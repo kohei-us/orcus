@@ -5,7 +5,7 @@ orcus 0.12.1
 
   * fix loading of file streams on Windows.
 
-  * get the debug flag to work again
+  * get the debug flag to work again.
 
 orcus 0.12.0
 
