@@ -6,7 +6,7 @@ build:
   before_script: 
     - apt update
     - apt -y install make autoconf automake libtool
-    - apt -y libboost-all-dev
+    - apt -y install libboost-all-dev
   script: 
     - ./autogen.sh --disable-spreadsheet-model && make
 
