@@ -11,8 +11,3 @@ build:
     - git clone https://gitlab.com/mdds/mdds.git /mdds && (cd /mdds && ./autogen.sh && make install)
   script: 
     - ./autogen.sh --disable-spreadsheet-model && make
-
-test:
-  stage: test
-  script:
-    - make check
