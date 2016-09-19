@@ -77,7 +77,7 @@ bool parse_token::operator== (const parse_token& other) const
         case parse_token_t::parse_error:
             if (pstring(error_value.p, error_value.len) != pstring(other.error_value.p, other.error_value.len))
                 return false;
-            if (error_value.offset != error_value.offset)
+            if (error_value.offset != other.error_value.offset)
                 return false;
             break;
         default:
