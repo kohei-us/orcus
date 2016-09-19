@@ -8,7 +8,6 @@ build:
     - apt update
     - apt -y install make autoconf automake libtool pkg-config
     - apt -y install libboost-all-dev
-    - apt -y install libmdds-dev
   script: 
     - ./autogen.sh --disable-spreadsheet-model && make
 
