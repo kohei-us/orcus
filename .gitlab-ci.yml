@@ -6,8 +6,9 @@ build:
     CPPFLAGS: "-D_GLIBCXX_USE_CXX11_ABI=0"
   before_script: 
     - apt update
-    - apt -y install make autoconf automake libtool pkg-config
+    - apt -y install make autoconf automake libtool pkg-config git
     - apt -y install libboost-all-dev
+    - git clone https://gitlab.com/mdds/mdds.git /mdds && (cd /mdds && ./autogen.sh && make install)
   script: 
     - ./autogen.sh --disable-spreadsheet-model && make
 
