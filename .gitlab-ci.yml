@@ -10,4 +10,4 @@ build:
     - apt -y install libboost-all-dev || apt-get -y install libboost-all-dev
     - git clone https://gitlab.com/mdds/mdds.git /mdds && (cd /mdds && ./autogen.sh && make install)
   script: 
-    - ./autogen.sh --disable-spreadsheet-model && make
+    - ./autogen.sh --disable-spreadsheet-model && make && make check
