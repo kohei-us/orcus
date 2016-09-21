@@ -82,11 +82,12 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
             xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
             if (get_config().debug)
                 print_attrs(get_tokens(), attrs);
+
+            break;
         }
-        break;
         case XML_sheets:
             xml_element_expected(parent, NS_ooxml_xlsx, XML_workbook);
-        break;
+            break;
         case XML_sheet:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_sheets);
@@ -95,8 +96,35 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
             m_sheet_info.data.insert(
                 opc_rel_extras_t::map_type::value_type(
                     func.get_rid(), new xlsx_rel_sheet_info(func.get_sheet())));
+            break;
         }
-        break;
+        case XML_pivotCaches:
+            xml_element_expected(parent, NS_ooxml_xlsx, XML_workbook);
+            break;
+        case XML_pivotCache:
+        {
+            xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCaches);
+
+            pstring cache_id, rid;
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns == NS_ooxml_xlsx && attr.name == XML_cacheId)
+                    {
+                        cache_id = attr.value;
+                    }
+                    else if (attr.ns == NS_ooxml_r && attr.name == XML_id)
+                    {
+                        rid = attr.value;
+                    }
+                }
+            );
+
+            if (get_config().debug)
+                cout << "pivot cache id: " << cache_id << "  relationship id: " << rid << endl;
+
+            break;
+        }
         default:
             warn_unhandled();
     }
