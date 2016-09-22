@@ -6,9 +6,12 @@
  */
 
 #include "orcus/spreadsheet/import_interface.hpp"
+#include "orcus/spreadsheet/import_interface_pivot.hpp"
 #include "orcus/spreadsheet/export_interface.hpp"
 
 namespace orcus { namespace spreadsheet { namespace iface {
+
+import_pivot_cache_definition::~import_pivot_cache_definition() {}
 
 import_shared_strings::~import_shared_strings() {}
 
@@ -71,6 +74,12 @@ import_shared_strings* import_factory::get_shared_strings()
 }
 
 import_styles* import_factory::get_styles()
+{
+    return nullptr;
+}
+
+import_pivot_cache_definition* import_factory::get_pivot_cache_definition(
+        orcus::spreadsheet::pivot_cache_id_t cache_id)
 {
     return nullptr;
 }

@@ -169,6 +169,8 @@
                     <F N="../include/orcus/spreadsheet/factory.hpp"/>
                     <F N="../include/orcus/spreadsheet/global_settings.hpp"/>
                     <F N="../include/orcus/spreadsheet/import_interface.hpp"/>
+                    <F N="../include/orcus/spreadsheet/import_interface_pivot.hpp"/>
+                    <F N="../include/orcus/spreadsheet/pivot.hpp"/>
                     <F N="../include/orcus/spreadsheet/shared_strings.hpp"/>
                     <F N="../include/orcus/spreadsheet/sheet.hpp"/>
                     <F N="../include/orcus/spreadsheet/sheet_properties.hpp"/>
@@ -475,6 +477,7 @@
                 <F N="../src/spreadsheet/global_settings.cpp"/>
                 <F N="../src/spreadsheet/json_dumper.cpp"/>
                 <F N="../src/spreadsheet/json_dumper.hpp"/>
+                <F N="../src/spreadsheet/pivot.cpp"/>
                 <F N="../src/spreadsheet/shared_strings.cpp"/>
                 <F N="../src/spreadsheet/sheet.cpp"/>
                 <F N="../src/spreadsheet/sheet_properties.cpp"/>

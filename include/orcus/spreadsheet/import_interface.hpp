@@ -20,6 +20,8 @@
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
+class import_pivot_cache_definition;
+
 /**
  * Interface class designed to be derived by the implementor.
  */
@@ -711,6 +713,9 @@ public:
      *         client app doesn't support styles.
      */
     virtual import_styles* get_styles();
+
+    virtual import_pivot_cache_definition* get_pivot_cache_definition(
+        orcus::spreadsheet::pivot_cache_id_t cache_id);
 
     /**
      * @return pointer to the sheet instance. It may return NULL if the client

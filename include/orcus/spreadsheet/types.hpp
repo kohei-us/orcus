@@ -23,6 +23,8 @@ typedef uint8_t color_elem_t;
 typedef uint16_t col_width_t;
 typedef uint16_t row_height_t;
 
+typedef uint32_t pivot_cache_id_t;
+
 ORCUS_DLLPUBLIC col_width_t get_default_column_width();
 ORCUS_DLLPUBLIC row_height_t get_default_row_height();
 
