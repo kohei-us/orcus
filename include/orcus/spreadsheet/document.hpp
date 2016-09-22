@@ -33,6 +33,7 @@ namespace spreadsheet {
 class import_global_settings;
 class import_shared_strings;
 class import_styles;
+class pivot_cache;
 class sheet;
 
 struct table_t;
@@ -58,6 +59,12 @@ public:
 
     import_styles* get_styles();
     const import_styles* get_styles() const;
+
+    pivot_cache* create_pivot_cache(
+        orcus::spreadsheet::pivot_cache_id_t cache_id);
+
+    const pivot_cache* get_pivot_cache(
+        orcus::spreadsheet::pivot_cache_id_t cache_id) const;
 
     sheet* append_sheet(const pstring& sheet_name, row_t row_size, col_t col_size);
     sheet* get_sheet(const pstring& sheet_name);

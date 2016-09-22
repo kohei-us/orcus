@@ -13,10 +13,11 @@
 
 namespace orcus { namespace spreadsheet {
 
-class ORCUS_SPM_DLLPUBLIC import_pivot_cache_definition : public iface::import_pivot_cache_definition
+class ORCUS_SPM_DLLPUBLIC pivot_cache : public iface::import_pivot_cache_definition
 {
 public:
-    virtual ~import_pivot_cache_definition();
+    pivot_cache();
+    virtual ~pivot_cache();
 };
 
 }}

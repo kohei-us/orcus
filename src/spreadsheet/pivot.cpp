@@ -9,7 +9,9 @@
 
 namespace orcus { namespace spreadsheet {
 
-import_pivot_cache_definition::~import_pivot_cache_definition() {}
+pivot_cache::pivot_cache() {}
+
+pivot_cache::~pivot_cache() {}
 
 }}
 

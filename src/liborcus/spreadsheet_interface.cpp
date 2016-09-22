@@ -78,7 +78,7 @@ import_styles* import_factory::get_styles()
     return nullptr;
 }
 
-import_pivot_cache_definition* import_factory::get_pivot_cache_definition(
+import_pivot_cache_definition* import_factory::create_pivot_cache_definition(
         orcus::spreadsheet::pivot_cache_id_t cache_id)
 {
     return nullptr;

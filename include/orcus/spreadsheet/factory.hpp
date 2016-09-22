@@ -24,13 +24,15 @@ public:
     import_factory(document& doc, row_t row_size = 1048576, col_t col_size = 1024);
     virtual ~import_factory();
 
-    virtual iface::import_global_settings* get_global_settings();
-    virtual iface::import_shared_strings* get_shared_strings();
-    virtual iface::import_styles* get_styles();
-    virtual iface::import_sheet* append_sheet(const char* sheet_name, size_t sheet_name_length);
-    virtual iface::import_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length);
-    virtual iface::import_sheet* get_sheet(sheet_t sheet_index);
-    virtual void finalize();
+    virtual iface::import_global_settings* get_global_settings() override;
+    virtual iface::import_shared_strings* get_shared_strings() override;
+    virtual iface::import_styles* get_styles() override;
+    virtual iface::import_pivot_cache_definition* create_pivot_cache_definition(
+        orcus::spreadsheet::pivot_cache_id_t cache_id) override;
+    virtual iface::import_sheet* append_sheet(const char* sheet_name, size_t sheet_name_length) override;
+    virtual iface::import_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) override;
+    virtual iface::import_sheet* get_sheet(sheet_t sheet_index) override;
+    virtual void finalize() override;
 
 private:
     import_factory_impl* mp_impl;

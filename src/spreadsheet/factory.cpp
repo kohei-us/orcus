@@ -7,6 +7,7 @@
 
 #include "orcus/spreadsheet/factory.hpp"
 
+#include "orcus/spreadsheet/pivot.hpp"
 #include "orcus/spreadsheet/shared_strings.hpp"
 #include "orcus/spreadsheet/styles.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
@@ -51,6 +52,12 @@ iface::import_shared_strings* import_factory::get_shared_strings()
 iface::import_styles* import_factory::get_styles()
 {
     return mp_impl->m_doc.get_styles();
+}
+
+iface::import_pivot_cache_definition* import_factory::create_pivot_cache_definition(
+    pivot_cache_id_t cache_id)
+{
+    return mp_impl->m_doc.create_pivot_cache(cache_id);
 }
 
 iface::import_sheet* import_factory::append_sheet(const char* sheet_name, size_t sheet_name_length)

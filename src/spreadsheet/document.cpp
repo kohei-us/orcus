@@ -12,6 +12,7 @@
 #include "orcus/spreadsheet/shared_strings.hpp"
 #include "orcus/spreadsheet/styles.hpp"
 #include "orcus/spreadsheet/auto_filter.hpp"
+#include "orcus/spreadsheet/pivot.hpp"
 
 #include "orcus/pstring.hpp"
 #include "orcus/types.hpp"
@@ -323,6 +324,7 @@ public:
 };
 
 typedef std::vector<std::unique_ptr<sheet_item>> sheet_items_type;
+typedef std::map<pivot_cache_id_t, std::unique_ptr<pivot_cache>> pivot_caches_type;
 
 }
 
@@ -340,6 +342,8 @@ struct document_impl
     import_styles* mp_styles;
     import_shared_strings* mp_strings;
     ixion::dirty_formula_cells_t m_dirty_cells;
+
+    pivot_caches_type m_pivot_caches;
 
     std::unique_ptr<ixion::formula_name_resolver> mp_name_resolver;
     formula_grammar_t m_grammar;
@@ -387,6 +391,26 @@ import_styles* document::get_styles()
 const import_styles* document::get_styles() const
 {
     return mp_impl->mp_styles;
+}
+
+pivot_cache* document::create_pivot_cache(pivot_cache_id_t cache_id)
+{
+    // It will overwrite an existing cache if any.
+    auto r = mp_impl->m_pivot_caches.insert(
+        pivot_caches_type::value_type(
+            cache_id, orcus::make_unique<pivot_cache>()));
+
+    if (!r.second)
+        // Insertion failed.
+        return nullptr;
+
+    return r.first->second.get();
+}
+
+const pivot_cache* document::get_pivot_cache(pivot_cache_id_t cache_id) const
+{
+    auto it = mp_impl->m_pivot_caches.find(cache_id);
+    return it == mp_impl->m_pivot_caches.end() ? nullptr : it->second.get();
 }
 
 ixion::model_context& document::get_model_context()

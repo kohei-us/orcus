@@ -714,7 +714,18 @@ public:
      */
     virtual import_styles* get_styles();
 
-    virtual import_pivot_cache_definition* get_pivot_cache_definition(
+    /**
+     * Create an interface for pivot cache definition import for a specified
+     * cache ID.  In case a pivot cache alrady exists for the passed ID, the
+     * client app should overwrite the existing cache with a brand-new cache
+     * instance.
+     *
+     * @param cache_id numeric ID associated with the pivot cache.
+     *
+     * @return pointer to the pivot cache interface instance. If may return
+     *         NULL if the client app doesn't support pivot tables.
+     */
+    virtual import_pivot_cache_definition* create_pivot_cache_definition(
         orcus::spreadsheet::pivot_cache_id_t cache_id);
 
     /**
