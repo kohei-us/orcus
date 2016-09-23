@@ -41,27 +41,6 @@ private:
     const char* m_prefix;
 };
 
-struct process_opc_rel : public unary_function<void, opc_rel_t>
-{
-    process_opc_rel(opc_reader& parent, opc_rel_extras_t* extras) :
-        m_parent(parent), m_extras(extras) {}
-
-    void operator() (opc_rel_t& v)
-    {
-        opc_rel_extra* data = nullptr;
-        if (m_extras)
-        {
-            opc_rel_extras_t::map_type::iterator it = m_extras->data.find(v.rid);
-            if (it != m_extras->data.end())
-                data = it->second;
-        }
-        m_parent.read_part(v.target, v.type, data);
-    }
-private:
-    opc_reader& m_parent;
-    opc_rel_extras_t* m_extras;
-};
-
 }
 
 opc_reader::part_handler::~part_handler() {}
@@ -176,7 +155,7 @@ void opc_reader::read_part(const pstring& path, const schema_t type, opc_rel_ext
     }
 }
 
-void opc_reader::check_relation_part(const std::string& file_name, opc_rel_extras_t* extra)
+void opc_reader::check_relation_part(const std::string& file_name, opc_rel_extras_t* extras)
 {
     // Read the relationship file associated with this file, located at
     // _rels/<file name>.rels.
@@ -189,7 +168,19 @@ void opc_reader::check_relation_part(const std::string& file_name, opc_rel_extra
     if (m_config.debug)
         for_each(rels.begin(), rels.end(), print_opc_rel());
 
-    for_each(rels.begin(), rels.end(), process_opc_rel(*this, extra));
+    for_each(rels.begin(), rels.end(),
+        [&](opc_rel_t& v)
+        {
+            opc_rel_extra* data = nullptr;
+            if (extras)
+            {
+                opc_rel_extras_t::map_type::iterator it = extras->data.find(v.rid);
+                if (it != extras->data.end())
+                    data = it->second;
+            }
+            read_part(v.target, v.type, data);
+        }
+    );
 }
 
 void opc_reader::list_content() const
@@ -227,7 +218,13 @@ void opc_reader::read_content()
 
     if (m_config.debug)
         for_each(rels.begin(), rels.end(), print_opc_rel());
-    for_each(rels.begin(), rels.end(), process_opc_rel(*this, nullptr));
+
+    for_each(rels.begin(), rels.end(),
+        [this](opc_rel_t& v)
+        {
+            read_part(v.target, v.type, nullptr);
+        }
+    );
 }
 
 void opc_reader::read_content_types()
