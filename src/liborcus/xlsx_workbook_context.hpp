@@ -36,10 +36,10 @@ public:
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
     virtual void characters(const pstring& str, bool transient);
 
-    void pop_sheet_info(opc_rel_extras_t& sheets);
+    void pop_workbook_info(opc_rel_extras_t& sheets);
 
 private:
-    opc_rel_extras_t m_sheet_info;
+    opc_rel_extras_t m_workbook_info;
 };
 
 }

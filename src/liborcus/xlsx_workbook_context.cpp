@@ -93,7 +93,7 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
             xml_element_expected(parent, NS_ooxml_xlsx, XML_sheets);
             workbook_sheet_attr_parser func(&get_session_context());
             func = for_each(attrs.begin(), attrs.end(), func);
-            m_sheet_info.data.insert(
+            m_workbook_info.data.insert(
                 opc_rel_extras_t::map_type::value_type(
                     func.get_rid(), new xlsx_rel_sheet_info(func.get_sheet())));
             break;
@@ -121,7 +121,7 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
                 }
             );
 
-            m_sheet_info.data.insert(
+            m_workbook_info.data.insert(
                 opc_rel_extras_t::map_type::value_type(
                     rid, new xlsx_rel_pivot_cache_info(cache_id)));
 
@@ -139,9 +139,9 @@ bool xlsx_workbook_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void xlsx_workbook_context::characters(const pstring& str, bool transient) {}
 
-void xlsx_workbook_context::pop_sheet_info(opc_rel_extras_t& sheets)
+void xlsx_workbook_context::pop_workbook_info(opc_rel_extras_t& workbook_data)
 {
-    m_sheet_info.swap(sheets);
+    m_workbook_info.swap(workbook_data);
 }
 
 }

@@ -318,11 +318,11 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
     // Get sheet info from the context instance.
     xlsx_workbook_context& context =
         static_cast<xlsx_workbook_context&>(handler->get_context());
-    opc_rel_extras_t sheet_data;
-    context.pop_sheet_info(sheet_data);
+    opc_rel_extras_t workbook_data;
+    context.pop_workbook_info(workbook_data);
     if (get_config().debug)
     {
-        for_each(sheet_data.data.begin(), sheet_data.data.end(),
+        for_each(workbook_data.data.begin(), workbook_data.data.end(),
             [](const std::pair<pstring, const opc_rel_extra*>& v)
             {
                 const xlsx_rel_sheet_info* info = dynamic_cast<const xlsx_rel_sheet_info*>(v.second);
@@ -366,7 +366,7 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
             return left.rid < right.rid;
         };
 
-    mp_impl->m_opc_reader.check_relation_part(file_name, &sheet_data, &sort_func);
+    mp_impl->m_opc_reader.check_relation_part(file_name, &workbook_data, &sort_func);
 }
 
 void orcus_xlsx::read_sheet(const string& dir_path, const string& file_name, xlsx_rel_sheet_info* data)
