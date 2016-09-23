@@ -12,6 +12,7 @@
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/exception.hpp"
 #include "orcus/config.hpp"
+#include "orcus/measurement.hpp"
 
 #include "xlsx_types.hpp"
 #include "xlsx_handler.hpp"
@@ -260,6 +261,38 @@ void orcus_xlsx::set_formulas_to_doc()
     }
 }
 
+namespace {
+
+size_t get_schema_rank(const schema_t sch)
+{
+    using map_type = std::unordered_map <schema_t, size_t>;
+
+    static const schema_t schema_rank[] = {
+        SCH_od_rels_shared_strings,
+        SCH_od_rels_pivot_cache_def,
+        SCH_od_rels_worksheet,
+        nullptr
+    };
+
+    static map_type rank_map;
+
+    if (rank_map.empty())
+    {
+        // initialize it.
+        size_t rank = 0;
+        for (const schema_t* p = schema_rank; *p; ++rank, ++p)
+        {
+            rank_map.insert(
+                map_type::value_type(*p, rank));
+        }
+    }
+
+    auto it = rank_map.find(sch);
+    return it == rank_map.end() ? numeric_limits<size_t>::max() : it->second;
+}
+
+}
+
 void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
 {
     string filepath = resolve_file_path(dir_path, file_name);
@@ -308,7 +341,31 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
     }
 
     handler.reset();
-    mp_impl->m_opc_reader.check_relation_part(file_name, &sheet_data);
+
+    // Re-order the relation items so that shared strings get imported first,
+    // pivot caches get imported before the sheets and so on.
+
+    opc_reader::sort_compare_type sort_func =
+        [](const opc_rel_t& left, const opc_rel_t& right)
+        {
+            if (left.type != right.type)
+                return get_schema_rank(left.type) < get_schema_rank(right.type);
+
+            pstring rid1 = left.rid, rid2 = right.rid;
+
+            if (rid1.size() > 1 && rid2.size() > 1)
+            {
+                // numerical comparison of relation ID's.
+                rid1 = pstring(&rid1[1], rid1.size()-1); // remove the 'r' prefix.
+                rid2 = pstring(&rid2[1], rid2.size()-1); // remove the 'r' prefix.
+                return to_long(rid1) < to_long(rid2);
+            }
+
+            // textural comparison of relation ID's.
+            return left.rid < right.rid;
+        };
+
+    mp_impl->m_opc_reader.check_relation_part(file_name, &sheet_data, &sort_func);
 }
 
 void orcus_xlsx::read_sheet(const string& dir_path, const string& file_name, xlsx_rel_sheet_info* data)

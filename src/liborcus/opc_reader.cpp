@@ -155,7 +155,8 @@ void opc_reader::read_part(const pstring& path, const schema_t type, opc_rel_ext
     }
 }
 
-void opc_reader::check_relation_part(const std::string& file_name, opc_rel_extras_t* extras)
+void opc_reader::check_relation_part(
+    const std::string& file_name, opc_rel_extras_t* extras, sort_compare_type* sorter)
 {
     // Read the relationship file associated with this file, located at
     // _rels/<file name>.rels.
@@ -164,6 +165,9 @@ void opc_reader::check_relation_part(const std::string& file_name, opc_rel_extra
     string rels_file_name = file_name + ".rels";
     read_relations(rels_file_name.c_str(), rels);
     m_dir_stack.pop_back();
+
+    if (sorter)
+        std::sort(rels.begin(), rels.end(), *sorter);
 
     if (m_config.debug)
         for_each(rels.begin(), rels.end(), print_opc_rel());

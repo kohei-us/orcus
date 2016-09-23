@@ -40,6 +40,9 @@ class opc_reader
     opc_reader& operator=(const opc_reader&) = delete;
 
 public:
+
+    using sort_compare_type = std::function<bool(const opc_rel_t&, const opc_rel_t&)>;
+
     /**
      * Interface class for the user of opc_reader to receive callback to
      * handle each xml part.
@@ -85,8 +88,12 @@ public:
      * @param file_name name of the current xml part.
      * @param extras optional extra data file for client code to pass on to
      *               the next xml part(s).
+     * @param sorter optoinal comparator function used to sort the relation
+     *               items prior to processing them.
      */
-    void check_relation_part(const std::string& file_name, opc_rel_extras_t* extras);
+    void check_relation_part(
+        const std::string& file_name, opc_rel_extras_t* extras = nullptr,
+        sort_compare_type* sorter = nullptr);
 
 private:
 
