@@ -348,8 +348,9 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
     opc_reader::sort_compare_type sort_func =
         [](const opc_rel_t& left, const opc_rel_t& right)
         {
-            if (left.type != right.type)
-                return get_schema_rank(left.type) < get_schema_rank(right.type);
+            size_t rank_left = get_schema_rank(left.type), rank_right = get_schema_rank(right.type);
+            if (rank_left != rank_right)
+                return rank_left < rank_right;
 
             pstring rid1 = left.rid, rid2 = right.rid;
 
