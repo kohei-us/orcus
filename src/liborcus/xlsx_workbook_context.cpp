@@ -105,13 +105,14 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCaches);
 
-            pstring cache_id, rid;
+            pstring rid;
+            long cache_id = -1;
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
                     if (attr.ns == NS_ooxml_xlsx && attr.name == XML_cacheId)
                     {
-                        cache_id = attr.value;
+                        cache_id = to_long(attr.value);
                     }
                     else if (attr.ns == NS_ooxml_r && attr.name == XML_id)
                     {
@@ -120,8 +121,9 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
                 }
             );
 
-            if (get_config().debug)
-                cout << "pivot cache id: " << cache_id << "  relationship id: " << rid << endl;
+            m_sheet_info.data.insert(
+                opc_rel_extras_t::map_type::value_type(
+                    rid, new xlsx_rel_pivot_cache_info(cache_id)));
 
             break;
         }

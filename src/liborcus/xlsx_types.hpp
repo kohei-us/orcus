@@ -9,6 +9,7 @@
 #define __ORCUS_XLSX_TYPES_HPP__
 
 #include "ooxml_types.hpp"
+#include "orcus/spreadsheet/types.hpp"
 
 namespace orcus {
 
@@ -26,6 +27,15 @@ struct xlsx_rel_sheet_info : public opc_rel_extra
     xlsx_rel_sheet_info() : id(0) {}
 
     virtual ~xlsx_rel_sheet_info() {}
+};
+
+struct xlsx_rel_pivot_cache_info : public opc_rel_extra
+{
+    spreadsheet::pivot_cache_id_t id;
+
+    xlsx_rel_pivot_cache_info(spreadsheet::pivot_cache_id_t _id) : id(_id) {}
+
+    virtual ~xlsx_rel_pivot_cache_info() {}
 };
 
 struct xlsx_rel_table_info : public opc_rel_extra

@@ -15,12 +15,13 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 namespace orcus {
 
 /**
- * Collection of global data that need to be persistent during a single
- * import session.
+ * Collection of global data that need to be persistent across different
+ * parts during a single import session.
  */
 struct xlsx_session_data : public session_context::custom_data
 {

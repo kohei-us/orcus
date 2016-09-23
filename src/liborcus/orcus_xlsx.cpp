@@ -38,19 +38,6 @@ using namespace std;
 
 namespace orcus {
 
-namespace {
-
-struct print_sheet_info : unary_function<pair<pstring, const opc_rel_extra*>, void>
-{
-    void operator() (const pair<pstring, const opc_rel_extra*>& v) const
-    {
-        const xlsx_rel_sheet_info* info = static_cast<const xlsx_rel_sheet_info*>(v.second);
-        cout << "sheet name: " << info->name << "  sheet id: " << info->id << "  relationship id: " << v.first << endl;
-    }
-};
-
-}
-
 class xlsx_opc_handler : public opc_reader::part_handler
 {
     orcus_xlsx& m_parent;
@@ -301,7 +288,24 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
     opc_rel_extras_t sheet_data;
     context.pop_sheet_info(sheet_data);
     if (get_config().debug)
-        for_each(sheet_data.data.begin(), sheet_data.data.end(), print_sheet_info());
+    {
+        for_each(sheet_data.data.begin(), sheet_data.data.end(),
+            [](const std::pair<pstring, const opc_rel_extra*>& v)
+            {
+                const xlsx_rel_sheet_info* info = dynamic_cast<const xlsx_rel_sheet_info*>(v.second);
+                if (info)
+                {
+                    cout << "relationship id: " << v.first << "; sheet name: " << info->name << "; sheet id: " << info->id << endl;
+                }
+
+                const xlsx_rel_pivot_cache_info* info_pc = dynamic_cast<const xlsx_rel_pivot_cache_info*>(v.second);
+                if (info_pc)
+                {
+                    cout << "relationship id: " << v.first << "; pivot cache id: " << info_pc->id << endl;
+                }
+            }
+        );
+    }
 
     handler.reset();
     mp_impl->m_opc_reader.check_relation_part(file_name, &sheet_data);
