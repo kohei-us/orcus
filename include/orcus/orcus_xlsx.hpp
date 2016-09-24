@@ -16,6 +16,7 @@ namespace spreadsheet { namespace iface { class import_factory; }}
 
 struct xlsx_rel_sheet_info;
 struct xlsx_rel_table_info;
+struct xlsx_rel_pivot_cache_info;
 struct orcus_xlsx_impl;
 class xlsx_opc_handler;
 
@@ -58,7 +59,9 @@ private:
 
     void read_table(const std::string& dir_path, const std::string& file_name, xlsx_rel_table_info* data);
 
-    void read_pivot_cache_def(const std::string& dir_path, const std::string& file_name);
+    void read_pivot_cache_def(
+        const std::string& dir_path, const std::string& file_name,
+        const xlsx_rel_pivot_cache_info* data);
 
     void read_pivot_cache_rec(const std::string& dir_path, const std::string& file_name);
 

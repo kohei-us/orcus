@@ -12,14 +12,24 @@
 
 namespace orcus {
 
+namespace spreadsheet { namespace iface {
+
+class import_pivot_cache_definition;
+
+}}
+
 /**
  * Base context for pivotCacheDefinition[n].xml part, which defines the
  * structure of a pivot cache.
  */
 class xlsx_pivot_cache_def_context : public xml_context_base
 {
+    spreadsheet::iface::import_pivot_cache_definition& m_pcache;
+
 public:
-    xlsx_pivot_cache_def_context(session_context& cxt, const tokens& tokens);
+    xlsx_pivot_cache_def_context(
+        session_context& cxt, const tokens& tokens,
+        spreadsheet::iface::import_pivot_cache_definition& pcache);
 
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);

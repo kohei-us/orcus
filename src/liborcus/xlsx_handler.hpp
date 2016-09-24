@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_XLSX_HANDLER_HPP__
-#define __ORCUS_XLSX_HANDLER_HPP__
+#ifndef INCLUDED_ORCUS_XLSX_HANDLER_HPP
+#define INCLUDED_ORCUS_XLSX_HANDLER_HPP
 
 #include "xml_stream_handler.hpp"
 #include "xml_context_base.hpp"
@@ -25,6 +25,7 @@ namespace spreadsheet { namespace iface {
 
 class import_sheet;
 class import_table;
+class import_pivot_cache_definition;
 
 }}
 
@@ -50,7 +51,9 @@ public:
 class xlsx_pivot_cache_def_xml_handler : public xml_stream_handler
 {
 public:
-    xlsx_pivot_cache_def_xml_handler(session_context& cxt, const tokens& tokens);
+    xlsx_pivot_cache_def_xml_handler(
+        session_context& cxt, const tokens& tokens,
+        spreadsheet::iface::import_pivot_cache_definition& pcache);
 };
 
 class xlsx_pivot_cache_rec_xml_handler : public xml_stream_handler

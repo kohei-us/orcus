@@ -76,7 +76,8 @@ public:
         }
         else if (type == SCH_od_rels_pivot_cache_def)
         {
-            m_parent.read_pivot_cache_def(dir_path, file_name);
+            m_parent.read_pivot_cache_def(
+                dir_path, file_name, static_cast<xlsx_rel_pivot_cache_info*>(data));
             return true;
         }
         else if (type == SCH_od_rels_pivot_cache_rec)
@@ -514,13 +515,26 @@ void orcus_xlsx::read_table(const std::string& dir_path, const std::string& file
     handler.reset();
 }
 
-void orcus_xlsx::read_pivot_cache_def(const std::string& dir_path, const std::string& file_name)
+void orcus_xlsx::read_pivot_cache_def(
+    const std::string& dir_path, const std::string& file_name,
+    const xlsx_rel_pivot_cache_info* data)
 {
+    if (!data)
+    {
+        if (get_config().debug)
+        {
+            cout << "---" << endl;
+            cout << "required pivot cache relation info was not present." << endl;
+        }
+        return;
+    }
+
     string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
         cout << "---" << endl;
-        cout << "read_pivot_cache_def: file path = " << filepath << endl;
+        cout << "read_pivot_cache_def: file path = " << filepath
+            << "; cache id = " << data->id << endl;
     }
 
     vector<unsigned char> buffer;
@@ -533,7 +547,15 @@ void orcus_xlsx::read_pivot_cache_def(const std::string& dir_path, const std::st
     if (buffer.empty())
         return;
 
-    auto handler = orcus::make_unique<xlsx_pivot_cache_def_xml_handler>(mp_impl->m_cxt, ooxml_tokens);
+    spreadsheet::iface::import_pivot_cache_definition* pcache =
+        mp_impl->mp_factory->create_pivot_cache_definition(data->id);
+
+    if (!pcache)
+        // failed to create a cache instance for whatever reason.
+        return;
+
+    auto handler = orcus::make_unique<xlsx_pivot_cache_def_xml_handler>(
+        mp_impl->m_cxt, ooxml_tokens, *pcache);
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,

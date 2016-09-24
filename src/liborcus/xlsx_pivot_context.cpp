@@ -184,8 +184,10 @@ public:
 
 }
 
-xlsx_pivot_cache_def_context::xlsx_pivot_cache_def_context(session_context& cxt, const tokens& tokens) :
-    xml_context_base(cxt, tokens) {}
+xlsx_pivot_cache_def_context::xlsx_pivot_cache_def_context(
+    session_context& cxt, const tokens& tokens,
+    spreadsheet::iface::import_pivot_cache_definition& pcache) :
+    xml_context_base(cxt, tokens), m_pcache(pcache) {}
 
 bool xlsx_pivot_cache_def_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
 {

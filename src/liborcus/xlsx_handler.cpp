@@ -42,8 +42,9 @@ xlsx_table_xml_handler::xlsx_table_xml_handler(
 }
 
 xlsx_pivot_cache_def_xml_handler::xlsx_pivot_cache_def_xml_handler(
-    session_context& cxt, const tokens& tokens) :
-    xml_stream_handler(new xlsx_pivot_cache_def_context(cxt, tokens)) {}
+    session_context& cxt, const tokens& tokens,
+    spreadsheet::iface::import_pivot_cache_definition& pcache) :
+    xml_stream_handler(new xlsx_pivot_cache_def_context(cxt, tokens, pcache)) {}
 
 xlsx_pivot_cache_rec_xml_handler::xlsx_pivot_cache_rec_xml_handler(
     session_context& cxt, const tokens& tokens) :
