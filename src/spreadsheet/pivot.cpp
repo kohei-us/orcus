@@ -13,6 +13,11 @@ pivot_cache::pivot_cache() {}
 
 pivot_cache::~pivot_cache() {}
 
+void pivot_cache::set_worksheet_source(
+    const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name)
+{
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

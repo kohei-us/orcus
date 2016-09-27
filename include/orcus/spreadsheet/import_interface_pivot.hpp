@@ -27,6 +27,9 @@ class ORCUS_DLLPUBLIC import_pivot_cache_definition
 {
 public:
     virtual ~import_pivot_cache_definition() = 0;
+
+    virtual void set_worksheet_source(
+        const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name) = 0;
 };
 
 }}}

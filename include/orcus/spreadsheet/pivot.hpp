@@ -18,6 +18,9 @@ class ORCUS_SPM_DLLPUBLIC pivot_cache : public iface::import_pivot_cache_definit
 public:
     pivot_cache();
     virtual ~pivot_cache();
+
+    virtual void set_worksheet_source(
+        const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name) override;
 };
 
 }}

@@ -12,14 +12,36 @@
 #include "session_context.hpp"
 
 #include "orcus/measurement.hpp"
+#include "orcus/spreadsheet/import_interface_pivot.hpp"
 
 #include <iostream>
+#include <mdds/sorted_string_map.hpp>
 
 using namespace std;
 
 namespace orcus {
 
 namespace {
+
+typedef mdds::sorted_string_map<xlsx_pivot_cache_def_context::source_type> pc_source_type;
+
+// Keys must be sorted.
+pc_source_type::entry pc_source_entries[] = {
+    { ORCUS_ASCII("consolidation"), xlsx_pivot_cache_def_context::source_type::consolidation },
+    { ORCUS_ASCII("external"),      xlsx_pivot_cache_def_context::source_type::external      },
+    { ORCUS_ASCII("scenario"),      xlsx_pivot_cache_def_context::source_type::scenario      },
+    { ORCUS_ASCII("worksheet"),     xlsx_pivot_cache_def_context::source_type::worksheet     },
+};
+
+const pc_source_type& get_pc_source_map()
+{
+    static pc_source_type source_map(
+        pc_source_entries,
+        sizeof(pc_source_entries)/sizeof(pc_source_entries[0]),
+        xlsx_pivot_cache_def_context::source_type::unknown);
+
+    return source_map;
+}
 
 class cache_def_attr_parser : public unary_function<xml_token_attr_t, void>
 {
@@ -51,47 +73,6 @@ public:
                 default:
                     ;
             }
-        }
-    }
-};
-
-class cache_src_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns != NS_ooxml_xlsx)
-            return;
-
-        switch (attr.name)
-        {
-            case XML_type:
-                cout << "type: " << attr.value << endl;
-            break;
-            default:
-                ;
-        }
-    }
-};
-
-class worksheet_src_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns != NS_ooxml_xlsx)
-            return;
-
-        switch (attr.name)
-        {
-            case XML_ref:
-                cout << "ref: " << attr.value << endl;
-            break;
-            case XML_sheet:
-                cout << "sheet: " << attr.value << endl;
-            break;
-            default:
-                ;
         }
     }
 };
@@ -218,44 +199,93 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             cout << "pivot cache definition" << endl;
             cache_def_attr_parser func;
             for_each(attrs.begin(), attrs.end(), func);
+            break;
         }
-        break;
         case XML_cacheSource:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheDefinition);
-            cache_src_attr_parser func;
-            for_each(attrs.begin(), attrs.end(), func);
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_type:
+                            m_source_type =
+                                get_pc_source_map().find(attr.value.get(), attr.value.size());
+
+                            cout << "type: " << attr.value << endl;
+                            break;
+                        default:
+                            ;
+                    }
+                }
+            );
+            break;
         }
-        break;
         case XML_worksheetSource:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheSource);
-            worksheet_src_attr_parser func;
-            for_each(attrs.begin(), attrs.end(), func);
+            if (m_source_type != source_type::worksheet)
+                throw xml_structure_error(
+                    "worksheetSource element encountered while the source type is not worksheet.");
+
+            pstring ref, sheet_name;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_ref:
+                            ref = attr.value;
+                        break;
+                        case XML_sheet:
+                            sheet_name = attr.value;
+                        break;
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            if (get_config().debug)
+            {
+                cout << "ref: " << ref << endl;
+                cout << "sheet: " << sheet_name << endl;
+            }
+
+            m_pcache.set_worksheet_source(
+                ref.get(), ref.size(), sheet_name.get(), sheet_name.size());
+            break;
         }
-        break;
         case XML_cacheFields:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheDefinition);
             single_long_attr_getter func(NS_ooxml_xlsx, XML_count);
             long field_count = for_each(attrs.begin(), attrs.end(), func).get_value();
             cout << "field count: " << field_count << endl;
+            break;
         }
-        break;
         case XML_cacheField:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheFields);
             cache_field_attr_parser func;
             for_each(attrs.begin(), attrs.end(), func);
+            break;
         }
-        break;
         case XML_sharedItems:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheField);
             shared_items_attr_parser func;
             for_each(attrs.begin(), attrs.end(), func);
+            break;
         }
-        break;
         case XML_s:
         {
             start_element_s(parent, attrs);

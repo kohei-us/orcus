@@ -24,7 +24,18 @@ class import_pivot_cache_definition;
  */
 class xlsx_pivot_cache_def_context : public xml_context_base
 {
+public:
+    enum class source_type {
+        unknown = 0,
+        worksheet,
+        external,
+        consolidation,
+        scenario
+    };
+
+private:
     spreadsheet::iface::import_pivot_cache_definition& m_pcache;
+    source_type m_source_type;
 
 public:
     xlsx_pivot_cache_def_context(
