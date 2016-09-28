@@ -398,7 +398,7 @@ pivot_cache* document::create_pivot_cache(pivot_cache_id_t cache_id)
     // It will overwrite an existing cache if any.
     auto r = mp_impl->m_pivot_caches.insert(
         pivot_caches_type::value_type(
-            cache_id, orcus::make_unique<pivot_cache>()));
+            cache_id, orcus::make_unique<pivot_cache>(mp_impl->m_string_pool)));
 
     if (!r.second)
         // Insertion failed.

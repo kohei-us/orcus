@@ -8,19 +8,25 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_PIVOT_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_PIVOT_HPP
 
-#include "orcus/spreadsheet/import_interface_pivot.hpp"
 #include "orcus/env.hpp"
 
-namespace orcus { namespace spreadsheet {
+#include <memory>
 
-class ORCUS_SPM_DLLPUBLIC pivot_cache : public iface::import_pivot_cache_definition
+namespace orcus {
+
+class string_pool;
+
+namespace spreadsheet {
+
+class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
-public:
-    pivot_cache();
-    virtual ~pivot_cache();
+    struct impl;
 
-    virtual void set_worksheet_source(
-        const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name) override;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    pivot_cache(string_pool& sp);
+    virtual ~pivot_cache();
 };
 
 }}

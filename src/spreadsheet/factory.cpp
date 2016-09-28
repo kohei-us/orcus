@@ -13,8 +13,47 @@
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/global_settings.hpp"
+#include "orcus/spreadsheet/import_interface_pivot.hpp"
+
+#include <cassert>
 
 namespace orcus { namespace spreadsheet {
+
+class import_pivot_cache_def : public iface::import_pivot_cache_definition
+{
+    enum source_type { unknown = 0, worksheet, external, consolidation, scenario };
+
+    document& m_doc;
+
+    pivot_cache_id_t m_cache_id = 0;
+    pivot_cache* m_cache = nullptr;
+
+    source_type m_src_type = unknown;
+
+public:
+    import_pivot_cache_def(document& doc) : m_doc(doc) {}
+
+    void set_cache(pivot_cache_id_t cache_id, pivot_cache* cache)
+    {
+        m_src_type = unknown;
+
+        m_cache_id = cache_id;
+        m_cache = cache;
+    }
+
+    virtual void set_worksheet_source(
+        const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name) override
+    {
+        assert(m_cache);
+        assert(m_cache_id > 0);
+
+        m_src_type = worksheet;
+    }
+
+    virtual void commit() override
+    {
+    }
+};
 
 struct import_factory_impl
 {
@@ -23,12 +62,14 @@ struct import_factory_impl
     col_t m_default_col_size;
 
     import_global_settings m_global_settings;
+    import_pivot_cache_def m_pc_def;
 
     import_factory_impl(document& doc, row_t row_size, col_t col_size) :
         m_doc(doc),
         m_default_row_size(row_size),
         m_default_col_size(col_size),
-        m_global_settings(doc) {}
+        m_global_settings(doc),
+        m_pc_def(doc) {}
 };
 
 import_factory::import_factory(document& doc, row_t row_size, col_t col_size) :
@@ -57,7 +98,9 @@ iface::import_styles* import_factory::get_styles()
 iface::import_pivot_cache_definition* import_factory::create_pivot_cache_definition(
     pivot_cache_id_t cache_id)
 {
-    return mp_impl->m_doc.create_pivot_cache(cache_id);
+    pivot_cache* pc = mp_impl->m_doc.create_pivot_cache(cache_id);
+    mp_impl->m_pc_def.set_cache(cache_id, pc);
+    return &mp_impl->m_pc_def;
 }
 
 iface::import_sheet* import_factory::append_sheet(const char* sheet_name, size_t sheet_name_length)

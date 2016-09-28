@@ -30,6 +30,8 @@ public:
 
     virtual void set_worksheet_source(
         const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name) = 0;
+
+    virtual void commit() = 0;
 };
 
 }}}

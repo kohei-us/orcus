@@ -6,17 +6,24 @@
  */
 
 #include "orcus/spreadsheet/pivot.hpp"
+#include "orcus/global.hpp"
+#include "orcus/string_pool.hpp"
 
 namespace orcus { namespace spreadsheet {
 
-pivot_cache::pivot_cache() {}
+struct pivot_cache::impl
+{
+    string_pool& m_string_pool;
+
+    pstring m_src_sheet_name;
+
+    impl(string_pool& sp) : m_string_pool(sp) {}
+};
+
+pivot_cache::pivot_cache(string_pool& sp) :
+    mp_impl(orcus::make_unique<impl>(sp)) {}
 
 pivot_cache::~pivot_cache() {}
-
-void pivot_cache::set_worksheet_source(
-    const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name)
-{
-}
 
 }}
 
