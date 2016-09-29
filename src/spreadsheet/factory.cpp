@@ -14,7 +14,13 @@
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/global_settings.hpp"
 #include "orcus/spreadsheet/import_interface_pivot.hpp"
+#include "orcus/global.hpp"
+#include "orcus/string_pool.hpp"
+#include "orcus/exception.hpp"
 
+#include <ixion/formula_name_resolver.hpp>
+
+#include <sstream>
 #include <cassert>
 
 namespace orcus { namespace spreadsheet {
@@ -26,19 +32,22 @@ class import_pivot_cache_def : public iface::import_pivot_cache_definition
     document& m_doc;
 
     pivot_cache_id_t m_cache_id = 0;
-    pivot_cache* m_cache = nullptr;
 
     source_type m_src_type = unknown;
+    pstring m_src_sheet_name;
+    ixion::abs_range_t m_src_range;
+
+    std::unique_ptr<pivot_cache> m_cache;
 
 public:
     import_pivot_cache_def(document& doc) : m_doc(doc) {}
 
-    void set_cache(pivot_cache_id_t cache_id, pivot_cache* cache)
+    void create_cache(pivot_cache_id_t cache_id)
     {
         m_src_type = unknown;
 
         m_cache_id = cache_id;
-        m_cache = cache;
+        m_cache = orcus::make_unique<pivot_cache>(m_doc.get_string_pool());
     }
 
     virtual void set_worksheet_source(
@@ -47,11 +56,28 @@ public:
         assert(m_cache);
         assert(m_cache_id > 0);
 
+        const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+        assert(resolver);
+
         m_src_type = worksheet;
+        m_src_sheet_name = m_doc.get_string_pool().intern(sheet_name, n_sheet_name).first;
+
+        ixion::formula_name_t fn = resolver->resolve(ref, n_ref, ixion::abs_address_t(0,0,0));
+
+        if (fn.type != ixion::formula_name_t::range_reference)
+        {
+            std::ostringstream os;
+            os << pstring(ref, n_ref) << " is not a valid range.";
+            throw xml_structure_error(os.str());
+        }
+
+        m_src_range = ixion::to_range(fn.range).to_abs(ixion::abs_address_t(0,0,0));
     }
 
     virtual void commit() override
     {
+        m_doc.get_pivot_collection().insert_worksheet_cache(
+            m_src_sheet_name, m_src_range, std::move(m_cache));
     }
 };
 
@@ -98,8 +124,7 @@ iface::import_styles* import_factory::get_styles()
 iface::import_pivot_cache_definition* import_factory::create_pivot_cache_definition(
     pivot_cache_id_t cache_id)
 {
-    pivot_cache* pc = mp_impl->m_doc.create_pivot_cache(cache_id);
-    mp_impl->m_pc_def.set_cache(cache_id, pc);
+    mp_impl->m_pc_def.create_cache(cache_id);
     return &mp_impl->m_pc_def;
 }
 

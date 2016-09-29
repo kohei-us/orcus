@@ -11,6 +11,7 @@
 #include "ooxml_token_constants.hpp"
 #include "ooxml_namespace_types.hpp"
 #include "session_context.hpp"
+#include "xlsx_session_data.hpp"
 
 #include "orcus/global.hpp"
 #include "orcus/measurement.hpp"
@@ -42,7 +43,7 @@ public:
         }
     }
 
-    const xlsx_rel_sheet_info get_sheet() const { return m_sheet; }
+    const xlsx_rel_sheet_info& get_sheet() const { return m_sheet; }
     const pstring& get_rid() const { return m_rid; }
 
 private:
@@ -75,6 +76,9 @@ void xlsx_workbook_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*n
 void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
+    session_context& cxt = get_session_context();
+    xlsx_session_data& sdata = static_cast<xlsx_session_data&>(*cxt.mp_data);
+
     switch (name)
     {
         case XML_workbook:
@@ -91,11 +95,19 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
         case XML_sheet:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_sheets);
+
             workbook_sheet_attr_parser func(&get_session_context());
             func = for_each(attrs.begin(), attrs.end(), func);
+
+            const xlsx_rel_sheet_info& sheet_info = func.get_sheet();
+            if (sheet_info.id > 0)
+                // Excel's sheet ID is 1-based. Convert it to 0-based.
+                sdata.set_sheet_name_map(sheet_info.name, sheet_info.id-1);
+
             m_workbook_info.data.insert(
                 opc_rel_extras_t::map_type::value_type(
-                    func.get_rid(), new xlsx_rel_sheet_info(func.get_sheet())));
+                    func.get_rid(), new xlsx_rel_sheet_info(sheet_info)));
+
             break;
         }
         case XML_pivotCaches:

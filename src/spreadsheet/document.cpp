@@ -344,6 +344,7 @@ struct document_impl
     ixion::dirty_formula_cells_t m_dirty_cells;
 
     pivot_caches_type m_pivot_caches;
+    pivot_collection m_pivots;
 
     std::unique_ptr<ixion::formula_name_resolver> mp_name_resolver;
     formula_grammar_t m_grammar;
@@ -393,24 +394,14 @@ const import_styles* document::get_styles() const
     return mp_impl->mp_styles;
 }
 
-pivot_cache* document::create_pivot_cache(pivot_cache_id_t cache_id)
+pivot_collection& document::get_pivot_collection()
 {
-    // It will overwrite an existing cache if any.
-    auto r = mp_impl->m_pivot_caches.insert(
-        pivot_caches_type::value_type(
-            cache_id, orcus::make_unique<pivot_cache>(mp_impl->m_string_pool)));
-
-    if (!r.second)
-        // Insertion failed.
-        return nullptr;
-
-    return r.first->second.get();
+    return mp_impl->m_pivots;
 }
 
-const pivot_cache* document::get_pivot_cache(pivot_cache_id_t cache_id) const
+const pivot_collection& document::get_pivot_collection() const
 {
-    auto it = mp_impl->m_pivot_caches.find(cache_id);
-    return it == mp_impl->m_pivot_caches.end() ? nullptr : it->second.get();
+    return mp_impl->m_pivots;
 }
 
 ixion::model_context& document::get_model_context()

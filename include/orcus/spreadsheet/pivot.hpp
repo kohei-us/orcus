@@ -12,21 +12,40 @@
 
 #include <memory>
 
+namespace ixion {
+
+struct abs_range_t;
+
+}
+
 namespace orcus {
 
 class string_pool;
+class pstring;
 
 namespace spreadsheet {
 
 class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
     struct impl;
-
     std::unique_ptr<impl> mp_impl;
 
 public:
     pivot_cache(string_pool& sp);
-    virtual ~pivot_cache();
+    ~pivot_cache();
+};
+
+class ORCUS_SPM_DLLPUBLIC pivot_collection
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    pivot_collection();
+    ~pivot_collection();
+
+    void insert_worksheet_cache(
+        const pstring& sheet_name, const ixion::abs_range_t& range, std::unique_ptr<pivot_cache>&& cache);
 };
 
 }}

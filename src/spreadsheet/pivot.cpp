@@ -25,6 +25,33 @@ pivot_cache::pivot_cache(string_pool& sp) :
 
 pivot_cache::~pivot_cache() {}
 
+namespace {
+
+}
+
+struct pivot_collection::impl
+{
+    std::vector<std::unique_ptr<pivot_cache>> m_caches;
+};
+
+pivot_collection::pivot_collection() : mp_impl(orcus::make_unique<impl>()) {}
+
+pivot_collection::~pivot_collection() {}
+
+void pivot_collection::insert_worksheet_cache(
+    const pstring& sheet_name, const ixion::abs_range_t& range,
+    std::unique_ptr<pivot_cache>&& cache)
+{
+    // TODO: check and see if there is already a cache for this location.  If
+    // yes, overwrite the existing cache.
+
+//  size_t cache_id = mp_impl->m_caches.size();
+
+    // TODO: Associate this cache ID with the name and the range.
+
+    mp_impl->m_caches.push_back(std::move(cache));
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -64,11 +64,20 @@ struct xlsx_session_data : public session_context::custom_data
 
     typedef std::vector<std::unique_ptr<formula>> formulas_type;
     typedef std::vector<std::unique_ptr<shared_formula>> shared_formulas_type;
+    typedef std::unordered_map<pstring, spreadsheet::sheet_t, pstring::hash> sheet_name_map_type;
 
     formulas_type m_formulas;
     shared_formulas_type m_shared_formulas;
+    sheet_name_map_type m_sheet_name_map;
 
     virtual ~xlsx_session_data();
+
+    /**
+     * @param name sheet name. Note that this must be already interned with
+     *             the string pool of the session context.
+     * @param id sheet index.
+     */
+    void set_sheet_name_map(pstring name, spreadsheet::sheet_t id);
 };
 
 }
