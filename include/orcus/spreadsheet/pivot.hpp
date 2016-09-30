@@ -25,6 +25,8 @@ class pstring;
 
 namespace spreadsheet {
 
+class document;
+
 class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
     struct impl;
@@ -41,9 +43,16 @@ class ORCUS_SPM_DLLPUBLIC pivot_collection
     std::unique_ptr<impl> mp_impl;
 
 public:
-    pivot_collection();
+    pivot_collection(document& doc);
     ~pivot_collection();
 
+    /**
+     * Insert a new pivot cache associated with a worksheet source.
+     *
+     * @param sheet_name name of the sheet where the source data is.
+     * @param range range of the source data.  Note that the sheet indices are
+     *              not used.
+     */
     void insert_worksheet_cache(
         const pstring& sheet_name, const ixion::abs_range_t& range, std::unique_ptr<pivot_cache>&& cache);
 };

@@ -324,7 +324,6 @@ public:
 };
 
 typedef std::vector<std::unique_ptr<sheet_item>> sheet_items_type;
-typedef std::map<pivot_cache_id_t, std::unique_ptr<pivot_cache>> pivot_caches_type;
 
 }
 
@@ -343,7 +342,6 @@ struct document_impl
     import_shared_strings* mp_strings;
     ixion::dirty_formula_cells_t m_dirty_cells;
 
-    pivot_caches_type m_pivot_caches;
     pivot_collection m_pivots;
 
     std::unique_ptr<ixion::formula_name_resolver> mp_name_resolver;
@@ -356,6 +354,7 @@ struct document_impl
         m_doc(doc),
         mp_styles(new import_styles(m_string_pool)),
         mp_strings(new import_shared_strings(m_string_pool, m_context, *mp_styles)),
+        m_pivots(doc),
         mp_name_resolver(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &m_context)),
         m_grammar(formula_grammar_t::xlsx_2007),
         m_table_handler(m_context, m_tables)
