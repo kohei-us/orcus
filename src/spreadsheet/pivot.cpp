@@ -115,6 +115,11 @@ void pivot_collection::insert_worksheet_cache(
         range_map_type::value_type(std::move(key), cache_id));
 }
 
+size_t pivot_collection::get_cache_count() const
+{
+    return mp_impl->m_caches.size();
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

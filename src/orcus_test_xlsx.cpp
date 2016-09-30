@@ -9,10 +9,12 @@
 #include "orcus/pstring.hpp"
 #include "orcus/global.hpp"
 #include "orcus/stream.hpp"
+#include "orcus/config.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/auto_filter.hpp"
+#include "orcus/spreadsheet/pivot.hpp"
 
 #include <cstdlib>
 #include <cassert>
@@ -27,6 +29,8 @@ using namespace orcus::spreadsheet;
 using namespace std;
 
 namespace {
+
+config test_config;
 
 const char* dirs[] = {
     SRCDIR"/test/xlsx/raw-values-1/",
@@ -171,13 +175,35 @@ void test_xlsx_table()
     assert(style.show_column_stripes == false);
 }
 
+void test_xlsx_pivot_two_pivot_caches()
+{
+    string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
+
+    document doc;
+    import_factory factory(doc);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    const pivot_collection& pc = doc.get_pivot_collection();
+    assert(pc.get_cache_count() == 2);
+
+    // TODO : add more tests.
+}
+
 }
 
 int main()
 {
+    test_config.debug = true;
+    test_config.structure_check = true;
+
     test_xlsx_import();
     test_xlsx_table_autofilter();
     test_xlsx_table();
+    test_xlsx_pivot_two_pivot_caches();
+
     return EXIT_SUCCESS;
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

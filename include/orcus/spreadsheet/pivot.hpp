@@ -55,6 +55,13 @@ public:
      */
     void insert_worksheet_cache(
         const pstring& sheet_name, const ixion::abs_range_t& range, std::unique_ptr<pivot_cache>&& cache);
+
+    /**
+     * Count the number of pivot caches currently stored.
+     *
+     * @return number of pivot caches currently stored in the document.
+     */
+    size_t get_cache_count() const;
 };
 
 }}
