@@ -9,8 +9,10 @@
 #define INCLUDED_ORCUS_SPREADSHEET_PIVOT_HPP
 
 #include "orcus/env.hpp"
+#include "orcus/pstring.hpp"
 
 #include <memory>
+#include <vector>
 
 namespace ixion {
 
@@ -21,11 +23,22 @@ struct abs_range_t;
 namespace orcus {
 
 class string_pool;
-class pstring;
 
 namespace spreadsheet {
 
 class document;
+
+struct ORCUS_SPM_DLLPUBLIC pivot_cache_field
+{
+    /**
+     * Field name. It must be interned with the string pool belonging to the
+     * document.
+     */
+    pstring name;
+
+    pivot_cache_field();
+    pivot_cache_field(pstring _name);
+};
 
 class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
@@ -33,8 +46,21 @@ class ORCUS_SPM_DLLPUBLIC pivot_cache
     std::unique_ptr<impl> mp_impl;
 
 public:
+    using fields_type = std::vector<pivot_cache_field>;
+
     pivot_cache(string_pool& sp);
     ~pivot_cache();
+
+    /**
+     * Bulk-insert all the fields in one step. Note that this will replace any
+     * pre-existing fields if any.
+     *
+     *
+     * @param fields field instances to move into storage.
+     */
+    void insert_fields(fields_type fields);
+
+    size_t get_field_count() const;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_collection
@@ -62,6 +88,9 @@ public:
      * @return number of pivot caches currently stored in the document.
      */
     size_t get_cache_count() const;
+
+    const pivot_cache* get_cache(
+        const pstring& sheet_name, const ixion::abs_range_t& range) const;
 };
 
 }}

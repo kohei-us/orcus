@@ -77,28 +77,6 @@ public:
     }
 };
 
-class cache_field_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns != NS_ooxml_xlsx)
-            return;
-
-        switch (attr.name)
-        {
-            case XML_name:
-                cout << "* name: " << attr.value << endl;
-            break;
-            case XML_numFmtId:
-                cout << "  number format id: " << attr.value << endl;
-            break;
-            default:
-                ;
-        }
-    }
-};
-
 class shared_items_attr_parser : public unary_function<xml_token_attr_t, void>
 {
 public:
@@ -269,14 +247,46 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheDefinition);
             single_long_attr_getter func(NS_ooxml_xlsx, XML_count);
             long field_count = for_each(attrs.begin(), attrs.end(), func).get_value();
-            cout << "field count: " << field_count << endl;
+
+            if (get_config().debug)
+                cout << "field count: " << field_count << endl;
+
+            if (field_count < 0)
+                throw xml_structure_error("field count of a pivot cache must be positive.");
+
+            m_pcache.set_field_count(field_count);
             break;
         }
         case XML_cacheField:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheFields);
-            cache_field_attr_parser func;
-            for_each(attrs.begin(), attrs.end(), func);
+
+            pstring name;
+            long numfmt_id = -1;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_name:
+                            cout << "* name: " << attr.value << endl;
+                        break;
+                        case XML_numFmtId:
+                            numfmt_id = to_long(attr.value);
+                            cout << "  number format id: " << attr.value << endl;
+                        break;
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            // TODO : Handle number format ID here.
+            m_pcache.append_field(name.get(), name.size());
             break;
         }
         case XML_sharedItems:

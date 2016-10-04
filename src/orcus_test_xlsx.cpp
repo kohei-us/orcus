@@ -189,7 +189,28 @@ void test_xlsx_pivot_two_pivot_caches()
     const pivot_collection& pc = doc.get_pivot_collection();
     assert(pc.get_cache_count() == 2);
 
-    // TODO : add more tests.
+    // B2:C6 on sheet 'Data'.
+    ixion::abs_range_t range;
+    range.first.column = 1;
+    range.first.row = 1;
+    range.last.column = 2;
+    range.last.row = 5;
+    const pivot_cache* cache = pc.get_cache("Data", range);
+    assert(cache);
+    assert(cache->get_field_count() == 2);
+
+    // TODO : test the content of this cache.
+
+    // F10:G14 on the same sheet.
+    range.first.column = 5;
+    range.first.row = 9;
+    range.last.column = 6;
+    range.last.row = 13;
+    cache = pc.get_cache("Data", range);
+    assert(cache);
+    assert(cache->get_field_count() == 2);
+
+    // TODO : test the content of this cache.
 }
 
 }

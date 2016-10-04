@@ -17,11 +17,16 @@
 
 namespace orcus { namespace spreadsheet {
 
+pivot_cache_field::pivot_cache_field() {}
+pivot_cache_field::pivot_cache_field(pstring _name) : name(std::move(_name)) {}
+
 struct pivot_cache::impl
 {
     string_pool& m_string_pool;
 
     pstring m_src_sheet_name;
+
+    pivot_cache::fields_type m_fields;
 
     impl(string_pool& sp) : m_string_pool(sp) {}
 };
@@ -30,6 +35,16 @@ pivot_cache::pivot_cache(string_pool& sp) :
     mp_impl(orcus::make_unique<impl>(sp)) {}
 
 pivot_cache::~pivot_cache() {}
+
+void pivot_cache::insert_fields(fields_type fields)
+{
+    mp_impl->m_fields = std::move(fields);
+}
+
+size_t pivot_cache::get_field_count() const
+{
+    return mp_impl->m_fields.size();
+}
 
 namespace {
 
@@ -118,6 +133,20 @@ void pivot_collection::insert_worksheet_cache(
 size_t pivot_collection::get_cache_count() const
 {
     return mp_impl->m_caches.size();
+}
+
+const pivot_cache* pivot_collection::get_cache(
+    const pstring& sheet_name, const ixion::abs_range_t& range) const
+{
+    worksheet_range wr(sheet_name, range);
+
+    auto it = mp_impl->m_worksheet_range_map.find(wr);
+    if (it == mp_impl->m_worksheet_range_map.end())
+        return nullptr;
+
+    size_t cache_id = it->second;
+    assert(cache_id < mp_impl->m_caches.size());
+    return mp_impl->m_caches[cache_id].get();
 }
 
 }}

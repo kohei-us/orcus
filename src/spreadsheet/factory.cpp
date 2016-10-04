@@ -39,6 +39,14 @@ class import_pivot_cache_def : public iface::import_pivot_cache_definition
 
     std::unique_ptr<pivot_cache> m_cache;
 
+    pivot_cache::fields_type m_current_fields;
+
+private:
+    pstring intern(const char* p, size_t n)
+    {
+        return m_doc.get_string_pool().intern(p, n).first;
+    }
+
 public:
     import_pivot_cache_def(document& doc) : m_doc(doc) {}
 
@@ -60,7 +68,7 @@ public:
         assert(resolver);
 
         m_src_type = worksheet;
-        m_src_sheet_name = m_doc.get_string_pool().intern(sheet_name, n_sheet_name).first;
+        m_src_sheet_name = intern(sheet_name, n_sheet_name);
 
         ixion::formula_name_t fn = resolver->resolve(ref, n_ref, ixion::abs_address_t(0,0,0));
 
@@ -74,8 +82,21 @@ public:
         m_src_range = ixion::to_range(fn.range).to_abs(ixion::abs_address_t(0,0,0));
     }
 
+    virtual void set_field_count(size_t n) override
+    {
+        m_current_fields.reserve(n);
+    }
+
+    virtual void append_field(const char* p, size_t n) override
+    {
+        m_current_fields.emplace_back(intern(p, n));
+    }
+
     virtual void commit() override
     {
+        m_cache->insert_fields(std::move(m_current_fields));
+        assert(m_current_fields.empty());
+
         m_doc.get_pivot_collection().insert_worksheet_cache(
             m_src_sheet_name, m_src_range, std::move(m_cache));
     }
