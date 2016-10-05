@@ -20,6 +20,11 @@ namespace orcus { namespace spreadsheet {
 pivot_cache_field::pivot_cache_field() {}
 pivot_cache_field::pivot_cache_field(const pstring& _name) : name(_name) {}
 pivot_cache_field::pivot_cache_field(const pivot_cache_field& other) : name(other.name) {}
+pivot_cache_field::pivot_cache_field(pivot_cache_field&& other) :
+    name(other.name)
+{
+    other.name.clear();
+}
 
 struct pivot_cache::impl
 {

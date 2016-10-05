@@ -241,7 +241,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             );
 
             // TODO : Handle number format ID here.
-            m_pcache.append_field(name.get(), name.size());
+            m_pcache.set_field_name(name.get(), name.size());
 
             if (get_config().debug)
             {
@@ -274,6 +274,11 @@ bool xlsx_pivot_cache_def_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_pivotCacheDefinition:
             {
                 m_pcache.commit();
+                break;
+            }
+            case XML_cacheField:
+            {
+                m_pcache.commit_field();
                 break;
             }
             default:
@@ -315,16 +320,22 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_pa
 {
     xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheField);
 
+    // If "semi-mixed types" is set, the field contains text values and at
+    // least one other type.
+    bool semi_mixed_types = true;
+
+    bool has_non_date = true;
+    bool has_date = false;
+    bool has_string = true;
+    bool has_blank = false;
+
     // If "mixed types" is set, the field contains more than one data types.
     bool mixed_types = false;
 
-    // If "semi-mixed types" is set, the field contains text values and at
-    // least one other type.
-    bool semi_mixed_types = false;
-
-    bool has_string = false;
     bool has_number = false;
     bool has_integer = false;
+    bool has_long_text = false;
+
     long count = -1;
     boost::optional<double> min_value;
     boost::optional<double> max_value;
@@ -346,8 +357,14 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_pa
                 case XML_containsSemiMixedTypes:
                     semi_mixed_types = to_bool(attr.value);
                     break;
+                case XML_containsNonDate:
+                    has_non_date = to_bool(attr.value);
+                    break;
                 case XML_containsString:
                     has_string = to_bool(attr.value);
+                    break;
+                case XML_containsBlank:
+                    has_blank = to_bool(attr.value);
                     break;
                 case XML_containsNumber:
                     has_number = to_bool(attr.value);
@@ -361,6 +378,9 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_pa
                 case XML_maxValue:
                     max_value = to_long(attr.value);
                     break;
+                case XML_longText:
+                    has_long_text = to_bool(attr.value);
+                    break;
                 default:
                     ;
             }
@@ -369,12 +389,17 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_pa
 
     if (get_config().debug)
     {
-        cout << "  count: " << count << endl;
-        cout << "  contains mixed types: " << mixed_types << endl;
         cout << "  contains semi-mixed types: " << semi_mixed_types << endl;
+        cout << "  contains non-date: " << has_non_date << endl;
+        cout << "  contains date: " << has_date << endl;
         cout << "  contains string: " << has_string << endl;
+        cout << "  contains blank: " << has_blank << endl;
+        cout << "  contains mixed types: " << mixed_types << endl;
         cout << "  contains number: " << has_number << endl;
         cout << "  contains integer: " << has_integer << endl;
+        cout << "  contains long text: " << has_long_text << endl;
+        cout << "  count: " << count << endl;
+
         if (min_value)
             cout << "  min value: " << *min_value << endl;
         if (max_value)

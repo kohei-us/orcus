@@ -33,7 +33,9 @@ public:
 
     virtual void set_field_count(size_t n) = 0;
 
-    virtual void append_field(const char* p, size_t n) = 0;
+    virtual void set_field_name(const char* p, size_t n) = 0;
+
+    virtual void commit_field() = 0;
 
     virtual void commit() = 0;
 };

@@ -38,8 +38,8 @@ class import_pivot_cache_def : public iface::import_pivot_cache_definition
     ixion::abs_range_t m_src_range;
 
     std::unique_ptr<pivot_cache> m_cache;
-
     pivot_cache::fields_type m_current_fields;
+    pivot_cache_field m_current_field;
 
 private:
     pstring intern(const char* p, size_t n)
@@ -87,9 +87,14 @@ public:
         m_current_fields.reserve(n);
     }
 
-    virtual void append_field(const char* p, size_t n) override
+    virtual void set_field_name(const char* p, size_t n) override
     {
-        m_current_fields.emplace_back(intern(p, n));
+        m_current_field.name = intern(p, n);
+    }
+
+    virtual void commit_field() override
+    {
+        m_current_fields.push_back(std::move(m_current_field));
     }
 
     virtual void commit() override

@@ -39,6 +39,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field
     pivot_cache_field();
     pivot_cache_field(const pstring& _name);
     pivot_cache_field(const pivot_cache_field& other);
+    pivot_cache_field(pivot_cache_field&& other);
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_cache
