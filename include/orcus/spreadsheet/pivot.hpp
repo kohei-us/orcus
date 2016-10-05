@@ -37,7 +37,8 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field
     pstring name;
 
     pivot_cache_field();
-    pivot_cache_field(pstring _name);
+    pivot_cache_field(const pstring& _name);
+    pivot_cache_field(const pivot_cache_field& other);
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_cache
@@ -55,12 +56,21 @@ public:
      * Bulk-insert all the fields in one step. Note that this will replace any
      * pre-existing fields if any.
      *
-     *
      * @param fields field instances to move into storage.
      */
     void insert_fields(fields_type fields);
 
     size_t get_field_count() const;
+
+    /**
+     * Retrieve a field data by its index.
+     *
+     * @param index index of the field to retrieve.
+     *
+     * @return pointer to the field instance, or nullptr if the index is
+     *         out-of-range.
+     */
+    const pivot_cache_field* get_field(size_t index) const;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_collection

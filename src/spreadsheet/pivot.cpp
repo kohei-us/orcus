@@ -18,7 +18,8 @@
 namespace orcus { namespace spreadsheet {
 
 pivot_cache_field::pivot_cache_field() {}
-pivot_cache_field::pivot_cache_field(pstring _name) : name(std::move(_name)) {}
+pivot_cache_field::pivot_cache_field(const pstring& _name) : name(_name) {}
+pivot_cache_field::pivot_cache_field(const pivot_cache_field& other) : name(other.name) {}
 
 struct pivot_cache::impl
 {
@@ -44,6 +45,11 @@ void pivot_cache::insert_fields(fields_type fields)
 size_t pivot_cache::get_field_count() const
 {
     return mp_impl->m_fields.size();
+}
+
+const pivot_cache_field* pivot_cache::get_field(size_t index) const
+{
+    return index < mp_impl->m_fields.size() ? &mp_impl->m_fields[index] : nullptr;
 }
 
 namespace {

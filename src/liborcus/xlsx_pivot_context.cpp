@@ -274,6 +274,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     {
                         case XML_name:
                             cout << "* name: " << attr.value << endl;
+                            name = attr.value;
                         break;
                         case XML_numFmtId:
                             numfmt_id = to_long(attr.value);

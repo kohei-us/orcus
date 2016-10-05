@@ -199,7 +199,18 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(cache);
     assert(cache->get_field_count() == 2);
 
-    // TODO : test the content of this cache.
+    // Test the content of this cache.
+    const pivot_cache_field* fld = cache->get_field(0);
+    assert(fld);
+    assert(fld->name == "F1");
+
+    // TODO : check the field content.
+
+    fld = cache->get_field(1);
+    assert(fld);
+    assert(fld->name == "D1");
+
+    // TODO : check the field content.
 
     // F10:G14 on the same sheet.
     range.first.column = 5;
@@ -209,6 +220,14 @@ void test_xlsx_pivot_two_pivot_caches()
     cache = pc.get_cache("Data", range);
     assert(cache);
     assert(cache->get_field_count() == 2);
+
+    fld = cache->get_field(0);
+    assert(fld);
+    assert(fld->name == "F2");
+
+    fld = cache->get_field(1);
+    assert(fld);
+    assert(fld->name == "D2");
 
     // TODO : test the content of this cache.
 }
