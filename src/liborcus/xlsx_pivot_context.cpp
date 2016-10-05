@@ -315,7 +315,13 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_pa
 {
     xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheField);
 
+    // If "mixed types" is set, the field contains more than one data types.
     bool mixed_types = false;
+
+    // If "semi-mixed types" is set, the field contains text values and at
+    // least one other type.
+    bool semi_mixed_types = false;
+
     bool has_string = false;
     bool has_number = false;
     bool has_integer = false;
@@ -334,8 +340,11 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_pa
                 case XML_count:
                     count = to_long(attr.value);
                     break;
-                case XML_containsSemiMixedTypes:
+                case XML_containsMixedTypes:
                     mixed_types = to_bool(attr.value);
+                    break;
+                case XML_containsSemiMixedTypes:
+                    semi_mixed_types = to_bool(attr.value);
                     break;
                 case XML_containsString:
                     has_string = to_bool(attr.value);
@@ -361,7 +370,8 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_pa
     if (get_config().debug)
     {
         cout << "  count: " << count << endl;
-        cout << "  contains semi-mixed types: " << mixed_types << endl;
+        cout << "  contains mixed types: " << mixed_types << endl;
+        cout << "  contains semi-mixed types: " << semi_mixed_types << endl;
         cout << "  contains string: " << has_string << endl;
         cout << "  contains number: " << has_number << endl;
         cout << "  contains integer: " << has_integer << endl;
@@ -370,6 +380,8 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_pa
         if (max_value)
             cout << "  max value: " << *max_value << endl;
     }
+
+    // TODO : pass these attribute values to the interface.
 }
 
 xlsx_pivot_cache_rec_context::xlsx_pivot_cache_rec_context(session_context& cxt, const tokens& tokens) :
