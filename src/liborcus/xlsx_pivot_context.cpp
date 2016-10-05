@@ -15,6 +15,7 @@
 #include "orcus/spreadsheet/import_interface_pivot.hpp"
 
 #include <iostream>
+#include <boost/optional.hpp>
 #include <mdds/sorted_string_map.hpp>
 
 using namespace std;
@@ -73,51 +74,6 @@ public:
                 default:
                     ;
             }
-        }
-    }
-};
-
-class shared_items_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns != NS_ooxml_xlsx)
-            return;
-
-        bool b = false;
-        long v = 0;
-        switch (attr.name)
-        {
-            case XML_count:
-                cout << "  count: " << attr.value << endl;
-            break;
-            case XML_containsSemiMixedTypes:
-                b = to_bool(attr.value);
-                cout << "  contains semi-mixed types: " << b << endl;
-            break;
-            case XML_containsString:
-                b = to_bool(attr.value);
-                cout << "  contains string: " << b << endl;
-            break;
-            case XML_containsNumber:
-                b = to_bool(attr.value);
-                cout << "  contains number: " << b << endl;
-            break;
-            case XML_containsInteger:
-                b = to_bool(attr.value);
-                cout << "  contains integer: " << b << endl;
-            break;
-            case XML_minValue:
-                v = to_long(attr.value);
-                cout << "  min value: " << v << endl;
-            break;
-            case XML_maxValue:
-                v = to_long(attr.value);
-                cout << "  max value: " << v << endl;
-            break;
-            default:
-                ;
         }
     }
 };
@@ -273,12 +229,10 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     switch (attr.name)
                     {
                         case XML_name:
-                            cout << "* name: " << attr.value << endl;
                             name = attr.value;
                         break;
                         case XML_numFmtId:
                             numfmt_id = to_long(attr.value);
-                            cout << "  number format id: " << attr.value << endl;
                         break;
                         default:
                             ;
@@ -288,13 +242,17 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
 
             // TODO : Handle number format ID here.
             m_pcache.append_field(name.get(), name.size());
+
+            if (get_config().debug)
+            {
+                cout << "* name: " << name << endl;
+                cout << "  number format id: " << numfmt_id << endl;
+            }
             break;
         }
         case XML_sharedItems:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheField);
-            shared_items_attr_parser func;
-            for_each(attrs.begin(), attrs.end(), func);
+            start_element_shared_items(parent, attrs);
             break;
         }
         case XML_s:
@@ -350,6 +308,67 @@ void xlsx_pivot_cache_def_context::start_element_s(
         }
         default:
             warn_unhandled();
+    }
+}
+
+void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs)
+{
+    xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheField);
+
+    bool mixed_types = false;
+    bool has_string = false;
+    bool has_number = false;
+    bool has_integer = false;
+    long count = -1;
+    boost::optional<double> min_value;
+    boost::optional<double> max_value;
+
+    for_each(attrs.begin(), attrs.end(),
+        [&](const xml_token_attr_t& attr)
+        {
+            if (attr.ns != NS_ooxml_xlsx)
+                return;
+
+            switch (attr.name)
+            {
+                case XML_count:
+                    count = to_long(attr.value);
+                    break;
+                case XML_containsSemiMixedTypes:
+                    mixed_types = to_bool(attr.value);
+                    break;
+                case XML_containsString:
+                    has_string = to_bool(attr.value);
+                    break;
+                case XML_containsNumber:
+                    has_number = to_bool(attr.value);
+                    break;
+                case XML_containsInteger:
+                    has_integer = to_bool(attr.value);
+                    break;
+                case XML_minValue:
+                    min_value = to_long(attr.value);
+                    break;
+                case XML_maxValue:
+                    max_value = to_long(attr.value);
+                    break;
+                default:
+                    ;
+            }
+        }
+    );
+
+    if (get_config().debug)
+    {
+        cout << "  count: " << count << endl;
+        cout << "  contains semi-mixed types: " << mixed_types << endl;
+        cout << "  contains string: " << has_string << endl;
+        cout << "  contains number: " << has_number << endl;
+        cout << "  contains integer: " << has_integer << endl;
+        if (min_value)
+            cout << "  min value: " << *min_value << endl;
+        if (max_value)
+            cout << "  max value: " << *max_value << endl;
     }
 }
 
