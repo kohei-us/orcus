@@ -78,25 +78,6 @@ public:
     }
 };
 
-class s_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns != NS_ooxml_xlsx)
-            return;
-
-        switch (attr.name)
-        {
-            case XML_v:
-                cout << "  * v: " << attr.value << endl;
-            break;
-            default:
-                ;
-        }
-    }
-};
-
 }
 
 xlsx_pivot_cache_def_context::xlsx_pivot_cache_def_context(
@@ -281,6 +262,9 @@ bool xlsx_pivot_cache_def_context::end_element(xmlns_id_t ns, xml_token_t name)
                 m_pcache.commit_field();
                 break;
             }
+            case XML_s:
+                end_element_s();
+                break;
             default:
                 ;
         }
@@ -306,9 +290,30 @@ void xlsx_pivot_cache_def_context::start_element_s(
     {
         case XML_sharedItems:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_sharedItems);
-            s_attr_parser func;
-            for_each(attrs.begin(), attrs.end(), func);
+            // string item of a cache field.
+            pstring value;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_v:
+                            value = attr.value;
+                        break;
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            if (get_config().debug)
+                cout << "  * v: " << value << endl;
+
+            m_pcache.set_field_string_value(value.get(), value.size());
             break;
         }
         default:
@@ -316,7 +321,26 @@ void xlsx_pivot_cache_def_context::start_element_s(
     }
 }
 
-void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs)
+void xlsx_pivot_cache_def_context::end_element_s()
+{
+    const xml_token_pair_t& parent = get_parent_element();
+    if (parent.first != NS_ooxml_xlsx)
+        return;
+
+    switch (parent.second)
+    {
+        case XML_sharedItems:
+        {
+            m_pcache.commit_field_value();
+            break;
+        }
+        default:
+            ;
+    }
+}
+
+void xlsx_pivot_cache_def_context::start_element_shared_items(
+    const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs)
 {
     xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheField);
 

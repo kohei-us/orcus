@@ -40,6 +40,7 @@ class import_pivot_cache_def : public iface::import_pivot_cache_definition
     std::unique_ptr<pivot_cache> m_cache;
     pivot_cache::fields_type m_current_fields;
     pivot_cache_field m_current_field;
+    pivot_cache_item m_current_field_item;
 
 private:
     pstring intern(const char* p, size_t n)
@@ -95,6 +96,23 @@ public:
     virtual void commit_field() override
     {
         m_current_fields.push_back(std::move(m_current_field));
+    }
+
+    virtual void set_field_string_value(const char* p, size_t n) override
+    {
+        m_current_field_item.type = pivot_cache_item_t::string;
+        m_current_field_item.value.string = intern(p, n).get();
+    }
+
+    virtual void set_field_numeric_value(double v) override
+    {
+        m_current_field_item.type = pivot_cache_item_t::numeric;
+        m_current_field_item.value.numeric = v;
+    }
+
+    virtual void commit_field_value() override
+    {
+        m_current_field.items.push_back(std::move(m_current_field_item));
     }
 
     virtual void commit() override

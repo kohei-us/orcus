@@ -28,13 +28,45 @@ namespace spreadsheet {
 
 class document;
 
+enum class pivot_cache_item_t
+{
+    unknown, boolean, datetime, string, numeric, blank, error
+};
+
+struct ORCUS_SPM_DLLPUBLIC pivot_cache_item
+{
+    pivot_cache_item_t type;
+
+    union
+    {
+        const char* string; /// This must point to an interned string instance.
+        double numeric;
+        bool boolean;
+
+        // TODO : probably more to add, esp for datetime and error values.
+
+    } value;
+
+    pivot_cache_item();
+    pivot_cache_item(const char* _string);
+    pivot_cache_item(double _numeric);
+    pivot_cache_item(bool _boolean);
+
+    pivot_cache_item(const pivot_cache_item& other);
+    pivot_cache_item(pivot_cache_item&& other);
+};
+
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_field
 {
+    using items_type = std::vector<pivot_cache_item>;
+
     /**
      * Field name. It must be interned with the string pool belonging to the
      * document.
      */
     pstring name;
+
+    items_type items;
 
     pivot_cache_field();
     pivot_cache_field(const pstring& _name);

@@ -37,6 +37,12 @@ public:
 
     virtual void commit_field() = 0;
 
+    virtual void set_field_string_value(const char* p, size_t n) = 0;
+
+    virtual void set_field_numeric_value(double v) = 0;
+
+    virtual void commit_field_value() = 0;
+
     virtual void commit() = 0;
 };
 
