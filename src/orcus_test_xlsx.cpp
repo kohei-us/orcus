@@ -21,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <set>
 
 #include <ixion/address.hpp>
 
@@ -204,7 +205,17 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(fld);
     assert(fld->name == "F1");
 
-    // TODO : check the field content.
+    // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
+    std::set<pivot_cache_item> expected =
+    {
+        pivot_cache_item(ORCUS_ASCII("A")),
+        pivot_cache_item(ORCUS_ASCII("B")),
+        pivot_cache_item(ORCUS_ASCII("C")),
+        pivot_cache_item(ORCUS_ASCII("D")),
+    };
+
+    std::set<pivot_cache_item> actual(fld->items.begin(), fld->items.end());
+    assert(actual == expected);
 
     fld = cache->get_field(1);
     assert(fld);

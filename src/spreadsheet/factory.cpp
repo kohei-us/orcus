@@ -101,7 +101,9 @@ public:
     virtual void set_field_string_value(const char* p, size_t n) override
     {
         m_current_field_item.type = pivot_cache_item_t::string;
-        m_current_field_item.value.string = intern(p, n).get();
+        pstring s = intern(p, n);
+        m_current_field_item.value.string.p = s.get();
+        m_current_field_item.value.string.n = s.size();
     }
 
     virtual void set_field_numeric_value(double v) override

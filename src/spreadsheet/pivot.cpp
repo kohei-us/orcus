@@ -19,10 +19,11 @@ namespace orcus { namespace spreadsheet {
 
 pivot_cache_item::pivot_cache_item() : type(pivot_cache_item_t::unknown) {}
 
-pivot_cache_item::pivot_cache_item(const char* _string) :
+pivot_cache_item::pivot_cache_item(const char* p_str, size_t n_str) :
     type(pivot_cache_item_t::string)
 {
-    value.string = _string;
+    value.string.p = p_str;
+    value.string.n = n_str;
 }
 
 pivot_cache_item::pivot_cache_item(double _numeric) :
@@ -57,7 +58,8 @@ pivot_cache_item::pivot_cache_item(const pivot_cache_item& other) :
             value.numeric = other.value.numeric;
             break;
         case pivot_cache_item_t::string:
-            value.string = other.value.string;
+            value.string.p = other.value.string.p;
+            value.string.n = other.value.string.n;
             break;
         case pivot_cache_item_t::unknown:
             break;
@@ -88,13 +90,71 @@ pivot_cache_item::pivot_cache_item(pivot_cache_item&& other) :
             value.numeric = other.value.numeric;
             break;
         case pivot_cache_item_t::string:
-            value.string = other.value.string;
+            value.string.p = other.value.string.p;
+            value.string.n = other.value.string.n;
             break;
         case pivot_cache_item_t::unknown:
             break;
         default:
             ;
     }
+}
+
+bool pivot_cache_item::operator< (const pivot_cache_item& other) const
+{
+    if (type != other.type)
+        return type < other.type;
+
+    switch (type)
+    {
+        case pivot_cache_item_t::boolean:
+            return value.boolean < other.value.boolean;
+        case pivot_cache_item_t::numeric:
+            return value.numeric < other.value.numeric;
+        case pivot_cache_item_t::string:
+            return pstring(value.string.p, value.string.n) < pstring(other.value.string.p, other.value.string.n);
+        case pivot_cache_item_t::datetime:
+            // TODO : implement this.
+            break;
+        case pivot_cache_item_t::error:
+            // TODO : implement this.
+            break;
+        case pivot_cache_item_t::blank:
+        case pivot_cache_item_t::unknown:
+        default:
+            ;
+    }
+
+    return false;
+}
+
+bool pivot_cache_item::operator== (const pivot_cache_item& other) const
+{
+    if (type != other.type)
+        return false;
+
+    switch (type)
+    {
+        case pivot_cache_item_t::boolean:
+            return value.boolean == other.value.boolean;
+        case pivot_cache_item_t::numeric:
+            return value.numeric == other.value.numeric;
+        case pivot_cache_item_t::string:
+            return pstring(value.string.p, value.string.n) == pstring(other.value.string.p, other.value.string.n);
+        case pivot_cache_item_t::datetime:
+            // TODO : implement this.
+            break;
+        case pivot_cache_item_t::error:
+            // TODO : implement this.
+            break;
+        case pivot_cache_item_t::blank:
+        case pivot_cache_item_t::unknown:
+            return true;
+        default:
+            ;
+    }
+
+    return false;
 }
 
 pivot_cache_field::pivot_cache_field() {}

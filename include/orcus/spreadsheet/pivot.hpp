@@ -30,7 +30,7 @@ class document;
 
 enum class pivot_cache_item_t
 {
-    unknown, boolean, datetime, string, numeric, blank, error
+    unknown = 0, boolean, datetime, string, numeric, blank, error
 };
 
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_item
@@ -39,7 +39,16 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item
 
     union
     {
-        const char* string; /// This must point to an interned string instance.
+        struct
+        {
+            // This must point to an interned string instance. May to be
+            // null-terminated.
+            const char* p;
+
+            size_t n; // Length of the string value.
+
+        } string;
+
         double numeric;
         bool boolean;
 
@@ -48,12 +57,15 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item
     } value;
 
     pivot_cache_item();
-    pivot_cache_item(const char* _string);
+    pivot_cache_item(const char* p_str, size_t n_str);
     pivot_cache_item(double _numeric);
     pivot_cache_item(bool _boolean);
 
     pivot_cache_item(const pivot_cache_item& other);
     pivot_cache_item(pivot_cache_item&& other);
+
+    bool operator< (const pivot_cache_item& other) const;
+    bool operator== (const pivot_cache_item& other) const;
 };
 
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_field
