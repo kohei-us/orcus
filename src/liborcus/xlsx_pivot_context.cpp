@@ -313,7 +313,7 @@ void xlsx_pivot_cache_def_context::start_element_s(
             if (get_config().debug)
                 cout << "  * v: " << value << endl;
 
-            m_pcache.set_field_string_value(value.get(), value.size());
+            m_pcache.set_field_item_string(value.get(), value.size());
             break;
         }
         default:
@@ -331,7 +331,7 @@ void xlsx_pivot_cache_def_context::end_element_s()
     {
         case XML_sharedItems:
         {
-            m_pcache.commit_field_value();
+            m_pcache.commit_field_item();
             break;
         }
         default:
@@ -410,6 +410,12 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
             }
         }
     );
+
+    if (min_value)
+        m_pcache.set_field_min_value(*min_value);
+
+    if (max_value)
+        m_pcache.set_field_max_value(*max_value);
 
     if (get_config().debug)
     {

@@ -221,7 +221,9 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(fld);
     assert(fld->name == "D1");
 
-    // TODO : check the field content.
+    // This is a pure numeric field with min and max values specified.
+    assert(fld->min_value && *fld->min_value == 1.0);
+    assert(fld->max_value && *fld->max_value == 4.0);
 
     // F10:G14 on the same sheet.
     range.first.column = 5;

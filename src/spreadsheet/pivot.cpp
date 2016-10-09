@@ -162,10 +162,16 @@ pivot_cache_field::pivot_cache_field() {}
 pivot_cache_field::pivot_cache_field(const pstring& _name) : name(_name) {}
 
 pivot_cache_field::pivot_cache_field(const pivot_cache_field& other) :
-    name(other.name), items(other.items) {}
+    name(other.name),
+    items(other.items),
+    min_value(other.min_value),
+    max_value(other.max_value) {}
 
 pivot_cache_field::pivot_cache_field(pivot_cache_field&& other) :
-    name(other.name), items(std::move(other.items))
+    name(other.name),
+    items(std::move(other.items)),
+    min_value(std::move(other.min_value)),
+    max_value(std::move(other.max_value))
 {
     other.name.clear();
 }

@@ -35,13 +35,17 @@ public:
 
     virtual void set_field_name(const char* p, size_t n) = 0;
 
+    virtual void set_field_min_value(double v) = 0;
+
+    virtual void set_field_max_value(double v) = 0;
+
     virtual void commit_field() = 0;
 
-    virtual void set_field_string_value(const char* p, size_t n) = 0;
+    virtual void set_field_item_string(const char* p, size_t n) = 0;
 
-    virtual void set_field_numeric_value(double v) = 0;
+    virtual void set_field_item_numeric(double v) = 0;
 
-    virtual void commit_field_value() = 0;
+    virtual void commit_field_item() = 0;
 
     virtual void commit() = 0;
 };

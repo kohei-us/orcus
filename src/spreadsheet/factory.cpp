@@ -93,12 +93,22 @@ public:
         m_current_field.name = intern(p, n);
     }
 
+    virtual void set_field_min_value(double v) override
+    {
+        m_current_field.min_value = v;
+    }
+
+    virtual void set_field_max_value(double v) override
+    {
+        m_current_field.max_value = v;
+    }
+
     virtual void commit_field() override
     {
         m_current_fields.push_back(std::move(m_current_field));
     }
 
-    virtual void set_field_string_value(const char* p, size_t n) override
+    virtual void set_field_item_string(const char* p, size_t n) override
     {
         m_current_field_item.type = pivot_cache_item_t::string;
         pstring s = intern(p, n);
@@ -106,13 +116,13 @@ public:
         m_current_field_item.value.string.n = s.size();
     }
 
-    virtual void set_field_numeric_value(double v) override
+    virtual void set_field_item_numeric(double v) override
     {
         m_current_field_item.type = pivot_cache_item_t::numeric;
         m_current_field_item.value.numeric = v;
     }
 
-    virtual void commit_field_value() override
+    virtual void commit_field_item() override
     {
         m_current_field.items.push_back(std::move(m_current_field_item));
     }

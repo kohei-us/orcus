@@ -14,6 +14,8 @@
 #include <memory>
 #include <vector>
 
+#include <boost/optional.hpp>
+
 namespace ixion {
 
 struct abs_range_t;
@@ -79,6 +81,9 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field
     pstring name;
 
     items_type items;
+
+    boost::optional<double> min_value;
+    boost::optional<double> max_value;
 
     pivot_cache_field();
     pivot_cache_field(const pstring& _name);
