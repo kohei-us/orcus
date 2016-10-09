@@ -321,6 +321,7 @@ void xlsx_pivot_cache_def_context::start_element_s(
             if (get_config().debug)
                 cout << "  * v: " << value << endl;
 
+            m_field_item_used = true;
             m_pcache.set_field_item_string(value.get(), value.size());
             break;
         }
@@ -339,7 +340,8 @@ void xlsx_pivot_cache_def_context::end_element_s()
     {
         case XML_sharedItems:
         {
-            m_pcache.commit_field_item();
+            if (m_field_item_used)
+                m_pcache.commit_field_item();
             break;
         }
         default:
@@ -361,7 +363,8 @@ void xlsx_pivot_cache_def_context::start_element_n(
         case XML_sharedItems:
         {
             // numeric item of a cache field.
-            double value;
+            double value = 0.0;
+            m_field_item_used = true;
 
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
@@ -374,6 +377,9 @@ void xlsx_pivot_cache_def_context::start_element_n(
                         case XML_v:
                             value = to_double(attr.value);
                         break;
+                        case XML_u:
+                            // flag for unused item.
+                            m_field_item_used = !to_bool(attr.value);
                         default:
                             ;
                     }
@@ -381,9 +387,17 @@ void xlsx_pivot_cache_def_context::start_element_n(
             );
 
             if (get_config().debug)
-                cout << "  * n: " << value << endl;
+            {
+                cout << "  * n: " << value;
+                if (!m_field_item_used)
+                    cout << " (unused)";
+                cout << endl;
 
-            m_pcache.set_field_item_numeric(value);
+            }
+
+            if (m_field_item_used)
+                m_pcache.set_field_item_numeric(value);
+
             break;
         }
         default:
@@ -401,7 +415,8 @@ void xlsx_pivot_cache_def_context::end_element_n()
     {
         case XML_sharedItems:
         {
-            m_pcache.commit_field_item();
+            if (m_field_item_used)
+                m_pcache.commit_field_item();
             break;
         }
         default:

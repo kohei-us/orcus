@@ -319,6 +319,39 @@ void test_xlsx_pivot_mixed_type_field()
     assert(std::round(*fld->min_value * 100.0) == 110.0); // min = 1.1
     assert(fld->max_value);
     assert(std::round(*fld->max_value * 100.0) == 150.0); // max = 1.5
+
+    // B10:C17 on sheet 'Data'.
+    range.first.column = 1;
+    range.first.row = 9;
+    range.last.column = 2;
+    range.last.row = 16;
+    cache = pc.get_cache("Data", range);
+    assert(cache);
+    assert(cache->get_field_count() == 2);
+
+    // 1st field
+    fld = cache->get_field(0);
+    assert(fld);
+    assert(fld->name == "F2");
+    assert(fld->min_value && fld->min_value == 1.0);
+    assert(fld->max_value && fld->max_value == 5.0);
+
+    // This field should contain 3 string items 'A', 'B', 'C' and 4 numeric
+    // items 1, 2, 3.5 and 5.
+    expected =
+    {
+        pivot_cache_item(ORCUS_ASCII("A")),
+        pivot_cache_item(ORCUS_ASCII("B")),
+        pivot_cache_item(ORCUS_ASCII("C")),
+        pivot_cache_item(1.0),
+        pivot_cache_item(2.0),
+        pivot_cache_item(3.5),
+        pivot_cache_item(5.0),
+    };
+
+    actual.clear();
+    actual.insert(fld->items.begin(), fld->items.end());
+    assert(actual == expected);
 }
 
 }

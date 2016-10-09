@@ -35,7 +35,8 @@ public:
 
 private:
     spreadsheet::iface::import_pivot_cache_definition& m_pcache;
-    source_type m_source_type;
+    source_type m_source_type = source_type::unknown;
+    bool m_field_item_used = true;
 
 public:
     xlsx_pivot_cache_def_context(
