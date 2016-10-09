@@ -22,6 +22,7 @@
 #include <iostream>
 #include <sstream>
 #include <set>
+#include <cmath>
 
 #include <ixion/address.hpp>
 
@@ -263,6 +264,63 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(fld->items.empty());
 }
 
+void test_xlsx_pivot_mixed_type_field()
+{
+    string path(SRCDIR"/test/xlsx/pivot-table/mixed-type-field.xlsx");
+
+    document doc;
+    import_factory factory(doc);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    const pivot_collection& pc = doc.get_pivot_collection();
+    assert(pc.get_cache_count() == 2);
+
+    // B2:C7 on sheet 'Data'.
+    ixion::abs_range_t range;
+    range.first.column = 1;
+    range.first.row = 1;
+    range.last.column = 2;
+    range.last.row = 6;
+    const pivot_cache* cache = pc.get_cache("Data", range);
+    assert(cache);
+    assert(cache->get_field_count() == 2);
+
+    // 1st field
+    const pivot_cache_field* fld = cache->get_field(0);
+    assert(fld);
+    assert(fld->name == "F1");
+    assert(fld->min_value && fld->min_value == 1.0);
+    assert(fld->max_value && fld->max_value == 2.0);
+
+    // This field should contain 3 string items 'A', 'B', 'C' and 2 numeric
+    // items 1 and 2.
+    std::set<pivot_cache_item> expected =
+    {
+        pivot_cache_item(ORCUS_ASCII("A")),
+        pivot_cache_item(ORCUS_ASCII("B")),
+        pivot_cache_item(ORCUS_ASCII("C")),
+        pivot_cache_item(1.0),
+        pivot_cache_item(2.0),
+    };
+
+    std::set<pivot_cache_item> actual(fld->items.begin(), fld->items.end());
+    assert(actual == expected);
+
+    // 2nd field should be a nuemric field between 1.1 and 1.5.
+    fld = cache->get_field(1);
+    assert(fld);
+    assert(fld->name == "V1");
+    assert(fld->items.empty());
+
+    assert(fld->min_value);
+    assert(std::round(*fld->min_value * 100.0) == 110.0); // min = 1.1
+    assert(fld->max_value);
+    assert(std::round(*fld->max_value * 100.0) == 150.0); // max = 1.5
+}
+
 }
 
 int main()
@@ -274,6 +332,7 @@ int main()
     test_xlsx_table_autofilter();
     test_xlsx_table();
     test_xlsx_pivot_two_pivot_caches();
+    test_xlsx_pivot_mixed_type_field();
 
     return EXIT_SUCCESS;
 }

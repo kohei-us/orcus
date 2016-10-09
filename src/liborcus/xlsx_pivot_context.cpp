@@ -241,6 +241,11 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             start_element_s(parent, attrs);
             break;
         }
+        case XML_n:
+        {
+            start_element_n(parent, attrs);
+            break;
+        }
         default:
             warn_unhandled();
     }
@@ -264,6 +269,9 @@ bool xlsx_pivot_cache_def_context::end_element(xmlns_id_t ns, xml_token_t name)
             }
             case XML_s:
                 end_element_s();
+                break;
+            case XML_n:
+                end_element_n();
                 break;
             default:
                 ;
@@ -339,6 +347,68 @@ void xlsx_pivot_cache_def_context::end_element_s()
     }
 }
 
+void xlsx_pivot_cache_def_context::start_element_n(
+    const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs)
+{
+    if (parent.first != NS_ooxml_xlsx)
+    {
+        warn_unhandled();
+        return;
+    }
+
+    switch (parent.second)
+    {
+        case XML_sharedItems:
+        {
+            // numeric item of a cache field.
+            double value;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_v:
+                            value = to_double(attr.value);
+                        break;
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            if (get_config().debug)
+                cout << "  * n: " << value << endl;
+
+            m_pcache.set_field_item_numeric(value);
+            break;
+        }
+        default:
+            warn_unhandled();
+    }
+}
+
+void xlsx_pivot_cache_def_context::end_element_n()
+{
+    const xml_token_pair_t& parent = get_parent_element();
+    if (parent.first != NS_ooxml_xlsx)
+        return;
+
+    switch (parent.second)
+    {
+        case XML_sharedItems:
+        {
+            m_pcache.commit_field_item();
+            break;
+        }
+        default:
+            ;
+    }
+}
+
 void xlsx_pivot_cache_def_context::start_element_shared_items(
     const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs)
 {
@@ -397,10 +467,10 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
                     has_integer = to_bool(attr.value);
                     break;
                 case XML_minValue:
-                    min_value = to_long(attr.value);
+                    min_value = to_double(attr.value);
                     break;
                 case XML_maxValue:
-                    max_value = to_long(attr.value);
+                    max_value = to_double(attr.value);
                     break;
                 case XML_longText:
                     has_long_text = to_bool(attr.value);
