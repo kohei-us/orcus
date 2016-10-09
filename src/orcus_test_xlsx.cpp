@@ -224,6 +224,7 @@ void test_xlsx_pivot_two_pivot_caches()
     // This is a pure numeric field with min and max values specified.
     assert(fld->min_value && *fld->min_value == 1.0);
     assert(fld->max_value && *fld->max_value == 4.0);
+    assert(fld->items.empty());
 
     // F10:G14 on the same sheet.
     range.first.column = 5;
@@ -234,15 +235,32 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(cache);
     assert(cache->get_field_count() == 2);
 
+    // This field should contain 4 string items 'W', 'X', 'Y' and 'Z' but not
+    // necessarily in this order.
     fld = cache->get_field(0);
     assert(fld);
     assert(fld->name == "F2");
+
+    expected =
+    {
+        pivot_cache_item(ORCUS_ASCII("W")),
+        pivot_cache_item(ORCUS_ASCII("X")),
+        pivot_cache_item(ORCUS_ASCII("Y")),
+        pivot_cache_item(ORCUS_ASCII("Z")),
+    };
+
+    actual.clear();
+    actual.insert(fld->items.begin(), fld->items.end());
+    assert(actual == expected);
 
     fld = cache->get_field(1);
     assert(fld);
     assert(fld->name == "D2");
 
-    // TODO : test the content of this cache.
+    // This is a pure numeric field with min and max values specified.
+    assert(fld->min_value && *fld->min_value == 1.0);
+    assert(fld->max_value && *fld->max_value == 4.0);
+    assert(fld->items.empty());
 }
 
 }
