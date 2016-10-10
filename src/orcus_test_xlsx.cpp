@@ -352,6 +352,17 @@ void test_xlsx_pivot_mixed_type_field()
     actual.clear();
     actual.insert(fld->items.begin(), fld->items.end());
     assert(actual == expected);
+
+    // 2nd field
+    fld = cache->get_field(1);
+    assert(fld);
+    assert(fld->name == "V2");
+    assert(fld->items.empty());
+
+    assert(fld->min_value);
+    assert(std::round(*fld->min_value * 100.0) == 110.0); // min = 1.1
+    assert(fld->max_value);
+    assert(std::round(*fld->max_value * 100.0) == 220.0); // max = 2.2
 }
 
 }
