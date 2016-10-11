@@ -202,20 +202,20 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(cache->get_field_count() == 2);
 
     // Test the content of this cache.
-    const pivot_cache_field* fld = cache->get_field(0);
+    const pivot_cache_field_t* fld = cache->get_field(0);
     assert(fld);
     assert(fld->name == "F1");
 
     // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
-    std::set<pivot_cache_item> expected =
+    std::set<pivot_cache_item_t> expected =
     {
-        pivot_cache_item(ORCUS_ASCII("A")),
-        pivot_cache_item(ORCUS_ASCII("B")),
-        pivot_cache_item(ORCUS_ASCII("C")),
-        pivot_cache_item(ORCUS_ASCII("D")),
+        pivot_cache_item_t(ORCUS_ASCII("A")),
+        pivot_cache_item_t(ORCUS_ASCII("B")),
+        pivot_cache_item_t(ORCUS_ASCII("C")),
+        pivot_cache_item_t(ORCUS_ASCII("D")),
     };
 
-    std::set<pivot_cache_item> actual(fld->items.begin(), fld->items.end());
+    std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
     assert(actual == expected);
 
     fld = cache->get_field(1);
@@ -244,10 +244,10 @@ void test_xlsx_pivot_two_pivot_caches()
 
     expected =
     {
-        pivot_cache_item(ORCUS_ASCII("W")),
-        pivot_cache_item(ORCUS_ASCII("X")),
-        pivot_cache_item(ORCUS_ASCII("Y")),
-        pivot_cache_item(ORCUS_ASCII("Z")),
+        pivot_cache_item_t(ORCUS_ASCII("W")),
+        pivot_cache_item_t(ORCUS_ASCII("X")),
+        pivot_cache_item_t(ORCUS_ASCII("Y")),
+        pivot_cache_item_t(ORCUS_ASCII("Z")),
     };
 
     actual.clear();
@@ -289,7 +289,7 @@ void test_xlsx_pivot_mixed_type_field()
     assert(cache->get_field_count() == 2);
 
     // 1st field
-    const pivot_cache_field* fld = cache->get_field(0);
+    const pivot_cache_field_t* fld = cache->get_field(0);
     assert(fld);
     assert(fld->name == "F1");
     assert(fld->min_value && fld->min_value == 1.0);
@@ -297,16 +297,16 @@ void test_xlsx_pivot_mixed_type_field()
 
     // This field should contain 3 string items 'A', 'B', 'C' and 2 numeric
     // items 1 and 2.
-    std::set<pivot_cache_item> expected =
+    std::set<pivot_cache_item_t> expected =
     {
-        pivot_cache_item(ORCUS_ASCII("A")),
-        pivot_cache_item(ORCUS_ASCII("B")),
-        pivot_cache_item(ORCUS_ASCII("C")),
-        pivot_cache_item(1.0),
-        pivot_cache_item(2.0),
+        pivot_cache_item_t(ORCUS_ASCII("A")),
+        pivot_cache_item_t(ORCUS_ASCII("B")),
+        pivot_cache_item_t(ORCUS_ASCII("C")),
+        pivot_cache_item_t(1.0),
+        pivot_cache_item_t(2.0),
     };
 
-    std::set<pivot_cache_item> actual(fld->items.begin(), fld->items.end());
+    std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
     assert(actual == expected);
 
     // 2nd field should be a nuemric field between 1.1 and 1.5.
@@ -340,13 +340,13 @@ void test_xlsx_pivot_mixed_type_field()
     // items 1, 2, 3.5 and 5.
     expected =
     {
-        pivot_cache_item(ORCUS_ASCII("A")),
-        pivot_cache_item(ORCUS_ASCII("B")),
-        pivot_cache_item(ORCUS_ASCII("C")),
-        pivot_cache_item(1.0),
-        pivot_cache_item(2.0),
-        pivot_cache_item(3.5),
-        pivot_cache_item(5.0),
+        pivot_cache_item_t(ORCUS_ASCII("A")),
+        pivot_cache_item_t(ORCUS_ASCII("B")),
+        pivot_cache_item_t(ORCUS_ASCII("C")),
+        pivot_cache_item_t(1.0),
+        pivot_cache_item_t(2.0),
+        pivot_cache_item_t(3.5),
+        pivot_cache_item_t(5.0),
     };
 
     actual.clear();
@@ -375,6 +375,8 @@ int main()
     test_xlsx_import();
     test_xlsx_table_autofilter();
     test_xlsx_table();
+
+    // pivot table
     test_xlsx_pivot_two_pivot_caches();
     test_xlsx_pivot_mixed_type_field();
 

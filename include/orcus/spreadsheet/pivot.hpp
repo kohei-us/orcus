@@ -30,14 +30,14 @@ namespace spreadsheet {
 
 class document;
 
-enum class pivot_cache_item_t
+struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
 {
-    unknown = 0, boolean, datetime, string, numeric, blank, error
-};
+    enum class item_type
+    {
+        unknown = 0, boolean, datetime, string, numeric, blank, error
+    };
 
-struct ORCUS_SPM_DLLPUBLIC pivot_cache_item
-{
-    pivot_cache_item_t type;
+    item_type type;
 
     union
     {
@@ -58,37 +58,45 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item
 
     } value;
 
-    pivot_cache_item();
-    pivot_cache_item(const char* p_str, size_t n_str);
-    pivot_cache_item(double _numeric);
-    pivot_cache_item(bool _boolean);
+    pivot_cache_item_t();
+    pivot_cache_item_t(const char* p_str, size_t n_str);
+    pivot_cache_item_t(double _numeric);
+    pivot_cache_item_t(bool _boolean);
 
-    pivot_cache_item(const pivot_cache_item& other);
-    pivot_cache_item(pivot_cache_item&& other);
+    pivot_cache_item_t(const pivot_cache_item_t& other);
+    pivot_cache_item_t(pivot_cache_item_t&& other);
 
-    bool operator< (const pivot_cache_item& other) const;
-    bool operator== (const pivot_cache_item& other) const;
+    bool operator< (const pivot_cache_item_t& other) const;
+    bool operator== (const pivot_cache_item_t& other) const;
 };
 
-struct ORCUS_SPM_DLLPUBLIC pivot_cache_field
-{
-    using items_type = std::vector<pivot_cache_item>;
+using pivot_cache_items_t = std::vector<pivot_cache_item_t>;
 
+struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
+{
     /**
      * Field name. It must be interned with the string pool belonging to the
      * document.
      */
     pstring name;
 
-    items_type items;
+    pivot_cache_items_t items;
 
     boost::optional<double> min_value;
     boost::optional<double> max_value;
 
-    pivot_cache_field();
-    pivot_cache_field(const pstring& _name);
-    pivot_cache_field(const pivot_cache_field& other);
-    pivot_cache_field(pivot_cache_field&& other);
+    pivot_cache_field_t();
+    pivot_cache_field_t(const pstring& _name);
+    pivot_cache_field_t(const pivot_cache_field_t& other);
+    pivot_cache_field_t(pivot_cache_field_t&& other);
+};
+
+/**
+ * Represents a group field.
+ *
+ */
+struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_field_t
+{
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_cache
@@ -97,7 +105,7 @@ class ORCUS_SPM_DLLPUBLIC pivot_cache
     std::unique_ptr<impl> mp_impl;
 
 public:
-    using fields_type = std::vector<pivot_cache_field>;
+    using fields_type = std::vector<pivot_cache_field_t>;
 
     pivot_cache(string_pool& sp);
     ~pivot_cache();
@@ -120,7 +128,7 @@ public:
      * @return pointer to the field instance, or nullptr if the index is
      *         out-of-range.
      */
-    const pivot_cache_field* get_field(size_t index) const;
+    const pivot_cache_field_t* get_field(size_t index) const;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_collection

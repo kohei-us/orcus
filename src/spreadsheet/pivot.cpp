@@ -17,110 +17,110 @@
 
 namespace orcus { namespace spreadsheet {
 
-pivot_cache_item::pivot_cache_item() : type(pivot_cache_item_t::unknown) {}
+pivot_cache_item_t::pivot_cache_item_t() : type(item_type::unknown) {}
 
-pivot_cache_item::pivot_cache_item(const char* p_str, size_t n_str) :
-    type(pivot_cache_item_t::string)
+pivot_cache_item_t::pivot_cache_item_t(const char* p_str, size_t n_str) :
+    type(item_type::string)
 {
     value.string.p = p_str;
     value.string.n = n_str;
 }
 
-pivot_cache_item::pivot_cache_item(double _numeric) :
-    type(pivot_cache_item_t::numeric)
+pivot_cache_item_t::pivot_cache_item_t(double _numeric) :
+    type(item_type::numeric)
 {
     value.numeric = _numeric;
 }
 
-pivot_cache_item::pivot_cache_item(bool _boolean) :
-    type(pivot_cache_item_t::boolean)
+pivot_cache_item_t::pivot_cache_item_t(bool _boolean) :
+    type(item_type::boolean)
 {
     value.boolean = _boolean;
 }
 
-pivot_cache_item::pivot_cache_item(const pivot_cache_item& other) :
+pivot_cache_item_t::pivot_cache_item_t(const pivot_cache_item_t& other) :
     type(other.type)
 {
     switch (type)
     {
-        case pivot_cache_item_t::blank:
+        case item_type::blank:
             break;
-        case pivot_cache_item_t::boolean:
+        case item_type::boolean:
             value.boolean = other.value.boolean;
             break;
-        case pivot_cache_item_t::datetime:
+        case item_type::datetime:
             // TODO : add this.
             break;
-        case pivot_cache_item_t::error:
+        case item_type::error:
             // TODO : add this.
             break;
-        case pivot_cache_item_t::numeric:
+        case item_type::numeric:
             value.numeric = other.value.numeric;
             break;
-        case pivot_cache_item_t::string:
+        case item_type::string:
             value.string.p = other.value.string.p;
             value.string.n = other.value.string.n;
             break;
-        case pivot_cache_item_t::unknown:
+        case item_type::unknown:
             break;
         default:
             ;
     }
 }
 
-pivot_cache_item::pivot_cache_item(pivot_cache_item&& other) :
+pivot_cache_item_t::pivot_cache_item_t(pivot_cache_item_t&& other) :
     type(other.type)
 {
-    other.type = pivot_cache_item_t::unknown;
+    other.type = item_type::unknown;
 
     switch (type)
     {
-        case pivot_cache_item_t::blank:
+        case item_type::blank:
             break;
-        case pivot_cache_item_t::boolean:
+        case item_type::boolean:
             value.boolean = other.value.boolean;
             break;
-        case pivot_cache_item_t::datetime:
+        case item_type::datetime:
             // TODO : add this.
             break;
-        case pivot_cache_item_t::error:
+        case item_type::error:
             // TODO : add this.
             break;
-        case pivot_cache_item_t::numeric:
+        case item_type::numeric:
             value.numeric = other.value.numeric;
             break;
-        case pivot_cache_item_t::string:
+        case item_type::string:
             value.string.p = other.value.string.p;
             value.string.n = other.value.string.n;
             break;
-        case pivot_cache_item_t::unknown:
+        case item_type::unknown:
             break;
         default:
             ;
     }
 }
 
-bool pivot_cache_item::operator< (const pivot_cache_item& other) const
+bool pivot_cache_item_t::operator< (const pivot_cache_item_t& other) const
 {
     if (type != other.type)
         return type < other.type;
 
     switch (type)
     {
-        case pivot_cache_item_t::boolean:
+        case item_type::boolean:
             return value.boolean < other.value.boolean;
-        case pivot_cache_item_t::numeric:
+        case item_type::numeric:
             return value.numeric < other.value.numeric;
-        case pivot_cache_item_t::string:
+        case item_type::string:
             return pstring(value.string.p, value.string.n) < pstring(other.value.string.p, other.value.string.n);
-        case pivot_cache_item_t::datetime:
+        case item_type::datetime:
             // TODO : implement this.
             break;
-        case pivot_cache_item_t::error:
+        case item_type::error:
             // TODO : implement this.
             break;
-        case pivot_cache_item_t::blank:
-        case pivot_cache_item_t::unknown:
+        case item_type::blank:
+        case item_type::unknown:
         default:
             ;
     }
@@ -128,27 +128,27 @@ bool pivot_cache_item::operator< (const pivot_cache_item& other) const
     return false;
 }
 
-bool pivot_cache_item::operator== (const pivot_cache_item& other) const
+bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
 {
     if (type != other.type)
         return false;
 
     switch (type)
     {
-        case pivot_cache_item_t::boolean:
+        case item_type::boolean:
             return value.boolean == other.value.boolean;
-        case pivot_cache_item_t::numeric:
+        case item_type::numeric:
             return value.numeric == other.value.numeric;
-        case pivot_cache_item_t::string:
+        case item_type::string:
             return pstring(value.string.p, value.string.n) == pstring(other.value.string.p, other.value.string.n);
-        case pivot_cache_item_t::datetime:
+        case item_type::datetime:
             // TODO : implement this.
             break;
-        case pivot_cache_item_t::error:
+        case item_type::error:
             // TODO : implement this.
             break;
-        case pivot_cache_item_t::blank:
-        case pivot_cache_item_t::unknown:
+        case item_type::blank:
+        case item_type::unknown:
             return true;
         default:
             ;
@@ -157,17 +157,17 @@ bool pivot_cache_item::operator== (const pivot_cache_item& other) const
     return false;
 }
 
-pivot_cache_field::pivot_cache_field() {}
+pivot_cache_field_t::pivot_cache_field_t() {}
 
-pivot_cache_field::pivot_cache_field(const pstring& _name) : name(_name) {}
+pivot_cache_field_t::pivot_cache_field_t(const pstring& _name) : name(_name) {}
 
-pivot_cache_field::pivot_cache_field(const pivot_cache_field& other) :
+pivot_cache_field_t::pivot_cache_field_t(const pivot_cache_field_t& other) :
     name(other.name),
     items(other.items),
     min_value(other.min_value),
     max_value(other.max_value) {}
 
-pivot_cache_field::pivot_cache_field(pivot_cache_field&& other) :
+pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
     name(other.name),
     items(std::move(other.items)),
     min_value(std::move(other.min_value)),
@@ -202,7 +202,7 @@ size_t pivot_cache::get_field_count() const
     return mp_impl->m_fields.size();
 }
 
-const pivot_cache_field* pivot_cache::get_field(size_t index) const
+const pivot_cache_field_t* pivot_cache::get_field(size_t index) const
 {
     return index < mp_impl->m_fields.size() ? &mp_impl->m_fields[index] : nullptr;
 }

@@ -39,8 +39,8 @@ class import_pivot_cache_def : public iface::import_pivot_cache_definition
 
     std::unique_ptr<pivot_cache> m_cache;
     pivot_cache::fields_type m_current_fields;
-    pivot_cache_field m_current_field;
-    pivot_cache_item m_current_field_item;
+    pivot_cache_field_t m_current_field;
+    pivot_cache_item_t m_current_field_item;
 
 private:
     pstring intern(const char* p, size_t n)
@@ -110,7 +110,7 @@ public:
 
     virtual void set_field_item_string(const char* p, size_t n) override
     {
-        m_current_field_item.type = pivot_cache_item_t::string;
+        m_current_field_item.type = pivot_cache_item_t::item_type::string;
         pstring s = intern(p, n);
         m_current_field_item.value.string.p = s.get();
         m_current_field_item.value.string.n = s.size();
@@ -118,7 +118,7 @@ public:
 
     virtual void set_field_item_numeric(double v) override
     {
-        m_current_field_item.type = pivot_cache_item_t::numeric;
+        m_current_field_item.type = pivot_cache_item_t::item_type::numeric;
         m_current_field_item.value.numeric = v;
     }
 
