@@ -30,6 +30,8 @@ namespace spreadsheet {
 
 class document;
 
+using pivot_cache_indices_t = std::vector<size_t>;
+
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
 {
     enum class item_type
@@ -97,6 +99,24 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
  */
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_field_t
 {
+    /**
+     * Field name. It must be interned with the string pool belonging to the
+     * document.
+     */
+    pstring name;
+
+    /**
+     * Field items of this group field.
+     */
+    pivot_cache_items_t items;
+
+    /**
+     * Mapping of base field member indices to the group field item indices.
+     */
+    pivot_cache_indices_t base_to_group_indices;
+
+    /** 0-based index of the base field. */
+    size_t base_field;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_cache
