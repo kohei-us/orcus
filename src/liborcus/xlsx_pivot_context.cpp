@@ -231,9 +231,101 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             }
             break;
         }
+        case XML_fieldGroup:
+        {
+            xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheField);
+            long parent = -1;
+            long base = -1;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_par:
+                            parent = to_long(attr.value);
+                            break;
+                        case XML_base:
+                            base = to_long(attr.value);
+                            break;
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            if (get_config().debug)
+            {
+                if (parent >= 0)
+                    cout << "  * group parent index: " << parent << endl;
+                if (base >= 0)
+                    cout << "  * group base index: " << base << endl;
+            }
+
+            break;
+        }
+        case XML_discretePr:
+        {
+            xml_element_expected(parent, NS_ooxml_xlsx, XML_fieldGroup);
+
+            long count = -1;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_count:
+                            count = to_long(attr.value);
+                            break;
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            if (get_config().debug)
+                cout << "  * group child member count: " << count << endl;
+
+            break;
+        }
         case XML_sharedItems:
         {
             start_element_shared_items(parent, attrs);
+            break;
+        }
+        case XML_groupItems:
+        {
+            xml_element_expected(parent, NS_ooxml_xlsx, XML_fieldGroup);
+
+            long count = -1;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_count:
+                            count = to_long(attr.value);
+                            break;
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            if (get_config().debug)
+                cout << "  * group member count: " << count << endl;
+
             break;
         }
         case XML_s:
@@ -244,6 +336,34 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         case XML_n:
         {
             start_element_n(parent, attrs);
+            break;
+        }
+        case XML_x:
+        {
+            xml_element_expected(parent, NS_ooxml_xlsx, XML_discretePr);
+
+            long index = -1;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_v:
+                            index = to_long(attr.value);
+                            break;
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            if (get_config().debug)
+                cout << "    * index = " << index << endl;
+
             break;
         }
         default:
@@ -294,35 +414,43 @@ void xlsx_pivot_cache_def_context::start_element_s(
         return;
     }
 
+    pstring value;
+
+    for_each(attrs.begin(), attrs.end(),
+        [&](const xml_token_attr_t& attr)
+        {
+            if (attr.ns != NS_ooxml_xlsx)
+                return;
+
+            switch (attr.name)
+            {
+                case XML_v:
+                    value = attr.value;
+                break;
+                default:
+                    ;
+            }
+        }
+    );
+
     switch (parent.second)
     {
         case XML_sharedItems:
         {
-            // string item of a cache field.
-            pstring value;
-
-            for_each(attrs.begin(), attrs.end(),
-                [&](const xml_token_attr_t& attr)
-                {
-                    if (attr.ns != NS_ooxml_xlsx)
-                        return;
-
-                    switch (attr.name)
-                    {
-                        case XML_v:
-                            value = attr.value;
-                        break;
-                        default:
-                            ;
-                    }
-                }
-            );
+            // regular (non-group) field member name.
 
             if (get_config().debug)
-                cout << "  * v: " << value << endl;
+                cout << "    * field member: " << value << endl;
 
             m_field_item_used = true;
             m_pcache.set_field_item_string(value.get(), value.size());
+            break;
+        }
+        case XML_groupItems:
+        {
+            // group field member name.
+            if (get_config().debug)
+                cout << "    * group field member: " << value << endl;
             break;
         }
         default:
