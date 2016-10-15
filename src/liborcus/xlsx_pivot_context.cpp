@@ -265,6 +265,11 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     cout << "  * group base index: " << base << endl;
             }
 
+            if (base >= 0)
+            {
+                // This is a group field.
+                m_pcache_field_group = m_pcache.set_field_group(base);
+            }
             break;
         }
         case XML_discretePr:

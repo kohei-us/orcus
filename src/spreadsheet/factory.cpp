@@ -25,6 +25,16 @@
 
 namespace orcus { namespace spreadsheet {
 
+class import_pc_field_group : public iface::import_pivot_cache_field_group
+{
+    pivot_cache_group_data_t& m_data;
+
+public:
+    import_pc_field_group(pivot_cache_group_data_t& data) : m_data(data) {}
+
+    virtual ~import_pc_field_group() override {}
+};
+
 class import_pivot_cache_def : public iface::import_pivot_cache_definition
 {
     enum source_type { unknown = 0, worksheet, external, consolidation, scenario };
@@ -41,6 +51,8 @@ class import_pivot_cache_def : public iface::import_pivot_cache_definition
     pivot_cache::fields_type m_current_fields;
     pivot_cache_field_t m_current_field;
     pivot_cache_item_t m_current_field_item;
+
+    std::unique_ptr<import_pc_field_group> m_current_field_group;
 
 private:
     pstring intern(const char* p, size_t n)
@@ -91,6 +103,14 @@ public:
     virtual void set_field_name(const char* p, size_t n) override
     {
         m_current_field.name = intern(p, n);
+    }
+
+    virtual iface::import_pivot_cache_field_group* set_field_group(size_t base_index) override
+    {
+        m_current_field.group_data = pivot_cache_group_data_t(base_index);
+        m_current_field_group =
+            orcus::make_unique<import_pc_field_group>(*m_current_field.group_data);
+        return m_current_field_group.get();
     }
 
     virtual void set_field_min_value(double v) override

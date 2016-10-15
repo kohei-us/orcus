@@ -13,6 +13,8 @@ namespace orcus { namespace spreadsheet { namespace iface {
 
 import_pivot_cache_definition::~import_pivot_cache_definition() {}
 
+import_pivot_cache_field_group::~import_pivot_cache_field_group() {}
+
 import_shared_strings::~import_shared_strings() {}
 
 import_styles::~import_styles() {}

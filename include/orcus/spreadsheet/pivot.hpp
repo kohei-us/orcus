@@ -74,6 +74,24 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
 
 using pivot_cache_items_t = std::vector<pivot_cache_item_t>;
 
+/**
+ * Group data for a pivot cache field.
+ */
+struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_data_t
+{
+    /**
+     * Mapping of base field member indices to the group field item indices.
+     */
+    pivot_cache_indices_t base_to_group_indices;
+
+    /** 0-based index of the base field. */
+    size_t base_field;
+
+    pivot_cache_group_data_t(size_t _base_field);
+
+    pivot_cache_group_data_t() = delete;
+};
+
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
 {
     /**
@@ -87,36 +105,12 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
     boost::optional<double> min_value;
     boost::optional<double> max_value;
 
+    boost::optional<pivot_cache_group_data_t> group_data;
+
     pivot_cache_field_t();
     pivot_cache_field_t(const pstring& _name);
     pivot_cache_field_t(const pivot_cache_field_t& other);
     pivot_cache_field_t(pivot_cache_field_t&& other);
-};
-
-/**
- * Represents a group field.
- *
- */
-struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_field_t
-{
-    /**
-     * Field name. It must be interned with the string pool belonging to the
-     * document.
-     */
-    pstring name;
-
-    /**
-     * Field items of this group field.
-     */
-    pivot_cache_items_t items;
-
-    /**
-     * Mapping of base field member indices to the group field item indices.
-     */
-    pivot_cache_indices_t base_to_group_indices;
-
-    /** 0-based index of the base field. */
-    size_t base_field;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_cache

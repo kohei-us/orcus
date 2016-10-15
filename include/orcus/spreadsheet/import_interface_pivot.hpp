@@ -20,13 +20,15 @@
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
+class import_pivot_cache_field_group;
+
 /**
  * Interface for importing pivot cache definition.
  */
 class ORCUS_DLLPUBLIC import_pivot_cache_definition
 {
 public:
-    virtual ~import_pivot_cache_definition() = 0;
+    virtual ~import_pivot_cache_definition();
 
     virtual void set_worksheet_source(
         const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name) = 0;
@@ -39,6 +41,17 @@ public:
 
     virtual void set_field_max_value(double v) = 0;
 
+    /**
+     * Mark this field as a group field for another field.
+     *
+     * This method gets called first to signify that the current field is a
+     * group field.
+     *
+     * @param base_index 0-based index of the field this field is the parent
+     *                   group of.
+     */
+    virtual import_pivot_cache_field_group* set_field_group(size_t base_index) = 0;
+
     virtual void commit_field() = 0;
 
     virtual void set_field_item_string(const char* p, size_t n) = 0;
@@ -48,6 +61,12 @@ public:
     virtual void commit_field_item() = 0;
 
     virtual void commit() = 0;
+};
+
+class ORCUS_DLLPUBLIC import_pivot_cache_field_group
+{
+public:
+    virtual ~import_pivot_cache_field_group();
 };
 
 }}}

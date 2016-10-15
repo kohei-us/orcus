@@ -157,6 +157,9 @@ bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
     return false;
 }
 
+pivot_cache_group_data_t::pivot_cache_group_data_t(size_t _base_field) :
+    base_field(_base_field) {}
+
 pivot_cache_field_t::pivot_cache_field_t() {}
 
 pivot_cache_field_t::pivot_cache_field_t(const pstring& _name) : name(_name) {}
@@ -165,13 +168,15 @@ pivot_cache_field_t::pivot_cache_field_t(const pivot_cache_field_t& other) :
     name(other.name),
     items(other.items),
     min_value(other.min_value),
-    max_value(other.max_value) {}
+    max_value(other.max_value),
+    group_data(other.group_data) {}
 
 pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
     name(other.name),
     items(std::move(other.items)),
     min_value(std::move(other.min_value)),
-    max_value(std::move(other.max_value))
+    max_value(std::move(other.max_value)),
+    group_data(std::move(other.group_data))
 {
     other.name.clear();
 }

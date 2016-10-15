@@ -15,6 +15,7 @@ namespace orcus {
 namespace spreadsheet { namespace iface {
 
 class import_pivot_cache_definition;
+class import_pivot_cache_field_group;
 
 }}
 
@@ -35,6 +36,8 @@ public:
 
 private:
     spreadsheet::iface::import_pivot_cache_definition& m_pcache;
+
+    spreadsheet::iface::import_pivot_cache_field_group* m_pcache_field_group = nullptr;
     source_type m_source_type = source_type::unknown;
     bool m_field_item_used = true;
 
