@@ -67,6 +67,17 @@ class ORCUS_DLLPUBLIC import_pivot_cache_field_group
 {
 public:
     virtual ~import_pivot_cache_field_group();
+
+    /**
+     * Establish a linkage between a base item to a gruop item.
+     *
+     * The index to corresponding base item is inferred from the order of this
+     * method being called; the first call to this method implies a base item
+     * index of 0, the second call implies an index of 1, and so on.
+     *
+     * @param group_item_index 0-based index for the group item.
+     */
+    virtual void link_base_to_group_items(size_t group_item_index) = 0;
 };
 
 }}}

@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <vector>
+#include <limits>
 
 #include <boost/optional.hpp>
 

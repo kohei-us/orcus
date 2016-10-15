@@ -110,8 +110,11 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         case XML_pivotCacheDefinition:
         {
             xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-            cout << "---" << endl;
-            cout << "pivot cache definition" << endl;
+            if (get_config().debug)
+            {
+                cout << "---" << endl;
+                cout << "pivot cache definition" << endl;
+            }
             cache_def_attr_parser func;
             for_each(attrs.begin(), attrs.end(), func);
             break;
@@ -366,8 +369,14 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 }
             );
 
+            if (index < 0)
+                throw xml_structure_error("element 'x' without a required attribute 'v'.");
+
             if (get_config().debug)
                 cout << "    * index = " << index << endl;
+
+            if (m_pcache_field_group)
+                m_pcache_field_group->link_base_to_group_items(index);
 
             break;
         }
@@ -390,6 +399,11 @@ bool xlsx_pivot_cache_def_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_cacheField:
             {
                 m_pcache.commit_field();
+                m_pcache_field_group = nullptr;
+                break;
+            }
+            case XML_discretePr:
+            {
                 break;
             }
             case XML_s:

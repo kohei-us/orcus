@@ -33,6 +33,12 @@ public:
     import_pc_field_group(pivot_cache_group_data_t& data) : m_data(data) {}
 
     virtual ~import_pc_field_group() override {}
+
+    virtual void link_base_to_group_items(size_t group_item_index) override
+    {
+        pivot_cache_indices_t& b2g = m_data.base_to_group_indices;
+        b2g.push_back(group_item_index);
+    }
 };
 
 class import_pivot_cache_def : public iface::import_pivot_cache_definition
