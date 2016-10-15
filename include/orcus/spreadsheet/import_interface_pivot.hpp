@@ -78,6 +78,12 @@ public:
      * @param group_item_index 0-based index for the group item.
      */
     virtual void link_base_to_group_items(size_t group_item_index) = 0;
+
+    virtual void set_field_item_string(const char* p, size_t n) = 0;
+
+    virtual void set_field_item_numeric(double v) = 0;
+
+    virtual void commit_field_item() = 0;
 };
 
 }}}

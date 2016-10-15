@@ -160,6 +160,16 @@ bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
 pivot_cache_group_data_t::pivot_cache_group_data_t(size_t _base_field) :
     base_field(_base_field) {}
 
+pivot_cache_group_data_t::pivot_cache_group_data_t(const pivot_cache_group_data_t& other) :
+    base_to_group_indices(other.base_to_group_indices),
+    items(other.items),
+    base_field(other.base_field) {}
+
+pivot_cache_group_data_t::pivot_cache_group_data_t(pivot_cache_group_data_t&& other) :
+    base_to_group_indices(std::move(other.base_to_group_indices)),
+    items(std::move(other.items)),
+    base_field(other.base_field) {}
+
 pivot_cache_field_t::pivot_cache_field_t() {}
 
 pivot_cache_field_t::pivot_cache_field_t(const pstring& _name) : name(_name) {}
@@ -169,7 +179,7 @@ pivot_cache_field_t::pivot_cache_field_t(const pivot_cache_field_t& other) :
     items(other.items),
     min_value(other.min_value),
     max_value(other.max_value),
-    group_data(other.group_data) {}
+    group_data(orcus::make_unique<pivot_cache_group_data_t>(*other.group_data)) {}
 
 pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
     name(other.name),

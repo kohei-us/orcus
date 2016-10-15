@@ -365,6 +365,87 @@ void test_xlsx_pivot_mixed_type_field()
     assert(std::round(*fld->max_value * 100.0) == 220.0); // max = 2.2
 }
 
+void test_xlsx_pivot_group_field()
+{
+    string path(SRCDIR"/test/xlsx/pivot-table/group-field.xlsx");
+
+    document doc;
+    import_factory factory(doc);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    const pivot_collection& pc = doc.get_pivot_collection();
+    assert(pc.get_cache_count() == 1);
+
+    // B2:C6 on sheet 'Sheet1'.
+    ixion::abs_range_t range;
+    range.first.column = 1;
+    range.first.row = 1;
+    range.last.column = 2;
+    range.last.row = 5;
+    const pivot_cache* cache = pc.get_cache("Sheet1", range);
+    assert(cache);
+    assert(cache->get_field_count() == 3);
+
+    // First field is labeled 'Key'.
+    const pivot_cache_field_t* fld = cache->get_field(0);
+    assert(fld);
+    assert(fld->name == "Key");
+
+    // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
+    std::set<pivot_cache_item_t> expected =
+    {
+        pivot_cache_item_t(ORCUS_ASCII("A")),
+        pivot_cache_item_t(ORCUS_ASCII("B")),
+        pivot_cache_item_t(ORCUS_ASCII("C")),
+        pivot_cache_item_t(ORCUS_ASCII("D")),
+    };
+
+    std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
+    assert(actual == expected);
+
+    // 2nd field is 'Value' and is a numeric field.
+    fld = cache->get_field(1);
+    assert(fld);
+    assert(fld->name == "Value");
+    assert(fld->items.empty());
+
+    assert(fld->min_value);
+    assert(*fld->min_value == 1.0);
+    assert(fld->max_value);
+    assert(*fld->max_value == 4.0);
+
+    // 3rd field is a group field labeled 'Key2'.
+    fld = cache->get_field(2);
+    assert(fld);
+    assert(fld->name == "Key2");
+    assert(fld->items.empty());
+
+    const pivot_cache_group_data_t* gd = fld->group_data.get();
+    assert(gd);
+    assert(gd->base_field == 0);
+    assert(gd->items.size() == 2);
+
+    // It should have two items - Group1 and Group2.
+    expected =
+    {
+        pivot_cache_item_t(ORCUS_ASCII("Group1")),
+        pivot_cache_item_t(ORCUS_ASCII("Group2")),
+    };
+
+    actual.clear();
+    actual.insert(gd->items.begin(), gd->items.end());
+    assert(actual == expected);
+
+    // Group1 should group 'A' and 'B' from the 1st field, and Group2 should
+    // group 'C' and 'D'.
+
+    pivot_cache_indices_t expected_group = { 0, 0, 1, 1 };
+    assert(gd->base_to_group_indices == expected_group);
+}
+
 }
 
 int main()
@@ -379,6 +460,7 @@ int main()
     // pivot table
     test_xlsx_pivot_two_pivot_caches();
     test_xlsx_pivot_mixed_type_field();
+    test_xlsx_pivot_group_field();
 
     return EXIT_SUCCESS;
 }

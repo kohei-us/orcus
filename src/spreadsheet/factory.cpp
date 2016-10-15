@@ -27,10 +27,19 @@ namespace orcus { namespace spreadsheet {
 
 class import_pc_field_group : public iface::import_pivot_cache_field_group
 {
+    document& m_doc;
     pivot_cache_group_data_t& m_data;
+    pivot_cache_item_t m_current_field_item;
+
+private:
+    pstring intern(const char* p, size_t n)
+    {
+        return m_doc.get_string_pool().intern(p, n).first;
+    }
 
 public:
-    import_pc_field_group(pivot_cache_group_data_t& data) : m_data(data) {}
+    import_pc_field_group(document& doc, pivot_cache_group_data_t& data) :
+        m_doc(doc), m_data(data) {}
 
     virtual ~import_pc_field_group() override {}
 
@@ -38,6 +47,25 @@ public:
     {
         pivot_cache_indices_t& b2g = m_data.base_to_group_indices;
         b2g.push_back(group_item_index);
+    }
+
+    virtual void set_field_item_string(const char* p, size_t n) override
+    {
+        m_current_field_item.type = pivot_cache_item_t::item_type::string;
+        pstring s = intern(p, n);
+        m_current_field_item.value.string.p = s.get();
+        m_current_field_item.value.string.n = s.size();
+    }
+
+    virtual void set_field_item_numeric(double v) override
+    {
+        m_current_field_item.type = pivot_cache_item_t::item_type::numeric;
+        m_current_field_item.value.numeric = v;
+    }
+
+    virtual void commit_field_item() override
+    {
+        m_data.items.push_back(std::move(m_current_field_item));
     }
 };
 
@@ -113,9 +141,12 @@ public:
 
     virtual iface::import_pivot_cache_field_group* set_field_group(size_t base_index) override
     {
-        m_current_field.group_data = pivot_cache_group_data_t(base_index);
+        m_current_field.group_data =
+            orcus::make_unique<pivot_cache_group_data_t>(base_index);
+
         m_current_field_group =
-            orcus::make_unique<import_pc_field_group>(*m_current_field.group_data);
+            orcus::make_unique<import_pc_field_group>(m_doc, *m_current_field.group_data);
+
         return m_current_field_group.get();
     }
 

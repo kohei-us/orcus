@@ -468,8 +468,13 @@ void xlsx_pivot_cache_def_context::start_element_s(
         case XML_groupItems:
         {
             // group field member name.
+
             if (get_config().debug)
                 cout << "    * group field member: " << value << endl;
+
+            m_field_item_used = true;
+            if (m_pcache_field_group)
+                m_pcache_field_group->set_field_item_string(value.get(), value.size());
             break;
         }
         default:
@@ -489,6 +494,12 @@ void xlsx_pivot_cache_def_context::end_element_s()
         {
             if (m_field_item_used)
                 m_pcache.commit_field_item();
+            break;
+        }
+        case XML_groupItems:
+        {
+            if (m_pcache_field_group && m_field_item_used)
+                m_pcache_field_group->commit_field_item();
             break;
         }
         default:

@@ -85,10 +85,14 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_data_t
      */
     pivot_cache_indices_t base_to_group_indices;
 
+    pivot_cache_items_t items;
+
     /** 0-based index of the base field. */
     size_t base_field;
 
     pivot_cache_group_data_t(size_t _base_field);
+    pivot_cache_group_data_t(const pivot_cache_group_data_t& other);
+    pivot_cache_group_data_t(pivot_cache_group_data_t&& other);
 
     pivot_cache_group_data_t() = delete;
 };
@@ -106,7 +110,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
     boost::optional<double> min_value;
     boost::optional<double> max_value;
 
-    boost::optional<pivot_cache_group_data_t> group_data;
+    std::unique_ptr<pivot_cache_group_data_t> group_data;
 
     pivot_cache_field_t();
     pivot_cache_field_t(const pstring& _name);
