@@ -25,12 +25,39 @@
 #include <cmath>
 
 #include <ixion/address.hpp>
+#include <ixion/formula_name_resolver.hpp>
 
 using namespace orcus;
 using namespace orcus::spreadsheet;
 using namespace std;
 
 namespace {
+
+/**
+ * Convenience function to retrieve a pivot cache instance from textural
+ * sheet name and range name.
+ */
+const pivot_cache* get_pivot_cache(
+    const pivot_collection& pc, const pstring& sheet_name, const pstring& range_name)
+{
+    std::unique_ptr<ixion::formula_name_resolver> resolver =
+        ixion::formula_name_resolver::get(
+            ixion::formula_name_resolver_t::excel_a1, nullptr);
+
+    if (!resolver)
+        return nullptr;
+
+    ixion::abs_address_t origin(0,0,0);
+
+    ixion::formula_name_t fn =
+        resolver->resolve(range_name.get(), range_name.size(), origin);
+
+    if (fn.type != ixion::formula_name_t::range_reference)
+        return nullptr;
+
+    ixion::abs_range_t range = ixion::to_range(fn.range).to_abs(origin);
+    return pc.get_cache(sheet_name, range);
+}
 
 config test_config;
 
@@ -192,12 +219,7 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(pc.get_cache_count() == 2);
 
     // B2:C6 on sheet 'Data'.
-    ixion::abs_range_t range;
-    range.first.column = 1;
-    range.first.row = 1;
-    range.last.column = 2;
-    range.last.row = 5;
-    const pivot_cache* cache = pc.get_cache("Data", range);
+    const pivot_cache* cache = get_pivot_cache(pc, "Data", "B2:C6");
     assert(cache);
     assert(cache->get_field_count() == 2);
 
@@ -228,11 +250,7 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(fld->items.empty());
 
     // F10:G14 on the same sheet.
-    range.first.column = 5;
-    range.first.row = 9;
-    range.last.column = 6;
-    range.last.row = 13;
-    cache = pc.get_cache("Data", range);
+    cache = get_pivot_cache(pc, "Data", "F10:G14");
     assert(cache);
     assert(cache->get_field_count() == 2);
 
@@ -279,12 +297,7 @@ void test_xlsx_pivot_mixed_type_field()
     assert(pc.get_cache_count() == 2);
 
     // B2:C7 on sheet 'Data'.
-    ixion::abs_range_t range;
-    range.first.column = 1;
-    range.first.row = 1;
-    range.last.column = 2;
-    range.last.row = 6;
-    const pivot_cache* cache = pc.get_cache("Data", range);
+    const pivot_cache* cache = get_pivot_cache(pc, "Data", "B2:C7");
     assert(cache);
     assert(cache->get_field_count() == 2);
 
@@ -321,11 +334,7 @@ void test_xlsx_pivot_mixed_type_field()
     assert(std::round(*fld->max_value * 100.0) == 150.0); // max = 1.5
 
     // B10:C17 on sheet 'Data'.
-    range.first.column = 1;
-    range.first.row = 9;
-    range.last.column = 2;
-    range.last.row = 16;
-    cache = pc.get_cache("Data", range);
+    cache = get_pivot_cache(pc, "Data", "B10:C17");
     assert(cache);
     assert(cache->get_field_count() == 2);
 
@@ -380,12 +389,7 @@ void test_xlsx_pivot_group_field()
     assert(pc.get_cache_count() == 1);
 
     // B2:C6 on sheet 'Sheet1'.
-    ixion::abs_range_t range;
-    range.first.column = 1;
-    range.first.row = 1;
-    range.last.column = 2;
-    range.last.row = 5;
-    const pivot_cache* cache = pc.get_cache("Sheet1", range);
+    const pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C6");
     assert(cache);
     assert(cache->get_field_count() == 3);
 
@@ -446,6 +450,26 @@ void test_xlsx_pivot_group_field()
     assert(gd->base_to_group_indices == expected_group);
 }
 
+void test_xlsx_pivot_group_by_numbers()
+{
+    string path(SRCDIR"/test/xlsx/pivot-table/group-by-numbers.xlsx");
+
+    document doc;
+    import_factory factory(doc);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    const pivot_collection& pc = doc.get_pivot_collection();
+    assert(pc.get_cache_count() == 1);
+
+    // B2:C13 on sheet 'Sheet1'.
+    const pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C13");
+    assert(cache);
+    assert(cache->get_field_count() == 2);
+}
+
 }
 
 int main()
@@ -461,6 +485,7 @@ int main()
     test_xlsx_pivot_two_pivot_caches();
     test_xlsx_pivot_mixed_type_field();
     test_xlsx_pivot_group_field();
+    test_xlsx_pivot_group_by_numbers();
 
     return EXIT_SUCCESS;
 }
