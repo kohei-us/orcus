@@ -271,7 +271,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             if (base >= 0)
             {
                 // This is a group field.
-                m_pcache_field_group = m_pcache.set_field_group(base);
+                m_pcache_field_group = m_pcache.create_field_group(base);
             }
             break;
         }

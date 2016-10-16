@@ -42,15 +42,16 @@ public:
     virtual void set_field_max_value(double v) = 0;
 
     /**
-     * Mark this field as a group field for another field.
+     * Mark the current field as a group field.
      *
      * This method gets called first to signify that the current field is a
      * group field.
      *
      * @param base_index 0-based index of the field this field is the parent
      *                   group of.
+     * @return interface for importing group field data.
      */
-    virtual import_pivot_cache_field_group* set_field_group(size_t base_index) = 0;
+    virtual import_pivot_cache_field_group* create_field_group(size_t base_index) = 0;
 
     virtual void commit_field() = 0;
 

@@ -139,7 +139,7 @@ public:
         m_current_field.name = intern(p, n);
     }
 
-    virtual iface::import_pivot_cache_field_group* set_field_group(size_t base_index) override
+    virtual iface::import_pivot_cache_field_group* create_field_group(size_t base_index) override
     {
         m_current_field.group_data =
             orcus::make_unique<pivot_cache_group_data_t>(base_index);
