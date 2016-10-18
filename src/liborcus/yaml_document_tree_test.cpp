@@ -12,6 +12,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <cmath>
 
 using namespace orcus;
 using namespace std;
@@ -28,11 +29,29 @@ bool string_expected(const yaml_document_tree::node& node, const char* expected)
     return false;
 }
 
-bool number_expected(const yaml_document_tree::node& node, double expected)
+bool number_expected(
+    const yaml_document_tree::node& node, double expected,
+    double decimal = 0.0, double exponent = 0.0)
 {
     if (node.type() != yaml_node_t::number)
         return false;
-    return node.numeric_value() == expected;
+
+    double actual = node.numeric_value();
+    if (!decimal || !exponent)
+        return actual == expected;
+
+    // Remove the exponent component.
+    actual /= std::pow(10.0, exponent);
+    expected /= std::pow(10.0, exponent);
+
+    // Only compare down to the specified decimal place.
+    actual *= std::pow(10.0, decimal);
+    expected *= std::pow(10.0, decimal);
+
+    actual = std::round(actual);
+    expected = std::round(expected);
+
+    return actual == expected;
 }
 
 void test_yaml_parse_basic1()

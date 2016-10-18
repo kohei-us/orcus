@@ -45,7 +45,6 @@ private:
     void array();
     void object();
     void number();
-    void number_with_exp(double base);
     void string();
 
 private:
@@ -255,30 +254,7 @@ void json_parser<_Handler>::number()
     assert(is_numeric(cur_char()) || cur_char() == '-');
 
     double val = parse_double_or_throw();
-    switch (cur_char())
-    {
-        case 'e':
-        case 'E':
-            number_with_exp(val);
-            return;
-        default:
-            ;
-    }
     m_handler.number(val);
-    skip_blanks();
-}
-
-template<typename _Handler>
-void json_parser<_Handler>::number_with_exp(double base)
-{
-    assert(cur_char() == 'e' || cur_char() == 'E');
-    next();
-    if (!has_char())
-        throw json::parse_error("number_with_exp: illegal exponent value.", offset());
-
-    long exp = parse_long_or_throw();
-    base *= std::pow(10.0, exp);
-    m_handler.number(base);
     skip_blanks();
 }
 

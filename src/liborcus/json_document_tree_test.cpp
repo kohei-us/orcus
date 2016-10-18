@@ -16,6 +16,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 using namespace orcus;
@@ -46,15 +47,32 @@ bool string_expected(const json_document_tree::node& node, const char* expected)
     return false;
 }
 
-bool number_expected(const json_document_tree::node& node, double expected)
+bool number_expected(
+    const json_document_tree::node& node, double expected,
+    double decimal = 0.0, double exponent = 0.0)
 {
     if (node.type() != json_node_t::number)
         return false;
 
-    if (node.numeric_value() == expected)
+    double actual = node.numeric_value();
+    if (!decimal || !exponent)
+        return actual == expected;
+
+    // Remove the exponent component.
+    actual /= std::pow(10.0, exponent);
+    expected /= std::pow(10.0, exponent);
+
+    // Only compare down to the specified decimal place.
+    actual *= std::pow(10.0, decimal);
+    expected *= std::pow(10.0, decimal);
+
+    actual = std::round(actual);
+    expected = std::round(expected);
+
+    if (actual == expected)
         return true;
 
-    cerr << "expected=" << expected << ", actual=" << node.numeric_value() << endl;
+    cerr << "expected=" << expected << ", actual=" << actual << endl;
     return false;
 }
 
@@ -276,8 +294,8 @@ void test_json_traverse_basic3()
         assert(number_expected(node.child(3), 15.0));
         assert(number_expected(node.child(4), 12.34));
         assert(number_expected(node.child(5), -0.12));
-        assert(number_expected(node.child(6), 1.2e+22));
-        assert(number_expected(node.child(7), 1.11e-7));
+        assert(number_expected(node.child(6), 1.2e+22, 1.0, 22.0));
+        assert(number_expected(node.child(7), 1.11e-7, 2.0, -7.0));
         assert(number_expected(node.child(8), 11E2));
     };
 

@@ -9,6 +9,8 @@
 #include "orcus/cell_buffer.hpp"
 
 #include <cassert>
+#include <cmath>
+#include <iostream>
 
 namespace orcus {
 
@@ -59,12 +61,73 @@ void write_to(std::ostringstream& os, const char* p, size_t n)
         os << *p;
 }
 
+namespace {
+
+/**
+ * Parse the exponent part of a numeric string.
+ *
+ * @return extra divisor to multiply to the original divisor, or 0.0 if the
+ *         parsing fails.
+ */
+double parse_exponent(const char*& p, const char* p_end)
+{
+    const char* p0 = p; // original position to restore to in case of parsing failure.
+    double exponent = 0.0;
+    bool negative_sign = false;
+    bool valid = false;
+
+    // Check for presence of a sign.
+    if (p != p_end)
+    {
+        switch (*p)
+        {
+            case '+':
+                ++p;
+            break;
+            case '-':
+                negative_sign = true;
+                ++p;
+            break;
+            default:
+                ;
+        }
+    }
+
+    for (; p != p_end; ++p)
+    {
+        if (*p < '0' || '9' < *p)
+        {
+            // Non-digit encountered.
+            break;
+        }
+
+        valid = true;
+        exponent *= 10.0;
+        exponent += *p - '0';
+    }
+
+    if (!valid)
+    {
+        // Restore the original position on failed parsing.
+        p = p0;
+        return 0.0;
+    }
+
+    if (!negative_sign)
+        exponent = -exponent;
+
+    return std::pow(10.0, exponent);
+}
+
+}
+
 double parse_numeric(const char*& p, size_t max_length)
 {
     const char* p_end = p + max_length;
     double ret = 0.0, divisor = 1.0;
     bool negative_sign = false;
     bool before_decimal_pt = true;
+    bool has_digit = false;
 
     // Check for presence of a sign.
     if (p != p_end)
@@ -98,12 +161,22 @@ double parse_numeric(const char*& p, size_t max_length)
             continue;
         }
 
+        if (has_digit && (*p == 'e' || *p == 'E'))
+        {
+            ++p;
+            double extra_divisor = parse_exponent(p, p_end);
+            if (extra_divisor)
+                divisor *= extra_divisor;
+            break;
+        }
+
         if (*p < '0' || '9' < *p)
         {
             ret /= divisor;
             return negative_sign ? -ret : ret;
         }
 
+        has_digit = true;
         ret *= 10.0;
         ret += *p - '0';
 

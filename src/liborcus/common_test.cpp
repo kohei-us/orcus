@@ -126,6 +126,8 @@ void test_string2number_conversion()
         { "1.3456", 1.3456, 4, 6 },
         { "-10.345", -10.345, 3, 7 },
         { "-10.345-", -10.345, 3, 7 },
+        { "1.2E-2", 1.2E-2, 3, 6 },
+        { "1.26E+3", 1.26E+3, 1, 7 },
     };
 
     for (size_t i = 0, n = sizeof(tests)/sizeof(tests[0]); i < n; ++i)
