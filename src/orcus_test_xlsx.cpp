@@ -468,6 +468,18 @@ void test_xlsx_pivot_group_by_numbers()
     const pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C13");
     assert(cache);
     assert(cache->get_field_count() == 2);
+
+    // First field is a field with numeric grouping with intervals.
+    const pivot_cache_field_t* fld = cache->get_field(0);
+    assert(fld);
+    assert(fld->name == "V1");
+
+    // There should be 11 raw values ranging from 9.78E-2 to 9.82.
+    assert(fld->items.size() == 11);
+    assert(fld->min_value);
+    assert(fld->max_value);
+    assert(std::round(*fld->min_value*10000.0) == 978.00); // 9.78E-2
+    assert(std::round(*fld->max_value*100.0) == 982.00);   // 9.82
 }
 
 }
