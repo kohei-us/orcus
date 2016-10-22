@@ -80,11 +80,36 @@ using pivot_cache_items_t = std::vector<pivot_cache_item_t>;
  */
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_data_t
 {
+    enum class group_by_type
+    {
+        range, seconds, minutes, hours, days, months, quarters, years
+    };
+
+    struct ORCUS_SPM_DLLPUBLIC numeric_range_type
+    {
+        bool auto_start = true;
+        bool auto_end   = true;
+
+        double start    = 0.0;
+        double end      = 0.0;
+        double interval = 1.0;
+
+        numeric_range_type() = default;
+        numeric_range_type(const numeric_range_type&) = default;
+    };
+
+    group_by_type group_by = group_by_type::range;
+
     /**
      * Mapping of base field member indices to the group field item indices.
      */
     pivot_cache_indices_t base_to_group_indices;
 
+    boost::optional<numeric_range_type> numeric_range;
+
+    /**
+     * Individual items comprising the group.
+     */
     pivot_cache_items_t items;
 
     /** 0-based index of the base field. */

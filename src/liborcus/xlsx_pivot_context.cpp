@@ -303,6 +303,58 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
 
             break;
         }
+        case XML_rangePr:
+        {
+            xml_element_expected(parent, NS_ooxml_xlsx, XML_fieldGroup);
+
+            bool auto_start = true;
+            bool auto_end = true;
+            double start = 0.0;
+            double end = 0.0;
+            double interval = 1.0;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_autoStart:
+                            auto_start = to_bool(attr.value);
+                            break;
+                        case XML_autoEnd:
+                            auto_end = to_bool(attr.value);
+                            break;
+                        case XML_startNum:
+                            start = to_double(attr.value);
+                            break;
+                        case XML_endNum:
+                            end = to_double(attr.value);
+                            break;
+                        case XML_groupInterval:
+                            interval = to_double(attr.value);
+                            break;
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            // TODO : pass the values to the interface.
+
+            if (get_config().debug)
+            {
+                cout << "  auto start: " << auto_start << endl;
+                cout << "  auto end: " << auto_end << endl;
+                cout << "  start: " << start << endl;
+                cout << "  end: " << end << endl;
+                cout << "  interval: " << interval << endl;
+            }
+
+            break;
+        }
         case XML_sharedItems:
         {
             start_element_shared_items(parent, attrs);

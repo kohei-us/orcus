@@ -162,11 +162,13 @@ pivot_cache_group_data_t::pivot_cache_group_data_t(size_t _base_field) :
 
 pivot_cache_group_data_t::pivot_cache_group_data_t(const pivot_cache_group_data_t& other) :
     base_to_group_indices(other.base_to_group_indices),
+    numeric_range(other.numeric_range),
     items(other.items),
     base_field(other.base_field) {}
 
 pivot_cache_group_data_t::pivot_cache_group_data_t(pivot_cache_group_data_t&& other) :
     base_to_group_indices(std::move(other.base_to_group_indices)),
+    numeric_range(std::move(other.numeric_range)),
     items(std::move(other.items)),
     base_field(other.base_field) {}
 
