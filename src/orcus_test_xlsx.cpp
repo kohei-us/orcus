@@ -480,6 +480,33 @@ void test_xlsx_pivot_group_by_numbers()
     assert(fld->max_value);
     assert(std::round(*fld->min_value*10000.0) == 978.00); // 9.78E-2
     assert(std::round(*fld->max_value*100.0) == 982.00);   // 9.82
+
+    // We'll just make sure that all 11 items are of numeric type.
+
+    for (const pivot_cache_item_t& item : fld->items)
+    {
+        assert(item.type == pivot_cache_item_t::item_type::numeric);
+        assert(*fld->min_value <= item.value.numeric);
+        assert(item.value.numeric <= *fld->max_value);
+    }
+
+    // This field is also gruop field with 7 numeric intervals of width 2.
+    assert(fld->group_data);
+    const pivot_cache_group_data_t& grp = *fld->group_data;
+    assert(grp.items.size() == 7);
+
+    pivot_cache_items_t expected =
+    {
+        pivot_cache_item_t(ORCUS_ASCII("<0")),
+        pivot_cache_item_t(ORCUS_ASCII("0-2")),
+        pivot_cache_item_t(ORCUS_ASCII("2-4")),
+        pivot_cache_item_t(ORCUS_ASCII("4-6")),
+        pivot_cache_item_t(ORCUS_ASCII("6-8")),
+        pivot_cache_item_t(ORCUS_ASCII("8-10")),
+        pivot_cache_item_t(ORCUS_ASCII(">10")),
+    };
+
+    assert(grp.items == expected);
 }
 
 }
