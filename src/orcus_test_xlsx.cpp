@@ -515,6 +515,19 @@ void test_xlsx_pivot_group_by_numbers()
     assert(grp.numeric_range->start == 0.0);
     assert(grp.numeric_range->end == 10.0);
     assert(grp.numeric_range->interval == 2.0);
+
+    // Test the 2nd field. This field is purely a numeric field with no
+    // discrete items.
+
+    fld = cache->get_field(1);
+    assert(fld);
+    assert(fld->name == "V2");
+    assert(!fld->group_data);
+    assert(fld->items.empty());
+    assert(fld->min_value);
+    assert(fld->min_value == 1.0);
+    assert(fld->max_value);
+    assert(fld->max_value == 11.0);
 }
 
 }
