@@ -85,6 +85,16 @@ public:
     virtual void set_field_item_numeric(double v) = 0;
 
     virtual void commit_field_item() = 0;
+
+    virtual void set_auto_start(bool b) = 0;
+
+    virtual void set_auto_end(bool b) = 0;
+
+    virtual void set_start_number(double v) = 0;
+
+    virtual void set_end_number(double v) = 0;
+
+    virtual void set_group_interval(double v) = 0;
 };
 
 }}}

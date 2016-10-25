@@ -27,6 +27,8 @@ namespace orcus { namespace spreadsheet {
 
 class import_pc_field_group : public iface::import_pivot_cache_field_group
 {
+    using numeric_range_type = pivot_cache_group_data_t::numeric_range_type;
+
     document& m_doc;
     pivot_cache_group_data_t& m_data;
     pivot_cache_item_t m_current_field_item;
@@ -35,6 +37,14 @@ private:
     pstring intern(const char* p, size_t n)
     {
         return m_doc.get_string_pool().intern(p, n).first;
+    }
+
+    numeric_range_type& get_numeric_range()
+    {
+        if (!m_data.numeric_range)
+            m_data.numeric_range = numeric_range_type();
+
+        return *m_data.numeric_range;
     }
 
 public:
@@ -66,6 +76,31 @@ public:
     virtual void commit_field_item() override
     {
         m_data.items.push_back(std::move(m_current_field_item));
+    }
+
+    virtual void set_auto_start(bool b) override
+    {
+        get_numeric_range().auto_start = b;
+    }
+
+    virtual void set_auto_end(bool b) override
+    {
+        get_numeric_range().auto_end = b;
+    }
+
+    virtual void set_start_number(double v) override
+    {
+        get_numeric_range().start = v;
+    }
+
+    virtual void set_end_number(double v) override
+    {
+        get_numeric_range().end = v;
+    }
+
+    virtual void set_group_interval(double v) override
+    {
+        get_numeric_range().interval = v;
     }
 };
 

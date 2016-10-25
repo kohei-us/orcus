@@ -342,7 +342,12 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 }
             );
 
-            // TODO : pass the values to the interface.
+            // Pass the values to the interface.
+            m_pcache_field_group->set_auto_start(auto_start);
+            m_pcache_field_group->set_auto_end(auto_end);
+            m_pcache_field_group->set_start_number(start);
+            m_pcache_field_group->set_end_number(end);
+            m_pcache_field_group->set_group_interval(interval);
 
             if (get_config().debug)
             {

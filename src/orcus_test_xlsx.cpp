@@ -507,6 +507,14 @@ void test_xlsx_pivot_group_by_numbers()
     };
 
     assert(grp.items == expected);
+
+    // Check the numeric range properties.
+    assert(grp.numeric_range);
+    assert(!grp.numeric_range->auto_start);
+    assert(!grp.numeric_range->auto_end);
+    assert(grp.numeric_range->start == 0.0);
+    assert(grp.numeric_range->end == 10.0);
+    assert(grp.numeric_range->interval == 2.0);
 }
 
 }
