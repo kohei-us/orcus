@@ -530,6 +530,23 @@ void test_xlsx_pivot_group_by_numbers()
     assert(fld->max_value == 11.0);
 }
 
+void test_xlsx_pivot_group_by_dates()
+{
+    string path(SRCDIR"/test/xlsx/pivot-table/group-by-dates.xlsx");
+
+    document doc;
+    import_factory factory(doc);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    const pivot_collection& pc = doc.get_pivot_collection();
+    assert(pc.get_cache_count() == 1);
+
+    // TODO : continue on.
+}
+
 }
 
 int main()
@@ -546,6 +563,7 @@ int main()
     test_xlsx_pivot_mixed_type_field();
     test_xlsx_pivot_group_field();
     test_xlsx_pivot_group_by_numbers();
+    test_xlsx_pivot_group_by_dates();
 
     return EXIT_SUCCESS;
 }
