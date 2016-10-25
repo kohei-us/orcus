@@ -463,6 +463,12 @@ bool xlsx_pivot_cache_def_context::end_element(xmlns_id_t ns, xml_token_t name)
             {
                 break;
             }
+            case XML_fieldGroup:
+            {
+                if (m_pcache_field_group)
+                    m_pcache_field_group->commit();
+                break;
+            }
             case XML_s:
                 end_element_s();
                 break;

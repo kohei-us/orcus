@@ -30,7 +30,8 @@ class import_pc_field_group : public iface::import_pivot_cache_field_group
     using numeric_range_type = pivot_cache_group_data_t::numeric_range_type;
 
     document& m_doc;
-    pivot_cache_group_data_t& m_data;
+    pivot_cache_field_t& m_parent_field;
+    std::unique_ptr<pivot_cache_group_data_t> m_data;
     pivot_cache_item_t m_current_field_item;
 
 private:
@@ -41,21 +42,23 @@ private:
 
     numeric_range_type& get_numeric_range()
     {
-        if (!m_data.numeric_range)
-            m_data.numeric_range = numeric_range_type();
+        if (!m_data->numeric_range)
+            m_data->numeric_range = numeric_range_type();
 
-        return *m_data.numeric_range;
+        return *m_data->numeric_range;
     }
 
 public:
-    import_pc_field_group(document& doc, pivot_cache_group_data_t& data) :
-        m_doc(doc), m_data(data) {}
+    import_pc_field_group(document& doc, pivot_cache_field_t& parent, size_t base_index) :
+        m_doc(doc),
+        m_parent_field(parent),
+        m_data(orcus::make_unique<pivot_cache_group_data_t>(base_index)) {}
 
     virtual ~import_pc_field_group() override {}
 
     virtual void link_base_to_group_items(size_t group_item_index) override
     {
-        pivot_cache_indices_t& b2g = m_data.base_to_group_indices;
+        pivot_cache_indices_t& b2g = m_data->base_to_group_indices;
         b2g.push_back(group_item_index);
     }
 
@@ -75,7 +78,7 @@ public:
 
     virtual void commit_field_item() override
     {
-        m_data.items.push_back(std::move(m_current_field_item));
+        m_data->items.push_back(std::move(m_current_field_item));
     }
 
     virtual void set_auto_start(bool b) override
@@ -101,6 +104,11 @@ public:
     virtual void set_group_interval(double v) override
     {
         get_numeric_range().interval = v;
+    }
+
+    virtual void commit() override
+    {
+        m_parent_field.group_data = std::move(m_data);
     }
 };
 
@@ -176,11 +184,8 @@ public:
 
     virtual iface::import_pivot_cache_field_group* create_field_group(size_t base_index) override
     {
-        m_current_field.group_data =
-            orcus::make_unique<pivot_cache_group_data_t>(base_index);
-
         m_current_field_group =
-            orcus::make_unique<import_pc_field_group>(m_doc, *m_current_field.group_data);
+            orcus::make_unique<import_pc_field_group>(m_doc, m_current_field, base_index);
 
         return m_current_field_group.get();
     }

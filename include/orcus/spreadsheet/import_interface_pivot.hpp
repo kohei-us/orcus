@@ -95,6 +95,11 @@ public:
     virtual void set_end_number(double v) = 0;
 
     virtual void set_group_interval(double v) = 0;
+
+    /**
+     * Commit the current field group data to the parent field.
+     */
+    virtual void commit() = 0;
 };
 
 }}}
