@@ -10,6 +10,7 @@
 
 #include "orcus/env.hpp"
 #include "orcus/pstring.hpp"
+#include "orcus/types.hpp"
 
 #include <memory>
 #include <vector>
@@ -134,6 +135,9 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
 
     boost::optional<double> min_value;
     boost::optional<double> max_value;
+
+    boost::optional<date_time_t> min_date;
+    boost::optional<date_time_t> max_date;
 
     std::unique_ptr<pivot_cache_group_data_t> group_data;
 

@@ -200,6 +200,16 @@ public:
         m_current_field.max_value = v;
     }
 
+    virtual void set_field_min_date(const date_time_t& d) override
+    {
+        m_current_field.min_date = d;
+    }
+
+    virtual void set_field_max_date(const date_time_t& d) override
+    {
+        m_current_field.max_date = d;
+    }
+
     virtual void commit_field() override
     {
         m_current_fields.push_back(std::move(m_current_field));

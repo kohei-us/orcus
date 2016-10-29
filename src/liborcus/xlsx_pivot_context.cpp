@@ -669,6 +669,8 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
     long count = -1;
     boost::optional<double> min_value;
     boost::optional<double> max_value;
+    boost::optional<date_time_t> min_date;
+    boost::optional<date_time_t> max_date;
 
     for_each(attrs.begin(), attrs.end(),
         [&](const xml_token_attr_t& attr)
@@ -708,6 +710,12 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
                 case XML_maxValue:
                     max_value = to_double(attr.value);
                     break;
+                case XML_minDate:
+                    min_date = to_date_time(attr.value);
+                    break;
+                case XML_maxDate:
+                    max_date = to_date_time(attr.value);
+                    break;
                 case XML_longText:
                     has_long_text = to_bool(attr.value);
                     break;
@@ -722,6 +730,12 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
 
     if (max_value)
         m_pcache.set_field_max_value(*max_value);
+
+    if (min_date)
+        m_pcache.set_field_min_date(*min_date);
+
+    if (max_date)
+        m_pcache.set_field_max_date(*max_date);
 
     if (get_config().debug)
     {
@@ -740,6 +754,10 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
             cout << "  min value: " << *min_value << endl;
         if (max_value)
             cout << "  max value: " << *max_value << endl;
+        if (min_date)
+            cout << "  min date: " << *min_date << endl;
+        if (max_date)
+            cout << "  max date: " << *max_date << endl;
     }
 
     // TODO : pass these attribute values to the interface.

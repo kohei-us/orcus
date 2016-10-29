@@ -73,11 +73,60 @@ std::string length_t::print() const
 date_time_t::date_time_t() :
     year(0), month(0), day(0), hour(0), minute(0), second(0.0) {}
 
+date_time_t::date_time_t(int _year, int _month, int _day) :
+    year(_year), month(_month), day(_day), hour(0), minute(0), second(0.0) {}
+
+date_time_t::date_time_t(int _year, int _month, int _day, int _hour, int _minute, double _second) :
+    year(_year), month(_month), day(_day), hour(_hour), minute(_minute), second(_second) {}
+
+date_time_t::date_time_t(const date_time_t& other) :
+    year(other.year),
+    month(other.month),
+    day(other.day),
+    hour(other.hour),
+    minute(other.minute),
+    second(other.second) {}
+
+date_time_t::~date_time_t() {}
+
+date_time_t& date_time_t::operator= (date_time_t other)
+{
+    swap(other);
+    return *this;
+}
+
+void date_time_t::swap(date_time_t& other)
+{
+    std::swap(year, other.year);
+    std::swap(month, other.month);
+    std::swap(day, other.day);
+    std::swap(hour, other.hour);
+    std::swap(minute, other.minute);
+    std::swap(second, other.second);
+}
+
+bool date_time_t::operator== (const date_time_t& other) const
+{
+    return year == other.year && month == other.month && day == other.day &&
+        hour == other.hour && minute == other.minute && second == other.second;
+}
+
+bool date_time_t::operator!= (const date_time_t& other) const
+{
+    return !operator== (other);
+}
+
 std::string date_time_t::to_string() const
 {
     std::ostringstream os;
     os << year << "-" << month << "-" << day << "T" << hour << ":" << minute << ":" << second;
     return os.str();
+}
+
+std::ostream& operator<< (std::ostream& os, const date_time_t& v)
+{
+    os << v.to_string();
+    return os;
 }
 
 }

@@ -41,6 +41,10 @@ public:
 
     virtual void set_field_max_value(double v) = 0;
 
+    virtual void set_field_min_date(const date_time_t& d) = 0;
+
+    virtual void set_field_max_date(const date_time_t& d) = 0;
+
     /**
      * Mark the current field as a group field.
      *

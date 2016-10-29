@@ -544,7 +544,16 @@ void test_xlsx_pivot_group_by_dates()
     const pivot_collection& pc = doc.get_pivot_collection();
     assert(pc.get_cache_count() == 1);
 
-    // TODO : continue on.
+    const pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C14");
+    assert(cache);
+
+    const pivot_cache_field_t* fld = cache->get_field(0);
+    assert(fld);
+    assert(fld->name == "Date");
+    assert(fld->min_date);
+    assert(*fld->min_date == date_time_t(2014, 1, 1));
+    assert(fld->max_date);
+    assert(*fld->max_date == date_time_t(2014, 12, 2));
 }
 
 }

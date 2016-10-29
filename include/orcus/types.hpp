@@ -104,7 +104,7 @@ struct ORCUS_DLLPUBLIC length_t
     std::string print() const;
 };
 
-struct ORCUS_PSR_DLLPUBLIC date_time_t
+struct ORCUS_DLLPUBLIC date_time_t
 {
     int year;
     int month;
@@ -114,9 +114,22 @@ struct ORCUS_PSR_DLLPUBLIC date_time_t
     double second;
 
     date_time_t();
+    date_time_t(int _year, int _month, int _day);
+    date_time_t(int _year, int _month, int _day, int _hour, int _minute, double _second);
+    date_time_t(const date_time_t& other);
+    ~date_time_t();
+
+    date_time_t& operator= (date_time_t other);
+
+    bool operator== (const date_time_t& other) const;
+    bool operator!= (const date_time_t& other) const;
 
     std::string to_string() const;
+
+    void swap(date_time_t& other);
 };
+
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const date_time_t& v);
 
 typedef ::std::vector<xml_token_attr_t> xml_attrs_t;
 
