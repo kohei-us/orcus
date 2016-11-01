@@ -576,6 +576,34 @@ void test_xlsx_pivot_group_by_dates()
 
     pivot_cache_items_t actual(fld->items.begin(), fld->items.end());
     assert(actual == expected);
+
+    // This field is grouped by month.
+
+    assert(fld->group_data);
+    const pivot_cache_group_data_t& gd = *fld->group_data;
+
+    expected =
+    {
+        pivot_cache_item_t(ORCUS_ASCII("<1/1/2014")),
+        pivot_cache_item_t(ORCUS_ASCII("Jan")),
+        pivot_cache_item_t(ORCUS_ASCII("Feb")),
+        pivot_cache_item_t(ORCUS_ASCII("Mar")),
+        pivot_cache_item_t(ORCUS_ASCII("Apr")),
+        pivot_cache_item_t(ORCUS_ASCII("May")),
+        pivot_cache_item_t(ORCUS_ASCII("Jun")),
+        pivot_cache_item_t(ORCUS_ASCII("Jul")),
+        pivot_cache_item_t(ORCUS_ASCII("Aug")),
+        pivot_cache_item_t(ORCUS_ASCII("Sep")),
+        pivot_cache_item_t(ORCUS_ASCII("Oct")),
+        pivot_cache_item_t(ORCUS_ASCII("Nov")),
+        pivot_cache_item_t(ORCUS_ASCII("Dec")),
+        pivot_cache_item_t(ORCUS_ASCII(">12/2/2014")),
+    };
+
+    assert(gd.items == expected);
+
+    // TODO : fix this.
+//  assert(gd.group_by == pivot_cache_group_data_t::group_by_type::months);
 }
 
 }

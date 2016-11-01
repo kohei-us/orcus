@@ -69,7 +69,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
         double numeric;
         bool boolean;
 
-        // TODO : probably more to add, esp for datetime and error values.
+        // TODO : add error value.
 
     } value;
 
@@ -84,6 +84,10 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
 
     bool operator< (const pivot_cache_item_t& other) const;
     bool operator== (const pivot_cache_item_t& other) const;
+
+    pivot_cache_item_t& operator= (pivot_cache_item_t other);
+
+    void swap(pivot_cache_item_t& other);
 };
 
 using pivot_cache_items_t = std::vector<pivot_cache_item_t>;
@@ -108,7 +112,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_data_t
         double interval = 1.0;
 
         numeric_range_type() = default;
-        numeric_range_type(const numeric_range_type&) = default;
+        numeric_range_type(const numeric_range_type& other) = default;
     };
 
     group_by_type group_by = group_by_type::range;

@@ -197,6 +197,19 @@ bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
     return false;
 }
 
+pivot_cache_item_t& pivot_cache_item_t::operator= (pivot_cache_item_t other)
+{
+    swap(other);
+    return *this;
+}
+
+void pivot_cache_item_t::swap(pivot_cache_item_t& other)
+{
+    std::swap(type, other.type);
+    // Swap values by the largest union member.
+    std::swap(value.datetime, other.value.datetime);
+}
+
 pivot_cache_group_data_t::pivot_cache_group_data_t(size_t _base_field) :
     base_field(_base_field) {}
 
