@@ -547,13 +547,35 @@ void test_xlsx_pivot_group_by_dates()
     const pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C14");
     assert(cache);
 
+    // First field is a date field.
     const pivot_cache_field_t* fld = cache->get_field(0);
     assert(fld);
     assert(fld->name == "Date");
-    assert(fld->min_date);
-    assert(*fld->min_date == date_time_t(2014, 1, 1));
-    assert(fld->max_date);
-    assert(*fld->max_date == date_time_t(2014, 12, 2));
+
+    // Minimum and maximum date values.
+    assert(fld->min_datetime);
+    assert(*fld->min_datetime == date_time_t(2014, 1, 1));
+    assert(fld->max_datetime);
+    assert(*fld->max_datetime == date_time_t(2014, 12, 2));
+
+    pivot_cache_items_t expected =
+    {
+        pivot_cache_item_t(date_time_t(2014, 1, 1)),
+        pivot_cache_item_t(date_time_t(2014, 2, 1)),
+        pivot_cache_item_t(date_time_t(2014, 3, 1)),
+        pivot_cache_item_t(date_time_t(2014, 4, 1)),
+        pivot_cache_item_t(date_time_t(2014, 5, 1)),
+        pivot_cache_item_t(date_time_t(2014, 6, 1)),
+        pivot_cache_item_t(date_time_t(2014, 7, 1)),
+        pivot_cache_item_t(date_time_t(2014, 8, 1)),
+        pivot_cache_item_t(date_time_t(2014, 9, 1)),
+        pivot_cache_item_t(date_time_t(2014, 10, 1)),
+        pivot_cache_item_t(date_time_t(2014, 11, 1)),
+        pivot_cache_item_t(date_time_t(2014, 12, 1)),
+    };
+
+    pivot_cache_items_t actual(fld->items.begin(), fld->items.end());
+    assert(actual == expected);
 }
 
 }

@@ -38,6 +38,17 @@ pivot_cache_item_t::pivot_cache_item_t(bool _boolean) :
     value.boolean = _boolean;
 }
 
+pivot_cache_item_t::pivot_cache_item_t(const date_time_t& _datetime) :
+    type(item_type::datetime)
+{
+    value.datetime.year   = _datetime.year;
+    value.datetime.month  = _datetime.month;
+    value.datetime.day    = _datetime.day;
+    value.datetime.hour   = _datetime.hour;
+    value.datetime.minute = _datetime.minute;
+    value.datetime.second = _datetime.second;
+}
+
 pivot_cache_item_t::pivot_cache_item_t(const pivot_cache_item_t& other) :
     type(other.type)
 {
@@ -49,7 +60,12 @@ pivot_cache_item_t::pivot_cache_item_t(const pivot_cache_item_t& other) :
             value.boolean = other.value.boolean;
             break;
         case item_type::datetime:
-            // TODO : add this.
+            value.datetime.year   = other.value.datetime.year;
+            value.datetime.month  = other.value.datetime.month;
+            value.datetime.day    = other.value.datetime.day;
+            value.datetime.hour   = other.value.datetime.hour;
+            value.datetime.minute = other.value.datetime.minute;
+            value.datetime.second = other.value.datetime.second;
             break;
         case item_type::error:
             // TODO : add this.
@@ -81,7 +97,12 @@ pivot_cache_item_t::pivot_cache_item_t(pivot_cache_item_t&& other) :
             value.boolean = other.value.boolean;
             break;
         case item_type::datetime:
-            // TODO : add this.
+            value.datetime.year   = other.value.datetime.year;
+            value.datetime.month  = other.value.datetime.month;
+            value.datetime.day    = other.value.datetime.day;
+            value.datetime.hour   = other.value.datetime.hour;
+            value.datetime.minute = other.value.datetime.minute;
+            value.datetime.second = other.value.datetime.second;
             break;
         case item_type::error:
             // TODO : add this.
@@ -114,8 +135,23 @@ bool pivot_cache_item_t::operator< (const pivot_cache_item_t& other) const
         case item_type::string:
             return pstring(value.string.p, value.string.n) < pstring(other.value.string.p, other.value.string.n);
         case item_type::datetime:
-            // TODO : implement this.
-            break;
+            if (value.datetime.year != other.value.datetime.year)
+                return value.datetime.year < other.value.datetime.year;
+
+            if (value.datetime.month != other.value.datetime.month)
+                return value.datetime.month < other.value.datetime.month;
+
+            if (value.datetime.day != other.value.datetime.day)
+                return value.datetime.day < other.value.datetime.day;
+
+            if (value.datetime.hour != other.value.datetime.hour)
+                return value.datetime.hour < other.value.datetime.hour;
+
+            if (value.datetime.minute != other.value.datetime.minute)
+                return value.datetime.minute < other.value.datetime.minute;
+
+            return value.datetime.second < other.value.datetime.second;
+
         case item_type::error:
             // TODO : implement this.
             break;
@@ -142,8 +178,12 @@ bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
         case item_type::string:
             return pstring(value.string.p, value.string.n) == pstring(other.value.string.p, other.value.string.n);
         case item_type::datetime:
-            // TODO : implement this.
-            break;
+            return value.datetime.year == other.value.datetime.year &&
+                value.datetime.month == other.value.datetime.month &&
+                value.datetime.day == other.value.datetime.day &&
+                value.datetime.hour == other.value.datetime.hour &&
+                value.datetime.minute == other.value.datetime.minute &&
+                value.datetime.second == other.value.datetime.second;
         case item_type::error:
             // TODO : implement this.
             break;
@@ -181,8 +221,8 @@ pivot_cache_field_t::pivot_cache_field_t(const pivot_cache_field_t& other) :
     items(other.items),
     min_value(other.min_value),
     max_value(other.max_value),
-    min_date(other.min_date),
-    max_date(other.max_date),
+    min_datetime(other.min_datetime),
+    max_datetime(other.max_datetime),
     group_data(orcus::make_unique<pivot_cache_group_data_t>(*other.group_data)) {}
 
 pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
@@ -190,8 +230,8 @@ pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
     items(std::move(other.items)),
     min_value(std::move(other.min_value)),
     max_value(std::move(other.max_value)),
-    min_date(std::move(other.min_date)),
-    max_date(std::move(other.max_date)),
+    min_datetime(std::move(other.min_datetime)),
+    max_datetime(std::move(other.max_datetime)),
     group_data(std::move(other.group_data))
 {
     other.name.clear();

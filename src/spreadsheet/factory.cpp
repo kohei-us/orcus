@@ -200,14 +200,14 @@ public:
         m_current_field.max_value = v;
     }
 
-    virtual void set_field_min_date(const date_time_t& d) override
+    virtual void set_field_min_datetime(const date_time_t& dt) override
     {
-        m_current_field.min_date = d;
+        m_current_field.min_datetime = dt;
     }
 
-    virtual void set_field_max_date(const date_time_t& d) override
+    virtual void set_field_max_datetime(const date_time_t& dt) override
     {
-        m_current_field.max_date = d;
+        m_current_field.max_datetime = dt;
     }
 
     virtual void commit_field() override
@@ -227,6 +227,17 @@ public:
     {
         m_current_field_item.type = pivot_cache_item_t::item_type::numeric;
         m_current_field_item.value.numeric = v;
+    }
+
+    virtual void set_field_item_datetime(const date_time_t& dt) override
+    {
+        m_current_field_item.type = pivot_cache_item_t::item_type::datetime;
+        m_current_field_item.value.datetime.year = dt.year;
+        m_current_field_item.value.datetime.month = dt.month;
+        m_current_field_item.value.datetime.day = dt.day;
+        m_current_field_item.value.datetime.hour = dt.hour;
+        m_current_field_item.value.datetime.minute = dt.minute;
+        m_current_field_item.value.datetime.second = dt.second;
     }
 
     virtual void commit_field_item() override

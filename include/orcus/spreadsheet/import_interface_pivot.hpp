@@ -41,9 +41,9 @@ public:
 
     virtual void set_field_max_value(double v) = 0;
 
-    virtual void set_field_min_date(const date_time_t& d) = 0;
+    virtual void set_field_min_datetime(const date_time_t& dt) = 0;
 
-    virtual void set_field_max_date(const date_time_t& d) = 0;
+    virtual void set_field_max_datetime(const date_time_t& dt) = 0;
 
     /**
      * Mark the current field as a group field.
@@ -62,6 +62,8 @@ public:
     virtual void set_field_item_string(const char* p, size_t n) = 0;
 
     virtual void set_field_item_numeric(double v) = 0;
+
+    virtual void set_field_item_datetime(const date_time_t& dt) = 0;
 
     virtual void commit_field_item() = 0;
 

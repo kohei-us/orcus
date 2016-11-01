@@ -55,6 +55,17 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
 
         } string;
 
+        struct
+        {
+            int year;
+            int month;
+            int day;
+            int hour;
+            int minute;
+            double second;
+
+        } datetime;
+
         double numeric;
         bool boolean;
 
@@ -66,6 +77,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
     pivot_cache_item_t(const char* p_str, size_t n_str);
     pivot_cache_item_t(double _numeric);
     pivot_cache_item_t(bool _boolean);
+    pivot_cache_item_t(const date_time_t& _datetime);
 
     pivot_cache_item_t(const pivot_cache_item_t& other);
     pivot_cache_item_t(pivot_cache_item_t&& other);
@@ -136,8 +148,8 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
     boost::optional<double> min_value;
     boost::optional<double> max_value;
 
-    boost::optional<date_time_t> min_date;
-    boost::optional<date_time_t> max_date;
+    boost::optional<date_time_t> min_datetime;
+    boost::optional<date_time_t> max_datetime;
 
     std::unique_ptr<pivot_cache_group_data_t> group_data;
 

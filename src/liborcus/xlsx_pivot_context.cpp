@@ -403,6 +403,11 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             start_element_n(parent, attrs);
             break;
         }
+        case XML_d:
+        {
+            start_element_d(parent, attrs);
+            break;
+        }
         case XML_x:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_discretePr);
@@ -474,6 +479,9 @@ bool xlsx_pivot_cache_def_context::end_element(xmlns_id_t ns, xml_token_t name)
                 break;
             case XML_n:
                 end_element_n();
+                break;
+            case XML_d:
+                end_element_d();
                 break;
             default:
                 ;
@@ -645,6 +653,81 @@ void xlsx_pivot_cache_def_context::end_element_n()
     }
 }
 
+void xlsx_pivot_cache_def_context::start_element_d(
+    const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs)
+{
+    if (parent.first != NS_ooxml_xlsx)
+    {
+        warn_unhandled();
+        return;
+    }
+
+    switch (parent.second)
+    {
+        case XML_sharedItems:
+        {
+            // date item of a cache field.
+            date_time_t dt;
+            m_field_item_used = true;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_v:
+                            dt = to_date_time(attr.value);
+                        break;
+                        case XML_u:
+                            // flag for unused item.
+                            m_field_item_used = !to_bool(attr.value);
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            if (get_config().debug)
+            {
+                cout << "  * d: " << dt;
+                if (!m_field_item_used)
+                    cout << " (unused)";
+                cout << endl;
+
+            }
+
+            if (m_field_item_used)
+                m_pcache.set_field_item_datetime(dt);
+
+            break;
+        }
+        default:
+            ;
+    }
+}
+
+void xlsx_pivot_cache_def_context::end_element_d()
+{
+    const xml_token_pair_t& parent = get_parent_element();
+    if (parent.first != NS_ooxml_xlsx)
+        return;
+
+    switch (parent.second)
+    {
+        case XML_sharedItems:
+        {
+            if (m_field_item_used)
+                m_pcache.commit_field_item();
+            break;
+        }
+        default:
+            ;
+    }
+}
+
 void xlsx_pivot_cache_def_context::start_element_shared_items(
     const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs)
 {
@@ -732,10 +815,10 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
         m_pcache.set_field_max_value(*max_value);
 
     if (min_date)
-        m_pcache.set_field_min_date(*min_date);
+        m_pcache.set_field_min_datetime(*min_date);
 
     if (max_date)
-        m_pcache.set_field_max_date(*max_date);
+        m_pcache.set_field_max_datetime(*max_date);
 
     if (get_config().debug)
     {
@@ -759,8 +842,6 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
         if (max_date)
             cout << "  max date: " << *max_date << endl;
     }
-
-    // TODO : pass these attribute values to the interface.
 }
 
 xlsx_pivot_cache_rec_context::xlsx_pivot_cache_rec_context(session_context& cxt, const tokens& tokens) :
