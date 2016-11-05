@@ -313,6 +313,10 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             double end = 0.0;
             double interval = 1.0;
 
+            // Default group-by type appears to be 'range'.
+            spreadsheet::pivot_cache_group_by_t group_by =
+                spreadsheet::pivot_cache_group_by_t::range;
+
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
@@ -336,6 +340,10 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                         case XML_groupInterval:
                             interval = to_double(attr.value);
                             break;
+                        case XML_groupBy:
+                            group_by = spreadsheet::to_pivot_cache_group_by_enum(
+                                attr.value.get(), attr.value.size());
+                            break;
                         default:
                             ;
                     }
@@ -343,6 +351,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             );
 
             // Pass the values to the interface.
+            m_pcache_field_group->set_range_grouping_type(group_by);
             m_pcache_field_group->set_auto_start(auto_start);
             m_pcache_field_group->set_auto_end(auto_end);
             m_pcache_field_group->set_start_number(start);

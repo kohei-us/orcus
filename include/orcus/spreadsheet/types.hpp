@@ -292,11 +292,26 @@ enum class databar_axis_t
     automatic
 };
 
+enum class pivot_cache_group_by_t
+{
+    unknown = 0,
+    days,     // grouping on "days" for date values.
+    hours,    // grouping on "hours" for date values.
+    minutes,  // grouping on "minutes" for date values.
+    months,   // grouping on "months" for date values.
+    quarters, // grouping on "quarters" for date values.
+    range,    // grouping by numeric ranges for numeric values.
+    seconds,  // grouping on "seconds" for date values.
+    years     // grouping on "years" for date values.
+};
+
 /**
  * Convert a string representation of a totals row function name to its
  * equivalent enum value.
  */
 ORCUS_DLLPUBLIC totals_row_function_t to_totals_row_function_enum(const char* p, size_t n);
+
+ORCUS_DLLPUBLIC pivot_cache_group_by_t to_pivot_cache_group_by_enum(const char* p, size_t n);
 
 }}
 

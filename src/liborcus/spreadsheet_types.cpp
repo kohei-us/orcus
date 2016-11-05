@@ -17,6 +17,7 @@ namespace orcus { namespace spreadsheet {
 namespace {
 
 typedef mdds::sorted_string_map<totals_row_function_t> trf_map_type;
+typedef mdds::sorted_string_map<pivot_cache_group_by_t> pc_group_by_map_type;
 
 // Keys must be sorted.
 trf_map_type::entry trf_entries[] =
@@ -43,6 +44,29 @@ const trf_map_type& get_trf_map()
     return trf_map;
 }
 
+// Keys must be sorted.
+pc_group_by_map_type::entry pc_group_by_entries[] =
+{
+    { ORCUS_ASCII("days"),     pivot_cache_group_by_t::days },
+    { ORCUS_ASCII("hours"),    pivot_cache_group_by_t::hours },
+    { ORCUS_ASCII("minutes"),  pivot_cache_group_by_t::minutes },
+    { ORCUS_ASCII("months"),   pivot_cache_group_by_t::months },
+    { ORCUS_ASCII("quarters"), pivot_cache_group_by_t::quarters },
+    { ORCUS_ASCII("range"),    pivot_cache_group_by_t::range },
+    { ORCUS_ASCII("seconds"),  pivot_cache_group_by_t::seconds },
+    { ORCUS_ASCII("years"),    pivot_cache_group_by_t::years },
+};
+
+const pc_group_by_map_type& get_pc_group_by_map()
+{
+    static pc_group_by_map_type pc_group_by_map(
+        pc_group_by_entries,
+        ORCUS_N_ELEMENTS(pc_group_by_entries),
+        pivot_cache_group_by_t::unknown);
+
+    return pc_group_by_map;
+}
+
 }
 
 col_width_t get_default_column_width()
@@ -58,6 +82,11 @@ row_height_t get_default_row_height()
 totals_row_function_t to_totals_row_function_enum(const char* p, size_t n)
 {
     return get_trf_map().find(p, n);
+}
+
+pivot_cache_group_by_t to_pivot_cache_group_by_enum(const char* p, size_t n)
+{
+    return get_pc_group_by_map().find(p, n);
 }
 
 }}

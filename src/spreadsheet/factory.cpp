@@ -27,7 +27,7 @@ namespace orcus { namespace spreadsheet {
 
 class import_pc_field_group : public iface::import_pivot_cache_field_group
 {
-    using numeric_range_type = pivot_cache_group_data_t::numeric_range_type;
+    using range_grouping_type = pivot_cache_group_data_t::range_grouping_type;
 
     document& m_doc;
     pivot_cache_field_t& m_parent_field;
@@ -40,12 +40,12 @@ private:
         return m_doc.get_string_pool().intern(p, n).first;
     }
 
-    numeric_range_type& get_numeric_range()
+    range_grouping_type& get_range_grouping()
     {
-        if (!m_data->numeric_range)
-            m_data->numeric_range = numeric_range_type();
+        if (!m_data->range_grouping)
+            m_data->range_grouping = range_grouping_type();
 
-        return *m_data->numeric_range;
+        return *m_data->range_grouping;
     }
 
 public:
@@ -81,29 +81,34 @@ public:
         m_data->items.push_back(std::move(m_current_field_item));
     }
 
+    virtual void set_range_grouping_type(pivot_cache_group_by_t group_by) override
+    {
+        get_range_grouping().group_by = group_by;
+    }
+
     virtual void set_auto_start(bool b) override
     {
-        get_numeric_range().auto_start = b;
+        get_range_grouping().auto_start = b;
     }
 
     virtual void set_auto_end(bool b) override
     {
-        get_numeric_range().auto_end = b;
+        get_range_grouping().auto_end = b;
     }
 
     virtual void set_start_number(double v) override
     {
-        get_numeric_range().start = v;
+        get_range_grouping().start = v;
     }
 
     virtual void set_end_number(double v) override
     {
-        get_numeric_range().end = v;
+        get_range_grouping().end = v;
     }
 
     virtual void set_group_interval(double v) override
     {
-        get_numeric_range().interval = v;
+        get_range_grouping().interval = v;
     }
 
     virtual void commit() override

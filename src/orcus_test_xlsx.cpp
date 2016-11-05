@@ -509,12 +509,13 @@ void test_xlsx_pivot_group_by_numbers()
     assert(grp.items == expected);
 
     // Check the numeric range properties.
-    assert(grp.numeric_range);
-    assert(!grp.numeric_range->auto_start);
-    assert(!grp.numeric_range->auto_end);
-    assert(grp.numeric_range->start == 0.0);
-    assert(grp.numeric_range->end == 10.0);
-    assert(grp.numeric_range->interval == 2.0);
+    assert(grp.range_grouping);
+    assert(grp.range_grouping->group_by == pivot_cache_group_by_t::range);
+    assert(!grp.range_grouping->auto_start);
+    assert(!grp.range_grouping->auto_end);
+    assert(grp.range_grouping->start == 0.0);
+    assert(grp.range_grouping->end == 10.0);
+    assert(grp.range_grouping->interval == 2.0);
 
     // Test the 2nd field. This field is purely a numeric field with no
     // discrete items.
@@ -602,8 +603,8 @@ void test_xlsx_pivot_group_by_dates()
 
     assert(gd.items == expected);
 
-    // TODO : fix this.
-//  assert(gd.group_by == pivot_cache_group_data_t::group_by_type::months);
+    assert(gd.range_grouping);
+    assert(gd.range_grouping->group_by == pivot_cache_group_by_t::months);
 }
 
 }

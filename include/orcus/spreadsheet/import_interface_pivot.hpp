@@ -92,6 +92,8 @@ public:
 
     virtual void commit_field_item() = 0;
 
+    virtual void set_range_grouping_type(pivot_cache_group_by_t group_by) = 0;
+
     virtual void set_auto_start(bool b) = 0;
 
     virtual void set_auto_end(bool b) = 0;

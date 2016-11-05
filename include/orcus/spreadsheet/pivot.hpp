@@ -11,6 +11,7 @@
 #include "orcus/env.hpp"
 #include "orcus/pstring.hpp"
 #include "orcus/types.hpp"
+#include "orcus/spreadsheet/types.hpp"
 
 #include <memory>
 #include <vector>
@@ -97,13 +98,10 @@ using pivot_cache_items_t = std::vector<pivot_cache_item_t>;
  */
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_data_t
 {
-    enum class group_by_type
+    struct ORCUS_SPM_DLLPUBLIC range_grouping_type
     {
-        range, seconds, minutes, hours, days, months, quarters, years
-    };
+        pivot_cache_group_by_t group_by = pivot_cache_group_by_t::range;
 
-    struct ORCUS_SPM_DLLPUBLIC numeric_range_type
-    {
         bool auto_start = true;
         bool auto_end   = true;
 
@@ -111,18 +109,17 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_data_t
         double end      = 0.0;
         double interval = 1.0;
 
-        numeric_range_type() = default;
-        numeric_range_type(const numeric_range_type& other) = default;
+        range_grouping_type() = default;
+        range_grouping_type(const range_grouping_type& other) = default;
     };
 
-    group_by_type group_by = group_by_type::range;
 
     /**
      * Mapping of base field member indices to the group field item indices.
      */
     pivot_cache_indices_t base_to_group_indices;
 
-    boost::optional<numeric_range_type> numeric_range;
+    boost::optional<range_grouping_type> range_grouping;
 
     /**
      * Individual items comprising the group.
