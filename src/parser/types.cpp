@@ -43,7 +43,7 @@ xml_token_element_t::xml_token_element_t(xml_token_element_t&& other) :
 
 length_t::length_t() : unit(length_unit_t::unknown), value(0.0) {}
 
-std::string length_t::print() const
+std::string length_t::to_string() const
 {
     std::ostringstream os;
     os << value;

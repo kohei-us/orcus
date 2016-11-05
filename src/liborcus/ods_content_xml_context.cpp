@@ -341,10 +341,10 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
             switch (it->second->family)
             {
                 case style_family_table_column:
-                    cout << "column width: " << it->second->column_data->width.print();
+                    cout << "column width: " << it->second->column_data->width.to_string();
                 break;
                 case style_family_table_row:
-                    cout << "row height: " << it->second->row_data->height.print();
+                    cout << "row height: " << it->second->row_data->height.to_string();
                 break;
                 case style_family_table_cell:
                 {

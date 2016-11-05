@@ -101,7 +101,7 @@ struct ORCUS_DLLPUBLIC length_t
 
     length_t();
 
-    std::string print() const;
+    std::string to_string() const;
 };
 
 struct ORCUS_DLLPUBLIC date_time_t
