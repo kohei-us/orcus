@@ -234,8 +234,8 @@ pivot_cache_field_t::pivot_cache_field_t(const pivot_cache_field_t& other) :
     items(other.items),
     min_value(other.min_value),
     max_value(other.max_value),
-    min_datetime(other.min_datetime),
-    max_datetime(other.max_datetime),
+    min_date(other.min_date),
+    max_date(other.max_date),
     group_data(orcus::make_unique<pivot_cache_group_data_t>(*other.group_data)) {}
 
 pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
@@ -243,8 +243,8 @@ pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
     items(std::move(other.items)),
     min_value(std::move(other.min_value)),
     max_value(std::move(other.max_value)),
-    min_datetime(std::move(other.min_datetime)),
-    max_datetime(std::move(other.max_datetime)),
+    min_date(std::move(other.min_date)),
+    max_date(std::move(other.max_date)),
     group_data(std::move(other.group_data))
 {
     other.name.clear();

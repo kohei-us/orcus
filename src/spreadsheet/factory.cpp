@@ -205,14 +205,14 @@ public:
         m_current_field.max_value = v;
     }
 
-    virtual void set_field_min_datetime(const date_time_t& dt) override
+    virtual void set_field_min_date(const date_time_t& dt) override
     {
-        m_current_field.min_datetime = dt;
+        m_current_field.min_date = dt;
     }
 
-    virtual void set_field_max_datetime(const date_time_t& dt) override
+    virtual void set_field_max_date(const date_time_t& dt) override
     {
-        m_current_field.max_datetime = dt;
+        m_current_field.max_date = dt;
     }
 
     virtual void commit_field() override

@@ -554,10 +554,10 @@ void test_xlsx_pivot_group_by_dates()
     assert(fld->name == "Date");
 
     // Minimum and maximum date values.
-    assert(fld->min_datetime);
-    assert(*fld->min_datetime == date_time_t(2014, 1, 1));
-    assert(fld->max_datetime);
-    assert(*fld->max_datetime == date_time_t(2014, 12, 2));
+    assert(fld->min_date);
+    assert(*fld->min_date == date_time_t(2014, 1, 1));
+    assert(fld->max_date);
+    assert(*fld->max_date == date_time_t(2014, 12, 2));
 
     pivot_cache_items_t expected =
     {

@@ -824,10 +824,10 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
         m_pcache.set_field_max_value(*max_value);
 
     if (min_date)
-        m_pcache.set_field_min_datetime(*min_date);
+        m_pcache.set_field_min_date(*min_date);
 
     if (max_date)
-        m_pcache.set_field_max_datetime(*max_date);
+        m_pcache.set_field_max_date(*max_date);
 
     if (get_config().debug)
     {

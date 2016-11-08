@@ -109,6 +109,9 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_data_t
         double end      = 0.0;
         double interval = 1.0;
 
+        date_time_t start_date;
+        date_time_t end_date;
+
         range_grouping_type() = default;
         range_grouping_type(const range_grouping_type& other) = default;
     };
@@ -149,8 +152,8 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
     boost::optional<double> min_value;
     boost::optional<double> max_value;
 
-    boost::optional<date_time_t> min_datetime;
-    boost::optional<date_time_t> max_datetime;
+    boost::optional<date_time_t> min_date;
+    boost::optional<date_time_t> max_date;
 
     std::unique_ptr<pivot_cache_group_data_t> group_data;
 
