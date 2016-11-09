@@ -102,6 +102,10 @@ public:
 
     virtual void set_end_number(double v) = 0;
 
+    virtual void set_start_date(const date_time_t& dt) = 0;
+
+    virtual void set_end_date(const date_time_t& dt) = 0;
+
     virtual void set_group_interval(double v) = 0;
 
     /**

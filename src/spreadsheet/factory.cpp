@@ -106,6 +106,16 @@ public:
         get_range_grouping().end = v;
     }
 
+    virtual void set_start_date(const date_time_t& dt) override
+    {
+        get_range_grouping().start_date = dt;
+    }
+
+    virtual void set_end_date(const date_time_t& dt) override
+    {
+        get_range_grouping().end_date = dt;
+    }
+
     virtual void set_group_interval(double v) override
     {
         get_range_grouping().interval = v;

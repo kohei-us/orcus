@@ -313,6 +313,9 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             double end = 0.0;
             double interval = 1.0;
 
+            boost::optional<date_time_t> start_date;
+            boost::optional<date_time_t> end_date;
+
             // Default group-by type appears to be 'range'.
             spreadsheet::pivot_cache_group_by_t group_by =
                 spreadsheet::pivot_cache_group_by_t::range;
@@ -340,6 +343,12 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                         case XML_groupInterval:
                             interval = to_double(attr.value);
                             break;
+                        case XML_startDate:
+                            start_date = to_date_time(attr.value);
+                            break;
+                        case XML_endDate:
+                            end_date = to_date_time(attr.value);
+                            break;
                         case XML_groupBy:
                             group_by = spreadsheet::to_pivot_cache_group_by_enum(
                                 attr.value.get(), attr.value.size());
@@ -358,6 +367,11 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             m_pcache_field_group->set_end_number(end);
             m_pcache_field_group->set_group_interval(interval);
 
+            if (start_date)
+                m_pcache_field_group->set_start_date(*start_date);
+            if (end_date)
+                m_pcache_field_group->set_end_date(*end_date);
+
             if (get_config().debug)
             {
                 cout << "  auto start: " << auto_start << endl;
@@ -365,6 +379,11 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 cout << "  start: " << start << endl;
                 cout << "  end: " << end << endl;
                 cout << "  interval: " << interval << endl;
+
+                if (start_date)
+                    cout << "start date: " << *start_date << endl;
+                if (end_date)
+                    cout << "end date: " << *end_date << endl;
             }
 
             break;

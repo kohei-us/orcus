@@ -605,6 +605,9 @@ void test_xlsx_pivot_group_by_dates()
 
     assert(gd.range_grouping);
     assert(gd.range_grouping->group_by == pivot_cache_group_by_t::months);
+
+    assert(gd.range_grouping->start_date == date_time_t(2014,1,1));
+    assert(gd.range_grouping->end_date == date_time_t(2014,12,2));
 }
 
 }
