@@ -608,6 +608,23 @@ void test_xlsx_pivot_group_by_dates()
 
     assert(gd.range_grouping->start_date == date_time_t(2014,1,1));
     assert(gd.range_grouping->end_date == date_time_t(2014,12,2));
+
+    // The 2nd field is a simple numeric field.
+    fld = cache->get_field(1);
+    assert(fld);
+    assert(fld->name == "Value");
+    assert(fld->min_value == 1.0);
+    assert(fld->max_value == 12.0);
+
+    // The 3rd field is an extra group field.
+    fld = cache->get_field(2);
+    assert(fld);
+    assert(fld->name == "Quarters");
+    assert(fld->group_data);
+    const pivot_cache_group_data_t& gd_qtrs = *fld->group_data;
+    assert(gd_qtrs.base_field == 0);
+
+    // TODO : continue on.
 }
 
 }
