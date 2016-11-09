@@ -365,7 +365,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             m_pcache_field_group->set_auto_end(auto_end);
             m_pcache_field_group->set_start_number(start);
             m_pcache_field_group->set_end_number(end);
-            m_pcache_field_group->set_group_interval(interval);
+            m_pcache_field_group->set_interval(interval);
 
             if (start_date)
                 m_pcache_field_group->set_start_date(*start_date);

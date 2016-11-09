@@ -116,7 +116,7 @@ public:
         get_range_grouping().end_date = dt;
     }
 
-    virtual void set_group_interval(double v) override
+    virtual void set_interval(double v) override
     {
         get_range_grouping().interval = v;
     }

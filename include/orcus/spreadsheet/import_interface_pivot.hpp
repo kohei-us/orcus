@@ -76,7 +76,7 @@ public:
     virtual ~import_pivot_cache_field_group();
 
     /**
-     * Establish a linkage between a base item to a gruop item.
+     * Establish a linkage between a base item to a group item.
      *
      * The index to corresponding base item is inferred from the order of this
      * method being called; the first call to this method implies a base item
@@ -106,7 +106,7 @@ public:
 
     virtual void set_end_date(const date_time_t& dt) = 0;
 
-    virtual void set_group_interval(double v) = 0;
+    virtual void set_interval(double v) = 0;
 
     /**
      * Commit the current field group data to the parent field.
