@@ -48,7 +48,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
     {
         struct
         {
-            // This must point to an interned string instance. May to be
+            // This must point to an interned string instance. May not be
             // null-terminated.
             const char* p;
 
