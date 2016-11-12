@@ -624,7 +624,22 @@ void test_xlsx_pivot_group_by_dates()
     const pivot_cache_group_data_t& gd_qtrs = *fld->group_data;
     assert(gd_qtrs.base_field == 0);
 
-    // TODO : continue on.
+    assert(gd_qtrs.range_grouping);
+    assert(gd_qtrs.range_grouping->group_by == pivot_cache_group_by_t::quarters);
+    assert(gd_qtrs.range_grouping->start_date == date_time_t(2014,1,1));
+    assert(gd_qtrs.range_grouping->end_date == date_time_t(2014,12,2));
+
+    expected =
+    {
+        pivot_cache_item_t(ORCUS_ASCII("<1/1/2014")),
+        pivot_cache_item_t(ORCUS_ASCII("Qtr1")),
+        pivot_cache_item_t(ORCUS_ASCII("Qtr2")),
+        pivot_cache_item_t(ORCUS_ASCII("Qtr3")),
+        pivot_cache_item_t(ORCUS_ASCII("Qtr4")),
+        pivot_cache_item_t(ORCUS_ASCII(">12/2/2014")),
+    };
+
+    assert(gd_qtrs.items == expected);
 }
 
 }
