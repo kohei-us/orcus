@@ -44,40 +44,6 @@ const pc_source_type& get_pc_source_map()
     return source_map;
 }
 
-class cache_def_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_ooxml_xlsx)
-        {
-            switch (attr.name)
-            {
-                case XML_refreshedBy:
-                    cout << "refreshed by: " << attr.value << endl;
-                break;
-                case XML_recordCount:
-                    cout << "record count: " << attr.value << endl;
-                break;
-                default:
-                    ;
-            }
-        }
-        else if (attr.ns == NS_ooxml_r)
-        {
-            switch (attr.name)
-            {
-                case XML_id:
-                    // relation id for its cache record.
-                    cout << "rid: " << attr.value << endl;
-                break;
-                default:
-                    ;
-            }
-        }
-    }
-};
-
 }
 
 xlsx_pivot_cache_def_context::xlsx_pivot_cache_def_context(
@@ -110,18 +76,60 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         case XML_pivotCacheDefinition:
         {
             xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
+
+            pstring refreshed_by;
+            pstring rid;
+            long record_count = -1;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns == NS_ooxml_xlsx)
+                    {
+                        switch (attr.name)
+                        {
+                            case XML_refreshedBy:
+                                refreshed_by = attr.value;
+                            break;
+                            case XML_recordCount:
+                                record_count = to_long(attr.value);
+                            break;
+                            default:
+                                ;
+                        }
+                    }
+                    else if (attr.ns == NS_ooxml_r)
+                    {
+                        switch (attr.name)
+                        {
+                            case XML_id:
+                                // relation id for its cache record.
+                                rid = attr.value;
+                            break;
+                            default:
+                                ;
+                        }
+                    }
+                }
+            );
+
             if (get_config().debug)
             {
                 cout << "---" << endl;
                 cout << "pivot cache definition" << endl;
+                cout << "refreshed by: " << refreshed_by << endl;
+                cout << "record count: " << record_count << endl;
+                cout << "rid: " << rid << endl;
             }
-            cache_def_attr_parser func;
-            for_each(attrs.begin(), attrs.end(), func);
+
             break;
         }
         case XML_cacheSource:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheDefinition);
+
+            pstring source_type;
+
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
@@ -134,13 +142,17 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                             m_source_type =
                                 get_pc_source_map().find(attr.value.get(), attr.value.size());
 
-                            cout << "type: " << attr.value << endl;
+                            source_type = attr.value;
                             break;
                         default:
                             ;
                     }
                 }
             );
+
+            if (get_config().debug)
+                cout << "type: " << source_type << endl;
+
             break;
         }
         case XML_worksheetSource:
@@ -902,31 +914,46 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         {
             xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
             long count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
-            cout << "---" << endl;
-            cout << "pivot cache record (count: " << count << ")" << endl;
+            if (get_config().debug)
+            {
+                cout << "---" << endl;
+                cout << "pivot cache record (count: " << count << ")" << endl;
+            }
         }
         break;
         case XML_r:
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheRecords);
-            cout << "* record" << endl;
+            if (get_config().debug)
+            {
+                cout << "* record" << endl;
+            }
         break;
         case XML_s:
             // direct string item rather than an index to pivot cache field?
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
-            cout << "  * s = '" << single_attr_getter::get(attrs, get_session_context().m_string_pool, NS_ooxml_xlsx, XML_v) << "'" << endl;
+            if (get_config().debug)
+            {
+                cout << "  * s = '" << single_attr_getter::get(attrs, get_session_context().m_string_pool, NS_ooxml_xlsx, XML_v) << "'" << endl;
+            }
         break;
         case XML_x:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
             long v = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
-            cout << "  * x = " << v << endl;
+            if (get_config().debug)
+            {
+                cout << "  * x = " << v << endl;
+            }
         }
         break;
         case XML_n:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
             double val = single_double_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
-            cout << "  * n = " << val << endl;
+            if (get_config().debug)
+            {
+                cout << "  * n = " << val << endl;
+            }
         }
         break;
         default:
