@@ -30,19 +30,62 @@ class ORCUS_DLLPUBLIC import_pivot_cache_definition
 public:
     virtual ~import_pivot_cache_definition();
 
+    /**
+     * Specify that the source data of this pivot cache is located on a local
+     * worksheet.
+     *
+     * @param ref pointer to the char array that contains the range string
+     *            specifying the source range.
+     *
+     * @param n_ref size of the aforementioned char array.
+     * @param sheet_name pointer to the char array that contains the name of
+     *                   the worksheet where the source data is located.
+     * @param n_sheet_name size of the aforementioned char array.
+     */
     virtual void set_worksheet_source(
         const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name) = 0;
 
+    /**
+     * Set the total number of fields present in this pivot cache.
+     *
+     * @param n total number of fields in this pivot cache.
+     */
     virtual void set_field_count(size_t n) = 0;
 
+    /**
+     * Set the name of the field in the current field buffer.
+     *
+     * @param p pointer to the char array that contains the field name.
+     * @param n size of the aforementioned char array.
+     */
     virtual void set_field_name(const char* p, size_t n) = 0;
 
+    /**
+     * Set the lowest value of the field in the current field buffer.
+     *
+     * @param v lowest value of the field.
+     */
     virtual void set_field_min_value(double v) = 0;
 
+    /**
+     * Set the highest value of the field in the current field buffer.
+     *
+     * @param v highest value of the field.
+     */
     virtual void set_field_max_value(double v) = 0;
 
+    /**
+     * Set the lowest date value of the field in the current field buffer.
+     *
+     * @param dt lowest date value of the field.
+     */
     virtual void set_field_min_date(const date_time_t& dt) = 0;
 
+    /**
+     * Set the highest date value of the field in the current field buffer.
+     *
+     * @param dt highest date value of the field.
+     */
     virtual void set_field_max_date(const date_time_t& dt) = 0;
 
     /**
@@ -57,16 +100,42 @@ public:
      */
     virtual import_pivot_cache_field_group* create_field_group(size_t base_index) = 0;
 
+    /**
+     * Commit the field in the current field buffer to the pivot cache model.
+     */
     virtual void commit_field() = 0;
 
+    /**
+     * Set a string value to the current field item buffer.
+     *
+     * @param p pointer to the char array that contains the string value.
+     * @param n size of the aforementioned char array.
+     */
     virtual void set_field_item_string(const char* p, size_t n) = 0;
 
+    /**
+     * Set a numeric value to the current field item buffer.
+     *
+     * @param v numeric value.
+     */
     virtual void set_field_item_numeric(double v) = 0;
 
+    /**
+     * Set a date-time value to the current field item buffer.
+     *
+     * @param dt date-time value.
+     */
     virtual void set_field_item_datetime(const date_time_t& dt) = 0;
 
+    /**
+     * Commit the field item in current field item buffer to the current field
+     * model.
+     */
     virtual void commit_field_item() = 0;
 
+    /**
+     * Commit the current pivot cache model to the document model.
+     */
     virtual void commit() = 0;
 };
 
@@ -154,14 +223,52 @@ public:
      */
     virtual void set_range_auto_end(bool b) = 0;
 
+    /**
+     * Set the start number of the current range group field.
+     *
+     * The current group field implicitly becomes a range group field when
+     * this method is called.
+     *
+     * @param v start number of the current range group field.
+     */
     virtual void set_range_start_number(double v) = 0;
 
+    /**
+     * Set the end number of the current range group field.
+     *
+     * The current group field implicitly becomes a range group field when
+     * this method is called.
+     *
+     * @param v end number of the current range group field.
+     */
     virtual void set_range_end_number(double v) = 0;
 
+    /**
+     * Set the start date of the current range group field.
+     *
+     * The current group field implicitly becomes a range group field when
+     * this method is called.
+     *
+     * @param dt start date of the current range group field.
+     */
     virtual void set_range_start_date(const date_time_t& dt) = 0;
 
+    /**
+     * Set the end date of the current range group field.
+     *
+     * The current group field implicitly becomes a range group field when
+     * this method is called.
+     *
+     * @param dt end date of the current range group field.
+     */
     virtual void set_range_end_date(const date_time_t& dt) = 0;
 
+    /**
+     * Set the interval of the current range group field.  If the current
+     * range is a date range, the value represents the number of days.
+     *
+     * @param v interval of the current range group field.
+     */
     virtual void set_range_interval(double v) = 0;
 
     /**
