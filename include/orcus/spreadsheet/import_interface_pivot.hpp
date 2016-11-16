@@ -70,6 +70,9 @@ public:
     virtual void commit() = 0;
 };
 
+/**
+ * Interface for importing group field settings in a pivot cache.
+ */
 class ORCUS_DLLPUBLIC import_pivot_cache_field_group
 {
 public:
@@ -82,31 +85,84 @@ public:
      * method being called; the first call to this method implies a base item
      * index of 0, the second call implies an index of 1, and so on.
      *
+     * This method is called only for a non-range group field; a group field
+     * where parent-to-child item relationships are manually defined.
+     *
      * @param group_item_index 0-based index for the group item.
      */
     virtual void link_base_to_group_items(size_t group_item_index) = 0;
 
+    /**
+     * Set an individual field item value that is of string type to the
+     * current internal buffer.
+     *
+     * This method can be called either for a range group field or a non-range
+     * one.
+     *
+     * @param p pointer to a char array.
+     * @param n size of the array.
+     */
     virtual void set_field_item_string(const char* p, size_t n) = 0;
 
+    /**
+     * Set an individual field item value that is of numeric type to the
+     * current internal buffer.
+     *
+     * This method can be called either for a range group field or a non-range
+     * one.
+     *
+     * @param v field item value.
+     */
     virtual void set_field_item_numeric(double v) = 0;
 
+    /**
+     * Commit the current internal field item buffer to the group.
+     */
     virtual void commit_field_item() = 0;
 
+    /**
+     * Set the range grouping type.
+     *
+     * The current group field implicitly becomes a range group field when
+     * this method is called.
+     *
+     * @param group_by type of range grouping.
+     */
     virtual void set_range_grouping_type(pivot_cache_group_by_t group_by) = 0;
 
-    virtual void set_auto_start(bool b) = 0;
+    /**
+     * Set whether the current range group field has an automatic start
+     * position.
+     *
+     * The current group field implicitly becomes a range group field when
+     * this method is called.
+     *
+     * @param b whether or not the current range group field has an automatic
+     *          start position.
+     */
+    virtual void set_range_auto_start(bool b) = 0;
 
-    virtual void set_auto_end(bool b) = 0;
+    /**
+     * Set whether the current range group field has an automatic end
+     * position.
+     *
+     * The current group field implicitly becomes a range group field when
+     * this method is called.
+     *
+     * @param b whether or not the current range group field has an automatic
+     *          end position.
+     */
+    virtual void set_range_auto_end(bool b) = 0;
 
-    virtual void set_start_number(double v) = 0;
+    virtual void set_range_start_number(double v) = 0;
 
-    virtual void set_end_number(double v) = 0;
+    virtual void set_range_end_number(double v) = 0;
 
-    virtual void set_start_date(const date_time_t& dt) = 0;
+    virtual void set_range_start_date(const date_time_t& dt) = 0;
 
-    virtual void set_end_date(const date_time_t& dt) = 0;
+    virtual void set_range_end_date(const date_time_t& dt) = 0;
 
-    virtual void set_interval(double v) = 0;
+    virtual void set_range_interval(double v) = 0;
 
     /**
      * Commit the current field group data to the parent field.

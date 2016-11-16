@@ -86,37 +86,37 @@ public:
         get_range_grouping().group_by = group_by;
     }
 
-    virtual void set_auto_start(bool b) override
+    virtual void set_range_auto_start(bool b) override
     {
         get_range_grouping().auto_start = b;
     }
 
-    virtual void set_auto_end(bool b) override
+    virtual void set_range_auto_end(bool b) override
     {
         get_range_grouping().auto_end = b;
     }
 
-    virtual void set_start_number(double v) override
+    virtual void set_range_start_number(double v) override
     {
         get_range_grouping().start = v;
     }
 
-    virtual void set_end_number(double v) override
+    virtual void set_range_end_number(double v) override
     {
         get_range_grouping().end = v;
     }
 
-    virtual void set_start_date(const date_time_t& dt) override
+    virtual void set_range_start_date(const date_time_t& dt) override
     {
         get_range_grouping().start_date = dt;
     }
 
-    virtual void set_end_date(const date_time_t& dt) override
+    virtual void set_range_end_date(const date_time_t& dt) override
     {
         get_range_grouping().end_date = dt;
     }
 
-    virtual void set_interval(double v) override
+    virtual void set_range_interval(double v) override
     {
         get_range_grouping().interval = v;
     }
