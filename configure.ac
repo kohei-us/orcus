@@ -8,14 +8,14 @@ AC_PREREQ([2.65])
 # ===================
 m4_define([orcus_major_version], [0])
 m4_define([orcus_minor_version], [12])
-m4_define([orcus_micro_version], [1])
+m4_define([orcus_micro_version], [99])
 m4_define([orcus_version], [orcus_major_version.orcus_minor_version.orcus_micro_version])
 
 # ===============
 # API information
 # ===============
 m4_define([orcus_major_api_version], [0])
-m4_define([orcus_minor_api_version], [12])
+m4_define([orcus_minor_api_version], [13])
 m4_define([orcus_api_version], [orcus_major_version.orcus_minor_api_version])
 
 # =============
