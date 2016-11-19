@@ -921,22 +921,21 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
             }
         }
         break;
-        case XML_r:
+        case XML_r: // record
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheRecords);
             if (get_config().debug)
             {
                 cout << "* record" << endl;
             }
         break;
-        case XML_s:
-            // direct string item rather than an index to pivot cache field?
+        case XML_s: // character value
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
             if (get_config().debug)
             {
                 cout << "  * s = '" << single_attr_getter::get(attrs, get_session_context().m_string_pool, NS_ooxml_xlsx, XML_v) << "'" << endl;
             }
         break;
-        case XML_x:
+        case XML_x: // shared item index
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
             long v = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
@@ -946,7 +945,7 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
             }
         }
         break;
-        case XML_n:
+        case XML_n: // numeric
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
             double val = single_double_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
@@ -956,6 +955,10 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
             }
         }
         break;
+        case XML_b: // boolean
+        case XML_d: // date time
+        case XML_e: // error value
+        case XML_m: // no value
         default:
             warn_unhandled();
     }

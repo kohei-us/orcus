@@ -277,6 +277,17 @@ public:
     virtual void commit() = 0;
 };
 
+/**
+ * Interface for importing pivot cache records.
+ */
+class ORCUS_DLLPUBLIC import_pivot_cache_records
+{
+public:
+    virtual ~import_pivot_cache_records();
+
+
+};
+
 }}}
 
 #endif
