@@ -740,7 +740,7 @@ void xlsx_pivot_cache_def_context::start_element_d(
             }
 
             if (m_field_item_used)
-                m_pcache.set_field_item_datetime(dt);
+                m_pcache.set_field_item_date_time(dt);
 
             break;
         }

@@ -125,7 +125,7 @@ public:
      *
      * @param dt date-time value.
      */
-    virtual void set_field_item_datetime(const date_time_t& dt) = 0;
+    virtual void set_field_item_date_time(const date_time_t& dt) = 0;
 
     /**
      * Commit the field item in current field item buffer to the current field
