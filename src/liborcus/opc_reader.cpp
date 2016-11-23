@@ -180,7 +180,7 @@ void opc_reader::check_relation_part(
             {
                 opc_rel_extras_t::map_type::iterator it = extras->data.find(v.rid);
                 if (it != extras->data.end())
-                    data = it->second;
+                    data = it->second.get();
             }
             read_part(v.target, v.type, data);
         }

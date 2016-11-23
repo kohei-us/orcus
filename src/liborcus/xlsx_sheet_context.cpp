@@ -499,7 +499,8 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
 
             unique_ptr<xlsx_rel_table_info> p(new xlsx_rel_table_info);
             p->sheet_interface = mp_sheet;
-            m_rel_extras.data.insert(opc_rel_extras_t::map_type::value_type(rid, p.release()));
+            m_rel_extras.data.insert(
+                opc_rel_extras_t::map_type::value_type(rid, std::move(p)));
         }
         break;
         default:

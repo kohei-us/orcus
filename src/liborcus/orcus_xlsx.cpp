@@ -324,15 +324,19 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
     if (get_config().debug)
     {
         for_each(workbook_data.data.begin(), workbook_data.data.end(),
-            [](const std::pair<pstring, const opc_rel_extra*>& v)
+            [](const opc_rel_extras_t::map_type::value_type& v)
             {
-                const xlsx_rel_sheet_info* info = dynamic_cast<const xlsx_rel_sheet_info*>(v.second);
+                const xlsx_rel_sheet_info* info =
+                    dynamic_cast<const xlsx_rel_sheet_info*>(v.second.get());
+
                 if (info)
                 {
                     cout << "relationship id: " << v.first << "; sheet name: " << info->name << "; sheet id: " << info->id << endl;
                 }
 
-                const xlsx_rel_pivot_cache_info* info_pc = dynamic_cast<const xlsx_rel_pivot_cache_info*>(v.second);
+                const xlsx_rel_pivot_cache_info* info_pc =
+                    dynamic_cast<const xlsx_rel_pivot_cache_info*>(v.second.get());
+
                 if (info_pc)
                 {
                     cout << "relationship id: " << v.first << "; pivot cache id: " << info_pc->id << endl;

@@ -9,17 +9,12 @@
 
 #include "orcus/global.hpp"
 
-#include <algorithm>
-
 namespace orcus {
 
 opc_rel_extra::~opc_rel_extra() {}
 
 opc_rel_extras_t::opc_rel_extras_t() {}
-opc_rel_extras_t::~opc_rel_extras_t()
-{
-    std::for_each(data.begin(), data.end(), map_object_deleter<map_type>());
-}
+opc_rel_extras_t::~opc_rel_extras_t() {}
 
 void opc_rel_extras_t::swap(opc_rel_extras_t& other)
 {
