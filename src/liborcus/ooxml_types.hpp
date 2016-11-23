@@ -57,6 +57,8 @@ struct opc_rel_extras_t
      */
     map_type data;
 
+    opc_rel_extras_t(opc_rel_extras_t&& other);
+
     opc_rel_extras_t(const opc_rel_extras_t&) = delete;
     opc_rel_extras_t& operator=(const opc_rel_extras_t&) = delete;
 

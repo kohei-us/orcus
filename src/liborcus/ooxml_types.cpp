@@ -16,6 +16,9 @@ opc_rel_extra::~opc_rel_extra() {}
 opc_rel_extras_t::opc_rel_extras_t() {}
 opc_rel_extras_t::~opc_rel_extras_t() {}
 
+opc_rel_extras_t::opc_rel_extras_t(opc_rel_extras_t&& other) :
+    data(std::move(other.data)) {}
+
 void opc_rel_extras_t::swap(opc_rel_extras_t& other)
 {
     data.swap(other.data);
