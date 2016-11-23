@@ -82,7 +82,9 @@ public:
         }
         else if (type == SCH_od_rels_pivot_cache_rec)
         {
-            m_parent.read_pivot_cache_rec(dir_path, file_name);
+            m_parent.read_pivot_cache_rec(
+                dir_path, file_name,
+                static_cast<const xlsx_rel_pivot_cache_record_info*>(data));
             return true;
         }
         else if (type == SCH_od_rels_pivot_table)
@@ -559,7 +561,7 @@ void orcus_xlsx::read_pivot_cache_def(
         return;
 
     auto handler = orcus::make_unique<xlsx_pivot_cache_def_xml_handler>(
-        mp_impl->m_cxt, ooxml_tokens, *pcache);
+        mp_impl->m_cxt, ooxml_tokens, *pcache, data->id);
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
@@ -567,17 +569,31 @@ void orcus_xlsx::read_pivot_cache_def(
     parser.set_handler(handler.get());
     parser.parse();
 
+    opc_rel_extras_t pcache_info = handler->pop_rel_extras();
+
     handler.reset();
-    mp_impl->m_opc_reader.check_relation_part(file_name, nullptr);
+    mp_impl->m_opc_reader.check_relation_part(file_name, &pcache_info);
 }
 
-void orcus_xlsx::read_pivot_cache_rec(const std::string& dir_path, const std::string& file_name)
+void orcus_xlsx::read_pivot_cache_rec(
+    const std::string& dir_path, const std::string& file_name,
+    const xlsx_rel_pivot_cache_record_info* data)
 {
+    if (!data)
+    {
+        if (get_config().debug)
+        {
+            cout << "---" << endl;
+            cout << "required pivot cache record relation info was not present." << endl;
+        }
+        return;
+    }
+
     string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
         cout << "---" << endl;
-        cout << "read_pivot_cache_rec: file path = " << filepath << endl;
+        cout << "read_pivot_cache_rec: file path = " << filepath << "; cache id = " << data->id << endl;
     }
 
     vector<unsigned char> buffer;

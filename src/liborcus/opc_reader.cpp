@@ -178,8 +178,10 @@ void opc_reader::check_relation_part(
             opc_rel_extra* data = nullptr;
             if (extras)
             {
+                // See if there is an extra data associated with this relation ID.
                 opc_rel_extras_t::map_type::iterator it = extras->data.find(v.rid);
                 if (it != extras->data.end())
+                    // There is one !
                     data = it->second.get();
             }
             read_part(v.target, v.type, data);

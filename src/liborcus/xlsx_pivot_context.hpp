@@ -9,6 +9,8 @@
 #define ORCUS_XLSX_PIVOT_CONTEXT_HPP
 
 #include "xml_context_base.hpp"
+#include "ooxml_types.hpp"
+#include "orcus/spreadsheet/types.hpp"
 
 namespace orcus {
 
@@ -36,15 +38,18 @@ public:
 
 private:
     spreadsheet::iface::import_pivot_cache_definition& m_pcache;
-
+    spreadsheet::pivot_cache_id_t m_pcache_id;
     spreadsheet::iface::import_pivot_cache_field_group* m_pcache_field_group = nullptr;
     source_type m_source_type = source_type::unknown;
     bool m_field_item_used = true;
 
+    opc_rel_extras_t m_pcache_info;
+
 public:
     xlsx_pivot_cache_def_context(
         session_context& cxt, const tokens& tokens,
-        spreadsheet::iface::import_pivot_cache_definition& pcache);
+        spreadsheet::iface::import_pivot_cache_definition& pcache,
+        spreadsheet::pivot_cache_id_t pcache_id);
 
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
@@ -52,6 +57,8 @@ public:
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs);
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
     virtual void characters(const pstring& str, bool transient);
+
+    opc_rel_extras_t pop_rel_extras();
 
 private:
     void start_element_s(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs);

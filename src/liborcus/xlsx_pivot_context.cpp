@@ -10,6 +10,7 @@
 #include "ooxml_token_constants.hpp"
 #include "xml_context_global.hpp"
 #include "session_context.hpp"
+#include "xlsx_types.hpp"
 
 #include "orcus/measurement.hpp"
 #include "orcus/spreadsheet/import_interface_pivot.hpp"
@@ -48,8 +49,9 @@ const pc_source_type& get_pc_source_map()
 
 xlsx_pivot_cache_def_context::xlsx_pivot_cache_def_context(
     session_context& cxt, const tokens& tokens,
-    spreadsheet::iface::import_pivot_cache_definition& pcache) :
-    xml_context_base(cxt, tokens), m_pcache(pcache) {}
+    spreadsheet::iface::import_pivot_cache_definition& pcache,
+    spreadsheet::pivot_cache_id_t pcache_id) :
+    xml_context_base(cxt, tokens), m_pcache(pcache), m_pcache_id(pcache_id) {}
 
 bool xlsx_pivot_cache_def_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
 {
@@ -120,6 +122,17 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 cout << "refreshed by: " << refreshed_by << endl;
                 cout << "record count: " << record_count << endl;
                 cout << "rid: " << rid << endl;
+            }
+
+            if (!rid.empty())
+            {
+                // The rid string here must be persistent beyond the current
+                // context.
+                rid = get_session_context().m_string_pool.intern(rid).first;
+
+                m_pcache_info.data.insert(
+                    opc_rel_extras_t::map_type::value_type(
+                        rid, orcus::make_unique<xlsx_rel_pivot_cache_record_info>(m_pcache_id)));
             }
 
             break;
@@ -533,6 +546,11 @@ bool xlsx_pivot_cache_def_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void xlsx_pivot_cache_def_context::characters(const pstring& /*str*/, bool /*transient*/)
 {
+}
+
+opc_rel_extras_t xlsx_pivot_cache_def_context::pop_rel_extras()
+{
+    return std::move(m_pcache_info);
 }
 
 void xlsx_pivot_cache_def_context::start_element_s(

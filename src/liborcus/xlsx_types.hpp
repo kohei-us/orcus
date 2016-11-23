@@ -26,7 +26,7 @@ struct xlsx_rel_sheet_info : public opc_rel_extra
 
     xlsx_rel_sheet_info() : id(0) {}
 
-    virtual ~xlsx_rel_sheet_info() {}
+    virtual ~xlsx_rel_sheet_info() override {}
 };
 
 struct xlsx_rel_pivot_cache_info : public opc_rel_extra
@@ -35,7 +35,19 @@ struct xlsx_rel_pivot_cache_info : public opc_rel_extra
 
     xlsx_rel_pivot_cache_info(spreadsheet::pivot_cache_id_t _id) : id(_id) {}
 
-    virtual ~xlsx_rel_pivot_cache_info() {}
+    virtual ~xlsx_rel_pivot_cache_info() override {}
+};
+
+/**
+ * Data to pass to the pivot cache record handler.
+ */
+struct xlsx_rel_pivot_cache_record_info : public opc_rel_extra
+{
+    spreadsheet::pivot_cache_id_t id;
+
+    xlsx_rel_pivot_cache_record_info(spreadsheet::pivot_cache_id_t _id) : id(_id) {}
+
+    virtual ~xlsx_rel_pivot_cache_record_info() override {}
 };
 
 struct xlsx_rel_table_info : public opc_rel_extra
@@ -44,7 +56,7 @@ struct xlsx_rel_table_info : public opc_rel_extra
 
     xlsx_rel_table_info() : sheet_interface(nullptr) {}
 
-    virtual ~xlsx_rel_table_info() {}
+    virtual ~xlsx_rel_table_info() override {}
 };
 
 enum xlsx_cell_t

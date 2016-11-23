@@ -53,7 +53,10 @@ class xlsx_pivot_cache_def_xml_handler : public xml_stream_handler
 public:
     xlsx_pivot_cache_def_xml_handler(
         session_context& cxt, const tokens& tokens,
-        spreadsheet::iface::import_pivot_cache_definition& pcache);
+        spreadsheet::iface::import_pivot_cache_definition& pcache,
+        spreadsheet::pivot_cache_id_t pcache_id);
+
+    opc_rel_extras_t pop_rel_extras();
 };
 
 class xlsx_pivot_cache_rec_xml_handler : public xml_stream_handler

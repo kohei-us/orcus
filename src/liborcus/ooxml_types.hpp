@@ -40,7 +40,8 @@ struct opc_rel_t
 };
 
 /**
- * Used only to allow custom data associated with a relationship.
+ * Used as a base struct only to allow storage of custom data associated
+ * with a relationship.
  */
 struct opc_rel_extra
 {

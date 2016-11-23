@@ -43,8 +43,17 @@ xlsx_table_xml_handler::xlsx_table_xml_handler(
 
 xlsx_pivot_cache_def_xml_handler::xlsx_pivot_cache_def_xml_handler(
     session_context& cxt, const tokens& tokens,
-    spreadsheet::iface::import_pivot_cache_definition& pcache) :
-    xml_stream_handler(new xlsx_pivot_cache_def_context(cxt, tokens, pcache)) {}
+    spreadsheet::iface::import_pivot_cache_definition& pcache,
+    spreadsheet::pivot_cache_id_t pcache_id) :
+    xml_stream_handler(new xlsx_pivot_cache_def_context(cxt, tokens, pcache, pcache_id)) {}
+
+opc_rel_extras_t xlsx_pivot_cache_def_xml_handler::pop_rel_extras()
+{
+    xlsx_pivot_cache_def_context& cxt =
+        static_cast<xlsx_pivot_cache_def_context&>(get_root_context());
+
+    return cxt.pop_rel_extras();
+}
 
 xlsx_pivot_cache_rec_xml_handler::xlsx_pivot_cache_rec_xml_handler(
     session_context& cxt, const tokens& tokens) :
