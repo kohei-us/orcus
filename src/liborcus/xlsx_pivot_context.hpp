@@ -18,6 +18,7 @@ namespace spreadsheet { namespace iface {
 
 class import_pivot_cache_definition;
 class import_pivot_cache_field_group;
+class import_pivot_cache_records;
 
 }}
 
@@ -79,8 +80,12 @@ private:
  */
 class xlsx_pivot_cache_rec_context : public xml_context_base
 {
+    spreadsheet::iface::import_pivot_cache_records& m_pc_records;
+
 public:
-    xlsx_pivot_cache_rec_context(session_context& cxt, const tokens& tokens);
+    xlsx_pivot_cache_rec_context(
+        session_context& cxt, const tokens& tokens,
+        spreadsheet::iface::import_pivot_cache_records& pc_records);
 
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);

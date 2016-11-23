@@ -56,8 +56,9 @@ opc_rel_extras_t xlsx_pivot_cache_def_xml_handler::pop_rel_extras()
 }
 
 xlsx_pivot_cache_rec_xml_handler::xlsx_pivot_cache_rec_xml_handler(
-    session_context& cxt, const tokens& tokens) :
-    xml_stream_handler(new xlsx_pivot_cache_rec_context(cxt, tokens)) {}
+    session_context& cxt, const tokens& tokens,
+    spreadsheet::iface::import_pivot_cache_records& pc_records) :
+    xml_stream_handler(new xlsx_pivot_cache_rec_context(cxt, tokens, pc_records)) {}
 
 xlsx_pivot_table_xml_handler::xlsx_pivot_table_xml_handler(
     session_context& cxt, const tokens& tokens) :

@@ -26,6 +26,7 @@ namespace spreadsheet { namespace iface {
 class import_sheet;
 class import_table;
 class import_pivot_cache_definition;
+class import_pivot_cache_records;
 
 }}
 
@@ -62,7 +63,9 @@ public:
 class xlsx_pivot_cache_rec_xml_handler : public xml_stream_handler
 {
 public:
-    xlsx_pivot_cache_rec_xml_handler(session_context& cxt, const tokens& tokens);
+    xlsx_pivot_cache_rec_xml_handler(
+        session_context& cxt, const tokens& tokens,
+        spreadsheet::iface::import_pivot_cache_records& pc_records);
 };
 
 class xlsx_pivot_table_xml_handler : public xml_stream_handler

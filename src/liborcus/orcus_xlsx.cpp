@@ -606,7 +606,14 @@ void orcus_xlsx::read_pivot_cache_rec(
     if (buffer.empty())
         return;
 
-    auto handler = orcus::make_unique<xlsx_pivot_cache_rec_xml_handler>(mp_impl->m_cxt, ooxml_tokens);
+    spreadsheet::iface::import_pivot_cache_records* pcache_records =
+        mp_impl->mp_factory->create_pivot_cache_records(data->id);
+
+    if (!pcache_records)
+        return;
+
+    auto handler = orcus::make_unique<xlsx_pivot_cache_rec_xml_handler>(
+        mp_impl->m_cxt, ooxml_tokens, *pcache_records);
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,

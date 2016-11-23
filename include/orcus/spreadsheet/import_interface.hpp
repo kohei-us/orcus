@@ -21,6 +21,7 @@
 namespace orcus { namespace spreadsheet { namespace iface {
 
 class import_pivot_cache_definition;
+class import_pivot_cache_records;
 
 /**
  * Interface class designed to be derived by the implementor.
@@ -726,6 +727,18 @@ public:
      *         NULL if the client app doesn't support pivot tables.
      */
     virtual import_pivot_cache_definition* create_pivot_cache_definition(
+        orcus::spreadsheet::pivot_cache_id_t cache_id);
+
+    /**
+     * Create an interface for pivot cache records import for a specified
+     * cache ID.
+     *
+     * @param cache_id numeric ID associated with the pivot cache.
+     *
+     * @return pointer to the pivot cache records interface instance.  If may
+     *         return nullptr if the client app doesn't support pivot tables.
+     */
+    virtual import_pivot_cache_records* create_pivot_cache_records(
         orcus::spreadsheet::pivot_cache_id_t cache_id);
 
     /**

@@ -88,6 +88,12 @@ import_pivot_cache_definition* import_factory::create_pivot_cache_definition(
     return nullptr;
 }
 
+import_pivot_cache_records* import_factory::create_pivot_cache_records(
+        orcus::spreadsheet::pivot_cache_id_t cache_id)
+{
+    return nullptr;
+}
+
 export_sheet::~export_sheet() {}
 
 export_factory::~export_factory() {}

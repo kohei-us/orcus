@@ -902,8 +902,11 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
     }
 }
 
-xlsx_pivot_cache_rec_context::xlsx_pivot_cache_rec_context(session_context& cxt, const tokens& tokens) :
-    xml_context_base(cxt, tokens) {}
+xlsx_pivot_cache_rec_context::xlsx_pivot_cache_rec_context(
+    session_context& cxt, const tokens& tokens,
+    spreadsheet::iface::import_pivot_cache_records& pc_records) :
+    xml_context_base(cxt, tokens),
+    m_pc_records(pc_records) {}
 
 bool xlsx_pivot_cache_rec_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
 {
