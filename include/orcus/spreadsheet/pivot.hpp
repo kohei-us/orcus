@@ -203,6 +203,11 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
 
     pivot_cache_items_t items;
 
+    /**
+     * Original values as they appear in the source column.
+     */
+    pivot_cache_record_t record;
+
     boost::optional<double> min_value;
     boost::optional<double> max_value;
 
