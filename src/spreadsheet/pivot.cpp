@@ -41,7 +41,7 @@ pivot_cache_item_t::pivot_cache_item_t(bool _boolean) :
 }
 
 pivot_cache_item_t::pivot_cache_item_t(const date_time_t& _datetime) :
-    type(item_type::datetime)
+    type(item_type::date_time)
 {
     value.datetime.year   = _datetime.year;
     value.datetime.month  = _datetime.month;
@@ -61,7 +61,7 @@ pivot_cache_item_t::pivot_cache_item_t(const pivot_cache_item_t& other) :
         case item_type::boolean:
             value.boolean = other.value.boolean;
             break;
-        case item_type::datetime:
+        case item_type::date_time:
             value.datetime.year   = other.value.datetime.year;
             value.datetime.month  = other.value.datetime.month;
             value.datetime.day    = other.value.datetime.day;
@@ -98,7 +98,7 @@ pivot_cache_item_t::pivot_cache_item_t(pivot_cache_item_t&& other) :
         case item_type::boolean:
             value.boolean = other.value.boolean;
             break;
-        case item_type::datetime:
+        case item_type::date_time:
             value.datetime.year   = other.value.datetime.year;
             value.datetime.month  = other.value.datetime.month;
             value.datetime.day    = other.value.datetime.day;
@@ -136,7 +136,7 @@ bool pivot_cache_item_t::operator< (const pivot_cache_item_t& other) const
             return value.numeric < other.value.numeric;
         case item_type::string:
             return pstring(value.string.p, value.string.n) < pstring(other.value.string.p, other.value.string.n);
-        case item_type::datetime:
+        case item_type::date_time:
             if (value.datetime.year != other.value.datetime.year)
                 return value.datetime.year < other.value.datetime.year;
 
@@ -179,7 +179,7 @@ bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
             return value.numeric == other.value.numeric;
         case item_type::string:
             return pstring(value.string.p, value.string.n) == pstring(other.value.string.p, other.value.string.n);
-        case item_type::datetime:
+        case item_type::date_time:
             return value.datetime.year == other.value.datetime.year &&
                 value.datetime.month == other.value.datetime.month &&
                 value.datetime.day == other.value.datetime.day &&

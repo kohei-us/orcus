@@ -217,7 +217,7 @@ void import_pivot_cache_def::set_field_item_numeric(double v)
 
 void import_pivot_cache_def::set_field_item_date_time(const date_time_t& dt)
 {
-    m_current_field_item.type = pivot_cache_item_t::item_type::datetime;
+    m_current_field_item.type = pivot_cache_item_t::item_type::date_time;
     m_current_field_item.value.datetime.year = dt.year;
     m_current_field_item.value.datetime.month = dt.month;
     m_current_field_item.value.datetime.day = dt.day;

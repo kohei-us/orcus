@@ -93,7 +93,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
 {
     enum class item_type
     {
-        unknown = 0, boolean, datetime, string, numeric, blank, error
+        unknown = 0, boolean, date_time, string, numeric, blank, error
     };
 
     item_type type;
