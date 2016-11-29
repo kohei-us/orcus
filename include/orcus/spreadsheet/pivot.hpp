@@ -35,6 +35,60 @@ class document;
 
 using pivot_cache_indices_t = std::vector<size_t>;
 
+struct ORCUS_SPM_DLLPUBLIC pivot_cache_record_value_t
+{
+    enum class value_type
+    {
+        unknown = 0,
+        boolean,
+        date_time,
+        character,
+        numeric,
+        blank,
+        error,
+        shared_item_index
+    };
+
+    value_type type;
+
+    union
+    {
+        bool boolean;
+
+        struct
+        {
+            // This must point to an interned string instance. May not be
+            // null-terminated.
+            const char* p;
+
+            size_t n; // Length of the string value.
+
+        } character;
+
+        struct
+        {
+            int year;
+            int month;
+            int day;
+            int hour;
+            int minute;
+            double second;
+
+        } date_time;
+
+        double numeric;
+
+        size_t shared_item_index;
+
+        // TODO : add error value.
+
+    } value;
+
+    pivot_cache_record_value_t();
+};
+
+using pivot_cache_record_t = std::vector<pivot_cache_record_value_t>;
+
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
 {
     enum class item_type

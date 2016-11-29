@@ -17,6 +17,8 @@
 
 namespace orcus { namespace spreadsheet {
 
+pivot_cache_record_value_t::pivot_cache_record_value_t() : type(value_type::unknown) {}
+
 pivot_cache_item_t::pivot_cache_item_t() : type(item_type::unknown) {}
 
 pivot_cache_item_t::pivot_cache_item_t(const char* p_str, size_t n_str) :
