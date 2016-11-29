@@ -54,10 +54,10 @@ public:
 
     void set_field_item_string(const char* p, size_t n) override
     {
-        m_current_field_item.type = pivot_cache_item_t::item_type::string;
+        m_current_field_item.type = pivot_cache_item_t::item_type::character;
         pstring s = intern(p, n);
-        m_current_field_item.value.string.p = s.get();
-        m_current_field_item.value.string.n = s.size();
+        m_current_field_item.value.character.p = s.get();
+        m_current_field_item.value.character.n = s.size();
     }
 
     void set_field_item_numeric(double v) override
@@ -203,10 +203,10 @@ void import_pivot_cache_def::commit_field()
 
 void import_pivot_cache_def::set_field_item_string(const char* p, size_t n)
 {
-    m_current_field_item.type = pivot_cache_item_t::item_type::string;
+    m_current_field_item.type = pivot_cache_item_t::item_type::character;
     pstring s = intern(p, n);
-    m_current_field_item.value.string.p = s.get();
-    m_current_field_item.value.string.n = s.size();
+    m_current_field_item.value.character.p = s.get();
+    m_current_field_item.value.character.n = s.size();
 }
 
 void import_pivot_cache_def::set_field_item_numeric(double v)

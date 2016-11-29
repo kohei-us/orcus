@@ -93,7 +93,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
 {
     enum class item_type
     {
-        unknown = 0, boolean, date_time, string, numeric, blank, error
+        unknown = 0, boolean, date_time, character, numeric, blank, error
     };
 
     item_type type;
@@ -108,7 +108,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
 
             size_t n; // Length of the string value.
 
-        } string;
+        } character;
 
         struct
         {
@@ -129,7 +129,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
     } value;
 
     pivot_cache_item_t();
-    pivot_cache_item_t(const char* p_str, size_t n_str);
+    pivot_cache_item_t(const char* cp, size_t cn);
     pivot_cache_item_t(double _numeric);
     pivot_cache_item_t(bool _boolean);
     pivot_cache_item_t(const date_time_t& _datetime);

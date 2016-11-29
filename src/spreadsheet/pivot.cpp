@@ -21,11 +21,11 @@ pivot_cache_record_value_t::pivot_cache_record_value_t() : type(value_type::unkn
 
 pivot_cache_item_t::pivot_cache_item_t() : type(item_type::unknown) {}
 
-pivot_cache_item_t::pivot_cache_item_t(const char* p_str, size_t n_str) :
-    type(item_type::string)
+pivot_cache_item_t::pivot_cache_item_t(const char* cp, size_t cn) :
+    type(item_type::character)
 {
-    value.string.p = p_str;
-    value.string.n = n_str;
+    value.character.p = cp;
+    value.character.n = cn;
 }
 
 pivot_cache_item_t::pivot_cache_item_t(double _numeric) :
@@ -75,9 +75,9 @@ pivot_cache_item_t::pivot_cache_item_t(const pivot_cache_item_t& other) :
         case item_type::numeric:
             value.numeric = other.value.numeric;
             break;
-        case item_type::string:
-            value.string.p = other.value.string.p;
-            value.string.n = other.value.string.n;
+        case item_type::character:
+            value.character.p = other.value.character.p;
+            value.character.n = other.value.character.n;
             break;
         case item_type::unknown:
             break;
@@ -112,9 +112,9 @@ pivot_cache_item_t::pivot_cache_item_t(pivot_cache_item_t&& other) :
         case item_type::numeric:
             value.numeric = other.value.numeric;
             break;
-        case item_type::string:
-            value.string.p = other.value.string.p;
-            value.string.n = other.value.string.n;
+        case item_type::character:
+            value.character.p = other.value.character.p;
+            value.character.n = other.value.character.n;
             break;
         case item_type::unknown:
             break;
@@ -134,8 +134,8 @@ bool pivot_cache_item_t::operator< (const pivot_cache_item_t& other) const
             return value.boolean < other.value.boolean;
         case item_type::numeric:
             return value.numeric < other.value.numeric;
-        case item_type::string:
-            return pstring(value.string.p, value.string.n) < pstring(other.value.string.p, other.value.string.n);
+        case item_type::character:
+            return pstring(value.character.p, value.character.n) < pstring(other.value.character.p, other.value.character.n);
         case item_type::date_time:
             if (value.datetime.year != other.value.datetime.year)
                 return value.datetime.year < other.value.datetime.year;
@@ -177,8 +177,8 @@ bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
             return value.boolean == other.value.boolean;
         case item_type::numeric:
             return value.numeric == other.value.numeric;
-        case item_type::string:
-            return pstring(value.string.p, value.string.n) == pstring(other.value.string.p, other.value.string.n);
+        case item_type::character:
+            return pstring(value.character.p, value.character.n) == pstring(other.value.character.p, other.value.character.n);
         case item_type::date_time:
             return value.datetime.year == other.value.datetime.year &&
                 value.datetime.month == other.value.datetime.month &&
