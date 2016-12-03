@@ -79,6 +79,31 @@ public:
     virtual void commit() override;
 };
 
+/**
+ * Concrete implementation of the import_pivot_cache_records interface. 
+ */
+class import_pivot_cache_records : public iface::import_pivot_cache_records
+{
+    document& m_doc;
+    pivot_cache* m_cache; //< cache to push the records to at the very end.
+
+public:
+    import_pivot_cache_records(document& doc);
+    ~import_pivot_cache_records();
+
+    void set_cache(pivot_cache* p);
+
+    virtual void set_record_count(size_t n) override;
+
+    virtual void append_record_value_numeric(double v) override;
+
+    virtual void append_record_value_shared_item(size_t index) override;
+
+    virtual void commit_record() override;
+
+    virtual void commit() override;
+};
+
 }}
 
 #endif

@@ -230,7 +230,7 @@ class ORCUS_SPM_DLLPUBLIC pivot_cache
 public:
     using fields_type = std::vector<pivot_cache_field_t>;
 
-    pivot_cache(string_pool& sp);
+    pivot_cache(pivot_cache_id_t cache_id, string_pool& sp);
     ~pivot_cache();
 
     /**
@@ -252,6 +252,8 @@ public:
      *         out-of-range.
      */
     const pivot_cache_field_t* get_field(size_t index) const;
+
+    pivot_cache_id_t get_id() const;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_collection
@@ -282,6 +284,10 @@ public:
 
     const pivot_cache* get_cache(
         const pstring& sheet_name, const ixion::abs_range_t& range) const;
+
+    pivot_cache* get_cache(pivot_cache_id_t cache_id);
+
+    const pivot_cache* get_cache(pivot_cache_id_t cache_id) const;
 };
 
 }}

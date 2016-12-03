@@ -129,16 +129,13 @@ import_pivot_cache_def::~import_pivot_cache_def() {}
 void import_pivot_cache_def::create_cache(pivot_cache_id_t cache_id)
 {
     m_src_type = unknown;
-
-    m_cache_id = cache_id;
-    m_cache = orcus::make_unique<pivot_cache>(m_doc.get_string_pool());
+    m_cache = orcus::make_unique<pivot_cache>(cache_id, m_doc.get_string_pool());
 }
 
 void import_pivot_cache_def::set_worksheet_source(
     const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name)
 {
     assert(m_cache);
-    assert(m_cache_id > 0);
 
     const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
     assert(resolver);
@@ -238,6 +235,36 @@ void import_pivot_cache_def::commit()
 
     m_doc.get_pivot_collection().insert_worksheet_cache(
         m_src_sheet_name, m_src_range, std::move(m_cache));
+}
+
+import_pivot_cache_records::import_pivot_cache_records(document& doc) :
+    m_doc(doc), m_cache(nullptr) {}
+
+import_pivot_cache_records::~import_pivot_cache_records() {}
+
+void import_pivot_cache_records::set_cache(pivot_cache* p)
+{
+    m_cache = p;
+}
+
+void import_pivot_cache_records::set_record_count(size_t n)
+{
+}
+
+void import_pivot_cache_records::append_record_value_numeric(double v)
+{
+}
+
+void import_pivot_cache_records::append_record_value_shared_item(size_t index)
+{
+}
+
+void import_pivot_cache_records::commit_record()
+{
+}
+
+void import_pivot_cache_records::commit()
+{
 }
 
 }}

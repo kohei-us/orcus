@@ -14,6 +14,7 @@
 
 #include <unordered_map>
 #include <cassert>
+#include <sstream>
 
 namespace orcus { namespace spreadsheet {
 
@@ -254,17 +255,20 @@ pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
 
 struct pivot_cache::impl
 {
+    pivot_cache_id_t m_cache_id;
+
     string_pool& m_string_pool;
 
     pstring m_src_sheet_name;
 
     pivot_cache::fields_type m_fields;
 
-    impl(string_pool& sp) : m_string_pool(sp) {}
+    impl(pivot_cache_id_t cache_id, string_pool& sp) :
+        m_cache_id(cache_id), m_string_pool(sp) {}
 };
 
-pivot_cache::pivot_cache(string_pool& sp) :
-    mp_impl(orcus::make_unique<impl>(sp)) {}
+pivot_cache::pivot_cache(pivot_cache_id_t cache_id, string_pool& sp) :
+    mp_impl(orcus::make_unique<impl>(cache_id, sp)) {}
 
 pivot_cache::~pivot_cache() {}
 
@@ -281,6 +285,11 @@ size_t pivot_cache::get_field_count() const
 const pivot_cache_field_t* pivot_cache::get_field(size_t index) const
 {
     return index < mp_impl->m_fields.size() ? &mp_impl->m_fields[index] : nullptr;
+}
+
+pivot_cache_id_t pivot_cache::get_id() const
+{
+    return mp_impl->m_cache_id;
 }
 
 namespace {
@@ -321,7 +330,9 @@ struct worksheet_range
     };
 };
 
-using range_map_type = std::unordered_map<worksheet_range, size_t, worksheet_range::hash>;
+using range_map_type = std::unordered_map<worksheet_range, pivot_cache_id_t, worksheet_range::hash>;
+
+using caches_type = std::unordered_map<pivot_cache_id_t, std::unique_ptr<pivot_cache>>;
 
 }
 
@@ -330,7 +341,7 @@ struct pivot_collection::impl
     document& m_doc;
 
     range_map_type m_worksheet_range_map; /// mapping of sheet name & range pair to cache ID.
-    std::vector<std::unique_ptr<pivot_cache>> m_caches;
+    caches_type m_caches;
 
     impl(document& doc) : m_doc(doc) {}
 };
@@ -343,28 +354,35 @@ void pivot_collection::insert_worksheet_cache(
     const pstring& sheet_name, const ixion::abs_range_t& range,
     std::unique_ptr<pivot_cache>&& cache)
 {
+    // First, ensure that no caches exist for the cache ID.
+    pivot_cache_id_t cache_id = cache->get_id();
+    if (mp_impl->m_caches.count(cache_id) > 0)
+    {
+        std::ostringstream os;
+        os << "Pivot cache with the ID of " << cache_id << " already exists.";
+        throw std::invalid_argument(os.str());
+    }
+
     // Check and see if there is already a cache for this location.  If yes,
     // overwrite the existing cache.
 
-    // sheet name must be interned with the document it belongs to.
-    worksheet_range key(mp_impl->m_doc.get_string_pool().intern(sheet_name).first, range);
+    worksheet_range key(sheet_name, range);
 
-    auto it = mp_impl->m_worksheet_range_map.find(key);
+    range_map_type& range_map = mp_impl->m_worksheet_range_map;
+    auto it = range_map.find(key);
 
-    if (it != mp_impl->m_worksheet_range_map.end())
+    if (it != range_map.end())
     {
-        // Overwrite an existing cache.
-        size_t cache_id = it->second;
-        assert(cache_id < mp_impl->m_caches.size());
-        mp_impl->m_caches[cache_id] = std::move(cache);
-        return;
+        std::ostringstream os;
+        os << "Another cache is already associated with this worksheet range.";
+        throw std::logic_error(os.str());
     }
 
-    // This is a new worksheet cache.
-    size_t cache_id = mp_impl->m_caches.size();
-    mp_impl->m_caches.push_back(std::move(cache));
-    mp_impl->m_worksheet_range_map.insert(
-        range_map_type::value_type(std::move(key), cache_id));
+    // sheet name must be interned with the document it belongs to.
+    key.sheet = mp_impl->m_doc.get_string_pool().intern(key.sheet).first;
+
+    mp_impl->m_caches[cache_id] = std::move(cache);
+    range_map.insert(range_map_type::value_type(std::move(key), cache_id));
 }
 
 size_t pivot_collection::get_cache_count() const
@@ -382,8 +400,28 @@ const pivot_cache* pivot_collection::get_cache(
         return nullptr;
 
     size_t cache_id = it->second;
-    assert(cache_id < mp_impl->m_caches.size());
     return mp_impl->m_caches[cache_id].get();
+}
+
+namespace {
+
+template<typename _CachesT, typename _CacheT>
+_CacheT* get_cache_impl(_CachesT& caches, pivot_cache_id_t cache_id)
+{
+    auto it = caches.find(cache_id);
+    return it == caches.end() ? nullptr : it->second.get();
+}
+
+}
+
+pivot_cache* pivot_collection::get_cache(pivot_cache_id_t cache_id)
+{
+    return get_cache_impl<caches_type, pivot_cache>(mp_impl->m_caches, cache_id);
+}
+
+const pivot_cache* pivot_collection::get_cache(pivot_cache_id_t cache_id) const
+{
+    return get_cache_impl<const caches_type, const pivot_cache>(mp_impl->m_caches, cache_id);
 }
 
 }}

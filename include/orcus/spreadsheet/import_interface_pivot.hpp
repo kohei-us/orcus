@@ -287,9 +287,9 @@ public:
 
     virtual void set_record_count(size_t n) = 0;
 
-    virtual void append_record_column_numeric(double v) = 0;
+    virtual void append_record_value_numeric(double v) = 0;
 
-    virtual void append_record_column_shared_item(size_t index) = 0;
+    virtual void append_record_value_shared_item(size_t index) = 0;
 
     virtual void commit_record() = 0;
 

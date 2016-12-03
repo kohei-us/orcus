@@ -25,13 +25,15 @@ struct import_factory_impl
 
     import_global_settings m_global_settings;
     import_pivot_cache_def m_pc_def;
+    import_pivot_cache_records m_pc_records;
 
     import_factory_impl(document& doc, row_t row_size, col_t col_size) :
         m_doc(doc),
         m_default_row_size(row_size),
         m_default_col_size(col_size),
         m_global_settings(doc),
-        m_pc_def(doc) {}
+        m_pc_def(doc),
+        m_pc_records(doc) {}
 };
 
 import_factory::import_factory(document& doc, row_t row_size, col_t col_size) :
@@ -62,6 +64,18 @@ iface::import_pivot_cache_definition* import_factory::create_pivot_cache_definit
 {
     mp_impl->m_pc_def.create_cache(cache_id);
     return &mp_impl->m_pc_def;
+}
+
+iface::import_pivot_cache_records* import_factory::create_pivot_cache_records(
+    orcus::spreadsheet::pivot_cache_id_t cache_id)
+{
+    pivot_collection& pcs = mp_impl->m_doc.get_pivot_collection();
+    pivot_cache* pc = pcs.get_cache(cache_id);
+    if (!pc)
+        return nullptr;
+
+    mp_impl->m_pc_records.set_cache(pc);
+    return &mp_impl->m_pc_records;
 }
 
 iface::import_sheet* import_factory::append_sheet(const char* sheet_name, size_t sheet_name_length)
