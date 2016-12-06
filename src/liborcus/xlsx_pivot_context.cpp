@@ -935,47 +935,54 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         {
             xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
             long count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
+
             if (get_config().debug)
             {
                 cout << "---" << endl;
                 cout << "pivot cache record (count: " << count << ")" << endl;
             }
+
+            m_pc_records.set_record_count(count);
+            break;
         }
-        break;
         case XML_r: // record
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheRecords);
             if (get_config().debug)
-            {
                 cout << "* record" << endl;
-            }
-        break;
+
+            break;
         case XML_s: // character value
+        {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
+
+            pstring cv = single_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
+
             if (get_config().debug)
-            {
-                cout << "  * s = '" << single_attr_getter::get(attrs, get_session_context().m_string_pool, NS_ooxml_xlsx, XML_v) << "'" << endl;
-            }
-        break;
+                cout << "  * s = '" << cv << "'" << endl;
+
+            m_pc_records.append_record_value_character(cv.get(), cv.size());
+            break;
+        }
         case XML_x: // shared item index
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
             long v = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
             if (get_config().debug)
-            {
                 cout << "  * x = " << v << endl;
-            }
+
+            m_pc_records.append_record_value_shared_item(v);
+            break;
         }
-        break;
         case XML_n: // numeric
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
             double val = single_double_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
             if (get_config().debug)
-            {
                 cout << "  * n = " << val << endl;
-            }
+
+            m_pc_records.append_record_value_numeric(val);
+            break;
         }
-        break;
         case XML_b: // boolean
         case XML_d: // date time
         case XML_e: // error value
@@ -987,6 +994,21 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
 
 bool xlsx_pivot_cache_rec_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
+    if (ns == NS_ooxml_xlsx)
+    {
+        switch (name)
+        {
+            case XML_pivotCacheRecords:
+                m_pc_records.commit();
+                break;
+            case XML_r: // record
+                m_pc_records.commit_record();
+                break;
+            default:
+                ;
+        }
+    }
+
     return pop_stack(ns, name);
 }
 

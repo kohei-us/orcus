@@ -12,6 +12,7 @@
 #include "orcus/exception.hpp"
 
 #include <sstream>
+#include <iostream>
 
 namespace orcus { namespace spreadsheet {
 
@@ -249,22 +250,41 @@ void import_pivot_cache_records::set_cache(pivot_cache* p)
 
 void import_pivot_cache_records::set_record_count(size_t n)
 {
+    m_records.reserve(n);
 }
 
 void import_pivot_cache_records::append_record_value_numeric(double v)
 {
+    m_current_record.emplace_back(v);
+}
+
+void import_pivot_cache_records::append_record_value_character(const char* p, size_t n)
+{
+    m_current_record.emplace_back(p, n);
 }
 
 void import_pivot_cache_records::append_record_value_shared_item(size_t index)
 {
+    m_current_record.emplace_back(index);
 }
 
 void import_pivot_cache_records::commit_record()
 {
+    if (!m_cache)
+    {
+        m_current_record.clear();
+        return;
+    }
+
+    m_records.push_back(std::move(m_current_record));
 }
 
 void import_pivot_cache_records::commit()
 {
+    if (!m_cache)
+        return;
+
+    m_cache->insert_records(std::move(m_records));
 }
 
 }}

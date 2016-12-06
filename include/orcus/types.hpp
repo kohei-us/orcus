@@ -45,9 +45,10 @@ struct ORCUS_PSR_DLLPUBLIC xml_token_attr_t
 
     /**
      * Whether or not the attribute value is transient. A transient value is
-     * not guaranteed to be valid after the start_element call ends.  A
-     * non-transient value is guaranteed to be valid during the life cycle of
-     * the xml stream it belongs to.
+     * only guaranteed to be valid until the end of the start_element call,
+     * after which its validity is not guaranteed. A non-transient value is
+     * guaranteed to be valid during the life cycle of the xml stream it
+     * belongs to.
      */
     bool transient;
 

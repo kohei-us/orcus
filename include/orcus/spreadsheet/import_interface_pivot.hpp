@@ -289,8 +289,13 @@ public:
 
     virtual void append_record_value_numeric(double v) = 0;
 
+    virtual void append_record_value_character(const char* p, size_t n) = 0;
+
     virtual void append_record_value_shared_item(size_t index) = 0;
 
+    /**
+     * Commit the record in the current buffer, and clears the buffer.
+     */
     virtual void commit_record() = 0;
 
     virtual void commit() = 0;

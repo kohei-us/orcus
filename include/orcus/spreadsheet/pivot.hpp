@@ -85,6 +85,9 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_record_value_t
     } value;
 
     pivot_cache_record_value_t();
+    pivot_cache_record_value_t(const char* cp, size_t cn);
+    pivot_cache_record_value_t(double v);
+    pivot_cache_record_value_t(size_t index);
 };
 
 using pivot_cache_record_t = std::vector<pivot_cache_record_value_t>;
@@ -203,11 +206,6 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
 
     pivot_cache_items_t items;
 
-    /**
-     * Original values as they appear in the source column.
-     */
-    pivot_cache_record_t record;
-
     boost::optional<double> min_value;
     boost::optional<double> max_value;
 
@@ -229,6 +227,7 @@ class ORCUS_SPM_DLLPUBLIC pivot_cache
 
 public:
     using fields_type = std::vector<pivot_cache_field_t>;
+    using records_type = std::vector<pivot_cache_record_t>;
 
     pivot_cache(pivot_cache_id_t cache_id, string_pool& sp);
     ~pivot_cache();
@@ -240,6 +239,8 @@ public:
      * @param fields field instances to move into storage.
      */
     void insert_fields(fields_type fields);
+
+    void insert_records(records_type record);
 
     size_t get_field_count() const;
 
@@ -254,6 +255,8 @@ public:
     const pivot_cache_field_t* get_field(size_t index) const;
 
     pivot_cache_id_t get_id() const;
+
+    const records_type& get_all_records() const;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_collection

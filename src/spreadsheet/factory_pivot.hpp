@@ -87,6 +87,9 @@ class import_pivot_cache_records : public iface::import_pivot_cache_records
     document& m_doc;
     pivot_cache* m_cache; //< cache to push the records to at the very end.
 
+    pivot_cache_record_t m_current_record;
+    pivot_cache::records_type m_records;
+
 public:
     import_pivot_cache_records(document& doc);
     ~import_pivot_cache_records();
@@ -96,6 +99,8 @@ public:
     virtual void set_record_count(size_t n) override;
 
     virtual void append_record_value_numeric(double v) override;
+
+    virtual void append_record_value_character(const char* p, size_t n) override;
 
     virtual void append_record_value_shared_item(size_t index) override;
 

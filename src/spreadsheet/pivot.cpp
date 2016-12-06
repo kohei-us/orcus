@@ -20,6 +20,25 @@ namespace orcus { namespace spreadsheet {
 
 pivot_cache_record_value_t::pivot_cache_record_value_t() : type(value_type::unknown) {}
 
+pivot_cache_record_value_t::pivot_cache_record_value_t(const char* cp, size_t cn) :
+    type(value_type::character)
+{
+    value.character.p = cp;
+    value.character.n = cn;
+}
+
+pivot_cache_record_value_t::pivot_cache_record_value_t(double v) :
+    type(value_type::numeric)
+{
+    value.numeric = v;
+}
+
+pivot_cache_record_value_t::pivot_cache_record_value_t(size_t index) :
+    type(value_type::shared_item_index)
+{
+    value.shared_item_index = index;
+}
+
 pivot_cache_item_t::pivot_cache_item_t() : type(item_type::unknown) {}
 
 pivot_cache_item_t::pivot_cache_item_t(const char* cp, size_t cn) :
@@ -263,6 +282,8 @@ struct pivot_cache::impl
 
     pivot_cache::fields_type m_fields;
 
+    pivot_cache::records_type m_records;
+
     impl(pivot_cache_id_t cache_id, string_pool& sp) :
         m_cache_id(cache_id), m_string_pool(sp) {}
 };
@@ -275,6 +296,11 @@ pivot_cache::~pivot_cache() {}
 void pivot_cache::insert_fields(fields_type fields)
 {
     mp_impl->m_fields = std::move(fields);
+}
+
+void pivot_cache::insert_records(records_type records)
+{
+    mp_impl->m_records = std::move(records);
 }
 
 size_t pivot_cache::get_field_count() const
@@ -290,6 +316,11 @@ const pivot_cache_field_t* pivot_cache::get_field(size_t index) const
 pivot_cache_id_t pivot_cache::get_id() const
 {
     return mp_impl->m_cache_id;
+}
+
+const pivot_cache::records_type& pivot_cache::get_all_records() const
+{
+    return mp_impl->m_records;
 }
 
 namespace {
