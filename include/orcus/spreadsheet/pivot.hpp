@@ -176,7 +176,6 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_data_t
         range_grouping_type(const range_grouping_type& other) = default;
     };
 
-
     /**
      * Mapping of base field member indices to the group field item indices.
      */
