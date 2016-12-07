@@ -359,6 +359,20 @@ void test_xlsx_pivot_mixed_type_field()
     assert(fld->max_value);
     assert(std::round(*fld->max_value * 100.0) == 150.0); // max = 1.5
 
+    {
+        // Check the records.
+        pivot_cache::records_type expected =
+        {
+            { pivot_cache_record_value_t(size_t(0)), pivot_cache_record_value_t(1.1) },
+            { pivot_cache_record_value_t(size_t(1)), pivot_cache_record_value_t(1.2) },
+            { pivot_cache_record_value_t(size_t(2)), pivot_cache_record_value_t(1.3) },
+            { pivot_cache_record_value_t(size_t(3)), pivot_cache_record_value_t(1.4) },
+            { pivot_cache_record_value_t(size_t(4)), pivot_cache_record_value_t(1.5) },
+        };
+
+        assert(expected == cache->get_all_records());
+    }
+
     // B10:C17 on sheet 'Data'.
     cache = get_pivot_cache(pc, "Data", "B10:C17");
     assert(cache);
@@ -398,6 +412,22 @@ void test_xlsx_pivot_mixed_type_field()
     assert(std::round(*fld->min_value * 100.0) == 110.0); // min = 1.1
     assert(fld->max_value);
     assert(std::round(*fld->max_value * 100.0) == 220.0); // max = 2.2
+
+    {
+        // Check the records.
+        pivot_cache::records_type expected =
+        {
+            { pivot_cache_record_value_t(size_t(0)), pivot_cache_record_value_t(1.1) },
+            { pivot_cache_record_value_t(size_t(1)), pivot_cache_record_value_t(1.2) },
+            { pivot_cache_record_value_t(size_t(2)), pivot_cache_record_value_t(1.3) },
+            { pivot_cache_record_value_t(size_t(3)), pivot_cache_record_value_t(1.4) },
+            { pivot_cache_record_value_t(size_t(4)), pivot_cache_record_value_t(1.5) },
+            { pivot_cache_record_value_t(size_t(5)), pivot_cache_record_value_t(1.8) },
+            { pivot_cache_record_value_t(size_t(6)), pivot_cache_record_value_t(2.2) },
+        };
+
+        assert(expected == cache->get_all_records());
+    }
 }
 
 void test_xlsx_pivot_group_field()
@@ -474,6 +504,19 @@ void test_xlsx_pivot_group_field()
 
     pivot_cache_indices_t expected_group = { 0, 0, 1, 1 };
     assert(gd->base_to_group_indices == expected_group);
+
+    {
+        // Check the records.
+        pivot_cache::records_type expected =
+        {
+            { pivot_cache_record_value_t(size_t(0)), pivot_cache_record_value_t(1.0) },
+            { pivot_cache_record_value_t(size_t(1)), pivot_cache_record_value_t(2.0) },
+            { pivot_cache_record_value_t(size_t(2)), pivot_cache_record_value_t(3.0) },
+            { pivot_cache_record_value_t(size_t(3)), pivot_cache_record_value_t(4.0) },
+        };
+
+        assert(expected == cache->get_all_records());
+    }
 }
 
 void test_xlsx_pivot_group_by_numbers()
@@ -688,4 +731,5 @@ int main()
 
     return EXIT_SUCCESS;
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
