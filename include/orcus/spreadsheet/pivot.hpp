@@ -88,6 +88,9 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_record_value_t
     pivot_cache_record_value_t(const char* cp, size_t cn);
     pivot_cache_record_value_t(double v);
     pivot_cache_record_value_t(size_t index);
+
+    bool operator== (const pivot_cache_record_value_t& other) const;
+    bool operator!= (const pivot_cache_record_value_t& other) const;
 };
 
 using pivot_cache_record_t = std::vector<pivot_cache_record_value_t>;

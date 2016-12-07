@@ -39,6 +39,45 @@ pivot_cache_record_value_t::pivot_cache_record_value_t(size_t index) :
     value.shared_item_index = index;
 }
 
+bool pivot_cache_record_value_t::operator== (const pivot_cache_record_value_t& other) const
+{
+    if (type != other.type)
+        return false;
+
+    switch (type)
+    {
+        case value_type::boolean:
+            return value.boolean == other.value.boolean;
+        case value_type::date_time:
+            return value.date_time.year == other.value.date_time.year &&
+                value.date_time.month == other.value.date_time.month &&
+                value.date_time.day == other.value.date_time.day &&
+                value.date_time.hour == other.value.date_time.hour &&
+                value.date_time.minute == other.value.date_time.minute &&
+                value.date_time.second == other.value.date_time.second;
+        case value_type::character:
+            return pstring(value.character.p, value.character.n) == pstring(other.value.character.p, other.value.character.n);
+        case value_type::numeric:
+            return value.numeric == other.value.numeric;
+        case value_type::blank:
+        case value_type::unknown:
+            return true;
+        case value_type::shared_item_index:
+            return value.shared_item_index == other.value.shared_item_index;
+        case value_type::error:
+            // TODO : handle error value.
+        default:
+            ;
+    }
+
+    return false;
+}
+
+bool pivot_cache_record_value_t::operator!= (const pivot_cache_record_value_t& other) const
+{
+    return !operator==(other);
+}
+
 pivot_cache_item_t::pivot_cache_item_t() : type(item_type::unknown) {}
 
 pivot_cache_item_t::pivot_cache_item_t(const char* cp, size_t cn) :

@@ -249,6 +249,19 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(fld->max_value && *fld->max_value == 4.0);
     assert(fld->items.empty());
 
+    {
+        // Check the records.
+        pivot_cache::records_type expected =
+        {
+            { pivot_cache_record_value_t(size_t(0)), pivot_cache_record_value_t(1.0) },
+            { pivot_cache_record_value_t(size_t(1)), pivot_cache_record_value_t(2.0) },
+            { pivot_cache_record_value_t(size_t(2)), pivot_cache_record_value_t(3.0) },
+            { pivot_cache_record_value_t(size_t(3)), pivot_cache_record_value_t(4.0) },
+        };
+
+        assert(expected == cache->get_all_records());
+    }
+
     // F10:G14 on the same sheet.
     cache = get_pivot_cache(pc, "Data", "F10:G14");
     assert(cache);
@@ -280,6 +293,19 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(fld->min_value && *fld->min_value == 1.0);
     assert(fld->max_value && *fld->max_value == 4.0);
     assert(fld->items.empty());
+
+    {
+        // Check the records.
+        pivot_cache::records_type expected =
+        {
+            { pivot_cache_record_value_t(size_t(0)), pivot_cache_record_value_t(4.0) },
+            { pivot_cache_record_value_t(size_t(1)), pivot_cache_record_value_t(3.0) },
+            { pivot_cache_record_value_t(size_t(2)), pivot_cache_record_value_t(2.0) },
+            { pivot_cache_record_value_t(size_t(3)), pivot_cache_record_value_t(1.0) },
+        };
+
+        assert(expected == cache->get_all_records());
+    }
 }
 
 void test_xlsx_pivot_mixed_type_field()
