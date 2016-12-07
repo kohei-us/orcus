@@ -125,7 +125,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
             int minute;
             double second;
 
-        } datetime;
+        } date_time;
 
         double numeric;
         bool boolean;

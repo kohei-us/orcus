@@ -216,12 +216,12 @@ void import_pivot_cache_def::set_field_item_numeric(double v)
 void import_pivot_cache_def::set_field_item_date_time(const date_time_t& dt)
 {
     m_current_field_item.type = pivot_cache_item_t::item_type::date_time;
-    m_current_field_item.value.datetime.year = dt.year;
-    m_current_field_item.value.datetime.month = dt.month;
-    m_current_field_item.value.datetime.day = dt.day;
-    m_current_field_item.value.datetime.hour = dt.hour;
-    m_current_field_item.value.datetime.minute = dt.minute;
-    m_current_field_item.value.datetime.second = dt.second;
+    m_current_field_item.value.date_time.year = dt.year;
+    m_current_field_item.value.date_time.month = dt.month;
+    m_current_field_item.value.date_time.day = dt.day;
+    m_current_field_item.value.date_time.hour = dt.hour;
+    m_current_field_item.value.date_time.minute = dt.minute;
+    m_current_field_item.value.date_time.second = dt.second;
 }
 
 void import_pivot_cache_def::commit_field_item()

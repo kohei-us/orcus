@@ -102,12 +102,12 @@ pivot_cache_item_t::pivot_cache_item_t(bool _boolean) :
 pivot_cache_item_t::pivot_cache_item_t(const date_time_t& _datetime) :
     type(item_type::date_time)
 {
-    value.datetime.year   = _datetime.year;
-    value.datetime.month  = _datetime.month;
-    value.datetime.day    = _datetime.day;
-    value.datetime.hour   = _datetime.hour;
-    value.datetime.minute = _datetime.minute;
-    value.datetime.second = _datetime.second;
+    value.date_time.year   = _datetime.year;
+    value.date_time.month  = _datetime.month;
+    value.date_time.day    = _datetime.day;
+    value.date_time.hour   = _datetime.hour;
+    value.date_time.minute = _datetime.minute;
+    value.date_time.second = _datetime.second;
 }
 
 pivot_cache_item_t::pivot_cache_item_t(const pivot_cache_item_t& other) :
@@ -121,12 +121,12 @@ pivot_cache_item_t::pivot_cache_item_t(const pivot_cache_item_t& other) :
             value.boolean = other.value.boolean;
             break;
         case item_type::date_time:
-            value.datetime.year   = other.value.datetime.year;
-            value.datetime.month  = other.value.datetime.month;
-            value.datetime.day    = other.value.datetime.day;
-            value.datetime.hour   = other.value.datetime.hour;
-            value.datetime.minute = other.value.datetime.minute;
-            value.datetime.second = other.value.datetime.second;
+            value.date_time.year   = other.value.date_time.year;
+            value.date_time.month  = other.value.date_time.month;
+            value.date_time.day    = other.value.date_time.day;
+            value.date_time.hour   = other.value.date_time.hour;
+            value.date_time.minute = other.value.date_time.minute;
+            value.date_time.second = other.value.date_time.second;
             break;
         case item_type::error:
             // TODO : add this.
@@ -158,12 +158,12 @@ pivot_cache_item_t::pivot_cache_item_t(pivot_cache_item_t&& other) :
             value.boolean = other.value.boolean;
             break;
         case item_type::date_time:
-            value.datetime.year   = other.value.datetime.year;
-            value.datetime.month  = other.value.datetime.month;
-            value.datetime.day    = other.value.datetime.day;
-            value.datetime.hour   = other.value.datetime.hour;
-            value.datetime.minute = other.value.datetime.minute;
-            value.datetime.second = other.value.datetime.second;
+            value.date_time.year   = other.value.date_time.year;
+            value.date_time.month  = other.value.date_time.month;
+            value.date_time.day    = other.value.date_time.day;
+            value.date_time.hour   = other.value.date_time.hour;
+            value.date_time.minute = other.value.date_time.minute;
+            value.date_time.second = other.value.date_time.second;
             break;
         case item_type::error:
             // TODO : add this.
@@ -196,22 +196,22 @@ bool pivot_cache_item_t::operator< (const pivot_cache_item_t& other) const
         case item_type::character:
             return pstring(value.character.p, value.character.n) < pstring(other.value.character.p, other.value.character.n);
         case item_type::date_time:
-            if (value.datetime.year != other.value.datetime.year)
-                return value.datetime.year < other.value.datetime.year;
+            if (value.date_time.year != other.value.date_time.year)
+                return value.date_time.year < other.value.date_time.year;
 
-            if (value.datetime.month != other.value.datetime.month)
-                return value.datetime.month < other.value.datetime.month;
+            if (value.date_time.month != other.value.date_time.month)
+                return value.date_time.month < other.value.date_time.month;
 
-            if (value.datetime.day != other.value.datetime.day)
-                return value.datetime.day < other.value.datetime.day;
+            if (value.date_time.day != other.value.date_time.day)
+                return value.date_time.day < other.value.date_time.day;
 
-            if (value.datetime.hour != other.value.datetime.hour)
-                return value.datetime.hour < other.value.datetime.hour;
+            if (value.date_time.hour != other.value.date_time.hour)
+                return value.date_time.hour < other.value.date_time.hour;
 
-            if (value.datetime.minute != other.value.datetime.minute)
-                return value.datetime.minute < other.value.datetime.minute;
+            if (value.date_time.minute != other.value.date_time.minute)
+                return value.date_time.minute < other.value.date_time.minute;
 
-            return value.datetime.second < other.value.datetime.second;
+            return value.date_time.second < other.value.date_time.second;
 
         case item_type::error:
             // TODO : implement this.
@@ -239,12 +239,12 @@ bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
         case item_type::character:
             return pstring(value.character.p, value.character.n) == pstring(other.value.character.p, other.value.character.n);
         case item_type::date_time:
-            return value.datetime.year == other.value.datetime.year &&
-                value.datetime.month == other.value.datetime.month &&
-                value.datetime.day == other.value.datetime.day &&
-                value.datetime.hour == other.value.datetime.hour &&
-                value.datetime.minute == other.value.datetime.minute &&
-                value.datetime.second == other.value.datetime.second;
+            return value.date_time.year == other.value.date_time.year &&
+                value.date_time.month == other.value.date_time.month &&
+                value.date_time.day == other.value.date_time.day &&
+                value.date_time.hour == other.value.date_time.hour &&
+                value.date_time.minute == other.value.date_time.minute &&
+                value.date_time.second == other.value.date_time.second;
         case item_type::error:
             // TODO : implement this.
             break;
@@ -268,7 +268,7 @@ void pivot_cache_item_t::swap(pivot_cache_item_t& other)
 {
     std::swap(type, other.type);
     // Swap values by the largest union member.
-    std::swap(value.datetime, other.value.datetime);
+    std::swap(value.date_time, other.value.date_time);
 }
 
 pivot_cache_group_data_t::pivot_cache_group_data_t(size_t _base_field) :
