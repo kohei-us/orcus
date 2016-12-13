@@ -18,6 +18,7 @@ namespace {
 
 typedef mdds::sorted_string_map<totals_row_function_t> trf_map_type;
 typedef mdds::sorted_string_map<pivot_cache_group_by_t> pc_group_by_map_type;
+typedef mdds::sorted_string_map<error_value_t> error_value_map_type;
 
 // Keys must be sorted.
 trf_map_type::entry trf_entries[] =
@@ -67,6 +68,28 @@ const pc_group_by_map_type& get_pc_group_by_map()
     return pc_group_by_map;
 }
 
+// Keys must be sorted.
+error_value_map_type::entry error_value_entries[] =
+{
+    { ORCUS_ASCII("#DIV/0!"), error_value_t::div0  },
+    { ORCUS_ASCII("#N/A!"),   error_value_t::na    },
+    { ORCUS_ASCII("#NAME?"),  error_value_t::name  },
+    { ORCUS_ASCII("#NULL!"),  error_value_t::null  },
+    { ORCUS_ASCII("#NUM!"),   error_value_t::num   },
+    { ORCUS_ASCII("#REF!"),   error_value_t::ref   },
+    { ORCUS_ASCII("#VALUE!"), error_value_t::value },
+};
+
+const error_value_map_type& get_error_value_map()
+{
+    static error_value_map_type error_value_map(
+        error_value_entries,
+        ORCUS_N_ELEMENTS(error_value_entries),
+        error_value_t::unknown);
+
+    return error_value_map;
+}
+
 }
 
 col_width_t get_default_column_width()
@@ -87,6 +110,43 @@ totals_row_function_t to_totals_row_function_enum(const char* p, size_t n)
 pivot_cache_group_by_t to_pivot_cache_group_by_enum(const char* p, size_t n)
 {
     return get_pc_group_by_map().find(p, n);
+}
+
+error_value_t to_error_value_enum(const char* p, size_t n)
+{
+    return get_error_value_map().find(p, n);
+}
+
+std::ostream& operator<< (std::ostream& os, error_value_t ev)
+{
+    switch (ev)
+    {
+        case error_value_t::div0:
+            os << error_value_entries[0].key;
+            break;
+        case error_value_t::na:
+            os << error_value_entries[1].key;
+            break;
+        case error_value_t::name:
+            os << error_value_entries[2].key;
+            break;
+        case error_value_t::null:
+            os << error_value_entries[3].key;
+            break;
+        case error_value_t::num:
+            os << error_value_entries[4].key;
+            break;
+        case error_value_t::ref:
+            os << error_value_entries[5].key;
+            break;
+        case error_value_t::value:
+            os << error_value_entries[6].key;
+            break;
+        case error_value_t::unknown:
+        default:
+            ;
+    }
+    return os;
 }
 
 }}

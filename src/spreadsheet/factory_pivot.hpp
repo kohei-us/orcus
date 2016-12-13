@@ -74,6 +74,8 @@ public:
 
     virtual void set_field_item_date_time(const date_time_t& dt) override;
 
+    virtual void set_field_item_error(error_value_t ev) override;
+
     virtual void commit_field_item() override;
 
     virtual void commit() override;

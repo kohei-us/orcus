@@ -128,6 +128,13 @@ public:
     virtual void set_field_item_date_time(const date_time_t& dt) = 0;
 
     /**
+     * Set an error value to the current field item buffer,
+     *
+     * @param ev error value.
+     */
+    virtual void set_field_item_error(error_value_t ev) = 0;
+
+    /**
      * Commit the field item in current field item buffer to the current field
      * model.
      */

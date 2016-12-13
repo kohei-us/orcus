@@ -87,27 +87,33 @@ pivot_cache_item_t::pivot_cache_item_t(const char* cp, size_t cn) :
     value.character.n = cn;
 }
 
-pivot_cache_item_t::pivot_cache_item_t(double _numeric) :
+pivot_cache_item_t::pivot_cache_item_t(double numeric) :
     type(item_type::numeric)
 {
-    value.numeric = _numeric;
+    value.numeric = numeric;
 }
 
-pivot_cache_item_t::pivot_cache_item_t(bool _boolean) :
+pivot_cache_item_t::pivot_cache_item_t(bool boolean) :
     type(item_type::boolean)
 {
-    value.boolean = _boolean;
+    value.boolean = boolean;
 }
 
-pivot_cache_item_t::pivot_cache_item_t(const date_time_t& _datetime) :
+pivot_cache_item_t::pivot_cache_item_t(const date_time_t& date_time) :
     type(item_type::date_time)
 {
-    value.date_time.year   = _datetime.year;
-    value.date_time.month  = _datetime.month;
-    value.date_time.day    = _datetime.day;
-    value.date_time.hour   = _datetime.hour;
-    value.date_time.minute = _datetime.minute;
-    value.date_time.second = _datetime.second;
+    value.date_time.year   = date_time.year;
+    value.date_time.month  = date_time.month;
+    value.date_time.day    = date_time.day;
+    value.date_time.hour   = date_time.hour;
+    value.date_time.minute = date_time.minute;
+    value.date_time.second = date_time.second;
+}
+
+pivot_cache_item_t::pivot_cache_item_t(error_value_t error) :
+    type(item_type::error)
+{
+    value.error = error;
 }
 
 pivot_cache_item_t::pivot_cache_item_t(const pivot_cache_item_t& other) :
@@ -129,7 +135,7 @@ pivot_cache_item_t::pivot_cache_item_t(const pivot_cache_item_t& other) :
             value.date_time.second = other.value.date_time.second;
             break;
         case item_type::error:
-            // TODO : add this.
+            value.error = other.value.error;
             break;
         case item_type::numeric:
             value.numeric = other.value.numeric;
@@ -166,7 +172,7 @@ pivot_cache_item_t::pivot_cache_item_t(pivot_cache_item_t&& other) :
             value.date_time.second = other.value.date_time.second;
             break;
         case item_type::error:
-            // TODO : add this.
+            value.error = other.value.error;
             break;
         case item_type::numeric:
             value.numeric = other.value.numeric;
@@ -214,8 +220,7 @@ bool pivot_cache_item_t::operator< (const pivot_cache_item_t& other) const
             return value.date_time.second < other.value.date_time.second;
 
         case item_type::error:
-            // TODO : implement this.
-            break;
+            return value.error < other.value.error;
         case item_type::blank:
         case item_type::unknown:
         default:
@@ -246,8 +251,7 @@ bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
                 value.date_time.minute == other.value.date_time.minute &&
                 value.date_time.second == other.value.date_time.second;
         case item_type::error:
-            // TODO : implement this.
-            break;
+            return value.error == other.value.error;
         case item_type::blank:
         case item_type::unknown:
             return true;

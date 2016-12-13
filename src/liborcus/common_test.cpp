@@ -13,6 +13,7 @@
 
 #include "orcus/global.hpp"
 #include "orcus/measurement.hpp"
+#include "orcus/spreadsheet/types.hpp"
 
 using namespace std;
 using namespace orcus;
@@ -206,6 +207,30 @@ void test_pstring()
     }
 }
 
+void test_spreadsheet_types()
+{
+    std::vector<spreadsheet::error_value_t> values =
+    {
+        spreadsheet::error_value_t::div0,
+        spreadsheet::error_value_t::na,
+        spreadsheet::error_value_t::name,
+        spreadsheet::error_value_t::null,
+        spreadsheet::error_value_t::num,
+        spreadsheet::error_value_t::ref,
+        spreadsheet::error_value_t::value
+    };
+
+    for (spreadsheet::error_value_t ev : values)
+    {
+        // Round-trip each enum value.
+        std::ostringstream os;
+        os << ev;
+        std::string s = os.str();
+        auto converted = spreadsheet::to_error_value_enum(s.data(), s.size());
+        assert(converted == ev);
+    }
+}
+
 int main()
 {
     test_date_time_conversion();
@@ -213,6 +238,7 @@ int main()
     test_string2number_conversion();
     test_string2long_conversion();
     test_pstring();
+    test_spreadsheet_types();
 
     return EXIT_SUCCESS;
 }

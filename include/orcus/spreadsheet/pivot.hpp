@@ -128,17 +128,19 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
         } date_time;
 
         double numeric;
-        bool boolean;
 
-        // TODO : add error value.
+        error_value_t error;
+
+        bool boolean;
 
     } value;
 
     pivot_cache_item_t();
     pivot_cache_item_t(const char* cp, size_t cn);
-    pivot_cache_item_t(double _numeric);
-    pivot_cache_item_t(bool _boolean);
-    pivot_cache_item_t(const date_time_t& _datetime);
+    pivot_cache_item_t(double numeric);
+    pivot_cache_item_t(bool boolean);
+    pivot_cache_item_t(const date_time_t& date_time);
+    pivot_cache_item_t(error_value_t error);
 
     pivot_cache_item_t(const pivot_cache_item_t& other);
     pivot_cache_item_t(pivot_cache_item_t&& other);

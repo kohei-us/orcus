@@ -461,6 +461,11 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             start_element_d(parent, attrs);
             break;
         }
+        case XML_e:
+        {
+            start_element_e(parent, attrs);
+            break;
+        }
         case XML_x:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_discretePr);
@@ -786,6 +791,80 @@ void xlsx_pivot_cache_def_context::end_element_d()
     }
 }
 
+void xlsx_pivot_cache_def_context::start_element_e(
+    const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs)
+{
+    if (parent.first != NS_ooxml_xlsx)
+    {
+        warn_unhandled();
+        return;
+    }
+
+    switch (parent.second)
+    {
+        case XML_sharedItems:
+        {
+            // error value item of a cache field.
+            spreadsheet::error_value_t ev = spreadsheet::error_value_t::unknown;
+            m_field_item_used = true;
+
+            for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    switch (attr.name)
+                    {
+                        case XML_v:
+                            ev = spreadsheet::to_error_value_enum(attr.value.get(), attr.value.size());
+                        break;
+                        case XML_u:
+                            // flag for unused item.
+                            m_field_item_used = !to_bool(attr.value);
+                        default:
+                            ;
+                    }
+                }
+            );
+
+            if (get_config().debug)
+            {
+                cout << "  * e: " << ev;
+                if (!m_field_item_used)
+                    cout << " (unused)";
+                cout << endl;
+            }
+
+            if (m_field_item_used)
+                m_pcache.set_field_item_error(ev);
+
+            break;
+        }
+        default:
+            ;
+    }
+}
+
+void xlsx_pivot_cache_def_context::end_element_e()
+{
+    const xml_token_pair_t& parent = get_parent_element();
+    if (parent.first != NS_ooxml_xlsx)
+        return;
+
+    switch (parent.second)
+    {
+        case XML_sharedItems:
+        {
+            if (m_field_item_used)
+                m_pcache.commit_field_item();
+            break;
+        }
+        default:
+            ;
+    }
+}
+
 void xlsx_pivot_cache_def_context::start_element_shared_items(
     const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs)
 {
@@ -983,9 +1062,17 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
             m_pc_records.append_record_value_numeric(val);
             break;
         }
+        case XML_e: // error value
+        {
+            pstring cv = single_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
+
+            if (get_config().debug)
+                cout << "  * e = " << cv << endl;
+
+            break;
+        }
         case XML_b: // boolean
         case XML_d: // date time
-        case XML_e: // error value
         case XML_m: // no value
         default:
             warn_unhandled();

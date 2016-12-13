@@ -224,6 +224,12 @@ void import_pivot_cache_def::set_field_item_date_time(const date_time_t& dt)
     m_current_field_item.value.date_time.second = dt.second;
 }
 
+void import_pivot_cache_def::set_field_item_error(error_value_t ev)
+{
+    m_current_field_item.type = pivot_cache_item_t::item_type::error;
+    m_current_field_item.value.error = ev;
+}
+
 void import_pivot_cache_def::commit_field_item()
 {
     m_current_field.items.push_back(std::move(m_current_field_item));

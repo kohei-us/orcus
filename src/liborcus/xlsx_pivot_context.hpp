@@ -71,6 +71,9 @@ private:
     void start_element_d(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs);
     void end_element_d();
 
+    void start_element_e(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs);
+    void end_element_e();
+
     void start_element_shared_items(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs);
 };
 
