@@ -11,7 +11,7 @@
 #include "orcus/env.hpp"
 #include <cstdlib>
 #include <cstdint>
-#include <ostream>
+#include <iosfwd>
 
 // NB: This header should only use primitive data types and enums.
 
