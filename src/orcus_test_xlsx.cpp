@@ -711,6 +711,57 @@ void test_xlsx_pivot_group_by_dates()
     assert(gd_qtrs.items == expected);
 }
 
+void test_xlsx_pivot_error_values()
+{
+    string path(SRCDIR"/test/xlsx/pivot-table/error-values.xlsx");
+
+    document doc;
+    import_factory factory(doc);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    const pivot_collection& pc = doc.get_pivot_collection();
+    assert(pc.get_cache_count() == 1);
+
+    const pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C6");
+    assert(cache);
+
+    const pivot_cache_field_t* fld = cache->get_field(0);
+
+    assert(fld);
+    assert(fld->name == "F1");
+
+    // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
+    std::set<pivot_cache_item_t> expected =
+    {
+        pivot_cache_item_t(ORCUS_ASCII("A")),
+        pivot_cache_item_t(ORCUS_ASCII("B")),
+        pivot_cache_item_t(ORCUS_ASCII("C")),
+        pivot_cache_item_t(ORCUS_ASCII("D")),
+    };
+
+    std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
+    assert(actual == expected);
+
+    fld = cache->get_field(1);
+
+    assert(fld);
+    assert(fld->name == "F2");
+
+    expected =
+    {
+        pivot_cache_item_t(spreadsheet::error_value_t::div0),
+        pivot_cache_item_t(spreadsheet::error_value_t::name),
+    };
+
+    actual.clear();
+    actual.insert(fld->items.begin(), fld->items.end());
+
+    assert(actual == expected);
+}
+
 }
 
 int main()
@@ -728,6 +779,7 @@ int main()
     test_xlsx_pivot_group_field();
     test_xlsx_pivot_group_by_numbers();
     test_xlsx_pivot_group_by_dates();
+    test_xlsx_pivot_error_values();
 
     return EXIT_SUCCESS;
 }
