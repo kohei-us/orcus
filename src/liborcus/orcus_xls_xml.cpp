@@ -9,6 +9,7 @@
 #include "orcus/stream.hpp"
 #include "orcus/xml_namespace.hpp"
 #include "orcus/config.hpp"
+#include "orcus/spreadsheet/import_interface.hpp"
 
 #include "xml_stream_parser.hpp"
 #include "xls_xml_handler.hpp"
@@ -89,6 +90,14 @@ void orcus_xls_xml::read_stream(const char* content, size_t len)
     if (!content || !len)
         return;
 
+    spreadsheet::iface::import_global_settings* gs =
+        mp_impl->mp_factory->get_global_settings();
+
+    if (!gs)
+        return;
+
+    gs->set_default_formula_grammar(spreadsheet::formula_grammar_t::xls_xml);
+
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, xls_xml_tokens, content, len);
 
@@ -97,6 +106,8 @@ void orcus_xls_xml::read_stream(const char* content, size_t len)
 
     parser.set_handler(handler.get());
     parser.parse();
+
+    mp_impl->mp_factory->finalize();
 }
 
 const char* orcus_xls_xml::get_name() const

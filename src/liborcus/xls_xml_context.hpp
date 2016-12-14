@@ -40,7 +40,10 @@ public:
     virtual void characters(const pstring& str, bool transient);
 
 private:
+    void start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+
     void push_cell();
+    void push_formula_cell();
 
 private:
     string_pool m_pool;
@@ -52,6 +55,7 @@ private:
     cell_type m_cur_cell_type;
     std::vector<pstring> m_cur_cell_string;
     double m_cur_cell_value;
+    pstring m_cur_cell_formula;
 };
 
 }

@@ -580,27 +580,35 @@ void document::set_formula_grammar(formula_grammar_t grammar)
         return;
 
     mp_impl->m_grammar = grammar;
+
+    ixion::formula_name_resolver_t resolver_type = ixion::formula_name_resolver_t::unknown;
+
     switch (mp_impl->m_grammar)
     {
+        case formula_grammar_t::xls_xml:
+            resolver_type = ixion::formula_name_resolver_t::excel_r1c1;
+            break;
         case formula_grammar_t::xlsx_2007:
         case formula_grammar_t::xlsx_2010:
-            mp_impl->mp_name_resolver =
-                ixion::formula_name_resolver::get(
-                    ixion::formula_name_resolver_t::excel_a1, &mp_impl->m_context);
-        break;
+            resolver_type = ixion::formula_name_resolver_t::excel_a1;
+            break;
         case formula_grammar_t::ods:
-            mp_impl->mp_name_resolver =
-                ixion::formula_name_resolver::get(
-                    ixion::formula_name_resolver_t::odff, &mp_impl->m_context);
-        break;
+            resolver_type = ixion::formula_name_resolver_t::odff;
+            break;
         case formula_grammar_t::gnumeric:
             // TODO : Use Excel A1 name resolver for now.
-            mp_impl->mp_name_resolver =
-                ixion::formula_name_resolver::get(
-                    ixion::formula_name_resolver_t::excel_a1, &mp_impl->m_context);
-        break;
+            resolver_type = ixion::formula_name_resolver_t::excel_a1;
+            break;
         default:
             mp_impl->mp_name_resolver.reset();
+    }
+
+    mp_impl->mp_name_resolver.reset();
+
+    if (resolver_type != ixion::formula_name_resolver_t::unknown)
+    {
+        mp_impl->mp_name_resolver =
+            ixion::formula_name_resolver::get(resolver_type, &mp_impl->m_context);
     }
 }
 

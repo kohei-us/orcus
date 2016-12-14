@@ -91,6 +91,9 @@ protected:
 
     const config& get_config() const;
 
+    pstring intern(const xml_token_attr_t& attr);
+    pstring intern(const pstring& s);
+
 private:
     config m_config;
     const xmlns_context* mp_ns_cxt;

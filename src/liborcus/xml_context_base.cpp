@@ -6,6 +6,8 @@
  */
 
 #include "xml_context_base.hpp"
+#include "session_context.hpp"
+
 #include "orcus/exception.hpp"
 #include "orcus/tokens.hpp"
 
@@ -198,6 +200,19 @@ void xml_context_base::xml_element_expected(
 const config& xml_context_base::get_config() const
 {
     return m_config;
+}
+
+pstring xml_context_base::intern(const xml_token_attr_t& attr)
+{
+    if (!attr.transient)
+        return attr.value;
+
+    return m_session_cxt.m_string_pool.intern(attr.value).first;
+}
+
+pstring xml_context_base::intern(const pstring& s)
+{
+    return m_session_cxt.m_string_pool.intern(s).first;
 }
 
 }

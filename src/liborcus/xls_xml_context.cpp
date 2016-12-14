@@ -103,38 +103,6 @@ public:
     long get_row_index() const { return m_row_index; }
 };
 
-class cell_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-    long m_col_index;
-public:
-    cell_attr_parser() : m_col_index(-1) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.value.empty())
-            return;
-
-        if (attr.ns == NS_xls_xml_ss)
-        {
-            switch (attr.name)
-            {
-                case XML_Index:
-                {
-                    const char* p = attr.value.get();
-                    const char* p_end = p + attr.value.size();
-                    m_col_index = to_long(p, p_end);
-                }
-                break;
-                default:
-                    ;
-            }
-        }
-    }
-
-    long get_col_index() const { return m_col_index; }
-};
-
-
 }
 
 xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
@@ -173,7 +141,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
         {
             case XML_Workbook:
                 // Do nothing.
-            break;
+                break;
             case XML_Worksheet:
             {
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
@@ -181,11 +149,11 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 mp_cur_sheet = mp_factory->append_sheet(sheet_name.get(), sheet_name.size());
                 m_cur_row = 0;
                 m_cur_col = 0;
+                break;
             }
-            break;
             case XML_Table:
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Worksheet);
-            break;
+                break;
             case XML_Row:
             {
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Table);
@@ -196,24 +164,16 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                     // 1-based row index. Convert it to a 0-based one.
                     m_cur_row = row_index - 1;
                 }
+                break;
             }
-            break;
             case XML_Cell:
-            {
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Row);
-                long col_index = for_each(attrs.begin(), attrs.end(), cell_attr_parser()).get_col_index();
-                if (col_index > 0)
-                {
-                    // 1-based column index. Convert it to a 0-based one.
-                    m_cur_col = col_index - 1;
-                }
-            }
-            break;
+                start_element_cell(parent, attrs);
+                break;
             case XML_Data:
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Cell);
                 m_cur_cell_type = for_each(attrs.begin(), attrs.end(), data_attr_parser()).get_cell_type();
                 m_cur_cell_string.clear();
-            break;
+                break;
             default:
                 warn_unhandled();
         }
@@ -230,13 +190,13 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
         {
             case XML_Row:
                 ++m_cur_row;
-            break;
+                break;
             case XML_Cell:
                 ++m_cur_col;
-            break;
+                break;
             case XML_Data:
                 push_cell();
-            break;
+                break;
             default:
                 ;
         }
@@ -261,27 +221,80 @@ void xls_xml_context::characters(const pstring& str, bool transient)
                     m_cur_cell_string.push_back(m_pool.intern(str).first);
                 else
                     m_cur_cell_string.push_back(str);
+
+                break;
             }
-            break;
             case ct_number:
             {
                 const char* p = str.get();
                 m_cur_cell_value = to_double(p, p + str.size());
+                break;
             }
-            break;
             default:
                 ;
         }
     }
 }
 
+void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_xls_xml_ss, XML_Row);
+
+    long col_index = 0;
+    pstring formula;
+
+    std::for_each(attrs.begin(), attrs.end(),
+        [&](const xml_token_attr_t& attr)
+        {
+            if (attr.value.empty())
+                return;
+
+            if (attr.ns != NS_xls_xml_ss)
+                return;
+
+            switch (attr.name)
+            {
+                case XML_Index:
+                    col_index = to_long(attr.value);
+                    break;
+                case XML_Formula:
+                    if (attr.value[0] == '=' && attr.value.size() > 1)
+                    {
+                        pstring s(attr.value.get()+1, attr.value.size()-1);
+                        formula = s;
+                        if (attr.transient)
+                            formula = intern(s);
+                    }
+                    break;
+                default:
+                    ;
+            }
+        }
+    );
+
+    if (!formula.empty())
+        m_cur_cell_formula = formula;
+
+    if (col_index > 0)
+    {
+        // 1-based column index. Convert it to a 0-based one.
+        m_cur_col = col_index - 1;
+    }
+}
+
 void xls_xml_context::push_cell()
 {
+    if (!m_cur_cell_formula.empty())
+    {
+        push_formula_cell();
+        return;
+    }
+
     switch (m_cur_cell_type)
     {
         case ct_number:
             mp_cur_sheet->set_value(m_cur_row, m_cur_col, m_cur_cell_value);
-        break;
+            break;
         case ct_string:
         {
             spreadsheet::iface::import_shared_strings* ss = mp_factory->get_shared_strings();
@@ -306,11 +319,31 @@ void xls_xml_context::push_cell()
                 mp_cur_sheet->set_string(m_cur_row, m_cur_col, ss->append(&s[0], s.size()));
             }
             m_cur_cell_string.clear();
+
+            break;
         }
-        break;
         default:
             ;
     }
+}
+
+void xls_xml_context::push_formula_cell()
+{
+    mp_cur_sheet->set_formula(
+        m_cur_row, m_cur_col, spreadsheet::formula_grammar_t::xls_xml,
+        m_cur_cell_formula.get(), m_cur_cell_formula.size());
+
+    switch (m_cur_cell_type)
+    {
+        case ct_number:
+            mp_cur_sheet->set_formula_result(m_cur_row, m_cur_col, m_cur_cell_value);
+            break;
+        default:
+            ;
+    }
+
+
+    m_cur_cell_formula.clear();
 }
 
 }
