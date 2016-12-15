@@ -1,3 +1,7 @@
+  * support import of formula cells for xls-xml.
+
+  * implement pivot cache import for xlsx.
+
 orcus 0.12.1
 
   * fix build when --disable-spreadsheet-model is specified and the
