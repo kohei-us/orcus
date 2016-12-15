@@ -24,7 +24,8 @@ using namespace std;
 namespace {
 
 const char* dirs[] = {
-    SRCDIR"/test/xls-xml/basic/"
+    SRCDIR"/test/xls-xml/basic/",
+    SRCDIR"/test/xls-xml/empty-rows/",
 };
 
 void test_xls_xml_import()
