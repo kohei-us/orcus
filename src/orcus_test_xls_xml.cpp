@@ -12,28 +12,25 @@
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
-#include <cstdlib>
 #include <cassert>
 #include <string>
-#include <iostream>
 #include <sstream>
+#include <vector>
 
 using namespace orcus;
 using namespace std;
 
 namespace {
 
-const char* dirs[] = {
+std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/basic/",
     SRCDIR"/test/xls-xml/empty-rows/",
 };
 
 void test_xls_xml_import()
 {
-    size_t n = sizeof(dirs)/sizeof(dirs[0]);
-    for (size_t i = 0; i < n; ++i)
+    for (const char* dir : dirs)
     {
-        const char* dir = dirs[i];
         string path(dir);
 
         // Read the input.xml document.
