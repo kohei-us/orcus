@@ -406,12 +406,16 @@ void orcus_xlsx::read_sheet(const string& dir_path, const string& file_name, xls
     if (!sheet)
         throw general_error("orcus_xlsx::read_sheet: failed to append sheet.");
 
+    spreadsheet::iface::import_reference_resolver* resolver = mp_impl->mp_factory->get_reference_resolver();
+    if (!resolver)
+        throw general_error("orcus_xlsx::read_sheet: reference resolver interface is not available.");
+
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
         reinterpret_cast<const char*>(&buffer[0]), buffer.size());
 
     auto handler = orcus::make_unique<xlsx_sheet_xml_handler>(
-        mp_impl->m_cxt, ooxml_tokens, data->id-1, sheet);
+        mp_impl->m_cxt, ooxml_tokens, data->id-1, *resolver, *sheet);
 
     parser.set_handler(handler.get());
     parser.parse();

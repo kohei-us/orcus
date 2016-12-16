@@ -115,7 +115,17 @@ public:
 
     virtual void set_row_hidden(orcus::spreadsheet::row_t row, bool hidden);
 
-    virtual void set_merge_cell_range(const char* p_ref, size_t p_ref_len);
+    virtual void set_merge_cell_range(const range_t& range);
+};
+
+class import_reference_resolver : public orcus::spreadsheet::iface::import_reference_resolver
+{
+public:
+    virtual ~import_reference_resolver() override;
+
+    virtual address_t resolve_address(const char* p, size_t n) override;
+
+    virtual range_t resolve_range(const char* p, size_t n) override;
 };
 
 /**

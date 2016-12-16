@@ -8,14 +8,14 @@
 #ifndef INCLUDED_ORCUS_EXCEPTION_HPP
 #define INCLUDED_ORCUS_EXCEPTION_HPP
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 #include "env.hpp"
 
 namespace orcus {
 
-class ORCUS_PSR_DLLPUBLIC general_error : public ::std::exception
+class ORCUS_PSR_DLLPUBLIC general_error : public std::exception
 {
 public:
     explicit general_error(const std::string& msg);
@@ -26,7 +26,7 @@ private:
     ::std::string m_msg;
 };
 
-class ORCUS_PSR_DLLPUBLIC invalid_arg_error : public general_error
+class ORCUS_PSR_DLLPUBLIC invalid_arg_error : public std::invalid_argument
 {
 public:
     explicit invalid_arg_error(const std::string& msg);

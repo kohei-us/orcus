@@ -284,9 +284,12 @@ void xlsx_sheet_context::formula::reset()
 }
 
 xlsx_sheet_context::xlsx_sheet_context(
-    session_context& session_cxt, const tokens& tokens, spreadsheet::sheet_t sheet_id, spreadsheet::iface::import_sheet* sheet) :
+    session_context& session_cxt, const tokens& tokens, spreadsheet::sheet_t sheet_id,
+    spreadsheet::iface::import_reference_resolver& resolver,
+    spreadsheet::iface::import_sheet& sheet) :
     xml_context_base(session_cxt, tokens),
-    mp_sheet(sheet),
+    m_resolver(resolver),
+    m_sheet(sheet),
     m_sheet_id(sheet_id),
     m_cur_row(-1),
     m_cur_col(-1),
@@ -318,10 +321,10 @@ xml_context_base* xlsx_sheet_context::create_child_context(xmlns_id_t ns, xml_to
         return mp_child.get();
     }
     else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting
-            && mp_sheet->get_conditional_format())
+            && m_sheet.get_conditional_format())
     {
         mp_child.reset(new xlsx_conditional_format_context(get_session_context(), get_tokens(),
-                    *mp_sheet->get_conditional_format()));
+                    *m_sheet.get_conditional_format()));
         mp_child->transfer_common(*this);
         return mp_child.get();
     }
@@ -335,7 +338,7 @@ void xlsx_sheet_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_
 
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
     {
-        spreadsheet::iface::import_auto_filter* af = mp_sheet->get_auto_filter();
+        spreadsheet::iface::import_auto_filter* af = m_sheet.get_auto_filter();
         if (!af)
             return;
 
@@ -365,7 +368,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             col_attr_parser func;
             func = for_each(attrs.begin(), attrs.end(), func);
 
-            spreadsheet::iface::import_sheet_properties* sheet_props = mp_sheet->get_sheet_properties();
+            spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
             if (sheet_props)
             {
                 double width = func.get_width();
@@ -390,13 +393,15 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_mergeCells);
 
-            spreadsheet::iface::import_sheet_properties* sheet_props = mp_sheet->get_sheet_properties();
+            spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
             if (sheet_props)
             {
                 // ref contains merged range in A1 reference style.
                 pstring ref = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_ref)).get_value();
-                sheet_props->set_merge_cell_range(ref.get(), ref.size());
+
+                spreadsheet::range_t range = m_resolver.resolve_range(ref.get(), ref.size());
+                sheet_props->set_merge_cell_range(range);
             }
         }
         break;
@@ -440,7 +445,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
 
             m_cur_col = -1;
 
-            spreadsheet::iface::import_sheet_properties* sheet_props = mp_sheet->get_sheet_properties();
+            spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
             if (sheet_props)
             {
                 length_t ht = func.get_height();
@@ -498,7 +503,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             pstring rid = for_each(attrs.begin(), attrs.end(), func).get_value();
 
             unique_ptr<xlsx_rel_table_info> p(new xlsx_rel_table_info);
-            p->sheet_interface = mp_sheet;
+            p->sheet_interface = &m_sheet;
             m_rel_extras.data.insert(
                 opc_rel_extras_t::map_type::value_type(rid, std::move(p)));
         }
@@ -577,7 +582,7 @@ void xlsx_sheet_context::end_element_cell()
     else if (m_cur_formula.type == spreadsheet::formula_t::data_table)
     {
         // Import data table.
-        spreadsheet::iface::import_data_table* dt = mp_sheet->get_data_table();
+        spreadsheet::iface::import_data_table* dt = m_sheet.get_data_table();
         if (dt)
         {
             if (m_cur_formula.data_table_2d)
@@ -618,7 +623,7 @@ void xlsx_sheet_context::end_element_cell()
     }
 
     if (m_cur_cell_xf)
-        mp_sheet->set_format(m_cur_row, m_cur_col, m_cur_cell_xf);
+        m_sheet.set_format(m_cur_row, m_cur_col, m_cur_cell_xf);
 
     // reset cell related parameters.
     m_cur_value.clear();
@@ -636,21 +641,21 @@ void xlsx_sheet_context::push_raw_cell_value()
         {
             // string cell
             size_t str_id = to_long(m_cur_value);
-            mp_sheet->set_string(m_cur_row, m_cur_col, str_id);
+            m_sheet.set_string(m_cur_row, m_cur_col, str_id);
         }
         break;
         case xlsx_ct_numeric:
         {
             // value cell
             double val = to_double(m_cur_value);
-            mp_sheet->set_value(m_cur_row, m_cur_col, val);
+            m_sheet.set_value(m_cur_row, m_cur_col, val);
         }
         break;
         case xlsx_ct_boolean:
         {
             // boolean cell
             bool val = to_long(m_cur_value) != 0;
-            mp_sheet->set_bool(m_cur_row, m_cur_col, val);
+            m_sheet.set_bool(m_cur_row, m_cur_col, val);
         }
         break;
         default:

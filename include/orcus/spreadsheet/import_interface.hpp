@@ -187,7 +187,7 @@ public:
      * @param p_range pointer to the first character of reference string.
      * @param n_range length of reference string.
      */
-    virtual void set_merge_cell_range(const char* p_range, size_t n_range) = 0;
+    virtual void set_merge_cell_range(const range_t& range) = 0;
 };
 
 /**
@@ -686,6 +686,40 @@ public:
     virtual orcus::spreadsheet::formula_grammar_t get_default_formula_grammar() const = 0;
 };
 
+class ORCUS_DLLPUBLIC import_reference_resolver
+{
+public:
+    virtual ~import_reference_resolver();
+
+    /**
+     * Resolve a textural representation of a single cell address.
+     *
+     * @param p pointer to the first character of the single cell address
+     *          string.
+     * @param n size of the single cell address string.
+     *
+     * @return structure containing the column and row positions of the
+     *         address.
+     *
+     * @exception orcus::invalid_arg_error the string is not a valid
+     *        single cell addreess.
+     */
+    virtual address_t resolve_address(const char* p, size_t n) = 0;
+
+    /**
+     * Resolve a textural representation of a range address.
+     *
+     * @param p pointer to the first character of the range address string.
+     * @param n size of the range address string.
+     *
+     * @return structure containing the start and end positions of the range
+     *         address.
+     *
+     * @exception invalid_arg_error the string is not a valid range addreess.
+     */
+    virtual range_t resolve_range(const char* p, size_t n) = 0;
+};
+
 /**
  * This interface provides the filters a means to instantiate concrete
  * classes that implement the above interfaces.  The client code never has
@@ -714,6 +748,8 @@ public:
      *         client app doesn't support styles.
      */
     virtual import_styles* get_styles();
+
+    virtual import_reference_resolver* get_reference_resolver();
 
     /**
      * Create an interface for pivot cache definition import for a specified

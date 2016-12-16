@@ -19,8 +19,10 @@ namespace orcus {
 
 xlsx_sheet_xml_handler::xlsx_sheet_xml_handler(
     session_context& session_cxt, const tokens& tokens,
-    spreadsheet::sheet_t sheet_id, spreadsheet::iface::import_sheet* sheet) :
-    xml_stream_handler(new xlsx_sheet_context(session_cxt, tokens, sheet_id, sheet))
+    spreadsheet::sheet_t sheet_id,
+    spreadsheet::iface::import_reference_resolver& resolver,
+    spreadsheet::iface::import_sheet& sheet) :
+    xml_stream_handler(new xlsx_sheet_context(session_cxt, tokens, sheet_id, resolver, sheet))
 {
 }
 

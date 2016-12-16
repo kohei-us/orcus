@@ -25,6 +25,7 @@ namespace spreadsheet { namespace iface {
 
 class import_sheet;
 class import_table;
+class import_reference_resolver;
 class import_pivot_cache_definition;
 class import_pivot_cache_records;
 
@@ -35,7 +36,9 @@ class xlsx_sheet_xml_handler : public xml_stream_handler
 public:
     xlsx_sheet_xml_handler(
         session_context& cxt, const tokens& tokens,
-        spreadsheet::sheet_t sheet_id, spreadsheet::iface::import_sheet* import_sheet);
+        spreadsheet::sheet_t sheet_id,
+        spreadsheet::iface::import_reference_resolver& resolver,
+        spreadsheet::iface::import_sheet& sheet);
 
     virtual ~xlsx_sheet_xml_handler();
 

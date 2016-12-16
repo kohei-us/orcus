@@ -12,10 +12,61 @@
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/global_settings.hpp"
+#include "orcus/exception.hpp"
 
 #include "factory_pivot.hpp"
 
+#include <ixion/formula_name_resolver.hpp>
+#include <sstream>
+
 namespace orcus { namespace spreadsheet {
+
+class import_ref_resolver : public iface::import_reference_resolver
+{
+    std::unique_ptr<ixion::formula_name_resolver> m_resolver;
+
+public:
+    import_ref_resolver() :
+        m_resolver(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, nullptr))
+    {}
+
+    virtual address_t resolve_address(const char* p, size_t n) override
+    {
+        ixion::formula_name_t name = m_resolver->resolve(p, n, ixion::abs_address_t());
+
+        if (name.type != ixion::formula_name_t::cell_reference)
+        {
+            std::ostringstream os;
+            os << pstring(p, n) << " is not a valid cell address.";
+            throw orcus::invalid_arg_error(os.str());
+        }
+
+        address_t ret;
+        ret.column = name.address.col;
+        ret.row = name.address.row;
+        return ret;
+    }
+
+    virtual range_t resolve_range(const char* p, size_t n) override
+    {
+        ixion::formula_name_t name = m_resolver->resolve(p, n, ixion::abs_address_t());
+
+        if (name.type != ixion::formula_name_t::range_reference)
+        {
+            std::ostringstream os;
+            os << pstring(p, n) << " is not a valid range address.";
+            throw orcus::invalid_arg_error(os.str());
+        }
+
+        range_t ret;
+        ret.first.column = name.range.first.col;
+        ret.first.row = name.range.first.row;
+        ret.last.column = name.range.last.col;
+        ret.last.row = name.range.last.row;
+
+        return ret;
+    }
+};
 
 struct import_factory_impl
 {
@@ -26,6 +77,7 @@ struct import_factory_impl
     import_global_settings m_global_settings;
     import_pivot_cache_def m_pc_def;
     import_pivot_cache_records m_pc_records;
+    import_ref_resolver m_ref_resolver;
 
     import_factory_impl(document& doc, row_t row_size, col_t col_size) :
         m_doc(doc),
@@ -57,6 +109,11 @@ iface::import_shared_strings* import_factory::get_shared_strings()
 iface::import_styles* import_factory::get_styles()
 {
     return mp_impl->m_doc.get_styles();
+}
+
+iface::import_reference_resolver* import_factory::get_reference_resolver()
+{
+    return &mp_impl->m_ref_resolver;
 }
 
 iface::import_pivot_cache_definition* import_factory::create_pivot_cache_definition(

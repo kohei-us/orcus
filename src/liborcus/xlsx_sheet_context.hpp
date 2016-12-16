@@ -22,7 +22,10 @@ namespace orcus {
 struct session_context;
 
 namespace spreadsheet { namespace iface {
-    class import_sheet;
+
+class import_sheet;
+class import_reference_resolver;
+
 }}
 
 /**
@@ -51,7 +54,9 @@ public:
 
     xlsx_sheet_context(
         session_context& session_cxt, const tokens& tokens,
-        spreadsheet::sheet_t sheet_id, spreadsheet::iface::import_sheet* import_sheet);
+        spreadsheet::sheet_t sheet_id,
+        spreadsheet::iface::import_reference_resolver& resolver,
+        spreadsheet::iface::import_sheet& sheet);
     virtual ~xlsx_sheet_context();
 
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
@@ -71,7 +76,8 @@ private:
 private:
     std::unique_ptr<xml_context_base> mp_child;
 
-    spreadsheet::iface::import_sheet* mp_sheet; /// sheet model instance for the loaded document.
+    spreadsheet::iface::import_reference_resolver& m_resolver;
+    spreadsheet::iface::import_sheet& m_sheet; /// sheet model instance for the loaded document.
     string_pool m_pool;
     spreadsheet::sheet_t m_sheet_id; /// ID of this sheet.
     spreadsheet::row_t m_cur_row;

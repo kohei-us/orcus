@@ -21,6 +21,10 @@ using namespace orcus::spreadsheet::mock;
 
 namespace {
 
+class mock_ref_resolver : public import_reference_resolver
+{
+};
+
 class mock_sheet : public import_sheet
 {
 public:
@@ -48,7 +52,6 @@ public:
         assert(string(s, n) == "A1:A2");
         assert(string(s_range, n_range) == "B3:B4");
     }
-
 };
 
 class mock_sheet_properties : public import_sheet_properties
@@ -82,11 +85,12 @@ private:
 void test_cell_value()
 {
     mock_sheet sheet;
+    mock_ref_resolver resolver;
     session_context cxt(new xlsx_session_data);
     config opt;
     opt.structure_check = false;
 
-    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, &sheet);
+    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, resolver, sheet);
     context.set_config(opt);
 
     orcus::xmlns_id_t ns = NS_ooxml_xlsx;
@@ -107,11 +111,12 @@ void test_cell_value()
 void test_cell_bool()
 {
     mock_sheet sheet;
+    mock_ref_resolver resolver;
     session_context cxt(new xlsx_session_data);
     config opt;
     opt.structure_check = false;
 
-    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, &sheet);
+    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, resolver, sheet);
     context.set_config(opt);
 
     orcus::xmlns_id_t ns = NS_ooxml_xlsx;
@@ -133,11 +138,12 @@ void test_cell_bool()
 void test_array_formula()
 {
     mock_sheet sheet;
+    mock_ref_resolver resolver;
     session_context cxt(new xlsx_session_data);
     config opt;
     opt.structure_check = false;
 
-    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, &sheet);
+    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, resolver, sheet);
     context.set_config(opt);
 
     orcus::xmlns_id_t ns = NS_ooxml_xlsx;
@@ -166,11 +172,12 @@ void test_array_formula()
 void test_hidden_col()
 {
     mock_sheet2 sheet;
+    mock_ref_resolver resolver;
     session_context cxt(new xlsx_session_data);
     config opt;
     opt.structure_check = false;
 
-    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, &sheet);
+    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, resolver, sheet);
     context.set_config(opt);
 
     orcus::xmlns_id_t ns = NS_ooxml_xlsx;
@@ -186,11 +193,12 @@ void test_hidden_col()
 void test_hidden_row()
 {
     mock_sheet2 sheet;
+    mock_ref_resolver resolver;
     session_context cxt(new xlsx_session_data);
     config opt;
     opt.structure_check = false;
 
-    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, &sheet);
+    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, resolver, sheet);
     context.set_config(opt);
 
     orcus::xmlns_id_t ns = NS_ooxml_xlsx;

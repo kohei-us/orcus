@@ -35,7 +35,7 @@ const char* general_error::what() const throw()
 }
 
 invalid_arg_error::invalid_arg_error(const std::string& msg) :
-    general_error(msg) {}
+    std::invalid_argument(msg) {}
 
 invalid_arg_error::~invalid_arg_error() throw() {}
 

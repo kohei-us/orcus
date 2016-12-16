@@ -142,9 +142,27 @@ void import_sheet_properties::set_row_hidden(row_t, bool)
     assert(false);
 }
 
-void import_sheet_properties::set_merge_cell_range(const char*, size_t)
+void import_sheet_properties::set_merge_cell_range(const range_t&)
 {
     assert(false);
+}
+
+import_reference_resolver::~import_reference_resolver()
+{
+}
+
+spreadsheet::address_t import_reference_resolver::resolve_address(const char*, size_t)
+{
+    spreadsheet::address_t ret;
+    assert(false);
+    return ret;
+}
+
+spreadsheet::range_t import_reference_resolver::resolve_range(const char*, size_t)
+{
+    spreadsheet::range_t ret;
+    assert(false);
+    return ret;
 }
 
 // import_sheet
@@ -234,4 +252,3 @@ void import_sheet::set_formula_result(row_t, col_t, const char*, size_t)
 
 }}}
 
-/* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -575,24 +575,15 @@ void sheet::set_row_hidden(row_t row, bool hidden)
         mp_impl->m_row_hidden.insert(mp_impl->m_row_hidden_pos, row, row+1, hidden).first;
 }
 
-void sheet::set_merge_cell_range(const char* p_ref, size_t p_ref_len)
+void sheet::set_merge_cell_range(const range_t& range)
 {
-    // A1 style without '$' signs.
-    const ixion::formula_name_resolver* resolver = mp_impl->m_doc.get_formula_name_resolver();
-    if (!resolver)
-        return;
-
-    ixion::formula_name_t res = resolver->resolve(p_ref, p_ref_len, ixion::abs_address_t());
-    if (res.type != ixion::formula_name_t::range_reference)
-        return;
-
-    col_merge_size_type::iterator it_col = mp_impl->m_merge_ranges.find(res.range.first.col);
+    col_merge_size_type::iterator it_col = mp_impl->m_merge_ranges.find(range.first.column);
     if (it_col == mp_impl->m_merge_ranges.end())
     {
         std::unique_ptr<merge_size_type> p(new merge_size_type);
         pair<col_merge_size_type::iterator, bool> r =
             mp_impl->m_merge_ranges.insert(
-                col_merge_size_type::value_type(res.range.first.col, p.get()));
+                col_merge_size_type::value_type(range.first.column, p.get()));
 
         if (!r.second)
             // Insertion failed.
@@ -603,9 +594,9 @@ void sheet::set_merge_cell_range(const char* p_ref, size_t p_ref_len)
     }
 
     merge_size_type& col_data = *it_col->second;
-    merge_size sz(res.range.last.col-res.range.first.col+1, res.range.last.row-res.range.first.row+1);
+    merge_size sz(range.last.column-range.first.column+1, range.last.row-range.first.row+1);
     col_data.insert(
-        merge_size_type::value_type(res.range.first.row, sz));
+        merge_size_type::value_type(range.first.row, sz));
 }
 
 size_t sheet::get_string_identifier(row_t row, col_t col) const

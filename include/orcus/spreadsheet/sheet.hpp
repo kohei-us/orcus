@@ -84,7 +84,7 @@ public:
 
     void set_row_hidden(row_t row, bool hidden);
 
-    void set_merge_cell_range(const char* p_ref, size_t p_ref_len);
+    void set_merge_cell_range(const range_t& range);
 
     size_t get_string_identifier(row_t row, col_t col) const;
 

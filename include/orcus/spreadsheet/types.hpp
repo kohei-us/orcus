@@ -319,6 +319,18 @@ enum class pivot_cache_group_by_t
     years     // grouping on "years" for date values.
 };
 
+struct address_t
+{
+    row_t row;
+    col_t column;
+};
+
+struct range_t
+{
+    address_t first;
+    address_t last;
+};
+
 /**
  * Convert a string representation of a totals row function name to its
  * equivalent enum value.
