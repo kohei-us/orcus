@@ -386,9 +386,10 @@ class fill_color_attr_parser : public unary_function<xml_token_attr_t, void>
     spreadsheet::iface::import_styles& m_styles;
     const tokens& m_tokens;
     bool m_foreground;
+    bool m_debug;
 public:
-    fill_color_attr_parser(spreadsheet::iface::import_styles& styles, const tokens& _tokens, bool fg) :
-        m_styles(styles), m_tokens(_tokens), m_foreground(fg) {}
+    fill_color_attr_parser(spreadsheet::iface::import_styles& styles, const tokens& _tokens, bool fg, bool debug) :
+        m_styles(styles), m_tokens(_tokens), m_foreground(fg), m_debug(debug) {}
 
     void operator() (const xml_token_attr_t& attr)
     {
@@ -413,7 +414,8 @@ public:
             case XML_indexed:
             break;
             default:
-                cerr << "warning: unknown attribute [ " << m_tokens.get_token_name(attr.name) << " ]" << endl;
+                if (m_debug)
+                    cerr << "warning: unknown attribute [ " << m_tokens.get_token_name(attr.name) << " ]" << endl;
         }
     }
 };
@@ -652,13 +654,19 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
         case XML_fgColor:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_patternFill);
-            for_each(attrs.begin(), attrs.end(), fill_color_attr_parser(*mp_styles, get_tokens(), true));
+            for_each(
+                attrs.begin(), attrs.end(),
+                fill_color_attr_parser(
+                    *mp_styles, get_tokens(), true, get_config().debug));
         }
         break;
         case XML_bgColor:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_patternFill);
-            for_each(attrs.begin(), attrs.end(), fill_color_attr_parser(*mp_styles, get_tokens(), false));
+            for_each(
+                attrs.begin(), attrs.end(),
+                fill_color_attr_parser(
+                    *mp_styles, get_tokens(), false, get_config().debug));
         }
         break;
         case XML_borders:
