@@ -86,6 +86,16 @@ public:
 
     void set_merge_cell_range(const range_t& range);
 
+    /**
+     * Return the size of a merged cell range.
+     *
+     * @param row row position of the upper-left cell.
+     * @param col column position of the upper-left cell.
+     *
+     * @return merged cell range.
+     */
+    range_t get_merge_cell_range(row_t row, col_t col) const;
+
     size_t get_string_identifier(row_t row, col_t col) const;
 
     auto_filter_t* get_auto_filter_data();

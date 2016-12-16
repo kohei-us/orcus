@@ -599,6 +599,30 @@ void sheet::set_merge_cell_range(const range_t& range)
         merge_size_type::value_type(range.first.row, sz));
 }
 
+range_t sheet::get_merge_cell_range(row_t row, col_t col) const
+{
+    range_t ret;
+    ret.first.column = col;
+    ret.first.row = row;
+    ret.last.column = col;
+    ret.last.row = row;
+
+    col_merge_size_type::const_iterator it_col = mp_impl->m_merge_ranges.find(col);
+    if (it_col == mp_impl->m_merge_ranges.end())
+        return ret; // not a merged cell
+
+    const merge_size_type& col_data = *it_col->second;
+    merge_size_type::const_iterator it = col_data.find(row);
+    if (it == col_data.end())
+        return ret; // not a merged cell
+
+    const merge_size& ms = it->second;
+    ret.last.column += ms.width - 1;
+    ret.last.row += ms.height - 1;
+
+    return ret;
+}
+
 size_t sheet::get_string_identifier(row_t row, col_t col) const
 {
     const ixion::model_context& cxt = mp_impl->m_doc.get_model_context();

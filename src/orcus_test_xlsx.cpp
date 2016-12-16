@@ -204,6 +204,51 @@ void test_xlsx_table()
     assert(style.show_column_stripes == false);
 }
 
+void test_xlsx_merged_cells()
+{
+    string path(SRCDIR"/test/xlsx/merged-cells/simple.xlsx");
+
+    document doc;
+    import_factory factory(doc);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    const sheet* sheet1 = doc.get_sheet("Sheet1");
+    assert(sheet1);
+
+    spreadsheet::range_t merge_range = sheet1->get_merge_cell_range(0, 1);
+    assert(merge_range.first.column == 1);
+    assert(merge_range.last.column == 2);
+    assert(merge_range.first.row == 0);
+    assert(merge_range.last.row == 0);
+
+    merge_range = sheet1->get_merge_cell_range(0, 3);
+    assert(merge_range.first.column == 3);
+    assert(merge_range.last.column == 5);
+    assert(merge_range.first.row == 0);
+    assert(merge_range.last.row == 0);
+
+    merge_range = sheet1->get_merge_cell_range(1, 0);
+    assert(merge_range.first.column == 0);
+    assert(merge_range.last.column == 0);
+    assert(merge_range.first.row == 1);
+    assert(merge_range.last.row == 2);
+
+    merge_range = sheet1->get_merge_cell_range(3, 0);
+    assert(merge_range.first.column == 0);
+    assert(merge_range.last.column == 0);
+    assert(merge_range.first.row == 3);
+    assert(merge_range.last.row == 5);
+
+    merge_range = sheet1->get_merge_cell_range(2, 2);
+    assert(merge_range.first.column == 2);
+    assert(merge_range.last.column == 5);
+    assert(merge_range.first.row == 2);
+    assert(merge_range.last.row == 5);
+}
+
 void test_xlsx_pivot_two_pivot_caches()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
@@ -772,6 +817,7 @@ int main()
     test_xlsx_import();
     test_xlsx_table_autofilter();
     test_xlsx_table();
+    test_xlsx_merged_cells();
 
     // pivot table
     test_xlsx_pivot_two_pivot_caches();
