@@ -25,6 +25,7 @@ namespace {
 std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/basic/",
     SRCDIR"/test/xls-xml/empty-rows/",
+    SRCDIR"/test/xls-xml/merged-cells/",
 };
 
 void test_xls_xml_import()
