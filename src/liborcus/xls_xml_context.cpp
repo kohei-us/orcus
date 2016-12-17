@@ -11,8 +11,6 @@
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/measurement.hpp"
 
-#include <iostream>
-
 using namespace std;
 
 namespace orcus {
