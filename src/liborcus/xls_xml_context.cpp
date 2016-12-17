@@ -109,7 +109,10 @@ xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tok
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
     mp_cur_sheet(nullptr),
-    m_cur_row(0), m_cur_col(0), m_cur_cell_type(ct_unknown),
+    mp_sheet_props(nullptr),
+    m_cur_row(0), m_cur_col(0),
+    m_cur_merge_down(0), m_cur_merge_across(0),
+    m_cur_cell_type(ct_unknown),
     m_cur_cell_value(std::numeric_limits<double>::quiet_NaN())
 {
 }
@@ -147,6 +150,8 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
                 pstring sheet_name = for_each(attrs.begin(), attrs.end(), sheet_attr_parser()).get_name();
                 mp_cur_sheet = mp_factory->append_sheet(sheet_name.get(), sheet_name.size());
+                if (mp_cur_sheet)
+                    mp_sheet_props = mp_cur_sheet->get_sheet_properties();
                 m_cur_row = 0;
                 m_cur_col = 0;
                 break;
@@ -192,7 +197,7 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
                 ++m_cur_row;
                 break;
             case XML_Cell:
-                ++m_cur_col;
+                end_element_cell();
                 break;
             case XML_Data:
                 push_cell();
@@ -243,6 +248,9 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
     long col_index = 0;
     pstring formula;
 
+    m_cur_merge_across = 0; // extra column(s) that are part of the merged cell.
+    m_cur_merge_down = 0; // extra row(s) that are part of the merged cell.
+
     std::for_each(attrs.begin(), attrs.end(),
         [&](const xml_token_attr_t& attr)
         {
@@ -266,6 +274,12 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
                             formula = intern(s);
                     }
                     break;
+                case XML_MergeAcross:
+                    m_cur_merge_across = to_long(attr.value);
+                    break;
+                case XML_MergeDown:
+                    m_cur_merge_down = to_long(attr.value);
+                    break;
                 default:
                     ;
             }
@@ -280,6 +294,24 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
         // 1-based column index. Convert it to a 0-based one.
         m_cur_col = col_index - 1;
     }
+}
+
+void xls_xml_context::end_element_cell()
+{
+    if (mp_sheet_props && (m_cur_merge_across > 0 || m_cur_merge_down > 0))
+    {
+        spreadsheet::range_t merge_range;
+        merge_range.first.column = m_cur_col;
+        merge_range.first.row = m_cur_row;
+        merge_range.last.column = m_cur_col + m_cur_merge_across;
+        merge_range.last.row = m_cur_row + m_cur_merge_down;
+
+        mp_sheet_props->set_merge_cell_range(merge_range);
+    }
+
+    ++m_cur_col;
+    if (m_cur_merge_across > 0)
+        m_cur_col += m_cur_merge_across;
 }
 
 void xls_xml_context::push_cell()

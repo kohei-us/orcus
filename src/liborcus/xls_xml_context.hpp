@@ -20,6 +20,7 @@ namespace spreadsheet { namespace iface {
 
 class import_factory;
 class import_sheet;
+class import_sheet_properties;
 
 }}
 
@@ -41,6 +42,7 @@ public:
 
 private:
     void start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void end_element_cell();
 
     void push_cell();
     void push_formula_cell();
@@ -50,8 +52,11 @@ private:
 
     spreadsheet::iface::import_factory* mp_factory;
     spreadsheet::iface::import_sheet* mp_cur_sheet;
+    spreadsheet::iface::import_sheet_properties* mp_sheet_props;
     spreadsheet::row_t m_cur_row;
     spreadsheet::col_t m_cur_col;
+    spreadsheet::row_t m_cur_merge_down;
+    spreadsheet::col_t m_cur_merge_across;
     cell_type m_cur_cell_type;
     std::vector<pstring> m_cur_cell_string;
     double m_cur_cell_value;

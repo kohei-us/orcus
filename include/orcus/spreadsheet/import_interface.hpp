@@ -181,11 +181,10 @@ public:
     virtual void set_row_hidden(orcus::spreadsheet::row_t row, bool hidden) = 0;
 
     /**
-     * Specify merged cell range.  The range is given in a 2-dimensional
-     * A1-style reference.
+     * Specify merged cell range.
      *
-     * @param p_range pointer to the first character of reference string.
-     * @param n_range length of reference string.
+     * @param range structure containing the top-left and bottom-right
+     *              positions of the merged cell range.
      */
     virtual void set_merge_cell_range(const range_t& range) = 0;
 };
