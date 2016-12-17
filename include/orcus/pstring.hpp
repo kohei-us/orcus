@@ -30,6 +30,7 @@ public:
     pstring() : m_pos(nullptr), m_size(0) {}
     pstring(const char* _pos) : m_pos(_pos) { m_size = std::strlen(_pos); }
     pstring(const char* _pos, size_t _size) : m_pos(_pos), m_size(_size) {}
+    pstring(const std::string& s) : m_pos(s.data()), m_size(s.size()) {}
 
     ::std::string str() const { return ::std::string(m_pos, m_size); }
 

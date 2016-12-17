@@ -10,6 +10,7 @@
 #include "orcus/xml_namespace.hpp"
 #include "orcus/config.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
+#include "orcus/parser_base.hpp"
 
 #include "xml_stream_parser.hpp"
 #include "xls_xml_handler.hpp"
@@ -105,7 +106,16 @@ void orcus_xls_xml::read_stream(const char* content, size_t len)
         mp_impl->m_cxt, xls_xml_tokens, mp_impl->mp_factory);
 
     parser.set_handler(handler.get());
-    parser.parse();
+    try
+    {
+        parser.parse();
+    }
+    catch (const parse_error& e)
+    {
+        std::cerr << create_parse_error_output(pstring(content, len), e.offset()) << std::endl;
+        std::cerr << e.what() << std::endl;
+        return;
+    }
 
     mp_impl->mp_factory->finalize();
 }

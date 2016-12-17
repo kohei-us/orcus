@@ -9,8 +9,7 @@
 #define INCLUDED_ORCUS_STREAM_HPP
 
 #include "env.hpp"
-
-#include <string>
+#include "orcus/pstring.hpp"
 
 namespace orcus {
 
@@ -32,7 +31,7 @@ ORCUS_PSR_DLLPUBLIC std::string load_file_content(const char* filepath);
  * @return string formatted to be usable as an error message for stdout.
  */
 ORCUS_PSR_DLLPUBLIC std::string create_parse_error_output(
-    const std::string& strm, std::ptrdiff_t offset);
+    const pstring& strm, std::ptrdiff_t offset);
 
 }
 

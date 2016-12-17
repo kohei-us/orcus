@@ -19,9 +19,9 @@ namespace orcus {
 namespace {
 
 std::tuple<pstring, size_t, size_t> find_line_with_offset(
-    const std::string& strm, std::ptrdiff_t offset)
+    const pstring& strm, std::ptrdiff_t offset)
 {
-    const char* p0 = strm.data();
+    const char* p0 = strm.get();
     const char* p_end = p0 + strm.size();
     const char* p_offset = p0 + offset;
 
@@ -87,7 +87,7 @@ std::string load_file_content(const char* filepath)
     return os.str();
 }
 
-std::string create_parse_error_output(const std::string& strm, std::ptrdiff_t offset)
+std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset)
 {
     if (offset < 0)
         return std::string();
