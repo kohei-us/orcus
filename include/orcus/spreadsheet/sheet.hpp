@@ -18,6 +18,7 @@
 namespace orcus {
 
 class pstring;
+struct date_time_t;
 
 namespace spreadsheet {
 
@@ -130,6 +131,8 @@ public:
     row_t row_size() const;
     col_t col_size() const;
     sheet_t get_index() const;
+
+    date_time_t get_date_time(row_t row, col_t col) const;
 
     void finalize();
 

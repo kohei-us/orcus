@@ -27,6 +27,7 @@ namespace orcus {
 
 class pstring;
 class string_pool;
+struct date_time_t;
 
 namespace spreadsheet {
 
@@ -102,6 +103,8 @@ public:
     size_t sheet_size() const;
 
     void set_origin_date(int year, int month, int day);
+    date_time_t get_origin_date() const;
+
     void set_formula_grammar(formula_grammar_t grammar);
     formula_grammar_t get_formula_grammar() const;
 

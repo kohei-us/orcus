@@ -574,6 +574,11 @@ void document::set_origin_date(int year, int month, int day)
     mp_impl->m_origin_date.day = day;
 }
 
+date_time_t document::get_origin_date() const
+{
+    return mp_impl->m_origin_date;
+}
+
 void document::set_formula_grammar(formula_grammar_t grammar)
 {
     if (mp_impl->m_grammar == grammar)

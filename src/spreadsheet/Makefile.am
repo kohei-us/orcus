@@ -35,7 +35,7 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 
 liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_CPPFLAGS = $(AM_CPPFLAGS) $(LIBIXION_CFLAGS)
 liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_LDFLAGS = -no-undefined
-liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_LIBADD = $(LIBIXION_LIBS) \
+liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_LIBADD = $(LIBIXION_LIBS) $(BOOST_DATE_TIME_LIBS) \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	../liborcus/liborcus-@ORCUS_API_VERSION@.la
 

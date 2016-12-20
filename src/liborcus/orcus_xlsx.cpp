@@ -125,6 +125,16 @@ struct orcus_xlsx_impl
 orcus_xlsx::orcus_xlsx(spreadsheet::iface::import_factory* factory) :
     mp_impl(new orcus_xlsx_impl(factory, *this))
 {
+    if (!factory)
+        throw std::invalid_argument("factory instance is required.");
+
+    spreadsheet::iface::import_global_settings* gs = factory->get_global_settings();
+    if (gs)
+    {
+        gs->set_origin_date(1899, 12, 30);
+        gs->set_default_formula_grammar(spreadsheet::formula_grammar_t::xlsx_2007);
+    }
+
     mp_impl->m_ns_repo.add_predefined_values(NS_ooxml_all);
     mp_impl->m_ns_repo.add_predefined_values(NS_opc_all);
     mp_impl->m_ns_repo.add_predefined_values(NS_misc_all);

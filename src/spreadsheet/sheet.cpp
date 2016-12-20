@@ -46,9 +46,12 @@
 #include <ixion/model_context.hpp>
 #include <ixion/address.hpp>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #define ORCUS_DEBUG_SHEET 0
 
 using namespace std;
+using namespace boost;
 
 namespace orcus { namespace spreadsheet {
 
@@ -677,6 +680,76 @@ col_t sheet::col_size() const
 sheet_t sheet::get_index() const
 {
     return mp_impl->m_sheet;
+}
+
+date_time_t sheet::get_date_time(row_t row, col_t col) const
+{
+    const ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
+    const ixion::column_stores_t* stores = cxt.get_columns(mp_impl->m_sheet);
+    if (!stores)
+        throw orcus::general_error(
+            "sheet::get_date_time: failed to get column stores from the model.");
+
+    if (col < 0 || static_cast<size_t>(col) >= stores->size())
+    {
+        std::ostringstream os;
+        os << "invalid column index (" << col << ")";
+        throw std::invalid_argument(os.str());
+    }
+
+    const ixion::column_store_t* col_store = (*stores)[col];
+    assert(col_store);
+
+    if (row < 0 || static_cast<size_t>(row) >= col_store->size())
+    {
+        std::ostringstream os;
+        os << "invalid row index (" << row << ")";
+        throw std::invalid_argument(os.str());
+    }
+
+    double dt_raw = col_store->get<double>(row); // raw value as days since epoch.
+
+    double days_since_epoch = std::floor(dt_raw);
+    double time_fraction = dt_raw - days_since_epoch;
+
+    date_time_t dt_origin = mp_impl->m_doc.get_origin_date();
+
+    posix_time::ptime origin(
+        gregorian::date(
+            gregorian::greg_year(dt_origin.year),
+            gregorian::greg_month(dt_origin.month),
+            gregorian::greg_day(dt_origin.day)
+        )
+    );
+
+    posix_time::ptime date_part = origin + gregorian::days(days_since_epoch);
+
+    long hours = 0;
+    long minutes = 0;
+    double seconds = 0.0;
+
+    if (time_fraction)
+    {
+        // Convert a fraction day to microseconds.
+        double ms = time_fraction * 24.0 * 60.0 * 60.0 * 1000000.0;
+        posix_time::time_duration td = posix_time::microsec(ms);
+
+        hours = td.hours();
+        minutes = td.minutes();
+        seconds = td.seconds(); // long to double
+
+        td -= posix_time::hours(hours);
+        td -= posix_time::minutes(minutes);
+        td -= posix_time::seconds(seconds);
+
+        ms = td.total_microseconds(); // remaining microseconds.
+
+        seconds += ms / 1000000.0;
+    }
+
+    gregorian::date d = date_part.date();
+
+    return date_time_t(d.year(), d.month(), d.day(), hours, minutes, seconds);
 }
 
 void sheet::finalize()

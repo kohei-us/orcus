@@ -249,6 +249,44 @@ void test_xlsx_merged_cells()
     assert(merge_range.last.row == 5);
 }
 
+void test_xlsx_date_time()
+{
+    string path(SRCDIR"/test/xlsx/date-time/input.xlsx");
+
+    document doc;
+    import_factory factory(doc);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    const sheet* sheet1 = doc.get_sheet("Sheet1");
+    assert(sheet1);
+
+    // B1 contains date-only value.
+    date_time_t dt = sheet1->get_date_time(0, 1);
+    assert(dt == date_time_t(2016, 12, 14));
+
+    // B2 contains date-time value with no fraction seconds.
+    dt = sheet1->get_date_time(1, 1);
+    assert(dt == date_time_t(2002, 2, 3, 12, 34, 45));
+
+    // B3 contains date-time value with fraction second (1992-03-04 08:34:33.555)
+    dt = sheet1->get_date_time(2, 1);
+    assert(dt.year == 1992);
+    assert(dt.month == 3);
+    assert(dt.day == 4);
+    assert(dt.hour == 8);
+    assert(dt.minute == 34);
+    assert(std::floor(dt.second) == 33.0);
+
+    // Evalutate the fraction second as milliseconds.
+    double ms = dt.second * 1000.0;
+    ms -= std::floor(dt.second) * 1000.0;
+    ms = std::round(ms);
+    assert(ms == 555.0);
+}
+
 void test_xlsx_pivot_two_pivot_caches()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
@@ -818,6 +856,7 @@ int main()
     test_xlsx_table_autofilter();
     test_xlsx_table();
     test_xlsx_merged_cells();
+    test_xlsx_date_time();
 
     // pivot table
     test_xlsx_pivot_two_pivot_caches();
