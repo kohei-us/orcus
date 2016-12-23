@@ -48,8 +48,7 @@ template<typename _Handler>
 void csv_parser<_Handler>::parse()
 {
 #if ORCUS_DEBUG_CSV
-    const char* p = mp_char;
-    for (size_t i = m_pos; i < m_length; ++i, ++p)
+    for (const char* p = mp_begin; p < mp_end; ++p)
         std::cout << *p;
     std::cout << std::endl;
 #endif
