@@ -88,7 +88,9 @@ void csv_parser<_Handler>::row()
             return;
         }
 
-        assert(is_delim(c));
+        if (is_delim(c))
+            throw orcus::csv::parse_error("expected a delimiter");
+
         next();
 
         if (m_config.trim_cell_value)
