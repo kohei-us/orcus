@@ -94,6 +94,12 @@ void csv_parser<_Handler>::row()
 
         if (m_config.trim_cell_value)
             skip_blanks();
+
+        if (!has_char())
+        {
+            m_handler.end_row();
+            return;
+        }
     }
 }
 
