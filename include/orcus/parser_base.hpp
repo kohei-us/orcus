@@ -14,6 +14,7 @@
 #include <string>
 #include <cstdlib>
 #include <cstddef>
+#include <cassert>
 
 namespace orcus {
 
@@ -41,7 +42,11 @@ protected:
 protected:
     parser_base(const char* p, size_t n);
 
-    bool has_char() const { return mp_char != mp_end; }
+    bool has_char() const
+    {
+        assert(mp_char <= mp_end);
+        return mp_char != mp_end;
+    }
     bool has_next() const { return (mp_char+1) != mp_end; }
 
     void next(size_t inc=1);
