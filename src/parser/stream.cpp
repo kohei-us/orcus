@@ -35,6 +35,13 @@ std::tuple<pstring, size_t, size_t> find_line_with_offset(
 
     // Determine the beginning of the line.
     const char* p_line_start = p_offset;
+
+    // if the error points at the new line character
+    // we have most likely an unterminated quote.
+    // Report the line with the actual error.
+    if (*p_offset == '\n' && offset > 0)
+        --p_line_start;
+
     for (; p0 <= p_line_start; --p_line_start)
     {
         if (*p_line_start == '\n')
