@@ -97,6 +97,7 @@ void orcus_xls_xml::read_stream(const char* content, size_t len)
     if (!gs)
         return;
 
+    gs->set_origin_date(1899, 12, 30);
     gs->set_default_formula_grammar(spreadsheet::formula_grammar_t::xls_xml);
 
     xml_stream_parser parser(

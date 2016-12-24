@@ -11,6 +11,8 @@
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/measurement.hpp"
 
+#include <iostream>
+
 using namespace std;
 
 namespace orcus {
@@ -37,37 +39,6 @@ public:
     }
 
     pstring get_name() const { return m_name; }
-};
-
-class data_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-    xls_xml_context::cell_type m_type;
-
-public:
-    data_attr_parser() : m_type(xls_xml_context::ct_unknown) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_xls_xml_ss)
-        {
-            switch (attr.name)
-            {
-                case XML_Type:
-                {
-                    if (attr.value == "String")
-                        m_type = xls_xml_context::ct_string;
-                    else if (attr.value == "Number")
-                        m_type = xls_xml_context::ct_number;
-
-                }
-                break;
-                default:
-                    ;
-            }
-        }
-    }
-
-    xls_xml_context::cell_type get_cell_type() const { return m_type; }
 };
 
 class row_attr_parser : public unary_function<xml_token_attr_t, void>
@@ -173,9 +144,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 start_element_cell(parent, attrs);
                 break;
             case XML_Data:
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Cell);
-                m_cur_cell_type = for_each(attrs.begin(), attrs.end(), data_attr_parser()).get_cell_type();
-                m_cur_cell_string.clear();
+                start_element_data(parent, attrs);
                 break;
             default:
                 warn_unhandled();
@@ -198,7 +167,7 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
                 end_element_cell();
                 break;
             case XML_Data:
-                push_cell();
+                end_element_data();
                 break;
             default:
                 ;
@@ -233,8 +202,15 @@ void xls_xml_context::characters(const pstring& str, bool transient)
                 m_cur_cell_value = to_double(p, p + str.size());
                 break;
             }
+            case ct_datetime:
+                m_cur_cell_datetime = to_date_time(str);
+                break;
             default:
-                ;
+                if (get_config().debug)
+                {
+                    cout << "warning: unknown cell type '" << m_cur_cell_type
+                        << "': characters='" << str << "'" << endl;
+                }
         }
     }
 }
@@ -312,7 +288,41 @@ void xls_xml_context::end_element_cell()
         m_cur_col += m_cur_merge_across;
 }
 
-void xls_xml_context::push_cell()
+void xls_xml_context::start_element_data(
+    const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_xls_xml_ss, XML_Cell);
+
+    m_cur_cell_type = ct_unknown;
+    m_cur_cell_string.clear();
+    m_cur_cell_datetime = date_time_t();
+
+    std::for_each(attrs.begin(), attrs.end(),
+        [&](const xml_token_attr_t& attr)
+        {
+            if (attr.ns != NS_xls_xml_ss)
+                return;
+
+            switch (attr.name)
+            {
+                case XML_Type:
+                {
+                    if (attr.value == "String")
+                        m_cur_cell_type = ct_string;
+                    else if (attr.value == "Number")
+                        m_cur_cell_type = ct_number;
+                    else if (attr.value == "DateTime")
+                        m_cur_cell_type = ct_datetime;
+                }
+                break;
+                default:
+                    ;
+            }
+        }
+    );
+}
+
+void xls_xml_context::end_element_data()
 {
     if (!m_cur_cell_formula.empty())
     {
@@ -352,8 +362,17 @@ void xls_xml_context::push_cell()
 
             break;
         }
+        case ct_datetime:
+        {
+            mp_cur_sheet->set_date_time(
+                m_cur_row, m_cur_col,
+                m_cur_cell_datetime.year, m_cur_cell_datetime.month, m_cur_cell_datetime.day,
+                m_cur_cell_datetime.hour, m_cur_cell_datetime.minute, m_cur_cell_datetime.second);
+            break;
+        }
         default:
-            ;
+            if (get_config().debug)
+                cout << "warning: unknown cell type '" << m_cur_cell_type << "': value not pushed." << endl;
     }
 }
 

@@ -27,7 +27,7 @@ class import_sheet_properties;
 class xls_xml_context : public xml_context_base
 {
 public:
-    enum cell_type { ct_unknown = 0, ct_string, ct_number };
+    enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };
 
     xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
     virtual ~xls_xml_context();
@@ -44,7 +44,9 @@ private:
     void start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void end_element_cell();
 
-    void push_cell();
+    void start_element_data(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void end_element_data();
+
     void push_formula_cell();
 
 private:
@@ -60,6 +62,7 @@ private:
     cell_type m_cur_cell_type;
     std::vector<pstring> m_cur_cell_string;
     double m_cur_cell_value;
+    date_time_t m_cur_cell_datetime;
     pstring m_cur_cell_formula;
 };
 

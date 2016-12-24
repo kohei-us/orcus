@@ -47,6 +47,7 @@
 #include <ixion/address.hpp>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/gregorian/greg_date.hpp>
 
 #define ORCUS_DEBUG_SHEET 0
 
@@ -376,27 +377,28 @@ void sheet::set_bool(row_t row, col_t col, bool value)
 
 void sheet::set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second)
 {
-    // I'll convert this into a string value for now.
+    // Convert this to a double value representing days since epoch.
 
-    ostringstream os;
-    os << year << '-';
-    if (month < 10)
-        os << '0';
-    os << month << '-';
-    if (day < 10)
-        os << '0';
-    os << day << 'T';
-    if (hour < 10)
-        os << '0';
-    os << hour << ':';
-    if (minute < 10)
-        os << '0';
-    os << minute << ':';
-    if (second < 10.0)
-        os << '0';
-    os << second;
-    string s = os.str();
-    set_auto(row, col, &s[0], s.size());
+    date_time_t dt_origin = mp_impl->m_doc.get_origin_date();
+
+    gregorian::date origin(dt_origin.year, dt_origin.month, dt_origin.day);
+    gregorian::date d(year, month, day);
+
+    double days_since_epoch = (d - origin).days();
+
+    double ms = second * 1000000.0;
+
+    posix_time::time_duration t(
+        posix_time::hours(hour) +
+        posix_time::minutes(minute) +
+        posix_time::microseconds(ms)
+    );
+
+    double time_as_day = t.total_microseconds();
+    time_as_day /= 1000000.0; // microseconds to seconds
+    time_as_day /= 60.0 * 60.0 * 24.0; // seconds to day
+
+    set_value(row, col, days_since_epoch + time_as_day);
 }
 
 void sheet::set_format(row_t row, col_t col, size_t index)
