@@ -167,6 +167,13 @@ void json_parser<_Handler>::array()
                         "array: either ']' or ',' expected, but '", cur_char(), "' found.", offset());
             }
         }
+        else
+        {
+            // needs to be handled here,
+            // we would call next() before checking again with has_char() which
+            // is already past the end
+            break;
+        }
     }
 
     throw json::parse_error("array: failed to parse array.", offset());
