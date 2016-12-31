@@ -423,6 +423,9 @@ class parser_handler
                 auto r = jvo->value_object.insert(
                     std::make_pair(key, std::move(value)));
 
+                if (!r.second)
+                    throw json_document_error("adding the same key twice");
+
                 return r.first->second.get();
             }
             break;
