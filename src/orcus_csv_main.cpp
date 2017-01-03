@@ -12,6 +12,7 @@
 #include "orcus_filter_global.hpp"
 
 #include <cstdlib>
+#include <iostream>
 
 using namespace std;
 using namespace orcus;
@@ -22,8 +23,16 @@ int main(int argc, char** argv)
     spreadsheet::import_factory fact(doc);
     orcus_csv app(&fact);
 
-    if (parse_import_filter_args(app, doc, argc, argv))
+    try
+    {
+        if (parse_import_filter_args(app, doc, argc, argv))
+            return EXIT_FAILURE;
+    }
+    catch (const std::exception& e)
+    {
+        cerr << e.what() << endl;
         return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
