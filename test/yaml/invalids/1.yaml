@@ -1,0 +1,4 @@
+---
+  a:  # the first non-comment line should not be indented.
+b:
+
