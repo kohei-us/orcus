@@ -248,7 +248,9 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
                     throw yaml::parse_error("parse_line: line ended with '--'.", offset());
 
                 if (*p != '-')
-                    yaml::parse_error::throw_with("parse_line: '-' expected but '", *p, "' found.", offset());
+                    yaml::parse_error::throw_with(
+                        "parse_line: '-' expected but '", *p, "' found.",
+                        offset() - std::ptrdiff_t(p_end-p));
 
                 ++p; // Skip the '-'.
                 set_doc_hash(p);
@@ -272,7 +274,9 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
                 // list item start with inline first item content.
                 ++p;
                 if (p == p_end)
-                    throw yaml::parse_error("parse_line: list item expected, but the line ended prematurely.", offset());
+                    throw yaml::parse_error(
+                        "parse_line: list item expected, but the line ended prematurely.",
+                        offset() - std::ptrdiff_t(p_end-p));
 
                 skip_blanks(p, p_end-p);
 
@@ -311,7 +315,9 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
             skip_blanks(p, p_end-p);
 
             if (*p != ':')
-                throw yaml::parse_error("parse_map_key: ':' is expected after the quoted string key.", offset());
+                throw yaml::parse_error(
+                    "parse_map_key: ':' is expected after the quoted string key.",
+                    offset() - std::ptrdiff_t(p_end-p));
 
             check_or_begin_map();
             m_handler.begin_map_key();
@@ -339,7 +345,9 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
             skip_blanks(p, p_end-p);
 
             if (*p != ':')
-                throw yaml::parse_error("parse_map_key: ':' is expected after the quoted string key.", offset());
+                throw yaml::parse_error(
+                    "parse_map_key: ':' is expected after the quoted string key.",
+                    offset() - std::ptrdiff_t(p_end-p));
 
             check_or_begin_map();
             m_handler.begin_map_key();
@@ -390,7 +398,9 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
 
     // inline map item.
     if (*p == '-')
-        throw yaml::parse_error("parse_map_key: sequence entry is not allowed as an inline map item.", offset());
+        throw yaml::parse_error(
+            "parse_map_key: sequence entry is not allowed as an inline map item.",
+            offset() - std::ptrdiff_t(p_end-p));
 
     size_t scope_width = get_scope() + (p-p0);
     push_scope(scope_width);
