@@ -245,12 +245,12 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
                 // start of a document
                 ++p;
                 if (p == p_end)
-                    throw yaml::parse_error("parse_line: line ended with '--'.", offset());
+                    throw yaml::parse_error("parse_line: line ended with '--'.", offset()-1);
 
                 if (*p != '-')
                     yaml::parse_error::throw_with(
                         "parse_line: '-' expected but '", *p, "' found.",
-                        offset() - std::ptrdiff_t(p_end-p));
+                        offset() - std::ptrdiff_t(p_end-p+1));
 
                 ++p; // Skip the '-'.
                 set_doc_hash(p);
@@ -276,7 +276,7 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
                 if (p == p_end)
                     throw yaml::parse_error(
                         "parse_line: list item expected, but the line ended prematurely.",
-                        offset() - std::ptrdiff_t(p_end-p));
+                        offset() - std::ptrdiff_t(p_end-p+1));
 
                 skip_blanks(p, p_end-p);
 
@@ -317,7 +317,7 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
             if (*p != ':')
                 throw yaml::parse_error(
                     "parse_map_key: ':' is expected after the quoted string key.",
-                    offset() - std::ptrdiff_t(p_end-p));
+                    offset() - std::ptrdiff_t(p_end-p+1));
 
             check_or_begin_map();
             m_handler.begin_map_key();
@@ -347,7 +347,7 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
             if (*p != ':')
                 throw yaml::parse_error(
                     "parse_map_key: ':' is expected after the quoted string key.",
-                    offset() - std::ptrdiff_t(p_end-p));
+                    offset() - std::ptrdiff_t(p_end-p+1));
 
             check_or_begin_map();
             m_handler.begin_map_key();
@@ -400,7 +400,7 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
     if (*p == '-')
         throw yaml::parse_error(
             "parse_map_key: sequence entry is not allowed as an inline map item.",
-            offset() - std::ptrdiff_t(p_end-p));
+            offset() - std::ptrdiff_t(p_end-p+1));
 
     size_t scope_width = get_scope() + (p-p0);
     push_scope(scope_width);
