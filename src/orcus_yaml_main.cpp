@@ -6,6 +6,7 @@
  */
 
 #include "orcus/yaml_document_tree.hpp"
+#include "orcus/yaml_parser_base.hpp"
 #include "orcus/config.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/global.hpp"
@@ -139,6 +140,21 @@ std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
     return config;
 }
 
+std::unique_ptr<yaml_document_tree> load_doc(const std::string& strm)
+{
+    std::unique_ptr<yaml_document_tree> doc(orcus::make_unique<yaml_document_tree>());
+    try
+    {
+        doc->load(strm);
+    }
+    catch (const yaml::parse_error& e)
+    {
+        cerr << create_parse_error_output(strm, e.offset()) << endl;
+        throw;
+    }
+    return doc;
+}
+
 int main(int argc, char** argv)
 {
     std::unique_ptr<yaml_config> config = parse_yaml_args(argc, argv);
@@ -148,22 +164,20 @@ int main(int argc, char** argv)
     try
     {
         std::string strm = load_file_content(config->input_path.c_str());
-
-        yaml_document_tree doc;
-        doc.load(strm);
+        std::unique_ptr<yaml_document_tree> doc = load_doc(strm);
 
         switch (config->output_format)
         {
             case yaml_config::output_format_type::yaml:
             {
                 ofstream fs(config->output_path.c_str());
-                fs << doc.dump_yaml();
+                fs << doc->dump_yaml();
             }
             break;
             case yaml_config::output_format_type::json:
             {
                 ofstream fs(config->output_path.c_str());
-                fs << doc.dump_json();
+                fs << doc->dump_json();
             }
             break;
             default:

@@ -20,18 +20,18 @@
 
 namespace orcus { namespace yaml {
 
-parse_error::parse_error(const std::string& msg) :
-    ::orcus::parse_error(msg, 0) {}
+parse_error::parse_error(const std::string& msg, std::ptrdiff_t offset) :
+    ::orcus::parse_error(msg, offset) {}
 
-void parse_error::throw_with(const char* msg_before, char c, const char* msg_after)
+void parse_error::throw_with(const char* msg_before, char c, const char* msg_after, std::ptrdiff_t offset)
 {
-    throw parse_error(build_message(msg_before, c, msg_after));
+    throw parse_error(build_message(msg_before, c, msg_after), offset);
 }
 
 void parse_error::throw_with(
-    const char* msg_before, const char* p, size_t n, const char* msg_after)
+    const char* msg_before, const char* p, size_t n, const char* msg_after, std::ptrdiff_t offset)
 {
-    throw parse_error(build_message(msg_before, p, n, msg_after));
+    throw parse_error(build_message(msg_before, p, n, msg_after), offset);
 }
 
 struct scope
@@ -106,7 +106,7 @@ pstring parser_base::parse_to_end_of_line()
                     parse_to_closing_single_quote(mp_char, remaining_size());
 
                 if (!p_end)
-                    throw parse_error("parse_to_end_of_line: closing single quote was expected but not found.");
+                    throw parse_error("parse_to_end_of_line: closing single quote was expected but not found.", offset());
 
                 size_t diff = p_end - p_open_quote - 1;
 
@@ -126,7 +126,7 @@ pstring parser_base::parse_to_end_of_line()
                     parse_to_closing_double_quote(mp_char, remaining_size());
 
                 if (!p_end)
-                    throw parse_error("parse_to_end_of_line: closing double quote was expected but not found.");
+                    throw parse_error("parse_to_end_of_line: closing double quote was expected but not found.", offset());
 
                 size_t diff = p_end - p_open_quote - 1;
 
@@ -285,7 +285,8 @@ mdds::sorted_string_map<keyword_t>::entry keyword_entries[] = {
     { ORCUS_ASCII("~"),     keyword_t::null          },
 };
 
-void throw_quoted_string_parse_error(const char* func_name, const parse_quoted_string_state& ret)
+void throw_quoted_string_parse_error(
+    const char* func_name, const parse_quoted_string_state& ret, std::ptrdiff_t offset)
 {
     std::ostringstream os;
     os << func_name << ": failed to parse ";
@@ -296,7 +297,7 @@ void throw_quoted_string_parse_error(const char* func_name, const parse_quoted_s
     else
         os << "due to unknown reason.";
 
-    throw parse_error(os.str());
+    throw parse_error(os.str(), offset);
 }
 
 }
@@ -372,7 +373,7 @@ pstring parser_base::parse_single_quoted_string_value(const char*& p, size_t max
         parse_single_quoted_string(p, max_length, mp_impl->m_buffer);
 
     if (!ret.str)
-        throw_quoted_string_parse_error("parse_single_quoted_string_value", ret);
+        throw_quoted_string_parse_error("parse_single_quoted_string_value", ret, offset());
 
     return pstring(ret.str, ret.length);
 }
@@ -383,7 +384,7 @@ pstring parser_base::parse_double_quoted_string_value(const char*& p, size_t max
         parse_double_quoted_string(p, max_length, mp_impl->m_buffer);
 
     if (!ret.str)
-        throw_quoted_string_parse_error("parse_double_quoted_string_value", ret);
+        throw_quoted_string_parse_error("parse_double_quoted_string_value", ret, offset());
 
     return pstring(ret.str, ret.length);
 }
@@ -414,7 +415,7 @@ void parser_base::handle_line_in_literal(size_t indent)
         // Start a new multi-line string scope.
 
         if (indent == cur_scope)
-            throw yaml::parse_error("parse: first line of a literal block must be indented.");
+            throw yaml::parse_error("parse: first line of a literal block must be indented.", offset());
 
         push_scope(indent);
         set_scope_type(yaml::scope_t::multi_line_string);

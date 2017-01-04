@@ -217,7 +217,7 @@ class handler
             {
                 std::ostringstream os;
                 os << BOOST_CURRENT_FUNCTION << ": unstackable YAML value type (" << cur.node->print() << ").";
-                throw yaml::parse_error(os.str());
+                throw yaml_document_error(os.str());
             }
         }
 
