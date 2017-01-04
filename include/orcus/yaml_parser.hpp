@@ -74,7 +74,15 @@ void yaml_parser<_Handler>::parse()
             }
         }
 
-        if (cur_scope == scope_empty || indent > cur_scope)
+        if (cur_scope == scope_empty)
+        {
+            if (indent > 0)
+                throw yaml::parse_error(
+                    "first node of the document should not be indented.", offset());
+
+            push_scope(indent);
+        }
+        else if (indent > cur_scope)
         {
             push_scope(indent);
         }
@@ -255,6 +263,7 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
                 ++p; // Skip the '-'.
                 set_doc_hash(p);
                 m_handler.begin_document();
+                clear_scopes();
 
                 if (p != p_end)
                 {

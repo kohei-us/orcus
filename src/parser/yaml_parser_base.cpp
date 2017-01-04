@@ -174,6 +174,11 @@ void parser_base::push_scope(size_t scope_width)
     mp_impl->m_scopes.emplace_back(scope_width);
 }
 
+void parser_base::clear_scopes()
+{
+    mp_impl->m_scopes.clear();
+}
+
 scope_t parser_base::get_scope_type() const
 {
     assert(!mp_impl->m_scopes.empty());

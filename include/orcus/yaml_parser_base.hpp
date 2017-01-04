@@ -92,6 +92,8 @@ protected:
 
     void push_scope(size_t scope_width);
 
+    void clear_scopes();
+
     scope_t get_scope_type() const;
 
     void set_scope_type(scope_t type);
