@@ -1,0 +1,4 @@
+---
+key:
+a  # key is expected here but not found.
+
