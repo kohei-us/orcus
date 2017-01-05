@@ -193,7 +193,8 @@ orcus_xml_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 if WITH_ODS_FILTER
 
 bin_PROGRAMS += \
-	orcus-ods
+	orcus-ods \
+	orcus-styles-ods
 
 # orcus-ods
 
@@ -216,6 +217,28 @@ orcus_ods_LDADD = \
 
 
 orcus_ods_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
+
+# orcus-styles-ods
+
+orcus_styles_ods_SOURCES = \
+	orcus_filter_global.hpp \
+	orcus_filter_global.cpp \
+	orcus_ods_styles.cpp
+
+orcus_styles_ods_LDFLAGS = \
+	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
+	$(BOOST_FILESYSTEM_LDFLAGS) \
+	$(BOOST_SYSTEM_LDFLAGS)
+
+orcus_styles_ods_LDADD = \
+	liborcus/liborcus-@ORCUS_API_VERSION@.la \
+	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	$(BOOST_PROGRAM_OPTIONS_LIBS) \
+	$(BOOST_FILESYSTEM_LIBS) \
+	$(BOOST_SYSTEM_LIBS)
+
+orcus_styles_ods_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 endif # WITH_ODS_FILTER
 
