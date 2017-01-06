@@ -132,7 +132,9 @@ protected:
     void nest_up() { ++m_nest_level; }
     void nest_down()
     {
-        assert(m_nest_level > 0);
+        if (m_nest_level == 0)
+            throw malformed_xml_error("incorrect nesting in xml stream", offset());
+
         --m_nest_level;
     }
 
