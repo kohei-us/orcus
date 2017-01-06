@@ -364,7 +364,8 @@ liborcus_test_yaml_document_tree_SOURCES = \
 
 liborcus_test_yaml_document_tree_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
 
 liborcus_test_yaml_document_tree_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 

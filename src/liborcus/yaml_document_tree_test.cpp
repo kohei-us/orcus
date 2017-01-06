@@ -9,13 +9,18 @@
 #include "orcus/stream.hpp"
 #include "orcus/pstring.hpp"
 #include "orcus/global.hpp"
+#include "orcus/yaml_parser_base.hpp"
 
 #include <cassert>
 #include <iostream>
 #include <cmath>
 
+#include <boost/filesystem.hpp>
+
 using namespace orcus;
 using namespace std;
+
+namespace fs = boost::filesystem;
 
 bool string_expected(const yaml_document_tree::node& node, const char* expected)
 {
@@ -52,6 +57,42 @@ bool number_expected(
     expected = std::round(expected);
 
     return actual == expected;
+}
+
+void test_yaml_invalids()
+{
+    // Get all yaml files in this directory.
+    fs::path dirpath(SRCDIR"/test/yaml/invalids/");
+    fs::directory_iterator it_end;
+
+    size_t file_count = 0;
+
+    for (fs::directory_iterator it(dirpath); it != it_end; ++it)
+    {
+        auto path = it->path();
+        if (!fs::is_regular_file(path))
+            continue;
+
+        if (fs::extension(path) != ".yaml")
+            continue;
+
+        ++file_count;
+
+        string strm = load_file_content(path.string().data());
+        yaml_document_tree doc;
+
+        try
+        {
+            doc.load(strm);
+            assert(!"yaml::parse_error was not thrown, but expected to be.");
+        }
+        catch (const yaml::parse_error&)
+        {
+            // This is expected.
+        }
+    }
+
+    assert(file_count > 0);
 }
 
 void test_yaml_parse_basic1()
@@ -551,6 +592,7 @@ void test_yaml_parse_url()
 
 int main()
 {
+    test_yaml_invalids();
     test_yaml_parse_basic1();
     test_yaml_parse_basic2();
     test_yaml_parse_basic3();
