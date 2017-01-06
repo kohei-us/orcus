@@ -48,6 +48,8 @@ void yaml_parser<_Handler>::parse()
 
     while (has_char())
     {
+        reset_on_new_line();
+
         size_t indent = parse_indent();
         if (indent == parse_indent_end_of_stream)
             break;
@@ -253,12 +255,12 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
                 // start of a document
                 ++p;
                 if (p == p_end)
-                    throw yaml::parse_error("parse_line: line ended with '--'.", offset()-1);
+                    throw yaml::parse_error("parse_line: line ended with '--'.", offset_last_char_of_line());
 
                 if (*p != '-')
                     yaml::parse_error::throw_with(
                         "parse_line: '-' expected but '", *p, "' found.",
-                        offset() - std::ptrdiff_t(p_end-p+1));
+                        offset_last_char_of_line() - std::ptrdiff_t(p_end-p));
 
                 ++p; // Skip the '-'.
                 set_doc_hash(p);
@@ -285,7 +287,7 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
                 if (p == p_end)
                     throw yaml::parse_error(
                         "parse_line: list item expected, but the line ended prematurely.",
-                        offset() - std::ptrdiff_t(p_end-p+1));
+                        offset_last_char_of_line() - std::ptrdiff_t(p_end-p));
 
                 skip_blanks(p, p_end-p);
 

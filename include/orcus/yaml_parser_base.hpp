@@ -70,6 +70,16 @@ protected:
     ~parser_base();
 
     /**
+     * Get the offset position of the last character of the current line
+     * without comment or trailing whitespaces (if present).  Call this only
+     * after the current line has been parsed to the end, that is, only after
+     * parse_to_end_of_line() has been called.
+     *
+     * @return offset position of the last character of the current line.
+     */
+    size_t offset_last_char_of_line() const;
+
+    /**
      * Parse the prefix indent part of a line.
      *
      * @return number of whitespace characters encountered.
@@ -87,6 +97,8 @@ protected:
      * end-of-stream is reached.
      */
     void skip_comment();
+
+    void reset_on_new_line();
 
     size_t get_scope() const;
 

@@ -49,9 +49,16 @@ struct parser_base::impl
     std::deque<pstring> m_line_buffer;
     const char* m_document;
 
-    bool m_in_literal_block;
+    size_t m_comment_length;
 
-    impl() : m_document(nullptr), m_in_literal_block(false) {}
+    bool m_in_literal_block;
+    bool m_parsed_to_end_of_line;
+
+    impl() :
+        m_document(nullptr),
+        m_comment_length(0),
+        m_in_literal_block(false),
+        m_parsed_to_end_of_line(false) {}
 };
 
 const size_t parser_base::parse_indent_blank_line    = std::numeric_limits<size_t>::max();
@@ -62,6 +69,30 @@ parser_base::parser_base(const char* p, size_t n) :
     ::orcus::parser_base(p, n), mp_impl(orcus::make_unique<impl>()) {}
 
 parser_base::~parser_base() {}
+
+size_t parser_base::offset_last_char_of_line() const
+{
+    // The current parser position should be on the linefeed char after
+    // calling parse_to_end_of_line().
+    assert(mp_impl->m_parsed_to_end_of_line);
+
+    size_t pos = offset();
+
+    if (mp_impl->m_comment_length)
+    {
+        assert(mp_impl->m_comment_length < pos);
+        pos -= mp_impl->m_comment_length; // should be on the '#' character.
+    }
+
+    pos -= 1;
+
+    // Ignore any trailing whitespaces.
+    const char* p = mp_begin + pos;
+    for (; mp_begin < p && *p == ' '; --p, --pos)
+        ;
+
+    return pos;
+}
 
 size_t parser_base::parse_indent()
 {
@@ -147,6 +178,7 @@ pstring parser_base::parse_to_end_of_line()
     }
 
     pstring ret(p, len);
+    mp_impl->m_parsed_to_end_of_line = true;
     return ret;
 }
 
@@ -154,7 +186,9 @@ void parser_base::skip_comment()
 {
     assert(cur_char() == '#');
 
-    for (; has_char(); next())
+    size_t n = 1;
+
+    for (; has_char(); next(), ++n)
     {
         if (cur_char() == '\n')
         {
@@ -162,6 +196,14 @@ void parser_base::skip_comment()
             break;
         }
     }
+
+    mp_impl->m_comment_length = n;
+}
+
+void parser_base::reset_on_new_line()
+{
+    mp_impl->m_comment_length = 0;
+    mp_impl->m_parsed_to_end_of_line = false;
 }
 
 size_t parser_base::get_scope() const
@@ -320,6 +362,9 @@ keyword_t parser_base::parse_keyword(const char* p, size_t len)
 
 parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
 {
+    size_t scope = get_scope();
+    assert(scope != scope_empty);
+
     assert(*p != ' ');
     assert(len);
 
@@ -328,7 +373,7 @@ parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
     key_value kv;
 
     char last = 0;
-    bool in_key = true;
+    bool key_found = false;
 
     const char* p_head = p;
 
@@ -336,13 +381,13 @@ parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
     {
         if (*p == ' ')
         {
-            if (in_key)
+            if (!key_found)
             {
                 if (last == ':')
                 {
                     // Key found.
                     kv.key = pstring(p_head, p-p_head-1).trim();
-                    in_key = false;
+                    key_found = true;
                     p_head = nullptr;
                 }
             }
@@ -358,15 +403,22 @@ parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
 
     assert(p_head);
 
-    if (in_key && last == ':')
+    if (key_found)
+    {
+        // Key has already been found and the value comes after the ':'.
+        kv.value = pstring(p_head, p-p_head);
+    }
+    else if (last == ':')
     {
         // Line only contains a key and ends with ':'.
         kv.key = pstring(p_head, p-p_head-1).trim();
     }
     else
     {
-        // Key has already been found and the value comes after the ':'.
-        kv.value = pstring(p_head, p-p_head);
+        // Key has not been found.
+        scope_t st = get_scope_type();
+        if (st == scope_t::map)
+            throw yaml::parse_error("key was expected, but not found.", offset_last_char_of_line());
     }
 
     return kv;
