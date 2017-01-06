@@ -14,6 +14,7 @@
 #include "orcus_filter_global.hpp"
 
 #include <cstdlib>
+#include <iostream>
 
 using namespace std;
 using namespace orcus;
@@ -30,8 +31,9 @@ int main(int argc, char** argv)
     {
         import_ods::read_styles(content.c_str(), content.length(), &style);
     }
-    catch(...)
+    catch(std::exception& ex)
     {
+        std::cerr << ex.what() << std::endl;
         return EXIT_FAILURE;
     }
 
