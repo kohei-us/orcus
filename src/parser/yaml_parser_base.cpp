@@ -89,7 +89,8 @@ size_t parser_base::offset_last_char_of_line() const
     // calling parse_to_end_of_line().
     assert(mp_impl->m_parsed_to_end_of_line);
 
-    size_t pos = offset();
+    size_t pos = offset(); // character past the '\n'.
+    pos -= 1; // move back to the '\n'.
 
     if (mp_impl->m_comment_length)
     {

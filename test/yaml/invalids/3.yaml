@@ -1,0 +1,4 @@
+---
+- a
+c    # sequence element is expected, but not found.
+- b

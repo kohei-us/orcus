@@ -458,6 +458,11 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
         return;
     }
 
+    if (get_scope_type() == yaml::detail::scope_t::sequence)
+        yaml::parse_error::throw_with(
+            "'-' was expected for a sequence element, but '", *p, "' was found.",
+            offset_last_char_of_line()-len+1);
+
     // If the line doesn't start with a '-', it must be a dictionary key.
     parse_map_key(p, len);
 }
