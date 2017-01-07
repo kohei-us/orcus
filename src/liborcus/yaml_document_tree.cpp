@@ -549,7 +549,12 @@ double node::numeric_value() const
 
 }}
 
-yaml_document_tree::yaml_document_tree() : mp_impl(orcus::make_unique<impl>()) {}
+yaml_document_tree::yaml_document_tree() :
+    mp_impl(orcus::make_unique<impl>()) {}
+
+yaml_document_tree::yaml_document_tree(yaml_document_tree&& other) :
+    mp_impl(std::move(other.mp_impl)) {}
+
 yaml_document_tree::~yaml_document_tree() {}
 
 void yaml_document_tree::load(const std::string& strm)

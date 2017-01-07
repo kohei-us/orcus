@@ -59,6 +59,17 @@ bool number_expected(
     return actual == expected;
 }
 
+yaml_document_tree load_doc(const char* filepath)
+{
+    cout << filepath << endl;
+    string strm = load_file_content(filepath);
+    cout << strm << endl;
+    yaml_document_tree doc;
+    doc.load(strm);
+
+    return doc;
+}
+
 void test_yaml_invalids()
 {
     // Get all yaml files in this directory.
@@ -97,12 +108,7 @@ void test_yaml_invalids()
 
 void test_yaml_parse_basic1()
 {
-    const char* filepath = SRCDIR"/test/yaml/basic1/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/basic1/input.yaml");
 
     assert(doc.get_document_count() == 1);
 
@@ -242,12 +248,7 @@ void test_yaml_parse_basic1()
 
 void test_yaml_parse_basic2()
 {
-    const char* filepath = SRCDIR"/test/yaml/basic2/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/basic2/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -273,12 +274,7 @@ void test_yaml_parse_basic2()
 
 void test_yaml_parse_basic3()
 {
-    const char* filepath = SRCDIR"/test/yaml/basic3/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/basic3/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -315,12 +311,7 @@ void test_yaml_parse_basic3()
 
 void test_yaml_parse_null()
 {
-    const char* filepath = SRCDIR"/test/yaml/null/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/null/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -357,12 +348,7 @@ void test_yaml_parse_null()
 
 void test_yaml_parse_boolean()
 {
-    const char* filepath = SRCDIR"/test/yaml/boolean/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/boolean/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -429,12 +415,7 @@ void test_yaml_parse_boolean()
 
 void test_yaml_parse_quoted_string()
 {
-    const char* filepath = SRCDIR"/test/yaml/quoted-string/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/quoted-string/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -497,12 +478,7 @@ void test_yaml_parse_quoted_string()
 
 void test_yaml_parse_multi_line_1()
 {
-    const char* filepath = SRCDIR"/test/yaml/multi-line-1/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/multi-line-1/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -512,12 +488,7 @@ void test_yaml_parse_multi_line_1()
 
 void test_yaml_parse_multi_line_2()
 {
-    const char* filepath = SRCDIR"/test/yaml/multi-line-2/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/multi-line-2/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -527,12 +498,7 @@ void test_yaml_parse_multi_line_2()
 
 void test_yaml_parse_literal_block_1()
 {
-    const char* filepath = SRCDIR"/test/yaml/literal-block-1/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/literal-block-1/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -543,12 +509,7 @@ void test_yaml_parse_literal_block_1()
 
 void test_yaml_parse_literal_block_2()
 {
-    const char* filepath = SRCDIR"/test/yaml/literal-block-2/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/literal-block-2/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -564,12 +525,7 @@ void test_yaml_parse_literal_block_2()
 
 void test_yaml_parse_url()
 {
-    const char* filepath = SRCDIR"/test/yaml/url/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/url/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -592,12 +548,7 @@ void test_yaml_parse_url()
 
 void test_yaml_parse_empty_value_map_1()
 {
-    const char* filepath = SRCDIR"/test/yaml/empty-value-map-1/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-map-1/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);
@@ -611,12 +562,7 @@ void test_yaml_parse_empty_value_map_1()
 
 void test_yaml_parse_empty_value_map_2()
 {
-    const char* filepath = SRCDIR"/test/yaml/empty-value-map-2/input.yaml";
-    cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
-    yaml_document_tree doc;
-    doc.load(strm);
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-map-2/input.yaml");
 
     assert(doc.get_document_count() == 1);
     yaml_document_tree::node node = doc.get_document_root(0);

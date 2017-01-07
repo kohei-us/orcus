@@ -95,7 +95,10 @@ public:
     using node = yaml::detail::node;
 
     yaml_document_tree();
+    yaml_document_tree(const yaml_document_tree&) = delete;
+    yaml_document_tree(yaml_document_tree&& other);
     ~yaml_document_tree();
+
 
     void load(const std::string& strm);
 
