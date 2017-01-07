@@ -37,9 +37,9 @@ void parse_error::throw_with(
 struct scope
 {
     size_t width;
-    scope_t type;
+    detail::scope_t type;
 
-    scope(size_t _width) : width(_width), type(scope_t::unset) {}
+    scope(size_t _width) : width(_width), type(detail::scope_t::unset) {}
 };
 
 struct parser_base::impl
@@ -54,14 +54,14 @@ struct parser_base::impl
     bool m_in_literal_block;
     bool m_parsed_to_end_of_line;
 
-    parse_token_t m_last_token;
+    detail::parse_token_t m_last_token;
 
     impl() :
         m_document(nullptr),
         m_comment_length(0),
         m_in_literal_block(false),
         m_parsed_to_end_of_line(false),
-        m_last_token(parse_token_t::unknown) {}
+        m_last_token(detail::parse_token_t::unknown) {}
 };
 
 const size_t parser_base::parse_indent_blank_line    = std::numeric_limits<size_t>::max();
@@ -73,12 +73,12 @@ parser_base::parser_base(const char* p, size_t n) :
 
 parser_base::~parser_base() {}
 
-void parser_base::push_parse_token(parse_token_t t)
+void parser_base::push_parse_token(detail::parse_token_t t)
 {
     mp_impl->m_last_token = t;
 }
 
-parse_token_t parser_base::get_last_parse_token() const
+detail::parse_token_t parser_base::get_last_parse_token() const
 {
     return mp_impl->m_last_token;
 }
@@ -234,13 +234,13 @@ void parser_base::clear_scopes()
     mp_impl->m_scopes.clear();
 }
 
-scope_t parser_base::get_scope_type() const
+detail::scope_t parser_base::get_scope_type() const
 {
     assert(!mp_impl->m_scopes.empty());
     return mp_impl->m_scopes.back().type;
 }
 
-void parser_base::set_scope_type(scope_t type)
+void parser_base::set_scope_type(detail::scope_t type)
 {
     assert(!mp_impl->m_scopes.empty());
     mp_impl->m_scopes.back().type = type;
@@ -316,33 +316,33 @@ void parser_base::set_doc_hash(const char* hash)
 
 namespace {
 
-mdds::sorted_string_map<keyword_t>::entry keyword_entries[] = {
-    { ORCUS_ASCII("FALSE"), keyword_t::boolean_false },
-    { ORCUS_ASCII("False"), keyword_t::boolean_false },
-    { ORCUS_ASCII("N"),     keyword_t::boolean_false },
-    { ORCUS_ASCII("NO"),    keyword_t::boolean_false },
-    { ORCUS_ASCII("NULL"),  keyword_t::null          },
-    { ORCUS_ASCII("No"),    keyword_t::boolean_false },
-    { ORCUS_ASCII("Null"),  keyword_t::null          },
-    { ORCUS_ASCII("OFF"),   keyword_t::boolean_false },
-    { ORCUS_ASCII("ON"),    keyword_t::boolean_true  },
-    { ORCUS_ASCII("Off"),   keyword_t::boolean_false },
-    { ORCUS_ASCII("On"),    keyword_t::boolean_true  },
-    { ORCUS_ASCII("TRUE"),  keyword_t::boolean_true  },
-    { ORCUS_ASCII("True"),  keyword_t::boolean_true  },
-    { ORCUS_ASCII("Y"),     keyword_t::boolean_true  },
-    { ORCUS_ASCII("YES"),   keyword_t::boolean_true  },
-    { ORCUS_ASCII("Yes"),   keyword_t::boolean_true  },
-    { ORCUS_ASCII("false"), keyword_t::boolean_false },
-    { ORCUS_ASCII("n"),     keyword_t::boolean_false },
-    { ORCUS_ASCII("no"),    keyword_t::boolean_false },
-    { ORCUS_ASCII("null"),  keyword_t::null          },
-    { ORCUS_ASCII("off"),   keyword_t::boolean_false },
-    { ORCUS_ASCII("on"),    keyword_t::boolean_true  },
-    { ORCUS_ASCII("true"),  keyword_t::boolean_true  },
-    { ORCUS_ASCII("y"),     keyword_t::boolean_true  },
-    { ORCUS_ASCII("yes"),   keyword_t::boolean_true  },
-    { ORCUS_ASCII("~"),     keyword_t::null          },
+mdds::sorted_string_map<detail::keyword_t>::entry keyword_entries[] = {
+    { ORCUS_ASCII("FALSE"), detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("False"), detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("N"),     detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("NO"),    detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("NULL"),  detail::keyword_t::null          },
+    { ORCUS_ASCII("No"),    detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("Null"),  detail::keyword_t::null          },
+    { ORCUS_ASCII("OFF"),   detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("ON"),    detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("Off"),   detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("On"),    detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("TRUE"),  detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("True"),  detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("Y"),     detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("YES"),   detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("Yes"),   detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("false"), detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("n"),     detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("no"),    detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("null"),  detail::keyword_t::null          },
+    { ORCUS_ASCII("off"),   detail::keyword_t::boolean_false },
+    { ORCUS_ASCII("on"),    detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("true"),  detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("y"),     detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("yes"),   detail::keyword_t::boolean_true  },
+    { ORCUS_ASCII("~"),     detail::keyword_t::null          },
 };
 
 void throw_quoted_string_parse_error(
@@ -362,14 +362,14 @@ void throw_quoted_string_parse_error(
 
 }
 
-keyword_t parser_base::parse_keyword(const char* p, size_t len)
+detail::keyword_t parser_base::parse_keyword(const char* p, size_t len)
 {
-    static mdds::sorted_string_map<keyword_t> map(
+    static mdds::sorted_string_map<detail::keyword_t> map(
         keyword_entries,
         ORCUS_N_ELEMENTS(keyword_entries),
-        keyword_t::unknown);
+        detail::keyword_t::unknown);
 
-    keyword_t value = map.find(p, len);
+    detail::keyword_t value = map.find(p, len);
     return value;
 }
 
@@ -429,8 +429,8 @@ parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
     else
     {
         // Key has not been found.
-        scope_t st = get_scope_type();
-        if (st == scope_t::map)
+        detail::scope_t st = get_scope_type();
+        if (st == detail::scope_t::map)
             throw yaml::parse_error("key was expected, but not found.", offset_last_char_of_line());
     }
 
@@ -488,12 +488,12 @@ void parser_base::handle_line_in_literal(size_t indent)
             throw yaml::parse_error("parse: first line of a literal block must be indented.", offset());
 
         push_scope(indent);
-        set_scope_type(yaml::scope_t::multi_line_string);
+        set_scope_type(yaml::detail::scope_t::multi_line_string);
     }
     else
     {
         // The current scope is already a multi-line scope.
-        assert(get_scope_type() == yaml::scope_t::multi_line_string);
+        assert(get_scope_type() == yaml::detail::scope_t::multi_line_string);
         size_t leading_indent = indent - cur_scope;
         prev(leading_indent);
     }
@@ -504,8 +504,8 @@ void parser_base::handle_line_in_literal(size_t indent)
 
 void parser_base::handle_line_in_multi_line_string()
 {
-    if (get_scope_type() != yaml::scope_t::multi_line_string)
-        set_scope_type(yaml::scope_t::multi_line_string);
+    if (get_scope_type() != yaml::detail::scope_t::multi_line_string)
+        set_scope_type(yaml::detail::scope_t::multi_line_string);
 
     pstring line = parse_to_end_of_line();
     line = line.trim();

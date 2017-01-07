@@ -25,6 +25,8 @@ public:
     static void throw_with(const char* msg_before, const char* p, size_t n, const char* msg_after, std::ptrdiff_t offset);
 };
 
+namespace detail {
+
 enum class scope_t
 {
     unset,
@@ -68,6 +70,8 @@ enum class parse_token_t
     begin_sequence_element
 };
 
+}
+
 class ORCUS_PSR_DLLPUBLIC parser_base : public ::orcus::parser_base
 {
     struct impl;
@@ -96,9 +100,9 @@ protected:
     parser_base(const char* p, size_t n);
     ~parser_base();
 
-    void push_parse_token(parse_token_t t);
+    void push_parse_token(detail::parse_token_t t);
 
-    parse_token_t get_last_parse_token() const;
+    detail::parse_token_t get_last_parse_token() const;
 
     /**
      * Get the offset position of the last character of the current line
@@ -137,9 +141,9 @@ protected:
 
     void clear_scopes();
 
-    scope_t get_scope_type() const;
+    detail::scope_t get_scope_type() const;
 
-    void set_scope_type(scope_t type);
+    void set_scope_type(detail::scope_t type);
 
     /**
      * Pop the current scope and return the new scope width after the pop.
@@ -175,7 +179,7 @@ protected:
      */
     void set_doc_hash(const char* hash);
 
-    keyword_t parse_keyword(const char* p, size_t len);
+    detail::keyword_t parse_keyword(const char* p, size_t len);
 
     key_value parse_key_value(const char* p, size_t len);
 
