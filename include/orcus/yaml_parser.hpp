@@ -33,9 +33,130 @@ private:
     void parse_line(const char* p, size_t len);
     void parse_map_key(const char* p, size_t len);
 
+    void handler_begin_parse();
+    void handler_end_parse();
+    void handler_begin_document();
+    void handler_end_document();
+    void handler_begin_sequence();
+    void handler_end_sequence();
+    void handler_begin_map();
+    void handler_end_map();
+    void handler_begin_map_key();
+    void handler_end_map_key();
+    void handler_string(const char* p, size_t n);
+    void handler_number(double val);
+    void handler_boolean_true();
+    void handler_boolean_false();
+    void handler_null();
+
 private:
     handler_type& m_handler;
 };
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_begin_parse()
+{
+    push_parse_token(yaml::parse_token_t::begin_parse);
+    m_handler.begin_parse();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_end_parse()
+{
+    push_parse_token(yaml::parse_token_t::end_parse);
+    m_handler.end_parse();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_begin_document()
+{
+    push_parse_token(yaml::parse_token_t::begin_document);
+    m_handler.begin_document();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_end_document()
+{
+    push_parse_token(yaml::parse_token_t::end_document);
+    m_handler.end_document();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_begin_sequence()
+{
+    push_parse_token(yaml::parse_token_t::begin_sequence);
+    m_handler.begin_sequence();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_end_sequence()
+{
+    push_parse_token(yaml::parse_token_t::end_sequence);
+    m_handler.end_sequence();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_begin_map()
+{
+    push_parse_token(yaml::parse_token_t::begin_map);
+    m_handler.begin_map();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_end_map()
+{
+    push_parse_token(yaml::parse_token_t::end_map);
+    m_handler.end_map();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_begin_map_key()
+{
+    push_parse_token(yaml::parse_token_t::begin_map_key);
+    m_handler.begin_map_key();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_end_map_key()
+{
+    push_parse_token(yaml::parse_token_t::end_map_key);
+    m_handler.end_map_key();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_string(const char* p, size_t n)
+{
+    push_parse_token(yaml::parse_token_t::string);
+    m_handler.string(p, n);
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_number(double val)
+{
+    push_parse_token(yaml::parse_token_t::number);
+    m_handler.number(val);
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_boolean_true()
+{
+    push_parse_token(yaml::parse_token_t::boolean_true);
+    m_handler.boolean_true();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_boolean_false()
+{
+    push_parse_token(yaml::parse_token_t::boolean_false);
+    m_handler.boolean_false();
+}
+
+template<typename _Handler>
+void yaml_parser<_Handler>::handler_null()
+{
+    push_parse_token(yaml::parse_token_t::null);
+    m_handler.null();
+}
 
 template<typename _Handler>
 yaml_parser<_Handler>::yaml_parser(const char* p, size_t n, handler_type& hdl) :
@@ -44,7 +165,7 @@ yaml_parser<_Handler>::yaml_parser(const char* p, size_t n, handler_type& hdl) :
 template<typename _Handler>
 void yaml_parser<_Handler>::parse()
 {
-    m_handler.begin_parse();
+    handler_begin_parse();
 
     while (has_char())
     {
@@ -114,9 +235,9 @@ void yaml_parser<_Handler>::parse()
         cur_scope = end_scope();
 
     if (get_doc_hash())
-        m_handler.end_document();
+        handler_end_document();
 
-    m_handler.end_parse();
+    handler_end_parse();
 }
 
 template<typename _Handler>
@@ -125,17 +246,22 @@ size_t yaml_parser<_Handler>::end_scope()
     switch (get_scope_type())
     {
         case yaml::scope_t::map:
-            m_handler.end_map();
-        break;
+        {
+            if (get_last_parse_token() == yaml::parse_token_t::end_map_key)
+                handler_null();
+
+            handler_end_map();
+            break;
+        }
         case yaml::scope_t::sequence:
-            m_handler.end_sequence();
-        break;
+            handler_end_sequence();
+            break;
         case yaml::scope_t::multi_line_string:
         {
             pstring merged = merge_line_buffer();
-            m_handler.string(merged.get(), merged.size());
+            handler_string(merged.get(), merged.size());
+            break;
         }
-        break;
         default:
         {
             if (has_line_buffer())
@@ -155,18 +281,30 @@ void yaml_parser<_Handler>::check_or_begin_document()
     if (!get_doc_hash())
     {
         set_doc_hash(mp_char);
-        m_handler.begin_document();
+        handler_begin_document();
     }
 }
 
 template<typename _Handler>
 void yaml_parser<_Handler>::check_or_begin_map()
 {
-    if (get_scope_type() == yaml::scope_t::unset)
+    switch (get_scope_type())
     {
-        check_or_begin_document();
-        set_scope_type(yaml::scope_t::map);
-        m_handler.begin_map();
+        case yaml::scope_t::unset:
+        {
+            check_or_begin_document();
+            set_scope_type(yaml::scope_t::map);
+            handler_begin_map();
+            break;
+        }
+        case yaml::scope_t::map:
+        {
+            if (get_last_parse_token() == yaml::parse_token_t::end_map_key)
+                handler_null();
+            break;
+        }
+        default:
+            ;
     }
 }
 
@@ -177,7 +315,7 @@ void yaml_parser<_Handler>::check_or_begin_sequence()
     {
         check_or_begin_document();
         set_scope_type(yaml::scope_t::sequence);
-        m_handler.begin_sequence();
+        handler_begin_sequence();
     }
 }
 
@@ -191,7 +329,7 @@ void yaml_parser<_Handler>::parse_value(const char* p, size_t len)
     double val = parse_numeric(p, len);
     if (p == p_end)
     {
-        m_handler.number(val);
+        handler_number(val);
         return;
     }
 
@@ -202,13 +340,13 @@ void yaml_parser<_Handler>::parse_value(const char* p, size_t len)
         switch (kw)
         {
             case yaml::keyword_t::null:
-                m_handler.null();
+                handler_null();
             break;
             case yaml::keyword_t::boolean_true:
-                m_handler.boolean_true();
+                handler_boolean_true();
             break;
             case yaml::keyword_t::boolean_false:
-                m_handler.boolean_false();
+                handler_boolean_false();
             break;
             default:
                 ;
@@ -218,7 +356,7 @@ void yaml_parser<_Handler>::parse_value(const char* p, size_t len)
     }
 
     // Failed to parse it as a number or a keyword.  It must be a string.
-    m_handler.string(p0, len);
+    handler_string(p0, len);
 }
 
 template<typename _Handler>
@@ -264,7 +402,7 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
 
                 ++p; // Skip the '-'.
                 set_doc_hash(p);
-                m_handler.begin_document();
+                handler_begin_document();
                 clear_scopes();
 
                 if (p != p_end)
@@ -319,7 +457,7 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
 
             if (p == p_end)
             {
-                m_handler.string(quoted_str.get(), quoted_str.size());
+                handler_string(quoted_str.get(), quoted_str.size());
                 return;
             }
 
@@ -331,9 +469,9 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
                     offset() - std::ptrdiff_t(p_end-p+1));
 
             check_or_begin_map();
-            m_handler.begin_map_key();
-            m_handler.string(quoted_str.get(), quoted_str.size());
-            m_handler.end_map_key();
+            handler_begin_map_key();
+            handler_string(quoted_str.get(), quoted_str.size());
+            handler_end_map_key();
 
             ++p;  // skip the ':'.
             if (p == p_end)
@@ -349,7 +487,7 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
 
             if (p == p_end)
             {
-                m_handler.string(quoted_str.get(), quoted_str.size());
+                handler_string(quoted_str.get(), quoted_str.size());
                 return;
             }
 
@@ -361,9 +499,9 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
                     offset() - std::ptrdiff_t(p_end-p+1));
 
             check_or_begin_map();
-            m_handler.begin_map_key();
-            m_handler.string(quoted_str.get(), quoted_str.size());
-            m_handler.end_map_key();
+            handler_begin_map_key();
+            handler_string(quoted_str.get(), quoted_str.size());
+            handler_end_map_key();
 
             ++p;  // skip the ':'.
             if (p == p_end)
@@ -390,9 +528,9 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
             }
 
             check_or_begin_map();
-            m_handler.begin_map_key();
+            handler_begin_map_key();
             parse_value(kv.key.get(), kv.key.size());
-            m_handler.end_map_key();
+            handler_end_map_key();
 
             if (kv.value.empty())
                 return;

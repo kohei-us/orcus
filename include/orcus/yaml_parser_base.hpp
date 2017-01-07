@@ -41,6 +41,26 @@ enum class keyword_t
     null
 };
 
+enum class parse_token_t
+{
+    unknown,
+    begin_parse,
+    end_parse,
+    begin_document,
+    end_document,
+    begin_sequence,
+    end_sequence,
+    begin_map,
+    end_map,
+    begin_map_key,
+    end_map_key,
+    string,
+    number,
+    boolean_true,
+    boolean_false,
+    null
+};
+
 class ORCUS_PSR_DLLPUBLIC parser_base : public ::orcus::parser_base
 {
     struct impl;
@@ -68,6 +88,10 @@ protected:
 
     parser_base(const char* p, size_t n);
     ~parser_base();
+
+    void push_parse_token(parse_token_t t);
+
+    parse_token_t get_last_parse_token() const;
 
     /**
      * Get the offset position of the last character of the current line

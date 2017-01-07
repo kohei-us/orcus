@@ -590,6 +590,44 @@ void test_yaml_parse_url()
     assert(string_expected(node.child(1), "mailto:submit@bugs.debian.org"));
 }
 
+void test_yaml_parse_empty_value_map_1()
+{
+    const char* filepath = SRCDIR"/test/yaml/empty-value-map-1/input.yaml";
+    cout << filepath << endl;
+    string strm = load_file_content(filepath);
+    cout << strm << endl;
+    yaml_document_tree doc;
+    doc.load(strm);
+
+    assert(doc.get_document_count() == 1);
+    yaml_document_tree::node node = doc.get_document_root(0);
+
+    assert(node.type() == yaml_node_t::map);
+    assert(node.child_count() == 1);
+
+    node = node.child(0);
+    assert(node.type() == yaml_node_t::null);
+}
+
+void test_yaml_parse_empty_value_map_2()
+{
+    const char* filepath = SRCDIR"/test/yaml/empty-value-map-2/input.yaml";
+    cout << filepath << endl;
+    string strm = load_file_content(filepath);
+    cout << strm << endl;
+    yaml_document_tree doc;
+    doc.load(strm);
+
+    assert(doc.get_document_count() == 1);
+    yaml_document_tree::node node = doc.get_document_root(0);
+
+    assert(node.type() == yaml_node_t::map);
+    assert(node.child_count() == 2);
+
+    assert(node.child(0).type() == yaml_node_t::null);
+    assert(node.child(1).type() == yaml_node_t::null);
+}
+
 int main()
 {
     test_yaml_invalids();
@@ -604,6 +642,8 @@ int main()
     test_yaml_parse_literal_block_1();
     test_yaml_parse_literal_block_2();
     test_yaml_parse_url();
+    test_yaml_parse_empty_value_map_1();
+    test_yaml_parse_empty_value_map_2();
 
     return EXIT_SUCCESS;
 }

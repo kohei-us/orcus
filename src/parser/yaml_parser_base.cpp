@@ -54,11 +54,14 @@ struct parser_base::impl
     bool m_in_literal_block;
     bool m_parsed_to_end_of_line;
 
+    parse_token_t m_last_token;
+
     impl() :
         m_document(nullptr),
         m_comment_length(0),
         m_in_literal_block(false),
-        m_parsed_to_end_of_line(false) {}
+        m_parsed_to_end_of_line(false),
+        m_last_token(parse_token_t::unknown) {}
 };
 
 const size_t parser_base::parse_indent_blank_line    = std::numeric_limits<size_t>::max();
@@ -69,6 +72,16 @@ parser_base::parser_base(const char* p, size_t n) :
     ::orcus::parser_base(p, n), mp_impl(orcus::make_unique<impl>()) {}
 
 parser_base::~parser_base() {}
+
+void parser_base::push_parse_token(parse_token_t t)
+{
+    mp_impl->m_last_token = t;
+}
+
+parse_token_t parser_base::get_last_parse_token() const
+{
+    return mp_impl->m_last_token;
+}
 
 size_t parser_base::offset_last_char_of_line() const
 {
