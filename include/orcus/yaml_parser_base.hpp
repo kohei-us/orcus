@@ -44,6 +44,9 @@ enum class keyword_t
 enum class parse_token_t
 {
     unknown,
+
+    // handler tokens (tokens associated with handler events)
+
     begin_parse,
     end_parse,
     begin_document,
@@ -58,7 +61,11 @@ enum class parse_token_t
     number,
     boolean_true,
     boolean_false,
-    null
+    null,
+
+    // non-handler tokens
+
+    begin_sequence_element
 };
 
 class ORCUS_PSR_DLLPUBLIC parser_base : public ::orcus::parser_base

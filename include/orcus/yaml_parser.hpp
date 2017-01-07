@@ -255,7 +255,7 @@ size_t yaml_parser<_Handler>::end_scope()
         }
         case yaml::scope_t::sequence:
         {
-            if (get_last_parse_token() == yaml::parse_token_t::begin_sequence)
+            if (get_last_parse_token() == yaml::parse_token_t::begin_sequence_element)
                 handler_null();
 
             handler_end_sequence();
@@ -316,12 +316,26 @@ void yaml_parser<_Handler>::check_or_begin_map()
 template<typename _Handler>
 void yaml_parser<_Handler>::check_or_begin_sequence()
 {
-    if (get_scope_type() == yaml::scope_t::unset)
+    switch (get_scope_type())
     {
-        check_or_begin_document();
-        set_scope_type(yaml::scope_t::sequence);
-        handler_begin_sequence();
+        case yaml::scope_t::unset:
+        {
+            check_or_begin_document();
+            set_scope_type(yaml::scope_t::sequence);
+            handler_begin_sequence();
+            break;
+        }
+        case yaml::scope_t::sequence:
+        {
+            if (get_last_parse_token() == yaml::parse_token_t::begin_sequence_element)
+                handler_null();
+            break;
+        }
+        default:
+            ;
     }
+
+    push_parse_token(yaml::parse_token_t::begin_sequence_element);
 }
 
 template<typename _Handler>
