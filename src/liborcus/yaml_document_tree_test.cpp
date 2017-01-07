@@ -556,8 +556,8 @@ void test_yaml_parse_empty_value_map_1()
     assert(node.type() == yaml_node_t::map);
     assert(node.child_count() == 1);
 
-    node = node.child(0);
-    assert(node.type() == yaml_node_t::null);
+    assert(string_expected(node.key(0), "key"));
+    assert(node.child(0).type() == yaml_node_t::null);
 }
 
 void test_yaml_parse_empty_value_map_2()
@@ -570,8 +570,23 @@ void test_yaml_parse_empty_value_map_2()
     assert(node.type() == yaml_node_t::map);
     assert(node.child_count() == 2);
 
+    assert(string_expected(node.key(0), "key1"));
     assert(node.child(0).type() == yaml_node_t::null);
+    assert(string_expected(node.key(1), "key2"));
     assert(node.child(1).type() == yaml_node_t::null);
+}
+
+void test_yaml_parse_empty_value_sequence_1()
+{
+    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-sequence-1/input.yaml");
+
+    assert(doc.get_document_count() == 1);
+    yaml_document_tree::node node = doc.get_document_root(0);
+
+    assert(node.type() == yaml_node_t::sequence);
+    assert(node.child_count() == 1);
+
+    assert(node.child(0).type() == yaml_node_t::null);
 }
 
 int main()
@@ -590,6 +605,7 @@ int main()
     test_yaml_parse_url();
     test_yaml_parse_empty_value_map_1();
     test_yaml_parse_empty_value_map_2();
+    test_yaml_parse_empty_value_sequence_1();
 
     return EXIT_SUCCESS;
 }

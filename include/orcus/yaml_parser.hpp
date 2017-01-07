@@ -254,8 +254,13 @@ size_t yaml_parser<_Handler>::end_scope()
             break;
         }
         case yaml::scope_t::sequence:
+        {
+            if (get_last_parse_token() == yaml::parse_token_t::begin_sequence)
+                handler_null();
+
             handler_end_sequence();
             break;
+        }
         case yaml::scope_t::multi_line_string:
         {
             pstring merged = merge_line_buffer();

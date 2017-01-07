@@ -1,0 +1,2 @@
+---
+-      # empty sequence element should be interpreted as null.
