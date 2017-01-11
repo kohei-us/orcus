@@ -433,8 +433,8 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
                     push_scope(0);
                     parse_line(p, p_end-p);
                 }
+                return;
             }
-            break;
             case ' ':
             {
                 check_or_begin_sequence();
@@ -451,11 +451,13 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
                 size_t scope_width = get_scope() + (p-p0);
                 push_scope(scope_width);
                 parse_line(p, p_end-p);
+                return;
             }
-            break;
+            default:
+                // It is none of the above.
+                p = p0;
         }
 
-        return;
     }
 
     if (get_scope_type() == yaml::detail::scope_t::sequence)
@@ -463,7 +465,7 @@ void yaml_parser<_Handler>::parse_line(const char* p, size_t len)
             "'-' was expected for a sequence element, but '", *p, "' was found.",
             offset_last_char_of_line()-len+1);
 
-    // If the line doesn't start with a '-', it must be a dictionary key.
+    // If the line doesn't start with a "- ", it must be a dictionary key.
     parse_map_key(p, len);
 }
 
