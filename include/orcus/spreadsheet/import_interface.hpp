@@ -190,6 +190,29 @@ public:
 };
 
 /**
+ * Interface for importing named expressions.
+ */
+class import_named_expression
+{
+public:
+    ORCUS_DLLPUBLIC virtual ~import_named_expression();
+
+    /**
+     * Define a new named expression or overwrite an existing one.
+     *
+     * @param p_name pointer to the buffer that stores the name of the
+     *               expression to be defined.
+     * @param n_name size of the buffer that stores the name of the expression
+     *               to be defined.
+     * @param p_exp pointer to the buffer that stores the expression to be
+     *              associated with the name.
+     * @param n_exp size of the buffer that stores the expression to be
+     *              associated with the name.
+     */
+    virtual void define_name(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) = 0;
+};
+
+/**
  * Interface for importing data tables.
  */
 class import_data_table
@@ -741,6 +764,8 @@ public:
      *         the client app doesn't support shared strings.
      */
     virtual import_shared_strings* get_shared_strings();
+
+    virtual import_named_expression* get_named_expression();
 
     /**
      * @return pointer to the styles instance. It may return NULL if the

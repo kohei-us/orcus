@@ -23,6 +23,8 @@ import_styles::~import_styles() {}
 
 import_sheet_properties::~import_sheet_properties() {}
 
+import_named_expression::~import_named_expression() {}
+
 import_data_table::~import_data_table() {}
 
 import_auto_filter::~import_auto_filter() {}
@@ -75,6 +77,11 @@ import_global_settings* import_factory::get_global_settings()
 }
 
 import_shared_strings* import_factory::get_shared_strings()
+{
+    return nullptr;
+}
+
+import_named_expression* import_factory::get_named_expression()
 {
     return nullptr;
 }
