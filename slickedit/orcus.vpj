@@ -378,6 +378,8 @@
 				<F N="../src/liborcus/xlsx_conditional_format_context.hpp"/>
 				<F N="../src/liborcus/xlsx_context.cpp"/>
 				<F N="../src/liborcus/xlsx_context.hpp"/>
+				<F N="../src/liborcus/xlsx_drawing_context.cpp"/>
+				<F N="../src/liborcus/xlsx_drawing_context.hpp"/>
 				<F N="../src/liborcus/xlsx_handler.cpp"/>
 				<F N="../src/liborcus/xlsx_handler.hpp"/>
 				<F N="../src/liborcus/xlsx_helper.cpp"/>

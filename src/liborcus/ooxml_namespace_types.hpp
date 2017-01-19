@@ -5,15 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_OOXML_NAMESPACE_TYPES_HPP__
-#define __ORCUS_OOXML_NAMESPACE_TYPES_HPP__
+#ifndef INCLUDED_ORCUS_OOXML_NAMESPACE_TYPES_HPP
+#define INCLUDED_ORCUS_OOXML_NAMESPACE_TYPES_HPP
 
 #include "orcus/types.hpp"
 
 namespace orcus {
 
+extern const xmlns_id_t NS_ooxml_a;
 extern const xmlns_id_t NS_ooxml_r;
 extern const xmlns_id_t NS_ooxml_xlsx;
+extern const xmlns_id_t NS_ooxml_xdr;
 
 extern const xmlns_id_t NS_opc_ct;
 extern const xmlns_id_t NS_opc_rel;

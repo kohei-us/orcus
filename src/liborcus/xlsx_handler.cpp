@@ -10,6 +10,7 @@
 #include "xlsx_sheet_context.hpp"
 #include "xlsx_table_context.hpp"
 #include "xlsx_pivot_context.hpp"
+#include "xlsx_drawing_context.hpp"
 
 #include <iostream>
 
@@ -65,6 +66,10 @@ xlsx_pivot_cache_rec_xml_handler::xlsx_pivot_cache_rec_xml_handler(
 xlsx_pivot_table_xml_handler::xlsx_pivot_table_xml_handler(
     session_context& cxt, const tokens& tokens) :
     xml_stream_handler(new xlsx_pivot_table_context(cxt, tokens)) {}
+
+xlsx_drawing_xml_handler::xlsx_drawing_xml_handler(
+    session_context& cxt, const tokens& tokens) :
+    xml_stream_handler(new xlsx_drawing_context(cxt, tokens)) {}
 
 }
 

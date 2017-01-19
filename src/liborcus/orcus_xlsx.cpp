@@ -69,6 +69,11 @@ public:
             m_parent.read_styles(dir_path, file_name);
             return true;
         }
+        else if (type == SCH_od_rels_drawing)
+        {
+            m_parent.read_drawing(dir_path, file_name);
+            return true;
+        }
         else if (type == SCH_od_rels_table)
         {
             m_parent.read_table(dir_path, file_name, static_cast<xlsx_rel_table_info*>(data));
@@ -728,6 +733,37 @@ void orcus_xlsx::read_rev_log(const std::string& dir_path, const std::string& fi
     auto handler = orcus::make_unique<xml_simple_stream_handler>(
         new xlsx_revlog_context(mp_impl->m_cxt, ooxml_tokens));
 
+    parser.set_handler(handler.get());
+    parser.parse();
+
+    handler.reset();
+}
+
+void orcus_xlsx::read_drawing(const std::string& dir_path, const std::string& file_name)
+{
+    string filepath = resolve_file_path(dir_path, file_name);
+    if (get_config().debug)
+    {
+        cout << "---" << endl;
+        cout << "read_drawing: file path = " << filepath << endl;
+    }
+
+    vector<unsigned char> buffer;
+    if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
+    {
+        cerr << "failed to open zip stream: " << filepath << endl;
+        return;
+    }
+
+    if (buffer.empty())
+        return;
+
+    auto handler = orcus::make_unique<xlsx_drawing_xml_handler>(
+        mp_impl->m_cxt, ooxml_tokens);
+
+    xml_stream_parser parser(
+        get_config(), mp_impl->m_ns_repo, ooxml_tokens,
+        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
     parser.set_handler(handler.get());
     parser.parse();
 

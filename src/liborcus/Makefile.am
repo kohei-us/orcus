@@ -110,6 +110,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	orcus_import_xlsx.cpp \
 	xlsx_context.cpp \
 	xlsx_context.hpp \
+	xlsx_drawing_context.hpp \
+	xlsx_drawing_context.cpp \
 	xlsx_handler.cpp \
 	xlsx_handler.hpp \
 	xlsx_helper.cpp \

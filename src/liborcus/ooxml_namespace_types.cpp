@@ -9,7 +9,9 @@
 
 namespace orcus {
 
+const xmlns_id_t NS_ooxml_a    = "http://schemas.openxmlformats.org/drawingml/2006/main";
 const xmlns_id_t NS_ooxml_r    = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+const xmlns_id_t NS_ooxml_xdr  = "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing";
 const xmlns_id_t NS_ooxml_xlsx = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
 const xmlns_id_t NS_opc_ct  = "http://schemas.openxmlformats.org/package/2006/content-types";
@@ -20,7 +22,9 @@ const xmlns_id_t NS_mc = "http://schemas.openxmlformats.org/markup-compatibility
 namespace {
 
 xmlns_id_t ooxml_ns[] = {
+    NS_ooxml_a,
     NS_ooxml_r,
+    NS_ooxml_xdr,
     NS_ooxml_xlsx,
     nullptr
 };

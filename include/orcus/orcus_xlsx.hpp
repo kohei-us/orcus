@@ -74,6 +74,8 @@ private:
 
     void read_rev_log(const std::string& dir_path, const std::string& file_name);
 
+    void read_drawing(const std::string& dir_path, const std::string& file_name);
+
 private:
     orcus_xlsx_impl* mp_impl;
 };

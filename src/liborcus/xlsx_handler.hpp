@@ -77,6 +77,12 @@ public:
     xlsx_pivot_table_xml_handler(session_context& cxt, const tokens& tokens);
 };
 
+class xlsx_drawing_xml_handler : public xml_stream_handler
+{
+public:
+    xlsx_drawing_xml_handler(session_context& cxt, const tokens& tokens);
+};
+
 }
 
 #endif
