@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_OOXML_SCHEMAS_HPP__
-#define __ORCUS_OOXML_SCHEMAS_HPP__
+#ifndef INCLUDED_ORCUS_OOXML_SCHEMAS_HPP
+#define INCLUDED_ORCUS_OOXML_SCHEMAS_HPP
 
 #include "ooxml_types.hpp"
 
@@ -32,6 +32,7 @@ extern schema_t SCH_od_rels_table;
 extern schema_t SCH_od_rels_pivot_cache_def;
 extern schema_t SCH_od_rels_pivot_cache_rec;
 extern schema_t SCH_od_rels_pivot_table;
+extern schema_t SCH_od_rels_drawing;
 extern schema_t SCH_xlsx_main;
 extern schema_t SCH_mso_x14ac;
 

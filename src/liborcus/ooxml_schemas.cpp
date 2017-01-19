@@ -29,6 +29,7 @@ schema_t SCH_od_rels_table                = "http://schemas.openxmlformats.org/o
 schema_t SCH_od_rels_pivot_cache_def      = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition";
 schema_t SCH_od_rels_pivot_cache_rec      = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords";
 schema_t SCH_od_rels_pivot_table          = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable";
+schema_t SCH_od_rels_drawing              = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing";
 schema_t SCH_xlsx_main                    = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 schema_t SCH_mso_x14ac                    = "http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac";
 
@@ -55,6 +56,7 @@ schema_t schs[] = {
     SCH_od_rels_pivot_cache_def,
     SCH_od_rels_pivot_cache_rec,
     SCH_od_rels_pivot_table,
+    SCH_od_rels_drawing,
     SCH_xlsx_main,
     SCH_mso_x14ac,
     nullptr
