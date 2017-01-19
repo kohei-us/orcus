@@ -29,14 +29,16 @@ class part_ext_attr_parser : public unary_function<void, xml_token_attr_t>
 {
 public:
     part_ext_attr_parser(
-        opc_content_types_context::ct_cache_type* p_ct_cache, xml_token_t attr_name) :
+        opc_content_types_context::ct_cache_type* p_ct_cache, xml_token_t attr_name, const config* conf) :
         mp_ct_cache(p_ct_cache),
         m_attr_name(attr_name),
+        m_config(conf),
         m_content_type(nullptr) {}
 
     part_ext_attr_parser(const part_ext_attr_parser& r) :
         mp_ct_cache(r.mp_ct_cache),
         m_attr_name(r.m_attr_name),
+        m_config(r.m_config),
         m_name(r.m_name),
         m_content_type(r.m_content_type) {}
 
@@ -58,7 +60,8 @@ private:
             mp_ct_cache->find(p);
         if (itr == mp_ct_cache->end())
         {
-            cout << "unknown content type: " << p << endl;
+            if (m_config->debug)
+                cout << "unknown content type: " << p << endl;
             return nullptr;
         }
         const pstring& val = *itr;
@@ -68,6 +71,7 @@ private:
 private:
     const opc_content_types_context::ct_cache_type* mp_ct_cache;
     xml_token_t m_attr_name;
+    const config* m_config;
     pstring m_name;
     content_type_t m_content_type;
 };
@@ -115,7 +119,7 @@ void opc_content_types_context::start_element(xmlns_id_t ns, xml_token_t name, c
         case XML_Override:
         {
             xml_element_expected(parent, NS_opc_ct, XML_Types);
-            part_ext_attr_parser func(&m_ct_cache, XML_PartName);
+            part_ext_attr_parser func(&m_ct_cache, XML_PartName, &get_config());
             func = for_each(attrs.begin(), attrs.end(), func);
 
             // We need to use allocated strings for part names here because
@@ -129,7 +133,7 @@ void opc_content_types_context::start_element(xmlns_id_t ns, xml_token_t name, c
         case XML_Default:
         {
             xml_element_expected(parent, NS_opc_ct, XML_Types);
-            part_ext_attr_parser func(&m_ct_cache, XML_Extension);
+            part_ext_attr_parser func(&m_ct_cache, XML_Extension, &get_config());
             func = for_each(attrs.begin(), attrs.end(), func);
 
             // Like the part names, we need to use allocated strings for
