@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_OOXML_CONTENT_TYPES_HPP__
-#define __ORCUS_OOXML_CONTENT_TYPES_HPP__
+#ifndef INCLUDED_ORCUS_OOXML_CONTENT_TYPES_HPP
+#define INCLUDED_ORCUS_OOXML_CONTENT_TYPES_HPP
 
 #include "ooxml_types.hpp"
 
@@ -36,6 +36,7 @@ extern const content_type_t CT_ooxml_theme;
 extern const content_type_t CT_opc_core_properties;
 extern const content_type_t CT_opc_relationships;
 extern const content_type_t CT_xml;
+extern const content_type_t CT_image_png;
 
 /**
  * Null-terminated array of all content types.

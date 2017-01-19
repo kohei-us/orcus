@@ -33,6 +33,7 @@ const content_type_t CT_ooxml_theme                 = "application/vnd.openxmlfo
 const content_type_t CT_opc_core_properties         = "application/vnd.openxmlformats-package.core-properties+xml";
 const content_type_t CT_opc_relationships           = "application/vnd.openxmlformats-package.relationships+xml";
 const content_type_t CT_xml                         = "application/xml";
+const content_type_t CT_image_png                   = "image/png";
 
 namespace {
 
@@ -61,6 +62,7 @@ content_type_t cts[] = {
     CT_opc_core_properties,
     CT_opc_relationships,
     CT_xml,
+    CT_image_png,
     nullptr
 };
 
