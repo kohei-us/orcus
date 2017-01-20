@@ -17,6 +17,11 @@ class tokens;
 
 class xlsx_drawing_context : public xml_context_base
 {
+    long m_col;
+    long m_row;
+    long m_col_offset;
+    long m_row_offset;
+
 public:
     xlsx_drawing_context(session_context& cxt, const tokens& tkns);
 
@@ -33,6 +38,9 @@ public:
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
 
     virtual void characters(const pstring& str, bool transient);
+
+private:
+    void reset();
 };
 
 }

@@ -7,11 +7,19 @@
 
 #include "xlsx_drawing_context.hpp"
 #include "ooxml_namespace_types.hpp"
+#include "ooxml_token_constants.hpp"
+
+#include "orcus/measurement.hpp"
+
+#include <iostream>
+
+using namespace std;
 
 namespace orcus {
 
 xlsx_drawing_context::xlsx_drawing_context(session_context& cxt, const tokens& tkns) :
-    xml_context_base(cxt, tkns) {}
+    xml_context_base(cxt, tkns),
+    m_col(-1), m_row(-1), m_col_offset(-1), m_row_offset(-1) {}
 
 xlsx_drawing_context::~xlsx_drawing_context() {}
 
@@ -35,7 +43,60 @@ void xlsx_drawing_context::start_element(xmlns_id_t ns, xml_token_t name, const:
 
     if (ns == NS_ooxml_xdr)
     {
-        warn_unhandled();
+        switch (name)
+        {
+            case XML_oneCellAnchor:
+            case XML_twoCellAnchor:
+            {
+                xml_element_expected(parent, NS_ooxml_xdr, XML_wsDr);
+                reset();
+                break;
+            }
+            case XML_from:
+            case XML_sp:
+            case XML_clientData:
+            {
+                xml_elem_stack_t expected;
+                expected.emplace_back(NS_ooxml_xdr, XML_twoCellAnchor);
+                expected.emplace_back(NS_ooxml_xdr, XML_oneCellAnchor);
+                xml_element_expected(parent, expected);
+                break;
+            }
+            case XML_to:
+            {
+                xml_elem_stack_t expected;
+                xml_element_expected(parent, NS_ooxml_xdr, XML_twoCellAnchor);
+                break;
+            }
+            case XML_col:
+            case XML_colOff:
+            case XML_row:
+            case XML_rowOff:
+            {
+                xml_elem_stack_t expected;
+                expected.emplace_back(NS_ooxml_xdr, XML_from);
+                expected.emplace_back(NS_ooxml_xdr, XML_to);
+                xml_element_expected(parent, expected);
+                break;
+            }
+            case XML_nvSpPr:
+            case XML_style:
+            case XML_txBody:
+            {
+                xml_element_expected(parent, NS_ooxml_xdr, XML_sp);
+                break;
+            }
+            case XML_spPr:
+            {
+                xml_elem_stack_t expected;
+                expected.emplace_back(NS_ooxml_xdr, XML_sp);
+                expected.emplace_back(NS_ooxml_xdr, XML_pic);
+                xml_element_expected(parent, expected);
+                break;
+            }
+            default:
+                warn_unhandled();
+        }
     }
     else if (ns == NS_ooxml_a)
     {
@@ -47,11 +108,56 @@ void xlsx_drawing_context::start_element(xmlns_id_t ns, xml_token_t name, const:
 
 bool xlsx_drawing_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
+    if (ns == NS_ooxml_xdr)
+    {
+        switch (name)
+        {
+            case XML_twoCellAnchor:
+            case XML_oneCellAnchor:
+                cout << "col: " << m_col << "; row: " << m_row << "; col offset: " << m_col_offset << "; row offset: " << m_row_offset << endl;
+                break;
+            default:
+                ;
+        }
+    }
+    else if (ns == NS_ooxml_a)
+    {
+
+    }
     return pop_stack(ns, name);
 }
 
-void xlsx_drawing_context::characters(const pstring& /*str*/, bool /*transient*/)
+void xlsx_drawing_context::characters(const pstring& str, bool /*transient*/)
 {
+    const xml_token_pair_t& elem = get_current_element();
+    if (elem.first == NS_ooxml_xdr)
+    {
+        switch (elem.second)
+        {
+            case XML_col:
+                m_col = to_long(str);
+                break;
+            case XML_row:
+                m_row = to_long(str);
+                break;
+            case XML_colOff:
+                m_col_offset = to_long(str);
+                break;
+            case XML_rowOff:
+                m_row_offset = to_long(str);
+                break;
+            default:
+                ;
+        }
+    }
+}
+
+void xlsx_drawing_context::reset()
+{
+    m_col = -1;
+    m_row = -1;
+    m_col_offset = -1;
+    m_row_offset = -1;
 }
 
 }
