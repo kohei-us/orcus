@@ -46,6 +46,8 @@ public:
 
     const char* get() const { return m_pos; }
 
+    const char* data() const { return m_pos; }
+
     bool operator== (const pstring& r) const;
 
     bool operator!= (const pstring& r) const

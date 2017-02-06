@@ -16,6 +16,12 @@
 
 namespace orcus {
 
+namespace spreadsheet { namespace iface {
+
+class import_named_expression;
+
+}}
+
 /**
  * Context for xl/workbook.xml.
  */
@@ -25,7 +31,10 @@ public:
     typedef std::unordered_map<
         pstring, xlsx_rel_sheet_info, pstring::hash> sheet_info_type;
 
-    xlsx_workbook_context(session_context& session_cxt, const tokens& tokens);
+    xlsx_workbook_context(
+        session_context& session_cxt, const tokens& tokens,
+        spreadsheet::iface::import_named_expression* named_exp);
+
     virtual ~xlsx_workbook_context();
 
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
@@ -40,6 +49,10 @@ public:
 
 private:
     opc_rel_extras_t m_workbook_info;
+    pstring m_defined_name;
+    pstring m_defined_name_exp;
+
+    spreadsheet::iface::import_named_expression* mp_named_exp;
 };
 
 }

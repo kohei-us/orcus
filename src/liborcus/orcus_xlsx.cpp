@@ -324,8 +324,11 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
     if (buffer.empty())
         return;
 
+    spreadsheet::iface::import_named_expression* named_exp =
+        mp_impl->mp_factory->get_named_expression();
+
     auto handler = orcus::make_unique<xml_simple_stream_handler>(
-        new xlsx_workbook_context(mp_impl->m_cxt, ooxml_tokens));
+        new xlsx_workbook_context(mp_impl->m_cxt, ooxml_tokens, named_exp));
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,

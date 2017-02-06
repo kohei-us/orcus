@@ -15,6 +15,7 @@
 
 #include "orcus/global.hpp"
 #include "orcus/measurement.hpp"
+#include "orcus/spreadsheet/import_interface.hpp"
 
 using namespace std;
 
@@ -54,8 +55,11 @@ private:
 
 }
 
-xlsx_workbook_context::xlsx_workbook_context(session_context& session_cxt, const tokens& tokens) :
-    xml_context_base(session_cxt, tokens) {}
+xlsx_workbook_context::xlsx_workbook_context(
+    session_context& session_cxt, const tokens& tokens,
+    spreadsheet::iface::import_named_expression* named_exp) :
+    xml_context_base(session_cxt, tokens),
+    mp_named_exp(named_exp) {}
 
 xlsx_workbook_context::~xlsx_workbook_context() {}
 
@@ -111,6 +115,33 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
 
             break;
         }
+        case XML_definedNames:
+            xml_element_expected(parent, NS_ooxml_xlsx, XML_workbook);
+            break;
+        case XML_definedName:
+        {
+            xml_element_expected(parent, NS_ooxml_xlsx, XML_definedNames);
+
+            std::for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns != NS_ooxml_xlsx)
+                        return;
+
+                    if (attr.name == XML_name)
+                    {
+                        m_defined_name = attr.value;
+                        if (attr.transient)
+                        {
+                            m_defined_name =
+                                cxt.m_string_pool.intern(m_defined_name).first;
+                        }
+                    }
+                }
+            );
+
+            break;
+        }
         case XML_pivotCaches:
             xml_element_expected(parent, NS_ooxml_xlsx, XML_workbook);
             break;
@@ -147,10 +178,34 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
 
 bool xlsx_workbook_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
+    if (ns == NS_ooxml_xlsx)
+    {
+        if (name == XML_definedName)
+        {
+            if (mp_named_exp)
+            {
+                mp_named_exp->define_name(
+                    m_defined_name.data(), m_defined_name.size(),
+                    m_defined_name_exp.data(), m_defined_name_exp.size());
+            }
+            m_defined_name.clear();
+            m_defined_name_exp.clear();
+        }
+    }
     return pop_stack(ns, name);
 }
 
-void xlsx_workbook_context::characters(const pstring& str, bool transient) {}
+void xlsx_workbook_context::characters(const pstring& str, bool transient)
+{
+    const xml_token_pair_t& cur = get_current_element();
+    string_pool& sp = get_session_context().m_string_pool;
+
+    if (cur.first == NS_ooxml_xlsx)
+    {
+        if (cur.second == XML_definedName)
+            m_defined_name_exp = transient ? sp.intern(str).first : str;
+    }
+}
 
 void xlsx_workbook_context::pop_workbook_info(opc_rel_extras_t& workbook_data)
 {
