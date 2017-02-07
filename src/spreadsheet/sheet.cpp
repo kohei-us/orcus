@@ -819,8 +819,8 @@ void sheet::dump_flat(std::ostream& os) const
                         string formula;
                         if (resolver)
                         {
-                            ixion::print_formula_tokens(
-                               mp_impl->m_doc.get_model_context(), pos, *resolver, *t, formula);
+                            formula = ixion::print_formula_tokens(
+                               mp_impl->m_doc.get_model_context(), pos, *resolver, *t);
                         }
                         else
                             formula = "???";
@@ -981,8 +981,8 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
                         string formula;
                         if (resolver)
                         {
-                            ixion::print_formula_tokens(
-                                mp_impl->m_doc.get_model_context(), pos, *resolver, *t, formula);
+                            formula = ixion::print_formula_tokens(
+                                mp_impl->m_doc.get_model_context(), pos, *resolver, *t);
                         }
                         else
                             formula = "???";
@@ -1538,8 +1538,8 @@ void sheet::dump_html(const string& filepath) const
                             string formula;
                             if (resolver)
                             {
-                                ixion::print_formula_tokens(
-                                    mp_impl->m_doc.get_model_context(), pos, *resolver, *t, formula);
+                                formula = ixion::print_formula_tokens(
+                                    mp_impl->m_doc.get_model_context(), pos, *resolver, *t);
                             }
                             else
                                 formula = "???";

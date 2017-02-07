@@ -192,10 +192,10 @@ public:
 /**
  * Interface for importing named expressions.
  */
-class import_named_expression
+class ORCUS_DLLPUBLIC import_named_expression
 {
 public:
-    ORCUS_DLLPUBLIC virtual ~import_named_expression();
+    virtual ~import_named_expression();
 
     /**
      * Define a new named expression or overwrite an existing one.

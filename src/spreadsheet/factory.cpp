@@ -13,13 +13,20 @@
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/global_settings.hpp"
 #include "orcus/exception.hpp"
+#include "orcus/global.hpp"
 
 #include "factory_pivot.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
+#include <ixion/formula_tokens.hpp>
+#include <ixion/formula.hpp>
+#include <ixion/model_context.hpp>
 #include <sstream>
+#include <iostream>
 
 namespace orcus { namespace spreadsheet {
+
+namespace {
 
 class import_ref_resolver : public iface::import_reference_resolver
 {
@@ -68,6 +75,35 @@ public:
     }
 };
 
+class import_global_named_exp : public iface::import_named_expression
+{
+    document& m_doc;
+
+public:
+    import_global_named_exp(document& doc) : m_doc(doc) {}
+
+    virtual void define_name(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) override
+    {
+#if 0 // TODO : store all names and compile them at the end of the import. We can't do it here because no sheets have been inserted yet.
+        const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+        assert(resolver);
+
+        ixion::model_context& cxt = m_doc.get_model_context();
+
+        ixion::formula_tokens_t tokens =
+            ixion::parse_formula_string(
+                cxt, ixion::abs_address_t(0,0,0), *resolver, p_exp, n_exp);
+
+        std::unique_ptr<ixion::formula_tokens_t> tokens_p =
+            orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
+
+        cxt.set_named_expression(p_name, n_name, std::move(tokens_p));
+#endif
+    }
+};
+
+}
+
 struct import_factory_impl
 {
     document& m_doc;
@@ -78,6 +114,7 @@ struct import_factory_impl
     import_pivot_cache_def m_pc_def;
     import_pivot_cache_records m_pc_records;
     import_ref_resolver m_ref_resolver;
+    import_global_named_exp m_global_named_exp;
 
     import_factory_impl(document& doc, row_t row_size, col_t col_size) :
         m_doc(doc),
@@ -85,7 +122,8 @@ struct import_factory_impl
         m_default_col_size(col_size),
         m_global_settings(doc),
         m_pc_def(doc),
-        m_pc_records(doc) {}
+        m_pc_records(doc),
+        m_global_named_exp(doc) {}
 };
 
 import_factory::import_factory(document& doc, row_t row_size, col_t col_size) :
@@ -109,6 +147,11 @@ iface::import_shared_strings* import_factory::get_shared_strings()
 iface::import_styles* import_factory::get_styles()
 {
     return mp_impl->m_doc.get_styles();
+}
+
+iface::import_named_expression* import_factory::get_named_expression()
+{
+    return &mp_impl->m_global_named_exp;
 }
 
 iface::import_reference_resolver* import_factory::get_reference_resolver()
@@ -177,4 +220,5 @@ const iface::export_sheet* export_factory::get_sheet(const char* sheet_name, siz
 }
 
 }}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
