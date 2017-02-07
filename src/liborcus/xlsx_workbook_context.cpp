@@ -21,40 +21,6 @@ using namespace std;
 
 namespace orcus {
 
-namespace {
-
-class workbook_sheet_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    workbook_sheet_attr_parser(session_context* cxt) : m_cxt(cxt) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_ooxml_xlsx && attr.name == XML_name)
-            m_sheet.name = m_cxt->m_string_pool.intern(attr.value).first;
-        else if (attr.ns == NS_ooxml_xlsx && attr.name == XML_sheetId)
-        {
-            const pstring& val = attr.value;
-            if (!val.empty())
-                m_sheet.id = to_long(val);
-        }
-        else if (attr.ns == NS_ooxml_r && attr.name == XML_id)
-        {
-            m_rid = m_cxt->m_string_pool.intern(attr.value).first;
-        }
-    }
-
-    const xlsx_rel_sheet_info& get_sheet() const { return m_sheet; }
-    const pstring& get_rid() const { return m_rid; }
-
-private:
-    session_context* m_cxt;
-    pstring m_rid;
-    xlsx_rel_sheet_info m_sheet;
-};
-
-}
-
 xlsx_workbook_context::xlsx_workbook_context(
     session_context& session_cxt, const tokens& tokens,
     spreadsheet::iface::import_named_expression* named_exp) :
@@ -81,6 +47,7 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
 {
     xml_token_pair_t parent = push_stack(ns, name);
     session_context& cxt = get_session_context();
+    string_pool& sp = cxt.m_string_pool;
     xlsx_session_data& sdata = static_cast<xlsx_session_data&>(*cxt.mp_data);
 
     switch (name)
@@ -100,18 +67,44 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_sheets);
 
-            workbook_sheet_attr_parser func(&get_session_context());
-            func = for_each(attrs.begin(), attrs.end(), func);
+            pstring rid;
+            xlsx_rel_sheet_info sheet;
 
-            const xlsx_rel_sheet_info& sheet_info = func.get_sheet();
-            if (sheet_info.id > 0)
+            std::for_each(attrs.begin(), attrs.end(),
+                [&](const xml_token_attr_t& attr)
+                {
+                    if (attr.ns == NS_ooxml_xlsx)
+                    {
+                        switch (attr.name)
+                        {
+                            case XML_name:
+                                sheet.name = sp.intern(attr.value).first;
+                                break;
+                            case XML_sheetId:
+                            {
+                                const pstring& val = attr.value;
+                                if (!val.empty())
+                                    sheet.id = to_long(val);
+                                break;
+                            }
+                            default:
+                                ;
+                        }
+                    }
+                    else if (attr.ns == NS_ooxml_r && attr.name == XML_id)
+                    {
+                        rid = sp.intern(attr.value).first;
+                    }
+                }
+            );
+
+            if (sheet.id > 0)
                 // Excel's sheet ID is 1-based. Convert it to 0-based.
-                sdata.set_sheet_name_map(sheet_info.name, sheet_info.id-1);
+                sdata.set_sheet_name_map(sheet.name, sheet.id-1);
 
             m_workbook_info.data.insert(
                 opc_rel_extras_t::map_type::value_type(
-                    func.get_rid(),
-                    orcus::make_unique<xlsx_rel_sheet_info>(sheet_info)));
+                    rid, orcus::make_unique<xlsx_rel_sheet_info>(sheet)));
 
             break;
         }
