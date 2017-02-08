@@ -23,8 +23,9 @@ namespace orcus {
 
 xlsx_workbook_context::xlsx_workbook_context(
     session_context& session_cxt, const tokens& tokens,
-    spreadsheet::iface::import_factory& factory ) :
+    spreadsheet::iface::import_factory& factory) :
     xml_context_base(session_cxt, tokens),
+    m_defined_name_scope(-1),
     m_factory(factory),
     mp_named_exp(factory.get_named_expression()) {}
 
@@ -128,14 +129,23 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
                     if (attr.ns != NS_ooxml_xlsx)
                         return;
 
-                    if (attr.name == XML_name)
+                    switch (attr.name)
                     {
-                        m_defined_name = attr.value;
-                        if (attr.transient)
+                        case XML_name:
                         {
-                            m_defined_name =
-                                cxt.m_string_pool.intern(m_defined_name).first;
+                            m_defined_name = attr.value;
+                            if (attr.transient)
+                            {
+                                m_defined_name =
+                                    cxt.m_string_pool.intern(m_defined_name).first;
+                            }
+                            break;
                         }
+                        case XML_localSheetId:
+                            m_defined_name_scope = to_long(attr.value);
+                            break;
+                        default:
+                            ;
                     }
                 }
             );
@@ -182,14 +192,11 @@ bool xlsx_workbook_context::end_element(xmlns_id_t ns, xml_token_t name)
     {
         if (name == XML_definedName)
         {
-            if (mp_named_exp)
-            {
-                mp_named_exp->define_name(
-                    m_defined_name.data(), m_defined_name.size(),
-                    m_defined_name_exp.data(), m_defined_name_exp.size());
-            }
+            push_defined_name();
+
             m_defined_name.clear();
             m_defined_name_exp.clear();
+            m_defined_name_scope = -1;
         }
     }
     return pop_stack(ns, name);
@@ -210,6 +217,28 @@ void xlsx_workbook_context::characters(const pstring& str, bool transient)
 void xlsx_workbook_context::pop_workbook_info(opc_rel_extras_t& workbook_data)
 {
     m_workbook_info.swap(workbook_data);
+}
+
+void xlsx_workbook_context::push_defined_name()
+{
+    spreadsheet::iface::import_named_expression* named_exp = mp_named_exp;
+
+    if (m_defined_name_scope >= 0)
+    {
+        // sheet local scope.
+        spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(m_defined_name_scope);
+        if (!sheet)
+            return;
+
+        named_exp = sheet->get_named_expression();
+    }
+
+    if (named_exp)
+    {
+        named_exp->define_name(
+            m_defined_name.data(), m_defined_name.size(),
+            m_defined_name_exp.data(), m_defined_name_exp.size());
+    }
 }
 
 }

@@ -499,6 +499,8 @@ public:
      */
     virtual import_conditional_format* get_conditional_format();
 
+    virtual import_named_expression* get_named_expression();
+
     /**
      * Set raw string value to a cell and have the implementation
      * auto-recognize its data type.

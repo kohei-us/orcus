@@ -65,6 +65,11 @@ import_conditional_format* import_sheet::get_conditional_format()
     return nullptr;
 }
 
+import_named_expression* import_sheet::get_named_expression()
+{
+    return nullptr;
+}
+
 import_global_settings::~import_global_settings() {}
 
 import_reference_resolver::~import_reference_resolver() {}

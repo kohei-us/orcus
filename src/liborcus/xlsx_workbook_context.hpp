@@ -49,9 +49,13 @@ public:
     void pop_workbook_info(opc_rel_extras_t& sheets);
 
 private:
+    void push_defined_name();
+
+private:
     opc_rel_extras_t m_workbook_info;
     pstring m_defined_name;
     pstring m_defined_name_exp;
+    spreadsheet::sheet_t m_defined_name_scope;
 
     spreadsheet::iface::import_factory& m_factory;
     spreadsheet::iface::import_named_expression* mp_named_exp;
