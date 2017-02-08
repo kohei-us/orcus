@@ -31,7 +31,7 @@ struct auto_filter_t;
  * This class represents a single sheet instance in the internal document
  * model.
  */
-class ORCUS_SPM_DLLPUBLIC sheet : public iface::import_sheet, public iface::export_sheet
+class ORCUS_SPM_DLLPUBLIC sheet : public iface::export_sheet
 {
     friend struct sheet_impl;
 
@@ -44,31 +44,31 @@ public:
 
     // Import methods
 
-    virtual iface::import_sheet_properties* get_sheet_properties();
-    virtual iface::import_data_table* get_data_table();
-    virtual iface::import_table* get_table();
-    virtual iface::import_auto_filter* get_auto_filter();
+    iface::import_sheet_properties* get_sheet_properties();
+    iface::import_data_table* get_data_table();
+    iface::import_table* get_table();
+    iface::import_auto_filter* get_auto_filter();
 
-    virtual void set_auto(row_t row, col_t col, const char* p, size_t n);
-    virtual void set_string(row_t row, col_t col, size_t sindex);
-    virtual void set_value(row_t row, col_t col, double value);
-    virtual void set_bool(row_t row, col_t col, bool value);
-    virtual void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second);
-    virtual void set_format(row_t row, col_t col, size_t index);
-    virtual void set_format(row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t index);
-    virtual void set_formula(row_t row, col_t col, formula_grammar_t grammar, const char* p, size_t n);
-    virtual void set_shared_formula(
+    void set_auto(row_t row, col_t col, const char* p, size_t n);
+    void set_string(row_t row, col_t col, size_t sindex);
+    void set_value(row_t row, col_t col, double value);
+    void set_bool(row_t row, col_t col, bool value);
+    void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second);
+    void set_format(row_t row, col_t col, size_t index);
+    void set_format(row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t index);
+    void set_formula(row_t row, col_t col, formula_grammar_t grammar, const char* p, size_t n);
+    void set_shared_formula(
         row_t row, col_t col, formula_grammar_t grammar, size_t sindex,
         const char* p_formula, size_t n_formula, const char* p_range, size_t n_range);
-    virtual void set_shared_formula(
+    void set_shared_formula(
         row_t row, col_t col, formula_grammar_t grammar, size_t sindex,
         const char* p_formula, size_t n_formula);
-    virtual void set_shared_formula(row_t row, col_t col, size_t sindex);
-    virtual void set_formula_result(row_t row, col_t col, double value);
-    virtual void set_formula_result(row_t row, col_t col, const char* p, size_t n);
-    virtual void set_array_formula(row_t, col_t, formula_grammar_t,
+    void set_shared_formula(row_t row, col_t col, size_t sindex);
+    void set_formula_result(row_t row, col_t col, double value);
+    void set_formula_result(row_t row, col_t col, const char* p, size_t n);
+    void set_array_formula(row_t, col_t, formula_grammar_t,
             const char*, size_t, row_t, col_t);
-    virtual void set_array_formula(row_t, col_t, formula_grammar_t,
+    void set_array_formula(row_t, col_t, formula_grammar_t,
             const char*, size_t, const char*, size_t);
 
     // Export methods

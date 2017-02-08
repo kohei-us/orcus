@@ -16,6 +16,7 @@
 #include "orcus/global.hpp"
 
 #include "factory_pivot.hpp"
+#include "factory_sheet.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_tokens.hpp>
@@ -100,6 +101,8 @@ public:
     }
 };
 
+using sheet_ifaces_type = std::vector<std::unique_ptr<import_sheet>>;
+
 }
 
 struct import_factory_impl
@@ -113,6 +116,8 @@ struct import_factory_impl
     import_pivot_cache_records m_pc_records;
     import_ref_resolver m_ref_resolver;
     import_global_named_exp m_global_named_exp;
+
+    sheet_ifaces_type m_sheets;
 
     import_factory_impl(document& doc, row_t row_size, col_t col_size) :
         m_doc(doc),
@@ -178,18 +183,31 @@ iface::import_pivot_cache_records* import_factory::create_pivot_cache_records(
 
 iface::import_sheet* import_factory::append_sheet(const char* sheet_name, size_t sheet_name_length)
 {
-    return mp_impl->m_doc.append_sheet(
+    sheet* sh = mp_impl->m_doc.append_sheet(
         pstring(sheet_name, sheet_name_length), mp_impl->m_default_row_size, mp_impl->m_default_col_size);
+
+    if (!sh)
+        return nullptr;
+
+    mp_impl->m_sheets.push_back(orcus::make_unique<import_sheet>(*sh));
+    return mp_impl->m_sheets.back().get();
 }
 
 iface::import_sheet* import_factory::get_sheet(const char* sheet_name, size_t sheet_name_length)
 {
-    return mp_impl->m_doc.get_sheet(pstring(sheet_name, sheet_name_length));
+    sheet_t si = mp_impl->m_doc.get_sheet_index(pstring(sheet_name, sheet_name_length));
+    if (si == ixion::invalid_sheet)
+        return nullptr;
+
+    return mp_impl->m_sheets.at(si).get();
 }
 
 iface::import_sheet* import_factory::get_sheet(sheet_t sheet_index)
 {
-    return mp_impl->m_doc.get_sheet(sheet_index);
+    if (sheet_index < 0 || size_t(sheet_index) >= mp_impl->m_sheets.size())
+        return nullptr;
+
+    return mp_impl->m_sheets[sheet_index].get();
 }
 
 void import_factory::finalize()
