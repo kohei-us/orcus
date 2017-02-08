@@ -324,11 +324,8 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
     if (buffer.empty())
         return;
 
-    spreadsheet::iface::import_named_expression* named_exp =
-        mp_impl->mp_factory->get_named_expression();
-
     auto handler = orcus::make_unique<xml_simple_stream_handler>(
-        new xlsx_workbook_context(mp_impl->m_cxt, ooxml_tokens, named_exp));
+        new xlsx_workbook_context(mp_impl->m_cxt, ooxml_tokens, *mp_impl->mp_factory));
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
@@ -420,9 +417,14 @@ void orcus_xlsx::read_sheet(const string& dir_path, const string& file_name, xls
         cout << "  sheet name: " << data->name << "  sheet ID: " << data->id << endl;
     }
 
-    spreadsheet::iface::import_sheet* sheet = mp_impl->mp_factory->append_sheet(data->name.get(), data->name.size());
+    spreadsheet::iface::import_sheet* sheet = mp_impl->mp_factory->get_sheet(data->name.get(), data->name.size());
     if (!sheet)
-        throw general_error("orcus_xlsx::read_sheet: failed to append sheet.");
+    {
+        std::ostringstream os;
+        os << "orcus_xlsx::read_sheet: ";
+        os << "sheet named '" << data->name << "' doesn't exist.";
+        throw general_error(os.str());
+    }
 
     spreadsheet::iface::import_reference_resolver* resolver = mp_impl->mp_factory->get_reference_resolver();
     if (!resolver)

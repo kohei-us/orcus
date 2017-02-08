@@ -84,7 +84,6 @@ public:
 
     virtual void define_name(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) override
     {
-#if 0 // TODO : store all names and compile them at the end of the import. We can't do it here because no sheets have been inserted yet.
         const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
         assert(resolver);
 
@@ -98,7 +97,6 @@ public:
             orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
 
         cxt.set_named_expression(p_name, n_name, std::move(tokens_p));
-#endif
     }
 };
 

@@ -23,9 +23,10 @@ namespace orcus {
 
 xlsx_workbook_context::xlsx_workbook_context(
     session_context& session_cxt, const tokens& tokens,
-    spreadsheet::iface::import_named_expression* named_exp) :
+    spreadsheet::iface::import_factory& factory ) :
     xml_context_base(session_cxt, tokens),
-    mp_named_exp(named_exp) {}
+    m_factory(factory),
+    mp_named_exp(factory.get_named_expression()) {}
 
 xlsx_workbook_context::~xlsx_workbook_context() {}
 
@@ -99,8 +100,14 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
             );
 
             if (sheet.id > 0)
+            {
                 // Excel's sheet ID is 1-based. Convert it to 0-based.
                 sdata.set_sheet_name_map(sheet.name, sheet.id-1);
+
+                // Insert the sheet here so that we have all the sheets available
+                // prior to parsing global named expressions.
+                m_factory.append_sheet(sheet.name.data(), sheet.name.size());
+            }
 
             m_workbook_info.data.insert(
                 opc_rel_extras_t::map_type::value_type(

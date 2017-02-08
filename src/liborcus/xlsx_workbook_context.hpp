@@ -18,6 +18,7 @@ namespace orcus {
 
 namespace spreadsheet { namespace iface {
 
+class import_factory;
 class import_named_expression;
 
 }}
@@ -33,7 +34,7 @@ public:
 
     xlsx_workbook_context(
         session_context& session_cxt, const tokens& tokens,
-        spreadsheet::iface::import_named_expression* named_exp);
+        spreadsheet::iface::import_factory& factory);
 
     virtual ~xlsx_workbook_context();
 
@@ -52,6 +53,7 @@ private:
     pstring m_defined_name;
     pstring m_defined_name_exp;
 
+    spreadsheet::iface::import_factory& m_factory;
     spreadsheet::iface::import_named_expression* mp_named_exp;
 };
 
