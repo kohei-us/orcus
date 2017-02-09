@@ -12,14 +12,28 @@
 
 namespace orcus { namespace spreadsheet {
 
+class document;
 class sheet;
+
+class import_sheet_named_exp : public iface::import_named_expression
+{
+    document& m_doc;
+    sheet_t m_sheet_index;
+
+public:
+    import_sheet_named_exp(document& doc, sheet_t sheet_index);
+    virtual ~import_sheet_named_exp() override;
+
+    virtual void define_name(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) override;
+};
 
 class import_sheet : public iface::import_sheet
 {
     sheet& m_sheet;
+    import_sheet_named_exp m_named_exp;
 
 public:
-    import_sheet(sheet& sh);
+    import_sheet(document& doc, sheet& sh);
     virtual ~import_sheet() override;
 
     virtual iface::import_auto_filter* get_auto_filter() override;

@@ -7,10 +7,39 @@
 
 #include "factory_sheet.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
+#include "orcus/spreadsheet/document.hpp"
+#include "orcus/global.hpp"
+
+#include <ixion/formula_name_resolver.hpp>
+#include <ixion/model_context.hpp>
+#include <ixion/formula.hpp>
 
 namespace orcus { namespace spreadsheet {
 
-import_sheet::import_sheet(sheet& sh) : m_sheet(sh) {}
+import_sheet_named_exp::import_sheet_named_exp(document& doc, sheet_t sheet_index) :
+    m_doc(doc), m_sheet_index(sheet_index) {}
+
+import_sheet_named_exp::~import_sheet_named_exp() {}
+
+void import_sheet_named_exp::define_name(
+    const char* p_name, size_t n_name, const char* p_exp, size_t n_exp)
+{
+    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+    assert(resolver);
+
+    ixion::model_context& cxt = m_doc.get_model_context();
+
+    ixion::formula_tokens_t tokens =
+        ixion::parse_formula_string(
+            cxt, ixion::abs_address_t(0,0,0), *resolver, p_exp, n_exp);
+
+    std::unique_ptr<ixion::formula_tokens_t> tokens_p =
+        orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
+
+    cxt.set_named_expression(m_sheet_index, p_name, n_name, std::move(tokens_p));
+}
+
+import_sheet::import_sheet(document& doc, sheet& sh) : m_sheet(sh), m_named_exp(doc, sh.get_index()) {}
 
 import_sheet::~import_sheet() {}
 
@@ -31,7 +60,7 @@ iface::import_data_table* import_sheet::get_data_table()
 
 iface::import_named_expression* import_sheet::get_named_expression()
 {
-    return nullptr;
+    return &m_named_exp;
 }
 
 iface::import_sheet_properties* import_sheet::get_sheet_properties()

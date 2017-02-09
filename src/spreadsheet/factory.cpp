@@ -189,7 +189,7 @@ iface::import_sheet* import_factory::append_sheet(const char* sheet_name, size_t
     if (!sh)
         return nullptr;
 
-    mp_impl->m_sheets.push_back(orcus::make_unique<import_sheet>(*sh));
+    mp_impl->m_sheets.push_back(orcus::make_unique<import_sheet>(mp_impl->m_doc, *sh));
     return mp_impl->m_sheets.back().get();
 }
 

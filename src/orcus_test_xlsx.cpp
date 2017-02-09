@@ -19,10 +19,10 @@
 #include <cstdlib>
 #include <cassert>
 #include <string>
-#include <iostream>
 #include <sstream>
 #include <set>
 #include <cmath>
+#include <vector>
 
 #include <ixion/address.hpp>
 #include <ixion/formula_name_resolver.hpp>
@@ -61,10 +61,11 @@ const pivot_cache* get_pivot_cache(
 
 config test_config;
 
-const char* dirs[] = {
+vector<const char*> dirs = {
     SRCDIR"/test/xlsx/raw-values-1/",
     SRCDIR"/test/xlsx/empty-shared-strings/",
     SRCDIR"/test/xlsx/named-expression/",
+    SRCDIR"/test/xlsx/named-expression-sheet-local/",
 };
 
 /**
@@ -74,10 +75,8 @@ const char* dirs[] = {
  */
 void test_xlsx_import()
 {
-    size_t n = sizeof(dirs)/sizeof(dirs[0]);
-    for (size_t i = 0; i < n; ++i)
+    for (const char* dir : dirs)
     {
-        const char* dir = dirs[i];
         string path(dir);
 
         // Read the input.xlsx document.
