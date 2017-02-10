@@ -74,6 +74,9 @@ public:
 
 }
 
+xls_xml_context::named_exp::named_exp(const pstring& _name, const pstring& _expression, spreadsheet::sheet_t _scope) :
+    name(_name), expression(_expression), scope(_scope) {}
+
 xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
@@ -146,6 +149,46 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             case XML_Data:
                 start_element_data(parent, attrs);
                 break;
+            case XML_Names:
+                xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
+                break;
+            case XML_NamedRange:
+            {
+                xml_element_expected(parent, NS_xls_xml_ss, XML_Names);
+
+                pstring name, exp;
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns != NS_xls_xml_ss)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_Name:
+                            name = attr.value;
+                            if (attr.transient)
+                                name = intern(name);
+                            break;
+                        case XML_RefersTo:
+                        {
+                            exp = attr.value;
+                            if (exp.size() > 1 && exp[0] == '=')
+                                exp = pstring(exp.data()+1, exp.size()-1);
+                            if (!exp.empty() && attr.transient)
+                                exp = intern(exp);
+                            break;
+                        }
+                        default:
+                            ;
+                    }
+                }
+
+                if (!name.empty() && !exp.empty())
+                    m_named_exps_global.emplace_back(name, exp, -1);
+
+                break;
+            }
             default:
                 warn_unhandled();
         }
@@ -168,6 +211,9 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
                 break;
             case XML_Data:
                 end_element_data();
+                break;
+            case XML_Workbook:
+                end_element_workbook();
                 break;
             default:
                 ;
@@ -373,6 +419,21 @@ void xls_xml_context::end_element_data()
         default:
             if (get_config().debug)
                 cout << "warning: unknown cell type '" << m_cur_cell_type << "': value not pushed." << endl;
+    }
+}
+
+void xls_xml_context::end_element_workbook()
+{
+    spreadsheet::iface::import_named_expression* ne_global = mp_factory->get_named_expression();
+    if (ne_global)
+    {
+        // global scope named expressions.
+
+        for (const named_exp& ne : m_named_exps_global)
+        {
+            ne_global->define_name(
+                ne.name.data(), ne.name.size(), ne.expression.data(), ne.expression.size());
+        }
     }
 }
 

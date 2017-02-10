@@ -26,6 +26,17 @@ class import_sheet_properties;
 
 class xls_xml_context : public xml_context_base
 {
+    struct named_exp
+    {
+        pstring name;
+        pstring expression;
+        spreadsheet::sheet_t scope;
+
+        named_exp(const pstring& _name, const pstring& _expression, spreadsheet::sheet_t _scope);
+    };
+
+    using named_expressions_type = std::vector<named_exp>;
+
 public:
     enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };
 
@@ -47,6 +58,8 @@ private:
     void start_element_data(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void end_element_data();
 
+    void end_element_workbook();
+
     void push_formula_cell();
 
 private:
@@ -64,6 +77,8 @@ private:
     double m_cur_cell_value;
     date_time_t m_cur_cell_datetime;
     pstring m_cur_cell_formula;
+
+    named_expressions_type m_named_exps_global;
 };
 
 }
