@@ -82,6 +82,7 @@ xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tok
     mp_factory(factory),
     mp_cur_sheet(nullptr),
     mp_sheet_props(nullptr),
+    m_cur_sheet(-1),
     m_cur_row(0), m_cur_col(0),
     m_cur_merge_down(0), m_cur_merge_across(0),
     m_cur_cell_type(ct_unknown),
@@ -126,6 +127,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                     mp_sheet_props = mp_cur_sheet->get_sheet_properties();
                 m_cur_row = 0;
                 m_cur_col = 0;
+                ++m_cur_sheet;
                 break;
             }
             case XML_Table:
@@ -150,8 +152,14 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 start_element_data(parent, attrs);
                 break;
             case XML_Names:
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
+            {
+                xml_elem_stack_t expected_parents;
+                expected_parents.emplace_back(NS_xls_xml_ss, XML_Workbook);
+                expected_parents.emplace_back(NS_xls_xml_ss, XML_Worksheet);
+
+                xml_element_expected(parent, expected_parents);
                 break;
+            }
             case XML_NamedRange:
             {
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Names);
@@ -185,7 +193,12 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 }
 
                 if (!name.empty() && !exp.empty())
-                    m_named_exps_global.emplace_back(name, exp, -1);
+                {
+                    if (m_cur_sheet >= 0)
+                        m_named_exps_sheet.emplace_back(name, exp, m_cur_sheet);
+                    else
+                        m_named_exps_global.emplace_back(name, exp, -1);
+                }
 
                 break;
             }
@@ -214,6 +227,9 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
                 break;
             case XML_Workbook:
                 end_element_workbook();
+                break;
+            case XML_Worksheet:
+                mp_cur_sheet = nullptr;
                 break;
             default:
                 ;

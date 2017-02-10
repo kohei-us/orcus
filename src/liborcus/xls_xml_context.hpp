@@ -68,6 +68,7 @@ private:
     spreadsheet::iface::import_factory* mp_factory;
     spreadsheet::iface::import_sheet* mp_cur_sheet;
     spreadsheet::iface::import_sheet_properties* mp_sheet_props;
+    spreadsheet::sheet_t m_cur_sheet;
     spreadsheet::row_t m_cur_row;
     spreadsheet::col_t m_cur_col;
     spreadsheet::row_t m_cur_merge_down;
@@ -79,6 +80,7 @@ private:
     pstring m_cur_cell_formula;
 
     named_expressions_type m_named_exps_global;
+    named_expressions_type m_named_exps_sheet;
 };
 
 }
