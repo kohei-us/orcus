@@ -20,11 +20,7 @@
 #include "xls_xml_namespace_types.hpp"
 #include "detection_result.hpp"
 
-#define ORCUS_DEBUG_XLS_XML_FILTER 1
-
-#if ORCUS_DEBUG_XLS_XML_FILTER
 #include <iostream>
-#endif
 
 using namespace std;
 
@@ -75,10 +71,6 @@ bool orcus_xls_xml::detect(const unsigned char* buffer, size_t size)
 
 void orcus_xls_xml::read_file(const string& filepath)
 {
-#if ORCUS_DEBUG_XLS_XML_FILTER
-    cout << "reading " << filepath << endl;
-#endif
-
     string strm = load_file_content(filepath.c_str());
     if (strm.empty())
         return;
