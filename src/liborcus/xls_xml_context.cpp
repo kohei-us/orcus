@@ -121,10 +121,18 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             case XML_Worksheet:
             {
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
+
                 pstring sheet_name = for_each(attrs.begin(), attrs.end(), sheet_attr_parser()).get_name();
                 mp_cur_sheet = mp_factory->append_sheet(sheet_name.get(), sheet_name.size());
+                spreadsheet::iface::import_named_expression* sheet_named_exp = nullptr;
                 if (mp_cur_sheet)
+                {
                     mp_sheet_props = mp_cur_sheet->get_sheet_properties();
+                    sheet_named_exp = mp_cur_sheet->get_named_expression();
+                }
+
+                m_sheet_named_exps.push_back(sheet_named_exp);
+
                 m_cur_row = 0;
                 m_cur_col = 0;
                 ++m_cur_sheet;
@@ -450,6 +458,19 @@ void xls_xml_context::end_element_workbook()
             ne_global->define_name(
                 ne.name.data(), ne.name.size(), ne.expression.data(), ne.expression.size());
         }
+    }
+
+    // sheet-local named expressions follow.
+
+    for (const named_exp& ne : m_named_exps_sheet)
+    {
+        spreadsheet::iface::import_named_expression* p = nullptr;
+        if (ne.scope >= 0 && size_t(ne.scope) < m_sheet_named_exps.size())
+            p = m_sheet_named_exps[ne.scope]; // it may be nullptr.
+
+        if (p)
+            p->define_name(
+                ne.name.data(), ne.name.size(), ne.expression.data(), ne.expression.size());
     }
 }
 

@@ -21,6 +21,7 @@ namespace spreadsheet { namespace iface {
 class import_factory;
 class import_sheet;
 class import_sheet_properties;
+class import_named_expression;
 
 }}
 
@@ -68,6 +69,9 @@ private:
     spreadsheet::iface::import_factory* mp_factory;
     spreadsheet::iface::import_sheet* mp_cur_sheet;
     spreadsheet::iface::import_sheet_properties* mp_sheet_props;
+
+    std::vector<spreadsheet::iface::import_named_expression*> m_sheet_named_exps;
+
     spreadsheet::sheet_t m_cur_sheet;
     spreadsheet::row_t m_cur_row;
     spreadsheet::col_t m_cur_col;
