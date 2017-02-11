@@ -29,6 +29,7 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/empty-rows/",
     SRCDIR"/test/xls-xml/merged-cells/",
     SRCDIR"/test/xls-xml/named-expression/",
+    SRCDIR"/test/xls-xml/named-expression-sheet-local/",
 };
 
 void test_xls_xml_import()
