@@ -1,6 +1,16 @@
+  * support import of named expressions for xlsx and xls-xml.
+
   * support import of formula cells for xls-xml.
 
   * implement pivot cache import for xlsx.
+
+  * fix a number of crashes in the csv parser.
+
+  * fix a number of crashes in the json parser.
+
+  * fix a number of crashes in the yaml parser.
+
+  * integrate orcus into gitlab's continuous integration.
 
 orcus 0.12.1
 
