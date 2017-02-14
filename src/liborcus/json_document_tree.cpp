@@ -719,16 +719,23 @@ struct node::impl
         const char* m_value_string;
     };
 
+    std::initializer_list<init::node> m_value_array;
+
     impl(double v) : m_type(json::node_t::number), m_value_number(v) {}
     impl(bool b) : m_type(b ? json::node_t::boolean_true : json::node_t::boolean_false) {}
     impl(decltype(nullptr)) : m_type(json::node_t::null) {}
     impl(const char* p) : m_type(json::node_t::string), m_value_string(p) {}
+
+    impl(std::initializer_list<init::node> vs) :
+        m_type(json::node_t::array),
+        m_value_array(std::move(vs)) {}
 };
 
 node::node(double v) : mp_impl(orcus::make_unique<impl>(v)) {}
 node::node(bool b) : mp_impl(orcus::make_unique<impl>(b)) {}
 node::node(decltype(nullptr)) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
 node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
+node::node(std::initializer_list<init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
 node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
 node::~node() {}
 
@@ -751,44 +758,52 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
     mp_impl(orcus::make_unique<impl>())
 {
     mp_impl->m_root = orcus::make_unique<json_value_array>();
-    json_value_array& jva = static_cast<json_value_array&>(*mp_impl->m_root);
 
-    std::for_each(vs.begin(), vs.end(),
-        [&](const init::node& v)
+    std::function<void(string_pool&,json_value*,const init::node&)> func_inserter =
+    [&func_inserter](string_pool& pool, json_value* parent, const init::node& v)
+    {
+        if (parent->type != json::node_t::array)
+            throw document_error("parent is expected to be an array.");
+
+        std::unique_ptr<json_value> jv;
+
+        switch (v.mp_impl->m_type)
         {
-            std::unique_ptr<json_value> jv;
-
-            switch (v.mp_impl->m_type)
+            case node_t::object:
+                throw document_error("TODO: object");
+                break;
+            case node_t::array:
             {
-                case node_t::object:
-                    throw document_error("TODO");
-                    break;
-                case node_t::array:
-                    throw document_error("TODO");
-                    break;
-                case node_t::string:
-                {
-                    pstring s = mp_impl->m_pool.intern(v.mp_impl->m_value_string).first;
-                    jv = orcus::make_unique<json_value_string>(s);
-                    break;
-                }
-                case node_t::number:
-                    jv = orcus::make_unique<json_value_number>(v.mp_impl->m_value_number);
-                    break;
-                case node_t::boolean_true:
-                case node_t::boolean_false:
-                case node_t::null:
-                    jv = orcus::make_unique<json_value>(v.mp_impl->m_type);
-                    break;
-                case node_t::unset:
-                default:
-                    throw document_error("unknown node type.");
+                jv = orcus::make_unique<json_value_array>();
+                for (const init::node& v2 : v.mp_impl->m_value_array)
+                    func_inserter(pool, jv.get(), v2);
+                break;
             }
-
-            jv->parent = mp_impl->m_root.get();
-            jva.value_array.push_back(std::move(jv));
+            case node_t::string:
+            {
+                pstring s = pool.intern(v.mp_impl->m_value_string).first;
+                jv = orcus::make_unique<json_value_string>(s);
+                break;
+            }
+            case node_t::number:
+                jv = orcus::make_unique<json_value_number>(v.mp_impl->m_value_number);
+                break;
+            case node_t::boolean_true:
+            case node_t::boolean_false:
+            case node_t::null:
+                jv = orcus::make_unique<json_value>(v.mp_impl->m_type);
+                break;
+            case node_t::unset:
+            default:
+                throw document_error("unknown node type.");
         }
-    );
+
+        jv->parent = parent;
+        static_cast<json_value_array*>(parent)->value_array.push_back(std::move(jv));
+    };
+
+    for (const init::node& v : vs)
+        func_inserter(mp_impl->m_pool, mp_impl->m_root.get(), v);
 }
 
 document_tree::~document_tree() {}

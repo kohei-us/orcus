@@ -206,6 +206,7 @@ public:
     node(bool b);
     node(decltype(nullptr));
     node(const char* p);
+    node(std::initializer_list<init::node> vs);
 
     node(const node&) = delete;
     node(node&& other);

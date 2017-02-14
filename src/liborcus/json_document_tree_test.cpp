@@ -461,6 +461,36 @@ void test_json_init_list_flat1()
     assert(node.string_value() == "C");
 }
 
+void test_json_init_list_nested1()
+{
+    json::document_tree doc = {
+        { true, false, nullptr },
+        { 1.1, 2.2, "text" }
+    };
+
+    json::node node = doc.get_document_root();
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 2);
+
+    node = node.child(0);
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 3);
+    assert(node.child(0).type() == json::node_t::boolean_true);
+    assert(node.child(1).type() == json::node_t::boolean_false);
+    assert(node.child(2).type() == json::node_t::null);
+    node = node.parent();
+
+    node = node.child(1);
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 3);
+    assert(node.child(0).type() == json::node_t::number);
+    assert(node.child(0).numeric_value() == 1.1);
+    assert(node.child(1).type() == json::node_t::number);
+    assert(node.child(1).numeric_value() == 2.2);
+    assert(node.child(2).type() == json::node_t::string);
+    assert(node.child(2).string_value() == "text");
+}
+
 int main()
 {
     test_json_parse();
@@ -475,6 +505,7 @@ int main()
     test_json_traverse_nested2();
 
     test_json_init_list_flat1();
+    test_json_init_list_nested1();
 
     return EXIT_SUCCESS;
 }
