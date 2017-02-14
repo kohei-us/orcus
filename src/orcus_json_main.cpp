@@ -23,9 +23,9 @@
 using namespace std;
 using namespace orcus;
 
-std::unique_ptr<json_document_tree> load_doc(const std::string& strm, const json_config& config)
+std::unique_ptr<json::document_tree> load_doc(const std::string& strm, const json_config& config)
 {
-    std::unique_ptr<json_document_tree> doc(orcus::make_unique<json_document_tree>());
+    std::unique_ptr<json::document_tree> doc(orcus::make_unique<json::document_tree>());
     try
     {
         doc->load(strm, config);
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
     try
     {
         std::string strm = load_file_content(config->input_path.c_str());
-        std::unique_ptr<json_document_tree> doc = load_doc(strm, *config);
+        std::unique_ptr<json::document_tree> doc = load_doc(strm, *config);
 
         switch (config->output_format)
         {

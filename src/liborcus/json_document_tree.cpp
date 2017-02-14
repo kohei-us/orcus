@@ -707,9 +707,7 @@ double node::numeric_value() const
     return jvn->value_number;
 }
 
-}
-
-struct json_document_tree::impl
+struct document_tree::impl
 {
     std::unique_ptr<json::json_value> m_root;
     std::unique_ptr<string_pool> m_own_pool;
@@ -719,16 +717,16 @@ struct json_document_tree::impl
     impl(string_pool& pool) : m_pool(pool) {}
 };
 
-json_document_tree::json_document_tree() : mp_impl(orcus::make_unique<impl>()) {}
-json_document_tree::json_document_tree(string_pool& pool) : mp_impl(orcus::make_unique<impl>(pool)) {}
-json_document_tree::~json_document_tree() {}
+document_tree::document_tree() : mp_impl(orcus::make_unique<impl>()) {}
+document_tree::document_tree(string_pool& pool) : mp_impl(orcus::make_unique<impl>(pool)) {}
+document_tree::~document_tree() {}
 
-void json_document_tree::load(const std::string& strm, const json_config& config)
+void document_tree::load(const std::string& strm, const json_config& config)
 {
     load(strm.data(), strm.size(), config);
 }
 
-void json_document_tree::load(const char* p, size_t n, const json_config& config)
+void document_tree::load(const char* p, size_t n, const json_config& config)
 {
     json::parser_handler hdl(config, mp_impl->m_pool);
     json_parser<json::parser_handler> parser(p, n, hdl);
@@ -753,7 +751,7 @@ void json_document_tree::load(const char* p, size_t n, const json_config& config
         std::string ext_strm = load_file_content(extpath.string().c_str());
 
         ext_config.input_path = extpath.string();
-        json_document_tree doc(mp_impl->m_pool);
+        document_tree doc(mp_impl->m_pool);
         try
         {
             doc.load(ext_strm, ext_config);
@@ -786,12 +784,12 @@ void json_document_tree::load(const char* p, size_t n, const json_config& config
     }
 }
 
-json::node json_document_tree::get_document_root() const
+json::node document_tree::get_document_root() const
 {
     return json::node(mp_impl->m_root.get());
 }
 
-std::string json_document_tree::dump() const
+std::string document_tree::dump() const
 {
     if (!mp_impl->m_root)
         return std::string();
@@ -799,11 +797,11 @@ std::string json_document_tree::dump() const
     return json::dump_json_tree(mp_impl->m_root.get());
 }
 
-std::string json_document_tree::dump_xml() const
+std::string document_tree::dump_xml() const
 {
     return json::dump_xml_tree(mp_impl->m_root.get());
 }
 
-}
+}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

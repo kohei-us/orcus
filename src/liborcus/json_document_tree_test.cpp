@@ -76,7 +76,7 @@ bool number_expected(
     return false;
 }
 
-string dump_check_content(const json_document_tree& doc)
+string dump_check_content(const json::document_tree& doc)
 {
     string xml_strm = doc.dump_xml();
     xmlns_repository repo;
@@ -108,7 +108,7 @@ void verify_input(json_config& test_config, const char* basedir)
     cout << "Testing " << json_file << endl;
 
     string strm = load_file_content(json_file.c_str());
-    json_document_tree doc;
+    json::document_tree doc;
     doc.load(strm, test_config);
 
     string check_file(basedir);
@@ -156,7 +156,7 @@ void test_json_parse_empty()
     {
         const char* test = tests[i];
         cout << "JSON stream: '" << test << "' (" << strlen(test) << ")" << endl;
-        json_document_tree doc;
+        json::document_tree doc;
         try
         {
             doc.load(test, strlen(test), test_config);
@@ -186,7 +186,7 @@ void test_json_parse_invalid()
     for (size_t i = 0; i < ORCUS_N_ELEMENTS(invalids); ++i)
     {
         const char* invalid_json = invalids[i];
-        json_document_tree doc;
+        json::document_tree doc;
         try
         {
             doc.load(string(invalid_json, strlen(invalid_json)), test_config);
@@ -202,7 +202,7 @@ void test_json_parse_invalid()
     }
 }
 
-std::unique_ptr<json_document_tree> get_doc_tree(const char* filepath)
+std::unique_ptr<json::document_tree> get_doc_tree(const char* filepath)
 {
     json_config test_config;
 
@@ -211,16 +211,16 @@ std::unique_ptr<json_document_tree> get_doc_tree(const char* filepath)
     cout << "--- original" << endl;
     cout << strm << endl;
 
-    auto doc = orcus::make_unique<json_document_tree>();
+    auto doc = orcus::make_unique<json::document_tree>();
     doc->load(strm, test_config);
 
     return doc;
 }
 
 void dump_and_load(
-    const json_document_tree& doc, const std::function<void(json::node)>& test_func)
+    const json::document_tree& doc, const std::function<void(json::node)>& test_func)
 {
-    json_document_tree doc2;
+    json::document_tree doc2;
     std::string dumped = doc.dump();
     cout << "--- dumped" << endl;
     cout << dumped << endl;
@@ -245,7 +245,7 @@ void test_json_traverse_basic1()
     };
 
     const char* filepath = SRCDIR"/test/json/basic1/input.json";
-    std::unique_ptr<json_document_tree> doc = get_doc_tree(filepath);
+    std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
@@ -275,7 +275,7 @@ void test_json_traverse_basic2()
     };
 
     const char* filepath = SRCDIR"/test/json/basic2/input.json";
-    std::unique_ptr<json_document_tree> doc = get_doc_tree(filepath);
+    std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
@@ -300,7 +300,7 @@ void test_json_traverse_basic3()
     };
 
     const char* filepath = SRCDIR"/test/json/basic3/input.json";
-    std::unique_ptr<json_document_tree> doc = get_doc_tree(filepath);
+    std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
@@ -329,7 +329,7 @@ void test_json_traverse_basic4()
     };
 
     const char* filepath = SRCDIR"/test/json/basic4/input.json";
-    std::unique_ptr<json_document_tree> doc = get_doc_tree(filepath);
+    std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
@@ -357,7 +357,7 @@ void test_json_traverse_nested1()
     };
 
     const char* filepath = SRCDIR"/test/json/nested1/input.json";
-    std::unique_ptr<json_document_tree> doc = get_doc_tree(filepath);
+    std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
@@ -387,7 +387,7 @@ void test_json_traverse_nested2()
     };
 
     const char* filepath = SRCDIR"/test/json/nested2/input.json";
-    std::unique_ptr<json_document_tree> doc = get_doc_tree(filepath);
+    std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
     json::node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);

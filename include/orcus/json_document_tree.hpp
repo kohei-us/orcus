@@ -17,10 +17,9 @@
 
 namespace orcus {
 
+class pstring;
 class string_pool;
 struct json_config;
-class json_document_tree;
-class pstring;
 
 namespace json {
 
@@ -70,7 +69,7 @@ enum class node_t
  */
 class ORCUS_DLLPUBLIC node
 {
-    friend class ::orcus::json_document_tree;
+    friend class document_tree;
 
     struct impl;
     std::unique_ptr<impl> mp_impl;
@@ -192,21 +191,19 @@ public:
     uintptr_t identity() const;
 };
 
-}
-
 /**
  * This class stores a parsed JSON document tree structure.
  */
-class ORCUS_DLLPUBLIC json_document_tree
+class ORCUS_DLLPUBLIC document_tree
 {
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
 public:
 
-    json_document_tree();
-    json_document_tree(string_pool& pool);
-    ~json_document_tree();
+    document_tree();
+    document_tree(string_pool& pool);
+    ~document_tree();
 
     /**
      * Load raw string stream containing a JSON structure to populate the
@@ -250,7 +247,7 @@ public:
     std::string dump_xml() const;
 };
 
-}
+}}
 
 #endif
 
