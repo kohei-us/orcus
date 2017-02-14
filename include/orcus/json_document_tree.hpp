@@ -210,6 +210,8 @@ public:
     node(const node&) = delete;
     node(node&& other);
     ~node();
+
+    node& operator= (node) = delete;
 };
 
 }
