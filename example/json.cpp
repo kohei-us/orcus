@@ -16,7 +16,7 @@ const char* json_string = "{"
 
 int main()
 {
-    using node = orcus::json_document_tree::node;
+    using node = orcus::json::node;
 
     orcus::json_config config; // Use default configuration.
 
@@ -34,11 +34,11 @@ int main()
         node value = root.child(key);
         switch (value.type())
         {
-            case orcus::json_node_t::string:
+            case orcus::json::node_t::string:
                 // string value
                 cout << key << ": " << value.string_value() << endl;
             break;
-            case orcus::json_node_t::array:
+            case orcus::json::node_t::array:
             {
                 // array value
                 cout << key << ":" << endl;

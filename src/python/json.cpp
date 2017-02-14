@@ -52,9 +52,9 @@ struct parser_stack
 {
     PyObject* key;
     PyObject* node;
-    json_node_t type;
+    json::node_t type;
 
-    parser_stack(PyObject* _node, json_node_t _type) : key(nullptr), node(_node), type(_type) {}
+    parser_stack(PyObject* _node, json::node_t _type) : key(nullptr), node(_node), type(_type) {}
 };
 
 class json_parser_handler
@@ -82,13 +82,13 @@ class json_parser_handler
 
         switch (cur.type)
         {
-            case json_node_t::array:
+            case json::node_t::array:
             {
                 PyList_Append(cur.node, value);
                 return value;
             }
             break;
-            case json_node_t::object:
+            case json::node_t::object:
             {
                 assert(cur.key);
                 PyDict_SetItem(cur.node, cur.key, value);
@@ -142,12 +142,12 @@ public:
         if (m_root)
         {
             PyObject* array = push_value(PyList_New(0));
-            m_stack.push_back(parser_stack(array, json_node_t::array));
+            m_stack.push_back(parser_stack(array, json::node_t::array));
         }
         else
         {
             m_root = PyList_New(0);
-            m_stack.push_back(parser_stack(m_root, json_node_t::array));
+            m_stack.push_back(parser_stack(m_root, json::node_t::array));
         }
     }
 
@@ -168,12 +168,12 @@ public:
         if (m_root)
         {
             PyObject* dict = push_value(PyDict_New());
-            m_stack.push_back(parser_stack(dict, json_node_t::object));
+            m_stack.push_back(parser_stack(dict, json::node_t::object));
         }
         else
         {
             m_root = PyDict_New();
-            m_stack.push_back(parser_stack(m_root, json_node_t::object));
+            m_stack.push_back(parser_stack(m_root, json::node_t::object));
         }
     }
 

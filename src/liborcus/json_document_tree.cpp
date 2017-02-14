@@ -34,7 +34,7 @@ json_document_error::json_document_error(const std::string& msg) :
 
 json_document_error::~json_document_error() throw() {}
 
-namespace json { namespace detail {
+namespace json {
 
 struct json_value
 {
@@ -46,12 +46,7 @@ struct json_value
     virtual ~json_value() {}
 };
 
-}}
-
 namespace {
-
-using json_value = json::detail::json_value;
-using node_t = json::detail::node_t;
 
 const char* tab = "    ";
 const char quote = '"';
@@ -547,8 +542,6 @@ public:
 
 }
 
-namespace json { namespace detail {
-
 struct node::impl
 {
     const json_value* m_node;
@@ -714,11 +707,11 @@ double node::numeric_value() const
     return jvn->value_number;
 }
 
-}}
+}
 
 struct json_document_tree::impl
 {
-    std::unique_ptr<json_value> m_root;
+    std::unique_ptr<json::json_value> m_root;
     std::unique_ptr<string_pool> m_own_pool;
     string_pool& m_pool;
 
@@ -737,8 +730,8 @@ void json_document_tree::load(const std::string& strm, const json_config& config
 
 void json_document_tree::load(const char* p, size_t n, const json_config& config)
 {
-    parser_handler hdl(config, mp_impl->m_pool);
-    json_parser<parser_handler> parser(p, n, hdl);
+    json::parser_handler hdl(config, mp_impl->m_pool);
+    json_parser<json::parser_handler> parser(p, n, hdl);
     parser.parse();
     hdl.swap(mp_impl->m_root);
 
@@ -777,11 +770,11 @@ void json_document_tree::load(const char* p, size_t n, const json_config& config
             throw general_error(os.str());
         }
 
-        json_value* root = doc.mp_impl->m_root.get();
-        if (root->type == node_t::object)
+        json::json_value* root = doc.mp_impl->m_root.get();
+        if (root->type == json::node_t::object)
         {
-            json_value_object* jvo_src = static_cast<json_value_object*>(root);
-            json_value_object* jvo_dest = it->dest;
+            json::json_value_object* jvo_src = static_cast<json::json_value_object*>(root);
+            json::json_value_object* jvo_dest = it->dest;
             if (jvo_dest->value_object.size() == 1)
             {
                 // Swap with the referenced object only when the destination
@@ -793,9 +786,9 @@ void json_document_tree::load(const char* p, size_t n, const json_config& config
     }
 }
 
-json_document_tree::node json_document_tree::get_document_root() const
+json::node json_document_tree::get_document_root() const
 {
-    return node(mp_impl->m_root.get());
+    return json::node(mp_impl->m_root.get());
 }
 
 std::string json_document_tree::dump() const
@@ -803,12 +796,12 @@ std::string json_document_tree::dump() const
     if (!mp_impl->m_root)
         return std::string();
 
-    return dump_json_tree(mp_impl->m_root.get());
+    return json::dump_json_tree(mp_impl->m_root.get());
 }
 
 std::string json_document_tree::dump_xml() const
 {
-    return dump_xml_tree(mp_impl->m_root.get());
+    return json::dump_xml_tree(mp_impl->m_root.get());
 }
 
 }

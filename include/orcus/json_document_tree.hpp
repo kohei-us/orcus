@@ -30,7 +30,7 @@ struct json_config;
 class json_document_tree;
 class pstring;
 
-namespace json { namespace detail {
+namespace json {
 
 struct json_value;
 
@@ -193,9 +193,7 @@ public:
     uintptr_t identity() const;
 };
 
-}}
-
-typedef json::detail::node_t json_node_t;
+}
 
 /**
  * This class stores a parsed JSON document tree structure.
@@ -206,7 +204,6 @@ class ORCUS_DLLPUBLIC json_document_tree
     std::unique_ptr<impl> mp_impl;
 
 public:
-    typedef json::detail::node node;
 
     json_document_tree();
     json_document_tree(string_pool& pool);
@@ -236,7 +233,7 @@ public:
      *
      * @return root node of the document.
      */
-    node get_document_root() const;
+    json::node get_document_root() const;
 
     /**
      * Dump the JSON document tree to string.
