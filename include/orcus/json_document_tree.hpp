@@ -24,6 +24,7 @@ struct json_config;
 namespace json {
 
 struct json_value;
+class document_tree;
 
 class ORCUS_DLLPUBLIC document_error : public general_error
 {
@@ -191,6 +192,28 @@ public:
     uintptr_t identity() const;
 };
 
+namespace init {
+
+class ORCUS_DLLPUBLIC node
+{
+    friend class ::orcus::json::document_tree;
+
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    node(double v);
+    node(bool b);
+    node(decltype(nullptr));
+    node(const char* p);
+
+    node(const node&) = delete;
+    node(node&& other);
+    ~node();
+};
+
+}
+
 /**
  * This class stores a parsed JSON document tree structure.
  */
@@ -200,10 +223,12 @@ class ORCUS_DLLPUBLIC document_tree
     std::unique_ptr<impl> mp_impl;
 
 public:
-
     document_tree();
     document_tree(string_pool& pool);
+    document_tree(std::initializer_list<init::node> vs);
     ~document_tree();
+
+    document_tree& operator= (std::initializer_list<init::node> vs);
 
     /**
      * Load raw string stream containing a JSON structure to populate the
@@ -245,6 +270,8 @@ public:
      *         content.
      */
     std::string dump_xml() const;
+
+    void swap(document_tree& other);
 };
 
 }}

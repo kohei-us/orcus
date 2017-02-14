@@ -707,6 +707,33 @@ double node::numeric_value() const
     return jvn->value_number;
 }
 
+namespace init {
+
+struct node::impl
+{
+    node_t m_type;
+
+    union
+    {
+        double m_value_number;
+        const char* m_value_string;
+    };
+
+    impl(double v) : m_type(json::node_t::number), m_value_number(v) {}
+    impl(bool b) : m_type(b ? json::node_t::boolean_true : json::node_t::boolean_false) {}
+    impl(decltype(nullptr)) : m_type(json::node_t::null) {}
+    impl(const char* p) : m_type(json::node_t::string), m_value_string(p) {}
+};
+
+node::node(double v) : mp_impl(orcus::make_unique<impl>(v)) {}
+node::node(bool b) : mp_impl(orcus::make_unique<impl>(b)) {}
+node::node(decltype(nullptr)) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
+node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
+node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
+node::~node() {}
+
+}
+
 struct document_tree::impl
 {
     std::unique_ptr<json::json_value> m_root;
@@ -719,7 +746,59 @@ struct document_tree::impl
 
 document_tree::document_tree() : mp_impl(orcus::make_unique<impl>()) {}
 document_tree::document_tree(string_pool& pool) : mp_impl(orcus::make_unique<impl>(pool)) {}
+
+document_tree::document_tree(std::initializer_list<init::node> vs) :
+    mp_impl(orcus::make_unique<impl>())
+{
+    mp_impl->m_root = orcus::make_unique<json_value_array>();
+    json_value_array& jva = static_cast<json_value_array&>(*mp_impl->m_root);
+
+    std::for_each(vs.begin(), vs.end(),
+        [&](const init::node& v)
+        {
+            std::unique_ptr<json_value> jv;
+
+            switch (v.mp_impl->m_type)
+            {
+                case node_t::object:
+                    throw document_error("TODO");
+                    break;
+                case node_t::array:
+                    throw document_error("TODO");
+                    break;
+                case node_t::string:
+                {
+                    pstring s = mp_impl->m_pool.intern(v.mp_impl->m_value_string).first;
+                    jv = orcus::make_unique<json_value_string>(s);
+                    break;
+                }
+                case node_t::number:
+                    jv = orcus::make_unique<json_value_number>(v.mp_impl->m_value_number);
+                    break;
+                case node_t::boolean_true:
+                case node_t::boolean_false:
+                case node_t::null:
+                    jv = orcus::make_unique<json_value>(v.mp_impl->m_type);
+                    break;
+                case node_t::unset:
+                default:
+                    throw document_error("unknown node type.");
+            }
+
+            jv->parent = mp_impl->m_root.get();
+            jva.value_array.push_back(std::move(jv));
+        }
+    );
+}
+
 document_tree::~document_tree() {}
+
+document_tree& document_tree::operator= (std::initializer_list<init::node> vs)
+{
+    document_tree tmp(std::move(vs));
+    swap(tmp);
+    return *this;
+}
 
 void document_tree::load(const std::string& strm, const json_config& config)
 {
@@ -786,7 +865,11 @@ void document_tree::load(const char* p, size_t n, const json_config& config)
 
 json::node document_tree::get_document_root() const
 {
-    return json::node(mp_impl->m_root.get());
+    const json::json_value* p = mp_impl->m_root.get();
+    if (!p)
+        throw document_error("document tree is empty");
+
+    return json::node(p);
 }
 
 std::string document_tree::dump() const
@@ -799,7 +882,15 @@ std::string document_tree::dump() const
 
 std::string document_tree::dump_xml() const
 {
+    if (!mp_impl->m_root)
+        return std::string();
+
     return json::dump_xml_tree(mp_impl->m_root.get());
+}
+
+void document_tree::swap(document_tree& other)
+{
+    std::swap(mp_impl, other.mp_impl);
 }
 
 }}

@@ -393,6 +393,74 @@ void test_json_traverse_nested2()
     dump_and_load(*doc, test_func);
 }
 
+void test_json_init_list_flat1()
+{
+    json::document_tree doc = { 1.0, 2.0, 3.0, 4.0 };
+    json::node node = doc.get_document_root();
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 4);
+
+    node = node.child(0);
+    assert(node.type() == json::node_t::number);
+    assert(node.numeric_value() == 1.0);
+    node = node.parent();
+
+    node = node.child(1);
+    assert(node.type() == json::node_t::number);
+    assert(node.numeric_value() == 2.0);
+    node = node.parent();
+
+    node = node.child(2);
+    assert(node.type() == json::node_t::number);
+    assert(node.numeric_value() == 3.0);
+    node = node.parent();
+
+    node = node.child(3);
+    assert(node.type() == json::node_t::number);
+    assert(node.numeric_value() == 4.0);
+    node = node.parent();
+
+    doc = { nullptr };
+    node = doc.get_document_root();
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 1);
+
+    node = node.child(0);
+    assert(node.type() == json::node_t::null);
+
+    doc = { true, false };
+    node = doc.get_document_root();
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 2);
+
+    node = node.child(0);
+    assert(node.type() == json::node_t::boolean_true);
+    node = node.parent();
+
+    node = node.child(1);
+    assert(node.type() == json::node_t::boolean_false);
+    node = node.parent();
+
+    doc = { "A", "B", "C" };
+    node = doc.get_document_root();
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 3);
+
+    node = node.child(0);
+    assert(node.type() == json::node_t::string);
+    assert(node.string_value() == "A");
+    node = node.parent();
+
+    node = node.child(1);
+    assert(node.type() == json::node_t::string);
+    assert(node.string_value() == "B");
+    node = node.parent();
+
+    node = node.child(2);
+    assert(node.type() == json::node_t::string);
+    assert(node.string_value() == "C");
+}
+
 int main()
 {
     test_json_parse();
@@ -405,6 +473,8 @@ int main()
     test_json_traverse_basic4();
     test_json_traverse_nested1();
     test_json_traverse_nested2();
+
+    test_json_init_list_flat1();
 
     return EXIT_SUCCESS;
 }
