@@ -18,14 +18,6 @@
 namespace orcus {
 
 class string_pool;
-
-class ORCUS_DLLPUBLIC json_document_error : public general_error
-{
-public:
-    json_document_error(const std::string& msg);
-    virtual ~json_document_error() throw();
-};
-
 struct json_config;
 class json_document_tree;
 class pstring;
@@ -33,6 +25,13 @@ class pstring;
 namespace json {
 
 struct json_value;
+
+class ORCUS_DLLPUBLIC document_error : public general_error
+{
+public:
+    document_error(const std::string& msg);
+    virtual ~document_error() throw();
+};
 
 enum class node_t
 {

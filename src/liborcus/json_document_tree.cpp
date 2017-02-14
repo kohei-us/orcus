@@ -29,12 +29,12 @@ namespace fs = boost::filesystem;
 
 namespace orcus {
 
-json_document_error::json_document_error(const std::string& msg) :
-    general_error("json_document_error", msg) {}
-
-json_document_error::~json_document_error() throw() {}
-
 namespace json {
+
+document_error::document_error(const std::string& msg) :
+    general_error("json::document_error", msg) {}
+
+document_error::~document_error() throw() {}
 
 struct json_value
 {
@@ -419,7 +419,7 @@ class parser_handler
                     std::make_pair(key, std::move(value)));
 
                 if (!r.second)
-                    throw json_document_error("adding the same key twice");
+                    throw document_error("adding the same key twice");
 
                 return r.first->second.get();
             }
@@ -428,7 +428,7 @@ class parser_handler
             {
                 std::ostringstream os;
                 os << BOOST_CURRENT_FUNCTION << ": unstackable JSON value type.";
-                throw json_document_error(os.str());
+                throw document_error(os.str());
             }
         }
 
@@ -597,7 +597,7 @@ size_t node::child_count() const
 std::vector<pstring> node::keys() const
 {
     if (mp_impl->m_node->type != node_t::object)
-        throw json_document_error("node::keys: this node is not of object type.");
+        throw document_error("node::keys: this node is not of object type.");
 
     const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node);
     if (!jvo->key_order.empty())
@@ -618,7 +618,7 @@ std::vector<pstring> node::keys() const
 pstring node::key(size_t index) const
 {
     if (mp_impl->m_node->type != node_t::object)
-        throw json_document_error("node::key: this node is not of object type.");
+        throw document_error("node::key: this node is not of object type.");
 
     const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node);
     if (index >= jvo->key_order.size())
@@ -660,14 +660,14 @@ node node::child(size_t index) const
         case node_t::null:
         case node_t::unset:
         default:
-            throw json_document_error("node::child: this node cannot have child nodes.");
+            throw document_error("node::child: this node cannot have child nodes.");
     }
 }
 
 node node::child(const pstring& key) const
 {
     if (mp_impl->m_node->type != node_t::object)
-        throw json_document_error("node::child: this node is not of object type.");
+        throw document_error("node::child: this node is not of object type.");
 
     const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node);
     auto it = jvo->value_object.find(key);
@@ -675,7 +675,7 @@ node node::child(const pstring& key) const
     {
         std::ostringstream os;
         os << "node::child: this object does not have a key labeled '" << key << "'";
-        throw json_document_error(os.str());
+        throw document_error(os.str());
     }
 
     return node(it->second.get());
@@ -684,7 +684,7 @@ node node::child(const pstring& key) const
 node node::parent() const
 {
     if (!mp_impl->m_node->parent)
-        throw json_document_error("node::parent: this node has no parent.");
+        throw document_error("node::parent: this node has no parent.");
 
     return node(mp_impl->m_node->parent);
 }
@@ -692,7 +692,7 @@ node node::parent() const
 pstring node::string_value() const
 {
     if (mp_impl->m_node->type != node_t::string)
-        throw json_document_error("node::key: current node is not of string type.");
+        throw document_error("node::key: current node is not of string type.");
 
     const json_value_string* jvs = static_cast<const json_value_string*>(mp_impl->m_node);
     return jvs->value_string;
@@ -701,7 +701,7 @@ pstring node::string_value() const
 double node::numeric_value() const
 {
     if (mp_impl->m_node->type != node_t::number)
-        throw json_document_error("node::key: current node is not of numeric type.");
+        throw document_error("node::key: current node is not of numeric type.");
 
     const json_value_number* jvn = static_cast<const json_value_number*>(mp_impl->m_node);
     return jvn->value_number;
