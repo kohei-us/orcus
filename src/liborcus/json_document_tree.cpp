@@ -820,6 +820,9 @@ std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_val
 
     for (std::unique_ptr<json_value>& node : nodes)
     {
+        if (node->type == detail::node_t::key_value)
+            throw document_error("key-value pair was not expected.");
+
         node->parent = jva;
         jva->value_array.push_back(std::move(node));
     }
