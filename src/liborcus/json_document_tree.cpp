@@ -27,9 +27,26 @@
 
 namespace fs = boost::filesystem;
 
-namespace orcus {
+namespace orcus { namespace json {
 
-namespace json {
+namespace detail {
+
+enum class node_t : int
+{
+    unset = json::node_t::unset,
+    string = json::node_t::string,
+    number = json::node_t::number,
+    object = json::node_t::object,
+    array = json::node_t::array,
+    boolean_true = json::node_t::boolean_true,
+    boolean_false = json::node_t::boolean_false,
+    null = json::node_t::null,
+
+    // internal only.
+    key_value = 10,
+};
+
+}
 
 document_error::document_error(const std::string& msg) :
     general_error("json::document_error", msg) {}
@@ -38,11 +55,11 @@ document_error::~document_error() throw() {}
 
 struct json_value
 {
-    node_t type;
+    detail::node_t type;
     json_value* parent;
 
-    json_value() : type(node_t::unset), parent(nullptr) {}
-    json_value(node_t _type) : type(_type), parent(nullptr) {}
+    json_value() : type(detail::node_t::unset), parent(nullptr) {}
+    json_value(detail::node_t _type) : type(_type), parent(nullptr) {}
     virtual ~json_value() {}
 };
 
@@ -57,8 +74,8 @@ struct json_value_string : public json_value
 {
     pstring value_string;
 
-    json_value_string() : json_value(node_t::string) {}
-    json_value_string(const pstring& s) : json_value(node_t::string), value_string(s) {}
+    json_value_string() : json_value(detail::node_t::string) {}
+    json_value_string(const pstring& s) : json_value(detail::node_t::string), value_string(s) {}
     virtual ~json_value_string() {}
 };
 
@@ -67,10 +84,10 @@ struct json_value_number : public json_value
     double value_number;
 
     json_value_number() :
-        json_value(node_t::number),
+        json_value(detail::node_t::number),
         value_number(std::numeric_limits<double>::quiet_NaN()) {}
 
-    json_value_number(double num) : json_value(node_t::number), value_number(num) {}
+    json_value_number(double num) : json_value(detail::node_t::number), value_number(num) {}
 
     virtual ~json_value_number() {}
 };
@@ -79,7 +96,7 @@ struct json_value_array : public json_value
 {
     std::vector<std::unique_ptr<json_value>> value_array;
 
-    json_value_array() : json_value(node_t::array) {}
+    json_value_array() : json_value(detail::node_t::array) {}
     virtual ~json_value_array() {}
 };
 
@@ -92,7 +109,7 @@ struct json_value_object : public json_value
 
     bool has_ref;
 
-    json_value_object() : json_value(node_t::object), has_ref(false) {}
+    json_value_object() : json_value(detail::node_t::object), has_ref(false) {}
     virtual ~json_value_object() {}
 
     void swap(json_value_object& src)
@@ -100,6 +117,19 @@ struct json_value_object : public json_value
         key_order.swap(src.key_order);
         value_object.swap(src.value_object);
     }
+};
+
+/**
+ * Value that represents a single key-value pair. Only to be used in the
+ * initializer.
+ */
+struct json_value_kvp : public json_value
+{
+    pstring key;
+    std::unique_ptr<json_value> value;
+
+    json_value_kvp(const pstring& _key, std::unique_ptr<json_value>&& _value) :
+        json_value(detail::node_t::key_value), key(_key), value(std::move(_value)) {}
 };
 
 void dump_repeat(std::ostringstream& os, const char* s, int repeat)
@@ -121,7 +151,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
 
     switch (v->type)
     {
-        case node_t::array:
+        case detail::node_t::array:
         {
             auto& vals = static_cast<const json_value_array*>(v)->value_array;
             os << "[" << std::endl;
@@ -134,19 +164,19 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
             os << "]";
         }
         break;
-        case node_t::boolean_false:
+        case detail::node_t::boolean_false:
             os << "false";
         break;
-        case node_t::boolean_true:
+        case detail::node_t::boolean_true:
             os << "true";
         break;
-        case node_t::null:
+        case detail::node_t::null:
             os << "null";
         break;
-        case node_t::number:
+        case detail::node_t::number:
             os << static_cast<const json_value_number*>(v)->value_number;
         break;
-        case node_t::object:
+        case detail::node_t::object:
         {
             const std::vector<pstring>& key_order = static_cast<const json_value_object*>(v)->key_order;
             auto& vals = static_cast<const json_value_object*>(v)->value_object;
@@ -183,10 +213,10 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
             os << "}";
         }
         break;
-        case node_t::string:
+        case detail::node_t::string:
             json::dump_string(os, static_cast<const json_value_string*>(v)->value_string.str());
         break;
-        case node_t::unset:
+        case detail::node_t::unset:
         default:
             ;
     }
@@ -204,7 +234,7 @@ void dump_item(
 
 std::string dump_json_tree(const json_value* root)
 {
-    if (root->type == node_t::unset)
+    if (root->type == detail::node_t::unset)
         return std::string();
 
     std::ostringstream os;
@@ -249,7 +279,7 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
 {
     switch (v->type)
     {
-        case node_t::array:
+        case detail::node_t::array:
         {
             os << "<array";
             if (level == 0)
@@ -268,21 +298,21 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
             os << "</array>";
         }
         break;
-        case node_t::boolean_false:
+        case detail::node_t::boolean_false:
             os << "<false/>";
         break;
-        case node_t::boolean_true:
+        case detail::node_t::boolean_true:
             os << "<true/>";
         break;
-        case node_t::null:
+        case detail::node_t::null:
             os << "<null/>";
         break;
-        case node_t::number:
+        case detail::node_t::number:
             os << "<number value=\"";
             os << static_cast<const json_value_number*>(v)->value_number;
             os << "\"/>";
         break;
-        case node_t::object:
+        case detail::node_t::object:
         {
             os << "<object";
             if (level == 0)
@@ -318,12 +348,12 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
             os << "</object>";
         }
         break;
-        case node_t::string:
+        case detail::node_t::string:
             os << "<string value=\"";
             dump_string_xml(os, static_cast<const json_value_string*>(v)->value_string);
             os << "\"/>";
         break;
-        case node_t::unset:
+        case detail::node_t::unset:
         default:
             ;
     }
@@ -341,7 +371,7 @@ void dump_object_item_xml(
 
 std::string dump_xml_tree(const json_value* root)
 {
-    if (root->type == node_t::unset)
+    if (root->type == detail::node_t::unset)
         return std::string();
 
     std::ostringstream os;
@@ -385,7 +415,7 @@ class parser_handler
 
         switch (cur.node->type)
         {
-            case node_t::array:
+            case detail::node_t::array:
             {
                 json_value_array* jva = static_cast<json_value_array*>(cur.node);
                 value->parent = jva;
@@ -393,14 +423,14 @@ class parser_handler
                 return jva->value_array.back().get();
             }
             break;
-            case node_t::object:
+            case detail::node_t::object:
             {
                 const pstring& key = cur.key;
                 json_value_object* jvo = static_cast<json_value_object*>(cur.node);
                 value->parent = jvo;
 
                 if (m_config.resolve_references &&
-                    key == "$ref" && value->type == node_t::string)
+                    key == "$ref" && value->type == detail::node_t::string)
                 {
                     json_value_string* jvs = static_cast<json_value_string*>(value.get());
                     if (!jvo->has_ref && !jvs->value_string.empty() && jvs->value_string[0] != '#')
@@ -453,7 +483,7 @@ public:
         if (m_root)
         {
             json_value* jv = push_value(orcus::make_unique<json_value_array>());
-            assert(jv && jv->type == node_t::array);
+            assert(jv && jv->type == detail::node_t::array);
             m_stack.push_back(parser_stack(jv));
         }
         else
@@ -474,7 +504,7 @@ public:
         if (m_root)
         {
             json_value* jv = push_value(orcus::make_unique<json_value_object>());
-            assert(jv && jv->type == node_t::object);
+            assert(jv && jv->type == detail::node_t::object);
             m_stack.push_back(parser_stack(jv));
         }
         else
@@ -501,17 +531,17 @@ public:
 
     void boolean_true()
     {
-        push_value(orcus::make_unique<json_value>(node_t::boolean_true));
+        push_value(orcus::make_unique<json_value>(detail::node_t::boolean_true));
     }
 
     void boolean_false()
     {
-        push_value(orcus::make_unique<json_value>(node_t::boolean_false));
+        push_value(orcus::make_unique<json_value>(detail::node_t::boolean_false));
     }
 
     void null()
     {
-        push_value(orcus::make_unique<json_value>(node_t::null));
+        push_value(orcus::make_unique<json_value>(detail::node_t::null));
     }
 
     void string(const char* p, size_t len, bool transient)
@@ -540,7 +570,7 @@ public:
     }
 };
 
-}
+} // anonymous namespace
 
 struct node::impl
 {
@@ -571,23 +601,24 @@ uintptr_t node::identity() const
 
 node_t node::type() const
 {
-    return mp_impl->m_node->type;
+    // Convert it back to the public enum type.
+    return static_cast<node_t>(mp_impl->m_node->type);
 }
 
 size_t node::child_count() const
 {
     switch (mp_impl->m_node->type)
     {
-        case node_t::object:
+        case detail::node_t::object:
             return static_cast<const json_value_object*>(mp_impl->m_node)->value_object.size();
-        case node_t::array:
+        case detail::node_t::array:
             return static_cast<const json_value_array*>(mp_impl->m_node)->value_array.size();
-        case node_t::string:
-        case node_t::number:
-        case node_t::boolean_true:
-        case node_t::boolean_false:
-        case node_t::null:
-        case node_t::unset:
+        case detail::node_t::string:
+        case detail::node_t::number:
+        case detail::node_t::boolean_true:
+        case detail::node_t::boolean_false:
+        case detail::node_t::null:
+        case detail::node_t::unset:
         default:
             ;
     }
@@ -596,7 +627,7 @@ size_t node::child_count() const
 
 std::vector<pstring> node::keys() const
 {
-    if (mp_impl->m_node->type != node_t::object)
+    if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::keys: this node is not of object type.");
 
     const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node);
@@ -617,7 +648,7 @@ std::vector<pstring> node::keys() const
 
 pstring node::key(size_t index) const
 {
-    if (mp_impl->m_node->type != node_t::object)
+    if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::key: this node is not of object type.");
 
     const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node);
@@ -631,7 +662,7 @@ node node::child(size_t index) const
 {
     switch (mp_impl->m_node->type)
     {
-        case node_t::object:
+        case detail::node_t::object:
         {
             // This works only when the key order is preserved.
             const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node);
@@ -644,7 +675,7 @@ node node::child(size_t index) const
             return node(it->second.get());
         }
         break;
-        case node_t::array:
+        case detail::node_t::array:
         {
             const json_value_array* jva = static_cast<const json_value_array*>(mp_impl->m_node);
             if (index >= jva->value_array.size())
@@ -653,12 +684,12 @@ node node::child(size_t index) const
             return node(jva->value_array[index].get());
         }
         break;
-        case node_t::string:
-        case node_t::number:
-        case node_t::boolean_true:
-        case node_t::boolean_false:
-        case node_t::null:
-        case node_t::unset:
+        case detail::node_t::string:
+        case detail::node_t::number:
+        case detail::node_t::boolean_true:
+        case detail::node_t::boolean_false:
+        case detail::node_t::null:
+        case detail::node_t::unset:
         default:
             throw document_error("node::child: this node cannot have child nodes.");
     }
@@ -666,7 +697,7 @@ node node::child(size_t index) const
 
 node node::child(const pstring& key) const
 {
-    if (mp_impl->m_node->type != node_t::object)
+    if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::child: this node is not of object type.");
 
     const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node);
@@ -691,7 +722,7 @@ node node::parent() const
 
 pstring node::string_value() const
 {
-    if (mp_impl->m_node->type != node_t::string)
+    if (mp_impl->m_node->type != detail::node_t::string)
         throw document_error("node::key: current node is not of string type.");
 
     const json_value_string* jvs = static_cast<const json_value_string*>(mp_impl->m_node);
@@ -700,7 +731,7 @@ pstring node::string_value() const
 
 double node::numeric_value() const
 {
-    if (mp_impl->m_node->type != node_t::number)
+    if (mp_impl->m_node->type != detail::node_t::number)
         throw document_error("node::key: current node is not of numeric type.");
 
     const json_value_number* jvn = static_cast<const json_value_number*>(mp_impl->m_node);
@@ -711,7 +742,7 @@ namespace init {
 
 struct node::impl
 {
-    node_t m_type;
+    detail::node_t m_type;
 
     union
     {
@@ -721,14 +752,25 @@ struct node::impl
 
     std::initializer_list<init::node> m_value_array;
 
-    impl(double v) : m_type(json::node_t::number), m_value_number(v) {}
-    impl(bool b) : m_type(b ? json::node_t::boolean_true : json::node_t::boolean_false) {}
-    impl(decltype(nullptr)) : m_type(json::node_t::null) {}
-    impl(const char* p) : m_type(json::node_t::string), m_value_string(p) {}
+    impl(double v) : m_type(detail::node_t::number), m_value_number(v) {}
+    impl(bool b) : m_type(b ? detail::node_t::boolean_true : detail::node_t::boolean_false) {}
+    impl(decltype(nullptr)) : m_type(detail::node_t::null) {}
+    impl(const char* p) : m_type(detail::node_t::string), m_value_string(p) {}
 
     impl(std::initializer_list<init::node> vs) :
-        m_type(json::node_t::array),
-        m_value_array(std::move(vs)) {}
+        m_type(detail::node_t::array),
+        m_value_array(std::move(vs))
+    {
+        // If the list has two elements, and the first element is of type string,
+        // we treat this as object's key-value pair.
+
+        if (vs.size() != 2)
+            return;
+
+        const init::node& v0 = *vs.begin();
+        if (v0.mp_impl->m_type == detail::node_t::string)
+            m_type = detail::node_t::object;
+    }
 };
 
 node::node(double v) : mp_impl(orcus::make_unique<impl>(v)) {}
@@ -759,11 +801,30 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
 {
     auto nodes_aggregator_func = [](std::vector<std::unique_ptr<json_value>>& nodes, bool object) -> std::unique_ptr<json_value>
     {
+        bool preserve_object_order = true;
+
         if (object)
         {
             std::unique_ptr<json_value> jv = orcus::make_unique<json_value_object>();
+            json_value_object* jvo = static_cast<json_value_object*>(jv.get());
 
-            // TODO : implement key-value pair insertion into object.
+            for (std::unique_ptr<json_value>& node : nodes)
+            {
+                if (node->type != detail::node_t::key_value)
+                    throw document_error("key-value pair was expected.");
+
+                json_value_kvp& kv = static_cast<json_value_kvp&>(*node);
+
+                if (preserve_object_order)
+                    jvo->key_order.push_back(kv.key);
+
+                kv.value->parent = jvo;
+                auto r = jvo->value_object.insert(
+                    std::make_pair(kv.key, std::move(kv.value)));
+
+                if (!r.second)
+                    throw document_error("adding the same key twice");
+            }
 
             return jv;
         }
@@ -788,36 +849,50 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
 
         switch (v.mp_impl->m_type)
         {
-            case node_t::object:
-                throw document_error("TODO: object");
+            case detail::node_t::object:
+            {
+                assert(v.mp_impl->m_value_array.size() == 2);
+                auto it = v.mp_impl->m_value_array.begin();
+                const init::node& key_node = *it;
+                assert(key_node.mp_impl->m_type == detail::node_t::string);
+                pstring key = pool.intern(key_node.mp_impl->m_value_string).first;
+                ++it;
+                std::unique_ptr<json_value> value = inserter_func(pool, *it);
+                assert(++it == v.mp_impl->m_value_array.end());
+
+                jv = orcus::make_unique<json_value_kvp>(key, std::move(value));
                 break;
-            case node_t::array:
+            }
+            case detail::node_t::array:
             {
                 std::vector<std::unique_ptr<json_value>> nodes;
+                bool object = true;
                 for (const init::node& v2 : v.mp_impl->m_value_array)
                 {
-                    auto r = inserter_func(pool, v2);
+                    std::unique_ptr<json_value> r = inserter_func(pool, v2);
+                    if (r->type != detail::node_t::key_value)
+                        object = false;
                     nodes.push_back(std::move(r));
                 }
 
-                jv = nodes_aggregator_func(nodes, false);
+                jv = nodes_aggregator_func(nodes, object);
                 break;
             }
-            case node_t::string:
+            case detail::node_t::string:
             {
                 pstring s = pool.intern(v.mp_impl->m_value_string).first;
                 jv = orcus::make_unique<json_value_string>(s);
                 break;
             }
-            case node_t::number:
+            case detail::node_t::number:
                 jv = orcus::make_unique<json_value_number>(v.mp_impl->m_value_number);
                 break;
-            case node_t::boolean_true:
-            case node_t::boolean_false:
-            case node_t::null:
+            case detail::node_t::boolean_true:
+            case detail::node_t::boolean_false:
+            case detail::node_t::null:
                 jv = orcus::make_unique<json_value>(v.mp_impl->m_type);
                 break;
-            case node_t::unset:
+            case detail::node_t::unset:
             default:
                 throw document_error("unknown node type.");
         }
@@ -826,13 +901,16 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
     };
 
     std::vector<std::unique_ptr<json_value>> nodes;
+    bool object = true;
     for (const init::node& v : vs)
     {
-        auto r = inserter_func(mp_impl->m_pool, v);
+        std::unique_ptr<json_value> r = inserter_func(mp_impl->m_pool, v);
+        if (r->type != detail::node_t::key_value)
+            object = false;
         nodes.push_back(std::move(r));
     }
 
-    mp_impl->m_root = nodes_aggregator_func(nodes, false);
+    mp_impl->m_root = nodes_aggregator_func(nodes, object);
 }
 
 document_tree::~document_tree() {}
@@ -892,7 +970,7 @@ void document_tree::load(const char* p, size_t n, const json_config& config)
         }
 
         json::json_value* root = doc.mp_impl->m_root.get();
-        if (root->type == json::node_t::object)
+        if (root->type == detail::node_t::object)
         {
             json::json_value_object* jvo_src = static_cast<json::json_value_object*>(root);
             json::json_value_object* jvo_dest = it->dest;

@@ -33,35 +33,35 @@ public:
     virtual ~document_error() throw();
 };
 
-enum class node_t
+enum class node_t : int
 {
     /** node type is not set.  */
-    unset,
+    unset = 0,
     /** JSON string node.  A node of this type contains a string value. */
-    string,
+    string = 1,
     /** JSON number node. A node of this type contains a numeric value. */
-    number,
+    number = 2,
     /**
      * JSON object node.  A node of this type contains one or more key-value
      * pairs.
      */
-    object,
+    object = 3,
     /**
      * JSON array node.  A node of this type contains one or more child nodes.
      */
-    array,
+    array = 4,
     /**
      * JSON boolean node containing a value of 'true'.
      */
-    boolean_true,
+    boolean_true = 5,
     /**
      * JSON boolean node containing a value of 'false'.
      */
-    boolean_false,
+    boolean_false = 6,
     /**
      * JSON node containing a 'null' value.
      */
-    null
+    null = 7,
 };
 
 /**

@@ -491,6 +491,29 @@ void test_json_init_list_nested1()
     assert(node.child(2).string_value() == "text");
 }
 
+void test_json_init_list_object1()
+{
+    json::document_tree doc = {
+        { "key1", 1.2 },
+        { "key2", "some text" },
+    };
+
+    json::node node = doc.get_document_root();
+    assert(node.type() == json::node_t::object);
+    assert(node.child_count() == 2);
+    assert(node.key(0) == "key1");
+    assert(node.key(1) == "key2");
+
+    node = node.child("key1");
+    assert(node.type() == json::node_t::number);
+    assert(node.numeric_value() == 1.2);
+    node = node.parent();
+
+    node = node.child("key2");
+    assert(node.type() == json::node_t::string);
+    assert(node.string_value() == "some text");
+}
+
 int main()
 {
     test_json_parse();
@@ -506,6 +529,7 @@ int main()
 
     test_json_init_list_flat1();
     test_json_init_list_nested1();
+    test_json_init_list_object1();
 
     return EXIT_SUCCESS;
 }
