@@ -783,6 +783,52 @@ node::~node() {}
 
 }
 
+namespace {
+
+std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_value>> nodes, bool object)
+{
+    bool preserve_object_order = true;
+
+    if (object)
+    {
+        std::unique_ptr<json_value> jv = orcus::make_unique<json_value_object>();
+        json_value_object* jvo = static_cast<json_value_object*>(jv.get());
+
+        for (std::unique_ptr<json_value>& node : nodes)
+        {
+            if (node->type != detail::node_t::key_value)
+                throw document_error("key-value pair was expected.");
+
+            json_value_kvp& kv = static_cast<json_value_kvp&>(*node);
+
+            if (preserve_object_order)
+                jvo->key_order.push_back(kv.key);
+
+            kv.value->parent = jvo;
+            auto r = jvo->value_object.insert(
+                std::make_pair(kv.key, std::move(kv.value)));
+
+            if (!r.second)
+                throw document_error("adding the same key twice");
+        }
+
+        return jv;
+    }
+
+    std::unique_ptr<json_value> jv = orcus::make_unique<json_value_array>();
+    json_value_array* jva = static_cast<json_value_array*>(jv.get());
+
+    for (std::unique_ptr<json_value>& node : nodes)
+    {
+        node->parent = jva;
+        jva->value_array.push_back(std::move(node));
+    }
+
+    return jv;
+};
+
+} // anonymous namespace
+
 struct document_tree::impl
 {
     std::unique_ptr<json::json_value> m_root;
@@ -799,51 +845,9 @@ document_tree::document_tree(string_pool& pool) : mp_impl(orcus::make_unique<imp
 document_tree::document_tree(std::initializer_list<init::node> vs) :
     mp_impl(orcus::make_unique<impl>())
 {
-    auto nodes_aggregator_func = [](std::vector<std::unique_ptr<json_value>>& nodes, bool object) -> std::unique_ptr<json_value>
-    {
-        bool preserve_object_order = true;
-
-        if (object)
-        {
-            std::unique_ptr<json_value> jv = orcus::make_unique<json_value_object>();
-            json_value_object* jvo = static_cast<json_value_object*>(jv.get());
-
-            for (std::unique_ptr<json_value>& node : nodes)
-            {
-                if (node->type != detail::node_t::key_value)
-                    throw document_error("key-value pair was expected.");
-
-                json_value_kvp& kv = static_cast<json_value_kvp&>(*node);
-
-                if (preserve_object_order)
-                    jvo->key_order.push_back(kv.key);
-
-                kv.value->parent = jvo;
-                auto r = jvo->value_object.insert(
-                    std::make_pair(kv.key, std::move(kv.value)));
-
-                if (!r.second)
-                    throw document_error("adding the same key twice");
-            }
-
-            return jv;
-        }
-
-        std::unique_ptr<json_value> jv = orcus::make_unique<json_value_array>();
-        json_value_array* jva = static_cast<json_value_array*>(jv.get());
-
-        for (std::unique_ptr<json_value>& node : nodes)
-        {
-            node->parent = jva;
-            jva->value_array.push_back(std::move(node));
-        }
-
-        return jv;
-    };
-
     using inserter_func_type = std::function<std::unique_ptr<json_value>(string_pool&,const init::node&)>;
 
-    inserter_func_type inserter_func = [&inserter_func,&nodes_aggregator_func](string_pool& pool, const init::node& v)
+    inserter_func_type inserter_func = [&inserter_func](string_pool& pool, const init::node& v)
     {
         std::unique_ptr<json_value> jv;
 
@@ -875,7 +879,7 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
                     nodes.push_back(std::move(r));
                 }
 
-                jv = nodes_aggregator_func(nodes, object);
+                jv = aggregate_nodes(std::move(nodes), object);
                 break;
             }
             case detail::node_t::string:
@@ -910,7 +914,7 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
         nodes.push_back(std::move(r));
     }
 
-    mp_impl->m_root = nodes_aggregator_func(nodes, object);
+    mp_impl->m_root = aggregate_nodes(std::move(nodes), object);
 }
 
 document_tree::~document_tree() {}
