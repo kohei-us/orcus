@@ -757,14 +757,33 @@ document_tree::document_tree(string_pool& pool) : mp_impl(orcus::make_unique<imp
 document_tree::document_tree(std::initializer_list<init::node> vs) :
     mp_impl(orcus::make_unique<impl>())
 {
-    mp_impl->m_root = orcus::make_unique<json_value_array>();
-
-    std::function<void(string_pool&,json_value*,const init::node&)> func_inserter =
-    [&func_inserter](string_pool& pool, json_value* parent, const init::node& v)
+    auto nodes_aggregator_func = [](std::vector<std::unique_ptr<json_value>>& nodes, bool object) -> std::unique_ptr<json_value>
     {
-        if (parent->type != json::node_t::array)
-            throw document_error("parent is expected to be an array.");
+        if (object)
+        {
+            std::unique_ptr<json_value> jv = orcus::make_unique<json_value_object>();
 
+            // TODO : implement key-value pair insertion into object.
+
+            return jv;
+        }
+
+        std::unique_ptr<json_value> jv = orcus::make_unique<json_value_array>();
+        json_value_array* jva = static_cast<json_value_array*>(jv.get());
+
+        for (std::unique_ptr<json_value>& node : nodes)
+        {
+            node->parent = jva;
+            jva->value_array.push_back(std::move(node));
+        }
+
+        return jv;
+    };
+
+    using inserter_func_type = std::function<std::unique_ptr<json_value>(string_pool&,const init::node&)>;
+
+    inserter_func_type inserter_func = [&inserter_func,&nodes_aggregator_func](string_pool& pool, const init::node& v)
+    {
         std::unique_ptr<json_value> jv;
 
         switch (v.mp_impl->m_type)
@@ -774,9 +793,14 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
                 break;
             case node_t::array:
             {
-                jv = orcus::make_unique<json_value_array>();
+                std::vector<std::unique_ptr<json_value>> nodes;
                 for (const init::node& v2 : v.mp_impl->m_value_array)
-                    func_inserter(pool, jv.get(), v2);
+                {
+                    auto r = inserter_func(pool, v2);
+                    nodes.push_back(std::move(r));
+                }
+
+                jv = nodes_aggregator_func(nodes, false);
                 break;
             }
             case node_t::string:
@@ -798,12 +822,17 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
                 throw document_error("unknown node type.");
         }
 
-        jv->parent = parent;
-        static_cast<json_value_array*>(parent)->value_array.push_back(std::move(jv));
+        return jv;
     };
 
+    std::vector<std::unique_ptr<json_value>> nodes;
     for (const init::node& v : vs)
-        func_inserter(mp_impl->m_pool, mp_impl->m_root.get(), v);
+    {
+        auto r = inserter_func(mp_impl->m_pool, v);
+        nodes.push_back(std::move(r));
+    }
+
+    mp_impl->m_root = nodes_aggregator_func(nodes, false);
 }
 
 document_tree::~document_tree() {}
