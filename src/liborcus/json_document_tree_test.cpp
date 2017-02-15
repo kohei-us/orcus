@@ -514,6 +514,45 @@ void test_json_init_list_object1()
     assert(node.string_value() == "some text");
 }
 
+void test_json_init_list_object2()
+{
+    // nested objects.
+    json::document_tree doc = {
+        { "parent1",
+            {
+                { "child1", true  },
+                { "child2", false },
+                { "child3", 123.4 },
+            }
+        },
+        { "parent2", "not-nested" },
+    };
+
+    json::node node = doc.get_document_root();
+    assert(node.type() == json::node_t::object);
+    assert(node.child_count() == 2);
+    assert(node.key(0) == "parent1");
+    assert(node.key(1) == "parent2");
+
+    node = node.child("parent1");
+    assert(node.type() == json::node_t::object);
+    assert(node.child_count() == 3);
+    assert(node.key(0) == "child1");
+    assert(node.key(1) == "child2");
+    assert(node.key(2) == "child3");
+
+    assert(node.child("child1").type() == json::node_t::boolean_true);
+    assert(node.child("child2").type() == json::node_t::boolean_false);
+    assert(node.child("child3").type() == json::node_t::number);
+    assert(node.child("child3").numeric_value() == 123.4);
+
+    node = node.parent();
+
+    node = node.child("parent2");
+    assert(node.type() == json::node_t::string);
+    assert(node.string_value() == "not-nested");
+}
+
 int main()
 {
     test_json_parse();
@@ -530,6 +569,7 @@ int main()
     test_json_init_list_flat1();
     test_json_init_list_nested1();
     test_json_init_list_object1();
+    test_json_init_list_object2();
 
     return EXIT_SUCCESS;
 }
