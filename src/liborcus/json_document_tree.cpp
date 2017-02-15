@@ -33,14 +33,15 @@ namespace detail {
 
 enum class node_t : int
 {
-    unset = json::node_t::unset,
-    string = json::node_t::string,
-    number = json::node_t::number,
-    object = json::node_t::object,
-    array = json::node_t::array,
-    boolean_true = json::node_t::boolean_true,
-    boolean_false = json::node_t::boolean_false,
-    null = json::node_t::null,
+    // These must have the same values as their public counterparts.
+    unset         = static_cast<int>(json::node_t::unset),
+    string        = static_cast<int>(json::node_t::string),
+    number        = static_cast<int>(json::node_t::number),
+    object        = static_cast<int>(json::node_t::object),
+    array         = static_cast<int>(json::node_t::array),
+    boolean_true  = static_cast<int>(json::node_t::boolean_true),
+    boolean_false = static_cast<int>(json::node_t::boolean_false),
+    null          = static_cast<int>(json::node_t::null),
 
     // internal only.
     key_value = 10,
