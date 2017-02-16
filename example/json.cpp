@@ -20,7 +20,7 @@ int main()
 
     orcus::json_config config; // Use default configuration.
 
-    orcus::json_document_tree doc;
+    orcus::json::document_tree doc;
     doc.load(json_string, config);
 
     // Root is an object containing three key-value pairs.
