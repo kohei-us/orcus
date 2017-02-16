@@ -26,11 +26,8 @@ int main()
     // Root is an object containing three key-value pairs.
     node root = doc.get_document_root();
 
-    vector<orcus::pstring> keys = root.keys();
-
-    for (auto it = keys.begin(), ite = keys.end(); it != ite; ++it)
+    for (const orcus::pstring& key : root.keys())
     {
-        orcus::pstring key = *it;
         node value = root.child(key);
         switch (value.type())
         {
