@@ -33,6 +33,13 @@ public:
     virtual ~document_error() throw();
 };
 
+class ORCUS_DLLPUBLIC key_value_error : public document_error
+{
+public:
+    key_value_error(const std::string& msg);
+    virtual ~key_value_error() throw();
+};
+
 enum class node_t : int
 {
     /** node type is not set.  */
@@ -192,6 +199,21 @@ public:
     uintptr_t identity() const;
 };
 
+namespace init { class node; }
+
+class ORCUS_DLLPUBLIC array
+{
+    friend class init::node;
+
+    std::initializer_list<init::node> m_vs;
+public:
+    array();
+    array(const array&) = delete;
+    array(array&& other);
+    array(std::initializer_list<init::node> vs);
+    ~array();
+};
+
 namespace init {
 
 class ORCUS_DLLPUBLIC node
@@ -207,6 +229,7 @@ public:
     node(decltype(nullptr));
     node(const char* p);
     node(std::initializer_list<init::node> vs);
+    node(json::array array);
 
     node(const node&) = delete;
     node(node&& other);

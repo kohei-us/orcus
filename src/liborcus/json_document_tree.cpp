@@ -54,6 +54,11 @@ document_error::document_error(const std::string& msg) :
 
 document_error::~document_error() throw() {}
 
+key_value_error::key_value_error(const std::string& msg) :
+    document_error(msg) {}
+
+key_value_error::~key_value_error() throw() {}
+
 struct json_value
 {
     detail::node_t type;
@@ -739,6 +744,11 @@ double node::numeric_value() const
     return jvn->value_number;
 }
 
+array::array() {}
+array::array(array&& other) : m_vs(std::move(other.m_vs)) {}
+array::array(std::initializer_list<init::node> vs) : m_vs(std::move(vs)) {}
+array::~array() {}
+
 namespace init {
 
 struct node::impl
@@ -770,8 +780,13 @@ struct node::impl
 
         const init::node& v0 = *vs.begin();
         if (v0.mp_impl->m_type == detail::node_t::string)
-            m_type = detail::node_t::object;
+            m_type = detail::node_t::key_value;
     }
+
+    impl(json::array array) :
+        m_type(detail::node_t::array),
+        m_value_array(std::move(array.m_vs))
+    {}
 };
 
 node::node(double v) : mp_impl(orcus::make_unique<impl>(v)) {}
@@ -779,6 +794,7 @@ node::node(bool b) : mp_impl(orcus::make_unique<impl>(b)) {}
 node::node(decltype(nullptr)) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
 node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
 node::node(std::initializer_list<init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
+node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array))) {}
 node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
 node::~node() {}
 
@@ -857,7 +873,7 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
 
         switch (v.mp_impl->m_type)
         {
-            case detail::node_t::object:
+            case detail::node_t::key_value:
             {
                 assert(v.mp_impl->m_value_array.size() == 2);
                 auto it = v.mp_impl->m_value_array.begin();
@@ -866,6 +882,9 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
                 pstring key = pool.intern(key_node.mp_impl->m_value_string).first;
                 ++it;
                 std::unique_ptr<json_value> value = inserter_func(pool, *it);
+                if (value->type == detail::node_t::key_value)
+                    throw key_value_error("nested key-value pairs are not allowed.");
+
                 assert(++it == v.mp_impl->m_value_array.end());
 
                 jv = orcus::make_unique<json_value_kvp>(key, std::move(value));

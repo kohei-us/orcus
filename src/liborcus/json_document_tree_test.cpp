@@ -553,6 +553,39 @@ void test_json_init_list_object2()
     assert(node.string_value() == "not-nested");
 }
 
+void test_json_init_list_explicit_array()
+{
+    try
+    {
+        // This structure is too ambiguous and cannot be implicitly
+        // determined.
+        json::document_tree doc = {
+            { "array", { "one", 987.0 } }
+        };
+        assert(!"key_value_error was not thrown");
+    }
+    catch (const json::key_value_error&)
+    {
+        // expected.
+    }
+
+    // Explicitly define an array instead.
+    json::document_tree doc = {
+        { "array", json::array({ "one", 987.0 }) }
+    };
+
+    json::node node = doc.get_document_root();
+    assert(node.type() == json::node_t::object);
+    assert(node.child_count() == 1);
+    assert(node.key(0) == "array");
+
+    node = node.child(0);
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 2);
+    assert(node.child(0).string_value() == "one");
+    assert(node.child(1).numeric_value() == 987.0);
+}
+
 int main()
 {
     test_json_parse();
@@ -570,6 +603,7 @@ int main()
     test_json_init_list_nested1();
     test_json_init_list_object1();
     test_json_init_list_object2();
+    test_json_init_list_explicit_array();
 
     return EXIT_SUCCESS;
 }
