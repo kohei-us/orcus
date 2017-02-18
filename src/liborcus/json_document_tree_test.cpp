@@ -584,6 +584,14 @@ void test_json_init_list_explicit_array()
     assert(node.child_count() == 2);
     assert(node.child(0).string_value() == "one");
     assert(node.child(1).numeric_value() == 987.0);
+
+    doc = json::array({1, 2, 3});
+    node = doc.get_document_root();
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 3);
+    assert(node.child(0).numeric_value() == 1.0);
+    assert(node.child(1).numeric_value() == 2.0);
+    assert(node.child(2).numeric_value() == 3.0);
 }
 
 int main()

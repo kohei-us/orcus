@@ -749,57 +749,6 @@ array::array(array&& other) : m_vs(std::move(other.m_vs)) {}
 array::array(std::initializer_list<init::node> vs) : m_vs(std::move(vs)) {}
 array::~array() {}
 
-namespace init {
-
-struct node::impl
-{
-    detail::node_t m_type;
-
-    union
-    {
-        double m_value_number;
-        const char* m_value_string;
-    };
-
-    std::initializer_list<init::node> m_value_array;
-
-    impl(double v) : m_type(detail::node_t::number), m_value_number(v) {}
-    impl(bool b) : m_type(b ? detail::node_t::boolean_true : detail::node_t::boolean_false) {}
-    impl(decltype(nullptr)) : m_type(detail::node_t::null) {}
-    impl(const char* p) : m_type(detail::node_t::string), m_value_string(p) {}
-
-    impl(std::initializer_list<init::node> vs) :
-        m_type(detail::node_t::array),
-        m_value_array(std::move(vs))
-    {
-        // If the list has two elements, and the first element is of type string,
-        // we treat this as object's key-value pair.
-
-        if (vs.size() != 2)
-            return;
-
-        const init::node& v0 = *vs.begin();
-        if (v0.mp_impl->m_type == detail::node_t::string)
-            m_type = detail::node_t::key_value;
-    }
-
-    impl(json::array array) :
-        m_type(detail::node_t::array),
-        m_value_array(std::move(array.m_vs))
-    {}
-};
-
-node::node(double v) : mp_impl(orcus::make_unique<impl>(v)) {}
-node::node(bool b) : mp_impl(orcus::make_unique<impl>(b)) {}
-node::node(decltype(nullptr)) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
-node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
-node::node(std::initializer_list<init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
-node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array))) {}
-node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
-node::~node() {}
-
-}
-
 namespace {
 
 std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_value>> nodes, bool object)
@@ -845,9 +794,122 @@ std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_val
     }
 
     return jv;
-};
+}
 
 } // anonymous namespace
+
+namespace init {
+
+struct node::impl
+{
+    detail::node_t m_type;
+
+    union
+    {
+        double m_value_number;
+        const char* m_value_string;
+    };
+
+    std::initializer_list<init::node> m_value_array;
+
+    impl(double v) : m_type(detail::node_t::number), m_value_number(v) {}
+    impl(int v) : m_type(detail::node_t::number), m_value_number(v) {}
+    impl(bool b) : m_type(b ? detail::node_t::boolean_true : detail::node_t::boolean_false) {}
+    impl(decltype(nullptr)) : m_type(detail::node_t::null) {}
+    impl(const char* p) : m_type(detail::node_t::string), m_value_string(p) {}
+
+    impl(std::initializer_list<init::node> vs) :
+        m_type(detail::node_t::array),
+        m_value_array(std::move(vs))
+    {
+        // If the list has two elements, and the first element is of type string,
+        // we treat this as object's key-value pair.
+
+        if (vs.size() != 2)
+            return;
+
+        const init::node& v0 = *vs.begin();
+        if (v0.mp_impl->m_type == detail::node_t::string)
+            m_type = detail::node_t::key_value;
+    }
+
+    impl(json::array array) :
+        m_type(detail::node_t::array),
+        m_value_array(std::move(array.m_vs))
+    {}
+};
+
+node::node(double v) : mp_impl(orcus::make_unique<impl>(v)) {}
+node::node(int v) : mp_impl(orcus::make_unique<impl>(v)) {}
+node::node(bool b) : mp_impl(orcus::make_unique<impl>(b)) {}
+node::node(decltype(nullptr)) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
+node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
+node::node(std::initializer_list<init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
+node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array))) {}
+node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
+node::~node() {}
+
+std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
+{
+    std::unique_ptr<json_value> jv;
+
+    switch (mp_impl->m_type)
+    {
+        case detail::node_t::key_value:
+        {
+            assert(mp_impl->m_value_array.size() == 2);
+            auto it = mp_impl->m_value_array.begin();
+            const init::node& key_node = *it;
+            assert(key_node.mp_impl->m_type == detail::node_t::string);
+            pstring key = pool.intern(key_node.mp_impl->m_value_string).first;
+            ++it;
+            std::unique_ptr<json_value> value = it->to_json_value(pool);
+            if (value->type == detail::node_t::key_value)
+                throw key_value_error("nested key-value pairs are not allowed.");
+
+            assert(++it == mp_impl->m_value_array.end());
+
+            jv = orcus::make_unique<json_value_kvp>(key, std::move(value));
+            break;
+        }
+        case detail::node_t::array:
+        {
+            std::vector<std::unique_ptr<json_value>> nodes;
+            bool object = true;
+            for (const init::node& v2 : mp_impl->m_value_array)
+            {
+                std::unique_ptr<json_value> r = v2.to_json_value(pool);
+                if (r->type != detail::node_t::key_value)
+                    object = false;
+                nodes.push_back(std::move(r));
+            }
+
+            jv = aggregate_nodes(std::move(nodes), object);
+            break;
+        }
+        case detail::node_t::string:
+        {
+            pstring s = pool.intern(mp_impl->m_value_string).first;
+            jv = orcus::make_unique<json_value_string>(s);
+            break;
+        }
+        case detail::node_t::number:
+            jv = orcus::make_unique<json_value_number>(mp_impl->m_value_number);
+            break;
+        case detail::node_t::boolean_true:
+        case detail::node_t::boolean_false:
+        case detail::node_t::null:
+            jv = orcus::make_unique<json_value>(mp_impl->m_type);
+            break;
+        case detail::node_t::unset:
+        default:
+            throw document_error("unknown node type.");
+    }
+
+    return jv;
+}
+
+}
 
 struct document_tree::impl
 {
@@ -865,73 +927,11 @@ document_tree::document_tree(string_pool& pool) : mp_impl(orcus::make_unique<imp
 document_tree::document_tree(std::initializer_list<init::node> vs) :
     mp_impl(orcus::make_unique<impl>())
 {
-    using inserter_func_type = std::function<std::unique_ptr<json_value>(string_pool&,const init::node&)>;
-
-    inserter_func_type inserter_func = [&inserter_func](string_pool& pool, const init::node& v)
-    {
-        std::unique_ptr<json_value> jv;
-
-        switch (v.mp_impl->m_type)
-        {
-            case detail::node_t::key_value:
-            {
-                assert(v.mp_impl->m_value_array.size() == 2);
-                auto it = v.mp_impl->m_value_array.begin();
-                const init::node& key_node = *it;
-                assert(key_node.mp_impl->m_type == detail::node_t::string);
-                pstring key = pool.intern(key_node.mp_impl->m_value_string).first;
-                ++it;
-                std::unique_ptr<json_value> value = inserter_func(pool, *it);
-                if (value->type == detail::node_t::key_value)
-                    throw key_value_error("nested key-value pairs are not allowed.");
-
-                assert(++it == v.mp_impl->m_value_array.end());
-
-                jv = orcus::make_unique<json_value_kvp>(key, std::move(value));
-                break;
-            }
-            case detail::node_t::array:
-            {
-                std::vector<std::unique_ptr<json_value>> nodes;
-                bool object = true;
-                for (const init::node& v2 : v.mp_impl->m_value_array)
-                {
-                    std::unique_ptr<json_value> r = inserter_func(pool, v2);
-                    if (r->type != detail::node_t::key_value)
-                        object = false;
-                    nodes.push_back(std::move(r));
-                }
-
-                jv = aggregate_nodes(std::move(nodes), object);
-                break;
-            }
-            case detail::node_t::string:
-            {
-                pstring s = pool.intern(v.mp_impl->m_value_string).first;
-                jv = orcus::make_unique<json_value_string>(s);
-                break;
-            }
-            case detail::node_t::number:
-                jv = orcus::make_unique<json_value_number>(v.mp_impl->m_value_number);
-                break;
-            case detail::node_t::boolean_true:
-            case detail::node_t::boolean_false:
-            case detail::node_t::null:
-                jv = orcus::make_unique<json_value>(v.mp_impl->m_type);
-                break;
-            case detail::node_t::unset:
-            default:
-                throw document_error("unknown node type.");
-        }
-
-        return jv;
-    };
-
     std::vector<std::unique_ptr<json_value>> nodes;
     bool object = true;
     for (const init::node& v : vs)
     {
-        std::unique_ptr<json_value> r = inserter_func(mp_impl->m_pool, v);
+        std::unique_ptr<json_value> r = v.to_json_value(mp_impl->m_pool);
         if (r->type != detail::node_t::key_value)
             object = false;
         nodes.push_back(std::move(r));
@@ -940,9 +940,28 @@ document_tree::document_tree(std::initializer_list<init::node> vs) :
     mp_impl->m_root = aggregate_nodes(std::move(nodes), object);
 }
 
+document_tree::document_tree(array vs) : mp_impl(orcus::make_unique<impl>())
+{
+    mp_impl->m_root = orcus::make_unique<json_value_array>();
+    json_value_array* jva = static_cast<json_value_array*>(mp_impl->m_root.get());
+
+    for (const init::node& v : vs.m_vs)
+    {
+        std::unique_ptr<json_value> r = v.to_json_value(mp_impl->m_pool);
+        jva->value_array.push_back(std::move(r));
+    }
+}
+
 document_tree::~document_tree() {}
 
 document_tree& document_tree::operator= (std::initializer_list<init::node> vs)
+{
+    document_tree tmp(std::move(vs));
+    swap(tmp);
+    return *this;
+}
+
+document_tree& document_tree::operator= (array vs)
 {
     document_tree tmp(std::move(vs));
     swap(tmp);
