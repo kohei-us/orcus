@@ -110,7 +110,7 @@ public:
     /**
      * Get a list of keys stored in a JSON object node.
      *
-     * @exception orcus::json_document_error if the node is not of the object
+     * @exception orcus::json::document_error if the node is not of the object
      *                 type.
      * @return a list of keys.
      */
@@ -122,7 +122,7 @@ public:
      *
      * @param index 0-based key index.
      *
-     * @exception orcus::json_document_error if the node is not of the object
+     * @exception orcus::json::document_error if the node is not of the object
      *                 type.
      *
      * @exception std::out_of_range if the index is equal to or greater than
@@ -137,7 +137,7 @@ public:
      *
      * @param index 0-based index of a child node.
      *
-     * @exception orcus::json_document_error if the node is not one of the
+     * @exception orcus::json::document_error if the node is not one of the
      *                 object or array types.
      *
      * @exception std::out_of_range if the index is equal to or greater than
@@ -152,7 +152,7 @@ public:
      *
      * @param key textural key value to get a child node by.
      *
-     * @exception orcus::json_document_error if the node is not of the object
+     * @exception orcus::json::document_error if the node is not of the object
      *                 type, or the node doesn't have the specified key.
      *
      * @return child node instance.
@@ -162,7 +162,7 @@ public:
     /**
      * Get the parent node.
      *
-     * @exception orcus::json_document_error if the node doesn't have a parent
+     * @exception orcus::json::document_error if the node doesn't have a parent
      *                 node which implies that the node is a root node.
      *
      * @return parent node instance.
@@ -172,7 +172,7 @@ public:
     /**
      * Get the string value of a JSON string node.
      *
-     * @exception orcus::json_document_error if the node is not of the string
+     * @exception orcus::json::document_error if the node is not of the string
      *                 type.
      *
      * @return string value.
@@ -182,7 +182,7 @@ public:
     /**
      * Get the numeric value of a JSON number node.
      *
-     * @exception orcus::json_document_error if the node is not of the number
+     * @exception orcus::json::document_error if the node is not of the number
      *                 type.
      *
      * @return numeric value.
@@ -201,9 +201,10 @@ public:
     uintptr_t identity() const;
 
     /**
-     * Append a new node value to the end of the array.  An exception will be
-     * thrown if this method is called when the node is not of array type.
+     * Append a new node value to the end of the array.
      *
+     * @exception orcus::json::document_error if the node is not of array
+     *                 type.
      * @param v new node value to append to the end of the array.
      */
     void push_back(const init::node& v);
