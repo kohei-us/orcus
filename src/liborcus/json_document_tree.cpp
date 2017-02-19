@@ -580,13 +580,15 @@ public:
 
 struct node::impl
 {
-    const json_value* m_node;
+    const document_tree* m_doc;
+    json_value* m_node;
 
-    impl(const json_value* jv) : m_node(jv) {}
+    impl(const document_tree* doc, json_value* jv) : m_doc(doc), m_node(jv) {}
+    impl(const impl& other) : m_doc(other.m_doc), m_node(other.m_node) {}
 };
 
-node::node(const json_value* jv) : mp_impl(orcus::make_unique<impl>(jv)) {}
-node::node(const node& other) : mp_impl(orcus::make_unique<impl>(other.mp_impl->m_node)) {}
+node::node(const document_tree* doc, json_value* jv) : mp_impl(orcus::make_unique<impl>(doc, jv)) {}
+node::node(const node& other) : mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
 node::node(node&& rhs) : mp_impl(std::move(rhs.mp_impl)) {}
 node::~node() {}
 
@@ -678,7 +680,7 @@ node node::child(size_t index) const
             const pstring& key = jvo->key_order[index];
             auto it = jvo->value_object.find(key);
             assert(it != jvo->value_object.end());
-            return node(it->second.get());
+            return node(mp_impl->m_doc, it->second.get());
         }
         break;
         case detail::node_t::array:
@@ -687,7 +689,7 @@ node node::child(size_t index) const
             if (index >= jva->value_array.size())
                 throw std::out_of_range("node::child: index is out-of-range");
 
-            return node(jva->value_array[index].get());
+            return node(mp_impl->m_doc, jva->value_array[index].get());
         }
         break;
         case detail::node_t::string:
@@ -715,7 +717,7 @@ node node::child(const pstring& key) const
         throw document_error(os.str());
     }
 
-    return node(it->second.get());
+    return node(mp_impl->m_doc, it->second.get());
 }
 
 node node::parent() const
@@ -723,7 +725,7 @@ node node::parent() const
     if (!mp_impl->m_node->parent)
         throw document_error("node::parent: this node has no parent.");
 
-    return node(mp_impl->m_node->parent);
+    return node(mp_impl->m_doc, mp_impl->m_node->parent);
 }
 
 pstring node::string_value() const
@@ -742,6 +744,16 @@ double node::numeric_value() const
 
     const json_value_number* jvn = static_cast<const json_value_number*>(mp_impl->m_node);
     return jvn->value_number;
+}
+
+void node::push_back(const init::node& v)
+{
+    if (mp_impl->m_node->type != detail::node_t::array)
+        throw document_error("node::push_back: the node must be of array type.");
+
+    json_value_array* jva = static_cast<json_value_array*>(mp_impl->m_node);
+    const string_pool& pool = mp_impl->m_doc->get_string_pool();
+    jva->value_array.push_back(v.to_json_value(const_cast<string_pool&>(pool)));
 }
 
 array::array() {}
@@ -921,6 +933,11 @@ struct document_tree::impl
     impl(string_pool& pool) : m_pool(pool) {}
 };
 
+const string_pool& document_tree::get_string_pool() const
+{
+    return mp_impl->m_pool;
+}
+
 document_tree::document_tree() : mp_impl(orcus::make_unique<impl>()) {}
 document_tree::document_tree(string_pool& pool) : mp_impl(orcus::make_unique<impl>(pool)) {}
 
@@ -1033,11 +1050,11 @@ void document_tree::load(const char* p, size_t n, const json_config& config)
 
 json::node document_tree::get_document_root() const
 {
-    const json::json_value* p = mp_impl->m_root.get();
+    json::json_value* p = mp_impl->m_root.get();
     if (!p)
         throw document_error("document tree is empty");
 
-    return json::node(p);
+    return json::node(this, p);
 }
 
 std::string document_tree::dump() const

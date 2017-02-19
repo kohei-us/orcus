@@ -592,6 +592,12 @@ void test_json_init_list_explicit_array()
     assert(node.child(0).numeric_value() == 1.0);
     assert(node.child(1).numeric_value() == 2.0);
     assert(node.child(2).numeric_value() == 3.0);
+
+    node.push_back(4);
+    node.push_back(5);
+    assert(node.child_count() == 5);
+    assert(node.child(3).numeric_value() == 4.0);
+    assert(node.child(4).numeric_value() == 5.0);
 }
 
 int main()

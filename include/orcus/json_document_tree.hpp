@@ -71,6 +71,8 @@ enum class node_t : int
     null = 7,
 };
 
+namespace init { class node; }
+
 /**
  * Each node instance represents a JSON value object stored in the document
  * tree.
@@ -82,7 +84,7 @@ class ORCUS_DLLPUBLIC node
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
-    node(const json_value* jv);
+    node(const document_tree* doc, json_value* jv);
 
 public:
     node() = delete;
@@ -197,9 +199,15 @@ public:
      * @return identifier of the JSON value object.
      */
     uintptr_t identity() const;
-};
 
-namespace init { class node; }
+    /**
+     * Append a new node value to the end of the array.  An exception will be
+     * thrown if this method is called when the node is not of array type.
+     *
+     * @param v new node value to append to the end of the array.
+     */
+    void push_back(const init::node& v);
+};
 
 class ORCUS_DLLPUBLIC array
 {
@@ -249,8 +257,12 @@ public:
  */
 class ORCUS_DLLPUBLIC document_tree
 {
+    friend class node;
+
     struct impl;
     std::unique_ptr<impl> mp_impl;
+
+    const string_pool& get_string_pool() const;
 
 public:
     document_tree();
