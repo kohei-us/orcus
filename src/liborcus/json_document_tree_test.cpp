@@ -604,6 +604,11 @@ void test_json_init_list_explicit_array()
     node = doc2.get_document_root();
     assert(node.type() == json::node_t::array);
     assert(node.child_count() == 0);
+
+    // Assigning a non-const node to a const one should work.
+    json::const_node cnode = node;
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 0);
 }
 
 int main()
