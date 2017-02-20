@@ -77,21 +77,22 @@ namespace init { class node; }
  * Each node instance represents a JSON value object stored in the document
  * tree.
  */
-class ORCUS_DLLPUBLIC node
+class ORCUS_DLLPUBLIC const_node
 {
     friend class document_tree;
 
+protected:
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
-    node(const document_tree* doc, json_value* jv);
-
+    const_node(const document_tree* doc, json_value* jv);
+    const_node(std::unique_ptr<impl>&& p);
 public:
-    node() = delete;
+    const_node() = delete;
 
-    node(const node& other);
-    node(node&& rhs);
-    ~node();
+    const_node(const const_node& other);
+    const_node(const_node&& rhs);
+    ~const_node();
 
     /**
      * Get the type of a node.
@@ -145,7 +146,7 @@ public:
      *
      * @return child node instance.
      */
-    node child(size_t index) const;
+    const_node child(size_t index) const;
 
     /**
      * Get a child node by textural key value.
@@ -157,7 +158,7 @@ public:
      *
      * @return child node instance.
      */
-    node child(const pstring& key) const;
+    const_node child(const pstring& key) const;
 
     /**
      * Get the parent node.
@@ -167,7 +168,7 @@ public:
      *
      * @return parent node instance.
      */
-    node parent() const;
+    const_node parent() const;
 
     /**
      * Get the string value of a JSON string node.
@@ -189,7 +190,7 @@ public:
      */
     double numeric_value() const;
 
-    node& operator=(const node& other);
+    const_node& operator=(const const_node& other);
 
     /**
      * Return an indentifier of the JSON value object that the node
@@ -199,6 +200,60 @@ public:
      * @return identifier of the JSON value object.
      */
     uintptr_t identity() const;
+};
+
+class ORCUS_DLLPUBLIC node : public const_node
+{
+    friend class document_tree;
+
+    node(const document_tree* doc, json_value* jv);
+    node(const_node&& rhs);
+
+public:
+    node() = delete;
+
+    node(const node& other);
+    node(node&& rhs);
+    ~node();
+
+    node& operator=(const node& other);
+
+    /**
+     * Get a child node by index.
+     *
+     * @param index 0-based index of a child node.
+     *
+     * @exception orcus::json::document_error if the node is not one of the
+     *                 object or array types.
+     *
+     * @exception std::out_of_range if the index is equal to or greater than
+     *               the number of child nodes that the node has.
+     *
+     * @return child node instance.
+     */
+    node child(size_t index);
+
+    /**
+     * Get a child node by textural key value.
+     *
+     * @param key textural key value to get a child node by.
+     *
+     * @exception orcus::json::document_error if the node is not of the object
+     *                 type, or the node doesn't have the specified key.
+     *
+     * @return child node instance.
+     */
+    node child(const pstring& key);
+
+    /**
+     * Get the parent node.
+     *
+     * @exception orcus::json::document_error if the node doesn't have a parent
+     *                 node which implies that the node is a root node.
+     *
+     * @return parent node instance.
+     */
+    node parent();
 
     /**
      * Append a new node value to the end of the array.
@@ -258,6 +313,7 @@ public:
  */
 class ORCUS_DLLPUBLIC document_tree
 {
+    friend class const_node;
     friend class node;
 
     struct impl;
@@ -301,7 +357,14 @@ public:
      *
      * @return root node of the document.
      */
-    json::node get_document_root() const;
+    json::const_node get_document_root() const;
+
+    /**
+     * Get the root node of the document.
+     *
+     * @return root node of the document.
+     */
+    json::node get_document_root();
 
     /**
      * Dump the JSON document tree to string.

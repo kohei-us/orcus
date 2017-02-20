@@ -578,7 +578,7 @@ public:
 
 } // anonymous namespace
 
-struct node::impl
+struct const_node::impl
 {
     const document_tree* m_doc;
     json_value* m_node;
@@ -587,33 +587,34 @@ struct node::impl
     impl(const impl& other) : m_doc(other.m_doc), m_node(other.m_node) {}
 };
 
-node::node(const document_tree* doc, json_value* jv) : mp_impl(orcus::make_unique<impl>(doc, jv)) {}
-node::node(const node& other) : mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
-node::node(node&& rhs) : mp_impl(std::move(rhs.mp_impl)) {}
-node::~node() {}
+const_node::const_node(const document_tree* doc, json_value* jv) : mp_impl(orcus::make_unique<impl>(doc, jv)) {}
+const_node::const_node(std::unique_ptr<impl>&& p) : mp_impl(std::move(p)) {}
+const_node::const_node(const const_node& other) : mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
+const_node::const_node(const_node&& rhs) : mp_impl(std::move(rhs.mp_impl)) {}
+const_node::~const_node() {}
 
-node& node::operator=(const node& other)
+const_node& const_node::operator=(const const_node& other)
 {
     if (this == &other)
         return *this;
 
-    node tmp(other);
+    const_node tmp(other);
     mp_impl.swap(tmp.mp_impl);
     return *this;
 }
 
-uintptr_t node::identity() const
+uintptr_t const_node::identity() const
 {
     return reinterpret_cast<uintptr_t>(mp_impl->m_node);
 }
 
-node_t node::type() const
+node_t const_node::type() const
 {
     // Convert it back to the public enum type.
     return static_cast<node_t>(mp_impl->m_node->type);
 }
 
-size_t node::child_count() const
+size_t const_node::child_count() const
 {
     switch (mp_impl->m_node->type)
     {
@@ -633,7 +634,7 @@ size_t node::child_count() const
     return 0;
 }
 
-std::vector<pstring> node::keys() const
+std::vector<pstring> const_node::keys() const
 {
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::keys: this node is not of object type.");
@@ -645,16 +646,16 @@ std::vector<pstring> node::keys() const
 
     std::vector<pstring> keys;
     std::for_each(jvo->value_object.begin(), jvo->value_object.end(),
-        [&](const json_value_object::object_type::value_type& node)
+        [&](const json_value_object::object_type::value_type& const_node)
         {
-            keys.push_back(node.first);
+            keys.push_back(const_node.first);
         }
     );
 
     return keys;
 }
 
-pstring node::key(size_t index) const
+pstring const_node::key(size_t index) const
 {
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::key: this node is not of object type.");
@@ -666,7 +667,7 @@ pstring node::key(size_t index) const
     return jvo->key_order[index];
 }
 
-node node::child(size_t index) const
+const_node const_node::child(size_t index) const
 {
     switch (mp_impl->m_node->type)
     {
@@ -680,7 +681,7 @@ node node::child(size_t index) const
             const pstring& key = jvo->key_order[index];
             auto it = jvo->value_object.find(key);
             assert(it != jvo->value_object.end());
-            return node(mp_impl->m_doc, it->second.get());
+            return const_node(mp_impl->m_doc, it->second.get());
         }
         break;
         case detail::node_t::array:
@@ -689,7 +690,7 @@ node node::child(size_t index) const
             if (index >= jva->value_array.size())
                 throw std::out_of_range("node::child: index is out-of-range");
 
-            return node(mp_impl->m_doc, jva->value_array[index].get());
+            return const_node(mp_impl->m_doc, jva->value_array[index].get());
         }
         break;
         case detail::node_t::string:
@@ -703,7 +704,7 @@ node node::child(size_t index) const
     }
 }
 
-node node::child(const pstring& key) const
+const_node const_node::child(const pstring& key) const
 {
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::child: this node is not of object type.");
@@ -717,18 +718,18 @@ node node::child(const pstring& key) const
         throw document_error(os.str());
     }
 
-    return node(mp_impl->m_doc, it->second.get());
+    return const_node(mp_impl->m_doc, it->second.get());
 }
 
-node node::parent() const
+const_node const_node::parent() const
 {
     if (!mp_impl->m_node->parent)
         throw document_error("node::parent: this node has no parent.");
 
-    return node(mp_impl->m_doc, mp_impl->m_node->parent);
+    return const_node(mp_impl->m_doc, mp_impl->m_node->parent);
 }
 
-pstring node::string_value() const
+pstring const_node::string_value() const
 {
     if (mp_impl->m_node->type != detail::node_t::string)
         throw document_error("node::key: current node is not of string type.");
@@ -737,13 +738,47 @@ pstring node::string_value() const
     return jvs->value_string;
 }
 
-double node::numeric_value() const
+double const_node::numeric_value() const
 {
     if (mp_impl->m_node->type != detail::node_t::number)
         throw document_error("node::key: current node is not of numeric type.");
 
     const json_value_number* jvn = static_cast<const json_value_number*>(mp_impl->m_node);
     return jvn->value_number;
+}
+
+node::node(const document_tree* doc, json_value* jv) : const_node(doc, jv) {}
+node::node(const_node&& rhs) : const_node(std::move(rhs)) {}
+node::node(const node& other) : const_node(other) {}
+node::node(node&& rhs) : const_node(rhs) {}
+node::~node() {}
+
+node& node::operator=(const node& other)
+{
+    if (this == &other)
+        return *this;
+
+    node tmp(other);
+    mp_impl.swap(tmp.mp_impl);
+    return *this;
+}
+
+node node::child(size_t index)
+{
+    const_node cn = const_node::child(index);
+    return node(std::move(cn));
+}
+
+node node::child(const pstring& key)
+{
+    const_node cn = const_node::child(key);
+    return node(std::move(cn));
+}
+
+node node::parent()
+{
+    const_node cn = const_node::parent();
+    return node(std::move(cn));
 }
 
 void node::push_back(const init::node& v)
@@ -772,12 +807,12 @@ std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_val
         std::unique_ptr<json_value> jv = orcus::make_unique<json_value_object>();
         json_value_object* jvo = static_cast<json_value_object*>(jv.get());
 
-        for (std::unique_ptr<json_value>& node : nodes)
+        for (std::unique_ptr<json_value>& const_node : nodes)
         {
-            if (node->type != detail::node_t::key_value)
+            if (const_node->type != detail::node_t::key_value)
                 throw document_error("key-value pair was expected.");
 
-            json_value_kvp& kv = static_cast<json_value_kvp&>(*node);
+            json_value_kvp& kv = static_cast<json_value_kvp&>(*const_node);
 
             if (preserve_object_order)
                 jvo->key_order.push_back(kv.key);
@@ -796,13 +831,13 @@ std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_val
     std::unique_ptr<json_value> jv = orcus::make_unique<json_value_array>();
     json_value_array* jva = static_cast<json_value_array*>(jv.get());
 
-    for (std::unique_ptr<json_value>& node : nodes)
+    for (std::unique_ptr<json_value>& const_node : nodes)
     {
-        if (node->type == detail::node_t::key_value)
+        if (const_node->type == detail::node_t::key_value)
             throw document_error("key-value pair was not expected.");
 
-        node->parent = jva;
-        jva->value_array.push_back(std::move(node));
+        const_node->parent = jva;
+        jva->value_array.push_back(std::move(const_node));
     }
 
     return jv;
@@ -1049,7 +1084,16 @@ void document_tree::load(const char* p, size_t n, const json_config& config)
     }
 }
 
-json::node document_tree::get_document_root() const
+json::const_node document_tree::get_document_root() const
+{
+    json::json_value* p = mp_impl->m_root.get();
+    if (!p)
+        throw document_error("document tree is empty");
+
+    return json::const_node(this, p);
+}
+
+json::node document_tree::get_document_root()
 {
     json::json_value* p = mp_impl->m_root.get();
     if (!p)

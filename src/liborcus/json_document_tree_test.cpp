@@ -35,7 +35,7 @@ const char* json_test_refs_dirs[] = {
     SRCDIR"/test/json/refs1/",
 };
 
-bool string_expected(const json::node& node, const char* expected)
+bool string_expected(const json::const_node& node, const char* expected)
 {
     if (node.type() != json::node_t::string)
         return false;
@@ -48,7 +48,7 @@ bool string_expected(const json::node& node, const char* expected)
 }
 
 bool number_expected(
-    const json::node& node, double expected,
+    const json::const_node& node, double expected,
     double decimal = 0.0, double exponent = 0.0)
 {
     if (node.type() != json::node_t::number)
@@ -218,20 +218,20 @@ std::unique_ptr<json::document_tree> get_doc_tree(const char* filepath)
 }
 
 void dump_and_load(
-    const json::document_tree& doc, const std::function<void(json::node)>& test_func)
+    const json::document_tree& doc, const std::function<void(json::const_node)>& test_func)
 {
     json::document_tree doc2;
     std::string dumped = doc.dump();
     cout << "--- dumped" << endl;
     cout << dumped << endl;
     doc2.load(dumped, json_config());
-    json::node node = doc2.get_document_root();
+    json::const_node node = doc2.get_document_root();
     test_func(node);
 }
 
 void test_json_traverse_basic1()
 {
-    auto test_func = [](json::node node)
+    auto test_func = [](json::const_node node)
     {
         assert(node.type() == json::node_t::array);
         assert(node.child_count() == 3);
@@ -240,20 +240,20 @@ void test_json_traverse_basic1()
         assert(node.child(2).type() == json::node_t::null);
 
         // Move to child node and move back.
-        json::node node2 = node.child(0).parent();
+        json::const_node node2 = node.child(0).parent();
         assert(node.identity() == node2.identity());
     };
 
     const char* filepath = SRCDIR"/test/json/basic1/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
-    json::node node = doc->get_document_root();
+    json::const_node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
 }
 
 void test_json_traverse_basic2()
 {
-    auto test_func = [](json::node node)
+    auto test_func = [](json::const_node node)
     {
         assert(node.type() == json::node_t::array);
         assert(node.child_count() == 14);
@@ -276,14 +276,14 @@ void test_json_traverse_basic2()
 
     const char* filepath = SRCDIR"/test/json/basic2/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
-    json::node node = doc->get_document_root();
+    json::const_node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
 }
 
 void test_json_traverse_basic3()
 {
-    auto test_func = [](json::node node)
+    auto test_func = [](json::const_node node)
     {
         assert(node.type() == json::node_t::array);
         assert(node.child_count() == 9);
@@ -301,14 +301,14 @@ void test_json_traverse_basic3()
 
     const char* filepath = SRCDIR"/test/json/basic3/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
-    json::node node = doc->get_document_root();
+    json::const_node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
 }
 
 void test_json_traverse_basic4()
 {
-    auto test_func = [](json::node node)
+    auto test_func = [](json::const_node node)
     {
         assert(node.type() == json::node_t::object);
         auto keys = node.keys();
@@ -316,7 +316,7 @@ void test_json_traverse_basic4()
         for (auto it = keys.begin(), ite = keys.end(); it != ite; ++it)
         {
             const pstring& key = *it;
-            json::node child = node.child(key);
+            json::const_node child = node.child(key);
             if (key == "int")
                 assert(number_expected(child, 12.0));
             else if (key == "float")
@@ -330,14 +330,14 @@ void test_json_traverse_basic4()
 
     const char* filepath = SRCDIR"/test/json/basic4/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
-    json::node node = doc->get_document_root();
+    json::const_node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
 }
 
 void test_json_traverse_nested1()
 {
-    auto test_func = [](json::node node)
+    auto test_func = [](json::const_node node)
     {
         uintptr_t root_id = node.identity();
 
@@ -358,14 +358,14 @@ void test_json_traverse_nested1()
 
     const char* filepath = SRCDIR"/test/json/nested1/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
-    json::node node = doc->get_document_root();
+    json::const_node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
 }
 
 void test_json_traverse_nested2()
 {
-    auto test_func = [](json::node node)
+    auto test_func = [](json::const_node node)
     {
         assert(node.type() == json::node_t::array);
         assert(node.child_count() == 3);
@@ -388,7 +388,7 @@ void test_json_traverse_nested2()
 
     const char* filepath = SRCDIR"/test/json/nested2/input.json";
     std::unique_ptr<json::document_tree> doc = get_doc_tree(filepath);
-    json::node node = doc->get_document_root();
+    json::const_node node = doc->get_document_root();
     test_func(node);
     dump_and_load(*doc, test_func);
 }
@@ -396,7 +396,7 @@ void test_json_traverse_nested2()
 void test_json_init_list_flat1()
 {
     json::document_tree doc = { 1.0, 2.0, 3.0, 4.0 };
-    json::node node = doc.get_document_root();
+    json::const_node node = doc.get_document_root();
     assert(node.type() == json::node_t::array);
     assert(node.child_count() == 4);
 
@@ -468,7 +468,7 @@ void test_json_init_list_nested1()
         { 1.1, 2.2, "text" }
     };
 
-    json::node node = doc.get_document_root();
+    json::const_node node = doc.get_document_root();
     assert(node.type() == json::node_t::array);
     assert(node.child_count() == 2);
 
@@ -498,7 +498,7 @@ void test_json_init_list_object1()
         { "key2", "some text" },
     };
 
-    json::node node = doc.get_document_root();
+    json::const_node node = doc.get_document_root();
     assert(node.type() == json::node_t::object);
     assert(node.child_count() == 2);
     assert(node.key(0) == "key1");
@@ -528,7 +528,7 @@ void test_json_init_list_object2()
         { "parent2", "not-nested" },
     };
 
-    json::node node = doc.get_document_root();
+    json::const_node node = doc.get_document_root();
     assert(node.type() == json::node_t::object);
     assert(node.child_count() == 2);
     assert(node.key(0) == "parent1");
