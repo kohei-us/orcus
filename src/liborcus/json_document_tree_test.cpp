@@ -598,6 +598,12 @@ void test_json_init_list_explicit_array()
     assert(node.child_count() == 5);
     assert(node.child(3).numeric_value() == 4.0);
     assert(node.child(4).numeric_value() == 5.0);
+
+    // empty JSON with array root.
+    json::document_tree doc2 = json::array();
+    node = doc2.get_document_root();
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 0);
 }
 
 int main()

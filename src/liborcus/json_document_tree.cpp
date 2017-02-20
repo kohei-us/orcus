@@ -939,6 +939,7 @@ const string_pool& document_tree::get_string_pool() const
 }
 
 document_tree::document_tree() : mp_impl(orcus::make_unique<impl>()) {}
+document_tree::document_tree(document_tree&& other) : mp_impl(std::move(other.mp_impl)) {}
 document_tree::document_tree(string_pool& pool) : mp_impl(orcus::make_unique<impl>(pool)) {}
 
 document_tree::document_tree(std::initializer_list<init::node> vs) :

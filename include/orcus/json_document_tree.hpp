@@ -267,6 +267,8 @@ class ORCUS_DLLPUBLIC document_tree
 
 public:
     document_tree();
+    document_tree(const document_tree&) = delete;
+    document_tree(document_tree&& other);
     document_tree(string_pool& pool);
     document_tree(std::initializer_list<init::node> vs);
     document_tree(array vs);
