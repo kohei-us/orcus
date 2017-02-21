@@ -71,7 +71,7 @@ enum class node_t : int
     null = 7,
 };
 
-namespace init { class node; }
+namespace detail { namespace init { class node; }}
 
 /**
  * Each node instance represents a JSON value object stored in the document
@@ -262,20 +262,20 @@ public:
      *                 type.
      * @param v new node value to append to the end of the array.
      */
-    void push_back(const init::node& v);
+    void push_back(const detail::init::node& v);
 };
 
 class ORCUS_DLLPUBLIC array
 {
-    friend class init::node;
+    friend class detail::init::node;
     friend class document_tree;
 
-    std::initializer_list<init::node> m_vs;
+    std::initializer_list<detail::init::node> m_vs;
 public:
     array();
     array(const array&) = delete;
     array(array&& other);
-    array(std::initializer_list<init::node> vs);
+    array(std::initializer_list<detail::init::node> vs);
     ~array();
 };
 
@@ -288,8 +288,13 @@ public:
     ~object();
 };
 
-namespace init {
+namespace detail { namespace init {
 
+/**
+ * Node to store an initial value during document tree initialization.  It's
+ * not meant to be instantiated explicitly.  A value passed from the braced
+ * initialization list is implicitly converted to an instance of this class.
+ */
 class ORCUS_DLLPUBLIC node
 {
     friend class ::orcus::json::document_tree;
@@ -303,7 +308,7 @@ public:
     node(bool b);
     node(decltype(nullptr));
     node(const char* p);
-    node(std::initializer_list<init::node> vs);
+    node(std::initializer_list<detail::init::node> vs);
     node(json::array array);
     node(json::object obj);
 
@@ -316,7 +321,7 @@ public:
     std::unique_ptr<json_value> to_json_value(string_pool& pool) const;
 };
 
-}
+}}
 
 /**
  * This class stores a parsed JSON document tree structure.
@@ -336,12 +341,12 @@ public:
     document_tree(const document_tree&) = delete;
     document_tree(document_tree&& other);
     document_tree(string_pool& pool);
-    document_tree(std::initializer_list<init::node> vs);
+    document_tree(std::initializer_list<detail::init::node> vs);
     document_tree(array vs);
     document_tree(object obj);
     ~document_tree();
 
-    document_tree& operator= (std::initializer_list<init::node> vs);
+    document_tree& operator= (std::initializer_list<detail::init::node> vs);
     document_tree& operator= (array vs);
     document_tree& operator= (object obj);
 

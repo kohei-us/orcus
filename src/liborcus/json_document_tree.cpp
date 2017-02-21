@@ -781,7 +781,7 @@ node node::parent()
     return node(std::move(cn));
 }
 
-void node::push_back(const init::node& v)
+void node::push_back(const detail::init::node& v)
 {
     if (mp_impl->m_node->type != detail::node_t::array)
         throw document_error("node::push_back: the node must be of array type.");
@@ -793,7 +793,7 @@ void node::push_back(const init::node& v)
 
 array::array() {}
 array::array(array&& other) : m_vs(std::move(other.m_vs)) {}
-array::array(std::initializer_list<init::node> vs) : m_vs(std::move(vs)) {}
+array::array(std::initializer_list<detail::init::node> vs) : m_vs(std::move(vs)) {}
 array::~array() {}
 
 object::object() {}
@@ -849,7 +849,7 @@ std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_val
 
 } // anonymous namespace
 
-namespace init {
+namespace detail { namespace init {
 
 struct node::impl
 {
@@ -861,7 +861,7 @@ struct node::impl
         const char* m_value_string;
     };
 
-    std::initializer_list<init::node> m_value_array;
+    std::initializer_list<detail::init::node> m_value_array;
 
     impl(double v) : m_type(detail::node_t::number), m_value_number(v) {}
     impl(int v) : m_type(detail::node_t::number), m_value_number(v) {}
@@ -869,7 +869,7 @@ struct node::impl
     impl(decltype(nullptr)) : m_type(detail::node_t::null) {}
     impl(const char* p) : m_type(detail::node_t::string), m_value_string(p) {}
 
-    impl(std::initializer_list<init::node> vs) :
+    impl(std::initializer_list<detail::init::node> vs) :
         m_type(detail::node_t::array),
         m_value_array(std::move(vs))
     {
@@ -879,7 +879,7 @@ struct node::impl
         if (vs.size() != 2)
             return;
 
-        const init::node& v0 = *vs.begin();
+        const detail::init::node& v0 = *vs.begin();
         if (v0.mp_impl->m_type == detail::node_t::string)
             m_type = detail::node_t::key_value;
     }
@@ -898,7 +898,7 @@ node::node(int v) : mp_impl(orcus::make_unique<impl>(v)) {}
 node::node(bool b) : mp_impl(orcus::make_unique<impl>(b)) {}
 node::node(decltype(nullptr)) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
 node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
-node::node(std::initializer_list<init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
+node::node(std::initializer_list<detail::init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
 node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array))) {}
 node::node(json::object obj) : mp_impl(orcus::make_unique<impl>(std::move(obj))) {}
 node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
@@ -914,7 +914,7 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
         {
             assert(mp_impl->m_value_array.size() == 2);
             auto it = mp_impl->m_value_array.begin();
-            const init::node& key_node = *it;
+            const detail::init::node& key_node = *it;
             assert(key_node.mp_impl->m_type == detail::node_t::string);
             pstring key = pool.intern(key_node.mp_impl->m_value_string).first;
             ++it;
@@ -931,7 +931,7 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
         {
             std::vector<std::unique_ptr<json_value>> nodes;
             bool object = true;
-            for (const init::node& v2 : mp_impl->m_value_array)
+            for (const detail::init::node& v2 : mp_impl->m_value_array)
             {
                 std::unique_ptr<json_value> r = v2.to_json_value(pool);
                 if (r->type != detail::node_t::key_value)
@@ -971,7 +971,7 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
     return jv;
 }
 
-}
+}}
 
 struct document_tree::impl
 {
@@ -992,12 +992,12 @@ document_tree::document_tree() : mp_impl(orcus::make_unique<impl>()) {}
 document_tree::document_tree(document_tree&& other) : mp_impl(std::move(other.mp_impl)) {}
 document_tree::document_tree(string_pool& pool) : mp_impl(orcus::make_unique<impl>(pool)) {}
 
-document_tree::document_tree(std::initializer_list<init::node> vs) :
+document_tree::document_tree(std::initializer_list<detail::init::node> vs) :
     mp_impl(orcus::make_unique<impl>())
 {
     std::vector<std::unique_ptr<json_value>> nodes;
     bool object = true;
-    for (const init::node& v : vs)
+    for (const detail::init::node& v : vs)
     {
         std::unique_ptr<json_value> r = v.to_json_value(mp_impl->m_pool);
         if (r->type != detail::node_t::key_value)
@@ -1013,7 +1013,7 @@ document_tree::document_tree(array vs) : mp_impl(orcus::make_unique<impl>())
     mp_impl->m_root = orcus::make_unique<json_value_array>();
     json_value_array* jva = static_cast<json_value_array*>(mp_impl->m_root.get());
 
-    for (const init::node& v : vs.m_vs)
+    for (const detail::init::node& v : vs.m_vs)
     {
         std::unique_ptr<json_value> r = v.to_json_value(mp_impl->m_pool);
         jva->value_array.push_back(std::move(r));
@@ -1027,7 +1027,7 @@ document_tree::document_tree(object obj) : mp_impl(orcus::make_unique<impl>())
 
 document_tree::~document_tree() {}
 
-document_tree& document_tree::operator= (std::initializer_list<init::node> vs)
+document_tree& document_tree::operator= (std::initializer_list<detail::init::node> vs)
 {
     document_tree tmp(std::move(vs));
     swap(tmp);
