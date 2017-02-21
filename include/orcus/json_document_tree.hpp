@@ -298,6 +298,7 @@ namespace detail { namespace init {
 class ORCUS_DLLPUBLIC node
 {
     friend class ::orcus::json::document_tree;
+    friend class ::orcus::json::node;
 
     struct impl;
     std::unique_ptr<impl> mp_impl;
@@ -318,6 +319,7 @@ public:
 
     node& operator= (node) = delete;
 
+private:
     std::unique_ptr<json_value> to_json_value(string_pool& pool) const;
 };
 
