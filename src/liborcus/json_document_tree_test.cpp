@@ -611,6 +611,33 @@ void test_json_init_list_explicit_array()
     assert(node.child_count() == 0);
 }
 
+void test_json_init_list_explicit_object()
+{
+    json::document_tree doc = json::object();
+    json::node node = doc.get_document_root();
+    assert(node.type() == json::node_t::object);
+    assert(node.child_count() == 0);
+
+    // Initialize with an array of 3 empty objects.
+    doc = {
+        json::object(),
+        json::object(),
+        json::object()
+    };
+
+    node = doc.get_document_root();
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 3);
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        node = node.child(i);
+        assert(node.type() == json::node_t::object);
+        assert(node.child_count() == 0);
+        node = node.parent();
+    }
+}
+
 int main()
 {
     test_json_parse();
@@ -629,6 +656,7 @@ int main()
     test_json_init_list_object1();
     test_json_init_list_object2();
     test_json_init_list_explicit_array();
+    test_json_init_list_explicit_object();
 
     return EXIT_SUCCESS;
 }

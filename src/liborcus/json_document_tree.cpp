@@ -796,6 +796,10 @@ array::array(array&& other) : m_vs(std::move(other.m_vs)) {}
 array::array(std::initializer_list<init::node> vs) : m_vs(std::move(vs)) {}
 array::~array() {}
 
+object::object() {}
+object::object(object&& other) {}
+object::~object() {}
+
 namespace {
 
 std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_value>> nodes, bool object)
@@ -884,6 +888,9 @@ struct node::impl
         m_type(detail::node_t::array),
         m_value_array(std::move(array.m_vs))
     {}
+
+    impl(json::object obj) :
+        m_type(detail::node_t::object) {}
 };
 
 node::node(double v) : mp_impl(orcus::make_unique<impl>(v)) {}
@@ -893,6 +900,7 @@ node::node(decltype(nullptr)) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
 node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
 node::node(std::initializer_list<init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
 node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array))) {}
+node::node(json::object obj) : mp_impl(orcus::make_unique<impl>(std::move(obj))) {}
 node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
 node::~node() {}
 
@@ -932,6 +940,13 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
             }
 
             jv = aggregate_nodes(std::move(nodes), object);
+            break;
+        }
+        case detail::node_t::object:
+        {
+            // Currently only empty object instance is allowed.
+            assert(mp_impl->m_value_array.size() == 0);
+            jv = orcus::make_unique<json_value_object>();
             break;
         }
         case detail::node_t::string:
@@ -1005,6 +1020,11 @@ document_tree::document_tree(array vs) : mp_impl(orcus::make_unique<impl>())
     }
 }
 
+document_tree::document_tree(object obj) : mp_impl(orcus::make_unique<impl>())
+{
+    mp_impl->m_root = orcus::make_unique<json_value_object>();
+}
+
 document_tree::~document_tree() {}
 
 document_tree& document_tree::operator= (std::initializer_list<init::node> vs)
@@ -1017,6 +1037,13 @@ document_tree& document_tree::operator= (std::initializer_list<init::node> vs)
 document_tree& document_tree::operator= (array vs)
 {
     document_tree tmp(std::move(vs));
+    swap(tmp);
+    return *this;
+}
+
+document_tree& document_tree::operator= (object obj)
+{
+    document_tree tmp(std::move(obj));
     swap(tmp);
     return *this;
 }

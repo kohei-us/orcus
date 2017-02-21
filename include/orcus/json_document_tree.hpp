@@ -279,6 +279,15 @@ public:
     ~array();
 };
 
+class ORCUS_DLLPUBLIC object
+{
+public:
+    object();
+    object(const object&) = delete;
+    object(object&& other);
+    ~object();
+};
+
 namespace init {
 
 class ORCUS_DLLPUBLIC node
@@ -296,6 +305,7 @@ public:
     node(const char* p);
     node(std::initializer_list<init::node> vs);
     node(json::array array);
+    node(json::object obj);
 
     node(const node&) = delete;
     node(node&& other);
@@ -328,10 +338,12 @@ public:
     document_tree(string_pool& pool);
     document_tree(std::initializer_list<init::node> vs);
     document_tree(array vs);
+    document_tree(object obj);
     ~document_tree();
 
     document_tree& operator= (std::initializer_list<init::node> vs);
     document_tree& operator= (array vs);
+    document_tree& operator= (object obj);
 
     /**
      * Load raw string stream containing a JSON structure to populate the
