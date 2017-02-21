@@ -398,6 +398,11 @@ public:
      */
     std::string dump_xml() const;
 
+    /**
+     * Swap the content of the document with another document instance.
+     *
+     * @param other document instance to swap the content with.
+     */
     void swap(document_tree& other);
 };
 
