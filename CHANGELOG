@@ -1,3 +1,6 @@
+  * orcus-xml: fix incorrect mapping of XML range data to sheet range
+    when the first column contains one or more empty elements.
+
   * support import of named expressions for xlsx and xls-xml.
 
   * support import of formula cells for xls-xml.
