@@ -65,11 +65,10 @@ private:
 
     const sax_ns_parser_attribute* find_attr_by_name(xmlns_id_t ns, const pstring& name)
     {
-        vector<sax_ns_parser_attribute>::const_iterator it = m_attrs.begin(), it_end = m_attrs.end();
-        for (; it != it_end; ++it)
+        for (const sax_ns_parser_attribute& attr : m_attrs)
         {
-            if (it->ns == ns && it->name == name)
-                return &(*it);
+            if (attr.ns == ns && attr.name == name)
+                return &attr;
         }
         return nullptr;
     }
@@ -478,7 +477,12 @@ struct orcus_xml_impl
 
     xml_map_tree::cell_position m_cur_range_ref;
 
-    explicit orcus_xml_impl(xmlns_repository& ns_repo) : mp_import_factory(nullptr), mp_export_factory(nullptr), m_ns_repo(ns_repo), m_ns_cxt_map(ns_repo.create_context()), m_map_tree(m_ns_repo) {}
+    explicit orcus_xml_impl(xmlns_repository& ns_repo) :
+        mp_import_factory(nullptr),
+        mp_export_factory(nullptr),
+        m_ns_repo(ns_repo),
+        m_ns_cxt_map(ns_repo.create_context()),
+        m_map_tree(m_ns_repo) {}
 };
 
 orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact, spreadsheet::iface::export_factory* ex_fact) :

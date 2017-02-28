@@ -22,6 +22,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include <unistd.h>
 
@@ -36,7 +37,7 @@ struct test_case
     bool output_equals_input;
 };
 
-const test_case tests[] =
+const std::vector<test_case> tests =
 {
     { SRCDIR"/test/xml-mapped/attribute-basic", true },
     { SRCDIR"/test/xml-mapped/attribute-namespace", true },
@@ -65,10 +66,10 @@ void dump_xml_structure(string& dump_content, string& strm, const char* filepath
 void test_mapped_xml_import()
 {
     string strm;
-    size_t n = sizeof(tests)/sizeof(tests[0]);
-    for (size_t i = 0; i < n; ++i)
+
+    for (const test_case& tc : tests)
     {
-        string base_dir(tests[i].base_dir);
+        string base_dir(tc.base_dir);
         string data_file = base_dir + "/input.xml";
         string map_file = base_dir + "/map.xml";
         string check_file = base_dir + "/check.txt";
@@ -109,7 +110,7 @@ void test_mapped_xml_import()
         cout << "writing to " << out_file << endl;
         app.write_file(out_file.c_str());
 
-        if (tests[i].output_equals_input)
+        if (tc.output_equals_input)
         {
             // Compare the logical xml content of the output xml with the
             // input one. They should be identical.
