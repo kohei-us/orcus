@@ -12,6 +12,7 @@
 #include "orcus/spreadsheet/export_interface.hpp"
 #include "orcus/xml_namespace.hpp"
 #include "orcus/stream.hpp"
+#include "orcus/string_pool.hpp"
 
 #include "xml_map_tree.hpp"
 
@@ -50,6 +51,7 @@ class xml_data_sax_handler
     vector<sax_ns_parser_attribute> m_attrs;
     vector<scope> m_scopes;
 
+    string_pool m_pool;
     spreadsheet::iface::import_factory& m_factory;
     xml_map_tree::const_element_list_type& m_link_positions;
     const xml_map_tree& m_map_tree;
@@ -221,12 +223,14 @@ public:
         mp_current_elem = m_map_tree_walker.pop_element(elem.ns, elem.name);
     }
 
-    void characters(const pstring& val, bool /*transient*/)
+    void characters(const pstring& val, bool transient)
     {
         if (!mp_current_elem)
             return;
 
         m_current_chars = val.trim();
+        if (transient)
+            m_current_chars = m_pool.intern(m_current_chars).first;
     }
 
     void attribute(const pstring& /*name*/, const pstring& /*val*/)
