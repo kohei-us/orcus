@@ -2,7 +2,7 @@
 <map xmlns="http://gitorious.org/orcus/xml-map">
     <sheet name="data"/>
     <range row="0" column="0" sheet="data">
-        <field xpath="/vehicles/vehicle/atvtype"/>
+        <field xpath="/vehicles/vehicle/atvType"/>
         <field xpath="/vehicles/vehicle/barrels08"/>
     </range>
 </map>
