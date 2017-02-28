@@ -46,6 +46,7 @@ const test_case tests[] =
     { SRCDIR"/test/xml-mapped/content-basic", true },
     { SRCDIR"/test/xml-mapped/content-namespace", false },
     { SRCDIR"/test/xml-mapped/content-namespace-2", true },
+    { SRCDIR"/test/xml-mapped/fuel-economy", true },
 };
 
 const char* temp_output_xml = "out.xml";

@@ -56,7 +56,7 @@ class xml_data_sax_handler
     xml_map_tree::walker m_map_tree_walker;
 
     const xml_map_tree::element* mp_current_elem;
-
+    pstring m_current_chars;
     bool m_in_range_ref:1;
 
 private:
@@ -83,9 +83,6 @@ private:
     {
         assert(field.ref);
         assert(!field.ref->pos.sheet.empty());
-
-        if (field.column_pos == 0)
-            ++field.ref->row_size;
 
         const xml_map_tree::cell_position& pos = field.ref->pos;
         spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(pos.sheet.get(), pos.sheet.size());
@@ -127,6 +124,7 @@ public:
         scope& cur = m_scopes.back();
         cur.element_open_begin = elem.begin_pos;
         cur.element_open_end = elem.end_pos;
+        m_current_chars.clear();
 
         mp_current_elem = m_map_tree_walker.push_element(elem.ns, elem.name);
         if (mp_current_elem)
@@ -149,10 +147,15 @@ public:
                 {
                     case xml_map_tree::reference_cell:
                         set_single_link_cell(*linked_attr.cell_ref, val_trimmed);
-                    break;
+                        break;
                     case xml_map_tree::reference_range_field:
+                    {
+                        const xml_map_tree::field_in_range& field = *linked_attr.field_ref;
+                        if (field.column_pos == 0)
+                            ++field.ref->row_size;
                         set_field_link_cell(*linked_attr.field_ref, val_trimmed);
-                    break;
+                        break;
+                    }
                     default:
                         ;
                 }
@@ -173,6 +176,25 @@ public:
 
         if (mp_current_elem)
         {
+            switch (mp_current_elem->ref_type)
+            {
+                case xml_map_tree::reference_cell:
+                {
+                    set_single_link_cell(*mp_current_elem->cell_ref, m_current_chars);
+                    break;
+                }
+                case xml_map_tree::reference_range_field:
+                {
+                    const xml_map_tree::field_in_range& field = *mp_current_elem->field_ref;
+                    if (field.column_pos == 0)
+                        ++field.ref->row_size;
+                    set_field_link_cell(*mp_current_elem->field_ref, m_current_chars);
+                    break;
+                }
+                default:
+                    ;
+            }
+
             // Store the end element position in stream for linked elements.
             const scope& cur = m_scopes.back();
             if (mp_current_elem->ref_type == xml_map_tree::reference_cell ||
@@ -204,21 +226,7 @@ public:
         if (!mp_current_elem)
             return;
 
-        pstring val_trimmed = val.trim();
-        if (val_trimmed.empty())
-            return;
-
-        switch (mp_current_elem->ref_type)
-        {
-            case xml_map_tree::reference_cell:
-                set_single_link_cell(*mp_current_elem->cell_ref, val_trimmed);
-            break;
-            case xml_map_tree::reference_range_field:
-                set_field_link_cell(*mp_current_elem->field_ref, val_trimmed);
-            break;
-            default:
-                ;
-        }
+        m_current_chars = val.trim();
     }
 
     void attribute(const pstring& /*name*/, const pstring& /*val*/)
@@ -693,4 +701,5 @@ void orcus_xml::write_file(const char* filepath)
 }
 
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
