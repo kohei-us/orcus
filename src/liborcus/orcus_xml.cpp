@@ -133,11 +133,9 @@ public:
         {
             // Go through all linked attributes that belong to this element,
             // and see if they exist in this content xml.
-            const xml_map_tree::attribute_store_type& linked_attrs = mp_current_elem->attributes;
-            xml_map_tree::attribute_store_type::const_iterator it = linked_attrs.begin(), it_end = linked_attrs.end();
-            for (; it != it_end; ++it)
+            for (const auto& p_attr : mp_current_elem->attributes)
             {
-                const xml_map_tree::attribute& linked_attr = **it;
+                const xml_map_tree::attribute& linked_attr = *p_attr;
                 const sax_ns_parser_attribute* p = find_attr_by_name(linked_attr.ns, linked_attr.name);
                 if (!p)
                     continue;
@@ -285,10 +283,9 @@ void write_opening_element(
 
     os << '<' << elem;
 
-    xml_map_tree::attribute_store_type::const_iterator it = elem.attributes.begin(), it_end = elem.attributes.end();
-    for (; it != it_end; ++it)
+    for (const auto& p_attr : elem.attributes)
     {
-        const xml_map_tree::attribute& attr = **it;
+        const xml_map_tree::attribute& attr = *p_attr;
         if (attr.ref_type != xml_map_tree::reference_range_field)
             // In theory this should never happen but it won't hurt to check.
             continue;
@@ -308,10 +305,9 @@ void write_opening_element(
     ostream& os, const xml_map_tree::element& elem, const spreadsheet::iface::export_factory& fact, bool self_close)
 {
     os << '<' << elem;
-    xml_map_tree::attribute_store_type::const_iterator it = elem.attributes.begin(), it_end = elem.attributes.end();
-    for (; it != it_end; ++it)
+    for (const auto& p_attr : elem.attributes)
     {
-        const xml_map_tree::attribute& attr = **it;
+        const xml_map_tree::attribute& attr = *p_attr;
         if (attr.ref_type != xml_map_tree::reference_cell)
             // We should only see single linked cell here, as all
             // field links are handled by the range parent above.
@@ -546,11 +542,10 @@ void orcus_xml::read_file(const char* filepath)
 
     // Insert the range headers and reset the row size counters.
     xml_map_tree::range_ref_map_type& range_refs = mp_impl->m_map_tree.get_range_references();
-    xml_map_tree::range_ref_map_type::iterator it_ref = range_refs.begin(), it_ref_end = range_refs.end();
-    for (; it_ref != it_ref_end; ++it_ref)
+    for (const auto& ref_pair : range_refs)
     {
-        const xml_map_tree::cell_position& ref = it_ref->first;
-        xml_map_tree::range_reference& range_ref = *it_ref->second;
+        const xml_map_tree::cell_position& ref = ref_pair.first;
+        xml_map_tree::range_reference& range_ref = *ref_pair.second;
         range_ref.row_size = 0; // Reset the row offset.
 
         spreadsheet::iface::import_sheet* sheet =
