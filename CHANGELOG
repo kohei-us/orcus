@@ -1,3 +1,7 @@
+orcus 0.13.0 (not released yet)
+
+  * support single-quoted attribute values in the sax xml parser.
+
   * orcus-xml: fix incorrect mapping of XML range data to sheet range
     when the first column contains one or more empty elements.
 
