@@ -7,3 +7,5 @@
 /root/child@attr4="before\"after"
 /root/child
 /root/child@attr5=""
+/root/child
+/root/child@attr6="double-quoted"
