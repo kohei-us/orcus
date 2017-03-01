@@ -303,13 +303,15 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, pstring& str)
 bool parser_base::value(pstring& str, bool decode)
 {
     char c = cur_char();
-    if (c != '"')
+    if (c != '"' && c != '\'')
         throw malformed_xml_error("value must be quoted", offset());
+
+    char quote_char = c;
 
     c = next_char_checked();
 
     const char* p0 = mp_char;
-    for (; c != '"'; c = next_char_checked())
+    for (; c != quote_char; c = next_char_checked())
     {
         if (decode && c == '&')
         {

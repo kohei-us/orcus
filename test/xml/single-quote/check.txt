@@ -1,0 +1,9 @@
+/root
+/root/child
+/root/child@attr1="value1"
+/root/child@attr2="value2"
+/root/child
+/root/child@attr3="\"quoted\""
+/root/child@attr4="before\"after"
+/root/child
+/root/child@attr5=""

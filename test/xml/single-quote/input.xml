@@ -3,5 +3,7 @@
 <root>
     <child attr2='value2' attr1='value1'/>
     <child attr3='"quoted"' attr4='before"after'/>
+    <child attr5=''/> <!-- empty attribute value -->
+    <child attr6="double-quoted"/>
 </root>
 
