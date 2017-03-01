@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- this is a comment -->
+<root>
+    <child attr2='value2' attr1='value1'/>
+    <child attr3='"quoted"' attr4='before"after'/>
+</root>
+
