@@ -175,7 +175,6 @@ public:
     virtual size_t commit_fill();
 
     virtual void set_border_count(size_t n);
-    virtual void set_border_style(border_direction_t dir, const char* s, size_t n);
     virtual void set_border_style(border_direction_t dir, border_style_t style);
     virtual void set_border_color(
         border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);

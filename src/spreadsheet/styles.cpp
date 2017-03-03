@@ -287,11 +287,6 @@ void import_styles::set_border_count(size_t n)
     m_borders.reserve(n);
 }
 
-void import_styles::set_border_style(border_direction_t dir, const char* s, size_t n)
-{
-    assert(false);
-}
-
 void import_styles::set_border_style(border_direction_t dir, border_style_t style)
 {
     border_attrs_t* p = get_border_attrs(m_cur_border, dir);
