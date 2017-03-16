@@ -210,6 +210,66 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
 
                 break;
             }
+            case XML_Styles:
+            {
+                xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
+                break;
+            }
+            case XML_Style:
+            {
+                xml_element_expected(parent, NS_xls_xml_ss, XML_Styles);
+
+                pstring style_id, style_name;
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns != NS_xls_xml_ss)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_ID:
+                            style_id = intern(attr.value);
+                            break;
+                        case XML_Name:
+                            style_name = intern(attr.value);
+                            break;
+                        default:
+                            ;
+                    }
+                }
+
+                m_current_style = orcus::make_unique<style_type>();
+                m_current_style->id = style_id;
+                m_current_style->name = style_name;
+
+                break;
+            }
+            case XML_Font:
+            {
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns != NS_xls_xml_ss)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_Bold:
+                        {
+                            m_current_style->font.bold = to_bool(attr.value);
+                            break;
+                        }
+                        case XML_Italic:
+                        {
+                            m_current_style->font.italic = to_bool(attr.value);
+                            break;
+                        }
+                        default:
+                            ;
+                    }
+                }
+                break;
+            }
             default:
                 warn_unhandled();
         }
@@ -239,6 +299,17 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_Worksheet:
                 mp_cur_sheet = nullptr;
                 break;
+            case XML_Style:
+            {
+                if (m_current_style)
+                {
+                    if (m_current_style->name == "Default")
+                        m_default_style = std::move(m_current_style);
+                    else
+                        m_styles.push_back(std::move(m_current_style));
+                }
+                break;
+            }
             default:
                 ;
         }

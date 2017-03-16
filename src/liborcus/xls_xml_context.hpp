@@ -27,6 +27,20 @@ class import_named_expression;
 
 class xls_xml_context : public xml_context_base
 {
+    struct font_style_type
+    {
+        bool bold = false;
+        bool italic = false;
+    };
+
+    struct style_type
+    {
+        pstring id;
+        pstring name;
+
+        font_style_type font;
+    };
+
     struct named_exp
     {
         pstring name;
@@ -37,6 +51,7 @@ class xls_xml_context : public xml_context_base
     };
 
     using named_expressions_type = std::vector<named_exp>;
+    using styles_type = std::vector<std::unique_ptr<style_type>>;
 
 public:
     enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };
@@ -85,6 +100,10 @@ private:
 
     named_expressions_type m_named_exps_global;
     named_expressions_type m_named_exps_sheet;
+
+    std::unique_ptr<style_type> m_current_style;
+    std::unique_ptr<style_type> m_default_style;
+    styles_type m_styles;
 };
 
 }
