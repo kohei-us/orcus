@@ -247,6 +247,8 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             }
             case XML_Font:
             {
+                xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
+
                 for (const xml_token_attr_t& attr : attrs)
                 {
                     if (attr.ns != NS_xls_xml_ss)
