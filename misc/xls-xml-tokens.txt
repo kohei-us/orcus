@@ -18,6 +18,7 @@ AllowFormatCells
 AllowInsertCols
 AllowInsertHyperlinks
 AllowInsertRows
+AllowPNG
 AllowSizeCols
 AllowSizeRows
 AllowSort
@@ -54,6 +55,7 @@ AutoShowRange
 AutoShowType
 AutoSortField
 AutoSortOrder
+B
 BackgroundQuery
 BaseField
 BaseItem
@@ -324,6 +326,7 @@ HorizontalResolution
 Href
 HtmlType
 HyperlinkBase
+I
 ID
 IMEMode
 Id
