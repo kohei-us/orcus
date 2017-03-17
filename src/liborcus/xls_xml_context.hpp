@@ -13,6 +13,7 @@
 #include "orcus/string_pool.hpp"
 
 #include <string>
+#include <unordered_map>
 
 namespace orcus {
 
@@ -52,6 +53,7 @@ class xls_xml_context : public xml_context_base
 
     using named_expressions_type = std::vector<named_exp>;
     using styles_type = std::vector<std::unique_ptr<style_type>>;
+    using style_id_xf_map_type = std::unordered_map<pstring, size_t, pstring::hash>;
 
 public:
     enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };
@@ -75,6 +77,10 @@ private:
     void end_element_data();
 
     void end_element_workbook();
+    void end_element_styles();
+
+    void commit_default_style();
+    void commit_styles();
 
     void push_formula_cell();
 
@@ -104,6 +110,8 @@ private:
     std::unique_ptr<style_type> m_current_style;
     std::unique_ptr<style_type> m_default_style;
     styles_type m_styles;
+
+    style_id_xf_map_type m_style_map;
 };
 
 }

@@ -305,11 +305,16 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
             {
                 if (m_current_style)
                 {
-                    if (m_current_style->name == "Default")
+                    if (m_current_style->id == "Default")
                         m_default_style = std::move(m_current_style);
                     else
                         m_styles.push_back(std::move(m_current_style));
                 }
+                break;
+            }
+            case XML_Styles:
+            {
+                end_element_styles();
                 break;
             }
             default:
@@ -547,6 +552,70 @@ void xls_xml_context::end_element_workbook()
     }
 }
 
+void xls_xml_context::end_element_styles()
+{
+    commit_default_style(); // Commit the default style first.
+    commit_styles();
+}
+
+void xls_xml_context::commit_default_style()
+{
+    spreadsheet::iface::import_styles* styles = mp_factory->get_styles();
+    if (!styles)
+        return;
+
+    if (m_default_style)
+    {
+        styles->set_font_bold(m_default_style->font.bold);
+        styles->set_font_italic(m_default_style->font.italic);
+    }
+
+    styles->commit_font();
+
+    styles->commit_fill();
+    styles->commit_border();
+    styles->commit_cell_protection();
+    styles->commit_number_format();
+
+    styles->commit_cell_style_xf();
+    styles->commit_cell_xf();
+
+    if (m_default_style)
+    {
+        const pstring& name = m_default_style->name;
+        if (!name.empty())
+            styles->set_cell_style_name(name.data(), name.size());
+    }
+
+    styles->commit_cell_style();
+}
+
+void xls_xml_context::commit_styles()
+{
+    if (m_styles.empty())
+        return;
+
+    spreadsheet::iface::import_styles* styles = mp_factory->get_styles();
+    if (!styles)
+        return;
+
+    // Build a map of cell style textural ID's to cell format (xf) numeric ID's.
+
+    for (const std::unique_ptr<style_type>& style : m_styles)
+    {
+        styles->set_font_bold(style->font.bold);
+        styles->set_font_italic(style->font.italic);
+
+        size_t font_id = styles->commit_font();
+
+        styles->set_xf_font(font_id);
+
+        size_t xf_id = styles->commit_cell_xf();
+
+        m_style_map.insert({style->id, xf_id});
+    }
+}
+
 void xls_xml_context::push_formula_cell()
 {
     mp_cur_sheet->set_formula(
@@ -561,7 +630,6 @@ void xls_xml_context::push_formula_cell()
         default:
             ;
     }
-
 
     m_cur_cell_formula.clear();
 }
