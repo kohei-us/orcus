@@ -369,6 +369,7 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
 
     long col_index = 0;
     pstring formula;
+    m_cur_cell_style_id.clear();
 
     m_cur_merge_across = 0; // extra column(s) that are part of the merged cell.
     m_cur_merge_down = 0; // extra row(s) that are part of the merged cell.
@@ -402,6 +403,9 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
                 case XML_MergeDown:
                     m_cur_merge_down = to_long(attr.value);
                     break;
+                case XML_StyleID:
+                    m_cur_cell_style_id = intern(attr.value);
+                    break;
                 default:
                     ;
             }
@@ -429,6 +433,16 @@ void xls_xml_context::end_element_cell()
         merge_range.last.row = m_cur_row + m_cur_merge_down;
 
         mp_sheet_props->set_merge_cell_range(merge_range);
+    }
+
+    if (!m_cur_cell_style_id.empty())
+    {
+        auto it = m_style_map.find(m_cur_cell_style_id);
+        if (it != m_style_map.end())
+        {
+            size_t xf_id = it->second;
+            mp_cur_sheet->set_format(m_cur_row, m_cur_col, xf_id);
+        }
     }
 
     ++m_cur_col;

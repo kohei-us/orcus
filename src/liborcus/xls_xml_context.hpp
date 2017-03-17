@@ -103,6 +103,7 @@ private:
     double m_cur_cell_value;
     date_time_t m_cur_cell_datetime;
     pstring m_cur_cell_formula;
+    pstring m_cur_cell_style_id;
 
     named_expressions_type m_named_exps_global;
     named_expressions_type m_named_exps_sheet;
