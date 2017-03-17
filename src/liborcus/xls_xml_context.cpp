@@ -327,37 +327,34 @@ void xls_xml_context::characters(const pstring& str, bool transient)
     if (str.empty())
         return;
 
-    const xml_token_pair_t& elem = get_current_element();
-
-    if (elem.first == NS_xls_xml_ss && elem.second == XML_Data)
+    switch (m_cur_cell_type)
     {
-        switch (m_cur_cell_type)
+        case ct_unknown:
+            break;
+        case ct_string:
         {
-            case ct_string:
-            {
-                if (transient)
-                    m_cur_cell_string.push_back(m_pool.intern(str).first);
-                else
-                    m_cur_cell_string.push_back(str);
+            if (transient)
+                m_cur_cell_string.push_back(m_pool.intern(str).first);
+            else
+                m_cur_cell_string.push_back(str);
 
-                break;
-            }
-            case ct_number:
-            {
-                const char* p = str.get();
-                m_cur_cell_value = to_double(p, p + str.size());
-                break;
-            }
-            case ct_datetime:
-                m_cur_cell_datetime = to_date_time(str);
-                break;
-            default:
-                if (get_config().debug)
-                {
-                    cout << "warning: unknown cell type '" << m_cur_cell_type
-                        << "': characters='" << str << "'" << endl;
-                }
+            break;
         }
+        case ct_number:
+        {
+            const char* p = str.get();
+            m_cur_cell_value = to_double(p, p + str.size());
+            break;
+        }
+        case ct_datetime:
+            m_cur_cell_datetime = to_date_time(str);
+            break;
+        default:
+            if (get_config().debug)
+            {
+                cout << "warning: unknown cell type '" << m_cur_cell_type
+                    << "': characters='" << str << "'" << endl;
+            }
     }
 }
 
@@ -492,6 +489,8 @@ void xls_xml_context::end_element_data()
 
     switch (m_cur_cell_type)
     {
+        case ct_unknown:
+            break;
         case ct_number:
             mp_cur_sheet->set_value(m_cur_row, m_cur_col, m_cur_cell_value);
             break;
@@ -534,6 +533,8 @@ void xls_xml_context::end_element_data()
             if (get_config().debug)
                 cout << "warning: unknown cell type '" << m_cur_cell_type << "': value not pushed." << endl;
     }
+
+    m_cur_cell_type = ct_unknown;
 }
 
 void xls_xml_context::end_element_workbook()
