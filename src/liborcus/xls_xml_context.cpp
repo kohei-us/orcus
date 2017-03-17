@@ -182,9 +182,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                     switch (attr.name)
                     {
                         case XML_Name:
-                            name = attr.value;
-                            if (attr.transient)
-                                name = intern(name);
+                            name = intern(attr);
                             break;
                         case XML_RefersTo:
                         {
@@ -229,10 +227,10 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                     switch (attr.name)
                     {
                         case XML_ID:
-                            style_id = intern(attr.value);
+                            style_id = intern(attr);
                             break;
                         case XML_Name:
-                            style_name = intern(attr.value);
+                            style_name = intern(attr);
                             break;
                         default:
                             ;
@@ -404,7 +402,7 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
                     m_cur_merge_down = to_long(attr.value);
                     break;
                 case XML_StyleID:
-                    m_cur_cell_style_id = intern(attr.value);
+                    m_cur_cell_style_id = intern(attr);
                     break;
                 default:
                     ;
