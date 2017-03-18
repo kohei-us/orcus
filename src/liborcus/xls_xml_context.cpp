@@ -17,6 +17,224 @@ using namespace std;
 
 namespace orcus {
 
+xls_xml_data_context::xls_xml_data_context(
+    session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
+    xml_context_base(session_cxt, tokens),
+    mp_factory(factory),
+    mp_cur_sheet(nullptr),
+    m_row(0), m_col(0),
+    m_cell_type(ct_unknown),
+    m_cell_value(std::numeric_limits<double>::quiet_NaN())
+{
+}
+
+bool xls_xml_data_context::can_handle_element(xmlns_id_t ns, xml_token_t name) const
+{
+    return true;
+}
+
+xml_context_base* xls_xml_data_context::create_child_context(xmlns_id_t ns, xml_token_t name)
+{
+    return nullptr;
+}
+
+void xls_xml_data_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child)
+{
+}
+
+void xls_xml_data_context::start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs)
+{
+    xml_token_pair_t parent = push_stack(ns, name);
+
+    if (ns == NS_xls_xml_ss)
+    {
+        switch (name)
+        {
+            case XML_Data:
+                start_element_data(parent, attrs);
+                break;
+            default:
+                warn_unhandled();
+        }
+    }
+    else
+        warn_unhandled();
+}
+
+void xls_xml_data_context::characters(const pstring& str, bool transient)
+{
+    if (str.empty())
+        return;
+
+    switch (m_cell_type)
+    {
+        case ct_unknown:
+            break;
+        case ct_string:
+        {
+            if (transient)
+                m_cell_string.push_back(intern(str));
+            else
+                m_cell_string.push_back(str);
+
+            break;
+        }
+        case ct_number:
+        {
+            const char* p = str.get();
+            m_cell_value = to_double(p, p + str.size());
+            break;
+        }
+        case ct_datetime:
+            m_cell_datetime = to_date_time(str);
+            break;
+        default:
+            if (get_config().debug)
+            {
+                cout << "warning: unknown cell type '" << m_cell_type
+                    << "': characters='" << str << "'" << endl;
+            }
+    }
+}
+
+bool xls_xml_data_context::end_element(xmlns_id_t ns, xml_token_t name)
+{
+    if (ns == NS_xls_xml_ss)
+    {
+        switch (name)
+        {
+            case XML_Data:
+                end_element_data();
+                break;
+            default:
+                ;
+        }
+    }
+
+    return pop_stack(ns, name);
+}
+
+void xls_xml_data_context::reset(
+    spreadsheet::iface::import_sheet* sheet,
+    spreadsheet::row_t row, spreadsheet::col_t col,
+    const pstring& cell_formula)
+{
+    mp_cur_sheet = sheet;
+    m_row = row;
+    m_col = col;
+    m_cell_formula = cell_formula;
+}
+
+void xls_xml_data_context::start_element_data(
+    const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+//  xml_element_expected(parent, NS_xls_xml_ss, XML_Cell);
+
+    m_cell_type = ct_unknown;
+    m_cell_string.clear();
+    m_cell_datetime = date_time_t();
+
+    std::for_each(attrs.begin(), attrs.end(),
+        [&](const xml_token_attr_t& attr)
+        {
+            if (attr.ns != NS_xls_xml_ss)
+                return;
+
+            switch (attr.name)
+            {
+                case XML_Type:
+                {
+                    if (attr.value == "String")
+                        m_cell_type = ct_string;
+                    else if (attr.value == "Number")
+                        m_cell_type = ct_number;
+                    else if (attr.value == "DateTime")
+                        m_cell_type = ct_datetime;
+                }
+                break;
+                default:
+                    ;
+            }
+        }
+    );
+}
+
+void xls_xml_data_context::end_element_data()
+{
+    if (!m_cell_formula.empty())
+    {
+        push_formula_cell();
+        return;
+    }
+
+    switch (m_cell_type)
+    {
+        case ct_unknown:
+            break;
+        case ct_number:
+            mp_cur_sheet->set_value(m_row, m_col, m_cell_value);
+            break;
+        case ct_string:
+        {
+            spreadsheet::iface::import_shared_strings* ss = mp_factory->get_shared_strings();
+            if (!ss)
+                return;
+
+            if (m_cell_string.empty())
+                return;
+
+            if (m_cell_string.size() == 1)
+            {
+                const pstring& s = m_cell_string.back();
+                mp_cur_sheet->set_string(m_row, m_col, ss->append(&s[0], s.size()));
+            }
+            else
+            {
+                string s;
+                vector<pstring>::const_iterator it = m_cell_string.begin(), it_end = m_cell_string.end();
+                for (; it != it_end; ++it)
+                    s += *it;
+
+                mp_cur_sheet->set_string(m_row, m_col, ss->append(&s[0], s.size()));
+            }
+            m_cell_string.clear();
+
+            break;
+        }
+        case ct_datetime:
+        {
+            mp_cur_sheet->set_date_time(
+                m_row, m_col,
+                m_cell_datetime.year, m_cell_datetime.month, m_cell_datetime.day,
+                m_cell_datetime.hour, m_cell_datetime.minute, m_cell_datetime.second);
+            break;
+        }
+        default:
+            if (get_config().debug)
+                cout << "warning: unknown cell type '" << m_cell_type << "': value not pushed." << endl;
+    }
+
+    m_cell_type = ct_unknown;
+}
+
+void xls_xml_data_context::push_formula_cell()
+{
+    mp_cur_sheet->set_formula(
+        m_row, m_col, spreadsheet::formula_grammar_t::xls_xml,
+        m_cell_formula.get(), m_cell_formula.size());
+
+    switch (m_cell_type)
+    {
+        case ct_number:
+            mp_cur_sheet->set_formula_result(m_row, m_col, m_cell_value);
+            break;
+        default:
+            ;
+    }
+
+    m_cell_formula.clear();
+}
+
 namespace {
 
 class sheet_attr_parser : public unary_function<xml_token_attr_t, void>
@@ -85,8 +303,7 @@ xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tok
     m_cur_sheet(-1),
     m_cur_row(0), m_cur_col(0),
     m_cur_merge_down(0), m_cur_merge_across(0),
-    m_cur_cell_type(ct_unknown),
-    m_cur_cell_value(std::numeric_limits<double>::quiet_NaN())
+    m_cc_data(session_cxt, tokens, factory)
 {
 }
 
@@ -96,11 +313,36 @@ xls_xml_context::~xls_xml_context()
 
 bool xls_xml_context::can_handle_element(xmlns_id_t ns, xml_token_t name) const
 {
+    if (ns == NS_xls_xml_ss)
+    {
+        switch (name)
+        {
+            case XML_Data:
+                return false;
+            default:
+                ;
+        }
+    }
     return true;
 }
 
 xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
+    if (ns == NS_xls_xml_ss)
+    {
+        switch (name)
+        {
+            case XML_Data:
+            {
+                // Move the cell formula string to the Data element context.
+                m_cc_data.reset(mp_cur_sheet, m_cur_row, m_cur_col, m_cur_cell_formula);
+                m_cur_cell_formula.clear();
+                return &m_cc_data;
+            }
+            default:
+                ;
+        }
+    }
     return nullptr;
 }
 
@@ -155,9 +397,6 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             }
             case XML_Cell:
                 start_element_cell(parent, attrs);
-                break;
-            case XML_Data:
-                start_element_data(parent, attrs);
                 break;
             case XML_Names:
             {
@@ -290,9 +529,6 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_Cell:
                 end_element_cell();
                 break;
-            case XML_Data:
-                end_element_data();
-                break;
             case XML_Workbook:
                 end_element_workbook();
                 break;
@@ -324,38 +560,6 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void xls_xml_context::characters(const pstring& str, bool transient)
 {
-    if (str.empty())
-        return;
-
-    switch (m_cur_cell_type)
-    {
-        case ct_unknown:
-            break;
-        case ct_string:
-        {
-            if (transient)
-                m_cur_cell_string.push_back(m_pool.intern(str).first);
-            else
-                m_cur_cell_string.push_back(str);
-
-            break;
-        }
-        case ct_number:
-        {
-            const char* p = str.get();
-            m_cur_cell_value = to_double(p, p + str.size());
-            break;
-        }
-        case ct_datetime:
-            m_cur_cell_datetime = to_date_time(str);
-            break;
-        default:
-            if (get_config().debug)
-            {
-                cout << "warning: unknown cell type '" << m_cur_cell_type
-                    << "': characters='" << str << "'" << endl;
-            }
-    }
 }
 
 void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
@@ -443,98 +647,6 @@ void xls_xml_context::end_element_cell()
     ++m_cur_col;
     if (m_cur_merge_across > 0)
         m_cur_col += m_cur_merge_across;
-}
-
-void xls_xml_context::start_element_data(
-    const xml_token_pair_t& parent, const xml_attrs_t& attrs)
-{
-    xml_element_expected(parent, NS_xls_xml_ss, XML_Cell);
-
-    m_cur_cell_type = ct_unknown;
-    m_cur_cell_string.clear();
-    m_cur_cell_datetime = date_time_t();
-
-    std::for_each(attrs.begin(), attrs.end(),
-        [&](const xml_token_attr_t& attr)
-        {
-            if (attr.ns != NS_xls_xml_ss)
-                return;
-
-            switch (attr.name)
-            {
-                case XML_Type:
-                {
-                    if (attr.value == "String")
-                        m_cur_cell_type = ct_string;
-                    else if (attr.value == "Number")
-                        m_cur_cell_type = ct_number;
-                    else if (attr.value == "DateTime")
-                        m_cur_cell_type = ct_datetime;
-                }
-                break;
-                default:
-                    ;
-            }
-        }
-    );
-}
-
-void xls_xml_context::end_element_data()
-{
-    if (!m_cur_cell_formula.empty())
-    {
-        push_formula_cell();
-        return;
-    }
-
-    switch (m_cur_cell_type)
-    {
-        case ct_unknown:
-            break;
-        case ct_number:
-            mp_cur_sheet->set_value(m_cur_row, m_cur_col, m_cur_cell_value);
-            break;
-        case ct_string:
-        {
-            spreadsheet::iface::import_shared_strings* ss = mp_factory->get_shared_strings();
-            if (!ss)
-                return;
-
-            if (m_cur_cell_string.empty())
-                return;
-
-            if (m_cur_cell_string.size() == 1)
-            {
-                const pstring& s = m_cur_cell_string.back();
-                mp_cur_sheet->set_string(m_cur_row, m_cur_col, ss->append(&s[0], s.size()));
-            }
-            else
-            {
-                string s;
-                vector<pstring>::const_iterator it = m_cur_cell_string.begin(), it_end = m_cur_cell_string.end();
-                for (; it != it_end; ++it)
-                    s += *it;
-
-                mp_cur_sheet->set_string(m_cur_row, m_cur_col, ss->append(&s[0], s.size()));
-            }
-            m_cur_cell_string.clear();
-
-            break;
-        }
-        case ct_datetime:
-        {
-            mp_cur_sheet->set_date_time(
-                m_cur_row, m_cur_col,
-                m_cur_cell_datetime.year, m_cur_cell_datetime.month, m_cur_cell_datetime.day,
-                m_cur_cell_datetime.hour, m_cur_cell_datetime.minute, m_cur_cell_datetime.second);
-            break;
-        }
-        default:
-            if (get_config().debug)
-                cout << "warning: unknown cell type '" << m_cur_cell_type << "': value not pushed." << endl;
-    }
-
-    m_cur_cell_type = ct_unknown;
 }
 
 void xls_xml_context::end_element_workbook()
@@ -629,23 +741,6 @@ void xls_xml_context::commit_styles()
     }
 }
 
-void xls_xml_context::push_formula_cell()
-{
-    mp_cur_sheet->set_formula(
-        m_cur_row, m_cur_col, spreadsheet::formula_grammar_t::xls_xml,
-        m_cur_cell_formula.get(), m_cur_cell_formula.size());
-
-    switch (m_cur_cell_type)
-    {
-        case ct_number:
-            mp_cur_sheet->set_formula_result(m_cur_row, m_cur_col, m_cur_cell_value);
-            break;
-        default:
-            ;
-    }
-
-    m_cur_cell_formula.clear();
 }
 
-}
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

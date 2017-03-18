@@ -26,6 +26,46 @@ class import_named_expression;
 
 }}
 
+class xls_xml_data_context : public xml_context_base
+{
+    enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };
+
+    spreadsheet::iface::import_factory* mp_factory;
+    spreadsheet::iface::import_sheet* mp_cur_sheet;
+    spreadsheet::row_t m_row;
+    spreadsheet::col_t m_col;
+
+    pstring m_cell_formula;
+
+    cell_type m_cell_type;
+    std::vector<pstring> m_cell_string;
+    double m_cell_value;
+    date_time_t m_cell_datetime;
+
+public:
+    xls_xml_data_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
+
+    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const override;
+    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
+    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
+
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs) override;
+    virtual void characters(const pstring& str, bool transient) override;
+    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
+
+    void reset(
+        spreadsheet::iface::import_sheet* sheet,
+        spreadsheet::row_t row, spreadsheet::col_t col,
+        const pstring& cell_formula);
+
+private:
+
+    void start_element_data(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void end_element_data();
+
+    void push_formula_cell();
+};
+
 class xls_xml_context : public xml_context_base
 {
     struct font_style_type
@@ -56,8 +96,6 @@ class xls_xml_context : public xml_context_base
     using style_id_xf_map_type = std::unordered_map<pstring, size_t, pstring::hash>;
 
 public:
-    enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };
-
     xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
     virtual ~xls_xml_context();
 
@@ -73,20 +111,13 @@ private:
     void start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void end_element_cell();
 
-    void start_element_data(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void end_element_data();
-
     void end_element_workbook();
     void end_element_styles();
 
     void commit_default_style();
     void commit_styles();
 
-    void push_formula_cell();
-
 private:
-    string_pool m_pool;
-
     spreadsheet::iface::import_factory* mp_factory;
     spreadsheet::iface::import_sheet* mp_cur_sheet;
     spreadsheet::iface::import_sheet_properties* mp_sheet_props;
@@ -98,10 +129,6 @@ private:
     spreadsheet::col_t m_cur_col;
     spreadsheet::row_t m_cur_merge_down;
     spreadsheet::col_t m_cur_merge_across;
-    cell_type m_cur_cell_type;
-    std::vector<pstring> m_cur_cell_string;
-    double m_cur_cell_value;
-    date_time_t m_cur_cell_datetime;
     pstring m_cur_cell_formula;
     pstring m_cur_cell_style_id;
 
@@ -113,6 +140,8 @@ private:
     styles_type m_styles;
 
     style_id_xf_map_type m_style_map;
+
+    xls_xml_data_context m_cc_data;
 };
 
 }

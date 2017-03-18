@@ -18,6 +18,7 @@
 #include <sstream>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 using namespace orcus;
 using namespace std;
@@ -36,6 +37,8 @@ void test_xls_xml_import()
 {
     for (const char* dir : dirs)
     {
+        cout << dir << endl;
+
         string path(dir);
 
         // Read the input.xml document.
