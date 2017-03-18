@@ -17,6 +17,9 @@ using namespace std;
 
 namespace orcus {
 
+xls_xml_data_context::string_segment_type::string_segment_type(const pstring& _str) :
+    str(_str) {}
+
 xls_xml_data_context::xls_xml_data_context(
     session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
@@ -75,9 +78,9 @@ void xls_xml_data_context::characters(const pstring& str, bool transient)
         case ct_string:
         {
             if (transient)
-                m_cell_string.push_back(intern(str));
+                m_cell_string.emplace_back(intern(str));
             else
-                m_cell_string.push_back(str);
+                m_cell_string.emplace_back(str);
 
             break;
         }
@@ -121,17 +124,23 @@ void xls_xml_data_context::reset(
     spreadsheet::row_t row, spreadsheet::col_t col,
     const pstring& cell_formula)
 {
+    m_format_stack.clear();
+    m_format_stack.emplace_back(); // set default format.
+
+    m_cell_type = ct_unknown;
+    m_cell_string.clear();
+
     mp_cur_sheet = sheet;
     m_row = row;
     m_col = col;
     m_cell_formula = cell_formula;
+    m_cell_value = std::numeric_limits<double>::quiet_NaN();
+    m_cell_datetime = date_time_t();
 }
 
 void xls_xml_data_context::start_element_data(
     const xml_token_pair_t& parent, const xml_attrs_t& attrs)
 {
-//  xml_element_expected(parent, NS_xls_xml_ss, XML_Cell);
-
     m_cell_type = ct_unknown;
     m_cell_string.clear();
     m_cell_datetime = date_time_t();
@@ -187,17 +196,16 @@ void xls_xml_data_context::end_element_data()
 
             if (m_cell_string.size() == 1)
             {
-                const pstring& s = m_cell_string.back();
-                mp_cur_sheet->set_string(m_row, m_col, ss->append(&s[0], s.size()));
+                const pstring& s = m_cell_string.back().str;
+                mp_cur_sheet->set_string(m_row, m_col, ss->append(s.data(), s.size()));
             }
             else
             {
                 string s;
-                vector<pstring>::const_iterator it = m_cell_string.begin(), it_end = m_cell_string.end();
-                for (; it != it_end; ++it)
-                    s += *it;
+                for (const string_segment_type& ss : m_cell_string)
+                    s += ss.str;
 
-                mp_cur_sheet->set_string(m_row, m_col, ss->append(&s[0], s.size()));
+                mp_cur_sheet->set_string(m_row, m_col, ss->append(s.data(), s.size()));
             }
             m_cell_string.clear();
 

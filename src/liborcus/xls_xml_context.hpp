@@ -28,6 +28,25 @@ class import_named_expression;
 
 class xls_xml_data_context : public xml_context_base
 {
+    struct format_type
+    {
+        bool bold = false;
+        bool italic = false;
+
+        spreadsheet::color_elem_t red = 0;
+        spreadsheet::color_elem_t green = 0;
+        spreadsheet::color_elem_t blue = 0;
+    };
+
+    struct string_segment_type
+    {
+        pstring str;
+        format_type format;
+        bool formatted = false;
+
+        string_segment_type(const pstring& _str);
+    };
+
     enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };
 
     spreadsheet::iface::import_factory* mp_factory;
@@ -38,7 +57,8 @@ class xls_xml_data_context : public xml_context_base
     pstring m_cell_formula;
 
     cell_type m_cell_type;
-    std::vector<pstring> m_cell_string;
+    std::vector<string_segment_type> m_cell_string;
+    std::vector<format_type> m_format_stack;
     double m_cell_value;
     date_time_t m_cell_datetime;
 
