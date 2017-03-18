@@ -17,6 +17,32 @@ using namespace std;
 
 namespace orcus {
 
+void xls_xml_data_context::format_type::merge(const format_type& fmt)
+{
+    if (fmt.bold)
+        bold = true;
+    if (fmt.italic)
+        italic = true;
+
+    if (fmt.red)
+        red = fmt.red;
+    if (fmt.green)
+        green = fmt.green;
+    if (fmt.blue)
+        blue = fmt.blue;
+}
+
+bool xls_xml_data_context::format_type::formatted() const
+{
+    if (bold || italic)
+        return true;
+
+    if (red || green || blue)
+        return true;
+
+    return false;
+}
+
 xls_xml_data_context::string_segment_type::string_segment_type(const pstring& _str) :
     str(_str) {}
 
@@ -62,6 +88,31 @@ void xls_xml_data_context::start_element(xmlns_id_t ns, xml_token_t name, const:
                 warn_unhandled();
         }
     }
+    else if (ns == NS_xls_xml_html)
+    {
+        switch (name)
+        {
+            case XML_B:
+                m_format_stack.emplace_back();
+                m_format_stack.back().bold = true;
+                update_current_format();
+                break;
+            case XML_I:
+                m_format_stack.emplace_back();
+                m_format_stack.back().italic = true;
+                update_current_format();
+                break;
+            case XML_Font:
+            {
+                m_format_stack.emplace_back();
+                // TODO : pick up the color.
+                update_current_format();
+                break;
+            }
+            default:
+                warn_unhandled();
+        }
+    }
     else
         warn_unhandled();
 }
@@ -81,6 +132,14 @@ void xls_xml_data_context::characters(const pstring& str, bool transient)
                 m_cell_string.emplace_back(intern(str));
             else
                 m_cell_string.emplace_back(str);
+
+            if (m_current_format.formatted())
+            {
+                // Apply the current format to this string segment.
+                string_segment_type& ss = m_cell_string.back();
+                ss.format = m_current_format;
+                ss.formatted = true;
+            }
 
             break;
         }
@@ -115,6 +174,21 @@ bool xls_xml_data_context::end_element(xmlns_id_t ns, xml_token_t name)
                 ;
         }
     }
+    else if (ns == NS_xls_xml_html)
+    {
+        switch (name)
+        {
+            case XML_B:
+            case XML_I:
+            case XML_Font:
+                assert(!m_format_stack.empty());
+                m_format_stack.pop_back();
+                update_current_format();
+                break;
+            default:
+                ;
+        }
+    }
 
     return pop_stack(ns, name);
 }
@@ -126,6 +200,7 @@ void xls_xml_data_context::reset(
 {
     m_format_stack.clear();
     m_format_stack.emplace_back(); // set default format.
+    update_current_format();
 
     m_cell_type = ct_unknown;
     m_cell_string.clear();
@@ -175,6 +250,7 @@ void xls_xml_data_context::end_element_data()
     if (!m_cell_formula.empty())
     {
         push_formula_cell();
+        m_cell_type = ct_unknown;
         return;
     }
 
@@ -189,24 +265,36 @@ void xls_xml_data_context::end_element_data()
         {
             spreadsheet::iface::import_shared_strings* ss = mp_factory->get_shared_strings();
             if (!ss)
-                return;
+                break;
 
             if (m_cell_string.empty())
-                return;
+                break;
 
-            if (m_cell_string.size() == 1)
+            if (m_cell_string.size() == 1 && !m_cell_string[0].formatted)
             {
+                // Unformatted string.
                 const pstring& s = m_cell_string.back().str;
                 mp_cur_sheet->set_string(m_row, m_col, ss->append(s.data(), s.size()));
             }
             else
             {
-                string s;
-                for (const string_segment_type& ss : m_cell_string)
-                    s += ss.str;
+                // Formatted string.
+                for (const string_segment_type& sstr : m_cell_string)
+                {
+                    if (sstr.formatted)
+                    {
+                        ss->set_segment_bold(sstr.format.bold);
+                        ss->set_segment_italic(sstr.format.italic);
+                        ss->set_segment_font_color(0, sstr.format.red, sstr.format.green, sstr.format.blue);
+                    }
 
-                mp_cur_sheet->set_string(m_row, m_col, ss->append(s.data(), s.size()));
+                    ss->append_segment(sstr.str.data(), sstr.str.size());
+                }
+
+                size_t si = ss->commit_segments();
+                mp_cur_sheet->set_string(m_row, m_col, si);
             }
+
             m_cell_string.clear();
 
             break;
@@ -243,6 +331,25 @@ void xls_xml_data_context::push_formula_cell()
     }
 
     m_cell_formula.clear();
+}
+
+void xls_xml_data_context::update_current_format()
+{
+    // format stack should have at least one entry at any given moment.
+    assert(!m_format_stack.empty());
+
+    // Grab the bottom format.
+    auto it = m_format_stack.begin();
+    m_current_format = *it;
+    ++it;
+
+    // Merge in the rest of the format data.
+    std::for_each(it, m_format_stack.end(),
+        [&](const format_type& fmt)
+        {
+            m_current_format.merge(fmt);
+        }
+    );
 }
 
 namespace {

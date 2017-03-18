@@ -39,6 +39,9 @@ class xls_xml_data_context : public xml_context_base
         spreadsheet::color_elem_t red = 0;
         spreadsheet::color_elem_t green = 0;
         spreadsheet::color_elem_t blue = 0;
+
+        void merge(const format_type& other);
+        bool formatted() const;
     };
 
     struct string_segment_type
@@ -62,6 +65,9 @@ class xls_xml_data_context : public xml_context_base
     cell_type m_cell_type;
     std::vector<string_segment_type> m_cell_string;
     std::vector<format_type> m_format_stack;
+
+    format_type m_current_format;
+
     double m_cell_value;
     date_time_t m_cell_datetime;
 
@@ -92,6 +98,8 @@ private:
     void end_element_data();
 
     void push_formula_cell();
+
+    void update_current_format();
 };
 
 class xls_xml_context : public xml_context_base
