@@ -26,6 +26,9 @@ class import_named_expression;
 
 }}
 
+/**
+ * Context for handling <Data> element scopes.
+ */
 class xls_xml_data_context : public xml_context_base
 {
     struct format_type
@@ -74,6 +77,10 @@ public:
     virtual void characters(const pstring& str, bool transient) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
 
+    /**
+     * Intendted to be called from the parent context instance, to reset its
+     * internal state before its use.
+     */
     void reset(
         spreadsheet::iface::import_sheet* sheet,
         spreadsheet::row_t row, spreadsheet::col_t col,
