@@ -28,6 +28,8 @@ xls_xml_data_context::xls_xml_data_context(
 {
 }
 
+xls_xml_data_context::~xls_xml_data_context() {}
+
 bool xls_xml_data_context::can_handle_element(xmlns_id_t ns, xml_token_t name) const
 {
     return true;

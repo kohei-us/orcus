@@ -44,6 +44,7 @@ class xls_xml_data_context : public xml_context_base
 
 public:
     xls_xml_data_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
+    virtual ~xls_xml_data_context() override;
 
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const override;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
