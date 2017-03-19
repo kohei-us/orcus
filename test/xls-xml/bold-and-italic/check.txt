@@ -1,0 +1,5 @@
+Sheet1/0/0:string:"Normal Text"
+Sheet1/1/0:string:"Bold Text"
+Sheet1/2/0:string:"Italic Text"
+Sheet1/3/0:string:"Bold and Italic Text"
+Sheet1/4/0:string:"Bold and Italic mixed"
