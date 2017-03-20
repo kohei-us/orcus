@@ -12,6 +12,8 @@
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
+#include "orcus/spreadsheet/shared_strings.hpp"
+#include "orcus/spreadsheet/styles.hpp"
 
 #include <cassert>
 #include <string>
@@ -34,6 +36,16 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/named-expression-sheet-local/",
 };
 
+std::unique_ptr<spreadsheet::document> load_doc(const string& path)
+{
+    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
+    spreadsheet::import_factory factory(*doc);
+    orcus_xls_xml app(&factory);
+    app.read_file(path.c_str());
+
+    return doc;
+}
+
 void test_xls_xml_import()
 {
     for (const char* dir : dirs)
@@ -44,14 +56,11 @@ void test_xls_xml_import()
 
         // Read the input.xml document.
         path.append("input.xml");
-        spreadsheet::document doc;
-        spreadsheet::import_factory factory(doc);
-        orcus_xls_xml app(&factory);
-        app.read_file(path.c_str());
+        std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
         // Dump the content of the model.
         ostringstream os;
-        doc.dump_check(os);
+        doc->dump_check(os);
         string check = os.str();
 
         // Check that against known control.
@@ -71,12 +80,9 @@ void test_xls_xml_merged_cells()
 {
     const char* filepath = SRCDIR"/test/xls-xml/merged-cells/input.xml";
 
-    spreadsheet::document doc;
-    spreadsheet::import_factory factory(doc);
-    orcus_xls_xml app(&factory);
-    app.read_file(filepath);
+    std::unique_ptr<spreadsheet::document> doc = load_doc(filepath);
 
-    const spreadsheet::sheet* sheet1 = doc.get_sheet("Sheet1");
+    const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
     assert(sheet1);
 
     spreadsheet::range_t merge_range = sheet1->get_merge_cell_range(0, 1);
@@ -114,12 +120,9 @@ void test_xls_xml_date_time()
 {
     const char* filepath = SRCDIR"/test/xls-xml/date-time/input.xml";
 
-    spreadsheet::document doc;
-    spreadsheet::import_factory factory(doc);
-    orcus_xls_xml app(&factory);
-    app.read_file(filepath);
+    std::unique_ptr<spreadsheet::document> doc = load_doc(filepath);
 
-    const spreadsheet::sheet* sheet1 = doc.get_sheet("Sheet1");
+    const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
     assert(sheet1);
 
     // B1 contains date-only value.
@@ -146,6 +149,94 @@ void test_xls_xml_date_time()
     assert(ms == 555.0);
 }
 
+void test_xls_xml_bold_and_italic()
+{
+    std::unique_ptr<spreadsheet::document> doc =
+        load_doc(SRCDIR"/test/xls-xml/bold-and-italic/input.xml");
+
+    const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
+    assert(sheet1);
+
+    const spreadsheet::import_shared_strings* ss = doc->get_shared_strings();
+    assert(ss);
+
+    const spreadsheet::import_styles* styles = doc->get_styles();
+    assert(styles);
+
+    // A1 contains unformatted text.
+    size_t si = sheet1->get_string_identifier(0, 0);
+    const string* sp = ss->get_string(si);
+    assert(sp);
+    assert(*sp == "Normal Text");
+
+    // A2 contains bold text.
+    si = sheet1->get_string_identifier(1, 0);
+    sp = ss->get_string(si);
+    assert(sp);
+    assert(*sp == "Bold Text");
+
+    size_t xfi = sheet1->get_cell_format(1, 0);
+    const spreadsheet::cell_format_t* cf = styles->get_cell_format(xfi);
+    assert(cf);
+    const spreadsheet::font_t* font = styles->get_font(cf->font);
+    assert(font);
+    assert(font->bold);
+    assert(!font->italic);
+
+    // A3 contains italic text.
+    si = sheet1->get_string_identifier(2, 0);
+    sp = ss->get_string(si);
+    assert(sp);
+    assert(*sp == "Italic Text");
+
+    xfi = sheet1->get_cell_format(2, 0);
+    cf = styles->get_cell_format(xfi);
+    assert(cf);
+    font = styles->get_font(cf->font);
+    assert(font);
+    assert(!font->bold);
+    assert(font->italic);
+
+    // A4 contains bold and italic text.
+    si = sheet1->get_string_identifier(3, 0);
+    sp = ss->get_string(si);
+    assert(sp);
+    assert(*sp == "Bold and Italic Text");
+
+    xfi = sheet1->get_cell_format(3, 0);
+    cf = styles->get_cell_format(xfi);
+    assert(cf);
+    font = styles->get_font(cf->font);
+    assert(font);
+    assert(font->bold);
+    assert(font->italic);
+
+    // A5 contains a mixed format text.
+    si = sheet1->get_string_identifier(4, 0);
+    sp = ss->get_string(si);
+    assert(sp);
+    assert(*sp == "Bold and Italic mixed");
+
+    // The string contains 2 formatted segments.
+    const spreadsheet::format_runs_t* fmt_runs = ss->get_format_runs(si);
+    assert(fmt_runs);
+    assert(fmt_runs->size() == 2);
+
+    // First formatted segment is bold.
+    const spreadsheet::format_run* fmt_run = &fmt_runs->at(0);
+    assert(fmt_run->pos == 0);
+    assert(fmt_run->size == 4);
+    assert(fmt_run->bold);
+    assert(!fmt_run->italic);
+
+    // Second formatted segment is italic.
+    fmt_run = &fmt_runs->at(1);
+    assert(fmt_run->pos == 9);
+    assert(fmt_run->size == 6);
+    assert(!fmt_run->bold);
+    assert(fmt_run->italic);
+}
+
 }
 
 int main()
@@ -153,6 +244,8 @@ int main()
     test_xls_xml_import();
     test_xls_xml_merged_cells();
     test_xls_xml_date_time();
+    test_xls_xml_bold_and_italic();
+
     return EXIT_SUCCESS;
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
