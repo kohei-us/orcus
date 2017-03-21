@@ -36,9 +36,7 @@ class xls_xml_data_context : public xml_context_base
         bool bold = false;
         bool italic = false;
 
-        spreadsheet::color_elem_t red = 0;
-        spreadsheet::color_elem_t green = 0;
-        spreadsheet::color_elem_t blue = 0;
+        spreadsheet::color_rgb_t color;
 
         void merge(const format_type& other);
         bool formatted() const;

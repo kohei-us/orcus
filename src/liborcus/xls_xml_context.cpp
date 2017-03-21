@@ -24,12 +24,12 @@ void xls_xml_data_context::format_type::merge(const format_type& fmt)
     if (fmt.italic)
         italic = true;
 
-    if (fmt.red)
-        red = fmt.red;
-    if (fmt.green)
-        green = fmt.green;
-    if (fmt.blue)
-        blue = fmt.blue;
+    if (fmt.color.red)
+        color.red = fmt.color.red;
+    if (fmt.color.green)
+        color.green = fmt.color.green;
+    if (fmt.color.blue)
+        color.blue = fmt.color.blue;
 }
 
 bool xls_xml_data_context::format_type::formatted() const
@@ -37,7 +37,7 @@ bool xls_xml_data_context::format_type::formatted() const
     if (bold || italic)
         return true;
 
-    if (red || green || blue)
+    if (color.red || color.green || color.blue)
         return true;
 
     return false;
@@ -105,6 +105,24 @@ void xls_xml_data_context::start_element(xmlns_id_t ns, xml_token_t name, const:
             case XML_Font:
             {
                 m_format_stack.emplace_back();
+                format_type& fmt = m_format_stack.back();
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (ns != NS_xls_xml_html)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_Color:
+                            fmt.color = spreadsheet::to_color_rgb(
+                                attr.value.data(), attr.value.size());
+                            break;
+                        default:
+                            ;
+                    }
+                }
+
                 // TODO : pick up the color.
                 update_current_format();
                 break;
@@ -285,7 +303,11 @@ void xls_xml_data_context::end_element_data()
                     {
                         ss->set_segment_bold(sstr.format.bold);
                         ss->set_segment_italic(sstr.format.italic);
-                        ss->set_segment_font_color(0, sstr.format.red, sstr.format.green, sstr.format.blue);
+                        ss->set_segment_font_color(
+                            0,
+                            sstr.format.color.red,
+                            sstr.format.color.green,
+                            sstr.format.color.blue);
                     }
 
                     ss->append_segment(sstr.str.data(), sstr.str.size());

@@ -232,6 +232,12 @@ std::ostream& operator<< (std::ostream& os, error_value_t ev)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, const color_rgb_t& color)
+{
+    os << "(r=" << (int)color.red << ",g=" << (int)color.green << ",b=" << (int)color.blue << ")";
+    return os;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
