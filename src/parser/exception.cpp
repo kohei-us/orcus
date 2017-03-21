@@ -44,5 +44,10 @@ xml_structure_error::xml_structure_error(const string& msg) :
 
 xml_structure_error::~xml_structure_error() throw() {}
 
+value_error::value_error(const string& msg) :
+    general_error(msg) {}
+
+value_error::~value_error() throw() {}
+
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

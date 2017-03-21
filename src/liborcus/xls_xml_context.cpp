@@ -620,6 +620,12 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                             m_current_style->font.italic = to_bool(attr.value);
                             break;
                         }
+                        case XML_Color:
+                        {
+                            m_current_style->font.color =
+                                spreadsheet::to_color_rgb(attr.value.data(), attr.value.size());
+                            break;
+                        }
                         default:
                             ;
                     }
@@ -675,7 +681,7 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xls_xml_context::characters(const pstring& str, bool transient)
+void xls_xml_context::characters(const pstring& /*str*/, bool /*transient*/)
 {
 }
 
@@ -810,6 +816,11 @@ void xls_xml_context::commit_default_style()
     {
         styles->set_font_bold(m_default_style->font.bold);
         styles->set_font_italic(m_default_style->font.italic);
+        styles->set_font_color(
+            0,
+            m_default_style->font.color.red,
+            m_default_style->font.color.green,
+            m_default_style->font.color.blue);
     }
 
     styles->commit_font();
@@ -847,6 +858,10 @@ void xls_xml_context::commit_styles()
     {
         styles->set_font_bold(style->font.bold);
         styles->set_font_italic(style->font.italic);
+        styles->set_font_color(0,
+            style->font.color.red,
+            style->font.color.green,
+            style->font.color.blue);
 
         size_t font_id = styles->commit_font();
 

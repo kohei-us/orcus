@@ -7,8 +7,10 @@
 
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/global.hpp"
+#include "orcus/exception.hpp"
 
 #include <limits>
+#include <sstream>
 
 #include <mdds/sorted_string_map.hpp>
 
@@ -92,6 +94,28 @@ const error_value_map_type& get_error_value_map()
 
 }
 
+color_rgb_t::color_rgb_t() : red(0), green(0), blue(0) {}
+
+color_rgb_t::color_rgb_t(const color_rgb_t& other) :
+    red(other.red), green(other.green), blue(other.blue) {}
+
+color_rgb_t::color_rgb_t(color_rgb_t&& other) :
+    red(other.red), green(other.green), blue(other.blue)
+{
+    other.red = 0;
+    other.green = 0;
+    other.blue = 0;
+}
+
+color_rgb_t& color_rgb_t::operator= (const color_rgb_t& other)
+{
+    red = other.red;
+    green = other.green;
+    blue = other.blue;
+
+    return *this;
+}
+
 col_width_t get_default_column_width()
 {
     return std::numeric_limits<col_width_t>::max();
@@ -115,6 +139,65 @@ pivot_cache_group_by_t to_pivot_cache_group_by_enum(const char* p, size_t n)
 error_value_t to_error_value_enum(const char* p, size_t n)
 {
     return get_error_value_map().find(p, n);
+}
+
+color_rgb_t to_color_rgb(const char* p, size_t n)
+{
+    // RGB string is a 6-character string representing 24-bit hexadecimal
+    // number e.g. '004A12' (red - green - blue)
+
+    // store the original head position and size.
+    const char* p0 = p;
+    size_t n0 = n;
+
+    if (n == 7 && *p == '#')
+    {
+        // Skip the leading '#' character.
+        --n;
+        ++p;
+    }
+
+    if (n != 6)
+    {
+        std::ostringstream os;
+        os << "'" << pstring(p0, n0) << "' is not a valid RGB color string.";
+        throw value_error(os.str());
+    }
+
+    color_rgb_t ret;
+    long converted = 0;
+    const char* p_end = p + n;
+
+    for (; p != p_end; ++p)
+    {
+        converted <<= 4;
+
+        char c = *p;
+        long this_val = 0;
+
+        if ('0' <= c && c <= '9')
+            this_val = c - '0';
+        else if ('a' <= c && c <= 'f')
+            this_val = 10 + c - 'a';
+        else if ('A' <= c && c <= 'F')
+            this_val = 10 + c - 'A';
+        else
+        {
+            std::ostringstream os;
+            os << "'" << pstring(p0, n0) << "' is not a valid RGB color string.";
+            throw value_error(os.str());
+        }
+
+        converted += this_val;
+    }
+
+    ret.blue  = (0x000000FF & converted);
+    converted >>= 8;
+    ret.green = (0x000000FF & converted);
+    converted >>= 8;
+    ret.red   = (0x000000FF & converted);
+
+    return ret;
 }
 
 std::ostream& operator<< (std::ostream& os, error_value_t ev)

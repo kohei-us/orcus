@@ -331,6 +331,19 @@ struct range_t
     address_t last;
 };
 
+struct ORCUS_DLLPUBLIC color_rgb_t
+{
+    color_elem_t red;
+    color_elem_t green;
+    color_elem_t blue;
+
+    color_rgb_t();
+    color_rgb_t(const color_rgb_t& other);
+    color_rgb_t(color_rgb_t&& other);
+
+    color_rgb_t& operator= (const color_rgb_t& other);
+};
+
 /**
  * Convert a string representation of a totals row function name to its
  * equivalent enum value.
@@ -363,6 +376,19 @@ ORCUS_DLLPUBLIC pivot_cache_group_by_t to_pivot_cache_group_by_enum(const char* 
  * @return enum value representing the error value.
  */
 ORCUS_DLLPUBLIC error_value_t to_error_value_enum(const char* p, size_t n);
+
+/**
+ * Convert a string representation of a RGB value to an equivalent struct
+ * value.  The string representation is expected to be a 6 digit hexadecimal
+ * value string that may or may not be prefixed with a '#'.
+ *
+ * @param p pointer to the string buffer that stores the string
+ *          representation of the RGB value.
+ * @param n length of the buffer.
+ *
+ * @return struct value representing an RGB value.
+ */
+ORCUS_DLLPUBLIC color_rgb_t to_color_rgb(const char* p, size_t n);
 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, error_value_t ev);
 

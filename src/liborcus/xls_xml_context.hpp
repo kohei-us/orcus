@@ -108,6 +108,8 @@ class xls_xml_context : public xml_context_base
     {
         bool bold = false;
         bool italic = false;
+
+        spreadsheet::color_rgb_t color;
     };
 
     struct style_type

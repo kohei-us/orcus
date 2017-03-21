@@ -40,6 +40,13 @@ public:
     virtual ~xml_structure_error() throw();
 };
 
+class ORCUS_PSR_DLLPUBLIC value_error : public general_error
+{
+public:
+    explicit value_error(const std::string& msg);
+    virtual ~value_error() throw();
+};
+
 }
 
 #endif
