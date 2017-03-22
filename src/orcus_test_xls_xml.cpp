@@ -315,7 +315,7 @@ void test_xls_xml_colored_text()
     assert(fmt->pos == 0);
     assert(fmt->size == 3);
 
-    // The 'Blue' segment should be in bluered color.
+    // The 'Blue' segment should be in blue color.
     fmt = &fmt_runs->at(1);
     assert(fmt->color.alpha == 0);
     assert(fmt->color.red == 0);
