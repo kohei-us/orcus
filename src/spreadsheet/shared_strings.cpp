@@ -49,6 +49,9 @@ bool format_run::formatted() const
     if (!font.empty())
         return true;
 
+    if (color.alpha || color.red || color.green || color.blue)
+        return true;
+
     return false;
 }
 
