@@ -238,6 +238,93 @@ void test_xls_xml_bold_and_italic()
     assert(fmt_run->italic);
 }
 
+void test_xls_xml_colored_text()
+{
+    std::unique_ptr<spreadsheet::document> doc =
+        load_doc(SRCDIR"/test/xls-xml/colored-text/input.xml");
+
+    const spreadsheet::sheet* sheet1 = doc->get_sheet("ColoredText");
+    assert(sheet1);
+
+    const spreadsheet::import_shared_strings* ss = doc->get_shared_strings();
+    assert(ss);
+
+    const spreadsheet::import_styles* styles = doc->get_styles();
+    assert(styles);
+
+    // Column A contains colored cells.
+
+    struct check
+    {
+        spreadsheet::row_t row;
+        spreadsheet::color_elem_t red;
+        spreadsheet::color_elem_t green;
+        spreadsheet::color_elem_t blue;
+        std::string text;
+    };
+
+    std::vector<check> checks = {
+        {  1, 0xC0, 0x00, 0x00, "Dark Red"    },
+        {  2, 0xFF, 0x00, 0x00, "Red"         },
+        {  3, 0xFF, 0xC0, 0x00, "Orange"      },
+        {  4, 0xFF, 0xFF, 0x00, "Yellow"      },
+        {  5, 0x92, 0xD0, 0x50, "Light Green" },
+        {  6, 0x00, 0xB0, 0x50, "Green"       },
+        {  7, 0x00, 0xB0, 0xF0, "Light Blue"  },
+        {  8, 0x00, 0x70, 0xC0, "Blue"        },
+        {  9, 0x00, 0x20, 0x60, "Dark Blue"   },
+        { 10, 0x70, 0x30, 0xA0, "Purple"      },
+    };
+
+    for (const check& c : checks)
+    {
+        size_t xfi = sheet1->get_cell_format(c.row, 0);
+        const spreadsheet::cell_format_t* xf = styles->get_cell_format(xfi);
+        assert(xf);
+
+        const spreadsheet::font_t* font = styles->get_font(xf->font);
+        assert(font);
+
+        assert(font->color.red == c.red);
+        assert(font->color.green == c.green);
+        assert(font->color.blue == c.blue);
+
+        size_t si = sheet1->get_string_identifier(c.row, 0);
+        const string* s = ss->get_string(si);
+        assert(s);
+        assert(*s == c.text);
+    }
+
+    // Cell B2 contains mix-colored text.
+    size_t si = sheet1->get_string_identifier(1, 1);
+    const string* s = ss->get_string(si);
+    assert(s);
+    assert(*s == "Red and Blue");
+    const spreadsheet::format_runs_t* fmt_runs = ss->get_format_runs(si);
+    assert(fmt_runs);
+
+    // There should be 2 segments that are color-formatted.
+    assert(fmt_runs->size() == 2);
+
+    // The 'Red' segment should be in red color.
+    const spreadsheet::format_run* fmt = &fmt_runs->at(0);
+    assert(fmt->color.alpha == 0);
+    assert(fmt->color.red == 0xFF);
+    assert(fmt->color.green == 0);
+    assert(fmt->color.blue == 0);
+    assert(fmt->pos == 0);
+    assert(fmt->size == 3);
+
+    // The 'Blue' segment should be in bluered color.
+    fmt = &fmt_runs->at(1);
+    assert(fmt->color.alpha == 0);
+    assert(fmt->color.red == 0);
+    assert(fmt->color.green == 0x70);
+    assert(fmt->color.blue == 0xC0);
+    assert(fmt->pos == 8);
+    assert(fmt->size == 4);
+}
+
 }
 
 int main()
@@ -246,7 +333,10 @@ int main()
     test_xls_xml_merged_cells();
     test_xls_xml_date_time();
     test_xls_xml_bold_and_italic();
+    test_xls_xml_colored_text();
 
     return EXIT_SUCCESS;
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
+
