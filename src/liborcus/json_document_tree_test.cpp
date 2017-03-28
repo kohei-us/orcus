@@ -678,9 +678,15 @@ void test_json_init_root_object_add_child()
 
     node = node.child(0);
     assert(node.type() == json::node_t::boolean_true);
-    // TODO : look into this.
-//  node = node.parent().child(1);
-//  assert(node.child(1).type() == json::node_t::boolean_false);
+
+    // Move up to the parent array.
+    node = node.parent();
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 2);
+
+    // Move down to the other child node.
+    node = node.child(1);
+    assert(node.type() == json::node_t::boolean_false);
 }
 
 int main()
