@@ -217,6 +217,8 @@ public:
     ~node();
 
     node& operator=(const node& other);
+    node& operator=(const detail::init::node& v);
+    node operator[](const pstring& key);
 
     /**
      * Get a child node by index.

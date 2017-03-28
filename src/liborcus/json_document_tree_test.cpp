@@ -638,6 +638,38 @@ void test_json_init_list_explicit_object()
     }
 }
 
+void test_json_init_root_object_add_child()
+{
+    json::document_tree doc = json::object();
+    json::node node = doc.get_document_root();
+    assert(node.type() == json::node_t::object);
+    assert(node.child_count() == 0);
+
+    node["child1"] = 1.0;
+
+    assert(node.child_count() == 1);
+
+    node = node.child("child1");
+    assert(node.type() == json::node_t::number);
+    assert(node.numeric_value() == 1.0);
+
+    node = node.parent();
+    node["child2"] = "foo";
+
+    assert(node.child_count() == 2);
+
+    node = node.child("child2");
+    assert(node.type() == json::node_t::string);
+    assert(node.string_value() == "foo");
+
+    node = node.parent();
+
+    // Access to child via [] operator.
+    node = node["child1"];
+    assert(node.type() == json::node_t::number);
+    assert(node.numeric_value() == 1.0);
+}
+
 int main()
 {
     test_json_parse();
@@ -657,6 +689,7 @@ int main()
     test_json_init_list_object2();
     test_json_init_list_explicit_array();
     test_json_init_list_explicit_object();
+    test_json_init_root_object_add_child();
 
     return EXIT_SUCCESS;
 }

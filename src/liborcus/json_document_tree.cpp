@@ -45,6 +45,7 @@ enum class node_t : int
 
     // internal only.
     key_value = 10,
+    object_value_placeholder = 11
 };
 
 }
@@ -136,6 +137,16 @@ struct json_value_kvp : public json_value
 
     json_value_kvp(const pstring& _key, std::unique_ptr<json_value>&& _value) :
         json_value(detail::node_t::key_value), key(_key), value(std::move(_value)) {}
+};
+
+struct json_value_ov_placeholder : public json_value
+{
+    json_value_object* object;
+    pstring key;
+
+    json_value_ov_placeholder(json_value_object* _object, const pstring& _key) :
+        json_value(detail::node_t::object_value_placeholder),
+        object(_object), key(_key) {}
 };
 
 void dump_repeat(std::ostringstream& os, const char* s, int repeat)
@@ -761,6 +772,55 @@ node& node::operator=(const node& other)
     node tmp(other);
     mp_impl.swap(tmp.mp_impl);
     return *this;
+}
+
+node& node::operator=(const detail::init::node& v)
+{
+    switch (mp_impl->m_node->type)
+    {
+        case detail::node_t::object_value_placeholder:
+        {
+            json_value_ov_placeholder* ovp =
+                static_cast<json_value_ov_placeholder*>(mp_impl->m_node);
+
+            json_value_object* dest = ovp->object;
+            pstring key = ovp->key;
+
+            string_pool& pool =
+                const_cast<string_pool&>(mp_impl->m_doc->get_string_pool());
+
+            std::unique_ptr<json_value> jv = v.to_json_value(pool);
+            jv->parent = mp_impl->m_node->parent; // transfer the current parent to the new one.
+            mp_impl->m_node = jv.get();
+            dest->value_object[key] = std::move(jv);
+            break;
+        }
+        default:
+            throw document_error("this node does not support assignment.");
+    }
+
+    return *this;
+}
+
+node node::operator[](const pstring& key)
+{
+    if (mp_impl->m_node->type != detail::node_t::object)
+        throw document_error("node::operator[]: the node must be of object type.");
+
+    json_value_object* jvo = static_cast<json_value_object*>(mp_impl->m_node);
+    auto it = jvo->value_object.find(key);
+    if (it == jvo->value_object.end())
+    {
+        // This object doesn't have the specified key. Create a new empty node
+        // on the fly.
+        std::unique_ptr<json_value> jv =
+            orcus::make_unique<json_value_ov_placeholder>(jvo, key);
+        jv->parent = mp_impl->m_node;
+        auto r = jvo->value_object.insert(std::make_pair(key, std::move(jv)));
+        it = r.first;
+    }
+
+    return node(mp_impl->m_doc, it->second.get());
 }
 
 node node::child(size_t index)
