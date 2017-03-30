@@ -822,9 +822,7 @@ node& node::operator=(const detail::init::node& v)
     string_pool& pool =
         const_cast<string_pool&>(mp_impl->m_doc->get_string_pool());
 
-    std::unique_ptr<json_value_store> store = v.to_json_value_store(pool, mp_impl->m_node);
-    mp_impl->m_node->type = static_cast<detail::node_t>(v.type());
-    mp_impl->m_node->store = std::move(store);
+    v.store_to_node(pool, mp_impl->m_node);
 
     return *this;
 }
@@ -1108,8 +1106,9 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
     return jv;
 }
 
-std::unique_ptr<json_value_store> node::to_json_value_store(string_pool& pool, json_value* parent) const
+void node::store_to_node(string_pool& pool, json_value* parent) const
 {
+    parent->type = mp_impl->m_type;
     std::unique_ptr<json_value_store> jvs;
 
     switch (mp_impl->m_type)
@@ -1126,7 +1125,12 @@ std::unique_ptr<json_value_store> node::to_json_value_store(string_pool& pool, j
             jvs = orcus::make_unique<json_value_number>(mp_impl->m_value_number);
             break;
         case detail::node_t::object:
-            throw document_error("TODO");
+        {
+            // Currently only empty object instance is allowed.
+            assert(mp_impl->m_value_array.size() == 0);
+            jvs = orcus::make_unique<json_value_object>();
+            break;
+        }
         case detail::node_t::array:
         {
             std::vector<std::unique_ptr<json_value>> nodes;
@@ -1139,6 +1143,8 @@ std::unique_ptr<json_value_store> node::to_json_value_store(string_pool& pool, j
                 nodes.push_back(std::move(r));
             }
 
+            if (object)
+                parent->type = detail::node_t::object;
             jvs = aggregate_nodes_to_store(std::move(nodes), parent, object);
 
             break;
@@ -1157,7 +1163,7 @@ std::unique_ptr<json_value_store> node::to_json_value_store(string_pool& pool, j
         }
     }
 
-    return jvs;
+    parent->store = std::move(jvs);
 }
 
 }}

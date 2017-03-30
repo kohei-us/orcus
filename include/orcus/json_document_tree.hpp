@@ -325,7 +325,7 @@ public:
 private:
     node_t type() const;
     std::unique_ptr<json_value> to_json_value(string_pool& pool) const;
-    std::unique_ptr<json_value_store> to_json_value_store(string_pool& pool, json_value* parent) const;
+    void store_to_node(string_pool& pool, json_value* parent) const;
 };
 
 }}

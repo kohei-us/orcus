@@ -709,6 +709,32 @@ void test_json_init_root_object_add_child()
 
     node = node.child("null-child");
     assert(node.type() == json::node_t::null);
+
+    node = node.parent();
+    node["object-child"] = json::object();
+
+    node = node.child("object-child");
+    assert(node.type() == json::node_t::object);
+    assert(node.child_count() == 0);
+
+    node["array"] = json::array({true, false, nullptr});
+
+    node = node.child("array");
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 3);
+
+    node = node.parent();
+    node["nested-object"] =
+    {
+        { "key1", "foo" },
+        { "key2", 12.34 }
+    };
+
+    node = node.child("nested-object");
+    assert(node.type() == json::node_t::object);
+    assert(node.child_count() == 2);
+    assert(node.child("key1").string_value() == "foo");
+    assert(node.child("key2").numeric_value() == 12.34);
 }
 
 int main()
