@@ -687,6 +687,28 @@ void test_json_init_root_object_add_child()
     // Move down to the other child node.
     node = node.child(1);
     assert(node.type() == json::node_t::boolean_false);
+
+    // Move up to the root node.
+    node = node.parent().parent();
+    assert(node.type() == json::node_t::object);
+    assert(node.child_count() == 3);
+
+    node["child1"] = true; // overwrite an existing node.
+    node = node.child("child1");
+    assert(node.type() == json::node_t::boolean_true);
+
+    // direct assignment.
+    node = false;
+    assert(node.type() == json::node_t::boolean_false);
+
+    node = node.parent().child("child1"); // make sure the link is still intact.
+    assert(node.type() == json::node_t::boolean_false);
+
+    node = node.parent();
+    node["null-child"] = nullptr;
+
+    node = node.child("null-child");
+    assert(node.type() == json::node_t::null);
 }
 
 int main()

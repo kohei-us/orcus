@@ -1146,6 +1146,7 @@ std::unique_ptr<json_value_store> node::to_json_value_store(string_pool& pool, j
         case detail::node_t::boolean_true:
         case detail::node_t::boolean_false:
         case detail::node_t::null:
+            break;
         case detail::node_t::key_value:
             throw document_error("TODO");
         default:
