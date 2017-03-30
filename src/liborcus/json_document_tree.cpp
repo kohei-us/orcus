@@ -45,7 +45,6 @@ enum class node_t : int
 
     // internal only.
     key_value = 10,
-    object_value_placeholder = 11
 };
 
 }
@@ -186,25 +185,6 @@ struct json_value_kvp : public json_value_store
         key(_key), value(std::move(_value)) {}
 
     virtual ~json_value_kvp() override {}
-};
-
-struct json_value_ov_placeholder : public json_value_store
-{
-    static std::unique_ptr<json_value> create(json_value_object* object, const pstring& key)
-    {
-        std::unique_ptr<json_value> ret =
-            orcus::make_unique<json_value>(detail::node_t::object_value_placeholder);
-        ret->store = orcus::make_unique<json_value_ov_placeholder>(object, key);
-        return ret;
-    }
-
-    json_value_object* object;
-    pstring key;
-
-    json_value_ov_placeholder(json_value_object* _object, const pstring& _key) :
-        object(_object), key(_key) {}
-
-    virtual ~json_value_ov_placeholder() override {}
 };
 
 void dump_repeat(std::ostringstream& os, const char* s, int repeat)
@@ -839,28 +819,12 @@ node& node::operator=(const node& other)
 
 node& node::operator=(const detail::init::node& v)
 {
-    switch (mp_impl->m_node->type)
-    {
-        case detail::node_t::object_value_placeholder:
-        {
-            json_value_ov_placeholder* ovp =
-                static_cast<json_value_ov_placeholder*>(mp_impl->m_node->store.get());
+    string_pool& pool =
+        const_cast<string_pool&>(mp_impl->m_doc->get_string_pool());
 
-            json_value_object* dest = ovp->object;
-            pstring key = ovp->key;
-
-            string_pool& pool =
-                const_cast<string_pool&>(mp_impl->m_doc->get_string_pool());
-
-            std::unique_ptr<json_value> jv = v.to_json_value(pool);
-            jv->parent = mp_impl->m_node->parent; // transfer the current parent to the new one.
-            mp_impl->m_node = jv.get();
-            dest->value_object[key] = std::move(jv);
-            break;
-        }
-        default:
-            throw document_error("this node does not support assignment.");
-    }
+    std::unique_ptr<json_value_store> store = v.to_json_value_store(pool, mp_impl->m_node);
+    mp_impl->m_node->type = static_cast<detail::node_t>(v.type());
+    mp_impl->m_node->store = std::move(store);
 
     return *this;
 }
@@ -876,7 +840,7 @@ node node::operator[](const pstring& key)
     {
         // This object doesn't have the specified key. Create a new empty node
         // on the fly.
-        std::unique_ptr<json_value> jv = json_value_ov_placeholder::create(jvo, key);
+        std::unique_ptr<json_value> jv = orcus::make_unique<json_value>(detail::node_t::unset);
         jv->parent = mp_impl->m_node;
         auto r = jvo->value_object.insert(std::make_pair(key, std::move(jv)));
         it = r.first;
@@ -969,6 +933,52 @@ std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_val
     return jv;
 }
 
+std::unique_ptr<json_value_store> aggregate_nodes_to_store(
+    std::vector<std::unique_ptr<json_value>> nodes, json_value* parent, bool object)
+{
+    bool preserve_object_order = true;
+
+    if (object)
+    {
+        std::unique_ptr<json_value_store> jvs = orcus::make_unique<json_value_object>();
+        json_value_object* jvo = static_cast<json_value_object*>(jvs.get());
+
+        for (std::unique_ptr<json_value>& const_node : nodes)
+        {
+            if (const_node->type != detail::node_t::key_value)
+                throw document_error("key-value pair was expected.");
+
+            json_value_kvp& kv = static_cast<json_value_kvp&>(*const_node->store);
+
+            if (preserve_object_order)
+                jvo->key_order.push_back(kv.key);
+
+            kv.value->parent = parent;
+            auto r = jvo->value_object.insert(
+                std::make_pair(kv.key, std::move(kv.value)));
+
+            if (!r.second)
+                throw document_error("adding the same key twice");
+        }
+
+        return jvs;
+    }
+
+    std::unique_ptr<json_value_store> jvs = orcus::make_unique<json_value_array>();
+    json_value_array* jva = static_cast<json_value_array*>(jvs.get());
+
+    for (std::unique_ptr<json_value>& const_node : nodes)
+    {
+        if (const_node->type == detail::node_t::key_value)
+            throw document_error("key-value pair was not expected.");
+
+        const_node->parent = parent;
+        jva->value_array.push_back(std::move(const_node));
+    }
+
+    return jvs;
+}
+
 } // anonymous namespace
 
 namespace detail { namespace init {
@@ -1025,6 +1035,11 @@ node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array
 node::node(json::object obj) : mp_impl(orcus::make_unique<impl>(std::move(obj))) {}
 node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
 node::~node() {}
+
+int node::type() const
+{
+    return (int)mp_impl->m_type;
+}
 
 std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
 {
@@ -1091,6 +1106,57 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
     }
 
     return jv;
+}
+
+std::unique_ptr<json_value_store> node::to_json_value_store(string_pool& pool, json_value* parent) const
+{
+    std::unique_ptr<json_value_store> jvs;
+
+    switch (mp_impl->m_type)
+    {
+        case detail::node_t::unset:
+            throw document_error("node type is unset.");
+        case detail::node_t::string:
+        {
+            pstring s = pool.intern(mp_impl->m_value_string).first;
+            jvs = orcus::make_unique<json_value_string>(s);
+            break;
+        }
+        case detail::node_t::number:
+            jvs = orcus::make_unique<json_value_number>(mp_impl->m_value_number);
+            break;
+        case detail::node_t::object:
+            throw document_error("TODO");
+        case detail::node_t::array:
+        {
+            std::vector<std::unique_ptr<json_value>> nodes;
+            bool object = true;
+            for (const detail::init::node& v2 : mp_impl->m_value_array)
+            {
+                std::unique_ptr<json_value> r = v2.to_json_value(pool);
+                if (r->type != detail::node_t::key_value)
+                    object = false;
+                nodes.push_back(std::move(r));
+            }
+
+            jvs = aggregate_nodes_to_store(std::move(nodes), parent, object);
+
+            break;
+        }
+        case detail::node_t::boolean_true:
+        case detail::node_t::boolean_false:
+        case detail::node_t::null:
+        case detail::node_t::key_value:
+            throw document_error("TODO");
+        default:
+        {
+            std::ostringstream os;
+            os << "unknown node type (" << (int)mp_impl->m_type << ")";
+            throw document_error(os.str());
+        }
+    }
+
+    return jvs;
 }
 
 }}
