@@ -65,19 +65,19 @@ struct json_value_store
     virtual ~json_value_store() {}
 };
 
-struct json_value
+struct json_value final
 {
     detail::node_t type;
     json_value* parent;
 
-    std::unique_ptr<json_value_store> value;
+    std::unique_ptr<json_value_store> store;
 
     json_value(const json_value&) = delete;
     json_value& operator= (const json_value&) = delete;
 
     json_value() : type(detail::node_t::unset), parent(nullptr) {}
     json_value(detail::node_t _type) : type(_type), parent(nullptr) {}
-    virtual ~json_value() {}
+    ~json_value() {}
 };
 
 namespace {
@@ -93,7 +93,7 @@ struct json_value_string : public json_value_store
     {
         std::unique_ptr<json_value> ret =
             orcus::make_unique<json_value>(detail::node_t::string);
-        ret->value = orcus::make_unique<json_value_string>(s);
+        ret->store = orcus::make_unique<json_value_string>(s);
         return ret;
     }
 
@@ -101,7 +101,7 @@ struct json_value_string : public json_value_store
 
     json_value_string() {}
     json_value_string(const pstring& s) : value_string(s) {}
-    virtual ~json_value_string() {}
+    virtual ~json_value_string() override {}
 };
 
 struct json_value_number : public json_value_store
@@ -110,7 +110,7 @@ struct json_value_number : public json_value_store
     {
         std::unique_ptr<json_value> ret =
             orcus::make_unique<json_value>(detail::node_t::number);
-        ret->value = orcus::make_unique<json_value_number>(num);
+        ret->store = orcus::make_unique<json_value_number>(num);
         return ret;
     }
 
@@ -119,7 +119,7 @@ struct json_value_number : public json_value_store
     json_value_number() : value_number(std::numeric_limits<double>::quiet_NaN()) {}
     json_value_number(double num) : value_number(num) {}
 
-    virtual ~json_value_number() {}
+    virtual ~json_value_number() override {}
 };
 
 struct json_value_array : public json_value_store
@@ -128,14 +128,14 @@ struct json_value_array : public json_value_store
     {
         std::unique_ptr<json_value> ret =
             orcus::make_unique<json_value>(detail::node_t::array);
-        ret->value = orcus::make_unique<json_value_array>();
+        ret->store = orcus::make_unique<json_value_array>();
         return ret;
     }
 
     std::vector<std::unique_ptr<json_value>> value_array;
 
     json_value_array() {}
-    virtual ~json_value_array() {}
+    virtual ~json_value_array() override {}
 };
 
 struct json_value_object : public json_value_store
@@ -144,7 +144,7 @@ struct json_value_object : public json_value_store
     {
         std::unique_ptr<json_value> ret =
             orcus::make_unique<json_value>(detail::node_t::object);
-        ret->value = orcus::make_unique<json_value_object>();
+        ret->store = orcus::make_unique<json_value_object>();
         return ret;
     }
 
@@ -156,7 +156,7 @@ struct json_value_object : public json_value_store
     bool has_ref;
 
     json_value_object() : has_ref(false) {}
-    virtual ~json_value_object() {}
+    virtual ~json_value_object() override {}
 
     void swap(json_value_object& src)
     {
@@ -175,7 +175,7 @@ struct json_value_kvp : public json_value_store
     {
         std::unique_ptr<json_value> ret =
             orcus::make_unique<json_value>(detail::node_t::key_value);
-        ret->value = orcus::make_unique<json_value_kvp>(key, std::move(value));
+        ret->store = orcus::make_unique<json_value_kvp>(key, std::move(value));
         return ret;
     }
 
@@ -184,6 +184,8 @@ struct json_value_kvp : public json_value_store
 
     json_value_kvp(const pstring& _key, std::unique_ptr<json_value>&& _value) :
         key(_key), value(std::move(_value)) {}
+
+    virtual ~json_value_kvp() override {}
 };
 
 struct json_value_ov_placeholder : public json_value_store
@@ -192,7 +194,7 @@ struct json_value_ov_placeholder : public json_value_store
     {
         std::unique_ptr<json_value> ret =
             orcus::make_unique<json_value>(detail::node_t::object_value_placeholder);
-        ret->value = orcus::make_unique<json_value_ov_placeholder>(object, key);
+        ret->store = orcus::make_unique<json_value_ov_placeholder>(object, key);
         return ret;
     }
 
@@ -201,6 +203,8 @@ struct json_value_ov_placeholder : public json_value_store
 
     json_value_ov_placeholder(json_value_object* _object, const pstring& _key) :
         object(_object), key(_key) {}
+
+    virtual ~json_value_ov_placeholder() override {}
 };
 
 void dump_repeat(std::ostringstream& os, const char* s, int repeat)
@@ -224,7 +228,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
     {
         case detail::node_t::array:
         {
-            auto& vals = static_cast<const json_value_array*>(v->value.get())->value_array;
+            auto& vals = static_cast<const json_value_array*>(v->store.get())->value_array;
             os << "[" << std::endl;
             size_t n = vals.size();
             size_t pos = 0;
@@ -245,12 +249,12 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
             os << "null";
         break;
         case detail::node_t::number:
-            os << static_cast<const json_value_number*>(v->value.get())->value_number;
+            os << static_cast<const json_value_number*>(v->store.get())->value_number;
         break;
         case detail::node_t::object:
         {
-            const std::vector<pstring>& key_order = static_cast<const json_value_object*>(v->value.get())->key_order;
-            auto& vals = static_cast<const json_value_object*>(v->value.get())->value_object;
+            const std::vector<pstring>& key_order = static_cast<const json_value_object*>(v->store.get())->key_order;
+            auto& vals = static_cast<const json_value_object*>(v->store.get())->value_object;
             os << "{" << std::endl;
             size_t n = vals.size();
 
@@ -287,7 +291,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
         case detail::node_t::string:
             json::dump_string(
                 os,
-                static_cast<const json_value_string*>(v->value.get())->value_string.str());
+                static_cast<const json_value_string*>(v->store.get())->value_string.str());
         break;
         case detail::node_t::unset:
         default:
@@ -359,7 +363,7 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
                 os << " xmlns=\"" << NS_orcus_json_xml << "\"";
             os << ">";
 
-            auto& vals = static_cast<const json_value_array*>(v->value.get())->value_array;
+            auto& vals = static_cast<const json_value_array*>(v->store.get())->value_array;
 
             for (auto it = vals.begin(), ite = vals.end(); it != ite; ++it)
             {
@@ -382,7 +386,7 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
         break;
         case detail::node_t::number:
             os << "<number value=\"";
-            os << static_cast<const json_value_number*>(v->value.get())->value_number;
+            os << static_cast<const json_value_number*>(v->store.get())->value_number;
             os << "\"/>";
         break;
         case detail::node_t::object:
@@ -392,8 +396,9 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
                 os << " xmlns=\"" << NS_orcus_json_xml << "\"";
             os << ">";
 
-            auto& key_order = static_cast<const json_value_object*>(v->value.get())->key_order;
-            auto& vals = static_cast<const json_value_object*>(v->value.get())->value_object;
+            const json_value_object& jvo = static_cast<const json_value_object&>(*v->store);
+            auto& key_order = jvo.key_order;
+            auto& vals = jvo.value_object;
 
             if (key_order.empty())
             {
@@ -423,7 +428,7 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
         break;
         case detail::node_t::string:
             os << "<string value=\"";
-            dump_string_xml(os, static_cast<const json_value_string*>(v->value.get())->value_string);
+            dump_string_xml(os, static_cast<const json_value_string*>(v->store.get())->value_string);
             os << "\"/>";
         break;
         case detail::node_t::unset:
@@ -490,7 +495,7 @@ class parser_handler
         {
             case detail::node_t::array:
             {
-                json_value_array* jva = static_cast<json_value_array*>(cur.node->value.get());
+                json_value_array* jva = static_cast<json_value_array*>(cur.node->store.get());
                 value->parent = cur.node;
                 jva->value_array.push_back(std::move(value));
                 return jva->value_array.back().get();
@@ -499,13 +504,13 @@ class parser_handler
             case detail::node_t::object:
             {
                 const pstring& key = cur.key;
-                json_value_object* jvo = static_cast<json_value_object*>(cur.node->value.get());
+                json_value_object* jvo = static_cast<json_value_object*>(cur.node->store.get());
                 value->parent = cur.node;
 
                 if (m_config.resolve_references &&
                     key == "$ref" && value->type == detail::node_t::string)
                 {
-                    json_value_string* jvs = static_cast<json_value_string*>(value->value.get());
+                    json_value_string* jvs = static_cast<json_value_string*>(value->store.get());
                     if (!jvo->has_ref && !jvs->value_string.empty() && jvs->value_string[0] != '#')
                     {
                         // Store the external reference path and the destination
@@ -686,9 +691,9 @@ size_t const_node::child_count() const
     switch (mp_impl->m_node->type)
     {
         case detail::node_t::object:
-            return static_cast<const json_value_object*>(mp_impl->m_node->value.get())->value_object.size();
+            return static_cast<const json_value_object*>(mp_impl->m_node->store.get())->value_object.size();
         case detail::node_t::array:
-            return static_cast<const json_value_array*>(mp_impl->m_node->value.get())->value_array.size();
+            return static_cast<const json_value_array*>(mp_impl->m_node->store.get())->value_array.size();
         case detail::node_t::string:
         case detail::node_t::number:
         case detail::node_t::boolean_true:
@@ -706,7 +711,7 @@ std::vector<pstring> const_node::keys() const
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::keys: this node is not of object type.");
 
-    const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->value.get());
+    const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->store.get());
     if (!jvo->key_order.empty())
         // Prefer to use key_order when it's populated.
         return jvo->key_order;
@@ -727,7 +732,7 @@ pstring const_node::key(size_t index) const
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::key: this node is not of object type.");
 
-    const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->value.get());
+    const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->store.get());
     if (index >= jvo->key_order.size())
         throw std::out_of_range("node::key: index is out-of-range.");
 
@@ -741,7 +746,7 @@ const_node const_node::child(size_t index) const
         case detail::node_t::object:
         {
             // This works only when the key order is preserved.
-            const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->value.get());
+            const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->store.get());
             if (index >= jvo->key_order.size())
                 throw std::out_of_range("node::child: index is out-of-range");
 
@@ -753,7 +758,7 @@ const_node const_node::child(size_t index) const
         break;
         case detail::node_t::array:
         {
-            const json_value_array* jva = static_cast<const json_value_array*>(mp_impl->m_node->value.get());
+            const json_value_array* jva = static_cast<const json_value_array*>(mp_impl->m_node->store.get());
             if (index >= jva->value_array.size())
                 throw std::out_of_range("node::child: index is out-of-range");
 
@@ -776,7 +781,7 @@ const_node const_node::child(const pstring& key) const
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::child: this node is not of object type.");
 
-    const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->value.get());
+    const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->store.get());
     auto it = jvo->value_object.find(key);
     if (it == jvo->value_object.end())
     {
@@ -802,7 +807,7 @@ pstring const_node::string_value() const
         throw document_error("node::key: current node is not of string type.");
 
     const json_value_string* jvs =
-        static_cast<const json_value_string*>(mp_impl->m_node->value.get());
+        static_cast<const json_value_string*>(mp_impl->m_node->store.get());
     return jvs->value_string;
 }
 
@@ -812,7 +817,7 @@ double const_node::numeric_value() const
         throw document_error("node::key: current node is not of numeric type.");
 
     const json_value_number* jvn =
-        static_cast<const json_value_number*>(mp_impl->m_node->value.get());
+        static_cast<const json_value_number*>(mp_impl->m_node->store.get());
     return jvn->value_number;
 }
 
@@ -839,7 +844,7 @@ node& node::operator=(const detail::init::node& v)
         case detail::node_t::object_value_placeholder:
         {
             json_value_ov_placeholder* ovp =
-                static_cast<json_value_ov_placeholder*>(mp_impl->m_node->value.get());
+                static_cast<json_value_ov_placeholder*>(mp_impl->m_node->store.get());
 
             json_value_object* dest = ovp->object;
             pstring key = ovp->key;
@@ -865,7 +870,7 @@ node node::operator[](const pstring& key)
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::operator[]: the node must be of object type.");
 
-    json_value_object* jvo = static_cast<json_value_object*>(mp_impl->m_node->value.get());
+    json_value_object* jvo = static_cast<json_value_object*>(mp_impl->m_node->store.get());
     auto it = jvo->value_object.find(key);
     if (it == jvo->value_object.end())
     {
@@ -903,7 +908,7 @@ void node::push_back(const detail::init::node& v)
     if (mp_impl->m_node->type != detail::node_t::array)
         throw document_error("node::push_back: the node must be of array type.");
 
-    json_value_array* jva = static_cast<json_value_array*>(mp_impl->m_node->value.get());
+    json_value_array* jva = static_cast<json_value_array*>(mp_impl->m_node->store.get());
     const string_pool& pool = mp_impl->m_doc->get_string_pool();
     jva->value_array.push_back(v.to_json_value(const_cast<string_pool&>(pool)));
 }
@@ -926,14 +931,14 @@ std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_val
     if (object)
     {
         std::unique_ptr<json_value> jv = json_value_object::create();
-        json_value_object* jvo = static_cast<json_value_object*>(jv->value.get());
+        json_value_object* jvo = static_cast<json_value_object*>(jv->store.get());
 
         for (std::unique_ptr<json_value>& const_node : nodes)
         {
             if (const_node->type != detail::node_t::key_value)
                 throw document_error("key-value pair was expected.");
 
-            json_value_kvp& kv = static_cast<json_value_kvp&>(*const_node->value);
+            json_value_kvp& kv = static_cast<json_value_kvp&>(*const_node->store);
 
             if (preserve_object_order)
                 jvo->key_order.push_back(kv.key);
@@ -950,7 +955,7 @@ std::unique_ptr<json_value> aggregate_nodes(std::vector<std::unique_ptr<json_val
     }
 
     std::unique_ptr<json_value> jv = json_value_array::create();
-    json_value_array* jva = static_cast<json_value_array*>(jv->value.get());
+    json_value_array* jva = static_cast<json_value_array*>(jv->store.get());
 
     for (std::unique_ptr<json_value>& const_node : nodes)
     {
@@ -1128,7 +1133,7 @@ document_tree::document_tree(std::initializer_list<detail::init::node> vs) :
 document_tree::document_tree(array vs) : mp_impl(orcus::make_unique<impl>())
 {
     mp_impl->m_root = json_value_array::create();
-    json_value_array* jva = static_cast<json_value_array*>(mp_impl->m_root->value.get());
+    json_value_array* jva = static_cast<json_value_array*>(mp_impl->m_root->store.get());
 
     for (const detail::init::node& v : vs.m_vs)
     {
@@ -1215,7 +1220,7 @@ void document_tree::load(const char* p, size_t n, const json_config& config)
         json::json_value* root = doc.mp_impl->m_root.get();
         if (root->type == detail::node_t::object)
         {
-            json::json_value_object* jvo_src = static_cast<json::json_value_object*>(root->value.get());
+            json::json_value_object* jvo_src = static_cast<json::json_value_object*>(root->store.get());
             json::json_value_object* jvo_dest = it->dest;
             if (jvo_dest->value_object.size() == 1)
             {
