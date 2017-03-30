@@ -323,7 +323,7 @@ public:
     node& operator= (node) = delete;
 
 private:
-    int type() const;
+    node_t type() const;
     std::unique_ptr<json_value> to_json_value(string_pool& pool) const;
     std::unique_ptr<json_value_store> to_json_value_store(string_pool& pool, json_value* parent) const;
 };

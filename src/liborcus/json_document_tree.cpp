@@ -1036,9 +1036,9 @@ node::node(json::object obj) : mp_impl(orcus::make_unique<impl>(std::move(obj)))
 node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
 node::~node() {}
 
-int node::type() const
+json::node_t node::type() const
 {
-    return (int)mp_impl->m_type;
+    return static_cast<json::node_t>(mp_impl->m_type);
 }
 
 std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
