@@ -1154,7 +1154,7 @@ void node::store_to_node(string_pool& pool, json_value* parent) const
         case detail::node_t::null:
             break;
         case detail::node_t::key_value:
-            throw document_error("TODO");
+            // fall-through
         default:
         {
             std::ostringstream os;
