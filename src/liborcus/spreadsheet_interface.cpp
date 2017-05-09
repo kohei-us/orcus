@@ -7,9 +7,12 @@
 
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/spreadsheet/import_interface_pivot.hpp"
+#include "orcus/spreadsheet/import_interface_view.hpp"
 #include "orcus/spreadsheet/export_interface.hpp"
 
 namespace orcus { namespace spreadsheet { namespace iface {
+
+import_sheet_view::~import_sheet_view() {}
 
 import_pivot_cache_definition::~import_pivot_cache_definition() {}
 
@@ -39,6 +42,11 @@ import_auto_filter* import_table::get_auto_filter()
 }
 
 import_sheet::~import_sheet() {}
+
+import_sheet_view* import_sheet::get_sheet_view()
+{
+    return nullptr;
+}
 
 import_sheet_properties* import_sheet::get_sheet_properties()
 {

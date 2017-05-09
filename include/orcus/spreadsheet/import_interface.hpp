@@ -22,6 +22,7 @@ namespace orcus { namespace spreadsheet { namespace iface {
 
 class import_pivot_cache_definition;
 class import_pivot_cache_records;
+class import_sheet_view;
 
 /**
  * Interface class designed to be derived by the implementor.
@@ -450,6 +451,8 @@ class ORCUS_DLLPUBLIC import_sheet
 {
 public:
     virtual ~import_sheet() = 0;
+
+    virtual import_sheet_view* get_sheet_view();
 
     virtual import_sheet_properties* get_sheet_properties();
 
