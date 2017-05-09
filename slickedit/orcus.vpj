@@ -178,6 +178,7 @@
 					<F N="../include/orcus/spreadsheet/sheet_range.hpp"/>
 					<F N="../include/orcus/spreadsheet/styles.hpp"/>
 					<F N="../include/orcus/spreadsheet/types.hpp"/>
+					<F N="../include/orcus/spreadsheet/view_types.hpp"/>
 				</Folder>
 				<F N="../include/orcus/base64.hpp"/>
 				<F N="../include/orcus/cell_buffer.hpp"/>

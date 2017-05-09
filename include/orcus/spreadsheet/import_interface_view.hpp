@@ -30,7 +30,7 @@
 
 #include <cstdlib>
 
-#include "orcus/spreadsheet/types.hpp"
+#include "orcus/spreadsheet/view_types.hpp"
 #include "orcus/types.hpp"
 #include "orcus/env.hpp"
 
@@ -40,6 +40,31 @@ class ORCUS_DLLPUBLIC import_sheet_view
 {
 public:
     virtual ~import_sheet_view();
+
+    /**
+     * Set this sheet as the active sheet.
+     */
+    virtual void set_sheet_active() = 0;
+
+    /**
+     * Set active pane in this sheet.  Only one pane can be active at any
+     * given moment.
+     *
+     * @param pane active pane in this sheet.
+     */
+    virtual void set_active_pane(orcus::spreadsheet::sheet_pane_t pane) = 0;
+
+    /**
+     * Set the selected cursor range in a specified sheet pane.
+     *
+     * @param pane sheet pane associated with the selection.  The top-left
+     *             pane is used for a non-split sheet view.
+     * @param range selected cursor range.  The range will be 1 column by 1
+     *              row when the cursor is on a single cell only.
+     */
+    virtual void set_selected_range(
+        orcus::spreadsheet::sheet_pane_t pane,
+        orcus::spreadsheet::range_t range) = 0;
 };
 
 }}}
