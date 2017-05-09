@@ -9,6 +9,7 @@
   <Author>Kohei Yoshida</Author>
   <LastAuthor>Kohei Yoshida</LastAuthor>
   <Created>2017-04-27T02:41:27Z</Created>
+  <LastSaved>2017-05-09T20:36:09Z</LastSaved>
   <Version>16.00</Version>
  </DocumentProperties>
  <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
@@ -19,6 +20,7 @@
   <WindowWidth>19680</WindowWidth>
   <WindowTopX>0</WindowTopX>
   <WindowTopY>0</WindowTopY>
+  <ActiveSheet>2</ActiveSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -31,15 +33,19 @@
    <NumberFormat/>
    <Protection/>
   </Style>
-  <Style ss:ID="s62">
+  <Style ss:ID="s57">
    <Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="s58">
+   <Interior ss:Color="#FFE699" ss:Pattern="Solid"/>
   </Style>
  </Styles>
  <Worksheet ss:Name="Sheet1">
   <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="4" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Row ss:Index="4">
-    <Cell ss:Index="3" ss:StyleID="s62"><Data ss:Type="String">cursor</Data></Cell>
+   <Row ss:AutoFitHeight="0"/>
+   <Row ss:Index="4" ss:AutoFitHeight="0">
+    <Cell ss:Index="3" ss:StyleID="s57"><Data ss:Type="String">cursor</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -48,7 +54,7 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
-   <Selected/>
+   <Unsynced/>
    <Panes>
     <Pane>
      <Number>3</Number>
@@ -63,8 +69,9 @@
  <Worksheet ss:Name="Sheet2">
   <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="8" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Row ss:Index="8">
-    <Cell ss:Index="4" ss:StyleID="s62"><Data ss:Type="String">cursor</Data></Cell>
+   <Row ss:AutoFitHeight="0"/>
+   <Row ss:Index="8" ss:AutoFitHeight="0">
+    <Cell ss:Index="4" ss:StyleID="s57"><Data ss:Type="String">cursor</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -73,6 +80,7 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
+   <Unsynced/>
    <Panes>
     <Pane>
      <Number>3</Number>
@@ -87,8 +95,52 @@
  <Worksheet ss:Name="Sheet3">
   <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="2" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Row ss:Index="2">
-    <Cell ss:Index="4" ss:StyleID="s62"><Data ss:Type="String">cursor</Data></Cell>
+   <Row ss:AutoFitHeight="0"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="4" ss:StyleID="s57"><Data ss:Type="String">cursor</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>1</ActiveRow>
+     <ActiveCol>3</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Sheet4">
+  <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="8" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Row ss:Index="5">
+    <Cell ss:Index="3" ss:StyleID="s58"><Data ss:Type="String">top-left</Data></Cell>
+    <Cell ss:StyleID="s58"/>
+    <Cell ss:StyleID="s58"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="3" ss:StyleID="s58"/>
+    <Cell ss:StyleID="s58"/>
+    <Cell ss:StyleID="s58"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="3" ss:StyleID="s58"/>
+    <Cell ss:StyleID="s58"/>
+    <Cell ss:StyleID="s58"/>
+   </Row>
+   <Row>
+    <Cell ss:Index="3" ss:StyleID="s58"/>
+    <Cell ss:StyleID="s58"/>
+    <Cell ss:StyleID="s58"><Data ss:Type="String">bottom-right</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -100,8 +152,9 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>1</ActiveRow>
-     <ActiveCol>3</ActiveCol>
+     <ActiveRow>4</ActiveRow>
+     <ActiveCol>2</ActiveCol>
+     <RangeSelection>R5C3:R8C5</RangeSelection>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
