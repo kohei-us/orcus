@@ -105,7 +105,7 @@ using sheet_ifaces_type = std::vector<std::unique_ptr<import_sheet>>;
 
 }
 
-struct import_factory_impl
+struct import_factory::impl
 {
     document& m_doc;
     row_t m_default_row_size;
@@ -119,7 +119,7 @@ struct import_factory_impl
 
     sheet_ifaces_type m_sheets;
 
-    import_factory_impl(document& doc, row_t row_size, col_t col_size) :
+    impl(document& doc, row_t row_size, col_t col_size) :
         m_doc(doc),
         m_default_row_size(row_size),
         m_default_col_size(col_size),
@@ -130,12 +130,9 @@ struct import_factory_impl
 };
 
 import_factory::import_factory(document& doc, row_t row_size, col_t col_size) :
-    mp_impl(new import_factory_impl(doc, row_size, col_size)) {}
+    mp_impl(orcus::make_unique<impl>(doc, row_size, col_size)) {}
 
-import_factory::~import_factory()
-{
-    delete mp_impl;
-}
+import_factory::~import_factory() {}
 
 iface::import_global_settings* import_factory::get_global_settings()
 {

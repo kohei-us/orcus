@@ -5,21 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_SPREADSHEET_IMPORT_FACTORY_HPP__
-#define __ORCUS_SPREADSHEET_IMPORT_FACTORY_HPP__
+#ifndef INCLUDED_ORCUS_SPREADSHEET_IMPORT_FACTORY_HPP
+#define INCLUDED_ORCUS_SPREADSHEET_IMPORT_FACTORY_HPP
 
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/spreadsheet/export_interface.hpp"
 #include "orcus/env.hpp"
 
+#include <memory>
+
 namespace orcus { namespace spreadsheet {
 
 class document;
 
-struct import_factory_impl;
-
 class ORCUS_SPM_DLLPUBLIC import_factory : public iface::import_factory
 {
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 public:
     import_factory(document& doc, row_t row_size = 1048576, col_t col_size = 16384);
     virtual ~import_factory();
@@ -37,9 +39,6 @@ public:
     virtual iface::import_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) override;
     virtual iface::import_sheet* get_sheet(sheet_t sheet_index) override;
     virtual void finalize() override;
-
-private:
-    import_factory_impl* mp_impl;
 };
 
 struct export_factory_impl;
