@@ -9,11 +9,16 @@
 #define INCLUDED_ORCUS_SPREADSHEET_FACTORY_SHEET_HPP
 
 #include "orcus/spreadsheet/import_interface.hpp"
+#include "orcus/spreadsheet/import_interface_view.hpp"
+
+#include <memory>
 
 namespace orcus { namespace spreadsheet {
 
 class document;
+class sheet_view;
 class sheet;
+class import_sheet_view;
 
 class import_sheet_named_exp : public iface::import_named_expression
 {
@@ -31,11 +36,13 @@ class import_sheet : public iface::import_sheet
 {
     sheet& m_sheet;
     import_sheet_named_exp m_named_exp;
+    std::unique_ptr<import_sheet_view> m_sheet_view;
 
 public:
-    import_sheet(document& doc, sheet& sh);
+    import_sheet(document& doc, sheet& sh, sheet_view* view);
     virtual ~import_sheet() override;
 
+    virtual iface::import_sheet_view* get_sheet_view() override;
     virtual iface::import_auto_filter* get_auto_filter() override;
     virtual iface::import_conditional_format* get_conditional_format() override;
     virtual iface::import_data_table* get_data_table() override;
@@ -57,6 +64,17 @@ public:
     virtual void set_shared_formula(row_t row, col_t col, size_t sindex) override;
     virtual void set_string(row_t row, col_t col, size_t sindex) override;
     virtual void set_value(row_t row, col_t col, double value) override;
+};
+
+class import_sheet_view : public iface::import_sheet_view
+{
+    sheet_view& m_view;
+public:
+    import_sheet_view(sheet_view& view);
+    virtual ~import_sheet_view();
+    virtual void set_sheet_active() override;
+    virtual void set_active_pane(sheet_pane_t pane) override;
+    virtual void set_selected_range(sheet_pane_t pane, range_t range) override;
 };
 
 }}

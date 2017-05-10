@@ -11,6 +11,7 @@
 #include "orcus/spreadsheet/styles.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
+#include "orcus/spreadsheet/view.hpp"
 #include "orcus/spreadsheet/global_settings.hpp"
 #include "orcus/exception.hpp"
 #include "orcus/global.hpp"
@@ -189,13 +190,21 @@ iface::import_pivot_cache_records* import_factory::create_pivot_cache_records(
 
 iface::import_sheet* import_factory::append_sheet(const char* sheet_name, size_t sheet_name_length)
 {
+    sheet_t sheet_index = mp_impl->m_doc.sheet_size();
+
     sheet* sh = mp_impl->m_doc.append_sheet(
         pstring(sheet_name, sheet_name_length), mp_impl->m_default_row_size, mp_impl->m_default_col_size);
 
     if (!sh)
         return nullptr;
 
-    mp_impl->m_sheets.push_back(orcus::make_unique<import_sheet>(mp_impl->m_doc, *sh));
+    sheet_view* sv = nullptr;
+    if (mp_impl->m_view)
+        sv = mp_impl->m_view->get_or_create_sheet_view(sheet_index);
+
+    mp_impl->m_sheets.push_back(
+        orcus::make_unique<import_sheet>(mp_impl->m_doc, *sh, sv));
+
     return mp_impl->m_sheets.back().get();
 }
 

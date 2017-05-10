@@ -39,9 +39,20 @@ void import_sheet_named_exp::define_name(
     cxt.set_named_expression(m_sheet_index, p_name, n_name, std::move(tokens_p));
 }
 
-import_sheet::import_sheet(document& doc, sheet& sh) : m_sheet(sh), m_named_exp(doc, sh.get_index()) {}
+import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
+    m_sheet(sh),
+    m_named_exp(doc, sh.get_index())
+{
+    if (view)
+        m_sheet_view = orcus::make_unique<import_sheet_view>(*view);
+}
 
 import_sheet::~import_sheet() {}
+
+iface::import_sheet_view* import_sheet::get_sheet_view()
+{
+    return m_sheet_view.get();
+}
 
 iface::import_auto_filter* import_sheet::get_auto_filter()
 {
@@ -151,6 +162,22 @@ void import_sheet::set_string(row_t row, col_t col, size_t sindex)
 void import_sheet::set_value(row_t row, col_t col, double value)
 {
     m_sheet.set_value(row, col, value);
+}
+
+import_sheet_view::import_sheet_view(sheet_view& view) : m_view(view) {}
+
+import_sheet_view::~import_sheet_view() {}
+
+void import_sheet_view::set_active_pane(sheet_pane_t pane)
+{
+}
+
+void import_sheet_view::set_selected_range(sheet_pane_t pane, range_t range)
+{
+}
+
+void import_sheet_view::set_sheet_active()
+{
 }
 
 }}
