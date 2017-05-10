@@ -8,14 +8,14 @@
 #ifndef ORCUS_SPREADSHEET_VIEW_TYPES_HPP
 #define ORCUS_SPREADSHEET_VIEW_TYPES_HPP
 
-#include "orcus/types.hpp"
+#include "orcus/spreadsheet/types.hpp"
 
 namespace orcus { namespace spreadsheet {
 
 /**
  * Type of sheet pane position in a split sheet view.
  */
-enum class sheet_pane_t
+enum class sheet_pane_t : uint8_t
 {
     unspecified = 0,
     top_left,

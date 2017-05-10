@@ -20,6 +20,7 @@ liborcus_HEADERS += \
 	sheet.hpp \
 	sheet_properties.hpp \
 	sheet_range.hpp \
-	styles.hpp
+	styles.hpp \
+	view.hpp
 
 endif

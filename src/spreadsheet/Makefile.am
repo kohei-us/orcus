@@ -33,6 +33,7 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	styles.cpp \
 	table.hpp \
 	table.cpp \
+	view.cpp \
 	global_settings.cpp
 
 liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_CPPFLAGS = $(AM_CPPFLAGS) $(LIBIXION_CFLAGS)
