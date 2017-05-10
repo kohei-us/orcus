@@ -17,6 +17,7 @@
 namespace orcus { namespace spreadsheet {
 
 class document;
+class view;
 
 class ORCUS_SPM_DLLPUBLIC import_factory : public iface::import_factory
 {
@@ -24,6 +25,7 @@ class ORCUS_SPM_DLLPUBLIC import_factory : public iface::import_factory
     std::unique_ptr<impl> mp_impl;
 public:
     import_factory(document& doc, row_t row_size = 1048576, col_t col_size = 16384);
+    import_factory(document& doc, view& view, row_t row_size = 1048576, col_t col_size = 16384);
     virtual ~import_factory();
 
     virtual iface::import_global_settings* get_global_settings() override;

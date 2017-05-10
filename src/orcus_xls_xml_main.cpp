@@ -8,6 +8,7 @@
 #include "orcus/orcus_xls_xml.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
+#include "orcus/spreadsheet/view.hpp"
 
 #include "orcus_filter_global.hpp"
 
@@ -16,7 +17,8 @@ using namespace orcus;
 int main(int argc, char** argv)
 {
     spreadsheet::document doc;
-    spreadsheet::import_factory fact(doc);
+    spreadsheet::view view(doc);
+    spreadsheet::import_factory fact(doc, view);
     orcus_xls_xml app(&fact);
 
     if (parse_import_filter_args(app, doc, argc, argv))
