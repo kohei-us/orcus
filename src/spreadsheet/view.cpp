@@ -59,6 +59,24 @@ struct sheet_pane_data
     range_t m_selection;
 };
 
+size_t to_pane_index(sheet_pane_t pos)
+{
+    switch (pos)
+    {
+        case sheet_pane_t::top_left:
+            return 0;
+        case sheet_pane_t::top_right:
+            return 1;
+        case sheet_pane_t::bottom_left:
+            return 2;
+        case sheet_pane_t::bottom_right:
+            return 3;
+        case sheet_pane_t::unspecified:
+        default:
+            throw std::runtime_error("invalid sheet pane.");
+    }
+}
+
 } // anonymous namespace
 
 struct sheet_view::impl
@@ -69,20 +87,7 @@ struct sheet_view::impl
 
     sheet_pane_data& get_pane(sheet_pane_t pos)
     {
-        switch (pos)
-        {
-            case sheet_pane_t::top_left:
-                return m_panes[0];
-            case sheet_pane_t::top_right:
-                return m_panes[1];
-            case sheet_pane_t::bottom_left:
-                return m_panes[2];
-            case sheet_pane_t::bottom_right:
-                return m_panes[3];
-            case sheet_pane_t::unspecified:
-            default:
-                throw std::runtime_error("invalid sheet pane.");
-        }
+        return m_panes[to_pane_index(pos)];
     }
 
     impl(view& doc_view) : m_doc_view(doc_view), m_active_pane(sheet_pane_t::top_left) {}
