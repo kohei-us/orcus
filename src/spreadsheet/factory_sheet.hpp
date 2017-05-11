@@ -69,8 +69,9 @@ public:
 class import_sheet_view : public iface::import_sheet_view
 {
     sheet_view& m_view;
+    sheet_t m_sheet_index;
 public:
-    import_sheet_view(sheet_view& view);
+    import_sheet_view(sheet_view& view, sheet_t si);
     virtual ~import_sheet_view();
     virtual void set_sheet_active() override;
     virtual void set_active_pane(sheet_pane_t pane) override;

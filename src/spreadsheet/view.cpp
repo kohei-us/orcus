@@ -39,7 +39,7 @@ sheet_view* view::get_or_create_sheet_view(sheet_t sheet)
         mp_impl->m_sheet_views.resize(sheet+1);
 
     if (!mp_impl->m_sheet_views[sheet])
-        mp_impl->m_sheet_views[sheet] = orcus::make_unique<sheet_view>();
+        mp_impl->m_sheet_views[sheet] = orcus::make_unique<sheet_view>(*this);
 
     return mp_impl->m_sheet_views[sheet].get();
 }
@@ -63,8 +63,9 @@ struct sheet_pane_data
 
 struct sheet_view::impl
 {
-
+    view& m_doc_view;
     sheet_pane_data m_panes[4];
+    sheet_pane_t m_active_pane;
 
     sheet_pane_data& get_pane(sheet_pane_t pos)
     {
@@ -83,15 +84,27 @@ struct sheet_view::impl
                 throw std::runtime_error("invalid sheet pane.");
         }
     }
+
+    impl(view& doc_view) : m_doc_view(doc_view), m_active_pane(sheet_pane_t::top_left) {}
 };
 
-sheet_view::sheet_view() : mp_impl(orcus::make_unique<impl>()) {}
+sheet_view::sheet_view(view& doc_view) : mp_impl(orcus::make_unique<impl>(doc_view)) {}
 sheet_view::~sheet_view() {}
 
 void sheet_view::set_selection(sheet_pane_t pos, const range_t& range)
 {
     sheet_pane_data& pd = mp_impl->get_pane(pos);
     pd.m_selection = range;
+}
+
+void sheet_view::set_active_pane(sheet_pane_t pos)
+{
+    mp_impl->m_active_pane = pos;
+}
+
+view& sheet_view::get_document_view()
+{
+    return mp_impl->m_doc_view;
 }
 
 }}

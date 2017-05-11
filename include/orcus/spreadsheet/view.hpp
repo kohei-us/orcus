@@ -37,10 +37,13 @@ class ORCUS_SPM_DLLPUBLIC sheet_view
     struct impl;
     std::unique_ptr<impl> mp_impl;
 public:
-    sheet_view();
+    sheet_view(view& doc_view);
     ~sheet_view();
 
     void set_selection(sheet_pane_t pos, const range_t& range);
+    void set_active_pane(sheet_pane_t pos);
+
+    view& get_document_view();
 };
 
 }}

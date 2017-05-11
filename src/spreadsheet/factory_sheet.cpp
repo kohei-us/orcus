@@ -8,6 +8,7 @@
 #include "factory_sheet.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
+#include "orcus/spreadsheet/view.hpp"
 #include "orcus/global.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
@@ -44,7 +45,7 @@ import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_named_exp(doc, sh.get_index())
 {
     if (view)
-        m_sheet_view = orcus::make_unique<import_sheet_view>(*view);
+        m_sheet_view = orcus::make_unique<import_sheet_view>(*view, sh.get_index());
 }
 
 import_sheet::~import_sheet() {}
@@ -164,7 +165,8 @@ void import_sheet::set_value(row_t row, col_t col, double value)
     m_sheet.set_value(row, col, value);
 }
 
-import_sheet_view::import_sheet_view(sheet_view& view) : m_view(view) {}
+import_sheet_view::import_sheet_view(sheet_view& view, sheet_t si) :
+    m_view(view), m_sheet_index(si) {}
 
 import_sheet_view::~import_sheet_view() {}
 
@@ -174,10 +176,12 @@ void import_sheet_view::set_active_pane(sheet_pane_t pane)
 
 void import_sheet_view::set_selected_range(sheet_pane_t pane, range_t range)
 {
+    m_view.set_selection(pane, range);
 }
 
 void import_sheet_view::set_sheet_active()
 {
+    m_view.get_document_view().set_active_sheet(m_sheet_index);
 }
 
 }}
