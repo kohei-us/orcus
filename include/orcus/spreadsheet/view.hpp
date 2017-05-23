@@ -28,8 +28,10 @@ public:
     ~view();
 
     sheet_view* get_or_create_sheet_view(sheet_t sheet);
+    const sheet_view* get_sheet_view(sheet_t sheet) const;
 
     void set_active_sheet(sheet_t sheet);
+    sheet_t get_active_sheet() const;
 };
 
 class ORCUS_SPM_DLLPUBLIC sheet_view

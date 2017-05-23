@@ -12,6 +12,7 @@
 #include "orcus/config.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
+#include "orcus/spreadsheet/view.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/auto_filter.hpp"
 #include "orcus/spreadsheet/pivot.hpp"
@@ -845,6 +846,24 @@ void test_xlsx_pivot_error_values()
     assert(actual == expected);
 }
 
+void test_xlsx_view_cursor_per_sheet()
+{
+    string path(SRCDIR"/test/xlsx/view/cursor-per-sheet.xlsx");
+
+    document doc;
+    spreadsheet::view view(doc);
+    spreadsheet::import_factory factory(doc, view);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    // Sheet3 should be active.
+    assert(view.get_active_sheet() == 2);
+
+    // TODO : continue...
+}
+
 }
 
 int main()
@@ -865,6 +884,9 @@ int main()
     test_xlsx_pivot_group_by_numbers();
     test_xlsx_pivot_group_by_dates();
     test_xlsx_pivot_error_values();
+
+    // view import
+    test_xlsx_view_cursor_per_sheet();
 
     return EXIT_SUCCESS;
 }

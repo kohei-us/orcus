@@ -9,6 +9,8 @@
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/global.hpp"
 
+#include <cassert>
+
 namespace orcus { namespace spreadsheet {
 
 struct view::impl
@@ -44,9 +46,31 @@ sheet_view* view::get_or_create_sheet_view(sheet_t sheet)
     return mp_impl->m_sheet_views[sheet].get();
 }
 
+const sheet_view* view::get_sheet_view(sheet_t sheet) const
+{
+    if (sheet < 0)
+        return nullptr;
+
+    sheet_t n = mp_impl->m_doc.sheet_size();
+    if (sheet >= n)
+        return nullptr;
+
+    n = mp_impl->m_sheet_views.size();
+    if (sheet >= n)
+        return nullptr;
+
+    assert(mp_impl->m_sheet_views[sheet]);
+    return mp_impl->m_sheet_views[sheet].get();
+}
+
 void view::set_active_sheet(sheet_t sheet)
 {
     mp_impl->m_active_sheet = sheet;
+}
+
+sheet_t view::get_active_sheet() const
+{
+    return mp_impl->m_active_sheet;
 }
 
 namespace {
