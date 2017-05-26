@@ -18,6 +18,7 @@
 #include "orcus/exception.hpp"
 #include "orcus/global.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
+#include "orcus/spreadsheet/import_interface_view.hpp"
 #include "orcus/measurement.hpp"
 
 #include <algorithm>
@@ -417,8 +418,8 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
         break;
         case XML_sheetView:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_sheetViews);
-        break;
+            start_element_sheet_view(parent, attrs);
+            break;
         case XML_selection:
         {
             xml_elem_stack_t elems;
@@ -540,6 +541,36 @@ void xlsx_sheet_context::characters(const pstring& str, bool transient)
     m_cur_str = str;
     if (transient)
         m_cur_str = m_pool.intern(m_cur_str).first;
+}
+
+void xlsx_sheet_context::start_element_sheet_view(
+    const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_ooxml_xlsx, XML_sheetViews);
+
+    spreadsheet::iface::import_sheet_view* view = m_sheet.get_sheet_view();
+    if (!view)
+        return;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns == NS_ooxml_xlsx)
+        {
+            switch (attr.name)
+            {
+                case XML_tabSelected:
+                {
+                    bool v = to_bool(attr.value);
+                    if (v)
+                        // This sheet is active.
+                        view->set_sheet_active();
+                    break;
+                }
+                default:
+                    ;
+            }
+        }
+    }
 }
 
 void xlsx_sheet_context::end_element_cell()
