@@ -47,12 +47,35 @@ public:
     virtual void set_sheet_active() = 0;
 
     /**
-     * Set active pane in this sheet.  Only one pane can be active at any
-     * given moment.
+     * Set the information about split view in the current sheet.
      *
-     * @param pane active pane in this sheet.
+     * @param hor_split horizontal position of the split in 1/20th of a point,
+     *                  or 0 if none.
+     * @param ver_split vertical position of the split in 1/20th of a point,
+     *                  or 0 if none.
+     * @param top_left_cell the top left visible cell in the bottom right
+     *                      pane.
+     * @param active_pane active pane in this sheet.
      */
-    virtual void set_active_pane(orcus::spreadsheet::sheet_pane_t pane) = 0;
+    virtual void set_split_pane(
+        double hor_split, double ver_split,
+        const orcus::spreadsheet::address_t& top_left_cell,
+        orcus::spreadsheet::sheet_pane_t active_pane) = 0;
+
+    /**
+     * Set the information about frozen view in the current sheet.
+     *
+     * @param visible_columns number of visible columns in the left pane.
+     * @param visible_rows number of visible rows in the top pane.
+     * @param top_left_cell the top left visible cell in the bottom right
+     *                      pane.
+     * @param active_pane active pane in this sheet.
+     */
+    virtual void set_frozen_pane(
+        orcus::spreadsheet::col_t visible_columns,
+        orcus::spreadsheet::row_t visible_rows,
+        const orcus::spreadsheet::address_t& top_left_cell,
+        orcus::spreadsheet::sheet_pane_t active_pane) = 0;
 
     /**
      * Set the selected cursor range in a specified sheet pane.

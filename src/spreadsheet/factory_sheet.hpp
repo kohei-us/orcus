@@ -74,7 +74,18 @@ public:
     import_sheet_view(sheet_view& view, sheet_t si);
     virtual ~import_sheet_view();
     virtual void set_sheet_active() override;
-    virtual void set_active_pane(sheet_pane_t pane) override;
+
+    virtual void set_split_pane(
+        double hor_split, double ver_split,
+        const orcus::spreadsheet::address_t& top_left_cell,
+        orcus::spreadsheet::sheet_pane_t active_pane) override;
+
+    virtual void set_frozen_pane(
+        orcus::spreadsheet::col_t visible_columns,
+        orcus::spreadsheet::row_t visible_rows,
+        const orcus::spreadsheet::address_t& top_left_cell,
+        orcus::spreadsheet::sheet_pane_t active_pane) override;
+
     virtual void set_selected_range(sheet_pane_t pane, range_t range) override;
 };
 

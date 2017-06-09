@@ -170,7 +170,18 @@ import_sheet_view::import_sheet_view(sheet_view& view, sheet_t si) :
 
 import_sheet_view::~import_sheet_view() {}
 
-void import_sheet_view::set_active_pane(sheet_pane_t pane)
+void import_sheet_view::set_split_pane(
+        double hor_split, double ver_split,
+        const orcus::spreadsheet::address_t& top_left_cell,
+        orcus::spreadsheet::sheet_pane_t active_pane)
+{
+}
+
+void import_sheet_view::set_frozen_pane(
+        orcus::spreadsheet::col_t visible_columns,
+        orcus::spreadsheet::row_t visible_rows,
+        const orcus::spreadsheet::address_t& top_left_cell,
+        orcus::spreadsheet::sheet_pane_t active_pane)
 {
 }
 
