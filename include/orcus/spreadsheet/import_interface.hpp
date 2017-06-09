@@ -732,7 +732,9 @@ public:
     virtual address_t resolve_address(const char* p, size_t n) = 0;
 
     /**
-     * Resolve a textural representation of a range address.
+     * Resolve a textural representation of a range address.  Note that a
+     * string representing a valid single cell address should be considered a
+     * valid range address.
      *
      * @param p pointer to the first character of the range address string.
      * @param n size of the range address string.
