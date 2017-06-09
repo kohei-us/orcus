@@ -331,6 +331,15 @@ struct range_t
     address_t last;
 };
 
+ORCUS_DLLPUBLIC bool operator== (const address_t& left, const address_t& right);
+ORCUS_DLLPUBLIC bool operator!= (const address_t& left, const address_t& right);
+
+ORCUS_DLLPUBLIC bool operator== (const range_t& left, const range_t& right);
+ORCUS_DLLPUBLIC bool operator!= (const range_t& left, const range_t& right);
+
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const address_t& v);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const range_t& v);
+
 struct ORCUS_DLLPUBLIC color_rgb_t
 {
     color_elem_t red;

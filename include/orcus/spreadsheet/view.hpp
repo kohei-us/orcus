@@ -42,6 +42,8 @@ public:
     sheet_view(view& doc_view);
     ~sheet_view();
 
+    const range_t& get_selection(sheet_pane_t pos) const;
+
     void set_selection(sheet_pane_t pos, const range_t& range);
     void set_active_pane(sheet_pane_t pos);
 

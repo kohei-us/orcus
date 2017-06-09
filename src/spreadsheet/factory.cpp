@@ -60,20 +60,36 @@ public:
     {
         ixion::formula_name_t name = m_resolver->resolve(p, n, ixion::abs_address_t());
 
-        if (name.type != ixion::formula_name_t::range_reference)
+        switch (name.type)
         {
-            std::ostringstream os;
-            os << pstring(p, n) << " is not a valid range address.";
-            throw orcus::invalid_arg_error(os.str());
+            case ixion::formula_name_t::range_reference:
+            {
+                range_t ret;
+                ret.first.column = name.range.first.col;
+                ret.first.row = name.range.first.row;
+                ret.last.column = name.range.last.col;
+                ret.last.row = name.range.last.row;
+                return ret;
+            }
+            case ixion::formula_name_t::cell_reference:
+            {
+                // Single cell address is still considered a valid "range".
+                address_t cell;
+                cell.column = name.address.col;
+                cell.row = name.address.row;
+
+                range_t ret;
+                ret.first = cell;
+                ret.last = cell;
+                return ret;
+            }
+            default:
+                ;
         }
 
-        range_t ret;
-        ret.first.column = name.range.first.col;
-        ret.first.row = name.range.first.row;
-        ret.last.column = name.range.last.col;
-        ret.last.row = name.range.last.row;
-
-        return ret;
+        std::ostringstream os;
+        os << pstring(p, n) << " is not a valid range address.";
+        throw orcus::invalid_arg_error(os.str());
     }
 };
 

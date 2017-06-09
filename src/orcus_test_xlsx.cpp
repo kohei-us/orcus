@@ -24,6 +24,7 @@
 #include <set>
 #include <cmath>
 #include <vector>
+#include <iostream>
 
 #include <ixion/address.hpp>
 #include <ixion/formula_name_resolver.hpp>
@@ -861,7 +862,41 @@ void test_xlsx_view_cursor_per_sheet()
     // Sheet3 should be active.
     assert(view.get_active_sheet() == 2);
 
-    // TODO : continue...
+    const spreadsheet::sheet_view* sv = view.get_sheet_view(0);
+    assert(sv);
+
+    spreadsheet::iface::import_reference_resolver* resolver = factory.get_reference_resolver();
+    assert(resolver);
+
+    // On Sheet1, the cursor should be set to C4.
+    spreadsheet::range_t expected = resolver->resolve_range(ORCUS_ASCII("C4"));
+
+    spreadsheet::range_t actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    assert(expected == actual);
+
+    sv = view.get_sheet_view(1);
+    assert(sv);
+
+    // On Sheet2, the cursor should be set to D8.
+    expected = resolver->resolve_range(ORCUS_ASCII("D8"));
+    actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    assert(expected == actual);
+
+    sv = view.get_sheet_view(2);
+    assert(sv);
+
+    // On Sheet3, the cursor should be set to D2.
+    expected = resolver->resolve_range(ORCUS_ASCII("D2"));
+    actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    assert(expected == actual);
+
+    sv = view.get_sheet_view(3);
+    assert(sv);
+
+    // On Sheet4, the cursor should be set to C5:E8.
+    expected = resolver->resolve_range(ORCUS_ASCII("C5:E8"));
+    actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    assert(expected == actual);
 }
 
 }

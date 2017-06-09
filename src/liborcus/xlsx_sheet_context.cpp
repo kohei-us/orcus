@@ -21,8 +21,11 @@
 #include "orcus/spreadsheet/import_interface_view.hpp"
 #include "orcus/measurement.hpp"
 
+#include <mdds/sorted_string_map.hpp>
+
 #include <algorithm>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -266,6 +269,22 @@ public:
     xlsx_sheet_context::formula get_attrs() const { return m_attrs; }
 };
 
+typedef mdds::sorted_string_map<spreadsheet::sheet_pane_t> sheet_pane_map_type;
+
+// Keys must be sorted.
+const std::vector<sheet_pane_map_type::entry> entries = {
+    { ORCUS_ASCII("bottomLeft"),  spreadsheet::sheet_pane_t::bottom_left  },
+    { ORCUS_ASCII("bottomRight"), spreadsheet::sheet_pane_t::bottom_right },
+    { ORCUS_ASCII("topLeft"),     spreadsheet::sheet_pane_t::top_left     },
+    { ORCUS_ASCII("topRight"),    spreadsheet::sheet_pane_t::top_right    },
+};
+
+const sheet_pane_map_type& get_sheet_pane_map()
+{
+    static sheet_pane_map_type mt(entries.data(), entries.size(), spreadsheet::sheet_pane_t::unspecified);
+    return mt;
+}
+
 }
 
 xlsx_sheet_context::formula::formula() :
@@ -421,13 +440,8 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             start_element_sheet_view(parent, attrs);
             break;
         case XML_selection:
-        {
-            xml_elem_stack_t elems;
-            elems.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_sheetView));
-            elems.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_customSheetView));
-            xml_element_expected(parent, elems);
-        }
-        break;
+            start_element_selection(parent, attrs);
+            break;
         case XML_sheetData:
             xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
         break;
@@ -571,6 +585,57 @@ void xlsx_sheet_context::start_element_sheet_view(
             }
         }
     }
+}
+
+void xlsx_sheet_context::start_element_selection(
+    const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_elem_stack_t elems;
+    elems.emplace_back(NS_ooxml_xlsx, XML_sheetView);
+    elems.emplace_back(NS_ooxml_xlsx, XML_customSheetView);
+    xml_element_expected(parent, elems);
+
+    spreadsheet::iface::import_sheet_view* view = m_sheet.get_sheet_view();
+    if (!view)
+        return;
+
+    // example: <selection pane="topRight" activeCell="H2" sqref="H2:L2"/>
+
+    spreadsheet::sheet_pane_t pane = spreadsheet::sheet_pane_t::unspecified;
+    spreadsheet::range_t range;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns == NS_ooxml_xlsx)
+        {
+            switch (attr.name)
+            {
+                case XML_pane:
+                {
+                    pane = get_sheet_pane_map().find(
+                        attr.value.data(), attr.value.size());
+                    break;
+                }
+                case XML_activeCell:
+                    // Single cell where the cursor is. Ignore this for now.
+                    break;
+                case XML_sqref:
+                {
+                    // Single cell address for a non-range cursor, or range
+                    // address if a range selection is present.
+                    range = m_resolver.resolve_range(attr.value.data(), attr.value.size());
+                    break;
+                }
+                default:
+                    ;
+            }
+        }
+    }
+
+    if (pane == spreadsheet::sheet_pane_t::unspecified)
+        pane = spreadsheet::sheet_pane_t::top_left;
+
+    view->set_selected_range(pane, range);
 }
 
 void xlsx_sheet_context::end_element_cell()

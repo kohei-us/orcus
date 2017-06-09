@@ -107,6 +107,38 @@ color_rgb_t::color_rgb_t(color_rgb_t&& other) :
     other.blue = 0;
 }
 
+bool operator== (const address_t& left, const address_t& right)
+{
+    return left.column == right.column && left.row == right.row;
+}
+
+bool operator!= (const address_t& left, const address_t& right)
+{
+    return !operator== (left, right);
+}
+
+bool operator== (const range_t& left, const range_t& right)
+{
+    return left.first == right.first && left.last == right.last;
+}
+
+bool operator!= (const range_t& left, const range_t& right)
+{
+    return !operator== (left, right);
+}
+
+std::ostream& operator<< (std::ostream& os, const address_t& v)
+{
+    os << "(column=" << v.column << ",row=" << v.row << ")";
+    return os;
+}
+
+std::ostream& operator<< (std::ostream& os, const range_t& v)
+{
+    os << v.first << "-" << v.last;
+    return os;
+}
+
 color_rgb_t& color_rgb_t::operator= (const color_rgb_t& other)
 {
     red = other.red;

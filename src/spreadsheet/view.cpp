@@ -114,11 +114,22 @@ struct sheet_view::impl
         return m_panes[to_pane_index(pos)];
     }
 
+    const sheet_pane_data& get_pane(sheet_pane_t pos) const
+    {
+        return m_panes[to_pane_index(pos)];
+    }
+
     impl(view& doc_view) : m_doc_view(doc_view), m_active_pane(sheet_pane_t::top_left) {}
 };
 
 sheet_view::sheet_view(view& doc_view) : mp_impl(orcus::make_unique<impl>(doc_view)) {}
 sheet_view::~sheet_view() {}
+
+const range_t& sheet_view::get_selection(sheet_pane_t pos) const
+{
+    const sheet_pane_data& pd = mp_impl->get_pane(pos);
+    return pd.m_selection;
+}
 
 void sheet_view::set_selection(sheet_pane_t pos, const range_t& range)
 {
