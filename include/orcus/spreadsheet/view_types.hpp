@@ -24,6 +24,17 @@ enum class sheet_pane_t : uint8_t
     bottom_right
 };
 
+/**
+ * Type of pane state - whether it's frozen, split, or both.
+ */
+enum class pane_state_t : uint8_t
+{
+    unspecified = 0,
+    frozen,
+    split,
+    frozen_split
+};
+
 }}
 
 #endif

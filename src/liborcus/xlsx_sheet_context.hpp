@@ -72,6 +72,7 @@ public:
 private:
     void start_element_sheet_view(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_selection(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_element_pane(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void end_element_cell();
     void push_raw_cell_value();
 

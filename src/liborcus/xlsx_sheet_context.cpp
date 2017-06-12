@@ -269,20 +269,43 @@ public:
     xlsx_sheet_context::formula get_attrs() const { return m_attrs; }
 };
 
-typedef mdds::sorted_string_map<spreadsheet::sheet_pane_t> sheet_pane_map_type;
+namespace sheet_pane {
+
+typedef mdds::sorted_string_map<spreadsheet::sheet_pane_t> map_type;
 
 // Keys must be sorted.
-const std::vector<sheet_pane_map_type::entry> entries = {
+const std::vector<map_type::entry> entries = {
     { ORCUS_ASCII("bottomLeft"),  spreadsheet::sheet_pane_t::bottom_left  },
     { ORCUS_ASCII("bottomRight"), spreadsheet::sheet_pane_t::bottom_right },
     { ORCUS_ASCII("topLeft"),     spreadsheet::sheet_pane_t::top_left     },
     { ORCUS_ASCII("topRight"),    spreadsheet::sheet_pane_t::top_right    },
 };
 
-const sheet_pane_map_type& get_sheet_pane_map()
+const map_type& get()
 {
-    static sheet_pane_map_type mt(entries.data(), entries.size(), spreadsheet::sheet_pane_t::unspecified);
+    static map_type mt(entries.data(), entries.size(), spreadsheet::sheet_pane_t::unspecified);
     return mt;
+}
+
+}
+
+namespace pane_state {
+
+typedef mdds::sorted_string_map<spreadsheet::pane_state_t> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries = {
+    { ORCUS_ASCII("frozen"),      spreadsheet::pane_state_t::frozen       },
+    { ORCUS_ASCII("frozenSplit"), spreadsheet::pane_state_t::frozen_split },
+    { ORCUS_ASCII("split"),       spreadsheet::pane_state_t::split        },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), spreadsheet::pane_state_t::unspecified);
+    return mt;
+}
+
 }
 
 }
@@ -441,6 +464,9 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             break;
         case XML_selection:
             start_element_selection(parent, attrs);
+            break;
+        case XML_pane:
+            start_element_pane(parent, attrs);
             break;
         case XML_sheetData:
             xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
@@ -612,7 +638,7 @@ void xlsx_sheet_context::start_element_selection(
             {
                 case XML_pane:
                 {
-                    pane = get_sheet_pane_map().find(
+                    pane = sheet_pane::get().find(
                         attr.value.data(), attr.value.size());
                     break;
                 }
@@ -636,6 +662,69 @@ void xlsx_sheet_context::start_element_selection(
         pane = spreadsheet::sheet_pane_t::top_left;
 
     view->set_selected_range(pane, range);
+}
+
+void xlsx_sheet_context::start_element_pane(
+    const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_elem_stack_t elems;
+    elems.emplace_back(NS_ooxml_xlsx, XML_sheetView);
+    elems.emplace_back(NS_ooxml_xlsx, XML_customSheetView);
+    xml_element_expected(parent, elems);
+
+    spreadsheet::iface::import_sheet_view* view = m_sheet.get_sheet_view();
+    if (!view)
+        return;
+
+    // <pane xSplit="4" ySplit="8" topLeftCell="E9" activePane="bottomRight" state="frozen"/>
+
+    double xsplit = 0.0, ysplit = 0.0;
+    spreadsheet::address_t top_left_cell;
+    spreadsheet::sheet_pane_t active_pane = spreadsheet::sheet_pane_t::unspecified;
+    spreadsheet::pane_state_t pane_state = spreadsheet::pane_state_t::unspecified;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns != NS_ooxml_xlsx)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_xSplit:
+                xsplit = to_double(attr.value);
+                break;
+            case XML_ySplit:
+                ysplit = to_double(attr.value);
+                break;
+            case XML_topLeftCell:
+                top_left_cell = m_resolver.resolve_address(attr.value.data(), attr.value.size());
+                break;
+            case XML_activePane:
+                active_pane = sheet_pane::get().find(attr.value.data(), attr.value.size());
+                break;
+            case XML_state:
+                pane_state = pane_state::get().find(attr.value.data(), attr.value.size());
+                break;
+            default:
+                ;
+        }
+    }
+
+    switch (pane_state)
+    {
+        case spreadsheet::pane_state_t::frozen:
+            view->set_frozen_pane(xsplit, ysplit, top_left_cell, active_pane);
+            break;
+        case spreadsheet::pane_state_t::split:
+            view->set_split_pane(xsplit, ysplit, top_left_cell, active_pane);
+            break;
+        case spreadsheet::pane_state_t::frozen_split:
+            if (get_config().debug)
+                cout << "FIXME: frozen-split state not yet handled." << endl;
+            break;
+        default:
+            ;
+    }
 }
 
 void xlsx_sheet_context::end_element_cell()
