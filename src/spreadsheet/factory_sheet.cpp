@@ -175,6 +175,8 @@ void import_sheet_view::set_split_pane(
         const orcus::spreadsheet::address_t& top_left_cell,
         orcus::spreadsheet::sheet_pane_t active_pane)
 {
+    m_view.set_split_pane(hor_split, ver_split, top_left_cell);
+    m_view.set_active_pane(active_pane);
 }
 
 void import_sheet_view::set_frozen_pane(

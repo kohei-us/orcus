@@ -899,6 +899,94 @@ void test_xlsx_view_cursor_per_sheet()
     assert(expected == actual);
 }
 
+struct expected_selection
+{
+    spreadsheet::sheet_pane_t pane;
+    const char* sel;
+    size_t sel_n;
+};
+
+void test_xlsx_view_cursor_split_pane()
+{
+    string path(SRCDIR"/test/xlsx/view/cursor-split-pane.xlsx");
+
+    document doc;
+    spreadsheet::view view(doc);
+    spreadsheet::import_factory factory(doc, view);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    spreadsheet::iface::import_reference_resolver* resolver = factory.get_reference_resolver();
+    assert(resolver);
+
+    // Sheet4 should be active.
+    assert(view.get_active_sheet() == 3);
+
+    const spreadsheet::sheet_view* sv = view.get_sheet_view(0);
+    assert(sv);
+
+    // On Sheet1, the view is split into 4.
+    assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_left);
+    assert(sv->get_split_pane().hor_split == 5190.0);
+    assert(sv->get_split_pane().ver_split == 1800.0);
+
+    {
+        spreadsheet::address_t expected = resolver->resolve_address(ORCUS_ASCII("F6"));
+        spreadsheet::address_t actual = sv->get_split_pane().top_left_cell;
+        assert(expected == actual);
+    }
+
+    std::vector<expected_selection> expected_selections =
+    {
+        { spreadsheet::sheet_pane_t::top_left,     ORCUS_ASCII("E4")  },
+        { spreadsheet::sheet_pane_t::top_right,    ORCUS_ASCII("J2")  },
+        { spreadsheet::sheet_pane_t::bottom_left,  ORCUS_ASCII("A8")  },
+        { spreadsheet::sheet_pane_t::bottom_right, ORCUS_ASCII("J17") },
+    };
+
+    for (const expected_selection& es : expected_selections)
+    {
+        // cursor in the top-left pane.
+        spreadsheet::range_t expected = resolver->resolve_range(es.sel, es.sel_n);
+        spreadsheet::range_t actual = sv->get_selection(es.pane);
+        assert(expected == actual);
+    }
+
+    sv = view.get_sheet_view(1);
+    assert(sv);
+
+    // Sheet2 is also split into 4 views.
+    assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::top_right);
+    assert(sv->get_split_pane().hor_split == 5190.0);
+    assert(sv->get_split_pane().ver_split == 2400.0);
+
+    {
+        spreadsheet::address_t expected = resolver->resolve_address(ORCUS_ASCII("F8"));
+        spreadsheet::address_t actual = sv->get_split_pane().top_left_cell;
+        assert(expected == actual);
+    }
+
+    expected_selections =
+    {
+        { spreadsheet::sheet_pane_t::top_left,     ORCUS_ASCII("C2:C6")  },
+        { spreadsheet::sheet_pane_t::top_right,    ORCUS_ASCII("H2:L2")  },
+        { spreadsheet::sheet_pane_t::bottom_left,  ORCUS_ASCII("B18:C23")  },
+        { spreadsheet::sheet_pane_t::bottom_right, ORCUS_ASCII("H11:J13") },
+    };
+
+    for (const expected_selection& es : expected_selections)
+    {
+        // cursor in the top-left pane.
+        spreadsheet::range_t expected = resolver->resolve_range(es.sel, es.sel_n);
+        spreadsheet::range_t actual = sv->get_selection(es.pane);
+        assert(expected == actual);
+    }
+
+    // TODO : add tests for Sheet3 and Sheet4.
+}
+
 }
 
 int main()
@@ -922,6 +1010,7 @@ int main()
 
     // view import
     test_xlsx_view_cursor_per_sheet();
+    test_xlsx_view_cursor_split_pane();
 
     return EXIT_SUCCESS;
 }

@@ -10,6 +10,7 @@
 #include "orcus/global.hpp"
 
 #include <cassert>
+#include <iostream>
 
 namespace orcus { namespace spreadsheet {
 
@@ -108,6 +109,7 @@ struct sheet_view::impl
     view& m_doc_view;
     sheet_pane_data m_panes[4];
     sheet_pane_t m_active_pane;
+    split_pane_t m_split_pane;
 
     sheet_pane_data& get_pane(sheet_pane_t pos)
     {
@@ -119,7 +121,11 @@ struct sheet_view::impl
         return m_panes[to_pane_index(pos)];
     }
 
-    impl(view& doc_view) : m_doc_view(doc_view), m_active_pane(sheet_pane_t::top_left) {}
+    impl(view& doc_view) : m_doc_view(doc_view), m_active_pane(sheet_pane_t::top_left)
+    {
+        m_split_pane.hor_split = 0.0;
+        m_split_pane.ver_split = 0.0;
+    }
 };
 
 sheet_view::sheet_view(view& doc_view) : mp_impl(orcus::make_unique<impl>(doc_view)) {}
@@ -140,6 +146,24 @@ void sheet_view::set_selection(sheet_pane_t pos, const range_t& range)
 void sheet_view::set_active_pane(sheet_pane_t pos)
 {
     mp_impl->m_active_pane = pos;
+}
+
+sheet_pane_t sheet_view::get_active_pane() const
+{
+    return mp_impl->m_active_pane;
+}
+
+void sheet_view::set_split_pane(
+    double hor_split, double ver_split, const address_t& top_left_cell)
+{
+    mp_impl->m_split_pane.hor_split = hor_split;
+    mp_impl->m_split_pane.ver_split = ver_split;
+    mp_impl->m_split_pane.top_left_cell = top_left_cell;
+}
+
+const split_pane_t& sheet_view::get_split_pane() const
+{
+    return mp_impl->m_split_pane;
 }
 
 view& sheet_view::get_document_view()

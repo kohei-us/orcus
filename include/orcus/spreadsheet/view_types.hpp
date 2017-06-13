@@ -35,6 +35,31 @@ enum class pane_state_t : uint8_t
     frozen_split
 };
 
+/**
+ * Store information about the state of a split sheet view.
+ */
+struct split_pane_t
+{
+    /**
+     * Horizontal distance to the vertical split bar in 1/20th of a point, or
+     * 0 if not horizontally split.
+     */
+    double hor_split;
+
+    /**
+     * Vertical distance to the horizontal split bar in 1/20th of a point, or
+     * 0 if not vertically split.
+     */
+    double ver_split;
+
+    /**
+     * Top-left visible cell of the bottom-right pane.  This value is valid
+     * only when either the horizontal distance or the vertical distance is
+     * non-zero.
+     */
+    address_t top_left_cell;
+};
+
 }}
 
 #endif
