@@ -110,6 +110,7 @@ struct sheet_view::impl
     sheet_pane_data m_panes[4];
     sheet_pane_t m_active_pane;
     split_pane_t m_split_pane;
+    frozen_pane_t m_frozen_pane;
 
     sheet_pane_data& get_pane(sheet_pane_t pos)
     {
@@ -125,6 +126,8 @@ struct sheet_view::impl
     {
         m_split_pane.hor_split = 0.0;
         m_split_pane.ver_split = 0.0;
+        m_frozen_pane.visible_columns = 0;
+        m_frozen_pane.visible_rows = 0;
     }
 };
 
@@ -164,6 +167,18 @@ void sheet_view::set_split_pane(
 const split_pane_t& sheet_view::get_split_pane() const
 {
     return mp_impl->m_split_pane;
+}
+
+void sheet_view::set_frozen_pane(col_t visible_cols, row_t visible_rows, const address_t& top_left_cell)
+{
+    mp_impl->m_frozen_pane.visible_columns = visible_cols;
+    mp_impl->m_frozen_pane.visible_rows = visible_rows;
+    mp_impl->m_frozen_pane.top_left_cell = top_left_cell;
+}
+
+const frozen_pane_t& sheet_view::get_frozen_pane() const
+{
+    return mp_impl->m_frozen_pane;
 }
 
 view& sheet_view::get_document_view()

@@ -1053,7 +1053,47 @@ void test_xlsx_view_frozen_pane()
 
     app.read_file(path.c_str());
 
-    // TODO : add tests here.
+    spreadsheet::iface::import_reference_resolver* resolver = factory.get_reference_resolver();
+    assert(resolver);
+
+    // Sheet3 should be active.
+    assert(view.get_active_sheet() == 2);
+
+    const spreadsheet::sheet_view* sv = view.get_sheet_view(0);
+    assert(sv);
+
+    {
+        // Sheet1 is vertically frozen between columns A and B.
+        const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
+        assert(fp.top_left_cell == resolver->resolve_address(ORCUS_ASCII("B1")));
+        assert(fp.visible_columns == 1);
+        assert(fp.visible_rows == 0);
+        assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::top_right);
+    }
+
+    sv = view.get_sheet_view(1);
+    assert(sv);
+
+    {
+        // Sheet2 is horizontally frozen between rows 1 and 2.
+        const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
+        assert(fp.top_left_cell == resolver->resolve_address(ORCUS_ASCII("A2")));
+        assert(fp.visible_columns == 0);
+        assert(fp.visible_rows == 1);
+        assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_left);
+    }
+
+    sv = view.get_sheet_view(2);
+    assert(sv);
+
+    {
+        // Sheet3 is frozen both horizontally and vertically.
+        const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
+        assert(fp.top_left_cell == resolver->resolve_address(ORCUS_ASCII("E9")));
+        assert(fp.visible_columns == 4);
+        assert(fp.visible_rows == 8);
+        assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_right);
+    }
 }
 
 }

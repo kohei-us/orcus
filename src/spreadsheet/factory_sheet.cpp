@@ -185,6 +185,8 @@ void import_sheet_view::set_frozen_pane(
         const orcus::spreadsheet::address_t& top_left_cell,
         orcus::spreadsheet::sheet_pane_t active_pane)
 {
+    m_view.set_frozen_pane(visible_columns, visible_rows, top_left_cell);
+    m_view.set_active_pane(active_pane);
 }
 
 void import_sheet_view::set_selected_range(sheet_pane_t pane, range_t range)

@@ -50,8 +50,10 @@ public:
     sheet_pane_t get_active_pane() const;
 
     void set_split_pane(double hor_split, double ver_split, const address_t& top_left_cell);
-
     const split_pane_t& get_split_pane() const;
+
+    void set_frozen_pane(col_t visible_cols, row_t visible_rows, const address_t& top_left_cell);
+    const frozen_pane_t& get_frozen_pane() const;
 
     view& get_document_view();
 };

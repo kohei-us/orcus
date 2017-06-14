@@ -60,6 +60,17 @@ struct split_pane_t
     address_t top_left_cell;
 };
 
+/**
+ * Store information about the state of a frozen sheet view.
+ */
+struct frozen_pane_t
+{
+    col_t visible_columns;
+    row_t visible_rows;
+
+    address_t top_left_cell;
+};
+
 }}
 
 #endif
