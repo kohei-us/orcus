@@ -1041,6 +1041,21 @@ void test_xlsx_view_cursor_split_pane()
     }
 }
 
+void test_xlsx_view_frozen_pane()
+{
+    string path(SRCDIR"/test/xlsx/view/frozen-pane.xlsx");
+
+    document doc;
+    spreadsheet::view view(doc);
+    spreadsheet::import_factory factory(doc, view);
+    orcus_xlsx app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    // TODO : add tests here.
+}
+
 }
 
 int main()
@@ -1065,6 +1080,7 @@ int main()
     // view import
     test_xlsx_view_cursor_per_sheet();
     test_xlsx_view_cursor_split_pane();
+    test_xlsx_view_frozen_pane();
 
     return EXIT_SUCCESS;
 }
