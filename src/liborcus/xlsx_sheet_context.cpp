@@ -710,6 +710,9 @@ void xlsx_sheet_context::start_element_pane(
         }
     }
 
+    if (active_pane == spreadsheet::sheet_pane_t::unspecified)
+        active_pane = spreadsheet::sheet_pane_t::top_left;
+
     if (pane_state == spreadsheet::pane_state_t::unspecified)
         pane_state = spreadsheet::pane_state_t::split;
 
