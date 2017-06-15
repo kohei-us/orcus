@@ -9,8 +9,10 @@
 #include "orcus/pstring.hpp"
 #include "orcus/global.hpp"
 #include "orcus/stream.hpp"
+#include "orcus/config.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
+#include "orcus/spreadsheet/view.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/shared_strings.hpp"
 #include "orcus/spreadsheet/styles.hpp"
@@ -26,6 +28,8 @@ using namespace orcus;
 using namespace std;
 
 namespace {
+
+config test_config;
 
 std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/basic/",
@@ -325,15 +329,72 @@ void test_xls_xml_colored_text()
     assert(fmt->size == 4);
 }
 
+void test_xls_xml_view_cursor_per_sheet()
+{
+    string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
+
+    spreadsheet::document doc;
+    spreadsheet::view view(doc);
+    spreadsheet::import_factory factory(doc, view);
+    orcus_xls_xml app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    // Sheet3 should be active.
+    assert(view.get_active_sheet() == 2);
+
+    const spreadsheet::sheet_view* sv = view.get_sheet_view(0);
+    assert(sv);
+
+    spreadsheet::iface::import_reference_resolver* resolver = factory.get_reference_resolver();
+    assert(resolver);
+
+    // On Sheet1, the cursor should be set to C4.
+    spreadsheet::range_t expected = resolver->resolve_range(ORCUS_ASCII("C4"));
+    spreadsheet::range_t actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    assert(expected == actual);
+
+    sv = view.get_sheet_view(1);
+    assert(sv);
+
+    // On Sheet2, the cursor should be set to D8.
+    expected = resolver->resolve_range(ORCUS_ASCII("D8"));
+    actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    assert(expected == actual);
+
+    sv = view.get_sheet_view(2);
+    assert(sv);
+
+    // On Sheet3, the cursor should be set to D2.
+    expected = resolver->resolve_range(ORCUS_ASCII("D2"));
+    actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    assert(expected == actual);
+
+    sv = view.get_sheet_view(3);
+    assert(sv);
+
+    // On Sheet4, the cursor should be set to C5:E8.
+    expected = resolver->resolve_range(ORCUS_ASCII("C5:E8"));
+    actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    assert(expected == actual);
+}
+
 }
 
 int main()
 {
+    test_config.debug = true;
+    test_config.structure_check = true;
+
     test_xls_xml_import();
     test_xls_xml_merged_cells();
     test_xls_xml_date_time();
     test_xls_xml_bold_and_italic();
     test_xls_xml_colored_text();
+
+    // view import
+    test_xls_xml_view_cursor_per_sheet();
 
     return EXIT_SUCCESS;
 }

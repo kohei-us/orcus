@@ -870,7 +870,6 @@ void test_xlsx_view_cursor_per_sheet()
 
     // On Sheet1, the cursor should be set to C4.
     spreadsheet::range_t expected = resolver->resolve_range(ORCUS_ASCII("C4"));
-
     spreadsheet::range_t actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
     assert(expected == actual);
 

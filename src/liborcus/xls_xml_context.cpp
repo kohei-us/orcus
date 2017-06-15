@@ -9,6 +9,7 @@
 #include "xls_xml_namespace_types.hpp"
 #include "xls_xml_token_constants.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
+#include "orcus/spreadsheet/import_interface_view.hpp"
 #include "orcus/measurement.hpp"
 
 #include <iostream>
@@ -434,6 +435,36 @@ public:
 xls_xml_context::named_exp::named_exp(const pstring& _name, const pstring& _expression, spreadsheet::sheet_t _scope) :
     name(_name), expression(_expression), scope(_scope) {}
 
+xls_xml_context::selection::selection() : pane(spreadsheet::sheet_pane_t::unspecified), col(-1), row(-1)
+{
+    range.first.column = -1;
+    range.first.row = -1;
+    range.last.column = -1;
+    range.last.row = -1;
+}
+
+void xls_xml_context::selection::reset()
+{
+    pane = spreadsheet::sheet_pane_t::unspecified;
+    col = -1;
+    row = -1;
+
+    range.first.column = -1;
+    range.first.row = -1;
+    range.last.column = -1;
+    range.last.row = -1;
+}
+
+bool xls_xml_context::selection::valid_cursor() const
+{
+    return col >= 0 && row >= 0;
+}
+
+bool xls_xml_context::selection::valid_range() const
+{
+    return range.first.column >= 0 && range.first.row >= 0 && range.last.column >= 0 && range.last.row >= 0;
+}
+
 xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
@@ -658,6 +689,47 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 warn_unhandled();
         }
     }
+    else if (ns == NS_xls_xml_x)
+    {
+        switch (name)
+        {
+            case XML_WorksheetOptions:
+                xml_element_expected(parent, NS_xls_xml_ss, XML_Worksheet);
+                break;
+            case XML_Panes:
+                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
+                break;
+            case XML_Pane:
+                xml_element_expected(parent, NS_xls_xml_x, XML_Panes);
+                m_cursor_selection.reset();
+                break;
+            case XML_Number:
+                xml_element_expected(parent, NS_xls_xml_x, XML_Pane);
+                break;
+            case XML_ActiveCol:
+                xml_element_expected(parent, NS_xls_xml_x, XML_Pane);
+                break;
+            case XML_ActiveRow:
+                xml_element_expected(parent, NS_xls_xml_x, XML_Pane);
+                break;
+            case XML_RangeSelection:
+                xml_element_expected(parent, NS_xls_xml_x, XML_Pane);
+                break;
+            case XML_Selected:
+            {
+                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
+                if (mp_cur_sheet)
+                {
+                    spreadsheet::iface::import_sheet_view* sv = mp_cur_sheet->get_sheet_view();
+                    if (sv)
+                        sv->set_sheet_active();
+                }
+                break;
+            }
+            default:
+                warn_unhandled();
+        }
+    }
     else
         warn_unhandled();
 }
@@ -700,11 +772,77 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
                 ;
         }
     }
+    else if (ns == NS_xls_xml_x)
+    {
+        switch (name)
+        {
+            case XML_Pane:
+                end_element_pane();
+                break;
+            default:
+                ;
+        }
+    }
     return pop_stack(ns, name);
 }
 
-void xls_xml_context::characters(const pstring& /*str*/, bool /*transient*/)
+namespace {
+
+spreadsheet::sheet_pane_t to_sheet_pane(long v)
 {
+    static const std::vector<spreadsheet::sheet_pane_t> mapping = {
+        spreadsheet::sheet_pane_t::bottom_right,  // 0
+        spreadsheet::sheet_pane_t::top_right,     // 1
+        spreadsheet::sheet_pane_t::bottom_left,   // 2
+        spreadsheet::sheet_pane_t::top_left,      // 3
+    };
+
+    if (v < 0 || size_t(v) >= mapping.size())
+        return spreadsheet::sheet_pane_t::unspecified;
+
+    return mapping[v];
+}
+
+}
+
+void xls_xml_context::characters(const pstring& str, bool /*transient*/)
+{
+    if (str.empty())
+        return;
+
+    const xml_token_pair_t& ce = get_current_element();
+
+    if (ce.first == NS_xls_xml_x)
+    {
+        switch (ce.second)
+        {
+            case XML_Number:
+                // sheet pane position.
+                // 3 | 1
+                //---+---
+                // 2 | 0
+                m_cursor_selection.pane = to_sheet_pane(to_long(str));
+                break;
+            case XML_ActiveCol:
+                m_cursor_selection.col = to_long(str);
+                break;
+            case XML_ActiveRow:
+                m_cursor_selection.row = to_long(str);
+                break;
+            case XML_RangeSelection:
+            {
+                spreadsheet::iface::import_reference_resolver* resolver =
+                    mp_factory->get_reference_resolver();
+
+                if (resolver)
+                    m_cursor_selection.range = resolver->resolve_range(str.data(), str.size());
+
+                break;
+            }
+            default:
+                ;
+        }
+    }
 }
 
 void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
@@ -826,6 +964,30 @@ void xls_xml_context::end_element_styles()
 {
     commit_default_style(); // Commit the default style first.
     commit_styles();
+}
+
+void xls_xml_context::end_element_pane()
+{
+    spreadsheet::iface::import_sheet_view* sv = mp_cur_sheet->get_sheet_view();
+    if (!sv)
+        return;
+
+    if (m_cursor_selection.pane == spreadsheet::sheet_pane_t::unspecified)
+        return;
+
+    if (m_cursor_selection.valid_range())
+    {
+        sv->set_selected_range(m_cursor_selection.pane, m_cursor_selection.range);
+    }
+    else if (m_cursor_selection.valid_cursor())
+    {
+        spreadsheet::range_t sel;
+        sel.first.column = m_cursor_selection.col;
+        sel.first.row = m_cursor_selection.row;
+        sel.last = sel.first;
+
+        sv->set_selected_range(m_cursor_selection.pane, sel);
+    }
 }
 
 void xls_xml_context::commit_default_style()

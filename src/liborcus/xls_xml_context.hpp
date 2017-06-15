@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_XLS_XML_CONTEXT_HPP
-#define ORCUS_XLS_XML_CONTEXT_HPP
+#ifndef INCLUDED_ORCUS_XLS_XML_CONTEXT_HPP
+#define INCLUDED_ORCUS_XLS_XML_CONTEXT_HPP
 
 #include "xml_context_base.hpp"
 #include "orcus/spreadsheet/types.hpp"
+#include "orcus/spreadsheet/view_types.hpp"
 #include "orcus/string_pool.hpp"
 
 #include <string>
@@ -127,6 +128,19 @@ class xls_xml_context : public xml_context_base
         named_exp(const pstring& _name, const pstring& _expression, spreadsheet::sheet_t _scope);
     };
 
+    struct selection
+    {
+        spreadsheet::sheet_pane_t pane;
+        spreadsheet::col_t col;
+        spreadsheet::row_t row;
+        spreadsheet::range_t range;
+
+        selection();
+        void reset();
+        bool valid_cursor() const;
+        bool valid_range() const;
+    };
+
     using named_expressions_type = std::vector<named_exp>;
     using styles_type = std::vector<std::unique_ptr<style_type>>;
     using style_id_xf_map_type = std::unordered_map<pstring, size_t, pstring::hash>;
@@ -149,6 +163,7 @@ private:
 
     void end_element_workbook();
     void end_element_styles();
+    void end_element_pane();
 
     void commit_default_style();
     void commit_styles();
@@ -170,6 +185,7 @@ private:
 
     named_expressions_type m_named_exps_global;
     named_expressions_type m_named_exps_sheet;
+    selection m_cursor_selection; /// cursor selection in a single pane.
 
     std::unique_ptr<style_type> m_current_style;
     std::unique_ptr<style_type> m_default_style;
