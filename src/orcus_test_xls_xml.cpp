@@ -347,11 +347,12 @@ void test_xls_xml_view_cursor_per_sheet()
     const spreadsheet::sheet_view* sv = view.get_sheet_view(0);
     assert(sv);
 
+    // NB : the resolver type is set to R1C1 for Excel XML 2003.
     spreadsheet::iface::import_reference_resolver* resolver = factory.get_reference_resolver();
     assert(resolver);
 
     // On Sheet1, the cursor should be set to C4.
-    spreadsheet::range_t expected = resolver->resolve_range(ORCUS_ASCII("C4"));
+    spreadsheet::range_t expected = resolver->resolve_range(ORCUS_ASCII("R4C3"));
     spreadsheet::range_t actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
     assert(expected == actual);
 
@@ -359,7 +360,7 @@ void test_xls_xml_view_cursor_per_sheet()
     assert(sv);
 
     // On Sheet2, the cursor should be set to D8.
-    expected = resolver->resolve_range(ORCUS_ASCII("D8"));
+    expected = resolver->resolve_range(ORCUS_ASCII("R8C4"));
     actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
     assert(expected == actual);
 
@@ -367,7 +368,7 @@ void test_xls_xml_view_cursor_per_sheet()
     assert(sv);
 
     // On Sheet3, the cursor should be set to D2.
-    expected = resolver->resolve_range(ORCUS_ASCII("D2"));
+    expected = resolver->resolve_range(ORCUS_ASCII("R2C4"));
     actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
     assert(expected == actual);
 
@@ -375,7 +376,7 @@ void test_xls_xml_view_cursor_per_sheet()
     assert(sv);
 
     // On Sheet4, the cursor should be set to C5:E8.
-    expected = resolver->resolve_range(ORCUS_ASCII("C5:E8"));
+    expected = resolver->resolve_range(ORCUS_ASCII("R5C3:R8C5"));
     actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
     assert(expected == actual);
 }

@@ -32,16 +32,20 @@ namespace {
 
 class import_ref_resolver : public iface::import_reference_resolver
 {
-    std::unique_ptr<ixion::formula_name_resolver> m_resolver;
+    document& m_doc;
 
 public:
-    import_ref_resolver() :
-        m_resolver(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, nullptr))
+    import_ref_resolver(document& doc) :
+        m_doc(doc)
     {}
 
     virtual address_t resolve_address(const char* p, size_t n) override
     {
-        ixion::formula_name_t name = m_resolver->resolve(p, n, ixion::abs_address_t());
+        const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+        if (!resolver)
+            throw std::runtime_error("import_ref_resolver::resolve_address: formula resolver is null!");
+
+        ixion::formula_name_t name = resolver->resolve(p, n, ixion::abs_address_t());
 
         if (name.type != ixion::formula_name_t::cell_reference)
         {
@@ -58,7 +62,11 @@ public:
 
     virtual range_t resolve_range(const char* p, size_t n) override
     {
-        ixion::formula_name_t name = m_resolver->resolve(p, n, ixion::abs_address_t());
+        const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+        if (!resolver)
+            throw std::runtime_error("import_ref_resolver::resolve_range: formula resolver is null!");
+
+        ixion::formula_name_t name = resolver->resolve(p, n, ixion::abs_address_t());
 
         switch (name.type)
         {
@@ -145,6 +153,7 @@ struct import_factory::impl
         m_global_settings(doc),
         m_pc_def(doc),
         m_pc_records(doc),
+        m_ref_resolver(doc),
         m_global_named_exp(doc) {}
 };
 
