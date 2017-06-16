@@ -524,6 +524,62 @@ void test_xls_xml_view_cursor_split_pane()
     }
 }
 
+void test_xls_xml_view_frozen_pane()
+{
+    string path(SRCDIR"/test/xls-xml/view/frozen-pane.xml");
+
+    spreadsheet::document doc;
+    spreadsheet::view view(doc);
+    spreadsheet::import_factory factory(doc, view);
+    orcus_xls_xml app(&factory);
+    app.set_config(test_config);
+
+    app.read_file(path.c_str());
+
+    // NB : the resolver type is set to R1C1 for Excel XML 2003.
+    spreadsheet::iface::import_reference_resolver* resolver = factory.get_reference_resolver();
+    assert(resolver);
+
+    // Sheet3 should be active.
+    assert(view.get_active_sheet() == 2);
+
+    const spreadsheet::sheet_view* sv = view.get_sheet_view(0);
+    assert(sv);
+
+    {
+        // Sheet1 is vertically frozen between columns A and B.
+        const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
+        assert(fp.top_left_cell == resolver->resolve_address(ORCUS_ASCII("R1C2")));
+        assert(fp.visible_columns == 1);
+        assert(fp.visible_rows == 0);
+        assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::top_right);
+    }
+
+    sv = view.get_sheet_view(1);
+    assert(sv);
+
+    {
+        // Sheet2 is horizontally frozen between rows 1 and 2.
+        const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
+        assert(fp.top_left_cell == resolver->resolve_address(ORCUS_ASCII("R2C1")));
+        assert(fp.visible_columns == 0);
+        assert(fp.visible_rows == 1);
+        assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_left);
+    }
+
+    sv = view.get_sheet_view(2);
+    assert(sv);
+
+    {
+        // Sheet3 is frozen both horizontally and vertically.
+        const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
+        assert(fp.top_left_cell == resolver->resolve_address(ORCUS_ASCII("R9C5")));
+        assert(fp.visible_columns == 4);
+        assert(fp.visible_rows == 8);
+        assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_right);
+    }
+}
+
 }
 
 int main()
@@ -540,6 +596,7 @@ int main()
     // view import
     test_xls_xml_view_cursor_per_sheet();
     test_xls_xml_view_cursor_split_pane();
+    test_xls_xml_view_frozen_pane();
 
     return EXIT_SUCCESS;
 }

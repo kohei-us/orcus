@@ -486,6 +486,14 @@ bool xls_xml_context::split_pane::split() const
     return (split_horizontal || split_vertical) && (top_row_bottom_pane || left_col_right_pane);
 }
 
+spreadsheet::address_t xls_xml_context::split_pane::get_top_left_cell() const
+{
+    spreadsheet::address_t pos;
+    pos.column = left_col_right_pane;
+    pos.row = top_row_bottom_pane;
+    return pos;
+}
+
 xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
@@ -717,6 +725,15 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             case XML_WorksheetOptions:
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Worksheet);
                 m_split_pane.reset();
+                break;
+            case XML_FreezePanes:
+                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
+                // TODO : check if this is correct.
+                m_split_pane.pane_state = spreadsheet::pane_state_t::frozen_split;
+                break;
+            case XML_FrozenNoSplit:
+                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
+                m_split_pane.pane_state = spreadsheet::pane_state_t::frozen;
                 break;
             case XML_ActivePane:
                 xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
@@ -1068,9 +1085,7 @@ void xls_xml_context::commit_split_pane()
     {
         case spreadsheet::pane_state_t::split:
         {
-            spreadsheet::address_t top_left_cell;
-            top_left_cell.column = m_split_pane.left_col_right_pane;
-            top_left_cell.row = m_split_pane.top_row_bottom_pane;
+            spreadsheet::address_t top_left_cell = m_split_pane.get_top_left_cell();
 
             // NB: The term "split vertical" in Excel 2003 XML refers to the
             // vertical split bar position which in this case corresponds with
@@ -1082,7 +1097,18 @@ void xls_xml_context::commit_split_pane()
             break;
         }
         case spreadsheet::pane_state_t::frozen:
+        {
+            spreadsheet::address_t top_left_cell = m_split_pane.get_top_left_cell();
+
+            // NB: Note for the split pane above also applies here.
+            spreadsheet::col_t visible_cols = m_split_pane.split_vertical;
+            spreadsheet::row_t visible_rows = m_split_pane.split_horizontal;
+
+            sv->set_frozen_pane(
+                visible_cols, visible_rows,
+                top_left_cell, m_split_pane.active_pane);
             break;
+        }
         case spreadsheet::pane_state_t::frozen_split:
             // not handled yet.
             break;

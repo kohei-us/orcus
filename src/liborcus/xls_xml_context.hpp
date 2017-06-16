@@ -152,8 +152,8 @@ class xls_xml_context : public xml_context_base
 
         split_pane();
         void reset();
-
         bool split() const;
+        spreadsheet::address_t get_top_left_cell() const;
     };
 
     using named_expressions_type = std::vector<named_exp>;
