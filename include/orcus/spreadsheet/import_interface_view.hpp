@@ -50,9 +50,11 @@ public:
      * Set the information about split view in the current sheet.
      *
      * @param hor_split horizontal position of the split in 1/20th of a point,
-     *                  or 0 if none.
+     *                  or 0 if none.  "Horizontal" in this case indicates the
+     *                  column direction.
      * @param ver_split vertical position of the split in 1/20th of a point,
-     *                  or 0 if none.
+     *                  or 0 if none.  "Vertical" in this case indicates the
+     *                  row direction.
      * @param top_left_cell the top left visible cell in the bottom right
      *                      pane.
      * @param active_pane active pane in this sheet.

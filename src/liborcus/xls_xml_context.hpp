@@ -141,6 +141,21 @@ class xls_xml_context : public xml_context_base
         bool valid_range() const;
     };
 
+    struct split_pane
+    {
+        spreadsheet::pane_state_t pane_state;
+        spreadsheet::sheet_pane_t active_pane;
+        double split_horizontal;
+        double split_vertical;
+        spreadsheet::row_t top_row_bottom_pane;
+        spreadsheet::col_t left_col_right_pane;
+
+        split_pane();
+        void reset();
+
+        bool split() const;
+    };
+
     using named_expressions_type = std::vector<named_exp>;
     using styles_type = std::vector<std::unique_ptr<style_type>>;
     using style_id_xf_map_type = std::unordered_map<pstring, size_t, pstring::hash>;
@@ -164,7 +179,9 @@ private:
     void end_element_workbook();
     void end_element_styles();
     void end_element_pane();
+    void end_element_worksheet_options();
 
+    void commit_split_pane();
     void commit_default_style();
     void commit_styles();
 
@@ -186,6 +203,8 @@ private:
     named_expressions_type m_named_exps_global;
     named_expressions_type m_named_exps_sheet;
     selection m_cursor_selection; /// cursor selection in a single pane.
+    split_pane m_split_pane;
+    spreadsheet::sheet_pane_t m_active_pane;
 
     std::unique_ptr<style_type> m_current_style;
     std::unique_ptr<style_type> m_default_style;

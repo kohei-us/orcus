@@ -446,8 +446,8 @@ xls_xml_context::selection::selection() : pane(spreadsheet::sheet_pane_t::unspec
 void xls_xml_context::selection::reset()
 {
     pane = spreadsheet::sheet_pane_t::unspecified;
-    col = -1;
-    row = -1;
+    col = 0;
+    row = 0;
 
     range.first.column = -1;
     range.first.row = -1;
@@ -463,6 +463,27 @@ bool xls_xml_context::selection::valid_cursor() const
 bool xls_xml_context::selection::valid_range() const
 {
     return range.first.column >= 0 && range.first.row >= 0 && range.last.column >= 0 && range.last.row >= 0;
+}
+
+xls_xml_context::split_pane::split_pane() :
+    pane_state(spreadsheet::pane_state_t::split),
+    active_pane(spreadsheet::sheet_pane_t::top_left),
+    split_horizontal(0.0), split_vertical(0.0),
+    top_row_bottom_pane(0), left_col_right_pane(0) {}
+
+void xls_xml_context::split_pane::reset()
+{
+    pane_state = spreadsheet::pane_state_t::split;
+    active_pane = spreadsheet::sheet_pane_t::top_left;
+    split_horizontal = 0.0;
+    split_vertical = 0.0;
+    top_row_bottom_pane = 0;
+    left_col_right_pane = 0;
+}
+
+bool xls_xml_context::split_pane::split() const
+{
+    return (split_horizontal || split_vertical) && (top_row_bottom_pane || left_col_right_pane);
 }
 
 xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
@@ -695,6 +716,27 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
         {
             case XML_WorksheetOptions:
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Worksheet);
+                m_split_pane.reset();
+                break;
+            case XML_ActivePane:
+                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
+                m_split_pane.active_pane = spreadsheet::sheet_pane_t::unspecified;
+                break;
+            case XML_SplitHorizontal:
+                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
+                m_split_pane.split_horizontal = 0.0;
+                break;
+            case XML_SplitVertical:
+                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
+                m_split_pane.split_vertical = 0.0;
+                break;
+            case XML_TopRowBottomPane:
+                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
+                m_split_pane.top_row_bottom_pane = 0;
+                break;
+            case XML_LeftColumnRightPane:
+                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
+                m_split_pane.left_col_right_pane = 0;
                 break;
             case XML_Panes:
                 xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
@@ -779,6 +821,9 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_Pane:
                 end_element_pane();
                 break;
+            case XML_WorksheetOptions:
+                end_element_worksheet_options();
+                break;
             default:
                 ;
         }
@@ -828,6 +873,21 @@ void xls_xml_context::characters(const pstring& str, bool /*transient*/)
                 break;
             case XML_ActiveRow:
                 m_cursor_selection.row = to_long(str);
+                break;
+            case XML_ActivePane:
+                m_split_pane.active_pane = to_sheet_pane(to_long(str));
+                break;
+            case XML_SplitHorizontal:
+                m_split_pane.split_horizontal = to_double(str);
+                break;
+            case XML_SplitVertical:
+                m_split_pane.split_vertical = to_double(str);
+                break;
+            case XML_TopRowBottomPane:
+                m_split_pane.top_row_bottom_pane = to_long(str);
+                break;
+            case XML_LeftColumnRightPane:
+                m_split_pane.left_col_right_pane = to_long(str);
                 break;
             case XML_RangeSelection:
             {
@@ -988,6 +1048,50 @@ void xls_xml_context::end_element_pane()
 
         sv->set_selected_range(m_cursor_selection.pane, sel);
     }
+}
+
+void xls_xml_context::end_element_worksheet_options()
+{
+    commit_split_pane();
+}
+
+void xls_xml_context::commit_split_pane()
+{
+    spreadsheet::iface::import_sheet_view* sv = mp_cur_sheet->get_sheet_view();
+    if (!sv)
+        return;
+
+    if (!m_split_pane.split())
+        return;
+
+    switch (m_split_pane.pane_state)
+    {
+        case spreadsheet::pane_state_t::split:
+        {
+            spreadsheet::address_t top_left_cell;
+            top_left_cell.column = m_split_pane.left_col_right_pane;
+            top_left_cell.row = m_split_pane.top_row_bottom_pane;
+
+            // NB: The term "split vertical" in Excel 2003 XML refers to the
+            // vertical split bar position which in this case corresponds with
+            // the "horizontal split" position of the set_split_pane() call,
+            // and vice versa.
+            sv->set_split_pane(
+                m_split_pane.split_vertical, m_split_pane.split_horizontal,
+                top_left_cell, m_split_pane.active_pane);
+            break;
+        }
+        case spreadsheet::pane_state_t::frozen:
+            break;
+        case spreadsheet::pane_state_t::frozen_split:
+            // not handled yet.
+            break;
+        case spreadsheet::pane_state_t::unspecified:
+        default:
+            ;
+    }
+
+    m_split_pane.reset();
 }
 
 void xls_xml_context::commit_default_style()
