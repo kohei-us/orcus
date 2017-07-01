@@ -173,7 +173,7 @@ void xml_context_base::xml_element_expected(
 
     // Create a generic error message.
     ostringstream os;
-    os << "element '" << ns << ":" << m_tokens.get_token_name(name) << "' expected, but '";
+    os << "element '" << (ns ? ns : "" )<< ":" << m_tokens.get_token_name(name) << "' expected, but '";
     os << elem.first << ":" << m_tokens.get_token_name(elem.second) << "' encountered.";
     throw xml_structure_error(os.str());
 }
