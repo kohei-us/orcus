@@ -174,6 +174,10 @@ add_executable(orcus-json
     ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
 )
 
+add_executable(orcus-yaml
+	${PROJECT_SOURCE_DIR}/src/orcus_yaml_main.cpp
+)
+
 add_custom_target(
     py_gen_files
     COMMAND python ${PROJECT_SOURCE_DIR}/bin/gen-files.py
@@ -194,6 +198,7 @@ target_link_libraries(orcus-css-dump liborcus-parser liborcus)
 target_link_libraries(orcus-xml-dump liborcus-parser liborcus)
 target_link_libraries(orcus-zip-dump liborcus-parser)
 target_link_libraries(orcus-json liborcus-parser liborcus)
+target_link_libraries(orcus-yaml liborcus-parser liborcus)
 
 target_compile_definitions(liborcus-parser PRIVATE __ORCUS_PSR_BUILDING_DLL)
 target_compile_definitions(liborcus PRIVATE
