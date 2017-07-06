@@ -155,6 +155,10 @@ add_executable(orcus-detect
 	${PROJECT_SOURCE_DIR}/src/orcus_detect_main.cpp
 )
 
+add_executable(orcus-zip-dump
+	${PROJECT_SOURCE_DIR}/src/orcus_zip_dump.cpp
+)
+
 add_custom_target(
     py_gen_files
     COMMAND python ${PROJECT_SOURCE_DIR}/bin/gen-files.py
@@ -171,6 +175,7 @@ add_dependencies(liborcus py_gen_files)
 target_link_libraries(liborcus-parser ${ZLIB_LIB})
 target_link_libraries(liborcus liborcus-parser)
 target_link_libraries(orcus-detect liborcus)
+target_link_libraries(orcus-zip-dump liborcus-parser)
 
 target_compile_definitions(liborcus-parser PRIVATE __ORCUS_PSR_BUILDING_DLL)
 target_compile_definitions(liborcus PRIVATE
