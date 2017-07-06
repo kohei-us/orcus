@@ -127,6 +127,18 @@ add_library(liborcus SHARED
 	${LIBORCUS_SRC_DIR}/xls_xml_detection_handler.cpp
 	${LIBORCUS_SRC_DIR}/xls_xml_handler.cpp
 	${LIBORCUS_SRC_DIR}/xls_xml_context.cpp
+# ods filter
+	${LIBORCUS_SRC_DIR}/odf_para_context.cpp
+	${LIBORCUS_SRC_DIR}/odf_styles.cpp
+	${LIBORCUS_SRC_DIR}/odf_styles_context.cpp
+	${LIBORCUS_SRC_DIR}/odf_number_formatting_context.cpp
+	${LIBORCUS_SRC_DIR}/odf_tokens.cpp
+	${LIBORCUS_SRC_DIR}/ods_content_xml_context.cpp
+	${LIBORCUS_SRC_DIR}/ods_content_xml_handler.cpp
+	${LIBORCUS_SRC_DIR}/ods_session_data.cpp
+	${LIBORCUS_SRC_DIR}/odf_helper.cpp
+	${LIBORCUS_SRC_DIR}/orcus_ods.cpp
+	${LIBORCUS_SRC_DIR}/orcus_import_ods.cpp
 )
 
 add_custom_target(
