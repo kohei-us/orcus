@@ -48,7 +48,7 @@ typedef std::vector<format_run> format_runs_t;
 /**
  * This class handles global pool of string instances.
  */
-class ORCUS_DLLPUBLIC import_shared_strings : public iface::import_shared_strings
+class ORCUS_SPM_DLLPUBLIC import_shared_strings : public iface::import_shared_strings
 {
     typedef std::unordered_map<pstring, size_t, pstring::hash> str_index_map_type;
 

@@ -32,6 +32,7 @@ include_directories(
 link_directories(${BOOST_LIB_DIR})
 
 find_library(ZLIB_LIB zlib PATHS ${ZLIB_LIB_DIR})
+find_library(IXION_LIB libixion PATHS ${IXION_LIB_DIR})
 
 set(PARSER_SRC_DIR ${PROJECT_SOURCE_DIR}/src/parser)
 set(LIBORCUS_SRC_DIR ${PROJECT_SOURCE_DIR}/src/liborcus)
@@ -152,6 +153,26 @@ add_library(liborcus SHARED
 #   ${LIBORCUS_SRC_DIR}/orcus_gnumeric.cpp
 )
 
+add_library(liborcus-spreadsheet-model SHARED
+	${SPREADSHEET_SRC_DIR}/auto_filter.cpp
+	${SPREADSHEET_SRC_DIR}/data_table.cpp
+	${SPREADSHEET_SRC_DIR}/document.cpp
+	${SPREADSHEET_SRC_DIR}/factory.cpp
+	${SPREADSHEET_SRC_DIR}/factory_pivot.cpp
+	${SPREADSHEET_SRC_DIR}/factory_sheet.cpp
+	${SPREADSHEET_SRC_DIR}/formula_global.cpp
+	${SPREADSHEET_SRC_DIR}/json_dumper.cpp
+	${SPREADSHEET_SRC_DIR}/pivot.cpp
+	${SPREADSHEET_SRC_DIR}/shared_strings.cpp
+	${SPREADSHEET_SRC_DIR}/sheet.cpp
+	${SPREADSHEET_SRC_DIR}/sheet_properties.cpp
+	${SPREADSHEET_SRC_DIR}/sheet_range.cpp
+	${SPREADSHEET_SRC_DIR}/styles.cpp
+	${SPREADSHEET_SRC_DIR}/table.cpp
+	${SPREADSHEET_SRC_DIR}/view.cpp
+	${SPREADSHEET_SRC_DIR}/global_settings.cpp
+)
+
 add_executable(orcus-detect
 	${PROJECT_SOURCE_DIR}/src/orcus_detect_main.cpp
 )
@@ -193,6 +214,7 @@ add_dependencies(liborcus py_gen_files)
 
 target_link_libraries(liborcus-parser ${ZLIB_LIB})
 target_link_libraries(liborcus liborcus-parser)
+target_link_libraries(liborcus-spreadsheet-model liborcus-parser liborcus ${IXION_LIB})
 target_link_libraries(orcus-detect liborcus)
 target_link_libraries(orcus-css-dump liborcus-parser liborcus)
 target_link_libraries(orcus-xml-dump liborcus-parser liborcus)
@@ -207,4 +229,5 @@ target_compile_definitions(liborcus PRIVATE
     __ORCUS_ODS
     __ORCUS_XLS_XML
 )
+target_compile_definitions(liborcus-spreadsheet-model PRIVATE __ORCUS_SPM_BUILDING_DLL)
 
