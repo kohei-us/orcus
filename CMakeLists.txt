@@ -59,7 +59,58 @@ add_library(liborcus-parser SHARED
 	${PARSER_SRC_DIR}/zip_archive_stream.cpp
 )
 
+add_library(liborcus SHARED
+	${LIBORCUS_SRC_DIR}/config.cpp
+	${LIBORCUS_SRC_DIR}/css_document_tree.cpp
+	${LIBORCUS_SRC_DIR}/css_selector.cpp
+	${LIBORCUS_SRC_DIR}/detection_result.cpp
+	${LIBORCUS_SRC_DIR}/dom_tree.cpp
+	${LIBORCUS_SRC_DIR}/format_detection.cpp
+	${LIBORCUS_SRC_DIR}/global.cpp
+	${LIBORCUS_SRC_DIR}/info.cpp
+	${LIBORCUS_SRC_DIR}/interface.cpp
+	${LIBORCUS_SRC_DIR}/json_document_tree.cpp
+	${LIBORCUS_SRC_DIR}/json_util.cpp
+	${LIBORCUS_SRC_DIR}/spreadsheet_interface.cpp
+	${LIBORCUS_SRC_DIR}/orcus_csv.cpp
+	${LIBORCUS_SRC_DIR}/orcus_xml.cpp
+	${LIBORCUS_SRC_DIR}/measurement.cpp
+	${LIBORCUS_SRC_DIR}/xml_context_base.cpp
+	${LIBORCUS_SRC_DIR}/xml_context_global.cpp
+	${LIBORCUS_SRC_DIR}/xml_map_tree.cpp
+	${LIBORCUS_SRC_DIR}/xml_stream_handler.cpp
+	${LIBORCUS_SRC_DIR}/xml_stream_parser.hpp
+	${LIBORCUS_SRC_DIR}/xml_stream_parser.cpp
+	${LIBORCUS_SRC_DIR}/xml_simple_stream_handler.cpp
+	${LIBORCUS_SRC_DIR}/xml_structure_tree.cpp
+	${LIBORCUS_SRC_DIR}/yaml_document_tree.cpp
+	${LIBORCUS_SRC_DIR}/ooxml_namespace_types.cpp
+	${LIBORCUS_SRC_DIR}/ooxml_namespace_types.hpp
+	${LIBORCUS_SRC_DIR}/odf_namespace_types.hpp
+	${LIBORCUS_SRC_DIR}/odf_namespace_types.cpp
+	${LIBORCUS_SRC_DIR}/gnumeric_namespace_types.cpp
+	${LIBORCUS_SRC_DIR}/xls_xml_namespace_types.cpp
+	${LIBORCUS_SRC_DIR}/session_context.cpp
+	${LIBORCUS_SRC_DIR}/spreadsheet_types.cpp
+	${LIBORCUS_SRC_DIR}/string_helper.cpp
+)
+
+add_custom_target(
+    py_gen_files
+    COMMAND python ${PROJECT_SOURCE_DIR}/bin/gen-files.py
+        --properties
+            ORCUS_MAJOR_VERSION=${ORCUS_MAJOR_VERSION}
+            ORCUS_MINOR_VERSION=${ORCUS_MINOR_VERSION}
+            ORCUS_MICRO_VERSION=${ORCUS_MICRO_VERSION}
+        --files
+            ${LIBORCUS_SRC_DIR}/constants.inl
+)
+
+add_dependencies(liborcus py_gen_files)
+
 target_link_libraries(liborcus-parser ${ZLIB_LIB})
+target_link_libraries(liborcus liborcus-parser)
 
 target_compile_definitions(liborcus-parser PRIVATE __ORCUS_PSR_BUILDING_DLL)
+target_compile_definitions(liborcus PRIVATE __ORCUS_BUILDING_DLL)
 
