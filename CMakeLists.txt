@@ -140,7 +140,8 @@ add_library(liborcus SHARED
 	${LIBORCUS_SRC_DIR}/orcus_ods.cpp
 	${LIBORCUS_SRC_DIR}/orcus_import_ods.cpp
 # gnumeric filter
-# TODO : document a way to build boost with bzip and zlib options.
+# TODO : document a way to build boost with bzip2 and zlib options, or find
+# a way to make this a build-time option.
 #   ${LIBORCUS_SRC_DIR}/gnumeric_detection_handler.cpp
 #   ${LIBORCUS_SRC_DIR}/gnumeric_cell_context.cpp
 #   ${LIBORCUS_SRC_DIR}/gnumeric_context.cpp
