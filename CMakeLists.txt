@@ -9,6 +9,10 @@ set(ORCUS_VERSION ${ORCUS_MAJOR_VERSION}.${ORCUS_MINOR_VERSION}.${ORCUS_MICRO_VE
 project(orcus VERSION ${ORCUS_VERSION} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4251 /wd4275")
+endif(MSVC)
+
 option(MDDS_INCLUDE_DIR "path to mdds header directory.")
 option(BOOST_INCLUDE_DIR "path to boost header directory.")
 option(BOOST_LIB_DIR "path to boost library directory.")
