@@ -60,6 +60,7 @@ add_library(liborcus-parser SHARED
 )
 
 add_library(liborcus SHARED
+# core
 	${LIBORCUS_SRC_DIR}/config.cpp
 	${LIBORCUS_SRC_DIR}/css_document_tree.cpp
 	${LIBORCUS_SRC_DIR}/css_selector.cpp
@@ -93,6 +94,35 @@ add_library(liborcus SHARED
 	${LIBORCUS_SRC_DIR}/session_context.cpp
 	${LIBORCUS_SRC_DIR}/spreadsheet_types.cpp
 	${LIBORCUS_SRC_DIR}/string_helper.cpp
+# xlsx filter
+	${LIBORCUS_SRC_DIR}/ooxml_content_types.cpp
+	${LIBORCUS_SRC_DIR}/ooxml_global.cpp
+	${LIBORCUS_SRC_DIR}/ooxml_schemas.cpp
+	${LIBORCUS_SRC_DIR}/ooxml_tokens.cpp
+	${LIBORCUS_SRC_DIR}/ooxml_types.cpp
+	${LIBORCUS_SRC_DIR}/opc_context.cpp
+	${LIBORCUS_SRC_DIR}/opc_reader.cpp
+	${LIBORCUS_SRC_DIR}/orcus_xlsx.cpp
+	${LIBORCUS_SRC_DIR}/orcus_import_xlsx.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_context.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_drawing_context.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_handler.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_helper.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_session_data.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_revision_context.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_pivot_context.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_sheet_context.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_conditional_format_context.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_table_context.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_autofilter_context.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_types.cpp
+	${LIBORCUS_SRC_DIR}/xlsx_workbook_context.cpp
+# xls-xml filter
+	${LIBORCUS_SRC_DIR}/xls_xml_tokens.cpp
+	${LIBORCUS_SRC_DIR}/orcus_xls_xml.cpp
+	${LIBORCUS_SRC_DIR}/xls_xml_detection_handler.cpp
+	${LIBORCUS_SRC_DIR}/xls_xml_handler.cpp
+	${LIBORCUS_SRC_DIR}/xls_xml_context.cpp
 )
 
 add_custom_target(
