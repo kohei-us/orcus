@@ -139,6 +139,16 @@ add_library(liborcus SHARED
 	${LIBORCUS_SRC_DIR}/odf_helper.cpp
 	${LIBORCUS_SRC_DIR}/orcus_ods.cpp
 	${LIBORCUS_SRC_DIR}/orcus_import_ods.cpp
+# gnumeric filter
+# TODO : document a way to build boost with bzip and zlib options.
+#   ${LIBORCUS_SRC_DIR}/gnumeric_detection_handler.cpp
+#   ${LIBORCUS_SRC_DIR}/gnumeric_cell_context.cpp
+#   ${LIBORCUS_SRC_DIR}/gnumeric_context.cpp
+#   ${LIBORCUS_SRC_DIR}/gnumeric_handler.cpp
+#   ${LIBORCUS_SRC_DIR}/gnumeric_helper.cpp
+#   ${LIBORCUS_SRC_DIR}/gnumeric_sheet_context.cpp
+#   ${LIBORCUS_SRC_DIR}/gnumeric_tokens.cpp
+#   ${LIBORCUS_SRC_DIR}/orcus_gnumeric.cpp
 )
 
 add_custom_target(
