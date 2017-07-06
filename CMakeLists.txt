@@ -159,6 +159,11 @@ add_executable(orcus-css-dump
 	${PROJECT_SOURCE_DIR}/src/orcus_css_dump.cpp
 )
 
+add_executable(orcus-xml-dump
+	${PROJECT_SOURCE_DIR}/src/orcus_xml_dump.cpp
+	${PROJECT_SOURCE_DIR}/src/dom_tree_sax_handler.cpp
+)
+
 add_executable(orcus-zip-dump
 	${PROJECT_SOURCE_DIR}/src/orcus_zip_dump.cpp
 )
@@ -180,6 +185,7 @@ target_link_libraries(liborcus-parser ${ZLIB_LIB})
 target_link_libraries(liborcus liborcus-parser)
 target_link_libraries(orcus-detect liborcus)
 target_link_libraries(orcus-css-dump liborcus-parser liborcus)
+target_link_libraries(orcus-xml-dump liborcus-parser liborcus)
 target_link_libraries(orcus-zip-dump liborcus-parser)
 
 target_compile_definitions(liborcus-parser PRIVATE __ORCUS_PSR_BUILDING_DLL)
