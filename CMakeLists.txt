@@ -199,6 +199,26 @@ add_executable(orcus-yaml
 	${PROJECT_SOURCE_DIR}/src/orcus_yaml_main.cpp
 )
 
+add_executable(orcus-csv
+    ${PROJECT_SOURCE_DIR}/src/orcus_csv_main.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+)
+
+add_executable(orcus-xml
+    ${PROJECT_SOURCE_DIR}/src/orcus_xml_main.cpp
+    ${PROJECT_SOURCE_DIR}/src/xml_map_sax_handler.cpp
+)
+
+add_executable(orcus-ods
+    ${PROJECT_SOURCE_DIR}/src/orcus_ods_main.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+)
+
+add_executable(orcus-styles-ods
+    ${PROJECT_SOURCE_DIR}/src/orcus_ods_styles.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+)
+
 add_custom_target(
     py_gen_files
     COMMAND python ${PROJECT_SOURCE_DIR}/bin/gen-files.py
@@ -221,6 +241,10 @@ target_link_libraries(orcus-xml-dump liborcus-parser liborcus)
 target_link_libraries(orcus-zip-dump liborcus-parser)
 target_link_libraries(orcus-json liborcus-parser liborcus)
 target_link_libraries(orcus-yaml liborcus-parser liborcus)
+target_link_libraries(orcus-csv liborcus-parser liborcus-spreadsheet-model liborcus)
+target_link_libraries(orcus-xml liborcus-parser liborcus-spreadsheet-model liborcus)
+target_link_libraries(orcus-ods liborcus-parser liborcus-spreadsheet-model liborcus)
+target_link_libraries(orcus-styles-ods liborcus-parser liborcus-spreadsheet-model liborcus)
 
 target_compile_definitions(liborcus-parser PRIVATE __ORCUS_PSR_BUILDING_DLL)
 target_compile_definitions(liborcus PRIVATE
