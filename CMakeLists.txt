@@ -219,6 +219,16 @@ add_executable(orcus-styles-ods
     ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
 )
 
+add_executable(orcus-xlsx
+    ${PROJECT_SOURCE_DIR}/src/orcus_xlsx_main.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+)
+
+add_executable(orcus-xls-xml
+    ${PROJECT_SOURCE_DIR}/src/orcus_xls_xml_main.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+)
+
 add_custom_target(
     py_gen_files
     COMMAND python ${PROJECT_SOURCE_DIR}/bin/gen-files.py
@@ -245,6 +255,8 @@ target_link_libraries(orcus-csv liborcus-parser liborcus-spreadsheet-model libor
 target_link_libraries(orcus-xml liborcus-parser liborcus-spreadsheet-model liborcus)
 target_link_libraries(orcus-ods liborcus-parser liborcus-spreadsheet-model liborcus)
 target_link_libraries(orcus-styles-ods liborcus-parser liborcus-spreadsheet-model liborcus)
+target_link_libraries(orcus-xlsx liborcus-parser liborcus-spreadsheet-model liborcus)
+target_link_libraries(orcus-xls-xml liborcus-parser liborcus-spreadsheet-model liborcus)
 
 target_compile_definitions(liborcus-parser PRIVATE __ORCUS_PSR_BUILDING_DLL)
 target_compile_definitions(liborcus PRIVATE
