@@ -143,15 +143,15 @@ bool parse_import_filter_args(
         return false;
     }
 
+    config opt;
+    opt.debug = vm.count("debug") > 0;
+    app.set_config(opt);
+
     if (vm.count("dump-check"))
     {
         // 'outdir' is used as the output file path in this mode.
         return handle_dump_check(app, doc, infile, outdir);
     }
-
-    config opt;
-    opt.debug = vm.count("debug") > 0;
-    app.set_config(opt);
 
     if (outformat.empty())
     {
