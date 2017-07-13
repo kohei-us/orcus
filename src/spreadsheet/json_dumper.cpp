@@ -43,22 +43,22 @@ void dump_cell_value(
         {
             auto b = node.get<ixion::boolean_element_block>();
             file << (b ? "true" : "false");
+            break;
         }
-        break;
         case ixion::element_type_numeric:
         {
             auto v = node.get<ixion::numeric_element_block>();
             file << v;
+            break;
         }
-        break;
         case ixion::element_type_string:
         {
             ixion::string_id_t sindex = node.get<ixion::string_element_block>();
             const std::string* p = cxt.get_string(sindex);
             assert(p);
             dump_string(file, *p);
+            break;
         }
-        break;
         case ixion::element_type_formula:
         {
             const ixion::formula_cell* cell = node.get<ixion::formula_element_block>();
@@ -83,8 +83,8 @@ void dump_cell_value(
                     file << "\"#ERR!\"";
                 break;
             }
+            break;
         }
-        break;
         default:
             ;
     }

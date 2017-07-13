@@ -1,0 +1,3 @@
+Sheet1/0/0:string:"Boolean Value"
+Sheet1/0/1:boolean:true
+Sheet1/0/2:boolean:false

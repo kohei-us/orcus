@@ -65,6 +65,7 @@ config test_config;
 
 vector<const char*> dirs = {
     SRCDIR"/test/xlsx/raw-values-1/",
+    SRCDIR"/test/xlsx/boolean-values/",
     SRCDIR"/test/xlsx/empty-shared-strings/",
     SRCDIR"/test/xlsx/named-expression/",
     SRCDIR"/test/xlsx/named-expression-sheet-local/",

@@ -792,15 +792,22 @@ void sheet::dump_flat(std::ostream& os) const
                     const string* p = cxt.get_string(sindex);
                     assert(p);
                     mx.set(row, col, *p);
+                    break;
                 }
-                break;
                 case ixion::celltype_t::numeric:
                 {
                     ostringstream os2;
                     os2 << cxt.get_numeric_value(pos) << " [v]";
                     mx.set(row, col, os2.str());
+                    break;
                 }
-                break;
+                case ixion::celltype_t::boolean:
+                {
+                    ostringstream os2;
+                    os2 << (cxt.get_boolean_value(pos) ? "true" : "false") << " [b]";
+                    mx.set(row, col, os2.str());
+                    break;
+                }
                 case ixion::celltype_t::formula:
                 {
                     // print the formula and the formula result.
@@ -832,8 +839,8 @@ void sheet::dump_flat(std::ostream& os) const
 
                         mx.set(row, col, os2.str());
                     }
+                    break;
                 }
-                break;
                 default:
                     ;
             }
@@ -953,14 +960,20 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
                     const string* p = cxt.get_string(sindex);
                     assert(p);
                     os << "string:\"" << escape_chars(*p) << '"' << endl;
+                    break;
                 }
-                break;
                 case ixion::celltype_t::numeric:
                 {
                     write_cell_position(os, sheet_name, row, col);
                     os << "numeric:" << cxt.get_numeric_value(pos) << endl;
+                    break;
                 }
-                break;
+                case ixion::celltype_t::boolean:
+                {
+                    write_cell_position(os, sheet_name, row, col);
+                    os << "boolean:" << (cxt.get_boolean_value(pos) ? "true" : "false") << endl;
+                    break;
+                }
                 case ixion::celltype_t::formula:
                 {
                     write_cell_position(os, sheet_name, row, col);
@@ -993,8 +1006,8 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
                         os << ':' << res.str(mp_impl->m_doc.get_model_context());
                     }
                     os << endl;
+                    break;
                 }
-                break;
                 default:
                     ;
             }
@@ -1516,11 +1529,15 @@ void sheet::dump_html(const string& filepath) const
                             print_formatted_text(os, *p, *pformat);
                         else
                             os << *p;
+
+                        break;
                     }
-                    break;
                     case ixion::celltype_t::numeric:
                         os << cxt.get_numeric_value(pos);
-                    break;
+                        break;
+                    case ixion::celltype_t::boolean:
+                        os << (cxt.get_boolean_value(pos) ? "true" : "false");
+                        break;
                     case ixion::celltype_t::formula:
                     {
                         // print the formula and the formula result.
@@ -1549,8 +1566,8 @@ void sheet::dump_html(const string& filepath) const
                             const ixion::formula_result& res = cell->get_result_cache();
                             os << " (" << res.str(mp_impl->m_doc.get_model_context()) << ")";
                         }
+                        break;
                     }
-                    break;
                     default:
                         ;
                 }
