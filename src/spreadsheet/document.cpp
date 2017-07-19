@@ -373,21 +373,15 @@ const table_t* document::get_table(const pstring& name) const
     return it == mp_impl->m_tables.end() ? nullptr : it->second.get();
 }
 
-namespace {
-
-struct sheet_finalizer : std::unary_function<std::unique_ptr<sheet_item>, void>
-{
-    void operator() (std::unique_ptr<sheet_item>& sh)
-    {
-        sh->data.finalize();
-    }
-};
-
-}
-
 void document::finalize()
 {
-    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(), sheet_finalizer());
+    std::for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(),
+        [](std::unique_ptr<sheet_item>& sh)
+        {
+            sh->data.finalize();
+        }
+    );
+
     calc_formulas();
 }
 
