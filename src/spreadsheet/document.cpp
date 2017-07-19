@@ -49,71 +49,12 @@ struct sheet_item
     pstring name;
     sheet   data;
     sheet_item(document& doc, const pstring& _name, sheet_t sheet_index, row_t row_size, col_t col_size);
-
-    class flat_printer : public ::std::unary_function<std::unique_ptr<sheet_item>, void>
-    {
-        const std::string& m_outdir;
-    public:
-        flat_printer(const std::string& outdir);
-        void operator() (const std::unique_ptr<sheet_item>& item) const;
-    };
-
-    class check_printer : public std::unary_function<std::unique_ptr<sheet_item>, void>
-    {
-        std::ostream& m_os;
-    public:
-        check_printer(std::ostream& os);
-        void operator() (const std::unique_ptr<sheet_item>& item) const;
-    };
-
-    struct html_printer : public ::std::unary_function<std::unique_ptr<sheet_item>, void>
-    {
-        html_printer(const ::std::string& filepath);
-        void operator() (const std::unique_ptr<sheet_item>& item) const;
-    private:
-        const ::std::string& m_filepath;
-    };
 };
 
 typedef std::map<pstring, std::unique_ptr<table_t>> table_store_type;
 
 sheet_item::sheet_item(document& doc, const pstring& _name, sheet_t sheet_index, row_t row_size, col_t col_size) :
     name(_name), data(doc, sheet_index, row_size, col_size) {}
-
-sheet_item::flat_printer::flat_printer(const string& outdir) : m_outdir(outdir) {}
-
-void sheet_item::flat_printer::operator() (const std::unique_ptr<sheet_item>& item) const
-{
-    string this_file = m_outdir + '/' + item->name.str() + ".txt";
-
-    ofstream file(this_file.c_str());
-    if (!file)
-    {
-        cerr << "failed to create file: " << this_file << endl;
-        return;
-    }
-
-    file << "---" << endl;
-    file << "Sheet name: " << item->name << endl;
-    item->data.dump_flat(file);
-}
-
-sheet_item::check_printer::check_printer(std::ostream& os) : m_os(os) {}
-
-void sheet_item::check_printer::operator() (const std::unique_ptr<sheet_item>& item) const
-{
-    item->data.dump_check(m_os, item->name);
-}
-
-sheet_item::html_printer::html_printer(const string& filepath) :
-    m_filepath(filepath) {}
-
-void sheet_item::html_printer::operator() (const std::unique_ptr<sheet_item>& item) const
-{
-    // file path is expected to be a directory.
-    string this_file = m_filepath + '/' + item->name.str() + ".html";
-    item->data.dump_html(this_file);
-}
 
 class find_sheet_by_name : std::unary_function<std::unique_ptr<sheet_item> , bool>
 {
@@ -513,17 +454,45 @@ void document::dump_flat(const string& outdir) const
     mp_impl->mp_strings->dump();
 
     cout << "number of sheets: " << mp_impl->m_sheets.size() << endl;
-    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(), sheet_item::flat_printer(outdir));
+
+    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(),
+        [&outdir](const std::unique_ptr<sheet_item>& item)
+        {
+            string this_file = outdir + '/' + item->name.str() + ".txt";
+
+            ofstream file(this_file.c_str());
+            if (!file)
+            {
+                cerr << "failed to create file: " << this_file << endl;
+                return;
+            }
+
+            file << "---" << endl;
+            file << "Sheet name: " << item->name << endl;
+            item->data.dump_flat(file);
+        }
+    );
 }
 
 void document::dump_check(ostream& os) const
 {
-    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(), sheet_item::check_printer(os));
+    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(),
+        [&os](const std::unique_ptr<sheet_item>& item)
+        {
+            item->data.dump_check(os, item->name);
+        }
+    );
 }
 
 void document::dump_html(const string& outdir) const
 {
-    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(), sheet_item::html_printer(outdir));
+    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(),
+        [&outdir](const std::unique_ptr<sheet_item>& item)
+        {
+            string this_file = outdir + '/' + item->name.str() + ".html";
+            item->data.dump_html(this_file);
+        }
+    );
 }
 
 void document::dump_json(const string& outdir) const
