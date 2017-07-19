@@ -38,8 +38,6 @@ namespace {
 
 /**
  * Single sheet entry which consists of a sheet name and a sheet data.
- * Use the printer function object to print sheet content with for_each
- * function.
  */
 struct sheet_item
 {
