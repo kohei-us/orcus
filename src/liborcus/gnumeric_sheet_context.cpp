@@ -527,9 +527,10 @@ private:
 
 
 gnumeric_sheet_context::gnumeric_sheet_context(
-    session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
+    session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory, spreadsheet::sheet_t sheet_index) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
+    m_sheet_index(sheet_index),
     mp_sheet(nullptr),
     mp_auto_filter(nullptr)
 {
@@ -771,7 +772,7 @@ void gnumeric_sheet_context::start_condition(const xml_attrs_t& attrs)
 
 void gnumeric_sheet_context::end_table()
 {
-    mp_sheet = mp_factory->append_sheet(chars.get(), chars.size());
+    mp_sheet = mp_factory->append_sheet(m_sheet_index, chars.get(), chars.size());
 }
 
 void gnumeric_sheet_context::end_font()

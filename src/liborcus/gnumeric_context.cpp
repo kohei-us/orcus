@@ -27,7 +27,8 @@ namespace {
 gnumeric_content_xml_context::gnumeric_content_xml_context(
     session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
-    mp_factory(factory)
+    mp_factory(factory),
+    m_sheet_count(0)
 {
 }
 
@@ -47,7 +48,7 @@ xml_context_base* gnumeric_content_xml_context::create_child_context(xmlns_id_t 
 {
     if (ns == NS_gnumeric_gnm && name == XML_Sheet)
     {
-        mp_child.reset(new gnumeric_sheet_context(get_session_context(), get_tokens(), mp_factory));
+        mp_child.reset(new gnumeric_sheet_context(get_session_context(), get_tokens(), mp_factory, m_sheet_count++));
         mp_child->transfer_common(*this);
         return mp_child.get();
     }

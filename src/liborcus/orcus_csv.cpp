@@ -26,12 +26,12 @@ class csv_handler
 {
 public:
     csv_handler(spreadsheet::iface::import_factory& factory) :
-        m_factory(factory), mp_sheet(nullptr), m_row(0), m_col(0) {}
+        m_factory(factory), mp_sheet(nullptr), m_sheet(0), m_row(0), m_col(0) {}
 
     void begin_parse()
     {
         const char* sheet_name = "data";
-        mp_sheet = m_factory.append_sheet(sheet_name, strlen(sheet_name));
+        mp_sheet = m_factory.append_sheet(m_sheet++, sheet_name, strlen(sheet_name));
     }
 
     void end_parse() {}
@@ -52,6 +52,7 @@ public:
 private:
     spreadsheet::iface::import_factory& m_factory;
     spreadsheet::iface::import_sheet* mp_sheet;
+    spreadsheet::sheet_t m_sheet;
     spreadsheet::row_t m_row;
     spreadsheet::col_t m_col;
 };

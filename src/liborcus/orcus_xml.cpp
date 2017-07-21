@@ -467,6 +467,8 @@ struct orcus_xml_impl
     /** xml element tree that represents all mapped paths. */
     xml_map_tree m_map_tree;
 
+    spreadsheet::sheet_t m_sheet_count;
+
     /**
      * Positions of all linked elements, single and range reference alike.
      * Stored link elements must be sorted in order of stream positions, and
@@ -482,7 +484,8 @@ struct orcus_xml_impl
         mp_export_factory(nullptr),
         m_ns_repo(ns_repo),
         m_ns_cxt_map(ns_repo.create_context()),
-        m_map_tree(m_ns_repo) {}
+        m_map_tree(m_ns_repo),
+        m_sheet_count(0) {}
 };
 
 orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact, spreadsheet::iface::export_factory* ex_fact) :
@@ -531,7 +534,7 @@ void orcus_xml::append_sheet(const pstring& name)
     if (name.empty())
         return;
 
-    mp_impl->mp_import_factory->append_sheet(name.get(), name.size());
+    mp_impl->mp_import_factory->append_sheet(mp_impl->m_sheet_count++, name.get(), name.size());
 }
 
 void orcus_xml::read_file(const char* filepath)

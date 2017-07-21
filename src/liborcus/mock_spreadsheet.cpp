@@ -37,7 +37,7 @@ orcus::spreadsheet::iface::import_styles* import_factory::get_styles()
     return nullptr;
 }
 
-orcus::spreadsheet::iface::import_sheet* import_factory::append_sheet(const char*, size_t)
+orcus::spreadsheet::iface::import_sheet* import_factory::append_sheet(orcus::spreadsheet::sheet_t, const char*, size_t)
 {
     assert(false);
     return nullptr;

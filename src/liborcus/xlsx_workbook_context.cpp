@@ -107,7 +107,7 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
 
                 // Insert the sheet here so that we have all the sheets available
                 // prior to parsing global named expressions.
-                m_factory.append_sheet(sheet.name.data(), sheet.name.size());
+                m_factory.append_sheet(sheet.id-1, sheet.name.data(), sheet.name.size());
             }
 
             m_workbook_info.data.insert(

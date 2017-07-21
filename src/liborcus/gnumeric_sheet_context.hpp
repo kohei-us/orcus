@@ -57,7 +57,7 @@ struct gnumeric_style_region
 class gnumeric_sheet_context : public xml_context_base
 {
 public:
-    gnumeric_sheet_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
+    gnumeric_sheet_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory, spreadsheet::sheet_t sheet_index);
     virtual ~gnumeric_sheet_context();
 
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
@@ -85,6 +85,7 @@ private:
 
 private:
     spreadsheet::iface::import_factory* mp_factory;
+    spreadsheet::sheet_t m_sheet_index;
 
     spreadsheet::iface::import_sheet* mp_sheet;
     spreadsheet::iface::import_auto_filter* mp_auto_filter;

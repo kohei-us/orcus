@@ -807,10 +807,20 @@ public:
         orcus::spreadsheet::pivot_cache_id_t cache_id);
 
     /**
-     * @return pointer to the sheet instance. It may return NULL if the client
-     *         app fails to append new sheet.
+     * Append a sheet with specified sheet position index and name.
+     *
+     * @param sheet_index position index of the sheet to be appended.  It is
+     *                    0-based i.e. the first sheet to be appended will
+     *                    have an index value of 0.
+     * @param sheet_name pointer to the first character in the buffer where
+     *                   the sheet name is stored.
+     * @param sheet_name_length length of the sheet name.
+     *
+     * @return pointer to the sheet instance. It may return nullptr if the
+     *         client app fails to append a new sheet.
      */
-    virtual import_sheet* append_sheet(const char* sheet_name, size_t sheet_name_length) = 0;
+    virtual import_sheet* append_sheet(
+        orcus::spreadsheet::sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) = 0;
 
     /**
      * @return pointer to the sheet instance whose name matches the name

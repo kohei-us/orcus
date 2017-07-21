@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_GNUMERICCONTEXT_HPP
 
 #include "xml_context_base.hpp"
+#include "orcus/spreadsheet/types.hpp"
 
 #include <vector>
 
@@ -36,10 +37,9 @@ public:
     virtual void characters(const pstring& str, bool transient);
 
 private:
-
-private:
     spreadsheet::iface::import_factory* mp_factory;
     std::unique_ptr<xml_context_base> mp_child;
+    spreadsheet::sheet_t m_sheet_count;
 };
 
 }

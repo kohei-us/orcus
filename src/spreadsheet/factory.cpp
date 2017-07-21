@@ -213,9 +213,10 @@ iface::import_pivot_cache_records* import_factory::create_pivot_cache_records(
     return &mp_impl->m_pc_records;
 }
 
-iface::import_sheet* import_factory::append_sheet(const char* sheet_name, size_t sheet_name_length)
+iface::import_sheet* import_factory::append_sheet(
+    sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length)
 {
-    sheet_t sheet_index = mp_impl->m_doc.sheet_size();
+    assert(sheet_index == static_cast<sheet_t>(mp_impl->m_doc.sheet_size()));
 
     sheet* sh = mp_impl->m_doc.append_sheet(
         pstring(sheet_name, sheet_name_length), mp_impl->m_default_row_size, mp_impl->m_default_col_size);

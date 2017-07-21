@@ -191,7 +191,8 @@ public:
 
     virtual orcus::spreadsheet::iface::import_styles* get_styles();
 
-    virtual orcus::spreadsheet::iface::import_sheet* append_sheet(const char* sheet_name, size_t sheet_name_length);
+    virtual orcus::spreadsheet::iface::import_sheet* append_sheet(
+        orcus::spreadsheet::sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length);
 
     virtual orcus::spreadsheet::iface::import_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length);
 

@@ -563,8 +563,9 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             {
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
 
+                ++m_cur_sheet;
                 pstring sheet_name = for_each(attrs.begin(), attrs.end(), sheet_attr_parser()).get_name();
-                mp_cur_sheet = mp_factory->append_sheet(sheet_name.get(), sheet_name.size());
+                mp_cur_sheet = mp_factory->append_sheet(m_cur_sheet, sheet_name.get(), sheet_name.size());
                 spreadsheet::iface::import_named_expression* sheet_named_exp = nullptr;
                 if (mp_cur_sheet)
                 {
@@ -576,7 +577,6 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
 
                 m_cur_row = 0;
                 m_cur_col = 0;
-                ++m_cur_sheet;
                 break;
             }
             case XML_Table:

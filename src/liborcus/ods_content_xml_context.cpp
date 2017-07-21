@@ -486,7 +486,7 @@ void ods_content_xml_context::start_table(const xml_attrs_t& attrs)
 {
     table_attr_parser parser = for_each(attrs.begin(), attrs.end(), table_attr_parser());
     const pstring& name = parser.get_name();
-    m_tables.push_back(mp_factory->append_sheet(name.get(), name.size()));
+    m_tables.push_back(mp_factory->append_sheet(m_tables.size(), name.get(), name.size()));
     cout << "start table " << name << endl;
 
     m_row = m_col = 0;
