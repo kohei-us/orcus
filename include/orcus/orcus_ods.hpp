@@ -5,12 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_ORCUS_ODS_HPP
-#define ORCUS_ORCUS_ODS_HPP
+#ifndef INCLUDED_ORCUS_ORCUS_ODS_HPP
+#define INCLUDED_ORCUS_ORCUS_ODS_HPP
 
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/env.hpp"
 #include "interface.hpp"
+
+#include <memory>
 
 namespace orcus {
 
@@ -45,7 +47,8 @@ private:
     void read_file_impl(zip_archive_stream* stream);
 
 private:
-    orcus_ods_impl* mp_impl;
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 };
 
 }

@@ -25,26 +25,23 @@ using namespace std;
 
 namespace orcus {
 
-struct orcus_ods_impl
+struct orcus_ods::impl
 {
     xmlns_repository m_ns_repo;
     session_context m_cxt;
     spreadsheet::iface::import_factory* mp_factory;
 
-    orcus_ods_impl(spreadsheet::iface::import_factory* im_factory) :
+    impl(spreadsheet::iface::import_factory* im_factory) :
         m_cxt(new ods_session_data), mp_factory(im_factory) {}
 };
 
 orcus_ods::orcus_ods(spreadsheet::iface::import_factory* factory) :
-    mp_impl(new orcus_ods_impl(factory))
+    mp_impl(orcus::make_unique<impl>(factory))
 {
     mp_impl->m_ns_repo.add_predefined_values(NS_odf_all);
 }
 
-orcus_ods::~orcus_ods()
-{
-    delete mp_impl;
-}
+orcus_ods::~orcus_ods() {}
 
 void orcus_ods::list_content(const zip_archive& archive)
 {
