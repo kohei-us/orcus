@@ -41,7 +41,8 @@ const char* help_output_format =
 "  4) no output (none)";
 
 const char* help_dump_check =
-"Dump the the content to stdout in a special format used for content verification in unit tests.";
+"Dump the content to stdout in a special format used for content verification "
+"in automated tests.";
 
 const char* help_debug =
 "Turn on a debug mode to generate run-time debug output.";
