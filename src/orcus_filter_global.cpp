@@ -11,6 +11,7 @@
 #include "orcus/interface.hpp"
 #include "orcus/global.hpp"
 
+#include <mdds/sorted_string_map.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include <vector>
@@ -27,18 +28,65 @@ namespace orcus {
 
 namespace {
 
+namespace doc_output_format {
+
+enum class type
+{
+    unspecified,
+    none,
+    flat,
+    html,
+    json,
+    csv
+};
+
+typedef mdds::sorted_string_map<doc_output_format::type> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
+{
+    { ORCUS_ASCII("csv"),  type::csv  },
+    { ORCUS_ASCII("flat"), type::flat },
+    { ORCUS_ASCII("html"), type::html },
+    { ORCUS_ASCII("json"), type::json },
+    { ORCUS_ASCII("none"), type::none },
+};
+
+// The order must match that of the entries above.
+const std::vector<const char*> descriptions =
+{
+    "CSV format",
+    "flat text format",
+    "HTML format",
+    "JSON format",
+    "no output",
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), type::unspecified);
+    return mt;
+}
+
+std::string gen_help_text()
+{
+    std::ostringstream os;
+    os << "Specify the format of output file.  Supported format types are:";
+
+    for (size_t i = 0, n = entries.size(); i < n; ++i)
+        os << std::endl << "  * " << std::string(entries[i].key, entries[i].keylen)
+            << " - " << descriptions[i];
+
+    return os.str();
+}
+
+}
+
 const char* help_program =
 "The FILE must specify a path to an existing file.";
 
 const char* help_output =
 "Output directory path, or output file when --dump-check option is used.";
-
-const char* help_output_format =
-"Specify the format of output file.  Supported format types are:\n"
-"  1) flat text format (flat)\n"
-"  2) HTML format (html)\n"
-"  3) JSON (json)\n"
-"  4) no output (none)";
 
 const char* help_dump_check =
 "Dump the content to stdout in a special format used for content verification "
@@ -52,10 +100,10 @@ const char* help_json_output =
 
 const char* help_json_output_format =
 "Specify the format of output file.  Supported format types are:\n"
-"  1) XML (xml)\n"
-"  2) JSON (json)\n"
-"  3) flat tree dump (check)\n"
-"  4) no output (none)";
+"  * XML (xml)\n"
+"  * JSON (json)\n"
+"  * flat tree dump (check)\n"
+"  * no output (none)";
 
 const char* err_no_input_file = "No input file.";
 
@@ -93,7 +141,7 @@ bool parse_import_filter_args(
         ("debug,d", help_debug)
         ("dump-check", help_dump_check)
         ("output,o", po::value<string>(), help_output)
-        ("output-format,f", po::value<string>(), help_output_format);
+        ("output-format,f", po::value<string>(), doc_output_format::gen_help_text().data());
 
     po::options_description hidden("Hidden options");
     hidden.add_options()
@@ -127,7 +175,8 @@ bool parse_import_filter_args(
         return true;
     }
 
-    string infile, outdir, outformat;
+    std::string infile, outdir, outformat_s;
+    doc_output_format::type outformat = doc_output_format::type::unspecified;
 
     if (vm.count("input"))
         infile = vm["input"].as<string>();
@@ -136,7 +185,10 @@ bool parse_import_filter_args(
         outdir = vm["output"].as<string>();
 
     if (vm.count("output-format"))
-        outformat = vm["output-format"].as<string>();
+    {
+        outformat_s = vm["output-format"].as<string>();
+        outformat = doc_output_format::get().find(outformat_s.data(), outformat_s.size());
+    }
 
     if (infile.empty())
     {
@@ -154,13 +206,13 @@ bool parse_import_filter_args(
         return handle_dump_check(app, doc, infile, outdir);
     }
 
-    if (outformat.empty())
+    if (outformat == doc_output_format::type::unspecified)
     {
-        cerr << "No output format specified.  Choose either 'flat', 'html' or 'none'." << endl;
+        std::cerr << "You must specify one of the supported output formats." << endl;
         return false;
     }
 
-    if (outformat == "none")
+    if (outformat == doc_output_format::type::none)
     {
         // When "none" format is specified, just read the input file and exit.
         app.read_file(infile);
@@ -186,16 +238,22 @@ bool parse_import_filter_args(
 
     app.read_file(infile);
 
-    if (outformat == "flat")
-        doc.dump_flat(outdir);
-    else if (outformat == "html")
-        doc.dump_html(outdir);
-    else if (outformat == "json")
-        doc.dump_json(outdir);
-    else
+    switch (outformat)
     {
-        // Do nothing, but warning about unknown output format type.
-        cerr << "Unknown output format type '" << outformat << "'. No output files have been generated." << endl;
+        case doc_output_format::type::flat:
+            doc.dump_flat(outdir);
+            break;
+        case doc_output_format::type::html:
+            doc.dump_html(outdir);
+            break;
+        case doc_output_format::type::json:
+            doc.dump_json(outdir);
+            break;
+        default:
+        {
+            std::cerr << "Unknown output format type '" << outformat_s << "'. No output files have been generated." << std::endl;
+        }
+
     }
 
     return true;
