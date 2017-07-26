@@ -79,7 +79,7 @@ public:
     /**
      * Dump document content to specified output directory.
      */
-    virtual void dump_flat(const std::string& outdir) const;
+    virtual void dump_flat(const std::string& outdir) const override;
 
     /**
      * File name should not contain an extension.  The final name will be
@@ -87,9 +87,11 @@ public:
      *
      * @param filename base file name
      */
-    virtual void dump_html(const ::std::string& outdir) const;
+    virtual void dump_html(const ::std::string& outdir) const override;
 
-    virtual void dump_json(const ::std::string& outdir) const;
+    virtual void dump_json(const ::std::string& outdir) const override;
+
+    virtual void dump_csv(const std::string& outdir) const override;
 
     /**
      * Dump document content to stdout in the special format used for content

@@ -1584,6 +1584,12 @@ void sheet::dump_json(const string& filepath) const
     dumper.dump(filepath, mp_impl->m_sheet);
 }
 
+void sheet::dump_csv(const std::string& filepath) const
+{
+    // TODO : implement this.
+    throw std::runtime_error("WIP: to be implemented.");
+}
+
 size_t sheet::get_cell_format(row_t row, col_t col) const
 {
     cell_format_type::const_iterator itr = mp_impl->m_cell_formats.find(col);

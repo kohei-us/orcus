@@ -249,6 +249,9 @@ bool parse_import_filter_args(
         case doc_output_format::type::json:
             doc.dump_json(outdir);
             break;
+        case doc_output_format::type::csv:
+            doc.dump_csv(outdir);
+            break;
         default:
         {
             std::cerr << "Unknown output format type '" << outformat_s << "'. No output files have been generated." << std::endl;
