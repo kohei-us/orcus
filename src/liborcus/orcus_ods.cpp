@@ -136,7 +136,8 @@ void orcus_ods::read_file_impl(zip_archive_stream* stream)
 {
     zip_archive archive(stream);
     archive.load();
-    list_content(archive);
+    if (get_config().debug)
+        list_content(archive);
 
     spreadsheet::formula_grammar_t old_grammar = spreadsheet::formula_grammar_t::unknown;
 

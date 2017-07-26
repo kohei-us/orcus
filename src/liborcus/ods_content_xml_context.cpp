@@ -333,23 +333,35 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
     }
     else if (ns == NS_odf_office && name == XML_automatic_styles)
     {
-        cout << "styles picked up:" << endl;
+        if (get_config().debug)
+            cout << "styles picked up:" << endl;
+
         odf_styles_map_type::const_iterator it = m_styles.begin(), it_end = m_styles.end();
         for (; it != it_end; ++it)
         {
-            cout << "  style: " << it->first << " [ ";
+            if (get_config().debug)
+                cout << "  style: " << it->first << " [ ";
+
             switch (it->second->family)
             {
                 case style_family_table_column:
-                    cout << "column width: " << it->second->column_data->width.to_string();
-                break;
+                {
+                    if (get_config().debug)
+                        cout << "column width: " << it->second->column_data->width.to_string();
+                    break;
+                }
                 case style_family_table_row:
-                    cout << "row height: " << it->second->row_data->height.to_string();
-                break;
+                {
+                    if (get_config().debug)
+                        cout << "row height: " << it->second->row_data->height.to_string();
+                    break;
+                }
                 case style_family_table_cell:
                 {
                     const odf_style::cell& cell = *it->second->cell_data;
-                    cout << "xf ID: " << cell.xf;
+                    if (get_config().debug)
+                        cout << "xf ID: " << cell.xf;
+
                     spreadsheet::iface::import_styles* styles = mp_factory->get_styles();
                     if (styles)
                     {
@@ -357,18 +369,23 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
                         //  currently we have no way to set a real style to a cell anyway
                         m_cell_format_map.insert(name2id_type::value_type(it->first, cell.xf));
                     }
+                    break;
                 }
-                break;
                 case style_family_text:
                 {
-                    const odf_style::text& data = *it->second->text_data;
-                    cout << "font ID: " << data.font;
+                    if (get_config().debug)
+                    {
+                        const odf_style::text& data = *it->second->text_data;
+                        cout << "font ID: " << data.font;
+                    }
+                    break;
                 }
-                break;
                 default:
                     ;
             }
-            cout << " ]" << endl;
+
+            if (get_config().debug)
+                cout << " ]" << endl;
         }
     }
 }
@@ -487,14 +504,17 @@ void ods_content_xml_context::start_table(const xml_attrs_t& attrs)
     table_attr_parser parser = for_each(attrs.begin(), attrs.end(), table_attr_parser());
     const pstring& name = parser.get_name();
     m_tables.push_back(mp_factory->append_sheet(m_tables.size(), name.get(), name.size()));
-    cout << "start table " << name << endl;
+
+    if (get_config().debug)
+        cout << "start table " << name << endl;
 
     m_row = m_col = 0;
 }
 
 void ods_content_xml_context::end_table()
 {
-    cout << "end table" << endl;
+    if (get_config().debug)
+        cout << "end table" << endl;
 }
 
 void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
@@ -550,7 +570,8 @@ void ods_content_xml_context::end_row()
     if (m_row_attr.number_rows_repeated > 1)
     {
         // TODO: repeat this row.
-//      cout << "repeat this row " << m_row_attr.number_rows_repeated << " times" << endl;
+        if (get_config().debug)
+            cout << "TODO: repeat this row " << m_row_attr.number_rows_repeated << " times." << endl;
     }
     m_row += m_row_attr.number_rows_repeated;
 }
