@@ -23,6 +23,7 @@
 #include "table.hpp"
 #include "formula_global.hpp"
 #include "json_dumper.hpp"
+#include "csv_dumper.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -1586,8 +1587,8 @@ void sheet::dump_json(const string& filepath) const
 
 void sheet::dump_csv(const std::string& filepath) const
 {
-    // TODO : implement this.
-    throw std::runtime_error("WIP: to be implemented.");
+    detail::csv_dumper dumper(mp_impl->m_doc);
+    dumper.dump(filepath, mp_impl->m_sheet);
 }
 
 size_t sheet::get_cell_format(row_t row, col_t col) const

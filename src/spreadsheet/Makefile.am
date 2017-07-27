@@ -23,6 +23,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	factory_sheet.cpp \
 	formula_global.hpp \
 	formula_global.cpp \
+	csv_dumper.hpp \
+	csv_dumper.cpp \
 	json_dumper.hpp \
 	json_dumper.cpp \
 	pivot.cpp \

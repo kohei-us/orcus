@@ -473,6 +473,8 @@
 			</Folder>
 			<Folder Name="spreadsheet">
 				<F N="../src/spreadsheet/auto_filter.cpp"/>
+				<F N="../src/spreadsheet/csv_dumper.cpp"/>
+				<F N="../src/spreadsheet/csv_dumper.hpp"/>
 				<F N="../src/spreadsheet/data_table.cpp"/>
 				<F N="../src/spreadsheet/data_table.hpp"/>
 				<F N="../src/spreadsheet/document.cpp"/>
