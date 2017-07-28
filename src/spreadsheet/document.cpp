@@ -482,7 +482,15 @@ void document::dump_html(const string& outdir) const
         [&outdir](const std::unique_ptr<sheet_item>& item)
         {
             string this_file = outdir + '/' + item->name.str() + ".html";
-            item->data.dump_html(this_file);
+
+            ofstream file(this_file.c_str());
+            if (!file)
+            {
+                cerr << "failed to create file: " << this_file << endl;
+                return;
+            }
+
+            item->data.dump_html(file);
         }
     );
 }

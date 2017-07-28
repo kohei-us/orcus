@@ -1388,16 +1388,9 @@ void build_html_elem_attributes(html_elem::attrs_type& attrs, const string& styl
 
 }
 
-void sheet::dump_html(const string& filepath) const
+void sheet::dump_html(std::ostream& output) const
 {
     typedef html_elem elem;
-
-    ofstream file(filepath.c_str());
-    if (!file)
-    {
-        cerr << "failed to create file: " << filepath << endl;
-        return;
-    }
 
     const char* p_html  = "html";
     const char* p_body  = "body";
@@ -1413,11 +1406,11 @@ void sheet::dump_html(const string& filepath) const
     if (!mp_impl->m_row_heights.is_tree_valid())
         mp_impl->m_row_heights.build_tree();
 
-    elem root(file, p_html);
-    dump_html_head(file);
+    elem root(output, p_html);
+    dump_html_head(output);
 
     {
-        elem elem_body(file, p_body);
+        elem elem_body(output, p_body);
 
         if (!range.valid())
             // Sheet is empty.  Nothing to print.
@@ -1427,7 +1420,7 @@ void sheet::dump_html(const string& filepath) const
         const ixion::formula_name_resolver* resolver = mp_impl->m_doc.get_formula_name_resolver();
         const import_shared_strings* sstrings = mp_impl->m_doc.get_shared_strings();
 
-        elem table(file, p_table);
+        elem table(output, p_table);
 
         row_t row_count = range.last.row + 1;
         col_t col_count = range.last.column + 1;
@@ -1452,7 +1445,7 @@ void sheet::dump_html(const string& filepath) const
             const char* style_str = nullptr;
             if (!row_style.empty())
                 style_str = row_style.c_str();
-            elem tr(file, p_tr, style_str);
+            elem tr(output, p_tr, style_str);
 
             const overlapped_col_index_type* p_overlapped = mp_impl->get_overlapped_ranges(row);
 
@@ -1508,14 +1501,14 @@ void sheet::dump_html(const string& filepath) const
                     html_elem::attrs_type attrs;
                     build_html_elem_attributes(attrs, style, p_merge_size);
                     attrs.push_back(html_elem::attr("class", "empty"));
-                    elem td(file, p_td, attrs);
-                    file << '-'; // empty cell.
+                    elem td(output, p_td, attrs);
+                    output << '-'; // empty cell.
                     continue;
                 }
 
                 html_elem::attrs_type attrs;
                 build_html_elem_attributes(attrs, style, p_merge_size);
-                elem td(file, p_td, attrs);
+                elem td(output, p_td, attrs);
 
                 ostringstream os;
                 switch (ct)
@@ -1573,7 +1566,7 @@ void sheet::dump_html(const string& filepath) const
                         ;
                 }
 
-                file << os.str();
+                output << os.str();
             }
         }
     }
