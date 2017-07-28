@@ -22,15 +22,8 @@ namespace orcus { namespace spreadsheet { namespace detail {
 
 json_dumper::json_dumper(const document& doc) : m_doc(doc) {}
 
-void json_dumper::dump(const std::string& filepath, ixion::sheet_t sheet_id) const
+void json_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 {
-    std::ofstream file(filepath.c_str());
-    if (!file)
-    {
-        std::cerr << "failed to create file: " << filepath << std::endl;
-        return;
-    }
-
     const ixion::model_context& cxt = m_doc.get_model_context();
 
     ixion::abs_range_t data_range = cxt.get_data_range(sheet_id);
@@ -55,13 +48,13 @@ void json_dumper::dump(const std::string& filepath, ixion::sheet_t sheet_id) con
 
     columns_type::const_iterator it = columns.begin();
 
-    file << "[" << std::endl;
+    os << "[" << std::endl;
 
     size_t row = it->position;
     size_t col = it->index;
 
-    file << "    {";
-    file << "\"" << column_labels[col] << "\": ";
+    os << "    {";
+    os << "\"" << column_labels[col] << "\": ";
 
     func_str_handler str_handler = [](std::ostream& os, const std::string& s)
     {
@@ -70,7 +63,7 @@ void json_dumper::dump(const std::string& filepath, ixion::sheet_t sheet_id) con
 
     func_empty_handler empty_handler = [](std::ostream& os) { os << "null"; };
 
-    dump_cell_value(file, cxt, *it, str_handler, empty_handler);
+    dump_cell_value(os, cxt, *it, str_handler, empty_handler);
 
     size_t last_col = col;
     size_t last_row = row;
@@ -82,23 +75,23 @@ void json_dumper::dump(const std::string& filepath, ixion::sheet_t sheet_id) con
             size_t col = node.index;
 
             if (row > last_row)
-                file << "}," << std::endl;
+                os << "}," << std::endl;
 
             if (col == 0)
-                file << "    {";
+                os << "    {";
             else
-                file << ", ";
+                os << ", ";
 
-            file << "\"" << column_labels[col] << "\": ";
+            os << "\"" << column_labels[col] << "\": ";
 
-            dump_cell_value(file, cxt, node, str_handler, empty_handler);
+            dump_cell_value(os, cxt, node, str_handler, empty_handler);
 
             last_col = node.index;
             last_row = node.position;
         }
     );
 
-    file << "}" << std::endl << "]" << std::endl;
+    os << "}" << std::endl << "]" << std::endl;
 }
 
 }}}

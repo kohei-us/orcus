@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_JSON_DUMPER_HPP
 
 #include <string>
+#include <ostream>
 
 #include <ixion/types.hpp>
 
@@ -25,7 +26,7 @@ class json_dumper
 public:
     json_dumper(const document& doc);
 
-    void dump(const std::string& filepath, ixion::sheet_t sheet_id) const;
+    void dump(std::ostream& os, ixion::sheet_t sheet_id) const;
 };
 
 }}}
