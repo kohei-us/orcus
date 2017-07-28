@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_SPREADSHEET_CSV_DUMPER_HPP
 
 #include <string>
+#include <ostream>
 #include <ixion/types.hpp>
 
 namespace orcus { namespace spreadsheet {
@@ -26,7 +27,7 @@ class csv_dumper
 public:
     csv_dumper(const document& doc);
 
-    void dump(const std::string& filepath, ixion::sheet_t sheet_id) const;
+    void dump(std::ostream& os, ixion::sheet_t sheet_id) const;
 };
 
 }}}

@@ -25,15 +25,8 @@ csv_dumper::csv_dumper(const document& doc) :
 {
 }
 
-void csv_dumper::dump(const std::string& filepath, ixion::sheet_t sheet_id) const
+void csv_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 {
-    std::ofstream file(filepath.c_str());
-    if (!file)
-    {
-        std::cerr << "failed to create file: " << filepath << std::endl;
-        return;
-    }
-
     const ixion::model_context& cxt = m_doc.get_model_context();
     ixion::abs_range_t data_range = cxt.get_data_range(sheet_id);
     const ixion::column_stores_t* p = cxt.get_columns(sheet_id);
@@ -53,12 +46,12 @@ void csv_dumper::dump(const std::string& filepath, ixion::sheet_t sheet_id) cons
             size_t col = node.index;
 
             if (col == 0 && row > 0)
-                file << std::endl;
+                os << std::endl;
 
             if (col > 0)
-                file << m_sep;
+                os << m_sep;
 
-            dump_cell_value(file, cxt, node,
+            dump_cell_value(os, cxt, node,
                 [](std::ostream& os, const std::string& s)
                 {
                     os << s;

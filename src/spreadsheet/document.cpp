@@ -520,7 +520,15 @@ void document::dump_csv(const std::string& outdir) const
         [&outdir](const std::unique_ptr<sheet_item>& item)
         {
             string this_file = outdir + '/' + item->name.str() + ".csv";
-            item->data.dump_csv(this_file);
+
+            ofstream file(this_file.c_str());
+            if (!file)
+            {
+                cerr << "failed to create file: " << this_file << endl;
+                return;
+            }
+
+            item->data.dump_csv(file);
         }
     );
 }

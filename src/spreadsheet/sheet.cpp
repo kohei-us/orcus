@@ -1575,10 +1575,10 @@ void sheet::dump_json(std::ostream& os) const
     dumper.dump(os, mp_impl->m_sheet);
 }
 
-void sheet::dump_csv(const std::string& filepath) const
+void sheet::dump_csv(std::ostream& os) const
 {
     detail::csv_dumper dumper(mp_impl->m_doc);
-    dumper.dump(filepath, mp_impl->m_sheet);
+    dumper.dump(os, mp_impl->m_sheet);
 }
 
 size_t sheet::get_cell_format(row_t row, col_t col) const
