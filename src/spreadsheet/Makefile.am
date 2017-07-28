@@ -16,6 +16,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	data_table.hpp \
 	data_table.cpp \
 	document.cpp \
+	dumper_global.hpp \
+	dumper_global.cpp \
 	factory.cpp \
 	factory_pivot.hpp \
 	factory_pivot.cpp \

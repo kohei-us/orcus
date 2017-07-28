@@ -6,91 +6,19 @@
  */
 
 #include "json_dumper.hpp"
+#include "dumper_global.hpp"
 
 #include "orcus/json_global.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
 #include <ixion/model_context.hpp>
 #include <ixion/formula_name_resolver.hpp>
-#include <ixion/formula_result.hpp>
-#include <mdds/multi_type_vector/collection.hpp>
 
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
 namespace orcus { namespace spreadsheet { namespace detail {
-
-using columns_type = mdds::mtv::collection<ixion::column_store_t>;
-
-namespace {
-
-void dump_string(std::ofstream& file, const std::string& s)
-{
-    file << '"' << json::escape_string(s) << '"';
-}
-
-void dump_cell_value(
-    std::ofstream& file, const ixion::model_context& cxt,
-    const columns_type::const_iterator::value_type& node, ixion::sheet_t sheet_id)
-{
-    switch (node.type)
-    {
-        case ixion::element_type_empty:
-            file << "null";
-            break;
-        case ixion::element_type_boolean:
-        {
-            auto b = node.get<ixion::boolean_element_block>();
-            file << (b ? "true" : "false");
-            break;
-        }
-        case ixion::element_type_numeric:
-        {
-            auto v = node.get<ixion::numeric_element_block>();
-            file << v;
-            break;
-        }
-        case ixion::element_type_string:
-        {
-            ixion::string_id_t sindex = node.get<ixion::string_element_block>();
-            const std::string* p = cxt.get_string(sindex);
-            assert(p);
-            dump_string(file, *p);
-            break;
-        }
-        case ixion::element_type_formula:
-        {
-            const ixion::formula_cell* cell = node.get<ixion::formula_element_block>();
-            assert(cell);
-
-            const ixion::formula_result& res = cell->get_result_cache();
-
-            switch (res.get_type())
-            {
-                case ixion::formula_result::result_type::value:
-                    file << res.get_value();
-                break;
-                case ixion::formula_result::result_type::string:
-                {
-                    ixion::string_id_t sid = res.get_string();
-                    const std::string* p = cxt.get_string(sid);
-                    assert(p);
-                    dump_string(file, *p);
-                }
-                break;
-                case ixion::formula_result::result_type::error:
-                    file << "\"#ERR!\"";
-                break;
-            }
-            break;
-        }
-        default:
-            ;
-    }
-}
-
-}
 
 json_dumper::json_dumper(const document& doc) : m_doc(doc) {}
 
@@ -135,7 +63,14 @@ void json_dumper::dump(const std::string& filepath, ixion::sheet_t sheet_id) con
     file << "    {";
     file << "\"" << column_labels[col] << "\": ";
 
-    dump_cell_value(file, cxt, *it, sheet_id);
+    func_str_handler str_handler = [](std::ostream& os, const std::string& s)
+    {
+        os << '"' << json::escape_string(s) << '"';
+    };
+
+    func_empty_handler empty_handler = [](std::ostream& os) { os << "null"; };
+
+    dump_cell_value(file, cxt, *it, str_handler, empty_handler);
 
     size_t last_col = col;
     size_t last_row = row;
@@ -156,7 +91,7 @@ void json_dumper::dump(const std::string& filepath, ixion::sheet_t sheet_id) con
 
             file << "\"" << column_labels[col] << "\": ";
 
-            dump_cell_value(file, cxt, node, sheet_id);
+            dump_cell_value(file, cxt, node, str_handler, empty_handler);
 
             last_col = node.index;
             last_row = node.position;
