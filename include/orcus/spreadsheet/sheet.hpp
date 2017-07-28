@@ -138,7 +138,7 @@ public:
 
     void dump_flat(std::ostream& os) const;
     void dump_check(std::ostream& os, const pstring& sheet_name) const;
-    void dump_html(std::ostream& output) const;
+    void dump_html(std::ostream& os) const;
     void dump_json(const std::string& filepath) const;
     void dump_csv(const std::string& filepath) const;
 

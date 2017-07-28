@@ -1388,7 +1388,7 @@ void build_html_elem_attributes(html_elem::attrs_type& attrs, const string& styl
 
 }
 
-void sheet::dump_html(std::ostream& output) const
+void sheet::dump_html(std::ostream& os) const
 {
     typedef html_elem elem;
 
@@ -1406,11 +1406,11 @@ void sheet::dump_html(std::ostream& output) const
     if (!mp_impl->m_row_heights.is_tree_valid())
         mp_impl->m_row_heights.build_tree();
 
-    elem root(output, p_html);
-    dump_html_head(output);
+    elem root(os, p_html);
+    dump_html_head(os);
 
     {
-        elem elem_body(output, p_body);
+        elem elem_body(os, p_body);
 
         if (!range.valid())
             // Sheet is empty.  Nothing to print.
@@ -1420,7 +1420,7 @@ void sheet::dump_html(std::ostream& output) const
         const ixion::formula_name_resolver* resolver = mp_impl->m_doc.get_formula_name_resolver();
         const import_shared_strings* sstrings = mp_impl->m_doc.get_shared_strings();
 
-        elem table(output, p_table);
+        elem table(os, p_table);
 
         row_t row_count = range.last.row + 1;
         col_t col_count = range.last.column + 1;
@@ -1445,7 +1445,7 @@ void sheet::dump_html(std::ostream& output) const
             const char* style_str = nullptr;
             if (!row_style.empty())
                 style_str = row_style.c_str();
-            elem tr(output, p_tr, style_str);
+            elem tr(os, p_tr, style_str);
 
             const overlapped_col_index_type* p_overlapped = mp_impl->get_overlapped_ranges(row);
 
@@ -1501,16 +1501,15 @@ void sheet::dump_html(std::ostream& output) const
                     html_elem::attrs_type attrs;
                     build_html_elem_attributes(attrs, style, p_merge_size);
                     attrs.push_back(html_elem::attr("class", "empty"));
-                    elem td(output, p_td, attrs);
-                    output << '-'; // empty cell.
+                    elem td(os, p_td, attrs);
+                    os << '-'; // empty cell.
                     continue;
                 }
 
                 html_elem::attrs_type attrs;
                 build_html_elem_attributes(attrs, style, p_merge_size);
-                elem td(output, p_td, attrs);
+                elem td(os, p_td, attrs);
 
-                ostringstream os;
                 switch (ct)
                 {
                     case ixion::celltype_t::string:
@@ -1565,8 +1564,6 @@ void sheet::dump_html(std::ostream& output) const
                     default:
                         ;
                 }
-
-                output << os.str();
             }
         }
     }
