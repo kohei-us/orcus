@@ -17,13 +17,13 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 using namespace orcus;
-using namespace std;
 
 namespace {
 
-const char* dirs[] = {
+std::vector<const char*> dirs = {
     SRCDIR"/test/csv/simple-numbers/",
     SRCDIR"/test/csv/normal-quotes/",
     SRCDIR"/test/csv/double-quotes/",
@@ -32,11 +32,9 @@ const char* dirs[] = {
 
 void test_csv_import()
 {
-    size_t n = sizeof(dirs)/sizeof(dirs[0]);
-    for (size_t i = 0; i < n; ++i)
+    for (const char* dir : dirs)
     {
-        const char* dir = dirs[i];
-        string path(dir);
+        std::string path(dir);
 
         // Read the input.csv document.
         path.append("input.csv");
@@ -46,14 +44,14 @@ void test_csv_import()
         app.read_file(path.c_str());
 
         // Dump the content of the model.
-        ostringstream os;
+        std::ostringstream os;
         doc.dump_check(os);
-        string check = os.str();
+        std::string check = os.str();
 
         // Check that against known control.
         path = dir;
         path.append("check.txt");
-        string control = load_file_content(path.c_str());
+        std::string control = load_file_content(path.c_str());
 
         assert(!check.empty());
         assert(!control.empty());
@@ -70,4 +68,5 @@ int main()
     test_csv_import();
     return EXIT_SUCCESS;
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
