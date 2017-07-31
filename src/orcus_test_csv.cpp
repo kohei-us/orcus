@@ -11,6 +11,7 @@
 #include "orcus/stream.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
+#include "orcus/spreadsheet/sheet.hpp"
 
 #include <cstdlib>
 #include <cassert>
@@ -39,14 +40,17 @@ void test_csv_import()
         // Read the input.csv document.
         path.append("input.csv");
         spreadsheet::document doc;
-        spreadsheet::import_factory factory(doc);
-        orcus_csv app(&factory);
-        app.read_file(path.c_str());
+        {
+            spreadsheet::import_factory factory(doc);
+            orcus_csv app(&factory);
+            app.read_file(path.c_str());
+        }
 
         // Dump the content of the model.
         std::ostringstream os;
         doc.dump_check(os);
         std::string check = os.str();
+        os.clear();
 
         // Check that against known control.
         path = dir;
@@ -56,7 +60,33 @@ void test_csv_import()
         assert(!check.empty());
         assert(!control.empty());
 
-        pstring s1(&check[0], check.size()), s2(&control[0], control.size());
+        pstring s1(check.data(), check.size()), s2(control.data(), control.size());
+        assert(s1.trim() == s2.trim());
+
+        spreadsheet::sheet* sh = doc.get_sheet(0);
+        assert(sh);
+
+        // Dump the first sheet as csv.
+        sh->dump_csv(os);
+        std::string stream = os.str();
+        os.clear();
+
+        // Re-import the dumped csv.
+        doc.clear();
+        {
+            spreadsheet::import_factory factory(doc);
+            orcus_csv app(&factory);
+            app.read_stream(stream.data(), stream.size());
+        }
+
+        // Dump the content of the re-imported model, and make sure it's still
+        // identical to the control.
+        doc.dump_check(os);
+        check = os.str();
+        os.clear();
+
+        assert(!check.empty());
+        s1 = pstring(check.data(), check.size());
         assert(s1.trim() == s2.trim());
     }
 }
