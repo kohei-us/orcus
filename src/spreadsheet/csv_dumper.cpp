@@ -20,6 +20,42 @@
 
 namespace orcus { namespace spreadsheet { namespace detail {
 
+namespace {
+
+void dump_string(std::ostream& os, const std::string& s)
+{
+    // Scan for any special characters that necessitate quoting.
+    bool outer_quotes = s.find_first_of(",\"") != std::string::npos;
+
+    if (outer_quotes)
+        os << '"';
+
+    for (const char c : s)
+    {
+        switch (c)
+        {
+            case '"':
+            {
+                os << c << c;
+                outer_quotes = true;
+                break;
+            }
+            default:
+                os << c;
+        }
+    }
+
+    if (outer_quotes)
+        os << '"';
+}
+
+void dump_empty(std::ostream& /*os*/)
+{
+    // Do nothing.
+}
+
+}
+
 csv_dumper::csv_dumper(const document& doc) :
     m_doc(doc), m_sep(','), m_quote('"')
 {
@@ -51,13 +87,7 @@ void csv_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
             if (col > 0)
                 os << m_sep;
 
-            dump_cell_value(os, cxt, node,
-                [](std::ostream& os, const std::string& s)
-                {
-                    os << s;
-                },
-                [](std::ostream& os) {}
-            );
+            dump_cell_value(os, cxt, node, dump_string, dump_empty);
         }
     );
 }
