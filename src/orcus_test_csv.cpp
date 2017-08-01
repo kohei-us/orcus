@@ -13,6 +13,8 @@
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 
+#include "orcus_test_global.hpp"
+
 #include <cstdlib>
 #include <cassert>
 #include <string>
@@ -47,10 +49,7 @@ void test_csv_import()
         }
 
         // Dump the content of the model.
-        std::ostringstream os;
-        doc.dump_check(os);
-        std::string check = os.str();
-        os.clear();
+        std::string check = test::get_content_check(doc);
 
         // Check that against known control.
         path = dir;
@@ -63,13 +62,9 @@ void test_csv_import()
         pstring s1(check.data(), check.size()), s2(control.data(), control.size());
         assert(s1.trim() == s2.trim());
 
-        spreadsheet::sheet* sh = doc.get_sheet(0);
-        assert(sh);
-
         // Dump the first sheet as csv.
-        sh->dump_csv(os);
-        std::string stream = os.str();
-        os.clear();
+        std::string stream = test::get_content_as_csv(doc, 0);
+        assert(!stream.empty());
 
         // Re-import the dumped csv.
         doc.clear();
@@ -81,11 +76,9 @@ void test_csv_import()
 
         // Dump the content of the re-imported model, and make sure it's still
         // identical to the control.
-        doc.dump_check(os);
-        check = os.str();
-        os.clear();
-
+        check = test::get_content_check(doc);
         assert(!check.empty());
+
         s1 = pstring(check.data(), check.size());
         assert(s1.trim() == s2.trim());
     }
@@ -95,7 +88,16 @@ void test_csv_import()
 
 int main()
 {
-    test_csv_import();
+    try
+    {
+        test_csv_import();
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 

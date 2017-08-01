@@ -342,7 +342,11 @@ EXTRA_PROGRAMS += \
 
 # orcus-test-csv
 
-orcus_test_csv_SOURCES = orcus_test_csv.cpp
+orcus_test_csv_SOURCES = \
+	orcus_test_csv.cpp \
+	orcus_test_global.hpp \
+	orcus_test_global.cpp
+
 orcus_test_csv_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \

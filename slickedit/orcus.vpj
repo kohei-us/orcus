@@ -513,6 +513,8 @@
 			<F N="../src/orcus_mso_encryption.cpp"/>
 			<F N="../src/orcus_ods_main.cpp"/>
 			<F N="../src/orcus_test_csv.cpp"/>
+			<F N="../src/orcus_test_global.cpp"/>
+			<F N="../src/orcus_test_global.hpp"/>
 			<F N="../src/orcus_test_ods.cpp"/>
 			<F N="../src/orcus_test_xls_xml.cpp"/>
 			<F N="../src/orcus_test_xlsx.cpp"/>
