@@ -8,6 +8,7 @@
 #include "orcus_test_global.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
+#include "orcus/pstring.hpp"
 
 #include <sstream>
 
@@ -41,6 +42,29 @@ std::string get_content_as_csv(const spreadsheet::document& doc, spreadsheet::sh
     std::ostringstream os;
     sh->dump_csv(os);
     return os.str();
+}
+
+void verify_content(
+    const char* filename, size_t line_no, const std::string& expected, const std::string& actual)
+{
+    pstring s1(expected.data(), expected.size());
+    pstring s2(actual.data(), actual.size());
+    s1 = s1.trim();
+    s2 = s2.trim();
+
+    if (s1 != s2)
+    {
+        // TODO : improve the error message to make it more viewer-friendly.
+
+        std::ostringstream os;
+        os << "content is not as expected: " << std::endl << std::endl
+            << "* expected:" << std::endl << std::endl
+            << s1 << std::endl << std::endl
+            << "* actual:" << std::endl << std::endl
+            << s2;
+
+        throw assert_error(filename, line_no, os.str().data());
+    }
 }
 
 }}

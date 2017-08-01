@@ -41,6 +41,9 @@ void test_csv_import()
 
         // Read the input.csv document.
         path.append("input.csv");
+
+        std::cout << "checking " << path << "..." << std::endl;
+
         spreadsheet::document doc;
         {
             spreadsheet::import_factory factory(doc);
@@ -59,8 +62,7 @@ void test_csv_import()
         assert(!check.empty());
         assert(!control.empty());
 
-        pstring s1(check.data(), check.size()), s2(control.data(), control.size());
-        assert(s1.trim() == s2.trim());
+        test::verify_content(__FILE__, __LINE__, control, check);
 
         // Dump the first sheet as csv.
         std::string stream = test::get_content_as_csv(doc, 0);
@@ -79,8 +81,7 @@ void test_csv_import()
         check = test::get_content_check(doc);
         assert(!check.empty());
 
-        s1 = pstring(check.data(), check.size());
-        assert(s1.trim() == s2.trim());
+        test::verify_content(__FILE__, __LINE__, control, check);
     }
 }
 
