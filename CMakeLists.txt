@@ -155,12 +155,15 @@ add_library(liborcus SHARED
 
 add_library(liborcus-spreadsheet-model SHARED
 	${SPREADSHEET_SRC_DIR}/auto_filter.cpp
+	${SPREADSHEET_SRC_DIR}/csv_dumper.cpp
 	${SPREADSHEET_SRC_DIR}/data_table.cpp
 	${SPREADSHEET_SRC_DIR}/document.cpp
+	${SPREADSHEET_SRC_DIR}/dumper_global.cpp
 	${SPREADSHEET_SRC_DIR}/factory.cpp
 	${SPREADSHEET_SRC_DIR}/factory_pivot.cpp
 	${SPREADSHEET_SRC_DIR}/factory_sheet.cpp
 	${SPREADSHEET_SRC_DIR}/formula_global.cpp
+	${SPREADSHEET_SRC_DIR}/global_settings.cpp
 	${SPREADSHEET_SRC_DIR}/json_dumper.cpp
 	${SPREADSHEET_SRC_DIR}/pivot.cpp
 	${SPREADSHEET_SRC_DIR}/shared_strings.cpp
@@ -170,7 +173,6 @@ add_library(liborcus-spreadsheet-model SHARED
 	${SPREADSHEET_SRC_DIR}/styles.cpp
 	${SPREADSHEET_SRC_DIR}/table.cpp
 	${SPREADSHEET_SRC_DIR}/view.cpp
-	${SPREADSHEET_SRC_DIR}/global_settings.cpp
 )
 
 add_executable(orcus-detect
