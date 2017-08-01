@@ -37,7 +37,6 @@ void dump_string(std::ostream& os, const std::string& s)
             case '"':
             {
                 os << c << c;
-                outer_quotes = true;
                 break;
             }
             default:
