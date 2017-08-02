@@ -178,6 +178,9 @@ public:
 
     virtual void set_array_formula(row_t, col_t, formula_grammar_t,
             const char*, size_t, const char*, size_t);
+
+    virtual orcus::spreadsheet::range_size_t
+        get_sheet_size() const;
 };
 
 class import_factory : public orcus::spreadsheet::iface::import_factory

@@ -165,6 +165,14 @@ void import_sheet::set_value(row_t row, col_t col, double value)
     m_sheet.set_value(row, col, value);
 }
 
+range_size_t import_sheet::get_sheet_size() const
+{
+    range_size_t ret;
+    ret.rows = m_sheet.row_size();
+    ret.columns = m_sheet.col_size();
+    return ret;
+}
+
 import_sheet_view::import_sheet_view(sheet_view& view, sheet_t si) :
     m_view(view), m_sheet_index(si) {}
 

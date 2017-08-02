@@ -56,6 +56,12 @@ public:
         return &m_mock_properties;
     }
 
+    virtual range_size_t get_sheet_size() const
+    {
+        range_size_t ret;
+        return ret;
+    }
+
 private:
     mock_sheet_properties m_mock_properties;
 };

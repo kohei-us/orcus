@@ -166,6 +166,11 @@ public:
     virtual size_t commit_cell_style() = 0;
 };
 
+/**
+ * Interface for importing sheet properties.  Sheet properties are those
+ * that are used for decorative purposes but are not not a part of the
+ * sheet cell values.
+ */
 class import_sheet_properties
 {
 public:
@@ -670,11 +675,19 @@ public:
      * @param p pointer to the first character of the raw formula expression string.
      * @param n size of the raw formula expression string
      * @param p_range pointer to the first character of the range string
-     * @param n_range isze of the range string
+     * @param n_range size of the range string
      */
     virtual void set_array_formula(
         orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, orcus::spreadsheet::formula_grammar_t grammar,
         const char* p, size_t n, const char* p_range, size_t n_range) = 0;
+
+    /**
+     * Get the size of the sheet.
+     *
+     * @return structure containing the numbers of rows and columns of the
+     *         sheet.
+     */
+    virtual orcus::spreadsheet::range_size_t get_sheet_size() const = 0;
 };
 
 class import_global_settings

@@ -250,5 +250,13 @@ void import_sheet::set_formula_result(row_t, col_t, const char*, size_t)
     assert(false);
 }
 
+orcus::spreadsheet::range_size_t import_sheet::get_sheet_size() const
+{
+    assert(false);
+    orcus::spreadsheet::range_size_t ret;
+    ret.columns = ret.rows = 0;
+    return ret;
+}
+
 }}}
 

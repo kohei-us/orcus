@@ -325,6 +325,12 @@ struct address_t
     col_t column;
 };
 
+struct range_size_t
+{
+    row_t rows;
+    col_t columns;
+};
+
 struct range_t
 {
     address_t first;

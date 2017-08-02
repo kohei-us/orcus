@@ -48,7 +48,14 @@ public:
         // sheet, and if so, append a new sheet and reset the current row to
         // 0.
 
-        // TODO : implement this later.
+        if (m_row >= mp_sheet->get_sheet_size().rows)
+        {
+            // The next row will be outside the boundary of the current sheet.
+            ++m_sheet;
+            std::string sheet_name = get_sheet_name();
+            mp_sheet = m_factory.append_sheet(m_sheet, m_sheet_name.data(), m_sheet_name.size());
+            m_row = 0;
+        }
     }
 
     void cell(const char* p, size_t n)
