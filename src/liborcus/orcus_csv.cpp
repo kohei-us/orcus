@@ -22,16 +22,18 @@ namespace orcus {
 
 namespace {
 
+constexpr const char* base_sheet_name = "data";
+
 class csv_handler
 {
 public:
     csv_handler(spreadsheet::iface::import_factory& factory) :
-        m_factory(factory), mp_sheet(nullptr), m_sheet(0), m_row(0), m_col(0) {}
+        m_factory(factory), mp_sheet(nullptr), m_sheet(0), m_row(0), m_col(0),
+        m_sheet_name(get_sheet_name()) {}
 
     void begin_parse()
     {
-        const char* sheet_name = "data";
-        mp_sheet = m_factory.append_sheet(m_sheet++, sheet_name, strlen(sheet_name));
+        mp_sheet = m_factory.append_sheet(m_sheet++, m_sheet_name.data(), m_sheet_name.size());
     }
 
     void end_parse() {}
@@ -41,6 +43,12 @@ public:
     {
         ++m_row;
         m_col = 0;
+
+        // Check to see if the next row is beyond the max row of the current
+        // sheet, and if so, append a new sheet and reset the current row to
+        // 0.
+
+        // TODO : implement this later.
     }
 
     void cell(const char* p, size_t n)
@@ -50,11 +58,26 @@ public:
     }
 
 private:
+    std::string get_sheet_name() const
+    {
+        if (!m_sheet)
+            // First sheet has no suffix.
+            return base_sheet_name;
+
+        // Add a suffix to keep the sheet name unique.
+        std::ostringstream os;
+        os << base_sheet_name << '_' << m_sheet;
+        return os.str();
+    }
+
+private:
     spreadsheet::iface::import_factory& m_factory;
     spreadsheet::iface::import_sheet* mp_sheet;
     spreadsheet::sheet_t m_sheet;
     spreadsheet::row_t m_row;
     spreadsheet::col_t m_col;
+
+    std::string m_sheet_name;
 };
 
 }
