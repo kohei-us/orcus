@@ -8,21 +8,12 @@
 #ifndef ORCUS_FORMAT_DETECTION_HPP
 #define ORCUS_FORMAT_DETECTION_HPP
 
-#include "env.hpp"
+#include "orcus/env.hpp"
+#include "orcus/types.hpp"
 
 #include <cstdlib>
 
 namespace orcus {
-
-enum class format_t
-{
-    unknown = 0,
-    ods,
-    xlsx,
-    gnumeric,
-    xls_xml,
-    csv
-};
 
 ORCUS_DLLPUBLIC format_t detect(const unsigned char* buffer, size_t length);
 

@@ -13,9 +13,11 @@ namespace orcus { namespace iface {
 struct import_filter::impl
 {
     orcus::config m_config;
+
+    impl(format_t input) : m_config(input) {}
 };
 
-import_filter::import_filter() : mp_impl(new impl) {}
+import_filter::import_filter(format_t input) : mp_impl(new impl(input)) {}
 
 import_filter::~import_filter()
 {

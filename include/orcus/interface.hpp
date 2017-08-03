@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_INTERFACE_HPP
-#define ORCUS_INTERFACE_HPP
+#ifndef INCLUDED_ORCUS_INTERFACE_HPP
+#define INCLUDED_ORCUS_INTERFACE_HPP
 
-#include "env.hpp"
+#include "orcus/env.hpp"
+#include "orcus/types.hpp"
 
 #include <string>
 
@@ -24,7 +25,7 @@ class ORCUS_DLLPUBLIC import_filter
     impl* mp_impl;
 
 public:
-    import_filter();
+    import_filter(format_t input);
     virtual ~import_filter();
 
     /// expects a system path to a local file

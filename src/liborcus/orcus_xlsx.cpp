@@ -128,6 +128,7 @@ struct orcus_xlsx_impl
 };
 
 orcus_xlsx::orcus_xlsx(spreadsheet::iface::import_factory* factory) :
+    iface::import_filter(format_t::xlsx),
     mp_impl(new orcus_xlsx_impl(factory, *this))
 {
     if (!factory)
@@ -173,7 +174,7 @@ bool orcus_xlsx::detect(const unsigned char* blob, size_t size)
     if (buf.empty())
         return false;
 
-    config opt;
+    config opt(format_t::xlsx);
     xmlns_repository ns_repo;
     ns_repo.add_predefined_values(NS_opc_all);
     session_context session_cxt;

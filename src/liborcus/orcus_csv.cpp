@@ -89,7 +89,8 @@ private:
 
 }
 
-orcus_csv::orcus_csv(spreadsheet::iface::import_factory* factory) : mp_factory(factory) {}
+orcus_csv::orcus_csv(spreadsheet::iface::import_factory* factory) :
+    iface::import_filter(format_t::csv), mp_factory(factory) {}
 
 void orcus_csv::read_file(const string& filepath)
 {

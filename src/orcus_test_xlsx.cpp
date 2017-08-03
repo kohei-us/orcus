@@ -61,7 +61,7 @@ const pivot_cache* get_pivot_cache(
     return pc.get_cache(sheet_name, range);
 }
 
-config test_config;
+config test_config(format_t::xlsx);
 
 vector<const char*> dirs = {
     SRCDIR"/test/xlsx/raw-values-1/",

@@ -9,7 +9,27 @@
 
 namespace orcus {
 
-config::config() : debug(false), structure_check(true) {}
+config::config(format_t input) :
+    input_format(input),
+    debug(false),
+    structure_check(true)
+{
+    // Initialize format-specific config settings below.
+
+    switch (input_format)
+    {
+        case format_t::csv:
+            csv.header_row_size = 0;
+            break;
+        case format_t::gnumeric:
+        case format_t::ods:
+        case format_t::xls_xml:
+        case format_t::xlsx:
+        case format_t::unknown:
+        default:
+            ;
+    }
+}
 
 json_config::json_config() :
     output_format(output_format_type::none),

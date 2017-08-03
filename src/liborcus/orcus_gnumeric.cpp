@@ -68,6 +68,7 @@ struct orcus_gnumeric_impl
 };
 
 orcus_gnumeric::orcus_gnumeric(spreadsheet::iface::import_factory* factory) :
+    iface::import_filter(format_t::gnumeric),
     mp_impl(new orcus_gnumeric_impl(factory))
 {
     mp_impl->m_ns_repo.add_predefined_values(NS_gnumeric_all);
@@ -101,7 +102,7 @@ bool orcus_gnumeric::detect(const unsigned char* buffer, size_t size)
         return false;
 
     // Parse this xml stream for detection.
-    config opt;
+    config opt(format_t::gnumeric);
     xmlns_repository ns_repo;
     ns_repo.add_predefined_values(NS_gnumeric_all);
     session_context cxt;

@@ -8,7 +8,8 @@
 #ifndef INCLUDED_ORCUS_CONFIG_HPP
 #define INCLUDED_ORCUS_CONFIG_HPP
 
-#include "env.hpp"
+#include "orcus/env.hpp"
+#include "orcus/types.hpp"
 
 #include <string>
 
@@ -16,6 +17,18 @@ namespace orcus {
 
 struct ORCUS_DLLPUBLIC config
 {
+    format_t input_format;
+
+    /**
+     * configuration settings specific to the CSV format. This struct must be
+     * POD.
+     */
+    struct csv_config
+    {
+        /** Number of header rows to repeat in case of split. */
+        size_t header_row_size;
+    };
+
     /**
      * Enable or disable runtime debug output to stdout or stderr.
      */
@@ -28,7 +41,14 @@ struct ORCUS_DLLPUBLIC config
      */
     bool structure_check;
 
-    config();
+    union
+    {
+        csv_config csv;
+
+        // TODO : add config for other formats as needed.
+    };
+
+    config(format_t input_format);
 };
 
 struct ORCUS_DLLPUBLIC json_config

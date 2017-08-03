@@ -29,7 +29,7 @@ using namespace std;
 
 namespace {
 
-config test_config;
+config test_config(format_t::xls_xml);
 
 std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/basic/",

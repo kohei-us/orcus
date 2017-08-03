@@ -196,7 +196,7 @@ bool parse_import_filter_args(
         return false;
     }
 
-    config opt;
+    config opt = app.get_config();
     opt.debug = vm.count("debug") > 0;
     app.set_config(opt);
 

@@ -95,6 +95,16 @@ enum class length_unit_t
     // TODO: Add more.
 };
 
+enum class format_t
+{
+    unknown = 0,
+    ods,
+    xlsx,
+    gnumeric,
+    xls_xml,
+    csv
+};
+
 struct ORCUS_DLLPUBLIC length_t
 {
     length_unit_t unit;

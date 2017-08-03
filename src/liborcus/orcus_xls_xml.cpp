@@ -36,6 +36,7 @@ struct orcus_xls_xml_impl
 };
 
 orcus_xls_xml::orcus_xls_xml(spreadsheet::iface::import_factory* factory) :
+    iface::import_filter(format_t::xls_xml),
     mp_impl(new orcus_xls_xml_impl(factory))
 {
     mp_impl->m_ns_repo.add_predefined_values(NS_xls_xml_all);
@@ -48,7 +49,7 @@ orcus_xls_xml::~orcus_xls_xml()
 
 bool orcus_xls_xml::detect(const unsigned char* buffer, size_t size)
 {
-    config opt;
+    config opt(format_t::xls_xml);
     xmlns_repository ns_repo;
     ns_repo.add_predefined_values(NS_xls_xml_all);
     xml_stream_parser parser(opt, ns_repo, xls_xml_tokens, reinterpret_cast<const char*>(buffer), size);

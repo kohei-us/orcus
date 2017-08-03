@@ -38,7 +38,7 @@ void import_ods::read_styles(const char* p, size_t n, spreadsheet::iface::import
     xmlns_repository ns_repo;
     ns_repo.add_predefined_values(NS_odf_all);
 
-    orcus::config config;
+    orcus::config config(format_t::ods);
     xml_stream_parser parser(
         config, ns_repo, odf_tokens,
         p, n);
