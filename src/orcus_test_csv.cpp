@@ -85,6 +85,34 @@ void test_csv_import()
     }
 }
 
+void test_csv_import_split_sheet()
+{
+    const char* dir = SRCDIR"/test/csv/split-sheet/";
+
+    std::string path(dir);
+    path.append("input.csv");
+
+    std::cout << "checking " << path << "..." << std::endl;
+
+    spreadsheet::document doc;
+    {
+        // Set the row size to 11 to make sure the split occurs.
+        spreadsheet::import_factory factory(doc, 11, 4);
+        orcus_csv app(&factory);
+        app.read_file(path.c_str());
+    }
+
+    // Dump the content of the model.
+    std::string check = test::get_content_check(doc);
+
+    // Check that against known control.
+    path = dir;
+    path.append("check.txt");
+    std::string control = load_file_content(path.c_str());
+
+    test::verify_content(__FILE__, __LINE__, control, check);
+}
+
 }
 
 int main()
@@ -92,6 +120,7 @@ int main()
     try
     {
         test_csv_import();
+        test_csv_import_split_sheet();
     }
     catch (const std::exception& e)
     {

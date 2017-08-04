@@ -28,12 +28,12 @@ class csv_handler
 {
 public:
     csv_handler(spreadsheet::iface::import_factory& factory) :
-        m_factory(factory), mp_sheet(nullptr), m_sheet(0), m_row(0), m_col(0),
-        m_sheet_name(get_sheet_name()) {}
+        m_factory(factory), mp_sheet(nullptr), m_sheet(0), m_row(0), m_col(0) {}
 
     void begin_parse()
     {
-        mp_sheet = m_factory.append_sheet(m_sheet++, m_sheet_name.data(), m_sheet_name.size());
+        std::string sheet_name = get_sheet_name();
+        mp_sheet = m_factory.append_sheet(m_sheet++, sheet_name.data(), sheet_name.size());
     }
 
     void end_parse() {}
@@ -51,9 +51,8 @@ public:
         if (m_row >= mp_sheet->get_sheet_size().rows)
         {
             // The next row will be outside the boundary of the current sheet.
-            ++m_sheet;
             std::string sheet_name = get_sheet_name();
-            mp_sheet = m_factory.append_sheet(m_sheet, m_sheet_name.data(), m_sheet_name.size());
+            mp_sheet = m_factory.append_sheet(m_sheet++, sheet_name.data(), sheet_name.size());
             m_row = 0;
         }
     }
@@ -83,8 +82,6 @@ private:
     spreadsheet::sheet_t m_sheet;
     spreadsheet::row_t m_row;
     spreadsheet::col_t m_col;
-
-    std::string m_sheet_name;
 };
 
 }
