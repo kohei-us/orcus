@@ -6,6 +6,7 @@
  */
 
 #include "orcus/csv_parser_base.hpp"
+#include <cstring>
 
 namespace orcus { namespace csv {
 
@@ -24,7 +25,10 @@ const char* parse_error::what() const throw()
 
 parser_base::parser_base(
     const char* p, size_t n, const csv::parser_config& config) :
-    ::orcus::parser_base(p, n), m_config(config) {}
+    ::orcus::parser_base(p, n), m_config(config)
+{
+    maybe_skip_bom();
+}
 
 bool parser_base::is_blank(char c) const
 {
@@ -46,6 +50,17 @@ void parser_base::skip_blanks()
     skip(" \t");
 }
 
+void parser_base::maybe_skip_bom()
+{
+    if (remaining_size() < 3)
+        // Ensure that the stream contains at least 3 bytes.
+        return;
+
+    static const char* bom = "\xEF\xBB\xBF";
+    if (!strncmp(mp_char, bom, 3))
+        mp_char += 3;
+}
 
 }}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

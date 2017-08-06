@@ -81,6 +81,9 @@ protected:
     bool is_text_qualifier(char c) const;
 
     void skip_blanks();
+
+private:
+    void maybe_skip_bom();
 };
 
 }}
