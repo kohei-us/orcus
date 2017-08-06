@@ -33,6 +33,19 @@ ORCUS_PSR_DLLPUBLIC std::string load_file_content(const char* filepath);
 ORCUS_PSR_DLLPUBLIC std::string create_parse_error_output(
     const pstring& strm, std::ptrdiff_t offset);
 
+/**
+ * Given two strings, locate the position of the first character that is
+ * different between the two strings.  Note that if one of the strings is
+ * empty (or both of them are empty), it returns 0.
+ *
+ * @param left one of the strings to compare.
+ * @param right one of the strings to compare.
+ *
+ * @return position of the first character that is different between the two
+ *         compared strings.
+ */
+ORCUS_PSR_DLLPUBLIC size_t locate_first_different_char(
+    const pstring& left, const pstring& right);
 }
 
 #endif

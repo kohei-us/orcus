@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 using namespace orcus;
@@ -23,9 +24,37 @@ void test_stream_create_error_output()
     assert(output == expected);
 }
 
+void test_stream_locate_first_different_char()
+{
+    struct test_case
+    {
+        const char* left;
+        const char* right;
+        size_t expected;
+    };
+
+    std::vector<test_case> test_cases = {
+        { "", "a", 0 },
+        { "a", "", 0 },
+        { "", "", 0 },
+        { " ", "b", 0 },
+        { "abc", "abc", 3 },
+        { "abcd", "abce", 3 },
+        { "abc", "bbc", 0 },
+        { "abc", "acc", 1 },
+    };
+
+    for (const test_case& tc : test_cases)
+    {
+        size_t actual = locate_first_different_char(tc.left, tc.right);
+        assert(actual == tc.expected);
+    }
+}
+
 int main()
 {
     test_stream_create_error_output();
+    test_stream_locate_first_different_char();
 
     return EXIT_SUCCESS;
 }

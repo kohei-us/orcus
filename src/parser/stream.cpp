@@ -144,6 +144,27 @@ std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset
     return os.str();
 }
 
+size_t locate_first_different_char(const pstring& left, const pstring& right)
+{
+    if (left.empty() || right.empty())
+        // If one of them is empty, then the first characters are considered
+        // different.
+        return 0;
+
+    size_t n = std::min(left.size(), right.size());
+    const char* p1 = left.data();
+    const char* p2 = right.data();
+    const char* p1_end = p1 + n;
+
+    for (; p1 != p1_end; ++p1, ++p2)
+    {
+        if (*p1 != *p2)
+            return std::distance(left.data(), p1);
+    }
+
+    return n;
+}
+
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

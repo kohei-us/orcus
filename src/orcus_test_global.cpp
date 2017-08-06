@@ -9,6 +9,7 @@
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/pstring.hpp"
+#include "orcus/stream.hpp"
 
 #include <sstream>
 
@@ -56,12 +57,16 @@ void verify_content(
     {
         // TODO : improve the error message to make it more viewer-friendly.
 
+        size_t diff_pos = locate_first_different_char(s1, s2);
+        std::string msg_s1 = create_parse_error_output(s1, diff_pos);
+        std::string msg_s2 = create_parse_error_output(s2, diff_pos);
+
         std::ostringstream os;
         os << "content is not as expected: " << std::endl << std::endl
             << "* expected:" << std::endl << std::endl
-            << s1 << std::endl << std::endl
+            << msg_s1 << std::endl
             << "* actual:" << std::endl << std::endl
-            << s2;
+            << msg_s2;
 
         throw assert_error(filename, line_no, os.str().data());
     }
