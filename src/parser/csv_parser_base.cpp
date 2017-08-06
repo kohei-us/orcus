@@ -58,7 +58,7 @@ void parser_base::maybe_skip_bom()
 
     static const char* bom = "\xEF\xBB\xBF";
     if (!strncmp(mp_char, bom, 3))
-        mp_char += 3;
+        next(3);
 }
 
 }}
