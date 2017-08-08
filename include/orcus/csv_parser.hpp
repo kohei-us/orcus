@@ -158,14 +158,14 @@ void csv_parser<_Handler>::quoted_cell()
         }
 
         // Closing quote.
-        m_handler.cell(p0, len-1);
+        m_handler.cell(p0, len-1, false);
         next();
         skip_blanks();
         return;
     }
 
     // Stream ended prematurely.  Handle it gracefully.
-    m_handler.cell(p0, len);
+    m_handler.cell(p0, len, false);
 }
 
 template<typename _Handler>
@@ -209,7 +209,7 @@ void csv_parser<_Handler>::parse_cell_with_quote(const char* p0, size_t len0)
         // buffer, push the value to the handler, and exit normally.
         m_cell_buf.append(p_cur, cur_len);
 
-        m_handler.cell(m_cell_buf.get(), m_cell_buf.size());
+        m_handler.cell(m_cell_buf.get(), m_cell_buf.size(), true);
         next();
         skip_blanks();
         return;
@@ -245,7 +245,7 @@ void csv_parser<_Handler>::push_cell_value(const char* p, size_t n)
         }
     }
 
-    m_handler.cell(p, len);
+    m_handler.cell(p, len, false);
 #if ORCUS_DEBUG_CSV
     if (len)
         cout << "(cell:'" << std::string(p, len) << "')" << endl;

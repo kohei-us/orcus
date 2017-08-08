@@ -12,6 +12,8 @@
 #include "orcus/global.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
+#include "orcus/config.hpp"
+#include "orcus/string_pool.hpp"
 
 #include <cstring>
 #include <iostream>
@@ -24,41 +26,75 @@ namespace {
 
 constexpr const char* base_sheet_name = "data";
 
+struct header_cell
+{
+    spreadsheet::row_t row;
+    spreadsheet::col_t col;
+    pstring value;
+
+    header_cell(spreadsheet::row_t row, spreadsheet::col_t col, const pstring& value) :
+        row(row), col(col), value(value) {}
+};
+
 class csv_handler
 {
 public:
-    csv_handler(spreadsheet::iface::import_factory& factory) :
-        m_factory(factory), mp_sheet(nullptr), m_sheet(0), m_row(0), m_col(0) {}
+    csv_handler(spreadsheet::iface::import_factory& factory, const orcus::config& app_config) :
+        m_factory(factory),
+        m_app_config(app_config),
+        mp_sheet(nullptr),
+        m_sheet(0),
+        m_row(0),
+        m_col(0) {}
 
     void begin_parse()
     {
         std::string sheet_name = get_sheet_name();
-        mp_sheet = m_factory.append_sheet(m_sheet++, sheet_name.data(), sheet_name.size());
+        mp_sheet = m_factory.append_sheet(m_sheet, sheet_name.data(), sheet_name.size());
     }
 
     void end_parse() {}
-    void begin_row() {}
+    void begin_row()
+    {
+        // Check to see if this row is beyond the max row of the current
+        // sheet, and if so, append a new sheet and reset the current row to
+        // 0.
+        if (m_row >= mp_sheet->get_sheet_size().rows)
+        {
+            // The next row will be outside the boundary of the current sheet.
+            ++m_sheet;
+            std::string sheet_name = get_sheet_name();
+            mp_sheet = m_factory.append_sheet(m_sheet, sheet_name.data(), sheet_name.size());
+            m_row = 0;
+
+            if (!m_header_cells.empty())
+            {
+                // Duplicate the header rows from the first sheet.
+                for (const header_cell& c : m_header_cells)
+                    mp_sheet->set_auto(c.row, c.col, c.value.data(), c.value.size());
+
+                m_row += m_app_config.csv.header_row_size;
+            }
+        }
+    }
 
     void end_row()
     {
         ++m_row;
         m_col = 0;
-
-        // Check to see if the next row is beyond the max row of the current
-        // sheet, and if so, append a new sheet and reset the current row to
-        // 0.
-
-        if (m_row >= mp_sheet->get_sheet_size().rows)
-        {
-            // The next row will be outside the boundary of the current sheet.
-            std::string sheet_name = get_sheet_name();
-            mp_sheet = m_factory.append_sheet(m_sheet++, sheet_name.data(), sheet_name.size());
-            m_row = 0;
-        }
     }
 
-    void cell(const char* p, size_t n)
+    void cell(const char* p, size_t n, bool transient)
     {
+        if (m_sheet == 0 && size_t(m_row) < m_app_config.csv.header_row_size)
+        {
+            pstring v(p, n);
+            if (transient)
+                v = m_pool.intern(v).first;
+
+            m_header_cells.emplace_back(m_row, m_col, v);
+        }
+
         mp_sheet->set_auto(m_row, m_col, p, n);
         ++m_col;
     }
@@ -77,7 +113,11 @@ private:
     }
 
 private:
+    string_pool m_pool;
+    std::vector<header_cell> m_header_cells;
+
     spreadsheet::iface::import_factory& m_factory;
+    const config& m_app_config;
     spreadsheet::iface::import_sheet* mp_sheet;
     spreadsheet::sheet_t m_sheet;
     spreadsheet::row_t m_row;
@@ -92,7 +132,7 @@ orcus_csv::orcus_csv(spreadsheet::iface::import_factory* factory) :
 void orcus_csv::read_file(const string& filepath)
 {
     string strm = load_file_content(filepath.c_str());
-    parse(&strm[0], strm.size());
+    parse(strm.data(), strm.size());
 
     mp_factory->finalize();
 }
@@ -118,7 +158,7 @@ void orcus_csv::parse(const char* content, size_t len)
     if (!len)
         return;
 
-    csv_handler handler(*mp_factory);
+    csv_handler handler(*mp_factory, get_config());
     csv::parser_config config;
     config.delimiters.push_back(',');
     config.text_qualifier = '"';

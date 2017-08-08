@@ -6,6 +6,7 @@
  */
 
 #include "orcus/orcus_csv.hpp"
+#include "orcus/config.hpp"
 #include "orcus/pstring.hpp"
 #include "orcus/global.hpp"
 #include "orcus/stream.hpp"
@@ -94,21 +95,55 @@ void test_csv_import_split_sheet()
 
     std::cout << "checking " << path << "..." << std::endl;
 
+    config conf(format_t::csv);
+    conf.csv.header_row_size = 0;
+
     spreadsheet::document doc;
     {
         // Set the row size to 11 to make sure the split occurs.
         spreadsheet::import_factory factory(doc, 11, 4);
         orcus_csv app(&factory);
+        app.set_config(conf);
+
         app.read_file(path.c_str());
     }
+
+    assert(doc.sheet_size() == 2);
 
     // Dump the content of the model.
     std::string check = test::get_content_check(doc);
 
     // Check that against known control.
     path = dir;
-    path.append("check.txt");
+    path.append("check-1.txt");
     std::string control = load_file_content(path.c_str());
+
+    test::verify_content(__FILE__, __LINE__, control, check);
+
+    // Re-import the same input file, but have the first row repeated on every
+    // sheet.
+    path = dir;
+    path.append("input.csv");
+    doc.clear();
+    conf.csv.header_row_size = 1;
+    {
+        // Set the row size to 11 to make sure the split occurs.
+        spreadsheet::import_factory factory(doc, 11, 4);
+        orcus_csv app(&factory);
+        app.set_config(conf);
+
+        app.read_file(path.c_str());
+    }
+
+    assert(doc.sheet_size() == 2);
+
+    // Dump the content of the model.
+    check = test::get_content_check(doc);
+
+    // Check that against known control.
+    path = dir;
+    path.append("check-2.txt");
+    control = load_file_content(path.c_str());
 
     test::verify_content(__FILE__, __LINE__, control, check);
 }

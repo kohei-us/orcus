@@ -58,8 +58,14 @@ public:
      *
      * @param p pointer to the first character of a cell content.
      * @param n number of characters the cell content consists of.
+     * @param transient when true, the text content has been converted and is
+     *                  stored in a temporary buffer.  In such case, there is
+     *                  no guarantee that the text content remain available
+     *                  after the end of the call.  When this value is false,
+     *                  the text content is guaranteed to be valid so long as
+     *                  the original CSV stream content is valid.
      */
-    void cell(const char* p, size_t n) {}
+    void cell(const char* p, size_t n, bool transient) {}
 };
 
 #endif
