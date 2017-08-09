@@ -9,9 +9,11 @@
 #define ORCUS_ORCUS_FILTER_GLOBAL_HPP
 
 #include <memory>
+#include <boost/program_options.hpp>
 
 namespace orcus {
 
+struct config;
 struct json_config;
 
 namespace iface {
@@ -21,8 +23,23 @@ class document_dumper;
 
 }
 
+/**
+ * Interface for supporting additional command-line options.
+ */
+class extra_args_handler
+{
+public:
+    virtual ~extra_args_handler();
+
+    virtual void add_options(boost::program_options::options_description& desc) = 0;
+    virtual void map_to_config(
+        config& opt, const boost::program_options::variables_map& vm) = 0;
+};
+
 bool parse_import_filter_args(
-    iface::import_filter& app, iface::document_dumper& doc, int argc, char** argv);
+    int argc, char** argv,
+    iface::import_filter& app, iface::document_dumper& doc,
+    extra_args_handler* args_handler = nullptr);
 
 /**
  * Parse the command-line options, populate the json_config object, and

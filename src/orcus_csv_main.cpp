@@ -8,6 +8,7 @@
 #include "orcus/orcus_csv.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/factory.hpp"
+#include "orcus/config.hpp"
 
 #include "orcus_filter_global.hpp"
 
@@ -16,16 +17,36 @@
 
 using namespace std;
 using namespace orcus;
+namespace po = boost::program_options;
+
+class csv_args_handler : public extra_args_handler
+{
+    constexpr static const char* help_row_header =
+        "Specify the number of header rows to repeat if the source content gets split into multiple sheets.";
+
+public:
+    virtual void add_options(po::options_description& desc)
+    {
+        desc.add_options()("row-header", po::value<size_t>()->default_value(0), help_row_header);
+    }
+
+    virtual void map_to_config(config& opt, const po::variables_map& vm)
+    {
+        if (vm.count("row-header"))
+            opt.csv.header_row_size = vm["row-header"].as<size_t>();
+    }
+};
 
 int main(int argc, char** argv)
 {
     spreadsheet::document doc;
     spreadsheet::import_factory fact(doc);
     orcus_csv app(&fact);
+    csv_args_handler hdl;
 
     try
     {
-        if (parse_import_filter_args(app, doc, argc, argv))
+        if (parse_import_filter_args(argc, argv, app, doc, &hdl))
             return EXIT_FAILURE;
     }
     catch (const std::exception& e)

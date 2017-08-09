@@ -12,7 +12,6 @@
 #include "orcus/global.hpp"
 
 #include <mdds/sorted_string_map.hpp>
-#include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include <vector>
 #include <iostream>
@@ -25,6 +24,8 @@ namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 namespace orcus {
+
+extra_args_handler::~extra_args_handler() {}
 
 namespace {
 
@@ -133,7 +134,8 @@ bool handle_dump_check(
 }
 
 bool parse_import_filter_args(
-    iface::import_filter& app, iface::document_dumper& doc, int argc, char** argv)
+    int argc, char** argv, iface::import_filter& app, iface::document_dumper& doc,
+    extra_args_handler* args_handler)
 {
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -142,6 +144,9 @@ bool parse_import_filter_args(
         ("dump-check", help_dump_check)
         ("output,o", po::value<string>(), help_output)
         ("output-format,f", po::value<string>(), doc_output_format::gen_help_text().data());
+
+    if (args_handler)
+        args_handler->add_options(desc);
 
     po::options_description hidden("Hidden options");
     hidden.add_options()
@@ -198,6 +203,10 @@ bool parse_import_filter_args(
 
     config opt = app.get_config();
     opt.debug = vm.count("debug") > 0;
+
+    if (args_handler)
+        args_handler->map_to_config(opt, vm);
+
     app.set_config(opt);
 
     if (vm.count("dump-check"))
