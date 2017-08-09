@@ -41,6 +41,9 @@ public:
     virtual iface::import_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) override;
     virtual iface::import_sheet* get_sheet(sheet_t sheet_index) override;
     virtual void finalize() override;
+
+    void set_default_row_size(row_t row_size);
+    void set_default_column_size(col_t col_size);
 };
 
 struct export_factory_impl;

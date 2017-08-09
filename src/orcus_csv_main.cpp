@@ -24,16 +24,29 @@ class csv_args_handler : public extra_args_handler
     constexpr static const char* help_row_header =
         "Specify the number of header rows to repeat if the source content gets split into multiple sheets.";
 
+    constexpr static const char* help_row_size =
+        "Specify the number of maximum rows in each sheet.";
+
+    spreadsheet::import_factory& m_fact;
+
 public:
-    virtual void add_options(po::options_description& desc)
+    csv_args_handler(spreadsheet::import_factory& fact) : m_fact(fact) {}
+    virtual ~csv_args_handler() override {}
+
+    virtual void add_options(po::options_description& desc) override
     {
-        desc.add_options()("row-header", po::value<size_t>()->default_value(0), help_row_header);
+        desc.add_options()
+            ("row-header", po::value<size_t>(), help_row_header)
+            ("row-size", po::value<spreadsheet::row_t>(), help_row_size);
     }
 
-    virtual void map_to_config(config& opt, const po::variables_map& vm)
+    virtual void map_to_config(config& opt, const po::variables_map& vm) override
     {
         if (vm.count("row-header"))
             opt.csv.header_row_size = vm["row-header"].as<size_t>();
+
+        if (vm.count("row-size"))
+            m_fact.set_default_row_size(vm["row-size"].as<spreadsheet::row_t>());
     }
 };
 
@@ -42,7 +55,7 @@ int main(int argc, char** argv)
     spreadsheet::document doc;
     spreadsheet::import_factory fact(doc);
     orcus_csv app(&fact);
-    csv_args_handler hdl;
+    csv_args_handler hdl(fact);
 
     try
     {

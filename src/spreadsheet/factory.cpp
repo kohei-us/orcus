@@ -256,6 +256,16 @@ void import_factory::finalize()
     mp_impl->m_doc.finalize();
 }
 
+void import_factory::set_default_row_size(row_t row_size)
+{
+    mp_impl->m_default_row_size = row_size;
+}
+
+void import_factory::set_default_column_size(col_t col_size)
+{
+    mp_impl->m_default_col_size = col_size;
+}
+
 struct export_factory_impl
 {
     document& m_doc;
