@@ -147,6 +147,34 @@ void test_csv_import_split_sheet()
     control = load_file_content(path.c_str());
 
     test::verify_content(__FILE__, __LINE__, control, check);
+
+    // Re-import it again, but this time disable the splitting.  The data should
+    // get trucated on the first sheet.
+    conf.csv.split_to_multiple_sheets = false;
+
+    path = dir;
+    path.append("input.csv");
+    doc.clear();
+
+    {
+        spreadsheet::import_factory factory(doc, 11, 4);
+        orcus_csv app(&factory);
+        app.set_config(conf);
+
+        app.read_file(path.c_str());
+    }
+
+    assert(doc.sheet_size() == 1);
+
+    // Dump the content of the model.
+    check = test::get_content_check(doc);
+
+    // Check that against known control.
+    path = dir;
+    path.append("check-3.txt");
+    control = load_file_content(path.c_str());
+
+    test::verify_content(__FILE__, __LINE__, control, check);
 }
 
 }
