@@ -27,6 +27,12 @@ struct ORCUS_DLLPUBLIC config
     {
         /** Number of header rows to repeat in case of split. */
         size_t header_row_size;
+
+        /**
+         * Whether or not to split oversized source data into multiple sheets
+         * in case it spills over.
+         */
+        bool split_to_multiple_sheets;
     };
 
     /**

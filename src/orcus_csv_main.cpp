@@ -27,6 +27,9 @@ class csv_args_handler : public extra_args_handler
     constexpr static const char* help_row_size =
         "Specify the number of maximum rows in each sheet.";
 
+    constexpr static const char* help_split =
+        "Specify whether or not to split the data into multiple sheets in case it won't fit in a single sheet.";
+
     spreadsheet::import_factory& m_fact;
 
 public:
@@ -36,13 +39,16 @@ public:
     virtual void add_options(po::options_description& desc) override
     {
         desc.add_options()
-            ("row-header", po::value<size_t>(), help_row_header);
+            ("row-header", po::value<size_t>(), help_row_header)
+            ("split", help_split);
     }
 
     virtual void map_to_config(config& opt, const po::variables_map& vm) override
     {
         if (vm.count("row-header"))
             opt.csv.header_row_size = vm["row-header"].as<size_t>();
+
+        opt.csv.split_to_multiple_sheets = vm.count("split") > 0;
     }
 };
 

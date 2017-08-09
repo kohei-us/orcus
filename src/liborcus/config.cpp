@@ -20,6 +20,7 @@ config::config(format_t input) :
     {
         case format_t::csv:
             csv.header_row_size = 0;
+            csv.split_to_multiple_sheets = false;
             break;
         case format_t::gnumeric:
         case format_t::ods:

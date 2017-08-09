@@ -36,6 +36,8 @@ struct header_cell
         row(row), col(col), value(value) {}
 };
 
+class max_row_size_reached {};
+
 class csv_handler
 {
 public:
@@ -61,6 +63,9 @@ public:
         // 0.
         if (m_row >= mp_sheet->get_sheet_size().rows)
         {
+            if (!m_app_config.csv.split_to_multiple_sheets)
+                throw max_row_size_reached();
+
             // The next row will be outside the boundary of the current sheet.
             ++m_sheet;
             std::string sheet_name = get_sheet_name();
@@ -166,6 +171,11 @@ void orcus_csv::parse(const char* content, size_t len)
     try
     {
         parser.parse();
+    }
+    catch (const max_row_size_reached&)
+    {
+        // The parser has decided to end the import due to the destination
+        // sheet being full.
     }
     catch (const csv::parse_error& e)
     {

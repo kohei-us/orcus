@@ -97,6 +97,7 @@ void test_csv_import_split_sheet()
 
     config conf(format_t::csv);
     conf.csv.header_row_size = 0;
+    conf.csv.split_to_multiple_sheets = true;
 
     spreadsheet::document doc;
     {
