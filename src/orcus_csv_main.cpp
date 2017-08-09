@@ -36,17 +36,13 @@ public:
     virtual void add_options(po::options_description& desc) override
     {
         desc.add_options()
-            ("row-header", po::value<size_t>(), help_row_header)
-            ("row-size", po::value<spreadsheet::row_t>(), help_row_size);
+            ("row-header", po::value<size_t>(), help_row_header);
     }
 
     virtual void map_to_config(config& opt, const po::variables_map& vm) override
     {
         if (vm.count("row-header"))
             opt.csv.header_row_size = vm["row-header"].as<size_t>();
-
-        if (vm.count("row-size"))
-            m_fact.set_default_row_size(vm["row-size"].as<spreadsheet::row_t>());
     }
 };
 
@@ -59,7 +55,7 @@ int main(int argc, char** argv)
 
     try
     {
-        if (parse_import_filter_args(argc, argv, app, doc, &hdl))
+        if (parse_import_filter_args(argc, argv, fact, app, doc, &hdl))
             return EXIT_FAILURE;
     }
     catch (const std::exception& e)

@@ -13,15 +13,151 @@
 #include "orcus/dom_tree.hpp"
 #include "orcus/global.hpp"
 
-#include "orcus_filter_global.hpp"
-
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <memory>
 
+#include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
+
 using namespace std;
 using namespace orcus;
+namespace po = boost::program_options;
+namespace fs = boost::filesystem;
+
+const char* help_program =
+"The FILE must specify a path to an existing file.";
+
+const char* help_json_output =
+"Output file path.";
+
+const char* help_json_output_format =
+"Specify the format of output file.  Supported format types are:\n"
+"  * XML (xml)\n"
+"  * JSON (json)\n"
+"  * flat tree dump (check)\n"
+"  * no output (none)";
+
+const char* err_no_input_file = "No input file.";
+
+void print_json_usage(std::ostream& os, const po::options_description& desc)
+{
+    os << "Usage: orcus-json [options] FILE" << endl << endl;
+    os << help_program << endl << endl << desc;
+}
+
+/**
+ * Parse the command-line options, populate the json_config object, and
+ * return that to the caller.
+ */
+std::unique_ptr<json_config> parse_json_args(int argc, char** argv)
+{
+    po::options_description desc("Allowed options");
+    desc.add_options()
+        ("help,h", "Print this help.")
+        ("resolve-refs", "Resolve JSON references to external files.")
+        ("output,o", po::value<string>(), help_json_output)
+        ("output-format,f", po::value<string>(), help_json_output_format);
+
+    po::options_description hidden("Hidden options");
+    hidden.add_options()
+        ("input", po::value<string>(), "input file");
+
+    po::options_description cmd_opt;
+    cmd_opt.add(desc).add(hidden);
+
+    po::positional_options_description po_desc;
+    po_desc.add("input", -1);
+
+    po::variables_map vm;
+    try
+    {
+        po::store(
+            po::command_line_parser(argc, argv).options(cmd_opt).positional(po_desc).run(), vm);
+        po::notify(vm);
+    }
+    catch (const exception& e)
+    {
+        // Unknown options.
+        cerr << e.what() << endl;
+        print_json_usage(cerr, desc);
+        return nullptr;
+    }
+
+    if (vm.count("help"))
+    {
+        print_json_usage(cout, desc);
+        return nullptr;
+    }
+
+    std::unique_ptr<json_config> config = orcus::make_unique<json_config>();
+
+    if (vm.count("input"))
+        config->input_path = vm["input"].as<string>();
+
+    if (vm.count("output"))
+        config->output_path = vm["output"].as<string>();
+
+    if (vm.count("resolve-refs"))
+        config->resolve_references = true;
+
+    if (vm.count("output-format"))
+    {
+        std::string outformat = vm["output-format"].as<string>();
+        if (outformat == "none")
+            config->output_format = json_config::output_format_type::none;
+        else if (outformat == "xml")
+            config->output_format = json_config::output_format_type::xml;
+        else if (outformat == "json")
+            config->output_format = orcus::json_config::output_format_type::json;
+        else if (outformat == "check")
+            config->output_format = orcus::json_config::output_format_type::check;
+        else
+        {
+            cerr << "Unknown output format type '" << outformat << "'." << endl;
+            return nullptr;
+        }
+    }
+    else
+    {
+        cerr << "Output format is not specified." << endl;
+        print_json_usage(cerr, desc);
+        return nullptr;
+    }
+
+    if (config->input_path.empty())
+    {
+        cerr << err_no_input_file << endl;
+        print_json_usage(cerr, desc);
+        return nullptr;
+    }
+
+    if (!fs::exists(config->input_path))
+    {
+        cerr << "Input file does not exist: " << config->input_path << endl;
+        return nullptr;
+    }
+
+    if (config->output_format != json_config::output_format_type::none)
+    {
+        if (config->output_path.empty())
+        {
+            cerr << "Output file not given." << endl;
+            return nullptr;
+        }
+
+        // Check to make sure the output path doesn't point to an existing
+        // directory.
+        if (fs::is_directory(config->output_path))
+        {
+            cerr << "Output file path points to an existing directory.  Aborting." << endl;
+            return nullptr;
+        }
+    }
+
+    return config;
+}
 
 std::unique_ptr<json::document_tree> load_doc(const std::string& strm, const json_config& config)
 {

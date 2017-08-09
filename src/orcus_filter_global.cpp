@@ -10,6 +10,7 @@
 #include "orcus/config.hpp"
 #include "orcus/interface.hpp"
 #include "orcus/global.hpp"
+#include "orcus/spreadsheet/factory.hpp"
 
 #include <mdds/sorted_string_map.hpp>
 #include <boost/filesystem.hpp>
@@ -96,15 +97,8 @@ const char* help_dump_check =
 const char* help_debug =
 "Turn on a debug mode to generate run-time debug output.";
 
-const char* help_json_output =
-"Output file path.";
-
-const char* help_json_output_format =
-"Specify the format of output file.  Supported format types are:\n"
-"  * XML (xml)\n"
-"  * JSON (json)\n"
-"  * flat tree dump (check)\n"
-"  * no output (none)";
+const char* help_row_size =
+"Specify the number of maximum rows in each sheet.";
 
 const char* err_no_input_file = "No input file.";
 
@@ -134,7 +128,8 @@ bool handle_dump_check(
 }
 
 bool parse_import_filter_args(
-    int argc, char** argv, iface::import_filter& app, iface::document_dumper& doc,
+    int argc, char** argv, spreadsheet::import_factory& fact,
+    iface::import_filter& app, iface::document_dumper& doc,
     extra_args_handler* args_handler)
 {
     po::options_description desc("Allowed options");
@@ -143,7 +138,8 @@ bool parse_import_filter_args(
         ("debug,d", help_debug)
         ("dump-check", help_dump_check)
         ("output,o", po::value<string>(), help_output)
-        ("output-format,f", po::value<string>(), doc_output_format::gen_help_text().data());
+        ("output-format,f", po::value<string>(), doc_output_format::gen_help_text().data())
+        ("row-size", po::value<spreadsheet::row_t>(), help_row_size);
 
     if (args_handler)
         args_handler->add_options(desc);
@@ -194,6 +190,9 @@ bool parse_import_filter_args(
         outformat_s = vm["output-format"].as<string>();
         outformat = doc_output_format::get().find(outformat_s.data(), outformat_s.size());
     }
+
+    if (vm.count("row-size"))
+        fact.set_default_row_size(vm["row-size"].as<spreadsheet::row_t>());
 
     if (infile.empty())
     {
@@ -269,120 +268,6 @@ bool parse_import_filter_args(
     }
 
     return true;
-}
-
-void print_json_usage(std::ostream& os, const po::options_description& desc)
-{
-    os << "Usage: orcus-json [options] FILE" << endl << endl;
-    os << help_program << endl << endl << desc;
-}
-
-std::unique_ptr<json_config> parse_json_args(int argc, char** argv)
-{
-    po::options_description desc("Allowed options");
-    desc.add_options()
-        ("help,h", "Print this help.")
-        ("resolve-refs", "Resolve JSON references to external files.")
-        ("output,o", po::value<string>(), help_json_output)
-        ("output-format,f", po::value<string>(), help_json_output_format);
-
-    po::options_description hidden("Hidden options");
-    hidden.add_options()
-        ("input", po::value<string>(), "input file");
-
-    po::options_description cmd_opt;
-    cmd_opt.add(desc).add(hidden);
-
-    po::positional_options_description po_desc;
-    po_desc.add("input", -1);
-
-    po::variables_map vm;
-    try
-    {
-        po::store(
-            po::command_line_parser(argc, argv).options(cmd_opt).positional(po_desc).run(), vm);
-        po::notify(vm);
-    }
-    catch (const exception& e)
-    {
-        // Unknown options.
-        cerr << e.what() << endl;
-        print_json_usage(cerr, desc);
-        return nullptr;
-    }
-
-    if (vm.count("help"))
-    {
-        print_json_usage(cout, desc);
-        return nullptr;
-    }
-
-    std::unique_ptr<json_config> config = orcus::make_unique<json_config>();
-
-    if (vm.count("input"))
-        config->input_path = vm["input"].as<string>();
-
-    if (vm.count("output"))
-        config->output_path = vm["output"].as<string>();
-
-    if (vm.count("resolve-refs"))
-        config->resolve_references = true;
-
-    if (vm.count("output-format"))
-    {
-        std::string outformat = vm["output-format"].as<string>();
-        if (outformat == "none")
-            config->output_format = json_config::output_format_type::none;
-        else if (outformat == "xml")
-            config->output_format = json_config::output_format_type::xml;
-        else if (outformat == "json")
-            config->output_format = orcus::json_config::output_format_type::json;
-        else if (outformat == "check")
-            config->output_format = orcus::json_config::output_format_type::check;
-        else
-        {
-            cerr << "Unknown output format type '" << outformat << "'." << endl;
-            return nullptr;
-        }
-    }
-    else
-    {
-        cerr << "Output format is not specified." << endl;
-        print_json_usage(cerr, desc);
-        return nullptr;
-    }
-
-    if (config->input_path.empty())
-    {
-        cerr << err_no_input_file << endl;
-        print_json_usage(cerr, desc);
-        return nullptr;
-    }
-
-    if (!fs::exists(config->input_path))
-    {
-        cerr << "Input file does not exist: " << config->input_path << endl;
-        return nullptr;
-    }
-
-    if (config->output_format != json_config::output_format_type::none)
-    {
-        if (config->output_path.empty())
-        {
-            cerr << "Output file not given." << endl;
-            return nullptr;
-        }
-
-        // Check to make sure the output path doesn't point to an existing
-        // directory.
-        if (fs::is_directory(config->output_path))
-        {
-            cerr << "Output file path points to an existing directory.  Aborting." << endl;
-            return nullptr;
-        }
-    }
-
-    return config;
 }
 
 }

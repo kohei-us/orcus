@@ -235,9 +235,6 @@
 				<F N="../include/orcus/zip_archive_stream.hpp"/>
 			</Folder>
 		</Folder>
-		<Folder Name="../misc">
-			<F N="../misc/sorted_string_map_perf.cpp"/>
-		</Folder>
 		<Folder Name="../parser_handlers">
 			<F N="../parser_handlers/css.hpp"/>
 			<F N="../parser_handlers/css_test.cpp"/>
@@ -502,7 +499,6 @@
 			</Folder>
 			<F N="../src/dom_tree_sax_handler.cpp"/>
 			<F N="../src/dom_tree_sax_handler.hpp"/>
-			<F N="../src/odf_styles_context_test.cpp"/>
 			<F N="../src/orcus_css_dump.cpp"/>
 			<F N="../src/orcus_csv_main.cpp"/>
 			<F N="../src/orcus_detect_main.cpp"/>
@@ -512,6 +508,7 @@
 			<F N="../src/orcus_json_main.cpp"/>
 			<F N="../src/orcus_mso_encryption.cpp"/>
 			<F N="../src/orcus_ods_main.cpp"/>
+			<F N="../src/orcus_ods_styles.cpp"/>
 			<F N="../src/orcus_test_csv.cpp"/>
 			<F N="../src/orcus_test_global.cpp"/>
 			<F N="../src/orcus_test_global.hpp"/>
