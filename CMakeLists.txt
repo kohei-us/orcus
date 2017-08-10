@@ -194,7 +194,6 @@ add_executable(orcus-zip-dump
 
 add_executable(orcus-json
 	${PROJECT_SOURCE_DIR}/src/orcus_json_main.cpp
-    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
 )
 
 add_executable(orcus-yaml

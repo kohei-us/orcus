@@ -13,6 +13,7 @@
 #include <fstream>
 #include <tuple>
 #include <cassert>
+#include <algorithm>
 
 namespace orcus {
 
