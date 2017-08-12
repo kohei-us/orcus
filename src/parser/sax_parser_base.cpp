@@ -336,7 +336,7 @@ void parser_base::name(pstring& str)
 {
     const char* p0 = mp_char;
     char c = cur_char();
-    if (!is_alpha(c))
+    if (!is_alpha(c) && c != '_')
     {
         ::std::ostringstream os;
         os << "name must begin with an alphabet, but got this instead '" << c << "'";
