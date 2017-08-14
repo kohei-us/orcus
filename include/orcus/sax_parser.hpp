@@ -15,12 +15,11 @@ namespace orcus {
 struct sax_parser_default_config
 {
     /**
-     * When true, the parser will throw an exception if the xml stream doesn't
-     * begin with a <?xml..?> declaration. When false, the parser will keep
-     * parsing regardless of whether or not the xml stream begins with a
-     * <?xml..?> declaration.
+     * An integer value representing a baseline XML version.  A value of 10
+     * corresponds with version 1.0 whereas a value of 11 corresponds with
+     * version 1.1.
      */
-    static const bool strict_xml_declaration = true;
+    static const uint8_t baseline_version = 10;
 };
 
 /**
@@ -95,8 +94,10 @@ void sax_parser<_Handler,_Config>::header()
     if (!has_char() || cur_char() != '<')
         throw sax::malformed_xml_error("xml file must begin with '<'.", offset());
 
-    if (config_type::strict_xml_declaration)
+    if (config_type::baseline_version >= 11)
     {
+        // XML version 1.1 requires a header declaration whereas in 1.0 it's
+        // optional.
         if (next_char_checked() != '?')
             throw sax::malformed_xml_error("xml file must begin with '<?'.", offset());
 

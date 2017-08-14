@@ -1,0 +1,8 @@
+/root
+/root/child
+/root/child
+/root/child@attr1="value1"
+/root/child@attr2="value2"
+/root/child
+/root/child/baby
+/root/child/baby"some text"
