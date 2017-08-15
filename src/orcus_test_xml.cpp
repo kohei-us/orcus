@@ -75,6 +75,7 @@ const char* sax_parser_test_dirs[] = {
     SRCDIR"/test/xml/cdata-1/",
     SRCDIR"/test/xml/single-quote/",
     SRCDIR"/test/xml/no-decl-1/",
+    SRCDIR"/test/xml/underscore-identifier/",
 };
 
 const char* sax_parser_parse_only_test_dirs[] = {

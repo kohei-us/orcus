@@ -1,0 +1,5 @@
+/root
+/root/_child
+/root/_child
+/root/_child@_attr2="value2"
+/root/_child@at_tr1="value1"
