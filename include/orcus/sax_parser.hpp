@@ -143,7 +143,7 @@ void sax_parser<_Handler,_Config>::element()
             declaration(nullptr);
         break;
         default:
-            if (!is_alpha(c))
+            if (!is_alpha(c) && c != '_')
                 throw sax::malformed_xml_error("expected an alphabet.", offset());
             element_open(pos);
     }
@@ -152,7 +152,7 @@ void sax_parser<_Handler,_Config>::element()
 template<typename _Handler, typename _Config>
 void sax_parser<_Handler,_Config>::element_open(const char* begin_pos)
 {
-    assert(is_alpha(cur_char()));
+    assert(is_alpha(cur_char()) || cur_char() == '_');
 
     sax::parser_element elem;
     element_name(elem, begin_pos);
