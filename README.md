@@ -36,7 +36,7 @@ callbacks from the parser as the file is being parsed.
 
 | Version | API Version | Release Date | Download | Checksum | File Size (bytes) |
 |---------|-------------|--------------|----------|----------|-------------------|
-| 0.13.0 | 0.13 | 2016-09-18 | [liborcus-0.13.0.tar.xz](http://kohei.us/files/orcus/src/liborcus-0.13.0.tar.xz) | sha256sum: 08c779722471d49f38de30dad538dbf3ae1c26eb9aeb7f5eb5ca64516513e6d7 | 1812468 |
+| 0.13.0 | 0.13 | 2017-08-15 | [liborcus-0.13.0.tar.xz](http://kohei.us/files/orcus/src/liborcus-0.13.0.tar.xz) | sha256sum: 08c779722471d49f38de30dad538dbf3ae1c26eb9aeb7f5eb5ca64516513e6d7 | 1812468 |
 |        |      |            | [liborcus-0.13.0.tar.gz](http://kohei.us/files/orcus/src/liborcus-0.13.0.tar.gz) | sha256sum: 1b03e1970aca31ecceae2d6412c4ead23d727c7c655efc26cf49d4ed83ba36e2 | 2309677 |
 | 0.12.1 | 0.12 | 2016-09-18 | [liborcus-0.12.1.tar.xz](http://kohei.us/files/orcus/src/liborcus-0.12.1.tar.xz) | sha256sum: d1b936c66944d23e1b2582d0e7129e44670052510d03f19fef644e9814ae2b9c | 1673880 |
 |        |      |            | [liborcus-0.12.1.tar.gz](http://kohei.us/files/orcus/src/liborcus-0.12.1.tar.gz) | sha256sum: 676b1fedd721f64489650f5e76d7f98b750439914d87cae505b8163d08447908 | 2117890 |
