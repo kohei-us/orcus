@@ -105,6 +105,10 @@ test_data = \
     test/csv/quoted-with-delim/input.csv \
     test/csv/simple-numbers/check.txt \
     test/csv/simple-numbers/input.csv \
+    test/csv/split-sheet/check-1.txt \
+    test/csv/split-sheet/check-2.txt \
+    test/csv/split-sheet/check-3.txt \
+    test/csv/split-sheet/input.csv \
     test/gnumeric/test.gnumeric \
     test/json/basic1/check.txt \
     test/json/basic1/input.json \
@@ -138,32 +142,69 @@ test_data = \
     test/ods/test.ods \
     test/python/json.py \
     test/python/module.py \
+    test/python/perf/test_json.py \
     test/python/xlsx.py \
     test/xls-xml/basic/check.txt \
     test/xls-xml/basic/input.xml \
+    test/xls-xml/bold-and-italic/check.txt \
+    test/xls-xml/bold-and-italic/input.xml \
+    test/xls-xml/colored-text/check.txt \
+    test/xls-xml/colored-text/input.xml \
+    test/xls-xml/date-time/input.xml \
+    test/xls-xml/empty-rows/check.txt \
+    test/xls-xml/empty-rows/input.xml \
+    test/xls-xml/merged-cells/check.txt \
+    test/xls-xml/merged-cells/input.xml \
+    test/xls-xml/named-expression-sheet-local/check.txt \
+    test/xls-xml/named-expression-sheet-local/input.xml \
+    test/xls-xml/named-expression/check.txt \
+    test/xls-xml/named-expression/input.xml \
+    test/xls-xml/table/autofilter.xml \
+    test/xls-xml/view/cursor-per-sheet.xml \
+    test/xls-xml/view/cursor-split-pane.xml \
+    test/xls-xml/view/frozen-pane.xml \
     test/xlsx/background-color/standard.xlsx \
+    test/xlsx/boolean-values/check.txt \
+    test/xlsx/boolean-values/input.xlsx \
     test/xlsx/borders/grid-box.xlsx \
     test/xlsx/borders/single-cells.xlsx \
     test/xlsx/column-width-row-height/input.xlsx \
     test/xlsx/data-table/multi-table.xlsx \
     test/xlsx/data-table/one-variable.xlsx \
     test/xlsx/date-cell/input.xlsx \
+    test/xlsx/date-time/input.xlsx \
     test/xlsx/empty-shared-strings/check.txt \
     test/xlsx/empty-shared-strings/input.xlsx \
     test/xlsx/formatted-text/bold-and-italic.xlsx \
     test/xlsx/formatted-text/colored-text.xlsx \
     test/xlsx/formula-shared.xlsx \
     test/xlsx/formula-simple.xlsx \
+    test/xlsx/merged-cells/simple.xlsx \
+    test/xlsx/named-expression-sheet-local/check.txt \
+    test/xlsx/named-expression-sheet-local/input.xlsx \
+    test/xlsx/named-expression/check.txt \
+    test/xlsx/named-expression/input.xlsx \
+    test/xlsx/pivot-table/chart-simple.xlsx \
+    test/xlsx/pivot-table/error-values.xlsx \
+    test/xlsx/pivot-table/group-by-dates.xlsx \
+    test/xlsx/pivot-table/group-by-numbers.xlsx \
+    test/xlsx/pivot-table/group-field.xlsx \
     test/xlsx/pivot-table/many-fields.xlsx \
+    test/xlsx/pivot-table/mixed-type-field.xlsx \
+    test/xlsx/pivot-table/three-pivot-tables-on-one-sheet.xlsx \
     test/xlsx/pivot-table/two-pivot-caches.xlsx \
     test/xlsx/pivot-table/two-tables-one-source.xlsx \
     test/xlsx/raw-values-1/check.txt \
     test/xlsx/raw-values-1/input.xlsx \
     test/xlsx/revision/cell-change-basic.xlsx \
+    test/xlsx/table/autofilter-text-filter-1.xlsx \
     test/xlsx/table/autofilter.xlsx \
     test/xlsx/table/table-1.xlsx \
     test/xlsx/table/table-2.xlsx \
     test/xlsx/test.xlsx \
+    test/xlsx/view/cursor-per-sheet.xlsx \
+    test/xlsx/view/cursor-split-pane.xlsx \
+    test/xlsx/view/frozen-pane.xlsx \
     test/xml-mapped/attribute-basic/check.txt \
     test/xml-mapped/attribute-basic/input.xml \
     test/xml-mapped/attribute-basic/map.xml \
@@ -180,6 +221,7 @@ test_data = \
     test/xml-mapped/attribute-single-element/input.xml \
     test/xml-mapped/attribute-single-element/map.xml \
     test/xml-mapped/content-basic/check.txt \
+    test/xml-mapped/content-basic/flat/data.txt \
     test/xml-mapped/content-basic/input.xml \
     test/xml-mapped/content-basic/map.xml \
     test/xml-mapped/content-namespace-2/check.txt \
@@ -188,6 +230,10 @@ test_data = \
     test/xml-mapped/content-namespace/check.txt \
     test/xml-mapped/content-namespace/input.xml \
     test/xml-mapped/content-namespace/map.xml \
+    test/xml-mapped/fuel-economy/check.txt \
+    test/xml-mapped/fuel-economy/flat/data.txt \
+    test/xml-mapped/fuel-economy/input.xml \
+    test/xml-mapped/fuel-economy/map.xml \
     test/xml-structure/attribute-1/check.txt \
     test/xml-structure/attribute-1/input.xml \
     test/xml-structure/basic-1/check.txt \
@@ -212,17 +258,31 @@ test_data = \
     test/xml/encoded-attrs/test1.xml \
     test/xml/encoded-char/check.txt \
     test/xml/encoded-char/input.xml \
+    test/xml/no-decl-1/check.txt \
+    test/xml/no-decl-1/input.xml \
     test/xml/ns-alias-1/check.txt \
     test/xml/ns-alias-1/input.xml \
     test/xml/parse-only/rss/input.xml \
     test/xml/simple/check.txt \
     test/xml/simple/input.xml \
+    test/xml/single-quote/check.txt \
+    test/xml/single-quote/input.xml \
+    test/xml/underscore-identifier/check.txt \
+    test/xml/underscore-identifier/input.xml \
     test/yaml/basic1/input.yaml \
     test/yaml/basic2/input.yaml \
     test/yaml/basic3/input.yaml \
     test/yaml/boolean/input.yaml \
+    test/yaml/empty-value-map-1/input.yaml \
+    test/yaml/empty-value-map-2/input.yaml \
+    test/yaml/empty-value-sequence-1/input.yaml \
+    test/yaml/empty-value-sequence-2/input.yaml \
+    test/yaml/invalids/1.yaml \
+    test/yaml/invalids/2.yaml \
+    test/yaml/invalids/3.yaml \
     test/yaml/literal-block-1/input.yaml \
     test/yaml/literal-block-2/input.yaml \
+    test/yaml/map-key-1/input.yaml \
     test/yaml/multi-line-1/input.yaml \
     test/yaml/multi-line-2/input.yaml \
     test/yaml/null/input.yaml \
