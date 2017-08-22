@@ -544,6 +544,23 @@ void orcus_xml::read_file(const char* filepath)
 #endif
     string& strm = mp_impl->m_data_strm;
     strm = load_file_content(filepath);
+    read_impl();
+}
+
+void orcus_xml::read_content(const char* p, size_t n)
+{
+#if ORCUS_DEBUG_XML
+    cout << "reading file " << filepath << endl;
+#endif
+
+    string& strm = mp_impl->m_data_strm;
+    strm = std::string(p, n);
+    read_impl();
+}
+
+void orcus_xml::read_impl()
+{
+    string& strm = mp_impl->m_data_strm;
     if (strm.empty())
         return;
 
