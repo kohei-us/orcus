@@ -5,14 +5,17 @@ JSON Document Tree
 Document tree
 `````````````
 
-.. doxygenclass:: orcus::json_document_tree
+.. doxygenclass:: orcus::json::document_tree
    :members:
 
 .. doxygenstruct:: orcus::json_config
    :members:
 
-.. doxygenclass:: orcus::json::detail::node
+.. doxygenclass:: orcus::json::node
    :members:
 
-.. doxygenenum:: orcus::json::detail::node_t
+.. doxygenclass:: orcus::json::const_node
+   :members:
+
+.. doxygenenum:: orcus::json::node_t
    :project: orcus
