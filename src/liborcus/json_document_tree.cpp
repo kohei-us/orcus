@@ -1026,7 +1026,7 @@ struct node::impl
 node::node(double v) : mp_impl(orcus::make_unique<impl>(v)) {}
 node::node(int v) : mp_impl(orcus::make_unique<impl>(v)) {}
 node::node(bool b) : mp_impl(orcus::make_unique<impl>(b)) {}
-node::node(decltype(nullptr)) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
+node::node(std::nullptr_t) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
 node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
 node::node(std::initializer_list<detail::init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
 node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array))) {}

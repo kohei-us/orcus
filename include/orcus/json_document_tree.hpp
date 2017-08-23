@@ -310,7 +310,7 @@ public:
     node(double v);
     node(int v);
     node(bool b);
-    node(decltype(nullptr));
+    node(std::nullptr_t);
     node(const char* p);
     node(std::initializer_list<detail::init::node> vs);
     node(json::array array);
