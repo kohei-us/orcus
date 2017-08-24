@@ -270,6 +270,7 @@ AC_CONFIG_FILES([Makefile
 	src/spreadsheet/Makefile
         parser_handlers/Makefile
         benchmark/Makefile
+        doc_example/Makefile
 ])
 AC_OUTPUT
 
