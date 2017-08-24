@@ -51,31 +51,26 @@ content tree afterward.
 
     int main()
     {
-        using node = orcus::json_document_tree::node;
+        using node = orcus::json::node;
 
         orcus::json_config config; // Use default configuration.
 
-        orcus::json_document_tree doc;
-
-        // Load JSON string into a document tree.
+        orcus::json::document_tree doc;
         doc.load(json_string, config);
 
         // Root is an object containing three key-value pairs.
         node root = doc.get_document_root();
 
-        vector<orcus::pstring> keys = root.keys();
-
-        for (auto it = keys.begin(), ite = keys.end(); it != ite; ++it)
+        for (const orcus::pstring& key : root.keys())
         {
-            orcus::pstring key = *it;
             node value = root.child(key);
             switch (value.type())
             {
-                case orcus::json_node_t::string:
+                case orcus::json::node_t::string:
                     // string value
                     cout << key << ": " << value.string_value() << endl;
                 break;
-                case orcus::json_node_t::array:
+                case orcus::json::node_t::array:
                 {
                     // array value
                     cout << key << ":" << endl;
@@ -112,6 +107,13 @@ Using the low-level parser
 
 The following code snippet shows how to use the low-level :cpp:class:`~orcus::json_parser`
 class by providing an own handler class and passing it as a template argument::
+
+    #include <orcus/json_parser.hpp>
+    #include <orcus/pstring.hpp>
+    #include <cstring>
+    #include <iostream>
+
+    using namespace std;
 
     class json_parser_handler
     {
