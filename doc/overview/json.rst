@@ -9,10 +9,10 @@ parsing of JSON strings and a document class that stores parsed JSON
 structures.
 
 There are two approaches to process JSON strings using the orcus library.  One
-approach is to utilize the :cpp:class:`~orcus::json_document_tree` class to
+approach is to utilize the :cpp:class:`~orcus::json::document_tree` class to
 load and populate the JSON structure tree via its
-:cpp:func:`~orcus::json_document_tree::load()` method and traverse the tree
-through its :cpp:func:`~orcus::json_document_tree::get_document_root()` method.
+:cpp:func:`~orcus::json::document_tree::load()` method and traverse the tree
+through its :cpp:func:`~orcus::json::document_tree::get_document_root()` method.
 This approach is ideal if you want a quick way to parse and access the content
 of a JSON document with minimal effort.
 
@@ -21,7 +21,7 @@ class directly by providing your own handler class to receive callbacks from
 the parser.  This method requires a bit more effort on your part to provide
 and populate your own data structure, but if you already have a data structure
 to store the content of JSON, then this approach is ideal.  The
-:cpp:class:`~orcus::json_document_tree` class internally uses
+:cpp:class:`~orcus::json::document_tree` class internally uses
 :cpp:class:`~orcus::json_parser` to parse JSON contents.
 
 
@@ -29,7 +29,7 @@ Populating a document tree
 --------------------------
 
 The following code snippet shows an example of how to populate an instance of
-:cpp:class:`~orcus::json_document_tree` from a JSON string, and navigate its
+:cpp:class:`~orcus::json::document_tree` from a JSON string, and navigate its
 content tree afterward.
 
 ::
