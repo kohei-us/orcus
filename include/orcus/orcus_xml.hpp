@@ -44,7 +44,7 @@ public:
     void append_sheet(const pstring& name);
 
     void read_file(const char* filepath);
-    void read_content(const char* p, size_t n);
+    void read_stream(const char* p, size_t n);
     void write_file(const char* filepath);
 
 private:

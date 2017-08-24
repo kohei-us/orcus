@@ -547,7 +547,7 @@ void orcus_xml::read_file(const char* filepath)
     read_impl();
 }
 
-void orcus_xml::read_content(const char* p, size_t n)
+void orcus_xml::read_stream(const char* p, size_t n)
 {
 #if ORCUS_DEBUG_XML
     cout << "reading file " << filepath << endl;
