@@ -19,8 +19,8 @@ Allowed options
    Turn on a debug mode to generate run-time debug output.
 
 **--dump-check**
-   Dump the the content to stdout in a special format used for content
-   verification in unit tests.
+   Dump the content to stdout in a special format used for content verification
+   in automated tests.
 
 **-o [ --output ] arg**
    Output directory path, or output file when --dump-check option is used.
@@ -28,7 +28,19 @@ Allowed options
 **-f [ --output-format ] arg**
    Specify the format of output file.  Supported format types are:
 
-   - flat text format (flat)
-   - HTML format (html)
-   - no output (none)
+   - csv - CSV format
+   - flat - flat text format
+   - html - HTML format
+   - json - JSON format
+   - none - no output
+
+**--row-size arg**
+   Specify the number of maximum rows in each sheet.
+
+**--row-header arg**
+   Specify the number of header rows to repeat if the source content gets split
+   into multiple sheets.
+**--split**
+   Specify whether or not to split the data into multiple sheets in case it
+   won't fit in a single sheet.
 
