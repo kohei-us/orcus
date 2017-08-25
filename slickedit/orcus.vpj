@@ -149,6 +149,11 @@
 			<F N="../benchmark/json_parser.cpp"/>
 			<F N="../benchmark/threaded_json_parser.cpp"/>
 		</Folder>
+		<Folder Name="../doc_example">
+			<F N="../doc_example/json_doc_1.cpp"/>
+			<F N="../doc_example/json_doc_2.cpp"/>
+			<F N="../doc_example/json_parser_1.cpp"/>
+		</Folder>
 		<Folder Name="../example">
 			<F N="../example/json.cpp"/>
 			<F N="../example/json_parser.cpp"/>
