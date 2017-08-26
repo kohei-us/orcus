@@ -78,6 +78,40 @@ void example_object_explicit_1()
     std::cout << doc.dump() << std::endl;
 }
 
+void example_object_explicit_2()
+{
+    using namespace orcus;
+
+    json::document_tree doc = {
+        json::object(),
+        json::object(),
+        json::object()
+    };
+
+    std::cout << doc.dump() << std::endl;
+}
+
+void example_root_object_add_child()
+{
+    using namespace orcus;
+
+    json::document_tree doc = json::object();
+
+    json::node root = doc.get_document_root();
+    root["child1"] = 1.0;
+    root["child2"] = "string";
+    root["child3"] = { true, false };
+
+    root["child object"] = {
+        { "key1", 100.0 },
+        { "key2", 200.0 }
+    };
+
+    root["child array"] = json::array({ 1.1, 1.2, true });
+
+    std::cout << doc.dump() << std::endl;
+}
+
 int main()
 {
     using func_type = std::function<void()>;
@@ -89,6 +123,8 @@ int main()
         example_list_object_2,
         example_array_explicit,
         example_object_explicit_1,
+        example_object_explicit_2,
+        example_root_object_add_child,
     };
 
     for (func_type f : funcs)
