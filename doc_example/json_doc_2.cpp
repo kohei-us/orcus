@@ -68,6 +68,22 @@ void example_array_explicit()
     std::cout << doc.dump() << std::endl;
 }
 
+void example_object_ambiguous()
+{
+    using namespace orcus;
+
+    json::document_tree doc = {};
+
+    try
+    {
+        auto root = doc.get_document_root();
+    }
+    catch (const json::document_error& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+}
+
 void example_object_explicit_1()
 {
     using namespace orcus;
@@ -94,19 +110,22 @@ void example_root_object_add_child()
 {
     using namespace orcus;
 
+    // Initialize the tree with an empty object.
     json::document_tree doc = json::object();
 
+    // Get the root object, and assign three key-value pairs.
     json::node root = doc.get_document_root();
     root["child1"] = 1.0;
     root["child2"] = "string";
-    root["child3"] = { true, false };
+    root["child3"] = { true, false }; // implicit array
 
+    // You can also create a key-value pair whose value is another object.
     root["child object"] = {
         { "key1", 100.0 },
         { "key2", 200.0 }
     };
 
-    root["child array"] = json::array({ 1.1, 1.2, true });
+    root["child array"] = json::array({ 1.1, 1.2, true }); // explicit array
 
     std::cout << doc.dump() << std::endl;
 }
@@ -121,6 +140,7 @@ int main()
         example_list_object,
         example_list_object_2,
         example_array_explicit,
+        example_object_ambiguous,
         example_object_explicit_1,
         example_object_explicit_2,
         example_root_object_add_child,

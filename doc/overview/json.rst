@@ -345,7 +345,7 @@ For instance, this code::
         { "array", { "one", 987.0 } }
     };
 
-is meant to be an object containing an array.  However, because the supposed
+is intended to be an object containing an array.  However, because the supposed
 inner array contains exactly two values and the first value is a string
 value, which could be interpreted as a key-value pair for the outer object, it
 ends up being too ambiguous and a :cpp:class:`~orcus::json::key_value_error`
@@ -370,5 +370,127 @@ whose value is an array:
             "one",
             987
         ]
+    }
+
+Similar ambiguity issue arises when you want to construct a tree consisting
+only of an empty root object.  You may be tempted to write something like
+this::
+
+    using namespace orcus;
+
+    json::document_tree doc = {};
+
+However, this will result in leaving the tree entirely unpopulated i.e. the
+tree will not even have a root node!  If you continue on and try to get a root
+node from this tree, you'll get a :cpp:class:`~orcus::json::document_error`
+thrown as a result.  If you inspect the error message stored in the exception::
+
+    try
+    {
+        auto root = doc.get_document_root();
+    }
+    catch (const json::document_error& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+
+you will get
+
+.. code-block:: text
+
+    json::document_error: document tree is empty
+
+giving you further proof that the tree is indeed empty!  The solution here is
+to directly assign an instance of :cpp:class:`~orcus::json::object` to the
+document tree, which will initialize the tree with an empty root object.  The
+following code::
+
+    using namespace orcus;
+
+    json::document_tree doc = json::object();
+
+    std::cout << doc.dump() << std::endl;
+
+will therefore generate
+
+.. code-block:: text
+
+    {
+    }
+
+You can also use the :cpp:class:`~orcus::json::object` class instances to
+indicate empty objects anythere in the tree.  For instance, this code::
+
+    using namespace orcus;
+
+    json::document_tree doc = {
+        json::object(),
+        json::object(),
+        json::object()
+    };
+
+is intended to create an array containing three empty objects as its elements,
+and that's exactly what it does:
+
+.. code-block:: text
+
+    [
+        {
+        },
+        {
+        },
+        {
+        }
+    ]
+
+So far all the examples have shown how to initialize the document tree as the
+tree itself is being constructed.  But our next example shows how to create
+new key-value pairs to existing objects after the document tree instance has
+been initialized.
+
+::
+
+    using namespace orcus;
+
+    // Initialize the tree with an empty object.
+    json::document_tree doc = json::object();
+
+    // Get the root object, and assign three key-value pairs.
+    json::node root = doc.get_document_root();
+    root["child1"] = 1.0;
+    root["child2"] = "string";
+    root["child3"] = { true, false }; // implicit array
+
+    // You can also create a key-value pair whose value is another object.
+    root["child object"] = {
+        { "key1", 100.0 },
+        { "key2", 200.0 }
+    };
+
+    root["child array"] = json::array({ 1.1, 1.2, true }); // explicit array
+
+This code first initializes the tree with an empty object, then retrieves the
+root empty object and assigns several key-value pairs to it.  When converting
+the tree content to a string and inspecting it you'll see something like the
+following:
+
+.. code-block:: text
+
+    {
+        "child array": [
+            1.1,
+            1.2,
+            true
+        ],
+        "child1": 1,
+        "child3": [
+            true,
+            false
+        ],
+        "child2": "string",
+        "child object": {
+            "key1": 100,
+            "key2": 200
+        }
     }
 
