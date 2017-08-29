@@ -348,8 +348,8 @@ For instance, this code::
 is meant to be an object containing an array.  However, because the supposed
 inner array contains exactly two values and the first value is a string
 value, which could be interpreted as a key-value pair for the outer object, it
-ends up being too ambiguous and throws a :cpp:class:`~orcus::json::key_value_error`
-exception.
+ends up being too ambiguous and a :cpp:class:`~orcus::json::key_value_error`
+exception gets thrown as a result.
 
 To work around this ambiguity, you need to declare the inner array to be
 explicit by using an :cpp:class:`~orcus::json::array` instance::
