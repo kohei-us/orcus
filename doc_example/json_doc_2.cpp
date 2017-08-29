@@ -38,8 +38,7 @@ void example_list_object()
 void example_list_object_2()
 {
     orcus::json::document_tree doc = {
-        { "parent1",
-            {
+        { "parent1", {
                 { "child1", true  },
                 { "child2", false },
                 { "child3", 123.4 },
