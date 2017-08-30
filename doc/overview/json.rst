@@ -494,3 +494,43 @@ following:
         }
     }
 
+The next example shows how to append values to an existing array after the
+tree has been constructed.  Let's take a look at the code::
+
+    using namespace orcus;
+
+    // Initialize the tree with an empty array root.
+    json::document_tree doc = json::array();
+
+    // Get the root array.
+    json::node root = doc.get_document_root();
+
+    // Append values to the array.
+    root.push_back(-1.2);
+    root.push_back("string");
+    root.push_back(true);
+    root.push_back(nullptr);
+
+    // You can append an object to the array via push_back() as well.
+    root.push_back({{"key1", 1.1}, {"key2", 1.2}});
+
+Like the previous example, this code first initializes the tree but this time
+with an empty array as its root, retrieves the root array, then appends
+several values to it via its :cpp:func:`~orcus::json::node::push_back` method.
+
+When you dump the content of this tree as a JSON string you'll get something
+like this:
+
+.. code-block:: text
+
+    [
+        -1.2,
+        "string",
+        true,
+        null,
+        {
+            "key1": 1.1,
+            "key2": 1.2
+        }
+    ]
+

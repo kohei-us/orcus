@@ -130,6 +130,28 @@ void example_root_object_add_child()
     std::cout << doc.dump() << std::endl;
 }
 
+void example_root_array_add_child()
+{
+    using namespace orcus;
+
+    // Initialize the tree with an empty array root.
+    json::document_tree doc = json::array();
+
+    // Get the root array.
+    json::node root = doc.get_document_root();
+
+    // Append values to the array.
+    root.push_back(-1.2);
+    root.push_back("string");
+    root.push_back(true);
+    root.push_back(nullptr);
+
+    // You can append an object to the array via push_back() as well.
+    root.push_back({{"key1", 1.1}, {"key2", 1.2}});
+
+    std::cout << doc.dump() << std::endl;
+}
+
 int main()
 {
     using func_type = std::function<void()>;
@@ -144,6 +166,7 @@ int main()
         example_object_explicit_1,
         example_object_explicit_2,
         example_root_object_add_child,
+        example_root_array_add_child,
     };
 
     for (func_type f : funcs)
