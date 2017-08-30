@@ -75,8 +75,8 @@ enum class node_t : int
 namespace detail { namespace init { class node; }}
 
 /**
- * Each node instance represents a JSON value object stored in the document
- * tree.
+ * Each node instance represents a JSON value stored in the document tree.
+ * It's immutable.
  */
 class ORCUS_DLLPUBLIC const_node
 {
@@ -203,6 +203,10 @@ public:
     uintptr_t identity() const;
 };
 
+/**
+ * Each node instance represents a JSON value stored in the document tree.
+ * This class allows mutable operations.
+ */
 class ORCUS_DLLPUBLIC node : public const_node
 {
     friend class document_tree;
@@ -268,6 +272,10 @@ public:
     void push_back(const detail::init::node& v);
 };
 
+/**
+ * This class represents a JSON array, to be used to explicitly create an
+ * array instance during initialization.
+ */
 class ORCUS_DLLPUBLIC array
 {
     friend class detail::init::node;
@@ -282,6 +290,10 @@ public:
     ~array();
 };
 
+/**
+ * This class represents a JSON object, primarily to be used to create an
+ * empty object instance.
+ */
 class ORCUS_DLLPUBLIC object
 {
 public:
