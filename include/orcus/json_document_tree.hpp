@@ -27,6 +27,9 @@ struct json_value;
 struct json_value_store;
 class document_tree;
 
+/**
+ * Exception related to JSON document tree construction.
+ */
 class ORCUS_DLLPUBLIC document_error : public general_error
 {
 public:
@@ -34,6 +37,11 @@ public:
     virtual ~document_error() throw();
 };
 
+/**
+ * Exception that gets thrown due to ambiguity when you specify a braced
+ * list that can be interpreted either as a key-value pair inside an object
+ * or as values of an array.
+ */
 class ORCUS_DLLPUBLIC key_value_error : public document_error
 {
 public:
