@@ -42,7 +42,7 @@ private:
     void simple_selector_name();
     void property_name();
     void property();
-    void quoted_value();
+    void quoted_value(char c);
     void value();
     void function_value(const char* p, size_t len);
     void function_rgb(bool alpha);
@@ -314,12 +314,12 @@ void css_parser<_Handler>::property()
 }
 
 template<typename _Handler>
-void css_parser<_Handler>::quoted_value()
+void css_parser<_Handler>::quoted_value(char c)
 {
     // Parse until the the end quote is reached.
     const char* p = nullptr;
     size_t len = 0;
-    literal(p, len, '"');
+    literal(p, len, c);
     next();
     skip_blanks();
 
@@ -335,9 +335,9 @@ void css_parser<_Handler>::value()
 {
     assert(has_char());
     char c = cur_char();
-    if (c == '"')
+    if (c == '"' || c == '\'')
     {
-        quoted_value();
+        quoted_value(c);
         return;
     }
 

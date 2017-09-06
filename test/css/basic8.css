@@ -11,5 +11,5 @@
 }
 
 .ribbon::after::selection {
-  content: "Selected orange box.";
+  content: 'Selected orange box.';
 }
