@@ -1,3 +1,5 @@
+  * support single quoted strings in the css parser.
+
 orcus 0.13.0
 
   * fix incorrect parsing of XML 1.0 documents that don't include
