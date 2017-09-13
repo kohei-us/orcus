@@ -35,7 +35,7 @@ public:
 class ORCUS_PSR_DLLPUBLIC parser_base
 {
 protected:
-    const char* mp_begin;
+    const char* const mp_begin;
     const char* mp_char;
     const char* mp_end;
 
