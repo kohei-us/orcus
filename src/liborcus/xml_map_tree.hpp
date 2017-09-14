@@ -60,10 +60,10 @@ public:
      */
     struct element_position
     {
-        const char* open_begin;
-        const char* open_end;
-        const char* close_begin;
-        const char* close_end;
+        std::ptrdiff_t open_begin;
+        std::ptrdiff_t open_end;
+        std::ptrdiff_t close_begin;
+        std::ptrdiff_t close_end;
 
         element_position();
     };

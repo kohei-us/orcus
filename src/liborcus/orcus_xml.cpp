@@ -37,14 +37,14 @@ class xml_data_sax_handler
     {
         xmlns_id_t ns;
         pstring name;
-        const char* element_open_begin;
-        const char* element_open_end;
+        std::ptrdiff_t element_open_begin;
+        std::ptrdiff_t element_open_end;
 
         xml_map_tree::element_type type;
 
         scope(xmlns_id_t _ns, const pstring& _name) :
             ns(_ns), name(_name),
-            element_open_begin(nullptr), element_open_end(nullptr),
+            element_open_begin(0), element_open_end(0),
             type(xml_map_tree::element_unknown) {}
     };
 
@@ -599,7 +599,7 @@ void orcus_xml::read_impl()
     xml_data_sax_handler handler(
        *mp_impl->mp_import_factory, mp_impl->m_link_positions, mp_impl->m_map_tree);
 
-    sax_ns_parser<xml_data_sax_handler> parser(strm.c_str(), strm.size(), ns_cxt, handler);
+    sax_ns_parser<xml_data_sax_handler> parser(strm.data(), strm.size(), ns_cxt, handler);
     parser.parse();
 }
 
@@ -649,7 +649,9 @@ void orcus_xml::write_file(const char* filepath)
     dump_links(links);
 #endif
 
-    const char* begin_pos = &mp_impl->m_data_strm[0];
+    const char* p0 = mp_impl->m_data_strm.data();
+    std::ptrdiff_t begin_pos = 0;
+
     for (; it != it_end; ++it)
     {
         const xml_map_tree::element& elem = **it;
@@ -663,16 +665,16 @@ void orcus_xml::write_file(const char* filepath)
             if (!sheet)
                 continue;
 
-            const char* open_begin = elem.stream_pos.open_begin;
-            const char* close_begin = elem.stream_pos.close_begin;
-            const char* close_end = elem.stream_pos.close_end;
+            std::ptrdiff_t open_begin  = elem.stream_pos.open_begin;
+            std::ptrdiff_t close_begin = elem.stream_pos.close_begin;
+            std::ptrdiff_t close_end   = elem.stream_pos.close_end;
 
             assert(open_begin > begin_pos);
-            file << pstring(begin_pos, open_begin-begin_pos); // stream since last linked element.
+            file << pstring(p0+begin_pos, open_begin-begin_pos); // stream since last linked element.
 
             write_opening_element(file, elem, fact, false);
             sheet->write_string(file, pos.row, pos.col);
-            file << pstring(close_begin, close_end-close_begin); // closing element.
+            file << pstring(p0+close_begin, close_end-close_begin); // closing element.
             begin_pos = close_end;
         }
         else if (elem.range_parent)
@@ -686,16 +688,16 @@ void orcus_xml::write_file(const char* filepath)
             if (!sheet)
                 continue;
 
-            const char* open_begin = elem.stream_pos.open_begin;
-            const char* close_begin = elem.stream_pos.close_begin;
-            const char* close_end = elem.stream_pos.close_end;
+            std::ptrdiff_t open_begin  = elem.stream_pos.open_begin;
+            std::ptrdiff_t close_begin = elem.stream_pos.close_begin;
+            std::ptrdiff_t close_end   = elem.stream_pos.close_end;
 
             assert(open_begin > begin_pos);
-            file << pstring(begin_pos, open_begin-begin_pos); // stream since last linked element.
+            file << pstring(p0+begin_pos, open_begin-begin_pos); // stream since last linked element.
 
             write_opening_element(file, elem, fact, false);
             write_range_reference(file, elem, fact);
-            file << pstring(close_begin, close_end-close_begin); // closing element.
+            file << pstring(p0+close_begin, close_end-close_begin); // closing element.
             begin_pos = close_end;
         }
         else if (elem.unlinked_attribute_anchor())
@@ -703,13 +705,13 @@ void orcus_xml::write_file(const char* filepath)
             // Element is not linked but has one or more attributes that are
             // linked.  Here, only write the opening element with attributes.
 
-            const char* open_begin = elem.stream_pos.open_begin;
-            const char* open_end = elem.stream_pos.open_end;
+            std::ptrdiff_t open_begin = elem.stream_pos.open_begin;
+            std::ptrdiff_t open_end   = elem.stream_pos.open_end;
 
-            bool self_close = open_begin == elem.stream_pos.close_begin;
+            bool self_close = elem.stream_pos.open_begin == elem.stream_pos.close_begin;
 
             assert(open_begin > begin_pos);
-            file << pstring(begin_pos, open_begin-begin_pos); // stream since last linked element.
+            file << pstring(p0+begin_pos, open_begin-begin_pos); // stream since last linked element.
 
             write_opening_element(file, elem, fact, self_close);
             begin_pos = open_end;
@@ -719,8 +721,7 @@ void orcus_xml::write_file(const char* filepath)
     }
 
     // Flush the remaining stream.
-    const char* strm_end = &mp_impl->m_data_strm[mp_impl->m_data_strm.size()-1];
-    file << pstring(begin_pos, strm_end-begin_pos);
+    file << pstring(p0+begin_pos, mp_impl->m_data_strm.size()-begin_pos);
 }
 
 }

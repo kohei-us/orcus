@@ -86,8 +86,8 @@ struct parser_element
 {
     pstring ns;            // element namespace (optional)
     pstring name;          // element name
-    const char* begin_pos; // position of the opening brace '<'.
-    const char* end_pos;   // position of the char after the closing brace '>'.
+    std::ptrdiff_t begin_pos; // position of the opening brace '<'.
+    std::ptrdiff_t end_pos;   // position of the char after the closing brace '>'.
 };
 
 /**
@@ -216,7 +216,7 @@ protected:
     bool value(pstring& str, bool decode);
 
     void name(pstring& str);
-    void element_name(parser_element& elem, const char* begin_pos);
+    void element_name(parser_element& elem, std::ptrdiff_t begin_pos);
     void attribute_name(pstring& attr_ns, pstring& attr_name);
     void characters_with_encoded_char(cell_buffer& buf);
 };

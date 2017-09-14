@@ -157,7 +157,7 @@ xml_map_tree::cell_position::cell_position(const cell_position& r) :
     sheet(r.sheet), row(r.row), col(r.col) {}
 
 xml_map_tree::element_position::element_position() :
-    open_begin(nullptr), open_end(nullptr), close_begin(nullptr), close_end(nullptr) {}
+    open_begin(0), open_end(0), close_begin(0), close_end(0) {}
 
 xml_map_tree::cell_reference::cell_reference() {}
 

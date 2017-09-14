@@ -47,8 +47,8 @@ private:
     void header();
     void body();
     void element();
-    void element_open(const char* begin_pos);
-    void element_close(const char* begin_pos);
+    void element_open(std::ptrdiff_t begin_pos);
+    void element_close(std::ptrdiff_t begin_pos);
     void special_tag();
     void declaration(const char* name_check);
     void cdata();
@@ -129,7 +129,7 @@ template<typename _Handler, typename _Config>
 void sax_parser<_Handler,_Config>::element()
 {
     assert(cur_char() == '<');
-    const char* pos = mp_char;
+    std::ptrdiff_t pos = offset();
     char c = next_char_checked();
     switch (c)
     {
@@ -150,7 +150,7 @@ void sax_parser<_Handler,_Config>::element()
 }
 
 template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::element_open(const char* begin_pos)
+void sax_parser<_Handler,_Config>::element_open(std::ptrdiff_t begin_pos)
 {
     assert(is_alpha(cur_char()) || cur_char() == '_');
 
@@ -167,7 +167,7 @@ void sax_parser<_Handler,_Config>::element_open(const char* begin_pos)
             if (next_and_char() != '>')
                 throw sax::malformed_xml_error("expected '/>' to self-close the element.", offset());
             next();
-            elem.end_pos = mp_char;
+            elem.end_pos = offset();
             m_handler.start_element(elem);
             reset_buffer_pos();
             m_handler.end_element(elem);
@@ -180,7 +180,7 @@ void sax_parser<_Handler,_Config>::element_open(const char* begin_pos)
         {
             // End of opening element: <element>
             next();
-            elem.end_pos = mp_char;
+            elem.end_pos = offset();
             nest_up();
             m_handler.start_element(elem);
             reset_buffer_pos();
@@ -195,7 +195,7 @@ void sax_parser<_Handler,_Config>::element_open(const char* begin_pos)
 }
 
 template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::element_close(const char* begin_pos)
+void sax_parser<_Handler,_Config>::element_close(std::ptrdiff_t begin_pos)
 {
     assert(cur_char() == '/');
     nest_down();
@@ -206,7 +206,7 @@ void sax_parser<_Handler,_Config>::element_close(const char* begin_pos)
     if (cur_char() != '>')
         throw sax::malformed_xml_error("expected '>' to close the element.", offset());
     next();
-    elem.end_pos = mp_char;
+    elem.end_pos = offset();
 
     m_handler.end_element(elem);
 #if ORCUS_DEBUG_SAX_PARSER

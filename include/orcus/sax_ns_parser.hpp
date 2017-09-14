@@ -24,8 +24,8 @@ struct sax_ns_parser_element
     xmlns_id_t ns;         // element namespace
     pstring ns_alias;      // element namespace alias
     pstring name;          // element name
-    const char* begin_pos; // position of the opening brace '<'.
-    const char* end_pos;   // position of the char after the closing brace '>'.
+    std::ptrdiff_t begin_pos; // position of the opening brace '<'.
+    std::ptrdiff_t end_pos;   // position of the char after the closing brace '>'.
 };
 
 struct sax_ns_parser_attribute

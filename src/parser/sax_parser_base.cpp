@@ -349,7 +349,7 @@ void parser_base::name(pstring& str)
     str = pstring(p0, mp_char-p0);
 }
 
-void parser_base::element_name(parser_element& elem, const char* begin_pos)
+void parser_base::element_name(parser_element& elem, std::ptrdiff_t begin_pos)
 {
     elem.begin_pos = begin_pos;
     name(elem.name);
