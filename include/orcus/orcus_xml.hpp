@@ -5,11 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_ORCUS_XML_HPP__
-#define __ORCUS_ORCUS_XML_HPP__
+#ifndef INCLUDED_ORCUS_ORCUS_XML_HPP
+#define INCLUDED_ORCUS_ORCUS_XML_HPP
 
 #include "env.hpp"
 #include "spreadsheet/types.hpp"
+
+#include <ostream>
 
 namespace orcus {
 
@@ -46,6 +48,7 @@ public:
     void read_file(const char* filepath);
     void read_stream(const char* p, size_t n);
     void write_file(const char* filepath) const;
+    void write(const char* p_in, size_t n_in, std::ostream& out) const;
 
 private:
     orcus_xml_impl* mp_impl;
