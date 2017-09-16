@@ -45,7 +45,7 @@ public:
 
     void read_file(const char* filepath);
     void read_stream(const char* p, size_t n);
-    void write_file(const char* filepath);
+    void write_file(const char* filepath) const;
 
 private:
     orcus_xml_impl* mp_impl;

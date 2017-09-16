@@ -616,7 +616,7 @@ void dump_links(const xml_map_tree::const_element_list_type& links)
 
 #endif
 
-void orcus_xml::write_file(const char* filepath)
+void orcus_xml::write_file(const char* filepath) const
 {
     if (!mp_impl->mp_export_factory)
         // We can't export data witout export factory.
