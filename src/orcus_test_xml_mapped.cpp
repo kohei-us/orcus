@@ -22,6 +22,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <vector>
 
 #include <unistd.h>
@@ -76,7 +77,7 @@ void test_mapped_xml_import()
 
         // Load the data file content.
         cout << "reading " << data_file << endl;
-        strm = load_file_content(data_file.c_str());
+        string data_strm = load_file_content(data_file.c_str());
 
         spreadsheet::document doc;
         spreadsheet::import_factory import_fact(doc);
@@ -88,7 +89,7 @@ void test_mapped_xml_import()
         // Parse the map file to define map rules, and parse the data file.
         orcus_xml app(repo, &import_fact, &export_fact);
         read_map_file(app, map_file.c_str());
-        app.read_file(data_file.c_str());
+        app.read_stream(data_strm.data(), data_strm.size());
 
         // Check the content of the document against static check file.
         ostringstream os;
@@ -99,7 +100,7 @@ void test_mapped_xml_import()
         assert(!loaded.empty());
         assert(!strm.empty());
 
-        pstring p1(&loaded[0], loaded.size()), p2(&strm[0], strm.size());
+        pstring p1(loaded.data(), loaded.size()), p2(strm.data(), strm.size());
 
         p1 = p1.trim();
         p2 = p2.trim();
@@ -108,7 +109,11 @@ void test_mapped_xml_import()
         // Output to xml file with the linked values coming from the document.
         string out_file = temp_output_xml;
         cout << "writing to " << out_file << endl;
-        app.write_file(out_file.c_str());
+        {
+            std::ofstream file(out_file);
+            assert(file);
+            app.write(data_strm.data(), data_strm.size(), file);
+        }
 
         if (tc.output_equals_input)
         {

@@ -9,6 +9,7 @@
 #include "orcus/xml_namespace.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
+#include "orcus/stream.hpp"
 
 #include "xml_map_sax_handler.hpp"
 
@@ -93,7 +94,8 @@ int main(int argc, char** argv)
     xmlns_repository repo;
     orcus_xml app(repo, &import_fact, &export_fact);
     read_map_file(app, argv[2]);
-    app.read_file(argv[3]);
+    std::string strm = load_file_content(argv[3]);
+    app.read_stream(strm.data(), strm.size());
 
     switch (mode)
     {
@@ -109,8 +111,15 @@ int main(int argc, char** argv)
                 return EXIT_FAILURE;
             }
 
+            ofstream file(argv[4]);
+            if (!file)
+            {
+                cerr << "failed to create output file: " << argv[4] << endl;
+                return EXIT_FAILURE;
+            }
+
             // Write transformed xml content to file.
-            app.write_file(argv[4]);
+            app.write(strm.data(), strm.size(), file);
         }
         break;
         case dump_document_check:
