@@ -77,7 +77,7 @@ void test_mapped_xml_import()
 
         // Load the data file content.
         cout << "reading " << data_file << endl;
-        string data_strm = load_file_content(data_file.c_str());
+        string data_strm = load_file_content(data_file.data());
 
         spreadsheet::document doc;
         spreadsheet::import_factory import_fact(doc);
@@ -90,6 +90,12 @@ void test_mapped_xml_import()
         orcus_xml app(repo, &import_fact, &export_fact);
         read_map_file(app, map_file.c_str());
         app.read_stream(data_strm.data(), data_strm.size());
+
+        // Zero the source data stream to make sure it's completely erased off
+        // memory.
+        std::for_each(data_strm.begin(), data_strm.end(), [](char& c) { c = '\0'; });
+        assert(data_strm[0] == '\0');
+        assert(data_strm[data_strm.size()-1] == '\0');
 
         // Check the content of the document against static check file.
         ostringstream os;
@@ -110,9 +116,11 @@ void test_mapped_xml_import()
         string out_file = temp_output_xml;
         cout << "writing to " << out_file << endl;
         {
+            // Create a duplicate source XML stream.
+            string data_strm_dup = load_file_content(data_file.data());
             std::ofstream file(out_file);
             assert(file);
-            app.write(data_strm.data(), data_strm.size(), file);
+            app.write(data_strm_dup.data(), data_strm_dup.size(), file);
         }
 
         if (tc.output_equals_input)
