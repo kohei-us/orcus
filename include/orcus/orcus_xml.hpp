@@ -29,7 +29,7 @@ class ORCUS_DLLPUBLIC orcus_xml
     orcus_xml(const orcus_xml&); // disabled
     orcus_xml& operator= (const orcus_xml&); // disabled
 
-    void read_impl();
+    void read_impl(const pstring& strm);
 
 public:
     orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact, spreadsheet::iface::export_factory* ex_fact);
@@ -45,9 +45,7 @@ public:
 
     void append_sheet(const pstring& name);
 
-    void read_file(const char* filepath);
     void read_stream(const char* p, size_t n);
-    void write_file(const char* filepath) const;
     void write(const char* p_in, size_t n_in, std::ostream& out) const;
 
 private:

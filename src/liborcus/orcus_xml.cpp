@@ -455,9 +455,6 @@ struct orcus_xml_impl
     spreadsheet::iface::import_factory* mp_import_factory;
     spreadsheet::iface::export_factory* mp_export_factory;
 
-    /** original xml data stream. */
-    string m_data_strm;
-
     /** xml namespace repository for the whole session. */
     xmlns_repository& m_ns_repo;
 
@@ -537,30 +534,18 @@ void orcus_xml::append_sheet(const pstring& name)
     mp_impl->mp_import_factory->append_sheet(mp_impl->m_sheet_count++, name.get(), name.size());
 }
 
-void orcus_xml::read_file(const char* filepath)
-{
-#if ORCUS_DEBUG_XML
-    cout << "reading file " << filepath << endl;
-#endif
-    string& strm = mp_impl->m_data_strm;
-    strm = load_file_content(filepath);
-    read_impl();
-}
-
 void orcus_xml::read_stream(const char* p, size_t n)
 {
 #if ORCUS_DEBUG_XML
     cout << "reading file " << filepath << endl;
 #endif
 
-    string& strm = mp_impl->m_data_strm;
-    strm = std::string(p, n);
-    read_impl();
+    pstring strm(p, n);
+    read_impl(strm);
 }
 
-void orcus_xml::read_impl()
+void orcus_xml::read_impl(const pstring& strm)
 {
-    string& strm = mp_impl->m_data_strm;
     if (strm.empty())
         return;
 
@@ -615,23 +600,6 @@ void dump_links(const xml_map_tree::const_element_list_type& links)
 }
 
 #endif
-
-void orcus_xml::write_file(const char* filepath) const
-{
-    if (mp_impl->m_data_strm.empty())
-        // Original xml stream is missing.  We need it.
-        return;
-
-#if ORCUS_DEBUG_XML
-    cout << "writing to " << filepath << endl;
-#endif
-    ofstream file(filepath);
-
-    if (!file)
-        throw general_error("Failed to create output file.");
-
-    write(mp_impl->m_data_strm.data(), mp_impl->m_data_strm.size(), file);
-}
 
 void orcus_xml::write(const char* p_in, size_t n_in, std::ostream& out) const
 {
