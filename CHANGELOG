@@ -1,3 +1,10 @@
+  * xml_map_tree no longer requires the source stream persisted in
+    memory between the read and write.
+
+  * the sax parser now stores the offset positions of each element
+    rather than their memory positions, in order to make the position
+    values usable between duplicated stream instances.
+
   * support single quoted strings in the css parser.
 
 orcus 0.13.0
