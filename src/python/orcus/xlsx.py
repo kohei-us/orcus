@@ -7,4 +7,5 @@
 ########################################################################
 
 from _orcus import _xlsx_read_file as read_file
+from _orcus import _xlsx_read as read
 

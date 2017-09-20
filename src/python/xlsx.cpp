@@ -54,9 +54,23 @@ PyObject* xlsx_read_file(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
     return obj_doc;
 }
 
+PyObject* xlsx_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
+{
+    // TODO : implement this.
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 #else
 
 PyObject* xlsx_read_file(PyObject*, PyObject*, PyObject*)
+{
+    // TODO : raise a python exception here.
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+PyObject* xlsx_read(PyObject*, PyObject*, PyObject*)
 {
     // TODO : raise a python exception here.
     Py_INCREF(Py_None);
