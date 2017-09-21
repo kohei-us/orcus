@@ -22,7 +22,8 @@ class TestCase(unittest.TestCase):
 
     def test_raw_values_1(self):
         filepath = self.basedir + "/raw-values-1/input.xlsx"
-        doc = xlsx.read_file(filepath)
+        with open(filepath, "rb") as f:
+            doc = xlsx.read(f)
         self.assertEqual(len(doc.sheets), 2)
         self.assertEqual(doc.sheets[0].name, "Num")
         self.assertEqual(doc.sheets[1].name, "Text")
