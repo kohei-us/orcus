@@ -50,9 +50,6 @@ PyMethodDef orcus_methods[] =
 {
     { "info", (PyCFunction)info, METH_NOARGS, "Print orcus module information." },
 
-    { "_xlsx_read_file", (PyCFunction)xlsx_read_file, METH_VARARGS | METH_KEYWORDS,
-      "Load specified xlsx file into a document model." },
-
     { "_xlsx_read", (PyCFunction)xlsx_read, METH_VARARGS | METH_KEYWORDS,
       "Load specified xlsx file into a document model." },
 

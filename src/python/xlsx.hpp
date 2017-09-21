@@ -12,7 +12,6 @@
 
 namespace orcus { namespace python {
 
-PyObject* xlsx_read_file(PyObject* module, PyObject* args, PyObject* kwargs);
 PyObject* xlsx_read(PyObject* module, PyObject* args, PyObject* kwargs);
 
 }}
