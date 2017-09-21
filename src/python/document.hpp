@@ -25,6 +25,10 @@ struct document_data
 
 document_data* get_document_data(PyObject* self);
 
+void import_from_file_object(iface::import_filter& app, PyObject* obj_bytes);
+
+PyObject* create_document_object();
+
 void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc);
 
 PyTypeObject* get_document_type();

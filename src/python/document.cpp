@@ -121,6 +121,30 @@ document_data* get_document_data(PyObject* self)
     return reinterpret_cast<pyobj_document*>(self)->m_data;
 }
 
+void import_from_file_object(iface::import_filter& app, PyObject* obj_bytes)
+{
+    const char* p = PyBytes_AS_STRING(obj_bytes);
+    size_t n = PyBytes_Size(obj_bytes);
+
+    app.read_stream(p, n);
+}
+
+PyObject* create_document_object()
+{
+    PyTypeObject* doc_type = get_document_type();
+    if (!doc_type)
+        return nullptr;
+
+    PyObject* obj_doc = doc_type->tp_new(doc_type, nullptr, nullptr);
+    if (!obj_doc)
+        return nullptr;
+
+    doc_type->tp_init(obj_doc, nullptr, nullptr);
+
+    Py_INCREF(obj_doc);
+    return obj_doc;
+}
+
 void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc)
 {
     pyobj_document* pydoc = reinterpret_cast<pyobj_document*>(self);

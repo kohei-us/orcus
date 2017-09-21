@@ -52,28 +52,13 @@ PyObject* xlsx_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
         return nullptr;
     }
 
-    const char* p = PyBytes_AS_STRING(obj_bytes);
-    size_t n = PyBytes_Size(obj_bytes);
-
     std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
     spreadsheet::import_factory fact(*doc);
     orcus_xlsx app(&fact);
 
-    app.read_stream(p, n);
-
-    PyTypeObject* doc_type = get_document_type();
-    if (!doc_type)
-        return nullptr;
-
-    PyObject* obj_doc = doc_type->tp_new(doc_type, nullptr, nullptr);
-    if (!obj_doc)
-        return nullptr;
-
-    doc_type->tp_init(obj_doc, nullptr, nullptr);
-
+    import_from_file_object(app, obj_bytes);
+    PyObject* obj_doc = create_document_object();
     store_document(obj_doc, std::move(doc));
-
-    Py_INCREF(obj_doc);
     return obj_doc;
 }
 
