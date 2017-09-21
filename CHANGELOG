@@ -1,3 +1,8 @@
+  * python
+
+    * add orcus.xlsx.read() function that takes a file object to load
+      an xlsx file as a replacement for orcus.xlsx.read_file().
+
   * xml_map_tree no longer requires the source stream persisted in
     memory between the read and write.
 
