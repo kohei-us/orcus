@@ -121,6 +121,38 @@ document_data* get_document_data(PyObject* self)
     return reinterpret_cast<pyobj_document*>(self)->m_data;
 }
 
+PyObject* read_byte_object_from_args(PyObject* args, PyObject* kwargs)
+{
+    static const char* kwlist[] = { "file", nullptr };
+
+    PyObject* file = nullptr;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", const_cast<char**>(kwlist), &file))
+        return nullptr;
+
+    if (!file)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Invalid file object has been passed.");
+        return nullptr;
+    }
+
+    PyObject* func_read = PyObject_GetAttrString(file, "read");
+    if (!func_read)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "'read' function was expected, but not found.");
+        return nullptr;
+    }
+
+    PyObject* obj_bytes = PyObject_CallFunction(func_read, nullptr);
+    if (!obj_bytes)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "The read function didn't return bytes.");
+        return nullptr;
+    }
+
+    return obj_bytes;
+}
+
 void import_from_file_object(iface::import_filter& app, PyObject* obj_bytes)
 {
     const char* p = PyBytes_AS_STRING(obj_bytes);

@@ -25,32 +25,9 @@ namespace orcus { namespace python {
 
 PyObject* xlsx_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    static const char* kwlist[] = { "file", nullptr };
-
-    PyObject* file = nullptr;
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", const_cast<char**>(kwlist), &file))
-        return nullptr;
-
-    if (!file)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "Invalid file object has been passed.");
-        return nullptr;
-    }
-
-    PyObject* func_read = PyObject_GetAttrString(file, "read");
-    if (!func_read)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "'read' function was expected, but not found.");
-        return nullptr;
-    }
-
-    PyObject* obj_bytes = PyObject_CallFunction(func_read, nullptr);
+    PyObject* obj_bytes = read_byte_object_from_args(args, kwargs);
     if (!obj_bytes)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "The read function didn't return bytes.");
         return nullptr;
-    }
 
     std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
     spreadsheet::import_factory fact(*doc);
