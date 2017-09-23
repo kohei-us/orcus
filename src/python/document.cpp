@@ -121,9 +121,9 @@ document_data* get_document_data(PyObject* self)
     return reinterpret_cast<pyobj_document*>(self)->m_data;
 }
 
-PyObject* read_byte_object_from_args(PyObject* args, PyObject* kwargs)
+PyObject* read_stream_object_from_args(PyObject* args, PyObject* kwargs)
 {
-    static const char* kwlist[] = { "file", nullptr };
+    static const char* kwlist[] = { "stream", nullptr };
 
     PyObject* file = nullptr;
 
@@ -153,7 +153,7 @@ PyObject* read_byte_object_from_args(PyObject* args, PyObject* kwargs)
     return obj_bytes;
 }
 
-void import_from_file_object(iface::import_filter& app, PyObject* obj_bytes)
+void import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes)
 {
     const char* p = PyBytes_AS_STRING(obj_bytes);
     size_t n = PyBytes_Size(obj_bytes);

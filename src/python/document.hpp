@@ -26,17 +26,17 @@ struct document_data
 document_data* get_document_data(PyObject* self);
 
 /**
- * Extract a python object representing the bytes from the arguments passed
- * to the python orcus.<file format>.read() function.
+ * Extract a python object representing the byte stream from the arguments
+ * passed to the python orcus.<file format>.read() function.
  *
  * @param args positional argument object.
  * @param kwargs keyword argument object.
  *
  * @return object representing the bytes.
  */
-PyObject* read_byte_object_from_args(PyObject* args, PyObject* kwargs);
+PyObject* read_stream_object_from_args(PyObject* args, PyObject* kwargs);
 
-void import_from_file_object(iface::import_filter& app, PyObject* obj_bytes);
+void import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes);
 
 PyObject* create_document_object();
 

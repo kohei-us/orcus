@@ -21,7 +21,7 @@ namespace orcus { namespace python {
 
 PyObject* xlsx_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    PyObject* obj_bytes = read_byte_object_from_args(args, kwargs);
+    PyObject* obj_bytes = read_stream_object_from_args(args, kwargs);
     if (!obj_bytes)
         return nullptr;
 
@@ -29,7 +29,7 @@ PyObject* xlsx_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
     spreadsheet::import_factory fact(*doc);
     orcus_xlsx app(&fact);
 
-    import_from_file_object(app, obj_bytes);
+    import_from_stream_object(app, obj_bytes);
     PyObject* obj_doc = create_document_object();
     store_document(obj_doc, std::move(doc));
     return obj_doc;

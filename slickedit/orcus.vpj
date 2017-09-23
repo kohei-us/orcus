@@ -460,9 +460,15 @@
 				<F N="../src/parser/zip_archive_test.cpp"/>
 			</Folder>
 			<Folder Name="python">
+				<Folder Name="orcus">
+					<F N="../src/python/orcus/ods.py"/>
+					<F N="../src/python/orcus/xlsx.py"/>
+				</Folder>
 				<F N="../src/python/document.cpp"/>
 				<F N="../src/python/document.hpp"/>
 				<F N="../src/python/json.cpp"/>
+				<F N="../src/python/ods.cpp"/>
+				<F N="../src/python/ods.hpp"/>
 				<F N="../src/python/python.cpp"/>
 				<F N="../src/python/root.cpp"/>
 				<F N="../src/python/root.hpp"/>
