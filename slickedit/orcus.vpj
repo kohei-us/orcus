@@ -537,5 +537,12 @@
 			<F N="../src/xml_map_sax_handler.cpp"/>
 			<F N="../src/xml_map_sax_handler.hpp"/>
 		</Folder>
+		<Folder Name="../test">
+			<Folder Name="python">
+				<F N="../test/python/file_load_common.py"/>
+				<F N="../test/python/ods.py"/>
+				<F N="../test/python/xlsx.py"/>
+			</Folder>
+		</Folder>
 	</Files>
 </Project>
