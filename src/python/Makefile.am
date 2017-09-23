@@ -11,7 +11,9 @@ _orcus_la_SOURCES = \
 	xlsx.hpp \
 	xlsx.cpp \
 	ods.hpp \
-	ods.cpp
+	ods.cpp \
+	csv.hpp \
+	csv.cpp
 
 _orcus_la_LDFLAGS = -module -avoid-version -export-symbols-regex PyInit__orcus
 _orcus_la_CPPFLAGS = -I$(top_srcdir)/include $(AM_CPPFLAGS)

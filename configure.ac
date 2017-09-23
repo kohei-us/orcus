@@ -237,6 +237,9 @@ AS_IF([test "x$enable_python" != "xno"], [
 ])
 AM_CONDITIONAL([BUILD_PYTHON], [test "x$enable_python" != "xno"])
 
+# csv is always enabled.
+CXXFLAGS="$CXXFLAGS -D__ORCUS_PYTHON_CSV"
+
 with_python_xlsx="no"
 if test "x$enable_spreadsheet_model" != "xno"; then
     if test "x$enable_python" != "xno"; then
@@ -265,6 +268,7 @@ fi
 
 AM_CONDITIONAL([WITH_PYTHON_XLSX], [test "x$with_python_xlsx" != "xno"])
 AM_CONDITIONAL([WITH_PYTHON_ODS], [test "x$with_python_ods" != "xno"])
+AM_CONDITIONAL([WITH_PYTHON_CSV], [test "x$with_python_csv" != "xno"])
 
 AC_CONFIG_FILES([Makefile
 	liborcus-$ORCUS_API_VERSION.pc:liborcus.pc.in
