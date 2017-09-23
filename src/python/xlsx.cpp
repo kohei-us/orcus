@@ -31,6 +31,9 @@ PyObject* xlsx_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 
     import_from_stream_object(app, obj_bytes);
     PyObject* obj_doc = create_document_object();
+    if (!obj_doc)
+        return nullptr;
+
     store_document(obj_doc, std::move(doc));
     return obj_doc;
 }

@@ -165,11 +165,17 @@ PyObject* create_document_object()
 {
     PyTypeObject* doc_type = get_document_type();
     if (!doc_type)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to get the document type object.");
         return nullptr;
+    }
 
     PyObject* obj_doc = doc_type->tp_new(doc_type, nullptr, nullptr);
     if (!obj_doc)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to instantiate a document object.");
         return nullptr;
+    }
 
     doc_type->tp_init(obj_doc, nullptr, nullptr);
 
@@ -179,6 +185,9 @@ PyObject* create_document_object()
 
 void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc)
 {
+    if (!self)
+        return;
+
     pyobj_document* pydoc = reinterpret_cast<pyobj_document*>(self);
     document_data* pydoc_data = pydoc->m_data;
     pydoc_data->m_doc = std::move(doc);
