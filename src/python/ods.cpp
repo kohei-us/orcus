@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "xlsx.hpp"
+#include "ods.hpp"
 
-#ifdef __ORCUS_PYTHON_XLSX
+#ifdef __ORCUS_PYTHON_ODS
 #include "document.hpp"
-#include "orcus/orcus_xlsx.hpp"
+#include "orcus/orcus_ods.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/global.hpp"
@@ -17,9 +17,9 @@
 
 namespace orcus { namespace python {
 
-#ifdef __ORCUS_PYTHON_XLSX
+#ifdef __ORCUS_PYTHON_ODS
 
-PyObject* xlsx_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
+PyObject* ods_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
     PyObject* obj_bytes = read_byte_object_from_args(args, kwargs);
     if (!obj_bytes)
@@ -27,7 +27,7 @@ PyObject* xlsx_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 
     std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
     spreadsheet::import_factory fact(*doc);
-    orcus_xlsx app(&fact);
+    orcus_ods app(&fact);
 
     import_from_file_object(app, obj_bytes);
     PyObject* obj_doc = create_document_object();
@@ -37,9 +37,9 @@ PyObject* xlsx_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 
 #else
 
-PyObject* xlsx_read(PyObject*, PyObject*, PyObject*)
+PyObject* ods_read(PyObject*, PyObject*, PyObject*)
 {
-    PyErr_SetString(PyExc_RuntimeError, "The xlsx module is not enabled.");
+    PyErr_SetString(PyExc_RuntimeError, "The ods module is not enabled.");
     return nullptr;
 }
 

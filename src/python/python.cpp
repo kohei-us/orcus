@@ -10,6 +10,7 @@
 
 #include "root.hpp"
 #include "xlsx.hpp"
+#include "ods.hpp"
 
 #ifdef __ORCUS_SPREADSHEET_MODEL
 #include "document.hpp"
@@ -49,6 +50,9 @@ void print_args(PyObject* args)
 PyMethodDef orcus_methods[] =
 {
     { "info", (PyCFunction)info, METH_NOARGS, "Print orcus module information." },
+
+    { "_ods_read", (PyCFunction)ods_read, METH_VARARGS | METH_KEYWORDS,
+      "Load specified ods file into a document model." },
 
     { "_xlsx_read", (PyCFunction)xlsx_read, METH_VARARGS | METH_KEYWORDS,
       "Load specified xlsx file into a document model." },

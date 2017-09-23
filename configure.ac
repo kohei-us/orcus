@@ -250,6 +250,19 @@ if test "x$with_python_xlsx" != "xno"; then
     CXXFLAGS="$CXXFLAGS -D__ORCUS_PYTHON_XLSX"
 fi
 
+with_python_ods="no"
+if test "x$enable_spreadsheet_model" != "xno"; then
+    if test "x$enable_python" != "xno"; then
+        if test "x$with_ods_filter" != "xno"; then
+            with_python_ods="yes"
+        fi
+    fi
+fi
+
+if test "x$with_python_ods" != "xno"; then
+    CXXFLAGS="$CXXFLAGS -D__ORCUS_PYTHON_ODS"
+fi
+
 AM_CONDITIONAL([WITH_PYTHON_XLSX], [test "x$with_python_xlsx" != "xno"])
 
 AC_CONFIG_FILES([Makefile
