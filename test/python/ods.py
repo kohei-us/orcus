@@ -11,21 +11,21 @@ import unittest
 import os
 import os.path
 
-from orcus import xlsx
+from orcus import ods
 
 
 class TestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # base directory for xlsx test files.
-        basedir = os.path.join(os.path.dirname(__file__), "..", "xlsx")
+        # base directory for ods test files.
+        basedir = os.path.join(os.path.dirname(__file__), "..", "ods")
         cls.basedir = os.path.normpath(basedir)
 
     def test_raw_values_1(self):
-        filepath = os.path.join(self.basedir, "raw-values-1", "input.xlsx")
+        filepath = os.path.join(self.basedir, "raw-values-1", "input.ods")
         with open(filepath, "rb") as f:
-            doc = xlsx.read(f)
+            doc = ods.read(f)
 
         self.assertEqual(len(doc.sheets), 2)
         self.assertEqual(doc.sheets[0].name, "Num")

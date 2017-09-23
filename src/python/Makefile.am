@@ -68,5 +68,11 @@ TESTS += ../../test/python/xlsx.py
 
 endif # WITH_PYTHON_XLSX
 
+if WITH_PYTHON_ODS
+
+TESTS += ../../test/python/ods.py
+
+endif
+
 
 endif # BUILD_PYTHON
