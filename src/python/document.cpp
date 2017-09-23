@@ -114,45 +114,6 @@ PyTypeObject document_type =
     document_new,                             // tp_new
 };
 
-}
-
-document_data* get_document_data(PyObject* self)
-{
-    return reinterpret_cast<pyobj_document*>(self)->m_data;
-}
-
-PyObject* read_stream_object_from_args(PyObject* args, PyObject* kwargs)
-{
-    static const char* kwlist[] = { "stream", nullptr };
-
-    PyObject* file = nullptr;
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", const_cast<char**>(kwlist), &file))
-        return nullptr;
-
-    if (!file)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "Invalid file object has been passed.");
-        return nullptr;
-    }
-
-    PyObject* func_read = PyObject_GetAttrString(file, "read");
-    if (!func_read)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "'read' function was expected, but not found.");
-        return nullptr;
-    }
-
-    PyObject* obj_bytes = PyObject_CallFunction(func_read, nullptr);
-    if (!obj_bytes)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "The read function didn't return bytes.");
-        return nullptr;
-    }
-
-    return obj_bytes;
-}
-
 void import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes)
 {
     const char* p = PyBytes_AS_STRING(obj_bytes);
@@ -220,9 +181,60 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
     }
 }
 
+} // anonoymous namespace
+
 PyTypeObject* get_document_type()
 {
     return &document_type;
+}
+
+document_data* get_document_data(PyObject* self)
+{
+    return reinterpret_cast<pyobj_document*>(self)->m_data;
+}
+
+PyObject* read_stream_object_from_args(PyObject* args, PyObject* kwargs)
+{
+    static const char* kwlist[] = { "stream", nullptr };
+
+    PyObject* file = nullptr;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", const_cast<char**>(kwlist), &file))
+        return nullptr;
+
+    if (!file)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Invalid file object has been passed.");
+        return nullptr;
+    }
+
+    PyObject* func_read = PyObject_GetAttrString(file, "read");
+    if (!func_read)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "'read' function was expected, but not found.");
+        return nullptr;
+    }
+
+    PyObject* obj_bytes = PyObject_CallFunction(func_read, nullptr);
+    if (!obj_bytes)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "The read function didn't return bytes.");
+        return nullptr;
+    }
+
+    return obj_bytes;
+}
+
+PyObject* import_from_stream_into_document(
+    PyObject* obj_bytes, iface::import_filter& app, std::unique_ptr<spreadsheet::document>&& doc)
+{
+    import_from_stream_object(app, obj_bytes);
+    PyObject* obj_doc = create_document_object();
+    if (!obj_doc)
+        return nullptr;
+
+    store_document(obj_doc, std::move(doc));
+    return obj_doc;
 }
 
 }}

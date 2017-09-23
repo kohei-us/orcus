@@ -36,12 +36,23 @@ document_data* get_document_data(PyObject* self);
  */
 PyObject* read_stream_object_from_args(PyObject* args, PyObject* kwargs);
 
-void import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes);
+/**
+ * Import a document from a python object containing the byte stream, and
+ * create a python object of class orcus.Document.
+ *
+ * @param obj_bytes python object containing the byte stream.
+ * @param app filter instance to use to load the document.
+ * @param doc orcus document instance which will be stored within the python
+ *            document object.
+ *
+ * @return python document object.
+ */
+PyObject* import_from_stream_into_document(
+    PyObject* obj_bytes, iface::import_filter& app, std::unique_ptr<spreadsheet::document>&& doc);
 
-PyObject* create_document_object();
-
-void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc);
-
+/**
+ * Get the definition of the python class Document.
+ */
 PyTypeObject* get_document_type();
 
 }}

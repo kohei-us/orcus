@@ -29,13 +29,7 @@ PyObject* ods_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
     spreadsheet::import_factory fact(*doc);
     orcus_ods app(&fact);
 
-    import_from_stream_object(app, obj_bytes);
-    PyObject* obj_doc = create_document_object();
-    if (!obj_doc)
-        return nullptr;
-
-    store_document(obj_doc, std::move(doc));
-    return obj_doc;
+    return import_from_stream_into_document(obj_bytes, app, std::move(doc));
 }
 
 #else
