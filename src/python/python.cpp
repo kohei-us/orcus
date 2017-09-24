@@ -12,6 +12,7 @@
 #include "xlsx.hpp"
 #include "ods.hpp"
 #include "csv.hpp"
+#include "xls_xml.hpp"
 
 #ifdef __ORCUS_SPREADSHEET_MODEL
 #include "document.hpp"
@@ -60,6 +61,9 @@ PyMethodDef orcus_methods[] =
 
     { "_xlsx_read", (PyCFunction)xlsx_read, METH_VARARGS | METH_KEYWORDS,
       "Load specified xlsx file into a document model." },
+
+    { "_xls_xml_read", (PyCFunction)xls_xml_read, METH_VARARGS | METH_KEYWORDS,
+      "Load specified xls-xml file into a document model." },
 
     { nullptr, nullptr, 0, nullptr }
 };

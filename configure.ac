@@ -266,9 +266,23 @@ if test "x$with_python_ods" != "xno"; then
     CXXFLAGS="$CXXFLAGS -D__ORCUS_PYTHON_ODS"
 fi
 
+with_python_xls_xml="no"
+if test "x$enable_spreadsheet_model" != "xno"; then
+    if test "x$enable_python" != "xno"; then
+        if test "x$with_xls_xml_filter" != "xno"; then
+            with_python_xls_xml="yes"
+        fi
+    fi
+fi
+
+if test "x$with_python_xls_xml" != "xno"; then
+    CXXFLAGS="$CXXFLAGS -D__ORCUS_PYTHON_XLS_XML"
+fi
+
 AM_CONDITIONAL([WITH_PYTHON_XLSX], [test "x$with_python_xlsx" != "xno"])
 AM_CONDITIONAL([WITH_PYTHON_ODS], [test "x$with_python_ods" != "xno"])
 AM_CONDITIONAL([WITH_PYTHON_CSV], [test "x$with_python_csv" != "xno"])
+AM_CONDITIONAL([WITH_PYTHON_XLS_XML], [test "x$with_python_xls_xml" != "xno"])
 
 AC_CONFIG_FILES([Makefile
 	liborcus-$ORCUS_API_VERSION.pc:liborcus.pc.in

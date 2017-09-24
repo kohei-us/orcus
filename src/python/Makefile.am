@@ -10,6 +10,8 @@ _orcus_la_SOURCES = \
 	root.cpp \
 	xlsx.hpp \
 	xlsx.cpp \
+	xls_xml.hpp \
+	xls_xml.cpp \
 	ods.hpp \
 	ods.cpp \
 	csv.hpp \
