@@ -15,7 +15,9 @@ _orcus_la_SOURCES = \
 	ods.hpp \
 	ods.cpp \
 	csv.hpp \
-	csv.cpp
+	csv.cpp \
+	gnumeric.hpp \
+	gnumeric.cpp
 
 _orcus_la_LDFLAGS = -module -avoid-version -export-symbols-regex PyInit__orcus
 _orcus_la_CPPFLAGS = -I$(top_srcdir)/include $(AM_CPPFLAGS)

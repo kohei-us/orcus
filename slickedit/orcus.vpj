@@ -466,6 +466,7 @@
 				</Folder>
 				<F N="../src/python/document.cpp"/>
 				<F N="../src/python/document.hpp"/>
+				<F N="../src/python/gnumeric.hpp"/>
 				<F N="../src/python/json.cpp"/>
 				<F N="../src/python/ods.cpp"/>
 				<F N="../src/python/ods.hpp"/>

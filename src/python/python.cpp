@@ -13,6 +13,7 @@
 #include "ods.hpp"
 #include "csv.hpp"
 #include "xls_xml.hpp"
+#include "gnumeric.hpp"
 
 #ifdef __ORCUS_SPREADSHEET_MODEL
 #include "document.hpp"
@@ -64,6 +65,9 @@ PyMethodDef orcus_methods[] =
 
     { "_xls_xml_read", (PyCFunction)xls_xml_read, METH_VARARGS | METH_KEYWORDS,
       "Load specified xls-xml file into a document model." },
+
+    { "_gnumeric_read", (PyCFunction)gnumeric_read, METH_VARARGS | METH_KEYWORDS,
+      "Load specified gnumeric file into a document model." },
 
     { nullptr, nullptr, 0, nullptr }
 };

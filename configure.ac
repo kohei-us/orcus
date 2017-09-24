@@ -279,10 +279,24 @@ if test "x$with_python_xls_xml" != "xno"; then
     CXXFLAGS="$CXXFLAGS -D__ORCUS_PYTHON_XLS_XML"
 fi
 
+with_python_gnumeric="no"
+if test "x$enable_spreadsheet_model" != "xno"; then
+    if test "x$enable_python" != "xno"; then
+        if test "x$with_gnumeric_filter" != "xno"; then
+            with_python_gnumeric="yes"
+        fi
+    fi
+fi
+
+if test "x$with_python_gnumeric" != "xno"; then
+    CXXFLAGS="$CXXFLAGS -D__ORCUS_PYTHON_GNUMERIC"
+fi
+
 AM_CONDITIONAL([WITH_PYTHON_XLSX], [test "x$with_python_xlsx" != "xno"])
 AM_CONDITIONAL([WITH_PYTHON_ODS], [test "x$with_python_ods" != "xno"])
 AM_CONDITIONAL([WITH_PYTHON_CSV], [test "x$with_python_csv" != "xno"])
 AM_CONDITIONAL([WITH_PYTHON_XLS_XML], [test "x$with_python_xls_xml" != "xno"])
+AM_CONDITIONAL([WITH_PYTHON_GNUMERIC], [test "x$with_python_gnumeric" != "xno"])
 
 AC_CONFIG_FILES([Makefile
 	liborcus-$ORCUS_API_VERSION.pc:liborcus.pc.in
@@ -315,13 +329,17 @@ Build configuration:
         debug:                 $enable_debug
         werror:                $enable_werror
         spreadsheet-model:     $enable_spreadsheet_model
-        python:                $enable_python
         gnumeric-filter:       $with_gnumeric_filter
         ods-filter:            $with_ods_filter
         xlsx-filter:           $with_xlsx_filter
         xls-xml-filter:        $with_xls_xml_filter
+        xls-gnumeric  :        $with_gnumeric_filter
         tools:                 $with_tools
+        python:                $enable_python
         python-xlsx            $with_python_xlsx
+        python-ods             $with_python_ods
+        python-xls-xml         $with_python_xls_xml
+        python-gnumeric        $with_python_gnumeric
 ==============================================================================
 ])
 
