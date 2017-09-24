@@ -24,12 +24,11 @@ class TestCase(unittest.TestCase):
         basedir = os.path.join(os.path.dirname(__file__), "..", "xls-xml")
         cls.basedir = os.path.normpath(basedir)
 
-    def test_raw_values_1(self):
-        filepath = os.path.join(self.basedir, "raw-values-1", "input.xml")
-        with open(filepath, "rb") as f:
-            doc = xls_xml.read(f)
-
-        common.test_raw_values_1(self, doc)
+    def test_import(self):
+        test_dirs = ("raw-values-1",)
+        for test_dir in test_dirs:
+            test_dir = os.path.join(self.basedir, test_dir)
+            common.run_test_dir(self, test_dir, xls_xml)
 
 
 if __name__ == '__main__':

@@ -8,40 +8,124 @@
 
 """Collection of test cases shared between different file format types."""
 
-def test_raw_values_1(self, doc):
-    self.assertEqual(len(doc.sheets), 2)
-    self.assertEqual(doc.sheets[0].name, "Num")
-    self.assertEqual(doc.sheets[1].name, "Text")
-    self.assertEqual(doc.sheets[0].data_size, {"column": 5, "row": 7})
-    self.assertEqual(doc.sheets[1].data_size, {"column": 4, "row": 10})
+import os
+import os.path
+import collections
+import orcus
 
-    # expected sheet contents (None == empty cell)
-    sheet_contents = (
-        (
-            (None, None, None, None, None),
-            ( 1.1, None,  2.1, None,  3.1),
-            ( 1.2, None,  2.2, None,  3.2),
-            ( 1.3, None,  2.3, None,  3.3),
-            (None, None, None, None, None),
-            (None, None, None, None, None),
-            (None, None,  5.0,  6.0,  7.0)
-        ),
-        (
-            ( 'A', None, None,      None),
-            ( 'B',  'D', None,      None),
-            ( 'C',  'E',  'G',      None),
-            (None,  'F',  'H',      None),
-            (None, None,  'I',      None),
-            (None, None, None,      None),
-            (None, None, None,    'Andy'),
-            (None, None, None,   'Bruce'),
-            (None, None, None, 'Charlie'),
-            (None, None, None,   'David')
-        )
-    )
 
-    for sheet, sheet_content in zip(doc.sheets, sheet_contents):
-        rows = sheet.get_rows()
-        for row, expected in zip(rows, sheet_content):
-            self.assertEqual(row, expected)
+class Address(object):
+
+    def __init__(self, pos_s):
+        self.sheet_name, self.row, self.column = pos_s.split('/')
+        self.row = int(self.row)
+        self.column = int(self.column)
+
+    def __repr__(self):
+        return "(sheet={}; row={}, column={})".format(self.sheet_name, self.row, self.column)
+
+
+class ExpectedSheet(object):
+
+    def __init__(self, name):
+        self.__name = name
+        self.__rows = collections.OrderedDict()
+        self.__max_column = 0
+        self.__max_row = 0
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def data_size(self):
+        return {"column": self.__max_column+1, "row": self.__max_row+1}
+
+    def get_rows(self):
+        rows = list()
+        for i in range(self.__max_row+1):
+            row = [None for _ in range(self.__max_column+1)]
+            if i in self.__rows:
+                for col_pos, cell in self.__rows[i].items():
+                    row[col_pos] = cell
+            rows.append(tuple(row))
+        return tuple(rows)
+
+    def insert_cell(self, row, column, cell_type, cell_value):
+        if row not in self.__rows:
+            self.__rows[row] = collections.OrderedDict()
+
+        row_data = self.__rows[row]
+
+        if cell_type == "numeric":
+            row_data[column] = float(cell_value)
+        elif cell_type == "string":
+            # string value is quoted.
+            if cell_value[0] != '"' or cell_value[-1] != '"':
+                raise RuntimeError("string value is expected to be quoted.")
+            row_data[column] = cell_value[1:-1]
+        else:
+            raise RuntimeError("unhandled cell value type: {}".format(cell_type))
+
+        # Update the data range.
+        if row > self.__max_row:
+            self.__max_row = row
+        if column > self.__max_column:
+            self.__max_column = column
+
+
+class ExpectedDocument(object):
+
+    def __init__(self, filepath):
+        self.sheets = []
+
+        with open(filepath, "r") as f:
+            for line in f.readlines():
+                line = line.strip()
+                self.__parse_line(line)
+
+    def __parse_line(self, line):
+        pos, cell_type, cell_value = line.split(':')
+        pos = Address(pos)
+
+        if not self.sheets or self.sheets[-1].name != pos.sheet_name:
+            self.sheets.append(ExpectedSheet(pos.sheet_name))
+
+        self.sheets[-1].insert_cell(pos.row, pos.column, cell_type, cell_value)
+
+
+def run_test_dir(self, test_dir, mod_loader):
+    """Run test case for loading a file into a document.
+
+    :param test_dir: test directory that contains an input file (whose base
+       name is 'input') and a content check file (check.txt).
+    :param mod_loader: module object that contains function called 'read'.
+    """
+
+    print("test directory: {}".format(test_dir))
+    expected = ExpectedDocument(os.path.join(test_dir, "check.txt"))
+
+    # Find the input file to load.
+    input_file = None
+    for file_name in os.listdir(test_dir):
+        name, ext = os.path.splitext(file_name)
+        if name == "input":
+            input_file = os.path.join(test_dir, file_name)
+            break
+
+    print("input file: {}".format(input_file))
+    self.assertIsNot(input_file, None)
+
+    with open(input_file, "rb") as f:
+        doc = mod_loader.read(f)
+
+    self.assertIsInstance(doc, orcus.Document)
+    self.assertEqual(len(expected.sheets), len(doc.sheets))
+
+    for expected_sheet, actual_sheet in zip(expected.sheets, doc.sheets):
+        self.assertEqual(expected_sheet.name, actual_sheet.name)
+        self.assertEqual(expected_sheet.data_size, actual_sheet.data_size)
+
+        for expected_row, actual_row in zip(expected_sheet.get_rows(), actual_sheet.get_rows()):
+            self.assertEqual(expected_row, actual_row)
 
