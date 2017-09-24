@@ -39,6 +39,7 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/merged-cells/",
     SRCDIR"/test/xls-xml/named-expression/",
     SRCDIR"/test/xls-xml/named-expression-sheet-local/",
+    SRCDIR"/test/xls-xml/raw-values-1/",
 };
 
 std::unique_ptr<spreadsheet::document> load_doc(const string& path)

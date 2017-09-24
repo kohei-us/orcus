@@ -78,7 +78,12 @@ if WITH_PYTHON_ODS
 
 TESTS += ../../test/python/ods.py
 
-endif
+endif # WITH_PYTHON_ODS
 
+if WITH_PYTHON_XLS_XML
+
+TESTS += ../../test/python/xls_xml.py
+
+endif # WITH_PYTHON_XLS_XML
 
 endif # BUILD_PYTHON
