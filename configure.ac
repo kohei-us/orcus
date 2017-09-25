@@ -326,16 +326,16 @@ AC_OUTPUT
 AC_MSG_NOTICE([
 ==============================================================================
 Build configuration:
-        debug:                 $enable_debug
-        werror:                $enable_werror
-        spreadsheet-model:     $enable_spreadsheet_model
-        gnumeric-filter:       $with_gnumeric_filter
-        ods-filter:            $with_ods_filter
-        xlsx-filter:           $with_xlsx_filter
-        xls-xml-filter:        $with_xls_xml_filter
-        xls-gnumeric  :        $with_gnumeric_filter
-        tools:                 $with_tools
-        python:                $enable_python
+        debug                  $enable_debug
+        werror                 $enable_werror
+        spreadsheet-model      $enable_spreadsheet_model
+        gnumeric-filter        $with_gnumeric_filter
+        ods-filter             $with_ods_filter
+        xlsx-filter            $with_xlsx_filter
+        xls-xml-filter         $with_xls_xml_filter
+        xls-gnumeric           $with_gnumeric_filter
+        tools                  $with_tools
+        python                 $enable_python
         python-xlsx            $with_python_xlsx
         python-ods             $with_python_ods
         python-xls-xml         $with_python_xls_xml
