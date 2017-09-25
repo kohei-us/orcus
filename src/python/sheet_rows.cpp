@@ -65,8 +65,8 @@ PyObject* sheet_rows_iter(PyObject* self)
 PyObject* sheet_rows_iternext(PyObject* self)
 {
     sheet_rows_data* data = reinterpret_cast<pyobj_sheet_rows*>(self)->m_data;
-    auto& row_pos = data->m_row_pos;
-    const auto& row_end = data->m_row_end;
+    spreadsheet::sheet_range::const_row_iterator& row_pos = data->m_row_pos;
+    const spreadsheet::sheet_range::const_row_iterator& row_end = data->m_row_end;
 
     if (row_pos == row_end)
     {
@@ -90,7 +90,19 @@ PyObject* sheet_rows_iternext(PyObject* self)
             }
             break;
             case ixion::element_type_boolean:
-                // TODO: This doesn't work currently due to the vector<bool> situation...
+            {
+                bool v = row_pos->get<ixion::boolean_element_block>();
+                if (v)
+                {
+                    Py_INCREF(Py_True);
+                    PyTuple_SetItem(pyobj_row, col_pos, Py_True);
+                }
+                else
+                {
+                    Py_INCREF(Py_False);
+                    PyTuple_SetItem(pyobj_row, col_pos, Py_False);
+                }
+            }
             break;
             case ixion::element_type_string:
             {

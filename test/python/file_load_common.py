@@ -61,6 +61,13 @@ class ExpectedSheet(object):
             row_data[column] = float(cell_value)
         elif cell_type == "string":
             row_data[column] = self.__unescape_string_cell_value(cell_value)
+        elif cell_type == "boolean":
+            if cell_value == "true":
+                row_data[column] = True
+            elif cell_value == "false":
+                row_data[column] = False
+            else:
+                raise RuntimeError("invalid boolean value: {}".format(cell_value))
         else:
             raise RuntimeError("unhandled cell value type: {}".format(cell_type))
 
