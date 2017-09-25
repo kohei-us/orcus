@@ -60,10 +60,7 @@ class ExpectedSheet(object):
         if cell_type == "numeric":
             row_data[column] = float(cell_value)
         elif cell_type == "string":
-            # string value is quoted.
-            if cell_value[0] != '"' or cell_value[-1] != '"':
-                raise RuntimeError("string value is expected to be quoted.")
-            row_data[column] = cell_value[1:-1]
+            row_data[column] = self.__unescape_string_cell_value(cell_value)
         else:
             raise RuntimeError("unhandled cell value type: {}".format(cell_type))
 
@@ -72,6 +69,28 @@ class ExpectedSheet(object):
             self.__max_row = row
         if column > self.__max_column:
             self.__max_column = column
+
+    def __unescape_string_cell_value(self, v):
+        if v[0] != '"' or v[-1] != '"':
+            raise RuntimeError("string value is expected to be quoted.")
+
+        v = v[1:-1]  # remove the outer quotes.
+
+        buf = []
+        escaped_char = False
+        for c in v:
+            if escaped_char:
+                buf.append(c)
+                escaped_char = False
+                continue
+
+            if c == '\\':
+                escaped_char = True
+                continue
+
+            buf.append(c)
+
+        return "".join(buf)
 
 
 class ExpectedDocument(object):
