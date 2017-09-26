@@ -116,16 +116,35 @@ class ExpectedDocument(object):
         if not line:
             return
 
-        vs = line.split(':')
+        # Split the line into 3 parts - position, cell type and the value.
+        # Note that a valid formula expression may contain ':', so we cannot
+        # simply split the line by ':'.
+
+        parts = list()
+        idx = line.find(':')
+        while idx >= 0:
+            parts.append(line[:idx])
+            line = line[idx+1:]
+            if len(parts) == 2:
+                # Append the rest.
+                parts.append(line)
+                break
+
+            idx = line.find(':')
+
+        if len(parts) != 3:
+            raise RuntimeError(
+                "line is expected to contain 3 parts, but not all parts are identified.")
+
+        pos, cell_type, cell_value = parts[0], parts[1], parts[2]
         result = None
-        if len(vs) == 3:
-            pos, cell_type, cell_value = vs
-        elif len(vs) == 4:
-            # formula cell - cell_value contains formula expression.
-            pos, cell_type, cell_value, result = vs
-            result = float(result)  # string to float
-        else:
-            raise RuntimeError("line contains {} elements.".format(len(vs)))
+        if cell_type == "formula":
+            # Split the cell value into formula expression and result.
+            idx = cell_value.rfind(':')
+            if idx < 0:
+                raise RuntimeError("formula line is expected to contain a result value.")
+            cell_value, result = cell_value[:idx], cell_value[idx+1:]
+            result = float(result)
 
         pos = Address(pos)
 
