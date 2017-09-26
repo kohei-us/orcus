@@ -51,7 +51,7 @@ class ExpectedSheet(object):
             rows.append(tuple(row))
         return tuple(rows)
 
-    def insert_cell(self, row, column, cell_type, cell_value):
+    def insert_cell(self, row, column, cell_type, cell_value, result):
         if row not in self.__rows:
             self.__rows[row] = collections.OrderedDict()
 
@@ -68,6 +68,8 @@ class ExpectedSheet(object):
                 row_data[column] = False
             else:
                 raise RuntimeError("invalid boolean value: {}".format(cell_value))
+        elif cell_type == "formula":
+            row_data[column] = result
         else:
             raise RuntimeError("unhandled cell value type: {}".format(cell_type))
 
@@ -111,13 +113,26 @@ class ExpectedDocument(object):
                 self.__parse_line(line)
 
     def __parse_line(self, line):
-        pos, cell_type, cell_value = line.split(':')
+        if not line:
+            return
+
+        vs = line.split(':')
+        result = None
+        if len(vs) == 3:
+            pos, cell_type, cell_value = vs
+        elif len(vs) == 4:
+            # formula cell - cell_value contains formula expression.
+            pos, cell_type, cell_value, result = vs
+            result = float(result)  # string to float
+        else:
+            raise RuntimeError("line contains {} elements.".format(len(vs)))
+
         pos = Address(pos)
 
         if not self.sheets or self.sheets[-1].name != pos.sheet_name:
             self.sheets.append(ExpectedSheet(pos.sheet_name))
 
-        self.sheets[-1].insert_cell(pos.row, pos.column, cell_type, cell_value)
+        self.sheets[-1].insert_cell(pos.row, pos.column, cell_type, cell_value, result)
 
 
 def run_test_dir(self, test_dir, mod_loader):
@@ -146,12 +161,24 @@ def run_test_dir(self, test_dir, mod_loader):
         doc = mod_loader.read(f)
 
     self.assertIsInstance(doc, orcus.Document)
-    self.assertEqual(len(expected.sheets), len(doc.sheets))
 
-    for expected_sheet, actual_sheet in zip(expected.sheets, doc.sheets):
-        self.assertEqual(expected_sheet.name, actual_sheet.name)
-        self.assertEqual(expected_sheet.data_size, actual_sheet.data_size)
+    # Sometimes the actual document contains trailing empty sheets, which the
+    # expected document does not store.
+    self.assertTrue(len(expected.sheets))
+    self.assertTrue(len(expected.sheets) <= len(doc.sheets))
 
-        for expected_row, actual_row in zip(expected_sheet.get_rows(), actual_sheet.get_rows()):
-            self.assertEqual(expected_row, actual_row)
+    expected_sheets = {sh.name: sh for sh in expected.sheets}
+    actual_sheets = {sh.name: sh for sh in doc.sheets}
+
+    for sheet_name, actual_sheet in actual_sheets.items():
+        if sheet_name in expected_sheets:
+            expected_sheet = expected_sheets[sheet_name]
+            self.assertEqual(expected_sheet.data_size, actual_sheet.data_size)
+            for expected_row, actual_row in zip(expected_sheet.get_rows(), actual_sheet.get_rows()):
+                self.assertEqual(expected_row, actual_row)
+        else:
+            # This sheet must be empty since it's not in the expected document.
+            # TODO : right now, calling get_rows() on an empty sheet object
+            # throws an C++ exception.  Fix it then add the check here.
+            pass
 
