@@ -659,7 +659,13 @@ sheet_range sheet::get_sheet_range(
     row_t row_start, col_t col_start, row_t row_end, col_t col_end) const
 {
     if (row_end < row_start || col_end < col_start)
-        throw orcus::general_error("sheet::get_sheet_range: invalid range.");
+    {
+        std::ostringstream os;
+        os << "sheet::get_sheet_range: invalid range (rows: "
+            << row_start << "->" << row_end << "; columns: "
+            << col_start << "->" << col_end << ")";
+        throw orcus::general_error(os.str());
+    }
 
     const ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
     const ixion::column_stores_t* stores = cxt.get_columns(mp_impl->m_sheet);
