@@ -178,7 +178,6 @@ def run_test_dir(self, test_dir, mod_loader):
                 self.assertEqual(expected_row, actual_row)
         else:
             # This sheet must be empty since it's not in the expected document.
-            # TODO : right now, calling get_rows() on an empty sheet object
-            # throws an C++ exception.  Fix it then add the check here.
-            pass
-
+            # Make sure it returns empty row set.
+            rows = [row for row in actual_sheet.get_rows()]
+            self.assertEqual(len(rows), 0)

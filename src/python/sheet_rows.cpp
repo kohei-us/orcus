@@ -219,8 +219,11 @@ void store_sheet_rows_data(PyObject* self, const spreadsheet::sheet* orcus_sheet
     data->m_range = orcus_sheet->get_data_range();
 
     const ixion::abs_range_t& range = data->m_range;
-    data->m_sheet_range = orcus_sheet->get_sheet_range(
-        0, 0, range.last.row, range.last.column);
+    if (range.valid())
+    {
+        data->m_sheet_range = orcus_sheet->get_sheet_range(
+            0, 0, range.last.row, range.last.column);
+    }
 }
 
 }}
