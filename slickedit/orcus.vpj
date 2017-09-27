@@ -544,6 +544,7 @@
 			<Folder Name="python">
 				<F N="../test/python/file_load_common.py"/>
 				<F N="../test/python/ods.py"/>
+				<F N="../test/python/xls_xml.py"/>
 				<F N="../test/python/xlsx.py"/>
 			</Folder>
 		</Folder>

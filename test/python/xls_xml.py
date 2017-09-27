@@ -25,7 +25,18 @@ class TestCase(unittest.TestCase):
         cls.basedir = os.path.normpath(basedir)
 
     def test_import(self):
-        test_dirs = ("raw-values-1",)
+
+        test_dirs = (
+            "basic",
+            "bold-and-italic",
+            "colored-text",
+            "empty-rows",
+            "merged-cells",
+            "named-expression",
+            "named-expression-sheet-local",
+            "raw-values-1",
+        )
+
         for test_dir in test_dirs:
             test_dir = os.path.join(self.basedir, test_dir)
             common.run_test_dir(self, test_dir, xls_xml)
