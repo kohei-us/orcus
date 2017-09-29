@@ -404,36 +404,33 @@ void sheet::set_date_time(row_t row, col_t col, int year, int month, int day, in
 
 void sheet::set_format(row_t row, col_t col, size_t index)
 {
-    cell_format_type::iterator itr = mp_impl->m_cell_formats.find(col);
-    if (itr == mp_impl->m_cell_formats.end())
-    {
-        std::unique_ptr<segment_row_index_type> p(new segment_row_index_type(0, mp_impl->m_row_size+1, 0));
-
-        pair<cell_format_type::iterator, bool> r =
-            mp_impl->m_cell_formats.insert(cell_format_type::value_type(col, p.get()));
-
-        if (!r.second)
-        {
-            cerr << "insertion of new cell format container failed!" << endl;
-            return;
-        }
-
-        p.release();
-        itr = r.first;
-    }
-
-    segment_row_index_type& con = *itr->second;
-    con.insert_back(row, row+1, index);
+    set_format(row, col, row, col, index);
 }
 
 void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t index)
 {
     for (col_t col = col_start; col <= col_end; ++col)
     {
-        for (row_t row = row_start; row <= row_end; ++row)
+        cell_format_type::iterator itr = mp_impl->m_cell_formats.find(col);
+        if (itr == mp_impl->m_cell_formats.end())
         {
-            set_format(row, col, index);
+            std::unique_ptr<segment_row_index_type> p(new segment_row_index_type(0, mp_impl->m_row_size+1, 0));
+
+            pair<cell_format_type::iterator, bool> r =
+                mp_impl->m_cell_formats.insert(cell_format_type::value_type(col, p.get()));
+
+            if (!r.second)
+            {
+                cerr << "insertion of new cell format container failed!" << endl;
+                return;
+            }
+
+            p.release();
+            itr = r.first;
         }
+
+        segment_row_index_type& con = *itr->second;
+        con.insert_back(row_start, row_end+1, index);
     }
 }
 
