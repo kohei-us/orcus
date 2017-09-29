@@ -87,4 +87,10 @@ TESTS += ../../test/python/xls_xml.py
 
 endif # WITH_PYTHON_XLS_XML
 
+if WITH_PYTHON_GNUMERIC
+
+TESTS += ../../test/python/gnumeric.py
+
+endif # WITH_PYTHON_GNUMERIC
+
 endif # BUILD_PYTHON
