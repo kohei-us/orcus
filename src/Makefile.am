@@ -466,6 +466,27 @@ TESTS += \
 
 endif # WITH_XLS_XML_FILTER
 
+if WITH_GNUMERIC_FILTER
+
+EXTRA_PROGRAMS += orcus-test-gnumeric
+
+orcus_test_gnumeric_SOURCES = \
+	orcus_test_gnumeric.cpp \
+	orcus_test_global.cpp
+
+orcus_test_gnumeric_LDADD = \
+	liborcus/liborcus-@ORCUS_API_VERSION@.la \
+	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
+
+orcus_test_gnumeric_CPPFLAGS = \
+	@LIBIXION_CFLAGS@  $(AM_CPPFLAGS) \
+	-I$(top_builddir)/lib/liborcus/liborcus.la -DSRCDIR=\""$(top_srcdir)"\"
+
+TESTS += orcus-test-gnumeric
+
+endif # WITH_GNUMERIC_FILTER
+
 endif # BUILD_SPREADSHEET_MODEL
 
 distclean-local:
