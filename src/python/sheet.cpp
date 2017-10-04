@@ -77,9 +77,26 @@ PyObject* sheet_get_rows(PyObject* self, PyObject* args, PyObject* kwargs)
     return rows;
 }
 
+PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    static const char* kwlist[] = { "file", "format", nullptr };
+
+    PyObject* file = nullptr;
+    PyObject* format = nullptr;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO", const_cast<char**>(kwlist), &file, &format))
+        return nullptr;
+
+    // TODO : implement this.
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 PyMethodDef sheet_methods[] =
 {
     { "get_rows", (PyCFunction)sheet_get_rows, METH_VARARGS, "Get a sheet row iterator." },
+    { "write", (PyCFunction)sheet_write, METH_VARARGS | METH_KEYWORDS, "Write sheet content to specified file object." },
     { nullptr }
 };
 
