@@ -7,3 +7,18 @@
 ########################################################################
 
 from _orcus import *
+from enum import Enum
+
+
+class FormatType(Enum):
+    """Collection of file format types currently used in orcus."""
+
+    UNKNOWN    = 0
+    ODS        = 1
+    XLSX       = 2
+    GNUMERIC   = 3
+    XLS_XML    = 4
+    CSV        = 5
+    YAML       = 6
+    JSON       = 7
+    XML        = 8
