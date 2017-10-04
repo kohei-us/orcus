@@ -37,6 +37,16 @@ struct pyobj_sheet
     sheet_data* m_data;
 };
 
+inline sheet_data* get_sheet_data(PyObject* self)
+{
+    return reinterpret_cast<pyobj_sheet*>(self)->m_data;
+}
+
+inline spreadsheet::sheet* get_core_sheet(PyObject* self)
+{
+    return get_sheet_data(self)->m_sheet;
+}
+
 void sheet_dealloc(pyobj_sheet* self)
 {
     delete self->m_data;
@@ -71,7 +81,7 @@ PyObject* sheet_get_rows(PyObject* self, PyObject* args, PyObject* kwargs)
     sr_type->tp_init(rows, nullptr, nullptr);
 
     // Populate the sheet rows data.
-    store_sheet_rows_data(rows, reinterpret_cast<pyobj_sheet*>(self)->m_data->m_sheet);
+    store_sheet_rows_data(rows, get_core_sheet(self));
 
     Py_INCREF(rows);
     return rows;
@@ -86,6 +96,13 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO", const_cast<char**>(kwlist), &file, &format))
         return nullptr;
+
+    spreadsheet::sheet* sheet = get_core_sheet(self);
+
+    std::ostringstream os;
+    sheet->dump_csv(os);
+
+    std::cout << os.str() << std::endl;
 
     // TODO : implement this.
 
