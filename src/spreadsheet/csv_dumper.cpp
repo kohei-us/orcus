@@ -64,6 +64,9 @@ void csv_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 {
     const ixion::model_context& cxt = m_doc.get_model_context();
     ixion::abs_range_t data_range = cxt.get_data_range(sheet_id);
+    if (!data_range.valid())
+        return;
+
     const ixion::column_stores_t* p = cxt.get_columns(sheet_id);
     if (!p)
         return;

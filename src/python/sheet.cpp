@@ -13,6 +13,7 @@
 #include "orcus/spreadsheet/document.hpp"
 
 #include <structmember.h>
+#include <bytesobject.h>
 #include <iostream>
 
 namespace orcus { namespace python {
@@ -102,9 +103,15 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
     std::ostringstream os;
     sheet->dump_csv(os);
 
-    std::cout << os.str() << std::endl;
 
-    // TODO : implement this.
+    PyObject* func_write = PyObject_GetAttrString(file, "write");
+    if (!func_write)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "'write' function was expected, but not found.");
+        return nullptr;
+    }
+
+    PyObject_CallFunction(func_write, "y", os.str().data(), nullptr);
 
     Py_INCREF(Py_None);
     return Py_None;
