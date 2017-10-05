@@ -43,6 +43,10 @@ inline sheet_data* get_sheet_data(PyObject* self)
     return reinterpret_cast<pyobj_sheet*>(self)->m_data;
 }
 
+/**
+ * Get the underlying C++ sheet class instance from the python object
+ * representation.
+ */
 inline spreadsheet::sheet* get_core_sheet(PyObject* self)
 {
     return get_sheet_data(self)->m_sheet;
@@ -102,16 +106,19 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
 
     std::ostringstream os;
     sheet->dump_csv(os);
+    std::string s = os.str();
 
-
-    PyObject* func_write = PyObject_GetAttrString(file, "write");
-    if (!func_write)
+    if (!s.empty())
     {
-        PyErr_SetString(PyExc_RuntimeError, "'write' function was expected, but not found.");
-        return nullptr;
-    }
+        PyObject* func_write = PyObject_GetAttrString(file, "write");
+        if (!func_write)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "'write' function was expected, but not found.");
+            return nullptr;
+        }
 
-    PyObject_CallFunction(func_write, "y", os.str().data(), nullptr);
+        PyObject_CallFunction(func_write, "y", s.data(), nullptr);
+    }
 
     Py_INCREF(Py_None);
     return Py_None;
