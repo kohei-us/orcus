@@ -67,29 +67,34 @@ AM_TESTS_ENVIRONMENT = PYTHONPATH=$(top_srcdir)/src/python:.libs$${PYTHONPATH:+:
 TESTS = \
 	../../test/python/json.py \
 	../../test/python/module.py \
-	../../test/python/csv.py
+	../../test/python/csv.py \
+	../../test/python/csv_export.py
 
 if WITH_PYTHON_XLSX
 
 TESTS += ../../test/python/xlsx.py
+AM_TESTS_ENVIRONMENT += export WITH_PYTHON_XLSX=1;
 
 endif # WITH_PYTHON_XLSX
 
 if WITH_PYTHON_ODS
 
 TESTS += ../../test/python/ods.py
+AM_TESTS_ENVIRONMENT += export WITH_PYTHON_ODS=1;
 
 endif # WITH_PYTHON_ODS
 
 if WITH_PYTHON_XLS_XML
 
 TESTS += ../../test/python/xls_xml.py
+AM_TESTS_ENVIRONMENT += export WITH_PYTHON_XLS_XML=1;
 
 endif # WITH_PYTHON_XLS_XML
 
 if WITH_PYTHON_GNUMERIC
 
 TESTS += ../../test/python/gnumeric.py
+AM_TESTS_ENVIRONMENT += export WITH_PYTHON_GNUMERIC=1;
 
 endif # WITH_PYTHON_GNUMERIC
 
