@@ -543,6 +543,7 @@
 		</Folder>
 		<Folder Name="../test">
 			<Folder Name="python">
+				<F N="../test/python/csv_export.py"/>
 				<F N="../test/python/file_load_common.py"/>
 				<F N="../test/python/ods.py"/>
 				<F N="../test/python/xls_xml.py"/>
