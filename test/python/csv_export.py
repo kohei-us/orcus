@@ -10,8 +10,8 @@
 import unittest
 import os
 import os.path
-
-from orcus import FormatType
+import file_load_common as common
+from orcus import FormatType, csv
 
 
 class MockFileObject(object):
@@ -21,6 +21,9 @@ class MockFileObject(object):
 
     def write(self, bytes):
         self.__bytes = bytes
+
+    def read(self):
+        return self.__bytes
 
     @property
     def bytes(self):
@@ -49,11 +52,28 @@ class TestCase(unittest.TestCase):
             with open(input_file, "rb") as f:
                 doc = xlsx.read(f)
 
+            # Build an expected document object from the check file.
+            check_file = os.path.join(test_dir, "check.txt")
+            check_doc = common.ExpectedDocument(check_file)
+
+            # check_doc only contains non-empty sheets.
+            data_sheet_names = set()
+            for sheet in check_doc.sheets:
+                data_sheet_names.add(sheet.name)
+
             for sheet in doc.sheets:
                 mfo = MockFileObject()
                 sheet.write(mfo, format=FormatType.CSV)
-                # TODO : check the contents of the bytes.
-                print(mfo.bytes)
+
+                if mfo.bytes is None:
+                    self.assertFalse(sheet.name in data_sheet_names)
+                    continue
+
+                # Load the csv stream into a document again.
+                doc_reload = csv.read(mfo)
+                self.assertEqual(1, len(doc_reload.sheets))
+                for row1, row2 in zip(sheet.get_rows(), doc_reload.sheets[0].get_rows()):
+                    self.assertEqual(row1, row2)
 
 
 if __name__ == '__main__':
