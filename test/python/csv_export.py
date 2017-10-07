@@ -43,7 +43,9 @@ class TestCase(unittest.TestCase):
         from orcus import xlsx
 
         test_dirs = (
+            "raw-values-1",
             "empty-shared-strings",
+            "named-expression",
         )
 
         for test_dir in test_dirs:
