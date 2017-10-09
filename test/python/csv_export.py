@@ -77,6 +77,26 @@ class TestCase(unittest.TestCase):
                 for row1, row2 in zip(sheet.get_rows(), doc_reload.sheets[0].get_rows()):
                     self.assertEqual(row1, row2)
 
+            # Make sure we raise an exception on invalid format type.
+            # We currently only support exporting sheet as csv.
+
+            invalid_formats = (
+                "foo",
+                FormatType.GNUMERIC,
+                FormatType.JSON,
+                FormatType.ODS,
+                FormatType.XLSX,
+                FormatType.XLS_XML,
+                FormatType.XLS_XML,
+                FormatType.XML,
+                FormatType.YAML,
+            )
+
+            for invalid_format in invalid_formats:
+                mfo = MockFileObject()
+                with self.assertRaises(Exception):
+                    doc.sheets[0].write(mfo, format=invalid_format)
+
 
 if __name__ == '__main__':
     unittest.main()
