@@ -15,6 +15,7 @@
 #include <structmember.h>
 #include <bytesobject.h>
 #include <iostream>
+#include <cstring>
 
 namespace orcus { namespace python {
 
@@ -92,6 +93,48 @@ PyObject* sheet_get_rows(PyObject* self, PyObject* args, PyObject* kwargs)
     return rows;
 }
 
+namespace {
+
+format_t to_format_type_enum(PyObject* format)
+{
+    static const char* err_not_format_type = "An enum value of 'orcus.FormatType' was expected.";
+    static const char* err_format_not_supported = "Unsupported format type.";
+
+    PyObject* format_s = PyObject_Str(format); // new reference
+    if (!format_s)
+    {
+        PyErr_SetString(PyExc_RuntimeError, err_not_format_type);
+        return format_t::unknown;
+    }
+
+    const char* p = PyUnicode_AsUTF8(format_s);
+
+    // Make sure that the string starts with 'FormatType.'.
+    if (!p || strnlen(p, 11u) < 11u || strncmp(p, "FormatType.", 11u))
+    {
+        PyErr_SetString(PyExc_RuntimeError, err_not_format_type);
+        Py_DECREF(format_s);
+        return format_t::unknown;
+    }
+
+    p += 11; // Move it to the char past the '.'.
+
+    // TODO : currently we only support csv format.  Change this code when we
+    // add more format type(s) to support.
+
+    if (strncmp(p, "CSV", 3u))
+    {
+        PyErr_SetString(PyExc_RuntimeError, err_format_not_supported);
+        Py_DECREF(format_s);
+        return format_t::unknown;
+    }
+
+    Py_DECREF(format_s);
+    return format_t::csv;
+}
+
+}
+
 PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
 {
     static const char* kwlist[] = { "file", "format", nullptr };
@@ -100,6 +143,9 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
     PyObject* format = nullptr;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO", const_cast<char**>(kwlist), &file, &format))
+        return nullptr;
+
+    if (to_format_type_enum(format) == format_t::unknown)
         return nullptr;
 
     spreadsheet::sheet* sheet = get_core_sheet(self);
