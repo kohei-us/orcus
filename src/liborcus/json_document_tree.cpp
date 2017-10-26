@@ -480,7 +480,6 @@ class parser_handler
                 jva->value_array.push_back(std::move(value));
                 return jva->value_array.back().get();
             }
-            break;
             case detail::node_t::object:
             {
                 const pstring& key = cur.key;
@@ -511,16 +510,13 @@ class parser_handler
 
                 return r.first->second.get();
             }
-            break;
             default:
-            {
-                std::ostringstream os;
-                os << BOOST_CURRENT_FUNCTION << ": unstackable JSON value type.";
-                throw document_error(os.str());
-            }
+                break;
         }
 
-        return nullptr;
+        std::ostringstream os;
+        os << BOOST_CURRENT_FUNCTION << ": unstackable JSON value type.";
+        throw document_error(os.str());
     }
 
 public:

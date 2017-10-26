@@ -198,7 +198,6 @@ class handler
                 yvs->value_sequence.push_back(std::move(value));
                 return yvs->value_sequence.back().get();
             }
-            break;
             case node_t::map:
             {
                 yaml_value_map* yvm = static_cast<yaml_value_map*>(cur.node);
@@ -212,16 +211,13 @@ class handler
 
                 return r.first->second.get();
             }
-            break;
             default:
-            {
-                std::ostringstream os;
-                os << BOOST_CURRENT_FUNCTION << ": unstackable YAML value type (" << cur.node->print() << ").";
-                throw yaml_document_error(os.str());
-            }
+                break;
         }
 
-        return nullptr;
+        std::ostringstream os;
+        os << BOOST_CURRENT_FUNCTION << ": unstackable YAML value type (" << cur.node->print() << ").";
+        throw yaml_document_error(os.str());
     }
 
 public:
