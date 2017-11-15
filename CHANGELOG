@@ -1,3 +1,7 @@
+orcus 0.13.1
+
+  * use a more efficient way to set format ranges in spreadsheet model.
+
   * support single quoted strings in the css parser.
 
 orcus 0.13.0
