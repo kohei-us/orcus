@@ -221,7 +221,6 @@ test_data = \
     test/xml-mapped/attribute-single-element/input.xml \
     test/xml-mapped/attribute-single-element/map.xml \
     test/xml-mapped/content-basic/check.txt \
-    test/xml-mapped/content-basic/flat/data.txt \
     test/xml-mapped/content-basic/input.xml \
     test/xml-mapped/content-basic/map.xml \
     test/xml-mapped/content-namespace-2/check.txt \
@@ -231,7 +230,6 @@ test_data = \
     test/xml-mapped/content-namespace/input.xml \
     test/xml-mapped/content-namespace/map.xml \
     test/xml-mapped/fuel-economy/check.txt \
-    test/xml-mapped/fuel-economy/flat/data.txt \
     test/xml-mapped/fuel-economy/input.xml \
     test/xml-mapped/fuel-economy/map.xml \
     test/xml-structure/attribute-1/check.txt \
