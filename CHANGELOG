@@ -6,6 +6,10 @@
     * add orcus.ods.read(), orcus.xls_xml.read(), orcus.csv.read(),
       and orcus.gnumeric.read() functions.
 
+    * add orcus.Sheet.write() method which exports sheet content to
+      specified format.  For now only the csv format type is
+      supported.
+
   * xml_map_tree no longer requires the source stream persisted in
     memory between the read and write.
 
