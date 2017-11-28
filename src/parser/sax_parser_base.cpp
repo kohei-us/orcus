@@ -296,7 +296,7 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, pstring& str)
         str = pstring(buf.get(), buf.size());
 
     // Skip the closing quote.
-    assert(cur_char() == '"');
+    assert(!has_char() || cur_char() == '"');
     next();
 }
 
