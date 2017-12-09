@@ -168,8 +168,8 @@ public:
 
 /**
  * Interface for importing sheet properties.  Sheet properties are those
- * that are used for decorative purposes but are not not a part of the
- * sheet cell values.
+ * that are used for decorative purposes but are not necessarily a part of
+ * the sheet cell values.
  */
 class import_sheet_properties
 {
