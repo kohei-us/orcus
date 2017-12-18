@@ -1,0 +1,7 @@
+Sheet1/0/0:numeric:1
+Sheet1/0/1:formula:A1*2:2
+Sheet1/1/0:numeric:2
+Sheet1/1/1:formula:A2-10:-8
+Sheet1/2/0:numeric:3
+Sheet1/2/1:formula:A3/3:1
+Sheet1/4/0:formula:SUM(A1:A3):6

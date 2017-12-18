@@ -36,6 +36,7 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/bold-and-italic/",
     SRCDIR"/test/xls-xml/colored-text/",
     SRCDIR"/test/xls-xml/empty-rows/",
+    SRCDIR"/test/xls-xml/formula-cells/",
     SRCDIR"/test/xls-xml/merged-cells/",
     SRCDIR"/test/xls-xml/named-expression/",
     SRCDIR"/test/xls-xml/named-expression-sheet-local/",
