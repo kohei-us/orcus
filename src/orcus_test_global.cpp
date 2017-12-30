@@ -12,6 +12,7 @@
 #include "orcus/stream.hpp"
 
 #include <sstream>
+#include <cmath>
 
 namespace orcus { namespace test {
 
@@ -70,6 +71,35 @@ void verify_content(
 
         throw assert_error(filename, line_no, os.str().data());
     }
+}
+
+void verify_value_to_decimals(
+    const char* filename, size_t line_no, double expected, double actual, int decimals)
+{
+    for (int i = 0; i < decimals; ++i)
+    {
+        expected *= 10.0;
+        actual *= 10.0;
+    }
+
+    long expected_i = std::lround(expected);
+    long actual_i = std::lround(actual);
+
+    if (expected_i == actual_i)
+        return;
+
+    expected = expected_i;
+    actual = actual_i;
+
+    for (int i = 0; i < decimals; ++i)
+    {
+        expected /= 10.0;
+        actual /= 10.0;
+    }
+
+    std::ostringstream os;
+    os << "value is not as expected: (expected: " << expected << "; actual: " << actual << ")";
+    throw assert_error(filename, line_no, os.str().data());
 }
 
 }}

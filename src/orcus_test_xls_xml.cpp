@@ -24,6 +24,8 @@
 #include <cmath>
 #include <iostream>
 
+#include "orcus_test_global.hpp"
+
 using namespace orcus;
 using namespace std;
 
@@ -331,6 +333,73 @@ void test_xls_xml_colored_text()
     assert(fmt->size == 4);
 }
 
+void test_xls_xml_column_width_row_height()
+{
+    struct cw_check
+    {
+        spreadsheet::col_t col;
+        double width;
+        int decimals;
+    };
+
+    struct rh_check
+    {
+        spreadsheet::row_t row;
+        double height;
+        int decimals;
+    };
+
+    std::unique_ptr<spreadsheet::document> doc =
+        load_doc(SRCDIR"/test/xls-xml/column-width-row-height/input.xml");
+
+    const spreadsheet::sheet* sheet1 = doc->get_sheet(0);
+    assert(sheet1);
+
+    // Column widths and row heights are stored in twips. Convert them to
+    // points so that we can compare them with the values stored in the source
+    // file.
+
+    std::vector<cw_check> cw_checks =
+    {
+        { 1, 56.25, 2 },
+        { 2, 82.50, 2 },
+        { 3, 108.75, 2 },
+        { 5, 66.75, 2 },
+        { 6, 66.75, 2 },
+        { 7, 66.75, 2 },
+        { 10, 119.25, 2 },
+        { 11, 119.25, 2 },
+    };
+
+    for (const cw_check& check : cw_checks)
+    {
+
+        spreadsheet::col_width_t cw = sheet1->get_col_width(check.col, nullptr, nullptr);
+        double pt = convert(cw, length_unit_t::twip, length_unit_t::point);
+        test::verify_value_to_decimals(__FILE__, __LINE__, check.width, pt, check.decimals);
+    }
+
+    std::vector<rh_check> rh_checks =
+    {
+        {  2, 20.0, 0 },
+        {  3, 30.0, 0 },
+        {  4, 40.0, 0 },
+        {  5, 50.0, 0 },
+        {  7, 25.0, 0 },
+        {  8, 25.0, 0 },
+        {  9, 25.0, 0 },
+        { 12, 35.0, 0 },
+        { 13, 35.0, 0 },
+    };
+
+    for (const rh_check& check : rh_checks)
+    {
+        spreadsheet::row_height_t rh = sheet1->get_row_height(check.row, nullptr, nullptr);
+        double pt = convert(rh, length_unit_t::twip, length_unit_t::point);
+        test::verify_value_to_decimals(__FILE__, __LINE__, check.height, pt, check.decimals);
+    }
+}
+
 void test_xls_xml_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
@@ -594,6 +663,7 @@ int main()
     test_xls_xml_date_time();
     test_xls_xml_bold_and_italic();
     test_xls_xml_colored_text();
+    test_xls_xml_column_width_row_height();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();

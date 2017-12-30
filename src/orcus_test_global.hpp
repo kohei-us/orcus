@@ -46,6 +46,9 @@ std::string get_content_as_csv(const spreadsheet::document& doc, spreadsheet::sh
 void verify_content(
     const char* filename, size_t line_no, const std::string& expected, const std::string& actual);
 
+void verify_value_to_decimals(
+    const char* filename, size_t line_no, double expected, double actual, int decimals);
+
 }}
 
 #endif

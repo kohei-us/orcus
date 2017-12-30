@@ -450,7 +450,8 @@ EXTRA_PROGRAMS += orcus-test-xls-xml
 # orcus-test-xls-xml
 
 orcus_test_xls_xml_SOURCES = \
-	orcus_test_xls_xml.cpp
+	orcus_test_xls_xml.cpp \
+	orcus_test_global.cpp
 
 orcus_test_xls_xml_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
