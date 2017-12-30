@@ -148,6 +148,9 @@ double convert_twip(double value, length_unit_t unit_to)
         case length_unit_t::inch:
             // twips to inches : 1 twip = 1/1440 inches
             return value / 1440.0;
+        case length_unit_t::point:
+            // 1 twip = 1/1440 inches = 72/1440 points = 1/20 points
+            return value / 20.0;
         default:
             ;
     }

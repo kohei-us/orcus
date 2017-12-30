@@ -174,7 +174,10 @@ public:
 
 private:
     void start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_element_column(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+
     void end_element_cell();
+    void end_element_column();
 
     void end_element_workbook();
     void end_element_styles();
@@ -195,6 +198,7 @@ private:
     spreadsheet::sheet_t m_cur_sheet;
     spreadsheet::row_t m_cur_row;
     spreadsheet::col_t m_cur_col;
+    spreadsheet::col_t m_cur_prop_col; /// current column position for column properties.
     spreadsheet::row_t m_cur_merge_down;
     spreadsheet::col_t m_cur_merge_across;
     pstring m_cur_cell_formula;

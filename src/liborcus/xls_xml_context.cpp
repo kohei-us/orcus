@@ -501,6 +501,7 @@ xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tok
     mp_sheet_props(nullptr),
     m_cur_sheet(-1),
     m_cur_row(0), m_cur_col(0),
+    m_cur_prop_col(0),
     m_cur_merge_down(0), m_cur_merge_across(0),
     m_cc_data(session_cxt, tokens, factory)
 {
@@ -596,6 +597,9 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             }
             case XML_Cell:
                 start_element_cell(parent, attrs);
+                break;
+            case XML_Column:
+                start_element_column(parent, attrs);
                 break;
             case XML_Names:
             {
@@ -805,6 +809,9 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_Cell:
                 end_element_cell();
                 break;
+            case XML_Column:
+                end_element_column();
+                break;
             case XML_Workbook:
                 end_element_workbook();
                 break;
@@ -981,6 +988,51 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
     }
 }
 
+void xls_xml_context::start_element_column(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_xls_xml_ss, XML_Table);
+
+    if (!mp_sheet_props)
+        return;
+
+    spreadsheet::col_t col_index = m_cur_prop_col;
+    spreadsheet::col_t span = 0;
+    double width = 0.0;
+
+    std::for_each(attrs.begin(), attrs.end(),
+        [&](const xml_token_attr_t& attr)
+        {
+            if (attr.value.empty())
+                return;
+
+            if (attr.ns != NS_xls_xml_ss)
+                return;
+
+            switch (attr.name)
+            {
+                case XML_Index:
+                    // Convert from 1-based to 0-based.
+                    col_index = to_long(attr.value) - 1;
+                    break;
+                case XML_Width:
+                    width = to_double(attr.value);
+                    break;
+                case XML_Span:
+                    span = to_long(attr.value);
+                    break;
+                default:
+                    ;
+            }
+        }
+    );
+
+    for (; span >= 0; --span, ++col_index)
+        // Column widths are stored as points.
+        mp_sheet_props->set_column_width(col_index, width, orcus::length_unit_t::point);
+
+    m_cur_prop_col = col_index;
+}
+
 void xls_xml_context::end_element_cell()
 {
     if (mp_sheet_props && (m_cur_merge_across > 0 || m_cur_merge_down > 0))
@@ -1007,6 +1059,10 @@ void xls_xml_context::end_element_cell()
     ++m_cur_col;
     if (m_cur_merge_across > 0)
         m_cur_col += m_cur_merge_across;
+}
+
+void xls_xml_context::end_element_column()
+{
 }
 
 void xls_xml_context::end_element_workbook()
