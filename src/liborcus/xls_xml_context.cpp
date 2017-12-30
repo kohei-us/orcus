@@ -399,37 +399,6 @@ public:
     pstring get_name() const { return m_name; }
 };
 
-class row_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-    long m_row_index;
-public:
-    row_attr_parser() : m_row_index(-1) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.value.empty())
-            return;
-
-        if (attr.ns == NS_xls_xml_ss)
-        {
-            switch (attr.name)
-            {
-                case XML_Index:
-                {
-                    const char* p = attr.value.get();
-                    const char* p_end = p + attr.value.size();
-                    m_row_index = to_long(p, p_end);
-                }
-                break;
-                default:
-                    ;
-            }
-        }
-    }
-
-    long get_row_index() const { return m_row_index; }
-};
-
 }
 
 xls_xml_context::named_exp::named_exp(const pstring& _name, const pstring& _expression, spreadsheet::sheet_t _scope) :
@@ -584,17 +553,8 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Worksheet);
                 break;
             case XML_Row:
-            {
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Table);
-                m_cur_col = 0;
-                long row_index = for_each(attrs.begin(), attrs.end(), row_attr_parser()).get_row_index();
-                if (row_index > 0)
-                {
-                    // 1-based row index. Convert it to a 0-based one.
-                    m_cur_row = row_index - 1;
-                }
+                start_element_row(parent, attrs);
                 break;
-            }
             case XML_Cell:
                 start_element_cell(parent, attrs);
                 break;
@@ -804,7 +764,7 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
         switch (name)
         {
             case XML_Row:
-                ++m_cur_row;
+                end_element_row();
                 break;
             case XML_Cell:
                 end_element_cell();
@@ -1033,6 +993,46 @@ void xls_xml_context::start_element_column(const xml_token_pair_t& parent, const
     m_cur_prop_col = col_index;
 }
 
+void xls_xml_context::start_element_row(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_xls_xml_ss, XML_Table);
+    m_cur_col = 0;
+    spreadsheet::row_t row_index = -1;
+    bool has_height = false;
+    double height = 0.0;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.value.empty())
+            return;
+
+        if (attr.ns == NS_xls_xml_ss)
+        {
+            switch (attr.name)
+            {
+                case XML_Index:
+                    row_index = to_long(attr.value);
+                    break;
+                case XML_Height:
+                    has_height = true;
+                    height = to_double(attr.value);
+                    break;
+                default:
+                    ;
+            }
+        }
+    }
+
+    if (row_index > 0)
+    {
+        // 1-based row index. Convert it to a 0-based one.
+        m_cur_row = row_index - 1;
+    }
+
+    if (mp_sheet_props && has_height)
+        mp_sheet_props->set_row_height(m_cur_row, height, length_unit_t::point);
+}
+
 void xls_xml_context::end_element_cell()
 {
     if (mp_sheet_props && (m_cur_merge_across > 0 || m_cur_merge_down > 0))
@@ -1063,6 +1063,11 @@ void xls_xml_context::end_element_cell()
 
 void xls_xml_context::end_element_column()
 {
+}
+
+void xls_xml_context::end_element_row()
+{
+    ++m_cur_row;
 }
 
 void xls_xml_context::end_element_workbook()
