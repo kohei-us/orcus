@@ -16,6 +16,7 @@
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/auto_filter.hpp"
 #include "orcus/spreadsheet/pivot.hpp"
+#include "orcus/spreadsheet/styles.hpp"
 
 #include <cstdlib>
 #include <cassert>
@@ -34,6 +35,19 @@ using namespace orcus::spreadsheet;
 using namespace std;
 
 namespace {
+
+config test_config(format_t::xlsx);
+
+std::unique_ptr<spreadsheet::document> load_doc(const pstring& path)
+{
+    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
+    spreadsheet::import_factory factory(*doc);
+    orcus_xlsx app(&factory);
+    app.read_file(path.str());
+    app.set_config(test_config);
+
+    return doc;
+}
 
 /**
  * Convenience function to retrieve a pivot cache instance from textural
@@ -60,8 +74,6 @@ const pivot_cache* get_pivot_cache(
     ixion::abs_range_t range = ixion::to_range(fn.range).to_abs(origin);
     return pc.get_cache(sheet_name, range);
 }
-
-config test_config(format_t::xlsx);
 
 vector<const char*> dirs = {
     SRCDIR"/test/xlsx/raw-values-1/",
@@ -289,6 +301,53 @@ void test_xlsx_date_time()
     ms -= std::floor(dt.second) * 1000.0;
     ms = std::round(ms);
     assert(ms == 555.0);
+}
+
+void test_xlsx_background_fill()
+{
+    pstring path(SRCDIR"/test/xlsx/background-color/standard.xlsx");
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path);
+
+    spreadsheet::import_styles* styles = doc->get_styles();
+    assert(styles);
+
+    spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        spreadsheet::row_t row;
+        spreadsheet::col_t col;
+        pstring pattern_type;
+        spreadsheet::color_t fg_color;
+    };
+
+    std::vector<check> checks =
+    {
+        {  1, 0, "solid", { 255, 192,   0,   0 } }, // A2  - dark red
+        {  2, 0, "solid", { 255, 255,   0,   0 } }, // A3  - red
+        {  3, 0, "solid", { 255, 255, 192,   0 } }, // A4  - orange
+        {  4, 0, "solid", { 255, 255, 255,   0 } }, // A5  - yellow
+        {  5, 0, "solid", { 255, 146, 208,  80 } }, // A6  - light green
+        {  6, 0, "solid", { 255,   0, 176,  80 } }, // A7  - green
+        {  7, 0, "solid", { 255,   0, 176, 240 } }, // A8  - light blue
+        {  8, 0, "solid", { 255,   0, 112, 192 } }, // A9  - blue
+        {  9, 0, "solid", { 255,   0,  32,  96 } }, // A10 - dark blue
+        { 10, 0, "solid", { 255, 112,  48, 160 } }, // A11 - purple
+    };
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col);
+
+        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        assert(cf);
+
+        const spreadsheet::fill_t* fill_data = styles->get_fill(cf->fill);
+        assert(fill_data);
+        assert(fill_data->pattern_type == c.pattern_type);
+        assert(fill_data->fg_color == c.fg_color);
+    }
 }
 
 void test_xlsx_pivot_two_pivot_caches()
@@ -1109,6 +1168,7 @@ int main()
     test_xlsx_table();
     test_xlsx_merged_cells();
     test_xlsx_date_time();
+    test_xlsx_background_fill();
 
     // pivot table
     test_xlsx_pivot_two_pivot_caches();

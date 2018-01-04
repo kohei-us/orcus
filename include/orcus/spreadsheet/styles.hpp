@@ -31,6 +31,9 @@ struct ORCUS_SPM_DLLPUBLIC color_t
     color_t(color_elem_t _alpha, color_elem_t _red, color_elem_t _green, color_elem_t _blue);
 
     void reset();
+
+    bool operator==(const color_t& other) const;
+    bool operator!=(const color_t& other) const;
 };
 
 struct ORCUS_SPM_DLLPUBLIC font_t

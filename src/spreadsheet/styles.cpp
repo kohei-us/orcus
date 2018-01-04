@@ -47,6 +47,16 @@ void color_t::reset()
     *this = color_t();
 }
 
+bool color_t::operator==(const color_t& other) const
+{
+    return alpha == other.alpha && red == other.red && green == other.green && blue == other.blue;
+}
+
+bool color_t::operator!=(const color_t& other) const
+{
+    return !operator==(other);
+}
+
 fill_t::fill_t()
 {
 }
