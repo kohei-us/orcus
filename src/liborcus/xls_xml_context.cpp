@@ -1262,7 +1262,7 @@ void xls_xml_context::commit_styles()
     {
         styles->set_font_bold(style->font.bold);
         styles->set_font_italic(style->font.italic);
-        styles->set_font_color(0,
+        styles->set_font_color(255,
             style->font.color.red,
             style->font.color.green,
             style->font.color.blue);
@@ -1275,7 +1275,7 @@ void xls_xml_context::commit_styles()
         {
             // TODO : add support for fill types other than 'solid'.
             styles->set_fill_pattern_type(ORCUS_ASCII("solid"));
-            styles->set_fill_fg_color(0,
+            styles->set_fill_fg_color(255,
                 style->fill.color.red,
                 style->fill.color.green,
                 style->fill.color.blue);
