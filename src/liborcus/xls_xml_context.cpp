@@ -678,6 +678,35 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 }
                 break;
             }
+            case XML_Interior:
+            {
+                xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns != NS_xls_xml_ss)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_Color:
+                        {
+                            m_current_style->fill.color =
+                                spreadsheet::to_color_rgb(attr.value.data(), attr.value.size());
+                            break;
+                        }
+                        case XML_Pattern:
+                        {
+                            // TODO : support fill types other than 'solid'.
+                            m_current_style->fill.solid = (attr.value == "Solid");
+                            break;
+                        }
+                        default:
+                            ;
+                    }
+                }
+                break;
+            }
             default:
                 warn_unhandled();
         }
@@ -1241,6 +1270,19 @@ void xls_xml_context::commit_styles()
         size_t font_id = styles->commit_font();
 
         styles->set_xf_font(font_id);
+
+        if (style->fill.solid)
+        {
+            // TODO : add support for fill types other than 'solid'.
+            styles->set_fill_pattern_type(ORCUS_ASCII("solid"));
+            styles->set_fill_fg_color(0,
+                style->fill.color.red,
+                style->fill.color.green,
+                style->fill.color.blue);
+
+            size_t fill_id = styles->commit_fill();
+            styles->set_xf_fill(fill_id);
+        }
 
         size_t xf_id = styles->commit_cell_xf();
 

@@ -111,12 +111,23 @@ class xls_xml_context : public xml_context_base
         spreadsheet::color_rgb_t color;
     };
 
+    /**
+     * TODO:  we only support solid fill for now.  More fill types to be added
+     * later.
+     */
+    struct fill_style_type
+    {
+        bool solid = false;
+        spreadsheet::color_rgb_t color;
+    };
+
     struct style_type
     {
         pstring id;
         pstring name;
 
         font_style_type font;
+        fill_style_type fill;
     };
 
     struct named_exp
