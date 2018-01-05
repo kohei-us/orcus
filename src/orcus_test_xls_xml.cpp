@@ -400,6 +400,53 @@ void test_xls_xml_column_width_row_height()
     }
 }
 
+void test_xls_xml_background_fill()
+{
+    pstring path(SRCDIR"/test/xls-xml/background-color/standard.xml");
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
+
+    spreadsheet::import_styles* styles = doc->get_styles();
+    assert(styles);
+
+    spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        spreadsheet::row_t row;
+        spreadsheet::col_t col;
+        pstring pattern_type;
+        spreadsheet::color_t fg_color;
+    };
+
+    std::vector<check> checks =
+    {
+        {  1, 0, "solid", { 255, 192,   0,   0 } }, // A2  - dark red
+        {  2, 0, "solid", { 255, 255,   0,   0 } }, // A3  - red
+        {  3, 0, "solid", { 255, 255, 192,   0 } }, // A4  - orange
+        {  4, 0, "solid", { 255, 255, 255,   0 } }, // A5  - yellow
+        {  5, 0, "solid", { 255, 146, 208,  80 } }, // A6  - light green
+        {  6, 0, "solid", { 255,   0, 176,  80 } }, // A7  - green
+        {  7, 0, "solid", { 255,   0, 176, 240 } }, // A8  - light blue
+        {  8, 0, "solid", { 255,   0, 112, 192 } }, // A9  - blue
+        {  9, 0, "solid", { 255,   0,  32,  96 } }, // A10 - dark blue
+        { 10, 0, "solid", { 255, 112,  48, 160 } }, // A11 - purple
+    };
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col);
+
+        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        assert(cf);
+
+        const spreadsheet::fill_t* fill_data = styles->get_fill(cf->fill);
+        assert(fill_data);
+        assert(fill_data->pattern_type == c.pattern_type);
+        assert(fill_data->fg_color == c.fg_color);
+    }
+}
+
 void test_xls_xml_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
@@ -664,6 +711,7 @@ int main()
     test_xls_xml_bold_and_italic();
     test_xls_xml_colored_text();
     test_xls_xml_column_width_row_height();
+    test_xls_xml_background_fill();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();
