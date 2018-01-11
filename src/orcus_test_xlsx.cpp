@@ -372,33 +372,33 @@ void test_xlsx_text_alignment()
 
     std::vector<check> checks =
     {
-        {  1, 2, false, spreadsheet::hor_alignment_t::unknown,   spreadsheet::ver_alignment_t::unknown   }, // C2
-        {  2, 2,  true, spreadsheet::hor_alignment_t::left,      spreadsheet::ver_alignment_t::bottom    }, // C3
-        {  3, 2,  true, spreadsheet::hor_alignment_t::center,    spreadsheet::ver_alignment_t::bottom    }, // C4
-        {  4, 2,  true, spreadsheet::hor_alignment_t::right,     spreadsheet::ver_alignment_t::bottom    }, // C5
-        {  5, 2,  true, spreadsheet::hor_alignment_t::left,      spreadsheet::ver_alignment_t::bottom    }, // C6
-        {  6, 2,  true, spreadsheet::hor_alignment_t::left,      spreadsheet::ver_alignment_t::bottom    }, // C7
-        {  7, 2,  true, spreadsheet::hor_alignment_t::right,     spreadsheet::ver_alignment_t::bottom    }, // C8
-        {  8, 2,  true, spreadsheet::hor_alignment_t::right,     spreadsheet::ver_alignment_t::bottom    }, // C9
-        {  9, 2,  true, spreadsheet::hor_alignment_t::unknown,   spreadsheet::ver_alignment_t::middle    }, // C10
-        { 10, 2,  true, spreadsheet::hor_alignment_t::left,      spreadsheet::ver_alignment_t::middle    }, // C11
-        { 11, 2,  true, spreadsheet::hor_alignment_t::center,    spreadsheet::ver_alignment_t::middle    }, // C12
-        { 12, 2,  true, spreadsheet::hor_alignment_t::right,     spreadsheet::ver_alignment_t::middle    }, // C13
-        { 13, 2,  true, spreadsheet::hor_alignment_t::left,      spreadsheet::ver_alignment_t::middle    }, // C14
-        { 14, 2,  true, spreadsheet::hor_alignment_t::left,      spreadsheet::ver_alignment_t::middle    }, // C15
-        { 15, 2,  true, spreadsheet::hor_alignment_t::right,     spreadsheet::ver_alignment_t::middle    }, // C16
-        { 16, 2,  true, spreadsheet::hor_alignment_t::right,     spreadsheet::ver_alignment_t::middle    }, // C17
-        { 17, 2,  true, spreadsheet::hor_alignment_t::unknown,   spreadsheet::ver_alignment_t::top       }, // C18
-        { 18, 2,  true, spreadsheet::hor_alignment_t::left,      spreadsheet::ver_alignment_t::top       }, // C19
-        { 19, 2,  true, spreadsheet::hor_alignment_t::center,    spreadsheet::ver_alignment_t::top       }, // C20
-        { 20, 2,  true, spreadsheet::hor_alignment_t::right,     spreadsheet::ver_alignment_t::top       }, // C21
-        { 21, 2,  true, spreadsheet::hor_alignment_t::left,      spreadsheet::ver_alignment_t::top       }, // C22
-        { 22, 2,  true, spreadsheet::hor_alignment_t::left,      spreadsheet::ver_alignment_t::top       }, // C23
-        { 23, 2,  true, spreadsheet::hor_alignment_t::right,     spreadsheet::ver_alignment_t::top       }, // C24
-        { 24, 2,  true, spreadsheet::hor_alignment_t::right,     spreadsheet::ver_alignment_t::top       }, // C25
-        { 25, 2,  true, spreadsheet::hor_alignment_t::unknown,   spreadsheet::ver_alignment_t::justified }, // C26
-        { 26, 2,  true, spreadsheet::hor_alignment_t::justified, spreadsheet::ver_alignment_t::bottom    }, // C27
-        { 27, 2,  true, spreadsheet::hor_alignment_t::distributed, spreadsheet::ver_alignment_t::distributed    }, // C28
+        {  1, 2, false, spreadsheet::hor_alignment_t::unknown,     spreadsheet::ver_alignment_t::unknown     }, // C2
+        {  2, 2,  true, spreadsheet::hor_alignment_t::left,        spreadsheet::ver_alignment_t::bottom      }, // C3
+        {  3, 2,  true, spreadsheet::hor_alignment_t::center,      spreadsheet::ver_alignment_t::bottom      }, // C4
+        {  4, 2,  true, spreadsheet::hor_alignment_t::right,       spreadsheet::ver_alignment_t::bottom      }, // C5
+        {  5, 2,  true, spreadsheet::hor_alignment_t::left,        spreadsheet::ver_alignment_t::bottom      }, // C6
+        {  6, 2,  true, spreadsheet::hor_alignment_t::left,        spreadsheet::ver_alignment_t::bottom      }, // C7
+        {  7, 2,  true, spreadsheet::hor_alignment_t::right,       spreadsheet::ver_alignment_t::bottom      }, // C8
+        {  8, 2,  true, spreadsheet::hor_alignment_t::right,       spreadsheet::ver_alignment_t::bottom      }, // C9
+        {  9, 2,  true, spreadsheet::hor_alignment_t::unknown,     spreadsheet::ver_alignment_t::middle      }, // C10
+        { 10, 2,  true, spreadsheet::hor_alignment_t::left,        spreadsheet::ver_alignment_t::middle      }, // C11
+        { 11, 2,  true, spreadsheet::hor_alignment_t::center,      spreadsheet::ver_alignment_t::middle      }, // C12
+        { 12, 2,  true, spreadsheet::hor_alignment_t::right,       spreadsheet::ver_alignment_t::middle      }, // C13
+        { 13, 2,  true, spreadsheet::hor_alignment_t::left,        spreadsheet::ver_alignment_t::middle      }, // C14
+        { 14, 2,  true, spreadsheet::hor_alignment_t::left,        spreadsheet::ver_alignment_t::middle      }, // C15
+        { 15, 2,  true, spreadsheet::hor_alignment_t::right,       spreadsheet::ver_alignment_t::middle      }, // C16
+        { 16, 2,  true, spreadsheet::hor_alignment_t::right,       spreadsheet::ver_alignment_t::middle      }, // C17
+        { 17, 2,  true, spreadsheet::hor_alignment_t::unknown,     spreadsheet::ver_alignment_t::top         }, // C18
+        { 18, 2,  true, spreadsheet::hor_alignment_t::left,        spreadsheet::ver_alignment_t::top         }, // C19
+        { 19, 2,  true, spreadsheet::hor_alignment_t::center,      spreadsheet::ver_alignment_t::top         }, // C20
+        { 20, 2,  true, spreadsheet::hor_alignment_t::right,       spreadsheet::ver_alignment_t::top         }, // C21
+        { 21, 2,  true, spreadsheet::hor_alignment_t::left,        spreadsheet::ver_alignment_t::top         }, // C22
+        { 22, 2,  true, spreadsheet::hor_alignment_t::left,        spreadsheet::ver_alignment_t::top         }, // C23
+        { 23, 2,  true, spreadsheet::hor_alignment_t::right,       spreadsheet::ver_alignment_t::top         }, // C24
+        { 24, 2,  true, spreadsheet::hor_alignment_t::right,       spreadsheet::ver_alignment_t::top         }, // C25
+        { 25, 2,  true, spreadsheet::hor_alignment_t::unknown,     spreadsheet::ver_alignment_t::justified   }, // C26
+        { 26, 2,  true, spreadsheet::hor_alignment_t::justified,   spreadsheet::ver_alignment_t::bottom      }, // C27
+        { 27, 2,  true, spreadsheet::hor_alignment_t::distributed, spreadsheet::ver_alignment_t::distributed }, // C28
     };
 
     for (const check& c : checks)
