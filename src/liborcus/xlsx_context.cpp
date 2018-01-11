@@ -471,6 +471,10 @@ public:
                     m_hor_align = spreadsheet::hor_alignment_t::right;
                 else if (attr.value == "left")
                     m_hor_align = spreadsheet::hor_alignment_t::left;
+                else if (attr.value == "justify")
+                    m_hor_align = spreadsheet::hor_alignment_t::justified;
+                else if (attr.value == "distributed")
+                    m_hor_align = spreadsheet::hor_alignment_t::distributed;
             }
             break;
             case XML_vertical:
@@ -481,6 +485,10 @@ public:
                     m_ver_align = spreadsheet::ver_alignment_t::middle;
                 else if (attr.value == "bottom")
                     m_ver_align = spreadsheet::ver_alignment_t::bottom;
+                else if (attr.value == "justify")
+                    m_ver_align = spreadsheet::ver_alignment_t::justified;
+                else if (attr.value == "distributed")
+                    m_ver_align = spreadsheet::ver_alignment_t::distributed;
             }
             break;
             default:
