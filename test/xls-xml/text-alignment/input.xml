@@ -9,7 +9,7 @@
   <Author>Kohei Yoshida</Author>
   <LastAuthor>Kohei Yoshida</LastAuthor>
   <Created>2018-01-06T03:30:32Z</Created>
-  <LastSaved>2018-01-06T03:44:57Z</LastSaved>
+  <LastSaved>2018-01-11T02:10:53Z</LastSaved>
   <Version>16.00</Version>
  </DocumentProperties>
  <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
@@ -32,97 +32,100 @@
    <NumberFormat/>
    <Protection/>
   </Style>
-  <Style ss:ID="s63">
+  <Style ss:ID="s16">
    <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
   </Style>
-  <Style ss:ID="s64">
+  <Style ss:ID="s17">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
   </Style>
-  <Style ss:ID="s65">
+  <Style ss:ID="s18">
    <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
   </Style>
-  <Style ss:ID="s66">
+  <Style ss:ID="s19">
    <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:Indent="2"/>
   </Style>
-  <Style ss:ID="s67">
+  <Style ss:ID="s20">
    <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:Indent="1"/>
   </Style>
-  <Style ss:ID="s68">
+  <Style ss:ID="s21">
    <Alignment ss:Horizontal="Right" ss:Vertical="Bottom" ss:Indent="1"/>
   </Style>
-  <Style ss:ID="s69">
+  <Style ss:ID="s22">
    <Alignment ss:Horizontal="Right" ss:Vertical="Bottom" ss:Indent="2"/>
   </Style>
-  <Style ss:ID="s70">
+  <Style ss:ID="s23">
    <Alignment ss:Vertical="Center"/>
   </Style>
-  <Style ss:ID="s71">
+  <Style ss:ID="s24">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
   </Style>
-  <Style ss:ID="s72">
+  <Style ss:ID="s25">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
   </Style>
-  <Style ss:ID="s73">
+  <Style ss:ID="s26">
    <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
   </Style>
-  <Style ss:ID="s74">
+  <Style ss:ID="s27">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center" ss:Indent="1"/>
   </Style>
-  <Style ss:ID="s75">
+  <Style ss:ID="s28">
    <Alignment ss:Horizontal="Left" ss:Vertical="Center" ss:Indent="2"/>
   </Style>
-  <Style ss:ID="s76">
+  <Style ss:ID="s29">
    <Alignment ss:Horizontal="Right" ss:Vertical="Center" ss:Indent="1"/>
   </Style>
-  <Style ss:ID="s77">
+  <Style ss:ID="s30">
    <Alignment ss:Horizontal="Right" ss:Vertical="Center" ss:Indent="2"/>
   </Style>
-  <Style ss:ID="s78">
+  <Style ss:ID="s31">
    <Alignment ss:Vertical="Top"/>
   </Style>
-  <Style ss:ID="s79">
+  <Style ss:ID="s32">
    <Alignment ss:Horizontal="Left" ss:Vertical="Top"/>
   </Style>
-  <Style ss:ID="s80">
+  <Style ss:ID="s33">
    <Alignment ss:Horizontal="Center" ss:Vertical="Top"/>
   </Style>
-  <Style ss:ID="s81">
+  <Style ss:ID="s34">
    <Alignment ss:Horizontal="Right" ss:Vertical="Top"/>
   </Style>
-  <Style ss:ID="s82">
+  <Style ss:ID="s35">
    <Alignment ss:Horizontal="Left" ss:Vertical="Top" ss:Indent="1"/>
   </Style>
-  <Style ss:ID="s83">
+  <Style ss:ID="s36">
    <Alignment ss:Horizontal="Left" ss:Vertical="Top" ss:Indent="2"/>
   </Style>
-  <Style ss:ID="s84">
+  <Style ss:ID="s37">
    <Alignment ss:Horizontal="Right" ss:Vertical="Top" ss:Indent="1"/>
   </Style>
-  <Style ss:ID="s85">
+  <Style ss:ID="s38">
    <Alignment ss:Horizontal="Right" ss:Vertical="Top" ss:Indent="2"/>
   </Style>
-  <Style ss:ID="s113">
+  <Style ss:ID="s39">
    <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
    <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
     ss:Bold="1"/>
   </Style>
-  <Style ss:ID="s118">
+  <Style ss:ID="s40">
    <Alignment ss:Vertical="Justify" ss:WrapText="1"/>
   </Style>
-  <Style ss:ID="s121">
+  <Style ss:ID="s41">
    <Alignment ss:Horizontal="Justify" ss:Vertical="Bottom" ss:WrapText="1"/>
+  </Style>
+  <Style ss:ID="s119">
+   <Alignment ss:Horizontal="Distributed" ss:Vertical="Distributed" ss:WrapText="1"/>
   </Style>
  </Styles>
  <Worksheet ss:Name="Sheet1">
-  <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="27" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="28" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
    <Column ss:AutoFitWidth="0" ss:Width="74.25"/>
    <Column ss:AutoFitWidth="0" ss:Width="68.25"/>
    <Column ss:AutoFitWidth="0" ss:Width="135"/>
    <Row>
-    <Cell ss:StyleID="s113"><Data ss:Type="String">Horizontal</Data></Cell>
-    <Cell ss:StyleID="s113"><Data ss:Type="String">Vertical</Data></Cell>
-    <Cell ss:StyleID="s113"><Data ss:Type="String">Content</Data></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Horizontal</Data></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Vertical</Data></Cell>
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Content</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">General</Data></Cell>
@@ -132,127 +135,132 @@
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Left</Data></Cell>
     <Cell><Data ss:Type="String">Bottom</Data></Cell>
-    <Cell ss:StyleID="s63"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s16"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Center</Data></Cell>
     <Cell><Data ss:Type="String">Bottom</Data></Cell>
-    <Cell ss:StyleID="s64"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s17"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Right</Data></Cell>
     <Cell><Data ss:Type="String">Bottom</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s18"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Left Indent 1</Data></Cell>
     <Cell><Data ss:Type="String">Bottom</Data></Cell>
-    <Cell ss:StyleID="s67"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s20"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Left Indent 2</Data></Cell>
     <Cell><Data ss:Type="String">Bottom</Data></Cell>
-    <Cell ss:StyleID="s66"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s19"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Right Indent 1</Data></Cell>
     <Cell><Data ss:Type="String">Bottom</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s21"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Right Indent 2</Data></Cell>
     <Cell><Data ss:Type="String">Bottom</Data></Cell>
-    <Cell ss:StyleID="s69"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s22"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">General</Data></Cell>
     <Cell><Data ss:Type="String">Center</Data></Cell>
-    <Cell ss:StyleID="s70"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s23"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Left</Data></Cell>
     <Cell><Data ss:Type="String">Center</Data></Cell>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s24"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Center</Data></Cell>
     <Cell><Data ss:Type="String">Center</Data></Cell>
-    <Cell ss:StyleID="s72"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s25"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Right</Data></Cell>
     <Cell><Data ss:Type="String">Center</Data></Cell>
-    <Cell ss:StyleID="s73"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s26"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Left Indent 1</Data></Cell>
     <Cell><Data ss:Type="String">Center</Data></Cell>
-    <Cell ss:StyleID="s74"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s27"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Left Indent 2</Data></Cell>
     <Cell><Data ss:Type="String">Center</Data></Cell>
-    <Cell ss:StyleID="s75"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s28"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Right Indent 1</Data></Cell>
     <Cell><Data ss:Type="String">Center</Data></Cell>
-    <Cell ss:StyleID="s76"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s29"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Right Indent 2</Data></Cell>
     <Cell><Data ss:Type="String">Center</Data></Cell>
-    <Cell ss:StyleID="s77"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s30"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">General</Data></Cell>
     <Cell><Data ss:Type="String">Top</Data></Cell>
-    <Cell ss:StyleID="s78"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s31"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Left</Data></Cell>
     <Cell><Data ss:Type="String">Top</Data></Cell>
-    <Cell ss:StyleID="s79"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s32"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Center</Data></Cell>
     <Cell><Data ss:Type="String">Top</Data></Cell>
-    <Cell ss:StyleID="s80"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s33"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Right</Data></Cell>
     <Cell><Data ss:Type="String">Top</Data></Cell>
-    <Cell ss:StyleID="s81"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s34"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Left Indent 1</Data></Cell>
     <Cell><Data ss:Type="String">Top</Data></Cell>
-    <Cell ss:StyleID="s82"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s35"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Left Indent 2</Data></Cell>
     <Cell><Data ss:Type="String">Top</Data></Cell>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s36"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Right Indent 1</Data></Cell>
     <Cell><Data ss:Type="String">Top</Data></Cell>
-    <Cell ss:StyleID="s84"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s37"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="24.9375">
     <Cell><Data ss:Type="String">Right Indent 2</Data></Cell>
     <Cell><Data ss:Type="String">Top</Data></Cell>
-    <Cell ss:StyleID="s85"><Data ss:Type="String">Text</Data></Cell>
+    <Cell ss:StyleID="s38"><Data ss:Type="String">Text</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="52.5">
     <Cell><Data ss:Type="String">General</Data></Cell>
     <Cell><Data ss:Type="String">Justify</Data></Cell>
-    <Cell ss:StyleID="s118"><Data ss:Type="String">Vertical justification looks like this.</Data></Cell>
+    <Cell ss:StyleID="s40"><Data ss:Type="String">Vertical justification looks like this.</Data></Cell>
    </Row>
    <Row ss:Height="45">
     <Cell><Data ss:Type="String">Justify</Data></Cell>
     <Cell><Data ss:Type="String">Bottom</Data></Cell>
-    <Cell ss:StyleID="s121"><Data ss:Type="String">Horizontal justification looks like this.</Data></Cell>
+    <Cell ss:StyleID="s41"><Data ss:Type="String">Horizontal justification looks like this.</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="43.5">
+    <Cell><Data ss:Type="String">Distributed</Data></Cell>
+    <Cell><Data ss:Type="String">Distributed</Data></Cell>
+    <Cell ss:StyleID="s119"><Data ss:Type="String">Both horizontally and vertically distributed.</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -267,6 +275,7 @@
     <VerticalResolution>600</VerticalResolution>
    </Print>
    <Selected/>
+   <TopRowVisible>18</TopRowVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
