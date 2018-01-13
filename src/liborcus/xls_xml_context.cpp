@@ -12,6 +12,8 @@
 #include "orcus/spreadsheet/import_interface_view.hpp"
 #include "orcus/measurement.hpp"
 
+#include <mdds/sorted_string_map.hpp>
+
 #include <iostream>
 
 using namespace std;
@@ -399,6 +401,50 @@ public:
     pstring get_name() const { return m_name; }
 };
 
+namespace hor_align {
+
+typedef mdds::sorted_string_map<spreadsheet::hor_alignment_t> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
+{
+    { ORCUS_ASCII("Center"),      spreadsheet::hor_alignment_t::center      },
+    { ORCUS_ASCII("Distributed"), spreadsheet::hor_alignment_t::distributed },
+    { ORCUS_ASCII("Justify"),     spreadsheet::hor_alignment_t::justified   },
+    { ORCUS_ASCII("Left"),        spreadsheet::hor_alignment_t::left        },
+    { ORCUS_ASCII("Right"),       spreadsheet::hor_alignment_t::right       },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), spreadsheet::hor_alignment_t::unknown);
+    return mt;
+}
+
+}
+
+namespace ver_align {
+
+typedef mdds::sorted_string_map<spreadsheet::ver_alignment_t> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
+{
+    { ORCUS_ASCII("Bottom"),      spreadsheet::ver_alignment_t::bottom      },
+    { ORCUS_ASCII("Center"),      spreadsheet::ver_alignment_t::middle      },
+    { ORCUS_ASCII("Distributed"), spreadsheet::ver_alignment_t::distributed },
+    { ORCUS_ASCII("Justify"),     spreadsheet::ver_alignment_t::justified   },
+    { ORCUS_ASCII("Top"),         spreadsheet::ver_alignment_t::top         },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), spreadsheet::ver_alignment_t::unknown);
+    return mt;
+}
+
+}
+
 }
 
 xls_xml_context::named_exp::named_exp(const pstring& _name, const pstring& _expression, spreadsheet::sheet_t _scope) :
@@ -699,6 +745,40 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                         {
                             // TODO : support fill types other than 'solid'.
                             m_current_style->fill.solid = (attr.value == "Solid");
+                            break;
+                        }
+                        default:
+                            ;
+                    }
+                }
+                break;
+            }
+            case XML_Alignment:
+            {
+                xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns != NS_xls_xml_ss)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_Horizontal:
+                        {
+                            m_current_style->text_alignment.hor =
+                                hor_align::get().find(attr.value.data(), attr.value.size());
+                            break;
+                        }
+                        case XML_Vertical:
+                        {
+                            m_current_style->text_alignment.ver =
+                                ver_align::get().find(attr.value.data(), attr.value.size());
+                            break;
+                        }
+                        case XML_Indent:
+                        {
+                            m_current_style->text_alignment.indent = to_long(attr.value);
                             break;
                         }
                         default:
@@ -1283,6 +1363,16 @@ void xls_xml_context::commit_styles()
             size_t fill_id = styles->commit_fill();
             styles->set_xf_fill(fill_id);
         }
+
+        bool apply_alignment =
+            style->text_alignment.hor != spreadsheet::hor_alignment_t::unknown ||
+            style->text_alignment.ver != spreadsheet::ver_alignment_t::unknown;
+
+        styles->set_xf_apply_alignment(apply_alignment);
+        styles->set_xf_horizontal_alignment(style->text_alignment.hor);
+        styles->set_xf_vertical_alignment(style->text_alignment.ver);
+
+        // TODO : handle text indent level.
 
         size_t xf_id = styles->commit_cell_xf();
 
