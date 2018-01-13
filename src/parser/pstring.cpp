@@ -32,6 +32,12 @@ size_t pstring::hash::operator() (const pstring& val) const
     return hash_val;
 }
 
+pstring::pstring(const char* _pos) :
+    m_pos(_pos),
+    m_size(_pos ? std::strlen(_pos) : 0)
+{
+}
+
 bool pstring::operator== (const pstring& r) const
 {
     if (m_size != r.m_size)
