@@ -121,6 +121,13 @@ class xls_xml_context : public xml_context_base
         spreadsheet::color_rgb_t color;
     };
 
+    struct text_alignment_type
+    {
+        spreadsheet::hor_alignment_t hor = spreadsheet::hor_alignment_t::unknown;
+        spreadsheet::ver_alignment_t ver = spreadsheet::ver_alignment_t::unknown;
+        int8_t indent = 0;
+    };
+
     struct style_type
     {
         pstring id;
@@ -128,6 +135,7 @@ class xls_xml_context : public xml_context_base
 
         font_style_type font;
         fill_style_type fill;
+        text_alignment_type text_alignment;
     };
 
     struct named_exp
