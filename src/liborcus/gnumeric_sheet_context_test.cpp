@@ -59,6 +59,7 @@ public:
     virtual range_size_t get_sheet_size() const
     {
         range_size_t ret;
+        ret.rows = ret.columns = 0;
         return ret;
     }
 
