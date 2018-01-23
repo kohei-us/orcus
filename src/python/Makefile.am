@@ -37,7 +37,8 @@ _orcus_la_SOURCES += \
 	sheet_rows.cpp
 
 _orcus_la_LIBADD += \
-	../spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
+	../spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+        $(LIBIXION_LIBS)
 
 endif # BUILD_SPREADSHEET_MODEL
 
