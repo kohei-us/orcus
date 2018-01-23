@@ -417,6 +417,57 @@ void test_xlsx_text_alignment()
     }
 }
 
+void test_xlsx_cell_borders_single_cells()
+{
+    pstring path(SRCDIR"/test/xlsx/borders/single-cells.xlsx");
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path);
+
+    spreadsheet::import_styles* styles = doc->get_styles();
+    assert(styles);
+
+    spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        spreadsheet::row_t row;
+        spreadsheet::col_t col;
+        spreadsheet::border_style_t style;
+    };
+
+    std::vector<check> checks =
+    {
+        {  3, 1, border_style_t::hair                },
+        {  5, 1, border_style_t::dotted              },
+        {  7, 1, border_style_t::dash_dot_dot        },
+        {  9, 1, border_style_t::dash_dot            },
+        { 11, 1, border_style_t::dashed              },
+        { 13, 1, border_style_t::thin                },
+        {  1, 3, border_style_t::medium_dash_dot_dot },
+        {  3, 3, border_style_t::slant_dash_dot      },
+        {  5, 3, border_style_t::medium_dash_dot     },
+        {  7, 3, border_style_t::medium_dashed       },
+        {  9, 3, border_style_t::medium              },
+        { 11, 3, border_style_t::thick               },
+        { 13, 3, border_style_t::double_border       },
+    };
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col);
+        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        assert(cf);
+        assert(cf->apply_border);
+
+        const spreadsheet::border_t* border = styles->get_border(cf->border);
+        assert(border);
+        assert(border->top.style    == c.style);
+        assert(border->bottom.style == c.style);
+        assert(border->left.style   == c.style);
+        assert(border->right.style  == c.style);
+    }
+}
+
 void test_xlsx_pivot_two_pivot_caches()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
@@ -1237,6 +1288,7 @@ int main()
     test_xlsx_date_time();
     test_xlsx_background_fill();
     test_xlsx_text_alignment();
+    test_xlsx_cell_borders_single_cells();
 
     // pivot table
     test_xlsx_pivot_two_pivot_caches();

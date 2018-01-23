@@ -427,6 +427,10 @@ void import_styles::set_xf_fill(size_t index)
 void import_styles::set_xf_border(size_t index)
 {
     m_cur_cell_format.border = index;
+
+    // TODO : we need to decide whether to have interface methods for these
+    // apply_foo attributes.  For now there is only one, for alignment.
+    m_cur_cell_format.apply_border = index > 0;
 }
 
 void import_styles::set_xf_protection(size_t index)
