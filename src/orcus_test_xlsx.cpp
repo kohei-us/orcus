@@ -468,6 +468,18 @@ void test_xlsx_cell_borders_single_cells()
     }
 }
 
+void test_xlsx_cell_borders_directions()
+{
+    pstring path(SRCDIR"/test/xlsx/borders/directions.xlsx");
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path);
+
+    spreadsheet::import_styles* styles = doc->get_styles();
+    assert(styles);
+
+    spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+}
+
 void test_xlsx_pivot_two_pivot_caches()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
@@ -1289,6 +1301,7 @@ int main()
     test_xlsx_background_fill();
     test_xlsx_text_alignment();
     test_xlsx_cell_borders_single_cells();
+    test_xlsx_cell_borders_directions();
 
     // pivot table
     test_xlsx_pivot_two_pivot_caches();
