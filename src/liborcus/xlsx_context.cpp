@@ -249,25 +249,36 @@ void xlsx_shared_strings_context::characters(const pstring& str, bool transient)
 
 namespace {
 
-typedef mdds::sorted_string_map<spreadsheet::border_style_t> border_style_map;
+namespace border_style {
 
-border_style_map::entry border_style_type_entries[] =
+typedef mdds::sorted_string_map<spreadsheet::border_style_t> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
 {
-    {MDDS_ASCII("dashDot"), spreadsheet::border_style_t::dash_dot},
-    {MDDS_ASCII("dashDotDot"), spreadsheet::border_style_t::dash_dot_dot},
-    {MDDS_ASCII("dashed"), spreadsheet::border_style_t::dashed},
-    {MDDS_ASCII("dotted"), spreadsheet::border_style_t::dotted},
-    {MDDS_ASCII("double"), spreadsheet::border_style_t::double_border},
-    {MDDS_ASCII("hair"), spreadsheet::border_style_t::hair},
-    {MDDS_ASCII("medium"), spreadsheet::border_style_t::medium},
-    {MDDS_ASCII("mediumDashDot"), spreadsheet::border_style_t::medium_dash_dot},
-    {MDDS_ASCII("mediumDashDotDot"), spreadsheet::border_style_t::medium_dash_dot_dot},
-    {MDDS_ASCII("mediumDashed"), spreadsheet::border_style_t::medium_dashed},
-    {MDDS_ASCII("none"), spreadsheet::border_style_t::none},
-    {MDDS_ASCII("slantDashDot"), spreadsheet::border_style_t::slant_dash_dot},
-    {MDDS_ASCII("thick"), spreadsheet::border_style_t::thick},
-    {MDDS_ASCII("thin"), spreadsheet::border_style_t::thin}
+    { ORCUS_ASCII("dashDot"),          spreadsheet::border_style_t::dash_dot            },
+    { ORCUS_ASCII("dashDotDot"),       spreadsheet::border_style_t::dash_dot_dot        },
+    { ORCUS_ASCII("dashed"),           spreadsheet::border_style_t::dashed              },
+    { ORCUS_ASCII("dotted"),           spreadsheet::border_style_t::dotted              },
+    { ORCUS_ASCII("double"),           spreadsheet::border_style_t::double_border       },
+    { ORCUS_ASCII("hair"),             spreadsheet::border_style_t::hair                },
+    { ORCUS_ASCII("medium"),           spreadsheet::border_style_t::medium              },
+    { ORCUS_ASCII("mediumDashDot"),    spreadsheet::border_style_t::medium_dash_dot     },
+    { ORCUS_ASCII("mediumDashDotDot"), spreadsheet::border_style_t::medium_dash_dot_dot },
+    { ORCUS_ASCII("mediumDashed"),     spreadsheet::border_style_t::medium_dashed       },
+    { ORCUS_ASCII("none"),             spreadsheet::border_style_t::none                },
+    { ORCUS_ASCII("slantDashDot"),     spreadsheet::border_style_t::slant_dash_dot      },
+    { ORCUS_ASCII("thick"),            spreadsheet::border_style_t::thick               },
+    { ORCUS_ASCII("thin"),             spreadsheet::border_style_t::thin                }
 };
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), spreadsheet::border_style_t::none);
+    return mt;
+}
+
+}
 
 class border_attr_parser : public unary_function<xml_token_attr_t, void>
 {
@@ -283,9 +294,8 @@ public:
         {
             case XML_style:
             {
-                border_style_map type_map(border_style_type_entries, ORCUS_N_ELEMENTS(border_style_type_entries), spreadsheet::border_style_t::none);
                 m_styles.set_border_style(m_dir,
-                        type_map.find(attr.value.get(), attr.value.size()));
+                    border_style::get().find(attr.value.get(), attr.value.size()));
             }
             break;
         }
