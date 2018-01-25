@@ -478,6 +478,104 @@ void test_xlsx_cell_borders_directions()
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
+
+    struct check
+    {
+        spreadsheet::row_t row;
+        spreadsheet::col_t col;
+        spreadsheet::border_direction_t dir;
+    };
+
+    std::vector<check> checks =
+    {
+        {  1, 1, spreadsheet::border_direction_t::top            },
+        {  3, 1, spreadsheet::border_direction_t::left           },
+        {  5, 1, spreadsheet::border_direction_t::right          },
+        {  7, 1, spreadsheet::border_direction_t::bottom         },
+        {  9, 1, spreadsheet::border_direction_t::diagonal_tl_br },
+        { 11, 1, spreadsheet::border_direction_t::diagonal_bl_tr },
+        { 13, 1, spreadsheet::border_direction_t::diagonal       },
+    };
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col);
+        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        assert(cf);
+        assert(cf->apply_border);
+
+        const spreadsheet::border_t* border = styles->get_border(cf->border);
+        assert(border);
+
+        switch (c.dir)
+        {
+            case spreadsheet::border_direction_t::top:
+                assert(border->top.style            == spreadsheet::border_style_t::thin);
+                assert(border->bottom.style         == spreadsheet::border_style_t::unknown);
+                assert(border->left.style           == spreadsheet::border_style_t::unknown);
+                assert(border->right.style          == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal.style       == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_bl_tr.style == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_tl_br.style == spreadsheet::border_style_t::unknown);
+                break;
+            case spreadsheet::border_direction_t::left:
+                assert(border->top.style            == spreadsheet::border_style_t::unknown);
+                assert(border->bottom.style         == spreadsheet::border_style_t::unknown);
+                assert(border->left.style           == spreadsheet::border_style_t::thin);
+                assert(border->right.style          == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal.style       == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_bl_tr.style == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_tl_br.style == spreadsheet::border_style_t::unknown);
+                break;
+            case spreadsheet::border_direction_t::right:
+                assert(border->top.style            == spreadsheet::border_style_t::unknown);
+                assert(border->bottom.style         == spreadsheet::border_style_t::unknown);
+                assert(border->left.style           == spreadsheet::border_style_t::unknown);
+                assert(border->right.style          == spreadsheet::border_style_t::thin);
+                assert(border->diagonal.style       == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_bl_tr.style == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_tl_br.style == spreadsheet::border_style_t::unknown);
+                break;
+            case spreadsheet::border_direction_t::bottom:
+                assert(border->top.style            == spreadsheet::border_style_t::unknown);
+                assert(border->bottom.style         == spreadsheet::border_style_t::thin);
+                assert(border->left.style           == spreadsheet::border_style_t::unknown);
+                assert(border->right.style          == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal.style       == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_bl_tr.style == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_tl_br.style == spreadsheet::border_style_t::unknown);
+                break;
+            case spreadsheet::border_direction_t::diagonal:
+                assert(border->top.style            == spreadsheet::border_style_t::unknown);
+                assert(border->bottom.style         == spreadsheet::border_style_t::unknown);
+                assert(border->left.style           == spreadsheet::border_style_t::unknown);
+                assert(border->right.style          == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal.style       == spreadsheet::border_style_t::thin);
+                assert(border->diagonal_bl_tr.style == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_tl_br.style == spreadsheet::border_style_t::unknown);
+                break;
+            case spreadsheet::border_direction_t::diagonal_tl_br:
+                assert(border->top.style            == spreadsheet::border_style_t::unknown);
+                assert(border->bottom.style         == spreadsheet::border_style_t::unknown);
+                assert(border->left.style           == spreadsheet::border_style_t::unknown);
+                assert(border->right.style          == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal.style       == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_bl_tr.style == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_tl_br.style == spreadsheet::border_style_t::thin);
+                break;
+            case spreadsheet::border_direction_t::diagonal_bl_tr:
+                assert(border->top.style            == spreadsheet::border_style_t::unknown);
+                assert(border->bottom.style         == spreadsheet::border_style_t::unknown);
+                assert(border->left.style           == spreadsheet::border_style_t::unknown);
+                assert(border->right.style          == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal.style       == spreadsheet::border_style_t::unknown);
+                assert(border->diagonal_bl_tr.style == spreadsheet::border_style_t::thin);
+                assert(border->diagonal_tl_br.style == spreadsheet::border_style_t::unknown);
+                break;
+            default:
+                assert(!"unhandled direction!");
+        }
+    }
 }
 
 void test_xlsx_pivot_two_pivot_caches()
