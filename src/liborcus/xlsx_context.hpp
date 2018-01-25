@@ -65,12 +65,16 @@ public:
     virtual void characters(const pstring& str, bool transient);
 
 private:
+    void start_element_border(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_element_diagonal(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_border_color(const xml_attrs_t& attrs);
     void start_font_color(const xml_attrs_t& attrs);
 
 private:
     spreadsheet::iface::import_styles* mp_styles;
     string_pool m_pool;
+    bool m_diagonal_up;
+    bool m_diagonal_down;
     spreadsheet::border_direction_t m_cur_border_dir;
     bool m_cell_style_xf;
 };

@@ -512,6 +512,7 @@ public:
 xlsx_styles_context::xlsx_styles_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_styles* styles) :
     xml_context_base(session_cxt, tokens),
     mp_styles(styles),
+    m_diagonal_up(false), m_diagonal_down(false),
     m_cur_border_dir(spreadsheet::border_direction_t::unknown),
     m_cell_style_xf(false) {}
 
@@ -688,12 +689,9 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
         break;
         case XML_border:
         {
-            xml_elem_stack_t expected_elements;
-            expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_borders));
-            expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
-            xml_element_expected(parent, expected_elements);
+            start_element_border(parent, attrs);
+            break;
         }
-        break;
         case XML_top:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
@@ -728,12 +726,9 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
         break;
         case XML_diagonal:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
-            m_cur_border_dir = spreadsheet::border_direction_t::diagonal;
-            border_attr_parser func(spreadsheet::border_direction_t::diagonal, *mp_styles);
-            for_each(attrs.begin(), attrs.end(), func);
+            start_element_diagonal(parent, attrs);
+            break;
         }
-        break;
         case XML_cellStyleXfs:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
@@ -878,6 +873,68 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
 void xlsx_styles_context::characters(const pstring& /*str*/, bool /*transient*/)
 {
     // not used in the styles.xml part.
+}
+
+void xlsx_styles_context::start_element_border(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_elem_stack_t expected_elements;
+    expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_borders));
+    expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
+    xml_element_expected(parent, expected_elements);
+
+    bool diagonal_up = false;
+    bool diagonal_down = false;
+
+    std::for_each(attrs.begin(), attrs.end(),
+        [&diagonal_up,&diagonal_down](const xml_token_attr_t& attr)
+        {
+            if (attr.ns != NS_ooxml_xlsx)
+                return;
+
+            switch (attr.name)
+            {
+                case XML_diagonalDown:
+                    // top-left to bottom-right.
+                    diagonal_down = to_long(attr.value) != 0;
+                    break;
+                case XML_diagonalUp:
+                    // bottom-left to top-right.
+                    diagonal_up = to_long(attr.value) != 0;
+                    break;
+                default:
+                    ;
+            }
+        }
+    );
+
+    m_diagonal_up = diagonal_up;
+    m_diagonal_down = diagonal_down;
+}
+
+void xlsx_styles_context::start_element_diagonal(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
+
+    m_cur_border_dir = spreadsheet::border_direction_t::unknown;
+
+    if (m_diagonal_up)
+    {
+        m_cur_border_dir = m_diagonal_down ?
+            spreadsheet::border_direction_t::diagonal :
+            spreadsheet::border_direction_t::diagonal_bl_tr;
+    }
+    else
+    {
+        m_cur_border_dir = m_diagonal_down ?
+            spreadsheet::border_direction_t::diagonal_tl_br :
+            spreadsheet::border_direction_t::unknown;
+    }
+
+    if (m_cur_border_dir == spreadsheet::border_direction_t::unknown)
+        return;
+
+    border_attr_parser func(m_cur_border_dir, *mp_styles);
+    for_each(attrs.begin(), attrs.end(), func);
 }
 
 void xlsx_styles_context::start_border_color(const xml_attrs_t& attrs)
