@@ -401,6 +401,53 @@ public:
     pstring get_name() const { return m_name; }
 };
 
+namespace border_dir {
+
+typedef mdds::sorted_string_map<spreadsheet::border_direction_t> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
+{
+    { ORCUS_ASCII("Bottom"),        spreadsheet::border_direction_t::bottom         },
+    { ORCUS_ASCII("DiagonalLeft"),  spreadsheet::border_direction_t::diagonal_tl_br },
+    { ORCUS_ASCII("DiagonalRight"), spreadsheet::border_direction_t::diagonal_bl_tr },
+    { ORCUS_ASCII("Left"),          spreadsheet::border_direction_t::left           },
+    { ORCUS_ASCII("Right"),         spreadsheet::border_direction_t::right          },
+    { ORCUS_ASCII("Top"),           spreadsheet::border_direction_t::top            },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), spreadsheet::border_direction_t::unknown);
+    return mt;
+}
+
+}
+
+namespace border_style {
+
+typedef mdds::sorted_string_map<spreadsheet::border_style_t> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
+{
+    { ORCUS_ASCII("Continuous"),   spreadsheet::border_style_t::solid          },
+    { ORCUS_ASCII("Dash"),         spreadsheet::border_style_t::dashed         },
+    { ORCUS_ASCII("DashDot"),      spreadsheet::border_style_t::dash_dot       },
+    { ORCUS_ASCII("DashDotDot"),   spreadsheet::border_style_t::dash_dot_dot   },
+    { ORCUS_ASCII("Dot"),          spreadsheet::border_style_t::dotted         },
+    { ORCUS_ASCII("Double"),       spreadsheet::border_style_t::double_border  },
+    { ORCUS_ASCII("SlantDashDot"), spreadsheet::border_style_t::slant_dash_dot },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), spreadsheet::border_style_t::unknown);
+    return mt;
+}
+
+}
+
 namespace hor_align {
 
 typedef mdds::sorted_string_map<spreadsheet::hor_alignment_t> map_type;
@@ -691,6 +738,12 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
 
                 break;
             }
+            case XML_Borders:
+                start_element_borders(parent, attrs);
+                break;
+            case XML_Border:
+                start_element_border(parent, attrs);
+                break;
             case XML_Font:
             {
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
@@ -872,6 +925,12 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
     {
         switch (name)
         {
+            case XML_Borders:
+                end_element_borders();
+                break;
+            case XML_Border:
+                end_element_border();
+                break;
             case XML_Row:
                 end_element_row();
                 break;
@@ -995,6 +1054,95 @@ void xls_xml_context::characters(const pstring& str, bool /*transient*/)
             default:
                 ;
         }
+    }
+}
+
+void xls_xml_context::start_element_borders(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
+    m_current_style->borders.clear();
+}
+
+void xls_xml_context::start_element_border(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_xls_xml_ss, XML_Borders);
+
+    spreadsheet::border_direction_t dir = spreadsheet::border_direction_t::unknown;
+    spreadsheet::border_style_t style = spreadsheet::border_style_t::unknown;
+    long weight = 0;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns != NS_xls_xml_ss)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_Position:
+            {
+                dir = border_dir::get().find(attr.value.data(), attr.value.size());
+                break;
+            }
+            case XML_LineStyle:
+            {
+                style = border_style::get().find(attr.value.data(), attr.value.size());
+                break;
+            }
+            case XML_Weight:
+            {
+                weight = to_long(attr.value);
+                break;
+            }
+            default:
+                ;
+        }
+    }
+
+    if (dir == spreadsheet::border_direction_t::unknown || style == spreadsheet::border_style_t::unknown)
+        return;
+
+    m_current_style->borders.emplace_back();
+    border_style_type& bs = m_current_style->borders.back();
+    bs.dir = dir;
+    bs.style = style;
+
+    switch (bs.style)
+    {
+        case spreadsheet::border_style_t::solid:
+        {
+            switch (weight)
+            {
+                case 0:
+                    bs.style = spreadsheet::border_style_t::hair;
+                    break;
+                case 1:
+                    bs.style = spreadsheet::border_style_t::thin;
+                    break;
+                case 2:
+                    bs.style = spreadsheet::border_style_t::medium;
+                    break;
+                case 3:
+                    bs.style = spreadsheet::border_style_t::thick;
+                    break;
+                default:
+                    ;
+            }
+            break;
+        }
+        case spreadsheet::border_style_t::dashed:
+            if (weight > 1)
+                bs.style = spreadsheet::border_style_t::medium_dashed;
+            break;
+        case spreadsheet::border_style_t::dash_dot:
+            if (weight > 1)
+                bs.style = spreadsheet::border_style_t::medium_dash_dot;
+            break;
+        case spreadsheet::border_style_t::dash_dot_dot:
+            if (weight > 1)
+                bs.style = spreadsheet::border_style_t::medium_dash_dot_dot;
+            break;
+        default:
+            ;
     }
 }
 
@@ -1140,6 +1288,14 @@ void xls_xml_context::start_element_row(const xml_token_pair_t& parent, const xm
 
     if (mp_sheet_props && has_height)
         mp_sheet_props->set_row_height(m_cur_row, height, length_unit_t::point);
+}
+
+void xls_xml_context::end_element_borders()
+{
+}
+
+void xls_xml_context::end_element_border()
+{
 }
 
 void xls_xml_context::end_element_cell()
@@ -1362,6 +1518,17 @@ void xls_xml_context::commit_styles()
 
             size_t fill_id = styles->commit_fill();
             styles->set_xf_fill(fill_id);
+        }
+
+        if (!style->borders.empty())
+        {
+            styles->set_border_count(style->borders.size());
+
+            for (const border_style_type& b : style->borders)
+                styles->set_border_style(b.dir, b.style);
+
+            size_t border_id = styles->commit_border();
+            styles->set_xf_border(border_id);
         }
 
         bool apply_alignment =
