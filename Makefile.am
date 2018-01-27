@@ -110,6 +110,8 @@ test_data = \
     test/csv/split-sheet/check-3.txt \
     test/csv/split-sheet/input.csv \
     test/gnumeric/test.gnumeric \
+    test/gnumeric/raw-values-1/check.txt \
+    test/gnumeric/raw-values-1/input.gnumeric \
     test/json/basic1/check.txt \
     test/json/basic1/input.json \
     test/json/basic2/check.txt \
@@ -140,71 +142,92 @@ test_data = \
     test/ods/styles/cell-styles.xml \
     test/ods/styles/number-format.xml \
     test/ods/test.ods \
+    test/python/csv_export.py \
+    test/python/csv.py \
+    test/python/file_load_common.py \
+    test/python/gnumeric.py \
     test/python/json.py \
     test/python/module.py \
-    test/python/perf/test_json.py \
+    test/python/ods.py \
+    test/python/xls_xml.py \
     test/python/xlsx.py \
-    test/xls-xml/basic/check.txt \
-    test/xls-xml/basic/input.xml \
-    test/xls-xml/bold-and-italic/check.txt \
-    test/xls-xml/bold-and-italic/input.xml \
-    test/xls-xml/colored-text/check.txt \
-    test/xls-xml/colored-text/input.xml \
-    test/xls-xml/date-time/input.xml \
+    test/xls-xml/background-color/standard.xml \
     test/xls-xml/empty-rows/check.txt \
     test/xls-xml/empty-rows/input.xml \
+    test/xls-xml/text-alignment/input.xml \
+    test/xls-xml/formula-cells/check.txt \
+    test/xls-xml/formula-cells/input.xml \
+    test/xls-xml/colored-text/check.txt \
+    test/xls-xml/colored-text/input.xml \
+    test/xls-xml/table/autofilter.xml \
+    test/xls-xml/basic/check.txt \
+    test/xls-xml/basic/input.xml \
+    test/xls-xml/borders/directions.xml \
+    test/xls-xml/borders/single-cells.xml \
+    test/xls-xml/borders/grid-box.xml \
     test/xls-xml/merged-cells/check.txt \
     test/xls-xml/merged-cells/input.xml \
-    test/xls-xml/named-expression-sheet-local/check.txt \
-    test/xls-xml/named-expression-sheet-local/input.xml \
     test/xls-xml/named-expression/check.txt \
     test/xls-xml/named-expression/input.xml \
-    test/xls-xml/table/autofilter.xml \
+    test/xls-xml/date-time/input.xml \
+    test/xls-xml/bold-and-italic/check.txt \
+    test/xls-xml/bold-and-italic/input.xml \
+    test/xls-xml/view/frozen-pane.xml \
     test/xls-xml/view/cursor-per-sheet.xml \
     test/xls-xml/view/cursor-split-pane.xml \
-    test/xls-xml/view/frozen-pane.xml \
+    test/xls-xml/matrix-results/input.xml \
+    test/xls-xml/named-expression-sheet-local/check.txt \
+    test/xls-xml/named-expression-sheet-local/input.xml \
+    test/xls-xml/column-width-row-height/input.xml \
+    test/xls-xml/raw-values-1/check.txt \
+    test/xls-xml/raw-values-1/input.xml \
     test/xlsx/background-color/standard.xlsx \
-    test/xlsx/boolean-values/check.txt \
-    test/xlsx/boolean-values/input.xlsx \
-    test/xlsx/borders/grid-box.xlsx \
-    test/xlsx/borders/single-cells.xlsx \
-    test/xlsx/column-width-row-height/input.xlsx \
+    test/xlsx/pivot-table/group-by-dates.xlsx \
+    test/xlsx/pivot-table/chart-simple.xlsx \
+    test/xlsx/pivot-table/group-field.xlsx \
+    test/xlsx/pivot-table/group-by-numbers.xlsx \
+    test/xlsx/pivot-table/error-values.xlsx \
+    test/xlsx/pivot-table/mixed-type-field.xlsx \
+    test/xlsx/pivot-table/two-tables-one-source.xlsx \
+    test/xlsx/pivot-table/two-pivot-caches.xlsx \
+    test/xlsx/pivot-table/three-pivot-tables-on-one-sheet.xlsx \
+    test/xlsx/pivot-table/many-fields.xlsx \
+    test/xlsx/revision/cell-change-basic.xlsx \
+    test/xlsx/formula-shared.xlsx \
     test/xlsx/data-table/multi-table.xlsx \
     test/xlsx/data-table/one-variable.xlsx \
-    test/xlsx/date-cell/input.xlsx \
-    test/xlsx/date-time/input.xlsx \
-    test/xlsx/empty-shared-strings/check.txt \
-    test/xlsx/empty-shared-strings/input.xlsx \
-    test/xlsx/formatted-text/bold-and-italic.xlsx \
-    test/xlsx/formatted-text/colored-text.xlsx \
-    test/xlsx/formula-shared.xlsx \
-    test/xlsx/formula-simple.xlsx \
-    test/xlsx/merged-cells/simple.xlsx \
-    test/xlsx/named-expression-sheet-local/check.txt \
-    test/xlsx/named-expression-sheet-local/input.xlsx \
-    test/xlsx/named-expression/check.txt \
-    test/xlsx/named-expression/input.xlsx \
-    test/xlsx/pivot-table/chart-simple.xlsx \
-    test/xlsx/pivot-table/error-values.xlsx \
-    test/xlsx/pivot-table/group-by-dates.xlsx \
-    test/xlsx/pivot-table/group-by-numbers.xlsx \
-    test/xlsx/pivot-table/group-field.xlsx \
-    test/xlsx/pivot-table/many-fields.xlsx \
-    test/xlsx/pivot-table/mixed-type-field.xlsx \
-    test/xlsx/pivot-table/three-pivot-tables-on-one-sheet.xlsx \
-    test/xlsx/pivot-table/two-pivot-caches.xlsx \
-    test/xlsx/pivot-table/two-tables-one-source.xlsx \
-    test/xlsx/raw-values-1/check.txt \
-    test/xlsx/raw-values-1/input.xlsx \
-    test/xlsx/revision/cell-change-basic.xlsx \
-    test/xlsx/table/autofilter-text-filter-1.xlsx \
-    test/xlsx/table/autofilter.xlsx \
+    test/xlsx/text-alignment/input.xlsx \
+    test/xlsx/formula-cells/check.txt \
+    test/xlsx/formula-cells/input.xlsx \
     test/xlsx/table/table-1.xlsx \
     test/xlsx/table/table-2.xlsx \
+    test/xlsx/table/autofilter.xlsx \
+    test/xlsx/table/autofilter-text-filter-1.xlsx \
+    test/xlsx/empty-shared-strings/check.txt \
+    test/xlsx/empty-shared-strings/input.xlsx \
+    test/xlsx/date-cell/input.xlsx \
+    test/xlsx/borders/directions.xlsx \
+    test/xlsx/borders/single-cells.xlsx \
+    test/xlsx/borders/grid-box.xlsx \
+    test/xlsx/merged-cells/simple.xlsx \
+    test/xlsx/named-expression/check.txt \
+    test/xlsx/named-expression/input.xlsx \
+    test/xlsx/date-time/input.xlsx \
     test/xlsx/test.xlsx \
-    test/xlsx/view/cursor-per-sheet.xlsx \
     test/xlsx/view/cursor-split-pane.xlsx \
     test/xlsx/view/frozen-pane.xlsx \
+    test/xlsx/view/cursor-per-sheet.xlsx \
+    test/xlsx/matrix-results/input.xlsx \
+    test/xlsx/formula-simple.xlsx \
+    test/xlsx/named-expression-sheet-local/check.txt \
+    test/xlsx/named-expression-sheet-local/input.xlsx \
+    test/xlsx/boolean-values/check.txt \
+    test/xlsx/boolean-values/input.xlsx \
+    test/xlsx/column-width-row-height/input.xlsx \
+    test/xlsx/raw-values-1/check.txt \
+    test/xlsx/raw-values-1/input.xlsx \
+    test/xlsx/formatted-text/bold-and-italic.xlsx \
+    test/xlsx/formatted-text/colored-text.xlsx \
     test/xml-mapped/attribute-basic/check.txt \
     test/xml-mapped/attribute-basic/input.xml \
     test/xml-mapped/attribute-basic/map.xml \
@@ -221,7 +244,6 @@ test_data = \
     test/xml-mapped/attribute-single-element/input.xml \
     test/xml-mapped/attribute-single-element/map.xml \
     test/xml-mapped/content-basic/check.txt \
-    test/xml-mapped/content-basic/flat/data.txt \
     test/xml-mapped/content-basic/input.xml \
     test/xml-mapped/content-basic/map.xml \
     test/xml-mapped/content-namespace-2/check.txt \
@@ -231,7 +253,6 @@ test_data = \
     test/xml-mapped/content-namespace/input.xml \
     test/xml-mapped/content-namespace/map.xml \
     test/xml-mapped/fuel-economy/check.txt \
-    test/xml-mapped/fuel-economy/flat/data.txt \
     test/xml-mapped/fuel-economy/input.xml \
     test/xml-mapped/fuel-economy/map.xml \
     test/xml-structure/attribute-1/check.txt \
@@ -290,24 +311,6 @@ test_data = \
     test/yaml/swagger/input.yaml \
     test/yaml/url/input.yaml
 
-vsprojects_data = \
-    vsprojects/orcus-csv/orcus-csv.vcproj \
-    vsprojects/orcus-csv/AdditionalLibs.vsprops \
-    vsprojects/liborcus-parser.vsprops \
-    vsprojects/liborcus-parser-static/liborcus-parser-static.vcproj \
-    vsprojects/MddsAndIxion.vsprops \
-    vsprojects/liborcus-parser/liborcus-parser.vcproj \
-    vsprojects/liborcus-spreadsheet-model/liborcus-spreadsheet-model.vcproj \
-    vsprojects/orcus-xlsx/orcus-xlsx.vcproj \
-    vsprojects/orcus-xml/orcus-xml.vcproj \
-    vsprojects/orcus.sln \
-    vsprojects/liborcus/liborcus.vcproj \
-    vsprojects/liborcus/zLib.vsprops \
-    vsprojects/liborcus/DefaultConfig.vsprops \
-    vsprojects/liborcus-static/liborcus-static.vcproj \
-    vsprojects/orcus-ods/orcus-ods.vcproj \
-    vsprojects/orcus-gnumeric/orcus-gnumeric.vcproj
-
 EXTRA_DIST = \
 	CHANGELOG \
 	LICENSE \
@@ -318,8 +321,7 @@ EXTRA_DIST = \
 	$(doc_data) \
 	$(misc_data) \
 	$(slickedit_data) \
-	$(test_data) \
-	$(vsprojects_data)
+	$(test_data)
 
 .PHONY: distclean-local dist-hook doc-doxygen doc-sphinx doc
 
