@@ -107,10 +107,48 @@ public:
 
     // fill
 
+    /**
+     * Set the total number of fill styles.  This call is not strictly
+     * required but may slightly improve performance.
+     *
+     * @param n number of fill styles.
+     */
     virtual void set_fill_count(size_t n) = 0;
+
+    /**
+     * Set the type of fill pattern.
+     */
     virtual void set_fill_pattern_type(const char* s, size_t n) = 0;
+
+    /**
+     * Set the foreground color of a fill.  <i>Note that for a solid fill
+     * type, the foreground color will be used.</i>
+     *
+     * @param alpha alpha component ranging from 0 (fully transparent) to 255
+     *              (fully opaque).
+     * @param red red component ranging from 0 to 255.
+     * @param green green component ranging from 0 to 255.
+     * @param blue blue component ranging from 0 to 255.
+     */
     virtual void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+
+    /**
+     * Set the foreground color of a fill.
+     *
+     * @param alpha alpha component ranging from 0 (fully transparent) to 255
+     *              (fully opaque).
+     * @param red red component ranging from 0 to 255.
+     * @param green green component ranging from 0 to 255.
+     * @param blue blue component ranging from 0 to 255.
+     */
     virtual void set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+
+    /**
+     * Commit the fill style currently in the buffer.
+     *
+     * @return the ID of the committed fill style, to be passed on to the
+     *         set_xf_fill() method as its argument.
+     */
     virtual size_t commit_fill() = 0;
 
     // border
