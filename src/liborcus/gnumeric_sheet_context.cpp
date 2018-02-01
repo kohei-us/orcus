@@ -132,7 +132,7 @@ public:
             {
                 spreadsheet::color_elem_t red, green, blue;
                 gnumeric_helper::parse_RGB_color_attribute(red, green, blue, attr.value);
-                m_styles.set_fill_fg_color(0, red, green, blue);
+                m_styles.set_fill_fg_color(255, red, green, blue);
 
                 m_fill = true;
 
@@ -145,7 +145,7 @@ public:
             {
                 spreadsheet::color_elem_t red, green, blue;
                 gnumeric_helper::parse_RGB_color_attribute(red, green, blue, attr.value);
-                m_styles.set_fill_bg_color(0, red, green, blue);
+                m_styles.set_fill_bg_color(255, red, green, blue);
 
                 m_fill = true;
             }
