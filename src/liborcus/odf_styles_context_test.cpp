@@ -48,10 +48,11 @@ void test_odf_fill(orcus::spreadsheet::import_styles &styles)
     std::cerr << std::hex << (int)fill;
     const orcus::spreadsheet::fill_t* cell_fill = styles.get_fill(fill);
     assert(cell_fill);
-    std::cerr << std::hex << (int)cell_fill->bg_color.red;
-    assert(cell_fill->bg_color.red == 0xfe);
-    assert(cell_fill->bg_color.green == 0xff);
-    assert(cell_fill->bg_color.blue == 0xcc);
+    std::cerr << std::hex << (int)cell_fill->fg_color.red;
+    assert(cell_fill->fg_color.red == 0xfe);
+    assert(cell_fill->fg_color.green == 0xff);
+    assert(cell_fill->fg_color.blue == 0xcc);
+    assert(cell_fill->pattern_type == "solid");
 }
 
 void test_odf_border(orcus::spreadsheet::import_styles &styles)
