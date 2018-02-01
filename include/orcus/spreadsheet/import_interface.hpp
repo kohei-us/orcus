@@ -133,7 +133,8 @@ public:
     virtual void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
 
     /**
-     * Set the foreground color of a fill.
+     * Set the background color of a fill.  <i>Note that this color will
+     * be ignored for a solid fill type.</i>
      *
      * @param alpha alpha component ranging from 0 (fully transparent) to 255
      *              (fully opaque).
