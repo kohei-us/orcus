@@ -16,6 +16,20 @@ its content in some way.  In this use case, you can simply instantiate the
 :cpp:class:`~orcus::spreadsheet::document` class provided by this library, get
 it populated, and access its content through its API.
 
+For each document type that orcus supports, there is a top-level filter class
+that serves as an entry point for loading the content of a document you wish
+to load.  You don't pass your document to this filter directly; instead, you
+wrap your document with what we call an "import factory", then pass this
+factory instance to the filter.  This import factory is required to implement
+necessary interfaces that the filter calls in order to pass data to the
+document.  If you use orcus' own :cpp:class:`~orcus::spreadsheet::document`
+class as the document store, then you can use the
+:cpp:class:`~orcus::spreadsheet::import_factory` class provided in the library
+which already implements all necessary interfaces.  If you need to use your
+own document store, then you'll need to implement your own import factory
+class that implements the required interfaces, and pass that instance to the
+filter instead.
+
 
 Other document types
 --------------------
