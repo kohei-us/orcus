@@ -433,6 +433,8 @@ void test_xls_xml_background_fill()
         { 10, 0, "solid", { 255, 112,  48, 160 } }, // A11 - purple
     };
 
+    spreadsheet::color_t color_white(255, 255, 255, 255);
+
     for (const check& c : checks)
     {
         size_t xf = sh->get_cell_format(c.row, c.col);
@@ -444,6 +446,12 @@ void test_xls_xml_background_fill()
         assert(fill_data);
         assert(fill_data->pattern_type == c.pattern_type);
         assert(fill_data->fg_color == c.fg_color);
+
+        // The font colors are all white in the colored cells.
+        const spreadsheet::font_t* font_data = styles->get_font(cf->font);
+        assert(font_data);
+
+        assert(font_data->color == color_white);
     }
 }
 
