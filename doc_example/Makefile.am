@@ -6,7 +6,8 @@ bin_PROGRAMS =
 EXTRA_PROGRAMS = \
 	json-doc-1 \
 	json-doc-2 \
-	json-parser-1
+	json-parser-1 \
+	spreadsheet-doc-1
 
 json_doc_1_SOURCES = \
 	json_doc_1.cpp
@@ -28,10 +29,19 @@ json_parser_1_SOURCES = \
 json_parser_1_LDADD = \
 	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
+spreadsheet_doc_1_SOURCES = \
+	spreadsheet_doc_1.cpp
+
+spreadsheet_doc_1_LDADD = \
+	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../src/liborcus/liborcus-@ORCUS_API_VERSION@.la \
+	../src/spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
+
 TESTS = \
 	json-doc-1 \
 	json-doc-2 \
-	json-parser-1
+	json-parser-1 \
+	spreadsheet-doc-1
 
 distclean-local:
 	rm -rf $(TESTS)
