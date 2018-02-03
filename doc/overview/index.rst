@@ -1,4 +1,6 @@
 
+.. highlight:: cpp
+
 Overview
 ========
 
@@ -16,20 +18,98 @@ its content in some way.  In this use case, you can simply instantiate the
 :cpp:class:`~orcus::spreadsheet::document` class provided by this library, get
 it populated, and access its content through its API.
 
-For each document type that orcus supports, there is a top-level filter class
+For each document type that orcus supports, there is a top-level loader class
 that serves as an entry point for loading the content of a document you wish
 to load.  You don't pass your document to this filter directly; instead, you
-wrap your document with what we call an "import factory", then pass this
-factory instance to the filter.  This import factory is required to implement
-necessary interfaces that the filter calls in order to pass data to the
-document.  If you use orcus' own :cpp:class:`~orcus::spreadsheet::document`
-class as the document store, then you can use the
-:cpp:class:`~orcus::spreadsheet::import_factory` class provided in the library
-which already implements all necessary interfaces.  If you need to use your
-own document store, then you'll need to implement your own import factory
-class that implements the required interfaces, and pass that instance to the
-filter instead.
+wrap your document with what we call an *import factory*, then pass this
+factory instance to the loader  This import factory is required to implement
+necessary interfaces that the loader calls in order for it to pass data to the
+document as it parses the file.
 
+If you have your own document store, then you need to implement your own
+import factory class that implements the required interfaces then pass that
+factory instance to the loader.
+
+If you want to use orcus' :cpp:class:`~orcus::spreadsheet::document` as your
+document store instead, then you can use the
+:cpp:class:`~orcus::spreadsheet::import_factory` class that orcus provides
+which already implements all necessary interfaces.  The example code shown
+below illustrates how to do this::
+
+    #include <orcus/spreadsheet/document.hpp>
+    #include <orcus/spreadsheet/factory.hpp>
+    #include <orcus/orcus_ods.hpp>
+
+    #include <ixion/model_context.hpp>
+    #include <iostream>
+
+    using namespace orcus;
+
+    int main()
+    {
+        // Instantiate a document, and wrap it with a factory.
+        spreadsheet::document doc;
+        spreadsheet::import_factory factory(doc);
+
+        // Pass the factory to the document loader, and read the content from a file
+        // to populate the document.
+        orcus_ods loader(&factory);
+        loader.read_file("/path/to/document.ods");
+
+        // Now that the document is fully populated, access its content.
+        const ixion::model_context& model = doc.get_model_context();
+
+        // Read the header row and print its content.
+
+        ixion::abs_address_t pos(0, 0, 0); // Set the cell position to A1.
+        ixion::string_id_t str_id = model.get_string_identifier(pos);
+
+        const std::string* s = model.get_string(str_id);
+        assert(s);
+        std::cout << "A1: " << *s << std::endl;
+
+        pos.column = 1; // Move to B1
+        str_id = model.get_string_identifier(pos);
+        s = model.get_string(str_id);
+        assert(s);
+        std::cout << "B1: " << *s << std::endl;
+
+        pos.column = 2; // Move to C1
+        str_id = model.get_string_identifier(pos);
+        s = model.get_string(str_id);
+        assert(s);
+        std::cout << "C1: " << *s << std::endl;
+
+        return EXIT_SUCCESS;
+    }
+
+This example code loads a file saved in the Open Document Spreadsheet format.
+It consists of the following content on its first sheet.
+
+.. figure:: /_static/images/overview/doc-content.png
+
+Let's walk through this code step by step.  First, we need to instantiate the
+document store.  Here we are using the concrete :cpp:class:`~orcus::spreadsheet::document`
+class available in orcus.  Then immediately pass this document to the
+:cpp:class:`~orcus::spreadsheet::import_factory` instance also from orcus::
+
+    // Instantiate a document, and wrap it with a factory.
+    spreadsheet::document doc;
+    spreadsheet::import_factory factory(doc);
+
+The next step is to create the loader instance and pass the factory to it::
+
+    // Pass the factory to the document loader, and read the content from a file
+    // to populate the document.
+    orcus_ods loader(&factory);
+
+In this example we are using the :cpp:class:`~orcus::orcus_ods` class because
+the document we are loading is in the Open Document Spreadsheet format.  Once
+the loader is constructed, we'll simply load the file by calling its
+:cpp:func:`~orcus::orcus_ods::read_file` method and passing the path to the
+file as its argument::
+
+    loader.read_file("/path/to/document.ods");
 
 Other document types
 --------------------
