@@ -32,25 +32,25 @@
    <NumberFormat/>
    <Protection/>
   </Style>
-  <Style ss:ID="s63">
+  <Style ss:ID="s62">
    <Borders>
     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="3"
      ss:Color="#FF0000"/>
    </Borders>
   </Style>
-  <Style ss:ID="s64">
+  <Style ss:ID="s63">
    <Borders>
     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="3"
      ss:Color="#0070C0"/>
    </Borders>
   </Style>
-  <Style ss:ID="s65">
+  <Style ss:ID="s64">
    <Borders>
     <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="3"
      ss:Color="#00B050"/>
    </Borders>
   </Style>
-  <Style ss:ID="s69">
+  <Style ss:ID="s65">
    <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="3"
@@ -67,18 +67,19 @@
  <Worksheet ss:Name="Sheet1">
   <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="7" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="88.5"/>
-   <Row ss:Index="3">
-    <Cell ss:Index="2" ss:StyleID="s63"><Data ss:Type="String">Red -&gt;</Data></Cell>
+   <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="225.75"/>
+   <Row ss:AutoFitHeight="0"/>
+   <Row ss:Index="3" ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s62"><Data ss:Type="String">Red -&gt;</Data></Cell>
    </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s64"><Data ss:Type="String">Blue -&gt;</Data></Cell>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s63"><Data ss:Type="String">Blue -&gt;</Data></Cell>
    </Row>
-   <Row>
-    <Cell ss:Index="2" ss:StyleID="s65"><Data ss:Type="String">Green -&gt;</Data></Cell>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:StyleID="s64"><Data ss:Type="String">Green -&gt;</Data></Cell>
    </Row>
    <Row ss:Index="7" ss:AutoFitHeight="0" ss:Height="66.75">
-    <Cell ss:Index="2" ss:StyleID="s69"><Data ss:Type="String">&lt;- Yellow&#10;Blue-&gt;&#10;Light Blue \</Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s65"><Data ss:Type="String">&lt;- Yellow&#10;Purple -&gt;&#10;Light Blue \</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -87,6 +88,7 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
+   <Unsynced/>
    <Print>
     <ValidPrinterInfo/>
     <HorizontalResolution>600</HorizontalResolution>
@@ -96,8 +98,8 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>6</ActiveRow>
-     <ActiveCol>4</ActiveCol>
+     <ActiveRow>8</ActiveRow>
+     <ActiveCol>1</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
