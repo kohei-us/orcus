@@ -686,6 +686,79 @@ void test_xls_xml_cell_borders_directions()
     }
 }
 
+void test_xls_xml_cell_borders_colors()
+{
+    using spreadsheet::color_t;
+    using spreadsheet::border_style_t;
+
+    pstring path(SRCDIR"/test/xls-xml/borders/colors.xml");
+    cout << path << endl;
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
+
+    spreadsheet::import_styles* styles = doc->get_styles();
+    assert(styles);
+
+    spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        spreadsheet::row_t row;
+        spreadsheet::col_t col;
+        color_t color;
+    };
+
+    std::vector<check> checks =
+    {
+        { 2, 1, color_t(0xFF, 0xFF,    0,    0) }, // B3 - red
+        { 3, 1, color_t(0xFF,    0, 0x70, 0xC0) }, // B4 - blue
+        { 4, 1, color_t(0xFF,    0, 0xB0, 0x50) }, // B5 - green
+    };
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col); // B3
+
+        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        assert(cf);
+        assert(cf->apply_border);
+
+        const spreadsheet::border_t* border = styles->get_border(cf->border);
+        assert(border);
+
+        assert(border->left.style   == border_style_t::unknown);
+        assert(border->right.style  == border_style_t::thick);
+        assert(border->top.style    == border_style_t::unknown);
+        assert(border->bottom.style == border_style_t::unknown);
+
+        assert(border->right.border_color == c.color);
+    }
+
+    // B7 contains yellow left border, purple right border, and light blue
+    // diagonal borders.
+
+    size_t xf = sh->get_cell_format(6, 1); // B7
+
+    const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+    assert(cf);
+    assert(cf->apply_border);
+
+    const spreadsheet::border_t* border = styles->get_border(cf->border);
+    assert(border);
+
+    assert(border->left.style == border_style_t::thick);
+    assert(border->left.border_color == color_t(0xFF, 0xFF, 0xFF, 0)); // yellow
+
+    assert(border->right.style == border_style_t::thick);
+    assert(border->right.border_color == color_t(0xFF, 0x70, 0x30, 0xA0)); // purple
+
+    assert(border->diagonal_bl_tr.style == border_style_t::thick);
+    assert(border->diagonal_bl_tr.border_color == color_t(0xFF, 0x00, 0xB0, 0xF0)); // light blue
+
+    assert(border->diagonal_tl_br.style == border_style_t::thick);
+    assert(border->diagonal_tl_br.border_color == color_t(0xFF, 0x00, 0xB0, 0xF0)); // light blue
+}
+
 void test_xls_xml_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
@@ -954,6 +1027,7 @@ int main()
     test_xls_xml_text_alignment();
     test_xls_xml_cell_borders_single_cells();
     test_xls_xml_cell_borders_directions();
+    test_xls_xml_cell_borders_colors();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();
