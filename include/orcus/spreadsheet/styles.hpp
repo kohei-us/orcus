@@ -147,6 +147,8 @@ struct ORCUS_SPM_DLLPUBLIC cell_style_t
     void reset();
 };
 
+ORCUS_SPM_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_t& c);
+
 class ORCUS_SPM_DLLPUBLIC import_styles : public iface::import_styles
 {
 public:

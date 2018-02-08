@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iomanip>
 
 namespace orcus { namespace spreadsheet {
 
@@ -138,6 +139,19 @@ cell_style_t::cell_style_t() :
 void cell_style_t::reset()
 {
     *this = cell_style_t();
+}
+
+std::ostream& operator<< (std::ostream& os, const color_t& c)
+{
+    os << std::hex << std::uppercase
+        << "(ARGB: "
+        << std::setfill('0') << std::setw(2) << int(c.alpha)
+        << std::setfill('0') << std::setw(2) << int(c.red)
+        << std::setfill('0') << std::setw(2) << int(c.green)
+        << std::setfill('0') << std::setw(2) << int(c.blue)
+        << ")";
+
+    return os;
 }
 
 import_styles::import_styles(string_pool& sp) : m_string_pool(sp) {}
