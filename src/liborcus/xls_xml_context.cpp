@@ -1069,6 +1069,7 @@ void xls_xml_context::start_element_border(const xml_token_pair_t& parent, const
 
     spreadsheet::border_direction_t dir = spreadsheet::border_direction_t::unknown;
     spreadsheet::border_style_t style = spreadsheet::border_style_t::unknown;
+    spreadsheet::color_rgb_t color;
     long weight = 0;
 
     for (const xml_token_attr_t& attr : attrs)
@@ -1093,6 +1094,11 @@ void xls_xml_context::start_element_border(const xml_token_pair_t& parent, const
                 weight = to_long(attr.value);
                 break;
             }
+            case XML_Color:
+            {
+                color = spreadsheet::to_color_rgb(attr.value.data(), attr.value.size());
+                break;
+            }
             default:
                 ;
         }
@@ -1105,6 +1111,7 @@ void xls_xml_context::start_element_border(const xml_token_pair_t& parent, const
     border_style_type& bs = m_current_style->borders.back();
     bs.dir = dir;
     bs.style = style;
+    bs.color = color;
 
     switch (bs.style)
     {
@@ -1525,7 +1532,10 @@ void xls_xml_context::commit_styles()
             styles->set_border_count(style->borders.size());
 
             for (const border_style_type& b : style->borders)
+            {
                 styles->set_border_style(b.dir, b.style);
+                styles->set_border_color(b.dir, 255, b.color.red, b.color.green, b.color.blue);
+            }
 
             size_t border_id = styles->commit_border();
             styles->set_xf_border(border_id);
