@@ -622,6 +622,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     case XML_bottom:
                     case XML_left:
                     case XML_right:
+                    case XML_diagonal:
                         // This color is for a border.
                         start_border_color(attrs);
                     break;
