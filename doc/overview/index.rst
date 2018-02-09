@@ -111,6 +111,21 @@ file as its argument::
 
     loader.read_file("/path/to/document.ods");
 
+Once this call returns, the document has been fully populated.  What the rest
+of the code does is access the content of the first row of the first sheet of
+the document.  First, you need to get a reference to the internal cell value
+store that we call *model context*::
+
+    const ixion::model_context& model = doc.get_model_context();
+
+Since the content of cell A1 is a string, to get the value you need to first
+get the ID of the string::
+
+    ixion::abs_address_t pos(0, 0, 0); // Set the cell position to A1.
+    ixion::string_id_t str_id = model.get_string_identifier(pos);
+
+
+
 Other document types
 --------------------
 

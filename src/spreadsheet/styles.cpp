@@ -627,4 +627,5 @@ size_t import_styles::get_cell_styles_count() const
 }
 
 }}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
