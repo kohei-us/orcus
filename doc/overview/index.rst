@@ -124,6 +124,32 @@ get the ID of the string::
     ixion::abs_address_t pos(0, 0, 0); // Set the cell position to A1.
     ixion::string_id_t str_id = model.get_string_identifier(pos);
 
+Once you have the ID of the string, you can pass that to the model to get the
+actual string value and print it to the standard output::
+
+    const std::string* s = model.get_string(str_id);
+    assert(s);
+    std::cout << "A1: " << *s << std::endl;
+
+Here we do assume that the string value exists for the given ID.  In case you
+pass a string ID value to the :cpp:func:`get_string` method and there isn't a string
+value associated with it, you'll get a null pointer instead.
+
+The reason you need to take this 2-step process to get a string value is
+because all the string values stored in the cells are pooled at the document
+model level, and the cells themselves only store the ID values.
+
+You may also have noticed that the types surrounding the :cpp:class:`ixion::model_context`
+class are all in the :cpp:any:`ixion` namespace.  It is because orcus' own
+:cpp:class:`~orcus::spreadsheet::document` class uses the formula engine from
+the `ixion library <https://gitlab.com/ixion/ixion>`_ in order to calculate
+the results of the formula cells inside the document, and the formula engine
+requires all cell values to be stored in the :cpp:class:`ixion::model_context`
+instance.
+
+.. note:: The :cpp:class:`~orcus::spreadsheet::document` class in orcus uses
+   the formula engine from the `ixion library <https://gitlab.com/ixion/ixion>`_
+   to calculate the results of the formula cells stored in the document.
 
 
 Other document types
