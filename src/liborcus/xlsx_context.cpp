@@ -240,6 +240,40 @@ void xlsx_shared_strings_context::characters(const pstring& str, bool transient)
     if (cur_token.first == NS_ooxml_xlsx && cur_token.second == XML_t)
     {
         m_cur_str = str;
+
+        // In case the string contains carriage returns (CRs), remove them.
+        m_cell_buffer.reset();
+        const char* p = m_cur_str.data();
+        const char* p_end = p + m_cur_str.size();
+        const char* p0 = nullptr;
+
+        for (; p != p_end; ++p)
+        {
+            if (!p0)
+                p0 = p;
+
+            if (*p == 0x0D)
+            {
+                // Append the segment up to this CR, and skip the CR.
+                m_cell_buffer.append(p0, std::distance(p0, p));
+                p0 = nullptr;
+            }
+        }
+
+        if (!m_cell_buffer.empty())
+        {
+            // This string contains at least one CR.
+
+            if (p0)
+                // Append the tail end.
+                m_cell_buffer.append(p0, std::distance(p0, p));
+
+            m_cur_str = m_pool.intern(
+                m_cell_buffer.get(), m_cell_buffer.size()).first;
+
+            transient = false;
+        }
+
         if (transient)
             m_cur_str = m_pool.intern(m_cur_str).first;
     }
