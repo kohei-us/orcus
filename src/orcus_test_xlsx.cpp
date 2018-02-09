@@ -649,7 +649,6 @@ void test_xlsx_cell_borders_colors()
     ixion::string_id_t sid = model.get_string_identifier(ixion::abs_address_t(0,6,1));
     const std::string* s = model.get_string(sid);
     assert(s);
-    std::cout << __FILE__ << ":" << __LINE__ << " (:test_xlsx_cell_borders_colors): '" << *s << "'" << std::endl;
     assert(*s == "<- Yellow\nPurple ->\nLight Blue \\");
 }
 
