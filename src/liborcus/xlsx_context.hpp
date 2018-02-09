@@ -10,6 +10,7 @@
 
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/string_pool.hpp"
+#include "orcus/cell_buffer.hpp"
 
 #include "xml_context_base.hpp"
 #include "xlsx_types.hpp"
@@ -42,6 +43,7 @@ public:
 private:
     spreadsheet::iface::import_shared_strings* mp_strings;
     string_pool m_pool;
+    cell_buffer m_cell_buffer;
     pstring m_cur_str;
     bool m_in_segments;
 };
