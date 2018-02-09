@@ -456,7 +456,8 @@ orcus_test_xls_xml_SOURCES = \
 orcus_test_xls_xml_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	@LIBIXION_LIBS@
 
 orcus_test_xls_xml_CPPFLAGS = \
 	@LIBIXION_CFLAGS@  $(AM_CPPFLAGS) \

@@ -17,6 +17,9 @@
 #include "orcus/spreadsheet/shared_strings.hpp"
 #include "orcus/spreadsheet/styles.hpp"
 
+#include <ixion/model_context.hpp>
+#include <ixion/address.hpp>
+
 #include <cassert>
 #include <string>
 #include <sstream>
@@ -757,6 +760,13 @@ void test_xls_xml_cell_borders_colors()
 
     assert(border->diagonal_tl_br.style == border_style_t::thick);
     assert(border->diagonal_tl_br.border_color == color_t(0xFF, 0x00, 0xB0, 0xF0)); // light blue
+
+    // B7 also contains multi-line string.  Test that as well.
+    ixion::model_context& model = doc->get_model_context();
+    ixion::string_id_t sid = model.get_string_identifier(ixion::abs_address_t(0,6,1));
+    const std::string* s = model.get_string(sid);
+    assert(s);
+    assert(*s == "<- Yellow\nPurple ->\nLight Blue \\");
 }
 
 void test_xls_xml_view_cursor_per_sheet()
