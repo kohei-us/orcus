@@ -27,6 +27,7 @@
 #include <vector>
 #include <iostream>
 
+#include <ixion/model_context.hpp>
 #include <ixion/address.hpp>
 #include <ixion/formula_name_resolver.hpp>
 
@@ -642,6 +643,14 @@ void test_xlsx_cell_borders_colors()
 
     assert(border->diagonal.style == border_style_t::thick);
     assert(border->diagonal.border_color == color_t(0xFF, 0x00, 0xB0, 0xF0)); // light blue
+
+    // B7 also contains multi-line string.  Test that as well.
+    ixion::model_context& model = doc->get_model_context();
+    ixion::string_id_t sid = model.get_string_identifier(ixion::abs_address_t(0,6,1));
+    const std::string* s = model.get_string(sid);
+    assert(s);
+    std::cout << __FILE__ << ":" << __LINE__ << " (:test_xlsx_cell_borders_colors): '" << *s << "'" << std::endl;
+    assert(*s == "<- Yellow\nPurple ->\nLight Blue \\");
 }
 
 void test_xlsx_pivot_two_pivot_caches()
