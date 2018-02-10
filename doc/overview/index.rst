@@ -30,6 +30,10 @@ If you have your own document store, then you need to implement your own
 import factory class that implements the required interfaces then pass that
 factory instance to the loader.
 
+
+Using the document from orcus
+-----------------------------
+
 If you want to use orcus' :cpp:class:`~orcus::spreadsheet::document` as your
 document store instead, then you can use the
 :cpp:class:`~orcus::spreadsheet::import_factory` class that orcus provides
@@ -87,6 +91,10 @@ This example code loads a file saved in the Open Document Spreadsheet format.
 It consists of the following content on its first sheet.
 
 .. figure:: /_static/images/overview/doc-content.png
+
+It is not clear from this screenshot, but cell C2 contains the formula **CONCATENATE(A2," ",B2)**
+to concatenate the content of A2 and B2 with a space between them.  Cells C3
+through C7 also contain similar formula expressions.
 
 Let's walk through this code step by step.  First, we need to instantiate the
 document store.  Here we are using the concrete :cpp:class:`~orcus::spreadsheet::document`
@@ -150,6 +158,51 @@ instance.
 .. note:: The :cpp:class:`~orcus::spreadsheet::document` class in orcus uses
    the formula engine from the `ixion library <https://gitlab.com/ixion/ixion>`_
    to calculate the results of the formula cells stored in the document.
+
+The rest of the code basically repeats the same process for cells B1 and C1::
+
+    pos.column = 1; // Move to B1
+    str_id = model.get_string_identifier(pos);
+    s = model.get_string(str_id);
+    assert(s);
+    std::cout << "B1: " << *s << std::endl;
+
+    pos.column = 2; // Move to C1
+    str_id = model.get_string_identifier(pos);
+    s = model.get_string(str_id);
+    assert(s);
+    std::cout << "C1: " << *s << std::endl;
+
+You will see the following output when you compile and run this code:
+
+.. code-block:: text
+
+    A1: Number
+    B1: String
+    C1: Formula
+
+Accessing the numeric cell values are a bit simpler since the values are
+stored directly with the cells.  Using the document from the above example
+code, the following code::
+
+    for (spreadsheet::row_t row = 1; row <= 6; ++row)
+    {
+        ixion::abs_address_t pos(0, row, 0);
+        double value = model.get_numeric_value(pos);
+        std::cout << "A" << (pos.row+1) << ": " << value << std::endl;
+    }
+
+will access the cells from A2 through A7 and print out their numeric values.
+You should see the following output when you run this code block:
+
+.. code-block:: text
+
+    A2: 1
+    A3: 2
+    A4: 3
+    A5: 4
+    A6: 5
+    A7: 6
 
 
 Other document types
