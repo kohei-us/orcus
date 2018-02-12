@@ -173,10 +173,64 @@ void test_walker()
     }
 }
 
+void test_walker_path()
+{
+    string filepath(base_dirs[0]);
+    filepath.append("input.xml");
+    string strm = load_file_content(filepath.c_str());
+    assert(!strm.empty());
+    xmlns_repository xmlns_repo;
+    xmlns_context cxt = xmlns_repo.create_context();
+    xml_structure_tree tree(cxt);
+    tree.parse(&strm[0], strm.size());
+
+    // Get walker from the tree.
+    xml_structure_tree::entity_names_type elem_names;
+    xml_structure_tree::walker wkr = tree.get_walker();
+    wkr.root();
+    assert("/root" == wkr.get_path());
+
+    wkr.get_children(elem_names);
+    xml_structure_tree::entity_name elem_name = elem_names.front();
+    wkr.descend(elem_name);
+    assert("/root/entry" == wkr.get_path());
+
+    xml_structure_tree::element element = wkr.select_by_path("/root/entry");
+    assert(element.name.name == "entry");
+
+    try
+    {
+        wkr.select_by_path("/root/not-there");
+        assert(false);
+    }
+    catch (...)
+    {
+    }
+
+    try
+    {
+        wkr.select_by_path("something_different");
+        assert(false);
+    }
+    catch (...)
+    {
+    }
+
+    try
+    {
+        wkr.select_by_path("/non-exist");
+        assert(false);
+    }
+    catch (...)
+    {
+    }
+}
+
 int main()
 {
     test_basic();
     test_walker();
+    test_walker_path();
     return EXIT_SUCCESS;
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

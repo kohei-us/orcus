@@ -385,6 +385,7 @@ liborcus_test_xml_map_tree_LDADD = \
 # liborcus-test-xml-structure-tree
 
 liborcus_test_xml_structure_tree_SOURCES = \
+	string_helper.cpp \
 	xml_structure_tree.cpp \
 	xml_structure_tree_test.cpp
 

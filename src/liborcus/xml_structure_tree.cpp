@@ -12,6 +12,7 @@
 #include "orcus/exception.hpp"
 
 #include "orcus/string_pool.hpp"
+#include "string_helper.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -275,6 +276,15 @@ struct xml_structure_tree_impl
     {
         delete mp_root;
     }
+
+    std::string get_element_str(const xml_structure_tree::entity_name& name) const
+    {
+        ostringstream ss;
+        if (m_xmlns_cxt.get_index(name.ns) != index_not_found)
+            ss << m_xmlns_cxt.get_short_name(name.ns) << ":";
+        ss << name.name;
+        return ss.str();
+    }
 };
 
 struct xml_structure_tree::walker_impl
@@ -421,6 +431,66 @@ size_t xml_structure_tree::walker::get_xmlns_index(xmlns_id_t ns) const
 string xml_structure_tree::walker::get_xmlns_short_name(xmlns_id_t ns) const
 {
     return mp_impl->m_parent_impl.m_xmlns_cxt.get_short_name(ns);
+}
+
+string xml_structure_tree::walker::get_path() const
+{
+    ostringstream ss;
+    for (auto& element : mp_impl->m_scopes)
+    {
+        ss << "/" << mp_impl->m_parent_impl.get_element_str(element.name);
+    }
+
+    return ss.str();
+}
+
+xml_structure_tree::element xml_structure_tree::walker::select_by_path(const std::string& path)
+{
+    pstring p(path);
+    std::vector<pstring> parts = string_helper::split_string(p, '/');
+    if (parts.empty())
+        throw general_error("invalid format for path");
+
+    // string_helper::split_string will create an empty first element due to leading '/'
+    if (parts[0] != "")
+    {
+        throw general_error("invalid format for path");
+    }
+    else
+    {
+        parts.erase(parts.begin());
+    }
+
+    if (parts.empty())
+        throw general_error("invalid format for path");
+
+    element_ref root_ref(mp_impl->mp_root->name, &mp_impl->mp_root->prop);
+    if (pstring(mp_impl->m_parent_impl.get_element_str(root_ref.name)) != parts[0])
+        throw general_error("path does not match any element");
+
+    std::vector<element_ref> scopes;
+    scopes.push_back(root_ref);
+
+    for (size_t i = 1; i < parts.size(); ++i)
+    {
+        const elem_prop& prop = *scopes.back().prop;
+        bool found = false;
+        for (auto& child : prop.child_elements)
+        {
+            if (pstring(mp_impl->m_parent_impl.get_element_str(child.first)) == parts[i])
+            {
+                scopes.emplace_back(child.first, child.second);
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            throw general_error("path does not match any element");
+    }
+
+    std::swap(mp_impl->m_scopes, scopes);
+    const element_ref& ref = mp_impl->m_scopes.back();
+    return element(ref.name, ref.prop->repeat);
 }
 
 xml_structure_tree::xml_structure_tree(xmlns_context& xmlns_cxt) :
