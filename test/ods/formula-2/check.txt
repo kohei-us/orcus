@@ -1,0 +1,21 @@
+Sheet1/0/0:string:"Number"
+Sheet1/0/1:string:"String"
+Sheet1/0/2:string:"Formula"
+Sheet1/1/0:numeric:1
+Sheet1/1/1:string:"Andy"
+Sheet1/1/2:formula:CONCATENATE(A2," ",B2):1 Andy
+Sheet1/2/0:numeric:2
+Sheet1/2/1:string:"Bruce"
+Sheet1/2/2:formula:CONCATENATE(A3," ",B3):2 Bruce
+Sheet1/3/0:numeric:3
+Sheet1/3/1:string:"Charlie"
+Sheet1/3/2:formula:CONCATENATE(A4," ",B4):3 Charlie
+Sheet1/4/0:numeric:4
+Sheet1/4/1:string:"David"
+Sheet1/4/2:formula:CONCATENATE(A5," ",B5):4 David
+Sheet1/5/0:numeric:5
+Sheet1/5/1:string:"Edward"
+Sheet1/5/2:formula:CONCATENATE(A6," ",B6):5 Edward
+Sheet1/6/0:numeric:6
+Sheet1/6/1:string:"Frank"
+Sheet1/6/2:formula:CONCATENATE(A7," ",B7):6 Frank

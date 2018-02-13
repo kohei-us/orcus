@@ -20,6 +20,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include <mdds/flat_segment_tree.hpp>
 
@@ -31,18 +32,18 @@ typedef mdds::flat_segment_tree<size_t,bool> bool_segment_type;
 
 namespace {
 
-const char* dirs[] = {
+std::vector<const char*> dirs = {
     SRCDIR"/test/ods/raw-values-1/",
     SRCDIR"/test/ods/formula-1/",
+    SRCDIR"/test/ods/formula-2/",
 };
 
 void test_ods_import_cell_values()
 {
-    size_t n = sizeof(dirs)/sizeof(dirs[0]);
-    for (size_t i = 0; i < n; ++i)
+    for (const char* dir : dirs)
     {
-        const char* dir = dirs[i];
         string path(dir);
+        cout << path << endl;
 
         // Read the input.ods document.
         path.append("input.ods");
