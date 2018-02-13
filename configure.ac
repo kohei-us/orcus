@@ -215,7 +215,7 @@ AC_ARG_ENABLE(spreadsheet-model,
 	[enable_spreadsheet_model=yes]
 )
 AS_IF([test "x$enable_spreadsheet_model" != "xno"], [
-	PKG_CHECK_MODULES([LIBIXION],[libixion-$IXION_REQUIRED_API_VERSION >= 0.12.0])
+	PKG_CHECK_MODULES([LIBIXION],[libixion-$IXION_REQUIRED_API_VERSION >= 0.13.99])
 	CXXFLAGS="$CXXFLAGS -D__ORCUS_SPREADSHEET_MODEL"
         BOOST_DATE_TIME
 ])

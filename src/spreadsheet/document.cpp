@@ -25,6 +25,7 @@
 #include <ixion/model_context.hpp>
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/interface/table_handler.hpp>
+#include <ixion/config.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -583,22 +584,27 @@ void document::set_formula_grammar(formula_grammar_t grammar)
     mp_impl->m_grammar = grammar;
 
     ixion::formula_name_resolver_t resolver_type = ixion::formula_name_resolver_t::unknown;
+    char arg_sep = 0;
 
     switch (mp_impl->m_grammar)
     {
         case formula_grammar_t::xls_xml:
             resolver_type = ixion::formula_name_resolver_t::excel_r1c1;
+            arg_sep = ',';
             break;
         case formula_grammar_t::xlsx_2007:
         case formula_grammar_t::xlsx_2010:
             resolver_type = ixion::formula_name_resolver_t::excel_a1;
+            arg_sep = ',';
             break;
         case formula_grammar_t::ods:
             resolver_type = ixion::formula_name_resolver_t::odff;
+            arg_sep = ';';
             break;
         case formula_grammar_t::gnumeric:
             // TODO : Use Excel A1 name resolver for now.
             resolver_type = ixion::formula_name_resolver_t::excel_a1;
+            arg_sep = ',';
             break;
         default:
             mp_impl->mp_name_resolver.reset();
@@ -610,6 +616,10 @@ void document::set_formula_grammar(formula_grammar_t grammar)
     {
         mp_impl->mp_name_resolver =
             ixion::formula_name_resolver::get(resolver_type, &mp_impl->m_context);
+
+        ixion::config cfg = mp_impl->m_context.get_config();
+        cfg.sep_function_arg = arg_sep;
+        mp_impl->m_context.set_config(cfg);
     }
 }
 
