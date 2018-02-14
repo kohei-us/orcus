@@ -1222,6 +1222,7 @@ void xls_xml_context::start_element_column(const xml_token_pair_t& parent, const
     spreadsheet::col_t col_index = m_cur_prop_col;
     spreadsheet::col_t span = 0;
     double width = 0.0;
+    bool hidden = false;
 
     std::for_each(attrs.begin(), attrs.end(),
         [&](const xml_token_attr_t& attr)
@@ -1244,6 +1245,8 @@ void xls_xml_context::start_element_column(const xml_token_pair_t& parent, const
                 case XML_Span:
                     span = to_long(attr.value);
                     break;
+                case XML_Hidden:
+                    hidden = to_long(attr.value) != 0;
                 default:
                     ;
             }
@@ -1251,8 +1254,11 @@ void xls_xml_context::start_element_column(const xml_token_pair_t& parent, const
     );
 
     for (; span >= 0; --span, ++col_index)
+    {
         // Column widths are stored as points.
         mp_sheet_props->set_column_width(col_index, width, orcus::length_unit_t::point);
+        mp_sheet_props->set_column_hidden(col_index, hidden);
+    }
 
     m_cur_prop_col = col_index;
 }
@@ -1263,6 +1269,7 @@ void xls_xml_context::start_element_row(const xml_token_pair_t& parent, const xm
     m_cur_col = 0;
     spreadsheet::row_t row_index = -1;
     bool has_height = false;
+    bool hidden = false;
     double height = 0.0;
 
     for (const xml_token_attr_t& attr : attrs)
@@ -1281,6 +1288,9 @@ void xls_xml_context::start_element_row(const xml_token_pair_t& parent, const xm
                     has_height = true;
                     height = to_double(attr.value);
                     break;
+                case XML_Hidden:
+                    hidden = to_long(attr.value) != 0;
+                    break;
                 default:
                     ;
             }
@@ -1293,8 +1303,14 @@ void xls_xml_context::start_element_row(const xml_token_pair_t& parent, const xm
         m_cur_row = row_index - 1;
     }
 
-    if (mp_sheet_props && has_height)
-        mp_sheet_props->set_row_height(m_cur_row, height, length_unit_t::point);
+    if (mp_sheet_props)
+    {
+        if (has_height)
+            mp_sheet_props->set_row_height(m_cur_row, height, length_unit_t::point);
+
+        if (hidden)
+            mp_sheet_props->set_row_hidden(m_cur_row, true);
+    }
 }
 
 void xls_xml_context::end_element_borders()
