@@ -174,8 +174,8 @@ struct sheet_impl
     col_widths_store_type::const_iterator m_col_width_pos;
     row_heights_store_type::const_iterator m_row_height_pos;
 
-    col_hidden_store_type m_col_hidden;
-    row_hidden_store_type m_row_hidden;
+    mutable col_hidden_store_type m_col_hidden;
+    mutable row_hidden_store_type m_row_hidden;
     col_hidden_store_type::const_iterator m_col_hidden_pos;
     row_hidden_store_type::const_iterator m_row_hidden_pos;
 
@@ -553,6 +553,19 @@ void sheet::set_col_hidden(col_t col, bool hidden)
         mp_impl->m_col_hidden.insert(mp_impl->m_col_hidden_pos, col, col+1, hidden).first;
 }
 
+bool sheet::is_col_hidden(col_t col, col_t* col_start, col_t* col_end) const
+{
+    col_hidden_store_type& col_hidden = mp_impl->m_col_hidden;
+    if (!col_hidden.is_tree_valid())
+        col_hidden.build_tree();
+
+    bool hidden = false;
+    if (!col_hidden.search_tree(col, hidden, col_start, col_end).second)
+        throw orcus::general_error("sheet::is_col_hidden: failed to search tree.");
+
+    return hidden;
+}
+
 void sheet::set_row_height(row_t row, row_height_t height)
 {
     mp_impl->m_row_height_pos =
@@ -576,6 +589,19 @@ void sheet::set_row_hidden(row_t row, bool hidden)
 {
     mp_impl->m_row_hidden_pos =
         mp_impl->m_row_hidden.insert(mp_impl->m_row_hidden_pos, row, row+1, hidden).first;
+}
+
+bool sheet::is_row_hidden(row_t row, row_t* row_start, row_t* row_end) const
+{
+    row_hidden_store_type& row_hidden = mp_impl->m_row_hidden;
+    if (!row_hidden.is_tree_valid())
+        row_hidden.build_tree();
+
+    bool hidden = false;
+    if (!row_hidden.search_tree(row, hidden, row_start, row_end).second)
+        throw orcus::general_error("sheet::is_row_hidden: failed to search tree.");
+
+    return hidden;
 }
 
 void sheet::set_merge_cell_range(const range_t& range)
