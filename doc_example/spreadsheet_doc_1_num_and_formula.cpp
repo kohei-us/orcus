@@ -4,6 +4,8 @@
 #include <orcus/orcus_ods.hpp>
 
 #include <ixion/model_context.hpp>
+#include <ixion/formula_result.hpp>
+#include <ixion/cell.hpp>
 #include <iostream>
 
 using namespace orcus;
@@ -27,6 +29,22 @@ int main()
         ixion::abs_address_t pos(0, row, 0);
         double value = model.get_numeric_value(pos);
         std::cout << "A" << (pos.row+1) << ": " << value << std::endl;
+    }
+
+    for (spreadsheet::row_t row = 1; row <=6; ++row)
+    {
+        ixion::abs_address_t pos(0, row, 2); // Column C
+        const ixion::formula_cell* fc = model.get_formula_cell(pos);
+        assert(fc);
+
+        // Get the formula cell results.
+        const ixion::formula_result& result = fc->get_result_cache();
+
+        // We already know the result is a string.
+        ixion::string_id_t sid = result.get_string();
+        const std::string* s = model.get_string(sid);
+        assert(s);
+        std::cout << "C" << (pos.row+1) << ": " << *s << std::endl;
     }
 
     return EXIT_SUCCESS;

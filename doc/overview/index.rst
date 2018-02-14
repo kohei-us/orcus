@@ -204,6 +204,46 @@ You should see the following output when you run this code block:
     A6: 5
     A7: 6
 
+It's a bit more complex to handle formula cells.  Since each formula cell
+contains two things: 1) the formula expression which is stored as tokens
+internally, and 2) the cached result of the formula.  The following code
+illustrates how to retrieve the cached formula results of cells C2 through
+C7::
+
+    for (spreadsheet::row_t row = 1; row <=6; ++row)
+    {
+        ixion::abs_address_t pos(0, row, 2); // Column C
+        const ixion::formula_cell* fc = model.get_formula_cell(pos);
+        assert(fc);
+
+        // Get the formula cell results.
+        const ixion::formula_result& result = fc->get_result_cache();
+
+        // We already know the result is a string.
+        ixion::string_id_t sid = result.get_string();
+        const std::string* s = model.get_string(sid);
+        assert(s);
+        std::cout << "C" << (pos.row+1) << ": " << *s << std::endl;
+    }
+
+For each cell, this code first accesses the stored formula cell instance, get
+a reference to its cached result, then obtain its string result value to print
+it out to the standard output.  Running this block of code will yield the
+following output:
+
+.. code-block:: text
+
+    C2: 1 Andy
+    C3: 2 Bruce
+    C4: 3 Charlie
+    C5: 4 David
+    C6: 5 Edward
+    C7: 6 Frank
+
+.. warning:: In production code, you should probabaly check the formula cell
+             pointer which may be null in case the cell at the specified
+             position is not a formula cell.
+
 
 Other document types
 --------------------
