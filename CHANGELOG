@@ -17,6 +17,36 @@
     rather than their memory positions, in order to make the position
     values usable between duplicated stream instances.
 
+  * xml_structure_tree to support selection of an element by element
+    path.
+
+  * document
+
+    * correctly set the argument separator depending on the formula
+      grammar type.  This change fixes loading of ods documents with
+      formula cells.
+
+orcus 0.13.3
+
+  * fix the handling of alpha values passed to set_fill_fg_color() and
+    set_fill_bg_color().  A value of 255 means fully opaque whereas a
+    value of 0 means fully transparent.
+
+  * fix the solid fill color import, to use the foreground color
+    instead of the background color.
+
+  * xlsx
+
+    * import colors to disgonal borders.
+
+    * remove carriage returns from multi-line cell strings.
+
+  * xls-xml
+
+    * import border colors.
+
+    * import hidden row and column flags.
+
 orcus 0.13.2
 
   * xls-xml
