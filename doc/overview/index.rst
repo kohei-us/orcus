@@ -4,35 +4,34 @@
 Overview
 ========
 
-The orcus library is designed to be used by a program that needs a way to
-import the contents of documents stored in various spreadsheet, or
-spreadsheet-like formats.  It supports two primary use cases.  One use case is
-where the client program already has its own internal document model, and you
-wish to use this library to populate its document model.  In this use case,
-you can implement your own set of classes that supports necessary interfaces,
-and that to the orcus filter instance.
+The orcus library is designed to provide a method to import the contents of
+documents stored in various spreadsheet, or spreadsheet-like formats.  It
+supports two primary use cases.  One use case is where the client program
+already has its own internal document model, and you wish to use this library
+to populate its document model.  In this particular use case, you can
+implement your own set of classes that supports necessary interfaces, and pass
+that to the orcus import filter instance.
 
 Another use case is where the client program does not have its own document
-model, but needs to import data from a spreadsheet document file and access
-its content in some way.  In this use case, you can simply instantiate the
-:cpp:class:`~orcus::spreadsheet::document` class provided by this library, get
-it populated, and access its content through its API.
+model, and wishes to import data from a spreadsheet-like document file and
+access its content.  In this particular use case, you can simply instantiate
+the :cpp:class:`~orcus::spreadsheet::document` class, get it populated, and
+access its content through its API.
 
-For each document type that orcus supports, there is a top-level loader class
-that serves as an entry point for loading the content of a document you wish
-to load.  You don't pass your document to this filter directly; instead, you
-wrap your document with what we call an *import factory*, then pass this
-factory instance to the loader  This import factory is required to implement
-necessary interfaces that the loader calls in order for it to pass data to the
-document as it parses the file.
+For each document type that orcus supports, there is a top-level import filter
+class that serves as an entry point for loading the content of a document you
+wish to load.  You don't pass your document to this filter directly; instead,
+you wrap your document with what we call an *import factory*, then pass this
+factory instance to the loader This import factory is then required to
+implement necessary interfaces that the filter class expects in order for it
+to pass data to the document as the file is getting parsed.
 
-If you have your own document store, then you need to implement your own
-import factory class that implements the required interfaces then pass that
-factory instance to the loader.
+The next section describes how to use orcus' own spreadsheet document class to
+load a spreadsheet document.
 
 
-Using the document from orcus
------------------------------
+Using the spreadsheet document class from orcus
+-----------------------------------------------
 
 If you want to use orcus' :cpp:class:`~orcus::spreadsheet::document` as your
 document store instead, then you can use the
@@ -92,9 +91,10 @@ It consists of the following content on its first sheet.
 
 .. figure:: /_static/images/overview/doc-content.png
 
-It is not clear from this screenshot, but cell C2 contains the formula **CONCATENATE(A2," ",B2)**
-to concatenate the content of A2 and B2 with a space between them.  Cells C3
-through C7 also contain similar formula expressions.
+While it is not clear from this screenshot, cell C2 contains the formula
+**CONCATENATE(A2, " ", B2)** to concatenate the content of A2 and B2 with a
+space between them.  Cells C3 through C7 also contain similar formula
+expressions.
 
 Let's walk through this code step by step.  First, we need to instantiate the
 document store.  Here we are using the concrete :cpp:class:`~orcus::spreadsheet::document`
@@ -111,11 +111,12 @@ The next step is to create the loader instance and pass the factory to it::
     // to populate the document.
     orcus_ods loader(&factory);
 
-In this example we are using the :cpp:class:`~orcus::orcus_ods` class because
-the document we are loading is in the Open Document Spreadsheet format.  Once
-the loader is constructed, we'll simply load the file by calling its
-:cpp:func:`~orcus::orcus_ods::read_file` method and passing the path to the
-file as its argument::
+In this example we are using the :cpp:class:`~orcus::orcus_ods` filter class
+because the document we are loading is of Open Document Spreadsheet type, but
+the process is the same for other document types, the only difference being
+the name of the class.  Once the filter object is constructed, we'll simply
+load the file by calling its :cpp:func:`~orcus::orcus_ods::read_file` method
+and passing the path to the file as its argument::
 
     loader.read_file("/path/to/document.ods");
 
@@ -243,6 +244,12 @@ following output:
 .. warning:: In production code, you should probabaly check the formula cell
              pointer which may be null in case the cell at the specified
              position is not a formula cell.
+
+
+Populating your own document class using orcus
+----------------------------------------------
+
+TBD
 
 
 Other document types
