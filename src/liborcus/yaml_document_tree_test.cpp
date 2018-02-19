@@ -22,9 +22,9 @@ using namespace std;
 
 namespace fs = boost::filesystem;
 
-bool string_expected(const yaml_document_tree::node& node, const char* expected)
+bool string_expected(const yaml::document_tree::node& node, const char* expected)
 {
-    if (node.type() != yaml_node_t::string)
+    if (node.type() != yaml::node_t::string)
         return false;
 
     if (node.string_value() == expected)
@@ -35,10 +35,10 @@ bool string_expected(const yaml_document_tree::node& node, const char* expected)
 }
 
 bool number_expected(
-    const yaml_document_tree::node& node, double expected,
+    const yaml::document_tree::node& node, double expected,
     double decimal = 0.0, double exponent = 0.0)
 {
-    if (node.type() != yaml_node_t::number)
+    if (node.type() != yaml::node_t::number)
         return false;
 
     double actual = node.numeric_value();
@@ -59,12 +59,12 @@ bool number_expected(
     return actual == expected;
 }
 
-yaml_document_tree load_doc(const char* filepath)
+yaml::document_tree load_doc(const char* filepath)
 {
     cout << filepath << endl;
     string strm = load_file_content(filepath);
     cout << strm << endl;
-    yaml_document_tree doc;
+    yaml::document_tree doc;
     doc.load(strm);
 
     return doc;
@@ -90,7 +90,7 @@ void test_yaml_invalids()
         ++file_count;
 
         string strm = load_file_content(path.string().data());
-        yaml_document_tree doc;
+        yaml::document_tree doc;
 
         try
         {
@@ -108,119 +108,119 @@ void test_yaml_invalids()
 
 void test_yaml_parse_basic1()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/basic1/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/basic1/input.yaml");
 
     assert(doc.get_document_count() == 1);
 
     // Document root is a map node with 4 elements.
-    yaml_document_tree::node root = doc.get_document_root(0);
+    yaml::document_tree::node root = doc.get_document_root(0);
     uintptr_t root_id = root.identity();
-    assert(root.type() == yaml_node_t::map);
+    assert(root.type() == yaml::node_t::map);
     assert(root.child_count() == 4);
 
-    std::vector<yaml_document_tree::node> keys = root.keys();
+    std::vector<yaml::document_tree::node> keys = root.keys();
     assert(keys.size() == 4);
 
-    yaml_document_tree::node key = keys[0];
-    assert(key.type() == yaml_node_t::string);
+    yaml::document_tree::node key = keys[0];
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "dict");
 
     key = keys[1];
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "list");
 
     key = keys[2];
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "number");
 
     key = keys[3];
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "string");
 
     // first child is a map.
-    yaml_document_tree::node node = root.child(keys[0]);
-    assert(node.type() == yaml_node_t::map);
+    yaml::document_tree::node node = root.child(keys[0]);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 3);
 
     key = node.key(0);
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "a");
 
     key = node.key(1);
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "b");
 
     key = node.key(2);
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "c");
 
     node = node.child(0);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 1.0);
     node = node.parent();
 
     node = node.child(1);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 2.0);
     node = node.parent();
 
     node = node.child(2);
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == 2);
-    yaml_document_tree::node child = node.child(0);
-    assert(child.type() == yaml_node_t::string);
+    yaml::document_tree::node child = node.child(0);
+    assert(child.type() == yaml::node_t::string);
     assert(child.string_value() == "foo");
     child = node.child(1);
-    assert(child.type() == yaml_node_t::string);
+    assert(child.type() == yaml::node_t::string);
     assert(child.string_value() == "bar");
 
     // Go up to the root node.
     node = node.parent().parent();
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.identity() == root_id);
 
     node = node.child(keys[1]);
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == 3);
 
     node = node.child(0);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 1.0);
     node = node.parent();
 
     node = node.child(1);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 2.0);
     node = node.parent();
 
     node = node.child(2);
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 3);
 
     key = node.key(0);
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "a");
 
     key = node.key(1);
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "b");
 
     key = node.key(2);
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "c");
 
     node = node.child(0);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 1.1);
     node = node.parent();
 
     node = node.child(1);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 1.2);
     node = node.parent();
 
     node = node.child(2);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 1.3);
     node = node.parent();
 
@@ -228,62 +228,62 @@ void test_yaml_parse_basic1()
     assert(node.identity() == root_id);
 
     key = node.key(2);
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "number");
 
     key = node.key(3);
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "string");
 
     node = node.child(2);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 12.3);
     node = node.parent();
 
     node = node.child(3);
-    assert(node.type() == yaml_node_t::string);
+    assert(node.type() == yaml::node_t::string);
     assert(node.string_value() == "foo");
     node = node.parent();
 }
 
 void test_yaml_parse_basic2()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/basic2/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/basic2/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == 3);
 
     node = node.child(0);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 1);
     node = node.parent();
 
     node = node.child(1);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 2);
     node = node.parent();
 
     node = node.child(2);
-    assert(node.type() == yaml_node_t::number);
+    assert(node.type() == yaml::node_t::number);
     assert(node.numeric_value() == 3);
     node = node.parent();
 }
 
 void test_yaml_parse_basic3()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/basic3/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/basic3/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == 2);
 
     node = node.child(0);
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 3);
 
     assert(string_expected(node.key(0), "a"));
@@ -297,7 +297,7 @@ void test_yaml_parse_basic3()
     node = node.parent();
 
     node = node.child(1);
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 3);
 
     assert(string_expected(node.key(0), "d"));
@@ -311,82 +311,82 @@ void test_yaml_parse_basic3()
 
 void test_yaml_parse_null()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/null/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/null/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == 6);
 
     node = node.child(0);
-    assert(node.type() == yaml_node_t::null);
+    assert(node.type() == yaml::node_t::null);
     node = node.parent();
 
     node = node.child(1);
-    assert(node.type() == yaml_node_t::null);
+    assert(node.type() == yaml::node_t::null);
     node = node.parent();
 
     node = node.child(2);
-    assert(node.type() == yaml_node_t::null);
+    assert(node.type() == yaml::node_t::null);
     node = node.parent();
 
     node = node.child(3);
-    assert(node.type() == yaml_node_t::null);
+    assert(node.type() == yaml::node_t::null);
     node = node.parent();
 
     node = node.child(4);
-    assert(node.type() == yaml_node_t::string);
+    assert(node.type() == yaml::node_t::string);
     assert(node.string_value() == "nULL");
     node = node.parent();
 
     node = node.child(5);
-    assert(node.type() == yaml_node_t::string);
+    assert(node.type() == yaml::node_t::string);
     assert(node.string_value() == "NUll");
     node = node.parent();
 }
 
 void test_yaml_parse_boolean()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/boolean/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/boolean/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 3);
 
-    yaml_document_tree::node key = node.key(0);
-    assert(key.type() == yaml_node_t::string);
+    yaml::document_tree::node key = node.key(0);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "positive");
 
     key = node.key(1);
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "negative");
 
     key = node.key(2);
-    assert(key.type() == yaml_node_t::string);
+    assert(key.type() == yaml::node_t::string);
     assert(key.string_value() == "non boolean");
 
     // list of boolean true's.
     node = node.child(0);
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == 11);
     for (size_t i = 0; i < node.child_count(); ++i)
     {
-        yaml_document_tree::node child = node.child(i);
-        assert(child.type() == yaml_node_t::boolean_true);
+        yaml::document_tree::node child = node.child(i);
+        assert(child.type() == yaml::node_t::boolean_true);
     }
     node = node.parent();
 
     // list of boolean false's.
     node = node.child(1);
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == 11);
     for (size_t i = 0; i < node.child_count(); ++i)
     {
-        yaml_document_tree::node child = node.child(i);
-        assert(child.type() == yaml_node_t::boolean_false);
+        yaml::document_tree::node child = node.child(i);
+        assert(child.type() == yaml::node_t::boolean_false);
     }
     node = node.parent();
 
@@ -401,13 +401,13 @@ void test_yaml_parse_boolean()
     };
 
     node = node.child(2);
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == ORCUS_N_ELEMENTS(values));
 
     for (size_t i = 0; i < ORCUS_N_ELEMENTS(values); ++i)
     {
         node = node.child(i);
-        assert(node.type() == yaml_node_t::string);
+        assert(node.type() == yaml::node_t::string);
         assert(node.string_value() == values[i]);
         node = node.parent();
     }
@@ -415,12 +415,12 @@ void test_yaml_parse_boolean()
 
 void test_yaml_parse_quoted_string()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/quoted-string/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/quoted-string/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 3);
 
     assert(string_expected(node.key(0), "I am quoted: ~ "));
@@ -444,7 +444,7 @@ void test_yaml_parse_quoted_string()
         };
 
         size_t n = ORCUS_N_ELEMENTS(values);
-        assert(node.type() == yaml_node_t::sequence);
+        assert(node.type() == yaml::node_t::sequence);
         assert(node.child_count() == n);
 
         for (size_t i = 0; i < n; ++i)
@@ -468,7 +468,7 @@ void test_yaml_parse_quoted_string()
         };
 
         size_t n = ORCUS_N_ELEMENTS(values);
-        assert(node.type() == yaml_node_t::sequence);
+        assert(node.type() == yaml::node_t::sequence);
         assert(node.child_count() == n);
 
         for (size_t i = 0; i < n; ++i)
@@ -478,30 +478,30 @@ void test_yaml_parse_quoted_string()
 
 void test_yaml_parse_multi_line_1()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/multi-line-1/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/multi-line-1/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
     assert(string_expected(node, "1 2 3"));
     assert(node.child_count() == 0);
 }
 
 void test_yaml_parse_multi_line_2()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/multi-line-2/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/multi-line-2/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
     assert(string_expected(node, "1 - 2 - 3"));
     assert(node.child_count() == 0);
 }
 
 void test_yaml_parse_literal_block_1()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/literal-block-1/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/literal-block-1/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
     assert(string_expected(node, "line 1\n  line 2\nline 3\n2 blanks follow  "));
     assert(node.child_count() == 0);
@@ -509,12 +509,12 @@ void test_yaml_parse_literal_block_1()
 
 void test_yaml_parse_literal_block_2()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/literal-block-2/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/literal-block-2/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 2);
 
     assert(string_expected(node.key(0),   "literal block"));
@@ -525,19 +525,19 @@ void test_yaml_parse_literal_block_2()
 
 void test_yaml_parse_url()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/url/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/url/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == 3);
 
     assert(string_expected(node.child(0), "http://www.google.com/"));
     assert(string_expected(node.child(1), "mailto:joe@joe-me.com"));
 
     node = node.child(2);
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 2);
 
     assert(string_expected(node.key(0), "orcus-url"));
@@ -548,69 +548,69 @@ void test_yaml_parse_url()
 
 void test_yaml_parse_empty_value_map_1()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-map-1/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-map-1/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 1);
 
     assert(string_expected(node.key(0), "key"));
-    assert(node.child(0).type() == yaml_node_t::null);
+    assert(node.child(0).type() == yaml::node_t::null);
 }
 
 void test_yaml_parse_empty_value_map_2()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-map-2/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-map-2/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 2);
 
     assert(string_expected(node.key(0), "key1"));
-    assert(node.child(0).type() == yaml_node_t::null);
+    assert(node.child(0).type() == yaml::node_t::null);
     assert(string_expected(node.key(1), "key2"));
-    assert(node.child(1).type() == yaml_node_t::null);
+    assert(node.child(1).type() == yaml::node_t::null);
 }
 
 void test_yaml_parse_empty_value_sequence_1()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-sequence-1/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-sequence-1/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == 1);
 
-    assert(node.child(0).type() == yaml_node_t::null);
+    assert(node.child(0).type() == yaml::node_t::null);
 }
 
 void test_yaml_parse_empty_value_sequence_2()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-sequence-2/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/empty-value-sequence-2/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::sequence);
+    assert(node.type() == yaml::node_t::sequence);
     assert(node.child_count() == 2);
 
-    assert(node.child(0).type() == yaml_node_t::null);
-    assert(node.child(1).type() == yaml_node_t::null);
+    assert(node.child(0).type() == yaml::node_t::null);
+    assert(node.child(1).type() == yaml::node_t::null);
 }
 
 void test_yaml_map_key_1()
 {
-    yaml_document_tree doc = load_doc(SRCDIR"/test/yaml/map-key-1/input.yaml");
+    yaml::document_tree doc = load_doc(SRCDIR"/test/yaml/map-key-1/input.yaml");
 
     assert(doc.get_document_count() == 1);
-    yaml_document_tree::node node = doc.get_document_root(0);
+    yaml::document_tree::node node = doc.get_document_root(0);
 
-    assert(node.type() == yaml_node_t::map);
+    assert(node.type() == yaml::node_t::map);
     assert(node.child_count() == 2);
 
     assert(string_expected(node.key(0), "-key"));

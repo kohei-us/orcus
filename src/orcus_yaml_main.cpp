@@ -140,9 +140,9 @@ std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
     return config;
 }
 
-std::unique_ptr<yaml_document_tree> load_doc(const std::string& strm)
+std::unique_ptr<yaml::document_tree> load_doc(const std::string& strm)
 {
-    std::unique_ptr<yaml_document_tree> doc(orcus::make_unique<yaml_document_tree>());
+    std::unique_ptr<yaml::document_tree> doc(orcus::make_unique<yaml::document_tree>());
     try
     {
         doc->load(strm);
@@ -164,7 +164,7 @@ int main(int argc, char** argv)
     try
     {
         std::string strm = load_file_content(config->input_path.c_str());
-        std::unique_ptr<yaml_document_tree> doc = load_doc(strm);
+        std::unique_ptr<yaml::document_tree> doc = load_doc(strm);
 
         switch (config->output_format)
         {

@@ -18,21 +18,19 @@
 namespace orcus {
 
 class pstring;
-class yaml_document_tree;
 
-class ORCUS_DLLPUBLIC yaml_document_error : public general_error
+namespace yaml {
+
+class document_tree;
+
+class ORCUS_DLLPUBLIC document_error : public general_error
 {
 public:
-    yaml_document_error(const std::string& msg);
-    virtual ~yaml_document_error() throw();
+    document_error(const std::string& msg);
+    virtual ~document_error() throw();
 };
 
-namespace yaml { namespace detail {
-
-class node;
-struct yaml_value;
-
-enum class node_t
+enum class node_t : uint8_t
 {
     unset,
     string,
@@ -44,9 +42,13 @@ enum class node_t
     null
 };
 
+namespace detail {
+
+struct yaml_value;
+
 class ORCUS_DLLPUBLIC node
 {
-    friend class ::orcus::yaml_document_tree;
+    friend class ::orcus::yaml::document_tree;
 
     struct impl;
     std::unique_ptr<impl> mp_impl;
@@ -82,22 +84,20 @@ public:
     uintptr_t identity() const;
 };
 
-}}
+}
 
-using yaml_node_t = yaml::detail::node_t;
-
-class ORCUS_DLLPUBLIC yaml_document_tree
+class ORCUS_DLLPUBLIC document_tree
 {
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
 public:
-    using node = yaml::detail::node;
+    using node = detail::node;
 
-    yaml_document_tree();
-    yaml_document_tree(const yaml_document_tree&) = delete;
-    yaml_document_tree(yaml_document_tree&& other);
-    ~yaml_document_tree();
+    document_tree();
+    document_tree(const document_tree&) = delete;
+    document_tree(document_tree&& other);
+    ~document_tree();
 
 
     void load(const std::string& strm);
@@ -111,7 +111,7 @@ public:
     std::string dump_json() const;
 };
 
-}
+}}
 
 #endif
 

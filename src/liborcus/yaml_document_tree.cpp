@@ -26,14 +26,14 @@
 #include <iostream>
 #endif
 
-namespace orcus {
+namespace orcus { namespace yaml {
 
-yaml_document_error::yaml_document_error(const std::string& msg) :
+document_error::document_error(const std::string& msg) :
     general_error("yaml_document_error", msg) {}
 
-yaml_document_error::~yaml_document_error() throw() {}
+document_error::~document_error() throw() {}
 
-namespace yaml { namespace detail {
+namespace detail {
 
 struct yaml_value
 {
@@ -92,12 +92,11 @@ struct yaml_value
     };
 };
 
-}}
+}
 
 namespace {
 
-using node_t = yaml::detail::node_t;
-using yaml_value = yaml::detail::yaml_value;
+using yaml_value = detail::yaml_value;
 
 struct yaml_value_string : public yaml_value
 {
@@ -217,7 +216,7 @@ class handler
 
         std::ostringstream os;
         os << BOOST_CURRENT_FUNCTION << ": unstackable YAML value type (" << cur.node->print() << ").";
-        throw yaml_document_error(os.str());
+        throw document_error(os.str());
     }
 
 public:
@@ -379,12 +378,12 @@ public:
 
 }
 
-struct yaml_document_tree::impl
+struct document_tree::impl
 {
     std::vector<document_root_type> m_docs;
 };
 
-namespace yaml { namespace detail {
+namespace detail {
 
 struct node::impl
 {
@@ -441,7 +440,7 @@ size_t node::child_count() const
 std::vector<node> node::keys() const
 {
     if (mp_impl->m_node->type != node_t::map)
-        throw yaml_document_error("node::keys: this node is not of map type.");
+        throw document_error("node::keys: this node is not of map type.");
 
     const yaml_value_map* yvm = static_cast<const yaml_value_map*>(mp_impl->m_node);
     std::vector<node> keys;
@@ -458,7 +457,7 @@ std::vector<node> node::keys() const
 node node::key(size_t index) const
 {
     if (mp_impl->m_node->type != node_t::map)
-        throw yaml_document_error("node::key: this node is not of map type.");
+        throw document_error("node::key: this node is not of map type.");
 
     const yaml_value_map* yvm = static_cast<const yaml_value_map*>(mp_impl->m_node);
     if (index >= yvm->key_order.size())
@@ -499,19 +498,19 @@ node node::child(size_t index) const
         case node_t::null:
         case node_t::unset:
         default:
-            throw yaml_document_error("node::child: this node cannot have child nodes.");
+            throw document_error("node::child: this node cannot have child nodes.");
     }
 }
 
 node node::child(const node& key) const
 {
     if (mp_impl->m_node->type != node_t::map)
-        throw yaml_document_error("node::child: this node is not of map type.");
+        throw document_error("node::child: this node is not of map type.");
 
     const yaml_value_map* yvm = static_cast<const yaml_value_map*>(mp_impl->m_node);
     auto it = yvm->value_map.find(key.mp_impl->m_node);
     if (it == yvm->value_map.end())
-        throw yaml_document_error("node::child: this map does not have the specified key.");
+        throw document_error("node::child: this map does not have the specified key.");
 
     return node(it->second.get());
 }
@@ -519,7 +518,7 @@ node node::child(const node& key) const
 node node::parent() const
 {
     if (!mp_impl->m_node->parent)
-        throw yaml_document_error("node::parent: this node has no parent.");
+        throw document_error("node::parent: this node has no parent.");
 
     return node(mp_impl->m_node->parent);
 }
@@ -527,7 +526,7 @@ node node::parent() const
 pstring node::string_value() const
 {
     if (mp_impl->m_node->type != node_t::string)
-        throw yaml_document_error("node::key: current node is not of string type.");
+        throw document_error("node::key: current node is not of string type.");
 
     const yaml_value_string* yvs = static_cast<const yaml_value_string*>(mp_impl->m_node);
     const std::string& str = yvs->value_string;
@@ -537,23 +536,23 @@ pstring node::string_value() const
 double node::numeric_value() const
 {
     if (mp_impl->m_node->type != node_t::number)
-        throw yaml_document_error("node::key: current node is not of numeric type.");
+        throw document_error("node::key: current node is not of numeric type.");
 
     const yaml_value_number* yvn = static_cast<const yaml_value_number*>(mp_impl->m_node);
     return yvn->value_number;
 }
 
-}}
+}
 
-yaml_document_tree::yaml_document_tree() :
+document_tree::document_tree() :
     mp_impl(orcus::make_unique<impl>()) {}
 
-yaml_document_tree::yaml_document_tree(yaml_document_tree&& other) :
+document_tree::document_tree(document_tree&& other) :
     mp_impl(std::move(other.mp_impl)) {}
 
-yaml_document_tree::~yaml_document_tree() {}
+document_tree::~document_tree() {}
 
-void yaml_document_tree::load(const std::string& strm)
+void document_tree::load(const std::string& strm)
 {
     handler hdl;
     yaml_parser<handler> parser(strm.data(), strm.size(), hdl);
@@ -561,12 +560,12 @@ void yaml_document_tree::load(const std::string& strm)
     hdl.swap(mp_impl->m_docs);
 }
 
-size_t yaml_document_tree::get_document_count() const
+size_t document_tree::get_document_count() const
 {
     return mp_impl->m_docs.size();
 }
 
-yaml_document_tree::node yaml_document_tree::get_document_root(size_t index) const
+document_tree::node document_tree::get_document_root(size_t index) const
 {
     return node(mp_impl->m_docs[index].get());
 }
@@ -619,34 +618,34 @@ void dump_yaml_node(std::ostringstream& os, const yaml_value& node, size_t scope
 {
     switch (node.type)
     {
-        case yaml_node_t::map:
+        case node_t::map:
             dump_yaml_map(os, node, scope);
         break;
-        case yaml_node_t::sequence:
+        case node_t::sequence:
             dump_yaml_sequence(os, node, scope);
         break;
-        case yaml_node_t::boolean_true:
+        case node_t::boolean_true:
             dump_indent(os, scope);
             os << kw_true << std::endl;
         break;
-        case yaml_node_t::boolean_false:
+        case node_t::boolean_false:
             dump_indent(os, scope);
             os << kw_false << std::endl;
         break;
-        case yaml_node_t::null:
+        case node_t::null:
             dump_indent(os, scope);
             os << kw_tilde << std::endl;
         break;
-        case yaml_node_t::number:
+        case node_t::number:
             dump_indent(os, scope);
             os << static_cast<const yaml_value_number&>(node).value_number << std::endl;
         break;
-        case yaml_node_t::string:
+        case node_t::string:
             dump_indent(os, scope);
             dump_yaml_string(os, static_cast<const yaml_value_string&>(node).value_string);
             os << std::endl;
         break;
-        case yaml_node_t::unset:
+        case node_t::unset:
         default:
             ;
     }
@@ -656,8 +655,8 @@ void dump_yaml_container_item(std::ostringstream& os, const yaml_value& node, si
 {
     switch (node.type)
     {
-        case yaml_node_t::map:
-        case yaml_node_t::sequence:
+        case node_t::map:
+        case node_t::sequence:
             // End the line and dump this child container in the next scope.
             os << std::endl;
             dump_yaml_node(os, node, scope+1);
@@ -680,33 +679,33 @@ void dump_yaml_map(std::ostringstream& os, const yaml_value& node, size_t scope)
 
             switch (key->type)
             {
-                case yaml_node_t::map:
+                case node_t::map:
                     // TODO
                 break;
-                case yaml_node_t::sequence:
+                case node_t::sequence:
                     // TODO
                 break;
-                case yaml_node_t::boolean_true:
+                case node_t::boolean_true:
                     dump_indent(os, scope);
                     os << kw_true;
                 break;
-                case yaml_node_t::boolean_false:
+                case node_t::boolean_false:
                     dump_indent(os, scope);
                     os << kw_false;
                 break;
-                case yaml_node_t::null:
+                case node_t::null:
                     dump_indent(os, scope);
                     os << kw_tilde;
                 break;
-                case yaml_node_t::number:
+                case node_t::number:
                     dump_indent(os, scope);
                     os << static_cast<const yaml_value_number*>(key)->value_number;
                 break;
-                case yaml_node_t::string:
+                case node_t::string:
                     dump_indent(os, scope);
                     dump_yaml_string(os, static_cast<const yaml_value_string*>(key)->value_string);
                 break;
-                case yaml_node_t::unset:
+                case node_t::unset:
                 default:
                     ;
             }
@@ -764,7 +763,7 @@ void dump_json_node(std::ostringstream& os, const yaml_value& node, size_t scope
 
     switch (node.type)
     {
-        case yaml_node_t::map:
+        case node_t::map:
         {
             auto& key_order = static_cast<const yaml_value_map&>(node).key_order;
             auto& vals = static_cast<const yaml_value_map&>(node).value_map;
@@ -776,8 +775,8 @@ void dump_json_node(std::ostringstream& os, const yaml_value& node, size_t scope
             for (auto it = key_order.begin(), ite = key_order.end(); it != ite; ++it, ++pos)
             {
                 const yaml_value* key = it->get();
-                if (key->type != yaml_node_t::string)
-                    throw yaml_document_error("JSON doesn't support non-string key.");
+                if (key->type != node_t::string)
+                    throw document_error("JSON doesn't support non-string key.");
 
                 auto val_pos = vals.find(key);
                 assert(val_pos != vals.end());
@@ -792,7 +791,7 @@ void dump_json_node(std::ostringstream& os, const yaml_value& node, size_t scope
             os << "}";
         }
         break;
-        case yaml_node_t::sequence:
+        case node_t::sequence:
         {
             auto& vals = static_cast<const yaml_value_sequence&>(node).value_sequence;
             os << "[" << std::endl;
@@ -805,22 +804,22 @@ void dump_json_node(std::ostringstream& os, const yaml_value& node, size_t scope
             os << "]";
         }
         break;
-        case yaml_node_t::boolean_true:
+        case node_t::boolean_true:
             os << kw_true;
         break;
-        case yaml_node_t::boolean_false:
+        case node_t::boolean_false:
             os << kw_false;
         break;
-        case yaml_node_t::null:
+        case node_t::null:
             os << kw_null;
         break;
-        case yaml_node_t::number:
+        case node_t::number:
             os << static_cast<const yaml_value_number&>(node).value_number;
         break;
-        case yaml_node_t::string:
+        case node_t::string:
             json::dump_string(os, static_cast<const yaml_value_string&>(node).value_string);
         break;
-        case yaml_node_t::unset:
+        case node_t::unset:
         default:
             ;
     }
@@ -832,7 +831,7 @@ const char* warning_multiple_documents =
 
 }
 
-std::string yaml_document_tree::dump_yaml() const
+std::string document_tree::dump_yaml() const
 {
     std::ostringstream os;
 
@@ -847,7 +846,7 @@ std::string yaml_document_tree::dump_yaml() const
     return os.str();
 }
 
-std::string yaml_document_tree::dump_json() const
+std::string document_tree::dump_json() const
 {
     if (mp_impl->m_docs.empty())
         return std::string();
@@ -865,6 +864,6 @@ std::string yaml_document_tree::dump_json() const
     return os.str();
 }
 
-}
+}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

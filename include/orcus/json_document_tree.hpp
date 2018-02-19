@@ -49,7 +49,7 @@ public:
     virtual ~key_value_error() throw();
 };
 
-enum class node_t : int
+enum class node_t : uint8_t
 {
     /** node type is not set.  */
     unset = 0,
