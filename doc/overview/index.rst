@@ -4,25 +4,30 @@
 Overview
 ========
 
-TBD
+The primary goal of the orcus library is to provide methods to import the
+contents of documents stored in various spreadsheet or spreadsheet-like
+formats.  It also provides several low-level parsers that can be used
+independently of the spreadsheet-related features.
+
+TODO: continue on...
 
 
 Loading spreadsheet documents
 -----------------------------
 
-The orcus library is designed to provide a method to import the contents of
-documents stored in various spreadsheet, or spreadsheet-like formats.  It
+The orcus library's primary aim is to provide a method to import the contents
+of documents stored in various spreadsheet, or spreadsheet-like formats.  It
 supports two primary use cases.  One use case is where the client program
-already has its own internal document model, and you wish to use this library
+already has its own internal document model, and you wish to use orcus
 to populate its document model.  In this particular use case, you can
-implement your own set of classes that supports necessary interfaces, and pass
-that to the orcus import filter instance.
+implement your own set of classes that support necessary interfaces, and pass
+that to the orcus import filter.
 
 Another use case is where the client program does not have its own document
 model, and wishes to import data from a spreadsheet-like document file and
-access its content.  In this particular use case, you can simply instantiate
-the :cpp:class:`~orcus::spreadsheet::document` class, get it populated, and
-access its content through its API.
+access its content.  In this particular use case, you can simply use
+the :cpp:class:`~orcus::spreadsheet::document` class to get it populated, and
+access its content through its API afterward.
 
 For each document type that orcus supports, there is a top-level import filter
 class that serves as an entry point for loading the content of a document you
