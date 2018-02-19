@@ -10,12 +10,14 @@
 #include "orcus/global.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/config.hpp"
+#include "orcus/yaml_document_tree.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/view.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/shared_strings.hpp"
 #include "orcus/spreadsheet/styles.hpp"
+#include "orcus/spreadsheet/config.hpp"
 
 #include <ixion/model_context.hpp>
 #include <ixion/address.hpp>
@@ -41,7 +43,8 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/bold-and-italic/",
     SRCDIR"/test/xls-xml/colored-text/",
     SRCDIR"/test/xls-xml/empty-rows/",
-    SRCDIR"/test/xls-xml/formula-cells/",
+    SRCDIR"/test/xls-xml/formula-cells-1/",
+    SRCDIR"/test/xls-xml/formula-cells-2/",
     SRCDIR"/test/xls-xml/merged-cells/",
     SRCDIR"/test/xls-xml/named-expression/",
     SRCDIR"/test/xls-xml/named-expression-sheet-local/",
@@ -58,6 +61,35 @@ std::unique_ptr<spreadsheet::document> load_doc(const string& path)
     return doc;
 }
 
+void update_config(spreadsheet::document& doc, const string& path)
+{
+    try
+    {
+        spreadsheet::document_config cfg = doc.get_config();
+
+        yaml_document_tree config;
+        config.load(load_file_content(path.data()));
+        yaml_document_tree::node root = config.get_document_root(0);
+        std::vector<yaml_document_tree::node> keys = root.keys();
+        for (size_t i = 0; i < keys.size(); ++i)
+        {
+            const yaml_document_tree::node& key = keys[i];
+            if (key.type() == yaml_node_t::string && key.string_value() == "output-precision")
+            {
+                yaml_document_tree::node child = root.child(i);
+                if (child.type() == yaml_node_t::number)
+                    cfg.output_precision = child.numeric_value();
+            }
+        }
+
+        doc.set_config(cfg);
+    }
+    catch (const std::exception&)
+    {
+        // Do nothing.
+    }
+}
+
 void test_xls_xml_import()
 {
     for (const char* dir : dirs)
@@ -69,6 +101,10 @@ void test_xls_xml_import()
         // Read the input.xml document.
         path.append("input.xml");
         std::unique_ptr<spreadsheet::document> doc = load_doc(path);
+
+        path = dir;
+        path.append("config.yaml");
+        update_config(*doc, path);
 
         // Dump the content of the model.
         ostringstream os;

@@ -12,6 +12,7 @@ if BUILD_SPREADSHEET_MODEL
 
 liborcus_HEADERS += \
 	auto_filter.hpp \
+	config.hpp \
 	document.hpp \
 	factory.hpp \
 	global_settings.hpp \

@@ -169,6 +169,7 @@
 				</Folder>
 				<Folder Name="spreadsheet">
 					<F N="../include/orcus/spreadsheet/auto_filter.hpp"/>
+					<F N="../include/orcus/spreadsheet/config.hpp"/>
 					<F N="../include/orcus/spreadsheet/document.hpp"/>
 					<F N="../include/orcus/spreadsheet/export_interface.hpp"/>
 					<F N="../include/orcus/spreadsheet/factory.hpp"/>
@@ -484,6 +485,7 @@
 			</Folder>
 			<Folder Name="spreadsheet">
 				<F N="../src/spreadsheet/auto_filter.cpp"/>
+				<F N="../src/spreadsheet/config.cpp"/>
 				<F N="../src/spreadsheet/csv_dumper.cpp"/>
 				<F N="../src/spreadsheet/csv_dumper.hpp"/>
 				<F N="../src/spreadsheet/data_table.cpp"/>

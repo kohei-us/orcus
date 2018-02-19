@@ -13,6 +13,7 @@
 #include "orcus/spreadsheet/styles.hpp"
 #include "orcus/spreadsheet/auto_filter.hpp"
 #include "orcus/spreadsheet/pivot.hpp"
+#include "orcus/spreadsheet/config.hpp"
 
 #include "orcus/pstring.hpp"
 #include "orcus/types.hpp"
@@ -274,6 +275,7 @@ struct document_impl
 
     document& m_doc;
 
+    document_config m_doc_config;
     string_pool m_string_pool;
     ixion::model_context m_context;
     date_time_t m_origin_date;
@@ -351,6 +353,19 @@ ixion::model_context& document::get_model_context()
 const ixion::model_context& document::get_model_context() const
 {
     return mp_impl->m_context;
+}
+
+const document_config& document::get_config() const
+{
+    return mp_impl->m_doc_config;
+}
+
+void document::set_config(const document_config& cfg)
+{
+    mp_impl->m_doc_config = cfg;
+    ixion::config ixion_cfg = mp_impl->m_context.get_config();
+    ixion_cfg.output_precision = cfg.output_precision;
+    mp_impl->m_context.set_config(ixion_cfg);
 }
 
 string_pool& document::get_string_pool()
@@ -619,6 +634,7 @@ void document::set_formula_grammar(formula_grammar_t grammar)
 
         ixion::config cfg = mp_impl->m_context.get_config();
         cfg.sep_function_arg = arg_sep;
+        cfg.output_precision = mp_impl->m_doc_config.output_precision;
         mp_impl->m_context.set_config(cfg);
     }
 }

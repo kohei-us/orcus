@@ -37,6 +37,7 @@ class import_styles;
 class pivot_collection;
 class sheet;
 
+struct document_config;
 struct table_t;
 struct document_impl;
 
@@ -114,6 +115,9 @@ public:
 
     ixion::model_context& get_model_context();
     const ixion::model_context& get_model_context() const;
+
+    const document_config& get_config() const;
+    void set_config(const document_config& cfg);
 
     string_pool& get_string_pool();
 

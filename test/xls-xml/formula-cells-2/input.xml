@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">
+<DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+<Author>HOME</Author>
+<LastAuthor>HOME</LastAuthor>
+<LastPrinted>2012-11-18T17:17:34Z</LastPrinted>
+<Created>2012-10-20T06:27:34Z</Created>
+<LastSaved>2012-11-07T05:31:00Z</LastSaved>
+<Company>Home, sweet home !!!</Company>
+<Version>11.5606</Version>
+</DocumentProperties>
+<ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+<WindowHeight>10545</WindowHeight>
+<WindowWidth>20940</WindowWidth>
+<WindowTopX>0</WindowTopX>
+<WindowTopY>1590</WindowTopY>
+<ProtectStructure>False</ProtectStructure>
+<ProtectWindows>False</ProtectWindows>
+</ExcelWorkbook>
+<Styles>
+<Style ss:ID="Default" ss:Name="Normal">
+<Alignment ss:Vertical="Bottom"/>
+<Borders/>
+<Font ss:FontName="Arial Cyr" x:CharSet="204"/>
+<Interior/>
+<NumberFormat/>
+<Protection/>
+</Style>
+<Style ss:ID="m24199894">
+<Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+<Font ss:FontName="Arial Cyr" x:CharSet="204" ss:Bold="1"/>
+</Style>
+<Style ss:ID="s22">
+<Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+<NumberFormat ss:Format="Fixed"/>
+</Style>
+<Style ss:ID="s24">
+<Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+</Style>
+<Style ss:ID="s26">
+<Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+</Style>
+<Style ss:ID="s27">
+<Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+<Font ss:FontName="Arial Cyr" x:CharSet="204"/>
+</Style>
+<Style ss:ID="s29">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+<Font ss:FontName="Arial Cyr" x:CharSet="204"/>
+</Style>
+<Style ss:ID="s30">
+<Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+<NumberFormat ss:Format="Fixed"/>
+</Style>
+<Style ss:ID="s31">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+<NumberFormat ss:Format="Fixed"/>
+</Style>
+<Style ss:ID="s32">
+<Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+<Borders>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+<Font ss:FontName="Arial Cyr" x:CharSet="204"/>
+</Style>
+<Style ss:ID="s41">
+<Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+</Style>
+<Style ss:ID="s43">
+<Alignment ss:Vertical="Bottom"/>
+</Style>
+<Style ss:ID="s44">
+<Borders>
+<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+</Borders>
+<Font ss:FontName="Arial Cyr" x:CharSet="204" ss:Bold="1"/>
+<NumberFormat ss:Format="Fixed"/>
+</Style>
+</Styles>
+<Worksheet ss:Name="Лист1">
+<Table ss:ExpandedColumnCount="11" ss:ExpandedRowCount="15" x:FullColumns="1" x:FullRows="1">
+<Column ss:AutoFitWidth="0" ss:Width="36"/>
+<Column ss:AutoFitWidth="0" ss:Width="182.25"/>
+<Column ss:Index="11" ss:AutoFitWidth="0" ss:Width="41.25"/>
+<Row>
+<Cell ss:Index="2" ss:MergeAcross="3" ss:StyleID="s22"><Data ss:Type="String">14.06.2013</Data></Cell>
+<Cell ss:MergeAcross="2" ss:StyleID="s24"><Data ss:Type="String">Надпись справа</Data></Cell>
+<Cell ss:StyleID="s43"/> <Cell ss:StyleID="s43"/> <Cell ss:StyleID="s43"/> </Row> <Row ss:Index="3"> <Cell ss:Index="2" ss:MergeAcross="9" ss:StyleID="s26"><Data ss:Type="String">Заголовок 1 (центр)</Data></Cell>
+</Row>
+<Row ss:Index="5">
+<Cell ss:StyleID="s27"><Data ss:Type="String"/></Cell>
+<Cell ss:StyleID="s41"><Data ss:Type="String">Назва</Data></Cell>
+<Cell ss:StyleID="s41"><Data ss:Type="String">Кількість</Data></Cell>
+<Cell ss:StyleID="s41"><Data ss:Type="String">Ціна</Data></Cell>
+<Cell ss:StyleID="s41"><Data ss:Type="String">Сума</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="s27"><Data ss:Type="String"/></Cell>
+<Cell ss:StyleID="s29"><Data ss:Type="String">Український текст1            </Data></Cell>
+<Cell ss:StyleID="s30"><Data ss:Type="Number">32.97</Data></Cell>
+<Cell ss:StyleID="s30"><Data ss:Type="Number">10.03</Data></Cell>
+<Cell ss:StyleID="s31" ss:Formula="=RC[-2]*RC[-1]"/>
+</Row>
+<Row>
+<Cell ss:StyleID="s27"><Data ss:Type="String"/></Cell>
+<Cell ss:StyleID="s29"><Data ss:Type="String">Український текст2            </Data></Cell>
+<Cell ss:StyleID="s30"><Data ss:Type="Number">32.93</Data></Cell>
+<Cell ss:StyleID="s30"><Data ss:Type="Number">10.06</Data></Cell>
+<Cell ss:StyleID="s31" ss:Formula="=RC[-2]*RC[-1]"/>
+</Row>
+<Row>
+<Cell ss:StyleID="s27"><Data ss:Type="String"/></Cell>
+<Cell ss:StyleID="s29"><Data ss:Type="String">Український текст3            </Data></Cell>
+<Cell ss:StyleID="s30"><Data ss:Type="Number">32.90</Data></Cell>
+<Cell ss:StyleID="s30"><Data ss:Type="Number">10.09</Data></Cell>
+<Cell ss:StyleID="s31" ss:Formula="=RC[-2]*RC[-1]"/>
+</Row>
+<Row>
+<Cell ss:StyleID="s27"><Data ss:Type="String"/></Cell>
+<Cell ss:StyleID="s29"><Data ss:Type="String">Український текст4            </Data></Cell>
+<Cell ss:StyleID="s30"><Data ss:Type="Number">32.87</Data></Cell>
+<Cell ss:StyleID="s30"><Data ss:Type="Number">10.12</Data></Cell>
+<Cell ss:StyleID="s31" ss:Formula="=RC[-2]*RC[-1]"/>
+</Row>
+<Row>
+<Cell ss:StyleID="s27"><Data ss:Type="String"/></Cell>
+<Cell ss:StyleID="s29"><Data ss:Type="String">Український текст5            </Data></Cell>
+<Cell ss:StyleID="s30"><Data ss:Type="Number">32.84</Data></Cell>
+<Cell ss:StyleID="s30"><Data ss:Type="Number">10.15</Data></Cell>
+<Cell ss:StyleID="s31" ss:Formula="=RC[-2]*RC[-1]"/>
+</Row>
+<Row>
+<Cell ss:StyleID="s32"><Data ss:Type="String">[ITOG]</Data></Cell>
+<Cell ss:MergeAcross="2" ss:StyleID="m24199894"><Data ss:Type="String">Всього</Data></Cell>
+<Cell ss:StyleID="s44" ss:Formula="=SUM(R[-1]C:R[-1]C)"/>
+<Cell><Data ss:Type="String"/></Cell>
+</Row>
+<Row ss:Index="15">
+<Cell ss:Index="3" ss:MergeAcross="3" ss:StyleID="s26"><Data ss:Type="String">Підпис</Data></Cell>
+</Row>
+</Table>
+<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+<PageSetup>
+<Header x:Margin="0.26"/>
+<PageMargins x:Bottom="0.984251969" x:Left="0.45" x:Right="0.36" x:Top="0.44"/>
+</PageSetup>
+<Print>
+<ValidPrinterInfo/>
+<PaperSizeIndex>9</PaperSizeIndex>
+<HorizontalResolution>300</HorizontalResolution>
+<VerticalResolution>300</VerticalResolution>
+</Print>
+<PageBreakZoom>60</PageBreakZoom>
+<Selected/>
+<Panes>
+<Pane>
+<Number>3</Number>
+<ActiveRow>14</ActiveRow>
+<ActiveCol>8</ActiveCol>
+</Pane>
+</Panes>
+<ProtectObjects>False</ProtectObjects>
+<ProtectScenarios>False</ProtectScenarios>
+</WorksheetOptions>
+</Worksheet>
+</Workbook>
