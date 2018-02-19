@@ -1334,7 +1334,7 @@ void xls_xml_context::end_element_cell()
         mp_sheet_props->set_merge_cell_range(merge_range);
     }
 
-    if (!m_cur_cell_style_id.empty())
+    if (mp_cur_sheet && !m_cur_cell_style_id.empty())
     {
         auto it = m_style_map.find(m_cur_cell_style_id);
         if (it != m_style_map.end())
@@ -1343,6 +1343,16 @@ void xls_xml_context::end_element_cell()
             mp_cur_sheet->set_format(m_cur_row, m_cur_col, xf_id);
         }
     }
+
+    if (mp_cur_sheet && !m_cur_cell_formula.empty())
+    {
+        // Likely a Cell element without a child Data element.
+        mp_cur_sheet->set_formula(
+            m_cur_row, m_cur_col, spreadsheet::formula_grammar_t::xls_xml,
+            m_cur_cell_formula.data(), m_cur_cell_formula.size());
+    }
+
+    m_cur_cell_formula.clear();
 
     ++m_cur_col;
     if (m_cur_merge_across > 0)
