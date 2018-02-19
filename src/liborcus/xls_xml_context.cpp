@@ -232,6 +232,13 @@ void xls_xml_data_context::reset(
     m_cell_formula = cell_formula;
     m_cell_value = std::numeric_limits<double>::quiet_NaN();
     m_cell_datetime = date_time_t();
+
+    if (get_config().debug)
+    {
+        cout << "cell data: (row: " << m_row
+             << "; column: " << m_col
+             << "; formula: '" << m_cell_formula << "')" << endl;
+    }
 }
 
 void xls_xml_data_context::start_element_data(
@@ -597,6 +604,7 @@ xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token
             case XML_Data:
             {
                 // Move the cell formula string to the Data element context.
+                m_cc_data.transfer_common(*this);
                 m_cc_data.reset(mp_cur_sheet, m_cur_row, m_cur_col, m_cur_cell_formula);
                 m_cur_cell_formula.clear();
                 return &m_cc_data;
