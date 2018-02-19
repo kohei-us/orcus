@@ -69,14 +69,14 @@ void update_config(spreadsheet::document& doc, const string& path)
 
         yaml::document_tree config;
         config.load(load_file_content(path.data()));
-        yaml::document_tree::node root = config.get_document_root(0);
-        std::vector<yaml::document_tree::node> keys = root.keys();
+        yaml::const_node root = config.get_document_root(0);
+        std::vector<yaml::const_node> keys = root.keys();
         for (size_t i = 0; i < keys.size(); ++i)
         {
-            const yaml::document_tree::node& key = keys[i];
+            const yaml::const_node& key = keys[i];
             if (key.type() == yaml::node_t::string && key.string_value() == "output-precision")
             {
-                yaml::document_tree::node child = root.child(i);
+                yaml::const_node child = root.child(i);
                 if (child.type() == yaml::node_t::number)
                     cfg.output_precision = child.numeric_value();
             }

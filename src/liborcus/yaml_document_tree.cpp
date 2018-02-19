@@ -33,8 +33,6 @@ document_error::document_error(const std::string& msg) :
 
 document_error::~document_error() throw() {}
 
-namespace detail {
-
 struct yaml_value
 {
     node_t type;
@@ -92,11 +90,7 @@ struct yaml_value
     };
 };
 
-}
-
 namespace {
-
-using yaml_value = detail::yaml_value;
 
 struct yaml_value_string : public yaml_value
 {
@@ -376,48 +370,46 @@ public:
     }
 };
 
-}
+} // anonymous namespace
 
 struct document_tree::impl
 {
     std::vector<document_root_type> m_docs;
 };
 
-namespace detail {
-
-struct node::impl
+struct const_node::impl
 {
     const yaml_value* m_node;
 
     impl(const yaml_value* yv) : m_node(yv) {}
 };
 
-node::node(const yaml_value* yv) : mp_impl(orcus::make_unique<impl>(yv)) {}
-node::node(const node& other) : mp_impl(orcus::make_unique<impl>(other.mp_impl->m_node)) {}
-node::node(node&& rhs) : mp_impl(std::move(rhs.mp_impl)) {}
-node::~node() {}
+const_node::const_node(const yaml_value* yv) : mp_impl(orcus::make_unique<impl>(yv)) {}
+const_node::const_node(const const_node& other) : mp_impl(orcus::make_unique<impl>(other.mp_impl->m_node)) {}
+const_node::const_node(const_node&& rhs) : mp_impl(std::move(rhs.mp_impl)) {}
+const_node::~const_node() {}
 
-node& node::operator=(const node& other)
+const_node& const_node::operator=(const const_node& other)
 {
     if (this == &other)
         return *this;
 
-    node tmp(other);
+    const_node tmp(other);
     mp_impl.swap(tmp.mp_impl);
     return *this;
 }
 
-uintptr_t node::identity() const
+uintptr_t const_node::identity() const
 {
     return reinterpret_cast<uintptr_t>(mp_impl->m_node);
 }
 
-node_t node::type() const
+node_t const_node::type() const
 {
     return mp_impl->m_node->type;
 }
 
-size_t node::child_count() const
+size_t const_node::child_count() const
 {
     switch (mp_impl->m_node->type)
     {
@@ -437,24 +429,24 @@ size_t node::child_count() const
     return 0;
 }
 
-std::vector<node> node::keys() const
+std::vector<const_node> const_node::keys() const
 {
     if (mp_impl->m_node->type != node_t::map)
         throw document_error("node::keys: this node is not of map type.");
 
     const yaml_value_map* yvm = static_cast<const yaml_value_map*>(mp_impl->m_node);
-    std::vector<node> keys;
+    std::vector<const_node> keys;
     std::for_each(yvm->key_order.begin(), yvm->key_order.end(),
         [&](const std::unique_ptr<yaml_value>& key)
         {
-            keys.push_back(node(key.get()));
+            keys.push_back(const_node(key.get()));
         }
     );
 
     return keys;
 }
 
-node node::key(size_t index) const
+const_node const_node::key(size_t index) const
 {
     if (mp_impl->m_node->type != node_t::map)
         throw document_error("node::key: this node is not of map type.");
@@ -463,10 +455,10 @@ node node::key(size_t index) const
     if (index >= yvm->key_order.size())
         throw std::out_of_range("node::key: index is out-of-range.");
 
-    return node(yvm->key_order[index].get());
+    return const_node(yvm->key_order[index].get());
 }
 
-node node::child(size_t index) const
+const_node const_node::child(size_t index) const
 {
     switch (mp_impl->m_node->type)
     {
@@ -479,7 +471,7 @@ node node::child(size_t index) const
             const yaml_value* key = yvm->key_order[index].get();
             auto it = yvm->value_map.find(key);
             assert(it != yvm->value_map.end());
-            return node(it->second.get());
+            return const_node(it->second.get());
         }
         break;
         case node_t::sequence:
@@ -488,7 +480,7 @@ node node::child(size_t index) const
             if (index >= yvs->value_sequence.size())
                 throw std::out_of_range("node::child: index is out-of-range");
 
-            return node(yvs->value_sequence[index].get());
+            return const_node(yvs->value_sequence[index].get());
         }
         break;
         case node_t::string:
@@ -502,7 +494,7 @@ node node::child(size_t index) const
     }
 }
 
-node node::child(const node& key) const
+const_node const_node::child(const const_node& key) const
 {
     if (mp_impl->m_node->type != node_t::map)
         throw document_error("node::child: this node is not of map type.");
@@ -512,18 +504,18 @@ node node::child(const node& key) const
     if (it == yvm->value_map.end())
         throw document_error("node::child: this map does not have the specified key.");
 
-    return node(it->second.get());
+    return const_node(it->second.get());
 }
 
-node node::parent() const
+const_node const_node::parent() const
 {
     if (!mp_impl->m_node->parent)
         throw document_error("node::parent: this node has no parent.");
 
-    return node(mp_impl->m_node->parent);
+    return const_node(mp_impl->m_node->parent);
 }
 
-pstring node::string_value() const
+pstring const_node::string_value() const
 {
     if (mp_impl->m_node->type != node_t::string)
         throw document_error("node::key: current node is not of string type.");
@@ -533,15 +525,13 @@ pstring node::string_value() const
     return pstring(str.data(), str.size());
 }
 
-double node::numeric_value() const
+double const_node::numeric_value() const
 {
     if (mp_impl->m_node->type != node_t::number)
         throw document_error("node::key: current node is not of numeric type.");
 
     const yaml_value_number* yvn = static_cast<const yaml_value_number*>(mp_impl->m_node);
     return yvn->value_number;
-}
-
 }
 
 document_tree::document_tree() :
@@ -565,9 +555,9 @@ size_t document_tree::get_document_count() const
     return mp_impl->m_docs.size();
 }
 
-document_tree::node document_tree::get_document_root(size_t index) const
+const_node document_tree::get_document_root(size_t index) const
 {
-    return node(mp_impl->m_docs[index].get());
+    return const_node(mp_impl->m_docs[index].get());
 }
 
 namespace {

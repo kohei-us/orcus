@@ -42,49 +42,45 @@ enum class node_t : uint8_t
     null
 };
 
-namespace detail {
-
 struct yaml_value;
 
-class ORCUS_DLLPUBLIC node
+class ORCUS_DLLPUBLIC const_node
 {
     friend class ::orcus::yaml::document_tree;
 
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
-    node(const yaml_value* yv);
+    const_node(const yaml_value* yv);
 
 public:
-    node() = delete;
+    const_node() = delete;
 
-    node(const node& other);
-    node(node&& rhs);
-    ~node();
+    const_node(const const_node& other);
+    const_node(const_node&& rhs);
+    ~const_node();
 
     node_t type() const;
 
     size_t child_count() const;
 
-    std::vector<node> keys() const;
+    std::vector<const_node> keys() const;
 
-    node key(size_t index) const;
+    const_node key(size_t index) const;
 
-    node child(size_t index) const;
+    const_node child(size_t index) const;
 
-    node child(const node& key) const;
+    const_node child(const const_node& key) const;
 
-    node parent() const;
+    const_node parent() const;
 
     pstring string_value() const;
     double numeric_value() const;
 
-    node& operator=(const node& other);
+    const_node& operator=(const const_node& other);
 
     uintptr_t identity() const;
 };
-
-}
 
 class ORCUS_DLLPUBLIC document_tree
 {
@@ -92,8 +88,6 @@ class ORCUS_DLLPUBLIC document_tree
     std::unique_ptr<impl> mp_impl;
 
 public:
-    using node = detail::node;
-
     document_tree();
     document_tree(const document_tree&) = delete;
     document_tree(document_tree&& other);
@@ -104,7 +98,7 @@ public:
 
     size_t get_document_count() const;
 
-    node get_document_root(size_t index) const;
+    const_node get_document_root(size_t index) const;
 
     std::string dump_yaml() const;
 
