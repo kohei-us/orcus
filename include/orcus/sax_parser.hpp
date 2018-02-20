@@ -171,6 +171,8 @@ void sax_parser<_Handler,_Config>::element_open(const char* begin_pos)
             m_handler.start_element(elem);
             reset_buffer_pos();
             m_handler.end_element(elem);
+            if (!m_nest_level)
+                m_root_elem_open = false;
 #if ORCUS_DEBUG_SAX_PARSER
             cout << "element_open: ns='" << elem.ns << "', name='" << elem.name << "' (self-closing)" << endl;
 #endif
