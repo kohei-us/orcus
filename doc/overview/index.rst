@@ -7,9 +7,21 @@ Overview
 The primary goal of the orcus library is to provide methods to import the
 contents of documents stored in various spreadsheet or spreadsheet-like
 formats.  It also provides several low-level parsers that can be used
-independently of the spreadsheet-related features.
+independently of the spreadsheet-related features if so desired.
 
-TODO: continue on...
+The library is physically split into three parts: 1) the parser part that
+includes the aforementioned low-level parsers, 2) the filter part that
+includes higher level import filters that internally use the parsers, and 3)
+the spreadsheet document model part that includes the document model suitable
+for storing spreadsheet-like document contents.  As such, if you need to just
+use the parser part of the library, you need to only link against the
+``liborcus-parser`` library file.  If you need to use the import filter part,
+you link againt both the ``liborcus-parser`` and the ``liborcus`` libraries.
+Likewise, if you need to use the spreadsheet document model part, you need to
+link against the aforementioned two plus the ``liborcus-spreadsheet-model``
+library.  Also note that the spreadsheet document model part has additional
+dependency on the `ixion library <https://gitlab.com/ixion/ixion>`_, for
+handling formula re-calculations on document load.
 
 
 Loading spreadsheet documents
