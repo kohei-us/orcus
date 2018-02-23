@@ -519,6 +519,9 @@ void ods_content_xml_context::end_table()
 
 void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
 {
+    if (!m_tables.back())
+        return;
+
     spreadsheet::iface::import_sheet_properties* sheet_props =
         m_tables.back()->get_sheet_properties();
 
@@ -549,6 +552,9 @@ void ods_content_xml_context::start_row(const xml_attrs_t& attrs)
     row_attr_parser func;
     func = for_each(attrs.begin(), attrs.end(), func);
     m_row_attr.number_rows_repeated = func.get_number_rows_repeated();
+
+    if (!m_tables.back())
+        return;
 
     // Pass row properties to the interface.
     spreadsheet::iface::import_sheet_properties* sheet_props =
@@ -585,7 +591,7 @@ void ods_content_xml_context::start_cell(const xml_attrs_t& attrs)
 void ods_content_xml_context::end_cell()
 {
     name2id_type::const_iterator it = m_cell_format_map.find(m_cell_attr.style_name);
-    if (it != m_cell_format_map.end())
+    if (m_tables.back() && it != m_cell_format_map.end())
         m_tables.back()->set_format(m_row, m_col, it->second);
 
     push_cell_value();
@@ -603,6 +609,7 @@ void ods_content_xml_context::end_cell()
 void ods_content_xml_context::push_cell_value()
 {
     spreadsheet::iface::import_sheet* sheet = m_tables.back();
+
     bool has_formula = !m_cell_attr.formula.empty();
     if (has_formula)
     {
@@ -633,24 +640,27 @@ void ods_content_xml_context::push_cell_value()
         return;
     }
 
-    switch (m_cell_attr.type)
+    if (sheet)
     {
-        case vt_float:
-            sheet->set_value(m_row, m_col, m_cell_attr.value);
-        break;
-        case vt_string:
-            if (m_has_content)
-                sheet->set_string(m_row, m_col, m_para_index);
-        break;
-        case vt_date:
+        switch (m_cell_attr.type)
         {
-            date_time_t val = to_date_time(m_cell_attr.date_value);
-            sheet->set_date_time(
-                m_row, m_col, val.year, val.month, val.day, val.hour, val.minute, val.second);
+            case vt_float:
+                sheet->set_value(m_row, m_col, m_cell_attr.value);
+            break;
+            case vt_string:
+                if (m_has_content)
+                    sheet->set_string(m_row, m_col, m_para_index);
+            break;
+            case vt_date:
+            {
+                date_time_t val = to_date_time(m_cell_attr.date_value);
+                sheet->set_date_time(
+                    m_row, m_col, val.year, val.month, val.day, val.hour, val.minute, val.second);
+            }
+            break;
+            default:
+                ;
         }
-        break;
-        default:
-            ;
     }
 }
 
@@ -671,20 +681,23 @@ void ods_content_xml_context::end_spreadsheet()
             continue;
 
         spreadsheet::iface::import_sheet* sheet = m_tables[data.sheet];
-        sheet->set_formula(
-            data.row, data.column, data.grammar,
-            data.exp.get(), data.exp.size());
-
-        switch (data.result.type)
+        if (sheet)
         {
-            case ods_session_data::rt_numeric:
-                sheet->set_formula_result(data.row, data.column, data.result.numeric_value);
-            break;
-            case ods_session_data::rt_string:
-            case ods_session_data::rt_error:
-            case ods_session_data::rt_none:
-            default:
-                ;
+            sheet->set_formula(
+                data.row, data.column, data.grammar,
+                data.exp.get(), data.exp.size());
+
+            switch (data.result.type)
+            {
+                case ods_session_data::rt_numeric:
+                    sheet->set_formula_result(data.row, data.column, data.result.numeric_value);
+                break;
+                case ods_session_data::rt_string:
+                case ods_session_data::rt_error:
+                case ods_session_data::rt_none:
+                default:
+                    ;
+            }
         }
     }
 

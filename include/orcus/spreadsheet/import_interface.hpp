@@ -876,7 +876,7 @@ public:
 
     /**
      * @return pointer to the sheet instance whose name matches the name
-     *         passed to this method. It returns NULL if no sheet instance
+     *         passed to this method. It returns nullptr if no sheet instance
      *         exists by the specified name.
      */
     virtual import_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) = 0;
@@ -886,7 +886,7 @@ public:
      *
      * @param sheet_index sheet index
      *
-     * @return pointer to the sheet instance, or NULL if no sheet instance
+     * @return pointer to the sheet instance, or nullptr if no sheet instance
      *         exists at specified sheet index position.
      */
     virtual import_sheet* get_sheet(orcus::spreadsheet::sheet_t sheet_index) = 0;

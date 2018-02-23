@@ -1,4 +1,6 @@
 
+.. highlight:: cpp
+
 Use orcus's spreadsheet document class
 ======================================
 

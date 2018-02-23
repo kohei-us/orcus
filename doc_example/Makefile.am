@@ -11,7 +11,8 @@ EXTRA_PROGRAMS = \
 	json-doc-2 \
 	json-parser-1 \
 	spreadsheet-doc-1 \
-	spreadsheet-doc-1-num-and-formula
+	spreadsheet-doc-1-num-and-formula \
+	spreadsheet-doc-2
 
 json_doc_1_SOURCES = \
 	json_doc_1.cpp
@@ -51,12 +52,20 @@ spreadsheet_doc_1_num_and_formula_SOURCES = \
 
 spreadsheet_doc_1_num_and_formula_LDADD = $(SPDOC_LDADD)
 
+spreadsheet_doc_2_SOURCES = \
+	spreadsheet_doc_2.cpp
+
+spreadsheet_doc_2_LDADD = \
+	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../src/liborcus/liborcus-@ORCUS_API_VERSION@.la
+
 TESTS = \
 	json-doc-1 \
 	json-doc-2 \
 	json-parser-1 \
 	spreadsheet-doc-1 \
-	spreadsheet-doc-1-num-and-formula
+	spreadsheet-doc-1-num-and-formula \
+	spreadsheet-doc-2
 
 distclean-local:
 	rm -rf $(TESTS)

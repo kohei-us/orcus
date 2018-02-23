@@ -91,7 +91,8 @@ bool text_para_context::end_element(xmlns_id_t ns, xml_token_t name)
             {
                 // paragraph
                 flush_segment();
-                m_string_index = mp_sstrings->commit_segments();
+                if (mp_sstrings)
+                    m_string_index = mp_sstrings->commit_segments();
             }
             break;
             case XML_span:
@@ -154,17 +155,20 @@ void text_para_context::flush_segment()
             style = it->second.get();
     }
 
-    if (style && style->family == style_family_text)
+    if (mp_sstrings)
     {
-        const odf_style::text* data = style->text_data;
-        mp_sstrings->set_segment_font(data->font);
-    }
+        if (style && style->family == style_family_text)
+        {
+            const odf_style::text* data = style->text_data;
+            mp_sstrings->set_segment_font(data->font);
+        }
 
-    vector<pstring>::const_iterator it = m_contents.begin(), it_end = m_contents.end();
-    for (; it != it_end; ++it)
-    {
-        const pstring& ps = *it;
-        mp_sstrings->append_segment(ps.get(), ps.size());
+        vector<pstring>::const_iterator it = m_contents.begin(), it_end = m_contents.end();
+        for (; it != it_end; ++it)
+        {
+            const pstring& ps = *it;
+            mp_sstrings->append_segment(ps.get(), ps.size());
+        }
     }
 
     m_contents.clear();
