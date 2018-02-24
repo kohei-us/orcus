@@ -16,13 +16,17 @@ public:
     virtual iface::import_sheet* append_sheet(
         sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override
     {
-        cout << "append_sheet: sheet index: " << sheet_index << "; sheet name: " << string(sheet_name, sheet_name_length) << endl;
+        cout << "append_sheet: sheet index: " << sheet_index
+             << "; sheet name: " << string(sheet_name, sheet_name_length)
+             << endl;
         return nullptr;
     }
 
-    virtual iface::import_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) override
+    virtual iface::import_sheet* get_sheet(
+        const char* sheet_name, size_t sheet_name_length) override
     {
-        cout << "get_sheet: sheet name: " << string(sheet_name, sheet_name_length) << endl;
+        cout << "get_sheet: sheet name: "
+             << string(sheet_name, sheet_name_length) << endl;
         return nullptr;
     }
 
@@ -39,7 +43,7 @@ int main()
 {
     my_empty_import_factory factory;
     orcus_ods loader(&factory);
-    loader.read_file(SRCDIR"/doc_example/files/document.ods");
+    loader.read_file(SRCDIR"/doc_example/files/multi-sheets.ods");
 
     return EXIT_SUCCESS;
 }
