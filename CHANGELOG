@@ -26,6 +26,15 @@
       grammar type.  This change fixes loading of ods documents with
       formula cells.
 
+orcus 0.13.4
+
+  * xls-xml
+
+    * fix incorrect handling of formula cells without result caches.
+
+  * fix incorrect parsing of invalid XML documents with multiple
+    self-closing root elements.
+
 orcus 0.13.3
 
   * fix the handling of alpha values passed to set_fill_fg_color() and
