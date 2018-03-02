@@ -7,8 +7,8 @@ Use a user-defined custom document class
 In this section we will demonstrate how you can use orcus to populate your own
 custom document model by implementing your own set of interface classes and
 passing it to the orcus import filter.  The first example code shown below is
-the *absolute* minimum that you need to write in order for the orcus filter
-to function properly::
+the *absolute* minimum that you need to implement in order for the orcus
+filter to function properly::
 
     #include <orcus/spreadsheet/import_interface.hpp>
     #include <orcus/orcus_ods.hpp>
@@ -73,9 +73,30 @@ compile and execute the above code, you should get the following output:
     append_sheet: sheet index: 2; sheet name: 3rd Sheet
 
 One primary role the import factory plays is to provide the orcus import
-filter with the ability to create and insert a new spreadsheet store to the
-document.  As illustrated in the above code, it also provides access to
-existing sheet stores by its name or its position.  That being said, not all
-import filters do make use of this interface, and as evidenced by the output
-from the code, the ods import filter does not make use of either version of
-:cpp:func:`~orcus::spreadsheet::iface::import_factory::get_sheet`.
+filter with the ability to create and insert a new sheet to the document.  As
+illustrated in the above code, it also provides access to existing sheets by
+its name or its position.  Every import factory implementation must be a
+sub-class of the :cpp:class:`~orcus::spreadsheet::iface::import_factory`
+interface base class.  At a minimum, it must implement
+
+* the :cpp:func:`~orcus::spreadsheet::iface::import_factory::append_sheet`
+  method which inserts a new sheet and return access to it,
+
+* two variants of the :cpp:func:`~orcus::spreadsheet::iface::import_factory::get_sheet`
+  method which returns access to an existing sheet, and
+
+* the :cpp:func:`~orcus::spreadsheet::iface::import_factory::finalize` method
+  which gets called at the very end of the import to give the implementation
+  a chance to perform post-import tasks.
+
+Now, since all of the sheet accessor methods return null pointers in this
+code, the import filter has no way of populating the sheet data.  To actually
+receive the sheet data from the import filter, you must have these methods
+return valid pointers to sheet accessors.  The next example shows how that can
+be done.
+
+
+Implement sheet accessors
+-------------------------
+
+TBD
