@@ -1518,10 +1518,10 @@ void sheet::dump_html(std::ostream& os) const
                 if (xf_id)
                 {
                     // Apply cell format.
-                    import_styles* p_styles = mp_impl->m_doc.get_styles();
-                    const cell_format_t* fmt = p_styles->get_cell_format(xf_id);
+                    import_styles& styles = mp_impl->m_doc.get_styles();
+                    const cell_format_t* fmt = styles.get_cell_format(xf_id);
                     if (fmt)
-                        build_style_string(style, *p_styles, *fmt);
+                        build_style_string(style, styles, *fmt);
                 }
 
                 ixion::celltype_t ct = cxt.get_celltype(pos);

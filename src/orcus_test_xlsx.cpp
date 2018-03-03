@@ -309,8 +309,7 @@ void test_xlsx_background_fill()
     pstring path(SRCDIR"/test/xlsx/background-color/standard.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
-    spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    spreadsheet::import_styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -341,10 +340,10 @@ void test_xlsx_background_fill()
     {
         size_t xf = sh->get_cell_format(c.row, c.col);
 
-        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
 
-        const spreadsheet::fill_t* fill_data = styles->get_fill(cf->fill);
+        const spreadsheet::fill_t* fill_data = styles.get_fill(cf->fill);
         assert(fill_data);
         assert(fill_data->pattern_type == c.pattern_type);
         assert(fill_data->fg_color == c.fg_color);
@@ -356,8 +355,7 @@ void test_xlsx_text_alignment()
     pstring path(SRCDIR"/test/xlsx/text-alignment/input.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
-    spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    spreadsheet::import_styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -406,7 +404,7 @@ void test_xlsx_text_alignment()
     {
         size_t xf = sh->get_cell_format(c.row, c.col);
 
-        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
         assert(c.apply_align == cf->apply_alignment);
 
@@ -423,8 +421,7 @@ void test_xlsx_cell_borders_single_cells()
     pstring path(SRCDIR"/test/xlsx/borders/single-cells.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
-    spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    spreadsheet::import_styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -456,11 +453,11 @@ void test_xlsx_cell_borders_single_cells()
     for (const check& c : checks)
     {
         size_t xf = sh->get_cell_format(c.row, c.col);
-        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
         assert(cf->apply_border);
 
-        const spreadsheet::border_t* border = styles->get_border(cf->border);
+        const spreadsheet::border_t* border = styles.get_border(cf->border);
         assert(border);
         assert(border->top.style    == c.style);
         assert(border->bottom.style == c.style);
@@ -474,8 +471,7 @@ void test_xlsx_cell_borders_directions()
     pstring path(SRCDIR"/test/xlsx/borders/directions.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
-    spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    spreadsheet::import_styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -501,11 +497,11 @@ void test_xlsx_cell_borders_directions()
     for (const check& c : checks)
     {
         size_t xf = sh->get_cell_format(c.row, c.col);
-        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
         assert(cf->apply_border);
 
-        const spreadsheet::border_t* border = styles->get_border(cf->border);
+        const spreadsheet::border_t* border = styles.get_border(cf->border);
         assert(border);
 
         switch (c.dir)
@@ -584,8 +580,7 @@ void test_xlsx_cell_borders_colors()
     pstring path(SRCDIR"/test/xlsx/borders/colors.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
-    spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    spreadsheet::import_styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -608,11 +603,11 @@ void test_xlsx_cell_borders_colors()
     {
         size_t xf = sh->get_cell_format(c.row, c.col); // B3
 
-        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
         assert(cf->apply_border);
 
-        const spreadsheet::border_t* border = styles->get_border(cf->border);
+        const spreadsheet::border_t* border = styles.get_border(cf->border);
         assert(border);
 
         assert(border->left.style   == border_style_t::unknown);
@@ -628,11 +623,11 @@ void test_xlsx_cell_borders_colors()
 
     size_t xf = sh->get_cell_format(6, 1); // B7
 
-    const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+    const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
     assert(cf);
     assert(cf->apply_border);
 
-    const spreadsheet::border_t* border = styles->get_border(cf->border);
+    const spreadsheet::border_t* border = styles.get_border(cf->border);
     assert(border);
 
     assert(border->left.style == border_style_t::thick);

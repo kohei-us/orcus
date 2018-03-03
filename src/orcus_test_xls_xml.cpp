@@ -209,8 +209,7 @@ void test_xls_xml_bold_and_italic()
     const spreadsheet::import_shared_strings* ss = doc->get_shared_strings();
     assert(ss);
 
-    const spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    const spreadsheet::import_styles& styles = doc->get_styles();
 
     // A1 contains unformatted text.
     size_t si = sheet1->get_string_identifier(0, 0);
@@ -225,9 +224,9 @@ void test_xls_xml_bold_and_italic()
     assert(*sp == "Bold Text");
 
     size_t xfi = sheet1->get_cell_format(1, 0);
-    const spreadsheet::cell_format_t* cf = styles->get_cell_format(xfi);
+    const spreadsheet::cell_format_t* cf = styles.get_cell_format(xfi);
     assert(cf);
-    const spreadsheet::font_t* font = styles->get_font(cf->font);
+    const spreadsheet::font_t* font = styles.get_font(cf->font);
     assert(font);
     assert(font->bold);
     assert(!font->italic);
@@ -239,9 +238,9 @@ void test_xls_xml_bold_and_italic()
     assert(*sp == "Italic Text");
 
     xfi = sheet1->get_cell_format(2, 0);
-    cf = styles->get_cell_format(xfi);
+    cf = styles.get_cell_format(xfi);
     assert(cf);
-    font = styles->get_font(cf->font);
+    font = styles.get_font(cf->font);
     assert(font);
     assert(!font->bold);
     assert(font->italic);
@@ -253,9 +252,9 @@ void test_xls_xml_bold_and_italic()
     assert(*sp == "Bold and Italic Text");
 
     xfi = sheet1->get_cell_format(3, 0);
-    cf = styles->get_cell_format(xfi);
+    cf = styles.get_cell_format(xfi);
     assert(cf);
-    font = styles->get_font(cf->font);
+    font = styles.get_font(cf->font);
     assert(font);
     assert(font->bold);
     assert(font->italic);
@@ -297,8 +296,7 @@ void test_xls_xml_colored_text()
     const spreadsheet::import_shared_strings* ss = doc->get_shared_strings();
     assert(ss);
 
-    const spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    const spreadsheet::import_styles& styles = doc->get_styles();
 
     // Column A contains colored cells.
 
@@ -327,10 +325,10 @@ void test_xls_xml_colored_text()
     for (const check& c : checks)
     {
         size_t xfi = sheet1->get_cell_format(c.row, 0);
-        const spreadsheet::cell_format_t* xf = styles->get_cell_format(xfi);
+        const spreadsheet::cell_format_t* xf = styles.get_cell_format(xfi);
         assert(xf);
 
-        const spreadsheet::font_t* font = styles->get_font(xf->font);
+        const spreadsheet::font_t* font = styles.get_font(xf->font);
         assert(font);
 
         assert(font->color.red == c.red);
@@ -445,8 +443,7 @@ void test_xls_xml_background_fill()
     pstring path(SRCDIR"/test/xls-xml/background-color/standard.xml");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
 
-    spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    spreadsheet::import_styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -479,16 +476,16 @@ void test_xls_xml_background_fill()
     {
         size_t xf = sh->get_cell_format(c.row, c.col);
 
-        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
 
-        const spreadsheet::fill_t* fill_data = styles->get_fill(cf->fill);
+        const spreadsheet::fill_t* fill_data = styles.get_fill(cf->fill);
         assert(fill_data);
         assert(fill_data->pattern_type == c.pattern_type);
         assert(fill_data->fg_color == c.fg_color);
 
         // The font colors are all white in the colored cells.
-        const spreadsheet::font_t* font_data = styles->get_font(cf->font);
+        const spreadsheet::font_t* font_data = styles.get_font(cf->font);
         assert(font_data);
 
         assert(font_data->color == color_white);
@@ -500,8 +497,7 @@ void test_xls_xml_text_alignment()
     pstring path(SRCDIR"/test/xls-xml/text-alignment/input.xml");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
 
-    spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    spreadsheet::import_styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -550,7 +546,7 @@ void test_xls_xml_text_alignment()
     {
         size_t xf = sh->get_cell_format(c.row, c.col);
 
-        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
         assert(c.apply_align == cf->apply_alignment);
 
@@ -568,8 +564,7 @@ void test_xls_xml_cell_borders_single_cells()
     cout << path << endl;
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
 
-    spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    spreadsheet::import_styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -602,11 +597,11 @@ void test_xls_xml_cell_borders_single_cells()
     {
         cout << "(row: " << c.row << "; col: " << c.col << "; expected: " << int(c.style) << ")" << endl;
         size_t xf = sh->get_cell_format(c.row, c.col);
-        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
         assert(cf->apply_border);
 
-        const spreadsheet::border_t* border = styles->get_border(cf->border);
+        const spreadsheet::border_t* border = styles.get_border(cf->border);
         assert(border);
         assert(border->top.style    == c.style);
         assert(border->bottom.style == c.style);
@@ -621,8 +616,7 @@ void test_xls_xml_cell_borders_directions()
     cout << path << endl;
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
 
-    spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    spreadsheet::import_styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -648,11 +642,11 @@ void test_xls_xml_cell_borders_directions()
     for (const check& c : checks)
     {
         size_t xf = sh->get_cell_format(c.row, c.col);
-        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
         assert(cf->apply_border);
 
-        const spreadsheet::border_t* border = styles->get_border(cf->border);
+        const spreadsheet::border_t* border = styles.get_border(cf->border);
         assert(border);
 
         switch (c.dir)
@@ -735,8 +729,7 @@ void test_xls_xml_cell_borders_colors()
     cout << path << endl;
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
 
-    spreadsheet::import_styles* styles = doc->get_styles();
-    assert(styles);
+    spreadsheet::import_styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -759,11 +752,11 @@ void test_xls_xml_cell_borders_colors()
     {
         size_t xf = sh->get_cell_format(c.row, c.col); // B3
 
-        const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
         assert(cf->apply_border);
 
-        const spreadsheet::border_t* border = styles->get_border(cf->border);
+        const spreadsheet::border_t* border = styles.get_border(cf->border);
         assert(border);
 
         assert(border->left.style   == border_style_t::unknown);
@@ -779,11 +772,11 @@ void test_xls_xml_cell_borders_colors()
 
     size_t xf = sh->get_cell_format(6, 1); // B7
 
-    const spreadsheet::cell_format_t* cf = styles->get_cell_format(xf);
+    const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
     assert(cf);
     assert(cf->apply_border);
 
-    const spreadsheet::border_t* border = styles->get_border(cf->border);
+    const spreadsheet::border_t* border = styles.get_border(cf->border);
     assert(border);
 
     assert(border->left.style == border_style_t::thick);

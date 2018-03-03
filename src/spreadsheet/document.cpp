@@ -280,7 +280,7 @@ struct document_impl
     ixion::model_context m_context;
     date_time_t m_origin_date;
     sheet_items_type m_sheets;
-    import_styles* mp_styles;
+    import_styles m_styles;
     import_shared_strings* mp_strings;
     ixion::dirty_formula_cells_t m_dirty_cells;
 
@@ -294,8 +294,8 @@ struct document_impl
 
     document_impl(document& doc) :
         m_doc(doc),
-        mp_styles(new import_styles(m_string_pool)),
-        mp_strings(new import_shared_strings(m_string_pool, m_context, *mp_styles)),
+        m_styles(m_string_pool),
+        mp_strings(new import_shared_strings(m_string_pool, m_context, m_styles)),
         m_pivots(doc),
         mp_name_resolver(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &m_context)),
         m_grammar(formula_grammar_t::xlsx_2007),
@@ -307,7 +307,6 @@ struct document_impl
     ~document_impl()
     {
         delete mp_strings;
-        delete mp_styles;
     }
 };
 
@@ -325,14 +324,14 @@ const import_shared_strings* document::get_shared_strings() const
     return mp_impl->mp_strings;
 }
 
-import_styles* document::get_styles()
+import_styles& document::get_styles()
 {
-    return mp_impl->mp_styles;
+    return mp_impl->m_styles;
 }
 
-const import_styles* document::get_styles() const
+const import_styles& document::get_styles() const
 {
-    return mp_impl->mp_styles;
+    return mp_impl->m_styles;
 }
 
 pivot_collection& document::get_pivot_collection()

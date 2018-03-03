@@ -18,6 +18,7 @@
 
 #include "factory_pivot.hpp"
 #include "factory_sheet.hpp"
+#include "factory_styles.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_tokens.hpp>
@@ -142,6 +143,7 @@ struct import_factory::impl
     import_pivot_cache_records m_pc_records;
     import_ref_resolver m_ref_resolver;
     import_global_named_exp m_global_named_exp;
+    _import_styles m_styles;
 
     sheet_ifaces_type m_sheets;
 
@@ -154,7 +156,8 @@ struct import_factory::impl
         m_pc_def(doc),
         m_pc_records(doc),
         m_ref_resolver(doc),
-        m_global_named_exp(doc) {}
+        m_global_named_exp(doc),
+        m_styles(doc.get_styles()) {}
 };
 
 import_factory::import_factory(document& doc, row_t row_size, col_t col_size) :
@@ -181,7 +184,7 @@ iface::import_shared_strings* import_factory::get_shared_strings()
 
 iface::import_styles* import_factory::get_styles()
 {
-    return mp_impl->m_doc.get_styles();
+    return &mp_impl->m_styles;
 }
 
 iface::import_named_expression* import_factory::get_named_expression()

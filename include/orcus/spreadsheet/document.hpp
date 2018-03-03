@@ -59,8 +59,8 @@ public:
     import_shared_strings* get_shared_strings();
     const import_shared_strings* get_shared_strings() const;
 
-    import_styles* get_styles();
-    const import_styles* get_styles() const;
+    import_styles& get_styles();
+    const import_styles& get_styles() const;
 
     pivot_collection& get_pivot_collection();
     const pivot_collection& get_pivot_collection() const;
