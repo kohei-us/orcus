@@ -1,3 +1,11 @@
+  * sax_parser now gracefully ignores leading whitespace(s) if any,
+    rather than aborting the parsing for it's not a valid XML stream
+    to have leading whitespace(s).  In the future we should make this
+    behavior configurable.
+
+  * import_sheet::set_fill_pattern_type() interface method now takes
+    an enum value of type fill_pattern_t, rather than a string value.
+
   * python
 
     * add orcus.xlsx.read() function that takes a file object to load
