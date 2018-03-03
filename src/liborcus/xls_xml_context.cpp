@@ -1551,7 +1551,7 @@ void xls_xml_context::commit_styles()
         if (style->fill.solid)
         {
             // TODO : add support for fill types other than 'solid'.
-            styles->set_fill_pattern_type(ORCUS_ASCII("solid"));
+            styles->set_fill_pattern_type(spreadsheet::fill_pattern_t::solid);
             styles->set_fill_fg_color(255,
                 style->fill.color.red,
                 style->fill.color.green,

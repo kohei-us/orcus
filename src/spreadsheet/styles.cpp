@@ -247,9 +247,9 @@ void import_styles::set_fill_count(size_t n)
     m_fills.reserve(n);
 }
 
-void import_styles::set_fill_pattern_type(const char* s, size_t n)
+void import_styles::set_fill_pattern_type(fill_pattern_t fp)
 {
-    m_cur_fill.pattern_type = m_string_pool.intern(s, n).first;
+    m_cur_fill.pattern_type = fp;
 }
 
 void import_styles::set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)

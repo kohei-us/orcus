@@ -314,6 +314,42 @@ const map_type& get()
 
 }
 
+namespace fill_pattern {
+
+typedef mdds::sorted_string_map<spreadsheet::fill_pattern_t> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
+{
+    { ORCUS_ASCII("darkDown"),        spreadsheet::fill_pattern_t::dark_down        },
+    { ORCUS_ASCII("darkGray"),        spreadsheet::fill_pattern_t::dark_gray        },
+    { ORCUS_ASCII("darkGrid"),        spreadsheet::fill_pattern_t::dark_grid        },
+    { ORCUS_ASCII("darkHorizontal"),  spreadsheet::fill_pattern_t::dark_horizontal  },
+    { ORCUS_ASCII("darkTrellis"),     spreadsheet::fill_pattern_t::dark_trellis     },
+    { ORCUS_ASCII("darkUp"),          spreadsheet::fill_pattern_t::dark_up          },
+    { ORCUS_ASCII("darkVertical"),    spreadsheet::fill_pattern_t::dark_vertical    },
+    { ORCUS_ASCII("gray0625"),        spreadsheet::fill_pattern_t::gray_0625        },
+    { ORCUS_ASCII("gray125"),         spreadsheet::fill_pattern_t::gray_125         },
+    { ORCUS_ASCII("lightDown"),       spreadsheet::fill_pattern_t::light_down       },
+    { ORCUS_ASCII("lightGray"),       spreadsheet::fill_pattern_t::light_gray       },
+    { ORCUS_ASCII("lightGrid"),       spreadsheet::fill_pattern_t::light_grid       },
+    { ORCUS_ASCII("lightHorizontal"), spreadsheet::fill_pattern_t::light_horizontal },
+    { ORCUS_ASCII("lightTrellis"),    spreadsheet::fill_pattern_t::light_trellis    },
+    { ORCUS_ASCII("lightUp"),         spreadsheet::fill_pattern_t::light_up         },
+    { ORCUS_ASCII("lightVertical"),   spreadsheet::fill_pattern_t::light_vertical   },
+    { ORCUS_ASCII("mediumGray"),      spreadsheet::fill_pattern_t::medium_gray      },
+    { ORCUS_ASCII("none"),            spreadsheet::fill_pattern_t::none             },
+    { ORCUS_ASCII("solid"),           spreadsheet::fill_pattern_t::solid            },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), spreadsheet::fill_pattern_t::none);
+    return mt;
+}
+
+}
+
 class border_attr_parser : public unary_function<xml_token_attr_t, void>
 {
     spreadsheet::border_direction_t m_dir;
@@ -703,7 +739,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_fill);
             pstring ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_patternType)).get_value();
-            mp_styles->set_fill_pattern_type(ps.get(), ps.size());
+            mp_styles->set_fill_pattern_type(fill_pattern::get().find(ps.data(), ps.size()));
         }
         break;
         case XML_fgColor:

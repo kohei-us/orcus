@@ -739,7 +739,7 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const std::v
                     {
                         spreadsheet::color_elem_t red, green, blue;
                         func.get_background_color(red, green, blue);
-                        mp_styles->set_fill_pattern_type(ORCUS_ASCII("solid"));
+                        mp_styles->set_fill_pattern_type(spreadsheet::fill_pattern_t::solid);
                         mp_styles->set_fill_fg_color(255, red, green, blue);
                     }
 

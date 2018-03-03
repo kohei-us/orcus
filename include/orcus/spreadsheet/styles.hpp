@@ -59,7 +59,7 @@ struct ORCUS_SPM_DLLPUBLIC font_t
 
 struct ORCUS_SPM_DLLPUBLIC fill_t
 {
-    pstring pattern_type;
+    fill_pattern_t pattern_type;
     color_t fg_color;
     color_t bg_color;
 
@@ -174,7 +174,7 @@ public:
     virtual size_t commit_font();
 
     virtual void set_fill_count(size_t n);
-    virtual void set_fill_pattern_type(const char* s, size_t n);
+    virtual void set_fill_pattern_type(fill_pattern_t fp);
     virtual void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
     virtual void set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
     virtual size_t commit_fill();

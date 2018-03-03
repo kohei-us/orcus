@@ -455,22 +455,22 @@ void test_xls_xml_background_fill()
     {
         spreadsheet::row_t row;
         spreadsheet::col_t col;
-        pstring pattern_type;
+        spreadsheet::fill_pattern_t pattern_type;
         spreadsheet::color_t fg_color;
     };
 
     std::vector<check> checks =
     {
-        {  1, 0, "solid", { 255, 192,   0,   0 } }, // A2  - dark red
-        {  2, 0, "solid", { 255, 255,   0,   0 } }, // A3  - red
-        {  3, 0, "solid", { 255, 255, 192,   0 } }, // A4  - orange
-        {  4, 0, "solid", { 255, 255, 255,   0 } }, // A5  - yellow
-        {  5, 0, "solid", { 255, 146, 208,  80 } }, // A6  - light green
-        {  6, 0, "solid", { 255,   0, 176,  80 } }, // A7  - green
-        {  7, 0, "solid", { 255,   0, 176, 240 } }, // A8  - light blue
-        {  8, 0, "solid", { 255,   0, 112, 192 } }, // A9  - blue
-        {  9, 0, "solid", { 255,   0,  32,  96 } }, // A10 - dark blue
-        { 10, 0, "solid", { 255, 112,  48, 160 } }, // A11 - purple
+        {  1, 0, spreadsheet::fill_pattern_t::solid, { 255, 192,   0,   0 } }, // A2  - dark red
+        {  2, 0, spreadsheet::fill_pattern_t::solid, { 255, 255,   0,   0 } }, // A3  - red
+        {  3, 0, spreadsheet::fill_pattern_t::solid, { 255, 255, 192,   0 } }, // A4  - orange
+        {  4, 0, spreadsheet::fill_pattern_t::solid, { 255, 255, 255,   0 } }, // A5  - yellow
+        {  5, 0, spreadsheet::fill_pattern_t::solid, { 255, 146, 208,  80 } }, // A6  - light green
+        {  6, 0, spreadsheet::fill_pattern_t::solid, { 255,   0, 176,  80 } }, // A7  - green
+        {  7, 0, spreadsheet::fill_pattern_t::solid, { 255,   0, 176, 240 } }, // A8  - light blue
+        {  8, 0, spreadsheet::fill_pattern_t::solid, { 255,   0, 112, 192 } }, // A9  - blue
+        {  9, 0, spreadsheet::fill_pattern_t::solid, { 255,   0,  32,  96 } }, // A10 - dark blue
+        { 10, 0, spreadsheet::fill_pattern_t::solid, { 255, 112,  48, 160 } }, // A11 - purple
     };
 
     spreadsheet::color_t color_white(255, 255, 255, 255);

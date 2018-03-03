@@ -75,6 +75,29 @@ enum class border_style_t
     fine_dashed
 };
 
+enum class fill_pattern_t
+{
+    none = 0,
+    solid,
+    dark_down,
+    dark_gray,
+    dark_grid,
+    dark_horizontal,
+    dark_trellis,
+    dark_up,
+    dark_vertical,
+    gray_0625,
+    gray_125,
+    light_down,
+    light_gray,
+    light_grid,
+    light_horizontal,
+    light_trellis,
+    light_up,
+    light_vertical,
+    medium_gray
+};
+
 enum class strikethrough_style_t
 {
     none = 0,

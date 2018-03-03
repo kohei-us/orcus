@@ -1312,7 +1312,7 @@ void build_style_string(string& str, const import_styles& styles, const cell_for
         const fill_t* p = styles.get_fill(fmt.fill);
         if (p)
         {
-            if (p->pattern_type == "solid")
+            if (p->pattern_type == fill_pattern_t::solid)
             {
                 const color_t& r = p->fg_color;
                 os << "background-color: ";

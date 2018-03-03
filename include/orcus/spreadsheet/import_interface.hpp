@@ -117,8 +117,10 @@ public:
 
     /**
      * Set the type of fill pattern.
+     *
+     * @param fp fill pattern type.
      */
-    virtual void set_fill_pattern_type(const char* s, size_t n) = 0;
+    virtual void set_fill_pattern_type(orcus::spreadsheet::fill_pattern_t fp) = 0;
 
     /**
      * Set the foreground color of a fill.  <i>Note that for a solid fill

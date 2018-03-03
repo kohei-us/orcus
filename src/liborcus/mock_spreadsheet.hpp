@@ -49,7 +49,7 @@ public:
     // fill
 
     virtual void set_fill_count(size_t n);
-    virtual void set_fill_pattern_type(const char* s, size_t n);
+    virtual void set_fill_pattern_type(fill_pattern_t fp);
     virtual void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
     virtual void set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
     virtual size_t commit_fill();

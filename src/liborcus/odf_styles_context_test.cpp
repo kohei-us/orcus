@@ -52,7 +52,7 @@ void test_odf_fill(orcus::spreadsheet::import_styles &styles)
     assert(cell_fill->fg_color.red == 0xfe);
     assert(cell_fill->fg_color.green == 0xff);
     assert(cell_fill->fg_color.blue == 0xcc);
-    assert(cell_fill->pattern_type == "solid");
+    assert(cell_fill->pattern_type == orcus::spreadsheet::fill_pattern_t::solid);
 }
 
 void test_odf_border(orcus::spreadsheet::import_styles &styles)
