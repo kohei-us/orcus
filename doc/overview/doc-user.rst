@@ -22,7 +22,7 @@ filter to function properly::
     class my_empty_import_factory : public iface::import_factory
     {
     public:
-        ~my_empty_import_factory() {}
+        virtual ~my_empty_import_factory() override {}
 
         virtual iface::import_sheet* append_sheet(
             sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override
@@ -76,7 +76,7 @@ One primary role the import factory plays is to provide the orcus import
 filter with the ability to create and insert a new sheet to the document.  As
 illustrated in the above code, it also provides access to existing sheets by
 its name or its position.  Every import factory implementation must be a
-sub-class of the :cpp:class:`~orcus::spreadsheet::iface::import_factory`
+derived class of the :cpp:class:`orcus::spreadsheet::iface::import_factory`
 interface base class.  At a minimum, it must implement
 
 * the :cpp:func:`~orcus::spreadsheet::iface::import_factory::append_sheet`
@@ -86,14 +86,14 @@ interface base class.  At a minimum, it must implement
   method which returns access to an existing sheet, and
 
 * the :cpp:func:`~orcus::spreadsheet::iface::import_factory::finalize` method
-  which gets called at the very end of the import to give the implementation
-  a chance to perform post-import tasks.
+  which gets called exactly once at the very end of the import, to give the
+  implementation a chance to perform post-import tasks.
 
-Now, since all of the sheet accessor methods return null pointers in this
-code, the import filter has no way of populating the sheet data.  To actually
-receive the sheet data from the import filter, you must have these methods
-return valid pointers to sheet accessors.  The next example shows how that can
-be done.
+in order for the code to be buildable.  Now, since all of the sheet accessor
+methods return null pointers in this code, the import filter has no way of
+populating the sheet data.  To actually receive the sheet data from the import
+filter, you must have these methods return valid pointers to sheet accessors.
+The next example shows how that can be done.
 
 
 Implement sheet accessors
