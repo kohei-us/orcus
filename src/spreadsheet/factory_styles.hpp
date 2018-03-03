@@ -8,12 +8,17 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_FACTORY_STYLES_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_FACTORY_STYLES_HPP
 
-#include "orcus/spreadsheet/styles.hpp"
+#include "orcus/spreadsheet/import_interface.hpp"
 
 namespace orcus { namespace spreadsheet {
 
+class import_styles;
+
 class _import_styles : public iface::import_styles
 {
+    import_styles& m_styles;
+public:
+    _import_styles(import_styles& styles);
     virtual ~_import_styles() override;
 
     virtual void set_font_count(size_t n) override;
@@ -21,29 +26,29 @@ class _import_styles : public iface::import_styles
     virtual void set_font_italic(bool b) override;
     virtual void set_font_name(const char* s, size_t n) override;
     virtual void set_font_size(double point) override;
-    virtual void set_font_underline(orcus::spreadsheet::underline_t e) override;
+    virtual void set_font_underline(underline_t e) override;
     virtual void set_font_underline_width(underline_width_t e) override;
     virtual void set_font_underline_mode(underline_mode_t e) override;
     virtual void set_font_underline_type(underline_type_t e) override;
     virtual void set_font_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
     virtual void set_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
-    virtual void set_strikethrough_style(orcus::spreadsheet::strikethrough_style_t s) override;
-    virtual void set_strikethrough_type(orcus::spreadsheet::strikethrough_type_t s) override;
-    virtual void set_strikethrough_width(orcus::spreadsheet::strikethrough_width_t s) override;
-    virtual void set_strikethrough_text(orcus::spreadsheet::strikethrough_text_t s) override;
+    virtual void set_strikethrough_style(strikethrough_style_t s) override;
+    virtual void set_strikethrough_type(strikethrough_type_t s) override;
+    virtual void set_strikethrough_width(strikethrough_width_t s) override;
+    virtual void set_strikethrough_text(strikethrough_text_t s) override;
     virtual size_t commit_font() override;
 
     virtual void set_fill_count(size_t n) override;
-    virtual void set_fill_pattern_type(orcus::spreadsheet::fill_pattern_t fp) override;
+    virtual void set_fill_pattern_type(fill_pattern_t fp) override;
     virtual void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
     virtual void set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
     virtual size_t commit_fill() override;
 
     virtual void set_border_count(size_t n) override;
-    virtual void set_border_style(orcus::spreadsheet::border_direction_t dir, border_style_t style) override;
+    virtual void set_border_style(border_direction_t dir, border_style_t style) override;
     virtual void set_border_color(
-        orcus::spreadsheet::border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
-    virtual void set_border_width(orcus::spreadsheet::border_direction_t dir, double width, orcus::length_unit_t unit) override;
+        border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual void set_border_width(border_direction_t dir, double width, orcus::length_unit_t unit) override;
     virtual size_t commit_border() override;
 
     virtual void set_cell_hidden(bool b) override;
@@ -68,8 +73,8 @@ class _import_styles : public iface::import_styles
     virtual void set_xf_number_format(size_t index) override;
     virtual void set_xf_style_xf(size_t index) override;
     virtual void set_xf_apply_alignment(bool b) override;
-    virtual void set_xf_horizontal_alignment(orcus::spreadsheet::hor_alignment_t align) override;
-    virtual void set_xf_vertical_alignment(orcus::spreadsheet::ver_alignment_t align) override;
+    virtual void set_xf_horizontal_alignment(hor_alignment_t align) override;
+    virtual void set_xf_vertical_alignment(ver_alignment_t align) override;
 
     virtual size_t commit_cell_xf() override;
     virtual size_t commit_cell_style_xf() override;
