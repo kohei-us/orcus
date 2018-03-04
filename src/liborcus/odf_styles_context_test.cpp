@@ -337,7 +337,7 @@ int main()
     const char* path = SRCDIR"/test/ods/styles/cell-styles.xml";
     std::string content = orcus::load_file_content(path);
     orcus::spreadsheet::styles styles(string_pool);
-    orcus::spreadsheet::_import_styles istyles(styles);
+    orcus::spreadsheet::import_styles istyles(styles);
     orcus::import_ods::read_styles(content.c_str(), content.size(), &istyles);
 
     test_odf_fill(styles);
@@ -351,7 +351,7 @@ int main()
     path = SRCDIR"/test/ods/styles/number-format.xml";
     std::string content2 = orcus::load_file_content(path);
     orcus::spreadsheet::styles styles2(string_pool2);
-    orcus::spreadsheet::_import_styles istyles2(styles2);
+    orcus::spreadsheet::import_styles istyles2(styles2);
     orcus::import_ods::read_styles(content2.c_str(), content2.size(), &istyles2);
 
     test_odf_number_formatting(styles2);

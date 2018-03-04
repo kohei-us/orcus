@@ -47,12 +47,12 @@ public:
     void set_default_column_size(col_t col_size);
 };
 
-class ORCUS_SPM_DLLPUBLIC _import_styles : public iface::import_styles
+class ORCUS_SPM_DLLPUBLIC import_styles : public iface::import_styles
 {
     orcus::spreadsheet::styles& m_styles;
 public:
-    _import_styles(orcus::spreadsheet::styles& styles);
-    virtual ~_import_styles() override;
+    import_styles(orcus::spreadsheet::styles& styles);
+    virtual ~import_styles() override;
 
     virtual void set_font_count(size_t n) override;
     virtual void set_font_bold(bool b) override;

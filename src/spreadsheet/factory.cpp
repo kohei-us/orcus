@@ -142,7 +142,7 @@ struct import_factory::impl
     import_pivot_cache_records m_pc_records;
     import_ref_resolver m_ref_resolver;
     import_global_named_exp m_global_named_exp;
-    _import_styles m_styles;
+    import_styles m_styles;
 
     sheet_ifaces_type m_sheets;
 

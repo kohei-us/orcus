@@ -25,7 +25,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     string_pool sp;
     spreadsheet::styles styles(sp);
-    spreadsheet::_import_styles istyles(styles);
+    spreadsheet::import_styles istyles(styles);
 
     std::string content = load_file_content(argv[1]);
     try
