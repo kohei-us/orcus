@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "factory_styles.hpp"
-
+#include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/styles.hpp"
 
 namespace orcus { namespace spreadsheet {
 
-_import_styles::_import_styles(import_styles& styles) : m_styles(styles) {}
+_import_styles::_import_styles(orcus::spreadsheet::import_styles& styles) : m_styles(styles) {}
 _import_styles::~_import_styles() {}
 
 void _import_styles::set_font_count(size_t n)

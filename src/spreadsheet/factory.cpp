@@ -18,7 +18,6 @@
 
 #include "factory_pivot.hpp"
 #include "factory_sheet.hpp"
-#include "factory_styles.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_tokens.hpp>

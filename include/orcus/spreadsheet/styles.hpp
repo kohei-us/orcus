@@ -5,13 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_SPREADSHEET_STYLES_HPP__
-#define __ORCUS_SPREADSHEET_STYLES_HPP__
+#ifndef INCLUDED_ORCUS_SPREADSHEET_STYLES_HPP
+#define INCLUDED_ORCUS_SPREADSHEET_STYLES_HPP
 
-#include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/pstring.hpp"
 #include "orcus/env.hpp"
-#include <orcus/measurement.hpp>
+#include "orcus/measurement.hpp"
+#include "orcus/spreadsheet/types.hpp"
+
 #include <vector>
 
 namespace orcus {
@@ -149,79 +150,79 @@ struct ORCUS_SPM_DLLPUBLIC cell_style_t
 
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_t& c);
 
-class ORCUS_SPM_DLLPUBLIC import_styles : public iface::import_styles
+class ORCUS_SPM_DLLPUBLIC import_styles
 {
 public:
 
     import_styles(string_pool& sp);
-    virtual ~import_styles();
+    ~import_styles();
 
-    virtual void set_font_count(size_t n);
-    virtual void set_font_bold(bool b);
-    virtual void set_font_italic(bool b);
-    virtual void set_font_name(const char* s, size_t n);
-    virtual void set_font_size(double point);
-    virtual void set_font_underline(underline_t e);
-    virtual void set_font_underline_width(underline_width_t e);
-    virtual void set_font_underline_mode(underline_mode_t e);
-    virtual void set_font_underline_type(underline_type_t e);
-    virtual void set_font_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    virtual void set_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    virtual void set_strikethrough_style(strikethrough_style_t s);
-    virtual void set_strikethrough_type(strikethrough_type_t s);
-    virtual void set_strikethrough_width(strikethrough_width_t s);
-    virtual void set_strikethrough_text(strikethrough_text_t s);
-    virtual size_t commit_font();
+    void set_font_count(size_t n);
+    void set_font_bold(bool b);
+    void set_font_italic(bool b);
+    void set_font_name(const char* s, size_t n);
+    void set_font_size(double point);
+    void set_font_underline(underline_t e);
+    void set_font_underline_width(underline_width_t e);
+    void set_font_underline_mode(underline_mode_t e);
+    void set_font_underline_type(underline_type_t e);
+    void set_font_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
+    void set_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
+    void set_strikethrough_style(strikethrough_style_t s);
+    void set_strikethrough_type(strikethrough_type_t s);
+    void set_strikethrough_width(strikethrough_width_t s);
+    void set_strikethrough_text(strikethrough_text_t s);
+    size_t commit_font();
 
-    virtual void set_fill_count(size_t n);
-    virtual void set_fill_pattern_type(fill_pattern_t fp);
-    virtual void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    virtual void set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    virtual size_t commit_fill();
+    void set_fill_count(size_t n);
+    void set_fill_pattern_type(fill_pattern_t fp);
+    void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
+    void set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
+    size_t commit_fill();
 
-    virtual void set_border_count(size_t n);
-    virtual void set_border_style(border_direction_t dir, border_style_t style);
-    virtual void set_border_color(
+    void set_border_count(size_t n);
+    void set_border_style(border_direction_t dir, border_style_t style);
+    void set_border_color(
         border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    virtual void set_border_width(border_direction_t dir, double width, orcus::length_unit_t unit);
-    virtual size_t commit_border();
+    void set_border_width(border_direction_t dir, double width, orcus::length_unit_t unit);
+    size_t commit_border();
 
-    virtual void set_cell_hidden(bool b);
-    virtual void set_cell_locked(bool b);
-    virtual void set_cell_print_content(bool b);
-    virtual void set_cell_formula_hidden(bool b);
-    virtual size_t commit_cell_protection();
+    void set_cell_hidden(bool b);
+    void set_cell_locked(bool b);
+    void set_cell_print_content(bool b);
+    void set_cell_formula_hidden(bool b);
+    size_t commit_cell_protection();
 
-    virtual void set_number_format_count(size_t n);
-    virtual void set_number_format_identifier(size_t id);
-    virtual void set_number_format_code(const char* s, size_t n);
-    virtual size_t commit_number_format();
+    void set_number_format_count(size_t n);
+    void set_number_format_identifier(size_t id);
+    void set_number_format_code(const char* s, size_t n);
+    size_t commit_number_format();
 
-    virtual void set_cell_style_xf_count(size_t n);
-    virtual size_t commit_cell_style_xf();
+    void set_cell_style_xf_count(size_t n);
+    size_t commit_cell_style_xf();
 
-    virtual void set_cell_xf_count(size_t n);
-    virtual size_t commit_cell_xf();
+    void set_cell_xf_count(size_t n);
+    size_t commit_cell_xf();
 
-    virtual void set_dxf_count(size_t n);
-    virtual size_t commit_dxf();
+    void set_dxf_count(size_t n);
+    size_t commit_dxf();
 
-    virtual void set_xf_font(size_t index);
-    virtual void set_xf_fill(size_t index);
-    virtual void set_xf_border(size_t index);
-    virtual void set_xf_protection(size_t index);
-    virtual void set_xf_number_format(size_t index);
-    virtual void set_xf_style_xf(size_t index);
-    virtual void set_xf_apply_alignment(bool b);
-    virtual void set_xf_horizontal_alignment(orcus::spreadsheet::hor_alignment_t align);
-    virtual void set_xf_vertical_alignment(orcus::spreadsheet::ver_alignment_t align);
+    void set_xf_font(size_t index);
+    void set_xf_fill(size_t index);
+    void set_xf_border(size_t index);
+    void set_xf_protection(size_t index);
+    void set_xf_number_format(size_t index);
+    void set_xf_style_xf(size_t index);
+    void set_xf_apply_alignment(bool b);
+    void set_xf_horizontal_alignment(orcus::spreadsheet::hor_alignment_t align);
+    void set_xf_vertical_alignment(orcus::spreadsheet::ver_alignment_t align);
 
-    virtual void set_cell_style_count(size_t n);
-    virtual void set_cell_style_name(const char* s, size_t n);
-    virtual void set_cell_style_xf(size_t index);
-    virtual void set_cell_style_builtin(size_t index);
-    virtual void set_cell_style_parent_name(const char* s, size_t n);
-    virtual size_t commit_cell_style();
+    void set_cell_style_count(size_t n);
+    void set_cell_style_name(const char* s, size_t n);
+    void set_cell_style_xf(size_t index);
+    void set_cell_style_builtin(size_t index);
+    void set_cell_style_parent_name(const char* s, size_t n);
+    size_t commit_cell_style();
 
     const font_t* get_font(size_t index) const;
     const fill_t* get_fill(size_t index) const;
