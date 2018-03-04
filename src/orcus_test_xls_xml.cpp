@@ -209,7 +209,7 @@ void test_xls_xml_bold_and_italic()
     const spreadsheet::import_shared_strings* ss = doc->get_shared_strings();
     assert(ss);
 
-    const spreadsheet::import_styles& styles = doc->get_styles();
+    const spreadsheet::styles& styles = doc->get_styles();
 
     // A1 contains unformatted text.
     size_t si = sheet1->get_string_identifier(0, 0);
@@ -296,7 +296,7 @@ void test_xls_xml_colored_text()
     const spreadsheet::import_shared_strings* ss = doc->get_shared_strings();
     assert(ss);
 
-    const spreadsheet::import_styles& styles = doc->get_styles();
+    const spreadsheet::styles& styles = doc->get_styles();
 
     // Column A contains colored cells.
 
@@ -443,7 +443,7 @@ void test_xls_xml_background_fill()
     pstring path(SRCDIR"/test/xls-xml/background-color/standard.xml");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
 
-    spreadsheet::import_styles& styles = doc->get_styles();
+    spreadsheet::styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -497,7 +497,7 @@ void test_xls_xml_text_alignment()
     pstring path(SRCDIR"/test/xls-xml/text-alignment/input.xml");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
 
-    spreadsheet::import_styles& styles = doc->get_styles();
+    spreadsheet::styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -564,7 +564,7 @@ void test_xls_xml_cell_borders_single_cells()
     cout << path << endl;
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
 
-    spreadsheet::import_styles& styles = doc->get_styles();
+    spreadsheet::styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -616,7 +616,7 @@ void test_xls_xml_cell_borders_directions()
     cout << path << endl;
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
 
-    spreadsheet::import_styles& styles = doc->get_styles();
+    spreadsheet::styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -729,7 +729,7 @@ void test_xls_xml_cell_borders_colors()
     cout << path << endl;
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
 
-    spreadsheet::import_styles& styles = doc->get_styles();
+    spreadsheet::styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);

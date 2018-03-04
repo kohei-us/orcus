@@ -116,7 +116,7 @@ void test_ods_import_formatted_text()
     const import_shared_strings* ss = doc.get_shared_strings();
     assert(ss);
 
-    const import_styles& styles = doc.get_styles();
+    const styles& styles = doc.get_styles();
 
     // A1 is unformatted
     size_t str_id = sh->get_string_identifier(0,0);

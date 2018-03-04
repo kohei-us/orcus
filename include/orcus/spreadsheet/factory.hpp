@@ -18,7 +18,7 @@ namespace orcus { namespace spreadsheet {
 
 class document;
 class view;
-class import_styles;
+class styles;
 
 class ORCUS_SPM_DLLPUBLIC import_factory : public iface::import_factory
 {
@@ -49,9 +49,9 @@ public:
 
 class ORCUS_SPM_DLLPUBLIC _import_styles : public iface::import_styles
 {
-    orcus::spreadsheet::import_styles& m_styles;
+    orcus::spreadsheet::styles& m_styles;
 public:
-    _import_styles(orcus::spreadsheet::import_styles& styles);
+    _import_styles(orcus::spreadsheet::styles& styles);
     virtual ~_import_styles() override;
 
     virtual void set_font_count(size_t n) override;

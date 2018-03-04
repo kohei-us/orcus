@@ -150,12 +150,12 @@ struct ORCUS_SPM_DLLPUBLIC cell_style_t
 
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_t& c);
 
-class ORCUS_SPM_DLLPUBLIC import_styles
+class ORCUS_SPM_DLLPUBLIC styles
 {
 public:
 
-    import_styles(string_pool& sp);
-    ~import_styles();
+    styles(string_pool& sp);
+    ~styles();
 
     void set_font_count(size_t n);
     void set_font_bold(bool b);

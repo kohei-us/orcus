@@ -20,7 +20,7 @@
 
 namespace {
 
-const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(const orcus::pstring& name, orcus::spreadsheet::import_styles* styles)
+const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(const orcus::pstring& name, orcus::spreadsheet::styles* styles)
 {
     size_t n = styles->get_cell_styles_count();
     for (size_t i = 0; i < n; ++i)
@@ -36,7 +36,7 @@ const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(const orcus::pst
 
 }
 
-void test_odf_fill(orcus::spreadsheet::import_styles &styles)
+void test_odf_fill(orcus::spreadsheet::styles &styles)
 {
     const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name1", &styles);
     assert(style->parent_name == "Text");
@@ -56,7 +56,7 @@ void test_odf_fill(orcus::spreadsheet::import_styles &styles)
     assert(cell_fill->pattern_type == orcus::spreadsheet::fill_pattern_t::solid);
 }
 
-void test_odf_border(orcus::spreadsheet::import_styles &styles)
+void test_odf_border(orcus::spreadsheet::styles &styles)
 {
     assert(styles.get_border_count() == 9);
 
@@ -111,7 +111,7 @@ void test_odf_border(orcus::spreadsheet::import_styles &styles)
     assert(cell_border->diagonal_tl_br.border_width.value == 0.74);
 }
 
-void test_odf_cell_protection(orcus::spreadsheet::import_styles& styles)
+void test_odf_cell_protection(orcus::spreadsheet::styles& styles)
 {
     /* Test that Cell is only protected and not hidden , Print Content is true */
     const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name5", &styles);
@@ -153,7 +153,7 @@ void test_odf_cell_protection(orcus::spreadsheet::import_styles& styles)
     assert(cell_protection->formula_hidden == false);
 }
 
-void test_odf_font(orcus::spreadsheet::import_styles& styles)
+void test_odf_font(orcus::spreadsheet::styles& styles)
 {
     const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name8", &styles);
     size_t xf = style->xf;
@@ -194,7 +194,7 @@ void test_odf_font(orcus::spreadsheet::import_styles& styles)
     assert(cell_font->underline_color.blue == (int)0xff);
 }
 
-void test_odf_number_formatting(orcus::spreadsheet::import_styles& styles)
+void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
 {
     const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name10", &styles);
     size_t xf = style->xf;
@@ -280,7 +280,7 @@ void test_odf_number_formatting(orcus::spreadsheet::import_styles& styles)
 
 }
 
-void test_odf_text_strikethrough(orcus::spreadsheet::import_styles& styles)
+void test_odf_text_strikethrough(orcus::spreadsheet::styles& styles)
 {
     const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name20", &styles);
     size_t xf = style->xf;
@@ -319,7 +319,7 @@ void test_odf_text_strikethrough(orcus::spreadsheet::import_styles& styles)
     assert(cell_font->strikethrough_text == orcus::spreadsheet::strikethrough_text_t::slash);
 }
 
-void test_odf_text_alignment(orcus::spreadsheet::import_styles& styles)
+void test_odf_text_alignment(orcus::spreadsheet::styles& styles)
 {
     const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name23", &styles);
     size_t xf = style->xf;
@@ -336,7 +336,7 @@ int main()
     orcus::string_pool string_pool;
     const char* path = SRCDIR"/test/ods/styles/cell-styles.xml";
     std::string content = orcus::load_file_content(path);
-    orcus::spreadsheet::import_styles styles(string_pool);
+    orcus::spreadsheet::styles styles(string_pool);
     orcus::spreadsheet::_import_styles istyles(styles);
     orcus::import_ods::read_styles(content.c_str(), content.size(), &istyles);
 
@@ -350,7 +350,7 @@ int main()
     orcus::string_pool string_pool2;
     path = SRCDIR"/test/ods/styles/number-format.xml";
     std::string content2 = orcus::load_file_content(path);
-    orcus::spreadsheet::import_styles styles2(string_pool2);
+    orcus::spreadsheet::styles styles2(string_pool2);
     orcus::spreadsheet::_import_styles istyles2(styles2);
     orcus::import_ods::read_styles(content2.c_str(), content2.size(), &istyles2);
 

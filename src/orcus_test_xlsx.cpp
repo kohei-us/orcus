@@ -309,7 +309,7 @@ void test_xlsx_background_fill()
     pstring path(SRCDIR"/test/xlsx/background-color/standard.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
-    spreadsheet::import_styles& styles = doc->get_styles();
+    spreadsheet::styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -355,7 +355,7 @@ void test_xlsx_text_alignment()
     pstring path(SRCDIR"/test/xlsx/text-alignment/input.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
-    spreadsheet::import_styles& styles = doc->get_styles();
+    spreadsheet::styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -421,7 +421,7 @@ void test_xlsx_cell_borders_single_cells()
     pstring path(SRCDIR"/test/xlsx/borders/single-cells.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
-    spreadsheet::import_styles& styles = doc->get_styles();
+    spreadsheet::styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -471,7 +471,7 @@ void test_xlsx_cell_borders_directions()
     pstring path(SRCDIR"/test/xlsx/borders/directions.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
-    spreadsheet::import_styles& styles = doc->get_styles();
+    spreadsheet::styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
@@ -580,7 +580,7 @@ void test_xlsx_cell_borders_colors()
     pstring path(SRCDIR"/test/xlsx/borders/colors.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
-    spreadsheet::import_styles& styles = doc->get_styles();
+    spreadsheet::styles& styles = doc->get_styles();
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);

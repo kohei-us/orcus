@@ -1281,7 +1281,7 @@ void build_border_style(ostringstream& os, const char* style_name, const border_
     os << "; ";
 }
 
-void build_style_string(string& str, const import_styles& styles, const cell_format_t& fmt)
+void build_style_string(string& str, const styles& styles, const cell_format_t& fmt)
 {
     ostringstream os;
     if (fmt.font)
@@ -1518,7 +1518,7 @@ void sheet::dump_html(std::ostream& os) const
                 if (xf_id)
                 {
                     // Apply cell format.
-                    import_styles& styles = mp_impl->m_doc.get_styles();
+                    styles& styles = mp_impl->m_doc.get_styles();
                     const cell_format_t* fmt = styles.get_cell_format(xf_id);
                     if (fmt)
                         build_style_string(style, styles, *fmt);

@@ -280,7 +280,7 @@ struct document_impl
     ixion::model_context m_context;
     date_time_t m_origin_date;
     sheet_items_type m_sheets;
-    import_styles m_styles;
+    styles m_styles;
     import_shared_strings* mp_strings;
     ixion::dirty_formula_cells_t m_dirty_cells;
 
@@ -324,12 +324,12 @@ const import_shared_strings* document::get_shared_strings() const
     return mp_impl->mp_strings;
 }
 
-import_styles& document::get_styles()
+styles& document::get_styles()
 {
     return mp_impl->m_styles;
 }
 
-const import_styles& document::get_styles() const
+const styles& document::get_styles() const
 {
     return mp_impl->m_styles;
 }

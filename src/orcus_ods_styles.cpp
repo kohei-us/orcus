@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     if (argc != 2)
         return EXIT_FAILURE;
     string_pool sp;
-    spreadsheet::import_styles styles(sp);
+    spreadsheet::styles styles(sp);
     spreadsheet::_import_styles istyles(styles);
 
     std::string content = load_file_content(argv[1]);

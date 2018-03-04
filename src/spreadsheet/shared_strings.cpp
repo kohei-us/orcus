@@ -55,7 +55,7 @@ bool format_run::formatted() const
     return false;
 }
 
-import_shared_strings::import_shared_strings(orcus::string_pool& sp, ixion::model_context& cxt, import_styles& styles) :
+import_shared_strings::import_shared_strings(orcus::string_pool& sp, ixion::model_context& cxt, styles& styles) :
     m_string_pool(sp), m_cxt(cxt), m_styles(styles), mp_cur_format_runs(nullptr) {}
 
 import_shared_strings::~import_shared_strings()

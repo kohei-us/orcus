@@ -10,7 +10,7 @@
 
 namespace orcus { namespace spreadsheet {
 
-_import_styles::_import_styles(orcus::spreadsheet::import_styles& styles) : m_styles(styles) {}
+_import_styles::_import_styles(orcus::spreadsheet::styles& styles) : m_styles(styles) {}
 _import_styles::~_import_styles() {}
 
 void _import_styles::set_font_count(size_t n)
