@@ -157,22 +157,8 @@ public:
     styles(string_pool& sp);
     ~styles();
 
-    void set_font_count(size_t n);
-    void set_font_bold(bool b);
-    void set_font_italic(bool b);
-    void set_font_name(const char* s, size_t n);
-    void set_font_size(double point);
-    void set_font_underline(underline_t e);
-    void set_font_underline_width(underline_width_t e);
-    void set_font_underline_mode(underline_mode_t e);
-    void set_font_underline_type(underline_type_t e);
-    void set_font_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    void set_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    void set_strikethrough_style(strikethrough_style_t s);
-    void set_strikethrough_type(strikethrough_type_t s);
-    void set_strikethrough_width(strikethrough_width_t s);
-    void set_strikethrough_text(strikethrough_text_t s);
-    size_t commit_font();
+    void reserve_font_store(size_t n);
+    size_t append_font(const font_t& font);
 
     void set_fill_count(size_t n);
     void set_fill_pattern_type(fill_pattern_t fp);
@@ -247,7 +233,6 @@ public:
 private:
     string_pool& m_string_pool;
 
-    font_t m_cur_font;
     fill_t m_cur_fill;
     border_t m_cur_border;
     protection_t m_cur_protection;

@@ -156,7 +156,7 @@ struct import_factory::impl
         m_pc_records(doc),
         m_ref_resolver(doc),
         m_global_named_exp(doc),
-        m_styles(doc.get_styles()) {}
+        m_styles(doc.get_styles(), doc.get_string_pool()) {}
 };
 
 import_factory::import_factory(document& doc, row_t row_size, col_t col_size) :

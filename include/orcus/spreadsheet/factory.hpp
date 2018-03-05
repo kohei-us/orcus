@@ -14,7 +14,11 @@
 
 #include <memory>
 
-namespace orcus { namespace spreadsheet {
+namespace orcus {
+
+class string_pool;
+
+namespace spreadsheet {
 
 class document;
 class view;
@@ -49,9 +53,10 @@ public:
 
 class ORCUS_SPM_DLLPUBLIC import_styles : public iface::import_styles
 {
-    orcus::spreadsheet::styles& m_styles;
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 public:
-    import_styles(orcus::spreadsheet::styles& styles);
+    import_styles(styles& styles, string_pool& sp);
     virtual ~import_styles() override;
 
     virtual void set_font_count(size_t n) override;
