@@ -19,6 +19,7 @@ struct import_styles::impl
 
     font_t m_cur_font;
     fill_t m_cur_fill;
+    border_t m_cur_border;
 
     impl(styles& styles, string_pool& sp) :
         m_styles(styles),
@@ -141,28 +142,76 @@ size_t import_styles::commit_fill()
 
 void import_styles::set_border_count(size_t n)
 {
-    mp_impl->m_styles.set_border_count(n);
+    mp_impl->m_styles.reserve_border_store(n);
+}
+
+namespace {
+
+border_attrs_t* get_border_attrs(border_t& cur_border, border_direction_t dir)
+{
+    border_attrs_t* p = nullptr;
+    switch (dir)
+    {
+        case border_direction_t::top:
+            p = &cur_border.top;
+        break;
+        case border_direction_t::bottom:
+            p = &cur_border.bottom;
+        break;
+        case border_direction_t::left:
+            p = &cur_border.left;
+        break;
+        case border_direction_t::right:
+            p = &cur_border.right;
+        break;
+        case border_direction_t::diagonal:
+            p = &cur_border.diagonal;
+        break;
+        case border_direction_t::diagonal_bl_tr:
+            p = &cur_border.diagonal_bl_tr;
+        break;
+        case border_direction_t::diagonal_tl_br:
+            p = &cur_border.diagonal_tl_br;
+        break;
+        default:
+            ;
+    }
+
+    return p;
+}
+
 }
 
 void import_styles::set_border_style(border_direction_t dir, border_style_t style)
 {
-    mp_impl->m_styles.set_border_style(dir, style);
+    border_attrs_t* p = get_border_attrs(mp_impl->m_cur_border, dir);
+    if (p)
+        p->style = style;
 }
 
 void import_styles::set_border_color(
     border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
-    mp_impl->m_styles.set_border_color(dir, alpha, red, green, blue);
+    border_attrs_t* p = get_border_attrs(mp_impl->m_cur_border, dir);
+    if (p)
+        p->border_color = color_t(alpha, red, green, blue);
 }
 
 void import_styles::set_border_width(border_direction_t dir, double width, orcus::length_unit_t unit)
 {
-    mp_impl->m_styles.set_border_width(dir, width, unit);
+    border_attrs_t* p = get_border_attrs(mp_impl->m_cur_border, dir);
+    if (p)
+    {
+        p->border_width.value = width;
+        p->border_width.unit = unit;
+    }
 }
 
 size_t import_styles::commit_border()
 {
-    return mp_impl->m_styles.commit_border();
+    size_t border_id = mp_impl->m_styles.append_border(mp_impl->m_cur_border);
+    mp_impl->m_cur_border.reset();
+    return border_id;
 }
 
 void import_styles::set_cell_hidden(bool b)

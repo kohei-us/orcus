@@ -163,12 +163,8 @@ public:
     void reserve_fill_store(size_t n);
     size_t append_fill(const fill_t& fill);
 
-    void set_border_count(size_t n);
-    void set_border_style(border_direction_t dir, border_style_t style);
-    void set_border_color(
-        border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    void set_border_width(border_direction_t dir, double width, orcus::length_unit_t unit);
-    size_t commit_border();
+    void reserve_border_store(size_t n);
+    size_t append_border(const border_t& border);
 
     void set_cell_hidden(bool b);
     void set_cell_locked(bool b);
@@ -230,7 +226,6 @@ public:
 private:
     string_pool& m_string_pool;
 
-    border_t m_cur_border;
     protection_t m_cur_protection;
     number_format_t m_cur_number_format;
     cell_format_t m_cur_cell_format;

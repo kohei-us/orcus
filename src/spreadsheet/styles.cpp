@@ -180,77 +180,14 @@ size_t styles::append_fill(const fill_t& fill)
     return m_fills.size() - 1;
 }
 
-namespace {
-
-border_attrs_t* get_border_attrs(border_t& cur_border, border_direction_t dir)
-{
-    border_attrs_t* p = nullptr;
-    switch (dir)
-    {
-        case border_direction_t::top:
-            p = &cur_border.top;
-        break;
-        case border_direction_t::bottom:
-            p = &cur_border.bottom;
-        break;
-        case border_direction_t::left:
-            p = &cur_border.left;
-        break;
-        case border_direction_t::right:
-            p = &cur_border.right;
-        break;
-        case border_direction_t::diagonal:
-            p = &cur_border.diagonal;
-        break;
-        case border_direction_t::diagonal_bl_tr:
-            p = &cur_border.diagonal_bl_tr;
-        break;
-        case border_direction_t::diagonal_tl_br:
-            p = &cur_border.diagonal_tl_br;
-        break;
-        default:
-            ;
-    }
-
-    return p;
-}
-
-}
-
-void styles::set_border_count(size_t n)
+void styles::reserve_border_store(size_t n)
 {
     m_borders.reserve(n);
 }
 
-void styles::set_border_style(border_direction_t dir, border_style_t style)
+size_t styles::append_border(const border_t& border)
 {
-    border_attrs_t* p = get_border_attrs(m_cur_border, dir);
-    if (p)
-        p->style = style;
-}
-
-void styles::set_border_color(
-    border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
-{
-    border_attrs_t* p = get_border_attrs(m_cur_border, dir);
-    if (p)
-        p->border_color = color_t(alpha, red, green, blue);
-}
-
-void styles::set_border_width(border_direction_t dir, double width, orcus::length_unit_t unit)
-{
-    border_attrs_t* p = get_border_attrs(m_cur_border, dir);
-    if (p)
-    {
-        p->border_width.value = width;
-        p->border_width.unit = unit;
-    }
-}
-
-size_t styles::commit_border()
-{
-    m_borders.push_back(m_cur_border);
-    m_cur_border.reset();
+    m_borders.push_back(border);
     return m_borders.size() - 1;
 }
 
