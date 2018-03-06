@@ -169,30 +169,14 @@ size_t styles::append_font(const font_t& font)
     return m_fonts.size() - 1;
 }
 
-void styles::set_fill_count(size_t n)
+void styles::reserve_fill_store(size_t n)
 {
     m_fills.reserve(n);
 }
 
-void styles::set_fill_pattern_type(fill_pattern_t fp)
+size_t styles::append_fill(const fill_t& fill)
 {
-    m_cur_fill.pattern_type = fp;
-}
-
-void styles::set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
-{
-    m_cur_fill.fg_color = color_t(alpha, red, green, blue);
-}
-
-void styles::set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
-{
-    m_cur_fill.bg_color = color_t(alpha, red, green, blue);
-}
-
-size_t styles::commit_fill()
-{
-    m_fills.push_back(m_cur_fill);
-    m_cur_fill.reset();
+    m_fills.push_back(fill);
     return m_fills.size() - 1;
 }
 

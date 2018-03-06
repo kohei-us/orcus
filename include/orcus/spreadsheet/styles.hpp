@@ -160,11 +160,8 @@ public:
     void reserve_font_store(size_t n);
     size_t append_font(const font_t& font);
 
-    void set_fill_count(size_t n);
-    void set_fill_pattern_type(fill_pattern_t fp);
-    void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    void set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    size_t commit_fill();
+    void reserve_fill_store(size_t n);
+    size_t append_fill(const fill_t& fill);
 
     void set_border_count(size_t n);
     void set_border_style(border_direction_t dir, border_style_t style);
@@ -233,7 +230,6 @@ public:
 private:
     string_pool& m_string_pool;
 
-    fill_t m_cur_fill;
     border_t m_cur_border;
     protection_t m_cur_protection;
     number_format_t m_cur_number_format;
