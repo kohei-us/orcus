@@ -197,25 +197,14 @@ size_t styles::append_protection(const protection_t& protection)
     return m_protections.size() - 1;
 }
 
-void styles::set_number_format_count(size_t n)
+void styles::reserve_number_format_store(size_t n)
 {
     m_number_formats.reserve(n);
 }
 
-void styles::set_number_format_identifier(size_t id)
+size_t styles::append_number_format(const number_format_t& nf)
 {
-    m_cur_number_format.identifier = id;
-}
-
-void styles::set_number_format_code(const char* s, size_t n)
-{
-    m_cur_number_format.format_string = pstring(s, n);
-}
-
-size_t styles::commit_number_format()
-{
-    m_number_formats.push_back(m_cur_number_format);
-    m_cur_number_format.reset();
+    m_number_formats.push_back(nf);
     return m_number_formats.size() - 1;
 }
 

@@ -168,10 +168,8 @@ public:
 
     size_t append_protection(const protection_t& protection);
 
-    void set_number_format_count(size_t n);
-    void set_number_format_identifier(size_t id);
-    void set_number_format_code(const char* s, size_t n);
-    size_t commit_number_format();
+    void reserve_number_format_store(size_t n);
+    size_t append_number_format(const number_format_t& nf);
 
     void set_cell_style_xf_count(size_t n);
     size_t commit_cell_style_xf();
@@ -222,7 +220,6 @@ public:
 private:
     string_pool& m_string_pool;
 
-    number_format_t m_cur_number_format;
     cell_format_t m_cur_cell_format;
     cell_style_t m_cur_cell_style;
 

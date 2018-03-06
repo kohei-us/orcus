@@ -21,6 +21,7 @@ struct import_styles::impl
     fill_t m_cur_fill;
     border_t m_cur_border;
     protection_t m_cur_protection;
+    number_format_t m_cur_number_format;
 
     impl(styles& styles, string_pool& sp) :
         m_styles(styles),
@@ -244,22 +245,24 @@ size_t import_styles::commit_cell_protection()
 
 void import_styles::set_number_format_count(size_t n)
 {
-    mp_impl->m_styles.set_number_format_count(n);
+    mp_impl->m_styles.reserve_number_format_store(n);
 }
 
 void import_styles::set_number_format_identifier(size_t id)
 {
-    mp_impl->m_styles.set_number_format_identifier(id);
+    mp_impl->m_cur_number_format.identifier = id;
 }
 
 void import_styles::set_number_format_code(const char* s, size_t n)
 {
-    mp_impl->m_styles.set_number_format_code(s, n);
+    mp_impl->m_cur_number_format.format_string = pstring(s, n);
 }
 
 size_t import_styles::commit_number_format()
 {
-    return mp_impl->m_styles.commit_number_format();
+    size_t nf_id = mp_impl->m_styles.append_number_format(mp_impl->m_cur_number_format);
+    mp_impl->m_cur_number_format.reset();
+    return nf_id;
 }
 
 void import_styles::set_cell_xf_count(size_t n)
