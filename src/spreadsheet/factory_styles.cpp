@@ -20,6 +20,7 @@ struct import_styles::impl
     font_t m_cur_font;
     fill_t m_cur_fill;
     border_t m_cur_border;
+    protection_t m_cur_protection;
 
     impl(styles& styles, string_pool& sp) :
         m_styles(styles),
@@ -216,27 +217,29 @@ size_t import_styles::commit_border()
 
 void import_styles::set_cell_hidden(bool b)
 {
-    mp_impl->m_styles.set_cell_hidden(b);
+    mp_impl->m_cur_protection.hidden = b;
 }
 
 void import_styles::set_cell_locked(bool b)
 {
-    mp_impl->m_styles.set_cell_locked(b);
+    mp_impl->m_cur_protection.locked = b;
 }
 
 void import_styles::set_cell_print_content(bool b)
 {
-    mp_impl->m_styles.set_cell_print_content(b);
+    mp_impl->m_cur_protection.print_content = b;
 }
 
 void import_styles::set_cell_formula_hidden(bool b)
 {
-    mp_impl->m_styles.set_cell_formula_hidden(b);
+    mp_impl->m_cur_protection.formula_hidden = b;
 }
 
 size_t import_styles::commit_cell_protection()
 {
-    return mp_impl->m_styles.commit_cell_protection();
+    size_t cp_id = mp_impl->m_styles.append_protection(mp_impl->m_cur_protection);
+    mp_impl->m_cur_protection.reset();
+    return cp_id;
 }
 
 void import_styles::set_number_format_count(size_t n)

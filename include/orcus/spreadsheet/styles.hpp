@@ -166,11 +166,7 @@ public:
     void reserve_border_store(size_t n);
     size_t append_border(const border_t& border);
 
-    void set_cell_hidden(bool b);
-    void set_cell_locked(bool b);
-    void set_cell_print_content(bool b);
-    void set_cell_formula_hidden(bool b);
-    size_t commit_cell_protection();
+    size_t append_protection(const protection_t& protection);
 
     void set_number_format_count(size_t n);
     void set_number_format_identifier(size_t id);
@@ -226,7 +222,6 @@ public:
 private:
     string_pool& m_string_pool;
 
-    protection_t m_cur_protection;
     number_format_t m_cur_number_format;
     cell_format_t m_cur_cell_format;
     cell_style_t m_cur_cell_style;

@@ -191,30 +191,9 @@ size_t styles::append_border(const border_t& border)
     return m_borders.size() - 1;
 }
 
-void styles::set_cell_hidden(bool b)
+size_t styles::append_protection(const protection_t& protection)
 {
-    m_cur_protection.hidden = b;
-}
-
-void styles::set_cell_locked(bool b)
-{
-    m_cur_protection.locked = b;
-}
-
-void styles::set_cell_print_content(bool b)
-{
-    m_cur_protection.print_content = b;
-}
-
-void styles::set_cell_formula_hidden(bool b)
-{
-    m_cur_protection.formula_hidden = b;
-}
-
-size_t styles::commit_cell_protection()
-{
-    m_protections.push_back(m_cur_protection);
-    m_cur_protection.reset();
+    m_protections.push_back(protection);
     return m_protections.size() - 1;
 }
 
