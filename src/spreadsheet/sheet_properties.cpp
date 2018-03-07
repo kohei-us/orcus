@@ -8,6 +8,7 @@
 #include "orcus/spreadsheet/sheet_properties.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/measurement.hpp"
+#include "orcus/global.hpp"
 
 #include <iostream>
 
@@ -15,21 +16,18 @@ using namespace std;
 
 namespace orcus { namespace spreadsheet {
 
-struct sheet_properties_impl
+struct sheet_properties::impl
 {
     document& m_doc;
     sheet& m_sheet;
 
-    sheet_properties_impl(document& doc, sheet& sh) : m_doc(doc), m_sheet(sh) {}
+    impl(document& doc, sheet& sh) : m_doc(doc), m_sheet(sh) {}
 };
 
 sheet_properties::sheet_properties(document& doc, sheet& sh) :
-    mp_impl(new sheet_properties_impl(doc, sh)) {}
+    mp_impl(orcus::make_unique<impl>(doc, sh)) {}
 
-sheet_properties::~sheet_properties()
-{
-    delete mp_impl;
-}
+sheet_properties::~sheet_properties() {}
 
 void sheet_properties::set_column_width(col_t col, double width, orcus::length_unit_t unit)
 {

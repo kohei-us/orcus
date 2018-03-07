@@ -5,17 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_SHEET_PROPERTIES_HPP
-#define ORCUS_SHEET_PROPERTIES_HPP
+#ifndef INCLUDED_ORCUS_SHEET_PROPERTIES_HPP
+#define INCLUDED_ORCUS_SHEET_PROPERTIES_HPP
 
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/env.hpp"
+
+#include <memory>
 
 namespace orcus { namespace spreadsheet {
 
 class document;
 class sheet;
-struct sheet_properties_impl;
 
 /**
  * Implement the sheet properties import interface, but the actual
@@ -23,7 +24,8 @@ struct sheet_properties_impl;
  */
 class sheet_properties : public iface::import_sheet_properties
 {
-    sheet_properties_impl* mp_impl;
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 public:
     sheet_properties(document& doc, sheet& sh);
     ~sheet_properties();
