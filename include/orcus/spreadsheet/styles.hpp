@@ -13,7 +13,6 @@
 #include "orcus/measurement.hpp"
 #include "orcus/spreadsheet/types.hpp"
 
-#include <vector>
 #include <memory>
 
 namespace orcus { namespace spreadsheet {

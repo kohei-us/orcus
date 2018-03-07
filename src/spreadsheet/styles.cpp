@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
+#include <vector>
 
 namespace orcus { namespace spreadsheet {
 
