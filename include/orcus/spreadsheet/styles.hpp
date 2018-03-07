@@ -15,11 +15,7 @@
 
 #include <vector>
 
-namespace orcus {
-
-class string_pool;
-
-namespace spreadsheet {
+namespace orcus { namespace spreadsheet {
 
 struct ORCUS_SPM_DLLPUBLIC color_t
 {
@@ -154,7 +150,7 @@ class ORCUS_SPM_DLLPUBLIC styles
 {
 public:
 
-    styles(string_pool& sp);
+    styles();
     ~styles();
 
     void reserve_font_store(size_t n);
@@ -204,8 +200,6 @@ public:
     size_t get_cell_styles_count() const;
 
 private:
-    string_pool& m_string_pool;
-
     ::std::vector<font_t> m_fonts;
     ::std::vector<fill_t> m_fills;
     ::std::vector<border_t> m_borders;

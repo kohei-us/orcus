@@ -6,7 +6,6 @@
  */
 
 #include "orcus/spreadsheet/styles.hpp"
-#include "orcus/string_pool.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -154,8 +153,7 @@ std::ostream& operator<< (std::ostream& os, const color_t& c)
     return os;
 }
 
-styles::styles(string_pool& sp) : m_string_pool(sp) {}
-
+styles::styles() {}
 styles::~styles() {}
 
 void styles::reserve_font_store(size_t n)

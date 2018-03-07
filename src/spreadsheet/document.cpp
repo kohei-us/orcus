@@ -294,7 +294,7 @@ struct document_impl
 
     document_impl(document& doc) :
         m_doc(doc),
-        m_styles(m_string_pool),
+        m_styles(),
         mp_strings(new import_shared_strings(m_string_pool, m_context, m_styles)),
         m_pivots(doc),
         mp_name_resolver(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &m_context)),
