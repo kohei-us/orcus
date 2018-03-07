@@ -208,89 +208,37 @@ size_t styles::append_number_format(const number_format_t& nf)
     return m_number_formats.size() - 1;
 }
 
-void styles::set_cell_style_xf_count(size_t n)
+void styles::reserve_cell_style_format_store(size_t n)
 {
     m_cell_style_formats.reserve(n);
 }
 
-size_t styles::commit_cell_style_xf()
+size_t styles::append_cell_style_format(const cell_format_t& cf)
 {
-    m_cell_style_formats.push_back(m_cur_cell_format);
-    m_cur_cell_format.reset();
+    m_cell_style_formats.push_back(cf);
     return m_cell_style_formats.size() - 1;
 }
 
-void styles::set_cell_xf_count(size_t n)
+void styles::reserve_cell_format_store(size_t n)
 {
     m_cell_formats.reserve(n);
 }
 
-size_t styles::commit_cell_xf()
+size_t styles::append_cell_format(const cell_format_t& cf)
 {
-    m_cell_formats.push_back(m_cur_cell_format);
-    m_cur_cell_format.reset();
+    m_cell_formats.push_back(cf);
     return m_cell_formats.size() - 1;
 }
 
-void styles::set_dxf_count(size_t n)
+void styles::reserve_diff_cell_format_store(size_t n)
 {
     m_dxf_formats.reserve(n);
 }
 
-size_t styles::commit_dxf()
+size_t styles::append_diff_cell_format(const cell_format_t& cf)
 {
-    m_dxf_formats.push_back(m_cur_cell_format);
-    m_cur_cell_format.reset();
+    m_dxf_formats.push_back(cf);
     return m_dxf_formats.size() - 1;
-}
-
-void styles::set_xf_font(size_t index)
-{
-    m_cur_cell_format.font = index;
-}
-
-void styles::set_xf_fill(size_t index)
-{
-    m_cur_cell_format.fill = index;
-}
-
-void styles::set_xf_border(size_t index)
-{
-    m_cur_cell_format.border = index;
-
-    // TODO : we need to decide whether to have interface methods for these
-    // apply_foo attributes.  For now there is only one, for alignment.
-    m_cur_cell_format.apply_border = index > 0;
-}
-
-void styles::set_xf_protection(size_t index)
-{
-    m_cur_cell_format.protection = index;
-}
-
-void styles::set_xf_number_format(size_t index)
-{
-    m_cur_cell_format.number_format = index;
-}
-
-void styles::set_xf_style_xf(size_t index)
-{
-    m_cur_cell_format.style_xf = index;
-}
-
-void styles::set_xf_apply_alignment(bool b)
-{
-    m_cur_cell_format.apply_alignment = b;
-}
-
-void styles::set_xf_horizontal_alignment(orcus::spreadsheet::hor_alignment_t align)
-{
-    m_cur_cell_format.hor_align = align;
-}
-
-void styles::set_xf_vertical_alignment(orcus::spreadsheet::ver_alignment_t align)
-{
-    m_cur_cell_format.ver_align = align;
 }
 
 void styles::set_cell_style_count(size_t n)

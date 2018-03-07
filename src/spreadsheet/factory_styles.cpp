@@ -22,6 +22,7 @@ struct import_styles::impl
     border_t m_cur_border;
     protection_t m_cur_protection;
     number_format_t m_cur_number_format;
+    cell_format_t m_cur_cell_format;
 
     impl(styles& styles, string_pool& sp) :
         m_styles(styles),
@@ -267,77 +268,87 @@ size_t import_styles::commit_number_format()
 
 void import_styles::set_cell_xf_count(size_t n)
 {
-    mp_impl->m_styles.set_cell_xf_count(n);
+    mp_impl->m_styles.reserve_cell_format_store(n);
 }
 
 void import_styles::set_cell_style_xf_count(size_t n)
 {
-    mp_impl->m_styles.set_cell_style_xf_count(n);
+    mp_impl->m_styles.reserve_cell_style_format_store(n);
 }
 
 void import_styles::set_dxf_count(size_t n)
 {
-    mp_impl->m_styles.set_dxf_count(n);
+    mp_impl->m_styles.reserve_diff_cell_format_store(n);
 }
 
 void import_styles::set_xf_font(size_t index)
 {
-    mp_impl->m_styles.set_xf_font(index);
+    mp_impl->m_cur_cell_format.font = index;
 }
 
 void import_styles::set_xf_fill(size_t index)
 {
-    mp_impl->m_styles.set_xf_fill(index);
+    mp_impl->m_cur_cell_format.fill = index;
 }
 
 void import_styles::set_xf_border(size_t index)
 {
-    mp_impl->m_styles.set_xf_border(index);
+    mp_impl->m_cur_cell_format.border = index;
+
+    // TODO : we need to decide whether to have interface methods for these
+    // apply_foo attributes.  For now there is only one, for alignment.
+    mp_impl->m_cur_cell_format.apply_border = index > 0;
 }
 
 void import_styles::set_xf_protection(size_t index)
 {
-    mp_impl->m_styles.set_xf_protection(index);
+    mp_impl->m_cur_cell_format.protection = index;
 }
 
 void import_styles::set_xf_number_format(size_t index)
 {
-    mp_impl->m_styles.set_xf_number_format(index);
+    mp_impl->m_cur_cell_format.number_format = index;
 }
 
 void import_styles::set_xf_style_xf(size_t index)
 {
-    mp_impl->m_styles.set_xf_style_xf(index);
+    mp_impl->m_cur_cell_format.style_xf = index;
 }
 
 void import_styles::set_xf_apply_alignment(bool b)
 {
-    mp_impl->m_styles.set_xf_apply_alignment(b);
+    mp_impl->m_cur_cell_format.apply_alignment = b;
 }
 
-void import_styles::set_xf_horizontal_alignment(hor_alignment_t align)
+void import_styles::set_xf_horizontal_alignment(orcus::spreadsheet::hor_alignment_t align)
 {
-    mp_impl->m_styles.set_xf_horizontal_alignment(align);
+    mp_impl->m_cur_cell_format.hor_align = align;
 }
 
-void import_styles::set_xf_vertical_alignment(ver_alignment_t align)
+void import_styles::set_xf_vertical_alignment(orcus::spreadsheet::ver_alignment_t align)
 {
-    mp_impl->m_styles.set_xf_vertical_alignment(align);
+    mp_impl->m_cur_cell_format.ver_align = align;
 }
 
 size_t import_styles::commit_cell_xf()
 {
-    return mp_impl->m_styles.commit_cell_xf();
+    size_t n = mp_impl->m_styles.append_cell_format(mp_impl->m_cur_cell_format);
+    mp_impl->m_cur_cell_format.reset();
+    return n;
 }
 
 size_t import_styles::commit_cell_style_xf()
 {
-    return mp_impl->m_styles.commit_cell_style_xf();
+    size_t n = mp_impl->m_styles.append_cell_style_format(mp_impl->m_cur_cell_format);
+    mp_impl->m_cur_cell_format.reset();
+    return n;
 }
 
 size_t import_styles::commit_dxf()
 {
-    return mp_impl->m_styles.commit_dxf();
+    size_t n = mp_impl->m_styles.append_diff_cell_format(mp_impl->m_cur_cell_format);
+    mp_impl->m_cur_cell_format.reset();
+    return n;
 }
 
 void import_styles::set_cell_style_count(size_t n)

@@ -171,24 +171,14 @@ public:
     void reserve_number_format_store(size_t n);
     size_t append_number_format(const number_format_t& nf);
 
-    void set_cell_style_xf_count(size_t n);
-    size_t commit_cell_style_xf();
+    void reserve_cell_style_format_store(size_t n);
+    size_t append_cell_style_format(const cell_format_t& cf);
 
-    void set_cell_xf_count(size_t n);
-    size_t commit_cell_xf();
+    void reserve_cell_format_store(size_t n);
+    size_t append_cell_format(const cell_format_t& cf);
 
-    void set_dxf_count(size_t n);
-    size_t commit_dxf();
-
-    void set_xf_font(size_t index);
-    void set_xf_fill(size_t index);
-    void set_xf_border(size_t index);
-    void set_xf_protection(size_t index);
-    void set_xf_number_format(size_t index);
-    void set_xf_style_xf(size_t index);
-    void set_xf_apply_alignment(bool b);
-    void set_xf_horizontal_alignment(orcus::spreadsheet::hor_alignment_t align);
-    void set_xf_vertical_alignment(orcus::spreadsheet::ver_alignment_t align);
+    void reserve_diff_cell_format_store(size_t n);
+    size_t append_diff_cell_format(const cell_format_t& cf);
 
     void set_cell_style_count(size_t n);
     void set_cell_style_name(const char* s, size_t n);
@@ -220,7 +210,6 @@ public:
 private:
     string_pool& m_string_pool;
 
-    cell_format_t m_cur_cell_format;
     cell_style_t m_cur_cell_style;
 
     ::std::vector<font_t> m_fonts;
