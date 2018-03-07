@@ -14,6 +14,7 @@
 #include "orcus/spreadsheet/types.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace orcus { namespace spreadsheet {
 
@@ -148,8 +149,10 @@ ORCUS_SPM_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_t& c
 
 class ORCUS_SPM_DLLPUBLIC styles
 {
-public:
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
+public:
     styles();
     ~styles();
 
@@ -198,17 +201,6 @@ public:
     size_t get_cell_style_formats_count() const;
     size_t get_dxf_count() const;
     size_t get_cell_styles_count() const;
-
-private:
-    ::std::vector<font_t> m_fonts;
-    ::std::vector<fill_t> m_fills;
-    ::std::vector<border_t> m_borders;
-    ::std::vector<protection_t> m_protections;
-    ::std::vector<number_format_t> m_number_formats;
-    ::std::vector<cell_format_t> m_cell_style_formats;
-    ::std::vector<cell_format_t> m_cell_formats;
-    ::std::vector<cell_format_t> m_dxf_formats;
-    ::std::vector<cell_style_t> m_cell_styles;
 };
 
 }}

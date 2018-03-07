@@ -6,6 +6,7 @@
  */
 
 #include "orcus/spreadsheet/styles.hpp"
+#include "orcus/global.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -153,218 +154,231 @@ std::ostream& operator<< (std::ostream& os, const color_t& c)
     return os;
 }
 
-styles::styles() {}
+struct styles::impl
+{
+    std::vector<font_t> m_fonts;
+    std::vector<fill_t> m_fills;
+    std::vector<border_t> m_borders;
+    std::vector<protection_t> m_protections;
+    std::vector<number_format_t> m_number_formats;
+    std::vector<cell_format_t> m_cell_style_formats;
+    std::vector<cell_format_t> m_cell_formats;
+    std::vector<cell_format_t> m_dxf_formats;
+    std::vector<cell_style_t> m_cell_styles;
+};
+
+styles::styles() : mp_impl(orcus::make_unique<impl>()) {}
 styles::~styles() {}
 
 void styles::reserve_font_store(size_t n)
 {
-    m_fonts.reserve(n);
+    mp_impl->m_fonts.reserve(n);
 }
 
 size_t styles::append_font(const font_t& font)
 {
-    m_fonts.push_back(font);
-    return m_fonts.size() - 1;
+    mp_impl->m_fonts.push_back(font);
+    return mp_impl->m_fonts.size() - 1;
 }
 
 void styles::reserve_fill_store(size_t n)
 {
-    m_fills.reserve(n);
+    mp_impl->m_fills.reserve(n);
 }
 
 size_t styles::append_fill(const fill_t& fill)
 {
-    m_fills.push_back(fill);
-    return m_fills.size() - 1;
+    mp_impl->m_fills.push_back(fill);
+    return mp_impl->m_fills.size() - 1;
 }
 
 void styles::reserve_border_store(size_t n)
 {
-    m_borders.reserve(n);
+    mp_impl->m_borders.reserve(n);
 }
 
 size_t styles::append_border(const border_t& border)
 {
-    m_borders.push_back(border);
-    return m_borders.size() - 1;
+    mp_impl->m_borders.push_back(border);
+    return mp_impl->m_borders.size() - 1;
 }
 
 size_t styles::append_protection(const protection_t& protection)
 {
-    m_protections.push_back(protection);
-    return m_protections.size() - 1;
+    mp_impl->m_protections.push_back(protection);
+    return mp_impl->m_protections.size() - 1;
 }
 
 void styles::reserve_number_format_store(size_t n)
 {
-    m_number_formats.reserve(n);
+    mp_impl->m_number_formats.reserve(n);
 }
 
 size_t styles::append_number_format(const number_format_t& nf)
 {
-    m_number_formats.push_back(nf);
-    return m_number_formats.size() - 1;
+    mp_impl->m_number_formats.push_back(nf);
+    return mp_impl->m_number_formats.size() - 1;
 }
 
 void styles::reserve_cell_style_format_store(size_t n)
 {
-    m_cell_style_formats.reserve(n);
+    mp_impl->m_cell_style_formats.reserve(n);
 }
 
 size_t styles::append_cell_style_format(const cell_format_t& cf)
 {
-    m_cell_style_formats.push_back(cf);
-    return m_cell_style_formats.size() - 1;
+    mp_impl->m_cell_style_formats.push_back(cf);
+    return mp_impl->m_cell_style_formats.size() - 1;
 }
 
 void styles::reserve_cell_format_store(size_t n)
 {
-    m_cell_formats.reserve(n);
+    mp_impl->m_cell_formats.reserve(n);
 }
 
 size_t styles::append_cell_format(const cell_format_t& cf)
 {
-    m_cell_formats.push_back(cf);
-    return m_cell_formats.size() - 1;
+    mp_impl->m_cell_formats.push_back(cf);
+    return mp_impl->m_cell_formats.size() - 1;
 }
 
 void styles::reserve_diff_cell_format_store(size_t n)
 {
-    m_dxf_formats.reserve(n);
+    mp_impl->m_dxf_formats.reserve(n);
 }
 
 size_t styles::append_diff_cell_format(const cell_format_t& cf)
 {
-    m_dxf_formats.push_back(cf);
-    return m_dxf_formats.size() - 1;
+    mp_impl->m_dxf_formats.push_back(cf);
+    return mp_impl->m_dxf_formats.size() - 1;
 }
 
 void styles::reserve_cell_style_store(size_t n)
 {
-    m_cell_styles.reserve(n);
+    mp_impl->m_cell_styles.reserve(n);
 }
 
 size_t styles::append_cell_style(const cell_style_t& cs)
 {
-    m_cell_styles.push_back(cs);
-    return m_cell_styles.size() - 1;
+    mp_impl->m_cell_styles.push_back(cs);
+    return mp_impl->m_cell_styles.size() - 1;
 }
 
 const font_t* styles::get_font(size_t index) const
 {
-    if (index >= m_fonts.size())
+    if (index >= mp_impl->m_fonts.size())
         return nullptr;
 
-    return &m_fonts[index];
+    return &mp_impl->m_fonts[index];
 }
 
 const cell_format_t* styles::get_cell_format(size_t index) const
 {
-    if (index >= m_cell_formats.size())
+    if (index >= mp_impl->m_cell_formats.size())
         return nullptr;
 
-    return &m_cell_formats[index];
+    return &mp_impl->m_cell_formats[index];
 }
 
 const fill_t* styles::get_fill(size_t index) const
 {
-    if (index >= m_fills.size())
+    if (index >= mp_impl->m_fills.size())
         return nullptr;
 
-    return &m_fills[index];
+    return &mp_impl->m_fills[index];
 }
 
 const border_t* styles::get_border(size_t index) const
 {
-    if (index >= m_borders.size())
+    if (index >= mp_impl->m_borders.size())
         return nullptr;
 
-    return &m_borders[index];
+    return &mp_impl->m_borders[index];
 }
 
 const protection_t* styles::get_protection(size_t index) const
 {
-    if (index >= m_protections.size())
+    if (index >= mp_impl->m_protections.size())
         return nullptr;
 
-    return &m_protections[index];
+    return &mp_impl->m_protections[index];
 }
 
 const number_format_t* styles::get_number_format(size_t index) const
 {
-    if (index >= m_number_formats.size())
+    if (index >= mp_impl->m_number_formats.size())
         return nullptr;
 
-    return &m_number_formats[index];
+    return &mp_impl->m_number_formats[index];
 }
 
 const cell_format_t* styles::get_cell_style_format(size_t index) const
 {
-    if (index >= m_cell_style_formats.size())
+    if (index >= mp_impl->m_cell_style_formats.size())
         return nullptr;
 
-    return &m_cell_style_formats[index];
+    return &mp_impl->m_cell_style_formats[index];
 }
 
 const cell_format_t* styles::get_dxf_format(size_t index) const
 {
-    if (index >= m_dxf_formats.size())
+    if (index >= mp_impl->m_dxf_formats.size())
         return nullptr;
 
-    return &m_dxf_formats[index];
+    return &mp_impl->m_dxf_formats[index];
 }
 
 const cell_style_t* styles::get_cell_style(size_t index) const
 {
-    if (index >= m_cell_styles.size())
+    if (index >= mp_impl->m_cell_styles.size())
         return nullptr;
 
-    return &m_cell_styles[index];
+    return &mp_impl->m_cell_styles[index];
 }
 
 size_t styles::get_font_count() const
 {
-    return m_fonts.size();
+    return mp_impl->m_fonts.size();
 }
 
 size_t styles::get_fill_count() const
 {
-    return m_fills.size();
+    return mp_impl->m_fills.size();
 }
 
 size_t styles::get_border_count() const
 {
-    return m_borders.size();
+    return mp_impl->m_borders.size();
 }
 
 size_t styles::get_protection_count() const
 {
-    return m_protections.size();
+    return mp_impl->m_protections.size();
 }
 
 size_t styles::get_number_format_count() const
 {
-    return m_number_formats.size();
+    return mp_impl->m_number_formats.size();
 }
 
 size_t styles::get_cell_formats_count() const
 {
-    return m_cell_formats.size();
+    return mp_impl->m_cell_formats.size();
 }
 
 size_t styles::get_cell_style_formats_count() const
 {
-    return m_cell_style_formats.size();
+    return mp_impl->m_cell_style_formats.size();
 }
 
 size_t styles::get_dxf_count() const
 {
-    return m_dxf_formats.size();
+    return mp_impl->m_dxf_formats.size();
 }
 
 size_t styles::get_cell_styles_count() const
 {
-    return m_cell_styles.size();
+    return mp_impl->m_cell_styles.size();
 }
 
 }}
