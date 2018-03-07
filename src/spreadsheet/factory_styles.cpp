@@ -23,6 +23,7 @@ struct import_styles::impl
     protection_t m_cur_protection;
     number_format_t m_cur_number_format;
     cell_format_t m_cur_cell_format;
+    cell_style_t m_cur_cell_style;
 
     impl(styles& styles, string_pool& sp) :
         m_styles(styles),
@@ -353,32 +354,36 @@ size_t import_styles::commit_dxf()
 
 void import_styles::set_cell_style_count(size_t n)
 {
-    mp_impl->m_styles.set_cell_style_count(n);
+    mp_impl->m_styles.reserve_cell_style_store(n);
 }
 
 void import_styles::set_cell_style_name(const char* s, size_t n)
 {
-    mp_impl->m_styles.set_cell_style_name(s, n);
+    mp_impl->m_cur_cell_style.name =
+        mp_impl->m_string_pool.intern(s, n).first;
 }
 
 void import_styles::set_cell_style_xf(size_t index)
 {
-    mp_impl->m_styles.set_cell_style_xf(index);
+    mp_impl->m_cur_cell_style.xf = index;
 }
 
 void import_styles::set_cell_style_builtin(size_t index)
 {
-    mp_impl->m_styles.set_cell_style_builtin(index);
+    mp_impl->m_cur_cell_style.builtin = index;
 }
 
 void import_styles::set_cell_style_parent_name(const char* s, size_t n)
 {
-    mp_impl->m_styles.set_cell_style_parent_name(s, n);
+    mp_impl->m_cur_cell_style.parent_name =
+        mp_impl->m_string_pool.intern(s, n).first;
 }
 
 size_t import_styles::commit_cell_style()
 {
-    return mp_impl->m_styles.commit_cell_style();
+    size_t n = mp_impl->m_styles.append_cell_style(mp_impl->m_cur_cell_style);
+    mp_impl->m_cur_cell_style.reset();
+    return n;
 }
 
 }}

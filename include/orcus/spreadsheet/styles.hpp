@@ -180,12 +180,8 @@ public:
     void reserve_diff_cell_format_store(size_t n);
     size_t append_diff_cell_format(const cell_format_t& cf);
 
-    void set_cell_style_count(size_t n);
-    void set_cell_style_name(const char* s, size_t n);
-    void set_cell_style_xf(size_t index);
-    void set_cell_style_builtin(size_t index);
-    void set_cell_style_parent_name(const char* s, size_t n);
-    size_t commit_cell_style();
+    void reserve_cell_style_store(size_t n);
+    size_t append_cell_style(const cell_style_t& cs);
 
     const font_t* get_font(size_t index) const;
     const fill_t* get_fill(size_t index) const;
@@ -209,8 +205,6 @@ public:
 
 private:
     string_pool& m_string_pool;
-
-    cell_style_t m_cur_cell_style;
 
     ::std::vector<font_t> m_fonts;
     ::std::vector<fill_t> m_fills;

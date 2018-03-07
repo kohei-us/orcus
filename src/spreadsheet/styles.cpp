@@ -241,35 +241,14 @@ size_t styles::append_diff_cell_format(const cell_format_t& cf)
     return m_dxf_formats.size() - 1;
 }
 
-void styles::set_cell_style_count(size_t n)
+void styles::reserve_cell_style_store(size_t n)
 {
     m_cell_styles.reserve(n);
 }
 
-void styles::set_cell_style_name(const char* s, size_t n)
+size_t styles::append_cell_style(const cell_style_t& cs)
 {
-    m_cur_cell_style.name = m_string_pool.intern(s, n).first;
-}
-
-void styles::set_cell_style_xf(size_t index)
-{
-    m_cur_cell_style.xf = index;
-}
-
-void styles::set_cell_style_builtin(size_t index)
-{
-    m_cur_cell_style.builtin = index;
-}
-
-void styles::set_cell_style_parent_name(const char* s, size_t n)
-{
-    m_cur_cell_style.parent_name = m_string_pool.intern(s, n).first;
-}
-
-size_t styles::commit_cell_style()
-{
-    m_cell_styles.push_back(m_cur_cell_style);
-    m_cur_cell_style.reset();
+    m_cell_styles.push_back(cs);
     return m_cell_styles.size() - 1;
 }
 
