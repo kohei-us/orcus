@@ -41,10 +41,38 @@ void import_sheet_named_exp::define_name(
     cxt.set_named_expression(m_sheet_index, p_name, n_name, std::move(tokens_p));
 }
 
+import_data_table::import_data_table(sheet& sh) : m_sheet(sh) {}
+import_data_table::~import_data_table() {}
+
+void import_data_table::reset()
+{
+}
+
+void import_data_table::set_type(data_table_type_t type)
+{
+}
+
+void import_data_table::set_range(const char* p_range, size_t n_range)
+{
+}
+
+void import_data_table::set_first_reference(const char* p_ref, size_t n_ref, bool deleted)
+{
+}
+
+void import_data_table::set_second_reference(const char* p_ref, size_t n_ref, bool deleted)
+{
+}
+
+void import_data_table::commit()
+{
+}
+
 import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_sheet(sh),
     m_named_exp(doc, sh.get_index()),
-    m_sheet_properties(doc, sh)
+    m_sheet_properties(doc, sh),
+    m_data_table(sh)
 {
     if (view)
         m_sheet_view = orcus::make_unique<import_sheet_view>(*view, sh.get_index());
@@ -69,7 +97,7 @@ iface::import_conditional_format* import_sheet::get_conditional_format()
 
 iface::import_data_table* import_sheet::get_data_table()
 {
-    return m_sheet.get_data_table();
+    return &m_data_table;
 }
 
 iface::import_named_expression* import_sheet::get_named_expression()

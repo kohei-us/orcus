@@ -51,11 +51,32 @@ public:
     virtual void set_merge_cell_range(const range_t& range);
 };
 
+class import_data_table : public iface::import_data_table
+{
+    sheet& m_sheet;
+public:
+    import_data_table(sheet& sh);
+    ~import_data_table();
+
+    void reset();
+
+    virtual void set_type(data_table_type_t type) override;
+
+    virtual void set_range(const char* p_range, size_t n_range) override;
+
+    virtual void set_first_reference(const char* p_ref, size_t n_ref, bool deleted) override;
+
+    virtual void set_second_reference(const char* p_ref, size_t n_ref, bool deleted) override;
+
+    virtual void commit() override;
+};
+
 class import_sheet : public iface::import_sheet
 {
     sheet& m_sheet;
     import_sheet_named_exp m_named_exp;
     import_sheet_properties m_sheet_properties;
+    import_data_table m_data_table;
     std::unique_ptr<import_sheet_view> m_sheet_view;
 
 public:

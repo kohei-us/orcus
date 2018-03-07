@@ -18,7 +18,6 @@
 #include "orcus/measurement.hpp"
 #include "orcus/string_pool.hpp"
 
-#include "data_table.hpp"
 #include "table.hpp"
 #include "formula_global.hpp"
 #include "json_dumper.hpp"
@@ -163,7 +162,6 @@ public:
 struct sheet_impl
 {
     document& m_doc;
-    data_table m_data_table;            /// data table import interface.
     sheet_auto_filter m_auto_filter;    /// auto filter import interface.
     table m_table;                      /// table import interface.
 
@@ -193,7 +191,6 @@ struct sheet_impl
 
     sheet_impl(document& doc, sheet& sh, sheet_t sheet_index, row_t row_size, col_t col_size) :
         m_doc(doc),
-        m_data_table(sh),
         m_auto_filter(sh, doc.get_string_pool()),
         m_table(doc, sh),
         m_col_widths(0, col_size, get_default_column_width()),
@@ -307,12 +304,6 @@ sheet::sheet(document& doc, sheet_t sheet_index, row_t row_size, col_t col_size)
 sheet::~sheet()
 {
     delete mp_impl;
-}
-
-iface::import_data_table* sheet::get_data_table()
-{
-    mp_impl->m_data_table.reset();
-    return &mp_impl->m_data_table;
 }
 
 iface::import_table* sheet::get_table()

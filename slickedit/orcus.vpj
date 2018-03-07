@@ -487,8 +487,6 @@
 				<F N="../src/spreadsheet/config.cpp"/>
 				<F N="../src/spreadsheet/csv_dumper.cpp"/>
 				<F N="../src/spreadsheet/csv_dumper.hpp"/>
-				<F N="../src/spreadsheet/data_table.cpp"/>
-				<F N="../src/spreadsheet/data_table.hpp"/>
 				<F N="../src/spreadsheet/document.cpp"/>
 				<F N="../src/spreadsheet/dumper_global.cpp"/>
 				<F N="../src/spreadsheet/dumper_global.hpp"/>
