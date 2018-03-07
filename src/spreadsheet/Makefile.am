@@ -34,7 +34,6 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	pivot.cpp \
 	shared_strings.cpp \
 	sheet.cpp \
-	sheet_properties.cpp \
 	sheet_range.cpp \
 	styles.cpp \
 	table.hpp \

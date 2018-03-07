@@ -44,7 +44,6 @@ public:
 
     // Import methods
 
-    iface::import_sheet_properties* get_sheet_properties();
     iface::import_data_table* get_data_table();
     iface::import_table* get_table();
     iface::import_auto_filter* get_auto_filter();

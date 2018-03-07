@@ -180,7 +180,6 @@
 					<F N="../include/orcus/spreadsheet/pivot.hpp"/>
 					<F N="../include/orcus/spreadsheet/shared_strings.hpp"/>
 					<F N="../include/orcus/spreadsheet/sheet.hpp"/>
-					<F N="../include/orcus/spreadsheet/sheet_properties.hpp"/>
 					<F N="../include/orcus/spreadsheet/sheet_range.hpp"/>
 					<F N="../include/orcus/spreadsheet/styles.hpp"/>
 					<F N="../include/orcus/spreadsheet/types.hpp"/>

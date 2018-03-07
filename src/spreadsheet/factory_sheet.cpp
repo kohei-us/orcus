@@ -10,6 +10,7 @@
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/view.hpp"
 #include "orcus/global.hpp"
+#include "orcus/measurement.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/model_context.hpp>
@@ -42,7 +43,8 @@ void import_sheet_named_exp::define_name(
 
 import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_sheet(sh),
-    m_named_exp(doc, sh.get_index())
+    m_named_exp(doc, sh.get_index()),
+    m_sheet_properties(doc, sh)
 {
     if (view)
         m_sheet_view = orcus::make_unique<import_sheet_view>(*view, sh.get_index());
@@ -77,7 +79,7 @@ iface::import_named_expression* import_sheet::get_named_expression()
 
 iface::import_sheet_properties* import_sheet::get_sheet_properties()
 {
-    return m_sheet.get_sheet_properties();
+    return &m_sheet_properties;
 }
 
 iface::import_table* import_sheet::get_table()
@@ -207,6 +209,39 @@ void import_sheet_view::set_sheet_active()
     m_view.get_document_view().set_active_sheet(m_sheet_index);
 }
 
+import_sheet_properties::import_sheet_properties(document& doc, sheet& sh) :
+    m_doc(doc), m_sheet(sh) {}
+
+import_sheet_properties::~import_sheet_properties() {}
+
+void import_sheet_properties::set_column_width(col_t col, double width, orcus::length_unit_t unit)
+{
+    col_width_t w = orcus::convert(width, unit, length_unit_t::twip);
+    m_sheet.set_col_width(col, w);
+}
+
+void import_sheet_properties::set_column_hidden(col_t col, bool hidden)
+{
+    m_sheet.set_col_hidden(col, hidden);
+}
+
+void import_sheet_properties::set_row_height(row_t row, double height, orcus::length_unit_t unit)
+{
+    row_height_t h = orcus::convert(height, unit, length_unit_t::twip);
+    m_sheet.set_row_height(row, h);
+}
+
+void import_sheet_properties::set_row_hidden(row_t row, bool hidden)
+{
+    m_sheet.set_row_hidden(row, hidden);
+}
+
+void import_sheet_properties::set_merge_cell_range(const range_t& range)
+{
+    m_sheet.set_merge_cell_range(range);
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
+

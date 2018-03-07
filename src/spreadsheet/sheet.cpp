@@ -9,7 +9,6 @@
 
 #include "orcus/spreadsheet/styles.hpp"
 #include "orcus/spreadsheet/shared_strings.hpp"
-#include "orcus/spreadsheet/sheet_properties.hpp"
 #include "orcus/spreadsheet/sheet_range.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/auto_filter.hpp"
@@ -164,7 +163,6 @@ public:
 struct sheet_impl
 {
     document& m_doc;
-    sheet_properties m_sheet_props;     /// sheet properties import interface.
     data_table m_data_table;            /// data table import interface.
     sheet_auto_filter m_auto_filter;    /// auto filter import interface.
     table m_table;                      /// table import interface.
@@ -195,7 +193,7 @@ struct sheet_impl
 
     sheet_impl(document& doc, sheet& sh, sheet_t sheet_index, row_t row_size, col_t col_size) :
         m_doc(doc),
-        m_sheet_props(doc, sh), m_data_table(sh),
+        m_data_table(sh),
         m_auto_filter(sh, doc.get_string_pool()),
         m_table(doc, sh),
         m_col_widths(0, col_size, get_default_column_width()),
@@ -309,11 +307,6 @@ sheet::sheet(document& doc, sheet_t sheet_index, row_t row_size, col_t col_size)
 sheet::~sheet()
 {
     delete mp_impl;
-}
-
-iface::import_sheet_properties* sheet::get_sheet_properties()
-{
-    return &mp_impl->m_sheet_props;
 }
 
 iface::import_data_table* sheet::get_data_table()

@@ -32,10 +32,30 @@ public:
     virtual void define_name(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) override;
 };
 
+/**
+ * Implement the sheet properties import interface, but the actual
+ * properties are stored in sheet.
+ */
+class import_sheet_properties : public iface::import_sheet_properties
+{
+    document& m_doc;
+    sheet& m_sheet;
+public:
+    import_sheet_properties(document& doc, sheet& sh);
+    ~import_sheet_properties();
+
+    virtual void set_column_width(col_t col, double width, orcus::length_unit_t unit);
+    virtual void set_column_hidden(col_t col, bool hidden);
+    virtual void set_row_height(row_t row, double height, orcus::length_unit_t unit);
+    virtual void set_row_hidden(row_t row, bool hidden);
+    virtual void set_merge_cell_range(const range_t& range);
+};
+
 class import_sheet : public iface::import_sheet
 {
     sheet& m_sheet;
     import_sheet_named_exp m_named_exp;
+    import_sheet_properties m_sheet_properties;
     std::unique_ptr<import_sheet_view> m_sheet_view;
 
 public:
