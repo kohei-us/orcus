@@ -93,76 +93,11 @@ struct overlapped_cells_tree_builder : std::unary_function<overlapped_cells_type
     }
 };
 
-class sheet_auto_filter : public orcus::spreadsheet::iface::import_auto_filter
-{
-    sheet& m_sheet;
-    orcus::string_pool& m_string_pool;
-    const ixion::formula_name_resolver* mp_resolver;
-    std::unique_ptr<auto_filter_t> mp_data;
-    col_t m_cur_col;
-    auto_filter_column_t m_cur_col_data;
-
-public:
-    sheet_auto_filter(sheet& sh, orcus::string_pool& sp) :
-        m_sheet(sh),
-        m_string_pool(sp),
-        mp_resolver(nullptr),
-        m_cur_col(-1) {}
-
-    void reset()
-    {
-        mp_resolver = nullptr;
-        mp_data.reset(new auto_filter_t);
-        m_cur_col = -1;
-        m_cur_col_data.reset();
-    }
-
-    void set_resolver(const ixion::formula_name_resolver* resolver)
-    {
-        mp_resolver = resolver;
-    }
-
-    virtual void set_range(const char* p_ref, size_t n_ref)
-    {
-        if (!mp_resolver)
-            return;
-
-        mp_data->range = to_abs_range(*mp_resolver, p_ref, n_ref);
-    }
-
-    virtual void set_column(orcus::spreadsheet::col_t col)
-    {
-        m_cur_col = col;
-    }
-
-    virtual void append_column_match_value(const char* p, size_t n)
-    {
-        // The string pool belongs to the document.
-        pstring s = m_string_pool.intern(p, n).first;
-        m_cur_col_data.match_values.insert(s);
-    }
-
-    virtual void commit_column()
-    {
-        if (!mp_data)
-            return;
-
-        mp_data->commit_column(m_cur_col, m_cur_col_data);
-        m_cur_col_data.reset();
-    }
-
-    virtual void commit()
-    {
-        m_sheet.set_auto_filter_data(mp_data.release());
-    }
-};
-
 }
 
 struct sheet_impl
 {
     document& m_doc;
-    sheet_auto_filter m_auto_filter;    /// auto filter import interface.
     table m_table;                      /// table import interface.
 
     mutable col_widths_store_type m_col_widths;
@@ -191,7 +126,6 @@ struct sheet_impl
 
     sheet_impl(document& doc, sheet& sh, sheet_t sheet_index, row_t row_size, col_t col_size) :
         m_doc(doc),
-        m_auto_filter(sh, doc.get_string_pool()),
         m_table(doc, sh),
         m_col_widths(0, col_size, get_default_column_width()),
         m_row_heights(0, row_size, get_default_row_height()),
@@ -310,13 +244,6 @@ iface::import_table* sheet::get_table()
 {
     mp_impl->m_table.reset();
     return &mp_impl->m_table;
-}
-
-iface::import_auto_filter* sheet::get_auto_filter()
-{
-    mp_impl->m_auto_filter.reset();
-    mp_impl->m_auto_filter.set_resolver(mp_impl->m_doc.get_formula_name_resolver());
-    return &mp_impl->m_auto_filter;
 }
 
 void sheet::set_auto(row_t row, col_t col, const char* p, size_t n)

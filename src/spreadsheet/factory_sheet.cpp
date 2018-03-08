@@ -11,6 +11,9 @@
 #include "orcus/spreadsheet/view.hpp"
 #include "orcus/global.hpp"
 #include "orcus/measurement.hpp"
+#include "orcus/string_pool.hpp"
+
+#include "formula_global.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/model_context.hpp>
@@ -68,11 +71,66 @@ void import_data_table::commit()
 {
 }
 
+import_auto_filter::import_auto_filter(sheet& sh, string_pool& sp) :
+    m_sheet(sh),
+    m_string_pool(sp),
+    mp_resolver(nullptr),
+    m_cur_col(-1) {}
+
+void import_auto_filter::reset()
+{
+    mp_resolver = nullptr;
+    mp_data.reset(new auto_filter_t);
+    m_cur_col = -1;
+    m_cur_col_data.reset();
+}
+
+void import_auto_filter::set_resolver(const ixion::formula_name_resolver* resolver)
+{
+    mp_resolver = resolver;
+}
+
+void import_auto_filter::set_range(const char* p_ref, size_t n_ref)
+{
+    if (!mp_resolver)
+        return;
+
+    mp_data->range = to_abs_range(*mp_resolver, p_ref, n_ref);
+}
+
+void import_auto_filter::set_column(col_t col)
+{
+    m_cur_col = col;
+}
+
+void import_auto_filter::append_column_match_value(const char* p, size_t n)
+{
+    // The string pool belongs to the document.
+    pstring s = m_string_pool.intern(p, n).first;
+    m_cur_col_data.match_values.insert(s);
+}
+
+void import_auto_filter::commit_column()
+{
+    if (!mp_data)
+        return;
+
+    mp_data->commit_column(m_cur_col, m_cur_col_data);
+    m_cur_col_data.reset();
+}
+
+void import_auto_filter::commit()
+{
+    m_sheet.set_auto_filter_data(mp_data.release());
+}
+
 import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
+    m_doc(doc),
     m_sheet(sh),
     m_named_exp(doc, sh.get_index()),
     m_sheet_properties(doc, sh),
-    m_data_table(sh)
+    m_data_table(sh),
+    m_auto_filter(sh, doc.get_string_pool())
 {
     if (view)
         m_sheet_view = orcus::make_unique<import_sheet_view>(*view, sh.get_index());
@@ -87,7 +145,9 @@ iface::import_sheet_view* import_sheet::get_sheet_view()
 
 iface::import_auto_filter* import_sheet::get_auto_filter()
 {
-    return m_sheet.get_auto_filter();
+    m_auto_filter.reset();
+    m_auto_filter.set_resolver(m_doc.get_formula_name_resolver());
+    return &m_auto_filter;
 }
 
 iface::import_conditional_format* import_sheet::get_conditional_format()
