@@ -83,7 +83,7 @@ public:
 
 }
 
-struct table_impl
+struct table::impl
 {
     document& m_doc;
     sheet& m_sheet;
@@ -93,19 +93,16 @@ struct table_impl
     std::unique_ptr<table_t> mp_data;
     table_column_t m_column;
 
-    table_impl(const table_impl&) = delete;
-    table_impl& operator=(const table_impl&) = delete;
+    impl(const impl&) = delete;
+    impl& operator=(const impl&) = delete;
 
-    table_impl(document& doc, sheet& sh) :
+    impl(document& doc, sheet& sh) :
         m_doc(doc), m_sheet(sh), m_auto_filter(doc) {}
 };
 
-table::table(document& doc, sheet& sh) : mp_impl(new table_impl(doc, sh)) {}
+table::table(document& doc, sheet& sh) : mp_impl(orcus::make_unique<impl>(doc, sh)) {}
 
-table::~table()
-{
-    delete mp_impl;
-}
+table::~table() {}
 
 iface::import_auto_filter* table::get_auto_filter()
 {

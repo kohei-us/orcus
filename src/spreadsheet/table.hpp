@@ -5,20 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_SPREADSHEET_TABLE_HPP
-#define ORCUS_SPREADSHEET_TABLE_HPP
+#ifndef INCLUDED_ORCUS_SPREADSHEET_TABLE_HPP
+#define INCLUDED_ORCUS_SPREADSHEET_TABLE_HPP
 
 #include "orcus/spreadsheet/import_interface.hpp"
+
+#include <memory>
 
 namespace orcus { namespace spreadsheet {
 
 class document;
 class sheet;
-struct table_impl;
 
 class table : public iface::import_table
 {
-    table_impl* mp_impl;
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
 public:
     table(document& doc, sheet& sh);
