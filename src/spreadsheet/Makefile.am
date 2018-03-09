@@ -23,6 +23,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	factory_sheet.hpp \
 	factory_sheet.cpp \
 	factory_styles.cpp \
+	factory_table.hpp \
+	factory_table.cpp \
 	formula_global.hpp \
 	formula_global.cpp \
 	csv_dumper.hpp \
@@ -34,8 +36,6 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	sheet.cpp \
 	sheet_range.cpp \
 	styles.cpp \
-	table.hpp \
-	table.cpp \
 	view.cpp \
 	global_settings.cpp
 
