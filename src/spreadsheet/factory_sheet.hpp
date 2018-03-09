@@ -114,7 +114,7 @@ class import_sheet : public iface::import_sheet
     import_sheet_properties m_sheet_properties;
     import_data_table m_data_table;
     import_auto_filter m_auto_filter;
-    table m_table;
+    import_table m_table;
     std::unique_ptr<import_sheet_view> m_sheet_view;
 
 public:

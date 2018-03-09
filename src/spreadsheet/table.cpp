@@ -83,7 +83,7 @@ public:
 
 }
 
-struct table::impl
+struct import_table::impl
 {
     document& m_doc;
     sheet& m_sheet;
@@ -100,17 +100,17 @@ struct table::impl
         m_doc(doc), m_sheet(sh), m_auto_filter(doc) {}
 };
 
-table::table(document& doc, sheet& sh) : mp_impl(orcus::make_unique<impl>(doc, sh)) {}
+import_table::import_table(document& doc, sheet& sh) : mp_impl(orcus::make_unique<impl>(doc, sh)) {}
 
-table::~table() {}
+import_table::~import_table() {}
 
-iface::import_auto_filter* table::get_auto_filter()
+iface::import_auto_filter* import_table::get_auto_filter()
 {
     mp_impl->m_auto_filter.reset(&mp_impl->mp_data->filter, mp_impl->m_doc.get_formula_name_resolver());
     return &mp_impl->m_auto_filter;
 }
 
-void table::set_range(const char* p_ref, size_t n_ref)
+void import_table::set_range(const char* p_ref, size_t n_ref)
 {
     const ixion::formula_name_resolver* resolver = mp_impl->m_doc.get_formula_name_resolver();
     if (!resolver)
@@ -122,99 +122,99 @@ void table::set_range(const char* p_ref, size_t n_ref)
         range.first.sheet = range.last.sheet = mp_impl->m_sheet.get_index();
 }
 
-void table::set_identifier(size_t id)
+void import_table::set_identifier(size_t id)
 {
     mp_impl->mp_data->identifier = id;
 }
 
-void table::set_name(const char* p, size_t n)
+void import_table::set_name(const char* p, size_t n)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
     mp_impl->mp_data->name = sp.intern(p, n).first;
 }
 
-void table::set_display_name(const char* p, size_t n)
+void import_table::set_display_name(const char* p, size_t n)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
     mp_impl->mp_data->display_name = sp.intern(p, n).first;
 }
 
-void table::set_totals_row_count(size_t row_count)
+void import_table::set_totals_row_count(size_t row_count)
 {
     mp_impl->mp_data->totals_row_count = row_count;
 }
 
-void table::set_column_count(size_t n)
+void import_table::set_column_count(size_t n)
 {
     mp_impl->mp_data->columns.reserve(n);
 }
 
-void table::set_column_identifier(size_t id)
+void import_table::set_column_identifier(size_t id)
 {
     mp_impl->m_column.identifier = id;
 }
 
-void table::set_column_name(const char* p, size_t n)
+void import_table::set_column_name(const char* p, size_t n)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
     mp_impl->m_column.name = sp.intern(p, n).first;
 }
 
-void table::set_column_totals_row_label(const char* p, size_t n)
+void import_table::set_column_totals_row_label(const char* p, size_t n)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
     mp_impl->m_column.totals_row_label = sp.intern(p, n).first;
 }
 
-void table::set_column_totals_row_function(orcus::spreadsheet::totals_row_function_t func)
+void import_table::set_column_totals_row_function(orcus::spreadsheet::totals_row_function_t func)
 {
     mp_impl->m_column.totals_row_function = func;
 }
 
-void table::commit_column()
+void import_table::commit_column()
 {
     mp_impl->mp_data->columns.push_back(mp_impl->m_column);
     mp_impl->m_column.reset();
 }
 
-void table::set_style_name(const char* p, size_t n)
+void import_table::set_style_name(const char* p, size_t n)
 {
     table_style_t& style = mp_impl->mp_data->style;
     string_pool& sp = mp_impl->m_doc.get_string_pool();
     style.name = sp.intern(p, n).first;
 }
 
-void table::set_style_show_first_column(bool b)
+void import_table::set_style_show_first_column(bool b)
 {
     table_style_t& style = mp_impl->mp_data->style;
     style.show_first_column = b;
 }
 
-void table::set_style_show_last_column(bool b)
+void import_table::set_style_show_last_column(bool b)
 {
     table_style_t& style = mp_impl->mp_data->style;
     style.show_last_column = b;
 }
 
-void table::set_style_show_row_stripes(bool b)
+void import_table::set_style_show_row_stripes(bool b)
 {
     table_style_t& style = mp_impl->mp_data->style;
     style.show_row_stripes = b;
 }
 
-void table::set_style_show_column_stripes(bool b)
+void import_table::set_style_show_column_stripes(bool b)
 {
     table_style_t& style = mp_impl->mp_data->style;
     style.show_column_stripes = b;
 }
 
-void table::commit()
+void import_table::commit()
 {
     mp_impl->m_doc.insert_table(mp_impl->mp_data.release());
     mp_impl->mp_data.reset(new table_t);
 }
 
-void table::reset()
+void import_table::reset()
 {
     mp_impl->mp_data.reset(new table_t);
     mp_impl->m_column.reset();

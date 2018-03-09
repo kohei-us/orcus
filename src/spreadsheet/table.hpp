@@ -17,14 +17,14 @@ namespace orcus { namespace spreadsheet {
 class document;
 class sheet;
 
-class table : public iface::import_table
+class import_table : public iface::import_table
 {
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
 public:
-    table(document& doc, sheet& sh);
-    ~table();
+    import_table(document& doc, sheet& sh);
+    ~import_table();
 
     virtual iface::import_auto_filter* get_auto_filter();
 
