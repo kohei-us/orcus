@@ -18,7 +18,6 @@
 #include "orcus/measurement.hpp"
 #include "orcus/string_pool.hpp"
 
-#include "table.hpp"
 #include "formula_global.hpp"
 #include "json_dumper.hpp"
 #include "csv_dumper.hpp"
@@ -98,7 +97,6 @@ struct overlapped_cells_tree_builder : std::unary_function<overlapped_cells_type
 struct sheet_impl
 {
     document& m_doc;
-    table m_table;                      /// table import interface.
 
     mutable col_widths_store_type m_col_widths;
     mutable row_heights_store_type m_row_heights;
@@ -126,7 +124,6 @@ struct sheet_impl
 
     sheet_impl(document& doc, sheet& sh, sheet_t sheet_index, row_t row_size, col_t col_size) :
         m_doc(doc),
-        m_table(doc, sh),
         m_col_widths(0, col_size, get_default_column_width()),
         m_row_heights(0, row_size, get_default_row_height()),
         m_col_width_pos(m_col_widths.begin()),
@@ -238,12 +235,6 @@ sheet::sheet(document& doc, sheet_t sheet_index, row_t row_size, col_t col_size)
 sheet::~sheet()
 {
     delete mp_impl;
-}
-
-iface::import_table* sheet::get_table()
-{
-    mp_impl->m_table.reset();
-    return &mp_impl->m_table;
 }
 
 void sheet::set_auto(row_t row, col_t col, const char* p, size_t n)

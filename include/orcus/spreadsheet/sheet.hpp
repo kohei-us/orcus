@@ -42,10 +42,6 @@ public:
     sheet(document& doc, sheet_t sheet_index, row_t row_size, col_t col_size);
     virtual ~sheet();
 
-    // Import methods
-
-    iface::import_table* get_table();
-
     void set_auto(row_t row, col_t col, const char* p, size_t n);
     void set_string(row_t row, col_t col, size_t sindex);
     void set_value(row_t row, col_t col, double value);

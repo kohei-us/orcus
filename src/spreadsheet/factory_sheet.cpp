@@ -130,7 +130,8 @@ import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_named_exp(doc, sh.get_index()),
     m_sheet_properties(doc, sh),
     m_data_table(sh),
-    m_auto_filter(sh, doc.get_string_pool())
+    m_auto_filter(sh, doc.get_string_pool()),
+    m_table(doc, sh)
 {
     if (view)
         m_sheet_view = orcus::make_unique<import_sheet_view>(*view, sh.get_index());
@@ -172,7 +173,8 @@ iface::import_sheet_properties* import_sheet::get_sheet_properties()
 
 iface::import_table* import_sheet::get_table()
 {
-    return m_sheet.get_table();
+    m_table.reset();
+    return &m_table;
 }
 
 void import_sheet::set_array_formula(row_t row, col_t col, formula_grammar_t grammar, const char* p, size_t n, const char* p_range, size_t n_range)
