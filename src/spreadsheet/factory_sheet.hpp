@@ -12,6 +12,8 @@
 #include "orcus/spreadsheet/import_interface_view.hpp"
 #include "orcus/spreadsheet/auto_filter.hpp"
 
+#include "orcus/spreadsheet/export_interface.hpp"
+
 #include "factory_table.hpp"
 
 #include <memory>
@@ -97,7 +99,7 @@ public:
 
     virtual void set_range(const char* p_ref, size_t n_ref) override;
 
-    virtual void set_column(orcus::spreadsheet::col_t col) override;
+    virtual void set_column(col_t col) override;
 
     virtual void append_column_match_value(const char* p, size_t n) override;
 
@@ -157,16 +159,26 @@ public:
 
     virtual void set_split_pane(
         double hor_split, double ver_split,
-        const orcus::spreadsheet::address_t& top_left_cell,
-        orcus::spreadsheet::sheet_pane_t active_pane) override;
+        const address_t& top_left_cell,
+        sheet_pane_t active_pane) override;
 
     virtual void set_frozen_pane(
-        orcus::spreadsheet::col_t visible_columns,
-        orcus::spreadsheet::row_t visible_rows,
-        const orcus::spreadsheet::address_t& top_left_cell,
-        orcus::spreadsheet::sheet_pane_t active_pane) override;
+        col_t visible_columns, row_t visible_rows,
+        const address_t& top_left_cell,
+        sheet_pane_t active_pane) override;
 
     virtual void set_selected_range(sheet_pane_t pane, range_t range) override;
+};
+
+class export_sheet : public iface::export_sheet
+{
+    const document& m_doc;
+    const sheet& m_sheet;
+public:
+    export_sheet(const document& doc, const sheet& sh);
+    ~export_sheet();
+
+    virtual void write_string(std::ostream& os, row_t row, col_t col) const override;
 };
 
 }}

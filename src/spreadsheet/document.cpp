@@ -417,6 +417,12 @@ sheet* document::append_sheet(const pstring& sheet_name, row_t row_size, col_t c
 
 sheet* document::get_sheet(const pstring& sheet_name)
 {
+    const sheet* sh = const_cast<const document*>(this)->get_sheet(sheet_name);
+    return const_cast<sheet*>(sh);
+}
+
+const sheet* document::get_sheet(const pstring& sheet_name) const
+{
     auto it = std::find_if(
         mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(), find_sheet_by_name(sheet_name));
 
@@ -428,10 +434,8 @@ sheet* document::get_sheet(const pstring& sheet_name)
 
 sheet* document::get_sheet(sheet_t sheet_pos)
 {
-    if (static_cast<size_t>(sheet_pos) >= mp_impl->m_sheets.size())
-        return nullptr;
-
-    return &mp_impl->m_sheets[sheet_pos]->data;
+    const sheet* sh = const_cast<const document*>(this)->get_sheet(sheet_pos);
+    return const_cast<sheet*>(sh);
 }
 
 const sheet* document::get_sheet(sheet_t sheet_pos) const

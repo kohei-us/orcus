@@ -331,6 +331,32 @@ void import_sheet_properties::set_merge_cell_range(const range_t& range)
     m_sheet.set_merge_cell_range(range);
 }
 
+export_sheet::export_sheet(const document& doc, const sheet& sh) : m_doc(doc), m_sheet(sh) {}
+export_sheet::~export_sheet() {}
+
+void export_sheet::write_string(std::ostream& os, row_t row, col_t col) const
+{
+    const ixion::model_context& cxt = m_doc.get_model_context();
+    ixion::abs_address_t pos(m_sheet.get_index(), row, col);
+
+    switch (cxt.get_celltype(pos))
+    {
+        case ixion::celltype_t::string:
+        {
+            size_t str_id = cxt.get_string_identifier(pos);
+            const std::string* p = cxt.get_string(str_id);
+            if (p)
+                os << *p;
+        }
+        break;
+        case ixion::celltype_t::numeric:
+            os << cxt.get_numeric_value(pos);
+        break;
+        default:
+            ;
+    }
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

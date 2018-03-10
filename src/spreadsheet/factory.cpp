@@ -25,6 +25,7 @@
 #include <ixion/model_context.hpp>
 #include <sstream>
 #include <iostream>
+#include <unordered_map>
 
 namespace orcus { namespace spreadsheet {
 
@@ -270,12 +271,39 @@ void import_factory::set_default_column_size(col_t col_size)
 
 struct export_factory_impl
 {
-    document& m_doc;
+    const document& m_doc;
 
-    export_factory_impl(document& doc) : m_doc(doc) {}
+    std::vector<std::unique_ptr<export_sheet>> m_sheets;
+    std::unordered_map<pstring, sheet_t, pstring::hash> m_sheet_index_map;
+
+    export_factory_impl(const document& doc) : m_doc(doc) {}
+
+    export_sheet* get_sheet(const pstring& name)
+    {
+        auto it = m_sheet_index_map.find(name);
+        if (it != m_sheet_index_map.end())
+        {
+            // Instance for this sheet already exists.
+            sheet_t sheet_pos = it->second;
+            assert(size_t(sheet_pos) < m_sheets.size());
+            return m_sheets[sheet_pos].get();
+        }
+
+        const sheet* sh = m_doc.get_sheet(name);
+        if (!sh)
+            return nullptr;
+
+        sheet_t sheet_pos = m_sheets.size();
+        m_sheets.emplace_back(orcus::make_unique<export_sheet>(m_doc, *sh));
+
+        m_sheet_index_map.insert(
+            std::make_pair(name, sheet_pos));
+
+        return m_sheets[sheet_pos].get();
+    }
 };
 
-export_factory::export_factory(document& doc) :
+export_factory::export_factory(const document& doc) :
     mp_impl(new export_factory_impl(doc)) {}
 
 export_factory::~export_factory()
@@ -285,7 +313,8 @@ export_factory::~export_factory()
 
 const iface::export_sheet* export_factory::get_sheet(const char* sheet_name, size_t sheet_name_length) const
 {
-    return mp_impl->m_doc.get_sheet(pstring(sheet_name, sheet_name_length));
+    pstring name(sheet_name, sheet_name_length);
+    return mp_impl->get_sheet(name);
 }
 
 }}

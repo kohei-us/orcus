@@ -131,7 +131,7 @@ struct export_factory_impl;
 class ORCUS_SPM_DLLPUBLIC export_factory : public iface::export_factory
 {
 public:
-    export_factory(document& doc);
+    export_factory(const document& doc);
     virtual ~export_factory();
 
     virtual const iface::export_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) const;

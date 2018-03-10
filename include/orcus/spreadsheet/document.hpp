@@ -67,6 +67,7 @@ public:
 
     sheet* append_sheet(const pstring& sheet_name, row_t row_size, col_t col_size);
     sheet* get_sheet(const pstring& sheet_name);
+    const sheet* get_sheet(const pstring& sheet_name) const;
     sheet* get_sheet(sheet_t sheet_pos);
     const sheet* get_sheet(sheet_t sheet_pos) const;
 

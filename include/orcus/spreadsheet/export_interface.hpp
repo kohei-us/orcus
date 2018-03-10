@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_SPREADSHEET_EXPORT_INTERFACE_HPP__
-#define __ORCUS_SPREADSHEET_EXPORT_INTERFACE_HPP__
+#ifndef INCLUDED_ORCUS_SPREADSHEET_EXPORT_INTERFACE_HPP
+#define INCLUDED_ORCUS_SPREADSHEET_EXPORT_INTERFACE_HPP
 
 #include "types.hpp"
 #include "../env.hpp"

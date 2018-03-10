@@ -133,6 +133,10 @@ void test_mapped_xml_import()
             dump_xml_structure(dump_input, strm_data_file, data_file.c_str(), cxt);
             dump_xml_structure(dump_output, strm_out_file, out_file.c_str(), cxt);
             assert(!dump_input.empty() && !dump_output.empty());
+
+            cout << dump_input << endl;
+            cout << "--" << endl;
+            cout << dump_output << endl;
             assert(dump_input == dump_output);
         }
 
