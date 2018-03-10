@@ -408,28 +408,6 @@ void sheet::set_formula_result(row_t row, col_t col, const char* p, size_t n)
 {
 }
 
-void sheet::write_string(ostream& os, row_t row, col_t col) const
-{
-    const ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
-    ixion::abs_address_t pos(mp_impl->m_sheet, row, col);
-    switch (cxt.get_celltype(pos))
-    {
-        case ixion::celltype_t::string:
-        {
-            size_t str_id = cxt.get_string_identifier(pos);
-            const string* p = cxt.get_string(str_id);
-            if (p)
-                os << *p;
-        }
-        break;
-        case ixion::celltype_t::numeric:
-            os << cxt.get_numeric_value(pos);
-        break;
-        default:
-            ;
-    }
-}
-
 void sheet::set_col_width(col_t col, col_width_t width)
 {
     mp_impl->m_col_width_pos =

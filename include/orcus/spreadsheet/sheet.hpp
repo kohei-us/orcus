@@ -8,9 +8,8 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_ODSTABLE_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_ODSTABLE_HPP
 
-#include "orcus/spreadsheet/import_interface.hpp"
-#include "orcus/spreadsheet/export_interface.hpp"
 #include "orcus/env.hpp"
+#include "orcus/spreadsheet/types.hpp"
 
 #include <ostream>
 #include <ixion/address.hpp>
@@ -31,7 +30,7 @@ struct auto_filter_t;
  * This class represents a single sheet instance in the internal document
  * model.
  */
-class ORCUS_SPM_DLLPUBLIC sheet : public iface::export_sheet
+class ORCUS_SPM_DLLPUBLIC sheet
 {
     friend struct sheet_impl;
 
@@ -63,10 +62,6 @@ public:
             const char*, size_t, row_t, col_t);
     void set_array_formula(row_t, col_t, formula_grammar_t,
             const char*, size_t, const char*, size_t);
-
-    // Export methods
-
-    virtual void write_string(std::ostream& os, row_t row, col_t col) const;
 
     void set_col_width(col_t col, col_width_t width);
     col_width_t get_col_width(col_t col, col_t* col_start, col_t* col_end) const;
