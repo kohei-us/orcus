@@ -569,15 +569,25 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
             break;
             case XML_Filter:
             {
+                spreadsheet::iface::import_reference_resolver* resolver =
+                    mp_factory->get_reference_resolver();
+
                 mp_auto_filter = mp_sheet->get_auto_filter();
-                if (mp_auto_filter)
+
+                if (resolver && mp_auto_filter)
                 {
                     for (const xml_token_attr_t& attr : attrs)
                     {
                         switch (attr.name)
                         {
                             case XML_Area:
-                                mp_auto_filter->set_range(attr.value.get(), attr.value.size());
+                            {
+                                spreadsheet::range_t range =
+                                    resolver->resolve_range(
+                                        attr.value.data(), attr.value.size());
+
+                                mp_auto_filter->set_range(range);
+                            }
                             break;
                             default:
                                 ;

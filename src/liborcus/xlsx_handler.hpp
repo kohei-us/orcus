@@ -49,7 +49,9 @@ class xlsx_table_xml_handler : public xml_stream_handler
 {
 public:
     xlsx_table_xml_handler(
-        session_context& cxt, const tokens& tokens, spreadsheet::iface::import_table& table);
+        session_context& cxt, const tokens& tokens,
+        spreadsheet::iface::import_table& table,
+        spreadsheet::iface::import_reference_resolver& resolver);
 };
 
 class xlsx_pivot_cache_def_xml_handler : public xml_stream_handler

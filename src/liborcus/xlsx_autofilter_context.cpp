@@ -18,8 +18,12 @@ using namespace std;
 
 namespace orcus {
 
-xlsx_autofilter_context::xlsx_autofilter_context(session_context& session_cxt, const tokens& tokens) :
-    xml_context_base(session_cxt, tokens), m_cur_col(-1) {}
+xlsx_autofilter_context::xlsx_autofilter_context(
+    session_context& session_cxt, const tokens& tokens,
+    spreadsheet::iface::import_reference_resolver& resolver) :
+    xml_context_base(session_cxt, tokens),
+    m_resolver(resolver),
+    m_cur_col(-1) {}
 
 xlsx_autofilter_context::~xlsx_autofilter_context() {}
 
@@ -111,7 +115,8 @@ void xlsx_autofilter_context::characters(const pstring& /*str*/, bool /*transien
 
 void xlsx_autofilter_context::push_to_model(spreadsheet::iface::import_auto_filter& af) const
 {
-    af.set_range(m_ref_range.get(), m_ref_range.size());
+    spreadsheet::range_t range = m_resolver.resolve_range(m_ref_range.data(), m_ref_range.size());
+    af.set_range(range);
 
     column_filters_type::const_iterator it = m_column_filters.begin(), it_end = m_column_filters.end();
     for (; it != it_end; ++it)

@@ -518,6 +518,13 @@ void orcus_xlsx::read_table(const std::string& dir_path, const std::string& file
         // Client code doesn't support tables. No point going further.
         return;
 
+    spreadsheet::iface::import_reference_resolver* resolver =
+        mp_impl->mp_factory->get_reference_resolver();
+
+    if (!resolver)
+        // This client doesn't support reference resolver, but is required.
+        return;
+
     string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
@@ -535,7 +542,8 @@ void orcus_xlsx::read_table(const std::string& dir_path, const std::string& file
     if (buffer.empty())
         return;
 
-    auto handler = orcus::make_unique<xlsx_table_xml_handler>(mp_impl->m_cxt, ooxml_tokens, *table);
+    auto handler = orcus::make_unique<xlsx_table_xml_handler>(
+        mp_impl->m_cxt, ooxml_tokens, *table, *resolver);
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,

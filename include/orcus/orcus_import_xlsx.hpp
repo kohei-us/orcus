@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_ORCUS_IMPORT_XLSX_HPP
-#define ORCUS_ORCUS_IMPORT_XLSX_HPP
+#ifndef INCLUDED_ORCUS_ORCUS_IMPORT_XLSX_HPP
+#define INCLUDED_ORCUS_ORCUS_IMPORT_XLSX_HPP
 
 #include "interface.hpp"
 
@@ -14,6 +14,7 @@ namespace orcus {
 
 namespace spreadsheet { namespace iface {
     class import_table;
+    class import_reference_resolver;
 }}
 
 class ORCUS_DLLPUBLIC import_xlsx
@@ -24,10 +25,14 @@ private:
     import_xlsx& operator=(const import_xlsx&); // deleted
 
 public:
-    static void read_table(const char* p, size_t n, spreadsheet::iface::import_table* data);
+    static void read_table(
+        const char* p, size_t n,
+        spreadsheet::iface::import_table& table,
+        spreadsheet::iface::import_reference_resolver& resolver);
 };
 
 }
 
 #endif
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

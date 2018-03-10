@@ -20,6 +20,7 @@ namespace orcus {
 namespace spreadsheet { namespace iface {
 
 class import_auto_filter;
+class import_reference_resolver;
 
 }}
 
@@ -29,7 +30,9 @@ public:
     typedef std::vector<pstring> match_values_type;
     typedef std::map<spreadsheet::col_t, match_values_type> column_filters_type;
 
-    xlsx_autofilter_context(session_context& session_cxt, const tokens& tokens);
+    xlsx_autofilter_context(
+        session_context& session_cxt, const tokens& tokens,
+        spreadsheet::iface::import_reference_resolver& resolver);
     virtual ~xlsx_autofilter_context();
 
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
@@ -43,6 +46,8 @@ public:
     void push_to_model(spreadsheet::iface::import_auto_filter& af) const;
 
 private:
+    spreadsheet::iface::import_reference_resolver& m_resolver;
+
     string_pool m_pool;
 
     pstring m_ref_range;

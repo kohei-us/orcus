@@ -85,7 +85,6 @@ class import_auto_filter : public orcus::spreadsheet::iface::import_auto_filter
 {
     sheet& m_sheet;
     string_pool& m_string_pool;
-    const ixion::formula_name_resolver* mp_resolver;
     std::unique_ptr<auto_filter_t> mp_data;
     col_t m_cur_col;
     auto_filter_column_t m_cur_col_data;
@@ -95,9 +94,7 @@ public:
 
     void reset();
 
-    void set_resolver(const ixion::formula_name_resolver* resolver);
-
-    virtual void set_range(const char* p_ref, size_t n_ref) override;
+    virtual void set_range(const range_t& range) override;
 
     virtual void set_column(col_t col) override;
 

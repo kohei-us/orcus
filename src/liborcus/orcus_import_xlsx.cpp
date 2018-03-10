@@ -24,16 +24,16 @@
 
 namespace orcus {
 
-void import_xlsx::read_table(const char* p, size_t n, spreadsheet::iface::import_table* table)
+void import_xlsx::read_table(
+    const char* p, size_t n,
+    spreadsheet::iface::import_table& table,
+    spreadsheet::iface::import_reference_resolver& resolver)
 {
-    if(!table)
-        return;
-
     if (!p || !n)
         return;
 
     session_context cxt;
-    auto handler = orcus::make_unique<xlsx_table_xml_handler>(cxt, ooxml_tokens, *table);
+    auto handler = orcus::make_unique<xlsx_table_xml_handler>(cxt, ooxml_tokens, table, resolver);
 
     xmlns_repository ns_repo;
     ns_repo.add_predefined_values(NS_ooxml_all);

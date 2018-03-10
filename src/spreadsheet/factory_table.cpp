@@ -23,7 +23,7 @@ namespace {
 class table_auto_filter : public iface::import_auto_filter
 {
     string_pool& m_pool;
-    const ixion::formula_name_resolver* mp_resolver;
+    sheet_t m_sheet_pos;
     col_t m_cur_col;
     auto_filter_column_t m_cur_col_data;
     auto_filter_t m_filter_data;
@@ -31,27 +31,23 @@ class table_auto_filter : public iface::import_auto_filter
     auto_filter_t* mp_data;
 
 public:
-    table_auto_filter(document& doc) :
+    table_auto_filter(document& doc, sheet& sh) :
         m_pool(doc.get_string_pool()),
-        mp_resolver(nullptr),
+        m_sheet_pos(sh.get_index()),
         m_cur_col(-1),
         mp_data(nullptr) {}
 
-    void reset(auto_filter_t* data, const ixion::formula_name_resolver* resolver)
+    void reset(auto_filter_t* data)
     {
         mp_data = data;
-        mp_resolver = resolver;
         m_cur_col = -1;
         m_cur_col_data.reset();
         m_filter_data.reset();
     }
 
-    virtual void set_range(const char* p_ref, size_t n_ref)
+    virtual void set_range(const range_t& range)
     {
-        if (!mp_resolver)
-            return;
-
-        m_filter_data.range = to_abs_range(*mp_resolver, p_ref, n_ref);
+        m_filter_data.range = to_abs_range(range, m_sheet_pos);
     }
 
     virtual void set_column(orcus::spreadsheet::col_t col)
@@ -97,7 +93,7 @@ struct import_table::impl
     impl& operator=(const impl&) = delete;
 
     impl(document& doc, sheet& sh) :
-        m_doc(doc), m_sheet(sh), m_auto_filter(doc) {}
+        m_doc(doc), m_sheet(sh), m_auto_filter(doc, sh) {}
 };
 
 import_table::import_table(document& doc, sheet& sh) : mp_impl(orcus::make_unique<impl>(doc, sh)) {}
@@ -106,7 +102,7 @@ import_table::~import_table() {}
 
 iface::import_auto_filter* import_table::get_auto_filter()
 {
-    mp_impl->m_auto_filter.reset(&mp_impl->mp_data->filter, mp_impl->m_doc.get_formula_name_resolver());
+    mp_impl->m_auto_filter.reset(&mp_impl->mp_data->filter);
     return &mp_impl->m_auto_filter;
 }
 

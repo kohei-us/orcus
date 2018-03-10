@@ -39,8 +39,9 @@ void xlsx_sheet_xml_handler::pop_rel_extras(opc_rel_extras_t& other)
 
 xlsx_table_xml_handler::xlsx_table_xml_handler(
     session_context& session_cxt, const tokens& tokens,
-    spreadsheet::iface::import_table& table) :
-    xml_stream_handler(new xlsx_table_context(session_cxt, tokens, table))
+    spreadsheet::iface::import_table& table,
+    spreadsheet::iface::import_reference_resolver& resolver) :
+    xml_stream_handler(new xlsx_table_context(session_cxt, tokens, table, resolver))
 {
 }
 

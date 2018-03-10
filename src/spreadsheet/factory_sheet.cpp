@@ -74,28 +74,18 @@ void import_data_table::commit()
 import_auto_filter::import_auto_filter(sheet& sh, string_pool& sp) :
     m_sheet(sh),
     m_string_pool(sp),
-    mp_resolver(nullptr),
     m_cur_col(-1) {}
 
 void import_auto_filter::reset()
 {
-    mp_resolver = nullptr;
     mp_data.reset(new auto_filter_t);
     m_cur_col = -1;
     m_cur_col_data.reset();
 }
 
-void import_auto_filter::set_resolver(const ixion::formula_name_resolver* resolver)
+void import_auto_filter::set_range(const range_t& range)
 {
-    mp_resolver = resolver;
-}
-
-void import_auto_filter::set_range(const char* p_ref, size_t n_ref)
-{
-    if (!mp_resolver)
-        return;
-
-    mp_data->range = to_abs_range(*mp_resolver, p_ref, n_ref);
+    mp_data->range = to_abs_range(range, m_sheet.get_index());
 }
 
 void import_auto_filter::set_column(col_t col)
@@ -147,7 +137,6 @@ iface::import_sheet_view* import_sheet::get_sheet_view()
 iface::import_auto_filter* import_sheet::get_auto_filter()
 {
     m_auto_filter.reset();
-    m_auto_filter.set_resolver(m_doc.get_formula_name_resolver());
     return &m_auto_filter;
 }
 

@@ -182,8 +182,10 @@ public:
 }
 
 xlsx_table_context::xlsx_table_context(
-    session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_table& table) :
-    xml_context_base(session_cxt, tokens), m_table(table) {}
+    session_context& session_cxt, const tokens& tokens,
+    spreadsheet::iface::import_table& table,
+    spreadsheet::iface::import_reference_resolver& resolver) :
+    xml_context_base(session_cxt, tokens), m_table(table), m_resolver(resolver) {}
 
 xlsx_table_context::~xlsx_table_context() {}
 
@@ -199,7 +201,7 @@ xml_context_base* xlsx_table_context::create_child_context(xmlns_id_t ns, xml_to
 {
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
     {
-        mp_child.reset(new xlsx_autofilter_context(get_session_context(), get_tokens()));
+        mp_child.reset(new xlsx_autofilter_context(get_session_context(), get_tokens(), m_resolver));
         mp_child->transfer_common(*this);
         return mp_child.get();
     }

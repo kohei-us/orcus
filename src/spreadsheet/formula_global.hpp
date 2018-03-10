@@ -5,8 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_SPREADSHEET_FORMULA_GLOBAL_HPP
-#define ORCUS_SPREADSHEET_FORMULA_GLOBAL_HPP
+#ifndef INCLUDED_ORCUS_SPREADSHEET_FORMULA_GLOBAL_HPP
+#define INCLUDED_ORCUS_SPREADSHEET_FORMULA_GLOBAL_HPP
+
+#include "orcus/spreadsheet/types.hpp"
 
 #include <cstdlib>
 
@@ -18,6 +20,8 @@ class formula_name_resolver;
 }
 
 namespace orcus { namespace spreadsheet {
+
+struct range_t;
 
 /**
  * Parse a string representing a 2-dimensional range using the passed name
@@ -34,6 +38,8 @@ namespace orcus { namespace spreadsheet {
  */
 ixion::abs_range_t to_abs_range(
     const ixion::formula_name_resolver& resolver, const char* p_ref, size_t n_ref);
+
+ixion::abs_range_t to_abs_range(const range_t& range, sheet_t sheet_pos);
 
 }}
 

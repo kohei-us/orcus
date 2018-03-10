@@ -282,13 +282,12 @@ public:
     ORCUS_DLLPUBLIC virtual ~import_auto_filter() = 0;
 
     /**
-     * Specify the range where the auto filter is applied.  The range
-     * is given in a 2-dimensional A1-style reference.
+     * Specify the range where the auto filter is applied.
      *
-     * @param p_ref pointer to the first character of range string.
-     * @param n_ref length of range string.
+     * @param range structure containing the top-left and bottom-right
+     *              positions of the auto filter range.
      */
-    virtual void set_range(const char* p_ref, size_t n_ref) = 0;
+    virtual void set_range(const range_t& range) = 0;
 
     /**
      * Specify the column position of a filter. The position is relative to
