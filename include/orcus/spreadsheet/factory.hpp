@@ -126,18 +126,15 @@ public:
     virtual size_t commit_cell_style() override;
 };
 
-struct export_factory_impl;
-
 class ORCUS_SPM_DLLPUBLIC export_factory : public iface::export_factory
 {
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 public:
     export_factory(const document& doc);
     virtual ~export_factory();
 
     virtual const iface::export_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) const;
-
-private:
-    export_factory_impl* mp_impl;
 };
 
 }}

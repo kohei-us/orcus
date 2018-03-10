@@ -269,14 +269,14 @@ void import_factory::set_default_column_size(col_t col_size)
     mp_impl->m_default_col_size = col_size;
 }
 
-struct export_factory_impl
+struct export_factory::impl
 {
     const document& m_doc;
 
     std::vector<std::unique_ptr<export_sheet>> m_sheets;
     std::unordered_map<pstring, sheet_t, pstring::hash> m_sheet_index_map;
 
-    export_factory_impl(const document& doc) : m_doc(doc) {}
+    impl(const document& doc) : m_doc(doc) {}
 
     export_sheet* get_sheet(const pstring& name)
     {
@@ -304,14 +304,12 @@ struct export_factory_impl
 };
 
 export_factory::export_factory(const document& doc) :
-    mp_impl(new export_factory_impl(doc)) {}
+    mp_impl(orcus::make_unique<impl>(doc)) {}
 
-export_factory::~export_factory()
-{
-    delete mp_impl;
-}
+export_factory::~export_factory() {}
 
-const iface::export_sheet* export_factory::get_sheet(const char* sheet_name, size_t sheet_name_length) const
+const iface::export_sheet* export_factory::get_sheet(
+    const char* sheet_name, size_t sheet_name_length) const
 {
     pstring name(sheet_name, sheet_name_length);
     return mp_impl->get_sheet(name);
