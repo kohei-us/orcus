@@ -383,28 +383,6 @@ private:
 
 };
 
-class gnumeric_autofilter_attr_parser : public std::unary_function<xml_token_attr_t, void>
-{
-public:
-    gnumeric_autofilter_attr_parser(spreadsheet::iface::import_auto_filter& auto_filter):
-        m_auto_filter(auto_filter) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch(attr.name)
-        {
-            case XML_Area:
-                m_auto_filter.set_range(attr.value.get(), attr.value.size());
-            break;
-            default:
-                ;
-        }
-    }
-
-private:
-    spreadsheet::iface::import_auto_filter& m_auto_filter;
-};
-
 enum gnumeric_filter_field_op_t
 {
     filter_equal,
@@ -594,9 +572,17 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
                 mp_auto_filter = mp_sheet->get_auto_filter();
                 if (mp_auto_filter)
                 {
-                    std::for_each(attrs.begin(), attrs.end(),
-                            gnumeric_autofilter_attr_parser(
-                                *mp_auto_filter));
+                    for (const xml_token_attr_t& attr : attrs)
+                    {
+                        switch (attr.name)
+                        {
+                            case XML_Area:
+                                mp_auto_filter->set_range(attr.value.get(), attr.value.size());
+                            break;
+                            default:
+                                ;
+                        }
+                    }
                 }
             }
             break;
