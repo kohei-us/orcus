@@ -124,7 +124,7 @@ PyObject* sheet_rows_iternext(PyObject* self)
             case ixion::element_type_formula:
             {
                 const ixion::formula_cell* fc = row_pos->get<ixion::formula_element_block>();
-                const ixion::formula_result& res = fc->get_result_cache();
+                const ixion::formula_result& res = fc->get_single_result_cache();
                 switch (res.get_type())
                 {
                     case ixion::formula_result::result_type::value:
@@ -152,6 +152,8 @@ PyObject* sheet_rows_iternext(PyObject* self)
                             PyTuple_SetItem(pyobj_row, col_pos, PyUnicode_FromString(fename));
                     }
                     break;
+                    default:
+                        ;
                 }
             }
             break;

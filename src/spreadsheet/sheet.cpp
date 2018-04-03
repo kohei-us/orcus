@@ -346,7 +346,10 @@ void sheet::set_formula(row_t row, col_t col, formula_grammar_t grammar,
     // Tokenize the formula string and store it.
     ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
     ixion::abs_address_t pos(mp_impl->m_sheet, row, col);
-    cxt.set_formula_cell(pos, p, n, *resolver);
+
+    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
+
+    cxt.set_formula_cell(pos, std::move(tokens));
     ixion::register_formula_cell(cxt, pos);
     mp_impl->m_doc.insert_dirty_cell(pos);
 }
@@ -355,6 +358,7 @@ void sheet::set_shared_formula(
     row_t row, col_t col, formula_grammar_t grammar, size_t sindex,
     const char* p_formula, size_t n_formula, const char* p_range, size_t n_range)
 {
+#if 0 // FIXME
     const ixion::formula_name_resolver* resolver = mp_impl->m_doc.get_formula_name_resolver();
     if (!resolver)
         return;
@@ -363,12 +367,14 @@ void sheet::set_shared_formula(
     ixion::abs_address_t pos(mp_impl->m_sheet, row, col);
     cxt.set_shared_formula(pos, sindex, p_formula, n_formula, p_range, n_range, *resolver);
     set_shared_formula(row, col, sindex);
+#endif
 }
 
 void sheet::set_shared_formula(
     row_t row, col_t col, formula_grammar_t grammar, size_t sindex,
     const char* p_formula, size_t n_formula)
 {
+#if 0 // FIXME
     const ixion::formula_name_resolver* resolver = mp_impl->m_doc.get_formula_name_resolver();
     if (!resolver)
         return;
@@ -377,15 +383,18 @@ void sheet::set_shared_formula(
     ixion::abs_address_t pos(mp_impl->m_sheet, row, col);
     cxt.set_shared_formula(pos, sindex, p_formula, n_formula, *resolver);
     set_shared_formula(row, col, sindex);
+#endif
 }
 
 void sheet::set_shared_formula(row_t row, col_t col, size_t sindex)
 {
+#if 0 // FIXME
     ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
     ixion::abs_address_t pos(mp_impl->m_sheet, row, col);
     cxt.set_formula_cell(pos, sindex, true);
     ixion::register_formula_cell(cxt, pos);
     mp_impl->m_doc.insert_dirty_cell(pos);
+#endif
 }
 
 void sheet::set_array_formula(
@@ -723,21 +732,17 @@ void sheet::dump_flat(std::ostream& os) const
                     // print the formula and the formula result.
                     const ixion::formula_cell* cell = cxt.get_formula_cell(pos);
                     assert(cell);
-                    size_t index = cell->get_identifier();
-                    const ixion::formula_tokens_t* t = nullptr;
-                    if (cell->is_shared())
-                        t = cxt.get_shared_formula_tokens(mp_impl->m_sheet, index);
-                    else
-                        t = cxt.get_formula_tokens(mp_impl->m_sheet, index);
-
-                    if (t)
+                    const ixion::formula_tokens_store_ptr_t& ts = cell->get_tokens();
+                    if (ts)
                     {
+                        const ixion::formula_tokens_t& tokens = ts->get();
+
                         ostringstream os2;
                         string formula;
                         if (resolver)
                         {
                             formula = ixion::print_formula_tokens(
-                               mp_impl->m_doc.get_model_context(), pos, *resolver, *t);
+                               mp_impl->m_doc.get_model_context(), pos, *resolver, tokens);
                         }
                         else
                             formula = "???";
@@ -892,20 +897,15 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
                     // print the formula and the formula result.
                     const ixion::formula_cell* cell = cxt.get_formula_cell(pos);
                     assert(cell);
-                    size_t index = cell->get_identifier();
-                    const ixion::formula_tokens_t* t = nullptr;
-                    if (cell->is_shared())
-                        t = cxt.get_shared_formula_tokens(mp_impl->m_sheet, index);
-                    else
-                        t = cxt.get_formula_tokens(mp_impl->m_sheet, index);
-
-                    if (t)
+                    const ixion::formula_tokens_store_ptr_t& ts = cell->get_tokens();
+                    if (ts)
                     {
+                        const ixion::formula_tokens_t& tokens = ts->get();
                         string formula;
                         if (resolver)
                         {
                             formula = ixion::print_formula_tokens(
-                                mp_impl->m_doc.get_model_context(), pos, *resolver, *t);
+                                mp_impl->m_doc.get_model_context(), pos, *resolver, tokens);
                         }
                         else
                             formula = "???";
@@ -915,6 +915,7 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
                         const ixion::formula_result& res = cell->get_result_cache();
                         os << ':' << res.str(mp_impl->m_doc.get_model_context());
                     }
+
                     os << endl;
                     break;
                 }
@@ -1445,20 +1446,16 @@ void sheet::dump_html(std::ostream& os) const
                         // print the formula and the formula result.
                         const ixion::formula_cell* cell = cxt.get_formula_cell(pos);
                         assert(cell);
-                        size_t index = cell->get_identifier();
-                        const ixion::formula_tokens_t* t = nullptr;
-                        if (cell->is_shared())
-                            t = cxt.get_shared_formula_tokens(mp_impl->m_sheet, index);
-                        else
-                            t = cxt.get_formula_tokens(mp_impl->m_sheet, index);
-
-                        if (t)
+                        const ixion::formula_tokens_store_ptr_t& ts = cell->get_tokens();
+                        if (ts)
                         {
+                            const ixion::formula_tokens_t& tokens = ts->get();
+
                             string formula;
                             if (resolver)
                             {
                                 formula = ixion::print_formula_tokens(
-                                    mp_impl->m_doc.get_model_context(), pos, *resolver, *t);
+                                    mp_impl->m_doc.get_model_context(), pos, *resolver, tokens);
                             }
                             else
                                 formula = "???";
@@ -1468,6 +1465,7 @@ void sheet::dump_html(std::ostream& os) const
                             const ixion::formula_result& res = cell->get_result_cache();
                             os << " (" << res.str(mp_impl->m_doc.get_model_context()) << ")";
                         }
+
                         break;
                     }
                     default:
