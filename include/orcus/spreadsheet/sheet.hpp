@@ -52,7 +52,6 @@ public:
 
     void set_formula(row_t row, col_t col, const ixion::formula_tokens_store_ptr_t& tokens);
 
-    void set_formula(row_t row, col_t col, formula_grammar_t grammar, const char* p, size_t n);
     void set_formula_result(row_t row, col_t col, double value);
     void set_formula_result(row_t row, col_t col, const char* p, size_t n);
     void set_array_formula(row_t, col_t, formula_grammar_t,

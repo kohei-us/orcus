@@ -346,24 +346,6 @@ void sheet::set_formula(row_t row, col_t col, const ixion::formula_tokens_store_
     mp_impl->m_doc.insert_dirty_cell(pos);
 }
 
-void sheet::set_formula(row_t row, col_t col, formula_grammar_t grammar,
-                        const char* p, size_t n)
-{
-    const ixion::formula_name_resolver* resolver = mp_impl->m_doc.get_formula_name_resolver();
-    if (!resolver)
-        return;
-
-    // Tokenize the formula string and store it.
-    ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
-    ixion::abs_address_t pos(mp_impl->m_sheet, row, col);
-
-    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
-
-    cxt.set_formula_cell(pos, std::move(tokens));
-    ixion::register_formula_cell(cxt, pos);
-    mp_impl->m_doc.insert_dirty_cell(pos);
-}
-
 void sheet::set_array_formula(
     row_t row, col_t col, formula_grammar_t grammar,
     const char* p, size_t n, row_t array_rows, col_t array_cols)
