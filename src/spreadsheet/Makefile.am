@@ -32,6 +32,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	json_dumper.hpp \
 	json_dumper.cpp \
 	pivot.cpp \
+	shared_formula.hpp \
+	shared_formula.cpp \
 	shared_strings.cpp \
 	sheet.cpp \
 	sheet_range.cpp \

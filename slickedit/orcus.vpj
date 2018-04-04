@@ -504,6 +504,8 @@
 				<F N="../src/spreadsheet/json_dumper.cpp"/>
 				<F N="../src/spreadsheet/json_dumper.hpp"/>
 				<F N="../src/spreadsheet/pivot.cpp"/>
+				<F N="../src/spreadsheet/shared_formula.cpp"/>
+				<F N="../src/spreadsheet/shared_formula.hpp"/>
 				<F N="../src/spreadsheet/shared_strings.cpp"/>
 				<F N="../src/spreadsheet/sheet.cpp"/>
 				<F N="../src/spreadsheet/sheet_properties.cpp"/>

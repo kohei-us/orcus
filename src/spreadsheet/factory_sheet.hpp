@@ -15,6 +15,7 @@
 #include "orcus/spreadsheet/export_interface.hpp"
 
 #include "factory_table.hpp"
+#include "shared_formula.hpp"
 
 #include <memory>
 #include <ixion/formula_name_resolver.hpp>
@@ -114,6 +115,8 @@ class import_sheet : public iface::import_sheet
     import_data_table m_data_table;
     import_auto_filter m_auto_filter;
     import_table m_table;
+    shared_formula_pool m_shared_formula_pool;
+
     std::unique_ptr<import_sheet_view> m_sheet_view;
 
 public:

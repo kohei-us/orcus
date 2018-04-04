@@ -13,6 +13,7 @@
 
 #include <ostream>
 #include <ixion/address.hpp>
+#include <ixion/formula_tokens.hpp>
 
 namespace orcus {
 
@@ -48,14 +49,10 @@ public:
     void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second);
     void set_format(row_t row, col_t col, size_t index);
     void set_format(row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t index);
+
+    void set_formula(row_t row, col_t col, const ixion::formula_tokens_store_ptr_t& tokens);
+
     void set_formula(row_t row, col_t col, formula_grammar_t grammar, const char* p, size_t n);
-    void set_shared_formula(
-        row_t row, col_t col, formula_grammar_t grammar, size_t sindex,
-        const char* p_formula, size_t n_formula, const char* p_range, size_t n_range);
-    void set_shared_formula(
-        row_t row, col_t col, formula_grammar_t grammar, size_t sindex,
-        const char* p_formula, size_t n_formula);
-    void set_shared_formula(row_t row, col_t col, size_t sindex);
     void set_formula_result(row_t row, col_t col, double value);
     void set_formula_result(row_t row, col_t col, const char* p, size_t n);
     void set_array_formula(row_t, col_t, formula_grammar_t,
