@@ -48,7 +48,7 @@ void dump_cell_value(
             const ixion::formula_cell* cell = node.get<ixion::formula_element_block>();
             assert(cell);
 
-            const ixion::formula_result& res = cell->get_result_cache();
+            const ixion::formula_result& res = cell->get_single_result_cache();
 
             switch (res.get_type())
             {
@@ -66,6 +66,8 @@ void dump_cell_value(
                 case ixion::formula_result::result_type::error:
                     os << "\"#ERR!\"";
                 break;
+                default:
+                    ;
             }
             break;
         }
