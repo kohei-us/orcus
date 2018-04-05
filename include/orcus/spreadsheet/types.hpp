@@ -147,6 +147,7 @@ enum class formula_grammar_t
 
 enum class formula_t
 {
+    unknown = 0,
     array,
     data_table,
     normal,

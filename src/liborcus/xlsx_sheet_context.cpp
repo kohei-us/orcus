@@ -257,10 +257,30 @@ const map_type& get()
 
 }
 
+namespace formula_type {
+
+typedef mdds::sorted_string_map<spreadsheet::formula_t> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries = {
+    { ORCUS_ASCII("array"),     spreadsheet::formula_t::array      },
+    { ORCUS_ASCII("dataTable"), spreadsheet::formula_t::data_table },
+    { ORCUS_ASCII("normal"),    spreadsheet::formula_t::normal     },
+    { ORCUS_ASCII("shared"),    spreadsheet::formula_t::shared     },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), spreadsheet::formula_t::unknown);
+    return mt;
+}
+
+}
+
 }
 
 xlsx_sheet_context::formula::formula() :
-    type(spreadsheet::formula_t::normal),
+    type(spreadsheet::formula_t::unknown),
     str(), ref(),
     data_table_ref1(),
     data_table_ref2(),
@@ -541,15 +561,8 @@ void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, c
         switch (attr.name)
         {
             case XML_t:
-            {
-                if (attr.value == "shared")
-                    m_cur_formula.type = spreadsheet::formula_t::shared;
-                else if (attr.value == "array")
-                    m_cur_formula.type = spreadsheet::formula_t::array;
-                else if (attr.value == "dataTable")
-                    m_cur_formula.type = spreadsheet::formula_t::data_table;
+                m_cur_formula.type = formula_type::get().find(attr.value.data(), attr.value.size());
                 break;
-            }
             case XML_ref:
                 m_cur_formula.ref = attr.value;
                 break;
