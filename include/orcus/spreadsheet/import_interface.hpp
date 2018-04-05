@@ -267,7 +267,7 @@ public:
 
     virtual void set_type(orcus::spreadsheet::data_table_type_t type) = 0;
 
-    virtual void set_range(const char* p_range, size_t n_range) = 0;
+    virtual void set_range(const range_t& range) = 0;
 
     virtual void set_first_reference(const char* p_ref, size_t n_ref, bool deleted) = 0;
 

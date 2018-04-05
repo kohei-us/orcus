@@ -55,7 +55,7 @@ void import_data_table::set_type(data_table_type_t type)
 {
 }
 
-void import_data_table::set_range(const char* p_range, size_t n_range)
+void import_data_table::set_range(const range_t& range)
 {
 }
 

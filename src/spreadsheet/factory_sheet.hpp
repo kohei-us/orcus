@@ -73,7 +73,7 @@ public:
 
     virtual void set_type(data_table_type_t type) override;
 
-    virtual void set_range(const char* p_range, size_t n_range) override;
+    virtual void set_range(const range_t& range) override;
 
     virtual void set_first_reference(const char* p_ref, size_t n_ref, bool deleted) override;
 

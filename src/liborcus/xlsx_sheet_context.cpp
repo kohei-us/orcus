@@ -784,10 +784,12 @@ void xlsx_sheet_context::end_element_cell()
         spreadsheet::iface::import_data_table* dt = m_sheet.get_data_table();
         if (dt)
         {
+            spreadsheet::range_t range = m_resolver.resolve_range(m_cur_formula.ref.data(), m_cur_formula.ref.size());
+
             if (m_cur_formula.data_table_2d)
             {
                 dt->set_type(spreadsheet::data_table_type_t::both);
-                dt->set_range(m_cur_formula.ref.get(), m_cur_formula.ref.size());
+                dt->set_range(range);
                 dt->set_first_reference(
                     m_cur_formula.data_table_ref1.get(), m_cur_formula.data_table_ref1.size(),
                     m_cur_formula.data_table_ref1_deleted);
@@ -798,7 +800,7 @@ void xlsx_sheet_context::end_element_cell()
             else if (m_cur_formula.data_table_row_based)
             {
                 dt->set_type(spreadsheet::data_table_type_t::row);
-                dt->set_range(m_cur_formula.ref.get(), m_cur_formula.ref.size());
+                dt->set_range(range);
                 dt->set_first_reference(
                     m_cur_formula.data_table_ref1.get(), m_cur_formula.data_table_ref1.size(),
                     m_cur_formula.data_table_ref1_deleted);
@@ -806,7 +808,7 @@ void xlsx_sheet_context::end_element_cell()
             else
             {
                 dt->set_type(spreadsheet::data_table_type_t::column);
-                dt->set_range(m_cur_formula.ref.get(), m_cur_formula.ref.size());
+                dt->set_range(range);
                 dt->set_first_reference(
                     m_cur_formula.data_table_ref1.get(), m_cur_formula.data_table_ref1.size(),
                     m_cur_formula.data_table_ref1_deleted);
