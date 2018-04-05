@@ -535,6 +535,9 @@ void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, c
 
     for (const xml_token_attr_t& attr : attrs)
     {
+        if (attr.ns != NS_ooxml_xlsx)
+            continue;
+
         switch (attr.name)
         {
             case XML_t:
