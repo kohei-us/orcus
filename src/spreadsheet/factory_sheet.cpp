@@ -252,13 +252,6 @@ void import_sheet::set_shared_formula(
     m_shared_formula_pool.add(sindex, ts);
 }
 
-void import_sheet::set_shared_formula(
-    row_t row, col_t col, formula_grammar_t grammar, size_t sindex,
-    const char* p_formula, size_t n_formula, const char* p_range, size_t n_range)
-{
-    set_shared_formula(row, col, grammar, sindex, p_formula, n_formula);
-}
-
 void import_sheet::set_shared_formula(row_t row, col_t col, size_t sindex)
 {
     ixion::formula_tokens_store_ptr_t ts = m_shared_formula_pool.get(sindex);

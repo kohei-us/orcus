@@ -249,7 +249,7 @@ void orcus_xlsx::set_formulas_to_doc()
         {
             sheet->set_shared_formula(
                 sf.row, sf.column, orcus::spreadsheet::formula_grammar_t::xlsx_2007, sf.identifier,
-                &sf.formula[0], sf.formula.size(), &sf.range[0], sf.range.size());
+                &sf.formula[0], sf.formula.size());
         }
         else
         {

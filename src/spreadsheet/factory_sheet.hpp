@@ -141,7 +141,6 @@ public:
     virtual void set_formula_result(row_t row, col_t col, const char* p, size_t n) override;
     virtual void set_formula_result(row_t row, col_t col, double value) override;
     virtual void set_shared_formula(row_t row, col_t col, formula_grammar_t grammar, size_t sindex, const char* p_formula, size_t n_formula) override;
-    virtual void set_shared_formula(row_t row, col_t col, formula_grammar_t grammar, size_t sindex, const char* p_formula, size_t n_formula, const char* p_range, size_t n_range) override;
     virtual void set_shared_formula(row_t row, col_t col, size_t sindex) override;
     virtual void set_string(row_t row, col_t col, size_t sindex) override;
     virtual void set_value(row_t row, col_t col, double value) override;
