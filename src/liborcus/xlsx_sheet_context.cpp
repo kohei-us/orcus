@@ -281,14 +281,19 @@ const map_type& get()
 
 xlsx_sheet_context::formula::formula() :
     type(spreadsheet::formula_t::unknown),
-    str(), ref(),
+    str(),
     data_table_ref1(),
     data_table_ref2(),
     shared_id(-1),
     data_table_2d(false),
     data_table_row_based(false),
     data_table_ref1_deleted(false),
-    data_table_ref2_deleted(false) {}
+    data_table_ref2_deleted(false)
+{
+    ref.first.column = -1;
+    ref.first.row = -1;
+    ref.last = ref.first;
+}
 
 void xlsx_sheet_context::formula::reset()
 {
@@ -562,7 +567,7 @@ void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, c
                 m_cur_formula.type = formula_type::get().find(attr.value.data(), attr.value.size());
                 break;
             case XML_ref:
-                m_cur_formula.ref = intern_in_context(attr);
+                m_cur_formula.ref = m_resolver.resolve_range(attr.value.data(), attr.value.size());
                 break;
             case XML_si:
                 m_cur_formula.shared_id = to_long(attr.value);
@@ -754,14 +759,14 @@ void xlsx_sheet_context::end_element_cell()
             session_data.m_shared_formulas.push_back(
                 orcus::make_unique<xlsx_session_data::shared_formula>(
                     m_sheet_id, m_cur_row, m_cur_col, m_cur_formula.shared_id,
-                    m_cur_formula.str.str(), m_cur_formula.ref.str()));
+                    m_cur_formula.str.str()));
         }
         else if (m_cur_formula.type == spreadsheet::formula_t::array)
         {
             // array formula expression
             session_data.m_formulas.push_back(
                 orcus::make_unique<xlsx_session_data::formula>(
-                    m_sheet_id, m_cur_row, m_cur_col, m_cur_formula.str.str(), m_cur_formula.ref.str()));
+                    m_sheet_id, m_cur_formula.ref, m_cur_formula.str.str()));
         }
         else
         {
@@ -784,12 +789,10 @@ void xlsx_sheet_context::end_element_cell()
         spreadsheet::iface::import_data_table* dt = m_sheet.get_data_table();
         if (dt)
         {
-            spreadsheet::range_t range = m_resolver.resolve_range(m_cur_formula.ref.data(), m_cur_formula.ref.size());
-
             if (m_cur_formula.data_table_2d)
             {
                 dt->set_type(spreadsheet::data_table_type_t::both);
-                dt->set_range(range);
+                dt->set_range(m_cur_formula.ref);
                 dt->set_first_reference(
                     m_cur_formula.data_table_ref1.get(), m_cur_formula.data_table_ref1.size(),
                     m_cur_formula.data_table_ref1_deleted);
@@ -800,7 +803,7 @@ void xlsx_sheet_context::end_element_cell()
             else if (m_cur_formula.data_table_row_based)
             {
                 dt->set_type(spreadsheet::data_table_type_t::row);
-                dt->set_range(range);
+                dt->set_range(m_cur_formula.ref);
                 dt->set_first_reference(
                     m_cur_formula.data_table_ref1.get(), m_cur_formula.data_table_ref1.size(),
                     m_cur_formula.data_table_ref1_deleted);
@@ -808,7 +811,7 @@ void xlsx_sheet_context::end_element_cell()
             else
             {
                 dt->set_type(spreadsheet::data_table_type_t::column);
-                dt->set_range(range);
+                dt->set_range(m_cur_formula.ref);
                 dt->set_first_reference(
                     m_cur_formula.data_table_ref1.get(), m_cur_formula.data_table_ref1.size(),
                     m_cur_formula.data_table_ref1_deleted);

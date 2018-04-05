@@ -38,8 +38,8 @@ public:
     struct formula
     {
         spreadsheet::formula_t type;
+        spreadsheet::range_t ref; /// formula reference range
         pstring str; /// formula expression string
-        pstring ref; /// formula reference
         pstring data_table_ref1;
         pstring data_table_ref2;
         int shared_id;

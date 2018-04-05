@@ -23,6 +23,17 @@ namespace {
 
 class mock_ref_resolver : public import_reference_resolver
 {
+    virtual address_t resolve_address(const char* p, size_t n) override
+    {
+        address_t ret;
+        return ret;
+    }
+
+    virtual range_t resolve_range(const char* p, size_t n) override
+    {
+        range_t ret;
+        return ret;
+    }
 };
 
 class mock_sheet : public import_sheet

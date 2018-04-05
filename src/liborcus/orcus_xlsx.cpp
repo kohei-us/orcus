@@ -272,16 +272,16 @@ void orcus_xlsx::set_formulas_to_doc()
 
         if (f.array)
         {
-            spreadsheet::range_t range = resolver->resolve_range(f.range.data(), f.range.size());
-
             sheet->set_array_formula(
-                range, spreadsheet::formula_grammar_t::xlsx_2007,
+                f.ref, spreadsheet::formula_grammar_t::xlsx_2007,
                 f.exp.data(), f.exp.size());
         }
         else
         {
             sheet->set_formula(
-                f.row, f.column, orcus::spreadsheet::formula_grammar_t::xlsx_2007, &f.exp[0], f.exp.size());
+                f.ref.first.row, f.ref.first.column,
+                orcus::spreadsheet::formula_grammar_t::xlsx_2007,
+                f.exp.data(), f.exp.size());
         }
     }
 }

@@ -28,19 +28,17 @@ struct xlsx_session_data : public session_context::custom_data
     struct formula
     {
         spreadsheet::sheet_t sheet;
-        spreadsheet::row_t row;
-        spreadsheet::col_t column;
+        spreadsheet::range_t ref;
         std::string exp;
-        std::string range;
         bool array;
 
         formula(
-            spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-            const std::string& _exp);
+            spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column,
+            const std::string& exp);
 
         formula(
-            spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-            const std::string& _exp, const std::string& _range);
+            spreadsheet::sheet_t sheet, const spreadsheet::range_t& ref,
+            const std::string& exp);
     };
 
     struct shared_formula
@@ -50,16 +48,15 @@ struct xlsx_session_data : public session_context::custom_data
         spreadsheet::col_t column;
         size_t identifier;
         std::string formula;
-        std::string range;
         bool master;
 
         shared_formula(
-            spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-            size_t _identifier);
+            spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column,
+            size_t identifier);
 
         shared_formula(
-            spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-            size_t _identifier, const std::string& _formula, const std::string& _range);
+            spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column,
+            size_t identifier, const std::string& formula);
     };
 
     typedef std::vector<std::unique_ptr<formula>> formulas_type;

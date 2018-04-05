@@ -10,24 +10,28 @@
 namespace orcus {
 
 xlsx_session_data::formula::formula(
-    spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-    const std::string& _exp) :
-    sheet(_sheet), row(_row), column(_column), exp(_exp), array(false) {}
+    spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column,
+    const std::string& exp) :
+    sheet(sheet), exp(exp), array(false)
+{
+    ref.first.column = column;
+    ref.first.row = row;
+    ref.last = ref.first;
+}
 
 xlsx_session_data::formula::formula(
-    spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-    const std::string& _exp, const std::string& _range) :
-    sheet(_sheet), row(_row), column(_column), exp(_exp), range(_range), array(true) {}
+    spreadsheet::sheet_t sheet, const spreadsheet::range_t& ref, const std::string& exp) :
+    sheet(sheet), ref(ref), exp(exp), array(true) {}
 
 xlsx_session_data::shared_formula::shared_formula(
-    spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column, size_t _identifier) :
-    sheet(_sheet), row(_row), column(_column), identifier(_identifier), master(false) {}
+    spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column, size_t identifier) :
+    sheet(sheet), row(row), column(column), identifier(identifier), master(false) {}
 
 xlsx_session_data::shared_formula::shared_formula(
-    spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-    size_t _identifier, const std::string& _formula, const std::string& _range) :
-    sheet(_sheet), row(_row), column(_column),
-    identifier(_identifier), formula(_formula), range(_range), master(true) {}
+    spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column,
+    size_t identifier, const std::string& formula) :
+    sheet(sheet), row(row), column(column),
+    identifier(identifier), formula(formula), master(true) {}
 
 xlsx_session_data::~xlsx_session_data()
 {
