@@ -74,15 +74,15 @@ public:
         assert(string(s, n) == "=formula");
     }
 
-    virtual void set_array_formula(row_t row, col_t col, formula_grammar_t grammar,
-            const char* s, size_t n, row_t rows, col_t cols)
+    virtual void set_array_formula(
+        const range_t& range, formula_grammar_t grammar, const char* s, size_t n)
     {
-        assert(row == 19);
-        assert(col == 111);
+        assert(range.first.row == 19);
+        assert(range.first.column == 111);
         assert(grammar == formula_grammar_t::gnumeric);
         assert(string(s, n) == "=arrayFormula");
-        assert(rows == 2);
-        assert(cols == 3);
+        assert(range.last.row == 20);
+        assert(range.last.column == 113);
     }
 };
 

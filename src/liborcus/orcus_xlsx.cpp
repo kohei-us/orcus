@@ -257,6 +257,10 @@ void orcus_xlsx::set_formulas_to_doc()
         }
     }
 
+    spreadsheet::iface::import_reference_resolver* resolver = mp_impl->mp_factory->get_reference_resolver();
+    if (!resolver)
+        return;
+
     // Insert regular (non-shared) formulas.
     xlsx_session_data::formulas_type::iterator it = sdata.m_formulas.begin(), it_end = sdata.m_formulas.end();
     for (; it != it_end; ++it)
@@ -268,9 +272,11 @@ void orcus_xlsx::set_formulas_to_doc()
 
         if (f.array)
         {
+            spreadsheet::range_t range = resolver->resolve_range(f.range.data(), f.range.size());
+
             sheet->set_array_formula(
-                f.row, f.column, spreadsheet::formula_grammar_t::xlsx_2007, &f.exp[0],
-                f.exp.size(), &f.range[0], f.range.size());
+                range, spreadsheet::formula_grammar_t::xlsx_2007,
+                f.exp.data(), f.exp.size());
         }
         else
         {

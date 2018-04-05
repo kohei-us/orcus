@@ -59,11 +59,7 @@ public:
     {
     }
 
-    virtual void set_array_formula(row_t row, col_t col, formula_grammar_t grammar, const char* p, size_t n, row_t array_rows, col_t array_cols) override
-    {
-    }
-
-    virtual void set_array_formula(row_t row, col_t col, formula_grammar_t grammar, const char* p, size_t n, const char* p_range, size_t n_range) override
+    virtual void set_array_formula(const range_t&, formula_grammar_t grammar, const char* p, size_t n) override
     {
     }
 

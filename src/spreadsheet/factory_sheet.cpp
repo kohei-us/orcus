@@ -166,14 +166,9 @@ iface::import_table* import_sheet::get_table()
     return &m_table;
 }
 
-void import_sheet::set_array_formula(row_t row, col_t col, formula_grammar_t grammar, const char* p, size_t n, const char* p_range, size_t n_range)
+void import_sheet::set_array_formula(
+    const range_t& range, formula_grammar_t grammar, const char* p, size_t n)
 {
-    m_sheet.set_array_formula(row, col, grammar, p, n, p_range, n_range);
-}
-
-void import_sheet::set_array_formula(row_t row, col_t col, formula_grammar_t grammar, const char* p, size_t n, row_t array_rows, col_t array_cols)
-{
-    m_sheet.set_array_formula(row, col, grammar, p, n, array_rows, array_cols);
 }
 
 void import_sheet::set_auto(row_t row, col_t col, const char* p, size_t n)

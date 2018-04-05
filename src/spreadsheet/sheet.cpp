@@ -346,18 +346,6 @@ void sheet::set_formula(row_t row, col_t col, const ixion::formula_tokens_store_
     mp_impl->m_doc.insert_dirty_cell(pos);
 }
 
-void sheet::set_array_formula(
-    row_t row, col_t col, formula_grammar_t grammar,
-    const char* p, size_t n, row_t array_rows, col_t array_cols)
-{
-}
-
-void sheet::set_array_formula(
-    row_t row, col_t col, formula_grammar_t grammar,
-    const char* p, size_t n, const char* p_range, size_t n_range)
-{
-}
-
 void sheet::set_formula_result(row_t row, col_t col, double value)
 {
 }

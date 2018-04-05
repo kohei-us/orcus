@@ -227,8 +227,15 @@ void gnumeric_cell_context::end_cell()
         break;
         case cell_type_array:
         {
-            mp_sheet->set_array_formula(row, col, spreadsheet::formula_grammar_t::gnumeric,
-                    chars.get(), chars.size(), mp_cell_data->array_rows, mp_cell_data->array_cols);
+            range_t range;
+            range.first.column = col;
+            range.first.row = row;
+            range.last.column = col + mp_cell_data->array_cols - 1;
+            range.last.row = row + mp_cell_data->array_rows - 1;
+
+            mp_sheet->set_array_formula(
+                range, spreadsheet::formula_grammar_t::gnumeric,
+                chars.get(), chars.size());
         }
         break;
         case cell_type_bool:
