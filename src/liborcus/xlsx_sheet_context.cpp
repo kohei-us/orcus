@@ -218,57 +218,6 @@ private:
     }
 };
 
-class formula_attr_parser : public std::unary_function<xml_token_attr_t, void>
-{
-    xlsx_sheet_context::formula m_attrs;
-
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_t:
-            {
-                if (attr.value == "shared")
-                    m_attrs.type = spreadsheet::formula_t::shared;
-                else if (attr.value == "array")
-                    m_attrs.type = spreadsheet::formula_t::array;
-                else if (attr.value == "dataTable")
-                    m_attrs.type = spreadsheet::formula_t::data_table;
-            }
-            break;
-            case XML_ref:
-                m_attrs.ref = attr.value;
-            break;
-            case XML_si:
-                m_attrs.shared_id = to_long(attr.value);
-            break;
-            case XML_dt2D:
-                m_attrs.data_table_2d = to_long(attr.value) != 0;
-            break;
-            case XML_dtr:
-                m_attrs.data_table_row_based = to_long(attr.value) != 0;
-            break;
-            case XML_del1:
-                m_attrs.data_table_ref1_deleted = to_long(attr.value) != 0;
-            break;
-            case XML_del2:
-                m_attrs.data_table_ref2_deleted = to_long(attr.value) != 0;
-            break;
-            case XML_r1:
-                m_attrs.data_table_ref1 = attr.value;
-            break;
-            case XML_r2:
-                m_attrs.data_table_ref2 = attr.value;
-            break;
-            default:
-                ;
-        }
-    }
-
-    xlsx_sheet_context::formula get_attrs() const { return m_attrs; }
-};
-
 namespace sheet_pane {
 
 typedef mdds::sorted_string_map<spreadsheet::sheet_pane_t> map_type;
@@ -521,13 +470,8 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
         }
         break;
         case XML_f:
-        {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_c);
-            formula_attr_parser func;
-            func = for_each(attrs.begin(), attrs.end(), func);
-            m_cur_formula = func.get_attrs();
-        }
-        break;
+            start_element_formula(parent, attrs);
+            break;
         case XML_v:
             xml_element_expected(parent, NS_ooxml_xlsx, XML_c);
         break;
@@ -581,6 +525,56 @@ void xlsx_sheet_context::characters(const pstring& str, bool transient)
     m_cur_str = str;
     if (transient)
         m_cur_str = m_pool.intern(m_cur_str).first;
+}
+
+void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_ooxml_xlsx, XML_c);
+
+    m_cur_formula.reset();
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_t:
+            {
+                if (attr.value == "shared")
+                    m_cur_formula.type = spreadsheet::formula_t::shared;
+                else if (attr.value == "array")
+                    m_cur_formula.type = spreadsheet::formula_t::array;
+                else if (attr.value == "dataTable")
+                    m_cur_formula.type = spreadsheet::formula_t::data_table;
+                break;
+            }
+            case XML_ref:
+                m_cur_formula.ref = attr.value;
+                break;
+            case XML_si:
+                m_cur_formula.shared_id = to_long(attr.value);
+                break;
+            case XML_dt2D:
+                m_cur_formula.data_table_2d = to_long(attr.value) != 0;
+                break;
+            case XML_dtr:
+                m_cur_formula.data_table_row_based = to_long(attr.value) != 0;
+                break;
+            case XML_del1:
+                m_cur_formula.data_table_ref1_deleted = to_long(attr.value) != 0;
+                break;
+            case XML_del2:
+                m_cur_formula.data_table_ref2_deleted = to_long(attr.value) != 0;
+                break;
+            case XML_r1:
+                m_cur_formula.data_table_ref1 = attr.value;
+                break;
+            case XML_r2:
+                m_cur_formula.data_table_ref2 = attr.value;
+                break;
+            default:
+                ;
+        }
+    }
 }
 
 void xlsx_sheet_context::start_element_sheet_view(

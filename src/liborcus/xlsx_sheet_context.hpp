@@ -70,6 +70,7 @@ public:
     void pop_rel_extras(opc_rel_extras_t& other);
 
 private:
+    void start_element_formula(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_sheet_view(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_selection(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_pane(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
