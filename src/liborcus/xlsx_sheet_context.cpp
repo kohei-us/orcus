@@ -542,9 +542,7 @@ bool xlsx_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void xlsx_sheet_context::characters(const pstring& str, bool transient)
 {
-    m_cur_str = str;
-    if (transient)
-        m_cur_str = m_pool.intern(m_cur_str).first;
+    m_cur_str = intern_in_context(str, transient);
 }
 
 void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
@@ -564,7 +562,7 @@ void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, c
                 m_cur_formula.type = formula_type::get().find(attr.value.data(), attr.value.size());
                 break;
             case XML_ref:
-                m_cur_formula.ref = attr.value;
+                m_cur_formula.ref = intern_in_context(attr);
                 break;
             case XML_si:
                 m_cur_formula.shared_id = to_long(attr.value);
@@ -582,10 +580,10 @@ void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, c
                 m_cur_formula.data_table_ref2_deleted = to_long(attr.value) != 0;
                 break;
             case XML_r1:
-                m_cur_formula.data_table_ref1 = attr.value;
+                m_cur_formula.data_table_ref1 = intern_in_context(attr);
                 break;
             case XML_r2:
-                m_cur_formula.data_table_ref2 = attr.value;
+                m_cur_formula.data_table_ref2 = intern_in_context(attr);
                 break;
             default:
                 ;
@@ -862,6 +860,19 @@ void xlsx_sheet_context::push_raw_cell_value()
         default:
             warn("unhanlded cell content type");
     }
+}
+
+pstring xlsx_sheet_context::intern_in_context(const xml_token_attr_t& attr)
+{
+    return intern_in_context(attr.value, attr.transient);
+}
+
+pstring xlsx_sheet_context::intern_in_context(const pstring& str, bool transient)
+{
+    if (transient)
+        return m_pool.intern(str).first;
+
+    return str;
 }
 
 void xlsx_sheet_context::pop_rel_extras(opc_rel_extras_t& other)

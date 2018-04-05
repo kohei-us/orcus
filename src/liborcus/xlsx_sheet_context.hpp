@@ -77,6 +77,18 @@ private:
     void end_element_cell();
     void push_raw_cell_value();
 
+    /**
+     * Potentially intern a transient attribute string value for the duration
+     * of the current sheet context.
+     */
+    pstring intern_in_context(const xml_token_attr_t& attr);
+
+    /**
+     * Potentially intern a transient string value for the duration of the
+     * current sheet context.
+     */
+    pstring intern_in_context(const pstring& str, bool transient);
+
 private:
     std::unique_ptr<xml_context_base> mp_child;
 
