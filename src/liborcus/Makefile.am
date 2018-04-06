@@ -39,6 +39,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	detection_result.cpp \
 	dom_tree.cpp \
 	format_detection.cpp \
+	formula_result.hpp \
+	formula_result.cpp \
 	global.cpp \
 	info.cpp \
 	interface.cpp \
