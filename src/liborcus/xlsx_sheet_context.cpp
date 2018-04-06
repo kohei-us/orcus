@@ -764,8 +764,8 @@ void xlsx_sheet_context::end_element_cell()
         else if (m_cur_formula.type == spreadsheet::formula_t::array)
         {
             // array formula expression
-            session_data.m_formulas.push_back(
-                orcus::make_unique<xlsx_session_data::formula>(
+            session_data.m_array_formulas.push_back(
+                orcus::make_unique<xlsx_session_data::array_formula>(
                     m_sheet_id, m_cur_formula.ref, m_cur_formula.str.str()));
         }
         else

@@ -237,10 +237,9 @@ void orcus_xlsx::set_formulas_to_doc()
     xlsx_session_data& sdata = static_cast<xlsx_session_data&>(*mp_impl->m_cxt.mp_data);
 
     // Insert shared formulas first.
-    xlsx_session_data::shared_formulas_type::iterator its = sdata.m_shared_formulas.begin(), its_end = sdata.m_shared_formulas.end();
-    for (; its != its_end; ++its)
+    for (auto& p : sdata.m_shared_formulas)
     {
-        xlsx_session_data::shared_formula& sf = **its;
+        xlsx_session_data::shared_formula& sf = *p;
         spreadsheet::iface::import_sheet* sheet = mp_impl->mp_factory->get_sheet(sf.sheet);
         if (!sheet)
             continue;
@@ -257,32 +256,30 @@ void orcus_xlsx::set_formulas_to_doc()
         }
     }
 
-    spreadsheet::iface::import_reference_resolver* resolver = mp_impl->mp_factory->get_reference_resolver();
-    if (!resolver)
-        return;
-
     // Insert regular (non-shared) formulas.
-    xlsx_session_data::formulas_type::iterator it = sdata.m_formulas.begin(), it_end = sdata.m_formulas.end();
-    for (; it != it_end; ++it)
+    for (auto& p : sdata.m_formulas)
     {
-        xlsx_session_data::formula& f = **it;
+        xlsx_session_data::formula& f = *p;
         spreadsheet::iface::import_sheet* sheet = mp_impl->mp_factory->get_sheet(f.sheet);
         if (!sheet)
             continue;
 
-        if (f.array)
-        {
-            sheet->set_array_formula(
-                f.ref, spreadsheet::formula_grammar_t::xlsx_2007,
-                f.exp.data(), f.exp.size());
-        }
-        else
-        {
-            sheet->set_formula(
-                f.ref.first.row, f.ref.first.column,
-                orcus::spreadsheet::formula_grammar_t::xlsx_2007,
-                f.exp.data(), f.exp.size());
-        }
+        sheet->set_formula(
+            f.ref.row, f.ref.column, orcus::spreadsheet::formula_grammar_t::xlsx_2007,
+            f.exp.data(), f.exp.size());
+    }
+
+    // Insert array formulas.
+    for (auto& p : sdata.m_array_formulas)
+    {
+        xlsx_session_data::array_formula& af = *p;
+        spreadsheet::iface::import_sheet* sheet = mp_impl->mp_factory->get_sheet(af.sheet);
+        if (!sheet)
+            continue;
+
+        sheet->set_array_formula(
+            af.ref, spreadsheet::formula_grammar_t::xlsx_2007,
+            af.exp.data(), af.exp.size());
     }
 }
 

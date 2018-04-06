@@ -28,15 +28,21 @@ struct xlsx_session_data : public session_context::custom_data
     struct formula
     {
         spreadsheet::sheet_t sheet;
-        spreadsheet::range_t ref;
+        spreadsheet::address_t ref;
         std::string exp;
-        bool array;
 
         formula(
             spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column,
             const std::string& exp);
+    };
 
-        formula(
+    struct array_formula
+    {
+        spreadsheet::sheet_t sheet;
+        spreadsheet::range_t ref;
+        std::string exp;
+
+        array_formula(
             spreadsheet::sheet_t sheet, const spreadsheet::range_t& ref,
             const std::string& exp);
     };
@@ -60,10 +66,12 @@ struct xlsx_session_data : public session_context::custom_data
     };
 
     typedef std::vector<std::unique_ptr<formula>> formulas_type;
+    typedef std::vector<std::unique_ptr<array_formula>> array_formulas_type;
     typedef std::vector<std::unique_ptr<shared_formula>> shared_formulas_type;
     typedef std::unordered_map<pstring, spreadsheet::sheet_t, pstring::hash> sheet_name_map_type;
 
     formulas_type m_formulas;
+    array_formulas_type m_array_formulas;
     shared_formulas_type m_shared_formulas;
     sheet_name_map_type m_sheet_name_map;
 

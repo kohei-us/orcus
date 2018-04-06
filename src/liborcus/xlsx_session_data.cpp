@@ -12,16 +12,15 @@ namespace orcus {
 xlsx_session_data::formula::formula(
     spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column,
     const std::string& exp) :
-    sheet(sheet), exp(exp), array(false)
+    sheet(sheet), exp(exp)
 {
-    ref.first.column = column;
-    ref.first.row = row;
-    ref.last = ref.first;
+    ref.column = column;
+    ref.row = row;
 }
 
-xlsx_session_data::formula::formula(
+xlsx_session_data::array_formula::array_formula(
     spreadsheet::sheet_t sheet, const spreadsheet::range_t& ref, const std::string& exp) :
-    sheet(sheet), ref(ref), exp(exp), array(true) {}
+    sheet(sheet), ref(ref), exp(exp) {}
 
 xlsx_session_data::shared_formula::shared_formula(
     spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column, size_t identifier) :
