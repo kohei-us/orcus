@@ -166,9 +166,10 @@ iface::import_table* import_sheet::get_table()
     return &m_table;
 }
 
-void import_sheet::set_array_formula(
+iface::import_formula_result* import_sheet::set_array_formula(
     const range_t& range, formula_grammar_t grammar, const char* p, size_t n)
 {
+    return nullptr;
 }
 
 void import_sheet::set_auto(row_t row, col_t col, const char* p, size_t n)

@@ -222,10 +222,11 @@ void import_sheet::set_shared_formula(row_t, col_t, size_t)
     assert(false);
 }
 
-void import_sheet::set_array_formula(
+iface::import_formula_result* import_sheet::set_array_formula(
     const range_t&, formula_grammar_t, const char*, size_t)
 {
     assert(false);
+    return nullptr;
 }
 
 void import_sheet::set_formula_result(row_t, col_t, double value)

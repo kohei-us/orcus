@@ -130,7 +130,8 @@ public:
     virtual iface::import_named_expression* get_named_expression() override;
     virtual iface::import_sheet_properties* get_sheet_properties() override;
     virtual iface::import_table* get_table() override;
-    virtual void set_array_formula(const range_t& range, formula_grammar_t grammar, const char* p, size_t n) override;
+    virtual iface::import_formula_result* set_array_formula(
+        const range_t& range, formula_grammar_t grammar, const char* p, size_t n) override;
     virtual void set_auto(row_t row, col_t col, const char* p, size_t n) override;
     virtual void set_bool(row_t row, col_t col, bool value) override;
     virtual void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override;

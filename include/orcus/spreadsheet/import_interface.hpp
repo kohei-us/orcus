@@ -489,6 +489,24 @@ public:
     virtual void commit() = 0;
 };
 
+class ORCUS_DLLPUBLIC import_formula_result
+{
+public:
+    virtual ~import_formula_result();
+
+    virtual orcus::spreadsheet::range_size_t get_size() const = 0;
+
+    virtual void set_string(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, size_t sindex) = 0;
+
+    virtual void set_value(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, double value) = 0;
+
+    virtual void set_bool(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, bool value) = 0;
+
+    virtual void set_empty(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col) = 0;
+
+    virtual void commit() = 0;
+};
+
 /**
  * Interface for sheet.
  */
@@ -679,8 +697,12 @@ public:
      * @param p pointer to the string buffer that stores the raw formula
      *          expression string.
      * @param n size of the string buffer.
+     *
+     * @return a pointer to an object supporting the {@link
+     *         import_formula_result} interface, or nullptr if the client app
+     *         does not support importing of cached array formula results.
      */
-    virtual void set_array_formula(
+    virtual import_formula_result* set_array_formula(
         const range_t& range, orcus::spreadsheet::formula_grammar_t grammar,
         const char* p, size_t n) = 0;
 

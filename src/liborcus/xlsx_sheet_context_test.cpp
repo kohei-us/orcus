@@ -54,14 +54,17 @@ public:
         assert(val == true);
     }
 
-    virtual void set_array_formula(row_t row, col_t col, formula_grammar_t grammar,
-            const char* s, size_t n, const char* s_range, size_t n_range)
+    virtual iface::import_formula_result* set_array_formula(
+        row_t row, col_t col, formula_grammar_t grammar,
+        const char* s, size_t n, const char* s_range, size_t n_range)
     {
         assert(row == -1);
         assert(col == 0);
         assert(grammar == formula_grammar_t::xlsx_2007);
         assert(string(s, n) == "A1:A2");
         assert(string(s_range, n_range) == "B3:B4");
+
+        return nullptr;
     }
 };
 

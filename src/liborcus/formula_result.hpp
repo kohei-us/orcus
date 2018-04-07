@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_FORMULA_RESULT_HPP
-#define ORCUS_FORMULA_RESULT_HPP
+#ifndef INCLUDED_ORCUS_FORMULA_RESULT_HPP
+#define INCLUDED_ORCUS_FORMULA_RESULT_HPP
 
 #include <vector>
 #include <cstdlib>
+#include <iosfwd>
 
 namespace orcus {
 
@@ -35,6 +36,8 @@ struct formula_result
 
 class range_formula_results
 {
+    friend std::ostream& operator<< (std::ostream&, const range_formula_results&);
+
     std::vector<formula_result> m_store;
     size_t m_rows;
     size_t m_cols;
@@ -48,9 +51,16 @@ public:
 
     void set(size_t row, size_t col, const formula_result& v);
     const formula_result& get(size_t row, size_t col) const;
+
+    size_t row_size() const;
+    size_t col_size() const;
 };
 
+std::ostream& operator<< (std::ostream& os, const formula_result& v);
+std::ostream& operator<< (std::ostream& os, const orcus::range_formula_results& res);
+
 }
+
 
 #endif
 

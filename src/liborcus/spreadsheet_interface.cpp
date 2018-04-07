@@ -41,6 +41,8 @@ import_auto_filter* import_table::get_auto_filter()
     return nullptr;
 }
 
+import_formula_result::~import_formula_result() {}
+
 import_sheet::~import_sheet() {}
 
 import_sheet_view* import_sheet::get_sheet_view()

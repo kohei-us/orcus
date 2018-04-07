@@ -59,8 +59,10 @@ public:
     {
     }
 
-    virtual void set_array_formula(const range_t&, formula_grammar_t grammar, const char* p, size_t n) override
+    virtual iface::import_formula_result* set_array_formula(
+        const range_t&, formula_grammar_t grammar, const char* p, size_t n) override
     {
+        return nullptr;
     }
 
     virtual range_size_t get_sheet_size() const override

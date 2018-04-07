@@ -74,7 +74,7 @@ public:
         assert(string(s, n) == "=formula");
     }
 
-    virtual void set_array_formula(
+    virtual iface::import_formula_result* set_array_formula(
         const range_t& range, formula_grammar_t grammar, const char* s, size_t n)
     {
         assert(range.first.row == 19);
@@ -83,6 +83,8 @@ public:
         assert(string(s, n) == "=arrayFormula");
         assert(range.last.row == 20);
         assert(range.last.column == 113);
+
+        return nullptr;
     }
 };
 

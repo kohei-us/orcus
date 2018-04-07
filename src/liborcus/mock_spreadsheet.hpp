@@ -169,8 +169,8 @@ public:
     virtual void set_formula_result(
         orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, const char* p, size_t n) override;
 
-    virtual void set_array_formula(const range_t&, formula_grammar_t,
-            const char*, size_t) override;
+    virtual iface::import_formula_result* set_array_formula(
+        const range_t&, formula_grammar_t, const char*, size_t) override;
 
     virtual orcus::spreadsheet::range_size_t get_sheet_size() const override;
 };

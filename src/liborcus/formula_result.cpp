@@ -7,6 +7,8 @@
 
 #include "formula_result.hpp"
 
+#include <ostream>
+
 namespace orcus {
 
 formula_result::formula_result() : type(result_type::empty) {}
@@ -52,6 +54,58 @@ const formula_result& range_formula_results::get(size_t row, size_t col) const
 {
     size_t pos = to_array_pos(row, col);
     return m_store[pos];
+}
+
+size_t range_formula_results::row_size() const
+{
+    return m_rows;
+}
+
+size_t range_formula_results::col_size() const
+{
+    return m_cols;
+}
+
+std::ostream& operator<< (std::ostream& os, const formula_result& v)
+{
+    switch (v.type)
+    {
+        case formula_result::result_type::numeric:
+            os << v.value_numeric;
+            break;
+        case formula_result::result_type::boolean:
+            os << v.value_boolean;
+            break;
+        case formula_result::result_type::string:
+            os << "s" << v.value_string;
+            break;
+        case formula_result::result_type::empty:
+            break;
+    }
+    return os;
+}
+
+std::ostream& operator<< (std::ostream& os, const orcus::range_formula_results& res)
+{
+    os << "{ ";
+    size_t col_pos = 0;
+    for (const formula_result& v : res.m_store)
+    {
+        if (col_pos == res.m_cols)
+        {
+            os << " | ";
+            col_pos = 0;
+        }
+        else if (col_pos > 0)
+            os << ", ";
+
+        os << v;
+        ++col_pos;
+    }
+
+    os << " }";
+
+    return os;
 }
 
 }
