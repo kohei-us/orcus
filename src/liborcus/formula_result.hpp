@@ -42,6 +42,7 @@ class range_formula_results
     size_t to_array_pos(size_t row, size_t col) const;
 
 public:
+    range_formula_results() = delete;
     range_formula_results(const range_formula_results&) = delete;
     range_formula_results(size_t rows, size_t cols);
 

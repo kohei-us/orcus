@@ -127,6 +127,34 @@ bool operator!= (const range_t& left, const range_t& right)
     return !operator== (left, right);
 }
 
+bool operator< (const range_t& left, const range_t& right)
+{
+    if (left.first.row != right.first.row)
+        return left.first.row < right.first.row;
+
+    if (left.first.column != right.first.column)
+        return left.first.column < right.first.column;
+
+    if (left.last.row != right.last.row)
+        return left.last.row < right.last.row;
+
+    return left.last.column < right.last.column;
+}
+
+bool operator> (const range_t& left, const range_t& right)
+{
+    if (left.first.row != right.first.row)
+        return left.first.row > right.first.row;
+
+    if (left.first.column != right.first.column)
+        return left.first.column > right.first.column;
+
+    if (left.last.row != right.last.row)
+        return left.last.row > right.last.row;
+
+    return left.last.column > right.last.column;
+}
+
 std::ostream& operator<< (std::ostream& os, const address_t& v)
 {
     os << "(column=" << v.column << ",row=" << v.row << ")";

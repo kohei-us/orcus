@@ -16,10 +16,12 @@
 #include "orcus/string_pool.hpp"
 
 #include <memory>
+#include <list>
 
 namespace orcus {
 
 struct session_context;
+class range_formula_results;
 
 namespace spreadsheet { namespace iface {
 
@@ -52,6 +54,9 @@ public:
         void reset();
     };
 
+    using array_formula_pair_type = std::pair<spreadsheet::range_t, std::shared_ptr<range_formula_results>>;
+    using array_formula_results_type = std::list<array_formula_pair_type>;
+
     xlsx_sheet_context(
         session_context& session_cxt, const tokens& tokens,
         spreadsheet::sheet_t sheet_id,
@@ -76,6 +81,15 @@ private:
     void start_element_pane(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void end_element_cell();
     void push_raw_cell_value();
+    void push_raw_cell_result(range_formula_results& res, size_t row_offset, size_t col_offset);
+
+    /**
+     * See if the current cell is a part of an array formula, and if so, store
+     * its value as a cached result.
+     *
+     * @return true if this is part of an array formula, false otherwise.
+     */
+    bool handle_array_formula_result();
 
     /**
      * Potentially intern a transient attribute string value for the duration
@@ -104,6 +118,8 @@ private:
     pstring      m_cur_value;
     formula m_cur_formula;
 
+    array_formula_results_type m_array_formula_results;
+
     /**
      * Extra data to pass on to subsequent parts via relations.
      */
@@ -113,4 +129,5 @@ private:
 }
 
 #endif
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

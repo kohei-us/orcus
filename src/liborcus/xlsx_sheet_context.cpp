@@ -751,7 +751,13 @@ void xlsx_sheet_context::end_element_cell()
     session_context& cxt = get_session_context();
     xlsx_session_data& session_data = static_cast<xlsx_session_data&>(*cxt.mp_data);
 
-    if (!m_cur_formula.str.empty())
+    bool array_formula_result = handle_array_formula_result();
+
+    if (array_formula_result)
+    {
+        // Do nothing.
+    }
+    else if (!m_cur_formula.str.empty())
     {
         if (m_cur_formula.type == spreadsheet::formula_t::shared && m_cur_formula.shared_id >= 0)
         {
@@ -767,6 +773,10 @@ void xlsx_sheet_context::end_element_cell()
             session_data.m_array_formulas.push_back(
                 orcus::make_unique<xlsx_session_data::array_formula>(
                     m_sheet_id, m_cur_formula.ref, m_cur_formula.str.str()));
+
+            xlsx_session_data::array_formula& af = *session_data.m_array_formulas.back();
+            push_raw_cell_result(*af.results, 0, 0);
+            m_array_formula_results.push_back(std::make_pair(m_cur_formula.ref, af.results));
         }
         else
         {
@@ -832,6 +842,8 @@ void xlsx_sheet_context::end_element_cell()
     // reset cell related parameters.
     m_cur_value.clear();
     m_cur_formula.reset();
+    m_cur_cell_xf = 0;
+    m_cur_cell_type = xlsx_ct_numeric;
 }
 
 void xlsx_sheet_context::push_raw_cell_value()
@@ -865,6 +877,77 @@ void xlsx_sheet_context::push_raw_cell_value()
         default:
             warn("unhanlded cell content type");
     }
+}
+
+void xlsx_sheet_context::push_raw_cell_result(
+    range_formula_results& res, size_t row_offset, size_t col_offset)
+{
+    if (m_cur_value.empty())
+        return;
+
+    switch (m_cur_cell_type)
+    {
+        case xlsx_ct_shared_string:
+        {
+            // string cell
+            size_t str_id = to_long(m_cur_value);
+            res.set(row_offset, col_offset, str_id);
+            break;
+        }
+        case xlsx_ct_numeric:
+        {
+            // value cell
+            double val = to_double(m_cur_value);
+            res.set(row_offset, col_offset, val);
+            break;
+        }
+        case xlsx_ct_boolean:
+        {
+            // boolean cell
+            bool val = to_long(m_cur_value) != 0;
+            res.set(row_offset, col_offset, val);
+            break;
+        }
+        default:
+            warn("unhanlded cell content type");
+    }
+}
+
+bool xlsx_sheet_context::handle_array_formula_result()
+{
+    // See if the current cell is within an array formula range.
+    auto it = m_array_formula_results.begin(), ite = m_array_formula_results.end();
+
+    while (it != ite)
+    {
+        const spreadsheet::range_t& ref = it->first;
+
+        if (ref.last.row < m_cur_row)
+        {
+            // If this result range lies above the current row, delete it as
+            // we no longer have use for it.
+
+            m_array_formula_results.erase(it++);
+            continue;
+        }
+
+        if (m_cur_col < ref.first.column || ref.last.column < m_cur_col || m_cur_row < ref.first.row || ref.last.row < m_cur_row)
+        {
+            // This cell is not within this array formula range.  Move on to
+            // the next one.
+            ++it;
+            continue;
+        }
+
+        size_t row_offset = m_cur_row - ref.first.row;
+        size_t col_offset = m_cur_col - ref.first.column;
+        range_formula_results& res = *it->second;
+        push_raw_cell_result(res, row_offset, col_offset);
+
+        return true;
+    }
+
+    return false;
 }
 
 pstring xlsx_sheet_context::intern_in_context(const xml_token_attr_t& attr)

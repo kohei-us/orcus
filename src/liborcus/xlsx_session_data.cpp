@@ -20,7 +20,15 @@ xlsx_session_data::formula::formula(
 
 xlsx_session_data::array_formula::array_formula(
     spreadsheet::sheet_t sheet, const spreadsheet::range_t& ref, const std::string& exp) :
-    sheet(sheet), ref(ref), exp(exp) {}
+    sheet(sheet),
+    ref(ref),
+    exp(exp),
+    results(
+        std::make_shared<range_formula_results>(
+            ref.last.row-ref.first.row+1,
+            ref.last.column-ref.first.column+1))
+{
+}
 
 xlsx_session_data::shared_formula::shared_formula(
     spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column, size_t identifier) :

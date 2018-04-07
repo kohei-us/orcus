@@ -140,25 +140,26 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 # orcus-xlsx-sheet-context-test
 
 orcus_xlsx_sheet_context_test_SOURCES = \
-	xlsx_session_data.cpp \
-	session_context.cpp \
-	xlsx_conditional_format_context.cpp \
-	xlsx_sheet_context_test.cpp \
-	xlsx_sheet_context.cpp \
-	xlsx_autofilter_context.cpp \
-	xlsx_helper.cpp \
-	xlsx_types.cpp \
+	formula_result.cpp \
+	global.cpp \
+	mock_spreadsheet.hpp \
+	mock_spreadsheet.cpp \
 	ooxml_global.cpp \
 	ooxml_namespace_types.cpp \
+	ooxml_schemas.cpp \
 	ooxml_tokens.cpp \
 	ooxml_types.cpp \
-	ooxml_schemas.cpp \
-	xml_context_base.cpp \
-	xml_context_global.cpp \
-	global.cpp \
+	session_context.cpp \
 	spreadsheet_interface.cpp \
-	mock_spreadsheet.hpp \
-	mock_spreadsheet.cpp
+	xlsx_autofilter_context.cpp \
+	xlsx_conditional_format_context.cpp \
+	xlsx_helper.cpp \
+	xlsx_session_data.cpp \
+	xlsx_sheet_context.cpp \
+	xlsx_sheet_context_test.cpp \
+	xlsx_types.cpp \
+	xml_context_base.cpp \
+	xml_context_global.cpp
 
 orcus_xlsx_sheet_context_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \

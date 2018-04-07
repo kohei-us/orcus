@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_XLSX_SESSION_DATA_HPP
 
 #include "session_context.hpp"
+#include "formula_result.hpp"
 
 #include "orcus/spreadsheet/types.hpp"
 
@@ -41,6 +42,8 @@ struct xlsx_session_data : public session_context::custom_data
         spreadsheet::sheet_t sheet;
         spreadsheet::range_t ref;
         std::string exp;
+
+        std::shared_ptr<range_formula_results> results;
 
         array_formula(
             spreadsheet::sheet_t sheet, const spreadsheet::range_t& ref,
