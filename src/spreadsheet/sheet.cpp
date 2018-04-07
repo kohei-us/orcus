@@ -703,7 +703,7 @@ void sheet::dump_flat(std::ostream& os) const
 
                         os2 << formula;
 
-                        const ixion::formula_result& res = cell->get_result_cache();
+                        const ixion::formula_result& res = cell->get_single_result_cache();
                         os2 << " (" << res.str(mp_impl->m_doc.get_model_context()) << ")";
 
                         mx.set(row, col, os2.str());
