@@ -346,6 +346,23 @@ void sheet::set_formula(row_t row, col_t col, const ixion::formula_tokens_store_
     mp_impl->m_doc.insert_dirty_cell(pos);
 }
 
+void sheet::set_grouped_formula(const range_t range, ixion::formula_tokens_t tokens)
+{
+    ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
+
+    ixion::abs_range_t pos;
+    pos.first.sheet  = mp_impl->m_sheet;
+    pos.first.row    = range.first.row;
+    pos.first.column = range.first.column;
+    pos.last.sheet   = mp_impl->m_sheet;
+    pos.last.row     = range.last.row;
+    pos.last.column  = range.last.column;
+
+    cxt.set_grouped_formula_cells(pos, std::move(tokens));
+    ixion::register_formula_cell(cxt, pos.first);
+    mp_impl->m_doc.insert_dirty_cell(pos.first);
+}
+
 void sheet::set_formula_result(row_t row, col_t col, double value)
 {
 }

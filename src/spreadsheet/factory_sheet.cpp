@@ -169,6 +169,18 @@ iface::import_table* import_sheet::get_table()
 iface::import_formula_result* import_sheet::set_array_formula(
     const range_t& range, formula_grammar_t grammar, const char* p, size_t n)
 {
+    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+    if (!resolver)
+        return nullptr;
+
+    // Tokenize the formula string and store it.
+    ixion::model_context& cxt = m_doc.get_model_context();
+    ixion::abs_address_t pos(m_sheet.get_index(), range.first.row, range.first.column);
+
+    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
+
+    m_sheet.set_grouped_formula(range, std::move(tokens));
+
     return nullptr;
 }
 
