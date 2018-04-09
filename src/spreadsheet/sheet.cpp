@@ -695,13 +695,19 @@ void sheet::dump_flat(std::ostream& os) const
                         string formula;
                         if (resolver)
                         {
+                            pos = cell->get_parent_position(pos);
                             formula = ixion::print_formula_tokens(
                                mp_impl->m_doc.get_model_context(), pos, *resolver, tokens);
                         }
                         else
                             formula = "???";
 
-                        os2 << formula;
+                        ixion::formula_group_t fg = cell->get_group_properties();
+
+                        if (fg.grouped)
+                            os2 << '{' << formula << '}';
+                        else
+                            os2 << formula;
 
                         const ixion::formula_result& res = cell->get_single_result_cache();
                         os2 << " (" << res.str(mp_impl->m_doc.get_model_context()) << ")";
@@ -858,15 +864,23 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
                         string formula;
                         if (resolver)
                         {
+                            pos = cell->get_parent_position(pos);
                             formula = ixion::print_formula_tokens(
                                 mp_impl->m_doc.get_model_context(), pos, *resolver, tokens);
                         }
                         else
                             formula = "???";
 
-                        os << ':' << formula;
+                        os << ':';
 
-                        const ixion::formula_result& res = cell->get_result_cache();
+                        ixion::formula_group_t fg = cell->get_group_properties();
+
+                        if (fg.grouped)
+                            os << '{' << formula << '}';
+                        else
+                            os << formula;
+
+                        const ixion::formula_result& res = cell->get_single_result_cache();
                         os << ':' << res.str(mp_impl->m_doc.get_model_context());
                     }
 
@@ -1408,15 +1422,21 @@ void sheet::dump_html(std::ostream& os) const
                             string formula;
                             if (resolver)
                             {
+                                pos = cell->get_parent_position(pos);
                                 formula = ixion::print_formula_tokens(
                                     mp_impl->m_doc.get_model_context(), pos, *resolver, tokens);
                             }
                             else
                                 formula = "???";
 
-                            os << formula;
+                            ixion::formula_group_t fg = cell->get_group_properties();
 
-                            const ixion::formula_result& res = cell->get_result_cache();
+                            if (fg.grouped)
+                                os << '{' << formula << '}';
+                            else
+                                os << formula;
+
+                            const ixion::formula_result& res = cell->get_single_result_cache();
                             os << " (" << res.str(mp_impl->m_doc.get_model_context()) << ")";
                         }
 
