@@ -80,6 +80,7 @@ vector<const char*> dirs = {
     SRCDIR"/test/xlsx/raw-values-1/",
     SRCDIR"/test/xlsx/boolean-values/",
     SRCDIR"/test/xlsx/empty-shared-strings/",
+    SRCDIR"/test/xlsx/formula-array-1/",
     SRCDIR"/test/xlsx/formula-cells/",
     SRCDIR"/test/xlsx/formula-shared/",
     SRCDIR"/test/xlsx/named-expression/",
