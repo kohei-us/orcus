@@ -709,7 +709,7 @@ void sheet::dump_flat(std::ostream& os) const
                         else
                             os2 << formula;
 
-                        const ixion::formula_result& res = cell->get_single_result_cache();
+                        ixion::formula_result res = cell->get_result_cache();
                         os2 << " (" << res.str(mp_impl->m_doc.get_model_context()) << ")";
 
                         mx.set(row, col, os2.str());
@@ -880,7 +880,7 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
                         else
                             os << formula;
 
-                        const ixion::formula_result& res = cell->get_single_result_cache();
+                        ixion::formula_result res = cell->get_result_cache();
                         os << ':' << res.str(mp_impl->m_doc.get_model_context());
                     }
 
@@ -1436,7 +1436,7 @@ void sheet::dump_html(std::ostream& os) const
                             else
                                 os << formula;
 
-                            const ixion::formula_result& res = cell->get_single_result_cache();
+                            ixion::formula_result res = cell->get_result_cache();
                             os << " (" << res.str(mp_impl->m_doc.get_model_context()) << ")";
                         }
 
