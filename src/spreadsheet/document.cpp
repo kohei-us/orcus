@@ -7,7 +7,6 @@
 
 #include "orcus/spreadsheet/document.hpp"
 
-#include "orcus/spreadsheet/global_settings.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/shared_strings.hpp"
 #include "orcus/spreadsheet/styles.hpp"

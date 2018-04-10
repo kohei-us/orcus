@@ -31,7 +31,6 @@ struct date_time_t;
 
 namespace spreadsheet {
 
-class import_global_settings;
 class import_shared_strings;
 class styles;
 class pivot_collection;

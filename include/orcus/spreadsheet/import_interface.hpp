@@ -747,6 +747,13 @@ public:
      * @return current default formula grammar.
      */
     virtual orcus::spreadsheet::formula_grammar_t get_default_formula_grammar() const = 0;
+
+    /**
+     * Set the character set to be used when parsing string values.
+     *
+     * @param charset character set to apply when parsing string values.
+     */
+    virtual void set_character_set(character_set_t charset) = 0;
 };
 
 class ORCUS_DLLPUBLIC import_reference_resolver

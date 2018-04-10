@@ -33,8 +33,9 @@ void xml_stream_handler::end_document()
 {
 }
 
-void xml_stream_handler::declaration(const xml_declaration_t& /*decl*/)
+void xml_stream_handler::declaration(const xml_declaration_t& decl)
 {
+    get_current_context().declaration(decl);
 }
 
 void xml_stream_handler::start_element(const xml_token_element_t& elem)

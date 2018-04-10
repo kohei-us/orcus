@@ -5,20 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/spreadsheet/global_settings.hpp"
+#include "global_settings.hpp"
 #include "orcus/spreadsheet/document.hpp"
+#include "orcus/spreadsheet/factory.hpp"
 
 namespace orcus { namespace spreadsheet {
 
 struct import_global_settings_impl
 {
+    import_factory& m_factory;
     document& m_doc;
 
-    import_global_settings_impl(document& doc) : m_doc(doc) {}
+    import_global_settings_impl(import_factory& factory, document& doc) :
+        m_factory(factory), m_doc(doc) {}
 };
 
-import_global_settings::import_global_settings(spreadsheet::document& doc) :
-    mp_impl(new import_global_settings_impl(doc)) {}
+import_global_settings::import_global_settings(import_factory& factory, document& doc) :
+    mp_impl(new import_global_settings_impl(factory, doc)) {}
 
 import_global_settings::~import_global_settings()
 {
@@ -38,6 +41,11 @@ void import_global_settings::set_default_formula_grammar(formula_grammar_t gramm
 formula_grammar_t import_global_settings::get_default_formula_grammar() const
 {
     return mp_impl->m_doc.get_formula_grammar();
+}
+
+void import_global_settings::set_character_set(character_set_t charset)
+{
+    mp_impl->m_factory.set_character_set(charset);
 }
 
 }}

@@ -54,6 +54,10 @@ xml_context_base::~xml_context_base()
 {
 }
 
+void xml_context_base::declaration(const xml_declaration_t& /*decl*/)
+{
+}
+
 void xml_context_base::set_ns_context(const xmlns_context* p)
 {
     mp_ns_cxt = p;

@@ -15,7 +15,6 @@ liborcus_HEADERS += \
 	config.hpp \
 	document.hpp \
 	factory.hpp \
-	global_settings.hpp \
 	pivot.hpp \
 	shared_strings.hpp \
 	sheet.hpp \

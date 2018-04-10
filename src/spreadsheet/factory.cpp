@@ -12,12 +12,12 @@
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/view.hpp"
-#include "orcus/spreadsheet/global_settings.hpp"
 #include "orcus/exception.hpp"
 #include "orcus/global.hpp"
 
 #include "factory_pivot.hpp"
 #include "factory_sheet.hpp"
+#include "global_settings.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_tokens.hpp>
@@ -133,6 +133,7 @@ using sheet_ifaces_type = std::vector<std::unique_ptr<import_sheet>>;
 
 struct import_factory::impl
 {
+    import_factory& m_envelope;
     document& m_doc;
     view* m_view;
     row_t m_default_row_size;
@@ -147,12 +148,13 @@ struct import_factory::impl
 
     sheet_ifaces_type m_sheets;
 
-    impl(document& doc, row_t row_size, col_t col_size) :
+    impl(import_factory& envelope, document& doc, row_t row_size, col_t col_size) :
+        m_envelope(envelope),
         m_doc(doc),
         m_view(nullptr),
         m_default_row_size(row_size),
         m_default_col_size(col_size),
-        m_global_settings(doc),
+        m_global_settings(envelope, doc),
         m_pc_def(doc),
         m_pc_records(doc),
         m_ref_resolver(doc),
@@ -161,10 +163,10 @@ struct import_factory::impl
 };
 
 import_factory::import_factory(document& doc, row_t row_size, col_t col_size) :
-    mp_impl(orcus::make_unique<impl>(doc, row_size, col_size)) {}
+    mp_impl(orcus::make_unique<impl>(*this, doc, row_size, col_size)) {}
 
 import_factory::import_factory(document& doc, view& view, row_t row_size, col_t col_size) :
-    mp_impl(orcus::make_unique<impl>(doc, row_size, col_size))
+    mp_impl(orcus::make_unique<impl>(*this, doc, row_size, col_size))
 {
     // Store the optional view store.
     mp_impl->m_view = &view;
@@ -267,6 +269,11 @@ void import_factory::set_default_row_size(row_t row_size)
 void import_factory::set_default_column_size(col_t col_size)
 {
     mp_impl->m_default_col_size = col_size;
+}
+
+void import_factory::set_character_set(character_set_t charset)
+{
+    // TODO : make use of this character set.
 }
 
 struct export_factory::impl

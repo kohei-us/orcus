@@ -18,12 +18,5 @@ xls_xml_handler::xls_xml_handler(
 
 xls_xml_handler::~xls_xml_handler() {}
 
-void xls_xml_handler::declaration(const xml_declaration_t& decl)
-{
-}
-
-void xls_xml_handler::start_document() {}
-void xls_xml_handler::end_document() {}
-
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
