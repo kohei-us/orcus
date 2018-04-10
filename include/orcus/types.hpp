@@ -354,10 +354,14 @@ struct ORCUS_PSR_DLLPUBLIC xml_declaration_t
     bool standalone;
 
     xml_declaration_t();
+    xml_declaration_t(uint8_t version_major, uint8_t version_minor, xml_encoding_t encoding, bool standalone);
     xml_declaration_t(const xml_declaration_t& other);
     ~xml_declaration_t();
 
     xml_declaration_t& operator= (const xml_declaration_t& other);
+
+    bool operator== (const xml_declaration_t& other) const;
+    bool operator!= (const xml_declaration_t& other) const;
 };
 
 // Other types

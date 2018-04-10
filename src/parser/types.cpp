@@ -47,6 +47,9 @@ xml_declaration_t::xml_declaration_t() :
     encoding(xml_encoding_t::unspecified),
     standalone(false) {}
 
+xml_declaration_t::xml_declaration_t(uint8_t version_major, uint8_t version_minor, xml_encoding_t encoding, bool standalone) :
+    version_major(version_major), version_minor(version_minor), encoding(encoding), standalone(standalone) {}
+
 xml_declaration_t::xml_declaration_t(const xml_declaration_t& other) :
     version_major(other.version_major),
     version_minor(other.version_minor),
@@ -62,6 +65,17 @@ xml_declaration_t& xml_declaration_t::operator= (const xml_declaration_t& other)
     encoding = other.encoding;
     standalone = other.standalone;
     return *this;
+}
+
+bool xml_declaration_t::operator== (const xml_declaration_t& other) const
+{
+    return version_major == other.version_major && version_minor == other.version_minor &&
+        encoding == other.encoding && standalone == other.standalone;
+}
+
+bool xml_declaration_t::operator!= (const xml_declaration_t& other) const
+{
+    return !operator== (other);
 }
 
 length_t::length_t() : unit(length_unit_t::unknown), value(0.0) {}

@@ -159,10 +159,70 @@ void test_unicode_string()
     parser3.parse();
 }
 
+void test_declaration()
+{
+    xml_declaration_t decl;
+
+    class handler
+    {
+        xml_declaration_t& m_decl;
+    public:
+        handler(xml_declaration_t& decl) : m_decl(decl) {}
+
+        void declaration(const xml_declaration_t& decl)
+        {
+            m_decl = decl;
+        }
+
+        void start_element(const xml_token_element_t&) {}
+        void end_element(const xml_token_element_t&) {}
+        void characters(const pstring&, bool) {}
+    };
+
+    std::vector<const char*> token_names = {};
+    tokens token_map(token_names.data(), token_names.size());
+    xmlns_repository ns_repo;
+    xmlns_context ns_cxt = ns_repo.create_context();
+
+    struct check
+    {
+        std::string content;
+        xml_declaration_t decl;
+    };
+
+    std::vector<check> checks =
+    {
+        {
+            "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><root/>",
+            { 1, 0, xml_encoding_t::utf_8, false }
+        },
+        {
+            "<?xml version=\"1.1\" encoding=\"windows-1253\" standalone=\"yes\"?><root/>",
+            { 1, 1, xml_encoding_t::windows_1253, true }
+        },
+        {
+            "<?xml version=\"2.0\" encoding=\"US-ASCII\" standalone=\"yes\"?><root/>",
+            { 2, 0, xml_encoding_t::us_ascii, true }
+        },
+    };
+
+    for (const check& c : checks)
+    {
+        xml_declaration_t decl;
+        handler hdl(decl);
+        sax_token_parser<handler> parser(c.content.data(), c.content.size(), token_map, ns_cxt, hdl);
+        parser.parse();
+
+        assert(decl == c.decl);
+    }
+}
+
 int main()
 {
     test_sax_token_parser_1();
     test_unicode_string();
+    test_declaration();
+
     return EXIT_SUCCESS;
 }
 

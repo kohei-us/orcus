@@ -357,8 +357,19 @@ void sax_token_handler_wrapper_base::attribute(const pstring& name, const pstrin
             break;
         }
         case decl_attr_type::encoding:
-            m_declaration.encoding = encoding::get().find(val.data(), val.size());
+        {
+            // Convert the source encoding string to all lower-case first.
+            std::string val_lower = val.str();
+            std::transform(val_lower.begin(), val_lower.end(), val_lower.begin(),
+                [](unsigned char c)
+                {
+                    return std::tolower(c);
+                }
+            );
+
+            m_declaration.encoding = encoding::get().find(val_lower.data(), val_lower.size());
             break;
+        }
         case decl_attr_type::standalone:
             m_declaration.standalone = (val == "yes") ? true : false;
             break;
