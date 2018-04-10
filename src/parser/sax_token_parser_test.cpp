@@ -194,15 +194,15 @@ void test_declaration()
     {
         {
             "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?><root/>",
-            { 1, 0, xml_encoding_t::utf_8, false }
+            { 1, 0, char_encoding_t::utf_8, false }
         },
         {
             "<?xml version=\"1.1\" encoding=\"windows-1253\" standalone=\"yes\"?><root/>",
-            { 1, 1, xml_encoding_t::windows_1253, true }
+            { 1, 1, char_encoding_t::windows_1253, true }
         },
         {
             "<?xml version=\"2.0\" encoding=\"US-ASCII\" standalone=\"yes\"?><root/>",
-            { 2, 0, xml_encoding_t::us_ascii, true }
+            { 2, 0, char_encoding_t::us_ascii, true }
         },
     };
 

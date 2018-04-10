@@ -27,8 +27,9 @@ public:
     xls_xml_handler(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
     virtual ~xls_xml_handler();
 
-    virtual void start_document();
-    virtual void end_document();
+    virtual void declaration(const xml_declaration_t& decl) override;
+    virtual void start_document() override;
+    virtual void end_document() override;
 };
 
 }

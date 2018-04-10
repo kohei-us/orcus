@@ -44,10 +44,10 @@ xml_token_element_t::xml_token_element_t(xml_token_element_t&& other) :
 xml_declaration_t::xml_declaration_t() :
     version_major(1),
     version_minor(0),
-    encoding(xml_encoding_t::unspecified),
+    encoding(char_encoding_t::unspecified),
     standalone(false) {}
 
-xml_declaration_t::xml_declaration_t(uint8_t version_major, uint8_t version_minor, xml_encoding_t encoding, bool standalone) :
+xml_declaration_t::xml_declaration_t(uint8_t version_major, uint8_t version_minor, char_encoding_t encoding, bool standalone) :
     version_major(version_major), version_minor(version_minor), encoding(encoding), standalone(standalone) {}
 
 xml_declaration_t::xml_declaration_t(const xml_declaration_t& other) :
