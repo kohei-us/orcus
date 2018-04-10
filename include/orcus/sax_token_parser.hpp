@@ -48,6 +48,7 @@ private:
 class ORCUS_PSR_DLLPUBLIC sax_token_handler_wrapper_base
 {
 protected:
+    xml_declaration_t m_declaration;
     xml_token_element_t m_elem;
     const tokens& m_tokens;
 

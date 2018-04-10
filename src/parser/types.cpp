@@ -41,6 +41,29 @@ xml_token_element_t::xml_token_element_t(const xml_token_element_t& other) :
 xml_token_element_t::xml_token_element_t(xml_token_element_t&& other) :
     ns(other.ns), name(other.name), raw_name(other.raw_name), attrs(std::move(other.attrs)) {}
 
+xml_declaration_t::xml_declaration_t() :
+    version_major(1),
+    version_minor(0),
+    encoding(xml_encoding_t::unspecified),
+    standalone(false) {}
+
+xml_declaration_t::xml_declaration_t(const xml_declaration_t& other) :
+    version_major(other.version_major),
+    version_minor(other.version_minor),
+    encoding(other.encoding),
+    standalone(other.standalone) {}
+
+xml_declaration_t::~xml_declaration_t() {}
+
+xml_declaration_t& xml_declaration_t::operator= (const xml_declaration_t& other)
+{
+    version_major = other.version_major;
+    version_minor = other.version_minor;
+    encoding = other.encoding;
+    standalone = other.standalone;
+    return *this;
+}
+
 length_t::length_t() : unit(length_unit_t::unknown), value(0.0) {}
 
 std::string length_t::to_string() const
