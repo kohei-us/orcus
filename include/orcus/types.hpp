@@ -80,11 +80,11 @@ struct ORCUS_PSR_DLLPUBLIC xml_token_element_t
 };
 
 /**
- * Character encoding types.
+ * Character set types.
  *
  * @see https://www.iana.org/assignments/character-sets/character-sets.xhtml
  */
-enum class char_encoding_t
+enum class character_set_t
 {
     unspecified = 0,
     us_ascii,                                      // US-ASCII
@@ -350,11 +350,11 @@ struct ORCUS_PSR_DLLPUBLIC xml_declaration_t
 {
     uint8_t version_major;
     uint8_t version_minor;
-    char_encoding_t encoding;
+    character_set_t encoding;
     bool standalone;
 
     xml_declaration_t();
-    xml_declaration_t(uint8_t version_major, uint8_t version_minor, char_encoding_t encoding, bool standalone);
+    xml_declaration_t(uint8_t version_major, uint8_t version_minor, character_set_t encoding, bool standalone);
     xml_declaration_t(const xml_declaration_t& other);
     ~xml_declaration_t();
 
