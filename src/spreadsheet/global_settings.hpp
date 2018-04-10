@@ -10,16 +10,17 @@
 
 #include "orcus/spreadsheet/import_interface.hpp"
 
+#include <memory>
+
 namespace orcus { namespace spreadsheet {
 
 class document;
 class import_factory;
 
-struct import_global_settings_impl;
-
 class import_global_settings : public spreadsheet::iface::import_global_settings
 {
-    import_global_settings_impl* mp_impl;
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
 public:
     import_global_settings(import_factory& factory, document& doc);

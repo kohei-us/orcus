@@ -8,25 +8,23 @@
 #include "global_settings.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/factory.hpp"
+#include "orcus/global.hpp"
 
 namespace orcus { namespace spreadsheet {
 
-struct import_global_settings_impl
+struct import_global_settings::impl
 {
     import_factory& m_factory;
     document& m_doc;
 
-    import_global_settings_impl(import_factory& factory, document& doc) :
+    impl(import_factory& factory, document& doc) :
         m_factory(factory), m_doc(doc) {}
 };
 
 import_global_settings::import_global_settings(import_factory& factory, document& doc) :
-    mp_impl(new import_global_settings_impl(factory, doc)) {}
+    mp_impl(orcus::make_unique<impl>(factory, doc)) {}
 
-import_global_settings::~import_global_settings()
-{
-    delete mp_impl;
-}
+import_global_settings::~import_global_settings() {}
 
 void import_global_settings::set_origin_date(int year, int month, int day)
 {
