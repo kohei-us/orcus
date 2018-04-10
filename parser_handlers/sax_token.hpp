@@ -41,6 +41,14 @@ struct xml_token_element_t;
 class sax_token_handler
 {
 public:
+
+    /**
+     * Called immediately after the entire XML declaration has been parsed.
+     *
+     * @param decl struct containing the attributes of the XML declaration.
+     */
+    void declaration(const orcus::xml_declaration_t& decl) {}
+
     /**
      * Called at the start of each element.
      *

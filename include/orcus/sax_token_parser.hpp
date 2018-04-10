@@ -99,6 +99,7 @@ private:
 
         void end_declaration(const pstring&)
         {
+            m_handler.declaration(m_declaration);
             m_elem.attrs.clear();
         }
 

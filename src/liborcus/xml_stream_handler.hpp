@@ -36,6 +36,7 @@ public:
     virtual void start_document();
     virtual void end_document();
 
+    virtual void declaration(const xml_declaration_t& decl);
     virtual void start_element(const xml_token_element_t& elem);
     virtual void end_element(const xml_token_element_t& elem);
     virtual void characters(const pstring& str, bool transient);

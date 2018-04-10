@@ -73,6 +73,8 @@ void test_sax_token_parser_1()
     public:
         handler(const check* p) : mp_head(p), mp_check(p) {}
 
+        void declaration(const orcus::xml_declaration_t&) {}
+
         void start_element(const orcus::xml_token_element_t& elem)
         {
             assert(pstring(mp_check->raw_name) == elem.raw_name);
@@ -120,6 +122,8 @@ void test_unicode_string()
         handler(orcus::pstring str):
             str(str)
             {}
+
+        void declaration(const orcus::xml_declaration_t&) {}
 
         void start_element(const orcus::xml_token_element_t& /*elem*/)
         {

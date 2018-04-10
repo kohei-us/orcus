@@ -33,6 +33,10 @@ void xml_stream_handler::end_document()
 {
 }
 
+void xml_stream_handler::declaration(const xml_declaration_t& /*decl*/)
+{
+}
+
 void xml_stream_handler::start_element(const xml_token_element_t& elem)
 {
     xml_context_base& cur = get_current_context();

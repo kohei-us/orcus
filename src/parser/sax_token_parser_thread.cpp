@@ -93,6 +93,10 @@ struct parser_thread::impl
         m_token_buffer.notify_and_finish(m_parser_tokens);
     }
 
+    void declaration(const orcus::xml_declaration_t& decl)
+    {
+    }
+
     void start_element(const orcus::xml_token_element_t& elem)
     {
         m_element_store.emplace_back(orcus::make_unique<orcus::xml_token_element_t>(elem));
