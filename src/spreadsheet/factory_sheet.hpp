@@ -116,6 +116,7 @@ class import_sheet : public iface::import_sheet
     import_auto_filter m_auto_filter;
     import_table m_table;
     shared_formula_pool m_shared_formula_pool;
+    character_set_t m_charset;
 
     std::unique_ptr<import_sheet_view> m_sheet_view;
 
@@ -145,6 +146,8 @@ public:
     virtual void set_string(row_t row, col_t col, size_t sindex) override;
     virtual void set_value(row_t row, col_t col, double value) override;
     virtual range_size_t get_sheet_size() const override;
+
+    void set_character_set(character_set_t charset);
 };
 
 class import_sheet_view : public iface::import_sheet_view

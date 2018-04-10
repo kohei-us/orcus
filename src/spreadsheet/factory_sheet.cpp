@@ -121,7 +121,8 @@ import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_sheet_properties(doc, sh),
     m_data_table(sh),
     m_auto_filter(sh, doc.get_string_pool()),
-    m_table(doc, sh)
+    m_table(doc, sh),
+    m_charset(character_set_t::unspecified)
 {
     if (view)
         m_sheet_view = orcus::make_unique<import_sheet_view>(*view, sh.get_index());
@@ -285,6 +286,11 @@ range_size_t import_sheet::get_sheet_size() const
     ret.rows = m_sheet.row_size();
     ret.columns = m_sheet.col_size();
     return ret;
+}
+
+void import_sheet::set_character_set(character_set_t charset)
+{
+    m_charset = charset;
 }
 
 import_sheet_view::import_sheet_view(sheet_view& view, sheet_t si) :

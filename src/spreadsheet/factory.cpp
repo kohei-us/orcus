@@ -273,7 +273,8 @@ void import_factory::set_default_column_size(col_t col_size)
 
 void import_factory::set_character_set(character_set_t charset)
 {
-    // TODO : make use of this character set.
+    for (std::unique_ptr<import_sheet>& sheet : mp_impl->m_sheets)
+        sheet->set_character_set(charset);
 }
 
 struct export_factory::impl
