@@ -138,6 +138,7 @@ struct import_factory::impl
     view* m_view;
     row_t m_default_row_size;
     col_t m_default_col_size;
+    character_set_t m_charset;
 
     import_global_settings m_global_settings;
     import_pivot_cache_def m_pc_def;
@@ -154,6 +155,7 @@ struct import_factory::impl
         m_view(nullptr),
         m_default_row_size(row_size),
         m_default_col_size(col_size),
+        m_charset(character_set_t::unspecified),
         m_global_settings(envelope, doc),
         m_pc_def(doc),
         m_pc_records(doc),
@@ -273,8 +275,15 @@ void import_factory::set_default_column_size(col_t col_size)
 
 void import_factory::set_character_set(character_set_t charset)
 {
+    mp_impl->m_charset = charset;
+
     for (std::unique_ptr<import_sheet>& sheet : mp_impl->m_sheets)
         sheet->set_character_set(charset);
+}
+
+character_set_t import_factory::get_character_set() const
+{
+    return mp_impl->m_charset;
 }
 
 struct export_factory::impl

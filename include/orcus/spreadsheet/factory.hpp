@@ -49,7 +49,9 @@ public:
 
     void set_default_row_size(row_t row_size);
     void set_default_column_size(col_t col_size);
+
     void set_character_set(character_set_t charset);
+    character_set_t get_character_set() const;
 };
 
 class ORCUS_SPM_DLLPUBLIC import_styles : public iface::import_styles

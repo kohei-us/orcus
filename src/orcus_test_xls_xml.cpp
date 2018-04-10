@@ -62,6 +62,30 @@ std::unique_ptr<spreadsheet::document> load_doc(const string& path)
     return doc;
 }
 
+class doc_loader
+{
+    spreadsheet::document m_doc;
+    spreadsheet::import_factory m_factory;
+
+public:
+    doc_loader(const pstring& path) :
+        m_doc(), m_factory(m_doc)
+    {
+        orcus_xls_xml app(&m_factory);
+        app.read_file(path.data());
+    }
+
+    spreadsheet::document& get_doc()
+    {
+        return m_doc;
+    }
+
+    spreadsheet::import_factory& get_factory()
+    {
+        return m_factory;
+    }
+};
+
 void update_config(spreadsheet::document& doc, const string& path)
 {
     try
@@ -876,6 +900,15 @@ void test_xls_xml_hidden_rows_columns()
     assert(col_end == sh->col_size()); // non-inclusive
 }
 
+void test_xls_xml_character_set()
+{
+    pstring path(SRCDIR"/test/xls-xml/character-set/input.xml");
+    cout << path << endl;
+    doc_loader loader(path);
+
+    assert(loader.get_factory().get_character_set() == character_set_t::windows_1252);
+}
+
 void test_xls_xml_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
@@ -1146,6 +1179,7 @@ int main()
     test_xls_xml_cell_borders_directions();
     test_xls_xml_cell_borders_colors();
     test_xls_xml_hidden_rows_columns();
+    test_xls_xml_character_set();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();
