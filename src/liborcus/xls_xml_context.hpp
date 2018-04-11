@@ -27,6 +27,8 @@ class import_named_expression;
 
 }}
 
+class xls_xml_context;
+
 /**
  * Context for handling <Data> element scopes.
  */
@@ -54,7 +56,7 @@ class xls_xml_data_context : public xml_context_base
 
     enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };
 
-    spreadsheet::iface::import_factory* mp_factory;
+    xls_xml_context& m_parent_cxt;
     spreadsheet::iface::import_sheet* mp_cur_sheet;
     spreadsheet::row_t m_row;
     spreadsheet::col_t m_col;
@@ -71,7 +73,7 @@ class xls_xml_data_context : public xml_context_base
     date_time_t m_cell_datetime;
 
 public:
-    xls_xml_data_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
+    xls_xml_data_context(session_context& session_cxt, const tokens& tokens, xls_xml_context& parent_cxt);
     virtual ~xls_xml_data_context() override;
 
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const override;
@@ -87,6 +89,7 @@ public:
      * internal state before its use.
      */
     void reset(
+
         spreadsheet::iface::import_sheet* sheet,
         spreadsheet::row_t row, spreadsheet::col_t col,
         const pstring& cell_formula);
@@ -103,6 +106,8 @@ private:
 
 class xls_xml_context : public xml_context_base
 {
+    friend class xls_xml_data_context;
+
     struct border_style_type
     {
         spreadsheet::border_direction_t dir = spreadsheet::border_direction_t::unknown;
@@ -222,6 +227,9 @@ private:
     void commit_split_pane();
     void commit_default_style();
     void commit_styles();
+
+private:
+    spreadsheet::iface::import_factory* get_import_factory();
 
 private:
     spreadsheet::iface::import_factory* mp_factory;

@@ -50,9 +50,9 @@ xls_xml_data_context::string_segment_type::string_segment_type(const pstring& _s
     str(_str) {}
 
 xls_xml_data_context::xls_xml_data_context(
-    session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
+    session_context& session_cxt, const tokens& tokens, xls_xml_context& parent_cxt) :
     xml_context_base(session_cxt, tokens),
-    mp_factory(factory),
+    m_parent_cxt(parent_cxt),
     mp_cur_sheet(nullptr),
     m_row(0), m_col(0),
     m_cell_type(ct_unknown),
@@ -291,7 +291,9 @@ void xls_xml_data_context::end_element_data()
             break;
         case ct_string:
         {
-            spreadsheet::iface::import_shared_strings* ss = mp_factory->get_shared_strings();
+            spreadsheet::iface::import_shared_strings* ss =
+                m_parent_cxt.get_import_factory()->get_shared_strings();
+
             if (!ss)
                 break;
 
@@ -572,7 +574,7 @@ xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tok
     m_cur_row(0), m_cur_col(0),
     m_cur_prop_col(0),
     m_cur_merge_down(0), m_cur_merge_across(0),
-    m_cc_data(session_cxt, tokens, factory)
+    m_cc_data(session_cxt, tokens, *this)
 {
 }
 
@@ -1608,6 +1610,11 @@ void xls_xml_context::commit_styles()
 
         m_style_map.insert({style->id, xf_id});
     }
+}
+
+spreadsheet::iface::import_factory* xls_xml_context::get_import_factory()
+{
+    return mp_factory;
 }
 
 }
