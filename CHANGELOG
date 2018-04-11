@@ -1,3 +1,7 @@
+  * xls-xml
+
+    * pick up the character set from the XML declaration, and pass it
+      to the client app via import_global_settings interface.
 
   * xlsx
 
