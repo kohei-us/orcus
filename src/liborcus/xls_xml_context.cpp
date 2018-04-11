@@ -53,7 +53,6 @@ xls_xml_data_context::xls_xml_data_context(
     session_context& session_cxt, const tokens& tokens, xls_xml_context& parent_cxt) :
     xml_context_base(session_cxt, tokens),
     m_parent_cxt(parent_cxt),
-    mp_cur_sheet(nullptr),
     m_row(0), m_col(0),
     m_cell_type(ct_unknown),
     m_cell_value(std::numeric_limits<double>::quiet_NaN())
@@ -214,10 +213,7 @@ bool xls_xml_data_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xls_xml_data_context::reset(
-    spreadsheet::iface::import_sheet* sheet,
-    spreadsheet::row_t row, spreadsheet::col_t col,
-    const pstring& cell_formula)
+void xls_xml_data_context::reset(spreadsheet::row_t row, spreadsheet::col_t col, const pstring& cell_formula)
 {
     m_format_stack.clear();
     m_format_stack.emplace_back(); // set default format.
@@ -226,7 +222,6 @@ void xls_xml_data_context::reset(
     m_cell_type = ct_unknown;
     m_cell_string.clear();
 
-    mp_cur_sheet = sheet;
     m_row = row;
     m_col = col;
     m_cell_formula = cell_formula;
@@ -282,12 +277,14 @@ void xls_xml_data_context::end_element_data()
         return;
     }
 
+    spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
+
     switch (m_cell_type)
     {
         case ct_unknown:
             break;
         case ct_number:
-            mp_cur_sheet->set_value(m_row, m_col, m_cell_value);
+            sheet->set_value(m_row, m_col, m_cell_value);
             break;
         case ct_string:
         {
@@ -304,7 +301,7 @@ void xls_xml_data_context::end_element_data()
             {
                 // Unformatted string.
                 const pstring& s = m_cell_string.back().str;
-                mp_cur_sheet->set_string(m_row, m_col, ss->append(s.data(), s.size()));
+                sheet->set_string(m_row, m_col, ss->append(s.data(), s.size()));
             }
             else
             {
@@ -326,7 +323,7 @@ void xls_xml_data_context::end_element_data()
                 }
 
                 size_t si = ss->commit_segments();
-                mp_cur_sheet->set_string(m_row, m_col, si);
+                sheet->set_string(m_row, m_col, si);
             }
 
             m_cell_string.clear();
@@ -335,7 +332,7 @@ void xls_xml_data_context::end_element_data()
         }
         case ct_datetime:
         {
-            mp_cur_sheet->set_date_time(
+            sheet->set_date_time(
                 m_row, m_col,
                 m_cell_datetime.year, m_cell_datetime.month, m_cell_datetime.day,
                 m_cell_datetime.hour, m_cell_datetime.minute, m_cell_datetime.second);
@@ -351,14 +348,16 @@ void xls_xml_data_context::end_element_data()
 
 void xls_xml_data_context::push_formula_cell()
 {
-    mp_cur_sheet->set_formula(
+    spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
+
+    sheet->set_formula(
         m_row, m_col, spreadsheet::formula_grammar_t::xls_xml,
         m_cell_formula.get(), m_cell_formula.size());
 
     switch (m_cell_type)
     {
         case ct_number:
-            mp_cur_sheet->set_formula_result(m_row, m_col, m_cell_value);
+            sheet->set_formula_result(m_row, m_col, m_cell_value);
             break;
         default:
             ;
@@ -616,7 +615,7 @@ xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token
             {
                 // Move the cell formula string to the Data element context.
                 m_cc_data.transfer_common(*this);
-                m_cc_data.reset(mp_cur_sheet, m_cur_row, m_cur_col, m_cur_cell_formula);
+                m_cc_data.reset(m_cur_row, m_cur_col, m_cur_cell_formula);
                 m_cur_cell_formula.clear();
                 return &m_cc_data;
             }
@@ -1615,6 +1614,11 @@ void xls_xml_context::commit_styles()
 spreadsheet::iface::import_factory* xls_xml_context::get_import_factory()
 {
     return mp_factory;
+}
+
+spreadsheet::iface::import_sheet* xls_xml_context::get_import_sheet()
+{
+    return mp_cur_sheet;
 }
 
 }

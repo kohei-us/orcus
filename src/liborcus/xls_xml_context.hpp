@@ -57,7 +57,6 @@ class xls_xml_data_context : public xml_context_base
     enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };
 
     xls_xml_context& m_parent_cxt;
-    spreadsheet::iface::import_sheet* mp_cur_sheet;
     spreadsheet::row_t m_row;
     spreadsheet::col_t m_col;
 
@@ -89,10 +88,7 @@ public:
      * internal state before its use.
      */
     void reset(
-
-        spreadsheet::iface::import_sheet* sheet,
-        spreadsheet::row_t row, spreadsheet::col_t col,
-        const pstring& cell_formula);
+        spreadsheet::row_t row, spreadsheet::col_t col, const pstring& cell_formula);
 
 private:
 
@@ -230,6 +226,7 @@ private:
 
 private:
     spreadsheet::iface::import_factory* get_import_factory();
+    spreadsheet::iface::import_sheet* get_import_sheet();
 
 private:
     spreadsheet::iface::import_factory* mp_factory;
