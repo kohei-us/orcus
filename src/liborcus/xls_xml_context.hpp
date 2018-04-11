@@ -236,6 +236,7 @@ private:
     spreadsheet::col_t m_cur_prop_col; /// current column position for column properties.
     spreadsheet::row_t m_cur_merge_down;
     spreadsheet::col_t m_cur_merge_across;
+    spreadsheet::range_t m_cur_array_range;
     pstring m_cur_cell_formula;
     pstring m_cur_cell_style_id;
 

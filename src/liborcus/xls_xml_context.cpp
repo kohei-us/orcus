@@ -1181,43 +1181,53 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
     m_cur_merge_across = 0; // extra column(s) that are part of the merged cell.
     m_cur_merge_down = 0; // extra row(s) that are part of the merged cell.
 
-    std::for_each(attrs.begin(), attrs.end(),
-        [&](const xml_token_attr_t& attr)
+    m_cur_array_range.first.column = -1;
+    m_cur_array_range.first.row = -1;
+    m_cur_array_range.last = m_cur_array_range.first;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.value.empty())
+            return;
+
+        if (attr.ns != NS_xls_xml_ss)
+            return;
+
+        switch (attr.name)
         {
-            if (attr.value.empty())
-                return;
-
-            if (attr.ns != NS_xls_xml_ss)
-                return;
-
-            switch (attr.name)
+            case XML_Index:
+                col_index = to_long(attr.value);
+                break;
+            case XML_Formula:
+                if (attr.value[0] == '=' && attr.value.size() > 1)
+                {
+                    pstring s(attr.value.get()+1, attr.value.size()-1);
+                    formula = s;
+                    if (attr.transient)
+                        formula = intern(s);
+                }
+                break;
+            case XML_MergeAcross:
+                m_cur_merge_across = to_long(attr.value);
+                break;
+            case XML_MergeDown:
+                m_cur_merge_down = to_long(attr.value);
+                break;
+            case XML_StyleID:
+                m_cur_cell_style_id = intern(attr);
+                break;
+            case XML_ArrayRange:
             {
-                case XML_Index:
-                    col_index = to_long(attr.value);
-                    break;
-                case XML_Formula:
-                    if (attr.value[0] == '=' && attr.value.size() > 1)
-                    {
-                        pstring s(attr.value.get()+1, attr.value.size()-1);
-                        formula = s;
-                        if (attr.transient)
-                            formula = intern(s);
-                    }
-                    break;
-                case XML_MergeAcross:
-                    m_cur_merge_across = to_long(attr.value);
-                    break;
-                case XML_MergeDown:
-                    m_cur_merge_down = to_long(attr.value);
-                    break;
-                case XML_StyleID:
-                    m_cur_cell_style_id = intern(attr);
-                    break;
-                default:
-                    ;
+                spreadsheet::iface::import_reference_resolver* resolver = mp_factory->get_reference_resolver();
+                if (resolver)
+                    m_cur_array_range = resolver->resolve_range(attr.value.data(), attr.value.size());
+
+                break;
             }
+            default:
+                ;
         }
-    );
+    }
 
     if (!formula.empty())
         m_cur_cell_formula = formula;
