@@ -238,6 +238,7 @@ iface::import_sheet* import_factory::append_sheet(
     mp_impl->m_sheets.push_back(
         orcus::make_unique<import_sheet>(mp_impl->m_doc, *sh, sv));
 
+    mp_impl->m_sheets.back()->set_character_set(mp_impl->m_charset);
     return mp_impl->m_sheets.back().get();
 }
 
