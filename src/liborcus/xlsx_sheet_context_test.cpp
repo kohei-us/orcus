@@ -36,35 +36,66 @@ class mock_ref_resolver : public import_reference_resolver
     }
 };
 
-class mock_sheet : public import_sheet
+class mock_array_formula : public import_array_formula
 {
 public:
+    virtual void set_range(const range_t& range) override
+    {
+        assert(range.first.row == 2);
+        assert(range.first.column == 1);
+        assert(range.last.row == 3);
+        assert(range.last.column == 1);
+    }
 
-    virtual void set_value(row_t row, col_t col, double val)
+    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+    {
+        assert(grammar == formula_grammar_t::xlsx_2007);
+        assert(string(p, n) == "A1:A2");
+    }
+
+    virtual void set_result_bool(row_t row, col_t col, bool value) override
+    {
+    }
+
+    virtual void set_result_empty(row_t row, col_t col) override
+    {
+    }
+
+    virtual void set_result_string(row_t row, col_t col, size_t sindex) override
+    {
+    }
+
+    virtual void set_result_value(row_t row, col_t col, double value) override
+    {
+    }
+
+    virtual void commit() override
+    {
+    }
+};
+
+class mock_sheet : public import_sheet
+{
+    mock_array_formula m_array_formula;
+
+public:
+    virtual void set_value(row_t row, col_t col, double val) override
     {
         assert(row == -1);
         assert(col == 0);
         assert(val == 5.0);
     }
 
-    virtual void set_bool(row_t row, col_t col, bool val)
+    virtual void set_bool(row_t row, col_t col, bool val) override
     {
         assert(row == -1);
         assert(col == 0);
         assert(val == true);
     }
 
-    virtual iface::import_formula_result* set_array_formula(
-        row_t row, col_t col, formula_grammar_t grammar,
-        const char* s, size_t n, const char* s_range, size_t n_range)
+    virtual iface::import_array_formula* get_array_formula() override
     {
-        assert(row == -1);
-        assert(col == 0);
-        assert(grammar == formula_grammar_t::xlsx_2007);
-        assert(string(s, n) == "A1:A2");
-        assert(string(s_range, n_range) == "B3:B4");
-
-        return nullptr;
+        return &m_array_formula;
     }
 };
 

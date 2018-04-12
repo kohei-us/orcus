@@ -24,8 +24,47 @@ using namespace orcus::spreadsheet::mock;
 
 namespace {
 
+class mock_array_formula : public import_array_formula
+{
+public:
+    virtual void set_range(const range_t& range) override
+    {
+        assert(range.first.row == 19);
+        assert(range.first.column == 111);
+        assert(range.last.row == 20);
+        assert(range.last.column == 113);
+    }
+
+    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+    {
+        assert(grammar == formula_grammar_t::gnumeric);
+        assert(string(p, n) == "=arrayFormula");
+    }
+
+    virtual void set_result_bool(row_t row, col_t col, bool value) override
+    {
+    }
+
+    virtual void set_result_empty(row_t row, col_t col) override
+    {
+    }
+
+    virtual void set_result_string(row_t row, col_t col, size_t sindex) override
+    {
+    }
+
+    virtual void set_result_value(row_t row, col_t col, double value) override
+    {
+    }
+
+    virtual void commit() override
+    {
+    }
+};
+
 class mock_sheet : public import_sheet
 {
+    mock_array_formula m_array_formula;
 public:
     virtual void set_value(row_t row, col_t col, double val)
     {
@@ -74,17 +113,10 @@ public:
         assert(string(s, n) == "=formula");
     }
 
-    virtual iface::import_formula_result* set_array_formula(
+    virtual iface::import_array_formula* set_array_formula(
         const range_t& range, formula_grammar_t grammar, const char* s, size_t n)
     {
-        assert(range.first.row == 19);
-        assert(range.first.column == 111);
-        assert(grammar == formula_grammar_t::gnumeric);
-        assert(string(s, n) == "=arrayFormula");
-        assert(range.last.row == 20);
-        assert(range.last.column == 113);
-
-        return nullptr;
+        return &m_array_formula;
     }
 };
 

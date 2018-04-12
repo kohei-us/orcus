@@ -114,9 +114,65 @@ void import_auto_filter::commit()
     m_sheet.set_auto_filter_data(mp_data.release());
 }
 
+import_array_formula::import_array_formula(document& doc, sheet& sheet) :
+    m_doc(doc), m_sheet(sheet) {}
+
+import_array_formula::~import_array_formula()
+{
+}
+
+void import_array_formula::set_range(const range_t& range)
+{
+    m_range = range;
+}
+
+void import_array_formula::set_formula(formula_grammar_t grammar, const char* p, size_t n)
+{
+    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+    if (!resolver)
+        return;
+
+    // Tokenize the formula string and store it.
+    ixion::model_context& cxt = m_doc.get_model_context();
+    ixion::abs_address_t pos(m_sheet.get_index(), m_range.first.row, m_range.first.column);
+
+    m_tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
+}
+
+void import_array_formula::set_result_value(row_t row, col_t col, double value)
+{
+}
+
+void import_array_formula::set_result_string(row_t row, col_t col, size_t sindex)
+{
+}
+
+void import_array_formula::set_result_empty(row_t row, col_t col)
+{
+}
+
+void import_array_formula::set_result_bool(row_t row, col_t col, bool value)
+{
+}
+
+void import_array_formula::commit()
+{
+    m_sheet.set_grouped_formula(m_range, std::move(m_tokens));
+}
+
+void import_array_formula::reset()
+{
+    m_tokens.clear();
+    m_range.first.row = -1;
+    m_range.first.column = -1;
+    m_range.last.row = -1;
+    m_range.last.column = -1;
+}
+
 import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_doc(doc),
     m_sheet(sh),
+    m_array_formula(doc, sh),
     m_named_exp(doc, sh.get_index()),
     m_sheet_properties(doc, sh),
     m_data_table(sh),
@@ -167,22 +223,10 @@ iface::import_table* import_sheet::get_table()
     return &m_table;
 }
 
-iface::import_formula_result* import_sheet::set_array_formula(
-    const range_t& range, formula_grammar_t grammar, const char* p, size_t n)
+iface::import_array_formula* import_sheet::get_array_formula()
 {
-    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
-    if (!resolver)
-        return nullptr;
-
-    // Tokenize the formula string and store it.
-    ixion::model_context& cxt = m_doc.get_model_context();
-    ixion::abs_address_t pos(m_sheet.get_index(), range.first.row, range.first.column);
-
-    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
-
-    m_sheet.set_grouped_formula(range, std::move(tokens));
-
-    return nullptr;
+    m_array_formula.reset();
+    return &m_array_formula;
 }
 
 void import_sheet::set_auto(row_t row, col_t col, const char* p, size_t n)

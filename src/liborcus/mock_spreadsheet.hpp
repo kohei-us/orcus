@@ -127,6 +127,26 @@ public:
     virtual range_t resolve_range(const char* p, size_t n) override;
 };
 
+class import_array_formula : public orcus::spreadsheet::iface::import_array_formula
+{
+public:
+    virtual ~import_array_formula() override;
+
+    virtual void set_range(const range_t& range) override;
+
+    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override;
+
+    virtual void set_result_value(row_t row, col_t col, double value) override;
+
+    virtual void set_result_string(row_t row, col_t col, size_t sindex) override;
+
+    virtual void set_result_empty(row_t row, col_t col) override;
+
+    virtual void set_result_bool(row_t row, col_t col, bool value) override;
+
+    virtual void commit() override;
+};
+
 /**
  * Interface for sheet.
  */
@@ -168,9 +188,6 @@ public:
 
     virtual void set_formula_result(
         orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, const char* p, size_t n) override;
-
-    virtual iface::import_formula_result* set_array_formula(
-        const range_t&, formula_grammar_t, const char*, size_t) override;
 
     virtual orcus::spreadsheet::range_size_t get_sheet_size() const override;
 };

@@ -277,16 +277,17 @@ void orcus_xlsx::set_formulas_to_doc()
         if (!sheet)
             continue;
 
-        spreadsheet::iface::import_formula_result* xres = sheet->set_array_formula(
-            af.ref, spreadsheet::formula_grammar_t::xlsx_2007,
-            af.exp.data(), af.exp.size());
+        spreadsheet::iface::import_array_formula* xaf = sheet->get_array_formula();
 
-        if (xres)
+        if (xaf)
         {
+            xaf->set_range(af.ref);
+            xaf->set_formula(spreadsheet::formula_grammar_t::xlsx_2007, af.exp.data(), af.exp.size());
+
             const range_formula_results& res = *af.results;
-            spreadsheet::range_size_t rs = xres->get_size();
-            spreadsheet::row_t row_size = std::min<spreadsheet::row_t>(rs.rows, res.row_size());
-            spreadsheet::col_t col_size = std::min<spreadsheet::col_t>(rs.columns, res.col_size());
+
+            spreadsheet::row_t row_size = res.row_size();
+            spreadsheet::col_t col_size = res.col_size();
 
             for (spreadsheet::row_t row = 0; row < row_size; ++row)
             {
@@ -296,16 +297,16 @@ void orcus_xlsx::set_formulas_to_doc()
                     switch (v.type)
                     {
                         case formula_result::result_type::numeric:
-                            xres->set_value(row, col, v.value_numeric);
+                            xaf->set_result_value(row, col, v.value_numeric);
                             break;
                         case formula_result::result_type::string:
-                            xres->set_string(row, col, v.value_string);
+                            xaf->set_result_string(row, col, v.value_string);
                             break;
                         case formula_result::result_type::boolean:
-                            xres->set_bool(row, col, v.value_boolean);
+                            xaf->set_result_bool(row, col, v.value_boolean);
                             break;
                         case formula_result::result_type::empty:
-                            xres->set_empty(row, col);
+                            xaf->set_result_empty(row, col);
                             break;
                         default:
                             ;
@@ -313,7 +314,7 @@ void orcus_xlsx::set_formulas_to_doc()
                 }
             }
 
-            xres->commit();
+            xaf->commit();
         }
     }
 }

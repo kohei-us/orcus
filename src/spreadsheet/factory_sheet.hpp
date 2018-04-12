@@ -106,10 +106,40 @@ public:
     virtual void commit() override;
 };
 
+class import_array_formula : public iface::import_array_formula
+{
+    document& m_doc;
+    sheet& m_sheet;
+
+    range_t m_range;
+    ixion::formula_tokens_t m_tokens;
+
+public:
+    import_array_formula(document& doc, sheet& sheet);
+    virtual ~import_array_formula() override;
+
+    virtual void set_range(const range_t& range) override;
+
+    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override;
+
+    virtual void set_result_value(row_t row, col_t col, double value) override;
+
+    virtual void set_result_string(row_t row, col_t col, size_t sindex) override;
+
+    virtual void set_result_empty(row_t row, col_t col) override;
+
+    virtual void set_result_bool(row_t row, col_t col, bool value) override;
+
+    virtual void commit() override;
+
+    void reset();
+};
+
 class import_sheet : public iface::import_sheet
 {
     document& m_doc;
     sheet& m_sheet;
+    import_array_formula m_array_formula;
     import_sheet_named_exp m_named_exp;
     import_sheet_properties m_sheet_properties;
     import_data_table m_data_table;
@@ -131,8 +161,7 @@ public:
     virtual iface::import_named_expression* get_named_expression() override;
     virtual iface::import_sheet_properties* get_sheet_properties() override;
     virtual iface::import_table* get_table() override;
-    virtual iface::import_formula_result* set_array_formula(
-        const range_t& range, formula_grammar_t grammar, const char* p, size_t n) override;
+    virtual iface::import_array_formula* get_array_formula() override;
     virtual void set_auto(row_t row, col_t col, const char* p, size_t n) override;
     virtual void set_bool(row_t row, col_t col, bool value) override;
     virtual void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override;

@@ -233,9 +233,13 @@ void gnumeric_cell_context::end_cell()
             range.last.column = col + mp_cell_data->array_cols - 1;
             range.last.row = row + mp_cell_data->array_rows - 1;
 
-            mp_sheet->set_array_formula(
-                range, spreadsheet::formula_grammar_t::gnumeric,
-                chars.get(), chars.size());
+            iface::import_array_formula* af = mp_sheet->get_array_formula();
+            if (af)
+            {
+                af->set_range(range);
+                af->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars.get(), chars.size());
+                af->commit();
+            }
         }
         break;
         case cell_type_bool:

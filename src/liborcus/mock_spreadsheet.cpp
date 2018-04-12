@@ -165,6 +165,45 @@ spreadsheet::range_t import_reference_resolver::resolve_range(const char*, size_
     return ret;
 }
 
+import_array_formula::~import_array_formula()
+{
+}
+
+void import_array_formula::set_range(const range_t&)
+{
+    assert(false);
+}
+
+void import_array_formula::set_formula(formula_grammar_t, const char*, size_t)
+{
+    assert(false);
+}
+
+void import_array_formula::set_result_value(row_t, col_t, double)
+{
+    assert(false);
+}
+
+void import_array_formula::set_result_string(row_t, col_t, size_t)
+{
+    assert(false);
+}
+
+void import_array_formula::set_result_empty(row_t, col_t)
+{
+    assert(false);
+}
+
+void import_array_formula::set_result_bool(row_t, col_t, bool)
+{
+    assert(false);
+}
+
+void import_array_formula::commit()
+{
+    assert(false);
+}
+
 // import_sheet
 
 import_sheet::~import_sheet()
@@ -220,13 +259,6 @@ void import_sheet::set_shared_formula(row_t, col_t, formula_grammar_t, size_t,
 void import_sheet::set_shared_formula(row_t, col_t, size_t)
 {
     assert(false);
-}
-
-iface::import_formula_result* import_sheet::set_array_formula(
-    const range_t&, formula_grammar_t, const char*, size_t)
-{
-    assert(false);
-    return nullptr;
 }
 
 void import_sheet::set_formula_result(row_t, col_t, double value)

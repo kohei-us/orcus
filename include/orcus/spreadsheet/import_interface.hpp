@@ -489,20 +489,22 @@ public:
     virtual void commit() = 0;
 };
 
-class ORCUS_DLLPUBLIC import_formula_result
+class ORCUS_DLLPUBLIC import_array_formula
 {
 public:
-    virtual ~import_formula_result();
+    virtual ~import_array_formula();
 
-    virtual orcus::spreadsheet::range_size_t get_size() const = 0;
+    virtual void set_range(const range_t& range) = 0;
 
-    virtual void set_string(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, size_t sindex) = 0;
+    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) = 0;
 
-    virtual void set_value(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, double value) = 0;
+    virtual void set_result_string(row_t row, col_t col, size_t sindex) = 0;
 
-    virtual void set_bool(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, bool value) = 0;
+    virtual void set_result_value(row_t row, col_t col, double value) = 0;
 
-    virtual void set_empty(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col) = 0;
+    virtual void set_result_bool(row_t row, col_t col, bool value) = 0;
+
+    virtual void set_result_empty(row_t row, col_t col) = 0;
 
     virtual void commit() = 0;
 };
@@ -564,6 +566,8 @@ public:
     virtual import_conditional_format* get_conditional_format();
 
     virtual import_named_expression* get_named_expression();
+
+    virtual import_array_formula* get_array_formula();
 
     /**
      * Set raw string value to a cell and have the implementation
@@ -687,24 +691,6 @@ public:
 
     virtual void set_formula_result(
         orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, const char* p, size_t n) = 0;
-
-    /**
-     * Set a array formula to the specified cells. The formula covers an area
-     * specified by array_rows and array_cols beginning from the base cell.
-     *
-     * @param range_t range of the array formula cells.
-     * @param grammar grammar used in the formula expression
-     * @param p pointer to the string buffer that stores the raw formula
-     *          expression string.
-     * @param n size of the string buffer.
-     *
-     * @return a pointer to an object supporting the {@link
-     *         import_formula_result} interface, or nullptr if the client app
-     *         does not support importing of cached array formula results.
-     */
-    virtual import_formula_result* set_array_formula(
-        const range_t& range, orcus::spreadsheet::formula_grammar_t grammar,
-        const char* p, size_t n) = 0;
 
     /**
      * Get the size of the sheet.
