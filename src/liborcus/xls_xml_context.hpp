@@ -57,7 +57,6 @@ class xls_xml_data_context : public xml_context_base
     enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };
 
     xls_xml_context& m_parent_cxt;
-    pstring m_cell_formula;
 
     cell_type m_cell_type;
     std::vector<string_segment_type> m_cell_string;
@@ -84,14 +83,14 @@ public:
      * Intendted to be called from the parent context instance, to reset its
      * internal state before its use.
      */
-    void reset(const pstring& cell_formula);
+    void reset();
 
 private:
 
     void start_element_data(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void end_element_data();
 
-    void push_formula_cell();
+    void push_formula_cell(const pstring& formula);
 
     void update_current_format();
 };
@@ -224,6 +223,7 @@ private:
     spreadsheet::iface::import_factory* get_import_factory();
     spreadsheet::iface::import_sheet* get_import_sheet();
     spreadsheet::address_t get_current_pos() const;
+    pstring pop_and_clear_formula();
 
 private:
     spreadsheet::iface::import_factory* mp_factory;

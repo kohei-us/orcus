@@ -212,7 +212,7 @@ bool xls_xml_data_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xls_xml_data_context::reset(const pstring& cell_formula)
+void xls_xml_data_context::reset()
 {
     m_format_stack.clear();
     m_format_stack.emplace_back(); // set default format.
@@ -221,17 +221,8 @@ void xls_xml_data_context::reset(const pstring& cell_formula)
     m_cell_type = ct_unknown;
     m_cell_string.clear();
 
-    m_cell_formula = cell_formula;
     m_cell_value = std::numeric_limits<double>::quiet_NaN();
     m_cell_datetime = date_time_t();
-
-    if (get_config().debug)
-    {
-        spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
-        cout << "cell data: (row: " << pos.row
-             << "; column: " << pos.column
-             << "; formula: '" << m_cell_formula << "')" << endl;
-    }
 }
 
 void xls_xml_data_context::start_element_data(
@@ -268,9 +259,11 @@ void xls_xml_data_context::start_element_data(
 
 void xls_xml_data_context::end_element_data()
 {
-    if (!m_cell_formula.empty())
+    pstring formula = m_parent_cxt.pop_and_clear_formula();
+
+    if (!formula.empty())
     {
-        push_formula_cell();
+        push_formula_cell(formula);
         m_cell_type = ct_unknown;
         return;
     }
@@ -345,14 +338,14 @@ void xls_xml_data_context::end_element_data()
     m_cell_type = ct_unknown;
 }
 
-void xls_xml_data_context::push_formula_cell()
+void xls_xml_data_context::push_formula_cell(const pstring& formula)
 {
     spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
     spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
 
     sheet->set_formula(
         pos.row, pos.column, spreadsheet::formula_grammar_t::xls_xml,
-        m_cell_formula.get(), m_cell_formula.size());
+        formula.get(), formula.size());
 
     switch (m_cell_type)
     {
@@ -362,8 +355,6 @@ void xls_xml_data_context::push_formula_cell()
         default:
             ;
     }
-
-    m_cell_formula.clear();
 }
 
 void xls_xml_data_context::update_current_format()
@@ -615,8 +606,7 @@ xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token
             {
                 // Move the cell formula string to the Data element context.
                 m_cc_data.transfer_common(*this);
-                m_cc_data.reset(m_cur_cell_formula);
-                m_cur_cell_formula.clear();
+                m_cc_data.reset();
                 return &m_cc_data;
             }
             default:
@@ -1627,6 +1617,13 @@ spreadsheet::address_t xls_xml_context::get_current_pos() const
     pos.row = m_cur_row;
     pos.column = m_cur_col;
     return pos;
+}
+
+pstring xls_xml_context::pop_and_clear_formula()
+{
+    pstring f = m_cur_cell_formula;
+    m_cur_cell_formula.clear();
+    return f;
 }
 
 }
