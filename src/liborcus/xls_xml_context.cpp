@@ -53,7 +53,6 @@ xls_xml_data_context::xls_xml_data_context(
     session_context& session_cxt, const tokens& tokens, xls_xml_context& parent_cxt) :
     xml_context_base(session_cxt, tokens),
     m_parent_cxt(parent_cxt),
-    m_row(0), m_col(0),
     m_cell_type(ct_unknown),
     m_cell_value(std::numeric_limits<double>::quiet_NaN())
 {
@@ -213,7 +212,7 @@ bool xls_xml_data_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xls_xml_data_context::reset(spreadsheet::row_t row, spreadsheet::col_t col, const pstring& cell_formula)
+void xls_xml_data_context::reset(const pstring& cell_formula)
 {
     m_format_stack.clear();
     m_format_stack.emplace_back(); // set default format.
@@ -222,16 +221,15 @@ void xls_xml_data_context::reset(spreadsheet::row_t row, spreadsheet::col_t col,
     m_cell_type = ct_unknown;
     m_cell_string.clear();
 
-    m_row = row;
-    m_col = col;
     m_cell_formula = cell_formula;
     m_cell_value = std::numeric_limits<double>::quiet_NaN();
     m_cell_datetime = date_time_t();
 
     if (get_config().debug)
     {
-        cout << "cell data: (row: " << m_row
-             << "; column: " << m_col
+        spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
+        cout << "cell data: (row: " << pos.row
+             << "; column: " << pos.column
              << "; formula: '" << m_cell_formula << "')" << endl;
     }
 }
@@ -278,13 +276,14 @@ void xls_xml_data_context::end_element_data()
     }
 
     spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
+    spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
 
     switch (m_cell_type)
     {
         case ct_unknown:
             break;
         case ct_number:
-            sheet->set_value(m_row, m_col, m_cell_value);
+            sheet->set_value(pos.row, pos.column, m_cell_value);
             break;
         case ct_string:
         {
@@ -301,7 +300,7 @@ void xls_xml_data_context::end_element_data()
             {
                 // Unformatted string.
                 const pstring& s = m_cell_string.back().str;
-                sheet->set_string(m_row, m_col, ss->append(s.data(), s.size()));
+                sheet->set_string(pos.row, pos.column, ss->append(s.data(), s.size()));
             }
             else
             {
@@ -323,7 +322,7 @@ void xls_xml_data_context::end_element_data()
                 }
 
                 size_t si = ss->commit_segments();
-                sheet->set_string(m_row, m_col, si);
+                sheet->set_string(pos.row, pos.column, si);
             }
 
             m_cell_string.clear();
@@ -333,7 +332,7 @@ void xls_xml_data_context::end_element_data()
         case ct_datetime:
         {
             sheet->set_date_time(
-                m_row, m_col,
+                pos.row, pos.column,
                 m_cell_datetime.year, m_cell_datetime.month, m_cell_datetime.day,
                 m_cell_datetime.hour, m_cell_datetime.minute, m_cell_datetime.second);
             break;
@@ -349,15 +348,16 @@ void xls_xml_data_context::end_element_data()
 void xls_xml_data_context::push_formula_cell()
 {
     spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
+    spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
 
     sheet->set_formula(
-        m_row, m_col, spreadsheet::formula_grammar_t::xls_xml,
+        pos.row, pos.column, spreadsheet::formula_grammar_t::xls_xml,
         m_cell_formula.get(), m_cell_formula.size());
 
     switch (m_cell_type)
     {
         case ct_number:
-            sheet->set_formula_result(m_row, m_col, m_cell_value);
+            sheet->set_formula_result(pos.row, pos.column, m_cell_value);
             break;
         default:
             ;
@@ -615,7 +615,7 @@ xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token
             {
                 // Move the cell formula string to the Data element context.
                 m_cc_data.transfer_common(*this);
-                m_cc_data.reset(m_cur_row, m_cur_col, m_cur_cell_formula);
+                m_cc_data.reset(m_cur_cell_formula);
                 m_cur_cell_formula.clear();
                 return &m_cc_data;
             }
@@ -1619,6 +1619,14 @@ spreadsheet::iface::import_factory* xls_xml_context::get_import_factory()
 spreadsheet::iface::import_sheet* xls_xml_context::get_import_sheet()
 {
     return mp_cur_sheet;
+}
+
+spreadsheet::address_t xls_xml_context::get_current_pos() const
+{
+    spreadsheet::address_t pos;
+    pos.row = m_cur_row;
+    pos.column = m_cur_col;
+    return pos;
 }
 
 }
