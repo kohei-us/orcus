@@ -240,10 +240,6 @@ private:
 
     void push_all_array_formulas();
 
-    static void push_array(
-        spreadsheet::iface::import_array_formula* array,
-        const spreadsheet::range_t& ref, const array_formula_type& af);
-
 private:
     spreadsheet::iface::import_factory* get_import_factory();
     spreadsheet::iface::import_sheet* get_import_sheet();

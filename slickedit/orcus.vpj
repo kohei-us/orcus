@@ -361,6 +361,8 @@
 				<F N="../src/liborcus/orcus_xml.cpp"/>
 				<F N="../src/liborcus/session_context.cpp"/>
 				<F N="../src/liborcus/session_context.hpp"/>
+				<F N="../src/liborcus/spreadsheet_iface_util.cpp"/>
+				<F N="../src/liborcus/spreadsheet_iface_util.hpp"/>
 				<F N="../src/liborcus/spreadsheet_interface.cpp"/>
 				<F N="../src/liborcus/spreadsheet_types.cpp"/>
 				<F N="../src/liborcus/string_helper.cpp"/>

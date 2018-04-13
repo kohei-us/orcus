@@ -78,6 +78,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	session_context.hpp \
 	session_context.cpp \
 	spreadsheet_types.cpp \
+	spreadsheet_iface_util.hpp \
+	spreadsheet_iface_util.cpp \
 	string_helper.hpp \
 	string_helper.cpp
 

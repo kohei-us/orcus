@@ -28,6 +28,7 @@
 #include "xlsx_session_data.hpp"
 #include "opc_context.hpp"
 #include "ooxml_global.hpp"
+#include "spreadsheet_iface_util.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -278,44 +279,7 @@ void orcus_xlsx::set_formulas_to_doc()
             continue;
 
         spreadsheet::iface::import_array_formula* xaf = sheet->get_array_formula();
-
-        if (xaf)
-        {
-            xaf->set_range(af.ref);
-            xaf->set_formula(spreadsheet::formula_grammar_t::xlsx_2007, af.exp.data(), af.exp.size());
-
-            const range_formula_results& res = *af.results;
-
-            spreadsheet::row_t row_size = res.row_size();
-            spreadsheet::col_t col_size = res.col_size();
-
-            for (spreadsheet::row_t row = 0; row < row_size; ++row)
-            {
-                for (spreadsheet::col_t col = 0; col < col_size; ++col)
-                {
-                    const formula_result& v = res.get(row, col);
-                    switch (v.type)
-                    {
-                        case formula_result::result_type::numeric:
-                            xaf->set_result_value(row, col, v.value_numeric);
-                            break;
-                        case formula_result::result_type::string:
-                            xaf->set_result_string(row, col, v.value_string);
-                            break;
-                        case formula_result::result_type::boolean:
-                            xaf->set_result_bool(row, col, v.value_boolean);
-                            break;
-                        case formula_result::result_type::empty:
-                            xaf->set_result_empty(row, col);
-                            break;
-                        default:
-                            ;
-                    }
-                }
-            }
-
-            xaf->commit();
-        }
+        push_array_formula(xaf, af.ref, af.exp, spreadsheet::formula_grammar_t::xlsx_2007, *af.results);
     }
 }
 

@@ -8,6 +8,7 @@
 #include "xls_xml_context.hpp"
 #include "xls_xml_namespace_types.hpp"
 #include "xls_xml_token_constants.hpp"
+#include "spreadsheet_iface_util.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/spreadsheet/import_interface_view.hpp"
 #include "orcus/measurement.hpp"
@@ -372,7 +373,10 @@ bool xls_xml_data_context::handle_array_formula_result()
                 array = sheet->get_array_formula();
 
             if (array)
-                xls_xml_context::push_array(array, ref, af);
+            {
+                push_array_formula(
+                    array, ref, af.formula, spreadsheet::formula_grammar_t::xls_xml, af.results);
+            }
 
             store.erase(it++);
             continue;
@@ -1729,45 +1733,11 @@ void xls_xml_context::push_all_array_formulas()
         return;
 
     for (const array_formula_pair_type& pair : m_array_formulas)
-        push_array(array, pair.first, *pair.second);
-}
-
-void xls_xml_context::push_array(
-    spreadsheet::iface::import_array_formula* array,
-    const spreadsheet::range_t& ref, const array_formula_type& af)
-{
-    array->set_range(ref);
-    array->set_formula(
-        spreadsheet::formula_grammar_t::xls_xml, af.formula.data(), af.formula.size());
-
-    const range_formula_results& res = af.results;
-
-    for (size_t row = 0; row < res.row_size(); ++row)
     {
-        for (size_t col = 0; col < res.col_size(); ++col)
-        {
-            const formula_result& v = res.get(row, col);
-            switch (v.type)
-            {
-                case formula_result::result_type::numeric:
-                    array->set_result_value(row, col, v.value_numeric);
-                    break;
-                case formula_result::result_type::string:
-                    array->set_result_string(row, col, v.value_string);
-                    break;
-                case formula_result::result_type::boolean:
-                    array->set_result_bool(row, col, v.value_boolean);
-                    break;
-                case formula_result::result_type::empty:
-                    array->set_result_empty(row, col);
-                    break;
-                default:
-                    ;
-            }
-        }
+        const array_formula_type& af = *pair.second;
+        push_array_formula(
+            array, pair.first, af.formula, spreadsheet::formula_grammar_t::xls_xml, af.results);
     }
-
-    array->commit();
 }
 
 spreadsheet::iface::import_factory* xls_xml_context::get_import_factory()
