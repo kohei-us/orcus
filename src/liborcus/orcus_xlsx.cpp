@@ -265,9 +265,13 @@ void orcus_xlsx::set_formulas_to_doc()
         if (!sheet)
             continue;
 
-        sheet->set_formula(
-            f.ref.row, f.ref.column, orcus::spreadsheet::formula_grammar_t::xlsx_2007,
-            f.exp.data(), f.exp.size());
+        spreadsheet::iface::import_formula* formula = sheet->get_formula();
+        if (!formula)
+            continue;
+
+        formula->set_position(f.ref.row, f.ref.column);
+        formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx_2007, f.exp.data(), f.exp.size());
+        formula->commit();
     }
 
     // Insert array formulas.

@@ -204,6 +204,50 @@ void import_array_formula::commit()
     assert(false);
 }
 
+import_formula::~import_formula()
+{
+}
+
+void import_formula::set_position(row_t row, col_t col)
+{
+    assert(false);
+}
+
+void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_t n)
+{
+    assert(false);
+}
+
+void import_formula::set_shared_formula_index(size_t index)
+{
+    assert(false);
+}
+
+void import_formula::set_result_value(double value)
+{
+    assert(false);
+}
+
+void import_formula::set_result_string(size_t sindex)
+{
+    assert(false);
+}
+
+void import_formula::set_result_bool(bool value)
+{
+    assert(false);
+}
+
+void import_formula::set_result_empty()
+{
+    assert(false);
+}
+
+void import_formula::commit()
+{
+    assert(false);
+}
+
 // import_sheet
 
 import_sheet::~import_sheet()
@@ -241,11 +285,6 @@ void import_sheet::set_format(row_t, col_t, size_t)
 }
 
 void import_sheet::set_format(row_t, col_t, row_t, col_t, size_t)
-{
-    assert(false);
-}
-
-void import_sheet::set_formula(row_t, col_t, formula_grammar_t, const char*, size_t)
 {
     assert(false);
 }

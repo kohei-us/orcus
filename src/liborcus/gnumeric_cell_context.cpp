@@ -215,8 +215,16 @@ void gnumeric_cell_context::end_cell()
         }
         break;
         case cell_type_formula:
-            mp_sheet->set_formula(row, col, spreadsheet::formula_grammar_t::gnumeric, chars.get(), chars.size());
-        break;
+        {
+            spreadsheet::iface::import_formula* xformula = mp_sheet->get_formula();
+            if (!xformula)
+                break;
+
+            xformula->set_position(row, col);
+            xformula->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars.data(), chars.size());
+            xformula->commit();
+            break;
+        }
         case cell_type_shared_formula:
         {
             if (chars.empty())

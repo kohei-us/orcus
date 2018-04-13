@@ -671,20 +671,6 @@ public:
         orcus::spreadsheet::row_t row_end, orcus::spreadsheet::col_t col_end, size_t xf_index) = 0;
 
     /**
-     * Set normal, non-shared formula expression to specified cell.
-     *
-     * @param row row ID
-     * @param col column ID
-     * @param grammar grammar used in the formula expression
-     * @param p pointer to the first character of the raw formula expression
-     *          string.
-     * @param n size of the raw formula expression string.
-     */
-    virtual void set_formula(
-        orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, orcus::spreadsheet::formula_grammar_t grammar,
-        const char* p, size_t n) = 0;
-
-    /**
      * Set shared formula expression to specified cell.  This call also
      * registers the formula expression to a common formula expression pool to
      * allow it to be looked up by the specified index later.

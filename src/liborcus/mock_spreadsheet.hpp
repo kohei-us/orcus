@@ -147,6 +147,20 @@ public:
     virtual void commit() override;
 };
 
+class import_formula : public orcus::spreadsheet::iface::import_formula
+{
+public:
+    virtual ~import_formula() override;
+    virtual void set_position(row_t row, col_t col) override;
+    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override;
+    virtual void set_shared_formula_index(size_t index) override;
+    virtual void set_result_value(double value) override;
+    virtual void set_result_string(size_t sindex) override;
+    virtual void set_result_bool(bool value) override;
+    virtual void set_result_empty() override;
+    virtual void commit() override;
+};
+
 /**
  * Interface for sheet.
  */
@@ -171,10 +185,6 @@ public:
 
     virtual void set_format(orcus::spreadsheet::row_t row_start, orcus::spreadsheet::col_t col_start,
             orcus::spreadsheet::row_t row_end, orcus::spreadsheet::col_t col_end, size_t xf_index) override;
-
-    virtual void set_formula(
-        orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, orcus::spreadsheet::formula_grammar_t grammar,
-         const char* p, size_t n) override;
 
     virtual void set_shared_formula(
         orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, orcus::spreadsheet::formula_grammar_t grammar,

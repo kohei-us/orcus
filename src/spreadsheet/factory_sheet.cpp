@@ -344,24 +344,6 @@ void import_sheet::set_format(
     m_sheet.set_format(row_start, col_start, row_end, col_end, xf_index);
 }
 
-void import_sheet::set_formula(row_t row, col_t col, formula_grammar_t grammar, const char* p, size_t n)
-{
-    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
-    if (!resolver)
-        return;
-
-    // Tokenize the formula string and store it.
-    ixion::model_context& cxt = m_doc.get_model_context();
-    ixion::abs_address_t pos(m_sheet.get_index(), row, col);
-
-    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
-
-    ixion::formula_tokens_store_ptr_t ts = ixion::formula_tokens_store::create();
-    ts->get() = std::move(tokens);
-
-    m_sheet.set_formula(row, col, ts);
-}
-
 void import_sheet::set_formula_result(row_t row, col_t col, const char* p, size_t n)
 {
     m_sheet.set_formula_result(row, col, p, n);

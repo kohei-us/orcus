@@ -62,8 +62,49 @@ public:
     }
 };
 
+class mock_formula : public import_formula
+{
+public:
+    virtual void set_position(row_t row, col_t col) override
+    {
+        assert(row == 9);
+        assert(col == 11);
+    }
+
+    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+    {
+        assert(grammar == formula_grammar_t::gnumeric);
+        assert(string(p, n) == "=formula");
+    }
+
+    virtual void set_shared_formula_index(size_t index) override
+    {
+    }
+
+    virtual void set_result_bool(bool value) override
+    {
+    }
+
+    virtual void set_result_empty() override
+    {
+    }
+
+    virtual void set_result_string(size_t sindex) override
+    {
+    }
+
+    virtual void set_result_value(double value) override
+    {
+    }
+
+    virtual void commit() override
+    {
+    }
+};
+
 class mock_sheet : public import_sheet
 {
+    mock_formula m_formula;
     mock_array_formula m_array_formula;
 public:
     virtual void set_value(row_t row, col_t col, double val)
@@ -104,19 +145,14 @@ public:
         assert(string(s, n) == "=basicFormulaString");
     }
 
-    virtual void set_formula(row_t row, col_t col, formula_grammar_t grammar,
-                                        const char* s, size_t n)
-    {
-        assert(row == 9);
-        assert(col == 11);
-        assert(grammar == formula_grammar_t::gnumeric);
-        assert(string(s, n) == "=formula");
-    }
-
-    virtual iface::import_array_formula* set_array_formula(
-        const range_t& range, formula_grammar_t grammar, const char* s, size_t n)
+    virtual iface::import_array_formula* get_array_formula()
     {
         return &m_array_formula;
+    }
+
+    virtual iface::import_formula* get_formula()
+    {
+        return &m_formula;
     }
 };
 

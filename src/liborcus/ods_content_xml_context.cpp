@@ -683,20 +683,25 @@ void ods_content_xml_context::end_spreadsheet()
         spreadsheet::iface::import_sheet* sheet = m_tables[data.sheet];
         if (sheet)
         {
-            sheet->set_formula(
-                data.row, data.column, data.grammar,
-                data.exp.get(), data.exp.size());
-
-            switch (data.result.type)
+            spreadsheet::iface::import_formula* formula = sheet->get_formula();
+            if (formula)
             {
-                case ods_session_data::rt_numeric:
-                    sheet->set_formula_result(data.row, data.column, data.result.numeric_value);
-                break;
-                case ods_session_data::rt_string:
-                case ods_session_data::rt_error:
-                case ods_session_data::rt_none:
-                default:
-                    ;
+                formula->set_position(data.row, data.column);
+                formula->set_formula(data.grammar, data.exp.data(), data.exp.size());
+
+                switch (data.result.type)
+                {
+                    case ods_session_data::rt_numeric:
+                        formula->set_result_value(data.result.numeric_value);
+                        break;
+                    case ods_session_data::rt_string:
+                    case ods_session_data::rt_error:
+                    case ods_session_data::rt_none:
+                    default:
+                        ;
+                }
+
+                formula->commit();
             }
         }
     }

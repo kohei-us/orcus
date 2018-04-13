@@ -425,18 +425,23 @@ void xls_xml_data_context::push_formula_cell(const pstring& formula)
 {
     spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
     spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
+    spreadsheet::iface::import_formula* xformula = sheet->get_formula();
 
-    sheet->set_formula(
-        pos.row, pos.column, spreadsheet::formula_grammar_t::xls_xml,
-        formula.get(), formula.size());
-
-    switch (m_cell_type)
+    if (xformula)
     {
-        case ct_number:
-            sheet->set_formula_result(pos.row, pos.column, m_cell_value);
-            break;
-        default:
-            ;
+        xformula->set_position(pos.row, pos.column);
+        xformula->set_formula(spreadsheet::formula_grammar_t::xls_xml, formula.data(), formula.size());
+
+        switch (m_cell_type)
+        {
+            case ct_number:
+                xformula->set_result_value(m_cell_value);
+                break;
+            default:
+                ;
+        }
+
+        xformula->commit();
     }
 }
 
@@ -1481,9 +1486,16 @@ void xls_xml_context::end_element_cell()
     if (mp_cur_sheet && !m_cur_cell_formula.empty())
     {
         // Likely a Cell element without a child Data element.
-        mp_cur_sheet->set_formula(
-            m_cur_row, m_cur_col, spreadsheet::formula_grammar_t::xls_xml,
-            m_cur_cell_formula.data(), m_cur_cell_formula.size());
+        spreadsheet::iface::import_formula* xformula = mp_cur_sheet->get_formula();
+
+        if (xformula)
+        {
+            xformula->set_position(m_cur_row, m_cur_col);
+            xformula->set_formula(
+                spreadsheet::formula_grammar_t::xls_xml,
+                m_cur_cell_formula.data(), m_cur_cell_formula.size());
+            xformula->commit();
+        }
     }
 
     m_cur_cell_formula.clear();
