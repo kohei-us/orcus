@@ -155,6 +155,26 @@ bool operator> (const range_t& left, const range_t& right)
     return left.last.column > right.last.column;
 }
 
+range_t& operator+= (range_t& left, const address_t& right)
+{
+    left.first.column += right.column;
+    left.first.row    += right.row;
+    left.last.column  += right.column;
+    left.last.row     += right.row;
+
+    return left;
+}
+
+range_t& operator-= (range_t& left, const address_t& right)
+{
+    left.first.column -= right.column;
+    left.first.row    -= right.row;
+    left.last.column  -= right.column;
+    left.last.row     -= right.row;
+
+    return left;
+}
+
 std::ostream& operator<< (std::ostream& os, const address_t& v)
 {
     os << "(column=" << v.column << ",row=" << v.row << ")";

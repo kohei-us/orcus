@@ -13,8 +13,11 @@
 #include "orcus/spreadsheet/view_types.hpp"
 #include "orcus/string_pool.hpp"
 
+#include "formula_result.hpp"
+
 #include <string>
 #include <unordered_map>
+#include <list>
 
 namespace orcus {
 
@@ -90,14 +93,26 @@ private:
     void start_element_data(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void end_element_data();
 
-    void push_formula_cell(const pstring& formula);
+    bool handle_array_formula_result();
+    void push_array_result(
+        range_formula_results& res, size_t row_offset, size_t col_offset);
 
+    void push_formula_cell(const pstring& formula);
+    void push_array_formula_parent_cell(const pstring& formula);
     void update_current_format();
 };
 
 class xls_xml_context : public xml_context_base
 {
     friend class xls_xml_data_context;
+
+    struct array_formula_type
+    {
+        pstring formula;
+        range_formula_results results;
+
+        array_formula_type(const spreadsheet::range_t& range, const pstring& formula);
+    };
 
     struct border_style_type
     {
@@ -182,6 +197,8 @@ class xls_xml_context : public xml_context_base
     using named_expressions_type = std::vector<named_exp>;
     using styles_type = std::vector<std::unique_ptr<style_type>>;
     using style_id_xf_map_type = std::unordered_map<pstring, size_t, pstring::hash>;
+    using array_formula_pair_type = std::pair<spreadsheet::range_t, std::unique_ptr<array_formula_type>>;
+    using array_formulas_type = std::list<array_formula_pair_type>;
 
 public:
     xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
@@ -224,6 +241,9 @@ private:
     spreadsheet::iface::import_sheet* get_import_sheet();
     spreadsheet::address_t get_current_pos() const;
     pstring pop_and_clear_formula();
+    bool is_array_formula() const;
+    const spreadsheet::range_t& get_array_range() const;
+    array_formulas_type& get_array_formula_store();
 
 private:
     spreadsheet::iface::import_factory* mp_factory;
@@ -242,6 +262,7 @@ private:
     pstring m_cur_cell_formula;
     pstring m_cur_cell_style_id;
 
+    array_formulas_type m_array_formulas;
     named_expressions_type m_named_exps_global;
     named_expressions_type m_named_exps_sheet;
     selection m_cursor_selection; /// cursor selection in a single pane.

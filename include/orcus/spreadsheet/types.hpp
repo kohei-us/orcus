@@ -369,6 +369,9 @@ ORCUS_DLLPUBLIC bool operator!= (const range_t& left, const range_t& right);
 ORCUS_DLLPUBLIC bool operator< (const range_t& left, const range_t& right);
 ORCUS_DLLPUBLIC bool operator> (const range_t& left, const range_t& right);
 
+ORCUS_DLLPUBLIC range_t& operator+= (range_t& left, const address_t& right);
+ORCUS_DLLPUBLIC range_t& operator-= (range_t& left, const address_t& right);
+
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const address_t& v);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const range_t& v);
 

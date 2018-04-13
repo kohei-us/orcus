@@ -263,7 +263,16 @@ void xls_xml_data_context::end_element_data()
 
     if (!formula.empty())
     {
-        push_formula_cell(formula);
+        if (m_parent_cxt.is_array_formula())
+            push_array_formula_parent_cell(formula);
+        else
+            push_formula_cell(formula);
+        m_cell_type = ct_unknown;
+        return;
+    }
+
+    if (handle_array_formula_result())
+    {
         m_cell_type = ct_unknown;
         return;
     }
@@ -338,6 +347,109 @@ void xls_xml_data_context::end_element_data()
     m_cell_type = ct_unknown;
 }
 
+bool xls_xml_data_context::handle_array_formula_result()
+{
+    xls_xml_context::array_formulas_type& store = m_parent_cxt.get_array_formula_store();
+    spreadsheet::address_t cur_pos = m_parent_cxt.get_current_pos();
+
+    // See if the current cell is within an array formula range.
+    auto it = store.begin(), ite = store.end();
+
+    while (it != ite)
+    {
+        const spreadsheet::range_t& ref = it->first;
+        xls_xml_context::array_formula_type& af = *it->second;
+
+        if (ref.last.row < cur_pos.row)
+        {
+            // If this result range lies above the current row, push the array
+            // and delete it from the list.
+
+            spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
+            spreadsheet::iface::import_array_formula* array = nullptr;
+
+            if (sheet)
+                array = sheet->get_array_formula();
+
+            if (array)
+            {
+                array->set_range(ref);
+                array->set_formula(
+                    spreadsheet::formula_grammar_t::xls_xml, af.formula.data(), af.formula.size());
+
+                const range_formula_results& res = af.results;
+
+                for (size_t row = 0; row < res.row_size(); ++row)
+                {
+                    for (size_t col = 0; col < res.col_size(); ++col)
+                    {
+                        const formula_result& v = res.get(row, col);
+                        switch (v.type)
+                        {
+                            case formula_result::result_type::numeric:
+                                array->set_result_value(row, col, v.value_numeric);
+                                break;
+                            case formula_result::result_type::string:
+                                array->set_result_string(row, col, v.value_string);
+                                break;
+                            case formula_result::result_type::boolean:
+                                array->set_result_bool(row, col, v.value_boolean);
+                                break;
+                            case formula_result::result_type::empty:
+                                array->set_result_empty(row, col);
+                                break;
+                            default:
+                                ;
+                        }
+                    }
+                }
+
+                array->commit();
+            }
+
+            store.erase(it++);
+            continue;
+        }
+
+        if (cur_pos.column < ref.first.column || ref.last.column < cur_pos.column ||
+            cur_pos.row < ref.first.row || ref.last.row < cur_pos.row)
+        {
+            // This cell is not within this array formula range.  Move on to
+            // the next one.
+            ++it;
+            continue;
+        }
+
+        size_t row_offset = cur_pos.row - ref.first.row;
+        size_t col_offset = cur_pos.column - ref.first.column;
+        range_formula_results& res = af.results;
+        push_array_result(res, row_offset, col_offset);
+
+        return true;
+    }
+
+    return false;
+}
+
+void xls_xml_data_context::push_array_result(
+    range_formula_results& res, size_t row_offset, size_t col_offset)
+{
+    switch (m_cell_type)
+    {
+        case ct_number:
+        {
+            res.set(row_offset, col_offset, m_cell_value);
+            break;
+        }
+        case ct_unknown:
+        case ct_datetime:
+        case ct_string:
+        default:
+            if (get_config().debug)
+                cout << "warning: unknown cell type '" << m_cell_type << "': value not pushed." << endl;
+    }
+}
+
 void xls_xml_data_context::push_formula_cell(const pstring& formula)
 {
     spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
@@ -351,6 +463,31 @@ void xls_xml_data_context::push_formula_cell(const pstring& formula)
     {
         case ct_number:
             sheet->set_formula_result(pos.row, pos.column, m_cell_value);
+            break;
+        default:
+            ;
+    }
+}
+
+void xls_xml_data_context::push_array_formula_parent_cell(const pstring& formula)
+{
+    spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
+    spreadsheet::range_t range = m_parent_cxt.get_array_range();
+    xls_xml_context::array_formulas_type& store = m_parent_cxt.get_array_formula_store();
+
+    range += pos;
+
+    store.push_back(
+        std::make_pair(
+            range,
+            orcus::make_unique<xls_xml_context::array_formula_type>(range, formula)));
+
+    xls_xml_context::array_formula_type& af = *store.back().second;
+
+    switch (m_cell_type)
+    {
+        case ct_number:
+            af.results.set(0, 0, m_cell_value);
             break;
         default:
             ;
@@ -492,6 +629,11 @@ const map_type& get()
 }
 
 }
+
+xls_xml_context::array_formula_type::array_formula_type(
+    const spreadsheet::range_t& range, const pstring& formula) :
+    formula(formula),
+    results(range.last.row-range.first.row+1, range.last.column-range.first.column+1) {}
 
 xls_xml_context::named_exp::named_exp(const pstring& _name, const pstring& _expression, spreadsheet::sheet_t _scope) :
     name(_name), expression(_expression), scope(_scope) {}
@@ -1624,6 +1766,31 @@ pstring xls_xml_context::pop_and_clear_formula()
     pstring f = m_cur_cell_formula;
     m_cur_cell_formula.clear();
     return f;
+}
+
+bool xls_xml_context::is_array_formula() const
+{
+    if (m_cur_array_range.first.column < 0 || m_cur_array_range.first.row < 0)
+        return false;
+
+    if (m_cur_array_range.last.column < 0 || m_cur_array_range.last.row < 0)
+        return false;
+
+    if (m_cur_array_range.first.column > m_cur_array_range.last.column ||
+        m_cur_array_range.first.row > m_cur_array_range.last.row)
+        return false;
+
+    return true;
+}
+
+const spreadsheet::range_t& xls_xml_context::get_array_range() const
+{
+    return m_cur_array_range;
+}
+
+xls_xml_context::array_formulas_type& xls_xml_context::get_array_formula_store()
+{
+    return m_array_formulas;
 }
 
 }
