@@ -12,8 +12,9 @@
   * import_data_table::set_range() now receives a parameter of type
     range_t.
 
-  * import_sheet::set_array_formula() interface method now only has
-    one variant.
+  * import_sheet::set_array_formula() interface methods have been
+    removed and replaced with import_sheet::get_array_formula() that
+    returns an interface of type import_array_formula.
 
   * shared formula handling code has been re-worked.
 
