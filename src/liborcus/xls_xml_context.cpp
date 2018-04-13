@@ -1090,6 +1090,9 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_Column:
                 end_element_column();
                 break;
+            case XML_Table:
+                end_element_table();
+                break;
             case XML_Workbook:
                 end_element_workbook();
                 break;
@@ -1528,6 +1531,12 @@ void xls_xml_context::end_element_row()
     ++m_cur_row;
 }
 
+void xls_xml_context::end_element_table()
+{
+    push_all_array_formulas();
+    m_array_formulas.clear();
+}
+
 void xls_xml_context::end_element_workbook()
 {
     spreadsheet::iface::import_named_expression* ne_global = mp_factory->get_named_expression();
@@ -1740,6 +1749,55 @@ void xls_xml_context::commit_styles()
         size_t xf_id = styles->commit_cell_xf();
 
         m_style_map.insert({style->id, xf_id});
+    }
+}
+
+void xls_xml_context::push_all_array_formulas()
+{
+    if (!mp_cur_sheet)
+        return;
+
+    spreadsheet::iface::import_array_formula* array = mp_cur_sheet->get_array_formula();
+    if (!array)
+        return;
+
+    for (const array_formula_pair_type& pair : m_array_formulas)
+    {
+        const spreadsheet::range_t& ref = pair.first;
+        const array_formula_type& af = *pair.second;
+
+        array->set_range(ref);
+        array->set_formula(
+            spreadsheet::formula_grammar_t::xls_xml, af.formula.data(), af.formula.size());
+
+        const range_formula_results& res = af.results;
+
+        for (size_t row = 0; row < res.row_size(); ++row)
+        {
+            for (size_t col = 0; col < res.col_size(); ++col)
+            {
+                const formula_result& v = res.get(row, col);
+                switch (v.type)
+                {
+                    case formula_result::result_type::numeric:
+                        array->set_result_value(row, col, v.value_numeric);
+                        break;
+                    case formula_result::result_type::string:
+                        array->set_result_string(row, col, v.value_string);
+                        break;
+                    case formula_result::result_type::boolean:
+                        array->set_result_bool(row, col, v.value_boolean);
+                        break;
+                    case formula_result::result_type::empty:
+                        array->set_result_empty(row, col);
+                        break;
+                    default:
+                        ;
+                }
+            }
+        }
+
+        array->commit();
     }
 }
 

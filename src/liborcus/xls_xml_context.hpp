@@ -226,6 +226,7 @@ private:
     void end_element_cell();
     void end_element_column();
     void end_element_row();
+    void end_element_table();
 
     void end_element_workbook();
     void end_element_styles();
@@ -235,6 +236,8 @@ private:
     void commit_split_pane();
     void commit_default_style();
     void commit_styles();
+
+    void push_all_array_formulas();
 
 private:
     spreadsheet::iface::import_factory* get_import_factory();
