@@ -27,6 +27,7 @@ class import_factory;
 class import_sheet;
 class import_sheet_properties;
 class import_named_expression;
+class import_array_formula;
 
 }}
 
@@ -238,6 +239,10 @@ private:
     void commit_styles();
 
     void push_all_array_formulas();
+
+    static void push_array(
+        spreadsheet::iface::import_array_formula* array,
+        const spreadsheet::range_t& ref, const array_formula_type& af);
 
 private:
     spreadsheet::iface::import_factory* get_import_factory();
