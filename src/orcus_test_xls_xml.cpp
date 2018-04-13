@@ -43,6 +43,7 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/bold-and-italic/",
     SRCDIR"/test/xls-xml/colored-text/",
     SRCDIR"/test/xls-xml/empty-rows/",
+    SRCDIR"/test/xls-xml/formula-array-1/",
     SRCDIR"/test/xls-xml/formula-cells-1/",
     SRCDIR"/test/xls-xml/formula-cells-2/",
     SRCDIR"/test/xls-xml/leading-whitespace/",
