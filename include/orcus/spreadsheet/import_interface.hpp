@@ -489,6 +489,28 @@ public:
     virtual void commit() = 0;
 };
 
+class ORCUS_DLLPUBLIC import_formula
+{
+public:
+    virtual ~import_formula();
+
+    virtual void set_position(row_t row, col_t col) = 0;
+
+    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) = 0;
+
+    virtual void set_shared_formula_index(size_t index) = 0;
+
+    virtual void set_result_string(size_t sindex) = 0;
+
+    virtual void set_result_value(double value) = 0;
+
+    virtual void set_result_bool(bool value) = 0;
+
+    virtual void set_result_empty() = 0;
+
+    virtual void commit() = 0;
+};
+
 class ORCUS_DLLPUBLIC import_array_formula
 {
 public:
@@ -568,6 +590,14 @@ public:
     virtual import_named_expression* get_named_expression();
 
     virtual import_array_formula* get_array_formula();
+
+    /**
+     * Get an interface for importing formula cells.
+     *
+     * @return pointer to the formula interface object, or nullptr if the
+     *         implementer doesn't support importing of formula cells.
+     */
+    virtual import_formula* get_formula();
 
     /**
      * Set raw string value to a cell and have the implementation

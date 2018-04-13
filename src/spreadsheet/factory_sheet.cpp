@@ -169,9 +169,92 @@ void import_array_formula::reset()
     m_range.last.column = -1;
 }
 
+import_formula::import_formula(document& doc, sheet& sheet, shared_formula_pool& pool) :
+    m_doc(doc),
+    m_sheet(sheet),
+    m_shared_formula_pool(pool),
+    m_row(-1),
+    m_col(-1),
+    m_shared_index(0),
+    m_shared(false) {}
+
+import_formula::~import_formula() {}
+
+void import_formula::set_position(row_t row, col_t col)
+{
+    m_row = row;
+    m_col = col;
+}
+
+void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_t n)
+{
+    if (m_row < 0 || m_col < 0)
+        return;
+
+    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+    if (!resolver)
+        return;
+
+    // Tokenize the formula string and store it.
+    ixion::model_context& cxt = m_doc.get_model_context();
+    ixion::abs_address_t pos(m_sheet.get_index(), m_row, m_col);
+
+    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
+
+    m_tokens_store = ixion::formula_tokens_store::create();
+    m_tokens_store->get() = std::move(tokens);
+}
+
+void import_formula::set_shared_formula_index(size_t index)
+{
+    m_shared = true;
+    m_shared_index = index;
+}
+
+void import_formula::set_result_value(double value) {}
+void import_formula::set_result_string(size_t sindex) {}
+void import_formula::set_result_empty() {}
+void import_formula::set_result_bool(bool value) {}
+
+void import_formula::commit()
+{
+    if (m_row < 0 || m_col < 0)
+        return;
+
+    if (m_shared)
+    {
+        if (m_tokens_store)
+        {
+            m_sheet.set_formula(m_row, m_col, m_tokens_store);
+            m_shared_formula_pool.add(m_shared_index, m_tokens_store);
+        }
+        else
+        {
+            ixion::formula_tokens_store_ptr_t ts = m_shared_formula_pool.get(m_shared_index);
+            if (!ts)
+                return;
+
+            m_sheet.set_formula(m_row, m_col, ts);
+        }
+        return;
+    }
+
+    m_sheet.set_formula(m_row, m_col, m_tokens_store);
+}
+
+void import_formula::reset()
+{
+    m_tokens_store.reset();
+    m_row = -1;
+    m_col = -1;
+    m_shared_index = 0;
+    m_shared = false;
+}
+
 import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_doc(doc),
     m_sheet(sh),
+    m_formula(doc, sh, m_shared_formula_pool),
     m_array_formula(doc, sh),
     m_named_exp(doc, sh.get_index()),
     m_sheet_properties(doc, sh),
@@ -221,6 +304,12 @@ iface::import_table* import_sheet::get_table()
 {
     m_table.reset();
     return &m_table;
+}
+
+iface::import_formula* import_sheet::get_formula()
+{
+    m_formula.reset();
+    return &m_formula;
 }
 
 iface::import_array_formula* import_sheet::get_array_formula()

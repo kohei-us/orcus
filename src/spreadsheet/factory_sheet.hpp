@@ -135,17 +135,47 @@ public:
     void reset();
 };
 
+class import_formula : public iface::import_formula
+{
+    document& m_doc;
+    sheet& m_sheet;
+    shared_formula_pool& m_shared_formula_pool;
+
+    row_t m_row;
+    col_t m_col;
+    size_t m_shared_index;
+    bool m_shared;
+
+    ixion::formula_tokens_store_ptr_t m_tokens_store;
+
+public:
+    import_formula(document& doc, sheet& sheet, shared_formula_pool& pool);
+    virtual ~import_formula() override;
+
+    virtual void set_position(row_t row, col_t col) override;
+    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override;
+    virtual void set_shared_formula_index(size_t index) override;
+    virtual void set_result_value(double value) override;
+    virtual void set_result_string(size_t sindex) override;
+    virtual void set_result_empty() override;
+    virtual void set_result_bool(bool value) override;
+    virtual void commit() override;
+
+    void reset();
+};
+
 class import_sheet : public iface::import_sheet
 {
     document& m_doc;
     sheet& m_sheet;
+    shared_formula_pool m_shared_formula_pool;
+    import_formula m_formula;
     import_array_formula m_array_formula;
     import_sheet_named_exp m_named_exp;
     import_sheet_properties m_sheet_properties;
     import_data_table m_data_table;
     import_auto_filter m_auto_filter;
     import_table m_table;
-    shared_formula_pool m_shared_formula_pool;
     character_set_t m_charset;
 
     std::unique_ptr<import_sheet_view> m_sheet_view;
@@ -161,6 +191,7 @@ public:
     virtual iface::import_named_expression* get_named_expression() override;
     virtual iface::import_sheet_properties* get_sheet_properties() override;
     virtual iface::import_table* get_table() override;
+    virtual iface::import_formula* get_formula() override;
     virtual iface::import_array_formula* get_array_formula() override;
     virtual void set_auto(row_t row, col_t col, const char* p, size_t n) override;
     virtual void set_bool(row_t row, col_t col, bool value) override;

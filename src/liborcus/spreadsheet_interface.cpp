@@ -41,6 +41,8 @@ import_auto_filter* import_table::get_auto_filter()
     return nullptr;
 }
 
+import_formula::~import_formula() {}
+
 import_array_formula::~import_array_formula() {}
 
 import_sheet::~import_sheet() {}
@@ -81,6 +83,11 @@ import_named_expression* import_sheet::get_named_expression()
 }
 
 import_array_formula* import_sheet::get_array_formula()
+{
+    return nullptr;
+}
+
+import_formula* import_sheet::get_formula()
 {
     return nullptr;
 }
