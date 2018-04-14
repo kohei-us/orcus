@@ -494,20 +494,60 @@ class ORCUS_DLLPUBLIC import_formula
 public:
     virtual ~import_formula();
 
+    /**
+     * Set the position of the cell.
+     *
+     * @param row row position.
+     * @param col column position.
+     */
     virtual void set_position(row_t row, col_t col) = 0;
 
+    /**
+     * Set formula string to the specified cell.
+     *
+     * @param grammar grammar to use to compile the formula string into
+     *                tokens.
+     * @param p pointer to the buffer where the formula string is stored.
+     * @param n size of the buffer where the formula string is stored.
+     */
     virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) = 0;
 
+    /**
+     * Register the formula as a shared string, to be shared with other cells.
+     *
+     * @param index shared string index to register the formula with.
+     */
     virtual void set_shared_formula_index(size_t index) = 0;
 
+    /**
+     * Set cached result of string type.
+     *
+     * @param sindex index of the string value into the shared string pool.
+     */
     virtual void set_result_string(size_t sindex) = 0;
 
+    /**
+     * Set cached result of numeric type.
+     *
+     * @param value numeric value to set as a cached result.
+     */
     virtual void set_result_value(double value) = 0;
 
+    /**
+     * Set cached result of boolean type.
+     *
+     * @param value boolean value to set as a cached result.
+     */
     virtual void set_result_bool(bool value) = 0;
 
+    /**
+     * Set empty value as a cached result.
+     */
     virtual void set_result_empty() = 0;
 
+    /**
+     * Commit all the formula data to the specified cell.
+     */
     virtual void commit() = 0;
 };
 
@@ -669,38 +709,6 @@ public:
      */
     virtual void set_format(orcus::spreadsheet::row_t row_start, orcus::spreadsheet::col_t col_start,
         orcus::spreadsheet::row_t row_end, orcus::spreadsheet::col_t col_end, size_t xf_index) = 0;
-
-    /**
-     * Set shared formula expression to specified cell.  This call also
-     * registers the formula expression to a common formula expression pool to
-     * allow it to be looked up by the specified index later.
-     *
-     * @param row row ID
-     * @param col column ID
-     * @param grammar grammar used in the formula expression
-     * @param sindex shared formula index (0-based)
-     * @param p_formula pointer to the first character of the raw formula
-     *          expression string.
-     * @param n_formula size of the raw formula expression string.
-     */
-    virtual void set_shared_formula(
-        orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, orcus::spreadsheet::formula_grammar_t grammar,
-        size_t sindex, const char* p_formula, size_t n_formula) = 0;
-
-    /**
-     * Set shared formula to specified cell by shared formula index.  The
-     * formula expression itself associated with the index must be defined.
-     *
-     * @param row row ID
-     * @param col column ID
-     * @param grammar grammar used in the formula expression
-     * @param sindex shared formula index (0-based)
-     * @param p pointer to the first character of the raw formula expression
-     *          string.
-     * @param n size of the raw formula expression string.
-     */
-    virtual void set_shared_formula(
-        orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, size_t sindex) = 0;
 
     virtual void set_formula_result(
         orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, double value) = 0;

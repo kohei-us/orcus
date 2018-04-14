@@ -354,37 +354,6 @@ void import_sheet::set_formula_result(row_t row, col_t col, double value)
     m_sheet.set_formula_result(row, col, value);
 }
 
-void import_sheet::set_shared_formula(
-    row_t row, col_t col, formula_grammar_t grammar, size_t sindex,
-    const char* p_formula, size_t n_formula)
-{
-    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
-    if (!resolver)
-        return;
-
-    // Tokenize the formula string and store it.
-    ixion::model_context& cxt = m_doc.get_model_context();
-    ixion::abs_address_t pos(m_sheet.get_index(), row, col);
-
-    ixion::formula_tokens_t tokens =
-        ixion::parse_formula_string(cxt, pos, *resolver, p_formula, n_formula);
-
-    ixion::formula_tokens_store_ptr_t ts = ixion::formula_tokens_store::create();
-    ts->get() = std::move(tokens);
-
-    m_sheet.set_formula(row, col, ts);
-    m_shared_formula_pool.add(sindex, ts);
-}
-
-void import_sheet::set_shared_formula(row_t row, col_t col, size_t sindex)
-{
-    ixion::formula_tokens_store_ptr_t ts = m_shared_formula_pool.get(sindex);
-    if (!ts)
-        return;
-
-    m_sheet.set_formula(row, col, ts);
-}
-
 void import_sheet::set_string(row_t row, col_t col, size_t sindex)
 {
     m_sheet.set_string(row, col, sindex);

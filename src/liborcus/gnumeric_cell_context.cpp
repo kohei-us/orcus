@@ -227,12 +227,19 @@ void gnumeric_cell_context::end_cell()
         }
         case cell_type_shared_formula:
         {
-            if (chars.empty())
-                mp_sheet->set_shared_formula(row, col, mp_cell_data->shared_formula_id);
-            else
-                mp_sheet->set_shared_formula(row, col, spreadsheet::formula_grammar_t::gnumeric, mp_cell_data->shared_formula_id, chars.get(), chars.size());
+            spreadsheet::iface::import_formula* xformula = mp_sheet->get_formula();
+            if (!xformula)
+                break;
+
+            xformula->set_position(row, col);
+
+            if (!chars.empty())
+                xformula->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars.data(), chars.size());
+
+            xformula->set_shared_formula_index(mp_cell_data->shared_formula_id);
+            xformula->commit();
+            break;
         }
-        break;
         case cell_type_array:
         {
             range_t range;

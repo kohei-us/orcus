@@ -128,23 +128,6 @@ public:
         assert(id == 2);
     }
 
-    virtual void set_shared_formula(row_t row, col_t col, size_t id)
-    {
-        assert(row == 6);
-        assert(col == 16);
-        assert(id == 3);
-    }
-
-    virtual void set_shared_formula(row_t row, col_t col, formula_grammar_t grammar,
-                                        size_t id, const char* s, size_t n)
-    {
-        assert(id == 2);
-        assert(col == 15);
-        assert(row == 5);
-        assert(grammar == spreadsheet::formula_grammar_t::gnumeric);
-        assert(string(s, n) == "=basicFormulaString");
-    }
-
     virtual iface::import_array_formula* get_array_formula()
     {
         return &m_array_formula;
@@ -239,7 +222,42 @@ void test_cell_string()
 
 void test_shared_formula_with_string()
 {
-    mock_sheet sheet;
+    class mock_formula_local : public import_formula
+    {
+    public:
+        void set_position(row_t row, col_t col) override
+        {
+            assert(row == 5);
+            assert(col == 15);
+        }
+
+        void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+        {
+            assert(grammar == formula_grammar_t::gnumeric);
+            assert(string(p, n) == "=basicFormulaString");
+        }
+
+        void set_shared_formula_index(size_t index) override
+        {
+            assert(index == 2);
+        }
+
+        void commit() override
+        {
+        }
+    };
+
+    class mock_sheet_local : public import_sheet
+    {
+        mock_formula_local m_formula;
+    public:
+        virtual iface::import_formula* get_formula()
+        {
+            return &m_formula;
+        }
+    };
+
+    mock_sheet_local sheet;
     mock_factory factory;
     session_context cxt;
 
@@ -260,7 +278,36 @@ void test_shared_formula_with_string()
 
 void test_shared_formula_without_string()
 {
-    mock_sheet sheet;
+    class mock_formula_local : public import_formula
+    {
+    public:
+        void set_position(row_t row, col_t col) override
+        {
+            assert(row == 6);
+            assert(col == 16);
+        }
+
+        void set_shared_formula_index(size_t index) override
+        {
+            assert(index == 3);
+        }
+
+        void commit() override
+        {
+        }
+    };
+
+    class mock_sheet_local : public import_sheet
+    {
+        mock_formula_local m_formula;
+    public:
+        virtual iface::import_formula* get_formula()
+        {
+            return &m_formula;
+        }
+    };
+
+    mock_sheet_local sheet;
     mock_factory factory;
     session_context cxt;
 

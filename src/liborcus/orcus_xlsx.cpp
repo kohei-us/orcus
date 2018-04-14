@@ -245,16 +245,15 @@ void orcus_xlsx::set_formulas_to_doc()
         if (!sheet)
             continue;
 
+        spreadsheet::iface::import_formula* formula = sheet->get_formula();
+        if (!formula)
+            continue;
+
+        formula->set_position(sf.row, sf.column);
         if (sf.master)
-        {
-            sheet->set_shared_formula(
-                sf.row, sf.column, orcus::spreadsheet::formula_grammar_t::xlsx_2007, sf.identifier,
-                &sf.formula[0], sf.formula.size());
-        }
-        else
-        {
-            sheet->set_shared_formula(sf.row, sf.column, sf.identifier);
-        }
+            formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx_2007, sf.formula.data(), sf.formula.size());
+        formula->set_shared_formula_index(sf.identifier);
+        formula->commit();
     }
 
     // Insert regular (non-shared) formulas.

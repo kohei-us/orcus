@@ -289,17 +289,6 @@ void import_sheet::set_format(row_t, col_t, row_t, col_t, size_t)
     assert(false);
 }
 
-void import_sheet::set_shared_formula(row_t, col_t, formula_grammar_t, size_t,
-        const char*, size_t)
-{
-    assert(false);
-}
-
-void import_sheet::set_shared_formula(row_t, col_t, size_t)
-{
-    assert(false);
-}
-
 void import_sheet::set_formula_result(row_t, col_t, double value)
 {
     assert(false);
