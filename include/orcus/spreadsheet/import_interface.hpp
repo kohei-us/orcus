@@ -93,16 +93,16 @@ public:
     virtual void set_font_italic(bool b) = 0;
     virtual void set_font_name(const char* s, size_t n) = 0;
     virtual void set_font_size(double point) = 0;
-    virtual void set_font_underline(orcus::spreadsheet::underline_t e) = 0;
+    virtual void set_font_underline(underline_t e) = 0;
     virtual void set_font_underline_width(underline_width_t e) = 0;
     virtual void set_font_underline_mode(underline_mode_t e) = 0;
     virtual void set_font_underline_type(underline_type_t e) = 0;
     virtual void set_font_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
     virtual void set_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
-    virtual void set_strikethrough_style(orcus::spreadsheet::strikethrough_style_t s) = 0;
-    virtual void set_strikethrough_type(orcus::spreadsheet::strikethrough_type_t s) = 0;
-    virtual void set_strikethrough_width(orcus::spreadsheet::strikethrough_width_t s) = 0;
-    virtual void set_strikethrough_text(orcus::spreadsheet::strikethrough_text_t s) = 0;
+    virtual void set_strikethrough_style(strikethrough_style_t s) = 0;
+    virtual void set_strikethrough_type(strikethrough_type_t s) = 0;
+    virtual void set_strikethrough_width(strikethrough_width_t s) = 0;
+    virtual void set_strikethrough_text(strikethrough_text_t s) = 0;
     virtual size_t commit_font() = 0;
 
     // fill
@@ -120,7 +120,7 @@ public:
      *
      * @param fp fill pattern type.
      */
-    virtual void set_fill_pattern_type(orcus::spreadsheet::fill_pattern_t fp) = 0;
+    virtual void set_fill_pattern_type(fill_pattern_t fp) = 0;
 
     /**
      * Set the foreground color of a fill.  <i>Note that for a solid fill
@@ -158,10 +158,10 @@ public:
 
     virtual void set_border_count(size_t n) = 0;
 
-    virtual void set_border_style(orcus::spreadsheet::border_direction_t dir, border_style_t style) = 0;
+    virtual void set_border_style(border_direction_t dir, border_style_t style) = 0;
     virtual void set_border_color(
-        orcus::spreadsheet::border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
-    virtual void set_border_width(orcus::spreadsheet::border_direction_t dir, double width, orcus::length_unit_t unit) = 0;
+        border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+    virtual void set_border_width(border_direction_t dir, double width, orcus::length_unit_t unit) = 0;
     virtual size_t commit_border() = 0;
 
     // cell protection
@@ -190,8 +190,8 @@ public:
     virtual void set_xf_number_format(size_t index) = 0;
     virtual void set_xf_style_xf(size_t index) = 0;
     virtual void set_xf_apply_alignment(bool b) = 0;
-    virtual void set_xf_horizontal_alignment(orcus::spreadsheet::hor_alignment_t align) = 0;
-    virtual void set_xf_vertical_alignment(orcus::spreadsheet::ver_alignment_t align) = 0;
+    virtual void set_xf_horizontal_alignment(hor_alignment_t align) = 0;
+    virtual void set_xf_vertical_alignment(ver_alignment_t align) = 0;
 
     virtual size_t commit_cell_xf() = 0;
     virtual size_t commit_cell_style_xf() = 0;
@@ -217,13 +217,13 @@ class import_sheet_properties
 public:
     ORCUS_DLLPUBLIC virtual ~import_sheet_properties() = 0;
 
-    virtual void set_column_width(orcus::spreadsheet::col_t col, double width, orcus::length_unit_t unit) = 0;
+    virtual void set_column_width(col_t col, double width, orcus::length_unit_t unit) = 0;
 
-    virtual void set_column_hidden(orcus::spreadsheet::col_t col, bool hidden) = 0;
+    virtual void set_column_hidden(col_t col, bool hidden) = 0;
 
-    virtual void set_row_height(orcus::spreadsheet::row_t row, double height, orcus::length_unit_t unit) = 0;
+    virtual void set_row_height(row_t row, double height, orcus::length_unit_t unit) = 0;
 
-    virtual void set_row_hidden(orcus::spreadsheet::row_t row, bool hidden) = 0;
+    virtual void set_row_hidden(row_t row, bool hidden) = 0;
 
     /**
      * Specify merged cell range.
@@ -265,7 +265,7 @@ class import_data_table
 public:
     ORCUS_DLLPUBLIC virtual ~import_data_table() = 0;
 
-    virtual void set_type(orcus::spreadsheet::data_table_type_t type) = 0;
+    virtual void set_type(data_table_type_t type) = 0;
 
     virtual void set_range(const range_t& range) = 0;
 
@@ -296,7 +296,7 @@ public:
      * @param col 0-based column position of a filter relative to the first
      *            column.
      */
-    virtual void set_column(orcus::spreadsheet::col_t col) = 0;
+    virtual void set_column(col_t col) = 0;
 
     /**
      * Add a match value to the current column filter.
@@ -360,12 +360,12 @@ public:
      * Sets the type for the formula, value or string of the current condition.
      * Only valid for type = iconset, databar or colorscale.
      */
-    virtual void set_condition_type(orcus::spreadsheet::condition_type_t type) = 0;
+    virtual void set_condition_type(condition_type_t type) = 0;
 
     /**
      * Only valid for type = date.
      */
-    virtual void set_date(orcus::spreadsheet::condition_date_t date) = 0;
+    virtual void set_date(condition_date_t date) = 0;
 
     /**
      * commits the current condition to the current entry.
@@ -388,7 +388,7 @@ public:
      * Position of the 0 axis in the current entry.
      * only valid for type == databar.
      */
-    virtual void set_databar_axis(orcus::spreadsheet::databar_axis_t axis) = 0;
+    virtual void set_databar_axis(databar_axis_t axis) = 0;
 
     /**
      * Databar color for positive values.
@@ -437,16 +437,16 @@ public:
      * Sets the current operation used for the current entry.
      * only valid for type == condition
      */
-    virtual void set_operator(orcus::spreadsheet::condition_operator_t condition_type) = 0;
+    virtual void set_operator(condition_operator_t condition_type) = 0;
 
-    virtual void set_type(orcus::spreadsheet::conditional_format_t type) = 0;
+    virtual void set_type(conditional_format_t type) = 0;
 
     virtual void commit_entry() = 0;
 
     virtual void set_range(const char* p, size_t n) = 0;
 
-    virtual void set_range(orcus::spreadsheet::row_t row_start, orcus::spreadsheet::col_t col_start,
-            orcus::spreadsheet::row_t row_end, orcus::spreadsheet::col_t col_end) = 0;
+    virtual void set_range(row_t row_start, col_t col_start,
+            row_t row_end, col_t col_end) = 0;
 
     virtual void commit_format() = 0;
 };
@@ -477,7 +477,7 @@ public:
     virtual void set_column_identifier(size_t id) = 0;
     virtual void set_column_name(const char* p, size_t n) = 0;
     virtual void set_column_totals_row_label(const char* p, size_t n) = 0;
-    virtual void set_column_totals_row_function(orcus::spreadsheet::totals_row_function_t func) = 0;
+    virtual void set_column_totals_row_function(totals_row_function_t func) = 0;
     virtual void commit_column() = 0;
 
     virtual void set_style_name(const char* p, size_t n) = 0;
@@ -648,7 +648,7 @@ public:
      * @param p pointer to the first character of the raw string value.
      * @param n size of the raw string value.
      */
-    virtual void set_auto(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, const char* p, size_t n) = 0;
+    virtual void set_auto(row_t row, col_t col, const char* p, size_t n) = 0;
 
     /**
      * Set string value to a cell.
@@ -657,7 +657,7 @@ public:
      * @param col column ID
      * @param sindex 0-based string index in the shared string table.
      */
-    virtual void set_string(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, size_t sindex) = 0;
+    virtual void set_string(row_t row, col_t col, size_t sindex) = 0;
 
     /**
      * Set numerical value to a cell.
@@ -666,7 +666,7 @@ public:
      * @param col column ID
      * @param value value being assigned to the cell.
      */
-    virtual void set_value(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, double value) = 0;
+    virtual void set_value(row_t row, col_t col, double value) = 0;
 
     /**
      * Set a boolean value to a cell.
@@ -675,7 +675,7 @@ public:
      * @param col col ID
      * @param value boolean value being assigned to the cell
      */
-    virtual void set_bool(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, bool value) = 0;
+    virtual void set_bool(row_t row, col_t col, bool value) = 0;
 
     /**
      * Set date and time value to a cell.
@@ -684,7 +684,7 @@ public:
      * @param col column ID
      */
     virtual void set_date_time(
-        orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col,
+        row_t row, col_t col,
         int year, int month, int day, int hour, int minute, double second) = 0;
 
     /**
@@ -695,7 +695,7 @@ public:
      * @param col column ID
      * @param index 0-based xf (cell format) index
      */
-    virtual void set_format(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, size_t xf_index) = 0;
+    virtual void set_format(row_t row, col_t col, size_t xf_index) = 0;
 
     /**
      * Set cell format to specified cell range.  The cell format is referred
@@ -707,8 +707,8 @@ public:
      * @param col_end end column ID
      * @param index 0-based xf (cell format) index
      */
-    virtual void set_format(orcus::spreadsheet::row_t row_start, orcus::spreadsheet::col_t col_start,
-        orcus::spreadsheet::row_t row_end, orcus::spreadsheet::col_t col_end, size_t xf_index) = 0;
+    virtual void set_format(row_t row_start, col_t col_start,
+        row_t row_end, col_t col_end, size_t xf_index) = 0;
 
     /**
      * Get the size of the sheet.
@@ -716,7 +716,7 @@ public:
      * @return structure containing the numbers of rows and columns of the
      *         sheet.
      */
-    virtual orcus::spreadsheet::range_size_t get_sheet_size() const = 0;
+    virtual range_size_t get_sheet_size() const = 0;
 };
 
 class import_global_settings
@@ -743,14 +743,14 @@ public:
      *
      * @param grammar default formula grammar
      */
-    virtual void set_default_formula_grammar(orcus::spreadsheet::formula_grammar_t grammar) = 0;
+    virtual void set_default_formula_grammar(formula_grammar_t grammar) = 0;
 
     /**
      * Get current default formula grammar.
      *
      * @return current default formula grammar.
      */
-    virtual orcus::spreadsheet::formula_grammar_t get_default_formula_grammar() const = 0;
+    virtual formula_grammar_t get_default_formula_grammar() const = 0;
 
     /**
      * Set the character set to be used when parsing string values.
@@ -841,7 +841,7 @@ public:
      *         NULL if the client app doesn't support pivot tables.
      */
     virtual import_pivot_cache_definition* create_pivot_cache_definition(
-        orcus::spreadsheet::pivot_cache_id_t cache_id);
+        pivot_cache_id_t cache_id);
 
     /**
      * Create an interface for pivot cache records import for a specified
@@ -853,7 +853,7 @@ public:
      *         return nullptr if the client app doesn't support pivot tables.
      */
     virtual import_pivot_cache_records* create_pivot_cache_records(
-        orcus::spreadsheet::pivot_cache_id_t cache_id);
+        pivot_cache_id_t cache_id);
 
     /**
      * Append a sheet with specified sheet position index and name.
@@ -869,7 +869,7 @@ public:
      *         client app fails to append a new sheet.
      */
     virtual import_sheet* append_sheet(
-        orcus::spreadsheet::sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) = 0;
+        sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) = 0;
 
     /**
      * @return pointer to the sheet instance whose name matches the name
@@ -886,7 +886,7 @@ public:
      * @return pointer to the sheet instance, or nullptr if no sheet instance
      *         exists at specified sheet index position.
      */
-    virtual import_sheet* get_sheet(orcus::spreadsheet::sheet_t sheet_index) = 0;
+    virtual import_sheet* get_sheet(sheet_t sheet_index) = 0;
 
     /**
      * This method is called at the end of import, to give the implementor a

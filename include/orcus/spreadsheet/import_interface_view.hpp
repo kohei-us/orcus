@@ -60,9 +60,8 @@ public:
      * @param active_pane active pane in this sheet.
      */
     virtual void set_split_pane(
-        double hor_split, double ver_split,
-        const orcus::spreadsheet::address_t& top_left_cell,
-        orcus::spreadsheet::sheet_pane_t active_pane) = 0;
+        double hor_split, double ver_split, const address_t& top_left_cell,
+        sheet_pane_t active_pane) = 0;
 
     /**
      * Set the information about frozen view in the current sheet.
@@ -74,10 +73,8 @@ public:
      * @param active_pane active pane in this sheet.
      */
     virtual void set_frozen_pane(
-        orcus::spreadsheet::col_t visible_columns,
-        orcus::spreadsheet::row_t visible_rows,
-        const orcus::spreadsheet::address_t& top_left_cell,
-        orcus::spreadsheet::sheet_pane_t active_pane) = 0;
+        col_t visible_columns, row_t visible_rows, const address_t& top_left_cell,
+        sheet_pane_t active_pane) = 0;
 
     /**
      * Set the selected cursor range in a specified sheet pane.
@@ -87,9 +84,7 @@ public:
      * @param range selected cursor range.  The range will be 1 column by 1
      *              row when the cursor is on a single cell only.
      */
-    virtual void set_selected_range(
-        orcus::spreadsheet::sheet_pane_t pane,
-        orcus::spreadsheet::range_t range) = 0;
+    virtual void set_selected_range(sheet_pane_t pane, range_t range) = 0;
 };
 
 }}}
