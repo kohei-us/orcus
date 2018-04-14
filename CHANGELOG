@@ -1,3 +1,23 @@
+  * spreadsheet interface
+
+    * import_data_table::set_range() now receives a parameter of type
+      range_t.
+
+    * import_sheet::set_array_formula() interface methods have been
+      removed and replaced with import_sheet::get_array_formula() that
+      returns an interface of type import_array_formula.
+
+    * import_formula interface class has been added to replace the
+      formula related methods of import_sheet.  As a result,
+      set_formula(), set_shared_formula(), and set_formula_result()
+      methods have been removed from the import_sheet interface class.
+
+    * import_auto_filter::set_range() now receives a parameter of type
+      range_t, rather than a string value representing a range.
+
+    * import_sheet::set_fill_pattern_type() interface method now takes
+      an enum value of type fill_pattern_t, rather than a string value.
+
   * xls-xml
 
     * pick up the character set from the XML declaration, and pass it
@@ -9,13 +29,6 @@
 
     * support importing of array formulas.
 
-  * import_data_table::set_range() now receives a parameter of type
-    range_t.
-
-  * import_sheet::set_array_formula() interface methods have been
-    removed and replaced with import_sheet::get_array_formula() that
-    returns an interface of type import_array_formula.
-
   * shared formula handling code has been re-worked.
 
   * spreadsheet::sheet class has been de-coupled from the import and
@@ -24,16 +37,10 @@
   * previously known as import_styles class is now split into styles
     class and import_styles factory wrapper class.
 
-  * import_auto_filter::set_range() now receives a parameter of type
-    range_t, rather than a string value representing a range.
-
   * sax_parser now gracefully ignores leading whitespace(s) if any,
     rather than aborting the parsing for it's not a valid XML stream
     to have leading whitespace(s).  In the future we should make this
     behavior configurable.
-
-  * import_sheet::set_fill_pattern_type() interface method now takes
-    an enum value of type fill_pattern_t, rather than a string value.
 
   * python
 
