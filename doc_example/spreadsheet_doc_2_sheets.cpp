@@ -39,14 +39,6 @@ public:
     {
     }
 
-    virtual void set_formula_result(row_t row, col_t col, double value) override
-    {
-    }
-
-    virtual void set_formula_result(row_t row, col_t col, const char* p, size_t n) override
-    {
-    }
-
     virtual range_size_t get_sheet_size() const override
     {
         range_size_t ret;

@@ -710,12 +710,6 @@ public:
     virtual void set_format(orcus::spreadsheet::row_t row_start, orcus::spreadsheet::col_t col_start,
         orcus::spreadsheet::row_t row_end, orcus::spreadsheet::col_t col_end, size_t xf_index) = 0;
 
-    virtual void set_formula_result(
-        orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, double value) = 0;
-
-    virtual void set_formula_result(
-        orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, const char* p, size_t n) = 0;
-
     /**
      * Get the size of the sheet.
      *

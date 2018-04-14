@@ -344,16 +344,6 @@ void import_sheet::set_format(
     m_sheet.set_format(row_start, col_start, row_end, col_end, xf_index);
 }
 
-void import_sheet::set_formula_result(row_t row, col_t col, const char* p, size_t n)
-{
-    m_sheet.set_formula_result(row, col, p, n);
-}
-
-void import_sheet::set_formula_result(row_t row, col_t col, double value)
-{
-    m_sheet.set_formula_result(row, col, value);
-}
-
 void import_sheet::set_string(row_t row, col_t col, size_t sindex)
 {
     m_sheet.set_string(row, col, sindex);
