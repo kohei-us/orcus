@@ -289,7 +289,7 @@ void sheet::set_date_time(row_t row, col_t col, int year, int month, int day, in
 
     double days_since_epoch = (d - origin).days();
 
-    double ms = second * 1000000.0;
+    long ms = second * 1000000.0;
 
     posix_time::time_duration t(
         posix_time::hours(hour) +
@@ -606,7 +606,7 @@ date_time_t sheet::get_date_time(row_t row, col_t col) const
     if (time_fraction)
     {
         // Convert a fraction day to microseconds.
-        double ms = time_fraction * 24.0 * 60.0 * 60.0 * 1000000.0;
+        long long ms = time_fraction * 24.0 * 60.0 * 60.0 * 1000000.0;
         posix_time::time_duration td = posix_time::microsec(ms);
 
         hours = td.hours();
@@ -615,7 +615,7 @@ date_time_t sheet::get_date_time(row_t row, col_t col) const
 
         td -= posix_time::hours(hours);
         td -= posix_time::minutes(minutes);
-        td -= posix_time::seconds(seconds);
+        td -= posix_time::seconds((long)seconds);
 
         ms = td.total_microseconds(); // remaining microseconds.
 
