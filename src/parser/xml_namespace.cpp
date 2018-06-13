@@ -8,6 +8,7 @@
 #include "orcus/xml_namespace.hpp"
 #include "orcus/exception.hpp"
 #include "orcus/string_pool.hpp"
+#include "orcus/global.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -52,22 +53,18 @@ void print_map_keys(const _MapType& map_store)
 
 typedef std::unordered_map<pstring, size_t, pstring::hash> strid_map_type;
 
-struct xmlns_repository_impl
+struct xmlns_repository::impl
 {
     size_t m_predefined_ns_size;
     string_pool m_pool; /// storage of live string instances.
     std::vector<pstring> m_identifiers; /// map strings to numerical identifiers.
     strid_map_type m_strid_map; /// string-to-numerical identifiers map for quick lookup.
 
-    xmlns_repository_impl() : m_predefined_ns_size(0) {}
+    impl() : m_predefined_ns_size(0) {}
 };
 
-xmlns_repository::xmlns_repository() : mp_impl(new xmlns_repository_impl) {}
-
-xmlns_repository::~xmlns_repository()
-{
-    delete mp_impl;
-}
+xmlns_repository::xmlns_repository() : mp_impl(orcus::make_unique<impl>()) {}
+xmlns_repository::~xmlns_repository() {}
 
 xmlns_id_t xmlns_repository::intern(const pstring& uri)
 {
@@ -179,7 +176,7 @@ size_t xmlns_repository::get_index(xmlns_id_t ns_id) const
 typedef std::vector<xmlns_id_t> xmlns_list_type;
 typedef std::unordered_map<pstring, xmlns_list_type, pstring::hash> alias_map_type;
 
-struct xmlns_context_impl
+struct xmlns_context::impl
 {
     xmlns_repository& m_repo;
     xmlns_list_type m_all_ns; /// all namespaces ever used in this context.
@@ -188,18 +185,14 @@ struct xmlns_context_impl
 
     bool m_trim_all_ns;
 
-    xmlns_context_impl(xmlns_repository& repo) : m_repo(repo), m_trim_all_ns(true) {}
-    xmlns_context_impl(const xmlns_context_impl& r) :
+    impl(xmlns_repository& repo) : m_repo(repo), m_trim_all_ns(true) {}
+    impl(const impl& r) :
         m_repo(r.m_repo), m_all_ns(r.m_all_ns), m_default(r.m_default), m_map(r.m_map), m_trim_all_ns(r.m_trim_all_ns) {}
 };
 
-xmlns_context::xmlns_context(xmlns_repository& repo) : mp_impl(new xmlns_context_impl(repo)) {}
-xmlns_context::xmlns_context(const xmlns_context& r) : mp_impl(new xmlns_context_impl(*r.mp_impl)) {}
-
-xmlns_context::~xmlns_context()
-{
-    delete mp_impl;
-}
+xmlns_context::xmlns_context(xmlns_repository& repo) : mp_impl(orcus::make_unique<impl>(repo)) {}
+xmlns_context::xmlns_context(const xmlns_context& r) : mp_impl(orcus::make_unique<impl>(*r.mp_impl)) {}
+xmlns_context::~xmlns_context() {}
 
 xmlns_id_t xmlns_context::push(const pstring& key, const pstring& uri)
 {

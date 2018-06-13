@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_XML_NAMESPACE_MANAGER_HPP__
-#define __ORCUS_XML_NAMESPACE_MANAGER_HPP__
+#ifndef INCLUDED_ORCUS_XML_NAMESPACE_MANAGER_HPP
+#define INCLUDED_ORCUS_XML_NAMESPACE_MANAGER_HPP
 
 #include "types.hpp"
 
 #include <ostream>
+#include <memory>
 
 namespace orcus {
 
@@ -23,9 +24,13 @@ struct xmlns_context_impl;
  * Central XML namespace repository that stores all namespaces that are used
  * in the current session.
  */
-class xmlns_repository
+class ORCUS_PSR_DLLPUBLIC xmlns_repository
 {
     friend class xmlns_context;
+
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
     xmlns_id_t intern(const pstring& uri);
 
     xmlns_repository(const xmlns_repository&); // disabled
@@ -34,8 +39,8 @@ class xmlns_repository
     size_t get_index(xmlns_id_t ns_id) const;
 
 public:
-    ORCUS_PSR_DLLPUBLIC xmlns_repository();
-    ORCUS_PSR_DLLPUBLIC ~xmlns_repository();
+    xmlns_repository();
+    ~xmlns_repository();
 
     /**
      * Add a set of predefined namespace values to the repository.
@@ -49,9 +54,9 @@ public:
      *                      corresponding xmlns_repository instance is
      *                      deleted.
      */
-    ORCUS_PSR_DLLPUBLIC void add_predefined_values(const xmlns_id_t* predefined_ns);
+    void add_predefined_values(const xmlns_id_t* predefined_ns);
 
-    ORCUS_PSR_DLLPUBLIC xmlns_context create_context();
+    xmlns_context create_context();
 
     /**
      * Get XML namespace identifier from its numerical index.
@@ -60,13 +65,10 @@ public:
      *
      * @return valid namespace identifier, or XMLNS_UNKNOWN_ID if not found.
      */
-    ORCUS_PSR_DLLPUBLIC xmlns_id_t get_identifier(size_t index) const;
+    xmlns_id_t get_identifier(size_t index) const;
 
-    ORCUS_PSR_DLLPUBLIC std::string get_short_name(xmlns_id_t ns_id) const;
-    ORCUS_PSR_DLLPUBLIC std::string get_short_name(size_t index) const;
-
-private:
-    xmlns_repository_impl* mp_impl;
+    std::string get_short_name(xmlns_id_t ns_id) const;
+    std::string get_short_name(size_t index) const;
 };
 
 /**
@@ -80,6 +82,9 @@ private:
 class ORCUS_PSR_DLLPUBLIC xmlns_context
 {
     friend class xmlns_repository;
+
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
     xmlns_context(); // disabled
     xmlns_context(xmlns_repository& repo);
@@ -130,9 +135,6 @@ public:
     void get_all_namespaces(std::vector<xmlns_id_t>& nslist) const;
 
     void dump(std::ostream& os) const;
-
-private:
-    xmlns_context_impl* mp_impl;
 };
 
 }
