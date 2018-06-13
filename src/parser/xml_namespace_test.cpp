@@ -68,8 +68,7 @@ void test_all_namespaces()
     ns = cxt.push(key3, ns3);
     assert(ns3 == ns);
 
-    vector<xmlns_id_t> all_ns;
-    cxt.get_all_namespaces(all_ns);
+    vector<xmlns_id_t> all_ns = cxt.get_all_namespaces();
     assert(all_ns.size() == 3);
     assert(ns1 == all_ns[0]);
     assert(ns2 == all_ns[1]);

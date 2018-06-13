@@ -140,7 +140,7 @@ public:
      */
     pstring get_alias(xmlns_id_t ns_id) const;
 
-    void get_all_namespaces(std::vector<xmlns_id_t>& nslist) const;
+    std::vector<xmlns_id_t> get_all_namespaces() const;
 
     void dump(std::ostream& os) const;
 };

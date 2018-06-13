@@ -375,12 +375,14 @@ public:
 
 }
 
-void xmlns_context::get_all_namespaces(std::vector<xmlns_id_t>& nslist) const
+std::vector<xmlns_id_t> xmlns_context::get_all_namespaces() const
 {
 #if ORCUS_DEBUG_XML_NAMESPACE
     cout << "xmlns_context::get_all_namespaces: count=" << mp_impl->m_all_ns.size() << endl;
     std::for_each(mp_impl->m_all_ns.begin(), mp_impl->m_all_ns.end(), print_ns());
 #endif
+
+    std::vector<xmlns_id_t> nslist;
 
     if (mp_impl->m_trim_all_ns)
     {
@@ -406,12 +408,12 @@ void xmlns_context::get_all_namespaces(std::vector<xmlns_id_t>& nslist) const
     }
 
     nslist.assign(mp_impl->m_all_ns.begin(), mp_impl->m_all_ns.end());
+    return nslist;
 }
 
 void xmlns_context::dump(std::ostream& os) const
 {
-    vector<xmlns_id_t> nslist;
-    get_all_namespaces(nslist);
+    vector<xmlns_id_t> nslist = get_all_namespaces();
     vector<xmlns_id_t>::const_iterator it = nslist.begin(), it_end = nslist.end();
     for (; it != it_end; ++it)
     {
@@ -425,4 +427,5 @@ void xmlns_context::dump(std::ostream& os) const
 }
 
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
