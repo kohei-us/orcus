@@ -90,7 +90,30 @@ public:
     xmlns_id_t push(const pstring& key, const pstring& uri);
     void pop(const pstring& key);
     xmlns_id_t get(const pstring& key) const;
+
+    /**
+     * Get a unique index value associated with a specified identifier.  An
+     * index value is guaranteed to be unique regardless of contexts.
+     *
+     * @param ns_id a namespace identifier to obtain index for.
+     *
+     * @return index value associated with the identifier.
+     */
     size_t get_index(xmlns_id_t ns_id) const;
+
+    /**
+     * Get a 'short' name associated with a specified identifier.  A short
+     * name is a string value conveniently short enough for display purposes,
+     * but still guaranteed to be unique to the identifier it is associated
+     * with.
+     *
+     * <p>Note that the xmlns_repository class has method of the same
+     * name, and that method works identically to this method.</p>
+     *
+     * @param ns_id a namespace identifier to obtain short name for.
+     *
+     * @return short name for the specified identifier.
+     */
     std::string get_short_name(xmlns_id_t ns_id) const;
 
     /**
