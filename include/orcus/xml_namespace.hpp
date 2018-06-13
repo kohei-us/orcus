@@ -94,6 +94,14 @@ public:
 
     xmlns_id_t push(const pstring& key, const pstring& uri);
     void pop(const pstring& key);
+
+    /**
+     * Get the currnet namespace identifier for a specified namespace alias.
+     *
+     * @param key namespace alias to get the current namespace identifier for.
+     *
+     * @return current namespace identifier associated with the alias.
+     */
     xmlns_id_t get(const pstring& key) const;
 
     /**
