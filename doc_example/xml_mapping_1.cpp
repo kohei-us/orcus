@@ -37,6 +37,10 @@ void run_xmlns_example()
             << " and a short name of '" << ns_cxt.get_short_name(nsid) << "'." << endl;
         cout << "The value of the alias '" << alias << "' is '" << ns_cxt.get(alias) << "'." << endl;
     }
+
+    // Iterate over all namespaces in the current context.
+    for (const xmlns_id_t nsid : ns_cxt.get_all_namespaces())
+        cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << endl;
 }
 
 void run_xmlns_stacked()
@@ -71,11 +75,17 @@ void run_xmlns_same_ns_different_aliases()
     {
         xmlns_context ns_cxt = ns_repo.create_context();
         alias_1 = ns_cxt.push("foo", "http://some-namespace");
+
+        for (const xmlns_id_t nsid : ns_cxt.get_all_namespaces())
+            cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << endl;
     }
 
     {
         xmlns_context ns_cxt = ns_repo.create_context();
         alias_2 = ns_cxt.push("bar", "http://some-namespace");
+
+        for (const xmlns_id_t nsid : ns_cxt.get_all_namespaces())
+            cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << endl;
     }
 
     cout << (alias_1 == alias_2 ? "same" : "different") << endl;
@@ -92,11 +102,17 @@ void run_xmlns_different_ns_same_alias()
     {
         xmlns_context ns_cxt = ns_repo.create_context();
         alias_1 = ns_cxt.push("foo", "http://namespace-1");
+
+        for (const xmlns_id_t nsid : ns_cxt.get_all_namespaces())
+            cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << endl;
     }
 
     {
         xmlns_context ns_cxt = ns_repo.create_context();
         alias_2 = ns_cxt.push("foo", "http://namespace-2");
+
+        for (const xmlns_id_t nsid : ns_cxt.get_all_namespaces())
+            cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << endl;
     }
 
     cout << (alias_1 == alias_2 ? "same" : "different") << endl;
