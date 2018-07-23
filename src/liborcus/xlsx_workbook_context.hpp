@@ -56,7 +56,7 @@ private:
     pstring m_defined_name;
     pstring m_defined_name_exp;
     spreadsheet::sheet_t m_defined_name_scope;
-
+    size_t m_sheet_count;
     spreadsheet::iface::import_factory& m_factory;
     spreadsheet::iface::import_named_expression* mp_named_exp;
 };

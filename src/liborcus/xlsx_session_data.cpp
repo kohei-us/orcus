@@ -44,12 +44,6 @@ xlsx_session_data::~xlsx_session_data()
 {
 }
 
-void xlsx_session_data::set_sheet_name_map(pstring name, spreadsheet::sheet_t id)
-{
-    m_sheet_name_map.insert(
-        sheet_name_map_type::value_type(std::move(name), id));
-}
-
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
