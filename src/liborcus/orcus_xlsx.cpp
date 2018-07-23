@@ -113,7 +113,7 @@ public:
     }
 };
 
-struct orcus_xlsx_impl
+struct orcus_xlsx::impl
 {
     session_context m_cxt;
     xmlns_repository m_ns_repo;
@@ -121,7 +121,7 @@ struct orcus_xlsx_impl
     xlsx_opc_handler m_opc_handler;
     opc_reader m_opc_reader;
 
-    orcus_xlsx_impl(spreadsheet::iface::import_factory* factory, orcus_xlsx& parent) :
+    impl(spreadsheet::iface::import_factory* factory, orcus_xlsx& parent) :
         m_cxt(new xlsx_session_data),
         mp_factory(factory),
         m_opc_handler(parent),
@@ -130,7 +130,7 @@ struct orcus_xlsx_impl
 
 orcus_xlsx::orcus_xlsx(spreadsheet::iface::import_factory* factory) :
     iface::import_filter(format_t::xlsx),
-    mp_impl(new orcus_xlsx_impl(factory, *this))
+    mp_impl(orcus::make_unique<impl>(factory, *this))
 {
     if (!factory)
         throw std::invalid_argument("factory instance is required.");
@@ -147,10 +147,7 @@ orcus_xlsx::orcus_xlsx(spreadsheet::iface::import_factory* factory) :
     mp_impl->m_ns_repo.add_predefined_values(NS_misc_all);
 }
 
-orcus_xlsx::~orcus_xlsx()
-{
-    delete mp_impl;
-}
+orcus_xlsx::~orcus_xlsx() {}
 
 bool orcus_xlsx::detect(const unsigned char* blob, size_t size)
 {
