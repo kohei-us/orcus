@@ -1531,6 +1531,26 @@ void test_xlsx_view_frozen_pane()
     }
 }
 
+void test_xlsx_doc_structure_unordered_sheet_positions()
+{
+    pstring path(SRCDIR"/test/xlsx/doc-structure/unordered-sheet-positions.xlsx");
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path);
+
+    // There should be 9 sheets named S1, S2, ..., S9.
+    std::vector<pstring> expected_sheet_names = {
+        "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"
+    };
+
+    assert(doc->sheet_size() == expected_sheet_names.size());
+
+    sheet_t n = expected_sheet_names.size();
+    for (sheet_t i = 0; i < n; ++i)
+    {
+        pstring sheet_name = doc->get_sheet_name(i);
+        assert(sheet_name == expected_sheet_names[i]);
+    }
+}
+
 }
 
 int main()
@@ -1562,6 +1582,9 @@ int main()
     test_xlsx_view_cursor_per_sheet();
     test_xlsx_view_cursor_split_pane();
     test_xlsx_view_frozen_pane();
+
+    // document structure
+    test_xlsx_doc_structure_unordered_sheet_positions();
 
     return EXIT_SUCCESS;
 }
