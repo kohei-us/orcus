@@ -29,6 +29,9 @@
 
     * support importing of array formulas.
 
+    * fixed a bug where sheet indices being passed to the append_sheet()
+      interface method were incorrect.
+
   * shared formula handling code has been re-worked.
 
   * spreadsheet::sheet class has been de-coupled from the import and
@@ -69,6 +72,8 @@
     * correctly set the argument separator depending on the formula
       grammar type.  This change fixes loading of ods documents with
       formula cells.
+
+  * fixed a build issue with boost 1.67.
 
 orcus 0.13.4
 
