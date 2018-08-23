@@ -66,7 +66,7 @@ AC_DEFINE([BOOST_ALL_NO_LIB], [], [Disable boost's evil autolink.])
 # ======================
 # Set required ixion api
 # ======================
-IXION_REQUIRED_API_VERSION=0.13
+IXION_REQUIRED_API_VERSION=0.14
 AC_SUBST(IXION_REQUIRED_API_VERSION)
 
 # =============
@@ -215,7 +215,7 @@ AC_ARG_ENABLE(spreadsheet-model,
 	[enable_spreadsheet_model=yes]
 )
 AS_IF([test "x$enable_spreadsheet_model" != "xno"], [
-	PKG_CHECK_MODULES([LIBIXION],[libixion-$IXION_REQUIRED_API_VERSION >= 0.13.99])
+	PKG_CHECK_MODULES([LIBIXION],[libixion-$IXION_REQUIRED_API_VERSION >= 0.14.0])
 	CXXFLAGS="$CXXFLAGS -D__ORCUS_SPREADSHEET_MODEL"
         BOOST_DATE_TIME
 ])
