@@ -1,3 +1,9 @@
+* improved precision of points-to-twips measurement conversions by
+  reducing the number of numeric operations to be performed.  This
+  especially helps on i386 platforms.
+
+orcus 0.14.0
+
 * spreadsheet interface
 
   * import_data_table::set_range() now receives a parameter of type
