@@ -1,229 +1,229 @@
-  * spreadsheet interface
+* spreadsheet interface
 
-    * import_data_table::set_range() now receives a parameter of type
-      range_t.
+  * import_data_table::set_range() now receives a parameter of type
+    range_t.
 
-    * import_sheet::set_array_formula() interface methods have been
-      removed and replaced with import_sheet::get_array_formula() that
-      returns an interface of type import_array_formula.
+  * import_sheet::set_array_formula() interface methods have been
+    removed and replaced with import_sheet::get_array_formula() that
+    returns an interface of type import_array_formula.
 
-    * import_formula interface class has been added to replace the
-      formula related methods of import_sheet.  As a result,
-      set_formula(), set_shared_formula(), and set_formula_result()
-      methods have been removed from the import_sheet interface class.
+  * import_formula interface class has been added to replace the
+    formula related methods of import_sheet.  As a result,
+    set_formula(), set_shared_formula(), and set_formula_result()
+    methods have been removed from the import_sheet interface class.
 
-    * import_auto_filter::set_range() now receives a parameter of type
-      range_t, rather than a string value representing a range.
+  * import_auto_filter::set_range() now receives a parameter of type
+    range_t, rather than a string value representing a range.
 
-    * import_sheet::set_fill_pattern_type() interface method now takes
-      an enum value of type fill_pattern_t, rather than a string value.
+  * import_sheet::set_fill_pattern_type() interface method now takes
+    an enum value of type fill_pattern_t, rather than a string value.
 
-  * xls-xml
+* xls-xml
 
-    * pick up the character set from the XML declaration, and pass it
-      to the client app via import_global_settings interface.
+  * pick up the character set from the XML declaration, and pass it
+    to the client app via import_global_settings interface.
 
-    * support importing of array formulas.
+  * support importing of array formulas.
 
-  * xlsx
+* xlsx
 
-    * support importing of array formulas.
+  * support importing of array formulas.
 
-    * fixed a bug where sheet indices being passed to the append_sheet()
-      interface method were incorrect.
+  * fixed a bug where sheet indices being passed to the append_sheet()
+    interface method were incorrect.
 
-  * shared formula handling code has been re-worked.
+* shared formula handling code has been re-worked.
 
-  * spreadsheet::sheet class has been de-coupled from the import and
-    export interfaces.
+* spreadsheet::sheet class has been de-coupled from the import and
+  export interfaces.
 
-  * previously known as import_styles class is now split into styles
-    class and import_styles factory wrapper class.
+* previously known as import_styles class is now split into styles
+  class and import_styles factory wrapper class.
 
-  * sax_parser now gracefully ignores leading whitespace(s) if any,
-    rather than aborting the parsing for it's not a valid XML stream
-    to have leading whitespace(s).  In the future we should make this
-    behavior configurable.
+* sax_parser now gracefully ignores leading whitespace(s) if any,
+  rather than aborting the parsing for it's not a valid XML stream
+  to have leading whitespace(s).  In the future we should make this
+  behavior configurable.
 
-  * python
+* python
 
-    * add orcus.xlsx.read() function that takes a file object to load
-      an xlsx file as a replacement for orcus.xlsx.read_file().
+  * add orcus.xlsx.read() function that takes a file object to load
+    an xlsx file as a replacement for orcus.xlsx.read_file().
 
-    * add orcus.ods.read(), orcus.xls_xml.read(), orcus.csv.read(),
-      and orcus.gnumeric.read() functions.
+  * add orcus.ods.read(), orcus.xls_xml.read(), orcus.csv.read(),
+    and orcus.gnumeric.read() functions.
 
-    * add orcus.Sheet.write() method which exports sheet content to
-      specified format.  For now only the csv format type is
-      supported.
+  * add orcus.Sheet.write() method which exports sheet content to
+    specified format.  For now only the csv format type is
+    supported.
 
-  * xml_map_tree no longer requires the source stream persisted in
-    memory between the read and write.
+* xml_map_tree no longer requires the source stream persisted in
+  memory between the read and write.
 
-  * the sax parser now stores the offset positions of each element
-    rather than their memory positions, in order to make the position
-    values usable between duplicated stream instances.
+* the sax parser now stores the offset positions of each element
+  rather than their memory positions, in order to make the position
+  values usable between duplicated stream instances.
 
-  * xml_structure_tree to support selection of an element by element
-    path.
+* xml_structure_tree to support selection of an element by element
+  path.
 
-  * document
+* document
 
-    * correctly set the argument separator depending on the formula
-      grammar type.  This change fixes loading of ods documents with
-      formula cells.
+  * correctly set the argument separator depending on the formula
+    grammar type.  This change fixes loading of ods documents with
+    formula cells.
 
-  * fixed a build issue with boost 1.67.
+* fixed a build issue with boost 1.67.
 
 orcus 0.13.4
 
-  * xls-xml
+* xls-xml
 
-    * fix incorrect handling of formula cells without result caches.
+  * fix incorrect handling of formula cells without result caches.
 
-  * fix incorrect parsing of invalid XML documents with multiple
-    self-closing root elements.
+* fix incorrect parsing of invalid XML documents with multiple
+  self-closing root elements.
 
 orcus 0.13.3
 
-  * fix the handling of alpha values passed to set_fill_fg_color() and
-    set_fill_bg_color().  A value of 255 means fully opaque whereas a
-    value of 0 means fully transparent.
+* fix the handling of alpha values passed to set_fill_fg_color() and
+  set_fill_bg_color().  A value of 255 means fully opaque whereas a
+  value of 0 means fully transparent.
 
-  * fix the solid fill color import, to use the foreground color
-    instead of the background color.
+* fix the solid fill color import, to use the foreground color
+  instead of the background color.
 
-  * xlsx
+* xlsx
 
-    * import colors to disgonal borders.
+  * import colors to disgonal borders.
 
-    * remove carriage returns from multi-line cell strings.
+  * remove carriage returns from multi-line cell strings.
 
-  * xls-xml
+* xls-xml
 
-    * import border colors.
+  * import border colors.
 
-    * import hidden row and column flags.
+  * import hidden row and column flags.
 
 orcus 0.13.2
 
-  * xls-xml
+* xls-xml
 
-    * import column width and row height properties.
+  * import column width and row height properties.
 
-    * import solid fill colors in cells.
+  * import solid fill colors in cells.
 
-    * import text alignment properties.
+  * import text alignment properties.
 
-    * import cell borders.
+  * import cell borders.
 
-  * xlsx
+* xlsx
 
-    * import justified and distributed text alignment properties.
+  * import justified and distributed text alignment properties.
 
-    * fix exception being thrown when the diagonal element is
-      encountered.
+  * fix exception being thrown when the diagonal element is
+    encountered.
 
-    * import diagonal cell borders.
+  * import diagonal cell borders.
 
 orcus 0.13.1
 
-  * use a more efficient way to set format ranges in spreadsheet
-    model.
+* use a more efficient way to set format ranges in spreadsheet
+  model.
 
-  * support single quoted strings in the css parser.
+* support single quoted strings in the css parser.
 
 orcus 0.13.0
 
-  * fix incorrect parsing of XML 1.0 documents that don't include
-    header declarations.
+* fix incorrect parsing of XML 1.0 documents that don't include
+  header declarations.
 
-  * fix incorrect parsing of XML elements and attributes whose names
-    start with an underscore.
+* fix incorrect parsing of XML elements and attributes whose names
+  start with an underscore.
 
-  * orcus-csv: add an option to split content into multiple sheets in
-    case it doesn't fit in one sheet.
+* orcus-csv: add an option to split content into multiple sheets in
+  case it doesn't fit in one sheet.
 
-  * add csv dump mode for all spreadsheet document based filter
-    commands.
+* add csv dump mode for all spreadsheet document based filter
+  commands.
 
-  * orcus-ods: suppress debug outputs unless the debug flag is set.
+* orcus-ods: suppress debug outputs unless the debug flag is set.
 
-  * orcus-xlsx: correctly import boolean cell values.
+* orcus-xlsx: correctly import boolean cell values.
 
-  * add experimental cmake-based build support, primarily for Windows.
+* add experimental cmake-based build support, primarily for Windows.
 
-  * add initial support for importing select sheet view settings in
-    xlsx and xls-xml.
+* add initial support for importing select sheet view settings in
+  xlsx and xls-xml.
 
-  * add API for directly constructing json document trees.
+* add API for directly constructing json document trees.
 
-  * support import of cell formats for xls-xml.
+* support import of cell formats for xls-xml.
 
-  * support single-quoted attribute values in the sax xml parser.
+* support single-quoted attribute values in the sax xml parser.
 
-  * orcus-xml: fix incorrect mapping of XML range data to sheet range
-    when the first column contains one or more empty elements.
+* orcus-xml: fix incorrect mapping of XML range data to sheet range
+  when the first column contains one or more empty elements.
 
-  * support import of named expressions for xlsx and xls-xml.
+* support import of named expressions for xlsx and xls-xml.
 
-  * support import of formula cells for xls-xml.
+* support import of formula cells for xls-xml.
 
-  * implement pivot cache import for xlsx.
+* implement pivot cache import for xlsx.
 
-  * fix a number of crashes in the csv parser.
+* fix a number of crashes in the csv parser.
 
-  * fix a number of crashes in the json parser.
+* fix a number of crashes in the json parser.
 
-  * fix a number of crashes in the yaml parser.
+* fix a number of crashes in the yaml parser.
 
-  * integrate orcus into gitlab's continuous integration.
+* integrate orcus into gitlab's continuous integration.
 
 orcus 0.12.1
 
-  * fix build when --disable-spreadsheet-model is specified and the
-    ixion headers are not present.
+* fix build when --disable-spreadsheet-model is specified and the
+  ixion headers are not present.
 
-  * fix loading of file streams on Windows.
+* fix loading of file streams on Windows.
 
-  * get the debug flag to work again.
+* get the debug flag to work again.
 
 orcus 0.12.0
 
-  * handle escaped unicode in the xml parser
+* handle escaped unicode in the xml parser
 
-  * improve odf styles import
+* improve odf styles import
 
-  * implement threaded xml parser
+* implement threaded xml parser
 
-  * implement threaded json parser
+* implement threaded json parser
 
 orcus 0.11.2
 
-  * make it buildable with mdds-1.2.
+* make it buildable with mdds-1.2.
 
 orcus 0.11.1
 
-  * fixed various build issues with MSVC and clang on OSX.
+* fixed various build issues with MSVC and clang on OSX.
 
 orcus 0.11.0
 
-  * remove boost dependency from the public headers.
+* remove boost dependency from the public headers.
 
-  * implement JSON parser and document storage model.
+* implement JSON parser and document storage model.
 
-  * implement YAML parser and document storage model.
+* implement YAML parser and document storage model.
 
-  * add orcus-json.
+* add orcus-json.
 
-  * add orcus-yaml.
+* add orcus-yaml.
 
-  * improve parse error output from the XML parser.
+* improve parse error output from the XML parser.
 
-  * use enum class in import_style::set_border_style().
+* use enum class in import_style::set_border_style().
 
-  * support non-local file import.
+* support non-local file import.
 
 orcus 0.1.0
 
-  * initial release.
+* initial release.
