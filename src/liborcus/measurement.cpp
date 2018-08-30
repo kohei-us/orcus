@@ -122,9 +122,16 @@ double convert_inch(double value, length_unit_t unit_to)
 
 double convert_point(double value, length_unit_t unit_to)
 {
-    // 72 points = 1 inch
-    value /= 72.0;
-    return convert_inch(value, unit_to);
+    switch (unit_to)
+    {
+        case length_unit_t::twip:
+            // 20 twips = 1 point
+            return value * 20.0;
+        default:
+            ;
+    }
+
+    throw general_error("convert_point: unsupported unit of measurement.");
 }
 
 double convert_centimeter(double value, length_unit_t unit_to)

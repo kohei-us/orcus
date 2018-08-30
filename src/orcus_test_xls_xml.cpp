@@ -436,7 +436,6 @@ void test_xls_xml_column_width_row_height()
 
     for (const cw_check& check : cw_checks)
     {
-
         spreadsheet::col_width_t cw = sheet1->get_col_width(check.col, nullptr, nullptr);
         double pt = convert(cw, length_unit_t::twip, length_unit_t::point);
         test::verify_value_to_decimals(__FILE__, __LINE__, check.width, pt, check.decimals);
