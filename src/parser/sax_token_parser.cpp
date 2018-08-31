@@ -9,6 +9,7 @@
 #include "orcus/tokens.hpp"
 
 #include <mdds/sorted_string_map.hpp>
+#include <cctype>
 
 namespace orcus {
 
