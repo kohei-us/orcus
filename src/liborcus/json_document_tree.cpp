@@ -1053,7 +1053,8 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
             if (value->type == detail::node_t::key_value)
                 throw key_value_error("nested key-value pairs are not allowed.");
 
-            assert(++it == mp_impl->m_value_array.end());
+            ++it;
+            assert(it == mp_impl->m_value_array.end());
 
             jv = json_value_kvp::create(key, std::move(value));
             break;
