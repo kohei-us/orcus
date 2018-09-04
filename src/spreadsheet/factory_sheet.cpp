@@ -115,7 +115,12 @@ void import_auto_filter::commit()
 }
 
 import_array_formula::import_array_formula(document& doc, sheet& sheet) :
-    m_doc(doc), m_sheet(sheet) {}
+    m_doc(doc), m_sheet(sheet)
+{
+    m_range.first.column = -1;
+    m_range.first.row = -1;
+    m_range.last = m_range.first;
+}
 
 import_array_formula::~import_array_formula()
 {
