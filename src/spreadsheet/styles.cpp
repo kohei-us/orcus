@@ -59,7 +59,8 @@ bool color_t::operator!=(const color_t& other) const
     return !operator==(other);
 }
 
-fill_t::fill_t()
+fill_t::fill_t() :
+    pattern_type(fill_pattern_t::none)
 {
 }
 
