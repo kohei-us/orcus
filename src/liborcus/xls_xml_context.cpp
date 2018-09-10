@@ -682,8 +682,12 @@ xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tok
     m_cur_row(0), m_cur_col(0),
     m_cur_prop_col(0),
     m_cur_merge_down(0), m_cur_merge_across(0),
+    m_active_pane(spreadsheet::sheet_pane_t::unspecified),
     m_cc_data(session_cxt, tokens, *this)
 {
+    m_cur_array_range.first.column = -1;
+    m_cur_array_range.first.row = -1;
+    m_cur_array_range.last = m_cur_array_range.first;
 }
 
 xls_xml_context::~xls_xml_context()
