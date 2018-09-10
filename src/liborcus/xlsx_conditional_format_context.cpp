@@ -23,38 +23,6 @@ namespace orcus {
 
 namespace {
 
-class color_attr_parser : public std::unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator()(const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_rgb:
-            {
-                to_rgb(attr.value, m_alpha, m_red, m_green, m_blue);
-            }
-            break;
-            default:
-            break;
-        }
-    }
-
-    void get_color(argb_color& color)
-    {
-        color.alpha = m_alpha;
-        color.red = m_red;
-        color.green = m_green;
-        color.blue = m_blue;
-    }
-
-private:
-    spreadsheet::color_elem_t m_alpha;
-    spreadsheet::color_elem_t m_red;
-    spreadsheet::color_elem_t m_green;
-    spreadsheet::color_elem_t m_blue;
-};
-
 enum xlsx_cond_format_type
 {
     none = 0,
@@ -737,10 +705,21 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
         break;
         case XML_color:
         {
-            color_attr_parser func = for_each(attrs.begin(), attrs.end(), color_attr_parser());
-            argb_color color;
-            func.get_color(color);
-            m_colors.push_back(color);
+            for (const xml_token_attr_t& attr : attrs)
+            {
+                switch (attr.name)
+                {
+                    case XML_rgb:
+                    {
+                        argb_color color;
+                        if (to_rgb(attr.value, color.alpha, color.red, color.green, color.blue))
+                            m_colors.push_back(color);
+                        break;
+                    }
+                    default:
+                        ;
+                }
+            }
         }
         break;
         case XML_formula:
