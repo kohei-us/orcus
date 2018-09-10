@@ -8,16 +8,26 @@
 #include "orcus/css_document_tree.hpp"
 #include "orcus/stream.hpp"
 
+#include <iostream>
+
 int main(int argc, char** argv)
 {
     if (argc < 2)
         return EXIT_FAILURE;
 
     const char* filepath = argv[1];
-    std::string strm = orcus::load_file_content(filepath);
-    orcus::css_document_tree doc;
-    doc.load(strm);
-    doc.dump();
+    try
+    {
+        std::string strm = orcus::load_file_content(filepath);
+        orcus::css_document_tree doc;
+        doc.load(strm);
+        doc.dump();
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
