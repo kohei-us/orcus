@@ -97,61 +97,62 @@ int main(int argc, char** argv)
     try
     {
         read_map_file(app, argv[2]);
+        std::string strm = load_file_content(argv[3]);
+        app.read_stream(strm.data(), strm.size());
+
+        switch (mode)
+        {
+            case dump_document:
+            {
+                doc.dump_flat("./flat");
+                break;
+            }
+            case transform_xml:
+            {
+                if (argc <= 4)
+                {
+                    cout << "output xml file name not provided" << endl;
+                    print_help();
+                    return EXIT_FAILURE;
+                }
+
+                ofstream file(argv[4]);
+                if (!file)
+                {
+                    cerr << "failed to create output file: " << argv[4] << endl;
+                    return EXIT_FAILURE;
+                }
+
+                // Write transformed xml content to file.
+                app.write(strm.data(), strm.size(), file);
+            }
+            break;
+            case dump_document_check:
+            {
+                if (argc <= 4)
+                {
+                    doc.dump_check(cout);
+                    break;
+                }
+
+                ofstream file(argv[4]);
+                if (!file)
+                {
+                    cerr << "failed to create output file: " << argv[4] << endl;
+                    return EXIT_FAILURE;
+                }
+
+                doc.dump_check(file);
+            }
+            break;
+            default:
+                ;
+        }
     }
     catch (const std::exception& e)
     {
         cerr << e.what() << endl;
         return EXIT_FAILURE;
-    }
-
-    std::string strm = load_file_content(argv[3]);
-    app.read_stream(strm.data(), strm.size());
-
-    switch (mode)
-    {
-        case dump_document:
-            doc.dump_flat("./flat");
-        break;
-        case transform_xml:
-        {
-            if (argc <= 4)
-            {
-                cout << "output xml file name not provided" << endl;
-                print_help();
-                return EXIT_FAILURE;
-            }
-
-            ofstream file(argv[4]);
-            if (!file)
-            {
-                cerr << "failed to create output file: " << argv[4] << endl;
-                return EXIT_FAILURE;
-            }
-
-            // Write transformed xml content to file.
-            app.write(strm.data(), strm.size(), file);
-        }
-        break;
-        case dump_document_check:
-        {
-            if (argc <= 4)
-            {
-                doc.dump_check(cout);
-                break;
-            }
-
-            ofstream file(argv[4]);
-            if (!file)
-            {
-                cerr << "failed to create output file: " << argv[4] << endl;
-                return EXIT_FAILURE;
-            }
-
-            doc.dump_check(file);
-        }
-        break;
-        default:
-            ;
     }
 
     return EXIT_SUCCESS;
