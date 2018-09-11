@@ -176,7 +176,18 @@ std::unique_ptr<json::document_tree> load_doc(const std::string& strm, const jso
 
 int main(int argc, char** argv)
 {
-    std::unique_ptr<json_config> config = parse_json_args(argc, argv);
+    std::unique_ptr<json_config> config;
+
+    try
+    {
+        config = parse_json_args(argc, argv);
+    }
+    catch (const std::exception& e)
+    {
+        cerr << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+
     if (!config)
         return EXIT_FAILURE;
 
