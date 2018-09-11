@@ -10,6 +10,7 @@
 
 #include <cstdlib>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -18,21 +19,30 @@ int main(int argc, char** argv)
     if (argc < 2)
         return EXIT_FAILURE;
 
-    orcus::zip_archive_stream_fd stream(argv[1]);
-    orcus::zip_archive archive(&stream);
-    archive.load();
-    size_t n = archive.get_file_entry_count();
-
-    if (argc < 3)
+    try
     {
-        for (size_t i = 0; i < n; ++i)
-            archive.dump_file_entry(i);
-        return EXIT_SUCCESS;
-    }
+        orcus::zip_archive_stream_fd stream(argv[1]);
+        orcus::zip_archive archive(&stream);
+        archive.load();
+        size_t n = archive.get_file_entry_count();
 
-    const char* entry_name = argv[2];
-    archive.dump_file_entry(entry_name);
+        if (argc < 3)
+        {
+            for (size_t i = 0; i < n; ++i)
+                archive.dump_file_entry(i);
+            return EXIT_SUCCESS;
+        }
+
+        const char* entry_name = argv[2];
+        archive.dump_file_entry(entry_name);
+    }
+    catch (const std::exception& e)
+    {
+        cerr << e.what() << endl;
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
