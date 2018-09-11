@@ -93,7 +93,17 @@ int main(int argc, char** argv)
 
     xmlns_repository repo;
     orcus_xml app(repo, &import_fact, &export_fact);
-    read_map_file(app, argv[2]);
+
+    try
+    {
+        read_map_file(app, argv[2]);
+    }
+    catch (const std::exception& e)
+    {
+        cerr << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+
     std::string strm = load_file_content(argv[3]);
     app.read_stream(strm.data(), strm.size());
 
