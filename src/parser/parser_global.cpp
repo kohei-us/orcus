@@ -492,7 +492,12 @@ parse_quoted_string_state parse_double_quoted_string(
     const char*& p, size_t max_length, cell_buffer& buffer)
 {
     assert(*p == '"');
+
     parse_quoted_string_state ret;
+    ret.str = nullptr;
+    ret.length = 0;
+    ret.transient = false;
+
     if (max_length == 0)
     {
         ret.str = nullptr;
