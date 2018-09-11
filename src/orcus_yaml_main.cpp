@@ -157,12 +157,12 @@ std::unique_ptr<yaml::document_tree> load_doc(const std::string& strm)
 
 int main(int argc, char** argv)
 {
-    std::unique_ptr<yaml_config> config = parse_yaml_args(argc, argv);
-    if (!config)
-        return EXIT_FAILURE;
-
     try
     {
+        std::unique_ptr<yaml_config> config = parse_yaml_args(argc, argv);
+        if (!config)
+            return EXIT_FAILURE;
+
         std::string strm = load_file_content(config->input_path.c_str());
         std::unique_ptr<yaml::document_tree> doc = load_doc(strm);
 
