@@ -23,13 +23,14 @@ int main(int argc, char** argv)
 {
     if (argc != 2)
         return EXIT_FAILURE;
+
     string_pool sp;
     spreadsheet::styles styles;
     spreadsheet::import_styles istyles(styles, sp);
 
-    std::string content = load_file_content(argv[1]);
     try
     {
+        std::string content = load_file_content(argv[1]);
         import_ods::read_styles(content.c_str(), content.length(), &istyles);
     }
     catch(std::exception& ex)
