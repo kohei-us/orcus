@@ -15,6 +15,27 @@
 
 namespace orcus { namespace spreadsheet {
 
+namespace {
+
+class ostream_format_switch
+{
+    std::ostream& m_os;
+    std::ios_base::fmtflags m_mask;
+public:
+    ostream_format_switch(std::ostream& os, std::ios_base::fmtflags mask) :
+        m_os(os), m_mask(mask)
+    {
+        m_os << std::setiosflags(m_mask);
+    }
+
+    ~ostream_format_switch()
+    {
+        m_os << std::resetiosflags(m_mask);
+    }
+};
+
+}
+
 font_t::font_t() :
     size(0.0), bold(false),
     italic(false), underline_style(underline_t::none),
@@ -145,13 +166,14 @@ void cell_style_t::reset()
 
 std::ostream& operator<< (std::ostream& os, const color_t& c)
 {
-    os << std::hex << std::uppercase
-        << "(ARGB: "
-        << std::setfill('0') << std::setw(2) << int(c.alpha)
-        << std::setfill('0') << std::setw(2) << int(c.red)
-        << std::setfill('0') << std::setw(2) << int(c.green)
-        << std::setfill('0') << std::setw(2) << int(c.blue)
-        << ")";
+    ostream_format_switch ifs(os, std::ios::hex | std::ios::uppercase);
+
+    os << "(ARGB: "
+       << std::setfill('0') << std::setw(2) << int(c.alpha)
+       << std::setfill('0') << std::setw(2) << int(c.red)
+       << std::setfill('0') << std::setw(2) << int(c.green)
+       << std::setfill('0') << std::setw(2) << int(c.blue)
+       << ")";
 
     return os;
 }
