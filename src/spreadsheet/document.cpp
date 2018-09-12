@@ -205,6 +205,9 @@ class table_handler : public ixion::iface::table_handler
                 return ixion::abs_range_t(ixion::abs_range_t::invalid);
 
             col_t col1_index = find_column(tab, col1_name, 0);
+            if (col1_index < 0)
+                return ixion::abs_range_t(ixion::abs_range_t::invalid);
+
             if (column_last != ixion::empty_string_id)
             {
                 pstring col2_name = get_string(column_last);
