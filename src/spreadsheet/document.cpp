@@ -211,14 +211,16 @@ class table_handler : public ixion::iface::table_handler
             if (column_last != ixion::empty_string_id)
             {
                 pstring col2_name = get_string(column_last);
-
-                // column range table reference.
-                col_t col2_index = find_column(tab, col2_name, col1_index);
-                ixion::abs_range_t range = tab.range;
-                range.first.column = col1_index;
-                range.last.column = col2_index;
-                adjust_row_range(range, tab, areas);
-                return range;
+                if (!col2_name.empty())
+                {
+                    // column range table reference.
+                    col_t col2_index = find_column(tab, col2_name, col1_index);
+                    ixion::abs_range_t range = tab.range;
+                    range.first.column = col1_index;
+                    range.last.column = col2_index;
+                    adjust_row_range(range, tab, areas);
+                    return range;
+                }
             }
 
             // single column table reference.
