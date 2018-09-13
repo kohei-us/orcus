@@ -82,6 +82,13 @@ namespace {
 struct sheet_pane_data
 {
     range_t m_selection;
+
+    sheet_pane_data()
+    {
+        m_selection.first.row = -1;
+        m_selection.first.column = -1;
+        m_selection.last = m_selection.first;
+    }
 };
 
 size_t to_pane_index(sheet_pane_t pos)
@@ -126,8 +133,12 @@ struct sheet_view::impl
     {
         m_split_pane.hor_split = 0.0;
         m_split_pane.ver_split = 0.0;
+        m_split_pane.top_left_cell.row = -1;
+        m_split_pane.top_left_cell.column = -1;
         m_frozen_pane.visible_columns = 0;
         m_frozen_pane.visible_rows = 0;
+        m_frozen_pane.top_left_cell.row = -1;
+        m_frozen_pane.top_left_cell.column = -1;
     }
 };
 
