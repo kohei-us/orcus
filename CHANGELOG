@@ -1,3 +1,5 @@
+orcus 0.14.1
+
 * addressed a number of coverity issues.
 
 * improved precision of points-to-twips measurement conversions by
