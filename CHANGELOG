@@ -1,3 +1,5 @@
+* addressed a number of coverity issues.
+
 * improved precision of points-to-twips measurement conversions by
   reducing the number of numeric operations to be performed.  This
   especially helps on i386 platforms.
