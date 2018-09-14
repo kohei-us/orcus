@@ -973,6 +973,36 @@ std::unique_ptr<json_value_store> aggregate_nodes_to_store(
     return jvs;
 }
 
+#ifndef NDEBUG
+
+/**
+ * Verify that the parent pointers stored in the child objects point to
+ * their real parent object.
+ */
+void verify_parent_pointers(const std::unique_ptr<json_value>& jv, bool object)
+{
+    if (object)
+    {
+        json_value_object* jvo = static_cast<json_value_object*>(jv->store.get());
+        for (const auto& child : jvo->value_object)
+        {
+            const json_value& cv = *child.second;
+            assert(cv.parent == jv.get());
+        }
+    }
+    else
+    {
+        json_value_array* jva = static_cast<json_value_array*>(jv->store.get());
+        for (const auto& child : jva->value_array)
+        {
+            const json_value& cv = *child;
+            assert(cv.parent == jv.get());
+        }
+    }
+}
+
+#endif
+
 } // anonymous namespace
 
 namespace detail { namespace init {
@@ -1072,6 +1102,9 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
             }
 
             jv = aggregate_nodes(std::move(nodes), object);
+#ifndef NDEBUG
+            verify_parent_pointers(jv, object);
+#endif
             break;
         }
         case detail::node_t::object:
