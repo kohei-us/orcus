@@ -8,7 +8,7 @@ AC_PREREQ([2.65])
 # ===================
 m4_define([orcus_major_version], [0])
 m4_define([orcus_minor_version], [14])
-m4_define([orcus_micro_version], [0])
+m4_define([orcus_micro_version], [1])
 m4_define([orcus_version], [orcus_major_version.orcus_minor_version.orcus_micro_version])
 
 # ===============
@@ -84,18 +84,6 @@ AC_SUBST(ORCUS_MICRO_VERSION)
 BOOST_REQUIRE([1.36])
 BOOST_FILESYSTEM
 BOOST_SYSTEM
-
-# ==============
-# Werror support
-# ==============
-AC_ARG_ENABLE([werror],
-	[AS_HELP_STRING([--enable-werror], [Treat all warnings as errors, useful for development])],
-	[enable_werror="$enableval"],
-	[enable_werror=no]
-)
-AS_IF([test x"$enable_werror" == "xyes"], [
-	CXXFLAGS="$CXXFLAGS -Werror"
-])
 
 # =========================================================
 # Determine if we are going to build static lib (for MinGW)
@@ -297,6 +285,22 @@ AM_CONDITIONAL([WITH_PYTHON_ODS], [test "x$with_python_ods" != "xno"])
 AM_CONDITIONAL([WITH_PYTHON_CSV], [test "x$with_python_csv" != "xno"])
 AM_CONDITIONAL([WITH_PYTHON_XLS_XML], [test "x$with_python_xls_xml" != "xno"])
 AM_CONDITIONAL([WITH_PYTHON_GNUMERIC], [test "x$with_python_gnumeric" != "xno"])
+
+# ==============
+# Werror support
+# ==============
+
+# NB: This must come at the end of all the other header detections, as enabling
+# it may cause some header detections to fail.
+
+AC_ARG_ENABLE([werror],
+	[AS_HELP_STRING([--enable-werror], [Treat all warnings as errors, useful for development])],
+	[enable_werror="$enableval"],
+	[enable_werror=no]
+)
+AS_IF([test x"$enable_werror" == "xyes"], [
+	CXXFLAGS="$CXXFLAGS -Werror"
+])
 
 AC_CONFIG_FILES([Makefile
 	liborcus-$ORCUS_API_VERSION.pc:liborcus.pc.in
