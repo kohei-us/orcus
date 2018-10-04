@@ -305,7 +305,6 @@ AS_IF([test x"$enable_werror" == "xyes"], [
 AC_CONFIG_FILES([Makefile
 	liborcus-$ORCUS_API_VERSION.pc:liborcus.pc.in
 	liborcus-spreadsheet-model-$ORCUS_API_VERSION.pc:liborcus-spreadsheet-model.pc.in
-	VERSION
 	include/Makefile
 	include/orcus/Makefile
 	include/orcus/detail/Makefile
