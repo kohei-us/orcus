@@ -16,6 +16,12 @@
 
 namespace orcus {
 
+/**
+ * Generic constant to be used to indicate that a valid index value is
+ * expected but not found.
+ */
+ORCUS_PSR_DLLPUBLIC extern const size_t index_not_found;
+
 // XML specific types
 
 typedef size_t xml_token_t;
@@ -23,7 +29,6 @@ typedef const char* xmlns_id_t;
 
 ORCUS_PSR_DLLPUBLIC extern const xmlns_id_t XMLNS_UNKNOWN_ID;
 ORCUS_PSR_DLLPUBLIC extern const xml_token_t XML_UNKNOWN_TOKEN;
-ORCUS_PSR_DLLPUBLIC extern const size_t index_not_found;
 
 struct xml_name_t
 {
