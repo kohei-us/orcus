@@ -8,14 +8,14 @@ AC_PREREQ([2.65])
 # ===================
 m4_define([orcus_major_version], [0])
 m4_define([orcus_minor_version], [14])
-m4_define([orcus_micro_version], [1])
+m4_define([orcus_micro_version], [99])
 m4_define([orcus_version], [orcus_major_version.orcus_minor_version.orcus_micro_version])
 
 # ===============
 # API information
 # ===============
 m4_define([orcus_major_api_version], [0])
-m4_define([orcus_minor_api_version], [14])
+m4_define([orcus_minor_api_version], [15])
 m4_define([orcus_api_version], [orcus_major_version.orcus_minor_api_version])
 
 # =============
@@ -29,7 +29,7 @@ AM_INIT_AUTOMAKE([1.11 foreign dist-bzip2 dist-xz])
 AM_SILENT_RULES([yes])
 AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX_11
-CXXFLAGS="-fvisibility=hidden $CXXFLAGS -Wall -pthread"
+CXXFLAGS="-fvisibility=hidden $CXXFLAGS -Wall -pthread -Wshadow"
 
 # ===========================
 # Find required base packages

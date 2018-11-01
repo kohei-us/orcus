@@ -24,7 +24,6 @@ typedef const char* xmlns_id_t;
 ORCUS_PSR_DLLPUBLIC extern const xmlns_id_t XMLNS_UNKNOWN_ID;
 ORCUS_PSR_DLLPUBLIC extern const xml_token_t XML_UNKNOWN_TOKEN;
 ORCUS_PSR_DLLPUBLIC extern const size_t index_not_found;
-ORCUS_PSR_DLLPUBLIC extern const size_t unspecified;
 
 struct xml_name_t
 {
@@ -354,7 +353,7 @@ struct ORCUS_PSR_DLLPUBLIC xml_declaration_t
     bool standalone;
 
     xml_declaration_t();
-    xml_declaration_t(uint8_t version_major, uint8_t version_minor, character_set_t encoding, bool standalone);
+    xml_declaration_t(uint8_t _version_major, uint8_t _version_minor, character_set_t _encoding, bool _standalone);
     xml_declaration_t(const xml_declaration_t& other);
     ~xml_declaration_t();
 

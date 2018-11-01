@@ -489,21 +489,21 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
     else
     {
         // Determine the deepest common element between the two.
-        element_list_type::iterator it = elem_stack.begin(), it_end = elem_stack.end();
+        element_list_type::iterator it_elem = elem_stack.begin(), it_elem_end = elem_stack.end();
         element_list_type::iterator it_cur = m_cur_range_parent.begin(), it_cur_end = m_cur_range_parent.end();
-        if (*it != *it_cur)
+        if (*it_elem != *it_cur)
             throw xpath_error("Two field links in the same range reference start with different root elements.");
 
-        ++it;
+        ++it_elem;
         ++it_cur;
 
-        for (; it != it_end && it_cur != it_cur_end; ++it, ++it_cur)
+        for (; it_elem != it_elem_end && it_cur != it_cur_end; ++it_elem, ++it_cur)
         {
-            if (*it == *it_cur)
+            if (*it_elem == *it_cur)
                 continue;
 
             // The two elements differ.  Take their parent element as the new common element.
-            m_cur_range_parent.assign(elem_stack.begin(), it); // current elemnt excluded.
+            m_cur_range_parent.assign(elem_stack.begin(), it_elem); // current elemnt excluded.
             break;
         }
 

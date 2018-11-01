@@ -607,9 +607,9 @@ const map_type& get()
 }
 
 xls_xml_context::array_formula_type::array_formula_type(
-    const spreadsheet::range_t& range, const pstring& formula) :
-    formula(formula),
-    results(range.last.row-range.first.row+1, range.last.column-range.first.column+1) {}
+    const spreadsheet::range_t& _range, const pstring& _formula) :
+    formula(_formula),
+    results(_range.last.row-_range.first.row+1, _range.last.column-_range.first.column+1) {}
 
 xls_xml_context::named_exp::named_exp(const pstring& _name, const pstring& _expression, spreadsheet::sheet_t _scope) :
     name(_name), expression(_expression), scope(_scope) {}
@@ -797,7 +797,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             {
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Names);
 
-                pstring name, exp;
+                pstring name_s, exp;
 
                 for (const xml_token_attr_t& attr : attrs)
                 {
@@ -807,7 +807,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                     switch (attr.name)
                     {
                         case XML_Name:
-                            name = intern(attr);
+                            name_s = intern(attr);
                             break;
                         case XML_RefersTo:
                         {
@@ -823,12 +823,12 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                     }
                 }
 
-                if (!name.empty() && !exp.empty())
+                if (!name_s.empty() && !exp.empty())
                 {
                     if (m_cur_sheet >= 0)
-                        m_named_exps_sheet.emplace_back(name, exp, m_cur_sheet);
+                        m_named_exps_sheet.emplace_back(name_s, exp, m_cur_sheet);
                     else
-                        m_named_exps_global.emplace_back(name, exp, -1);
+                        m_named_exps_global.emplace_back(name_s, exp, -1);
                 }
 
                 break;

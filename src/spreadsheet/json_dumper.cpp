@@ -56,12 +56,12 @@ void json_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     os << "    {";
     os << "\"" << column_labels[col] << "\": ";
 
-    func_str_handler str_handler = [](std::ostream& os, const std::string& s)
+    func_str_handler str_handler = [](std::ostream& _os, const std::string& s)
     {
-        os << '"' << json::escape_string(s) << '"';
+        _os << '"' << json::escape_string(s) << '"';
     };
 
-    func_empty_handler empty_handler = [](std::ostream& os) { os << "null"; };
+    func_empty_handler empty_handler = [](std::ostream& _os) { _os << "null"; };
 
     dump_cell_value(os, cxt, *it, str_handler, empty_handler);
 
@@ -71,18 +71,18 @@ void json_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     std::for_each(++it, columns.end(),
         [&](const columns_type::const_iterator::value_type& node)
         {
-            size_t row = node.position;
-            size_t col = node.index;
+            size_t this_row = node.position;
+            size_t this_col = node.index;
 
-            if (row > last_row)
+            if (this_row > last_row)
                 os << "}," << std::endl;
 
-            if (col == 0)
+            if (this_col == 0)
                 os << "    {";
             else
                 os << ", ";
 
-            os << "\"" << column_labels[col] << "\": ";
+            os << "\"" << column_labels[this_col] << "\": ";
 
             dump_cell_value(os, cxt, node, str_handler, empty_handler);
 

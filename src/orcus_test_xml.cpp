@@ -173,7 +173,6 @@ void test_xml_dtd()
           "html", "-//W3C//DTD XHTML 1.0 Transitional//EN", "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" }
     };
 
-    string strm;
     xmlns_repository repo;
     size_t n = sizeof(tests)/sizeof(tests[0]);
 

@@ -112,7 +112,7 @@ class xls_xml_context : public xml_context_base
         pstring formula;
         range_formula_results results;
 
-        array_formula_type(const spreadsheet::range_t& range, const pstring& formula);
+        array_formula_type(const spreadsheet::range_t& _range, const pstring& _formula);
     };
 
     struct border_style_type

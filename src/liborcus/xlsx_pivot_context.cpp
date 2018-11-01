@@ -141,7 +141,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheDefinition);
 
-            pstring source_type;
+            pstring source_type_s;
 
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
@@ -155,7 +155,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                             m_source_type =
                                 get_pc_source_map().find(attr.value.get(), attr.value.size());
 
-                            source_type = attr.value;
+                            source_type_s = attr.value;
                             break;
                         default:
                             ;
@@ -164,7 +164,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             );
 
             if (get_config().debug)
-                cout << "type: " << source_type << endl;
+                cout << "type: " << source_type_s << endl;
 
             break;
         }
@@ -226,7 +226,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheFields);
 
-            pstring name;
+            pstring field_name;
             long numfmt_id = -1;
 
             for_each(attrs.begin(), attrs.end(),
@@ -238,7 +238,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     switch (attr.name)
                     {
                         case XML_name:
-                            name = attr.value;
+                            field_name = attr.value;
                         break;
                         case XML_numFmtId:
                             numfmt_id = to_long(attr.value);
@@ -250,11 +250,11 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             );
 
             // TODO : Handle number format ID here.
-            m_pcache.set_field_name(name.get(), name.size());
+            m_pcache.set_field_name(field_name.get(), field_name.size());
 
             if (get_config().debug)
             {
-                cout << "* name: " << name << endl;
+                cout << "* name: " << field_name << endl;
                 cout << "  number format id: " << numfmt_id << endl;
             }
             break;
@@ -262,8 +262,8 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         case XML_fieldGroup:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheField);
-            long parent = -1;
-            long base = -1;
+            long group_parent = -1;
+            long group_base = -1;
 
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
@@ -274,10 +274,10 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     switch (attr.name)
                     {
                         case XML_par:
-                            parent = to_long(attr.value);
+                            group_parent = to_long(attr.value);
                             break;
                         case XML_base:
-                            base = to_long(attr.value);
+                            group_base = to_long(attr.value);
                             break;
                         default:
                             ;
@@ -287,16 +287,16 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
 
             if (get_config().debug)
             {
-                if (parent >= 0)
-                    cout << "  * group parent index: " << parent << endl;
-                if (base >= 0)
-                    cout << "  * group base index: " << base << endl;
+                if (group_parent >= 0)
+                    cout << "  * group parent index: " << group_parent << endl;
+                if (group_base >= 0)
+                    cout << "  * group base index: " << group_base << endl;
             }
 
-            if (base >= 0)
+            if (group_base >= 0)
             {
                 // This is a group field.
-                m_pcache_field_group = m_pcache.create_field_group(base);
+                m_pcache_field_group = m_pcache.create_field_group(group_base);
             }
             break;
         }

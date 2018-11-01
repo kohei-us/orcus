@@ -244,10 +244,10 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
                 size_t pos = 0;
                 for (auto it = vals.begin(), ite = vals.end(); it != ite; ++it, ++pos)
                 {
-                    const pstring& key = it->first;
-                    auto& val = it->second;
+                    const pstring& this_key = it->first;
+                    auto& this_val = it->second;
 
-                    dump_item(os, &key, val.get(), level, pos < (n-1));
+                    dump_item(os, &this_key, this_val.get(), level, pos < (n-1));
                 }
             }
             else
@@ -256,11 +256,11 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
                 size_t pos = 0;
                 for (auto it = key_order.begin(), ite = key_order.end(); it != ite; ++it, ++pos)
                 {
-                    const pstring& key = *it;
-                    auto val_pos = vals.find(key);
+                    const pstring& this_key = *it;
+                    auto val_pos = vals.find(this_key);
                     assert(val_pos != vals.end());
 
-                    dump_item(os, &key, val_pos->second.get(), level, pos < (n-1));
+                    dump_item(os, &this_key, val_pos->second.get(), level, pos < (n-1));
                 }
             }
 
@@ -693,10 +693,11 @@ std::vector<pstring> const_node::keys() const
         return jvo->key_order;
 
     std::vector<pstring> keys;
+
     std::for_each(jvo->value_object.begin(), jvo->value_object.end(),
-        [&](const json_value_object::object_type::value_type& const_node)
+        [&](const json_value_object::object_type::value_type& n)
         {
-            keys.push_back(const_node.first);
+            keys.push_back(n.first);
         }
     );
 

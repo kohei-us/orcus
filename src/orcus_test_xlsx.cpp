@@ -749,17 +749,19 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(fld);
     assert(fld->name == "F1");
 
-    // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
-    std::set<pivot_cache_item_t> expected =
     {
-        pivot_cache_item_t(ORCUS_ASCII("A")),
-        pivot_cache_item_t(ORCUS_ASCII("B")),
-        pivot_cache_item_t(ORCUS_ASCII("C")),
-        pivot_cache_item_t(ORCUS_ASCII("D")),
-    };
+        // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
+        std::set<pivot_cache_item_t> expected =
+        {
+            pivot_cache_item_t(ORCUS_ASCII("A")),
+            pivot_cache_item_t(ORCUS_ASCII("B")),
+            pivot_cache_item_t(ORCUS_ASCII("C")),
+            pivot_cache_item_t(ORCUS_ASCII("D")),
+        };
 
-    std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
-    assert(actual == expected);
+        std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
+        assert(actual == expected);
+    }
 
     fld = cache->get_field(1);
     assert(fld);
@@ -794,17 +796,19 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(fld);
     assert(fld->name == "F2");
 
-    expected =
     {
-        pivot_cache_item_t(ORCUS_ASCII("W")),
-        pivot_cache_item_t(ORCUS_ASCII("X")),
-        pivot_cache_item_t(ORCUS_ASCII("Y")),
-        pivot_cache_item_t(ORCUS_ASCII("Z")),
-    };
+        std::set<pivot_cache_item_t> expected =
+        {
+            pivot_cache_item_t(ORCUS_ASCII("W")),
+            pivot_cache_item_t(ORCUS_ASCII("X")),
+            pivot_cache_item_t(ORCUS_ASCII("Y")),
+            pivot_cache_item_t(ORCUS_ASCII("Z")),
+        };
 
-    actual.clear();
-    actual.insert(fld->items.begin(), fld->items.end());
-    assert(actual == expected);
+        std::set<pivot_cache_item_t> actual;
+        actual.insert(fld->items.begin(), fld->items.end());
+        assert(actual == expected);
+    }
 
     fld = cache->get_field(1);
     assert(fld);
@@ -855,19 +859,21 @@ void test_xlsx_pivot_mixed_type_field()
     assert(fld->min_value && fld->min_value == 1.0);
     assert(fld->max_value && fld->max_value == 2.0);
 
-    // This field should contain 3 string items 'A', 'B', 'C' and 2 numeric
-    // items 1 and 2.
-    std::set<pivot_cache_item_t> expected =
     {
-        pivot_cache_item_t(ORCUS_ASCII("A")),
-        pivot_cache_item_t(ORCUS_ASCII("B")),
-        pivot_cache_item_t(ORCUS_ASCII("C")),
-        pivot_cache_item_t(1.0),
-        pivot_cache_item_t(2.0),
-    };
+        // This field should contain 3 string items 'A', 'B', 'C' and 2 numeric
+        // items 1 and 2.
+        std::set<pivot_cache_item_t> expected =
+        {
+            pivot_cache_item_t(ORCUS_ASCII("A")),
+            pivot_cache_item_t(ORCUS_ASCII("B")),
+            pivot_cache_item_t(ORCUS_ASCII("C")),
+            pivot_cache_item_t(1.0),
+            pivot_cache_item_t(2.0),
+        };
 
-    std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
-    assert(actual == expected);
+        std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
+        assert(actual == expected);
+    }
 
     // 2nd field should be a nuemric field between 1.1 and 1.5.
     fld = cache->get_field(1);
@@ -906,22 +912,24 @@ void test_xlsx_pivot_mixed_type_field()
     assert(fld->min_value && fld->min_value == 1.0);
     assert(fld->max_value && fld->max_value == 5.0);
 
-    // This field should contain 3 string items 'A', 'B', 'C' and 4 numeric
-    // items 1, 2, 3.5 and 5.
-    expected =
     {
-        pivot_cache_item_t(ORCUS_ASCII("A")),
-        pivot_cache_item_t(ORCUS_ASCII("B")),
-        pivot_cache_item_t(ORCUS_ASCII("C")),
-        pivot_cache_item_t(1.0),
-        pivot_cache_item_t(2.0),
-        pivot_cache_item_t(3.5),
-        pivot_cache_item_t(5.0),
-    };
+        // This field should contain 3 string items 'A', 'B', 'C' and 4 numeric
+        // items 1, 2, 3.5 and 5.
+        std::set<pivot_cache_item_t> expected =
+        {
+            pivot_cache_item_t(ORCUS_ASCII("A")),
+            pivot_cache_item_t(ORCUS_ASCII("B")),
+            pivot_cache_item_t(ORCUS_ASCII("C")),
+            pivot_cache_item_t(1.0),
+            pivot_cache_item_t(2.0),
+            pivot_cache_item_t(3.5),
+            pivot_cache_item_t(5.0),
+        };
 
-    actual.clear();
-    actual.insert(fld->items.begin(), fld->items.end());
-    assert(actual == expected);
+        std::set<pivot_cache_item_t> actual;
+        actual.insert(fld->items.begin(), fld->items.end());
+        assert(actual == expected);
+    }
 
     // 2nd field
     fld = cache->get_field(1);
@@ -975,17 +983,19 @@ void test_xlsx_pivot_group_field()
     assert(fld);
     assert(fld->name == "Key");
 
-    // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
-    std::set<pivot_cache_item_t> expected =
     {
-        pivot_cache_item_t(ORCUS_ASCII("A")),
-        pivot_cache_item_t(ORCUS_ASCII("B")),
-        pivot_cache_item_t(ORCUS_ASCII("C")),
-        pivot_cache_item_t(ORCUS_ASCII("D")),
-    };
+        // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
+        std::set<pivot_cache_item_t> expected =
+        {
+            pivot_cache_item_t(ORCUS_ASCII("A")),
+            pivot_cache_item_t(ORCUS_ASCII("B")),
+            pivot_cache_item_t(ORCUS_ASCII("C")),
+            pivot_cache_item_t(ORCUS_ASCII("D")),
+        };
 
-    std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
-    assert(actual == expected);
+        std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
+        assert(actual == expected);
+    }
 
     // 2nd field is 'Value' and is a numeric field.
     fld = cache->get_field(1);
@@ -1009,16 +1019,18 @@ void test_xlsx_pivot_group_field()
     assert(gd->base_field == 0);
     assert(gd->items.size() == 2);
 
-    // It should have two items - Group1 and Group2.
-    expected =
     {
-        pivot_cache_item_t(ORCUS_ASCII("Group1")),
-        pivot_cache_item_t(ORCUS_ASCII("Group2")),
-    };
+        // It should have two items - Group1 and Group2.
+        std::set<pivot_cache_item_t> expected =
+        {
+            pivot_cache_item_t(ORCUS_ASCII("Group1")),
+            pivot_cache_item_t(ORCUS_ASCII("Group2")),
+        };
 
-    actual.clear();
-    actual.insert(gd->items.begin(), gd->items.end());
-    assert(actual == expected);
+        std::set<pivot_cache_item_t> actual;
+        actual.insert(gd->items.begin(), gd->items.end());
+        assert(actual == expected);
+    }
 
     // Group1 should group 'A' and 'B' from the 1st field, and Group2 should
     // group 'C' and 'D'.

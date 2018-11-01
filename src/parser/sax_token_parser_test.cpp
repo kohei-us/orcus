@@ -119,8 +119,8 @@ void test_unicode_string()
     {
         orcus::pstring str;
     public:
-        handler(orcus::pstring str):
-            str(str)
+        handler(orcus::pstring _str):
+            str(_str)
             {}
 
         void declaration(const orcus::xml_declaration_t&) {}
@@ -161,8 +161,6 @@ void test_unicode_string()
 
 void test_declaration()
 {
-    xml_declaration_t decl;
-
     class handler
     {
         xml_declaration_t& m_decl;

@@ -33,8 +33,8 @@ struct xlsx_session_data : public session_context::custom_data
         std::string exp;
 
         formula(
-            spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column,
-            const std::string& exp);
+            spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
+            const std::string& _exp);
     };
 
     struct array_formula
@@ -60,12 +60,12 @@ struct xlsx_session_data : public session_context::custom_data
         bool master;
 
         shared_formula(
-            spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column,
-            size_t identifier);
+            spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
+            size_t _identifier);
 
         shared_formula(
-            spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t column,
-            size_t identifier, const std::string& formula);
+            spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
+            size_t _identifier, const std::string& _formula);
     };
 
     typedef std::vector<std::unique_ptr<formula>> formulas_type;

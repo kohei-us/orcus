@@ -746,7 +746,7 @@ void sheet::dump_flat(std::ostream& os) const
     {
         os2 << '-';
         size_t cw = col_widths[i];
-        for (size_t i = 0; i < cw; ++i)
+        for (size_t j = 0; j < cw; ++j)
             os2 << '-';
         os2 << "-+";
     }

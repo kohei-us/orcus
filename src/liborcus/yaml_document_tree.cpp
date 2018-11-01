@@ -764,16 +764,16 @@ void dump_json_node(std::ostringstream& os, const yaml_value& node, size_t scope
             size_t pos = 0;
             for (auto it = key_order.begin(), ite = key_order.end(); it != ite; ++it, ++pos)
             {
-                const yaml_value* key = it->get();
-                if (key->type != node_t::string)
+                const yaml_value* this_key = it->get();
+                if (this_key->type != node_t::string)
                     throw document_error("JSON doesn't support non-string key.");
 
-                auto val_pos = vals.find(key);
+                auto val_pos = vals.find(this_key);
                 assert(val_pos != vals.end());
 
                 dump_json_item(
                     os,
-                    &static_cast<const yaml_value_string*>(key)->value_string,
+                    &static_cast<const yaml_value_string*>(this_key)->value_string,
                     *val_pos->second, scope, pos < (n-1));
             }
 

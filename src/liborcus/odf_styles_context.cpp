@@ -54,8 +54,8 @@ style_family_map::entry style_family_entries[] =
 
 odf_style_family to_style_family(const pstring& val)
 {
-    style_family_map style_family_map(style_family_entries, ORCUS_N_ELEMENTS(style_family_entries), style_family_unknown);
-    return style_family_map.find(val.get(), val.size());
+    static style_family_map map(style_family_entries, ORCUS_N_ELEMENTS(style_family_entries), style_family_unknown);
+    return map.find(val.get(), val.size());
 }
 
 class style_attr_parser : public std::unary_function<xml_token_attr_t, void>
@@ -829,10 +829,10 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
                     }
 
                     // ptr_map's first argument must be a non-const reference.
-                    pstring name = m_current_style->name;
+                    pstring style_name = m_current_style->name;
                     m_styles.insert(
                         odf_styles_map_type::value_type(
-                            name, std::move(m_current_style)));
+                            style_name, std::move(m_current_style)));
                     assert(!m_current_style);
                 }
             }

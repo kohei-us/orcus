@@ -32,8 +32,8 @@ struct header_cell
     spreadsheet::col_t col;
     pstring value;
 
-    header_cell(spreadsheet::row_t row, spreadsheet::col_t col, const pstring& value) :
-        row(row), col(col), value(value) {}
+    header_cell(spreadsheet::row_t _row, spreadsheet::col_t _col, const pstring& _value) :
+        row(_row), col(_col), value(_value) {}
 };
 
 class max_row_size_reached {};

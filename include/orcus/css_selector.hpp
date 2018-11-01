@@ -116,12 +116,12 @@ struct ORCUS_DLLPUBLIC css_property_value_t
     /**
      * Constructor that takes a string value.
      *
-     * @param str string value to store. This value should point to a string
+     * @param _str string value to store. This value should point to a string
      *            buffer that's already been interned. The caller is
      *            responsible for managing the life cycle of the string buffer
      *            that the pstring object points to.
      */
-    css_property_value_t(const pstring& str);
+    css_property_value_t(const pstring& _str);
 
     css_property_value_t& operator= (const css_property_value_t& r);
 

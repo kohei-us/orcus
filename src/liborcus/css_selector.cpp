@@ -128,8 +128,8 @@ css_property_value_t::css_property_value_t(const css_property_value_t& r) :
     assign_value(*this, r);
 }
 
-css_property_value_t::css_property_value_t(const pstring& str) :
-    type(css::property_value_t::string), str(str.get()), length(str.size()) {}
+css_property_value_t::css_property_value_t(const pstring& _str) :
+    type(css::property_value_t::string), str(_str.get()), length(_str.size()) {}
 
 css_property_value_t& css_property_value_t::operator= (const css_property_value_t& r)
 {

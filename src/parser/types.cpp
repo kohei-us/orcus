@@ -16,7 +16,6 @@ const xmlns_id_t XMLNS_UNKNOWN_ID = nullptr;
 const xml_token_t XML_UNKNOWN_TOKEN = 0;
 
 const size_t index_not_found = std::numeric_limits<size_t>::max();
-const size_t unspecified = std::numeric_limits<size_t>::max()-1;
 
 xml_token_attr_t::xml_token_attr_t() :
     ns(XMLNS_UNKNOWN_ID), name(XML_UNKNOWN_TOKEN), transient(false) {}
@@ -47,8 +46,8 @@ xml_declaration_t::xml_declaration_t() :
     encoding(character_set_t::unspecified),
     standalone(false) {}
 
-xml_declaration_t::xml_declaration_t(uint8_t version_major, uint8_t version_minor, character_set_t encoding, bool standalone) :
-    version_major(version_major), version_minor(version_minor), encoding(encoding), standalone(standalone) {}
+xml_declaration_t::xml_declaration_t(uint8_t _version_major, uint8_t _version_minor, character_set_t _encoding, bool _standalone) :
+    version_major(_version_major), version_minor(_version_minor), encoding(_encoding), standalone(_standalone) {}
 
 xml_declaration_t::xml_declaration_t(const xml_declaration_t& other) :
     version_major(other.version_major),
