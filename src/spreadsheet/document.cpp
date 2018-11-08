@@ -286,7 +286,7 @@ struct document_impl
     sheet_items_type m_sheets;
     styles m_styles;
     import_shared_strings* mp_strings;
-    ixion::dirty_formula_cells_t m_dirty_cells;
+    ixion::abs_range_set_t m_dirty_cells;
 
     pivot_collection m_pivots;
 
@@ -452,8 +452,12 @@ const sheet* document::get_sheet(sheet_t sheet_pos) const
 
 void document::calc_formulas()
 {
+    ixion::abs_range_set_t empty;
+
     ixion::model_context& cxt = get_model_context();
-    ixion::calculate_cells(cxt, mp_impl->m_dirty_cells, 0);
+    std::vector<ixion::abs_range_t> sorted = ixion::query_and_sort_dirty_cells(
+        cxt, empty, &mp_impl->m_dirty_cells);
+    ixion::calculate_sorted_cells(cxt, sorted, 0);
 }
 
 void document::clear()
