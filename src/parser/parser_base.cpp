@@ -120,7 +120,8 @@ double parser_base::parse_double()
 
 size_t parser_base::remaining_size() const
 {
-    return std::distance(mp_char, mp_end) - 1;
+    size_t n = std::distance(mp_char, mp_end);
+    return n ? (n - 1) : 0;
 }
 
 std::ptrdiff_t parser_base::offset() const
