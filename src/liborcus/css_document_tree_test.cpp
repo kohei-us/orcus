@@ -115,6 +115,16 @@ void test_css_simple_selector_equality()
     assert(left == right);
 }
 
+void test_css_empty()
+{
+    const char* path = SRCDIR"/test/css/empty.css";
+    cout << path << endl;
+
+    string strm = load_file_content(path);
+    css_document_tree doc;
+    doc.load(strm);
+}
+
 void test_css_parse_basic1()
 {
     const char* path = SRCDIR"/test/css/basic1.css";
@@ -666,6 +676,7 @@ int main()
 {
     test_css_invalids();
     test_css_simple_selector_equality();
+    test_css_empty();
     test_css_parse_basic1();
     test_css_parse_basic2();
     test_css_parse_basic3();
