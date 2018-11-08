@@ -7,6 +7,7 @@
 
 #include "orcus/css_document_tree.hpp"
 #include "orcus/css_types.hpp"
+#include "orcus/css_parser_base.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/global.hpp"
 
@@ -16,8 +17,12 @@
 #include <sstream>
 #include <iterator>
 
+#include <boost/filesystem.hpp>
+
 using namespace orcus;
 using namespace std;
+
+namespace fs = boost::filesystem;
 
 bool check_prop(const css_properties_t& props, const pstring& key, const pstring& val)
 {
@@ -48,6 +53,44 @@ bool check_prop(const css_properties_t& props, const pstring& key, const pstring
     }
 
     return true;
+}
+
+void test_css_invalids()
+{
+    // Get all yaml files in this directory.
+    fs::path dirpath(SRCDIR"/test/css/invalids/");
+    fs::directory_iterator it_end;
+
+    size_t file_count = 0;
+
+    for (fs::directory_iterator it(dirpath); it != it_end; ++it)
+    {
+        fs::path path = it->path();
+        if (!fs::is_regular_file(path))
+            continue;
+
+        if (fs::extension(path) != ".css")
+            continue;
+
+        cout << "parsing invalid file " << path.filename().string() << "..." << endl;
+
+        ++file_count;
+
+        string strm = load_file_content(path.string().data());
+        css_document_tree doc;
+
+        try
+        {
+            doc.load(strm);
+            assert(!"css::parse_error was not thrown, but expected to be.");
+        }
+        catch (const css::parse_error&)
+        {
+            // This is expected.
+        }
+    }
+
+    assert(file_count > 0);
 }
 
 void test_css_simple_selector_equality()
@@ -621,6 +664,7 @@ void test_css_parse_chained2()
 
 int main()
 {
+    test_css_invalids();
     test_css_simple_selector_equality();
     test_css_parse_basic1();
     test_css_parse_basic2();
