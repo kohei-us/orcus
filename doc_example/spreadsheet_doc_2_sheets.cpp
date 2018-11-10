@@ -24,14 +24,14 @@ struct cell_value
     cell_value() : type(cell_value_type::empty) {}
 };
 
-class my_import_sheet : public iface::import_sheet
+class my_sheet : public iface::import_sheet
 {
     cell_value m_cells[100][1000];
     range_size_t m_sheet_size;
     sheet_t m_sheet_index;
 
 public:
-    my_import_sheet(sheet_t sheet_index) :
+    my_sheet(sheet_t sheet_index) :
         m_sheet_index(sheet_index)
     {
         m_sheet_size.rows = 1000;
@@ -40,6 +40,7 @@ public:
 
     virtual void set_auto(row_t row, col_t col, const char* p, size_t n) override
     {
+        // TODO : implement this.
     }
 
     virtual void set_string(row_t row, col_t col, size_t sindex) override
@@ -60,20 +61,24 @@ public:
 
     virtual void set_bool(row_t row, col_t col, bool value) override
     {
+        // TODO : implement this.
     }
 
     virtual void set_date_time(
         row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override
     {
+        // TODO : implement this.
     }
 
     virtual void set_format(row_t row, col_t col, size_t xf_index) override
     {
+        // TODO : implement this.
     }
 
     virtual void set_format(
         row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t xf_index) override
     {
+        // TODO : implement this.
     }
 
     virtual range_size_t get_sheet_size() const override
@@ -84,7 +89,7 @@ public:
 
 class my_import_factory : public iface::import_factory
 {
-    vector<unique_ptr<my_import_sheet>> m_sheets;
+    vector<unique_ptr<my_sheet>> m_sheets;
 
 public:
     virtual ~my_import_factory() {}
@@ -92,14 +97,14 @@ public:
     virtual iface::import_sheet* append_sheet(
         sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override
     {
-        cout << "--" << endl;
-        m_sheets.push_back(make_unique<my_import_sheet>(m_sheets.size()));
+        m_sheets.push_back(make_unique<my_sheet>(m_sheets.size()));
         return m_sheets.back().get();
     }
 
     virtual iface::import_sheet* get_sheet(
         const char* sheet_name, size_t sheet_name_length) override
     {
+        // TODO : implement this.
         return nullptr;
     }
 

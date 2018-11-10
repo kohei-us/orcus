@@ -99,4 +99,311 @@ The next example shows how that can be done.
 Implement sheet accessors
 -------------------------
 
-TBD
+In this section we will expand on the code in the previous section to
+implement sheet accessors, in order to receive cell values in each individual
+sheet.  In this example, we will define a structure to hold a cell value, and
+store them in a 2-dimensional array for each sheet.  First, let's define the
+cell value structure::
+
+    enum class cell_value_type { empty, numeric, string };
+
+    struct cell_value
+    {
+        cell_value_type type;
+
+        union
+        {
+            size_t s;
+            double f;
+        };
+
+        cell_value() : type(cell_value_type::empty) {}
+    };
+
+As we will be handling only three cell types i.e.  empty, numeric, or string
+cell type, this structure will work just fine.  Next, we'll define a sheet
+class called ``my_sheet`` that stores the cell values in a 2-dimensional
+array, and implements all required interfaces as a child class of
+:cpp:class:`~orcus::spreadsheet::iface::import_sheet`.
+
+At a minimum, the sheet accessor class must implement the following virtual
+methods to satisfy the interface requirements of
+:cpp:class:`~orcus::spreadsheet::iface::import_sheet`.
+
+* :cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_auto` - This is a
+  setter method for a cell whose type is undetermined.  The implementor must
+  determine the value type of this cell, from the raw string value of the
+  cell.  This method is used when loading a CSV document, for instance.
+
+* :cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_string` - This is a
+  setter method for a cell that stores a string value.  All cell string values
+  are expectd to be pooled for the entire document, and this method only
+  receives a string index into a centrally-managed string table.  The document
+  model is expected to implement a central string table that can translate an
+  index into its actual string value.
+
+* :cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_value` - This is a
+  setter method for a cell that stores a numeric value.
+
+* :cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_bool` - This is a
+  setter method for a cell that stores a boolean value.  Note that not all
+  format types use this method, as some formats store boolean values as
+  numeric values.
+
+* :cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_date_time` - This
+  is a setter method for a cell that stores a date time value.  As with
+  boolean value type, some format types may not use this method as they store
+  date time values as numeric values, typically as days since epoch.
+
+* :cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_format` - This is a
+  setter method for applying cell formats.  Just like the string values, cell
+  format properties are expected to be stored in a document-wide cell format
+  properties table, and this method only receives an index into the table.
+
+* :cpp:func:`~orcus::spreadsheet::iface::import_sheet::get_sheet_size` - This
+  method is expected to return the dimension of the sheet which the loader may
+  need in some operations.
+
+For now, we'll only implement
+:cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_string`,
+:cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_value`, and
+:cpp:func:`~orcus::spreadsheet::iface::import_sheet::get_sheet_size`, and
+leave the rest empty.
+
+Here is the actual code for class ``my_sheet``::
+
+    class my_sheet : public iface::import_sheet
+    {
+        cell_value m_cells[100][1000];
+        range_size_t m_sheet_size;
+        sheet_t m_sheet_index;
+
+    public:
+        my_sheet(sheet_t sheet_index) :
+            m_sheet_index(sheet_index)
+        {
+            m_sheet_size.rows = 1000;
+            m_sheet_size.columns = 100;
+        }
+
+        virtual void set_auto(row_t row, col_t col, const char* p, size_t n) override
+        {
+            // TODO : implement this.
+        }
+
+        virtual void set_string(row_t row, col_t col, size_t sindex) override
+        {
+            cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): string index = " << sindex << endl;
+
+            m_cells[col][row].type = cell_value_type::string;
+            m_cells[col][row].s = sindex;
+        }
+
+        virtual void set_value(row_t row, col_t col, double value) override
+        {
+            cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): value = " << value << endl;
+
+            m_cells[col][row].type = cell_value_type::numeric;
+            m_cells[col][row].f = value;
+        }
+
+        virtual void set_bool(row_t row, col_t col, bool value) override
+        {
+            // TODO : implement this.
+        }
+
+        virtual void set_date_time(
+            row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override
+        {
+            // TODO : implement this.
+        }
+
+        virtual void set_format(row_t row, col_t col, size_t xf_index) override
+        {
+            // TODO : implement this.
+        }
+
+        virtual void set_format(
+            row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t xf_index) override
+        {
+            // TODO : implement this.
+        }
+
+        virtual range_size_t get_sheet_size() const override
+        {
+            return m_sheet_size;
+        }
+    };
+
+Note that this class receives its sheet index value from the caller upon
+instantiation.  A sheet index is a 0-based value and represents its position
+within the sheet collection.
+
+Finally, we will modify the ``my_import_factory`` class to store and manage a
+collection of ``my_sheet`` instances and to return the pointer value to a
+correct sheet accessor instance as needed.
+
+::
+
+    class my_import_factory : public iface::import_factory
+    {
+        vector<unique_ptr<my_sheet>> m_sheets;
+
+    public:
+        virtual ~my_import_factory() {}
+
+        virtual iface::import_sheet* append_sheet(
+            sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override
+        {
+            m_sheets.push_back(make_unique<my_sheet>(m_sheets.size()));
+            return m_sheets.back().get();
+        }
+
+        virtual iface::import_sheet* get_sheet(
+            const char* sheet_name, size_t sheet_name_length) override
+        {
+            // TODO : implement this.
+            return nullptr;
+        }
+
+        virtual iface::import_sheet* get_sheet(sheet_t sheet_index) override
+        {
+            sheet_t sheet_count = m_sheets.size();
+            return sheet_index < sheet_count ? m_sheets[sheet_index].get() : nullptr;
+        }
+
+        virtual void finalize() override {}
+    };
+
+Let's put it all together and run this code::
+
+    #include <orcus/spreadsheet/import_interface.hpp>
+    #include <orcus/orcus_ods.hpp>
+
+    #include <iostream>
+    #include <memory>
+
+    using namespace std;
+    using namespace orcus::spreadsheet;
+    using orcus::orcus_ods;
+
+    enum class cell_value_type { empty, numeric, string };
+
+    struct cell_value
+    {
+        cell_value_type type;
+
+        union
+        {
+            size_t s;
+            double f;
+        };
+
+        cell_value() : type(cell_value_type::empty) {}
+    };
+
+    class my_sheet : public iface::import_sheet
+    {
+        cell_value m_cells[100][1000];
+        range_size_t m_sheet_size;
+        sheet_t m_sheet_index;
+
+    public:
+        my_sheet(sheet_t sheet_index) :
+            m_sheet_index(sheet_index)
+        {
+            m_sheet_size.rows = 1000;
+            m_sheet_size.columns = 100;
+        }
+
+        virtual void set_auto(row_t row, col_t col, const char* p, size_t n) override
+        {
+            // TODO : implement this.
+        }
+
+        virtual void set_string(row_t row, col_t col, size_t sindex) override
+        {
+            cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): string index = " << sindex << endl;
+
+            m_cells[col][row].type = cell_value_type::string;
+            m_cells[col][row].s = sindex;
+        }
+
+        virtual void set_value(row_t row, col_t col, double value) override
+        {
+            cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): value = " << value << endl;
+
+            m_cells[col][row].type = cell_value_type::numeric;
+            m_cells[col][row].f = value;
+        }
+
+        virtual void set_bool(row_t row, col_t col, bool value) override
+        {
+            // TODO : implement this.
+        }
+
+        virtual void set_date_time(
+            row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override
+        {
+            // TODO : implement this.
+        }
+
+        virtual void set_format(row_t row, col_t col, size_t xf_index) override
+        {
+            // TODO : implement this.
+        }
+
+        virtual void set_format(
+            row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t xf_index) override
+        {
+            // TODO : implement this.
+        }
+
+        virtual range_size_t get_sheet_size() const override
+        {
+            return m_sheet_size;
+        }
+    };
+
+    class my_import_factory : public iface::import_factory
+    {
+        vector<unique_ptr<my_sheet>> m_sheets;
+
+    public:
+        virtual ~my_import_factory() {}
+
+        virtual iface::import_sheet* append_sheet(
+            sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override
+        {
+            m_sheets.push_back(make_unique<my_sheet>(m_sheets.size()));
+            return m_sheets.back().get();
+        }
+
+        virtual iface::import_sheet* get_sheet(
+            const char* sheet_name, size_t sheet_name_length) override
+        {
+            // TODO : implement this.
+            return nullptr;
+        }
+
+        virtual iface::import_sheet* get_sheet(sheet_t sheet_index) override
+        {
+            sheet_t sheet_count = m_sheets.size();
+            return sheet_index < sheet_count ? m_sheets[sheet_index].get() : nullptr;
+        }
+
+        virtual void finalize() override {}
+    };
+
+    int main()
+    {
+        my_import_factory factory;
+        orcus_ods loader(&factory);
+        loader.read_file("/path/to/multi-sheets.ods");
+
+        return EXIT_SUCCESS;
+    }
+
+We'll be loading the same document we loaded in the previous example, but this
+time we will receive its cell values.  We will go through each sheet one at a
+time.
