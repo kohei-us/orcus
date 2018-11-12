@@ -405,5 +405,77 @@ Let's put it all together and run this code::
     }
 
 We'll be loading the same document we loaded in the previous example, but this
-time we will receive its cell values.  We will go through each sheet one at a
+time we will receive its cell values.  Let's go through each sheet one at a
 time.
+
+Data on the first sheet looks like this:
+
+.. figure:: /_static/images/overview/multi-sheets-sheet1.png
+
+It consists of 4 columns, with each column having a header row followed by
+exactly ten rows of data.  The first and forth columns contain numeric data,
+while the second and third columns contain string data.
+
+When you run the above code to load this sheet, you'll get the following output:
+
+.. code-block:: text
+
+    (sheet: 0; row: 0; col: 0): string index = 0
+    (sheet: 0; row: 0; col: 1): string index = 0
+    (sheet: 0; row: 0; col: 2): string index = 0
+    (sheet: 0; row: 0; col: 3): string index = 0
+    (sheet: 0; row: 1; col: 0): value = 1
+    (sheet: 0; row: 1; col: 1): string index = 0
+    (sheet: 0; row: 1; col: 2): string index = 0
+    (sheet: 0; row: 1; col: 3): value = 35
+    (sheet: 0; row: 2; col: 0): value = 2
+    (sheet: 0; row: 2; col: 1): string index = 0
+    (sheet: 0; row: 2; col: 2): string index = 0
+    (sheet: 0; row: 2; col: 3): value = 56
+    (sheet: 0; row: 3; col: 0): value = 3
+    (sheet: 0; row: 3; col: 1): string index = 0
+    (sheet: 0; row: 3; col: 2): string index = 0
+    (sheet: 0; row: 3; col: 3): value = 6
+    (sheet: 0; row: 4; col: 0): value = 4
+    (sheet: 0; row: 4; col: 1): string index = 0
+    (sheet: 0; row: 4; col: 2): string index = 0
+    (sheet: 0; row: 4; col: 3): value = 65
+    (sheet: 0; row: 5; col: 0): value = 5
+    (sheet: 0; row: 5; col: 1): string index = 0
+    (sheet: 0; row: 5; col: 2): string index = 0
+    (sheet: 0; row: 5; col: 3): value = 88
+    (sheet: 0; row: 6; col: 0): value = 6
+    (sheet: 0; row: 6; col: 1): string index = 0
+    (sheet: 0; row: 6; col: 2): string index = 0
+    (sheet: 0; row: 6; col: 3): value = 90
+    (sheet: 0; row: 7; col: 0): value = 7
+    (sheet: 0; row: 7; col: 1): string index = 0
+    (sheet: 0; row: 7; col: 2): string index = 0
+    (sheet: 0; row: 7; col: 3): value = 80
+    (sheet: 0; row: 8; col: 0): value = 8
+    (sheet: 0; row: 8; col: 1): string index = 0
+    (sheet: 0; row: 8; col: 2): string index = 0
+    (sheet: 0; row: 8; col: 3): value = 66
+    (sheet: 0; row: 9; col: 0): value = 9
+    (sheet: 0; row: 9; col: 1): string index = 0
+    (sheet: 0; row: 9; col: 2): string index = 0
+    (sheet: 0; row: 9; col: 3): value = 14
+    (sheet: 0; row: 10; col: 0): value = 10
+    (sheet: 0; row: 10; col: 1): string index = 0
+    (sheet: 0; row: 10; col: 2): string index = 0
+    (sheet: 0; row: 10; col: 3): value = 23
+
+There is a couple of things worth pointing out.  First, the cell data flows
+left to right first then top to bottom second, starting from A1 - the row
+position of 0 and the column position of 0, all the way to D11 - row position
+of 10 and the column position of 3.  Second, for this particular sheet,
+implementing just the two setter methods, namely
+:cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_string` and
+:cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_value` are enough to
+receive all cell values.  However, we are getting a string index value of 0
+for all string cells.  This is because orcus expects the custom document model
+to implement the relevant string loader interface for the pooled string
+values, and we have not yet implemented one.  Let's fix that.
+
+
+
