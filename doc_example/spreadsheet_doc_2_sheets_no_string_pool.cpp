@@ -38,11 +38,6 @@ public:
         m_sheet_size.columns = 100;
     }
 
-    virtual void set_auto(row_t row, col_t col, const char* p, size_t n) override
-    {
-        // TODO : implement this.
-    }
-
     virtual void set_string(row_t row, col_t col, size_t sindex) override
     {
         cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): string index = " << sindex << endl;
@@ -59,45 +54,28 @@ public:
         m_cells[col][row].f = value;
     }
 
-    virtual void set_bool(row_t row, col_t col, bool value) override
-    {
-        // TODO : implement this.
-    }
-
-    virtual void set_date_time(
-        row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override
-    {
-        // TODO : implement this.
-    }
-
-    virtual void set_format(row_t row, col_t col, size_t xf_index) override
-    {
-        // TODO : implement this.
-    }
-
-    virtual void set_format(
-        row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t xf_index) override
-    {
-        // TODO : implement this.
-    }
-
     virtual range_size_t get_sheet_size() const override
     {
         return m_sheet_size;
     }
+
+    // We don't implement these methods for now.
+    virtual void set_auto(row_t row, col_t col, const char* p, size_t n) override {}
+    virtual void set_bool(row_t row, col_t col, bool value) override {}
+    virtual void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override {}
+    virtual void set_format(row_t row, col_t col, size_t xf_index) override {}
+    virtual void set_format(row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t xf_index) override {}
 };
 
 class my_import_factory : public iface::import_factory
 {
-    vector<unique_ptr<my_sheet>> m_sheets;
+    std::vector<std::unique_ptr<my_sheet>> m_sheets;
 
 public:
-    virtual ~my_import_factory() {}
-
     virtual iface::import_sheet* append_sheet(
         sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override
     {
-        m_sheets.push_back(make_unique<my_sheet>(m_sheets.size()));
+        m_sheets.push_back(std::make_unique<my_sheet>(m_sheets.size()));
         return m_sheets.back().get();
     }
 

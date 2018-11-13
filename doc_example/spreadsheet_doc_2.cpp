@@ -11,8 +11,6 @@ using orcus::orcus_ods;
 class my_empty_import_factory : public iface::import_factory
 {
 public:
-    virtual ~my_empty_import_factory() override {}
-
     virtual iface::import_sheet* append_sheet(
         sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override
     {
