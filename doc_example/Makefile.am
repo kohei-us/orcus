@@ -14,7 +14,8 @@ EXTRA_PROGRAMS = \
 	spreadsheet-doc-1 \
 	spreadsheet-doc-1-num-and-formula \
 	spreadsheet-doc-2 \
-	spreadsheet-doc-2-sheets-no-string-pool
+	spreadsheet-doc-2-sheets-no-string-pool \
+	spreadsheet-doc-2-sheets-with-string-pool
 
 json_doc_1_SOURCES = \
 	json_doc_1.cpp
@@ -75,6 +76,13 @@ spreadsheet_doc_2_sheets_no_string_pool_LDADD = \
 	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	../src/liborcus/liborcus-@ORCUS_API_VERSION@.la
 
+spreadsheet_doc_2_sheets_with_string_pool_SOURCES = \
+	spreadsheet_doc_2_sheets_with_string_pool.cpp
+
+spreadsheet_doc_2_sheets_with_string_pool_LDADD = \
+	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../src/liborcus/liborcus-@ORCUS_API_VERSION@.la
+
 TESTS = \
 	json-doc-1 \
 	json-doc-2 \
@@ -83,7 +91,8 @@ TESTS = \
 	spreadsheet-doc-1 \
 	spreadsheet-doc-1-num-and-formula \
 	spreadsheet-doc-2 \
-	spreadsheet-doc-2-sheets-no-string-pool
+	spreadsheet-doc-2-sheets-no-string-pool \
+	spreadsheet-doc-2-sheets-with-string-pool
 
 
 distclean-local:
