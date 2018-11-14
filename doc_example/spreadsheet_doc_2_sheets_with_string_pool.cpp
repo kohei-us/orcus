@@ -14,8 +14,8 @@ using orcus::pstring;
 
 enum class cell_value_type { empty, numeric, string };
 
-using ss_hash_type = std::unordered_map<pstring, size_t, pstring::hash>;
 using ss_type = std::deque<std::string>;
+using ss_hash_type = std::unordered_map<pstring, size_t, pstring::hash>;
 
 struct cell_value
 {
