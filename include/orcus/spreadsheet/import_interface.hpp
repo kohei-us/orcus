@@ -59,13 +59,74 @@ public:
      */
     virtual size_t add(const char* s, size_t n) = 0;
 
+    /**
+     * Set the index of a font to apply to the current format attributes.
+     *
+     * @param font_index positive integer representing the font to use.
+     */
     virtual void set_segment_font(size_t font_index) = 0;
+
+    /**
+     * Set whether or not to make the font bold to the current format
+     * attributes.
+     *
+     * @param b true if it's bold, false otherwise.
+     */
     virtual void set_segment_bold(bool b) = 0;
+
+    /**
+     * Set whether or not to set the font italic font to the current format
+     * attributes.
+     *
+     * @param b true if it's italic, false otherwise.
+     */
     virtual void set_segment_italic(bool b) = 0;
+
+    /**
+     * Set the name of a font to the current format attributes.
+     *
+     * @param s pointer to the first character of a char array that stores the
+     *          font name.
+     * @param n size of the char array that stores the font name.
+     */
     virtual void set_segment_font_name(const char* s, size_t n) = 0;
+
+    /**
+     * Set a font size to the current format attributes.
+     *
+     * @param point font size in points.
+     */
     virtual void set_segment_font_size(double point) = 0;
+
+    /**
+     * Set the color of a font in ARGB to the current format attributes.
+     *
+     * @param alpha alpha component value (0-255).
+     * @param red red component value (0-255).
+     * @param green green component value (0-255).
+     * @param blue blue component value (0-255).
+     */
     virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+
+    /**
+     * Append a string segment with the current format attributes to the
+     * formatted string buffer.
+     *
+     * @param s pointer to the first character of the string array.  The
+     *          string array doesn't necessary have to be null-terminated.
+     * @param n length of the string.
+     */
     virtual void append_segment(const char* s, size_t n) = 0;
+
+    /**
+     * Store the formatted string in the current buffer to the shared strings
+     * store.  The implementation may choose to unconditionally append the
+     * string to the store, or choose to look for an existing indentical
+     * formatted string to reuse and discard the new one if one exists.
+     *
+     * @return ID of the string just inserted, or the ID of an existing string
+     *         with identical formatting attributes.
+     */
     virtual size_t commit_segments() = 0;
 };
 

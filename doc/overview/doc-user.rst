@@ -419,17 +419,17 @@ When you run the above code to load this sheet, you'll get the following output:
     (sheet: 0; row: 10; col: 2): string index = 0
     (sheet: 0; row: 10; col: 3): value = 23
 
-There is a couple of things worth pointing out.  First, the cell data flows
-left to right first then top to bottom second, starting from A1 - the row
-position of 0 and the column position of 0, all the way to D11 - row position
-of 10 and the column position of 3.  Second, for this particular sheet,
-implementing just the two setter methods, namely
+There is a couple of things worth pointing out.  First, the cell data
+flows left to right first then top to bottom second.  Second, for this
+particular sheet and for this particular format, implementing just the
+two setter methods, namely
 :cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_string` and
-:cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_value` are enough to
-receive all cell values.  However, we are getting a string index value of 0
-for all string cells.  This is because orcus expects the custom document model
-to implement the relevant string loader interface for the pooled string
-values, and we have not yet implemented one.  Let's fix that.
+:cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_value` are
+enough to receive all cell values.  However, we are getting a string
+index value of 0 for all string cells.  This is because orcus expects
+the backend document model to implement the shared strings interface
+which is responsible for providing correct string indices to the import
+filter, and we have not yet implemented one.  Let's fix that.
 
 
 Implement shared strings interface

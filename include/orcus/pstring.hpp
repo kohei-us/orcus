@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_PSTRING_HPP__
-#define __ORCUS_PSTRING_HPP__
+#ifndef INCLUDED_ORCUS_PSTRING_HPP
+#define INCLUDED_ORCUS_PSTRING_HPP
 
 #include "orcus/env.hpp"
 
@@ -18,8 +18,11 @@
 namespace orcus {
 
 /**
- * This string class does not store any char arrays, but it only stores the
- * position of the first char in the memory, and the size of the char array.
+ * This string class does not have its own char array buffer; it only stores
+ * the memory position of the first char of an existing char array and its
+ * size.  When using this class, it is important that the string object
+ * being referenced by an instance of this class will stay valid during its
+ * life time.
  */
 class ORCUS_PSR_DLLPUBLIC pstring
 {
