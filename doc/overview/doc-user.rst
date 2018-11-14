@@ -798,3 +798,58 @@ Let's put this all together::
 
         return EXIT_SUCCESS;
     }
+
+The sheet class is largely unchanged except for one thing; it now takes a
+reference to the string pool and print the actual string value alongside the
+string index associated with it.  When you execute this code, you'll see the
+following output when loading the same sheet:
+
+.. code-block:: text
+
+    (sheet: 0; row: 0; col: 0): string index = 0 (ID)
+    (sheet: 0; row: 0; col: 1): string index = 1 (First Name)
+    (sheet: 0; row: 0; col: 2): string index = 2 (Last Name)
+    (sheet: 0; row: 0; col: 3): string index = 3 (Age)
+    (sheet: 0; row: 1; col: 0): value = 1
+    (sheet: 0; row: 1; col: 1): string index = 5 (Thia)
+    (sheet: 0; row: 1; col: 2): string index = 6 (Beauly)
+    (sheet: 0; row: 1; col: 3): value = 35
+    (sheet: 0; row: 2; col: 0): value = 2
+    (sheet: 0; row: 2; col: 1): string index = 9 (Pepito)
+    (sheet: 0; row: 2; col: 2): string index = 10 (Resun)
+    (sheet: 0; row: 2; col: 3): value = 56
+    (sheet: 0; row: 3; col: 0): value = 3
+    (sheet: 0; row: 3; col: 1): string index = 13 (Emera)
+    (sheet: 0; row: 3; col: 2): string index = 14 (Gravey)
+    (sheet: 0; row: 3; col: 3): value = 6
+    (sheet: 0; row: 4; col: 0): value = 4
+    (sheet: 0; row: 4; col: 1): string index = 17 (Erinn)
+    (sheet: 0; row: 4; col: 2): string index = 18 (Flucks)
+    (sheet: 0; row: 4; col: 3): value = 65
+    (sheet: 0; row: 5; col: 0): value = 5
+    (sheet: 0; row: 5; col: 1): string index = 21 (Giusto)
+    (sheet: 0; row: 5; col: 2): string index = 22 (Bambury)
+    (sheet: 0; row: 5; col: 3): value = 88
+    (sheet: 0; row: 6; col: 0): value = 6
+    (sheet: 0; row: 6; col: 1): string index = 25 (Neall)
+    (sheet: 0; row: 6; col: 2): string index = 26 (Scorton)
+    (sheet: 0; row: 6; col: 3): value = 90
+    (sheet: 0; row: 7; col: 0): value = 7
+    (sheet: 0; row: 7; col: 1): string index = 29 (Ervin)
+    (sheet: 0; row: 7; col: 2): string index = 30 (Foreman)
+    (sheet: 0; row: 7; col: 3): value = 80
+    (sheet: 0; row: 8; col: 0): value = 8
+    (sheet: 0; row: 8; col: 1): string index = 33 (Shoshana)
+    (sheet: 0; row: 8; col: 2): string index = 34 (Bohea)
+    (sheet: 0; row: 8; col: 3): value = 66
+    (sheet: 0; row: 9; col: 0): value = 9
+    (sheet: 0; row: 9; col: 1): string index = 37 (Gladys)
+    (sheet: 0; row: 9; col: 2): string index = 38 (Somner)
+    (sheet: 0; row: 9; col: 3): value = 14
+    (sheet: 0; row: 10; col: 0): value = 10
+    (sheet: 0; row: 10; col: 1): string index = 41 (Ephraim)
+    (sheet: 0; row: 10; col: 2): string index = 42 (Russell)
+    (sheet: 0; row: 10; col: 3): value = 23
+
+The string indices now increment nicely, and their respective string values
+look correct.
