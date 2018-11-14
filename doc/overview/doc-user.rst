@@ -853,3 +853,47 @@ following output when loading the same sheet:
 
 The string indices now increment nicely, and their respective string values
 look correct.
+
+Now, let's turn our attention to the second sheet, which contains formulas.
+First, here is what the second sheet looks like:
+
+.. figure:: /_static/images/overview/multi-sheets-sheet2.png
+
+It contains a simple table extending from A1 to C9.  It consists of three
+columns and the first row is a header row.  Cells in the the first and second
+columns contain simple numbers and the third column contains formulas that
+simply add the two numbers to the left of the same row.  When loading this
+sheet using the last code we used above, you'll see the following output:
+
+.. code-block:: text
+
+    (sheet: 1; row: 0; col: 0): string index = 44 (X)
+    (sheet: 1; row: 0; col: 1): string index = 45 (Y)
+    (sheet: 1; row: 0; col: 2): string index = 46 (X + Y)
+    (sheet: 1; row: 1; col: 0): value = 18
+    (sheet: 1; row: 1; col: 1): value = 79
+    (sheet: 1; row: 2; col: 0): value = 48
+    (sheet: 1; row: 2; col: 1): value = 55
+    (sheet: 1; row: 3; col: 0): value = 99
+    (sheet: 1; row: 3; col: 1): value = 35
+    (sheet: 1; row: 4; col: 0): value = 41
+    (sheet: 1; row: 4; col: 1): value = 69
+    (sheet: 1; row: 5; col: 0): value = 5
+    (sheet: 1; row: 5; col: 1): value = 18
+    (sheet: 1; row: 6; col: 0): value = 46
+    (sheet: 1; row: 6; col: 1): value = 69
+    (sheet: 1; row: 7; col: 0): value = 36
+    (sheet: 1; row: 7; col: 1): value = 67
+    (sheet: 1; row: 8; col: 0): value = 78
+    (sheet: 1; row: 8; col: 1): value = 2
+
+Everything looks fine except that the formula cells in C2:C9 are not loaded at
+all.  This is because, in order to receive formula cell data, you must
+implement the required :cpp:class:`~orcus::spreadsheet::iface::import_formula`
+interface.  Let's talk about this in the next section.
+
+
+Implement formula interface
+---------------------------
+
+TBD

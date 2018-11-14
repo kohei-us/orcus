@@ -76,6 +76,9 @@ Spreadsheet Interface
 .. doxygenclass:: orcus::spreadsheet::iface::import_factory
    :members:
 
+.. doxygenclass:: orcus::spreadsheet::iface::import_formula
+   :members:
+
 .. doxygenclass:: orcus::spreadsheet::iface::import_global_settings
    :members:
 
