@@ -434,6 +434,7 @@ ORCUS_DLLPUBLIC error_value_t to_error_value_enum(const char* p, size_t n);
 ORCUS_DLLPUBLIC color_rgb_t to_color_rgb(const char* p, size_t n);
 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, error_value_t ev);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_rgb_t& color);
 
 }}

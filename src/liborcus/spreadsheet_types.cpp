@@ -312,6 +312,24 @@ std::ostream& operator<< (std::ostream& os, error_value_t ev)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar)
+{
+    static const std::vector<const char*> entries = {
+        "unknown",
+        "xls_xml",
+        "xlsx",
+        "ods",
+        "gnumeric"
+    };
+
+    size_t n = static_cast<size_t>(grammar);
+    if (n >= entries.size())
+        n = 0; // unknown
+
+    os << entries[n];
+    return os;
+}
+
 std::ostream& operator<< (std::ostream& os, const color_rgb_t& color)
 {
     os << "(r=" << (int)color.red << ",g=" << (int)color.green << ",b=" << (int)color.blue << ")";
