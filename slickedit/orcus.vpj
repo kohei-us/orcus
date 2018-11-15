@@ -153,6 +153,13 @@
 			<F N="../doc_example/json_doc_1.cpp"/>
 			<F N="../doc_example/json_doc_2.cpp"/>
 			<F N="../doc_example/json_parser_1.cpp"/>
+			<F N="../doc_example/spreadsheet_doc_1.cpp"/>
+			<F N="../doc_example/spreadsheet_doc_1_num_and_formula.cpp"/>
+			<F N="../doc_example/spreadsheet_doc_2.cpp"/>
+			<F N="../doc_example/spreadsheet_doc_2_sheets_no_string_pool.cpp"/>
+			<F N="../doc_example/spreadsheet_doc_2_sheets_with_formula.cpp"/>
+			<F N="../doc_example/spreadsheet_doc_2_sheets_with_string_pool.cpp"/>
+			<F N="../doc_example/xml_mapping_1.cpp"/>
 		</Folder>
 		<Folder Name="../example">
 			<F N="../example/json.cpp"/>
