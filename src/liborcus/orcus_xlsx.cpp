@@ -139,7 +139,7 @@ orcus_xlsx::orcus_xlsx(spreadsheet::iface::import_factory* factory) :
     if (gs)
     {
         gs->set_origin_date(1899, 12, 30);
-        gs->set_default_formula_grammar(spreadsheet::formula_grammar_t::xlsx_2007);
+        gs->set_default_formula_grammar(spreadsheet::formula_grammar_t::xlsx);
     }
 
     mp_impl->m_ns_repo.add_predefined_values(NS_ooxml_all);
@@ -248,7 +248,7 @@ void orcus_xlsx::set_formulas_to_doc()
 
         formula->set_position(sf.row, sf.column);
         if (sf.master)
-            formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx_2007, sf.formula.data(), sf.formula.size());
+            formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx, sf.formula.data(), sf.formula.size());
         formula->set_shared_formula_index(sf.identifier);
         formula->commit();
     }
@@ -266,7 +266,7 @@ void orcus_xlsx::set_formulas_to_doc()
             continue;
 
         formula->set_position(f.ref.row, f.ref.column);
-        formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx_2007, f.exp.data(), f.exp.size());
+        formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx, f.exp.data(), f.exp.size());
         formula->commit();
     }
 
@@ -279,7 +279,7 @@ void orcus_xlsx::set_formulas_to_doc()
             continue;
 
         spreadsheet::iface::import_array_formula* xaf = sheet->get_array_formula();
-        push_array_formula(xaf, af.ref, af.exp, spreadsheet::formula_grammar_t::xlsx_2007, *af.results);
+        push_array_formula(xaf, af.ref, af.exp, spreadsheet::formula_grammar_t::xlsx, *af.results);
     }
 }
 

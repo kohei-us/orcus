@@ -57,7 +57,7 @@ public:
 
     virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
     {
-        assert(grammar == formula_grammar_t::xlsx_2007);
+        assert(grammar == formula_grammar_t::xlsx);
         assert(string(p, n) == "A1:A2");
     }
 

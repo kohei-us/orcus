@@ -139,8 +139,7 @@ enum class formula_grammar_t
 {
     unknown = 0,
     xls_xml,
-    xlsx_2007,
-    xlsx_2010,
+    xlsx,
     ods,
     gnumeric
 };

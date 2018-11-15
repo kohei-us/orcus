@@ -302,7 +302,7 @@ struct document_impl
         mp_strings(new import_shared_strings(m_string_pool, m_context, m_styles)),
         m_pivots(doc),
         mp_name_resolver(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &m_context)),
-        m_grammar(formula_grammar_t::xlsx_2007),
+        m_grammar(formula_grammar_t::xlsx),
         m_table_handler(m_context, m_tables)
     {
         m_context.set_table_handler(&m_table_handler);
@@ -618,8 +618,7 @@ void document::set_formula_grammar(formula_grammar_t grammar)
             resolver_type = ixion::formula_name_resolver_t::excel_r1c1;
             arg_sep = ',';
             break;
-        case formula_grammar_t::xlsx_2007:
-        case formula_grammar_t::xlsx_2010:
+        case formula_grammar_t::xlsx:
             resolver_type = ixion::formula_name_resolver_t::excel_a1;
             arg_sep = ',';
             break;
