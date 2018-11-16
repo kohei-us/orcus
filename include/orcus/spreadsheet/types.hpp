@@ -135,12 +135,21 @@ enum class strikethrough_text_t
     cross
 };
 
+/**
+ * Type that specifies the grammar of a formula expression.  Each grammar
+ * may exhibit a different set of syntax rules.
+ */
 enum class formula_grammar_t
 {
+    /** Grammar type is either unknown or unspecified. */
     unknown = 0,
+    /** Grammar used by the Excel 2003 XML (aka XML Spreadsheet) format. */
     xls_xml,
+    /** Grammar used by the Office Open XML spreadsheet format. */
     xlsx,
+    /** Grammar used by the OpenDocument Spreadsheet format. */
     ods,
+    /** Grammar used by the Gnumeric XML format. */
     gnumeric
 };
 
