@@ -12,7 +12,7 @@ using namespace orcus::spreadsheet;
 using orcus::orcus_ods;
 using orcus::pstring;
 
-enum class cell_value_type { empty, numeric, string };
+enum class cell_value_type { empty, numeric, string, formula }; // adding a formula type here
 
 using ss_type = std::deque<std::string>;
 using ss_hash_type = std::unordered_map<pstring, size_t, pstring::hash>;
@@ -23,43 +23,96 @@ struct cell_value
 
     union
     {
-        size_t s;
+        size_t index;  // either a string index or a formula index
         double f;
     };
 
     cell_value() : type(cell_value_type::empty) {}
 };
 
+class cell_grid
+{
+    cell_value m_cells[100][1000];
+public:
+
+    cell_value& operator()(row_t row, col_t col)
+    {
+        return m_cells[col][row];
+    }
+};
+
+struct formula
+{
+    std::string expression;
+    formula_grammar_t grammar;
+
+    formula() : grammar(formula_grammar_t::unknown) {}
+    formula(std::string _expression, formula_grammar_t _grammar) :
+        expression(std::move(_expression)),
+        grammar(_grammar) {}
+};
+
 class my_formula : public iface::import_formula
 {
+    sheet_t m_sheet_index;
+    cell_grid& m_cells;
+    std::vector<formula>& m_formula_store;
+
+    row_t m_row;
+    col_t m_col;
+    formula m_formula;
+
 public:
-    void set_position(row_t row, col_t col) override {}
+    my_formula(sheet_t sheet, cell_grid& cells, std::vector<formula>& formulas) :
+        m_sheet_index(sheet),
+        m_cells(cells),
+        m_formula_store(formulas),
+        m_row(0),
+        m_col(0) {}
 
-    void set_formula(formula_grammar_t grammar, const char* p, size_t n) override {}
+    virtual void set_position(row_t row, col_t col) override
+    {
+        m_row = row;
+        m_col = col;
+    }
 
-    void set_shared_formula_index(size_t index) override {}
+    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+    {
+        m_formula.expression = std::string(p, n);
+        m_formula.grammar = grammar;
+    }
 
-    void set_result_string(size_t sindex) override {}
+    virtual void set_shared_formula_index(size_t index) override {}
 
-    void set_result_value(double value) override {}
+    virtual void set_result_string(size_t sindex) override {}
+    virtual void set_result_value(double value) override {}
+    virtual void set_result_empty() override {}
+    virtual void set_result_bool(bool value) override {}
 
-    void set_result_empty() override {}
+    virtual void commit() override
+    {
+        cout << "(sheet: " << m_sheet_index << "; row: " << m_row << "; col: " << m_col << "): formula = "
+            << m_formula.expression << " (" << m_formula.grammar << ")" << endl;
 
-    void set_result_bool(bool value) override {}
-
-    void commit() override {}
+        size_t index = m_formula_store.size();
+        m_cells(m_row, m_col).type = cell_value_type::formula;
+        m_cells(m_row, m_col).index = index;
+        m_formula_store.push_back(std::move(m_formula));
+    }
 };
 
 class my_sheet : public iface::import_sheet
 {
-    my_formula m_formula;
-    cell_value m_cells[100][1000];
+    cell_grid m_cells;
+    std::vector<formula> m_formula_store;
+    my_formula m_formula_iface;
     range_size_t m_sheet_size;
     sheet_t m_sheet_index;
     const ss_type& m_string_pool;
 
 public:
     my_sheet(sheet_t sheet_index, const ss_type& string_pool) :
+        m_formula_iface(sheet_index, m_cells, m_formula_store),
         m_sheet_index(sheet_index),
         m_string_pool(string_pool)
     {
@@ -71,16 +124,16 @@ public:
     {
         cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): string index = " << sindex << " (" << m_string_pool[sindex] << ")" << endl;
 
-        m_cells[col][row].type = cell_value_type::string;
-        m_cells[col][row].s = sindex;
+        m_cells(row, col).type = cell_value_type::string;
+        m_cells(row, col).index = sindex;
     }
 
     virtual void set_value(row_t row, col_t col, double value) override
     {
         cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): value = " << value << endl;
 
-        m_cells[col][row].type = cell_value_type::numeric;
-        m_cells[col][row].f = value;
+        m_cells(row, col).type = cell_value_type::numeric;
+        m_cells(row, col).f = value;
     }
 
     virtual range_size_t get_sheet_size() const override
@@ -98,7 +151,7 @@ public:
 
     virtual iface::import_formula* get_formula() override
     {
-        return &m_formula;
+        return &m_formula_iface;
     }
 };
 

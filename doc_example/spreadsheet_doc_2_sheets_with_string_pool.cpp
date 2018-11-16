@@ -23,7 +23,7 @@ struct cell_value
 
     union
     {
-        size_t s;
+        size_t index;
         double f;
     };
 
@@ -51,7 +51,7 @@ public:
         cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): string index = " << sindex << " (" << m_string_pool[sindex] << ")" << endl;
 
         m_cells[col][row].type = cell_value_type::string;
-        m_cells[col][row].s = sindex;
+        m_cells[col][row].index = sindex;
     }
 
     virtual void set_value(row_t row, col_t col, double value) override

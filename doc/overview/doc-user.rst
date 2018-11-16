@@ -111,7 +111,7 @@ sheet.  First, let's define the cell value structure::
 
         union
         {
-            size_t s;
+            size_t index;
             double f;
         };
 
@@ -189,7 +189,7 @@ Here is the actual code for class ``my_sheet``::
             cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): string index = " << sindex << endl;
 
             m_cells[col][row].type = cell_value_type::string;
-            m_cells[col][row].s = sindex;
+            m_cells[col][row].index = sindex;
         }
 
         virtual void set_value(row_t row, col_t col, double value) override
@@ -271,7 +271,7 @@ Let's put it all together and run this code::
 
         union
         {
-            size_t s;
+            size_t index;
             double f;
         };
 
@@ -297,7 +297,7 @@ Let's put it all together and run this code::
             cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): string index = " << sindex << endl;
 
             m_cells[col][row].type = cell_value_type::string;
-            m_cells[col][row].s = sindex;
+            m_cells[col][row].index = sindex;
         }
 
         virtual void set_value(row_t row, col_t col, double value) override
@@ -353,7 +353,7 @@ Let's put it all together and run this code::
     {
         my_import_factory factory;
         orcus_ods loader(&factory);
-        loader.read_file(SRCDIR"/doc_example/files/multi-sheets.ods");
+        loader.read_file("/path/to/multi-sheets.ods");
 
         return EXIT_SUCCESS;
     }
@@ -642,7 +642,7 @@ Let's put this all together::
 
         union
         {
-            size_t s;
+            size_t index;
             double f;
         };
 
@@ -670,7 +670,7 @@ Let's put this all together::
             cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): string index = " << sindex << " (" << m_string_pool[sindex] << ")" << endl;
 
             m_cells[col][row].type = cell_value_type::string;
-            m_cells[col][row].s = sindex;
+            m_cells[col][row].index = sindex;
         }
 
         virtual void set_value(row_t row, col_t col, double value) override
@@ -794,7 +794,7 @@ Let's put this all together::
     {
         my_import_factory factory;
         orcus_ods loader(&factory);
-        loader.read_file(SRCDIR"/doc_example/files/multi-sheets.ods");
+        loader.read_file("/path/to/multi-sheets.ods");
 
         return EXIT_SUCCESS;
     }
