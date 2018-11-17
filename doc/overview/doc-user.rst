@@ -890,10 +890,249 @@ sheet using the last code we used above, you'll see the following output:
 Everything looks fine except that the formula cells in C2:C9 are not loaded at
 all.  This is because, in order to receive formula cell data, you must
 implement the required :cpp:class:`~orcus::spreadsheet::iface::import_formula`
-interface.  Let's talk about this in the next section.
+interface, which we will cover in the next section.
 
 
 Implement formula interface
 ---------------------------
 
-TBD
+In this section we will extend the code from the previous section in order to
+receive and process formula cell values from the sheet.  We will need to make
+quite a few changes.  Let's go over this one thing at a time.  First, we are
+adding a new cell value type ``formula``::
+
+    enum class cell_value_type { empty, numeric, string, formula }; // adding a formula type here
+
+which should not come as a surprise.
+
+We are not making any change to the ``cell_value`` struct itself, but we are
+re-using its ``index`` member for a formula cell value such that, if the cell
+stores a formula, the index will refer to its actual formula data which will
+be stored in a separate data store, much like how strings are stored
+externally and referenced by their indices in the ``cell_value`` instances.
+
+We are also adding a branch-new class called ``cell_grid``, to add an extra
+layer over the raw cell value array::
+
+    class cell_grid
+    {
+        cell_value m_cells[100][1000];
+    public:
+
+        cell_value& operator()(row_t row, col_t col)
+        {
+            return m_cells[col][row];
+        }
+    };
+
+Each sheet instance will own one instance of ``cell_grid``, and the formula
+interface class instance will hold a reference to it and use it to insert
+formula cell values into it.  The same sheet instance will also hold a formula
+value store, and pass its reference to the formula interface class.
+
+The formula interface class must implement the following methods:
+
+* :cpp:func:`~orcus::spreadsheet::iface::import_formula::set_position`
+* :cpp:func:`~orcus::spreadsheet::iface::import_formula::set_formula`
+* :cpp:func:`~orcus::spreadsheet::iface::import_formula::set_shared_formula_index`
+* :cpp:func:`~orcus::spreadsheet::iface::import_formula::set_result_string`
+* :cpp:func:`~orcus::spreadsheet::iface::import_formula::set_result_value`
+* :cpp:func:`~orcus::spreadsheet::iface::import_formula::set_result_empty`
+* :cpp:func:`~orcus::spreadsheet::iface::import_formula::set_result_bool`
+* :cpp:func:`~orcus::spreadsheet::iface::import_formula::commit`
+
+Depending on the type of a formula cell, and depending on the format of the
+document, some methods may not be called.  The
+:cpp:func:`~orcus::spreadsheet::iface::import_formula::set_position` method
+always gets called regardless of the formula cell type, to specify the
+position of the formula cell.  The
+:cpp:func:`~orcus::spreadsheet::iface::import_formula::set_formula` gets
+called for a formula cell that does not share its formula expression with any
+other formula cells, or a formula cell that shares its formula expression with
+a group of other formuls cells and is the primary cell of that group.  If it's
+the primary cell of a grouped formula cells, the
+:cpp:func:`~orcus::spreadsheet::iface::import_formula::set_shared_formula_index`
+method also gets called to receive the identifier value of that group.  All
+formula cells belonging to the same group receives the same identifier value
+via
+:cpp:func:`~orcus::spreadsheet::iface::import_formula::set_shared_formula_index`,
+but only the primary cell of a group receives the formula expression string
+via :cpp:func:`~orcus::spreadsheet::iface::import_formula::set_formula`.  The
+rest of the methods -
+:cpp:func:`~orcus::spreadsheet::iface::import_formula::set_result_string`,
+:cpp:func:`~orcus::spreadsheet::iface::import_formula::set_result_value`,
+:cpp:func:`~orcus::spreadsheet::iface::import_formula::set_result_empty` and
+:cpp:func:`~orcus::spreadsheet::iface::import_formula::set_result_bool` - are
+called to deliver the cached formula cell value when applicable.
+
+The :cpp:func:`~orcus::spreadsheet::iface::import_formula::commit` method gets
+called at the very end to let the implementation commit the formula cell data
+to the backend document store.
+
+Without further ado, here is the formula interface implementation that we will
+use::
+
+    class my_formula : public iface::import_formula
+    {
+        sheet_t m_sheet_index;
+        cell_grid& m_cells;
+        std::vector<formula>& m_formula_store;
+
+        row_t m_row;
+        col_t m_col;
+        formula m_formula;
+
+    public:
+        my_formula(sheet_t sheet, cell_grid& cells, std::vector<formula>& formulas) :
+            m_sheet_index(sheet),
+            m_cells(cells),
+            m_formula_store(formulas),
+            m_row(0),
+            m_col(0) {}
+
+        virtual void set_position(row_t row, col_t col) override
+        {
+            m_row = row;
+            m_col = col;
+        }
+
+        virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+        {
+            m_formula.expression = std::string(p, n);
+            m_formula.grammar = grammar;
+        }
+
+        virtual void set_shared_formula_index(size_t index) override {}
+
+        virtual void set_result_string(size_t sindex) override {}
+        virtual void set_result_value(double value) override {}
+        virtual void set_result_empty() override {}
+        virtual void set_result_bool(bool value) override {}
+
+        virtual void commit() override
+        {
+            cout << "(sheet: " << m_sheet_index << "; row: " << m_row << "; col: " << m_col << "): formula = "
+                 << m_formula.expression << " (" << m_formula.grammar << ")" << endl;
+
+            size_t index = m_formula_store.size();
+            m_cells(m_row, m_col).type = cell_value_type::formula;
+            m_cells(m_row, m_col).index = index;
+            m_formula_store.push_back(std::move(m_formula));
+        }
+    };
+
+Note that since we are loading a OpenDocument Spereadsheet file (.ods) which
+does not support shared formulas, we do not need to handle the
+:cpp:func:`~orcus::spreadsheet::iface::import_formula::set_shared_formula_index`
+method.  Likewise, we are leaving the ``set_result_*`` methods unhandled for
+now.
+
+This interface class also stores references to ``cell_grid`` and
+``std::vector<formula>`` instances, both of which are passed from the parent
+sheet instance.
+
+We also need to make a few changes to the sheet interface class to provide a formula interface
+and add a formula value store::
+
+    class my_sheet : public iface::import_sheet
+    {
+        cell_grid m_cells;
+        std::vector<formula> m_formula_store;
+        my_formula m_formula_iface;
+        range_size_t m_sheet_size;
+        sheet_t m_sheet_index;
+        const ss_type& m_string_pool;
+
+    public:
+        my_sheet(sheet_t sheet_index, const ss_type& string_pool) :
+            m_formula_iface(sheet_index, m_cells, m_formula_store),
+            m_sheet_index(sheet_index),
+            m_string_pool(string_pool)
+        {
+            m_sheet_size.rows = 1000;
+            m_sheet_size.columns = 100;
+        }
+
+        virtual void set_string(row_t row, col_t col, size_t sindex) override
+        {
+            cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col
+                 << "): string index = " << sindex << " (" << m_string_pool[sindex] << ")" << endl;
+
+            m_cells(row, col).type = cell_value_type::string;
+            m_cells(row, col).index = sindex;
+        }
+
+        virtual void set_value(row_t row, col_t col, double value) override
+        {
+            cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col
+                 << "): value = " << value << endl;
+
+            m_cells(row, col).type = cell_value_type::numeric;
+            m_cells(row, col).f = value;
+        }
+
+        virtual range_size_t get_sheet_size() const override
+        {
+            return m_sheet_size;
+        }
+
+        // We don't implement these methods for now.
+        virtual void set_auto(row_t row, col_t col, const char* p, size_t n) override {}
+        virtual void set_bool(row_t row, col_t col, bool value) override {}
+        virtual void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override {}
+        virtual void set_format(row_t row, col_t col, size_t xf_index) override {}
+        virtual void set_format(
+            row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t xf_index) override {}
+
+        virtual iface::import_formula* get_formula() override
+        {
+            return &m_formula_iface;
+        }
+    };
+
+We've added the
+:cpp:func:`~orcus::spreadsheet::iface::import_sheet::get_formula` method which
+returns a pointer to the ``my_formula`` class instance defined above.  The
+rest of the code is unchanged.
+
+Now let's see what happens when loading the same sheet from the previous
+section:
+
+.. code-block:: text
+
+    (sheet: 1; row: 0; col: 0): string index = 44 (X)
+    (sheet: 1; row: 0; col: 1): string index = 45 (Y)
+    (sheet: 1; row: 0; col: 2): string index = 46 (X + Y)
+    (sheet: 1; row: 1; col: 0): value = 18
+    (sheet: 1; row: 1; col: 1): value = 79
+    (sheet: 1; row: 2; col: 0): value = 48
+    (sheet: 1; row: 2; col: 1): value = 55
+    (sheet: 1; row: 3; col: 0): value = 99
+    (sheet: 1; row: 3; col: 1): value = 35
+    (sheet: 1; row: 4; col: 0): value = 41
+    (sheet: 1; row: 4; col: 1): value = 69
+    (sheet: 1; row: 5; col: 0): value = 5
+    (sheet: 1; row: 5; col: 1): value = 18
+    (sheet: 1; row: 6; col: 0): value = 46
+    (sheet: 1; row: 6; col: 1): value = 69
+    (sheet: 1; row: 7; col: 0): value = 36
+    (sheet: 1; row: 7; col: 1): value = 67
+    (sheet: 1; row: 8; col: 0): value = 78
+    (sheet: 1; row: 8; col: 1): value = 2
+    (sheet: 1; row: 1; col: 2): formula = [.A2]+[.B2] (ods)
+    (sheet: 1; row: 2; col: 2): formula = [.A3]+[.B3] (ods)
+    (sheet: 1; row: 3; col: 2): formula = [.A4]+[.B4] (ods)
+    (sheet: 1; row: 4; col: 2): formula = [.A5]+[.B5] (ods)
+    (sheet: 1; row: 5; col: 2): formula = [.A6]+[.B6] (ods)
+    (sheet: 1; row: 6; col: 2): formula = [.A7]+[.B7] (ods)
+    (sheet: 1; row: 7; col: 2): formula = [.A8]+[.B8] (ods)
+    (sheet: 1; row: 8; col: 2): formula = [.A9]+[.B9] (ods)
+
+Looks like we are getting the formula cell values this time around.
+
+One thing to note is that the formula expression strings you see here follow
+the syntax rules of OpenFormula specification, which is the formula syntax
+referenced by the OpenDocument Spreadsheet format.  The `ixion library
+<https://gitlab.com/ixion/ixion>`_ provides a parser capable of parsing
+OpenFormula formula expressions as well as other formula grammar types used by
+the orcus library.

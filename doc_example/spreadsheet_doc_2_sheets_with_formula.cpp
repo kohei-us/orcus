@@ -92,7 +92,7 @@ public:
     virtual void commit() override
     {
         cout << "(sheet: " << m_sheet_index << "; row: " << m_row << "; col: " << m_col << "): formula = "
-            << m_formula.expression << " (" << m_formula.grammar << ")" << endl;
+             << m_formula.expression << " (" << m_formula.grammar << ")" << endl;
 
         size_t index = m_formula_store.size();
         m_cells(m_row, m_col).type = cell_value_type::formula;
@@ -122,7 +122,8 @@ public:
 
     virtual void set_string(row_t row, col_t col, size_t sindex) override
     {
-        cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): string index = " << sindex << " (" << m_string_pool[sindex] << ")" << endl;
+        cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col
+             << "): string index = " << sindex << " (" << m_string_pool[sindex] << ")" << endl;
 
         m_cells(row, col).type = cell_value_type::string;
         m_cells(row, col).index = sindex;
@@ -130,7 +131,8 @@ public:
 
     virtual void set_value(row_t row, col_t col, double value) override
     {
-        cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): value = " << value << endl;
+        cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col
+             << "): value = " << value << endl;
 
         m_cells(row, col).type = cell_value_type::numeric;
         m_cells(row, col).f = value;
