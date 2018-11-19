@@ -1132,7 +1132,4 @@ Looks like we are getting the formula cell values this time around.
 
 One thing to note is that the formula expression strings you see here follow
 the syntax rules of OpenFormula specification, which is the formula syntax
-referenced by the OpenDocument Spreadsheet format.  The `ixion library
-<https://gitlab.com/ixion/ixion>`_ provides a parser capable of parsing
-OpenFormula formula expressions as well as other formula grammar types used by
-the orcus library.
+referenced by the OpenDocument Spreadsheet format.
