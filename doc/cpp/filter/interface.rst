@@ -16,6 +16,12 @@ Global Interface
 Spreadsheet Interface
 ---------------------
 
+import_array_formula
+^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_array_formula
+   :members:
+
 import_auto_filter
 ^^^^^^^^^^^^^^^^^^
 
@@ -52,6 +58,30 @@ import_global_settings
 .. doxygenclass:: orcus::spreadsheet::iface::import_global_settings
    :members:
 
+import_named_expression
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_named_expression
+   :members:
+
+import_pivot_cache_definition
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_cache_definition
+   :members:
+
+import_pivot_cache_records
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_cache_records
+   :members:
+
+import_reference_resolver
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_reference_resolver
+   :members:
+
 import_shared_strings
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -68,6 +98,12 @@ import_sheet_properties
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenclass:: orcus::spreadsheet::iface::import_sheet_properties
+   :members:
+
+import_sheet_view
+^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_sheet_view
    :members:
 
 import_styles
