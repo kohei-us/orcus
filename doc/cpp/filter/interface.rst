@@ -12,6 +12,7 @@ Global Interface
 .. doxygenclass:: orcus::iface::document_dumper
    :members:
 
+.. _spreadsheet-interface:
 
 Spreadsheet Interface
 ---------------------
@@ -194,8 +195,8 @@ Enums
 .. doxygenenum:: orcus::spreadsheet::pivot_cache_group_by_t
 
 
-Spreadsheet Functions
----------------------
+Spreadsheet Global Functions
+----------------------------
 
 .. doxygenfunction:: orcus::spreadsheet::get_default_column_width
 .. doxygenfunction:: orcus::spreadsheet::get_default_row_height

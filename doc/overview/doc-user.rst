@@ -1133,3 +1133,11 @@ Looks like we are getting the formula cell values this time around.
 One thing to note is that the formula expression strings you see here follow
 the syntax rules of OpenFormula specification, which is the formula syntax
 referenced by the OpenDocument Spreadsheet format.
+
+
+Implement more interfaces
+-------------------------
+
+This section has covered only a part of the available spreadsheet interfaces
+you can implement in your code.  Refer to the :ref:`spreadsheet-interface`
+section to see the complete list of interfaces.
