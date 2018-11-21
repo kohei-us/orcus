@@ -14,6 +14,8 @@
 #include <mdds/global.hpp>
 #include <orcus/global.hpp>
 
+#include <sstream>
+
 using namespace std;
 
 namespace orcus {
@@ -197,7 +199,12 @@ double convert(double value, length_unit_t unit_from, length_unit_t unit_to)
         default:
             ;
     }
-    throw general_error("convert: unsupported unit of measurement.");
+
+    std::ostringstream os;
+    os << "convert: unsupported unit of measurement (from "
+        << static_cast<int>(unit_from) << " to "
+        << static_cast<int>(unit_to) << ")";
+    throw general_error(os.str());
 }
 
 }
