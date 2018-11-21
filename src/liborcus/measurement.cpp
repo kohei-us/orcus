@@ -150,6 +150,20 @@ double convert_centimeter(double value, length_unit_t unit_to)
     throw general_error("convert_centimeter: unsupported unit of measurement.");
 }
 
+double convert_millimeter(double value, length_unit_t unit_to)
+{
+    switch (unit_to)
+    {
+        case length_unit_t::twip:
+            // millimeters to twips : 25.4 mm = 1 inch = 1440 twips
+            return value / 25.4 * 1440.0;
+        default:
+            ;
+    }
+
+    throw general_error("convert_millimeter: unsupported unit of measurement.");
+}
+
 double convert_twip(double value, length_unit_t unit_to)
 {
     switch (unit_to)
@@ -192,6 +206,8 @@ double convert(double value, length_unit_t unit_from, length_unit_t unit_to)
             return convert_inch(value, unit_to);
         case length_unit_t::centimeter:
             return convert_centimeter(value, unit_to);
+        case length_unit_t::millimeter:
+            return convert_millimeter(value, unit_to);
         case length_unit_t::twip:
             return convert_twip(value, unit_to);
         case length_unit_t::xlsx_column_digit:

@@ -113,6 +113,28 @@ void test_measurement_conversion()
     }
 }
 
+void test_measurement_conversion_2()
+{
+    struct check
+    {
+        length_unit_t from;
+        length_unit_t to;
+        double original;
+        double expected;
+    };
+
+    std::vector<check> checks =
+    {
+        { length_unit_t::millimeter, length_unit_t::twip, 254.0, 14400.0 },
+    };
+
+    for (const check& c : checks)
+    {
+        double observed = convert(c.original, c.from, c.to);
+        assert(observed == c.expected);
+    }
+}
+
 void test_string2number_conversion()
 {
     struct {
@@ -235,6 +257,7 @@ int main()
 {
     test_date_time_conversion();
     test_measurement_conversion();
+    test_measurement_conversion_2();
     test_string2number_conversion();
     test_string2long_conversion();
     test_pstring();
@@ -242,4 +265,5 @@ int main()
 
     return EXIT_SUCCESS;
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
