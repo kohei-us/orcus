@@ -10,6 +10,7 @@
 
 #include <ixion/formula.hpp>
 #include <ixion/model_context.hpp>
+#include <ixion/model_iterator.hpp>
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_result.hpp>
 #include <mdds/multi_type_matrix.hpp>
@@ -42,95 +43,109 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     size_t col_count = range.last.column + 1;
     os << "rows: " << row_count << "  cols: " << col_count << endl;
 
+    // Always start at the top-left corner.
+    range.first.row = 0;
+    range.first.column = 0;
+    ixion::model_iterator iter = cxt.get_model_iterator(
+        sheet_id, ixion::rc_direction_t::vertical, range);
+
     typedef mdds::multi_type_matrix<mdds::mtm::std_string_trait> mx_type;
     mx_type mx(row_count, col_count);
+    mx_type::position_type mx_pos = mx.position(0, 0);
 
-    // Put all cell values into matrix as string elements first.
-    for (size_t row = 0; row < row_count; ++row)
-    {
-        for (size_t col = 0; col < col_count; ++col)
-        {
-            ixion::abs_address_t pos(sheet_id, row, col);
-            switch (cxt.get_celltype(pos))
-            {
-                case ixion::celltype_t::string:
-                {
-                    size_t sindex = cxt.get_string_identifier(pos);
-                    const std::string* p = cxt.get_string(sindex);
-                    assert(p);
-                    mx.set(row, col, *p);
-                    break;
-                }
-                case ixion::celltype_t::numeric:
-                {
-                    std::ostringstream os2;
-                    os2 << cxt.get_numeric_value(pos) << " [v]";
-                    mx.set(row, col, os2.str());
-                    break;
-                }
-                case ixion::celltype_t::boolean:
-                {
-                    std::ostringstream os2;
-                    os2 << (cxt.get_boolean_value(pos) ? "true" : "false") << " [b]";
-                    mx.set(row, col, os2.str());
-                    break;
-                }
-                case ixion::celltype_t::formula:
-                {
-                    // print the formula and the formula result.
-                    const ixion::formula_cell* cell = cxt.get_formula_cell(pos);
-                    assert(cell);
-                    const ixion::formula_tokens_store_ptr_t& ts = cell->get_tokens();
-                    if (ts)
-                    {
-                        const ixion::formula_tokens_t& tokens = ts->get();
-
-                        std::ostringstream os2;
-                        std::string formula;
-                        if (resolver)
-                        {
-                            pos = cell->get_parent_position(pos);
-                            formula = ixion::print_formula_tokens(
-                               cxt, pos, *resolver, tokens);
-                        }
-                        else
-                            formula = "???";
-
-                        ixion::formula_group_t fg = cell->get_group_properties();
-
-                        if (fg.grouped)
-                            os2 << '{' << formula << '}';
-                        else
-                            os2 << formula;
-
-                        ixion::formula_result res = cell->get_result_cache();
-                        os2 << " (" << res.str(cxt) << ")";
-
-                        mx.set(row, col, os2.str());
-                    }
-                    break;
-                }
-                default:
-                    ;
-            }
-        }
-    }
-
-    // Calculate column widths first.
+    // Calculate column widths as we iterate.
     mx_type::size_pair_type sp = mx.size();
     std::vector<size_t> col_widths(sp.column, 0);
+    auto it_colwidth = col_widths.begin();
+    col_t current_col = 0;
 
-    for (size_t r = 0; r < sp.row; ++r)
+    for (; iter.has(); iter.next())
     {
-        for (size_t c = 0; c < sp.column; ++c)
+        const ixion::model_iterator::cell& c = iter.get();
+        if (c.col > current_col)
         {
-            if (mx.get_type(r, c) == mdds::mtm::element_empty)
-                continue;
-
-            const std::string s = mx.get_string(r, c);
-            if (col_widths[c] < s.size())
-                col_widths[c] = s.size();
+            ++current_col;
+            ++it_colwidth;
+            assert(current_col == c.col);
         }
+
+        size_t cell_str_width = 0;
+
+        switch (c.type)
+        {
+            case ixion::celltype_t::string:
+            {
+                size_t sindex = c.value.string;
+                const std::string* p = cxt.get_string(sindex);
+                assert(p);
+                mx.set(mx_pos, *p);
+                cell_str_width = p->size();
+                break;
+            }
+            case ixion::celltype_t::numeric:
+            {
+                std::ostringstream os2;
+                os2 << c.value.numeric << " [v]";
+                std::string s = os2.str();
+                cell_str_width = s.size();
+                mx.set(mx_pos, s);
+                break;
+            }
+            case ixion::celltype_t::boolean:
+            {
+                std::ostringstream os2;
+                os2 << (c.value.boolean ? "true" : "false") << " [b]";
+                std::string s = os2.str();
+                cell_str_width = s.size();
+                mx.set(mx_pos, s);
+                break;
+            }
+            case ixion::celltype_t::formula:
+            {
+                // print the formula and the formula result.
+                const ixion::formula_cell* cell = c.value.formula;
+                assert(cell);
+                const ixion::formula_tokens_store_ptr_t& ts = cell->get_tokens();
+                if (ts)
+                {
+                    const ixion::formula_tokens_t& tokens = ts->get();
+
+                    std::ostringstream os2;
+                    std::string formula;
+                    if (resolver)
+                    {
+                        ixion::abs_address_t pos(sheet_id, c.row, c.col);
+                        pos = cell->get_parent_position(pos);
+                        formula = ixion::print_formula_tokens(
+                           cxt, pos, *resolver, tokens);
+                    }
+                    else
+                        formula = "???";
+
+                    ixion::formula_group_t fg = cell->get_group_properties();
+
+                    if (fg.grouped)
+                        os2 << '{' << formula << '}';
+                    else
+                        os2 << formula;
+
+                    ixion::formula_result res = cell->get_result_cache();
+                    os2 << " (" << res.str(cxt) << ")";
+
+                    std::string s = os2.str();
+                    cell_str_width = s.size();
+                    mx.set(mx_pos, s);
+                }
+                break;
+            }
+            default:
+                ;
+        }
+
+        if (*it_colwidth < cell_str_width)
+            *it_colwidth = cell_str_width;
+
+        mx_pos = mx_type::next_position(mx_pos);
     }
 
     // Create a row separator string;
