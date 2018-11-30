@@ -13,7 +13,6 @@
 #include <ixion/model_iterator.hpp>
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_result.hpp>
-#include <mdds/multi_type_matrix.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -49,13 +48,15 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     ixion::model_iterator iter = cxt.get_model_iterator(
         sheet_id, ixion::rc_direction_t::vertical, range);
 
-    typedef mdds::multi_type_matrix<mdds::mtm::std_string_trait> mx_type;
-    mx_type mx(row_count, col_count);
-    mx_type::position_type mx_pos = mx.position(0, 0);
+    std::vector<std::string> mx(row_count*col_count);
+
+    auto to_pos = [col_count](size_t row, size_t col) -> size_t
+    {
+        return col_count * row + col;
+    };
 
     // Calculate column widths as we iterate.
-    mx_type::size_pair_type sp = mx.size();
-    std::vector<size_t> col_widths(sp.column, 0);
+    std::vector<size_t> col_widths(col_count, 0);
     auto it_colwidth = col_widths.begin();
     col_t current_col = 0;
 
@@ -78,7 +79,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                 size_t sindex = c.value.string;
                 const std::string* p = cxt.get_string(sindex);
                 assert(p);
-                mx.set(mx_pos, *p);
+                mx[to_pos(c.row, c.col)] = std::move(*p);
                 cell_str_width = p->size();
                 break;
             }
@@ -88,7 +89,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                 os2 << c.value.numeric << " [v]";
                 std::string s = os2.str();
                 cell_str_width = s.size();
-                mx.set(mx_pos, s);
+                mx[to_pos(c.row, c.col)] = std::move(s);
                 break;
             }
             case ixion::celltype_t::boolean:
@@ -97,7 +98,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                 os2 << (c.value.boolean ? "true" : "false") << " [b]";
                 std::string s = os2.str();
                 cell_str_width = s.size();
-                mx.set(mx_pos, s);
+                mx[to_pos(c.row, c.col)] = std::move(s);
                 break;
             }
             case ixion::celltype_t::formula:
@@ -134,7 +135,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 
                     std::string s = os2.str();
                     cell_str_width = s.size();
-                    mx.set(mx_pos, s);
+                    mx[to_pos(c.row, c.col)] = std::move(s);
                 }
                 break;
             }
@@ -144,8 +145,6 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 
         if (*it_colwidth < cell_str_width)
             *it_colwidth = cell_str_width;
-
-        mx_pos = mx_type::next_position(mx_pos);
     }
 
     // Create a row separator string;
@@ -170,8 +169,8 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
         for (size_t c = 0; c < col_count; ++c)
         {
             size_t cw = col_widths[c]; // column width
-            mx_pos = mx.position(r, c);
-            if (mx.get_type(mx_pos) == mdds::mtm::element_empty)
+            const std::string& s = mx[to_pos(r, c)];
+            if (s.empty())
             {
                 for (size_t i = 0; i < cw; ++i)
                     os << ' ';
@@ -179,7 +178,6 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
             }
             else
             {
-                const std::string s = mx.get_string(mx_pos);
                 os << ' ' << s;
                 cw -= s.size();
                 for (size_t i = 0; i < cw; ++i)
