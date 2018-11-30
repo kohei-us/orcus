@@ -170,7 +170,8 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
         for (size_t c = 0; c < col_count; ++c)
         {
             size_t cw = col_widths[c]; // column width
-            if (mx.get_type(r, c) == mdds::mtm::element_empty)
+            mx_pos = mx.position(r, c);
+            if (mx.get_type(mx_pos) == mdds::mtm::element_empty)
             {
                 for (size_t i = 0; i < cw; ++i)
                     os << ' ';
@@ -178,7 +179,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
             }
             else
             {
-                const std::string s = mx.get_string(r, c);
+                const std::string s = mx.get_string(mx_pos);
                 os << ' ' << s;
                 cw -= s.size();
                 for (size_t i = 0; i < cw; ++i)
