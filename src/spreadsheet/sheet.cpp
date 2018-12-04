@@ -31,9 +31,7 @@
 #include <sstream>
 #include <vector>
 #include <cassert>
-#include <memory>
 #include <cstdlib>
-#include <unordered_map>
 
 #include <mdds/flat_segment_tree.hpp>
 
@@ -58,7 +56,7 @@ namespace orcus { namespace spreadsheet {
 namespace {
 
 typedef mdds::flat_segment_tree<row_t, size_t>  segment_row_index_type;
-typedef std::unordered_map<col_t, segment_row_index_type*> cell_format_type;
+typedef std::unordered_map<col_t, std::unique_ptr<segment_row_index_type>> cell_format_type;
 
 // Widths and heights are stored in twips.
 typedef mdds::flat_segment_tree<col_t, col_width_t> col_widths_store_type;
@@ -109,11 +107,7 @@ struct sheet_impl
         m_row_hidden_pos(m_row_hidden.begin()),
         m_row_size(row_size), m_col_size(col_size), m_sheet(sheet_index) {}
 
-    ~sheet_impl()
-    {
-        for_each(m_cell_formats.begin(), m_cell_formats.end(),
-                 map_object_deleter<cell_format_type>());
-    }
+    ~sheet_impl() {}
 
     const detail::merge_size* get_merge_size(row_t row, col_t col) const
     {
@@ -226,10 +220,10 @@ void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t co
         cell_format_type::iterator itr = mp_impl->m_cell_formats.find(col);
         if (itr == mp_impl->m_cell_formats.end())
         {
-            std::unique_ptr<segment_row_index_type> p(new segment_row_index_type(0, mp_impl->m_row_size+1, 0));
+            auto p = orcus::make_unique<segment_row_index_type>(0, mp_impl->m_row_size+1, 0);
 
             pair<cell_format_type::iterator, bool> r =
-                mp_impl->m_cell_formats.insert(cell_format_type::value_type(col, p.get()));
+                mp_impl->m_cell_formats.insert(cell_format_type::value_type(col, std::move(p)));
 
             if (!r.second)
             {
@@ -237,7 +231,6 @@ void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t co
                 return;
             }
 
-            p.release();
             itr = r.first;
         }
 
