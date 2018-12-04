@@ -669,7 +669,7 @@ void sheet::dump_html(std::ostream& os) const
         mp_impl->m_row_heights.build_tree();
 
     detail::html_dumper dumper(mp_impl->m_doc, mp_impl->m_merge_ranges, mp_impl->m_sheet);
-    dumper.dump(os, mp_impl->m_sheet);
+    dumper.dump(os);
 }
 
 void sheet::dump_json(std::ostream& os) const
