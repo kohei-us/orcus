@@ -23,17 +23,19 @@ namespace detail {
 class html_dumper
 {
     const document& m_doc;
-    const overlapped_cells_type& m_overlapped_ranges;
+    overlapped_cells_type m_overlapped_ranges;
     const col_merge_size_type& m_merge_ranges;
 
     const overlapped_col_index_type* get_overlapped_ranges(row_t row) const;
     const merge_size* get_merge_size(row_t row, col_t col) const;
 
+    void build_overlapped_ranges(sheet_t sheet_id);
+
 public:
     html_dumper(
         const document& doc,
-        const overlapped_cells_type& overlapped_ranges,
-        const col_merge_size_type& merge_ranges);
+        const col_merge_size_type& merge_ranges,
+        sheet_t sheet_id);
 
     void dump(std::ostream& os, ixion::sheet_t sheet_id) const;
 };

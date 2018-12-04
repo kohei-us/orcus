@@ -12,6 +12,7 @@
 #include "orcus/spreadsheet/shared_strings.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
+#include "orcus/global.hpp"
 
 #include <ixion/address.hpp>
 #include <ixion/model_context.hpp>
@@ -396,14 +397,17 @@ void build_html_elem_attributes(html_elem::attrs_type& attrs, const std::string&
 
 html_dumper::html_dumper(
     const document& doc,
-    const overlapped_cells_type& overlapped_ranges,
-    const col_merge_size_type& merge_ranges) :
+    const col_merge_size_type& merge_ranges,
+    sheet_t sheet_id) :
     m_doc(doc),
-    m_overlapped_ranges(overlapped_ranges),
-    m_merge_ranges(merge_ranges) {}
+    m_merge_ranges(merge_ranges)
+{
+    build_overlapped_ranges(sheet_id);
+}
 
 void html_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 {
+
     typedef html_elem elem;
 
     const char* p_html  = "html";
@@ -601,6 +605,52 @@ const merge_size* html_dumper::get_merge_size(row_t row, col_t col) const
         return nullptr;
 
     return &it_row->second;
+}
+
+void html_dumper::build_overlapped_ranges(sheet_t sheet_id)
+{
+    const sheet* sh = m_doc.get_sheet(sheet_id);
+    if (!sh)
+        return;
+
+    detail::col_merge_size_type::const_iterator it_col = m_merge_ranges.begin(), it_col_end = m_merge_ranges.end();
+    for (; it_col != it_col_end; ++it_col)
+    {
+        col_t col = it_col->first;
+        const detail::merge_size_type& data = *it_col->second;
+        detail::merge_size_type::const_iterator it = data.begin(), it_end = data.end();
+        for (; it != it_end; ++it)
+        {
+            row_t row = it->first;
+            const detail::merge_size& item = it->second;
+            for (row_t i = 0; i < item.height; ++i, ++row)
+            {
+                // Get the container for this row.
+                detail::overlapped_cells_type::iterator it_cont = m_overlapped_ranges.find(row);
+                if (it_cont == m_overlapped_ranges.end())
+                {
+                    auto p = orcus::make_unique<detail::overlapped_col_index_type>(0, sh->col_size(), false);
+                    std::pair<detail::overlapped_cells_type::iterator, bool> r =
+                        m_overlapped_ranges.insert(detail::overlapped_cells_type::value_type(row, std::move(p)));
+
+                    if (!r.second)
+                    {
+                        // Insertion failed.
+                        return;
+                    }
+
+                    it_cont = r.first;
+                }
+
+                detail::overlapped_col_index_type& cont = *it_cont->second;
+                cont.insert_back(col, col+item.width, true);
+            }
+        }
+    }
+
+    // Build trees.
+    for (auto& range : m_overlapped_ranges)
+        range.second->build_tree();
 }
 
 }}}

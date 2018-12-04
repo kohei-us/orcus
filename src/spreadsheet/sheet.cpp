@@ -85,7 +85,6 @@ struct sheet_impl
     row_hidden_store_type::const_iterator m_row_hidden_pos;
 
     detail::col_merge_size_type m_merge_ranges; /// 2-dimensional merged cell ranges.
-    detail::overlapped_cells_type m_overlapped_ranges;
 
     std::unique_ptr<auto_filter_t> mp_auto_filter_data;
 
@@ -128,50 +127,6 @@ struct sheet_impl
             return nullptr;
 
         return &it_row->second;
-    }
-
-    void update_overlapped_ranges()
-    {
-        m_overlapped_ranges.clear();
-
-        detail::col_merge_size_type::const_iterator it_col = m_merge_ranges.begin(), it_col_end = m_merge_ranges.end();
-        for (; it_col != it_col_end; ++it_col)
-        {
-            col_t col = it_col->first;
-            const detail::merge_size_type& data = *it_col->second;
-            detail::merge_size_type::const_iterator it = data.begin(), it_end = data.end();
-            for (; it != it_end; ++it)
-            {
-                row_t row = it->first;
-                const detail::merge_size& item = it->second;
-                for (row_t i = 0; i < item.height; ++i, ++row)
-                {
-                    // Get the container for this row.
-                    detail::overlapped_cells_type::iterator it_cont = m_overlapped_ranges.find(row);
-                    if (it_cont == m_overlapped_ranges.end())
-                    {
-                        auto p = orcus::make_unique<detail::overlapped_col_index_type>(0, m_col_size, false);
-                        std::pair<detail::overlapped_cells_type::iterator, bool> r =
-                            m_overlapped_ranges.insert(detail::overlapped_cells_type::value_type(row, std::move(p)));
-
-                        if (!r.second)
-                        {
-                            // Insertion failed.
-                            return;
-                        }
-
-                        it_cont = r.first;
-                    }
-
-                    detail::overlapped_col_index_type& cont = *it_cont->second;
-                    cont.insert_back(col, col+item.width, true);
-                }
-            }
-        }
-
-        // Build trees.
-        for (auto& range : m_overlapped_ranges)
-            range.second->build_tree();
     }
 
     ixion::abs_range_t get_data_range() const
@@ -585,7 +540,6 @@ void sheet::finalize()
 {
     mp_impl->m_col_widths.build_tree();
     mp_impl->m_row_heights.build_tree();
-    mp_impl->update_overlapped_ranges();
 }
 
 void sheet::dump_flat(std::ostream& os) const
@@ -714,7 +668,7 @@ void sheet::dump_html(std::ostream& os) const
     if (!mp_impl->m_row_heights.is_tree_valid())
         mp_impl->m_row_heights.build_tree();
 
-    detail::html_dumper dumper(mp_impl->m_doc, mp_impl->m_overlapped_ranges, mp_impl->m_merge_ranges);
+    detail::html_dumper dumper(mp_impl->m_doc, mp_impl->m_merge_ranges, mp_impl->m_sheet);
     dumper.dump(os, mp_impl->m_sheet);
 }
 
