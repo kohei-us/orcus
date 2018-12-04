@@ -29,6 +29,9 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	flat_dumper.cpp \
 	formula_global.hpp \
 	formula_global.cpp \
+	html_dumper.hpp \
+	html_dumper.cpp \
+	impl_types.hpp \
 	csv_dumper.hpp \
 	csv_dumper.cpp \
 	json_dumper.hpp \

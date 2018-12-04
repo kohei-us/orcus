@@ -22,6 +22,8 @@
 #include "json_dumper.hpp"
 #include "csv_dumper.hpp"
 #include "flat_dumper.hpp"
+#include "html_dumper.hpp"
+#include "impl_types.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -55,23 +57,6 @@ namespace orcus { namespace spreadsheet {
 
 namespace {
 
-struct merge_size
-{
-    col_t width;
-    row_t height;
-
-    merge_size(col_t _width, row_t _height) :
-        width(_width), height(_height) {}
-};
-
-// Merged cell data stored in sheet.
-typedef std::unordered_map<row_t, merge_size> merge_size_type;
-typedef std::unordered_map<col_t, merge_size_type*> col_merge_size_type;
-
-// Overlapped cells per row, used when rendering sheet content.
-typedef mdds::flat_segment_tree<col_t, bool> overlapped_col_index_type;
-typedef std::unordered_map<row_t, overlapped_col_index_type*> overlapped_cells_type;
-
 typedef mdds::flat_segment_tree<row_t, size_t>  segment_row_index_type;
 typedef std::unordered_map<col_t, segment_row_index_type*> cell_format_type;
 
@@ -82,14 +67,6 @@ typedef mdds::flat_segment_tree<row_t, row_height_t> row_heights_store_type;
 // hidden information
 typedef mdds::flat_segment_tree<col_t, bool> col_hidden_store_type;
 typedef mdds::flat_segment_tree<row_t, bool> row_hidden_store_type;
-
-struct overlapped_cells_tree_builder : std::unary_function<overlapped_cells_type::value_type, void>
-{
-    void operator() (overlapped_cells_type::value_type& node)
-    {
-        node.second->build_tree();
-    }
-};
 
 }
 
@@ -107,8 +84,8 @@ struct sheet_impl
     col_hidden_store_type::const_iterator m_col_hidden_pos;
     row_hidden_store_type::const_iterator m_row_hidden_pos;
 
-    col_merge_size_type m_merge_ranges; /// 2-dimensional merged cell ranges.
-    overlapped_cells_type m_overlapped_ranges;
+    detail::col_merge_size_type m_merge_ranges; /// 2-dimensional merged cell ranges.
+    detail::overlapped_cells_type m_overlapped_ranges;
 
     std::unique_ptr<auto_filter_t> mp_auto_filter_data;
 
@@ -137,65 +114,45 @@ struct sheet_impl
     {
         for_each(m_cell_formats.begin(), m_cell_formats.end(),
                  map_object_deleter<cell_format_type>());
-        for_each(m_merge_ranges.begin(), m_merge_ranges.end(),
-                 map_object_deleter<col_merge_size_type>());
-
-        clear_overlapped_ranges();
     }
 
-    const merge_size* get_merge_size(row_t row, col_t col) const
+    const detail::merge_size* get_merge_size(row_t row, col_t col) const
     {
-        col_merge_size_type::const_iterator it_col = m_merge_ranges.find(col);
+        detail::col_merge_size_type::const_iterator it_col = m_merge_ranges.find(col);
         if (it_col == m_merge_ranges.end())
             return nullptr;
 
-        merge_size_type& col_merge_sizes = *it_col->second;
-        merge_size_type::const_iterator it_row = col_merge_sizes.find(row);
+        detail::merge_size_type& col_merge_sizes = *it_col->second;
+        detail::merge_size_type::const_iterator it_row = col_merge_sizes.find(row);
         if (it_row == col_merge_sizes.end())
             return nullptr;
 
         return &it_row->second;
     }
 
-    const overlapped_col_index_type* get_overlapped_ranges(row_t row) const
-    {
-        overlapped_cells_type::const_iterator it = m_overlapped_ranges.find(row);
-        if (it == m_overlapped_ranges.end())
-            return nullptr;
-
-        return it->second;
-    }
-
-    void clear_overlapped_ranges()
-    {
-        for_each(m_overlapped_ranges.begin(), m_overlapped_ranges.end(),
-                 map_object_deleter<overlapped_cells_type>());
-        m_overlapped_ranges.clear();
-    }
-
     void update_overlapped_ranges()
     {
-        clear_overlapped_ranges();
+        m_overlapped_ranges.clear();
 
-        col_merge_size_type::const_iterator it_col = m_merge_ranges.begin(), it_col_end = m_merge_ranges.end();
+        detail::col_merge_size_type::const_iterator it_col = m_merge_ranges.begin(), it_col_end = m_merge_ranges.end();
         for (; it_col != it_col_end; ++it_col)
         {
             col_t col = it_col->first;
-            const merge_size_type& data = *it_col->second;
-            merge_size_type::const_iterator it = data.begin(), it_end = data.end();
+            const detail::merge_size_type& data = *it_col->second;
+            detail::merge_size_type::const_iterator it = data.begin(), it_end = data.end();
             for (; it != it_end; ++it)
             {
                 row_t row = it->first;
-                const merge_size& item = it->second;
+                const detail::merge_size& item = it->second;
                 for (row_t i = 0; i < item.height; ++i, ++row)
                 {
                     // Get the container for this row.
-                    overlapped_cells_type::iterator it_cont = m_overlapped_ranges.find(row);
+                    detail::overlapped_cells_type::iterator it_cont = m_overlapped_ranges.find(row);
                     if (it_cont == m_overlapped_ranges.end())
                     {
-                        std::unique_ptr<overlapped_col_index_type> p(new overlapped_col_index_type(0, m_col_size, false));
-                        std::pair<overlapped_cells_type::iterator, bool> r =
-                            m_overlapped_ranges.insert(overlapped_cells_type::value_type(row, p.get()));
+                        auto p = orcus::make_unique<detail::overlapped_col_index_type>(0, m_col_size, false);
+                        std::pair<detail::overlapped_cells_type::iterator, bool> r =
+                            m_overlapped_ranges.insert(detail::overlapped_cells_type::value_type(row, std::move(p)));
 
                         if (!r.second)
                         {
@@ -203,19 +160,18 @@ struct sheet_impl
                             return;
                         }
 
-                        p.release();
                         it_cont = r.first;
                     }
 
-                    overlapped_col_index_type& cont = *it_cont->second;
+                    detail::overlapped_col_index_type& cont = *it_cont->second;
                     cont.insert_back(col, col+item.width, true);
                 }
             }
         }
 
         // Build trees.
-        for_each(m_overlapped_ranges.begin(), m_overlapped_ranges.end(),
-                 overlapped_cells_tree_builder());
+        for (auto& range : m_overlapped_ranges)
+            range.second->build_tree();
     }
 
     ixion::abs_range_t get_data_range() const
@@ -448,26 +404,25 @@ bool sheet::is_row_hidden(row_t row, row_t* row_start, row_t* row_end) const
 
 void sheet::set_merge_cell_range(const range_t& range)
 {
-    col_merge_size_type::iterator it_col = mp_impl->m_merge_ranges.find(range.first.column);
+    detail::col_merge_size_type::iterator it_col = mp_impl->m_merge_ranges.find(range.first.column);
     if (it_col == mp_impl->m_merge_ranges.end())
     {
-        std::unique_ptr<merge_size_type> p(new merge_size_type);
-        pair<col_merge_size_type::iterator, bool> r =
+        auto p = orcus::make_unique<detail::merge_size_type>();
+        pair<detail::col_merge_size_type::iterator, bool> r =
             mp_impl->m_merge_ranges.insert(
-                col_merge_size_type::value_type(range.first.column, p.get()));
+                detail::col_merge_size_type::value_type(range.first.column, std::move(p)));
 
         if (!r.second)
             // Insertion failed.
             return;
 
-        p.release();
         it_col = r.first;
     }
 
-    merge_size_type& col_data = *it_col->second;
-    merge_size sz(range.last.column-range.first.column+1, range.last.row-range.first.row+1);
+    detail::merge_size_type& col_data = *it_col->second;
+    detail::merge_size sz(range.last.column-range.first.column+1, range.last.row-range.first.row+1);
     col_data.insert(
-        merge_size_type::value_type(range.first.row, sz));
+        detail::merge_size_type::value_type(range.first.row, sz));
 }
 
 range_t sheet::get_merge_cell_range(row_t row, col_t col) const
@@ -478,16 +433,16 @@ range_t sheet::get_merge_cell_range(row_t row, col_t col) const
     ret.last.column = col;
     ret.last.row = row;
 
-    col_merge_size_type::const_iterator it_col = mp_impl->m_merge_ranges.find(col);
+    detail::col_merge_size_type::const_iterator it_col = mp_impl->m_merge_ranges.find(col);
     if (it_col == mp_impl->m_merge_ranges.end())
         return ret; // not a merged cell
 
-    const merge_size_type& col_data = *it_col->second;
-    merge_size_type::const_iterator it = col_data.find(row);
+    const detail::merge_size_type& col_data = *it_col->second;
+    detail::merge_size_type::const_iterator it = col_data.find(row);
     if (it == col_data.end())
         return ret; // not a merged cell
 
-    const merge_size& ms = it->second;
+    const detail::merge_size& ms = it->second;
     ret.last.column += ms.width - 1;
     ret.last.row += ms.height - 1;
 
@@ -751,560 +706,16 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
     }
 }
 
-namespace {
-
-void build_rgb_color(ostringstream& os, const color_t& color_value)
-{
-    // Special colors.
-    if (color_value.alpha == 255 && color_value.red == 0 && color_value.green == 0 && color_value.blue == 0)
-    {
-        os << "black";
-        return;
-    }
-
-    if (color_value.alpha == 255 && color_value.red == 255 && color_value.green == 0 && color_value.blue == 0)
-    {
-        os << "red";
-        return;
-    }
-
-    if (color_value.alpha == 255 && color_value.red == 0 && color_value.green == 255 && color_value.blue == 0)
-    {
-        os << "green";
-        return;
-    }
-
-    if (color_value.alpha == 255 && color_value.red == 0 && color_value.green == 0 && color_value.blue == 255)
-    {
-        os << "blue";
-        return;
-    }
-
-    os << "rgb("
-        << static_cast<short>(color_value.red) << ","
-        << static_cast<short>(color_value.green) << ","
-        << static_cast<short>(color_value.blue) << ")";
-}
-
-const char* css_style_global =
-"table, td { "
-    "border-collapse : collapse; "
-"}\n"
-
-"table { "
-    "border-spacing : 0px; "
-"}\n"
-
-"td { "
-    "width : 1in; "
-"}\n"
-
-"td.empty { "
-    "color : white; "
-"}\n";
-
-class html_elem
-{
-public:
-    struct attr
-    {
-        string name;
-        string value;
-
-        attr(const string& _name, const string& _value) : name(_name), value(_value) {}
-    };
-
-    typedef vector<attr> attrs_type;
-
-    html_elem(ostream& strm, const char* name, const char* style = nullptr, const char* style_class = nullptr) :
-        m_strm(strm), m_name(name)
-    {
-        m_strm << '<' << m_name;
-
-        if (style)
-            m_strm << " style=\"" << style << "\"";
-
-        if (style_class)
-            m_strm << " class=\"" << style_class << "\"";
-
-        m_strm << '>';
-    }
-
-    html_elem(ostream& strm, const char* name, const attrs_type& attrs) :
-        m_strm(strm), m_name(name)
-    {
-        m_strm << '<' << m_name;
-
-        attrs_type::const_iterator it = attrs.begin(), it_end = attrs.end();
-        for (; it != it_end; ++it)
-            m_strm << " " << it->name << "=\"" << it->value << "\"";
-
-        m_strm << '>';
-    }
-
-    ~html_elem()
-    {
-        m_strm << "</" << m_name << '>';
-    }
-
-private:
-    ostream& m_strm;
-    const char* m_name;
-};
-
-void print_formatted_text(ostream& strm, const string& text, const format_runs_t& formats)
-{
-    typedef html_elem elem;
-
-    const char* p_span = "span";
-
-    size_t pos = 0;
-    format_runs_t::const_iterator itr = formats.begin(), itr_end = formats.end();
-    for (; itr != itr_end; ++itr)
-    {
-        const format_run& run = *itr;
-        if (pos < run.pos)
-        {
-            // flush unformatted text.
-            strm << string(&text[pos], run.pos-pos);
-            pos = run.pos;
-        }
-
-        if (!run.size)
-            continue;
-
-        string style = "";
-        if (run.bold)
-            style += "font-weight: bold;";
-        else
-            style += "font-weight: normal;";
-
-        if (run.italic)
-            style += "font-style: italic;";
-        else
-            style += "font-style: normal;";
-
-        if (!run.font.empty())
-            style += "font-family: " + run.font.str() + ";";
-
-        if (run.font_size)
-        {
-            ostringstream os;
-            os << "font-size: " << run.font_size << "pt;";
-            style += os.str();
-        }
-
-        const color_t& col = run.color;
-        if (col.red || col.green || col.blue)
-        {
-            ostringstream os;
-            os << "color: ";
-            build_rgb_color(os, col);
-            os << ";";
-            style += os.str();
-        }
-
-        if (style.empty())
-            strm << string(&text[pos], run.size);
-        else
-        {
-            elem span(strm, p_span, style.c_str());
-            strm << string(&text[pos], run.size);
-        }
-
-        pos += run.size;
-    }
-
-    if (pos < text.size())
-    {
-        // flush the remaining unformatted text.
-        strm << string(&text[pos], text.size() - pos);
-    }
-}
-
-void build_border_style(ostringstream& os, const char* style_name, const border_attrs_t& attrs)
-{
-    os << style_name << ": ";
-    if (attrs.style == border_style_t::thin)
-    {
-        os << "solid 1px ";
-    }
-    else if (attrs.style == border_style_t::medium)
-    {
-        os << "solid 2px ";
-    }
-    else if (attrs.style == border_style_t::thick)
-    {
-        os << "solid 3px ";
-    }
-    else if (attrs.style == border_style_t::hair)
-    {
-        os << "solid 0.5px ";
-    }
-    else if (attrs.style == border_style_t::dotted)
-    {
-        os << "dotted 1px ";
-    }
-    else if (attrs.style == border_style_t::dashed)
-    {
-        os << "dashed 1px ";
-    }
-    else if (attrs.style == border_style_t::double_border)
-    {
-        os << "3px double ";
-    }
-    else if (attrs.style == border_style_t::dash_dot)
-    {
-        // CSS doesn't support dash-dot.
-        os << "dashed 1px ";
-    }
-    else if (attrs.style == border_style_t::dash_dot_dot)
-    {
-        // CSS doesn't support dash-dot-dot.
-        os << "dashed 1px ";
-    }
-    else if (attrs.style == border_style_t::medium_dashed)
-    {
-        os << "dashed 2px ";
-    }
-    else if (attrs.style == border_style_t::medium_dash_dot)
-    {
-        // CSS doesn't support dash-dot.
-        os << "dashed 2px ";
-    }
-    else if (attrs.style == border_style_t::medium_dash_dot_dot)
-    {
-        // CSS doesn't support dash-dot-dot.
-        os << "dashed 2px ";
-    }
-    else if (attrs.style == border_style_t::slant_dash_dot)
-    {
-        // CSS doesn't support dash-dot.
-        os << "dashed 2px ";
-    }
-
-    build_rgb_color(os, attrs.border_color);
-    os << "; ";
-}
-
-void build_style_string(string& str, const styles& styles, const cell_format_t& fmt)
-{
-    ostringstream os;
-    if (fmt.font)
-    {
-        const font_t* p = styles.get_font(fmt.font);
-        if (p)
-        {
-            if (!p->name.empty())
-                os << "font-family: " << p->name << ";";
-            if (p->size)
-                os << "font-size: " << p->size << "pt;";
-            if (p->bold)
-                os << "font-weight: bold;";
-            if (p->italic)
-                os << "font-style: italic;";
-
-            const color_t& r = p->color;
-            if (r.red || r.green || r.blue)
-            {
-                os << "color: ";
-                build_rgb_color(os, r);
-                os << ";";
-            }
-        }
-    }
-    if (fmt.fill)
-    {
-        const fill_t* p = styles.get_fill(fmt.fill);
-        if (p)
-        {
-            if (p->pattern_type == fill_pattern_t::solid)
-            {
-                const color_t& r = p->fg_color;
-                os << "background-color: ";
-                build_rgb_color(os, r);
-                os << ";";
-            }
-        }
-    }
-
-    if (fmt.border)
-    {
-        const border_t* p = styles.get_border(fmt.border);
-        if (p)
-        {
-            build_border_style(os, "border-top", p->top);
-            build_border_style(os, "border-bottom", p->bottom);
-            build_border_style(os, "border-left", p->left);
-            build_border_style(os, "border-right", p->right);
-        }
-    }
-
-    if (fmt.apply_alignment)
-    {
-        if (fmt.hor_align != hor_alignment_t::unknown)
-        {
-            os << "text-align: ";
-            switch (fmt.hor_align)
-            {
-                case hor_alignment_t::left:
-                    os << "left";
-                break;
-                case hor_alignment_t::center:
-                    os << "center";
-                break;
-                case hor_alignment_t::right:
-                    os << "right";
-                break;
-                default:
-                    ;
-            }
-            os << ";";
-        }
-
-        if (fmt.ver_align != ver_alignment_t::unknown)
-        {
-            os << "vertical-align: ";
-            switch (fmt.ver_align)
-            {
-                case ver_alignment_t::top:
-                    os << "top";
-                break;
-                case ver_alignment_t::middle:
-                    os << "middle";
-                break;
-                case ver_alignment_t::bottom:
-                    os << "bottom";
-                break;
-                default:
-                    ;
-            }
-            os << ";";
-        }
-    }
-
-    str += os.str();
-}
-
-void dump_html_head(ostream& os)
-{
-    typedef html_elem elem;
-
-    const char* p_head = "head";
-    const char* p_style = "style";
-
-    elem elem_head(os, p_head);
-    {
-        elem elem_style(os, p_style);
-        os << css_style_global;
-    }
-}
-
-void build_html_elem_attributes(html_elem::attrs_type& attrs, const string& style, const merge_size* p_merge_size)
-{
-    attrs.push_back(html_elem::attr("style", style));
-    if (p_merge_size)
-    {
-        if (p_merge_size->width > 1)
-        {
-            ostringstream os2;
-            os2 << p_merge_size->width;
-            attrs.push_back(html_elem::attr("colspan", os2.str()));
-        }
-
-        if (p_merge_size->height > 1)
-        {
-            ostringstream os2;
-            os2 << p_merge_size->height;
-            attrs.push_back(html_elem::attr("rowspan", os2.str()));
-        }
-    }
-}
-
-}
-
 void sheet::dump_html(std::ostream& os) const
 {
-    typedef html_elem elem;
-
-    const char* p_html  = "html";
-    const char* p_body  = "body";
-    const char* p_table = "table";
-    const char* p_tr    = "tr";
-    const char* p_td    = "td";
-
-    ixion::abs_range_t range = mp_impl->get_data_range();
-
     if (!mp_impl->m_col_widths.is_tree_valid())
         mp_impl->m_col_widths.build_tree();
 
     if (!mp_impl->m_row_heights.is_tree_valid())
         mp_impl->m_row_heights.build_tree();
 
-    elem root(os, p_html);
-    dump_html_head(os);
-
-    {
-        elem elem_body(os, p_body);
-
-        if (!range.valid())
-            // Sheet is empty.  Nothing to print.
-            return;
-
-        const ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
-        const ixion::formula_name_resolver* resolver = mp_impl->m_doc.get_formula_name_resolver();
-        const import_shared_strings* sstrings = mp_impl->m_doc.get_shared_strings();
-
-        elem table(os, p_table);
-
-        row_t row_count = range.last.row + 1;
-        col_t col_count = range.last.column + 1;
-        for (row_t row = 0; row < row_count; ++row)
-        {
-            // Set the row height.
-            string row_style;
-            row_height_t rh;
-            if (mp_impl->m_row_heights.search_tree(row, rh).second)
-            {
-                // Convert height from twip to inches.
-                if (rh != get_default_row_height())
-                {
-                    string style;
-                    double val = orcus::convert(rh, length_unit_t::twip, length_unit_t::inch);
-                    ostringstream os_style;
-                    os_style << "height: " << val << "in;";
-                    row_style += os_style.str();
-                }
-            }
-
-            const char* style_str = nullptr;
-            if (!row_style.empty())
-                style_str = row_style.c_str();
-            elem tr(os, p_tr, style_str);
-
-            const overlapped_col_index_type* p_overlapped = mp_impl->get_overlapped_ranges(row);
-
-            for (col_t col = 0; col < col_count; ++col)
-            {
-                ixion::abs_address_t pos(mp_impl->m_sheet,row,col);
-
-                const merge_size* p_merge_size = mp_impl->get_merge_size(row, col);
-                if (!p_merge_size && p_overlapped)
-                {
-                    // Check if this cell is overlapped by a merged cell.
-                    bool overlapped = false;
-                    col_t last_col;
-                    if (p_overlapped->search_tree(col, overlapped, nullptr, &last_col).second && overlapped)
-                    {
-                        // Skip all overlapped cells on this row.
-                        col = last_col - 1;
-                        continue;
-                    }
-                }
-                size_t xf_id = get_cell_format(row, col);
-                string style;
-
-                if (row == 0)
-                {
-                    // Set the column width.
-                    col_width_t cw;
-                    if (mp_impl->m_col_widths.search_tree(col, cw).second)
-                    {
-                        // Convert width from twip to inches.
-                        if (cw != get_default_column_width())
-                        {
-                            double val = orcus::convert(cw, length_unit_t::twip, length_unit_t::inch);
-                            ostringstream os_style;
-                            os_style << "width: " << val << "in;";
-                            style += os_style.str();
-                        }
-                    }
-                }
-
-                if (xf_id)
-                {
-                    // Apply cell format.
-                    styles& styles = mp_impl->m_doc.get_styles();
-                    const cell_format_t* fmt = styles.get_cell_format(xf_id);
-                    if (fmt)
-                        build_style_string(style, styles, *fmt);
-                }
-
-                ixion::celltype_t ct = cxt.get_celltype(pos);
-                if (ct == ixion::celltype_t::empty)
-                {
-                    html_elem::attrs_type attrs;
-                    build_html_elem_attributes(attrs, style, p_merge_size);
-                    attrs.push_back(html_elem::attr("class", "empty"));
-                    elem td(os, p_td, attrs);
-                    os << '-'; // empty cell.
-                    continue;
-                }
-
-                html_elem::attrs_type attrs;
-                build_html_elem_attributes(attrs, style, p_merge_size);
-                elem td(os, p_td, attrs);
-
-                switch (ct)
-                {
-                    case ixion::celltype_t::string:
-                    {
-                        size_t sindex = cxt.get_string_identifier(pos);
-                        const string* p = cxt.get_string(sindex);
-                        assert(p);
-                        const format_runs_t* pformat = sstrings->get_format_runs(sindex);
-                        if (pformat)
-                            print_formatted_text(os, *p, *pformat);
-                        else
-                            os << *p;
-
-                        break;
-                    }
-                    case ixion::celltype_t::numeric:
-                        os << cxt.get_numeric_value(pos);
-                        break;
-                    case ixion::celltype_t::boolean:
-                        os << (cxt.get_boolean_value(pos) ? "true" : "false");
-                        break;
-                    case ixion::celltype_t::formula:
-                    {
-                        // print the formula and the formula result.
-                        const ixion::formula_cell* cell = cxt.get_formula_cell(pos);
-                        assert(cell);
-                        const ixion::formula_tokens_store_ptr_t& ts = cell->get_tokens();
-                        if (ts)
-                        {
-                            const ixion::formula_tokens_t& tokens = ts->get();
-
-                            string formula;
-                            if (resolver)
-                            {
-                                pos = cell->get_parent_position(pos);
-                                formula = ixion::print_formula_tokens(
-                                    mp_impl->m_doc.get_model_context(), pos, *resolver, tokens);
-                            }
-                            else
-                                formula = "???";
-
-                            ixion::formula_group_t fg = cell->get_group_properties();
-
-                            if (fg.grouped)
-                                os << '{' << formula << '}';
-                            else
-                                os << formula;
-
-                            ixion::formula_result res = cell->get_result_cache();
-                            os << " (" << res.str(mp_impl->m_doc.get_model_context()) << ")";
-                        }
-
-                        break;
-                    }
-                    default:
-                        ;
-                }
-            }
-        }
-    }
+    detail::html_dumper dumper(mp_impl->m_doc, mp_impl->m_overlapped_ranges, mp_impl->m_merge_ranges);
+    dumper.dump(os, mp_impl->m_sheet);
 }
 
 void sheet::dump_json(std::ostream& os) const
