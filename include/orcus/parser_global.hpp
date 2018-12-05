@@ -56,16 +56,17 @@ ORCUS_PSR_DLLPUBLIC bool is_name_char(char c);
 ORCUS_PSR_DLLPUBLIC bool is_numeric(char c);
 
 /**
- * Check if the characater is one of allowed characters.
+ * Check if the characater is one of allowed characters.  Note that you can
+ * only specify up to 16 allowed characters.
  *
  * @param c character to check.
- * @param allowed null-terminated character array containing all allowed
- *                characters.
+ * @param allowed character array containing all allowed characters.
+ * @param n_allowed length of the character array.
  *
  * @return true if the character is one of the allowed characters, false
  *         otherwise.
  */
-ORCUS_PSR_DLLPUBLIC bool is_in(char c, const char* allowed);
+ORCUS_PSR_DLLPUBLIC bool is_in(char c, const char* allowed, size_t n_allowed);
 
 ORCUS_PSR_DLLPUBLIC void write_to(std::ostringstream& os, const char* p, size_t n);
 

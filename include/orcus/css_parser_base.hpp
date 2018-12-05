@@ -34,7 +34,7 @@ public:
 
 protected:
 
-    void identifier(const char*& p, size_t& len, const char* extra = nullptr);
+    void identifier(const char*& p, size_t& len, const char* extra = nullptr, size_t n_extra = 0);
     uint8_t parse_uint8();
     double parse_percent();
     double parse_double_or_throw();
@@ -49,7 +49,7 @@ protected:
      * @param len length of the skipped character array.
      * @param chars one or more characters that can end the skipping.
      */
-    void skip_to_or_blank(const char*& p, size_t& len, const char* chars);
+    void skip_to_or_blank(const char*& p, size_t& len, const char* chars, size_t n_chars);
     void skip_blanks();
     void skip_blanks_reverse();
     void shrink_stream();

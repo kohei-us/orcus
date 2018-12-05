@@ -10,8 +10,9 @@
 
 #define ORCUS_DEBUG_CSS 0
 
-#include "parser_global.hpp"
-#include "css_parser_base.hpp"
+#include "orcus/parser_global.hpp"
+#include "orcus/css_parser_base.hpp"
+#include "orcus/global.hpp"
 
 #include <cassert>
 
@@ -341,12 +342,12 @@ void css_parser<_Handler>::value()
         return;
     }
 
-    if (!is_alpha(c) && !is_numeric(c) && !is_in(c, "-+.#"))
+    if (!is_alpha(c) && !is_numeric(c) && !is_in(c, ORCUS_ASCII("-+.#")))
         css::parse_error::throw_with("value:: illegal first character of a value '", c, "'");
 
     const char* p = nullptr;
     size_t len = 0;
-    identifier(p, len, ".%");
+    identifier(p, len, ORCUS_ASCII(".%"));
     if (cur_char() == '(')
     {
         function_value(p, len);
@@ -535,7 +536,7 @@ void css_parser<_Handler>::function_url()
     // Unquoted URL value.
     const char* p;
     size_t len;
-    skip_to_or_blank(p, len, ")");
+    skip_to_or_blank(p, len, ORCUS_ASCII(")"));
     skip_comments_and_blanks();
     m_handler.url(p, len);
 #if ORCUS_DEBUG_CSS

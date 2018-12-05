@@ -82,11 +82,11 @@ char parser_base::next_char() const
     return *(mp_char+1);
 }
 
-void parser_base::skip(const char* chars_to_skip)
+void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
 {
     for (; has_char(); next())
     {
-        if (!is_in(*mp_char, chars_to_skip))
+        if (!is_in(*mp_char, chars_to_skip, n_chars_to_skip))
             break;
     }
 }

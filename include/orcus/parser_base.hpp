@@ -54,7 +54,7 @@ protected:
     char cur_char() const;
     char next_char() const;
 
-    void skip(const char* chars_to_skip);
+    void skip(const char* chars_to_skip, size_t n_chars_to_skip);
 
     /**
      * Parse and check next characters to see if it matches specified

@@ -6,6 +6,8 @@
  */
 
 #include "orcus/csv_parser_base.hpp"
+#include "orcus/global.hpp"
+
 #include <cstring>
 
 namespace orcus { namespace csv {
@@ -32,7 +34,7 @@ parser_base::parser_base(
 
 bool parser_base::is_blank(char c) const
 {
-    return is_in(c, " \t");
+    return is_in(c, ORCUS_ASCII(" \t"));
 }
 
 bool parser_base::is_delim(char c) const
@@ -47,7 +49,7 @@ bool parser_base::is_text_qualifier(char c) const
 
 void parser_base::skip_blanks()
 {
-    skip(" \t");
+    skip(ORCUS_ASCII(" \t"));
 }
 
 void parser_base::maybe_skip_bom()
