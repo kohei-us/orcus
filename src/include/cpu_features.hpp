@@ -8,17 +8,17 @@
 #ifndef INCLUDED_ORCUS_DETAIL_CPU_FEATURES_HPP
 #define INCLUDED_ORCUS_DETAIL_CPU_FEATURES_HPP
 
-#ifdef __ORCUS_CPU_FEATURES
-#include <cpu_features/cpuinfo_x86.h>
-#endif
-
 namespace orcus { namespace detail { namespace cpu {
 
 #ifdef __ORCUS_CPU_FEATURES
 
 inline bool has_sse42()
 {
-    return !!cpu_features::GetX86Info().features.sse4_2;
+#ifdef __SSE4_2__
+    return true;
+#else
+    return false;
+#endif
 }
 
 #else
