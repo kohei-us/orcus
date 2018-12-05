@@ -188,6 +188,10 @@ AS_IF([test "x$with_gnumeric_filter" != "xno"], [
         BOOST_IOSTREAMS
 ])
 
+AS_IF([test "x$with_cpu_features" != "xno"], [
+        CXXFLAGS="$CXXFLAGS -D__ORCUS_CPU_FEATURES"
+])
+
 AS_IF([test "x$with_tools" != "xno"], [
         BOOST_PROGRAM_OPTIONS
         BOOST_SYSTEM
