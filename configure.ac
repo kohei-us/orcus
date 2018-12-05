@@ -159,6 +159,12 @@ AC_ARG_WITH(gnumeric-filter,
 	[with_gnumeric_filter=yes]
 )
 
+AC_ARG_WITH(cpu-features,
+        AS_HELP_STRING([--with-cpu-features], [Enables custom CPU features.]),
+        [with_cpu_features="$withval"],
+        [with_cpu_features=no]
+)
+
 AM_CONDITIONAL([WITH_ODS_FILTER], [test "x$with_ods_filter" != "xno"])
 AM_CONDITIONAL([WITH_XLSX_FILTER], [test "x$with_xlsx_filter" != "xno"])
 AM_CONDITIONAL([WITH_XLS_XML_FILTER], [test "x$with_xls_xml_filter" != "xno"])
@@ -343,6 +349,7 @@ Build configuration:
         python-ods             $with_python_ods
         python-xls-xml         $with_python_xls_xml
         python-gnumeric        $with_python_gnumeric
+        cpu-features           $with_cpu_features
 ==============================================================================
 ])
 
