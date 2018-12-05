@@ -12,7 +12,7 @@ namespace orcus { namespace detail { namespace cpu {
 
 #ifdef __ORCUS_CPU_FEATURES
 
-inline bool has_sse42()
+constexpr bool has_sse42()
 {
 #ifdef __SSE4_2__
     return true;
@@ -23,7 +23,7 @@ inline bool has_sse42()
 
 #else
 
-inline bool has_sse42() { return false; }
+constexpr bool has_sse42() { return false; }
 
 #endif
 
