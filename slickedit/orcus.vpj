@@ -263,6 +263,9 @@
 			<F N="../parser_handlers/yaml_test.cpp"/>
 		</Folder>
 		<Folder Name="../src">
+			<Folder Name="include">
+				<F N="../src/include/cpu_features.hpp"/>
+			</Folder>
 			<Folder Name="liborcus">
 				<F N="../src/liborcus/common_test.cpp"/>
 				<F N="../src/liborcus/config.cpp"/>

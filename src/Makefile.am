@@ -1,11 +1,14 @@
-SUBDIRS = parser mso liborcus spreadsheet python
+SUBDIRS = include parser mso liborcus spreadsheet python
 
-AM_CPPFLAGS = -I$(top_srcdir)/include
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/src/include
 
 bin_PROGRAMS =
 
 EXTRA_PROGRAMS = \
-	orcus-test-xml
+	orcus-test-xml \
+	orcus-env-dump
 
 AM_CPPFLAGS += $(BOOST_CPPFLAGS) $(LIBIXION_CFLAGS)
 
@@ -24,7 +27,8 @@ orcus_test_xml_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLA
 
 
 TESTS = \
-	orcus-test-xml
+	orcus-test-xml \
+	orcus-env-dump
 
 if WITH_TOOLS
 
@@ -139,6 +143,16 @@ orcus_detect_LDADD = \
 	$(BOOST_SYSTEM_LIBS)
 
 orcus_detect_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
+
+#----------------------------------------------------------------------------
+
+# orcus-env-dump
+
+orcus_env_dump_SOURCES = orcus_env_dump.cpp
+orcus_env_dump_LDADD = \
+	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	liborcus/liborcus-@ORCUS_API_VERSION@.la
+orcus_env_dump_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 #----------------------------------------------------------------------------
 
