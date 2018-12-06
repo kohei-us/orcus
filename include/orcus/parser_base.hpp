@@ -86,6 +86,14 @@ protected:
     size_t remaining_size() const;
 
     /**
+     * Determine the number of characters available from the current character
+     * to the end of the buffer.  The current character is included.
+     *
+     * @return number of characters available including the current character.
+     */
+    size_t available_size() const;
+
+    /**
      * Return the current offset from the beginning of the character stream.
      *
      * @return current offset from the beginning of the character stream.
