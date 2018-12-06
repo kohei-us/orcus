@@ -44,6 +44,11 @@ bool is_numeric(char c)
 
 bool is_in(char c, const char* allowed, size_t n_allowed)
 {
+#ifdef __ORCUS_DEBUG_UTILS
+    if (allowed && !n_allowed)
+        throw std::invalid_argument("'allowed' pointer is non-null but the value of 'n_allowed' is 0.");
+#endif
+
     const char* p_end = allowed + n_allowed;
 
     for (; allowed != p_end; ++allowed)

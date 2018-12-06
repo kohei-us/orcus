@@ -91,19 +91,31 @@ BOOST_SYSTEM
 AM_CONDITIONAL([HAVE_STATIC_LIB],
                [test "$enable_shared" = no -a "$enable_static" = yes])
 
+# =====================
+# Development Utilities
+# =====================
+AC_ARG_ENABLE(debug-utils,
+        AC_HELP_STRING([--enable-debug-utils], [Build with extra checks useful during development.])
+)
+
 # =====
 # Debug
 # =====
 AC_ARG_ENABLE(debug,
-	AS_HELP_STRING([--enable-debug], [Build with debug features in mind.])],
+	AS_HELP_STRING([--enable-debug], [Build with debug features in mind.]),
 	[enable_debug="$enableval"],
 	[enable_debug=no]
 )
 AS_IF([test "x$enable_debug" != "xno"], [
 	CXXFLAGS="$CXXFLAGS -g -O0 -DMDDS_ASSERT_STRING_MAP"
+        enable_debug_utils=yes
 ], [
 	CXXFLAGS="$CXXFLAGS -O2"
 	AC_DEFINE([NDEBUG], [], [Disable debugging information])
+])
+
+AS_IF([test "x$eanble_debug_utils" != "xno"], [
+        CXXFLAGS="$CXXFLAGS -D__ORCUS_DEBUG_UTILS"
 ])
 
 # zlib is a hard requirement in liborcus-parser.
@@ -341,6 +353,7 @@ AC_MSG_NOTICE([
 ==============================================================================
 Build configuration:
         debug                  $enable_debug
+        debug-utils            $enable_debug_utils
         werror                 $enable_werror
         spreadsheet-model      $enable_spreadsheet_model
         gnumeric-filter        $with_gnumeric_filter
