@@ -59,6 +59,13 @@ protected:
     void skip_sse42(const char* chars_to_skip, size_t n_chars_to_skip);
 
     /**
+     * Skip all characters that are 0-32 in ASCII range
+     */
+    void skip_space_and_control();
+
+    void skip_space_and_control_sse42();
+
+    /**
      * Parse and check next characters to see if it matches specified
      * character sequence.
      *

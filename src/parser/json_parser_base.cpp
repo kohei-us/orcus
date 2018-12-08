@@ -101,12 +101,7 @@ parse_quoted_string_state parser_base::parse_string()
 
 void parser_base::skip_blanks()
 {
-#if 1
-    skip(ORCUS_ASCII(" \t\n"));
-#else
-    for (; mp_char != mp_end && *mp_char <= ' '; ++mp_char)
-        ;
-#endif
+    skip_space_and_control();
 }
 
 }}
