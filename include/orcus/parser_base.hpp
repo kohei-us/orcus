@@ -56,6 +56,8 @@ protected:
 
     void skip(const char* chars_to_skip, size_t n_chars_to_skip);
 
+    void skip_sse42(const char* chars_to_skip, size_t n_chars_to_skip);
+
     /**
      * Parse and check next characters to see if it matches specified
      * character sequence.
@@ -91,7 +93,10 @@ protected:
      *
      * @return number of characters available including the current character.
      */
-    size_t available_size() const;
+    size_t available_size() const
+    {
+        return std::distance(mp_char, mp_end);
+    }
 
     /**
      * Return the current offset from the beginning of the character stream.

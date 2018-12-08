@@ -7,11 +7,16 @@
 
 #include "orcus/parser_base.hpp"
 #include "orcus/parser_global.hpp"
+#include "cpu_features.hpp"
 
 #include <sstream>
 #include <cstring>
 #include <limits>
 #include <cassert>
+
+#ifdef __ORCUS_CPU_FEATURES
+#include <immintrin.h>
+#endif
 
 namespace orcus {
 
@@ -84,12 +89,52 @@ char parser_base::next_char() const
 
 void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
 {
+    if (detail::cpu::has_sse42())
+    {
+        skip_sse42(chars_to_skip, n_chars_to_skip);
+        return;
+    }
+
     for (; has_char(); next())
     {
         if (!is_in(*mp_char, chars_to_skip, n_chars_to_skip))
             break;
     }
 }
+
+#ifdef __ORCUS_CPU_FEATURES
+
+void parser_base::skip_sse42(const char* chars_to_skip, size_t n_chars_to_skip)
+{
+    __m128i match = _mm_loadu_si128((const __m128i*)chars_to_skip);
+
+    size_t n = std::min<size_t>(16u, available_size());
+
+    while (n)
+    {
+        __m128i char_block = _mm_loadu_si128((const __m128i*)mp_char);
+
+        // Find position of the first character that is NOT any of the
+        // characters to skip.
+        size_t r = _mm_cmpestri(
+            match, n_chars_to_skip, char_block, n,
+            _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_EQUAL_ANY | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY);
+
+        if (!r)
+            // No characters to skip. Bail out.
+            break;
+
+        mp_char += r; // Move the current char position.
+
+        if (r < 16)
+            // No need to move to the next segment. Stop here.
+            break;
+
+        n = std::min<size_t>(16u, available_size());
+    }
+}
+
+#endif
 
 bool parser_base::parse_expected(const char* expected)
 {
@@ -122,11 +167,6 @@ size_t parser_base::remaining_size() const
 {
     size_t n = available_size();
     return n ? (n - 1) : 0;
-}
-
-size_t parser_base::available_size() const
-{
-    return std::distance(mp_char, mp_end);
 }
 
 std::ptrdiff_t parser_base::offset() const
