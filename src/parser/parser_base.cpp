@@ -185,7 +185,7 @@ bool parser_base::parse_expected(const char* expected)
 
 double parser_base::parse_double()
 {
-    size_t max_length = remaining_size();
+    size_t max_length = available_size();
     const char* p = mp_char;
     double val = parse_numeric(p, max_length);
     if (p == mp_char)
