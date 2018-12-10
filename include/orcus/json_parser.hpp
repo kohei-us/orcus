@@ -61,7 +61,7 @@ void json_parser<_Handler>::parse()
 {
     m_handler.begin_parse();
 
-    skip_blanks();
+    skip_space_and_control();
     if (has_char())
         root_value();
 
@@ -143,13 +143,13 @@ void json_parser<_Handler>::array()
         {
             m_handler.end_array();
             next();
-            skip_blanks();
+            skip_space_and_control();
             return;
         }
 
-        skip_blanks();
+        skip_space_and_control();
         value();
-        skip_blanks();
+        skip_space_and_control();
 
         if (has_char())
         {
@@ -158,7 +158,7 @@ void json_parser<_Handler>::array()
                 case ']':
                     m_handler.end_array();
                     next();
-                    skip_blanks();
+                    skip_space_and_control();
                     return;
                 case ',':
                     continue;
@@ -187,7 +187,7 @@ void json_parser<_Handler>::object()
     m_handler.begin_object();
     for (next(); has_char(); next())
     {
-        skip_blanks();
+        skip_space_and_control();
         if (!has_char())
             throw json::parse_error("object: stream ended prematurely before reaching a key.", offset());
 
@@ -196,7 +196,7 @@ void json_parser<_Handler>::object()
             case '}':
                 m_handler.end_object();
                 next();
-                skip_blanks();
+                skip_space_and_control();
                 return;
             case '"':
                 break;
@@ -220,20 +220,20 @@ void json_parser<_Handler>::object()
 
         m_handler.object_key(res.str, res.length, res.transient);
 
-        skip_blanks();
+        skip_space_and_control();
         if (cur_char() != ':')
             json::parse_error::throw_with(
                 "object: ':' was expected, but '", cur_char(), "' found.", offset());
 
         next();
-        skip_blanks();
+        skip_space_and_control();
 
         if (!has_char())
             throw json::parse_error("object: stream ended prematurely before reaching a value.", offset());
 
         value();
 
-        skip_blanks();
+        skip_space_and_control();
         if (!has_char())
             throw json::parse_error("object: stream ended prematurely before reaching either ']' or ','.", offset());
 
@@ -242,7 +242,7 @@ void json_parser<_Handler>::object()
             case '}':
                 m_handler.end_object();
                 next();
-                skip_blanks();
+                skip_space_and_control();
                 return;
             case ',':
                 continue;
@@ -262,7 +262,7 @@ void json_parser<_Handler>::number()
 
     double val = parse_double_or_throw();
     m_handler.number(val);
-    skip_blanks();
+    skip_space_and_control();
 }
 
 template<typename _Handler>

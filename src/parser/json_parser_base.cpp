@@ -45,7 +45,7 @@ void parser_base::parse_true()
     if (!parse_expected(expected))
         throw parse_error("parse_true: boolean 'true' expected.", offset());
 
-    skip_blanks();
+    skip_space_and_control();
 }
 
 void parser_base::parse_false()
@@ -54,7 +54,7 @@ void parser_base::parse_false()
     if (!parse_expected(expected))
         throw parse_error("parse_false: boolean 'false' expected.", offset());
 
-    skip_blanks();
+    skip_space_and_control();
 }
 
 void parser_base::parse_null()
@@ -63,7 +63,7 @@ void parser_base::parse_null()
     if (!parse_expected(expected))
         throw parse_error("parse_null: null expected.", offset());
 
-    skip_blanks();
+    skip_space_and_control();
 }
 
 long parser_base::parse_long_or_throw()
@@ -94,14 +94,9 @@ parse_quoted_string_state parser_base::parse_string()
     mp_char = p;
 
     if (ret.str)
-        skip_blanks();
+        skip_space_and_control();
 
     return ret;
-}
-
-void parser_base::skip_blanks()
-{
-    skip_space_and_control();
 }
 
 }}

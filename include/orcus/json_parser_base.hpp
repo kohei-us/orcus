@@ -48,8 +48,6 @@ protected:
     double parse_double_or_throw();
 
     parse_quoted_string_state parse_string();
-
-    void skip_blanks();
 };
 
 }}

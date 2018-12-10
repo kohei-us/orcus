@@ -63,8 +63,6 @@ protected:
      */
     void skip_space_and_control();
 
-    void skip_space_and_control_sse42();
-
     /**
      * Parse and check next characters to see if it matches specified
      * character sequence.
