@@ -127,7 +127,7 @@ void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
 void parser_base::skip_space_and_control()
 {
 #if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
-    __m128i match = _mm_loadu_si128((const __m128i*)"\0 ");
+    static __m128i match = _mm_loadu_si128((const __m128i*)"\0 ");
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_RANGES | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
     int n = std::min<int>(16, available_size());
 
