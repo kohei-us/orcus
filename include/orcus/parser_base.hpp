@@ -56,8 +56,6 @@ protected:
 
     void skip(const char* chars_to_skip, size_t n_chars_to_skip);
 
-    void skip_sse42(const char* chars_to_skip, size_t n_chars_to_skip);
-
     /**
      * Skip all characters that are 0-32 in ASCII range
      */
