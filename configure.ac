@@ -95,7 +95,9 @@ AM_CONDITIONAL([HAVE_STATIC_LIB],
 # Development Utilities
 # =====================
 AC_ARG_ENABLE(debug-utils,
-        AC_HELP_STRING([--enable-debug-utils], [Build with extra checks useful during development.])
+        AC_HELP_STRING([--enable-debug-utils], [Build with extra checks useful during development.]),
+        [enable_debug_utils="$enableval"],
+        [enable_debug_utils=no]
 )
 
 # =====
