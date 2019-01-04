@@ -113,7 +113,8 @@ void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
             // No need to move to the next segment. Stop here.
             break;
 
-        n = std::min<int>(16, available_size());
+        // Skip 16 chars to the next segment.
+        n -= 16;
     }
 #else
     for (; has_char(); next())
@@ -127,7 +128,7 @@ void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
 void parser_base::skip_space_and_control()
 {
 #if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
-    static __m128i match = _mm_loadu_si128((const __m128i*)"\0 ");
+    __m128i match = _mm_loadu_si128((const __m128i*)"\0 ");
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_RANGES | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
     int n = std::min<int>(16, available_size());
 
@@ -149,7 +150,8 @@ void parser_base::skip_space_and_control()
             // No need to move to the next segment. Stop here.
             break;
 
-        n = std::min<int>(16, available_size());
+        // Skip 16 chars to the next segment.
+        n -= 16;
     }
 #else
     for (; mp_char != mp_end && *mp_char <= ' '; ++mp_char)
