@@ -537,6 +537,7 @@
 			<F N="../src/orcus_css_dump.cpp"/>
 			<F N="../src/orcus_csv_main.cpp"/>
 			<F N="../src/orcus_detect_main.cpp"/>
+			<F N="../src/orcus_env_dump.cpp"/>
 			<F N="../src/orcus_filter_global.cpp"/>
 			<F N="../src/orcus_filter_global.hpp"/>
 			<F N="../src/orcus_gnumeric_main.cpp"/>
