@@ -76,6 +76,12 @@ struct json_value final
     detail::node_t type;
     json_value* parent;
 
+    union
+    {
+        double numeric;
+
+    } value;
+
     std::unique_ptr<json_value_store> store;
 
     json_value(const json_value&) = delete;
@@ -107,23 +113,6 @@ struct json_value_string : public json_value_store
     json_value_string() {}
     json_value_string(const pstring& s) : value_string(s) {}
     virtual ~json_value_string() override {}
-};
-
-struct json_value_number : public json_value_store
-{
-    static json_value* create(document_resource& res, double num)
-    {
-        json_value* ret = res.obj_pool.construct(detail::node_t::number);
-        ret->store = orcus::make_unique<json_value_number>(num);
-        return ret;
-    }
-
-    double value_number;
-
-    json_value_number() : value_number(std::numeric_limits<double>::quiet_NaN()) {}
-    json_value_number(double num) : value_number(num) {}
-
-    virtual ~json_value_number() override {}
 };
 
 struct json_value_array : public json_value_store
@@ -231,7 +220,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
             os << "null";
         break;
         case detail::node_t::number:
-            os << static_cast<const json_value_number*>(v->store.get())->value_number;
+            os << v->value.numeric;
         break;
         case detail::node_t::object:
         {
@@ -368,7 +357,7 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
         break;
         case detail::node_t::number:
             os << "<number value=\"";
-            os << static_cast<const json_value_number*>(v->store.get())->value_number;
+            os << v->value.numeric;
             os << "\"/>";
         break;
         case detail::node_t::object:
@@ -611,7 +600,9 @@ public:
 
     void number(double val)
     {
-        push_value(json_value_number::create(m_res, val));
+        json_value* jv = m_res.obj_pool.construct(detail::node_t::number);
+        jv->value.numeric = val;
+        push_value(jv);
     }
 
     json_value* get_root()
@@ -794,9 +785,7 @@ double const_node::numeric_value() const
     if (mp_impl->m_node->type != detail::node_t::number)
         throw document_error("node::key: current node is not of numeric type.");
 
-    const json_value_number* jvn =
-        static_cast<const json_value_number*>(mp_impl->m_node->store.get());
-    return jvn->value_number;
+    return mp_impl->m_node->value.numeric;
 }
 
 node::node(const document_tree* doc, json_value* jv) : const_node(doc, jv) {}
@@ -1125,7 +1114,8 @@ json_value* node::to_json_value(document_resource& res) const
             break;
         }
         case detail::node_t::number:
-            jv = json_value_number::create(res, mp_impl->m_value_number);
+            jv = res.obj_pool.construct(mp_impl->m_type);
+            jv->value.numeric = mp_impl->m_value_number;
             break;
         case detail::node_t::boolean_true:
         case detail::node_t::boolean_false:
@@ -1156,7 +1146,7 @@ void node::store_to_node(document_resource& res, json_value* parent) const
             break;
         }
         case detail::node_t::number:
-            jvs = orcus::make_unique<json_value_number>(mp_impl->m_value_number);
+            parent->value.numeric = mp_impl->m_value_number;
             break;
         case detail::node_t::object:
         {
