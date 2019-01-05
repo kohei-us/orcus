@@ -189,6 +189,7 @@ void json_parser<_Handler>::object()
 {
     assert(cur_char() == '{');
 
+    bool require_new_key = false;
     m_handler.begin_object();
     for (next(); has_char(); next())
     {
@@ -199,6 +200,11 @@ void json_parser<_Handler>::object()
         switch (cur_char())
         {
             case '}':
+                if (require_new_key)
+                {
+                    json::parse_error::throw_with(
+                        "object: new key expected, but '", cur_char(), "' found.", offset());
+                }
                 m_handler.end_object();
                 next();
                 skip_space_and_control();
@@ -209,6 +215,7 @@ void json_parser<_Handler>::object()
                 json::parse_error::throw_with(
                     "object: '\"' was expected, but '", cur_char(), "' found.", offset());
         }
+        require_new_key = false;
 
         parse_quoted_string_state res = parse_string();
         if (!res.str)
@@ -250,6 +257,7 @@ void json_parser<_Handler>::object()
                 skip_space_and_control();
                 return;
             case ',':
+                require_new_key = true;
                 continue;
             default:
                 json::parse_error::throw_with(
