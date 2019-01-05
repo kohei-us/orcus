@@ -64,6 +64,8 @@ void json_parser<_Handler>::parse()
     skip_space_and_control();
     if (has_char())
         root_value();
+    else
+        throw json::parse_error("parse: no json content could be found in file", offset());
 
     if (has_char())
         throw json::parse_error("parse: unexpected trailing string segment.", offset());
