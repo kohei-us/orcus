@@ -49,6 +49,7 @@ EXTRA_PROGRAMS = \
 	parser-test-threaded-json-parser \
 	parser-test-zip-archive \
 	parser-test-base \
+	parser-test-global \
 	parser-test-json-validation
 
 # parser-test-string-pool
@@ -127,6 +128,14 @@ parser_test_base_SOURCES = \
 parser_test_base_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 parser_test_base_CPPFLAGS = $(AM_CPPFLAGS)
 
+# parser-test-global
+
+parser_test_global_SOURCES = \
+	parser_global_test.cpp
+
+parser_test_global_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+parser_test_global_CPPFLAGS = $(AM_CPPFLAGS)
+
 # parser-test-json-validation
 
 parser_test_json_validation_SOURCES = \
@@ -146,6 +155,7 @@ TESTS = \
 	parser-test-stream \
 	parser-test-zip-archive \
 	parser-test-base \
+	parser-test-global \
 	parser-test-json-validation
 
 distclean-local:
