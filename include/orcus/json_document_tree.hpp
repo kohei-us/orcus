@@ -344,7 +344,7 @@ public:
 
 private:
     node_t type() const;
-    std::unique_ptr<json_value> to_json_value(document_resource& res) const;
+    json_value* to_json_value(document_resource& res) const;
     void store_to_node(document_resource& res, json_value* parent) const;
 };
 

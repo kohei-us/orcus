@@ -79,6 +79,8 @@ bool number_expected(
 string dump_check_content(const json::document_tree& doc)
 {
     string xml_strm = doc.dump_xml();
+    assert(!xml_strm.empty());
+
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
     dom_tree dom(cxt);
