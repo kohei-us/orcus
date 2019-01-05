@@ -12,6 +12,7 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include <limits>
 
 namespace orcus {
 
@@ -180,6 +181,9 @@ double parse_numeric(const char*& p, size_t max_length)
 
         if (*p < '0' || '9' < *p)
         {
+            if (!has_digit) // without a digit we have no numbers
+                return std::numeric_limits<double>::quiet_NaN();
+
             ret /= divisor;
             return negative_sign ? -ret : ret;
         }
