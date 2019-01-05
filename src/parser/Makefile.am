@@ -2,6 +2,7 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/src/include \
+	-DSRCDIR=\""$(top_srcdir)"\" \
 	$(BOOST_CPPFLAGS) \
 	-D__ORCUS_PSR_BUILDING_DLL
 
@@ -47,7 +48,8 @@ EXTRA_PROGRAMS = \
 	parser-test-stream \
 	parser-test-threaded-json-parser \
 	parser-test-zip-archive \
-	parser-test-base
+	parser-test-base \
+	parser-test-json-validation
 
 # parser-test-string-pool
 
@@ -125,6 +127,15 @@ parser_test_base_SOURCES = \
 parser_test_base_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 parser_test_base_CPPFLAGS = $(AM_CPPFLAGS)
 
+# parser-test-json-validation
+
+parser_test_json_validation_SOURCES = \
+	parser_test_json_validation.cpp
+
+parser_test_json_validation = liborcus-parser-@ORCUS_API_VERSION@.la
+parser_test_json_validation_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+parser_test_json_validation_CPPFLAGS = $(AM_CPPFLAGS)
+
 TESTS = \
 	parser-test-string-pool \
 	parser-test-xml-namespace \
@@ -134,7 +145,8 @@ TESTS = \
 	parser-test-threaded-json-parser \
 	parser-test-stream \
 	parser-test-zip-archive \
-	parser-test-base
+	parser-test-base \
+	parser-test-json-validation
 
 distclean-local:
 	rm -rf $(TESTS)
