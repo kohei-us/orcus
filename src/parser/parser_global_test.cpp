@@ -11,6 +11,7 @@
 #include <cmath>
 #include <cstring>
 #include <cassert>
+#include <limits>
 
 namespace {
 
@@ -43,14 +44,22 @@ void test_simple_numbers()
         {"2e2", 200.0},
         {"1.2", 1.2},
         {"-0.0001", -0.0001},
-        {"-0.0", 0.0}
+        {"-0.0", 0.0},
+        {"+.", std::numeric_limits<double>::signaling_NaN()}
     };
 
     for (const test_case& test_data : test_cases)
     {
         const char* str = test_data.str;
         double val = orcus::parse_numeric(str, std::strlen(test_data.str));
-        assert(val == test_data.val);
+        if (std::isnan(test_data.val))
+        {
+            assert(std::isnan(val));
+        }
+        else
+        {
+            assert(val == test_data.val);
+        }
     }
 }
 

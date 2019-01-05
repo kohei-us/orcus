@@ -195,6 +195,8 @@ double parse_numeric(const char*& p, size_t max_length)
         if (!before_decimal_pt)
             divisor *= 10.0;
     }
+    if (!has_digit) // without a digit we have no numbers
+        return std::numeric_limits<double>::quiet_NaN();
 
     ret /= divisor;
     return negative_sign ? -ret : ret;
