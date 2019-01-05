@@ -24,6 +24,7 @@
 
 #include <boost/current_function.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/pool/object_pool.hpp>
 
 namespace fs = boost::filesystem;
 
@@ -31,7 +32,8 @@ namespace orcus { namespace json {
 
 struct document_resource
 {
-    string_pool pool;
+    string_pool str_pool;
+    boost::object_pool<json_value> obj_pool;
 };
 
 namespace detail {
@@ -579,7 +581,7 @@ public:
         cur.key = pstring(p, len);
         if (m_config.persistent_string_values || transient)
             // The tree manages the life cycle of this string value.
-            cur.key = m_pool.pool.intern(cur.key).first;
+            cur.key = m_pool.str_pool.intern(cur.key).first;
     }
 
     void end_object()
@@ -608,7 +610,7 @@ public:
         pstring s(p, len);
         if (m_config.persistent_string_values || transient)
             // The tree manages the life cycle of this string value.
-            s = m_pool.pool.intern(s).first;
+            s = m_pool.str_pool.intern(s).first;
 
         push_value(json_value_string::create(s));
     }
@@ -1083,7 +1085,7 @@ std::unique_ptr<json_value> node::to_json_value(document_resource& res) const
             auto it = mp_impl->m_value_array.begin();
             const detail::init::node& key_node = *it;
             assert(key_node.mp_impl->m_type == detail::node_t::string);
-            pstring key = res.pool.intern(key_node.mp_impl->m_value_string).first;
+            pstring key = res.str_pool.intern(key_node.mp_impl->m_value_string).first;
             ++it;
             std::unique_ptr<json_value> value = it->to_json_value(res);
             if (value->type == detail::node_t::key_value)
@@ -1122,7 +1124,7 @@ std::unique_ptr<json_value> node::to_json_value(document_resource& res) const
         }
         case detail::node_t::string:
         {
-            pstring s = res.pool.intern(mp_impl->m_value_string).first;
+            pstring s = res.str_pool.intern(mp_impl->m_value_string).first;
             jv = json_value_string::create(s);
             break;
         }
@@ -1153,7 +1155,7 @@ void node::store_to_node(document_resource& res, json_value* parent) const
             throw document_error("node type is unset.");
         case detail::node_t::string:
         {
-            pstring s = res.pool.intern(mp_impl->m_value_string).first;
+            pstring s = res.str_pool.intern(mp_impl->m_value_string).first;
             jvs = orcus::make_unique<json_value_string>(s);
             break;
         }
