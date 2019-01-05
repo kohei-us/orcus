@@ -80,6 +80,13 @@ struct json_value final
     {
         double numeric;
 
+        struct
+        {
+            const char* p;
+            size_t n;
+
+        } str;
+
     } value;
 
     std::unique_ptr<json_value_store> store;
@@ -98,22 +105,6 @@ const char* tab = "    ";
 const char quote = '"';
 
 const xmlns_id_t NS_orcus_json_xml = "http://schemas.kohei.us/orcus/2015/json";
-
-struct json_value_string : public json_value_store
-{
-    static json_value* create(document_resource& res, const pstring& s)
-    {
-        json_value* ret = res.obj_pool.construct(detail::node_t::string);
-        ret->store = orcus::make_unique<json_value_string>(s);
-        return ret;
-    }
-
-    pstring value_string;
-
-    json_value_string() {}
-    json_value_string(const pstring& s) : value_string(s) {}
-    virtual ~json_value_string() override {}
-};
 
 struct json_value_array : public json_value_store
 {
@@ -262,7 +253,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
         case detail::node_t::string:
             json::dump_string(
                 os,
-                static_cast<const json_value_string*>(v->store.get())->value_string.str());
+                std::string(v->value.str.p, v->value.str.n));
         break;
         case detail::node_t::unset:
         default:
@@ -399,7 +390,7 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
         break;
         case detail::node_t::string:
             os << "<string value=\"";
-            dump_string_xml(os, static_cast<const json_value_string*>(v->store.get())->value_string);
+            dump_string_xml(os, pstring(v->value.str.p, v->value.str.n));
             os << "\"/>";
         break;
         case detail::node_t::unset:
@@ -480,12 +471,12 @@ class parser_handler
                 if (m_config.resolve_references &&
                     key == "$ref" && value->type == detail::node_t::string)
                 {
-                    json_value_string* jvs = static_cast<json_value_string*>(value->store.get());
-                    if (!jvo->has_ref && !jvs->value_string.empty() && jvs->value_string[0] != '#')
+                    pstring sv(value->value.str.p, value->value.str.n);
+                    if (!jvo->has_ref && !sv.empty() && sv[0] != '#')
                     {
                         // Store the external reference path and the destination
                         // object for later processing.
-                        m_external_refs.emplace_back(jvs->value_string, jvo);
+                        m_external_refs.emplace_back(sv, jvo);
                         jvo->has_ref = true;
                     }
                 }
@@ -595,7 +586,10 @@ public:
             // The tree manages the life cycle of this string value.
             s = m_res.str_pool.intern(s).first;
 
-        push_value(json_value_string::create(m_res, s));
+        json_value* jv = m_res.obj_pool.construct(detail::node_t::string);
+        jv->value.str.p = s.data();
+        jv->value.str.n = s.size();
+        push_value(jv);
     }
 
     void number(double val)
@@ -775,9 +769,7 @@ pstring const_node::string_value() const
     if (mp_impl->m_node->type != detail::node_t::string)
         throw document_error("node::key: current node is not of string type.");
 
-    const json_value_string* jvs =
-        static_cast<const json_value_string*>(mp_impl->m_node->store.get());
-    return jvs->value_string;
+    return pstring(mp_impl->m_node->value.str.p, mp_impl->m_node->value.str.n);
 }
 
 double const_node::numeric_value() const
@@ -1110,7 +1102,9 @@ json_value* node::to_json_value(document_resource& res) const
         case detail::node_t::string:
         {
             pstring s = res.str_pool.intern(mp_impl->m_value_string).first;
-            jv = json_value_string::create(res, s);
+            jv = res.obj_pool.construct(mp_impl->m_type);
+            jv->value.str.p = s.data();
+            jv->value.str.n = s.size();
             break;
         }
         case detail::node_t::number:
@@ -1142,7 +1136,8 @@ void node::store_to_node(document_resource& res, json_value* parent) const
         case detail::node_t::string:
         {
             pstring s = res.str_pool.intern(mp_impl->m_value_string).first;
-            jvs = orcus::make_unique<json_value_string>(s);
+            parent->value.str.p = s.data();
+            parent->value.str.n = s.size();
             break;
         }
         case detail::node_t::number:
