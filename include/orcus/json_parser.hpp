@@ -161,6 +161,11 @@ void json_parser<_Handler>::array()
                     skip_space_and_control();
                     return;
                 case ',':
+                    if (next_char() == ']')
+                    {
+                        json::parse_error::throw_with(
+                            "array: ']' expected but '", cur_char(), "' found.", offset() );
+                    }
                     continue;
                 default:
                     json::parse_error::throw_with(
