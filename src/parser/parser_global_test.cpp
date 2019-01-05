@@ -15,27 +15,13 @@
 
 namespace {
 
-void test_just_minus_as_number()
-{
-    const char* str = "- ";
-    double val = orcus::parse_numeric(str, 2);
-    assert(std::isnan(val));
-}
-
-void test_just_plus_as_number()
-{
-    const char* str = "+ ";
-    double val = orcus::parse_numeric(str, 2);
-    assert(std::isnan(val));
-}
-
 struct test_case
 {
     const char* str;
     double val;
 };
 
-void test_simple_numbers()
+void test_parse_numbers()
 {
     std::vector<test_case> test_cases = {
         {"1", 1.0},
@@ -45,7 +31,11 @@ void test_simple_numbers()
         {"1.2", 1.2},
         {"-0.0001", -0.0001},
         {"-0.0", 0.0},
-        {"+.", std::numeric_limits<double>::signaling_NaN()}
+        {"+.", std::numeric_limits<double>::signaling_NaN()},
+        {"+e", std::numeric_limits<double>::signaling_NaN()},
+        {"+e1", std::numeric_limits<double>::signaling_NaN()},
+        {"+ ",  std::numeric_limits<double>::signaling_NaN()},
+        {"- ",  std::numeric_limits<double>::signaling_NaN()},
     };
 
     for (const test_case& test_data : test_cases)
@@ -67,9 +57,7 @@ void test_simple_numbers()
 
 int main()
 {
-    test_just_minus_as_number();
-    test_just_plus_as_number();
-    test_simple_numbers();
+    test_parse_numbers();
 
     return 0;
 }
