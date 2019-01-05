@@ -18,13 +18,13 @@
 namespace orcus {
 
 class pstring;
-class string_pool;
 struct json_config;
 
 namespace json {
 
 struct json_value;
 struct json_value_store;
+struct document_resource;
 class document_tree;
 
 /**
@@ -344,8 +344,8 @@ public:
 
 private:
     node_t type() const;
-    std::unique_ptr<json_value> to_json_value(string_pool& pool) const;
-    void store_to_node(string_pool& pool, json_value* parent) const;
+    std::unique_ptr<json_value> to_json_value(document_resource& res) const;
+    void store_to_node(document_resource& res, json_value* parent) const;
 };
 
 }}
@@ -361,13 +361,13 @@ class ORCUS_DLLPUBLIC document_tree
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
-    const string_pool& get_string_pool() const;
+    const document_resource& get_resource() const;
 
 public:
     document_tree();
     document_tree(const document_tree&) = delete;
     document_tree(document_tree&& other);
-    document_tree(string_pool& pool);
+    document_tree(document_resource& res);
     document_tree(std::initializer_list<detail::init::node> vs);
     document_tree(array vs);
     document_tree(object obj);

@@ -29,6 +29,11 @@ namespace fs = boost::filesystem;
 
 namespace orcus { namespace json {
 
+struct document_resource
+{
+    string_pool pool;
+};
+
 namespace detail {
 
 enum class node_t : int
@@ -464,7 +469,7 @@ class parser_handler
     std::vector<parser_stack> m_stack;
     std::vector<external_ref> m_external_refs;
 
-    string_pool& m_pool;
+    document_resource& m_pool;
 
     json_value* push_value(std::unique_ptr<json_value>&& value)
     {
@@ -520,7 +525,7 @@ class parser_handler
     }
 
 public:
-    parser_handler(const json_config& config, string_pool& pool) :
+    parser_handler(const json_config& config, document_resource& pool) :
         m_config(config), m_pool(pool) {}
 
     void begin_parse()
@@ -574,7 +579,7 @@ public:
         cur.key = pstring(p, len);
         if (m_config.persistent_string_values || transient)
             // The tree manages the life cycle of this string value.
-            cur.key = m_pool.intern(cur.key).first;
+            cur.key = m_pool.pool.intern(cur.key).first;
     }
 
     void end_object()
@@ -603,7 +608,7 @@ public:
         pstring s(p, len);
         if (m_config.persistent_string_values || transient)
             // The tree manages the life cycle of this string value.
-            s = m_pool.intern(s).first;
+            s = m_pool.pool.intern(s).first;
 
         push_value(json_value_string::create(s));
     }
@@ -816,10 +821,10 @@ node& node::operator=(const node& other)
 
 node& node::operator=(const detail::init::node& v)
 {
-    string_pool& pool =
-        const_cast<string_pool&>(mp_impl->m_doc->get_string_pool());
+    document_resource& res =
+        const_cast<document_resource&>(mp_impl->m_doc->get_resource());
 
-    v.store_to_node(pool, mp_impl->m_node);
+    v.store_to_node(res, mp_impl->m_node);
 
     return *this;
 }
@@ -868,8 +873,8 @@ void node::push_back(const detail::init::node& v)
         throw document_error("node::push_back: the node must be of array type.");
 
     json_value_array* jva = static_cast<json_value_array*>(mp_impl->m_node->store.get());
-    const string_pool& pool = mp_impl->m_doc->get_string_pool();
-    jva->value_array.push_back(v.to_json_value(const_cast<string_pool&>(pool)));
+    const document_resource& res = mp_impl->m_doc->get_resource();
+    jva->value_array.push_back(v.to_json_value(const_cast<document_resource&>(res)));
 }
 
 array::array() {}
@@ -1066,7 +1071,7 @@ json::node_t node::type() const
     return static_cast<json::node_t>(mp_impl->m_type);
 }
 
-std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
+std::unique_ptr<json_value> node::to_json_value(document_resource& res) const
 {
     std::unique_ptr<json_value> jv;
 
@@ -1078,9 +1083,9 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
             auto it = mp_impl->m_value_array.begin();
             const detail::init::node& key_node = *it;
             assert(key_node.mp_impl->m_type == detail::node_t::string);
-            pstring key = pool.intern(key_node.mp_impl->m_value_string).first;
+            pstring key = res.pool.intern(key_node.mp_impl->m_value_string).first;
             ++it;
-            std::unique_ptr<json_value> value = it->to_json_value(pool);
+            std::unique_ptr<json_value> value = it->to_json_value(res);
             if (value->type == detail::node_t::key_value)
                 throw key_value_error("nested key-value pairs are not allowed.");
 
@@ -1096,7 +1101,7 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
             bool object = true;
             for (const detail::init::node& v2 : mp_impl->m_value_array)
             {
-                std::unique_ptr<json_value> r = v2.to_json_value(pool);
+                std::unique_ptr<json_value> r = v2.to_json_value(res);
                 if (r->type != detail::node_t::key_value)
                     object = false;
                 nodes.push_back(std::move(r));
@@ -1117,7 +1122,7 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
         }
         case detail::node_t::string:
         {
-            pstring s = pool.intern(mp_impl->m_value_string).first;
+            pstring s = res.pool.intern(mp_impl->m_value_string).first;
             jv = json_value_string::create(s);
             break;
         }
@@ -1137,7 +1142,7 @@ std::unique_ptr<json_value> node::to_json_value(string_pool& pool) const
     return jv;
 }
 
-void node::store_to_node(string_pool& pool, json_value* parent) const
+void node::store_to_node(document_resource& res, json_value* parent) const
 {
     parent->type = mp_impl->m_type;
     std::unique_ptr<json_value_store> jvs;
@@ -1148,7 +1153,7 @@ void node::store_to_node(string_pool& pool, json_value* parent) const
             throw document_error("node type is unset.");
         case detail::node_t::string:
         {
-            pstring s = pool.intern(mp_impl->m_value_string).first;
+            pstring s = res.pool.intern(mp_impl->m_value_string).first;
             jvs = orcus::make_unique<json_value_string>(s);
             break;
         }
@@ -1168,7 +1173,7 @@ void node::store_to_node(string_pool& pool, json_value* parent) const
             bool object = true;
             for (const detail::init::node& v2 : mp_impl->m_value_array)
             {
-                std::unique_ptr<json_value> r = v2.to_json_value(pool);
+                std::unique_ptr<json_value> r = v2.to_json_value(res);
                 if (r->type != detail::node_t::key_value)
                     object = false;
                 nodes.push_back(std::move(r));
@@ -1197,26 +1202,26 @@ void node::store_to_node(string_pool& pool, json_value* parent) const
     parent->store = std::move(jvs);
 }
 
-}}
+}} // namespace detail::init
 
 struct document_tree::impl
 {
     std::unique_ptr<json::json_value> m_root;
-    std::unique_ptr<string_pool> m_own_pool;
-    string_pool& m_pool;
+    std::unique_ptr<document_resource> m_own_resl;
+    document_resource& m_res;
 
-    impl() : m_own_pool(orcus::make_unique<string_pool>()), m_pool(*m_own_pool) {}
-    impl(string_pool& pool) : m_pool(pool) {}
+    impl() : m_own_resl(orcus::make_unique<document_resource>()), m_res(*m_own_resl) {}
+    impl(document_resource& res) : m_res(res) {}
 };
 
-const string_pool& document_tree::get_string_pool() const
+const document_resource& document_tree::get_resource() const
 {
-    return mp_impl->m_pool;
+    return mp_impl->m_res;
 }
 
 document_tree::document_tree() : mp_impl(orcus::make_unique<impl>()) {}
 document_tree::document_tree(document_tree&& other) : mp_impl(std::move(other.mp_impl)) {}
-document_tree::document_tree(string_pool& pool) : mp_impl(orcus::make_unique<impl>(pool)) {}
+document_tree::document_tree(document_resource& res) : mp_impl(orcus::make_unique<impl>(res)) {}
 
 document_tree::document_tree(std::initializer_list<detail::init::node> vs) :
     mp_impl(orcus::make_unique<impl>())
@@ -1225,7 +1230,7 @@ document_tree::document_tree(std::initializer_list<detail::init::node> vs) :
     bool object = true;
     for (const detail::init::node& v : vs)
     {
-        std::unique_ptr<json_value> r = v.to_json_value(mp_impl->m_pool);
+        std::unique_ptr<json_value> r = v.to_json_value(mp_impl->m_res);
         if (r->type != detail::node_t::key_value)
             object = false;
         nodes.push_back(std::move(r));
@@ -1241,7 +1246,7 @@ document_tree::document_tree(array vs) : mp_impl(orcus::make_unique<impl>())
 
     for (const detail::init::node& v : vs.m_vs)
     {
-        std::unique_ptr<json_value> r = v.to_json_value(mp_impl->m_pool);
+        std::unique_ptr<json_value> r = v.to_json_value(mp_impl->m_res);
         jva->value_array.push_back(std::move(r));
     }
 }
@@ -1281,7 +1286,7 @@ void document_tree::load(const std::string& strm, const json_config& config)
 
 void document_tree::load(const char* p, size_t n, const json_config& config)
 {
-    json::parser_handler hdl(config, mp_impl->m_pool);
+    json::parser_handler hdl(config, mp_impl->m_res);
     json_parser<json::parser_handler> parser(p, n, hdl);
     parser.parse();
     hdl.swap(mp_impl->m_root);
@@ -1304,7 +1309,7 @@ void document_tree::load(const char* p, size_t n, const json_config& config)
         std::string ext_strm = load_file_content(extpath.string().c_str());
 
         ext_config.input_path = extpath.string();
-        document_tree doc(mp_impl->m_pool);
+        document_tree doc(mp_impl->m_res);
         try
         {
             doc.load(ext_strm, ext_config);
