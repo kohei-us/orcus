@@ -80,7 +80,7 @@ namespace {
  */
 double parse_exponent(const char*& p, const char* p_end)
 {
-    const char* p0 = p; // original position to restore to in case of parsing failure.
+    const char* p0 = p - 1; // original position to restore to in case of parsing failure. The e needs to be added back as well.
     double exponent = 0.0;
     bool negative_sign = false;
     bool valid = false;
