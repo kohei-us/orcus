@@ -159,7 +159,7 @@ void parser_base::skip_space_and_control()
         n = std::min<int>(16, n_total);
     }
 #else
-    for (; mp_char != mp_end && *mp_char <= ' '; ++mp_char)
+    for (; mp_char != mp_end && ((unsigned char)*mp_char) <= (unsigned char)' '; ++mp_char)
         ;
 #endif
 }
