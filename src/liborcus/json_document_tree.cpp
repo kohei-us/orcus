@@ -50,7 +50,10 @@ enum class node_t : int
     boolean_false = static_cast<int>(json::node_t::boolean_false),
     null          = static_cast<int>(json::node_t::null),
 
-    // internal only.
+    /**
+     * Value that represents a single key-value pair.  This is an internal
+     * only type, and only to be used in the initializer.
+     */
     key_value = 10,
 };
 
@@ -86,6 +89,14 @@ struct json_value final
             size_t n;
 
         } str;
+
+        struct
+        {
+            const char* key;
+            size_t n_key;
+            json_value* value;
+
+        } kvp; // key-value pair
 
     } value;
 
@@ -145,28 +156,6 @@ struct json_value_object : public json_value_store
         key_order.swap(src.key_order);
         value_object.swap(src.value_object);
     }
-};
-
-/**
- * Value that represents a single key-value pair. Only to be used in the
- * initializer.
- */
-struct json_value_kvp : public json_value_store
-{
-    static json_value* create(document_resource& res, const pstring& key, json_value* value)
-    {
-        json_value* ret = res.obj_pool.construct(detail::node_t::key_value);
-        ret->store = orcus::make_unique<json_value_kvp>(key, value);
-        return ret;
-    }
-
-    pstring key;
-    json_value* value;
-
-    json_value_kvp(const pstring& _key, json_value* _value) :
-        key(_key), value(_value) {}
-
-    virtual ~json_value_kvp() override {}
 };
 
 void dump_repeat(std::ostringstream& os, const char* s, int repeat)
@@ -881,14 +870,14 @@ json_value* aggregate_nodes(document_resource& res, std::vector<json_value*> nod
             if (const_node->type != detail::node_t::key_value)
                 throw document_error("key-value pair was expected.");
 
-            json_value_kvp& kv = static_cast<json_value_kvp&>(*const_node->store);
+            auto& kvp = const_node->value.kvp;
 
             if (preserve_object_order)
-                jvo->key_order.push_back(kv.key);
+                jvo->key_order.emplace_back(kvp.key, kvp.n_key);
 
-            kv.value->parent = jv;
+            kvp.value->parent = jv;
             auto r = jvo->value_object.insert(
-                std::make_pair(kv.key, std::move(kv.value)));
+                std::make_pair(pstring(kvp.key, kvp.n_key), kvp.value));
 
             if (!r.second)
                 throw document_error("adding the same key twice");
@@ -927,14 +916,14 @@ std::unique_ptr<json_value_store> aggregate_nodes_to_store(
             if (const_node->type != detail::node_t::key_value)
                 throw document_error("key-value pair was expected.");
 
-            json_value_kvp& kv = static_cast<json_value_kvp&>(*const_node->store);
+            auto& kvp = const_node->value.kvp;
 
             if (preserve_object_order)
-                jvo->key_order.push_back(kv.key);
+                jvo->key_order.emplace_back(kvp.key, kvp.n_key);
 
-            kv.value->parent = parent;
+            kvp.value->parent = parent;
             auto r = jvo->value_object.insert(
-                std::make_pair(kv.key, std::move(kv.value)));
+                std::make_pair(pstring(kvp.key, kvp.n_key), kvp.value));
 
             if (!r.second)
                 throw document_error("adding the same key twice");
@@ -1071,7 +1060,10 @@ json_value* node::to_json_value(document_resource& res) const
             ++it;
             assert(it == mp_impl->m_value_array.end());
 
-            jv = json_value_kvp::create(res, key, value);
+            jv = res.obj_pool.construct(mp_impl->m_type);
+            jv->value.kvp.key = key.data();
+            jv->value.kvp.n_key = key.size();
+            jv->value.kvp.value = value;
             break;
         }
         case detail::node_t::array:
