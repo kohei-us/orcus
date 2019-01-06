@@ -35,7 +35,7 @@ void test_parse_numbers()
         {"+e", std::numeric_limits<double>::signaling_NaN()},
         {"+e1", std::numeric_limits<double>::signaling_NaN()},
         {"+ ",  std::numeric_limits<double>::signaling_NaN()},
-        {"- ",  std::numeric_limits<double>::signaling_NaN()},
+        {"- ",  std::numeric_limits<double>::signaling_NaN()}
     };
 
     for (const test_case& test_data : test_cases)
