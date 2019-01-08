@@ -23,7 +23,6 @@ struct json_config;
 namespace json {
 
 struct json_value;
-struct json_value_store;
 struct document_resource;
 class document_tree;
 

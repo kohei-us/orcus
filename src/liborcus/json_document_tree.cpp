@@ -33,6 +33,7 @@ namespace orcus { namespace json {
 namespace {
 
 struct json_value_object;
+struct json_value_array;
 
 }
 
@@ -41,6 +42,7 @@ struct document_resource
     string_pool str_pool;
     boost::object_pool<json_value> obj_pool;
     boost::object_pool<json_value_object> obj_pool_jvo;
+    boost::object_pool<json_value_array> obj_pool_jva;
 };
 
 namespace detail {
@@ -76,11 +78,6 @@ key_value_error::key_value_error(const std::string& msg) :
 
 key_value_error::~key_value_error() throw() {}
 
-struct json_value_store
-{
-    virtual ~json_value_store() {}
-};
-
 struct json_value final
 {
     detail::node_t type;
@@ -106,10 +103,9 @@ struct json_value final
         } kvp; // key-value pair
 
         json_value_object* object;
+        json_value_array* array;
 
     } value;
-
-    std::unique_ptr<json_value_store> store;
 
     json_value(const json_value&) = delete;
     json_value& operator= (const json_value&) = delete;
@@ -126,19 +122,9 @@ const char quote = '"';
 
 const xmlns_id_t NS_orcus_json_xml = "http://schemas.kohei.us/orcus/2015/json";
 
-struct json_value_array : public json_value_store
+struct json_value_array
 {
-    static json_value* create(document_resource& res)
-    {
-        json_value* ret = res.obj_pool.construct(detail::node_t::array);
-        ret->store = orcus::make_unique<json_value_array>();
-        return ret;
-    }
-
     std::vector<json_value*> value_array;
-
-    json_value_array() {}
-    virtual ~json_value_array() override {}
 };
 
 struct json_value_object
@@ -180,7 +166,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
     {
         case detail::node_t::array:
         {
-            auto& vals = static_cast<const json_value_array*>(v->store.get())->value_array;
+            auto& vals = v->value.array->value_array;
             os << "[" << std::endl;
             size_t n = vals.size();
             size_t pos = 0;
@@ -315,7 +301,7 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
                 os << " xmlns=\"" << NS_orcus_json_xml << "\"";
             os << ">";
 
-            auto& vals = static_cast<const json_value_array*>(v->store.get())->value_array;
+            auto& vals = v->value.array->value_array;
 
             for (auto it = vals.begin(), ite = vals.end(); it != ite; ++it)
             {
@@ -447,7 +433,7 @@ class parser_handler
         {
             case detail::node_t::array:
             {
-                json_value_array* jva = static_cast<json_value_array*>(cur.node->store.get());
+                json_value_array* jva = cur.node->value.array;
                 value->parent = cur.node;
                 jva->value_array.push_back(value);
                 return jva->value_array.back();
@@ -507,13 +493,16 @@ public:
     {
         if (m_root)
         {
-            json_value* jv = push_value(json_value_array::create(m_res));
+            json_value* jv = m_res.obj_pool.construct(detail::node_t::array);
+            jv->value.array = m_res.obj_pool_jva.construct();
+            jv = push_value(jv);
             assert(jv && jv->type == detail::node_t::array);
             m_stack.push_back(parser_stack(jv));
         }
         else
         {
-            m_root = json_value_array::create(m_res);
+            m_root = m_res.obj_pool.construct(detail::node_t::array);
+            m_root->value.array = m_res.obj_pool_jva.construct();
             m_stack.push_back(parser_stack(m_root));
         }
     }
@@ -648,7 +637,7 @@ size_t const_node::child_count() const
         case detail::node_t::object:
             return mp_impl->m_node->value.object->value_object.size();
         case detail::node_t::array:
-            return static_cast<const json_value_array*>(mp_impl->m_node->store.get())->value_array.size();
+            return mp_impl->m_node->value.array->value_array.size();
         case detail::node_t::string:
         case detail::node_t::number:
         case detail::node_t::boolean_true:
@@ -714,7 +703,7 @@ const_node const_node::child(size_t index) const
         break;
         case detail::node_t::array:
         {
-            const json_value_array* jva = static_cast<const json_value_array*>(mp_impl->m_node->store.get());
+            const json_value_array* jva = mp_impl->m_node->value.array;
             if (index >= jva->value_array.size())
                 throw std::out_of_range("node::child: index is out-of-range");
 
@@ -844,7 +833,7 @@ void node::push_back(const detail::init::node& v)
     if (mp_impl->m_node->type != detail::node_t::array)
         throw document_error("node::push_back: the node must be of array type.");
 
-    json_value_array* jva = static_cast<json_value_array*>(mp_impl->m_node->store.get());
+    json_value_array* jva = mp_impl->m_node->value.array;
     const document_resource& res = mp_impl->m_doc->get_resource();
     jva->value_array.push_back(v.to_json_value(const_cast<document_resource&>(res)));
 }
@@ -891,8 +880,9 @@ json_value* aggregate_nodes(document_resource& res, std::vector<json_value*> nod
         return jv;
     }
 
-    json_value* jv = json_value_array::create(res);
-    json_value_array* jva = static_cast<json_value_array*>(jv->store.get());
+    json_value* jv = res.obj_pool.construct(detail::node_t::array);
+    jv->value.array = res.obj_pool_jva.construct();
+    json_value_array* jva = jv->value.array;
 
     for (json_value* const_node : nodes)
     {
@@ -933,11 +923,11 @@ void aggregate_nodes_to_object(
     }
 }
 
-std::unique_ptr<json_value_store> aggregate_nodes_to_array(
+void aggregate_nodes_to_array(
     document_resource& res, std::vector<json_value*> nodes, json_value* parent)
 {
-    std::unique_ptr<json_value_store> jvs = orcus::make_unique<json_value_array>();
-    json_value_array* jva = static_cast<json_value_array*>(jvs.get());
+    json_value_array* jva = res.obj_pool_jva.construct();
+    parent->value.array = jva;
 
     for (json_value* const_node : nodes)
     {
@@ -947,8 +937,6 @@ std::unique_ptr<json_value_store> aggregate_nodes_to_array(
         const_node->parent = parent;
         jva->value_array.push_back(const_node);
     }
-
-    return jvs;
 }
 
 #ifndef NDEBUG
@@ -970,7 +958,7 @@ void verify_parent_pointers(const json_value* jv, bool object)
     }
     else
     {
-        json_value_array* jva = static_cast<json_value_array*>(jv->store.get());
+        json_value_array* jva = jv->value.array;
         for (const auto& child : jva->value_array)
         {
             const json_value& cv = *child;
@@ -1124,7 +1112,6 @@ json_value* node::to_json_value(document_resource& res) const
 void node::store_to_node(document_resource& res, json_value* parent) const
 {
     parent->type = mp_impl->m_type;
-    std::unique_ptr<json_value_store> jvs;
 
     switch (mp_impl->m_type)
     {
@@ -1165,7 +1152,7 @@ void node::store_to_node(document_resource& res, json_value* parent) const
                 aggregate_nodes_to_object(res, std::move(nodes), parent);
             }
             else
-                jvs = aggregate_nodes_to_array(res, std::move(nodes), parent);
+                aggregate_nodes_to_array(res, std::move(nodes), parent);
 
             break;
         }
@@ -1182,8 +1169,6 @@ void node::store_to_node(document_resource& res, json_value* parent) const
             throw document_error(os.str());
         }
     }
-
-    parent->store = std::move(jvs);
 }
 
 }} // namespace detail::init
@@ -1225,8 +1210,9 @@ document_tree::document_tree(std::initializer_list<detail::init::node> vs) :
 
 document_tree::document_tree(array vs) : mp_impl(orcus::make_unique<impl>())
 {
-    mp_impl->m_root = json_value_array::create(mp_impl->m_res);
-    json_value_array* jva = static_cast<json_value_array*>(mp_impl->m_root->store.get());
+    json_value_array* jva = mp_impl->m_res.obj_pool_jva.construct();
+    mp_impl->m_root = mp_impl->m_res.obj_pool.construct(detail::node_t::array);
+    mp_impl->m_root->value.array = jva;
 
     for (const detail::init::node& v : vs.m_vs)
     {
