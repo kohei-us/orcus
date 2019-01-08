@@ -30,10 +30,17 @@ namespace fs = boost::filesystem;
 
 namespace orcus { namespace json {
 
+namespace {
+
+struct json_value_object;
+
+}
+
 struct document_resource
 {
     string_pool str_pool;
     boost::object_pool<json_value> obj_pool;
+    boost::object_pool<json_value_object> obj_pool_jvo;
 };
 
 namespace detail {
@@ -98,6 +105,8 @@ struct json_value final
 
         } kvp; // key-value pair
 
+        json_value_object* object;
+
     } value;
 
     std::unique_ptr<json_value_store> store;
@@ -132,15 +141,8 @@ struct json_value_array : public json_value_store
     virtual ~json_value_array() override {}
 };
 
-struct json_value_object : public json_value_store
+struct json_value_object
 {
-    static json_value* create(document_resource& res)
-    {
-        json_value* ret = res.obj_pool.construct(detail::node_t::object);
-        ret->store = orcus::make_unique<json_value_object>();
-        return ret;
-    }
-
     using object_type = std::unordered_map<pstring, json_value*, pstring::hash>;
 
     std::vector<pstring> key_order;
@@ -149,7 +151,6 @@ struct json_value_object : public json_value_store
     bool has_ref;
 
     json_value_object() : has_ref(false) {}
-    virtual ~json_value_object() override {}
 
     void swap(json_value_object& src)
     {
@@ -204,8 +205,8 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
         break;
         case detail::node_t::object:
         {
-            const std::vector<pstring>& key_order = static_cast<const json_value_object*>(v->store.get())->key_order;
-            auto& vals = static_cast<const json_value_object*>(v->store.get())->value_object;
+            const std::vector<pstring>& key_order = v->value.object->key_order;
+            auto& vals = v->value.object->value_object;
             os << "{" << std::endl;
             size_t n = vals.size();
 
@@ -347,7 +348,7 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
                 os << " xmlns=\"" << NS_orcus_json_xml << "\"";
             os << ">";
 
-            const json_value_object& jvo = static_cast<const json_value_object&>(*v->store);
+            const json_value_object& jvo = *v->value.object;
             auto& key_order = jvo.key_order;
             auto& vals = jvo.value_object;
 
@@ -454,7 +455,7 @@ class parser_handler
             case detail::node_t::object:
             {
                 const pstring& key = cur.key;
-                json_value_object* jvo = static_cast<json_value_object*>(cur.node->store.get());
+                json_value_object* jvo = cur.node->value.object;
                 value->parent = cur.node;
 
                 if (m_config.resolve_references &&
@@ -527,13 +528,16 @@ public:
     {
         if (m_root)
         {
-            json_value* jv = push_value(json_value_object::create(m_res));
+            json_value* jv = m_res.obj_pool.construct(detail::node_t::object);
+            jv->value.object = m_res.obj_pool_jvo.construct();
+            jv = push_value(jv);
             assert(jv && jv->type == detail::node_t::object);
             m_stack.push_back(parser_stack(jv));
         }
         else
         {
-            m_root = json_value_object::create(m_res);
+            m_root = m_res.obj_pool.construct(detail::node_t::object);
+            m_root->value.object = m_res.obj_pool_jvo.construct();
             m_stack.push_back(parser_stack(m_root));
         }
     }
@@ -642,7 +646,7 @@ size_t const_node::child_count() const
     switch (mp_impl->m_node->type)
     {
         case detail::node_t::object:
-            return static_cast<const json_value_object*>(mp_impl->m_node->store.get())->value_object.size();
+            return mp_impl->m_node->value.object->value_object.size();
         case detail::node_t::array:
             return static_cast<const json_value_array*>(mp_impl->m_node->store.get())->value_array.size();
         case detail::node_t::string:
@@ -662,7 +666,7 @@ std::vector<pstring> const_node::keys() const
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::keys: this node is not of object type.");
 
-    const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->store.get());
+    const json_value_object* jvo = mp_impl->m_node->value.object;
     if (!jvo->key_order.empty())
         // Prefer to use key_order when it's populated.
         return jvo->key_order;
@@ -684,7 +688,7 @@ pstring const_node::key(size_t index) const
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::key: this node is not of object type.");
 
-    const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->store.get());
+    const json_value_object* jvo = mp_impl->m_node->value.object;
     if (index >= jvo->key_order.size())
         throw std::out_of_range("node::key: index is out-of-range.");
 
@@ -698,7 +702,7 @@ const_node const_node::child(size_t index) const
         case detail::node_t::object:
         {
             // This works only when the key order is preserved.
-            const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->store.get());
+            const json_value_object* jvo = mp_impl->m_node->value.object;
             if (index >= jvo->key_order.size())
                 throw std::out_of_range("node::child: index is out-of-range");
 
@@ -733,7 +737,7 @@ const_node const_node::child(const pstring& key) const
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::child: this node is not of object type.");
 
-    const json_value_object* jvo = static_cast<const json_value_object*>(mp_impl->m_node->store.get());
+    const json_value_object* jvo = mp_impl->m_node->value.object;
     auto it = jvo->value_object.find(key);
     if (it == jvo->value_object.end())
     {
@@ -800,7 +804,7 @@ node node::operator[](const pstring& key)
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::operator[]: the node must be of object type.");
 
-    json_value_object* jvo = static_cast<json_value_object*>(mp_impl->m_node->store.get());
+    json_value_object* jvo = const_cast<json_value_object*>(mp_impl->m_node->value.object);
     auto it = jvo->value_object.find(key);
     if (it == jvo->value_object.end())
     {
@@ -862,8 +866,9 @@ json_value* aggregate_nodes(document_resource& res, std::vector<json_value*> nod
 
     if (object)
     {
-        json_value* jv = json_value_object::create(res);
-        json_value_object* jvo = static_cast<json_value_object*>(jv->store.get());
+        json_value* jv = res.obj_pool.construct(detail::node_t::object);
+        jv->value.object = res.obj_pool_jvo.construct();
+        json_value_object* jvo = jv->value.object;
 
         for (json_value* const_node : nodes)
         {
@@ -901,37 +906,36 @@ json_value* aggregate_nodes(document_resource& res, std::vector<json_value*> nod
     return jv;
 }
 
-std::unique_ptr<json_value_store> aggregate_nodes_to_store(
-    std::vector<json_value*> nodes, json_value* parent, bool object)
+void aggregate_nodes_to_object(
+    document_resource& res, std::vector<json_value*> nodes, json_value* parent)
 {
     bool preserve_object_order = true;
 
-    if (object)
+    json_value_object* jvo = res.obj_pool_jvo.construct();
+    parent->value.object = jvo;
+
+    for (json_value* const_node : nodes)
     {
-        std::unique_ptr<json_value_store> jvs = orcus::make_unique<json_value_object>();
-        json_value_object* jvo = static_cast<json_value_object*>(jvs.get());
+        if (const_node->type != detail::node_t::key_value)
+            throw document_error("key-value pair was expected.");
 
-        for (json_value* const_node : nodes)
-        {
-            if (const_node->type != detail::node_t::key_value)
-                throw document_error("key-value pair was expected.");
+        auto& kvp = const_node->value.kvp;
 
-            auto& kvp = const_node->value.kvp;
+        if (preserve_object_order)
+            jvo->key_order.emplace_back(kvp.key, kvp.n_key);
 
-            if (preserve_object_order)
-                jvo->key_order.emplace_back(kvp.key, kvp.n_key);
+        kvp.value->parent = parent;
+        auto r = jvo->value_object.insert(
+            std::make_pair(pstring(kvp.key, kvp.n_key), kvp.value));
 
-            kvp.value->parent = parent;
-            auto r = jvo->value_object.insert(
-                std::make_pair(pstring(kvp.key, kvp.n_key), kvp.value));
-
-            if (!r.second)
-                throw document_error("adding the same key twice");
-        }
-
-        return jvs;
+        if (!r.second)
+            throw document_error("adding the same key twice");
     }
+}
 
+std::unique_ptr<json_value_store> aggregate_nodes_to_array(
+    document_resource& res, std::vector<json_value*> nodes, json_value* parent)
+{
     std::unique_ptr<json_value_store> jvs = orcus::make_unique<json_value_array>();
     json_value_array* jva = static_cast<json_value_array*>(jvs.get());
 
@@ -957,7 +961,7 @@ void verify_parent_pointers(const json_value* jv, bool object)
 {
     if (object)
     {
-        json_value_object* jvo = static_cast<json_value_object*>(jv->store.get());
+        json_value_object* jvo = jv->value.object;
         for (const auto& child : jvo->value_object)
         {
             const json_value& cv = *child.second;
@@ -1088,7 +1092,8 @@ json_value* node::to_json_value(document_resource& res) const
         {
             // Currently only empty object instance is allowed.
             assert(mp_impl->m_value_array.size() == 0);
-            jv = json_value_object::create(res);
+            jv = res.obj_pool.construct(mp_impl->m_type);
+            jv->value.object = res.obj_pool_jvo.construct();
             break;
         }
         case detail::node_t::string:
@@ -1139,7 +1144,7 @@ void node::store_to_node(document_resource& res, json_value* parent) const
         {
             // Currently only empty object instance is allowed.
             assert(mp_impl->m_value_array.size() == 0);
-            jvs = orcus::make_unique<json_value_object>();
+            parent->value.object = res.obj_pool_jvo.construct();
             break;
         }
         case detail::node_t::array:
@@ -1155,8 +1160,12 @@ void node::store_to_node(document_resource& res, json_value* parent) const
             }
 
             if (object)
+            {
                 parent->type = detail::node_t::object;
-            jvs = aggregate_nodes_to_store(std::move(nodes), parent, object);
+                aggregate_nodes_to_object(res, std::move(nodes), parent);
+            }
+            else
+                jvs = aggregate_nodes_to_array(res, std::move(nodes), parent);
 
             break;
         }
@@ -1228,7 +1237,8 @@ document_tree::document_tree(array vs) : mp_impl(orcus::make_unique<impl>())
 
 document_tree::document_tree(object obj) : mp_impl(orcus::make_unique<impl>())
 {
-    mp_impl->m_root = json_value_object::create(mp_impl->m_res);
+    mp_impl->m_root = mp_impl->m_res.obj_pool.construct(detail::node_t::object);
+    mp_impl->m_root->value.object = mp_impl->m_res.obj_pool_jvo.construct();
 }
 
 document_tree::~document_tree() {}
@@ -1304,7 +1314,7 @@ void document_tree::load(const char* p, size_t n, const json_config& config)
         json::json_value* root = doc.mp_impl->m_root;
         if (root->type == detail::node_t::object)
         {
-            json::json_value_object* jvo_src = static_cast<json::json_value_object*>(root->store.get());
+            json::json_value_object* jvo_src = root->value.object;
             json::json_value_object* jvo_dest = it->dest;
             if (jvo_dest->value_object.size() == 1)
             {
