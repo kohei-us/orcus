@@ -65,7 +65,8 @@ protected:
      * Parse and check next characters to see if it matches specified
      * character sequence.
      *
-     * @param expected null-terminated character array to match against.
+     * @param expected sequence of characters to match against.
+     * @param n_expected length of the character sequence.
      *
      * @return true if it matches specified character sequence, false
      *         otherwise.
