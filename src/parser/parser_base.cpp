@@ -94,14 +94,14 @@ void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_EQUAL_ANY | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
 
     int n_total = available_size();
-    int n = std::min<int>(16, n_total);
 
-    while (n)
+    while (n_total)
     {
         __m128i char_block = _mm_loadu_si128((const __m128i*)mp_char);
 
         // Find position of the first character that is NOT any of the
         // characters to skip.
+        int n = std::min<int>(16, n_total);
         int r = _mm_cmpestri(match, n_chars_to_skip, char_block, n, mode);
 
         if (!r)
@@ -116,7 +116,6 @@ void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
 
         // Skip 16 chars to the next segment.
         n_total -= 16;
-        n = std::min<int>(16, n_total);
     }
 #else
     for (; has_char(); next())
@@ -134,14 +133,14 @@ void parser_base::skip_space_and_control()
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_RANGES | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
 
     int n_total = available_size();
-    int n = std::min<int>(16, n_total);
 
-    while (n)
+    while (n_total)
     {
         __m128i char_block = _mm_loadu_si128((const __m128i*)mp_char);
 
         // Find position of the first character that is NOT any of the
         // characters to skip.
+        int n = std::min<int>(16, n_total);
         int r = _mm_cmpestri(match, 2, char_block, n, mode);
 
         if (!r)
@@ -156,7 +155,6 @@ void parser_base::skip_space_and_control()
 
         // Skip 16 chars to the next segment.
         n_total -= 16;
-        n = std::min<int>(16, n_total);
     }
 #else
     for (; mp_char != mp_end && ((unsigned char)*mp_char) <= (unsigned char)' '; ++mp_char)
