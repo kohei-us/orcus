@@ -70,7 +70,7 @@ protected:
      * @return true if it matches specified character sequence, false
      *         otherwise.
      */
-    bool parse_expected(const char* expected);
+    bool parse_expected(const char* expected, size_t n_expected);
 
     /**
      * Try to parse the next characters as double, or return NaN in case of

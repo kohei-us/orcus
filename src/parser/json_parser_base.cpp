@@ -41,8 +41,7 @@ parser_base::~parser_base() {}
 
 void parser_base::parse_true()
 {
-    static const char* expected = "true";
-    if (!parse_expected(expected))
+    if (!parse_expected(ORCUS_ASCII("true")))
         throw parse_error("parse_true: boolean 'true' expected.", offset());
 
     skip_space_and_control();
@@ -50,8 +49,7 @@ void parser_base::parse_true()
 
 void parser_base::parse_false()
 {
-    static const char* expected = "false";
-    if (!parse_expected(expected))
+    if (!parse_expected(ORCUS_ASCII("false")))
         throw parse_error("parse_false: boolean 'false' expected.", offset());
 
     skip_space_and_control();
@@ -59,8 +57,7 @@ void parser_base::parse_false()
 
 void parser_base::parse_null()
 {
-    static const char* expected = "null";
-    if (!parse_expected(expected))
+    if (!parse_expected(ORCUS_ASCII("null")))
         throw parse_error("parse_null: null expected.", offset());
 
     skip_space_and_control();

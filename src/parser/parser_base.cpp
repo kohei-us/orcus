@@ -162,13 +162,12 @@ void parser_base::skip_space_and_control()
 #endif
 }
 
-bool parser_base::parse_expected(const char* expected)
+bool parser_base::parse_expected(const char* expected, size_t n_expected)
 {
-    size_t len = std::strlen(expected);
-    if (len > remaining_size())
+    if (n_expected > available_size())
         return false;
 
-    for (size_t i = 0; i < len; ++i, ++expected, next())
+    for (size_t i = 0; i < n_expected; ++i, ++expected, next())
     {
         if (cur_char() != *expected)
             return false;
