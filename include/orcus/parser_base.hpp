@@ -49,9 +49,12 @@ protected:
     }
     bool has_next() const { return (mp_char+1) != mp_end; }
 
-    void next(size_t inc=1);
+    void next(size_t inc=1) { mp_char += inc; }
+
     void prev(size_t dec=1);
-    char cur_char() const;
+
+    char cur_char() const { return *mp_char; }
+
     char next_char() const;
 
     void skip(const char* chars_to_skip, size_t n_chars_to_skip);

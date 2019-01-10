@@ -67,19 +67,9 @@ parser_base::parser_base(const char* p, size_t n) :
 {
 }
 
-void parser_base::next(size_t inc)
-{
-    mp_char += inc;
-}
-
 void parser_base::prev(size_t dec)
 {
     mp_char -= dec;
-}
-
-char parser_base::cur_char() const
-{
-    return *mp_char;
 }
 
 char parser_base::next_char() const
