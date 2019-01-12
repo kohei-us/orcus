@@ -140,42 +140,38 @@ void string_pool::merge(string_pool& other)
 {
     string_store_type* other_store = &other.mp_impl->m_store;
 
-    std::for_each(other_store->begin(), other_store->end(),
-        [&](string_store_type::value_type& value)
+    for (string_store_type::value_type& value : *other_store)
+    {
+        const std::string* p = value.get();
+        size_t n = p->size();
+
+        pstring key(p->data(), n);
+        string_set_type::const_iterator it = mp_impl->m_set.find(key);
+
+        if (it == mp_impl->m_set.end())
         {
-            const std::string* p = value.get();
-            size_t n = p->size();
-
-            pstring key(p->data(), n);
-            string_set_type::const_iterator it = mp_impl->m_set.find(key);
-
-            if (it == mp_impl->m_set.end())
-            {
-                // This is a new string value in this pool.  Move this string
-                // instance in as-is.
-                mp_impl->m_store.push_back(std::move(value));
-                assert(key.get() == mp_impl->m_store.back()->data());
-                auto r = mp_impl->m_set.insert(key);
-                if (!r.second)
-                    throw general_error("failed to intern a new string instance.");
-            }
-            else
-            {
-                // This is a duplicate string value in this pool.  Move this
-                // string instance in to the merged store.
-                mp_impl->m_merged_store.push_back(std::move(value));
-            }
+            // This is a new string value in this pool.  Move this string
+            // instance in as-is.
+            mp_impl->m_store.push_back(std::move(value));
+            assert(key.get() == mp_impl->m_store.back()->data());
+            auto r = mp_impl->m_set.insert(key);
+            if (!r.second)
+                throw general_error("failed to intern a new string instance.");
         }
-    );
+        else
+        {
+            // This is a duplicate string value in this pool.  Move this
+            // string instance in to the merged store.
+            mp_impl->m_merged_store.push_back(std::move(value));
+        }
+    }
 
     // Move all duplicate string values from the other store as-is.
     other_store = &other.mp_impl->m_merged_store;
-    std::for_each(other_store->begin(), other_store->end(),
-        [&](string_store_type::value_type& value)
-        {
-            mp_impl->m_merged_store.push_back(std::move(value));
-        }
-    );
+    for (string_store_type::value_type& value : *other_store)
+    {
+        mp_impl->m_merged_store.push_back(std::move(value));
+    }
 
     other.mp_impl->m_store.clear();
     other.mp_impl->m_merged_store.clear();
