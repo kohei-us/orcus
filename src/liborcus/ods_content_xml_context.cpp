@@ -287,6 +287,12 @@ ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, c
     m_styles(),
     m_child_para(session_cxt, tokens, factory->get_shared_strings(), m_styles)
 {
+    spreadsheet::iface::import_global_settings* gs = mp_factory->get_global_settings();
+    if (gs)
+    {
+        // Set the default null date to 1899-12-30 per specification (19.614).
+        gs->set_origin_date(1899, 12, 30);
+    }
 }
 
 ods_content_xml_context::~ods_content_xml_context()
