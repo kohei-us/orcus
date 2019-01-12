@@ -9,6 +9,8 @@
 #include "orcus/cell_buffer.hpp"
 #include "orcus/global.hpp"
 
+#include "numeric_parser.hpp"
+
 #include <cassert>
 #include <cmath>
 #include <iostream>
@@ -70,136 +72,17 @@ void write_to(std::ostringstream& os, const char* p, size_t n)
         os << *p;
 }
 
-namespace {
-
-/**
- * Parse the exponent part of a numeric string.
- *
- * @return extra divisor to multiply to the original divisor, or 0.0 if the
- *         parsing fails.
- */
-double parse_exponent(const char*& p, const char* p_end)
-{
-    const char* p0 = p - 1; // original position to restore to in case of parsing failure. The e needs to be added back as well.
-    double exponent = 0.0;
-    bool negative_sign = false;
-    bool valid = false;
-
-    // Check for presence of a sign.
-    if (p != p_end)
-    {
-        switch (*p)
-        {
-            case '+':
-                ++p;
-            break;
-            case '-':
-                negative_sign = true;
-                ++p;
-            break;
-            default:
-                ;
-        }
-    }
-
-    for (; p != p_end; ++p)
-    {
-        if (*p < '0' || '9' < *p)
-        {
-            // Non-digit encountered.
-            break;
-        }
-
-        valid = true;
-        exponent *= 10.0;
-        exponent += *p - '0';
-    }
-
-    if (!valid)
-    {
-        // Restore the original position on failed parsing.
-        p = p0;
-        return 0.0;
-    }
-
-    if (!negative_sign)
-        exponent = -exponent;
-
-    return std::pow(10.0, exponent);
-}
-
-}
-
 double parse_numeric(const char*& p, size_t max_length)
 {
+    using numeric_parser_type = detail::numeric_parser<detail::generic_parser_trait>;
+
     const char* p_end = p + max_length;
-    double ret = 0.0, divisor = 1.0;
-    bool negative_sign = false;
-    bool before_decimal_pt = true;
-    bool has_digit = false;
 
-    // Check for presence of a sign.
-    if (p != p_end)
-    {
-        switch (*p)
-        {
-            case '+':
-                ++p;
-            break;
-            case '-':
-                negative_sign = true;
-                ++p;
-            break;
-            default:
-                ;
-        }
-    }
-
-    for (; p != p_end; ++p)
-    {
-        if (*p == '.')
-        {
-            if (!before_decimal_pt)
-            {
-                // Second '.' encountered. Terminate the parsing.
-                ret /= divisor;
-                return negative_sign ? -ret : ret;
-            }
-
-            before_decimal_pt = false;
-            continue;
-        }
-
-        if (has_digit && (*p == 'e' || *p == 'E'))
-        {
-            ++p;
-            double extra_divisor = parse_exponent(p, p_end);
-            if (extra_divisor)
-                divisor *= extra_divisor;
-            break;
-        }
-
-        if (*p < '0' || '9' < *p)
-        {
-            if (!has_digit) // without a digit we have no numbers
-                return std::numeric_limits<double>::quiet_NaN();
-
-            ret /= divisor;
-            return negative_sign ? -ret : ret;
-        }
-
-        has_digit = true;
-        ret *= 10.0;
-        ret += *p - '0';
-
-        if (!before_decimal_pt)
-            divisor *= 10.0;
-    }
-    if (!has_digit) // without a digit we have no numbers
-        return std::numeric_limits<double>::quiet_NaN();
-
-    ret /= divisor;
-    return negative_sign ? -ret : ret;
+    numeric_parser_type parser(p, p_end);
+    double v = parser.parse();
+    if (!std::isnan(v))
+        p = parser.get_char_position();
+    return v;
 }
 
 long parse_integer(const char*& p, size_t max_length)
