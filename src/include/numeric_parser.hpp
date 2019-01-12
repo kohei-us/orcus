@@ -29,6 +29,30 @@ class numeric_parser
     const char* mp_char;
     const char* mp_end;
 
+    bool check_sign()
+    {
+        bool negative_sign = false;
+
+        // Check for presence of a sign.
+        if (mp_char != mp_end)
+        {
+            switch (*mp_char)
+            {
+                case '+':
+                    ++mp_char;
+                    break;
+                case '-':
+                    negative_sign = true;
+                    ++mp_char;
+                    break;
+                default:
+                    ;
+            }
+        }
+
+        return negative_sign;
+    }
+
     /**
      * Parse the exponent part of a numeric string.
      *
@@ -39,25 +63,9 @@ class numeric_parser
     {
         const char* p0 = mp_char - 1; // original position to restore to in case of parsing failure. The e needs to be added back as well.
         double exponent = 0.0;
-        bool negative_sign = false;
         bool valid = false;
 
-        // Check for presence of a sign.
-        if (mp_char != mp_end)
-        {
-            switch (*mp_char)
-            {
-                case '+':
-                    ++mp_char;
-                break;
-                case '-':
-                    negative_sign = true;
-                    ++mp_char;
-                break;
-                default:
-                    ;
-            }
-        }
+        bool negative_sign = check_sign();
 
         for (; mp_char != mp_end; ++mp_char)
         {
@@ -96,26 +104,10 @@ public:
     double parse()
     {
         double ret = 0.0, divisor = 1.0;
-        bool negative_sign = false;
         bool before_decimal_pt = true;
         bool has_digit = false;
 
-        // Check for presence of a sign.
-        if (mp_char != mp_end)
-        {
-            switch (*mp_char)
-            {
-                case '+':
-                    ++mp_char;
-                break;
-                case '-':
-                    negative_sign = true;
-                    ++mp_char;
-                break;
-                default:
-                    ;
-            }
-        }
+        bool negative_sign = check_sign();
 
         for (; mp_char != mp_end; ++mp_char)
         {
