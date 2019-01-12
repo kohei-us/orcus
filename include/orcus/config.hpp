@@ -38,7 +38,7 @@ struct ORCUS_DLLPUBLIC config
     /**
      * Enable or disable runtime debug output to stdout or stderr.
      */
-    bool debug;
+    uint16_t debug;
 
     /**
      * Control whether or not to perform strict check of the xml structure of

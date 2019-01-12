@@ -95,7 +95,7 @@ const char* help_dump_check =
 "in automated tests.";
 
 const char* help_debug =
-"Turn on a debug mode to generate run-time debug output.";
+"Turn on a debug mode and optionally specify a debug level in order to generate run-time debug outputs.";
 
 const char* help_row_size =
 "Specify the number of maximum rows in each sheet.";
@@ -135,7 +135,7 @@ bool parse_import_filter_args(
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help,h", "Print this help.")
-        ("debug,d", help_debug)
+        ("debug,d", po::value<uint16_t>()->default_value(0u)->implicit_value(1u), help_debug)
         ("dump-check", help_dump_check)
         ("output,o", po::value<string>(), help_output)
         ("output-format,f", po::value<string>(), doc_output_format::gen_help_text().data())
@@ -201,7 +201,7 @@ bool parse_import_filter_args(
     }
 
     config opt = app.get_config();
-    opt.debug = vm.count("debug") > 0;
+    opt.debug = vm["debug"].as<uint16_t>();
 
     if (args_handler)
         args_handler->map_to_config(opt, vm);

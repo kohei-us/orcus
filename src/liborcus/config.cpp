@@ -11,7 +11,7 @@ namespace orcus {
 
 config::config(format_t input) :
     input_format(input),
-    debug(false),
+    debug(0),
     structure_check(true)
 {
     // Initialize format-specific config settings below.
