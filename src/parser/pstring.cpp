@@ -20,10 +20,10 @@ namespace orcus {
 
 size_t pstring::hash::operator() (const pstring& val) const
 {
-    size_t hash_val = 0;
+    uint32_t hash_val = 0; // use 32-bit int for better performance
     const char* p = val.get();
-    const char* p_end = p + val.size();
-    for (; p != p_end; ++p)
+
+    for (uint32_t i = 0, n = val.size(); i < n; ++i, ++p)
     {
         hash_val *= 0x01000193;
         hash_val ^= *p;
