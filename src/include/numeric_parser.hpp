@@ -17,6 +17,10 @@ struct generic_parser_trait
 {
 };
 
+struct json_parser_trait
+{
+};
+
 template<typename _Trait>
 class numeric_parser
 {

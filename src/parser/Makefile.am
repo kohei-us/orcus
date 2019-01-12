@@ -63,6 +63,7 @@ EXTRA_PROGRAMS = \
 	parser-test-base \
 	parser-test-global \
 	parser-test-json-validation \
+	parser-test-numeric \
 	xml-writer-test
 
 # parser-test-string-pool
@@ -212,6 +213,15 @@ xml_writer_test_SOURCES = xml_writer_test.cpp
 xml_writer_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 xml_writer_test_CPPFLAGS = $(AM_CPPFLAGS)
 
+# parser-test-numeric
+
+parser_test_numeric_SOURCES = \
+	parser_test_numeric.cpp
+
+parser_test_numeric = liborcus-parser-@ORCUS_API_VERSION@.la
+parser_test_numeric_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+parser_test_numeric_CPPFLAGS = $(AM_CPPFLAGS)
+
 TESTS = \
 	parser-test-string-pool \
 	parser-test-xml-namespace \
@@ -229,6 +239,7 @@ TESTS = \
 	parser-test-base \
 	parser-test-global \
 	parser-test-json-validation \
+	parser-test-numeric \
 	xml-writer-test
 
 distclean-local:
