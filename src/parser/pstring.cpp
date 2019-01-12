@@ -40,6 +40,9 @@ pstring::pstring(const char* _pos) :
 
 bool pstring::operator== (const pstring& r) const
 {
+    if (m_pos == r.m_pos)
+        return true;
+
     if (m_size != r.m_size)
         // lengths differ.
         return false;
