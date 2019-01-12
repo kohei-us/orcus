@@ -63,17 +63,6 @@ void parser_base::parse_null()
     skip_space_and_control();
 }
 
-long parser_base::parse_long_or_throw()
-{
-    const char* p = mp_char;
-    long v = parse_integer(p, remaining_size());
-    if (p == mp_char)
-        throw parse_error("parse_integer_or_throw: failed to parse long integer value.", offset());
-
-    mp_char = p;
-    return v;
-}
-
 double parser_base::parse_double_or_throw()
 {
     double v = parse_double();

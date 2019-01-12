@@ -44,7 +44,6 @@ protected:
     void parse_true();
     void parse_false();
     void parse_null();
-    long parse_long_or_throw();
     double parse_double_or_throw();
 
     parse_quoted_string_state parse_string();
