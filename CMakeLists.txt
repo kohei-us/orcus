@@ -28,8 +28,15 @@ endif()
 message(STATUS "Found Ixion: ${IXION_LIB}")
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4251 /wd4275 /MP")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4251 /wd4275 /wd4267 /wd4244 /MP")
+    add_definitions(
+        -D_CRT_SECURE_NO_WARNINGS
+    )
 endif(MSVC)
+
+add_definitions(
+    ${Boost_LIB_DIAGNOSTIC_DEFINITIONS}
+)
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/include

@@ -394,7 +394,7 @@ enum class format_t
     csv
 };
 
-struct ORCUS_DLLPUBLIC length_t
+struct ORCUS_PSR_DLLPUBLIC length_t
 {
     length_unit_t unit;
     double value;
@@ -404,7 +404,7 @@ struct ORCUS_DLLPUBLIC length_t
     std::string to_string() const;
 };
 
-struct ORCUS_DLLPUBLIC date_time_t
+struct ORCUS_PSR_DLLPUBLIC date_time_t
 {
     int year;
     int month;
@@ -429,7 +429,7 @@ struct ORCUS_DLLPUBLIC date_time_t
     void swap(date_time_t& other);
 };
 
-ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const date_time_t& v);
+ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const date_time_t& v);
 
 typedef ::std::vector<xml_token_attr_t> xml_attrs_t;
 
