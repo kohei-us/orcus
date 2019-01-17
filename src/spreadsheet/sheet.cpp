@@ -474,17 +474,16 @@ date_time_t sheet::get_date_time(row_t row, col_t col) const
         throw std::invalid_argument(os.str());
     }
 
-    const ixion::column_store_t* col_store = (*stores)[col];
-    assert(col_store);
+    const ixion::column_store_t& col_store = (*stores)[col];
 
-    if (row < 0 || static_cast<size_t>(row) >= col_store->size())
+    if (row < 0 || static_cast<size_t>(row) >= col_store.size())
     {
         std::ostringstream os;
         os << "invalid row index (" << row << ")";
         throw std::invalid_argument(os.str());
     }
 
-    double dt_raw = col_store->get<double>(row); // raw value as days since epoch.
+    double dt_raw = col_store.get<double>(row); // raw value as days since epoch.
 
     double days_since_epoch = std::floor(dt_raw);
     double time_fraction = dt_raw - days_since_epoch;

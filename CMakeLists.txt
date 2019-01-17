@@ -9,30 +9,38 @@ set(ORCUS_VERSION ${ORCUS_MAJOR_VERSION}.${ORCUS_MINOR_VERSION}.${ORCUS_MICRO_VE
 project(orcus VERSION ${ORCUS_VERSION} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 
+option(MDDS_INCLUDEDIR "path to mdds header directory.")
+option(IXION_INCLUDEDIR "path to ixion header directory.")
+option(IXION_LIBRARYDIR "path to ixion library directory.")
+
+set(Boost_USE_STATIC_LIBS 1)
+find_package(Boost COMPONENTS program_options filesystem)
+find_package(Threads)
+find_package(Python3)
+find_package(Zlib)
+
+find_library(IXION_LIB libixion PATHS ${IXION_LIBRARYDIR})
+
+if(NOT IXION_LIB)
+    message(FATAL_ERROR "Ixion not found.")
+endif()
+
+message(STATUS "Found Ixion: ${IXION_LIB}")
+
 if(MSVC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4251 /wd4275 /MP")
 endif(MSVC)
 
-option(MDDS_INCLUDE_DIR "path to mdds header directory.")
-option(BOOST_INCLUDE_DIR "path to boost header directory.")
-option(BOOST_LIB_DIR "path to boost library directory.")
-option(IXION_INCLUDE_DIR "path to ixion header directory.")
-option(IXION_LIB_DIR "path to ixion library directory.")
-option(ZLIB_INCLUDE_DIR "path to zlib header directory.")
-option(ZLIB_LIB_DIR "path to zlib library directory.")
-
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
-    ${BOOST_INCLUDE_DIR}
-    ${MDDS_INCLUDE_DIR}
-    ${IXION_INCLUDE_DIR}
-    ${ZLIB_INCLUDE_DIR}
+    ${PROJECT_SOURCE_DIR}/src/include
+    ${Boost_INCLUDE_DIR}
+    ${MDDS_INCLUDEDIR}
+    ${IXION_INCLUDEDIR}
+    ${ZLIB_INCLUDE_DIRS}
 )
 
-link_directories(${BOOST_LIB_DIR})
-
-find_library(ZLIB_LIB zlib PATHS ${ZLIB_LIB_DIR})
-find_library(IXION_LIB libixion PATHS ${IXION_LIB_DIR})
+link_directories(${Boost_LIBRARY_DIRS})
 
 set(PARSER_SRC_DIR ${PROJECT_SOURCE_DIR}/src/parser)
 set(LIBORCUS_SRC_DIR ${PROJECT_SOURCE_DIR}/src/liborcus)
@@ -72,6 +80,7 @@ add_library(liborcus SHARED
 	${LIBORCUS_SRC_DIR}/detection_result.cpp
 	${LIBORCUS_SRC_DIR}/dom_tree.cpp
 	${LIBORCUS_SRC_DIR}/format_detection.cpp
+	${LIBORCUS_SRC_DIR}/formula_result.cpp
 	${LIBORCUS_SRC_DIR}/global.cpp
 	${LIBORCUS_SRC_DIR}/info.cpp
 	${LIBORCUS_SRC_DIR}/interface.cpp
@@ -97,6 +106,7 @@ add_library(liborcus SHARED
 	${LIBORCUS_SRC_DIR}/gnumeric_namespace_types.cpp
 	${LIBORCUS_SRC_DIR}/xls_xml_namespace_types.cpp
 	${LIBORCUS_SRC_DIR}/session_context.cpp
+	${LIBORCUS_SRC_DIR}/spreadsheet_iface_util.cpp
 	${LIBORCUS_SRC_DIR}/spreadsheet_types.cpp
 	${LIBORCUS_SRC_DIR}/string_helper.cpp
 # xlsx filter
@@ -155,23 +165,26 @@ add_library(liborcus SHARED
 
 add_library(liborcus-spreadsheet-model SHARED
 	${SPREADSHEET_SRC_DIR}/auto_filter.cpp
+	${SPREADSHEET_SRC_DIR}/config.cpp
 	${SPREADSHEET_SRC_DIR}/csv_dumper.cpp
-	${SPREADSHEET_SRC_DIR}/data_table.cpp
 	${SPREADSHEET_SRC_DIR}/document.cpp
 	${SPREADSHEET_SRC_DIR}/dumper_global.cpp
 	${SPREADSHEET_SRC_DIR}/factory.cpp
 	${SPREADSHEET_SRC_DIR}/factory_pivot.cpp
 	${SPREADSHEET_SRC_DIR}/factory_sheet.cpp
+	${SPREADSHEET_SRC_DIR}/factory_styles.cpp
+	${SPREADSHEET_SRC_DIR}/factory_table.cpp
+	${SPREADSHEET_SRC_DIR}/flat_dumper.cpp
 	${SPREADSHEET_SRC_DIR}/formula_global.cpp
 	${SPREADSHEET_SRC_DIR}/global_settings.cpp
+	${SPREADSHEET_SRC_DIR}/html_dumper.cpp
 	${SPREADSHEET_SRC_DIR}/json_dumper.cpp
 	${SPREADSHEET_SRC_DIR}/pivot.cpp
+	${SPREADSHEET_SRC_DIR}/shared_formula.cpp
 	${SPREADSHEET_SRC_DIR}/shared_strings.cpp
 	${SPREADSHEET_SRC_DIR}/sheet.cpp
-	${SPREADSHEET_SRC_DIR}/sheet_properties.cpp
 	${SPREADSHEET_SRC_DIR}/sheet_range.cpp
 	${SPREADSHEET_SRC_DIR}/styles.cpp
-	${SPREADSHEET_SRC_DIR}/table.cpp
 	${SPREADSHEET_SRC_DIR}/view.cpp
 )
 
@@ -243,7 +256,7 @@ add_custom_target(
 
 add_dependencies(liborcus py_gen_files)
 
-target_link_libraries(liborcus-parser ${ZLIB_LIB})
+target_link_libraries(liborcus-parser ${ZLIB_LIBRARIES})
 target_link_libraries(liborcus liborcus-parser)
 target_link_libraries(liborcus-spreadsheet-model liborcus-parser liborcus ${IXION_LIB})
 target_link_libraries(orcus-detect liborcus)
