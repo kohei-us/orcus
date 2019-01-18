@@ -983,8 +983,9 @@ struct node::impl
         const char* m_value_string;
     };
 
-    std::initializer_list<detail::init::node> m_value_array;
+    std::vector<detail::init::node> m_value_array;
 
+    impl() : m_type(detail::node_t::unset) {}
     impl(double v) : m_type(detail::node_t::number), m_value_number(v) {}
     impl(int v) : m_type(detail::node_t::number), m_value_number(v) {}
     impl(bool b) : m_type(b ? detail::node_t::boolean_true : detail::node_t::boolean_false) {}
@@ -992,16 +993,18 @@ struct node::impl
     impl(const char* p) : m_type(detail::node_t::string), m_value_string(p) {}
 
     impl(std::initializer_list<detail::init::node> vs) :
-        m_type(detail::node_t::array),
-        m_value_array(std::move(vs))
+        m_type(detail::node_t::array)
     {
+        for (const detail::init::node& v : vs)
+            m_value_array.push_back(v);
+
         // If the list has two elements, and the first element is of type string,
         // we treat this as object's key-value pair.
 
-        if (vs.size() != 2)
+        if (m_value_array.size() != 2)
             return;
 
-        const detail::init::node& v0 = *vs.begin();
+        const detail::init::node& v0 = *m_value_array.begin();
         if (v0.mp_impl->m_type == detail::node_t::string)
             m_type = detail::node_t::key_value;
     }
@@ -1023,8 +1026,23 @@ node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
 node::node(std::initializer_list<detail::init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
 node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array))) {}
 node::node(json::object obj) : mp_impl(orcus::make_unique<impl>(std::move(obj))) {}
+
+node::node(const node& other) : mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
+
 node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
 node::~node() {}
+
+node& node::operator= (node other)
+{
+    node tmp(std::move(other));
+    swap(tmp);
+    return *this;
+}
+
+void node::swap(node& other)
+{
+    std::swap(mp_impl, other.mp_impl);
+}
 
 json::node_t node::type() const
 {

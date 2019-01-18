@@ -288,7 +288,7 @@ class ORCUS_DLLPUBLIC array
     friend class detail::init::node;
     friend class document_tree;
 
-    std::initializer_list<detail::init::node> m_vs;
+    std::vector<detail::init::node> m_vs;
 public:
     array();
     array(const array&) = delete;
@@ -335,11 +335,13 @@ public:
     node(json::array array);
     node(json::object obj);
 
-    node(const node&) = delete;
+    node(const node& other);
     node(node&& other);
     ~node();
 
-    node& operator= (node) = delete;
+    node& operator= (node other);
+
+    void swap(node& other);
 
 private:
     node_t type() const;

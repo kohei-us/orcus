@@ -122,7 +122,7 @@ set(_TESTS
 #   gnumeric-cell-context-test
 #   gnumeric-helper-test
 #   gnumeric-sheet-context-test
-#   json-document-tree-test
+    json-document-tree-test
 #   odf-styles-context-test
     xml-structure-tree-test
     yaml-document-tree-test

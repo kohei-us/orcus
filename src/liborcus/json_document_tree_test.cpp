@@ -741,24 +741,32 @@ void test_json_init_root_object_add_child()
 
 int main()
 {
-    test_json_parse();
-    test_json_resolve_refs();
-    test_json_parse_empty();
-    test_json_parse_invalid();
-    test_json_traverse_basic1();
-    test_json_traverse_basic2();
-    test_json_traverse_basic3();
-    test_json_traverse_basic4();
-    test_json_traverse_nested1();
-    test_json_traverse_nested2();
+    try
+    {
+        test_json_parse();
+        test_json_resolve_refs();
+        test_json_parse_empty();
+        test_json_parse_invalid();
+        test_json_traverse_basic1();
+        test_json_traverse_basic2();
+        test_json_traverse_basic3();
+        test_json_traverse_basic4();
+        test_json_traverse_nested1();
+        test_json_traverse_nested2();
 
-    test_json_init_list_flat1();
-    test_json_init_list_nested1();
-    test_json_init_list_object1();
-    test_json_init_list_object2();
-    test_json_init_list_explicit_array();
-    test_json_init_list_explicit_object();
-    test_json_init_root_object_add_child();
+        test_json_init_list_flat1();
+        test_json_init_list_nested1();
+        test_json_init_list_object1();
+        test_json_init_list_object2();
+        test_json_init_list_explicit_array();
+        test_json_init_list_explicit_object();
+        test_json_init_root_object_add_child();
+    }
+    catch (const orcus::general_error& e)
+    {
+        cerr << e.what() << endl;
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
