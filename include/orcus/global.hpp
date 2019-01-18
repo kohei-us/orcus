@@ -21,12 +21,12 @@ namespace orcus {
 
 class tokens;
 
-void print_element(xmlns_id_t ns, xml_token_t name);
+ORCUS_DLLPUBLIC void print_element(xmlns_id_t ns, xml_token_t name);
 
 /**
  * Print attributes to stdout for debugging purposes.
  */
-void print_attrs(const tokens& tokens, const xml_attrs_t& attrs);
+ORCUS_DLLPUBLIC void print_attrs(const tokens& tokens, const xml_attrs_t& attrs);
 
 /**
  * Parse the string representation of a date-time value, and convert it into
@@ -40,7 +40,7 @@ void print_attrs(const tokens& tokens, const xml_attrs_t& attrs);
  * @param str string representation of a date-time value.
  * @return converted date-time value consisting of a set of numeric values.
  */
-date_time_t to_date_time(const pstring& str);
+ORCUS_DLLPUBLIC date_time_t to_date_time(const pstring& str);
 
 /**
  * Function object for deleting objects that are stored in map container as

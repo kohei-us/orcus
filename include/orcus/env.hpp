@@ -52,7 +52,7 @@
     #else
       #define ORCUS_PSR_DLLPUBLIC __declspec(dllexport)
     #endif
-  #elif defined __ORCUS_STATIC_LIB
+  #elif defined __ORCUS_PSR_STATIC_LIB
       #define ORCUS_PSR_DLLPUBLIC
   #else
     #ifdef __GNUC__
@@ -84,7 +84,7 @@
     #else
       #define ORCUS_SPM_DLLPUBLIC __declspec(dllexport)
     #endif
-  #elif defined __ORCUS_STATIC_LIB
+  #elif defined __ORCUS_SPM_STATIC_LIB
       #define ORCUS_SPM_DLLPUBLIC
   #else
     #ifdef __GNUC__
@@ -116,7 +116,7 @@
     #else
       #define ORCUS_MSO_DLLPUBLIC __declspec(dllexport)
     #endif
-  #elif defined __ORCUS_STATIC_LIB
+  #elif defined __ORCUS_MSO_STATIC_LIB
       #define ORCUS_MSO_DLLPUBLIC
   #else
     #ifdef __GNUC__
