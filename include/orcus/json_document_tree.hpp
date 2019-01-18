@@ -335,13 +335,11 @@ public:
     node(json::array array);
     node(json::object obj);
 
-    node(const node& other);
+    node(const node& other) = delete;
     node(node&& other);
     ~node();
 
-    node& operator= (node other);
-
-    void swap(node& other);
+    node& operator= (node other) = delete;
 
 private:
     node_t type() const;

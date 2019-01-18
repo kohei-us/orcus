@@ -840,7 +840,12 @@ void node::push_back(const detail::init::node& v)
 
 array::array() {}
 array::array(array&& other) : m_vs(std::move(other.m_vs)) {}
-array::array(std::initializer_list<detail::init::node> vs) : m_vs(std::move(vs)) {}
+array::array(std::initializer_list<detail::init::node> vs)
+{
+    for (const detail::init::node& v : vs)
+        m_vs.push_back(std::move(const_cast<detail::init::node&>(v)));
+}
+
 array::~array() {}
 
 object::object() {}
@@ -996,7 +1001,7 @@ struct node::impl
         m_type(detail::node_t::array)
     {
         for (const detail::init::node& v : vs)
-            m_value_array.push_back(v);
+            m_value_array.push_back(std::move(const_cast<detail::init::node&>(v)));
 
         // If the list has two elements, and the first element is of type string,
         // we treat this as object's key-value pair.
@@ -1027,22 +1032,8 @@ node::node(std::initializer_list<detail::init::node> vs) : mp_impl(orcus::make_u
 node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array))) {}
 node::node(json::object obj) : mp_impl(orcus::make_unique<impl>(std::move(obj))) {}
 
-node::node(const node& other) : mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
-
 node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
 node::~node() {}
-
-node& node::operator= (node other)
-{
-    node tmp(std::move(other));
-    swap(tmp);
-    return *this;
-}
-
-void node::swap(node& other)
-{
-    std::swap(mp_impl, other.mp_impl);
-}
 
 json::node_t node::type() const
 {
