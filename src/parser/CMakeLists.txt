@@ -29,3 +29,28 @@ add_library(liborcus-parser SHARED
 
 target_compile_definitions(liborcus-parser PRIVATE __ORCUS_PSR_BUILDING_DLL)
 target_link_libraries(liborcus-parser ${ZLIB_LIBRARIES})
+
+# test programs
+
+set(_TESTS
+    base64-test
+    parser-base-test
+    parser-global-test
+#   sax-token-parser-test
+    stream_test
+    string-pool-test
+    threaded-json-parser-test
+    threaded-sax-token-parser-test
+    xml-namespace-test
+    zip-archive-test
+)
+
+foreach(_TEST ${_TESTS})
+    set(_TEST_FILE "${_TEST}.cpp")
+    string(REPLACE "-" "_" _TEST_FILE ${_TEST_FILE})
+    add_executable(${_TEST} EXCLUDE_FROM_ALL ${_TEST_FILE})
+    target_link_libraries(${_TEST} liborcus-parser)
+    add_test(${_TEST} ${_TEST})
+endforeach()
+
+add_dependencies(check ${_TESTS})

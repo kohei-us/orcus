@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 cmake_policy(SET CMP0048 NEW)
 
 set(ORCUS_MAJOR_VERSION 0)
-set(ORCUS_MINOR_VERSION 13)
-set(ORCUS_MICRO_VERSION 0)
+set(ORCUS_MINOR_VERSION 14)
+set(ORCUS_MICRO_VERSION 99)
 set(ORCUS_VERSION ${ORCUS_MAJOR_VERSION}.${ORCUS_MINOR_VERSION}.${ORCUS_MICRO_VERSION})
 
 project(orcus VERSION ${ORCUS_VERSION} LANGUAGES CXX)
@@ -18,6 +18,11 @@ find_package(Boost COMPONENTS program_options filesystem)
 find_package(Threads)
 find_package(Python3)
 find_package(Zlib)
+
+enable_testing()
+set(CMAKE_CTEST_COMMAND ctest -V)
+
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 
 find_library(IXION_LIB libixion PATHS ${IXION_LIBRARYDIR})
 
