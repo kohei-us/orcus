@@ -92,7 +92,7 @@ add_library(liborcus SHARED
 
 add_custom_target(
     py_gen_files
-    COMMAND python ${PROJECT_SOURCE_DIR}/bin/gen-files.py
+    COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/bin/gen-files.py
         --properties
             ORCUS_MAJOR_VERSION=${ORCUS_MAJOR_VERSION}
             ORCUS_MINOR_VERSION=${ORCUS_MINOR_VERSION}
