@@ -1103,7 +1103,11 @@ json_value* node::to_json_value(document_resource& res) const
             break;
         case detail::node_t::unset:
         default:
-            throw document_error("unknown node type.");
+        {
+            std::ostringstream os;
+            os << "unknown node type (type=" << int(mp_impl->m_type) << ")";
+            throw document_error(os.str());
+        }
     }
 
     return jv;
