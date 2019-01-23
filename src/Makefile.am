@@ -375,10 +375,16 @@ orcus_test_xml_mapped_SOURCES = \
 	dom_tree_sax_handler.hpp \
 	orcus_test_xml_mapped.cpp
 
+orcus_test_xml_mapped_LDFLAGS = \
+	$(BOOST_FILESYSTEM_LDFLAGS) \
+	$(BOOST_SYSTEM_LDFLAGS)
+
 orcus_test_xml_mapped_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	$(BOOST_FILESYSTEM_LIBS) \
+	$(BOOST_SYSTEM_LIBS)
 
 orcus_test_xml_mapped_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS) -DSRCDIR=\""$(top_srcdir)"\"
 
