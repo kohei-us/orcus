@@ -70,3 +70,64 @@ target_link_libraries(orcus-ods liborcus-parser liborcus-spreadsheet-model libor
 target_link_libraries(orcus-styles-ods liborcus-parser liborcus-spreadsheet-model liborcus)
 target_link_libraries(orcus-xlsx liborcus-parser liborcus-spreadsheet-model liborcus)
 target_link_libraries(orcus-xls-xml liborcus-parser liborcus-spreadsheet-model liborcus)
+
+# test programs
+
+add_executable(orcus-test-csv EXCLUDE_FROM_ALL
+    orcus_test_csv.cpp
+    orcus_test_global.cpp
+)
+
+add_executable(orcus-test-ods EXCLUDE_FROM_ALL
+    orcus_test_ods.cpp
+)
+
+add_executable(orcus-test-xls-xml EXCLUDE_FROM_ALL
+    orcus_test_xls_xml.cpp
+    orcus_test_global.cpp
+)
+
+add_executable(orcus-test-xlsx EXCLUDE_FROM_ALL
+    orcus_test_xlsx.cpp
+)
+
+add_executable(orcus-test-xml EXCLUDE_FROM_ALL
+    orcus_test_xml.cpp
+)
+
+add_executable(orcus-test-xml-mapped EXCLUDE_FROM_ALL
+	xml_map_sax_handler.cpp
+	dom_tree_sax_handler.cpp
+	orcus_test_xml_mapped.cpp
+)
+
+set(_TESTS
+    orcus-test-csv
+    orcus-test-ods
+    orcus-test-xls-xml
+    orcus-test-xlsx
+    orcus-test-xml
+    orcus-test-xml-mapped
+)
+
+foreach(_TEST ${_TESTS})
+    target_link_libraries(${_TEST} liborcus-parser liborcus-spreadsheet-model liborcus)
+
+    target_compile_definitions(${_TEST} PRIVATE
+        SRCDIR="${PROJECT_SOURCE_DIR}"
+    )
+
+    add_test(${_TEST} ${_TEST})
+
+    # Make sure the liborcus-parser library file is present in the same directory
+    # as the test program.
+    add_custom_command(TARGET ${_TEST} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:liborcus-parser>
+        $<TARGET_FILE:liborcus>
+        $<TARGET_FILE:liborcus-spreadsheet-model>
+        $<TARGET_FILE_DIR:${_TEST}>
+    )
+endforeach()
+
+add_dependencies(check ${_TESTS})

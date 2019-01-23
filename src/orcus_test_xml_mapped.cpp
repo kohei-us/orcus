@@ -25,8 +25,6 @@
 #include <fstream>
 #include <vector>
 
-#include <unistd.h>
-
 using namespace std;
 using namespace orcus;
 
