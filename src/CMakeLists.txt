@@ -71,6 +71,12 @@ target_link_libraries(orcus-styles-ods liborcus-parser liborcus-spreadsheet-mode
 target_link_libraries(orcus-xlsx liborcus-parser liborcus-spreadsheet-model liborcus)
 target_link_libraries(orcus-xls-xml liborcus-parser liborcus-spreadsheet-model liborcus)
 
+add_executable(orcus-env-dump EXCLUDE_FROM_ALL
+    orcus_env_dump.cpp
+)
+
+target_link_libraries(orcus-env-dump liborcus-parser liborcus)
+
 # test programs
 
 add_executable(orcus-test-csv EXCLUDE_FROM_ALL

@@ -13,6 +13,7 @@
 #include <cstring>
 #include <limits>
 #include <cassert>
+#include <algorithm>
 
 #ifdef __ORCUS_CPU_FEATURES
 #include <immintrin.h>

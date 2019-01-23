@@ -12,6 +12,8 @@ set(CMAKE_CXX_STANDARD 11)
 option(MDDS_INCLUDEDIR "path to mdds header directory.")
 option(IXION_INCLUDEDIR "path to ixion header directory.")
 option(IXION_LIBRARYDIR "path to ixion library directory.")
+option(WITH_CPU_FEATURES "whether or not to enable use of CPU extensions.")
+option(WITH_SSE42 "whether or not to enable use of SSE 4.2.")
 
 set(Boost_USE_STATIC_LIBS 1)
 find_package(Boost COMPONENTS program_options filesystem)
@@ -42,6 +44,15 @@ endif(MSVC)
 add_definitions(
     ${Boost_LIB_DIAGNOSTIC_DEFINITIONS}
 )
+
+if(WITH_CPU_FEATURES)
+    add_definitions(-D__ORCUS_CPU_FEATURES)
+    message(STATUS "Enabling use of CPU features...")
+    if(WITH_SSE42)
+        add_definitions(-D__SSE4_2__)
+        message(STATUS "Enabling SSE 4.2...")
+    endif()
+endif()
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
