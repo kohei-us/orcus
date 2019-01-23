@@ -25,8 +25,11 @@
 #include <fstream>
 #include <vector>
 
+#include <boost/filesystem.hpp>
+
 using namespace std;
 using namespace orcus;
+namespace fs = boost::filesystem;
 
 namespace {
 
@@ -139,7 +142,7 @@ void test_mapped_xml_import()
         }
 
         // Delete the temporary xml output.
-        unlink(out_file.c_str());
+        fs::remove(out_file.c_str());
     }
 }
 
