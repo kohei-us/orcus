@@ -15,14 +15,13 @@ option(IXION_LIBRARYDIR "path to ixion library directory.")
 option(WITH_CPU_FEATURES "whether or not to enable use of CPU extensions.")
 option(WITH_SSE42 "whether or not to enable use of SSE 4.2.")
 
-set(Boost_USE_STATIC_LIBS 1)
 find_package(Boost COMPONENTS program_options filesystem)
 find_package(Threads)
 find_package(Python3)
 find_package(Zlib)
 
 enable_testing()
-set(CMAKE_CTEST_COMMAND ctest -V)
+set(CMAKE_CTEST_COMMAND ctest)
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 
