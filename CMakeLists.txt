@@ -9,9 +9,9 @@ set(ORCUS_VERSION ${ORCUS_MAJOR_VERSION}.${ORCUS_MINOR_VERSION}.${ORCUS_MICRO_VE
 project(orcus VERSION ${ORCUS_VERSION} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 
-option(MDDS_INCLUDEDIR "path to mdds header directory.")
-option(IXION_INCLUDEDIR "path to ixion header directory.")
-option(IXION_LIBRARYDIR "path to ixion library directory.")
+set(MDDS_INCLUDEDIR "" CACHE STRING "path to mdds header directory.")
+set(IXION_INCLUDEDIR "" CACHE STRING "path to ixion header directory.")
+set(IXION_LIBRARYDIR "" CACHE STRING "path to ixion library directory.")
 option(WITH_CPU_FEATURES "whether or not to enable use of CPU extensions.")
 option(WITH_SSE42 "whether or not to enable use of SSE 4.2.")
 
