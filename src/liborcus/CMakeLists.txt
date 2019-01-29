@@ -91,18 +91,7 @@ add_library(liborcus SHARED
 #   orcus_gnumeric.cpp
 )
 
-add_custom_target(
-    py_gen_files
-    COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/bin/gen-files.py
-        --properties
-            ORCUS_MAJOR_VERSION=${ORCUS_MAJOR_VERSION}
-            ORCUS_MINOR_VERSION=${ORCUS_MINOR_VERSION}
-            ORCUS_MICRO_VERSION=${ORCUS_MICRO_VERSION}
-        --files
-            ${CMAKE_CURRENT_SOURCE_DIR}/constants.inl
-)
-
-add_dependencies(liborcus py_gen_files)
+configure_file(constants.inl.in constants.inl)
 
 target_link_libraries(liborcus liborcus-parser)
 
