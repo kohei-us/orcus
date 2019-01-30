@@ -14,7 +14,16 @@ namespace orcus { namespace detail { namespace cpu {
 
 constexpr bool has_sse42()
 {
-#ifdef __SSE4_2__
+#if defined(__SSE4_2__) || defined(__AVX2__)
+    return true;
+#else
+    return false;
+#endif
+}
+
+constexpr bool has_avx2()
+{
+#ifdef __AVX2__
     return true;
 #else
     return false;
@@ -24,6 +33,7 @@ constexpr bool has_sse42()
 #else
 
 constexpr bool has_sse42() { return false; }
+constexpr bool has_avx2() { return false; }
 
 #endif
 

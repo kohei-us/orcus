@@ -17,6 +17,7 @@ int main(int argc, char** argv)
 {
     cout << "CPU flags:" << endl;
     cout << "  SSE 4.2: " << orcus::detail::cpu::has_sse42() << endl;
+    cout << "  AVX2: " << orcus::detail::cpu::has_avx2() << endl;
 
     return EXIT_SUCCESS;
 }

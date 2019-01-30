@@ -14,6 +14,7 @@ set(IXION_INCLUDEDIR "" CACHE STRING "path to ixion header directory.")
 set(IXION_LIBRARYDIR "" CACHE STRING "path to ixion library directory.")
 option(WITH_CPU_FEATURES "whether or not to enable use of CPU extensions.")
 option(WITH_SSE42 "whether or not to enable use of SSE 4.2.")
+option(WITH_AVX2 "whether or not to enable use of AVX2.")
 
 find_package(Boost COMPONENTS program_options filesystem)
 find_package(Threads)
@@ -34,7 +35,7 @@ endif()
 message(STATUS "Found Ixion: ${IXION_LIB}")
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /wd4251 /wd4275 /wd4267 /wd4244 /MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251 /wd4275 /wd4267 /wd4244 /MP")
     add_definitions(
         -D_CRT_SECURE_NO_WARNINGS
     )
@@ -47,10 +48,21 @@ add_definitions(
 if(WITH_CPU_FEATURES)
     add_definitions(-D__ORCUS_CPU_FEATURES)
     message(STATUS "Enabling use of CPU features...")
-    if(WITH_SSE42)
-        add_definitions(-D__SSE4_2__)
-        message(STATUS "Enabling SSE 4.2...")
+
+    if(WITH_AVX2)
+        message(STATUS "Enabling AVX2...")
+        if(MSVC)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX2")
+        else()
+            add_definitions(-D__AVX2__)
+        endif()
     endif()
+
+    if(WITH_SSE42)
+        message(STATUS "Enabling SSE 4.2...")
+        add_definitions(-D__SSE4_2__)
+    endif()
+
 endif()
 
 include_directories(
