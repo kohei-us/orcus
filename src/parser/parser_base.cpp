@@ -119,7 +119,32 @@ void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
 
 void parser_base::skip_space_and_control()
 {
-#if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
+#if defined(__ORCUS_CPU_FEATURES) && defined(__AVX2__)
+    int n_total = available_size();
+    const __m256i ws = _mm256_set1_epi8(' '); // whitespaces
+
+    while (n_total)
+    {
+        __m256i char_block = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(mp_char));
+        __m256i results = _mm256_cmpgt_epi8(char_block, ws);
+        int r = _mm256_movemask_epi8(results);
+        r = _tzcnt_u32(r);
+        r = std::min<int>(r, n_total);
+
+        if (!r)
+            // No characters to skip. Bail out.
+            break;
+
+        mp_char += r; // Move the current char position.
+
+        if (r < 32)
+            // No need to move to the next segment. Stop here.
+            break;
+
+        n_total -= 32;
+    }
+
+#elif defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
     __m128i match = _mm_loadu_si128((const __m128i*)"\0 ");
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_RANGES | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
 
