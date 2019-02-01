@@ -18,7 +18,6 @@
 namespace orcus {
 
 class xmlns_context;
-struct dom_tree_impl;
 
 namespace sax {
 
@@ -31,10 +30,12 @@ struct doctype_declaration;
  */
 class ORCUS_DLLPUBLIC dom_tree
 {
-    dom_tree(const dom_tree&) = delete;
-    dom_tree& operator= (const dom_tree&) = delete;
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
 public:
+    dom_tree(const dom_tree&) = delete;
+    dom_tree& operator= (const dom_tree&) = delete;
 
     struct entity_name
     {
@@ -125,12 +126,10 @@ public:
     const attrs_type* get_declaration_attributes(const pstring& name) const;
 
     void dump_compact(std::ostream& os) const;
-
-private:
-    std::unique_ptr<dom_tree_impl> mp_impl;
 };
 
 }
 
 #endif
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

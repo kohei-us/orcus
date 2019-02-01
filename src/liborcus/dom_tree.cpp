@@ -105,7 +105,7 @@ typedef std::unordered_map<pstring, dom_tree::attrs_type, pstring::hash> declara
 
 }
 
-struct dom_tree_impl
+struct dom_tree::impl
 {
     xmlns_context& m_ns_cxt;
     string_pool m_pool;
@@ -119,9 +119,9 @@ struct dom_tree_impl
     dom_tree::element_stack_type m_elem_stack;
     dom_tree::element* m_root;
 
-    dom_tree_impl(xmlns_context& cxt) : m_ns_cxt(cxt), m_root(nullptr) {}
+    impl(xmlns_context& cxt) : m_ns_cxt(cxt), m_root(nullptr) {}
 
-    ~dom_tree_impl()
+    ~impl()
     {
         delete m_root;
     }
@@ -177,7 +177,7 @@ void dom_tree::content::print(ostream& os, const xmlns_context& /*cxt*/) const
 dom_tree::content::~content() {}
 
 dom_tree::dom_tree(xmlns_context& cxt) :
-    mp_impl(orcus::make_unique<dom_tree_impl>(cxt)) {}
+    mp_impl(orcus::make_unique<impl>(cxt)) {}
 
 dom_tree::~dom_tree() {}
 
