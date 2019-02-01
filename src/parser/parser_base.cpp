@@ -122,11 +122,16 @@ void parser_base::skip_space_and_control()
 #if defined(__ORCUS_CPU_FEATURES) && defined(__AVX2__)
     int n_total = available_size();
     const __m256i ws = _mm256_set1_epi8(' '); // whitespaces
+    const __m256i sb = _mm256_set1_epi8(0x80); // signed bit on.
 
     while (n_total)
     {
+        // The 'results' stores (for each 8-bit int) 0x00 if the char is less
+        // than or equal to whitespace, or the char is "negative" i.e. the
+        // signed bit is on IOW greater than 127.
         __m256i char_block = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(mp_char));
-        __m256i results = _mm256_cmpgt_epi8(char_block, ws);
+        __m256i results = _mm256_cmpgt_epi8(char_block, ws); // NB: this is a signed comparison.
+        results = _mm256_or_si256(results, _mm256_and_si256(char_block, sb));
         int r = _mm256_movemask_epi8(results);
         r = _tzcnt_u32(r);
         r = std::min<int>(r, n_total);
