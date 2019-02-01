@@ -533,8 +533,6 @@
 				<F N="../src/spreadsheet/styles.cpp"/>
 				<F N="../src/spreadsheet/view.cpp"/>
 			</Folder>
-			<F N="../src/dom_tree_sax_handler.cpp"/>
-			<F N="../src/dom_tree_sax_handler.hpp"/>
 			<F N="../src/orcus_css_dump.cpp"/>
 			<F N="../src/orcus_csv_main.cpp"/>
 			<F N="../src/orcus_detect_main.cpp"/>
