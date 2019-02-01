@@ -65,9 +65,7 @@ orcus_zip_dump_CPPFLAGS = $(AM_CPPFLAGS)
 # orcus-xml-dump
 
 orcus_xml_dump_SOURCES = \
-	orcus_xml_dump.cpp \
-	dom_tree_sax_handler.hpp \
-	dom_tree_sax_handler.cpp
+	orcus_xml_dump.cpp
 
 orcus_xml_dump_LDADD = \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
@@ -371,8 +369,6 @@ orcus_test_csv_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLA
 orcus_test_xml_mapped_SOURCES = \
 	xml_map_sax_handler.cpp \
 	xml_map_sax_handler.hpp \
-	dom_tree_sax_handler.cpp \
-	dom_tree_sax_handler.hpp \
 	orcus_test_xml_mapped.cpp
 
 orcus_test_xml_mapped_LDFLAGS = \

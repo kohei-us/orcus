@@ -7,12 +7,11 @@
 
 #include <cstdlib>
 
-#include "orcus/sax_ns_parser.hpp"
 #include "orcus/global.hpp"
 #include "orcus/xml_namespace.hpp"
 #include "orcus/stream.hpp"
-
-#include "dom_tree_sax_handler.hpp"
+#include "orcus/dom_tree.hpp"
+#include "orcus/sax_parser_base.hpp"
 
 #include <cstdlib>
 #include <cassert>
@@ -45,11 +44,10 @@ int main(int argc, char** argv)
     {
         xmlns_repository repo;
         xmlns_context cxt = repo.create_context();
-        dom_tree_sax_handler hdl(cxt);
-        sax_ns_parser<dom_tree_sax_handler> parser(strm.c_str(), strm.size(), cxt, hdl);
-        parser.parse();
+        dom_tree tree(cxt);
+        tree.load(strm);
         ostringstream os;
-        hdl.dump_compact(os);
+        tree.dump_compact(os);
         cout << os.str();
     }
     catch (const sax::malformed_xml_error& e)

@@ -10,12 +10,12 @@
 #include "orcus/sax_ns_parser.hpp"
 #include "orcus/xml_namespace.hpp"
 #include "orcus/stream.hpp"
+#include "orcus/dom_tree.hpp"
 
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
 #include "xml_map_sax_handler.hpp"
-#include "dom_tree_sax_handler.hpp"
 
 #include <cstdlib>
 #include <cassert>
@@ -57,11 +57,10 @@ const char* temp_output_xml = "out.xml";
 void dump_xml_structure(string& dump_content, string& strm, const char* filepath, xmlns_context& cxt)
 {
     strm = load_file_content(filepath);
-    dom_tree_sax_handler hdl(cxt);
-    sax_ns_parser<dom_tree_sax_handler> parser(strm.c_str(), strm.size(), cxt, hdl);
-    parser.parse();
+    dom_tree tree(cxt);
+    tree.load(strm);
     ostringstream os;
-    hdl.dump_compact(os);
+    tree.dump_compact(os);
     dump_content = os.str();
 }
 
