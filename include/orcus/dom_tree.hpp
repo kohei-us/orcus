@@ -113,14 +113,6 @@ public:
      */
     void swap(dom_tree& other);
 
-    void start_declaration(const pstring& name);
-    void end_declaration(const pstring& name);
-    void start_element(xmlns_id_t ns, const pstring& name);
-    void end_element(xmlns_id_t ns, const pstring& name);
-    void set_characters(const pstring& val);
-    void set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val);
-
-    void set_doctype(const sax::doctype_declaration& dtd);
     const sax::doctype_declaration* get_doctype() const;
 
     const attrs_type* get_declaration_attributes(const pstring& name) const;

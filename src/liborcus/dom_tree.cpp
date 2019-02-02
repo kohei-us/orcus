@@ -26,60 +26,6 @@ namespace orcus {
 
 namespace {
 
-class sax_handler
-{
-    sax::doctype_declaration m_dtd;
-    dom_tree m_tree;
-
-public:
-    sax_handler(xmlns_context& cxt) : m_tree(cxt) {}
-
-    void doctype(const sax::doctype_declaration& dtd)
-    {
-        m_tree.set_doctype(dtd);
-    }
-
-    void start_declaration(const pstring& name)
-    {
-        m_tree.start_declaration(name);
-    }
-
-    void end_declaration(const pstring& name)
-    {
-        m_tree.end_declaration(name);
-    }
-
-    void start_element(const sax_ns_parser_element& elem)
-    {
-        m_tree.start_element(elem.ns, elem.name);
-    }
-
-    void end_element(const sax_ns_parser_element& elem)
-    {
-        m_tree.end_element(elem.ns, elem.name);
-    }
-
-    void characters(const pstring& val, bool)
-    {
-        m_tree.set_characters(val);
-    }
-
-    void attribute(const pstring& name, const pstring& val)
-    {
-        m_tree.set_attribute(XMLNS_UNKNOWN_ID, name, val);
-    }
-
-    void attribute(const sax_ns_parser_attribute& attr)
-    {
-        m_tree.set_attribute(attr.ns, attr.name, attr.value);
-    }
-
-    void swap(dom_tree& other)
-    {
-        m_tree.swap(other);
-    }
-};
-
 /**
  * Escape certain characters with backslash (\).
  */
@@ -124,6 +70,24 @@ struct dom_tree::impl
     ~impl()
     {
         delete m_root;
+    }
+
+    void start_declaration(const pstring& name);
+    void end_declaration(const pstring& name);
+    void start_element(const sax_ns_parser_element& elem);
+    void end_element(const sax_ns_parser_element& elem);
+    void characters(const pstring& val, bool transient);
+    void set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val);
+    void doctype(const sax::doctype_declaration& dtd);
+
+    void attribute(const pstring& name, const pstring& val)
+    {
+        set_attribute(XMLNS_UNKNOWN_ID, name, val);
+    }
+
+    void attribute(const sax_ns_parser_attribute& attr)
+    {
+        set_attribute(attr.ns, attr.name, attr.value);
     }
 };
 
@@ -183,12 +147,9 @@ dom_tree::~dom_tree() {}
 
 void dom_tree::load(const std::string& strm)
 {
-    sax_handler hdl(mp_impl->m_ns_cxt);
-    sax_ns_parser<sax_handler> parser(
-        strm.c_str(), strm.size(), mp_impl->m_ns_cxt, hdl);
+    sax_ns_parser<impl> parser(
+        strm.c_str(), strm.size(), mp_impl->m_ns_cxt, *mp_impl);
     parser.parse();
-
-    hdl.swap(*this);
 }
 
 void dom_tree::swap(dom_tree& other)
@@ -196,15 +157,15 @@ void dom_tree::swap(dom_tree& other)
     mp_impl.swap(other.mp_impl);
 }
 
-void dom_tree::start_declaration(const pstring& name)
+void dom_tree::impl::start_declaration(const pstring& name)
 {
-    mp_impl->m_cur_decl_name = name;
+    m_cur_decl_name = name;
 }
 
-void dom_tree::end_declaration(const pstring& name)
+void dom_tree::impl::end_declaration(const pstring& name)
 {
-    assert(mp_impl->m_cur_decl_name == name);
-    declarations_type& decls = mp_impl->m_decls;
+    assert(m_cur_decl_name == name);
+    declarations_type& decls = m_decls;
     declarations_type::iterator it = decls.find(name);
     if (it == decls.end())
     {
@@ -212,54 +173,60 @@ void dom_tree::end_declaration(const pstring& name)
         std::pair<declarations_type::iterator,bool> r =
             decls.insert(
                 declarations_type::value_type(
-                    mp_impl->m_pool.intern(name).first, mp_impl->m_cur_attrs));
+                    m_pool.intern(name).first, m_cur_attrs));
 
         if (!r.second)
             // Insertion failed.
             throw general_error("dom_tree::end_declaration: failed to insert a new declaration entry.");
     }
     else
-        it->second = mp_impl->m_cur_attrs;
+        it->second = m_cur_attrs;
 
-    mp_impl->m_cur_attrs.clear();
+    m_cur_attrs.clear();
 }
 
-void dom_tree::start_element(xmlns_id_t ns, const pstring& name)
+void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
 {
+    xmlns_id_t ns = elem.ns;
+    const pstring& name = elem.name;
+
     // These strings must be persistent.
-    pstring name_safe = mp_impl->m_pool.intern(name).first;
+    pstring name_safe = m_pool.intern(name).first;
 
     element* p = nullptr;
-    if (!mp_impl->m_root)
+    if (!m_root)
     {
         // This must be the root element!
-        mp_impl->m_root = new element(ns, name_safe);
-        mp_impl->m_elem_stack.push_back(mp_impl->m_root);
-        p = mp_impl->m_elem_stack.back();
-        p->attrs.swap(mp_impl->m_cur_attrs);
+        m_root = new element(ns, name_safe);
+        m_elem_stack.push_back(m_root);
+        p = m_elem_stack.back();
+        p->attrs.swap(m_cur_attrs);
         return;
     }
 
     // Append new element as a child element of the current element.
-    p = mp_impl->m_elem_stack.back();
+    p = m_elem_stack.back();
     p->child_nodes.push_back(orcus::make_unique<element>(ns, name_safe));
     p = static_cast<element*>(p->child_nodes.back().get());
-    p->attrs.swap(mp_impl->m_cur_attrs);
-    mp_impl->m_elem_stack.push_back(p);
+    p->attrs.swap(m_cur_attrs);
+    m_elem_stack.push_back(p);
 }
 
-void dom_tree::end_element(xmlns_id_t ns, const pstring& name)
+void dom_tree::impl::end_element(const sax_ns_parser_element& elem)
 {
-    const element* p = mp_impl->m_elem_stack.back();
+    xmlns_id_t ns = elem.ns;
+    const pstring& name = elem.name;
+
+    const element* p = m_elem_stack.back();
     if (p->name.ns != ns || p->name.name != name)
         throw general_error("non-matching end element.");
 
-    mp_impl->m_elem_stack.pop_back();
+    m_elem_stack.pop_back();
 }
 
-void dom_tree::set_characters(const pstring& val)
+void dom_tree::impl::characters(const pstring& val, bool transient)
 {
-    if (mp_impl->m_elem_stack.empty())
+    if (m_elem_stack.empty())
         // No root element has been encountered.  Ignore this.
         return;
 
@@ -267,26 +234,26 @@ void dom_tree::set_characters(const pstring& val)
     if (val2.empty())
         return;
 
-    element* p = mp_impl->m_elem_stack.back();
-    val2 = mp_impl->m_pool.intern(val2).first; // Make sure the string is persistent.
+    element* p = m_elem_stack.back();
+    val2 = m_pool.intern(val2).first; // Make sure the string is persistent.
     p->child_nodes.push_back(orcus::make_unique<content>(val2));
 }
 
-void dom_tree::set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val)
+void dom_tree::impl::set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val)
 {
     // These strings must be persistent.
-    pstring name2 = mp_impl->m_pool.intern(name).first;
-    pstring val2 = mp_impl->m_pool.intern(val).first;
+    pstring name2 = m_pool.intern(name).first;
+    pstring val2 = m_pool.intern(val).first;
 
-    mp_impl->m_cur_attrs.push_back(attr(ns, name2, val2));
+    m_cur_attrs.push_back(attr(ns, name2, val2));
 }
 
-void dom_tree::set_doctype(const sax::doctype_declaration& dtd)
+void dom_tree::impl::doctype(const sax::doctype_declaration& dtd)
 {
-    mp_impl->m_doctype = orcus::make_unique<sax::doctype_declaration>(dtd);  // make a copy.
+    m_doctype = orcus::make_unique<sax::doctype_declaration>(dtd);  // make a copy.
 
-    sax::doctype_declaration& this_dtd = *mp_impl->m_doctype;
-    string_pool& pool = mp_impl->m_pool;
+    sax::doctype_declaration& this_dtd = *m_doctype;
+    string_pool& pool = m_pool;
 
     // Intern the strings.
     this_dtd.root_element = pool.intern(dtd.root_element).first;
