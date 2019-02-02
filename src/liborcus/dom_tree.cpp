@@ -63,21 +63,15 @@ struct dom_tree::impl
     dom_tree::attrs_type m_doc_attrs;
     dom_tree::attrs_type m_cur_attrs;
     dom_tree::element_stack_type m_elem_stack;
-    dom_tree::element* m_root;
+    std::unique_ptr<dom_tree::element> m_root;
 
-    impl(xmlns_context& cxt) : m_ns_cxt(cxt), m_root(nullptr) {}
-
-    ~impl()
-    {
-        delete m_root;
-    }
+    impl(xmlns_context& cxt) : m_ns_cxt(cxt) {}
 
     void start_declaration(const pstring& name);
     void end_declaration(const pstring& name);
     void start_element(const sax_ns_parser_element& elem);
     void end_element(const sax_ns_parser_element& elem);
     void characters(const pstring& val, bool transient);
-    void set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val);
     void doctype(const sax::doctype_declaration& dtd);
 
     void attribute(const pstring& name, const pstring& val)
@@ -89,6 +83,8 @@ struct dom_tree::impl
     {
         set_attribute(attr.ns, attr.name, attr.value);
     }
+
+    void set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val);
 };
 
 dom_tree::entity_name::entity_name() : ns(XMLNS_UNKNOWN_ID) {}
@@ -197,8 +193,8 @@ void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
     if (!m_root)
     {
         // This must be the root element!
-        m_root = new element(ns, name_safe);
-        m_elem_stack.push_back(m_root);
+        m_root = orcus::make_unique<element>(ns, name_safe);
+        m_elem_stack.push_back(m_root.get());
         p = m_elem_stack.back();
         p->attrs.swap(m_cur_attrs);
         return;
@@ -327,7 +323,7 @@ void dom_tree::dump_compact(ostream& os) const
 
     scopes_type scopes;
 
-    scopes.push_back(orcus::make_unique<scope>(string(), mp_impl->m_root));
+    scopes.push_back(orcus::make_unique<scope>(string(), mp_impl->m_root.get()));
     while (!scopes.empty())
     {
         bool new_scope = false;
