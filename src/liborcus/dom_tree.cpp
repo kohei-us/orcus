@@ -53,6 +53,8 @@ typedef std::unordered_map<pstring, dom_tree::attrs_type, pstring::hash> declara
 
 struct dom_tree::impl
 {
+    typedef std::vector<element*> element_stack_type;
+
     xmlns_context& m_ns_cxt;
     string_pool m_pool;
 
@@ -62,7 +64,7 @@ struct dom_tree::impl
     declarations_type m_decls;
     dom_tree::attrs_type m_doc_attrs;
     dom_tree::attrs_type m_cur_attrs;
-    dom_tree::element_stack_type m_elem_stack;
+    element_stack_type m_elem_stack;
     std::unique_ptr<dom_tree::element> m_root;
 
     impl(xmlns_context& cxt) : m_ns_cxt(cxt) {}

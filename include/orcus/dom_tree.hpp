@@ -85,8 +85,6 @@ public:
         virtual ~element();
     };
 
-    typedef std::vector<element*> element_stack_type;
-
     struct content : public node
     {
         pstring value;
