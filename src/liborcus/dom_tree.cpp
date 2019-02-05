@@ -193,6 +193,21 @@ const_node& const_node::operator= (const const_node& other)
     return *this;
 }
 
+namespace {
+
+void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
+{
+    if (name.ns)
+    {
+        size_t index = cxt.get_index(name.ns);
+        if (index != index_not_found)
+            os << "ns" << index << ':';
+    }
+    os << name.name;
+}
+
+} // anonymous namespace
+
 } // namespace dom
 
 struct dom_tree::impl
@@ -233,28 +248,12 @@ struct dom_tree::impl
     void set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val);
 };
 
-dom_tree::entity_name::entity_name() : ns(XMLNS_UNKNOWN_ID) {}
-
-dom_tree::entity_name::entity_name(xmlns_id_t _ns, const pstring& _name) :
-    ns(_ns), name(_name) {}
-
-void dom_tree::entity_name::print(std::ostream& os, const xmlns_context& cxt) const
-{
-    if (ns)
-    {
-        size_t index = cxt.get_index(ns);
-        if (index != index_not_found)
-            os << "ns" << index << ':';
-    }
-    os << name;
-}
-
 dom_tree::attr::attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value) :
     name(_ns, _name), value(_value) {}
 
 void dom_tree::attr::print(std::ostream& os, const xmlns_context& cxt) const
 {
-    name.print(os, cxt);
+    dom::print(os, name, cxt);
     os << "=\"";
     escape(os, value);
     os << '"';
@@ -266,7 +265,7 @@ dom_tree::element::element(xmlns_id_t _ns, const pstring& _name) : node(node_typ
 
 void dom_tree::element::print(ostream& os, const xmlns_context& cxt) const
 {
-    name.print(os, cxt);
+    dom::print(os, name, cxt);
 }
 
 dom_tree::element::~element() {}

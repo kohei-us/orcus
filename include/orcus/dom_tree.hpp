@@ -90,20 +90,9 @@ public:
     dom_tree(const dom_tree&) = delete;
     dom_tree& operator= (const dom_tree&) = delete;
 
-    struct entity_name
-    {
-        xmlns_id_t ns;
-        pstring name;
-
-        entity_name();
-        entity_name(xmlns_id_t _ns, const pstring& _name);
-
-        void print(std::ostream& os, const xmlns_context& cxt) const;
-    };
-
     struct attr
     {
-        entity_name name;
+        dom::entity_name name;
         pstring value;
 
         attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value);
@@ -129,7 +118,7 @@ public:
 
     struct element : public node
     {
-        entity_name name;
+        dom::entity_name name;
         attrs_type attrs;
         nodes_type child_nodes;
 
