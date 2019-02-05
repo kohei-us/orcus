@@ -24,6 +24,8 @@ using namespace std;
 
 namespace orcus {
 
+namespace dom {
+
 namespace {
 
 /**
@@ -47,11 +49,95 @@ void escape(ostream& os, const pstring& val)
     }
 }
 
-typedef std::unordered_map<pstring, dom_tree::attrs_type, pstring::hash> declarations_type;
+struct attr
+{
+    dom::entity_name name;
+    pstring value;
+
+    attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value);
+};
+
+typedef std::vector<attr> attrs_type;
+
+enum class node_type { element, content };
+
+struct node
+{
+    node_type type;
+
+    node(node_type _type) : type(_type) {}
+
+    virtual ~node() = 0;
+    virtual void print(std::ostream& os, const xmlns_context& cxt) const = 0;
+};
+
+typedef std::vector<std::unique_ptr<node>> nodes_type;
+
+struct element : public node
+{
+    entity_name name;
+    attrs_type attrs;
+    nodes_type child_nodes;
+
+    element(xmlns_id_t _ns, const pstring& _name);
+    virtual void print(std::ostream& os, const xmlns_context& cxt) const;
+    virtual ~element();
+};
+
+struct content : public node
+{
+    pstring value;
+
+    content(const pstring& _value);
+    virtual void print(std::ostream& os, const xmlns_context& cxt) const;
+    virtual ~content();
+};
+
+void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
+{
+    if (name.ns)
+    {
+        size_t index = cxt.get_index(name.ns);
+        if (index != index_not_found)
+            os << "ns" << index << ':';
+    }
+    os << name.name;
+}
+
+void print(std::ostream& os, const attr& at, const xmlns_context& cxt)
+{
+    dom::print(os, at.name, cxt);
+    os << "=\"";
+    escape(os, at.value);
+    os << '"';
+}
+
+attr::attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value) :
+    name(_ns, _name), value(_value) {}
+
+node::~node() {}
+
+element::element(xmlns_id_t _ns, const pstring& _name) : node(node_type::element), name(_ns, _name) {}
+
+void element::print(ostream& os, const xmlns_context& cxt) const
+{
+    dom::print(os, name, cxt);
+}
+
+element::~element() {}
+
+content::content(const pstring& _value) : node(node_type::content), value(_value) {}
+
+void content::print(ostream& os, const xmlns_context& /*cxt*/) const
+{
+    os << '"';
+    escape(os, value);
+    os << '"';
+}
+
+content::~content() {}
 
 } // anonymous namespace
-
-namespace dom {
 
 entity_name::entity_name() : ns(XMLNS_UNKNOWN_ID) {}
 
@@ -64,8 +150,8 @@ struct const_node::impl
 
     union
     {
-        const dom_tree::attrs_type* attrs;
-        const dom_tree::attr* attr;
+        const dom::attrs_type* attrs;
+        const dom::attr* attr;
 
         struct
         {
@@ -98,12 +184,12 @@ struct const_node::impl
         }
     }
 
-    impl(const dom_tree::attr* _attr) : type(node_t::attribute)
+    impl(const dom::attr* _attr) : type(node_t::attribute)
     {
         value.attr = _attr;
     }
 
-    impl(const dom_tree::attrs_type* _attrs) : type(node_t::declaration)
+    impl(const dom::attrs_type* _attrs) : type(node_t::declaration)
     {
         value.attrs = _attrs;
     }
@@ -140,7 +226,7 @@ const_node const_node::child(size_t index) const
         case node_t::declaration:
         {
             assert(index < mp_impl->value.attrs->size());
-            const dom_tree::attrs_type& attrs = *mp_impl->value.attrs;
+            const dom::attrs_type& attrs = *mp_impl->value.attrs;
             auto v = orcus::make_unique<impl>(&attrs[index]);
             return const_node(std::move(v));
         }
@@ -156,7 +242,7 @@ entity_name const_node::name() const
     {
         case node_t::attribute:
         {
-            const dom_tree::attr* v = mp_impl->value.attr;
+            const dom::attr* v = mp_impl->value.attr;
             return entity_name(v->name.ns, v->name.name);
         }
         default:
@@ -172,7 +258,7 @@ pstring const_node::value() const
     {
         case node_t::attribute:
         {
-            const dom_tree::attr* v = mp_impl->value.attr;
+            const dom::attr* v = mp_impl->value.attr;
             return v->value;
         }
         default:
@@ -193,34 +279,12 @@ const_node& const_node::operator= (const const_node& other)
     return *this;
 }
 
-namespace {
-
-void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
-{
-    if (name.ns)
-    {
-        size_t index = cxt.get_index(name.ns);
-        if (index != index_not_found)
-            os << "ns" << index << ':';
-    }
-    os << name.name;
-}
-
-void print(std::ostream& os, const dom_tree::attr& at, const xmlns_context& cxt)
-{
-    dom::print(os, at.name, cxt);
-    os << "=\"";
-    escape(os, at.value);
-    os << '"';
-}
-
-} // anonymous namespace
-
 } // namespace dom
 
 struct dom_tree::impl
 {
-    typedef std::vector<element*> element_stack_type;
+    typedef std::vector<dom::element*> element_stack_type;
+    typedef std::unordered_map<pstring, dom::attrs_type, pstring::hash> declarations_type;
 
     xmlns_context& m_ns_cxt;
     string_pool m_pool;
@@ -229,10 +293,10 @@ struct dom_tree::impl
 
     pstring m_cur_decl_name;
     declarations_type m_decls;
-    dom_tree::attrs_type m_doc_attrs;
-    dom_tree::attrs_type m_cur_attrs;
+    dom::attrs_type m_doc_attrs;
+    dom::attrs_type m_cur_attrs;
     element_stack_type m_elem_stack;
-    std::unique_ptr<dom_tree::element> m_root;
+    std::unique_ptr<dom::element> m_root;
 
     impl(xmlns_context& cxt) : m_ns_cxt(cxt) {}
 
@@ -256,31 +320,6 @@ struct dom_tree::impl
     void set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val);
 };
 
-dom_tree::attr::attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value) :
-    name(_ns, _name), value(_value) {}
-
-dom_tree::node::~node() {}
-
-dom_tree::element::element(xmlns_id_t _ns, const pstring& _name) : node(node_type::element), name(_ns, _name) {}
-
-void dom_tree::element::print(ostream& os, const xmlns_context& cxt) const
-{
-    dom::print(os, name, cxt);
-}
-
-dom_tree::element::~element() {}
-
-dom_tree::content::content(const pstring& _value) : node(node_type::content), value(_value) {}
-
-void dom_tree::content::print(ostream& os, const xmlns_context& /*cxt*/) const
-{
-    os << '"';
-    escape(os, value);
-    os << '"';
-}
-
-dom_tree::content::~content() {}
-
 dom_tree::dom_tree(xmlns_context& cxt) :
     mp_impl(orcus::make_unique<impl>(cxt)) {}
 
@@ -300,11 +339,11 @@ dom::const_node dom_tree::root() const
 
 dom::const_node dom_tree::declaration(const pstring& name) const
 {
-    declarations_type::const_iterator it = mp_impl->m_decls.find(name);
+    impl::declarations_type::const_iterator it = mp_impl->m_decls.find(name);
     if (it == mp_impl->m_decls.end())
         return dom::const_node();
 
-    const attrs_type* attrs = &it->second;
+    const dom::attrs_type* attrs = &it->second;
     auto v = orcus::make_unique<dom::const_node::impl>(attrs);
     return dom::const_node(std::move(v));
 }
@@ -350,11 +389,11 @@ void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
     // These strings must be persistent.
     pstring name_safe = m_pool.intern(name).first;
 
-    element* p = nullptr;
+    dom::element* p = nullptr;
     if (!m_root)
     {
         // This must be the root element!
-        m_root = orcus::make_unique<element>(ns, name_safe);
+        m_root = orcus::make_unique<dom::element>(ns, name_safe);
         m_elem_stack.push_back(m_root.get());
         p = m_elem_stack.back();
         p->attrs.swap(m_cur_attrs);
@@ -363,8 +402,8 @@ void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
 
     // Append new element as a child element of the current element.
     p = m_elem_stack.back();
-    p->child_nodes.push_back(orcus::make_unique<element>(ns, name_safe));
-    p = static_cast<element*>(p->child_nodes.back().get());
+    p->child_nodes.push_back(orcus::make_unique<dom::element>(ns, name_safe));
+    p = static_cast<dom::element*>(p->child_nodes.back().get());
     p->attrs.swap(m_cur_attrs);
     m_elem_stack.push_back(p);
 }
@@ -374,7 +413,7 @@ void dom_tree::impl::end_element(const sax_ns_parser_element& elem)
     xmlns_id_t ns = elem.ns;
     const pstring& name = elem.name;
 
-    const element* p = m_elem_stack.back();
+    const dom::element* p = m_elem_stack.back();
     if (p->name.ns != ns || p->name.name != name)
         throw general_error("non-matching end element.");
 
@@ -391,9 +430,9 @@ void dom_tree::impl::characters(const pstring& val, bool transient)
     if (val2.empty())
         return;
 
-    element* p = m_elem_stack.back();
+    dom::element* p = m_elem_stack.back();
     val2 = m_pool.intern(val2).first; // Make sure the string is persistent.
-    p->child_nodes.push_back(orcus::make_unique<content>(val2));
+    p->child_nodes.push_back(orcus::make_unique<dom::content>(val2));
 }
 
 void dom_tree::impl::set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val)
@@ -402,7 +441,7 @@ void dom_tree::impl::set_attribute(xmlns_id_t ns, const pstring& name, const pst
     pstring name2 = m_pool.intern(name).first;
     pstring val2 = m_pool.intern(val).first;
 
-    m_cur_attrs.push_back(attr(ns, name2, val2));
+    m_cur_attrs.push_back(dom::attr(ns, name2, val2));
 }
 
 void dom_tree::impl::doctype(const sax::doctype_declaration& dtd)
@@ -427,7 +466,7 @@ namespace {
 
 struct scope
 {
-    typedef std::vector<const dom_tree::node*> nodes_type;
+    typedef std::vector<const dom::node*> nodes_type;
     string name;
     nodes_type nodes;
     nodes_type::const_iterator current_pos;
@@ -435,7 +474,7 @@ struct scope
     scope(const scope&) = delete;
     scope& operator=(const scope&) = delete;
 
-    scope(const string& _name, dom_tree::node* _node) :
+    scope(const string& _name, dom::node* _node) :
         name(_name)
     {
         nodes.push_back(_node);
@@ -458,9 +497,9 @@ void print_scope(ostream& os, const scopes_type& scopes)
         os << "/" << (*it)->name;
 }
 
-struct sort_by_name : std::binary_function<dom_tree::attr, dom_tree::attr, bool>
+struct sort_by_name
 {
-    bool operator() (const dom_tree::attr& left, const dom_tree::attr& right) const
+    bool operator() (const dom::attr& left, const dom::attr& right) const
     {
         return left.name.name < right.name.name;
     }
@@ -487,10 +526,10 @@ void dom_tree::dump_compact(ostream& os) const
         scope& cur_scope = *scopes.back();
         for (; cur_scope.current_pos != cur_scope.nodes.end(); ++cur_scope.current_pos)
         {
-            const node* this_node = *cur_scope.current_pos;
+            const dom::node* this_node = *cur_scope.current_pos;
             assert(this_node);
             print_scope(os, scopes);
-            if (this_node->type == node_type::content)
+            if (this_node->type == dom::node_type::content)
             {
                 // This is a text content.
                 this_node->print(os, mp_impl->m_ns_cxt);
@@ -498,17 +537,17 @@ void dom_tree::dump_compact(ostream& os) const
                 continue;
             }
 
-            assert(this_node->type == node_type::element);
-            const element* elem = static_cast<const element*>(this_node);
+            assert(this_node->type == dom::node_type::element);
+            const dom::element* elem = static_cast<const dom::element*>(this_node);
             os << "/";
             elem->print(os, mp_impl->m_ns_cxt);
             os << endl;
 
             {
                 // Dump attributes.
-                attrs_type attrs = elem->attrs;
+                dom::attrs_type attrs = elem->attrs;
                 sort(attrs.begin(), attrs.end(), sort_by_name());
-                attrs_type::const_iterator it = attrs.begin(), it_end = attrs.end();
+                dom::attrs_type::const_iterator it = attrs.begin(), it_end = attrs.end();
                 for (; it != it_end; ++it)
                 {
                     print_scope(os, scopes);
@@ -525,7 +564,7 @@ void dom_tree::dump_compact(ostream& os) const
 
             // This element has child nodes.  Push a new scope and populate it
             // with all child elements, but skip content nodes.
-            dom_tree::nodes_type::const_iterator it = elem->child_nodes.begin(), it_end = elem->child_nodes.end();
+            dom::nodes_type::const_iterator it = elem->child_nodes.begin(), it_end = elem->child_nodes.end();
             scope::nodes_type nodes;
             for (; it != it_end; ++it)
                 nodes.push_back(it->get());
@@ -534,7 +573,7 @@ void dom_tree::dump_compact(ostream& os) const
 
             // Push a new scope, and restart the loop with the new scope.
             ++cur_scope.current_pos;
-            ostringstream elem_name;
+            std::ostringstream elem_name;
             elem->print(elem_name, mp_impl->m_ns_cxt);
             scopes.push_back(orcus::make_unique<scope>(elem_name.str()));
             scope& child_scope = *scopes.back();

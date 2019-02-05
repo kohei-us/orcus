@@ -90,50 +90,6 @@ public:
     dom_tree(const dom_tree&) = delete;
     dom_tree& operator= (const dom_tree&) = delete;
 
-    struct attr
-    {
-        dom::entity_name name;
-        pstring value;
-
-        attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value);
-    };
-
-    typedef std::vector<attr> attrs_type;
-
-    enum class node_type { element, content };
-
-    struct node
-    {
-        node_type type;
-
-        node(node_type _type) : type(_type) {}
-
-        virtual ~node() = 0;
-        virtual void print(std::ostream& os, const xmlns_context& cxt) const = 0;
-    };
-
-    typedef std::vector<std::unique_ptr<node>> nodes_type;
-
-    struct element : public node
-    {
-        dom::entity_name name;
-        attrs_type attrs;
-        nodes_type child_nodes;
-
-        element(xmlns_id_t _ns, const pstring& _name);
-        virtual void print(std::ostream& os, const xmlns_context& cxt) const;
-        virtual ~element();
-    };
-
-    struct content : public node
-    {
-        pstring value;
-
-        content(const pstring& _value);
-        virtual void print(std::ostream& os, const xmlns_context& cxt) const;
-        virtual ~content();
-    };
-
     dom_tree(xmlns_context& cxt);
     ~dom_tree();
 
