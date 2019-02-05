@@ -58,7 +58,16 @@ struct attr
     attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value);
 };
 
-typedef std::vector<attr> attrs_type;
+struct entity_name_hash
+{
+    size_t operator()(const entity_name& v) const
+    {
+        return 0; // TODO : don't forget to implement this.
+    }
+};
+
+using attrs_type = std::vector<attr>;
+using attr_map_type = std::unordered_map<entity_name, size_t, entity_name_hash>;
 
 enum class node_type { element, content };
 
@@ -78,6 +87,7 @@ struct element : public node
 {
     entity_name name;
     attrs_type attrs;
+    attr_map_type attr_map;
     nodes_type child_nodes;
 
     element(xmlns_id_t _ns, const pstring& _name);
@@ -142,8 +152,21 @@ content::~content() {}
 
 entity_name::entity_name() : ns(XMLNS_UNKNOWN_ID) {}
 
+entity_name::entity_name(const pstring& _name) :
+    ns(XMLNS_UNKNOWN_ID), name(_name) {}
+
 entity_name::entity_name(xmlns_id_t _ns, const pstring& _name) :
     ns(_ns), name(_name) {}
+
+bool entity_name::operator== (const entity_name& other) const
+{
+    return ns == other.ns && name == other.name;
+}
+
+bool entity_name::operator!= (const entity_name& other) const
+{
+    return !operator==(other);
+}
 
 struct const_node::impl
 {
@@ -274,6 +297,33 @@ pstring const_node::value() const
     return pstring();
 }
 
+pstring const_node::attribute(const entity_name& name) const
+{
+    switch (mp_impl->type)
+    {
+        case node_t::element:
+        {
+            const dom::element* p = mp_impl->value.elem;
+            auto it = p->attr_map.find(name);
+            if (it == p->attr_map.end())
+                break;
+
+            size_t pos = it->second;
+            assert(pos < p->attrs.size());
+            return p->attrs[pos].value;
+        }
+        default:
+            ;
+    }
+
+    return pstring();
+}
+
+pstring const_node::attribute(const pstring& name) const
+{
+    return attribute(entity_name(name));
+}
+
 void const_node::swap(const_node& other)
 {
     mp_impl.swap(other.mp_impl);
@@ -302,6 +352,7 @@ struct dom_tree::impl
     declarations_type m_decls;
     dom::attrs_type m_doc_attrs;
     dom::attrs_type m_cur_attrs;
+    dom::attr_map_type m_cur_attr_map;
     element_stack_type m_elem_stack;
     std::unique_ptr<dom::element> m_root;
 
@@ -370,6 +421,7 @@ void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
         m_elem_stack.push_back(m_root.get());
         p = m_elem_stack.back();
         p->attrs.swap(m_cur_attrs);
+        p->attr_map.swap(m_cur_attr_map);
         return;
     }
 
@@ -378,6 +430,7 @@ void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
     p->child_nodes.push_back(orcus::make_unique<dom::element>(ns, name_safe));
     p = static_cast<dom::element*>(p->child_nodes.back().get());
     p->attrs.swap(m_cur_attrs);
+    p->attr_map.swap(m_cur_attr_map);
     m_elem_stack.push_back(p);
 }
 
@@ -414,7 +467,9 @@ void dom_tree::impl::set_attribute(xmlns_id_t ns, const pstring& name, const pst
     pstring name2 = m_pool.intern(name).first;
     pstring val2 = m_pool.intern(val).first;
 
+    size_t pos = m_cur_attrs.size();
     m_cur_attrs.push_back(dom::attr(ns, name2, val2));
+    m_cur_attr_map.insert({dom::entity_name(ns, name2), pos});
 }
 
 void dom_tree::impl::doctype(const sax::doctype_declaration& dtd)

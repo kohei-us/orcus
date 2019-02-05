@@ -43,7 +43,11 @@ struct ORCUS_DLLPUBLIC entity_name
     pstring name;
 
     entity_name();
+    entity_name(const pstring& _name);
     entity_name(xmlns_id_t _ns, const pstring& _name);
+
+    bool operator== (const entity_name& other) const;
+    bool operator!= (const entity_name& other) const;
 };
 
 class ORCUS_DLLPUBLIC const_node
@@ -70,6 +74,9 @@ public:
     entity_name name() const;
 
     pstring value() const;
+
+    pstring attribute(const entity_name& name) const;
+    pstring attribute(const pstring& name) const;
 
     void swap(const_node& other);
 
