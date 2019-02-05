@@ -96,8 +96,6 @@ public:
         pstring value;
 
         attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value);
-
-        void print(std::ostream& os, const xmlns_context& cxt) const;
     };
 
     typedef std::vector<attr> attrs_type;

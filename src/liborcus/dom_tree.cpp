@@ -206,6 +206,14 @@ void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
     os << name.name;
 }
 
+void print(std::ostream& os, const dom_tree::attr& at, const xmlns_context& cxt)
+{
+    dom::print(os, at.name, cxt);
+    os << "=\"";
+    escape(os, at.value);
+    os << '"';
+}
+
 } // anonymous namespace
 
 } // namespace dom
@@ -250,14 +258,6 @@ struct dom_tree::impl
 
 dom_tree::attr::attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value) :
     name(_ns, _name), value(_value) {}
-
-void dom_tree::attr::print(std::ostream& os, const xmlns_context& cxt) const
-{
-    dom::print(os, name, cxt);
-    os << "=\"";
-    escape(os, value);
-    os << '"';
-}
 
 dom_tree::node::~node() {}
 
@@ -515,7 +515,7 @@ void dom_tree::dump_compact(ostream& os) const
                     os << "/";
                     elem->print(os, mp_impl->m_ns_cxt);
                     os << "@";
-                    it->print(os, mp_impl->m_ns_cxt);
+                    dom::print(os, *it, mp_impl->m_ns_cxt);
                     os << endl;
                 }
             }
