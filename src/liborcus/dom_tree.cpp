@@ -300,7 +300,11 @@ struct dom_tree::impl
 
     impl(xmlns_context& cxt) : m_ns_cxt(cxt) {}
 
-    void start_declaration(const pstring& name);
+    void start_declaration(const pstring& name)
+    {
+        m_cur_decl_name = name;
+    }
+
     void end_declaration(const pstring& name);
     void start_element(const sax_ns_parser_element& elem);
     void end_element(const sax_ns_parser_element& elem);
@@ -319,44 +323,6 @@ struct dom_tree::impl
 
     void set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val);
 };
-
-dom_tree::dom_tree(xmlns_context& cxt) :
-    mp_impl(orcus::make_unique<impl>(cxt)) {}
-
-dom_tree::~dom_tree() {}
-
-void dom_tree::load(const std::string& strm)
-{
-    sax_ns_parser<impl> parser(
-        strm.c_str(), strm.size(), mp_impl->m_ns_cxt, *mp_impl);
-    parser.parse();
-}
-
-dom::const_node dom_tree::root() const
-{
-    return dom::const_node();
-}
-
-dom::const_node dom_tree::declaration(const pstring& name) const
-{
-    impl::declarations_type::const_iterator it = mp_impl->m_decls.find(name);
-    if (it == mp_impl->m_decls.end())
-        return dom::const_node();
-
-    const dom::attrs_type* attrs = &it->second;
-    auto v = orcus::make_unique<dom::const_node::impl>(attrs);
-    return dom::const_node(std::move(v));
-}
-
-void dom_tree::swap(dom_tree& other)
-{
-    mp_impl.swap(other.mp_impl);
-}
-
-void dom_tree::impl::start_declaration(const pstring& name)
-{
-    m_cur_decl_name = name;
-}
 
 void dom_tree::impl::end_declaration(const pstring& name)
 {
@@ -457,6 +423,39 @@ void dom_tree::impl::doctype(const sax::doctype_declaration& dtd)
     this_dtd.uri = pool.intern(dtd.uri).first;
 }
 
+dom_tree::dom_tree(xmlns_context& cxt) :
+    mp_impl(orcus::make_unique<impl>(cxt)) {}
+
+dom_tree::~dom_tree() {}
+
+void dom_tree::load(const std::string& strm)
+{
+    sax_ns_parser<impl> parser(
+        strm.c_str(), strm.size(), mp_impl->m_ns_cxt, *mp_impl);
+    parser.parse();
+}
+
+dom::const_node dom_tree::root() const
+{
+    return dom::const_node();
+}
+
+dom::const_node dom_tree::declaration(const pstring& name) const
+{
+    impl::declarations_type::const_iterator it = mp_impl->m_decls.find(name);
+    if (it == mp_impl->m_decls.end())
+        return dom::const_node();
+
+    const dom::attrs_type* attrs = &it->second;
+    auto v = orcus::make_unique<dom::const_node::impl>(attrs);
+    return dom::const_node(std::move(v));
+}
+
+void dom_tree::swap(dom_tree& other)
+{
+    mp_impl.swap(other.mp_impl);
+}
+
 const sax::doctype_declaration* dom_tree::get_doctype() const
 {
     return mp_impl->m_doctype.get();
@@ -496,14 +495,6 @@ void print_scope(ostream& os, const scopes_type& scopes)
     for (++it; it != it_end; ++it)
         os << "/" << (*it)->name;
 }
-
-struct sort_by_name
-{
-    bool operator() (const dom::attr& left, const dom::attr& right) const
-    {
-        return left.name.name < right.name.name;
-    }
-};
 
 }
 
@@ -546,7 +537,13 @@ void dom_tree::dump_compact(ostream& os) const
             {
                 // Dump attributes.
                 dom::attrs_type attrs = elem->attrs;
-                sort(attrs.begin(), attrs.end(), sort_by_name());
+                std::sort(attrs.begin(), attrs.end(),
+                      [](const dom::attr& left, const dom::attr& right) -> bool
+                      {
+                          return left.name.name < right.name.name;
+                      }
+                );
+
                 dom::attrs_type::const_iterator it = attrs.begin(), it_end = attrs.end();
                 for (; it != it_end; ++it)
                 {
