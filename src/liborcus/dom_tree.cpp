@@ -49,7 +49,148 @@ void escape(ostream& os, const pstring& val)
 
 typedef std::unordered_map<pstring, dom_tree::attrs_type, pstring::hash> declarations_type;
 
+} // anonymous namespace
+
+namespace dom {
+
+entity_name::entity_name() : ns(XMLNS_UNKNOWN_ID) {}
+
+entity_name::entity_name(xmlns_id_t _ns, const pstring& _name) :
+    ns(_ns), name(_name) {}
+
+struct const_node::impl
+{
+    node_t type;
+
+    union
+    {
+        const dom_tree::attrs_type* attrs;
+        const dom_tree::attr* attr;
+
+        struct
+        {
+            const char* p;
+            size_t n;
+
+        } str;
+
+    } value;
+
+    impl() : type(node_t::unset) {}
+
+    impl(const impl& other) : type(other.type)
+    {
+        switch (type)
+        {
+            case node_t::attribute:
+                value.attr = other.value.attr;
+                break;
+            case node_t::content:
+                break;
+            case node_t::declaration:
+                value.attrs = other.value.attrs;
+                break;
+            case node_t::element:
+                break;
+            case node_t::unset:
+            default:
+                ;
+        }
+    }
+
+    impl(const dom_tree::attr* _attr) : type(node_t::attribute)
+    {
+        value.attr = _attr;
+    }
+
+    impl(const dom_tree::attrs_type* _attrs) : type(node_t::declaration)
+    {
+        value.attrs = _attrs;
+    }
+};
+
+const_node::const_node(std::unique_ptr<impl>&& _impl) : mp_impl(std::move(_impl)) {}
+const_node::const_node() : mp_impl(orcus::make_unique<impl>()) {}
+const_node::const_node(const const_node& other) : mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
+const_node::const_node(const_node&& other) : mp_impl(std::move(other.mp_impl)) {}
+const_node::~const_node() {}
+
+node_t const_node::type() const
+{
+    return mp_impl->type;
 }
+
+size_t const_node::child_count() const
+{
+    switch (mp_impl->type)
+    {
+        case node_t::declaration:
+            return mp_impl->value.attrs->size();
+        default:
+            ;
+    }
+
+    return 0;
+}
+
+const_node const_node::child(size_t index) const
+{
+    switch (mp_impl->type)
+    {
+        case node_t::declaration:
+        {
+            assert(index < mp_impl->value.attrs->size());
+            const dom_tree::attrs_type& attrs = *mp_impl->value.attrs;
+            auto v = orcus::make_unique<impl>(&attrs[index]);
+            return const_node(std::move(v));
+        }
+        default:
+            ;
+    }
+    return const_node();
+}
+
+entity_name const_node::name() const
+{
+    switch (mp_impl->type)
+    {
+        case node_t::attribute:
+        {
+            const dom_tree::attr* v = mp_impl->value.attr;
+            return entity_name(v->name.ns, v->name.name);
+        }
+        default:
+            ;
+    }
+
+    return entity_name();
+}
+
+pstring const_node::value() const
+{
+    switch (mp_impl->type)
+    {
+        case node_t::attribute:
+            return pstring(mp_impl->value.str.p, mp_impl->value.str.n);
+        default:
+            ;
+    }
+    return pstring();
+}
+
+void const_node::swap(const_node& other)
+{
+    mp_impl.swap(other.mp_impl);
+}
+
+const_node& const_node::operator= (const const_node& other)
+{
+    const_node tmp(other);
+    swap(tmp);
+    return *this;
+}
+
+} // namespace dom
 
 struct dom_tree::impl
 {
@@ -148,6 +289,22 @@ void dom_tree::load(const std::string& strm)
     sax_ns_parser<impl> parser(
         strm.c_str(), strm.size(), mp_impl->m_ns_cxt, *mp_impl);
     parser.parse();
+}
+
+dom::const_node dom_tree::root() const
+{
+    return dom::const_node();
+}
+
+dom::const_node dom_tree::declaration(const pstring& name) const
+{
+    declarations_type::const_iterator it = mp_impl->m_decls.find(name);
+    if (it == mp_impl->m_decls.end())
+        return dom::const_node();
+
+    const attrs_type* attrs = &it->second;
+    auto v = orcus::make_unique<dom::const_node::impl>(attrs);
+    return dom::const_node(std::move(v));
 }
 
 void dom_tree::swap(dom_tree& other)

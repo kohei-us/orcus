@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="CGImap 0.6.1 (1984 thorn-02.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
+ <bounds minlat="37.4793300" minlon="139.9158300" maxlat="37.4798000" maxlon="139.9162300"/>
+ <node id="755713171" visible="true" version="3" changeset="26166007" timestamp="2014-10-18T08:39:27Z" user="jun_meguro" uid="279283" lat="37.4793416" lon="139.9160310"/>
+ <node id="761578574" visible="true" version="3" changeset="34357111" timestamp="2015-09-30T22:02:58Z" user="DannyAiquipa" uid="2226712" lat="37.4793344" lon="139.9158428"/>
+ <node id="761578575" visible="true" version="2" changeset="16173374" timestamp="2013-05-17T21:30:31Z" user="jun_meguro" uid="279283" lat="37.4797907" lon="139.9157685"/>
+ <node id="761578576" visible="true" version="2" changeset="16173374" timestamp="2013-05-17T21:30:31Z" user="jun_meguro" uid="279283" lat="37.4801316" lon="139.9157429"/>
+ <node id="2308855657" visible="true" version="3" changeset="53955991" timestamp="2017-11-20T17:45:36Z" user="jun_meguro" uid="279283" lat="37.4791258" lon="139.9161905">
+  <tag k="highway" v="crossing"/>
+ </node>
+ <node id="2308855711" visible="true" version="3" changeset="53955991" timestamp="2017-11-20T17:45:36Z" user="jun_meguro" uid="279283" lat="37.4792845" lon="139.9163414">
+  <tag k="highway" v="traffic_signals"/>
+ </node>
+ <node id="2308855735" visible="true" version="3" changeset="39933437" timestamp="2016-06-10T15:59:44Z" user="jun_meguro" uid="279283" lat="37.4793437" lon="139.9161752">
+  <tag k="highway" v="crossing"/>
+ </node>
+ <node id="2342696889" visible="true" version="2" changeset="34357111" timestamp="2015-09-30T22:02:58Z" user="DannyAiquipa" uid="2226712" lat="37.4792636" lon="139.9145748"/>
+ <node id="2342697034" visible="true" version="1" changeset="16530860" timestamp="2013-06-12T22:40:59Z" user="jun_meguro" uid="279283" lat="37.4797682" lon="139.9160743"/>
+ <node id="2342697041" visible="true" version="2" changeset="39933437" timestamp="2016-06-10T15:59:44Z" user="jun_meguro" uid="279283" lat="37.4797768" lon="139.9163279"/>
+ <node id="2343446366" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4793697" lon="139.9158791"/>
+ <node id="2343446367" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4793745" lon="139.9160509"/>
+ <node id="2343446368" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4793778" lon="139.9161283"/>
+ <node id="2343446369" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4793790" lon="139.9159997"/>
+ <node id="2343446370" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4794417" lon="139.9161239"/>
+ <node id="2343446371" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4794428" lon="139.9161500"/>
+ <node id="2343446372" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4794436" lon="139.9158701"/>
+ <node id="2343446373" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4794529" lon="139.9159907"/>
+ <node id="2343446374" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4794967" lon="139.9160426"/>
+ <node id="2343446375" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4795007" lon="139.9158986"/>
+ <node id="2343446376" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4795007" lon="139.9160191"/>
+ <node id="2343446377" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4795012" lon="139.9161460"/>
+ <node id="2343446378" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4795089" lon="139.9160771"/>
+ <node id="2343446379" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4795140" lon="139.9161548"/>
+ <node id="2343446380" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4795738" lon="139.9158986"/>
+ <node id="2343446381" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4795738" lon="139.9160191"/>
+ <node id="2343446382" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4796391" lon="139.9158794"/>
+ <node id="2343446383" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4796457" lon="139.9160167"/>
+ <node id="2343446384" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4797160" lon="139.9158734"/>
+ <node id="2343446385" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4797189" lon="139.9160554"/>
+ <node id="2343446386" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4797226" lon="139.9160108"/>
+ <node id="2343446387" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4797240" lon="139.9161330"/>
+ <node id="2343446388" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4797439" lon="139.9159353"/>
+ <node id="2343446389" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4797466" lon="139.9160492"/>
+ <node id="2343446390" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4797864" lon="139.9159337"/>
+ <node id="2343446391" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:17Z" user="jun_meguro" uid="279283" lat="37.4797891" lon="139.9160476"/>
+ <node id="3136449574" visible="true" version="1" changeset="26166007" timestamp="2014-10-18T08:39:20Z" user="jun_meguro" uid="279283" lat="37.4792352" lon="139.9141591"/>
+ <node id="3136449575" visible="true" version="1" changeset="26166007" timestamp="2014-10-18T08:39:20Z" user="jun_meguro" uid="279283" lat="37.4792357" lon="139.9141669"/>
+ <node id="4235793561" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4796203" lon="139.9161051">
+  <tag k="name" v="アーティストハウス"/>
+  <tag k="shop" v="variety_store"/>
+ </node>
+ <node id="4235793567" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4701581" lon="139.9161869"/>
+ <node id="4235793568" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4701637" lon="139.9162140"/>
+ <node id="4235793569" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4701684" lon="139.9162316"/>
+ <node id="4235793571" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4701833" lon="139.9162564"/>
+ <node id="4235793573" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4702067" lon="139.9162788"/>
+ <node id="4235793575" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4702282" lon="139.9162929"/>
+ <node id="4235793576" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4702637" lon="139.9162976"/>
+ <node id="4235793577" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4703460" lon="139.9163000"/>
+ <node id="4235793578" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4705470" lon="139.9162976"/>
+ <node id="4235793580" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:25Z" user="jun_meguro" uid="279283" lat="37.4712414" lon="139.9163094"/>
+ <node id="4235793582" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:26Z" user="jun_meguro" uid="279283" lat="37.4721138" lon="139.9163047"/>
+ <node id="4235793588" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:26Z" user="jun_meguro" uid="279283" lat="37.4756994" lon="139.9162879"/>
+ <node id="4235795990" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:26Z" user="jun_meguro" uid="279283" lat="37.4760347" lon="139.9162916"/>
+ <node id="4235795992" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:26Z" user="jun_meguro" uid="279283" lat="37.4765378" lon="139.9162920"/>
+ <node id="4235795994" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:26Z" user="jun_meguro" uid="279283" lat="37.4769583" lon="139.9162836"/>
+ <node id="4235795996" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:26Z" user="jun_meguro" uid="279283" lat="37.4774011" lon="139.9162629"/>
+ <node id="4235796011" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:26Z" user="jun_meguro" uid="279283" lat="37.4779859" lon="139.9162473"/>
+ <node id="4235796054" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:27Z" user="jun_meguro" uid="279283" lat="37.4785655" lon="139.9162711"/>
+ <node id="4235796117" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:28Z" user="jun_meguro" uid="279283" lat="37.4790400" lon="139.9162695"/>
+ <node id="4235796123" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:28Z" user="jun_meguro" uid="279283" lat="37.4790592" lon="139.9162671"/>
+ <node id="4235796125" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:28Z" user="jun_meguro" uid="279283" lat="37.4790721" lon="139.9162630"/>
+ <node id="4235796128" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:28Z" user="jun_meguro" uid="279283" lat="37.4790836" lon="139.9162533"/>
+ <node id="4235796131" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:28Z" user="jun_meguro" uid="279283" lat="37.4790964" lon="139.9162339"/>
+ <node id="4235796133" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:28Z" user="jun_meguro" uid="279283" lat="37.4791003" lon="139.9162178"/>
+ <node id="4235796134" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:28Z" user="jun_meguro" uid="279283" lat="37.4791016" lon="139.9161919"/>
+ <node id="4235796142" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:28Z" user="jun_meguro" uid="279283" lat="37.4791481" lon="139.9161887"/>
+ <node id="4235796158" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:28Z" user="jun_meguro" uid="279283" lat="37.4791864" lon="139.9161860">
+  <tag k="highway" v="crossing"/>
+ </node>
+ <node id="4235796176" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:29Z" user="jun_meguro" uid="279283" lat="37.4792793" lon="139.9161796">
+  <tag k="highway" v="crossing"/>
+ </node>
+ <node id="4235796191" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:29Z" user="jun_meguro" uid="279283" lat="37.4793168" lon="139.9161770"/>
+ <node id="4235796205" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:29Z" user="jun_meguro" uid="279283" lat="37.4793888" lon="139.9161711"/>
+ <node id="4235796209" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:29Z" user="jun_meguro" uid="279283" lat="37.4794017" lon="139.9162131"/>
+ <node id="4235796211" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:29Z" user="jun_meguro" uid="279283" lat="37.4794100" lon="139.9162293"/>
+ <node id="4235796213" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:29Z" user="jun_meguro" uid="279283" lat="37.4794209" lon="139.9162463"/>
+ <node id="4235796221" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:29Z" user="jun_meguro" uid="279283" lat="37.4794485" lon="139.9162576"/>
+ <node id="4235796227" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:29Z" user="jun_meguro" uid="279283" lat="37.4797165" lon="139.9162592"/>
+ <node id="4235796236" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:29Z" user="jun_meguro" uid="279283" lat="37.4801090" lon="139.9162665"/>
+ <node id="4235796347" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:31Z" user="jun_meguro" uid="279283" lat="37.4795493" lon="139.9161108">
+  <tag k="amenity" v="restaurant"/>
+  <tag k="cuisine" v="chinese"/>
+  <tag k="name" v="大龍軒"/>
+ </node>
+ <node id="4235796350" visible="true" version="1" changeset="39933437" timestamp="2016-06-10T15:59:31Z" user="jun_meguro" uid="279283" lat="37.4796932" lon="139.9160989">
+  <tag k="amenity" v="restaurant"/>
+  <tag k="cuisine" v="chinese"/>
+  <tag k="name" v="鈴木飯店"/>
+ </node>
+ <node id="5252454385" visible="true" version="1" changeset="54155492" timestamp="2017-11-28T17:52:34Z" user="jun_meguro" uid="279283" lat="37.4778775" lon="139.9162502"/>
+ <node id="6086973524" visible="true" version="1" changeset="64836723" timestamp="2018-11-24T05:02:55Z" user="jun_meguro" uid="279283" lat="37.4792738" lon="139.9147579"/>
+ <way id="60521477" visible="true" version="7" changeset="64836723" timestamp="2018-11-24T05:02:55Z" user="jun_meguro" uid="279283">
+  <nd ref="3136449574"/>
+  <nd ref="3136449575"/>
+  <nd ref="2342696889"/>
+  <nd ref="6086973524"/>
+  <nd ref="761578574"/>
+  <nd ref="755713171"/>
+  <nd ref="2308855735"/>
+  <nd ref="2308855711"/>
+  <tag k="highway" v="unclassified"/>
+ </way>
+ <way id="60839396" visible="true" version="1" changeset="4877772" timestamp="2010-06-01T19:36:13Z" user="jun_meguro" uid="279283">
+  <nd ref="761578574"/>
+  <nd ref="761578575"/>
+  <nd ref="761578576"/>
+  <tag k="highway" v="unclassified"/>
+ </way>
+ <way id="225498209" visible="true" version="1" changeset="16530860" timestamp="2013-06-12T22:41:35Z" user="jun_meguro" uid="279283">
+  <nd ref="2342697041"/>
+  <nd ref="2342697034"/>
+  <tag k="highway" v="residential"/>
+  <tag k="source" v="GSI/KIBAN 2500; NARO"/>
+ </way>
+ <way id="225581287" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:33Z" user="jun_meguro" uid="279283">
+  <nd ref="2343446387"/>
+  <nd ref="2343446379"/>
+  <nd ref="2343446378"/>
+  <nd ref="2343446385"/>
+  <nd ref="2343446387"/>
+  <tag k="building" v="residential"/>
+ </way>
+ <way id="225581303" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:34Z" user="jun_meguro" uid="279283">
+  <nd ref="2343446372"/>
+  <nd ref="2343446373"/>
+  <nd ref="2343446369"/>
+  <nd ref="2343446366"/>
+  <nd ref="2343446372"/>
+  <tag k="building" v="residential"/>
+ </way>
+ <way id="225581308" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:34Z" user="jun_meguro" uid="279283">
+  <nd ref="2343446390"/>
+  <nd ref="2343446391"/>
+  <nd ref="2343446389"/>
+  <nd ref="2343446388"/>
+  <nd ref="2343446390"/>
+  <tag k="building" v="residential"/>
+ </way>
+ <way id="225581312" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:34Z" user="jun_meguro" uid="279283">
+  <nd ref="2343446384"/>
+  <nd ref="2343446386"/>
+  <nd ref="2343446383"/>
+  <nd ref="2343446382"/>
+  <nd ref="2343446384"/>
+  <tag k="building" v="residential"/>
+ </way>
+ <way id="225581316" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:34Z" user="jun_meguro" uid="279283">
+  <nd ref="2343446380"/>
+  <nd ref="2343446381"/>
+  <nd ref="2343446376"/>
+  <nd ref="2343446375"/>
+  <nd ref="2343446380"/>
+  <tag k="building" v="residential"/>
+ </way>
+ <way id="225581392" visible="true" version="1" changeset="16539371" timestamp="2013-06-13T15:58:38Z" user="jun_meguro" uid="279283">
+  <nd ref="2343446374"/>
+  <nd ref="2343446377"/>
+  <nd ref="2343446371"/>
+  <nd ref="2343446370"/>
+  <nd ref="2343446368"/>
+  <nd ref="2343446367"/>
+  <nd ref="2343446374"/>
+  <tag k="building" v="residential"/>
+ </way>
+ <way id="424116497" visible="true" version="3" changeset="54155492" timestamp="2017-11-28T17:52:36Z" user="jun_meguro" uid="279283">
+  <nd ref="4235796205"/>
+  <nd ref="2308855735"/>
+  <nd ref="4235796191"/>
+  <nd ref="4235796176"/>
+  <nd ref="4235796158"/>
+  <nd ref="4235796142"/>
+  <nd ref="2308855657"/>
+  <nd ref="4235796134"/>
+  <nd ref="4235796133"/>
+  <nd ref="4235796131"/>
+  <nd ref="4235796128"/>
+  <nd ref="4235796125"/>
+  <nd ref="4235796123"/>
+  <nd ref="4235796117"/>
+  <nd ref="4235796054"/>
+  <nd ref="4235796011"/>
+  <nd ref="5252454385"/>
+  <nd ref="4235795996"/>
+  <nd ref="4235795994"/>
+  <nd ref="4235795992"/>
+  <nd ref="4235795990"/>
+  <nd ref="4235793588"/>
+  <nd ref="4235793582"/>
+  <nd ref="4235793580"/>
+  <nd ref="4235793578"/>
+  <nd ref="4235793577"/>
+  <nd ref="4235793576"/>
+  <nd ref="4235793575"/>
+  <nd ref="4235793573"/>
+  <nd ref="4235793571"/>
+  <nd ref="4235793569"/>
+  <nd ref="4235793568"/>
+  <nd ref="4235793567"/>
+  <tag k="footway" v="sidewalk"/>
+  <tag k="highway" v="footway"/>
+ </way>
+ <way id="424116516" visible="true" version="3" changeset="55053671" timestamp="2017-12-31T09:48:02Z" user="jun_meguro" uid="279283">
+  <nd ref="4235796236"/>
+  <nd ref="4235796227"/>
+  <nd ref="4235796221"/>
+  <nd ref="4235796213"/>
+  <nd ref="4235796211"/>
+  <nd ref="4235796209"/>
+  <nd ref="4235796205"/>
+  <tag k="footway" v="sidewalk"/>
+  <tag k="highway" v="footway"/>
+  <tag k="tactile_paving" v="yes"/>
+  <tag k="width" v="2.6"/>
+ </way>
+</osm>

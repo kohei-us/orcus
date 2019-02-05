@@ -8,7 +8,8 @@ EXTRA_PROGRAMS = \
 	liborcus-test-xml-map-tree \
 	liborcus-test-xml-structure-tree \
 	liborcus-test-common \
-	liborcus-test-format-detection
+	liborcus-test-format-detection \
+	dom-tree-test
 
 TESTS =
 
@@ -420,6 +421,13 @@ liborcus_test_format_detection_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
+# dom-tree-test
+
+dom_tree_test_SOURCES = dom_tree_test.cpp
+dom_tree_test_LDADD = \
+	liborcus-@ORCUS_API_VERSION@.la \
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+
 TESTS += \
 	liborcus-test-css-document-tree \
 	liborcus-test-json-document-tree \
@@ -427,7 +435,8 @@ TESTS += \
 	liborcus-test-xml-map-tree \
 	liborcus-test-xml-structure-tree \
 	liborcus-test-common \
-	liborcus-test-format-detection
+	liborcus-test-format-detection \
+	dom-tree-test
 
 distclean-local:
 	rm -rf $(TESTS)

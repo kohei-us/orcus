@@ -18,12 +18,65 @@
 namespace orcus {
 
 class xmlns_context;
+class dom_tree;
 
 namespace sax {
 
 struct doctype_declaration;
 
 }
+
+namespace dom {
+
+enum class node_t : uint8_t
+{
+    unset,
+    declaration,
+    attribute,
+    element,
+    content
+};
+
+struct ORCUS_DLLPUBLIC entity_name
+{
+    xmlns_id_t ns;
+    pstring name;
+
+    entity_name();
+    entity_name(xmlns_id_t _ns, const pstring& _name);
+};
+
+class ORCUS_DLLPUBLIC const_node
+{
+    friend class ::orcus::dom_tree;
+
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+    const_node(std::unique_ptr<impl>&& _impl);
+public:
+    const_node();
+    const_node(const const_node& other);
+    const_node(const_node&& other);
+
+    ~const_node();
+
+    node_t type() const;
+
+    size_t child_count() const;
+
+    const_node child(size_t index) const;
+
+    entity_name name() const;
+
+    pstring value() const;
+
+    void swap(const_node& other);
+
+    const_node& operator= (const const_node& other);
+};
+
+} // namespace dom
 
 /**
  * Ordinary DOM tree representing the structure of a XML content in full.
@@ -103,6 +156,10 @@ public:
      * @param strm XML stream.
      */
     void load(const std::string& strm);
+
+    dom::const_node root() const;
+
+    dom::const_node declaration(const pstring& name) const;
 
     /**
      * Swap the content with another dom_tree instance.
