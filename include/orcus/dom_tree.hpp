@@ -170,8 +170,6 @@ public:
 
     const sax::doctype_declaration* get_doctype() const;
 
-    const attrs_type* get_declaration_attributes(const pstring& name) const;
-
     void dump_compact(std::ostream& os) const;
 };
 

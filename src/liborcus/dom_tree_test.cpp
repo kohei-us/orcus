@@ -23,11 +23,13 @@ void test_declaration()
     assert(attr.type() == node_t::attribute);
     assert(attr.name().ns == orcus::XMLNS_UNKNOWN_ID);
     assert(attr.name().name == "version");
+    assert(attr.value() == "1.0");
 
     attr = decl.child(1);
     assert(attr.type() == node_t::attribute);
     assert(attr.name().ns == orcus::XMLNS_UNKNOWN_ID);
     assert(attr.name().name == "encoding");
+    assert(attr.value() == "UTF-8");
 }
 
 int main()

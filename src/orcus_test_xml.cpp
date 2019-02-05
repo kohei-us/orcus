@@ -153,11 +153,13 @@ void test_xml_declarations()
     parse_file(dom, file_path, strm);
 
     // Make sure we parse the custom declaration correctly.
-    const dom_tree::attrs_type* p = dom.get_declaration_attributes("mso-application");
-    assert(p);
-    assert(p->size() == 1);
-    const dom_tree::attr& at = (*p)[0];
-    assert(at.name.ns == XMLNS_UNKNOWN_ID && at.name.name == "progid" && at.value == "Excel.Sheet");
+    dom::const_node decl = dom.declaration("mso-application");
+    assert(decl.type() == dom::node_t::declaration);
+    assert(decl.child_count() == 1);
+    dom::const_node attr = decl.child(0);
+    assert(attr.name().ns == XMLNS_UNKNOWN_ID);
+    assert(attr.name().name == "progid");
+    assert(attr.value() == "Excel.Sheet");
 }
 
 void test_xml_dtd()

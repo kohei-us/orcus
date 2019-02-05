@@ -171,7 +171,10 @@ pstring const_node::value() const
     switch (mp_impl->type)
     {
         case node_t::attribute:
-            return pstring(mp_impl->value.str.p, mp_impl->value.str.n);
+        {
+            const dom_tree::attr* v = mp_impl->value.attr;
+            return v->value;
+        }
         default:
             ;
     }
@@ -419,12 +422,6 @@ void dom_tree::impl::doctype(const sax::doctype_declaration& dtd)
 const sax::doctype_declaration* dom_tree::get_doctype() const
 {
     return mp_impl->m_doctype.get();
-}
-
-const dom_tree::attrs_type* dom_tree::get_declaration_attributes(const pstring& name) const
-{
-    declarations_type::const_iterator it = mp_impl->m_decls.find(name);
-    return it == mp_impl->m_decls.end() ? nullptr : &it->second;
 }
 
 namespace {
