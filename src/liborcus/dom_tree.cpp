@@ -37,7 +37,7 @@ void escape(ostream& os, const pstring& val)
     if (val.empty())
         return;
 
-    const char* p = &val[0];
+    const char* p = val.data();
     const char* p_end = p + val.size();
     for (; p != p_end; ++p)
     {
@@ -545,14 +545,13 @@ void dom_tree::dump_compact(ostream& os) const
                       }
                 );
 
-                dom::attrs_type::const_iterator it = attrs.begin(), it_end = attrs.end();
-                for (; it != it_end; ++it)
+                for (const dom::attr& a : attrs)
                 {
                     print_scope(os, scopes);
                     os << "/";
                     elem->print(os, mp_impl->m_ns_cxt);
                     os << "@";
-                    dom::print(os, *it, mp_impl->m_ns_cxt);
+                    dom::print(os, a, mp_impl->m_ns_cxt);
                     os << endl;
                 }
             }
@@ -562,10 +561,9 @@ void dom_tree::dump_compact(ostream& os) const
 
             // This element has child nodes.  Push a new scope and populate it
             // with all child elements, but skip content nodes.
-            dom::nodes_type::const_iterator it = elem->child_nodes.begin(), it_end = elem->child_nodes.end();
             scope::nodes_type nodes;
-            for (; it != it_end; ++it)
-                nodes.push_back(it->get());
+            for (const std::unique_ptr<dom::node>& p : elem->child_nodes)
+                nodes.push_back(p.get());
 
             assert(!nodes.empty());
 
