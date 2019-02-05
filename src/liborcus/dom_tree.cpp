@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <vector>
 #include <algorithm>
+#include <deque>
 
 using namespace std;
 
@@ -483,7 +484,7 @@ struct scope
     scope(const string& _name) : name(_name) {}
 };
 
-typedef std::vector<std::unique_ptr<scope>> scopes_type;
+typedef std::deque<scope> scopes_type;
 
 void print_scope(ostream& os, const scopes_type& scopes)
 {
@@ -493,7 +494,7 @@ void print_scope(ostream& os, const scopes_type& scopes)
     // Skip the first scope which is root.
     scopes_type::const_iterator it = scopes.begin(), it_end = scopes.end();
     for (++it; it != it_end; ++it)
-        os << "/" << (*it)->name;
+        os << "/" << it->name;
 }
 
 }
@@ -508,13 +509,13 @@ void dom_tree::dump_compact(ostream& os) const
 
     scopes_type scopes;
 
-    scopes.push_back(orcus::make_unique<scope>(string(), mp_impl->m_root.get()));
+    scopes.emplace_back(string(), mp_impl->m_root.get());
     while (!scopes.empty())
     {
         bool new_scope = false;
 
         // Iterate through all elements in the current scope.
-        scope& cur_scope = *scopes.back();
+        scope& cur_scope = scopes.back();
         for (; cur_scope.current_pos != cur_scope.nodes.end(); ++cur_scope.current_pos)
         {
             const dom::node* this_node = *cur_scope.current_pos;
@@ -572,8 +573,8 @@ void dom_tree::dump_compact(ostream& os) const
             ++cur_scope.current_pos;
             std::ostringstream elem_name;
             elem->print(elem_name, mp_impl->m_ns_cxt);
-            scopes.push_back(orcus::make_unique<scope>(elem_name.str()));
-            scope& child_scope = *scopes.back();
+            scopes.emplace_back(elem_name.str());
+            scope& child_scope = scopes.back();
             child_scope.nodes.swap(nodes);
             child_scope.current_pos = child_scope.nodes.begin();
 
