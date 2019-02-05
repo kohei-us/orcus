@@ -91,6 +91,7 @@ public:
     dom_tree& operator= (const dom_tree&) = delete;
 
     dom_tree(xmlns_context& cxt);
+    dom_tree(dom_tree&& other);
     ~dom_tree();
 
     /**

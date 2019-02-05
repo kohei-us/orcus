@@ -153,6 +153,7 @@ struct const_node::impl
     {
         const dom::attrs_type* attrs;
         const dom::attr* attr;
+        const dom::element* elem;
 
         struct
         {
@@ -183,6 +184,11 @@ struct const_node::impl
             default:
                 ;
         }
+    }
+
+    impl(const dom::element* _elem) : type(node_t::element)
+    {
+        value.elem = _elem;
     }
 
     impl(const dom::attr* _attr) : type(node_t::attribute)
@@ -427,6 +433,12 @@ void dom_tree::impl::doctype(const sax::doctype_declaration& dtd)
 dom_tree::dom_tree(xmlns_context& cxt) :
     mp_impl(orcus::make_unique<impl>(cxt)) {}
 
+dom_tree::dom_tree(dom_tree&& other) :
+    mp_impl(std::move(other.mp_impl))
+{
+    other.mp_impl = orcus::make_unique<impl>(mp_impl->m_ns_cxt);
+}
+
 dom_tree::~dom_tree() {}
 
 void dom_tree::load(const std::string& strm)
@@ -438,7 +450,9 @@ void dom_tree::load(const std::string& strm)
 
 dom::const_node dom_tree::root() const
 {
-    return dom::const_node();
+    const dom::element* p = mp_impl->m_root.get();
+    auto v = orcus::make_unique<dom::const_node::impl>(p);
+    return dom::const_node(std::move(v));
 }
 
 dom::const_node dom_tree::declaration(const pstring& name) const
