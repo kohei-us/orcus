@@ -155,11 +155,7 @@ void test_xml_declarations()
     // Make sure we parse the custom declaration correctly.
     dom::const_node decl = dom.declaration("mso-application");
     assert(decl.type() == dom::node_t::declaration);
-    assert(decl.child_count() == 1);
-    dom::const_node attr = decl.child(0);
-    assert(attr.name().ns == XMLNS_UNKNOWN_ID);
-    assert(attr.name().name == "progid");
-    assert(attr.value() == "Excel.Sheet");
+    assert(decl.attribute("progid") == "Excel.Sheet");
 }
 
 void test_xml_dtd()

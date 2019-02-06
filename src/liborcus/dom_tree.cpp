@@ -69,6 +69,12 @@ struct entity_name_hash
 using attrs_type = std::vector<attr>;
 using attr_map_type = std::unordered_map<entity_name, size_t, entity_name_hash>;
 
+struct declaration
+{
+    attrs_type attrs;
+    attr_map_type attr_map;
+};
+
 enum class node_type { element, content };
 
 struct node
@@ -174,7 +180,7 @@ struct const_node::impl
 
     union
     {
-        const dom::attrs_type* attrs;
+        const dom::declaration* decl;
         const dom::attr* attr;
         const dom::element* elem;
 
@@ -199,7 +205,7 @@ struct const_node::impl
             case node_t::content:
                 break;
             case node_t::declaration:
-                value.attrs = other.value.attrs;
+                value.decl = other.value.decl;
                 break;
             case node_t::element:
                 break;
@@ -219,9 +225,9 @@ struct const_node::impl
         value.attr = _attr;
     }
 
-    impl(const dom::attrs_type* _attrs) : type(node_t::declaration)
+    impl(const dom::declaration* _decl) : type(node_t::declaration)
     {
-        value.attrs = _attrs;
+        value.decl = _decl;
     }
 };
 
@@ -240,8 +246,6 @@ size_t const_node::child_count() const
 {
     switch (mp_impl->type)
     {
-        case node_t::declaration:
-            return mp_impl->value.attrs->size();
         default:
             ;
     }
@@ -253,13 +257,6 @@ const_node const_node::child(size_t index) const
 {
     switch (mp_impl->type)
     {
-        case node_t::declaration:
-        {
-            assert(index < mp_impl->value.attrs->size());
-            const dom::attrs_type& attrs = *mp_impl->value.attrs;
-            auto v = orcus::make_unique<impl>(&attrs[index]);
-            return const_node(std::move(v));
-        }
         default:
             ;
     }
@@ -321,6 +318,23 @@ pstring const_node::attribute(const entity_name& name) const
 
 pstring const_node::attribute(const pstring& name) const
 {
+    switch (mp_impl->type)
+    {
+        case node_t::declaration:
+        {
+            const dom::declaration* p = mp_impl->value.decl;
+            auto it = p->attr_map.find(name);
+            if (it == p->attr_map.end())
+                return pstring();
+
+            size_t pos = it->second;
+            assert(pos < p->attrs.size());
+            return p->attrs[pos].value;
+        }
+        default:
+            ;
+    }
+
     return attribute(entity_name(name));
 }
 
@@ -338,10 +352,13 @@ const_node& const_node::operator= (const const_node& other)
 
 } // namespace dom
 
+/**
+ * This impl class also serves as the handler for the sax_ns_parser.
+ */
 struct dom_tree::impl
 {
     typedef std::vector<dom::element*> element_stack_type;
-    typedef std::unordered_map<pstring, dom::attrs_type, pstring::hash> declarations_type;
+    typedef std::unordered_map<pstring, dom::declaration, pstring::hash> declarations_type;
 
     xmlns_context& m_ns_cxt;
     string_pool m_pool;
@@ -385,24 +402,26 @@ struct dom_tree::impl
 void dom_tree::impl::end_declaration(const pstring& name)
 {
     assert(m_cur_decl_name == name);
-    declarations_type& decls = m_decls;
-    declarations_type::iterator it = decls.find(name);
-    if (it == decls.end())
+
+    dom::declaration decl;
+    decl.attrs.swap(m_cur_attrs);
+    decl.attr_map.swap(m_cur_attr_map);
+
+    declarations_type::iterator it = m_decls.find(name);
+    if (it == m_decls.end())
     {
         // Insert a new entry for this name.
         std::pair<declarations_type::iterator,bool> r =
-            decls.insert(
+            m_decls.insert(
                 declarations_type::value_type(
-                    m_pool.intern(name).first, m_cur_attrs));
+                    m_pool.intern(name).first, std::move(decl)));
 
         if (!r.second)
             // Insertion failed.
             throw general_error("dom_tree::end_declaration: failed to insert a new declaration entry.");
     }
     else
-        it->second = m_cur_attrs;
-
-    m_cur_attrs.clear();
+        it->second = std::move(decl);
 }
 
 void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
@@ -516,8 +535,8 @@ dom::const_node dom_tree::declaration(const pstring& name) const
     if (it == mp_impl->m_decls.end())
         return dom::const_node();
 
-    const dom::attrs_type* attrs = &it->second;
-    auto v = orcus::make_unique<dom::const_node::impl>(attrs);
+    const dom::declaration* decl = &it->second;
+    auto v = orcus::make_unique<dom::const_node::impl>(decl);
     return dom::const_node(std::move(v));
 }
 
