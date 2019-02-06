@@ -528,7 +528,6 @@
 				<F N="../src/spreadsheet/shared_formula.hpp"/>
 				<F N="../src/spreadsheet/shared_strings.cpp"/>
 				<F N="../src/spreadsheet/sheet.cpp"/>
-				<F N="../src/spreadsheet/sheet_properties.cpp"/>
 				<F N="../src/spreadsheet/sheet_range.cpp"/>
 				<F N="../src/spreadsheet/styles.cpp"/>
 				<F N="../src/spreadsheet/view.cpp"/>

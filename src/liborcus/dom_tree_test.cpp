@@ -43,10 +43,31 @@ void test_attributes()
     assert(root.attribute("no-such-attribute").empty());
 }
 
+void test_element_hierarchy()
+{
+    orcus::dom_tree tree = load_dom_tree(SRCDIR"/test/xml/osm/street-in-aizu.osm");
+
+    const_node root = tree.root();
+    assert(root.name() == entity_name("osm"));
+    assert(root.child_count() > 0);
+
+    const_node elem = root.child(0);
+    assert(elem.type() == node_t::element);
+    assert(elem.name() == entity_name("bounds"));
+    assert(elem.attribute("minlat") == "37.4793300");
+    assert(elem.attribute("minlon") == "139.9158300");
+    assert(elem.attribute("maxlat") == "37.4798000");
+    assert(elem.attribute("maxlon") == "139.9162300");
+    assert(elem.child_count() == 0);
+
+    // TODO : continue with this.
+}
+
 int main()
 {
     test_declaration();
     test_attributes();
+    test_element_hierarchy();
 
     return EXIT_SUCCESS;
 }

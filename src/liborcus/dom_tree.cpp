@@ -95,6 +95,7 @@ struct element : public node
     attrs_type attrs;
     attr_map_type attr_map;
     nodes_type child_nodes;
+    std::vector<size_t> child_elem_positions;
 
     element(xmlns_id_t _ns, const pstring& _name);
     virtual void print(std::ostream& os, const xmlns_context& cxt) const;
@@ -246,6 +247,11 @@ size_t const_node::child_count() const
 {
     switch (mp_impl->type)
     {
+        case node_t::element:
+        {
+            const dom::element* p = mp_impl->value.elem;
+            return p->child_elem_positions.size();
+        }
         default:
             ;
     }
@@ -257,6 +263,19 @@ const_node const_node::child(size_t index) const
 {
     switch (mp_impl->type)
     {
+        case node_t::element:
+        {
+            const dom::element* p = mp_impl->value.elem;
+
+            size_t elem_pos = p->child_elem_positions.at(index);
+            assert(elem_pos < p->child_nodes.size());
+
+            const dom::node* child_node = p->child_nodes[elem_pos].get();
+            assert(child_node->type == node_type::element);
+
+            auto v = orcus::make_unique<impl>(static_cast<const dom::element*>(child_node));
+            return const_node(std::move(v));
+        }
         default:
             ;
     }
@@ -451,10 +470,15 @@ void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
 
     // Append new element as a child element of the current element.
     p = m_elem_stack.back();
+
+    size_t elem_pos = p->child_nodes.size();
+    p->child_elem_positions.push_back(elem_pos);
+
     p->child_nodes.push_back(orcus::make_unique<dom::element>(ns, name_safe));
     p = static_cast<dom::element*>(p->child_nodes.back().get());
     p->attrs.swap(m_cur_attrs);
     p->attr_map.swap(m_cur_attr_map);
+
     m_elem_stack.push_back(p);
 }
 
