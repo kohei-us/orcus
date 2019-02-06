@@ -362,6 +362,26 @@ pstring const_node::attribute(const pstring& name) const
     return attribute(entity_name(name));
 }
 
+size_t const_node::attribute_count() const
+{
+    switch (mp_impl->type)
+    {
+        case node_t::declaration:
+        {
+            const dom::declaration* p = mp_impl->value.decl;
+            return p->attrs.size();
+        }
+        case node_t::element:
+        {
+            const dom::element* p = mp_impl->value.elem;
+            return p->attrs.size();
+        }
+        default:
+            ;
+    }
+    return 0;
+}
+
 void const_node::swap(const_node& other)
 {
     mp_impl.swap(other.mp_impl);

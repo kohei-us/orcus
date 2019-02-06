@@ -41,6 +41,7 @@ void test_attributes()
     assert(root.attribute("attribution") == "http://www.openstreetmap.org/copyright");
     assert(root.attribute("license") == "http://opendatacommons.org/licenses/odbl/1-0/");
     assert(root.attribute("no-such-attribute").empty());
+    assert(root.attribute_count() == 5);
 }
 
 void test_element_hierarchy()
@@ -58,6 +59,7 @@ void test_element_hierarchy()
     assert(elem.attribute("minlon") == "139.9158300");
     assert(elem.attribute("maxlat") == "37.4798000");
     assert(elem.attribute("maxlon") == "139.9162300");
+    assert(elem.attribute_count() == 4);
     assert(elem.child_count() == 0);
 
     // TODO : continue with this.

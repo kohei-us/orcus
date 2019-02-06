@@ -78,6 +78,8 @@ public:
     pstring attribute(const entity_name& name) const;
     pstring attribute(const pstring& name) const;
 
+    size_t attribute_count() const;
+
     void swap(const_node& other);
 
     const_node& operator= (const const_node& other);
