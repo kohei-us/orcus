@@ -50,6 +50,7 @@ void test_attributes()
     assert(root.attribute("copyright") == "OpenStreetMap and contributors");
     assert(root.attribute("attribution") == "http://www.openstreetmap.org/copyright");
     assert(root.attribute("license") == "http://opendatacommons.org/licenses/odbl/1-0/");
+    assert(root.attribute("no-such-attribute").empty());
 }
 
 int main()
