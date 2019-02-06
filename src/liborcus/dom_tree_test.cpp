@@ -33,6 +33,7 @@ void test_attributes()
     orcus::dom_tree tree = load_dom_tree(SRCDIR"/test/xml/osm/street-in-aizu.osm");
 
     const_node root = tree.root();
+    assert(root.name() == entity_name("osm"));
     assert(root.type() == node_t::element);
     assert(root.attribute("version") == "0.6");
     assert(root.attribute("generator") == "CGImap 0.6.1 (1984 thorn-02.openstreetmap.org)");

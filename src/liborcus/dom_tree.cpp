@@ -267,6 +267,11 @@ entity_name const_node::name() const
 {
     switch (mp_impl->type)
     {
+        case node_t::element:
+        {
+            const dom::element* p = mp_impl->value.elem;
+            return p->name;
+        }
         case node_t::attribute:
         {
             const dom::attr* v = mp_impl->value.attr;
