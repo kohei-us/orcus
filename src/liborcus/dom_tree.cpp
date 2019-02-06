@@ -62,7 +62,7 @@ struct entity_name_hash
 {
     size_t operator()(const entity_name& v) const
     {
-        return 0; // TODO : don't forget to implement this.
+        return pstring::hash()(v.name) ^ reinterpret_cast<size_t>(v.ns);
     }
 };
 
