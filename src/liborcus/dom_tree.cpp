@@ -204,12 +204,11 @@ struct const_node::impl
     {
         switch (type)
         {
-            case node_t::content:
-                break;
             case node_t::declaration:
                 value.decl = other.value.decl;
                 break;
             case node_t::element:
+                value.elem = other.value.elem;
                 break;
             case node_t::unset:
             default:

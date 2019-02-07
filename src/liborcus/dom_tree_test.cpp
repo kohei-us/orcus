@@ -26,6 +26,9 @@ void test_declaration()
     assert(decl.type() == node_t::declaration);
     assert(decl.attribute("version") == "1.0");
     assert(decl.attribute("encoding") == "UTF-8");
+
+    const_node copied = decl;
+    assert(copied == decl);
 }
 
 void test_attributes()
@@ -64,7 +67,8 @@ void test_element_hierarchy()
     assert(elem.child_count() == 0);
     assert(elem.parent() == root);
 
-    // TODO : continue with this.
+    const_node copied_elem = elem;
+    assert(copied_elem == elem);
 }
 
 int main()

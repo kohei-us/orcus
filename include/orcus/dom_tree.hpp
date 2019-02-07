@@ -33,7 +33,6 @@ enum class node_t : uint8_t
     unset,
     declaration,
     element,
-    content
 };
 
 struct ORCUS_DLLPUBLIC entity_name
