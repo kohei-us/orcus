@@ -54,6 +54,7 @@ void test_element_hierarchy()
     const_node root = tree.root();
     assert(root.name() == entity_name("osm"));
     assert(root.child_count() > 0);
+    assert(root.parent().type() == node_t::unset);
 
     const_node elem = root.child(0);
     assert(elem != root);
