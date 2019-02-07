@@ -32,7 +32,6 @@ enum class node_t : uint8_t
 {
     unset,
     declaration,
-    attribute,
     element,
     content
 };
@@ -72,8 +71,6 @@ public:
     const_node child(size_t index) const;
 
     entity_name name() const;
-
-    pstring value() const;
 
     pstring attribute(const entity_name& name) const;
     pstring attribute(const pstring& name) const;

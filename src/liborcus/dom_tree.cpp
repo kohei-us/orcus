@@ -187,7 +187,6 @@ struct const_node::impl
     union
     {
         const dom::declaration* decl;
-        const dom::attr* attr;
         const dom::element* elem;
 
         struct
@@ -205,9 +204,6 @@ struct const_node::impl
     {
         switch (type)
         {
-            case node_t::attribute:
-                value.attr = other.value.attr;
-                break;
             case node_t::content:
                 break;
             case node_t::declaration:
@@ -224,11 +220,6 @@ struct const_node::impl
     impl(const dom::element* _elem) : type(node_t::element)
     {
         value.elem = _elem;
-    }
-
-    impl(const dom::attr* _attr) : type(node_t::attribute)
-    {
-        value.attr = _attr;
     }
 
     impl(const dom::declaration* _decl) : type(node_t::declaration)
@@ -296,31 +287,11 @@ entity_name const_node::name() const
             const dom::element* p = mp_impl->value.elem;
             return p->name;
         }
-        case node_t::attribute:
-        {
-            const dom::attr* v = mp_impl->value.attr;
-            return entity_name(v->name.ns, v->name.name);
-        }
         default:
             ;
     }
 
     return entity_name();
-}
-
-pstring const_node::value() const
-{
-    switch (mp_impl->type)
-    {
-        case node_t::attribute:
-        {
-            const dom::attr* v = mp_impl->value.attr;
-            return v->value;
-        }
-        default:
-            ;
-    }
-    return pstring();
 }
 
 pstring const_node::attribute(const entity_name& name) const
