@@ -77,11 +77,14 @@ struct declaration
 
 enum class node_type { element, content };
 
+struct element;
+
 struct node
 {
+    const element* parent;
     node_type type;
 
-    node(node_type _type) : type(_type) {}
+    node(node_type _type) : parent(nullptr), type(_type) {}
 
     virtual ~node() = 0;
     virtual void print(std::ostream& os, const xmlns_context& cxt) const = 0;
@@ -97,6 +100,7 @@ struct element : public node
     nodes_type child_nodes;
     std::vector<size_t> child_elem_positions;
 
+    element() = delete;
     element(xmlns_id_t _ns, const pstring& _name);
     virtual void print(std::ostream& os, const xmlns_context& cxt) const;
     virtual ~element();
@@ -135,7 +139,8 @@ attr::attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value) :
 
 node::~node() {}
 
-element::element(xmlns_id_t _ns, const pstring& _name) : node(node_type::element), name(_ns, _name) {}
+element::element(xmlns_id_t _ns, const pstring& _name) :
+    node(node_type::element), name(_ns, _name) {}
 
 void element::print(ostream& os, const xmlns_context& cxt) const
 {
@@ -382,6 +387,19 @@ size_t const_node::attribute_count() const
     return 0;
 }
 
+const_node const_node::parent() const
+{
+    if (mp_impl->type != node_t::element)
+        return const_node();
+
+    const dom::element* p = mp_impl->value.elem->parent;
+    if (!p)
+        return const_node();
+
+    auto v = orcus::make_unique<impl>(p);
+    return const_node(std::move(v));
+}
+
 void const_node::swap(const_node& other)
 {
     mp_impl.swap(other.mp_impl);
@@ -392,6 +410,31 @@ const_node& const_node::operator= (const const_node& other)
     const_node tmp(other);
     swap(tmp);
     return *this;
+}
+
+bool const_node::operator== (const const_node& other) const
+{
+    if (mp_impl->type != other.mp_impl->type)
+        return false;
+
+    switch (mp_impl->type)
+    {
+        case node_t::unset:
+            return true;
+        case node_t::declaration:
+            return mp_impl->value.decl == other.mp_impl->value.decl;
+        case node_t::element:
+            return mp_impl->value.elem == other.mp_impl->value.elem;
+        default:
+            ;
+    }
+
+    return false;
+}
+
+bool const_node::operator!= (const const_node& other) const
+{
+    return !operator==(other);
 }
 
 } // namespace dom
@@ -495,7 +538,9 @@ void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
     p->child_elem_positions.push_back(elem_pos);
 
     p->child_nodes.push_back(orcus::make_unique<dom::element>(ns, name_safe));
+    const dom::element* parent = p;
     p = static_cast<dom::element*>(p->child_nodes.back().get());
+    p->parent = parent;
     p->attrs.swap(m_cur_attrs);
     p->attr_map.swap(m_cur_attr_map);
 
@@ -526,7 +571,9 @@ void dom_tree::impl::characters(const pstring& val, bool transient)
 
     dom::element* p = m_elem_stack.back();
     val2 = m_pool.intern(val2).first; // Make sure the string is persistent.
-    p->child_nodes.push_back(orcus::make_unique<dom::content>(val2));
+    auto child = orcus::make_unique<dom::content>(val2);
+    child->parent = p;
+    p->child_nodes.push_back(std::move(child));
 }
 
 void dom_tree::impl::set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val)

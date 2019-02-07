@@ -80,9 +80,14 @@ public:
 
     size_t attribute_count() const;
 
+    const_node parent() const;
+
     void swap(const_node& other);
 
     const_node& operator= (const const_node& other);
+
+    bool operator== (const const_node& other) const;
+    bool operator!= (const const_node& other) const;
 };
 
 } // namespace dom

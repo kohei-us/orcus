@@ -53,6 +53,7 @@ void test_element_hierarchy()
     assert(root.child_count() > 0);
 
     const_node elem = root.child(0);
+    assert(elem != root);
     assert(elem.type() == node_t::element);
     assert(elem.name() == entity_name("bounds"));
     assert(elem.attribute("minlat") == "37.4793300");
@@ -61,6 +62,7 @@ void test_element_hierarchy()
     assert(elem.attribute("maxlon") == "139.9162300");
     assert(elem.attribute_count() == 4);
     assert(elem.child_count() == 0);
+    assert(elem.parent() == root);
 
     // TODO : continue with this.
 }
