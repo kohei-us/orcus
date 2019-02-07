@@ -70,6 +70,23 @@ void test_element_hierarchy()
 
     const_node copied_elem = elem;
     assert(copied_elem == elem);
+
+    elem = root.child(5);
+    assert(elem.name() == entity_name("node"));
+    assert(elem.attribute("user") == "jun_meguro");
+    assert(elem.child_count() == 1);
+    elem = elem.child(0);
+    assert(elem.name() == entity_name("tag"));
+    assert(elem.attribute("k") == "highway");
+    assert(elem.attribute("v") == "crossing");
+
+    // Make sure the number of child elements are accurate.
+    size_t n_elems = root.child_count();
+    for (size_t i = 0; i < n_elems; ++i)
+    {
+        auto child = root.child(i);
+        assert(child.type() == node_t::element);
+    }
 }
 
 int main()
