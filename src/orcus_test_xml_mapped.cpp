@@ -57,7 +57,7 @@ const char* temp_output_xml = "out.xml";
 void dump_xml_structure(string& dump_content, string& strm, const char* filepath, xmlns_context& cxt)
 {
     strm = load_file_content(filepath);
-    dom_tree tree(cxt);
+    dom::document_tree tree(cxt);
     tree.load(strm);
     ostringstream os;
     tree.dump_compact(os);

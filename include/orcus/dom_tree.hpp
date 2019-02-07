@@ -18,7 +18,6 @@
 namespace orcus {
 
 class xmlns_context;
-class dom_tree;
 
 namespace sax {
 
@@ -27,6 +26,8 @@ struct doctype_declaration;
 }
 
 namespace dom {
+
+class document_tree;
 
 enum class node_t : uint8_t
 {
@@ -50,7 +51,7 @@ struct ORCUS_DLLPUBLIC entity_name
 
 class ORCUS_DLLPUBLIC const_node
 {
-    friend class ::orcus::dom_tree;
+    friend class document_tree;
 
     struct impl;
     std::unique_ptr<impl> mp_impl;
@@ -86,23 +87,21 @@ public:
     bool operator!= (const const_node& other) const;
 };
 
-} // namespace dom
-
 /**
- * Ordinary DOM tree representing the structure of a XML content in full.
+ * Ordinary DOM tree representing the content of an XML document.
  */
-class ORCUS_DLLPUBLIC dom_tree
+class ORCUS_DLLPUBLIC document_tree
 {
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
 public:
-    dom_tree(const dom_tree&) = delete;
-    dom_tree& operator= (const dom_tree&) = delete;
+    document_tree(const document_tree&) = delete;
+    document_tree& operator= (const document_tree&) = delete;
 
-    dom_tree(xmlns_context& cxt);
-    dom_tree(dom_tree&& other);
-    ~dom_tree();
+    document_tree(xmlns_context& cxt);
+    document_tree(document_tree&& other);
+    ~document_tree();
 
     /**
      * Parse a given XML stream and build the content tree.
@@ -120,12 +119,14 @@ public:
      *
      * @param other the dom_tree instance to swap the content with.
      */
-    void swap(dom_tree& other);
+    void swap(document_tree& other);
 
     const sax::doctype_declaration* get_doctype() const;
 
     void dump_compact(std::ostream& os) const;
 };
+
+} // namespace dom
 
 }
 

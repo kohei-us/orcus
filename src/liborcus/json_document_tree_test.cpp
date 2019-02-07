@@ -83,7 +83,7 @@ string dump_check_content(const json::document_tree& doc)
 
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
-    dom_tree dom(cxt);
+    dom::document_tree dom(cxt);
     dom.load(xml_strm);
 
     ostringstream os;

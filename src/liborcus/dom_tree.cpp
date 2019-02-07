@@ -407,12 +407,10 @@ bool const_node::operator!= (const const_node& other) const
     return !operator==(other);
 }
 
-} // namespace dom
-
 /**
  * This impl class also serves as the handler for the sax_ns_parser.
  */
-struct dom_tree::impl
+struct document_tree::impl
 {
     typedef std::vector<dom::element*> element_stack_type;
     typedef std::unordered_map<pstring, dom::declaration, pstring::hash> declarations_type;
@@ -456,7 +454,7 @@ struct dom_tree::impl
     void set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val);
 };
 
-void dom_tree::impl::end_declaration(const pstring& name)
+void document_tree::impl::end_declaration(const pstring& name)
 {
     assert(m_cur_decl_name == name);
 
@@ -481,7 +479,7 @@ void dom_tree::impl::end_declaration(const pstring& name)
         it->second = std::move(decl);
 }
 
-void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
+void document_tree::impl::start_element(const sax_ns_parser_element& elem)
 {
     xmlns_id_t ns = elem.ns;
     const pstring& name = elem.name;
@@ -517,7 +515,7 @@ void dom_tree::impl::start_element(const sax_ns_parser_element& elem)
     m_elem_stack.push_back(p);
 }
 
-void dom_tree::impl::end_element(const sax_ns_parser_element& elem)
+void document_tree::impl::end_element(const sax_ns_parser_element& elem)
 {
     xmlns_id_t ns = elem.ns;
     const pstring& name = elem.name;
@@ -529,7 +527,7 @@ void dom_tree::impl::end_element(const sax_ns_parser_element& elem)
     m_elem_stack.pop_back();
 }
 
-void dom_tree::impl::characters(const pstring& val, bool transient)
+void document_tree::impl::characters(const pstring& val, bool transient)
 {
     if (m_elem_stack.empty())
         // No root element has been encountered.  Ignore this.
@@ -546,7 +544,7 @@ void dom_tree::impl::characters(const pstring& val, bool transient)
     p->child_nodes.push_back(std::move(child));
 }
 
-void dom_tree::impl::set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val)
+void document_tree::impl::set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val)
 {
     // These strings must be persistent.
     pstring name2 = m_pool.intern(name).first;
@@ -557,7 +555,7 @@ void dom_tree::impl::set_attribute(xmlns_id_t ns, const pstring& name, const pst
     m_cur_attr_map.insert({dom::entity_name(ns, name2), pos});
 }
 
-void dom_tree::impl::doctype(const sax::doctype_declaration& dtd)
+void document_tree::impl::doctype(const sax::doctype_declaration& dtd)
 {
     m_doctype = orcus::make_unique<sax::doctype_declaration>(dtd);  // make a copy.
 
@@ -570,32 +568,32 @@ void dom_tree::impl::doctype(const sax::doctype_declaration& dtd)
     this_dtd.uri = pool.intern(dtd.uri).first;
 }
 
-dom_tree::dom_tree(xmlns_context& cxt) :
+document_tree::document_tree(xmlns_context& cxt) :
     mp_impl(orcus::make_unique<impl>(cxt)) {}
 
-dom_tree::dom_tree(dom_tree&& other) :
+document_tree::document_tree(document_tree&& other) :
     mp_impl(std::move(other.mp_impl))
 {
     other.mp_impl = orcus::make_unique<impl>(mp_impl->m_ns_cxt);
 }
 
-dom_tree::~dom_tree() {}
+document_tree::~document_tree() {}
 
-void dom_tree::load(const std::string& strm)
+void document_tree::load(const std::string& strm)
 {
     sax_ns_parser<impl> parser(
         strm.c_str(), strm.size(), mp_impl->m_ns_cxt, *mp_impl);
     parser.parse();
 }
 
-dom::const_node dom_tree::root() const
+dom::const_node document_tree::root() const
 {
     const dom::element* p = mp_impl->m_root.get();
-    auto v = orcus::make_unique<dom::const_node::impl>(p);
+    auto v = orcus::make_unique<const_node::impl>(p);
     return dom::const_node(std::move(v));
 }
 
-dom::const_node dom_tree::declaration(const pstring& name) const
+dom::const_node document_tree::declaration(const pstring& name) const
 {
     impl::declarations_type::const_iterator it = mp_impl->m_decls.find(name);
     if (it == mp_impl->m_decls.end())
@@ -606,12 +604,12 @@ dom::const_node dom_tree::declaration(const pstring& name) const
     return dom::const_node(std::move(v));
 }
 
-void dom_tree::swap(dom_tree& other)
+void document_tree::swap(document_tree& other)
 {
     mp_impl.swap(other.mp_impl);
 }
 
-const sax::doctype_declaration* dom_tree::get_doctype() const
+const sax::doctype_declaration* document_tree::get_doctype() const
 {
     return mp_impl->m_doctype.get();
 }
@@ -653,7 +651,7 @@ void print_scope(ostream& os, const scopes_type& scopes)
 
 }
 
-void dom_tree::dump_compact(ostream& os) const
+void document_tree::dump_compact(ostream& os) const
 {
     if (!mp_impl->m_root)
         return;
@@ -741,5 +739,8 @@ void dom_tree::dump_compact(ostream& os) const
     }
 }
 
+} // namespace dom
+
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

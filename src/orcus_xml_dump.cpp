@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     {
         xmlns_repository repo;
         xmlns_context cxt = repo.create_context();
-        dom_tree tree(cxt);
+        dom::document_tree tree(cxt);
         tree.load(strm);
         ostringstream os;
         tree.dump_compact(os);

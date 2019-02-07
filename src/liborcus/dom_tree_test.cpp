@@ -7,11 +7,11 @@
 
 using namespace orcus::dom;
 
-orcus::dom_tree load_dom_tree(const char* filepath)
+orcus::dom::document_tree load_document_tree(const char* filepath)
 {
     orcus::xmlns_repository repo;
     orcus::xmlns_context cxt = repo.create_context();
-    orcus::dom_tree tree(cxt);
+    orcus::dom::document_tree tree(cxt);
 
     std::string content = orcus::load_file_content(filepath);
     tree.load(content);
@@ -20,7 +20,7 @@ orcus::dom_tree load_dom_tree(const char* filepath)
 
 void test_declaration()
 {
-    orcus::dom_tree tree = load_dom_tree(SRCDIR"/test/xml/osm/street-in-aizu.osm");
+    orcus::dom::document_tree tree = load_document_tree(SRCDIR"/test/xml/osm/street-in-aizu.osm");
 
     const_node decl = tree.declaration("xml");
     assert(decl.type() == node_t::declaration);
@@ -33,7 +33,7 @@ void test_declaration()
 
 void test_attributes()
 {
-    orcus::dom_tree tree = load_dom_tree(SRCDIR"/test/xml/osm/street-in-aizu.osm");
+    orcus::dom::document_tree tree = load_document_tree(SRCDIR"/test/xml/osm/street-in-aizu.osm");
 
     const_node root = tree.root();
     assert(root.name() == entity_name("osm"));
@@ -49,7 +49,7 @@ void test_attributes()
 
 void test_element_hierarchy()
 {
-    orcus::dom_tree tree = load_dom_tree(SRCDIR"/test/xml/osm/street-in-aizu.osm");
+    orcus::dom::document_tree tree = load_document_tree(SRCDIR"/test/xml/osm/street-in-aizu.osm");
 
     const_node root = tree.root();
     assert(root.name() == entity_name("osm"));

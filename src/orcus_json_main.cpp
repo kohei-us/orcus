@@ -215,7 +215,7 @@ int main(int argc, char** argv)
                 string xml_strm = doc->dump_xml();
                 xmlns_repository repo;
                 xmlns_context cxt = repo.create_context();
-                dom_tree dom(cxt);
+                dom::document_tree dom(cxt);
                 dom.load(xml_strm);
 
                 ofstream fs(config->output_path.c_str());

@@ -83,7 +83,7 @@ const char* sax_parser_parse_only_test_dirs[] = {
     SRCDIR"/test/xml/parse-only/rss/"
 };
 
-void parse_file(dom_tree& tree, const char* filepath, string& strm)
+void parse_file(dom::document_tree& tree, const char* filepath, string& strm)
 {
     cout << "testing " << filepath << endl;
     strm = load_file_content(filepath);
@@ -105,7 +105,7 @@ void test_xml_sax_parser()
 
         xmlns_repository repo;
         xmlns_context cxt = repo.create_context();
-        dom_tree tree(cxt);
+        dom::document_tree tree(cxt);
         parse_file(tree, file.c_str(), strm);
 
         // Get the compact form of the content.
@@ -138,7 +138,7 @@ void test_xml_sax_parser_read_only()
 
         xmlns_repository repo;
         xmlns_context cxt = repo.create_context();
-        dom_tree tree(cxt);
+        dom::document_tree tree(cxt);
         parse_file(tree, file.c_str(), strm);
     }
 }
@@ -149,7 +149,7 @@ void test_xml_declarations()
     const char* file_path = SRCDIR"/test/xml/custom-decl-1/input.xml";
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
-    dom_tree dom(cxt);
+    dom::document_tree dom(cxt);
     parse_file(dom, file_path, strm);
 
     // Make sure we parse the custom declaration correctly.
@@ -179,7 +179,7 @@ void test_xml_dtd()
         const char* file_path = tests[i].file_path;
         string strm;
         xmlns_context cxt = repo.create_context();
-        dom_tree dom(cxt);
+        dom::document_tree dom(cxt);
         parse_file(dom, file_path, strm);
         const sax::doctype_declaration* dtd = dom.get_doctype();
         assert(dtd);
