@@ -273,7 +273,6 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, pstring& str)
 {
     assert(cur_char() == '&');
     parse_encoded_char(buf);
-    assert(cur_char() != ';');
 
     const char* p0 = mp_char;
 
