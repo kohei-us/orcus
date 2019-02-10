@@ -38,16 +38,24 @@ protected:
     const char* const mp_begin;
     const char* mp_char;
     const char* mp_end;
+    const bool m_transient_stream;
 
 protected:
-    parser_base(const char* p, size_t n);
+    parser_base(const char* p, size_t n, bool transient_stream);
+
+    bool transient_stream() const { return m_transient_stream; }
 
     bool has_char() const
     {
         assert(mp_char <= mp_end);
         return mp_char != mp_end;
     }
-    bool has_next() const { return (mp_char+1) != mp_end; }
+
+    bool has_next() const
+    {
+        assert((mp_char+1) <= mp_end);
+        return (mp_char+1) != mp_end;
+    }
 
     void next(size_t inc=1) { mp_char += inc; }
 

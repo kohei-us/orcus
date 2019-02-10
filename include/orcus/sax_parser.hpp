@@ -332,7 +332,7 @@ void sax_parser<_Handler,_Config>::cdata()
         {
             // Found ']]>'.
             size_t cdata_len = i - 2;
-            m_handler.characters(pstring(p0, cdata_len), false);
+            m_handler.characters(pstring(p0, cdata_len), transient_stream());
             next();
             return;
         }
@@ -426,7 +426,7 @@ void sax_parser<_Handler,_Config>::characters()
             buf.append(p0, mp_char-p0);
             characters_with_encoded_char(buf);
             if (buf.empty())
-                m_handler.characters(pstring(), false);
+                m_handler.characters(pstring(), transient_stream());
             else
                 m_handler.characters(pstring(buf.get(), buf.size()), true);
             return;
@@ -436,7 +436,7 @@ void sax_parser<_Handler,_Config>::characters()
     if (mp_char > p0)
     {
         pstring val(p0, mp_char-p0);
-        m_handler.characters(val, false);
+        m_handler.characters(val, transient_stream());
     }
 }
 

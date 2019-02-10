@@ -63,8 +63,9 @@ std::string parse_error::build_message(
     return os.str();
 }
 
-parser_base::parser_base(const char* p, size_t n) :
-    mp_begin(p), mp_char(p), mp_end(p+n)
+parser_base::parser_base(const char* p, size_t n, bool transient_stream) :
+    mp_begin(p), mp_char(p), mp_end(p+n),
+    m_transient_stream(transient_stream)
 {
 }
 

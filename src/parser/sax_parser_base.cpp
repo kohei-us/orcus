@@ -109,7 +109,7 @@ struct parser_base::impl
 };
 
 parser_base::parser_base(const char* content, size_t size) :
-    ::orcus::parser_base(content, size),
+    ::orcus::parser_base(content, size, false),
     mp_impl(orcus::make_unique<impl>()),
     m_nest_level(0),
     m_buffer_pos(0),
@@ -334,7 +334,7 @@ bool parser_base::value(pstring& str, bool decode)
     // Skip the closing quote.
     next();
 
-    return false;
+    return transient_stream();
 }
 
 void parser_base::name(pstring& str)

@@ -27,7 +27,7 @@ const char* parse_error::what() const throw()
 
 parser_base::parser_base(
     const char* p, size_t n, const csv::parser_config& config) :
-    ::orcus::parser_base(p, n), m_config(config)
+    ::orcus::parser_base(p, n, false), m_config(config)
 {
     maybe_skip_bom();
 }

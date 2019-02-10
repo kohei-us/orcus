@@ -82,8 +82,8 @@ public:
 private:
 
     /**
-     * Re-route callbacks from the internal sax_parser into the token_parser
-     * callbacks.
+     * Re-route callbacks from the internal sax_ns_parser into the
+     * sax_token_parser callbacks.
      */
     class handler_wrapper : public sax_token_handler_wrapper_base
     {

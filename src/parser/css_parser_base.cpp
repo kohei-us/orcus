@@ -33,7 +33,7 @@ void parse_error::throw_with(
 }
 
 parser_base::parser_base(const char* p, size_t n) :
-    ::orcus::parser_base(p, n),
+    ::orcus::parser_base(p, n, false),
     m_simple_selector_count(0),
     m_combinator(combinator_t::descendant) {}
 
