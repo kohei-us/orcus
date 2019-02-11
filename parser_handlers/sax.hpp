@@ -102,14 +102,6 @@ public:
     void characters(const orcus::pstring& val, bool transient) {}
 
     /**
-     * Called upon parsing of a name-value pair within &lt;? ... ?&gt; tag.
-     *
-     * @param name attribute name.
-     * @param val attribute value text.
-     */
-    void attribute(const orcus::pstring& name, const orcus::pstring& val) {}
-
-    /**
      * Called upon parsing of an attribute of an element.  Note that <em>when
      * the attribute's transient flag is set, the attribute value is stored in
      * a temporary buffer due to presence of one or more encoded characters,
