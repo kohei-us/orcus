@@ -586,6 +586,13 @@ void document_tree::load(const std::string& strm)
     parser.parse();
 }
 
+void document_tree::load(const char* p_strm, size_t n_strm, bool transient)
+{
+    sax_ns_parser<impl> parser(
+        p_strm, n_strm, transient, mp_impl->m_ns_cxt, *mp_impl);
+    parser.parse();
+}
+
 dom::const_node document_tree::root() const
 {
     const dom::element* p = mp_impl->m_root.get();
