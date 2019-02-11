@@ -34,6 +34,7 @@ public:
     typedef _Config config_type;
 
     sax_parser(const char* content, const size_t size, handler_type& handler);
+    sax_parser(const char* content, const size_t size, bool transient_stream, handler_type& handler);
     ~sax_parser();
 
     void parse();
@@ -63,7 +64,15 @@ private:
 template<typename _Handler, typename _Config>
 sax_parser<_Handler,_Config>::sax_parser(
     const char* content, const size_t size, handler_type& handler) :
-    sax::parser_base(content, size),
+    sax::parser_base(content, size, false),
+    m_handler(handler)
+{
+}
+
+template<typename _Handler, typename _Config>
+sax_parser<_Handler,_Config>::sax_parser(
+    const char* content, const size_t size, bool transient_stream, handler_type& handler) :
+    sax::parser_base(content, size, transient_stream),
     m_handler(handler)
 {
 }

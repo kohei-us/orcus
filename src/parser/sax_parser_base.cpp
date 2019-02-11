@@ -108,8 +108,8 @@ struct parser_base::impl
     std::vector<std::unique_ptr<cell_buffer>> m_cell_buffers;
 };
 
-parser_base::parser_base(const char* content, size_t size) :
-    ::orcus::parser_base(content, size, false),
+parser_base::parser_base(const char* content, size_t size, bool transient_stream) :
+    ::orcus::parser_base(content, size, transient_stream),
     mp_impl(orcus::make_unique<impl>()),
     m_nest_level(0),
     m_buffer_pos(0),
