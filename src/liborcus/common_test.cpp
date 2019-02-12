@@ -208,25 +208,38 @@ void test_string2long_conversion()
     }
 }
 
-void test_pstring()
+void test_pstring_trim()
 {
-    {
-        // test for trimming.
-        string s1("test"), s2("  test"), s3("   test  "), s4("test   ");
-        pstring ps1(s1.c_str()), ps2(s2.c_str()), ps3(s3.c_str()), ps4(s4.c_str());
-        assert(ps1 != ps2);
-        assert(ps1 != ps3);
-        assert(ps2 != ps3);
-        assert(ps1 != ps4);
+    // test for trimming.
+    string s1("test"), s2("  test"), s3("   test  "), s4("test   ");
+    pstring ps1(s1.c_str()), ps2(s2.c_str()), ps3(s3.c_str()), ps4(s4.c_str());
+    assert(ps1 != ps2);
+    assert(ps1 != ps3);
+    assert(ps2 != ps3);
+    assert(ps1 != ps4);
 
-        pstring trimmed = ps1.trim();
-        assert(ps1 == trimmed); // nothing to trim.
-        assert(ps1 == ps2.trim());
-        assert(ps1 == ps3.trim());
-        assert(ps1 == ps4.trim());
-        assert(ps1.size() == ps2.trim().size());
-        assert(ps1.size() == ps3.trim().size());
-    }
+    pstring trimmed = ps1.trim();
+    assert(ps1 == trimmed); // nothing to trim.
+    assert(ps1 == ps2.trim());
+    assert(ps1 == ps3.trim());
+    assert(ps1 == ps4.trim());
+    assert(ps1.size() == ps2.trim().size());
+    assert(ps1.size() == ps3.trim().size());
+}
+
+void test_pstring_equality()
+{
+    // Two pstrings that point to the same buffer but different sizes should
+    // not be equal.
+    string s1("some string");
+    pstring p1(s1.data(), 3), p2(s1.data(), 6);
+    assert(p1 != p2);
+
+    // Two pstrings that point to different buffers but with same content
+    // should be equal.
+    string s2("some string");
+    pstring p3(s2.data(), 6);
+    assert(p2 == p3);
 }
 
 void test_spreadsheet_types()
@@ -260,7 +273,8 @@ int main()
     test_measurement_conversion_2();
     test_string2number_conversion();
     test_string2long_conversion();
-    test_pstring();
+    test_pstring_trim();
+    test_pstring_equality();
     test_spreadsheet_types();
 
     return EXIT_SUCCESS;
