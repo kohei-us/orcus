@@ -344,13 +344,13 @@ void parser_base::name(pstring& str)
     const __m128i match = _mm_loadu_si128((const __m128i*)"azAZ09--__");
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_RANGES | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
 
-    int n_total = available_size();
+    size_t n_total = available_size();
 
     while (n_total)
     {
         __m128i char_block = _mm_loadu_si128((const __m128i*)mp_char);
 
-        int n = std::min<int>(16, n_total);
+        int n = std::min<size_t>(16u, n_total);
         int r = _mm_cmpestri(match, 10, char_block, n, mode);
         mp_char += r; // Move the current char position.
 

@@ -138,7 +138,7 @@ void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
 void parser_base::skip_space_and_control()
 {
 #if defined(__ORCUS_CPU_FEATURES) && defined(__AVX2__)
-    int n_total = available_size();
+    size_t n_total = available_size();
     const __m256i ws = _mm256_set1_epi8(' '); // whitespaces
     const __m256i sb = _mm256_set1_epi8(0x80); // signed bit on.
 
@@ -152,7 +152,7 @@ void parser_base::skip_space_and_control()
         results = _mm256_or_si256(results, _mm256_and_si256(char_block, sb));
         int r = _mm256_movemask_epi8(results);
         r = _tzcnt_u32(r);
-        r = std::min<int>(r, n_total);
+        r = std::min<size_t>(r, n_total);
 
         if (!r)
             // No characters to skip. Bail out.
@@ -171,7 +171,7 @@ void parser_base::skip_space_and_control()
     __m128i match = _mm_loadu_si128((const __m128i*)"\0 ");
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_RANGES | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
 
-    int n_total = available_size();
+    size_t n_total = available_size();
 
     while (n_total)
     {
@@ -179,7 +179,7 @@ void parser_base::skip_space_and_control()
 
         // Find position of the first character that is NOT any of the
         // characters to skip.
-        int n = std::min<int>(16, n_total);
+        int n = std::min<size_t>(16u, n_total);
         int r = _mm_cmpestri(match, 2, char_block, n, mode);
 
         if (!r)
