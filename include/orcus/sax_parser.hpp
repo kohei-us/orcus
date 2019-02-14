@@ -88,7 +88,7 @@ void sax_parser<_Handler,_Config>::parse()
     m_nest_level = 0;
     mp_char = mp_begin;
     header();
-    blank();
+    skip_space_and_control();
     body();
 
     assert(m_buffer_pos == 0);
@@ -99,7 +99,7 @@ void sax_parser<_Handler,_Config>::header()
 {
     // we don't handle multi byte encodings so we can just skip bom entry if exists.
     skip_bom();
-    blank();
+    skip_space_and_control();
     if (!has_char() || cur_char() != '<')
         throw sax::malformed_xml_error("xml file must begin with '<'.", offset());
 
@@ -168,7 +168,7 @@ void sax_parser<_Handler,_Config>::element_open(std::ptrdiff_t begin_pos)
 
     while (true)
     {
-        blank();
+        skip_space_and_control();
         char c = cur_char();
         if (c == '/')
         {
@@ -264,7 +264,7 @@ void sax_parser<_Handler,_Config>::special_tag()
         {
             // check if this is a DOCTYPE.
             expects_next("OCTYPE", 6);
-            blank();
+            skip_space_and_control();
             if (has_char())
                 doctype();
         }
@@ -295,13 +295,13 @@ void sax_parser<_Handler,_Config>::declaration(const char* name_check)
     }
 
     m_handler.start_declaration(decl_name);
-    blank();
+    skip_space_and_control();
 
     // Parse the attributes.
     while (cur_char_checked() != '?')
     {
         attribute();
-        blank();
+        skip_space_and_control();
     }
     if (next_char_checked() != '>')
         throw sax::malformed_xml_error("declaration must end with '?>'.", offset());
@@ -357,7 +357,7 @@ void sax_parser<_Handler,_Config>::doctype()
     // Parse the root element first.
     sax::doctype_declaration param;
     name(param.root_element);
-    blank();
+    skip_space_and_control();
 
     // Either PUBLIC or SYSTEM.
     size_t len = remains();
@@ -380,14 +380,14 @@ void sax_parser<_Handler,_Config>::doctype()
     }
 
     next_check();
-    blank();
+    skip_space_and_control();
     has_char_throw("DOCTYPE section too short.");
 
     // Parse FPI.
     value(param.fpi, false);
 
     has_char_throw("DOCTYPE section too short.");
-    blank();
+    skip_space_and_control();
     has_char_throw("DOCTYPE section too short.");
 
     if (cur_char() == '>')
@@ -405,7 +405,7 @@ void sax_parser<_Handler,_Config>::doctype()
     value(param.uri, false);
 
     has_char_throw("DOCTYPE section too short.");
-    blank();
+    skip_space_and_control();
     has_char_throw("DOCTYPE section too short.");
 
     if (cur_char() != '>')

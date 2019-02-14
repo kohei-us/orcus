@@ -192,7 +192,6 @@ protected:
 
     cell_buffer& get_cell_buffer();
 
-    void blank();
     void comment();
 
     /**

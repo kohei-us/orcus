@@ -136,19 +136,6 @@ cell_buffer& parser_base::get_cell_buffer()
     return *mp_impl->m_cell_buffers[m_buffer_pos];
 }
 
-void parser_base::blank()
-{
-    char c = cur_char_checked();
-    while (is_blank(c))
-    {
-        next();
-        if (!has_char())
-            return;
-
-        c = cur_char();
-    }
-}
-
 void parser_base::comment()
 {
     // Parse until we reach '-->'.
