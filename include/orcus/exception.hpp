@@ -22,6 +22,10 @@ public:
     explicit general_error(const std::string& cls, const std::string& msg);
     virtual ~general_error() throw();
     virtual const char* what() const throw();
+
+protected:
+    void append_msg(const std::string& s);
+
 private:
     ::std::string m_msg;
 };

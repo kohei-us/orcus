@@ -34,6 +34,11 @@ const char* general_error::what() const throw()
     return m_msg.c_str();
 }
 
+void general_error::append_msg(const std::string& s)
+{
+    m_msg += s;
+}
+
 invalid_arg_error::invalid_arg_error(const std::string& msg) :
     std::invalid_argument(msg) {}
 

@@ -21,11 +21,28 @@
 
 namespace orcus {
 
+namespace {
+
+std::string build_offset_msg(std::ptrdiff_t offset)
+{
+    std::ostringstream os;
+    os << " (offset=" << offset << ')';
+    return os.str();
+}
+
+}
+
 parse_error::parse_error(const std::string& msg, std::ptrdiff_t offset) :
-    general_error(msg), m_offset(offset) {}
+    general_error(msg), m_offset(offset)
+{
+    append_msg(build_offset_msg(offset));
+}
 
 parse_error::parse_error(const std::string& cls, const std::string& msg, std::ptrdiff_t offset) :
-    general_error(cls, msg), m_offset(offset) {}
+    general_error(cls, msg), m_offset(offset)
+{
+    append_msg(build_offset_msg(offset));
+}
 
 std::ptrdiff_t parse_error::offset() const
 {
