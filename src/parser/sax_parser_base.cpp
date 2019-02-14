@@ -12,6 +12,10 @@
 #include <vector>
 #include <memory>
 
+#ifdef __ORCUS_CPU_FEATURES
+#include <immintrin.h>
+#endif
+
 namespace orcus { namespace sax {
 
 malformed_xml_error::malformed_xml_error(const std::string& msg, std::ptrdiff_t offset) :
@@ -348,8 +352,33 @@ void parser_base::name(pstring& str)
         throw malformed_xml_error(os.str(), offset());
     }
 
+#if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
+
+    const __m128i match = _mm_loadu_si128((const __m128i*)"azAZ09--__");
+    const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_RANGES | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
+
+    int n_total = available_size();
+
+    while (n_total)
+    {
+        __m128i char_block = _mm_loadu_si128((const __m128i*)mp_char);
+
+        int n = std::min<int>(16, n_total);
+        int r = _mm_cmpestri(match, 10, char_block, n, mode);
+        mp_char += r; // Move the current char position.
+
+        if (r < 16)
+            // No need to move to the next segment. Stop here.
+            break;
+
+        // Skip 16 chars to the next segment.
+        n_total -= 16;
+    }
+
+#else
     while (is_alpha(c) || is_numeric(c) || is_name_char(c))
         c = next_char_checked();
+#endif
 
     str = pstring(p0, mp_char-p0);
 }
