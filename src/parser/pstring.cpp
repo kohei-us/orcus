@@ -83,7 +83,7 @@ bool pstring::operator== (const char* _str) const
         // both are empty strings.
         return true;
 
-    return std::strncmp(_str, m_pos, n) == 0;
+    return std::memcmp(_str, m_pos, n) == 0;
 }
 
 pstring pstring::trim() const
