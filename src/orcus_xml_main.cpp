@@ -7,6 +7,7 @@
 
 #include "orcus/orcus_xml.hpp"
 #include "orcus/xml_namespace.hpp"
+#include "orcus/xml_structure_tree.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/stream.hpp"
@@ -41,7 +42,11 @@ void print_usage(ostream& os, const po::options_description& desc)
 namespace output_mode {
 
 enum class type {
-    unknown, dump_document, transform_xml, dump_document_check
+    unknown,
+    dump_document,
+    transform_xml,
+    dump_document_check,
+    xml_structure,
 };
 
 typedef mdds::sorted_string_map<type> map_type;
@@ -49,9 +54,10 @@ typedef mdds::sorted_string_map<type> map_type;
 // Keys must be sorted.
 const std::vector<map_type::entry> entries =
 {
-    { ORCUS_ASCII("dump"),       type::dump_document       },
-    { ORCUS_ASCII("dump-check"), type::dump_document_check },
-    { ORCUS_ASCII("transform"),  type::transform_xml       },
+    { ORCUS_ASCII("dump"),          type::dump_document       },
+    { ORCUS_ASCII("dump-check"),    type::dump_document_check },
+    { ORCUS_ASCII("transform"),     type::transform_xml       },
+    { ORCUS_ASCII("xml-structure"), type::xml_structure       },
 };
 
 const map_type& get()
@@ -62,14 +68,31 @@ const map_type& get()
 
 } // namespace output_mode
 
+std::string build_mode_help_text()
+{
+    std::ostringstream os;
+    os << "Mode of operation. Select one of the following options: ";
+    auto it = output_mode::entries.cbegin(), ite = output_mode::entries.cend();
+    --ite;
+
+    for (; it != ite; ++it)
+        os << std::string(it->key, it->keylen) << ", ";
+
+    os << "or " << std::string(it->key, it->keylen) << ".";
+
+    return os.str();
+}
+
 } // anonymous namespace
 
 int main(int argc, char** argv)
 {
+    std::string help_mode = build_mode_help_text();
+
     po::options_description desc("Options");
     desc.add_options()
         ("help,h", "Print this help.")
-        ("mode", po::value<std::string>(), "Either dump, transoform, or dump-check.")
+        ("mode", po::value<std::string>(), help_mode.data())
         ("map,m", po::value<std::string>(), "Path to the map file.")
         ("output,o", po::value<std::string>(), help_output)
     ;
@@ -141,15 +164,40 @@ int main(int argc, char** argv)
 
     try
     {
+        xmlns_repository repo;
+        std::string strm = load_file_content(input_path.data());
+
+        if (mode == output_mode::type::xml_structure)
+        {
+            xmlns_context cxt = repo.create_context();
+            xml_structure_tree tree(cxt);
+            tree.parse(strm.data(), strm.size());
+
+            if (output.empty())
+            {
+                tree.dump_compact(cout);
+                return EXIT_SUCCESS;
+            }
+
+            ofstream file(output);
+            if (!file)
+            {
+                cerr << "failed to create output file: " << output << endl;
+                return EXIT_FAILURE;
+            }
+
+            tree.dump_compact(file);
+
+            return EXIT_SUCCESS;
+        }
+
         spreadsheet::document doc;
         spreadsheet::import_factory import_fact(doc);
         spreadsheet::export_factory export_fact(doc);
 
-        xmlns_repository repo;
         orcus_xml app(repo, &import_fact, &export_fact);
 
         read_map_file(app, map_path.data());
-        std::string strm = load_file_content(input_path.data());
         app.read_stream(strm.data(), strm.size());
 
         switch (mode)
