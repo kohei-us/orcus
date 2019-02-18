@@ -19,13 +19,18 @@
 #include <iostream>
 #include <fstream>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 #include <mdds/sorted_string_map.hpp>
 
 using namespace orcus;
 using namespace std;
 namespace po = boost::program_options;
+namespace fs = boost::filesystem;
 
 namespace {
+
+const char* help_output =
+"Output directory path, or output file in the dump-check mode.";
 
 void print_usage(ostream& os, const po::options_description& desc)
 {
@@ -66,7 +71,7 @@ int main(int argc, char** argv)
         ("help,h", "Print this help.")
         ("mode", po::value<std::string>(), "Either dump, transoform, or dump-check.")
         ("map,m", po::value<std::string>(), "Path to the map file.")
-        ("output,o", po::value<std::string>(), "Output file path.")
+        ("output,o", po::value<std::string>(), help_output)
     ;
 
     po::options_description hidden("");
@@ -130,6 +135,10 @@ int main(int argc, char** argv)
     if (vm.count("map"))
         map_path = vm["map"].as<std::string>();
 
+    std::string output;
+    if (vm.count("output"))
+        output = vm["output"].as<std::string>();
+
     try
     {
         spreadsheet::document doc;
@@ -147,19 +156,36 @@ int main(int argc, char** argv)
         {
             case output_mode::type::dump_document:
             {
-                doc.dump_flat("./flat");
+                if (output.empty())
+                {
+                    cerr << "Output directory path is required, but is not given." << endl;
+                    return EXIT_FAILURE;
+                }
+
+                if (fs::exists(output))
+                {
+                    if (!fs::is_directory(output))
+                    {
+                        cerr << "A file named '" << output << "' already exists, and is not a directory." << endl;
+                        return false;
+                    }
+                }
+                else
+                    fs::create_directory(output);
+
+                doc.dump_flat(output);
                 break;
             }
             case output_mode::type::transform_xml:
             {
-                if (argc <= 4)
+                if (output.empty())
                 {
                     cout << "output xml file name not provided" << endl;
                     print_usage(cout, desc);
                     return EXIT_FAILURE;
                 }
 
-                ofstream file(argv[4]);
+                ofstream file(output);
                 if (!file)
                 {
                     cerr << "failed to create output file: " << argv[4] << endl;
@@ -168,26 +194,26 @@ int main(int argc, char** argv)
 
                 // Write transformed xml content to file.
                 app.write(strm.data(), strm.size(), file);
+                break;
             }
-            break;
             case output_mode::type::dump_document_check:
             {
-                if (argc <= 4)
+                if (output.empty())
                 {
                     doc.dump_check(cout);
                     break;
                 }
 
-                ofstream file(argv[4]);
+                ofstream file(output);
                 if (!file)
                 {
-                    cerr << "failed to create output file: " << argv[4] << endl;
+                    cerr << "failed to create output file: " << output << endl;
                     return EXIT_FAILURE;
                 }
 
                 doc.dump_check(file);
+                break;
             }
-            break;
             default:
                 ;
         }
