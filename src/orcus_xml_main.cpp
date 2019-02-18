@@ -10,6 +10,7 @@
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/stream.hpp"
+#include "orcus/global.hpp"
 
 #include "xml_map_sax_handler.hpp"
 
@@ -17,102 +18,144 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <boost/program_options.hpp>
+#include <mdds/sorted_string_map.hpp>
 
 using namespace orcus;
 using namespace std;
+namespace po = boost::program_options;
 
 namespace {
 
-void print_help()
+void print_usage(ostream& os, const po::options_description& desc)
 {
-    cout << "Usage: orcus-xml --mode=MODE [map file] [data file] [output file (optional)]" << endl;
-    cout << endl;
-    cout << "The MODE must be one of dump, transform, or dump-check." << endl;
+    os << "Usage: orcus-xml [OPTIONS] FILE" << endl << endl;
+    os << desc;
 }
 
-enum output_mode {
+namespace output_mode {
+
+enum class type {
     unknown, dump_document, transform_xml, dump_document_check
 };
 
-output_mode parse_mode(const char* s)
+typedef mdds::sorted_string_map<type> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
 {
-    const char* prefix = "--mode=";
-    size_t prefix_size = strlen(prefix);
-    const char* p_value = nullptr;
-    size_t value_size = 0;
-    for (size_t i = 0, n = strlen(s); i < n; ++i, ++s)
-    {
-        if (i < prefix_size)
-        {
-            if (*s != prefix[i])
-                // Required prefix is not present.
-                return unknown;
-            continue;
-        }
+    { ORCUS_ASCII("dump"),       type::dump_document       },
+    { ORCUS_ASCII("dump-check"), type::dump_document_check },
+    { ORCUS_ASCII("transform"),  type::transform_xml       },
+};
 
-        if (!p_value)
-            p_value = s;
-
-        ++value_size;
-    }
-
-    if (value_size == 4 && strncmp(p_value, "dump", 4) == 0)
-        return dump_document;
-
-    if (value_size == 9 && strncmp(p_value, "transform", 9) == 0)
-        return transform_xml;
-
-    if (value_size == 10 && strncmp(p_value, "dump-check", 10) == 0)
-        return dump_document_check;
-
-    return unknown;
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), type::unknown);
+    return mt;
 }
 
-}
+} // namespace output_mode
+
+} // anonymous namespace
 
 int main(int argc, char** argv)
 {
-    if (argc < 4)
+    po::options_description desc("Options");
+    desc.add_options()
+        ("help,h", "Print this help.")
+        ("mode", po::value<std::string>(), "Either dump, transoform, or dump-check.")
+        ("map,m", po::value<std::string>(), "Path to the map file.")
+        ("output,o", po::value<std::string>(), "Output file path.")
+    ;
+
+    po::options_description hidden("");
+    hidden.add_options()
+        ("input", po::value<string>(), "input file");
+
+    po::positional_options_description po_desc;
+    po_desc.add("input", 1);
+
+    po::options_description cmd_opt;
+    cmd_opt.add(desc).add(hidden);
+
+    po::variables_map vm;
+    try
     {
-        print_help();
+        po::store(
+            po::command_line_parser(argc, argv).options(cmd_opt).positional(po_desc).run(), vm);
+        po::notify(vm);
+    }
+    catch (const exception& e)
+    {
+        // Unknown options.
+        cerr << e.what() << endl;
+        print_usage(cout, desc);
         return EXIT_FAILURE;
     }
 
-    // Parse the mode.
-    output_mode mode = parse_mode(argv[1]);
-    if (mode == unknown)
+    if (vm.count("help"))
     {
-        cerr << "unknown mode" << endl;
-        print_help();
+        print_usage(cout, desc);
         return EXIT_FAILURE;
     }
 
-    spreadsheet::document doc;
-    spreadsheet::import_factory import_fact(doc);
-    spreadsheet::export_factory export_fact(doc);
+    if (!vm.count("input"))
+    {
+        cerr << "No input file." << endl;
+        print_usage(cout, desc);
+        return EXIT_FAILURE;
+    }
 
-    xmlns_repository repo;
-    orcus_xml app(repo, &import_fact, &export_fact);
+    if (!vm.count("mode"))
+    {
+        cerr << "Mode not specified." << endl;
+        print_usage(cout, desc);
+        return EXIT_FAILURE;
+    }
+
+    std::string s = vm["mode"].as<std::string>();
+    output_mode::type mode = output_mode::get().find(s.data(), s.size());
+
+    if (mode == output_mode::type::unknown)
+    {
+        cerr << "Unknown output mode: " << s << endl;
+        print_usage(cout, desc);
+        return EXIT_FAILURE;
+    }
+
+    std::string input_path = vm["input"].as<std::string>();
+
+    std::string map_path;
+    if (vm.count("map"))
+        map_path = vm["map"].as<std::string>();
 
     try
     {
-        read_map_file(app, argv[2]);
-        std::string strm = load_file_content(argv[3]);
+        spreadsheet::document doc;
+        spreadsheet::import_factory import_fact(doc);
+        spreadsheet::export_factory export_fact(doc);
+
+        xmlns_repository repo;
+        orcus_xml app(repo, &import_fact, &export_fact);
+
+        read_map_file(app, map_path.data());
+        std::string strm = load_file_content(input_path.data());
         app.read_stream(strm.data(), strm.size());
 
         switch (mode)
         {
-            case dump_document:
+            case output_mode::type::dump_document:
             {
                 doc.dump_flat("./flat");
                 break;
             }
-            case transform_xml:
+            case output_mode::type::transform_xml:
             {
                 if (argc <= 4)
                 {
                     cout << "output xml file name not provided" << endl;
-                    print_help();
+                    print_usage(cout, desc);
                     return EXIT_FAILURE;
                 }
 
@@ -127,7 +170,7 @@ int main(int argc, char** argv)
                 app.write(strm.data(), strm.size(), file);
             }
             break;
-            case dump_document_check:
+            case output_mode::type::dump_document_check:
             {
                 if (argc <= 4)
                 {
@@ -157,4 +200,5 @@ int main(int argc, char** argv)
 
     return EXIT_SUCCESS;
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
