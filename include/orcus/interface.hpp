@@ -12,6 +12,7 @@
 #include "orcus/types.hpp"
 
 #include <string>
+#include <memory>
 
 namespace orcus {
 
@@ -22,7 +23,7 @@ namespace iface {
 class ORCUS_DLLPUBLIC import_filter
 {
     struct impl;
-    impl* mp_impl;
+    std::unique_ptr<impl> mp_impl;
 
 public:
     import_filter(format_t input);

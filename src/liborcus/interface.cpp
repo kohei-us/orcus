@@ -7,6 +7,7 @@
 
 #include "orcus/interface.hpp"
 #include "orcus/config.hpp"
+#include "orcus/global.hpp"
 
 namespace orcus { namespace iface {
 
@@ -17,12 +18,9 @@ struct import_filter::impl
     impl(format_t input) : m_config(input) {}
 };
 
-import_filter::import_filter(format_t input) : mp_impl(new impl(input)) {}
+import_filter::import_filter(format_t input) : mp_impl(orcus::make_unique<impl>(input)) {}
 
-import_filter::~import_filter()
-{
-    delete mp_impl;
-}
+import_filter::~import_filter() {}
 
 void import_filter::set_config(const config& v)
 {
