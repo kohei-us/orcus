@@ -39,24 +39,6 @@ const std::map<dump_format_t, pstring> descriptions =
     std::make_pair(dump_format_t::none, "no output"),
 };
 
-std::string gen_help_output_format()
-{
-    std::ostringstream os;
-    os << "Specify the format of output file.  Supported format types are:";
-
-    for (const std::pair<pstring, dump_format_t>& entry : get_dump_format_entries())
-    {
-        pstring desc;
-        auto it_desc = descriptions.find(entry.second);
-        if (it_desc != descriptions.end())
-            desc = it_desc->second;
-
-        os << std::endl << "  * " << entry.first << " - " << desc;
-    }
-
-    return os.str();
-}
-
 const char* help_program =
 "The FILE must specify a path to an existing file.";
 
@@ -75,6 +57,24 @@ const char* help_row_size =
 
 const char* err_no_input_file = "No input file.";
 
+}
+
+std::string gen_help_output_format()
+{
+    std::ostringstream os;
+    os << "Specify the format of output file.  Supported format types are:";
+
+    for (const std::pair<pstring, dump_format_t>& entry : get_dump_format_entries())
+    {
+        pstring desc;
+        auto it_desc = descriptions.find(entry.second);
+        if (it_desc != descriptions.end())
+            desc = it_desc->second;
+
+        os << std::endl << "  * " << entry.first << " - " << desc;
+    }
+
+    return os.str();
 }
 
 bool handle_dump_check(

@@ -14,6 +14,7 @@
 #include "orcus/global.hpp"
 
 #include "xml_map_sax_handler.hpp"
+#include "orcus_filter_global.hpp"
 
 #include <cstdlib>
 #include <cstring>
@@ -95,6 +96,7 @@ int main(int argc, char** argv)
         ("mode", po::value<std::string>(), help_mode.data())
         ("map,m", po::value<std::string>(), "Path to the map file.")
         ("output,o", po::value<std::string>(), help_output)
+        ("output-format,f", po::value<string>(), gen_help_output_format().data())
     ;
 
     po::options_description hidden("");

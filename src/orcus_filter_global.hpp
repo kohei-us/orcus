@@ -45,6 +45,8 @@ bool parse_import_filter_args(
     iface::import_filter& app, iface::document_dumper& doc,
     extra_args_handler* args_handler = nullptr);
 
+std::string gen_help_output_format();
+
 }
 
 #endif

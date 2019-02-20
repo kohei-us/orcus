@@ -36,6 +36,7 @@ add_executable(orcus-csv
 add_executable(orcus-xml
     ${PROJECT_SOURCE_DIR}/src/orcus_xml_main.cpp
     ${PROJECT_SOURCE_DIR}/src/xml_map_sax_handler.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
 )
 
 add_executable(orcus-ods
