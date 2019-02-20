@@ -46,10 +46,6 @@ class ORCUS_DLLPUBLIC document_dumper
 public:
     virtual ~document_dumper();
     virtual void dump(dump_format_t format, const std::string& outdir) const = 0;
-    virtual void dump_flat(const std::string& outdir) const = 0;
-    virtual void dump_html(const std::string& outdir) const = 0;
-    virtual void dump_json(const std::string& outdir) const = 0;
-    virtual void dump_csv(const std::string& outdir) const = 0;
     virtual void dump_check(std::ostream& os) const = 0;
 };
 
