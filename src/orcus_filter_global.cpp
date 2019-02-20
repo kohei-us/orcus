@@ -30,58 +30,33 @@ extra_args_handler::~extra_args_handler() {}
 
 namespace {
 
-namespace doc_output_format {
-
-enum class type
+const std::map<dump_format_t, pstring> descriptions =
 {
-    unspecified,
-    none,
-    flat,
-    html,
-    json,
-    csv
+    std::make_pair(dump_format_t::csv,  "CSV format"),
+    std::make_pair(dump_format_t::flat, "flat text format"),
+    std::make_pair(dump_format_t::html, "HTML format"),
+    std::make_pair(dump_format_t::json, "JSON format"),
+    std::make_pair(dump_format_t::none, "no output"),
 };
 
-typedef mdds::sorted_string_map<doc_output_format::type> map_type;
-
-// Keys must be sorted.
-const std::vector<map_type::entry> entries =
-{
-    { ORCUS_ASCII("csv"),  type::csv  },
-    { ORCUS_ASCII("flat"), type::flat },
-    { ORCUS_ASCII("html"), type::html },
-    { ORCUS_ASCII("json"), type::json },
-    { ORCUS_ASCII("none"), type::none },
-};
-
-// The order must match that of the entries above.
-const std::vector<const char*> descriptions =
-{
-    "CSV format",
-    "flat text format",
-    "HTML format",
-    "JSON format",
-    "no output",
-};
-
-const map_type& get()
-{
-    static map_type mt(entries.data(), entries.size(), type::unspecified);
-    return mt;
-}
-
-std::string gen_help_text()
+std::string gen_help_output_format()
 {
     std::ostringstream os;
     os << "Specify the format of output file.  Supported format types are:";
 
-    for (size_t i = 0, n = entries.size(); i < n; ++i)
-        os << std::endl << "  * " << std::string(entries[i].key, entries[i].keylen)
-            << " - " << descriptions[i];
+    auto _entries = get_dump_format_entries();
+
+    for (const std::pair<pstring, dump_format_t>& entry : _entries)
+    {
+        pstring desc;
+        auto it_desc = descriptions.find(entry.second);
+        if (it_desc != descriptions.end())
+            desc = it_desc->second;
+
+        os << std::endl << "  * " << entry.first << " - " << desc;
+    }
 
     return os.str();
-}
-
 }
 
 const char* help_program =
@@ -138,7 +113,7 @@ bool parse_import_filter_args(
         ("debug,d", po::value<uint16_t>()->default_value(0u)->implicit_value(1u), help_debug)
         ("dump-check", help_dump_check)
         ("output,o", po::value<string>(), help_output)
-        ("output-format,f", po::value<string>(), doc_output_format::gen_help_text().data())
+        ("output-format,f", po::value<string>(), gen_help_output_format().data())
         ("row-size", po::value<spreadsheet::row_t>(), help_row_size);
 
     if (args_handler)
@@ -177,7 +152,7 @@ bool parse_import_filter_args(
     }
 
     std::string infile, outdir, outformat_s;
-    doc_output_format::type outformat = doc_output_format::type::unspecified;
+    dump_format_t outformat = dump_format_t::unknown;
 
     if (vm.count("input"))
         infile = vm["input"].as<string>();
@@ -188,7 +163,7 @@ bool parse_import_filter_args(
     if (vm.count("output-format"))
     {
         outformat_s = vm["output-format"].as<string>();
-        outformat = doc_output_format::get().find(outformat_s.data(), outformat_s.size());
+        outformat = to_dump_format_enum(outformat_s.data(), outformat_s.size());
     }
 
     if (vm.count("row-size"))
@@ -214,13 +189,13 @@ bool parse_import_filter_args(
         return handle_dump_check(app, doc, infile, outdir);
     }
 
-    if (outformat == doc_output_format::type::unspecified)
+    if (outformat == dump_format_t::unknown)
     {
         std::cerr << "You must specify one of the supported output formats." << endl;
         return false;
     }
 
-    if (outformat == doc_output_format::type::none)
+    if (outformat == dump_format_t::none)
     {
         // When "none" format is specified, just read the input file and exit.
         app.read_file(infile);
@@ -248,16 +223,16 @@ bool parse_import_filter_args(
 
     switch (outformat)
     {
-        case doc_output_format::type::flat:
+        case dump_format_t::flat:
             doc.dump_flat(outdir);
             break;
-        case doc_output_format::type::html:
+        case dump_format_t::html:
             doc.dump_html(outdir);
             break;
-        case doc_output_format::type::json:
+        case dump_format_t::json:
             doc.dump_json(outdir);
             break;
-        case doc_output_format::type::csv:
+        case dump_format_t::csv:
             doc.dump_csv(outdir);
             break;
         default:

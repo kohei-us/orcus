@@ -6,9 +6,11 @@
  */
 
 #include "orcus/types.hpp"
+#include "orcus/global.hpp"
 
 #include <limits>
 #include <sstream>
+#include <mdds/sorted_string_map.hpp>
 
 namespace orcus {
 
@@ -157,6 +159,46 @@ std::string date_time_t::to_string() const
     std::ostringstream os;
     os << year << "-" << month << "-" << day << "T" << hour << ":" << minute << ":" << second;
     return os.str();
+}
+
+namespace {
+
+namespace dump_format {
+
+typedef mdds::sorted_string_map<dump_format_t> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
+{
+    { ORCUS_ASCII("csv"),  dump_format_t::csv  },
+    { ORCUS_ASCII("flat"), dump_format_t::flat },
+    { ORCUS_ASCII("html"), dump_format_t::html },
+    { ORCUS_ASCII("json"), dump_format_t::json },
+    { ORCUS_ASCII("none"), dump_format_t::none },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), dump_format_t::unknown);
+    return mt;
+}
+
+} // namespace dump_format
+
+} // anonymous namespace
+
+dump_format_t to_dump_format_enum(const char* p, size_t n)
+{
+    return dump_format::get().find(p, n);
+}
+
+std::vector<std::pair<pstring, dump_format_t>> get_dump_format_entries()
+{
+    std::vector<std::pair<pstring, dump_format_t>> ret;
+    for (const auto& e : dump_format::entries)
+        ret.emplace_back(pstring(e.key, e.keylen), e.value);
+
+    return ret;
 }
 
 std::ostream& operator<< (std::ostream& os, const date_time_t& v)

@@ -394,6 +394,16 @@ enum class format_t
     csv
 };
 
+enum class dump_format_t
+{
+    unknown,
+    csv,
+    flat,
+    json,
+    html,
+    none
+};
+
 struct ORCUS_PSR_DLLPUBLIC length_t
 {
     length_unit_t unit;
@@ -428,6 +438,10 @@ struct ORCUS_PSR_DLLPUBLIC date_time_t
 
     void swap(date_time_t& other);
 };
+
+ORCUS_PSR_DLLPUBLIC dump_format_t to_dump_format_enum(const char* p, size_t n);
+
+ORCUS_PSR_DLLPUBLIC std::vector<std::pair<pstring, dump_format_t>> get_dump_format_entries();
 
 ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const date_time_t& v);
 
