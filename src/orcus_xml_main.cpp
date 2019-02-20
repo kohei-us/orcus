@@ -238,7 +238,7 @@ int main(int argc, char** argv)
                 ofstream file(output);
                 if (!file)
                 {
-                    cerr << "failed to create output file: " << argv[4] << endl;
+                    cerr << "failed to create output file: " << output << endl;
                     return EXIT_FAILURE;
                 }
 
