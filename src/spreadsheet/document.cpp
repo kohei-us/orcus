@@ -465,6 +465,30 @@ void document::clear()
     mp_impl.reset(new document_impl(*this));
 }
 
+void document::dump(dump_format_t format, const std::string& outdir) const
+{
+    switch (format)
+    {
+        case dump_format_t::csv:
+            dump_csv(outdir);
+            break;
+        case dump_format_t::flat:
+            dump_flat(outdir);
+            break;
+        case dump_format_t::html:
+            dump_html(outdir);
+            break;
+        case dump_format_t::json:
+            dump_json(outdir);
+            break;
+        case dump_format_t::none:
+        case dump_format_t::unknown:
+            break;
+        default:
+            ;
+    }
+}
+
 void document::dump_flat(const string& outdir) const
 {
     cout << "----------------------------------------------------------------------" << endl;

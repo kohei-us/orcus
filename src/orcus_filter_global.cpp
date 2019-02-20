@@ -149,7 +149,7 @@ bool parse_import_filter_args(
         return true;
     }
 
-    std::string infile, outdir, outformat_s;
+    std::string infile, outdir;
     dump_format_t outformat = dump_format_t::unknown;
 
     if (vm.count("input"))
@@ -160,7 +160,7 @@ bool parse_import_filter_args(
 
     if (vm.count("output-format"))
     {
-        outformat_s = vm["output-format"].as<string>();
+        std::string outformat_s = vm["output-format"].as<string>();
         outformat = to_dump_format_enum(outformat_s.data(), outformat_s.size());
     }
 
@@ -218,27 +218,7 @@ bool parse_import_filter_args(
         fs::create_directory(outdir);
 
     app.read_file(infile);
-
-    switch (outformat)
-    {
-        case dump_format_t::flat:
-            doc.dump_flat(outdir);
-            break;
-        case dump_format_t::html:
-            doc.dump_html(outdir);
-            break;
-        case dump_format_t::json:
-            doc.dump_json(outdir);
-            break;
-        case dump_format_t::csv:
-            doc.dump_csv(outdir);
-            break;
-        default:
-        {
-            std::cerr << "Unknown output format type '" << outformat_s << "'. No output files have been generated." << std::endl;
-        }
-
-    }
+    doc.dump(outformat, outdir);
 
     return true;
 }
