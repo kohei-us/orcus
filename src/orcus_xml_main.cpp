@@ -217,13 +217,27 @@ int main(int argc, char** argv)
                     if (!fs::is_directory(output))
                     {
                         cerr << "A file named '" << output << "' already exists, and is not a directory." << endl;
-                        return false;
+                        return EXIT_FAILURE;
                     }
                 }
                 else
                     fs::create_directory(output);
 
-                doc.dump_flat(output);
+                dump_format_t format = dump_format_t::unknown;
+
+                if (vm.count("output-format"))
+                {
+                    s = vm["output-format"].as<std::string>();
+                    format = to_dump_format_enum(s.data(), s.size());
+                }
+
+                if (format == dump_format_t::unknown)
+                {
+                    std::cerr << "Unsupported output format: '" << s << "'" << endl;
+                    return EXIT_FAILURE;
+                }
+
+                doc.dump(format, output);
                 break;
             }
             case output_mode::type::transform_xml:
