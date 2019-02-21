@@ -29,8 +29,10 @@ callbacks from the parser as the file is being parsed.
 
 ## API Documentation
 
-* [Official API documentation](http://kohei.us/files/orcus/doc/)
-* [Doxygen code documentation](http://kohei.us/files/orcus/doxygen/)
+* [Official API documentation](https://orcus.readthedocs.io/en/latest/) for
+  general users of the library.
+* [Doxygen code documentation](http://kohei.us/files/orcus/doxygen/) for
+  maintainers and potential contributors to the library.
 
 ## Download source packages
 
