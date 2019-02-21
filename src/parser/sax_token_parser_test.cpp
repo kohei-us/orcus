@@ -142,6 +142,7 @@ void test_unicode_string()
     };
 
     const char* token_names[] = {
+        "???",
     };
     size_t token_count = ORCUS_N_ELEMENTS(token_names);
 

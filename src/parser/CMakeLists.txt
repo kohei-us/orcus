@@ -35,7 +35,7 @@ set(_TESTS
     parser-base-test
     parser-global-test
     sax-parser-test
-#   sax-token-parser-test
+    sax-token-parser-test
     stream-test
     string-pool-test
     threaded-json-parser-test
