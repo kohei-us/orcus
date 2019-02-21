@@ -13,7 +13,6 @@ add_executable(orcus-css-dump
 
 add_executable(orcus-xml-dump
 	${PROJECT_SOURCE_DIR}/src/orcus_xml_dump.cpp
-	${PROJECT_SOURCE_DIR}/src/dom_tree_sax_handler.cpp
 )
 
 add_executable(orcus-zip-dump
@@ -104,7 +103,6 @@ add_executable(orcus-test-xml EXCLUDE_FROM_ALL
 
 add_executable(orcus-test-xml-mapped EXCLUDE_FROM_ALL
 	xml_map_sax_handler.cpp
-	dom_tree_sax_handler.cpp
 	orcus_test_xml_mapped.cpp
 )
 
