@@ -454,6 +454,7 @@
 				<F N="../src/parser/parser_global.cpp"/>
 				<F N="../src/parser/pstring.cpp"/>
 				<F N="../src/parser/sax_parser_base.cpp"/>
+				<F N="../src/parser/sax_parser_test.cpp"/>
 				<F N="../src/parser/sax_token_parser.cpp"/>
 				<F N="../src/parser/sax_token_parser_test.cpp"/>
 				<F N="../src/parser/sax_token_parser_thread.cpp"/>
