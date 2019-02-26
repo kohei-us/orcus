@@ -450,7 +450,7 @@ struct less_by_opening_elem_pos : std::binary_function<xml_map_tree::element*, x
 
 }
 
-struct orcus_xml_impl
+struct orcus_xml::impl
 {
     spreadsheet::iface::import_factory* mp_import_factory;
     spreadsheet::iface::export_factory* mp_export_factory;
@@ -476,7 +476,7 @@ struct orcus_xml_impl
 
     xml_map_tree::cell_position m_cur_range_ref;
 
-    explicit orcus_xml_impl(xmlns_repository& ns_repo) :
+    explicit impl(xmlns_repository& ns_repo) :
         mp_import_factory(nullptr),
         mp_export_factory(nullptr),
         m_ns_repo(ns_repo),
@@ -486,16 +486,13 @@ struct orcus_xml_impl
 };
 
 orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact, spreadsheet::iface::export_factory* ex_fact) :
-    mp_impl(new orcus_xml_impl(ns_repo))
+    mp_impl(orcus::make_unique<impl>(ns_repo))
 {
     mp_impl->mp_import_factory = im_fact;
     mp_impl->mp_export_factory = ex_fact;
 }
 
-orcus_xml::~orcus_xml()
-{
-    delete mp_impl;
-}
+orcus_xml::~orcus_xml() {}
 
 void orcus_xml::set_namespace_alias(const pstring& alias, const pstring& uri)
 {
