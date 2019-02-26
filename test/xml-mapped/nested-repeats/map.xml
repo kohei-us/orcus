@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<map xmlns="http://gitorious.org/orcus/xml-map">
+    <sheet name="data"/>
+    <range row="0" column="0" sheet="data">
+        <field xpath="/osm/way@id"/>
+        <field xpath="/osm/way/nd@ref"/>
+    </range>
+</map>
