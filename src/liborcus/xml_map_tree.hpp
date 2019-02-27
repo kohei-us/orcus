@@ -18,6 +18,7 @@
 #include <ostream>
 #include <map>
 #include <vector>
+#include <memory>
 
 namespace orcus {
 
@@ -113,7 +114,7 @@ public:
         spreadsheet::col_t column_pos;
     };
 
-    typedef std::map<cell_position, range_reference*> range_ref_map_type;
+    typedef std::map<cell_position, std::unique_ptr<range_reference>> range_ref_map_type;
 
     enum linkable_node_type { node_unknown, node_element, node_attribute };
     enum reference_type { reference_unknown, reference_cell, reference_range_field };

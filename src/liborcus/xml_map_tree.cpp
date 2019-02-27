@@ -355,7 +355,6 @@ xml_map_tree::xml_map_tree(xmlns_repository& xmlns_repo) :
 
 xml_map_tree::~xml_map_tree()
 {
-    std::for_each(m_field_refs.begin(), m_field_refs.end(), map_object_deleter<range_ref_map_type>());
     delete mp_root;
 }
 
@@ -427,10 +426,12 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
         cell_position pos_safe = pos;
         pos_safe.sheet = m_names.intern(pos.sheet.get(), pos.sheet.size()).first;
 
-        it = m_field_refs.insert(it, range_ref_map_type::value_type(pos_safe, new range_reference(pos_safe)));
+        it = m_field_refs.insert(
+            it, range_ref_map_type::value_type(
+                pos_safe, orcus::make_unique<range_reference>(pos_safe)));
     }
 
-    range_ref = it->second;
+    range_ref = it->second.get();
     assert(range_ref);
 
     if (!mp_cur_range_ref)
