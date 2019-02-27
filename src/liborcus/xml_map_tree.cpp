@@ -296,7 +296,7 @@ const xml_map_tree::element* xml_map_tree::walker::push_element(xmlns_id_t ns, c
             return nullptr;
         }
 
-        const element* p = m_parent.mp_root;
+        const element* p = m_parent.mp_root.get();
         if (p->ns != ns || p->name != name)
         {
             // Names differ.
@@ -353,10 +353,7 @@ const xml_map_tree::element* xml_map_tree::walker::pop_element(xmlns_id_t ns, co
 xml_map_tree::xml_map_tree(xmlns_repository& xmlns_repo) :
     m_xmlns_cxt(xmlns_repo.create_context()), mp_cur_range_ref(nullptr), mp_root(nullptr) {}
 
-xml_map_tree::~xml_map_tree()
-{
-    delete mp_root;
-}
+xml_map_tree::~xml_map_tree() {}
 
 void xml_map_tree::set_namespace_alias(const pstring& alias, const pstring& uri)
 {
@@ -543,7 +540,7 @@ const xml_map_tree::linkable* xml_map_tree::get_link(const pstring& xpath) const
 #if ORCUS_DEBUG_XML_MAP_TREE
     cout << "xml_map_tree::get_link: xpath = '" << xpath << "'" << endl;
 #endif
-    const linkable* cur_node = mp_root;
+    const linkable* cur_node = mp_root.get();
 
     xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size());
 
@@ -643,12 +640,12 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
         if (token.attribute)
             throw xpath_error("root element cannot be an attribute.");
 
-        mp_root = new element(
+        mp_root = orcus::make_unique<element>(
             token.ns, m_names.intern(token.name.get(), token.name.size()).first,
             element_unlinked, reference_unknown);
     }
 
-    elem_stack_new.push_back(mp_root);
+    elem_stack_new.push_back(mp_root.get());
     element* cur_element = elem_stack_new.back();
     assert(cur_element);
     assert(cur_element->child_elements);

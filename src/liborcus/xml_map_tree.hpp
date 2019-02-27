@@ -254,7 +254,7 @@ private:
     /** pool of element names. */
     mutable string_pool m_names;
 
-    element* mp_root;
+    std::unique_ptr<element> mp_root;
 };
 
 std::ostream& operator<< (std::ostream& os, const xml_map_tree::cell_position& ref);
