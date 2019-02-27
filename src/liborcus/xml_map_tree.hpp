@@ -231,6 +231,8 @@ public:
     pstring intern_string(const pstring& str) const;
 
 private:
+    range_reference* get_range_reference(const cell_position& pos);
+
     linkable* get_element_stack(const pstring& xpath, reference_type type, element_list_type& elem_stack);
 
 private:

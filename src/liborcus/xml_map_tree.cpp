@@ -413,22 +413,7 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
     if (xpath.empty())
         return;
 
-    range_reference* range_ref = nullptr;
-    range_ref_map_type::iterator it = m_field_refs.lower_bound(pos);
-    if (it == m_field_refs.end() || m_field_refs.key_comp()(pos, it->first))
-    {
-        // This reference does not exist yet.  Insert a new one.
-
-        // Make sure the sheet name string is persistent.
-        cell_position pos_safe = pos;
-        pos_safe.sheet = m_names.intern(pos.sheet.get(), pos.sheet.size()).first;
-
-        it = m_field_refs.insert(
-            it, range_ref_map_type::value_type(
-                pos_safe, orcus::make_unique<range_reference>(pos_safe)));
-    }
-
-    range_ref = it->second.get();
+    range_reference* range_ref = get_range_reference(pos);
     assert(range_ref);
 
     if (!mp_cur_range_ref)
@@ -616,6 +601,25 @@ xml_map_tree::range_ref_map_type& xml_map_tree::get_range_references()
 pstring xml_map_tree::intern_string(const pstring& str) const
 {
     return m_names.intern(str).first;
+}
+
+xml_map_tree::range_reference* xml_map_tree::get_range_reference(const cell_position& pos)
+{
+    range_ref_map_type::iterator it = m_field_refs.lower_bound(pos);
+    if (it == m_field_refs.end() || m_field_refs.key_comp()(pos, it->first))
+    {
+        // This reference does not exist yet.  Insert a new one.
+
+        // Make sure the sheet name string is persistent.
+        cell_position pos_safe = pos;
+        pos_safe.sheet = m_names.intern(pos.sheet.get(), pos.sheet.size()).first;
+
+        it = m_field_refs.insert(
+            it, range_ref_map_type::value_type(
+                pos_safe, orcus::make_unique<range_reference>(pos_safe)));
+    }
+
+    return it->second.get();
 }
 
 xml_map_tree::linkable* xml_map_tree::get_element_stack(
