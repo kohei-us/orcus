@@ -622,7 +622,7 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
     const pstring& xpath, reference_type ref_type, element_list_type& elem_stack)
 {
     assert(!xpath.empty());
-    xpath_parser parser(m_xmlns_cxt,xpath.get(), xpath.size());
+    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size());
 
     element_list_type elem_stack_new;
 
@@ -641,7 +641,7 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
             throw xpath_error("root element cannot be an attribute.");
 
         mp_root = orcus::make_unique<element>(
-            token.ns, m_names.intern(token.name.get(), token.name.size()).first,
+            token.ns, m_names.intern(token.name).first,
             element_unlinked, reference_unknown);
     }
 
