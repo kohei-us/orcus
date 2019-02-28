@@ -175,6 +175,8 @@ public:
 
         const element* get_child(xmlns_id_t _ns, const pstring& _name) const;
 
+        element* get_or_create_child(string_pool& _name_pool, xmlns_id_t _ns, const pstring& _name);
+
         /**
          * Unlinked attribute anchor is an element that's not linked but has
          * one or more attributes that are linked.

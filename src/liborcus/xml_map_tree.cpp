@@ -262,6 +262,24 @@ const xml_map_tree::element* xml_map_tree::element::get_child(xmlns_id_t _ns, co
     return it == child_elements->end() ? nullptr : it->get();
 }
 
+xml_map_tree::element* xml_map_tree::element::get_or_create_child(
+    string_pool& _name_pool, xmlns_id_t _ns, const pstring& _name)
+{
+    auto it = std::find_if(
+        child_elements->begin(), child_elements->end(), find_by_name<element>(_ns, _name));
+
+    if (it != child_elements->end())
+        return it->get();
+
+    // Insert a new element of this name.
+    child_elements->push_back(
+        orcus::make_unique<element>(
+            _ns, _name_pool.intern(_name.get(), _name.size()).first,
+            element_unlinked, reference_unknown));
+
+    return child_elements->back().get();
+}
+
 bool xml_map_tree::element::unlinked_attribute_anchor() const
 {
     return elem_type == element_unlinked && ref_type == reference_unknown && !attributes.empty();
@@ -661,21 +679,7 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
         if (token.attribute)
             throw xpath_error("attribute must always be at the end of the path.");
 
-        element_store_type& children = *cur_element->child_elements;
-        auto it = std::find_if(
-            children.begin(), children.end(), find_by_name<element>(token.ns, token.name));
-        if (it == children.end())
-        {
-            // Insert a new element of this name.
-            children.push_back(
-                orcus::make_unique<element>(
-                    token.ns, m_names.intern(token.name.get(), token.name.size()).first,
-                    element_unlinked, reference_unknown));
-            cur_element = children.back().get();
-        }
-        else
-            cur_element = it->get();
-
+        cur_element = cur_element->get_or_create_child(m_names, token.ns, token.name);
         elem_stack_new.push_back(cur_element);
         token = token_next;
     }
