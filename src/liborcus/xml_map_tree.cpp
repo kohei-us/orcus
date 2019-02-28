@@ -262,14 +262,16 @@ const xml_map_tree::element* xml_map_tree::element::get_child(xmlns_id_t _ns, co
     return it == child_elements->end() ? nullptr : it->get();
 }
 
-xml_map_tree::element* xml_map_tree::element::get_or_create_child(
+std::pair<xml_map_tree::element*, bool> xml_map_tree::element::get_or_create_child(
     string_pool& _name_pool, xmlns_id_t _ns, const pstring& _name)
 {
+    using ret_type = std::pair<xml_map_tree::element*, bool>;
+
     auto it = std::find_if(
         child_elements->begin(), child_elements->end(), find_by_name<element>(_ns, _name));
 
     if (it != child_elements->end())
-        return it->get();
+        return ret_type(it->get(), false);
 
     // Insert a new element of this name.
     child_elements->push_back(
@@ -277,7 +279,7 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_child(
             _ns, _name_pool.intern(_name.get(), _name.size()).first,
             element_unlinked, reference_unknown));
 
-    return child_elements->back().get();
+    return ret_type(child_elements->back().get(), true);
 }
 
 bool xml_map_tree::element::unlinked_attribute_anchor() const
@@ -679,7 +681,7 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
         if (token.attribute)
             throw xpath_error("attribute must always be at the end of the path.");
 
-        cur_element = cur_element->get_or_create_child(m_names, token.ns, token.name);
+        cur_element = cur_element->get_or_create_child(m_names, token.ns, token.name).first;
         elem_stack_new.push_back(cur_element);
         token = token_next;
     }
@@ -709,46 +711,42 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
     else
     {
         // Check if an element of the same name already exists.
-        element_store_type& children = *cur_element->child_elements;
-        auto it = std::find_if(
-            children.begin(), children.end(), find_by_name<element>(token.ns, token.name));
-        if (it == children.end())
+        auto r = cur_element->get_or_create_child(m_names, token.ns, token.name);
+        element* elem = r.first;
+        bool created = r.second;
+
+        if (created)
         {
             // No element of that name exists.
-            children.push_back(
-                orcus::make_unique<element>(
-                    token.ns, m_names.intern(token.name.get(), token.name.size()).first,
-                    element_linked, ref_type));
-
-            elem_stack_new.push_back(children.back().get());
-            ret = children.back().get();
+            elem->elem_type = element_linked;
+            elem->ref_type = ref_type;
         }
         else
         {
             // This element already exists.  Check if this is already linked.
-            element& elem = **it;
-            if (elem.ref_type != reference_unknown || elem.elem_type != element_unlinked)
+            if (elem->ref_type != reference_unknown || elem->elem_type != element_unlinked)
                 throw xpath_error("This element is already linked.  You can't link the same element twice.");
 
             // Turn this existing non-linked element into a linked one.
-            delete elem.child_elements;
-            elem.elem_type = element_linked;
-            elem.ref_type = ref_type;
+            delete elem->child_elements;
+            elem->elem_type = element_linked;
+            elem->ref_type = ref_type;
             switch (ref_type)
             {
                 case reference_cell:
-                    elem.cell_ref = new cell_reference;
-                break;
+                    elem->cell_ref = new cell_reference;
+                    break;
                 case reference_range_field:
-                    elem.field_ref = new field_in_range;
-                break;
+                    elem->field_ref = new field_in_range;
+                    break;
                 default:
                     throw general_error("Unknown reference type in xml_map_tree::get_element_stack.");
             }
 
-            elem_stack_new.push_back(&elem);
-            ret = &elem;
         }
+
+        elem_stack_new.push_back(elem);
+        ret = elem;
     }
 
     elem_stack.swap(elem_stack_new);
