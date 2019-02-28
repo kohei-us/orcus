@@ -560,7 +560,7 @@ void orcus_xml::read_impl(const pstring& strm)
         if (!sheet)
             continue;
 
-        xml_map_tree::const_linkable_list_type::const_iterator it = range_ref.field_nodes.begin(), it_end = range_ref.field_nodes.end();
+        auto it = range_ref.field_nodes.cbegin(), it_end = range_ref.field_nodes.cend();
         spreadsheet::row_t row = ref.row;
         spreadsheet::col_t col = ref.col;
         for (; it != it_end; ++it)

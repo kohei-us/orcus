@@ -84,7 +84,6 @@ public:
     typedef std::vector<std::unique_ptr<element>> element_store_type;
     typedef std::vector<element*> element_list_type;
     typedef std::vector<const element*> const_element_list_type;
-    typedef std::vector<const linkable*> const_linkable_list_type;
 
     struct range_reference
     {
@@ -94,7 +93,7 @@ public:
          * List of elements comprising the fields, in order of appearance from
          * left to right.
          */
-        const_linkable_list_type field_nodes;
+        std::vector<const linkable*> field_nodes;
 
         /**
          * Total number of rows comprising data.  This does not include the
