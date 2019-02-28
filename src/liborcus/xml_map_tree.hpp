@@ -235,7 +235,20 @@ public:
 private:
     range_reference* get_range_reference(const cell_position& pos);
 
-    linkable* get_element_stack(const pstring& xpath, reference_type type, element_list_type& elem_stack);
+    struct linked_node_type
+    {
+        element_list_type elem_stack;
+        linkable* node;
+    };
+
+    /**
+     * Get a linked node (element or attribute) referenced by the specified
+     * xpath.
+     *
+     * @param xpath path to the linked node.
+     * @param type type of reference, either a cell or a range field.
+     */
+    linked_node_type get_linked_node(const pstring& xpath, reference_type type);
 
 private:
     xmlns_context m_xmlns_cxt;

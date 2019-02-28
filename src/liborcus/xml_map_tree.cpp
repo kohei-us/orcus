@@ -400,21 +400,20 @@ void xml_map_tree::set_cell_link(const pstring& xpath, const cell_position& ref)
     cout << "xml_map_tree::set_cell_link: xpath='" << xpath << "' (ref=" << ref << ")" << endl;
 #endif
 
-    element_list_type elem_stack;
-    linkable* node = get_element_stack(xpath, reference_cell, elem_stack);
-    assert(node);
-    assert(!elem_stack.empty());
+    linked_node_type linked_node = get_linked_node(xpath, reference_cell);
+    assert(linked_node.node);
+    assert(!linked_node.elem_stack.empty());
     cell_reference* cell_ref = nullptr;
-    switch (node->node_type)
+    switch (linked_node.node->node_type)
     {
         case node_element:
-            assert(static_cast<element*>(node)->cell_ref);
-            cell_ref = static_cast<element*>(node)->cell_ref;
-        break;
+            assert(static_cast<element*>(linked_node.node)->cell_ref);
+            cell_ref = static_cast<element*>(linked_node.node)->cell_ref;
+            break;
         case node_attribute:
-            assert(static_cast<attribute*>(node)->cell_ref);
-            cell_ref = static_cast<attribute*>(node)->cell_ref;
-        break;
+            assert(static_cast<attribute*>(linked_node.node)->cell_ref);
+            cell_ref = static_cast<attribute*>(linked_node.node)->cell_ref;
+            break;
         default:
             throw general_error("unknown node type returned from get_element_stack call in xml_map_tree::set_cell_link().");
     }
@@ -442,16 +441,15 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
 #if ORCUS_DEBUG_XML_MAP_TREE
     cout << "xml_map_tree::append_range_field_link: " << xpath << " (ref=" << pos << ")" << endl;
 #endif
-    element_list_type elem_stack;
-    linkable* node = get_element_stack(xpath, reference_range_field, elem_stack);
-    if (elem_stack.size() < 2)
+    linked_node_type linked_node = get_linked_node(xpath, reference_range_field);
+    if (linked_node.elem_stack.size() < 2)
         throw xpath_error("Path of a range field link must be at least 2 levels.");
 
-    switch (node->node_type)
+    switch (linked_node.node->node_type)
     {
         case node_element:
         {
-            element* p = static_cast<element*>(node);
+            element* p = static_cast<element*>(linked_node.node);
             assert(p && p->ref_type == reference_range_field && p->field_ref);
             p->field_ref->ref = range_ref;
             p->field_ref->column_pos = range_ref->field_nodes.size();
@@ -461,7 +459,7 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
         break;
         case node_attribute:
         {
-            attribute* p = static_cast<attribute*>(node);
+            attribute* p = static_cast<attribute*>(linked_node.node);
             assert(p && p->ref_type == reference_range_field && p->field_ref);
             p->field_ref->ref = range_ref;
             p->field_ref->column_pos = range_ref->field_nodes.size();
@@ -478,12 +476,12 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
     if (m_cur_range_parent.empty())
     {
         // First field link in this range.
-        element_list_type::iterator it_end = elem_stack.end();
-        if (node->node_type == node_element)
+        element_list_type::iterator it_end = linked_node.elem_stack.end();
+        if (linked_node.node->node_type == node_element)
             --it_end; // Skip the linked element, which is used as a field in a range.
 
         --it_end; // Skip the next-up element, which is used to group a single record entry.
-        m_cur_range_parent.assign(elem_stack.begin(), it_end);
+        m_cur_range_parent.assign(linked_node.elem_stack.begin(), it_end);
 #if ORCUS_DEBUG_XML_MAP_TREE
         print_element_stack(cout, m_cur_range_parent);
         cout << endl;
@@ -492,7 +490,7 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
     else
     {
         // Determine the deepest common element between the two.
-        element_list_type::iterator it_elem = elem_stack.begin(), it_elem_end = elem_stack.end();
+        element_list_type::iterator it_elem = linked_node.elem_stack.begin(), it_elem_end = linked_node.elem_stack.end();
         element_list_type::iterator it_cur = m_cur_range_parent.begin(), it_cur_end = m_cur_range_parent.end();
         if (*it_elem != *it_cur)
             throw xpath_error("Two field links in the same range reference start with different root elements.");
@@ -506,7 +504,7 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
                 continue;
 
             // The two elements differ.  Take their parent element as the new common element.
-            m_cur_range_parent.assign(elem_stack.begin(), it_elem); // current elemnt excluded.
+            m_cur_range_parent.assign(linked_node.elem_stack.begin(), it_elem); // current elemnt excluded.
             break;
         }
 
@@ -642,13 +640,12 @@ xml_map_tree::range_reference* xml_map_tree::get_range_reference(const cell_posi
     return it->second.get();
 }
 
-xml_map_tree::linkable* xml_map_tree::get_element_stack(
-    const pstring& xpath, reference_type ref_type, element_list_type& elem_stack)
+xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpath, reference_type ref_type)
 {
+    linked_node_type ret;
+
     assert(!xpath.empty());
     xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size());
-
-    element_list_type elem_stack_new;
 
     // Get the root element first.
     xpath_parser::token token = parser.next();
@@ -669,8 +666,8 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
             element_unlinked, reference_unknown);
     }
 
-    elem_stack_new.push_back(mp_root.get());
-    element* cur_element = elem_stack_new.back();
+    ret.elem_stack.push_back(mp_root.get());
+    element* cur_element = ret.elem_stack.back();
     assert(cur_element);
     assert(cur_element->child_elements);
 
@@ -682,7 +679,7 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
             throw xpath_error("attribute must always be at the end of the path.");
 
         cur_element = cur_element->get_or_create_child(m_names, token.ns, token.name).first;
-        elem_stack_new.push_back(cur_element);
+        ret.elem_stack.push_back(cur_element);
         token = token_next;
     }
 
@@ -690,7 +687,6 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
 
     // Insert a leaf node.
 
-    linkable* ret = nullptr;
     if (token.attribute)
     {
         // This is an attribute.  Insert it into the current element.
@@ -706,7 +702,7 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
             orcus::make_unique<attribute>(
                 token.ns, m_names.intern(token.name.get(), token.name.size()).first, ref_type));
 
-        ret = attrs.back().get();
+        ret.node = attrs.back().get();
     }
     else
     {
@@ -745,11 +741,9 @@ xml_map_tree::linkable* xml_map_tree::get_element_stack(
 
         }
 
-        elem_stack_new.push_back(elem);
-        ret = elem;
+        ret.elem_stack.push_back(elem);
+        ret.node = elem;
     }
-
-    elem_stack.swap(elem_stack_new);
 
     return ret;
 }
