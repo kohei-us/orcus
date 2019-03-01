@@ -45,6 +45,7 @@ public:
 
     void start_range(const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col);
     void append_field_link(const pstring& xpath);
+    void set_range_row_group(const pstring& xpath);
     void commit_range();
 
     void append_sheet(const pstring& name);

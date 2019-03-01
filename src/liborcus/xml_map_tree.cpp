@@ -203,7 +203,8 @@ xml_map_tree::element::element(
     linkable(_ns, _name, node_element),
     elem_type(_elem_type),
     ref_type(_ref_type),
-    range_parent(nullptr)
+    range_parent(nullptr),
+    row_group(nullptr)
 {
     if (elem_type == element_unlinked)
     {
@@ -513,6 +514,19 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
     }
 }
 
+void xml_map_tree::set_range_row_group(const pstring& xpath, const cell_position& pos)
+{
+    if (xpath.empty())
+        return;
+
+    range_reference* range_ref = get_range_reference(pos);
+    assert(range_ref);
+
+    element* elem = get_element(xpath);
+    assert(elem);
+    elem->row_group = range_ref;
+}
+
 void xml_map_tree::commit_range()
 {
     if (!mp_cur_range_ref)
@@ -746,6 +760,46 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
     }
 
     return ret;
+}
+
+xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
+{
+    assert(!xpath.empty());
+    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size());
+
+    // Get the root element first.
+    xpath_parser::token token = parser.next();
+    if (mp_root)
+    {
+        // Make sure the root element's names are the same.
+        if (mp_root->ns != token.ns || mp_root->name != token.name)
+            throw xpath_error("path begins with inconsistent root level name.");
+    }
+    else
+    {
+        // First time the root element is encountered.
+        if (token.attribute)
+            throw xpath_error("root element cannot be an attribute.");
+
+        mp_root = orcus::make_unique<element>(
+            token.ns, m_names.intern(token.name).first,
+            element_unlinked, reference_unknown);
+    }
+
+    element* cur_element = mp_root.get();
+    assert(cur_element->child_elements);
+
+    for (token = parser.next(); !token.name.empty(); token = parser.next())
+    {
+        // Check if the current element contains a child element of the same name.
+        if (token.attribute)
+            throw xpath_error("attribute was not expected.");
+
+        cur_element = cur_element->get_or_create_child(m_names, token.ns, token.name).first;
+    }
+
+    assert(cur_element);
+    return cur_element;
 }
 
 std::ostream& operator<< (std::ostream& os, const xml_map_tree::cell_position& ref)

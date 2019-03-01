@@ -7,5 +7,6 @@
         <field xpath="/a:table/a:rows/a:row/a:city"/>
         <field xpath="/a:table/a:rows/a:row/a:population"/>
         <field xpath="/a:table/a:rows/a:row/a:year"/>
+        <row-group xpath="/a:table/a:rows/a:row"/>
     </range>
 </map>

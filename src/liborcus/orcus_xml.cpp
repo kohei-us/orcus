@@ -48,8 +48,8 @@ class xml_data_sax_handler
             type(xml_map_tree::element_unknown) {}
     };
 
-    vector<sax_ns_parser_attribute> m_attrs;
-    vector<scope> m_scopes;
+    std::vector<sax_ns_parser_attribute> m_attrs;
+    std::vector<scope> m_scopes;
 
     string_pool m_pool;
     spreadsheet::iface::import_factory& m_factory;
@@ -59,7 +59,8 @@ class xml_data_sax_handler
 
     const xml_map_tree::element* mp_current_elem;
     pstring m_current_chars;
-    bool m_in_range_ref:1;
+    bool m_in_range_ref;
+    xml_map_tree::range_reference* mp_increment_row;
 
 private:
 
@@ -104,7 +105,8 @@ public:
         m_map_tree(map_tree),
         m_map_tree_walker(map_tree.get_tree_walker()),
         mp_current_elem(nullptr),
-        m_in_range_ref(false) {}
+        m_in_range_ref(false),
+        mp_increment_row(nullptr) {}
 
     void doctype(const sax::doctype_declaration&)
     {
@@ -130,6 +132,12 @@ public:
         mp_current_elem = m_map_tree_walker.push_element(elem.ns, elem.name);
         if (mp_current_elem)
         {
+            if (mp_current_elem->row_group && mp_increment_row == mp_current_elem->row_group)
+            {
+                ++mp_current_elem->row_group->row_size;
+                mp_increment_row = nullptr;
+            }
+
             // Go through all linked attributes that belong to this element,
             // and see if they exist in this content xml.
             for (const auto& p_attr : mp_current_elem->attributes)
@@ -149,9 +157,6 @@ public:
                         break;
                     case xml_map_tree::reference_range_field:
                     {
-                        const xml_map_tree::field_in_range& field = *linked_attr.field_ref;
-                        if (field.column_pos == 0)
-                            ++field.ref->row_size;
                         set_field_link_cell(*linked_attr.field_ref, val_trimmed);
                         break;
                     }
@@ -184,15 +189,15 @@ public:
                 }
                 case xml_map_tree::reference_range_field:
                 {
-                    const xml_map_tree::field_in_range& field = *mp_current_elem->field_ref;
-                    if (field.column_pos == 0)
-                        ++field.ref->row_size;
                     set_field_link_cell(*mp_current_elem->field_ref, m_current_chars);
                     break;
                 }
                 default:
                     ;
             }
+
+            if (mp_current_elem->row_group)
+                mp_increment_row = mp_current_elem->row_group;
 
             // Store the end element position in stream for linked elements.
             const scope& cur = m_scopes.back();
@@ -517,6 +522,11 @@ void orcus_xml::append_field_link(const pstring& xpath)
     mp_impl->m_map_tree.append_range_field_link(xpath, mp_impl->m_cur_range_ref);
 }
 
+void orcus_xml::set_range_row_group(const pstring& xpath)
+{
+    mp_impl->m_map_tree.set_range_row_group(xpath, mp_impl->m_cur_range_ref);
+}
+
 void orcus_xml::commit_range()
 {
     mp_impl->m_cur_range_ref = xml_map_tree::cell_position();
@@ -552,7 +562,7 @@ void orcus_xml::read_impl(const pstring& strm)
     {
         const xml_map_tree::cell_position& ref = ref_pair.first;
         xml_map_tree::range_reference& range_ref = *ref_pair.second;
-        range_ref.row_size = 0; // Reset the row offset.
+        range_ref.row_size = 1; // Reset the row offset.
 
         spreadsheet::iface::import_sheet* sheet =
             mp_impl->mp_import_factory->get_sheet(ref.sheet.get(), ref.sheet.size());

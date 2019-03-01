@@ -11,5 +11,6 @@
         <field xpath="/data/entries/entry@last-name"/>
         <field xpath="/data/entries/entry@score"/>
         <field xpath="/data/entries/entry"/>
+        <row-group xpath="/data/entries/entry"/>
     </range>
 </map>

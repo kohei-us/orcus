@@ -9,5 +9,6 @@
         <field xpath="/data/entries/entry/name/first"/>
         <field xpath="/data/entries/entry/name/last"/>
         <field xpath="/data/entries/entry/score"/>
+        <row-group xpath="/data/entries/entry"/>
     </range>
 </map>

@@ -7,5 +7,6 @@
         <field xpath="/x:data/y:entries/y:entry@y:date-received"/>
         <field xpath="/x:data/y:entries/y:entry@y:date-processed"/>
         <field xpath="/x:data/y:entries/y:entry@y:received-by"/>
+        <row-group xpath="/x:data/y:entries/y:entry"/>
     </range>
 </map>

@@ -4,5 +4,7 @@
     <range row="0" column="0" sheet="data">
         <field xpath="/osm/way@id"/>
         <field xpath="/osm/way/nd@ref"/>
+        <row-group xpath="/osm/way"/>
+        <row-group xpath="/osm/way/nd"/>
     </range>
 </map>

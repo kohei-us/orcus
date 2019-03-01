@@ -100,6 +100,19 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
 
         m_app.append_field_link(xpath);
     }
+    else if (elem.name == "row-group")
+    {
+        for (const sax::parser_attribute& attr : m_attrs)
+        {
+            if (attr.name == "xpath")
+            {
+                xpath = attr.value;
+                break;
+            }
+        }
+
+        m_app.set_range_row_group(xpath);
+    }
     else if (elem.name == "sheet")
     {
         pstring sheet_name;

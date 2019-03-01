@@ -169,6 +169,8 @@ public:
          */
         range_reference* range_parent;
 
+        range_reference* row_group;
+
         element(xmlns_id_t _ns, const pstring& _name, element_type _elem_type, reference_type _ref_type);
         ~element();
 
@@ -221,6 +223,7 @@ public:
 
     void start_range();
     void append_range_field_link(const pstring& xpath, const cell_position& pos);
+    void set_range_row_group(const pstring& xpath, const cell_position& pos);
     void commit_range();
 
     const linkable* get_link(const pstring& xpath) const;
@@ -248,6 +251,8 @@ private:
      * @param type type of reference, either a cell or a range field.
      */
     linked_node_type get_linked_node(const pstring& xpath, reference_type type);
+
+    element* get_element(const pstring& xpath);
 
 private:
     xmlns_context m_xmlns_cxt;
