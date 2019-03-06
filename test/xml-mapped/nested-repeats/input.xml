@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <osm version="0.6">
     <way id="A">
-        <nd ref="1"/>
-        <nd ref="2"/>
+        <nd ref="123456789"/>
+        <nd ref="987654321"/>
         <nd ref="3"/>
     </way>
     <way id="B">

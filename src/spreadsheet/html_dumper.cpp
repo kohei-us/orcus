@@ -7,6 +7,7 @@
 
 #include "html_dumper.hpp"
 #include "impl_types.hpp"
+#include "number_format.hpp"
 
 #include "orcus/spreadsheet/styles.hpp"
 #include "orcus/spreadsheet/shared_strings.hpp"
@@ -538,7 +539,7 @@ void html_dumper::dump(std::ostream& os) const
                         break;
                     }
                     case ixion::celltype_t::numeric:
-                        os << cxt.get_numeric_value(pos);
+                        format_to_file_output(os, cxt.get_numeric_value(pos));
                         break;
                     case ixion::celltype_t::boolean:
                         os << (cxt.get_boolean_value(pos) ? "true" : "false");

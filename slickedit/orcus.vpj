@@ -524,6 +524,8 @@
 				<F N="../src/spreadsheet/impl_types.hpp"/>
 				<F N="../src/spreadsheet/json_dumper.cpp"/>
 				<F N="../src/spreadsheet/json_dumper.hpp"/>
+				<F N="../src/spreadsheet/number_format.cpp"/>
+				<F N="../src/spreadsheet/number_format.hpp"/>
 				<F N="../src/spreadsheet/pivot.cpp"/>
 				<F N="../src/spreadsheet/shared_formula.cpp"/>
 				<F N="../src/spreadsheet/shared_formula.hpp"/>

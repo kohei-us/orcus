@@ -15,6 +15,7 @@ add_library(liborcus-spreadsheet-model SHARED
 	global_settings.cpp
 	html_dumper.cpp
 	json_dumper.cpp
+    number_format.cpp
 	pivot.cpp
 	shared_formula.cpp
 	shared_strings.cpp

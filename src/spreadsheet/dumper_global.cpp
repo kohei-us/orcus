@@ -6,6 +6,7 @@
  */
 
 #include "dumper_global.hpp"
+#include "number_format.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_result.hpp>
@@ -32,7 +33,7 @@ void dump_cell_value(
         case ixion::element_type_numeric:
         {
             auto v = node.get<ixion::numeric_element_block>();
-            os << v;
+            format_to_file_output(os, v);
             break;
         }
         case ixion::element_type_string:
@@ -53,7 +54,7 @@ void dump_cell_value(
             switch (res.get_type())
             {
                 case ixion::formula_result::result_type::value:
-                    os << res.get_value();
+                    format_to_file_output(os, res.get_value());
                 break;
                 case ixion::formula_result::result_type::string:
                 {

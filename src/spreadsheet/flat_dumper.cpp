@@ -6,6 +6,7 @@
  */
 
 #include "flat_dumper.hpp"
+#include "number_format.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
 #include <ixion/formula.hpp>
@@ -86,7 +87,8 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
             case ixion::celltype_t::numeric:
             {
                 std::ostringstream os2;
-                os2 << c.value.numeric << " [v]";
+                format_to_file_output(os2, c.value.numeric);
+                os2 << " [v]";
                 std::string s = os2.str();
                 cell_str_width = s.size();
                 mx[to_pos(c.row, c.col)] = std::move(s);
