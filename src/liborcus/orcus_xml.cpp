@@ -81,10 +81,12 @@ private:
             sheet->set_auto(ref.pos.row, ref.pos.col, val.get(), val.size());
     }
 
-    void set_field_link_cell(const xml_map_tree::field_in_range& field, const pstring& val)
+    void set_field_link_cell(xml_map_tree::field_in_range& field, const pstring& val)
     {
         assert(field.ref);
         assert(!field.ref->pos.sheet.empty());
+        assert(field.column_pos < spreadsheet::col_t(field.ref->imported_cols.size()));
+        field.ref->imported_cols[field.column_pos] = 1u;
 
         const xml_map_tree::cell_position& pos = field.ref->pos;
         spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(pos.sheet.get(), pos.sheet.size());
@@ -135,7 +137,10 @@ public:
             if (mp_current_elem->row_group && mp_increment_row == mp_current_elem->row_group)
             {
                 // The last closing element was a row group boundary.  Increment the row position.
-                ++mp_current_elem->row_group->row_size;
+                xml_map_tree::range_reference* ref = mp_current_elem->row_group;
+                fill_unprocessed_column(*ref);
+                ref->reset();
+                ++ref->row_size;
                 mp_increment_row = nullptr;
             }
 
@@ -244,6 +249,33 @@ public:
     void attribute(const sax_ns_parser_attribute& at)
     {
         m_attrs.push_back(at);
+    }
+
+    void postprocess()
+    {
+        if (mp_increment_row)
+        {
+            xml_map_tree::range_reference* ref = mp_increment_row;
+            fill_unprocessed_column(*ref);
+        }
+    }
+
+    void fill_unprocessed_column(const xml_map_tree::range_reference& ref)
+    {
+        spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(
+            ref.pos.sheet.get(), ref.pos.sheet.size());
+
+        if (!sheet)
+            return;
+
+        spreadsheet::row_t row = ref.pos.row + ref.row_size;
+        spreadsheet::col_t col_base = ref.pos.col;
+
+        for (spreadsheet::col_t col = 0, n = ref.imported_cols.size(); col < n; ++col)
+        {
+            if (!ref.imported_cols[col])
+                sheet->set_auto(row, col_base + col, ORCUS_ASCII("---"));
+        }
     }
 };
 
@@ -594,6 +626,8 @@ void orcus_xml::read_impl(const pstring& strm)
 
     sax_ns_parser<xml_data_sax_handler> parser(strm.data(), strm.size(), ns_cxt, handler);
     parser.parse();
+
+    handler.postprocess();
 }
 
 #if ORCUS_DEBUG_XML
