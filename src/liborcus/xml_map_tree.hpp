@@ -25,7 +25,10 @@ namespace orcus {
 class xmlns_repository;
 
 /**
- * Tree representing XML-to-sheet mapping for mapped XML import.
+ * Tree structure representing XML-to-sheet mapping rules for mapped XML
+ * import. This structure only contains linked elements and attributes and
+ * their parent elements; it does not contain the entire structure of the
+ * imported XML.
  */
 class xml_map_tree
 {
@@ -169,6 +172,11 @@ public:
          */
         range_reference* range_parent;
 
+        /**
+         * The element is a row-group element (element that defines a row
+         * boundary) if this value is not null.  If this is not null, it
+         * points to the range_reference instance it belongs to.
+         */
         range_reference* row_group;
 
         element(xmlns_id_t _ns, const pstring& _name, element_type _elem_type, reference_type _ref_type);

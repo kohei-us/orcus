@@ -134,6 +134,7 @@ public:
         {
             if (mp_current_elem->row_group && mp_increment_row == mp_current_elem->row_group)
             {
+                // The last closing element was a row group boundary.  Increment the row position.
                 ++mp_current_elem->row_group->row_size;
                 mp_increment_row = nullptr;
             }
