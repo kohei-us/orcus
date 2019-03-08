@@ -162,7 +162,7 @@ xml_map_tree::element_position::element_position() :
 xml_map_tree::cell_reference::cell_reference() {}
 
 xml_map_tree::range_reference::range_reference(const cell_position& _pos) :
-    pos(_pos), row_size(0) {}
+    pos(_pos), row_position(0) {}
 
 void xml_map_tree::range_reference::reset()
 {

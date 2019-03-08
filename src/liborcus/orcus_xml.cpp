@@ -92,7 +92,7 @@ private:
         spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(pos.sheet.get(), pos.sheet.size());
         if (sheet)
             sheet->set_auto(
-               pos.row + field.ref->row_size,
+               pos.row + field.ref->row_position,
                pos.col + field.column_pos,
                val.get(), val.size());
     }
@@ -140,7 +140,7 @@ public:
                 xml_map_tree::range_reference* ref = mp_current_elem->row_group;
                 fill_unprocessed_column(*ref);
                 ref->reset();
-                ++ref->row_size;
+                ++ref->row_position;
                 mp_increment_row = nullptr;
             }
 
@@ -268,7 +268,7 @@ public:
         if (!sheet)
             return;
 
-        spreadsheet::row_t row = ref.pos.row + ref.row_size;
+        spreadsheet::row_t row = ref.pos.row + ref.row_position;
         spreadsheet::col_t col_base = ref.pos.col;
 
         for (spreadsheet::col_t col = 0, n = ref.imported_cols.size(); col < n; ++col)
@@ -386,7 +386,7 @@ void write_range_reference_group(
         return;
 
     scopes_type scopes;
-    for (spreadsheet::row_t current_row = 0; current_row < ref.row_size; ++current_row)
+    for (spreadsheet::row_t current_row = 0; current_row < ref.row_position; ++current_row)
     {
         scopes.push_back(orcus::make_unique<scope>(root)); // root element
 
@@ -595,7 +595,7 @@ void orcus_xml::read_impl(const pstring& strm)
     {
         const xml_map_tree::cell_position& ref = ref_pair.first;
         xml_map_tree::range_reference& range_ref = *ref_pair.second;
-        range_ref.row_size = 1; // Reset the row offset.
+        range_ref.row_position = 1; // Reset the row offset.
 
         spreadsheet::iface::import_sheet* sheet =
             mp_impl->mp_import_factory->get_sheet(ref.sheet.get(), ref.sheet.size());

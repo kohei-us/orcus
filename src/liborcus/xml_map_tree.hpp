@@ -104,7 +104,7 @@ public:
          * Total number of rows comprising data.  This does not include the
          * label row at the top.
          */
-        spreadsheet::row_t row_size;
+        spreadsheet::row_t row_position;
 
         range_reference(const range_reference&) = delete;
         range_reference& operator=(const range_reference&) = delete;
