@@ -164,12 +164,6 @@ xml_map_tree::cell_reference::cell_reference() {}
 xml_map_tree::range_reference::range_reference(const cell_position& _pos) :
     pos(_pos), row_position(0) {}
 
-void xml_map_tree::range_reference::reset()
-{
-    std::vector<uint8_t> tmp(field_nodes.size(), 0u);
-    imported_cols.swap(tmp);
-}
-
 xml_map_tree::linkable::linkable(xmlns_id_t _ns, const pstring& _name, linkable_node_type _node_type) :
     ns(_ns), name(_name), node_type(_node_type) {}
 
@@ -544,8 +538,6 @@ void xml_map_tree::commit_range()
     if (!mp_cur_range_ref)
         // Nothing to commit.
         return;
-
-    mp_cur_range_ref->reset();
 
 #if ORCUS_DEBUG_XML_MAP_TREE
     cout << "parent element path for this range: ";

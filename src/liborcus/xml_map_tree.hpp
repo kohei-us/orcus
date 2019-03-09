@@ -98,8 +98,6 @@ public:
          */
         std::vector<const linkable*> field_nodes;
 
-        std::vector<uint8_t> imported_cols;
-
         /**
          * Total number of rows comprising data.  This does not include the
          * label row at the top.

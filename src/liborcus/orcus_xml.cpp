@@ -85,8 +85,6 @@ private:
     {
         assert(field.ref);
         assert(!field.ref->pos.sheet.empty());
-        assert(field.column_pos < spreadsheet::col_t(field.ref->imported_cols.size()));
-        field.ref->imported_cols[field.column_pos] = 1u;
 
         const xml_map_tree::cell_position& pos = field.ref->pos;
         spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(pos.sheet.get(), pos.sheet.size());
@@ -138,7 +136,6 @@ public:
             {
                 // The last closing element was a row group boundary.  Increment the row position.
                 xml_map_tree::range_reference* ref = mp_current_elem->row_group;
-                ref->reset();
                 ++ref->row_position;
                 mp_increment_row = nullptr;
             }
