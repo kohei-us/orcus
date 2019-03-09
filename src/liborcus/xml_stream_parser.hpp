@@ -41,7 +41,7 @@ protected:
     xml_stream_parser_base(
         const config& opt,
         xmlns_repository& ns_repo, const tokens& tokens, const char* content, size_t size);
-    ~xml_stream_parser_base();
+    virtual ~xml_stream_parser_base();
 
     const config& m_config;
     xmlns_context m_ns_cxt;
@@ -57,7 +57,7 @@ public:
     xml_stream_parser(
         const config& opt,
         xmlns_repository& ns_repo, const tokens& tokens, const char* content, size_t size);
-    ~xml_stream_parser();
+    virtual ~xml_stream_parser() override;
 
     virtual void parse();
 };
@@ -70,7 +70,7 @@ public:
     threaded_xml_stream_parser(
         const config& opt,
         xmlns_repository& ns_repo, const tokens& tokens, const char* content, size_t size);
-    ~threaded_xml_stream_parser();
+    virtual ~threaded_xml_stream_parser() override;
 
     virtual void parse();
 
