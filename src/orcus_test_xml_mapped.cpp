@@ -50,7 +50,7 @@ const std::vector<test_case> tests =
     { SRCDIR"/test/xml-mapped/content-namespace", false },
     { SRCDIR"/test/xml-mapped/content-namespace-2", true },
     { SRCDIR"/test/xml-mapped/fuel-economy", true },
-//  { SRCDIR"/test/xml-mapped/nested-repeats", false },
+    { SRCDIR"/test/xml-mapped/nested-repeats", false },
 };
 
 const char* temp_output_xml = "out.xml";

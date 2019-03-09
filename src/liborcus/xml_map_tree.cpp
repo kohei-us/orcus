@@ -204,7 +204,8 @@ xml_map_tree::element::element(
     elem_type(_elem_type),
     ref_type(_ref_type),
     range_parent(nullptr),
-    row_group(nullptr)
+    row_group(nullptr),
+    row_group_position(0)
 {
     if (elem_type == element_unlinked)
     {
