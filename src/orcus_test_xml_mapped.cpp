@@ -51,6 +51,7 @@ const std::vector<test_case> tests =
     { SRCDIR"/test/xml-mapped/content-namespace-2", true },
     { SRCDIR"/test/xml-mapped/fuel-economy", true },
     { SRCDIR"/test/xml-mapped/nested-repeats", false },
+    { SRCDIR"/test/xml-mapped/nested-repeats-2", false },
 };
 
 const char* temp_output_xml = "out.xml";
@@ -113,19 +114,19 @@ void test_mapped_xml_import()
         p2 = p2.trim();
         assert(p1 == p2);
 
-        // Output to xml file with the linked values coming from the document.
-        string out_file = temp_output_xml;
-        cout << "writing to " << out_file << endl;
-        {
-            // Create a duplicate source XML stream.
-            string data_strm_dup = load_file_content(data_file.data());
-            std::ofstream file(out_file);
-            assert(file);
-            app.write(data_strm_dup.data(), data_strm_dup.size(), file);
-        }
-
         if (tc.output_equals_input)
         {
+            // Output to xml file with the linked values coming from the document.
+            string out_file = temp_output_xml;
+            cout << "writing to " << out_file << endl;
+            {
+                // Create a duplicate source XML stream.
+                string data_strm_dup = load_file_content(data_file.data());
+                std::ofstream file(out_file);
+                assert(file);
+                app.write(data_strm_dup.data(), data_strm_dup.size(), file);
+            }
+
             // Compare the logical xml content of the output xml with the
             // input one. They should be identical.
 
@@ -139,10 +140,10 @@ void test_mapped_xml_import()
             cout << "--" << endl;
             cout << dump_output << endl;
             assert(dump_input == dump_output);
-        }
 
-        // Delete the temporary xml output.
-        fs::remove(out_file.c_str());
+            // Delete the temporary xml output.
+            fs::remove(out_file.c_str());
+        }
     }
 }
 
