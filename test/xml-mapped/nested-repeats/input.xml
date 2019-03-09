@@ -3,11 +3,16 @@
     <way id="A">
         <nd ref="123456789"/>
         <nd ref="987654321"/>
-        <nd ref="3"/>
     </way>
     <way id="B">
         <nd ref="1"/>
         <nd ref="2"/>
         <nd ref="3"/>
+    </way>
+    <way id="C">
+        <nd ref="1.1"/>
+        <nd ref="2.2"/>
+        <nd ref="3.3"/>
+        <nd ref="4.4"/>
     </way>
 </osm>

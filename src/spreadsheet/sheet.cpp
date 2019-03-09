@@ -24,6 +24,7 @@
 #include "flat_dumper.hpp"
 #include "html_dumper.hpp"
 #include "impl_types.hpp"
+#include "number_format.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -605,7 +606,9 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
                 case ixion::celltype_t::numeric:
                 {
                     write_cell_position(os, sheet_name, row, col);
-                    os << "numeric:" << cxt.get_numeric_value(pos) << endl;
+                    os << "numeric:";
+                    detail::format_to_file_output(os, cxt.get_numeric_value(pos));
+                    os << endl;
                     break;
                 }
                 case ixion::celltype_t::boolean:
