@@ -291,6 +291,11 @@ void import_sheet::set_format(row_t, col_t, row_t, col_t, size_t)
     assert(false);
 }
 
+void import_sheet::fill_down_cells(row_t src_row, col_t src_col, row_t range_size)
+{
+    assert(false);
+}
+
 orcus::spreadsheet::range_size_t import_sheet::get_sheet_size() const
 {
     assert(false);

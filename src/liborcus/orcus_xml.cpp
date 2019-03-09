@@ -57,7 +57,7 @@ class xml_data_sax_handler
     const xml_map_tree& m_map_tree;
     xml_map_tree::walker m_map_tree_walker;
 
-    const xml_map_tree::element* mp_current_elem;
+    xml_map_tree::element* mp_current_elem;
     pstring m_current_chars;
     bool m_in_range_ref;
     xml_map_tree::range_reference* mp_increment_row;
@@ -138,7 +138,6 @@ public:
             {
                 // The last closing element was a row group boundary.  Increment the row position.
                 xml_map_tree::range_reference* ref = mp_current_elem->row_group;
-                fill_unprocessed_column(*ref);
                 ref->reset();
                 ++ref->row_position;
                 mp_increment_row = nullptr;
@@ -203,7 +202,35 @@ public:
             }
 
             if (mp_current_elem->row_group)
+            {
+                // This element defines a row-group boundary.
+                spreadsheet::row_t row_start = mp_current_elem->row_group_position;
+                spreadsheet::row_t row_end = mp_current_elem->row_group->row_position - 1;
+                if (row_end > row_start)
+                {
+                    // This is the end of a parent row-group.  Fill down the
+                    // cell values.
+                    const xml_map_tree::range_reference& ref = *mp_current_elem->row_group;
+
+                    spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(
+                        ref.pos.sheet.get(), ref.pos.sheet.size());
+
+                    if (sheet)
+                    {
+                        row_start += ref.pos.row + 1;
+                        row_end += ref.pos.row + 1;
+
+                        for (spreadsheet::col_t col : mp_current_elem->linked_range_fields)
+                        {
+                            col += ref.pos.col;
+                            sheet->fill_down_cells(row_start, col, row_end - row_start);
+                        }
+                    }
+                }
+
+                mp_current_elem->row_group_position = mp_current_elem->row_group->row_position;
                 mp_increment_row = mp_current_elem->row_group;
+            }
 
             // Store the end element position in stream for linked elements.
             const scope& cur = m_scopes.back();
@@ -249,33 +276,6 @@ public:
     void attribute(const sax_ns_parser_attribute& at)
     {
         m_attrs.push_back(at);
-    }
-
-    void postprocess()
-    {
-        if (mp_increment_row)
-        {
-            xml_map_tree::range_reference* ref = mp_increment_row;
-            fill_unprocessed_column(*ref);
-        }
-    }
-
-    void fill_unprocessed_column(const xml_map_tree::range_reference& ref)
-    {
-        spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(
-            ref.pos.sheet.get(), ref.pos.sheet.size());
-
-        if (!sheet)
-            return;
-
-        spreadsheet::row_t row = ref.pos.row + ref.row_position;
-        spreadsheet::col_t col_base = ref.pos.col;
-
-        for (spreadsheet::col_t col = 0, n = ref.imported_cols.size(); col < n; ++col)
-        {
-            if (!ref.imported_cols[col])
-                sheet->set_auto(row, col_base + col, ORCUS_ASCII("---"));
-        }
     }
 };
 
@@ -626,8 +626,6 @@ void orcus_xml::read_impl(const pstring& strm)
 
     sax_ns_parser<xml_data_sax_handler> parser(strm.data(), strm.size(), ns_cxt, handler);
     parser.parse();
-
-    handler.postprocess();
 }
 
 #if ORCUS_DEBUG_XML

@@ -200,6 +200,7 @@ public:
     virtual void set_format(row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t xf_index) override;
     virtual void set_string(row_t row, col_t col, size_t sindex) override;
     virtual void set_value(row_t row, col_t col, double value) override;
+    virtual void fill_down_cells(row_t src_row, col_t src_col, row_t range_size) override;
     virtual range_size_t get_sheet_size() const override;
 
     void set_character_set(character_set_t charset);

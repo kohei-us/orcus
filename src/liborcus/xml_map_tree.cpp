@@ -256,7 +256,7 @@ xml_map_tree::element::~element()
     }
 }
 
-const xml_map_tree::element* xml_map_tree::element::get_child(xmlns_id_t _ns, const pstring& _name) const
+xml_map_tree::element* xml_map_tree::element::get_child(xmlns_id_t _ns, const pstring& _name)
 {
     if (elem_type != element_unlinked)
         return nullptr;
@@ -305,7 +305,7 @@ void xml_map_tree::walker::reset()
     m_unlinked_stack.clear();
 }
 
-const xml_map_tree::element* xml_map_tree::walker::push_element(xmlns_id_t ns, const pstring& name)
+xml_map_tree::element* xml_map_tree::walker::push_element(xmlns_id_t ns, const pstring& name)
 {
     if (!m_unlinked_stack.empty())
     {
@@ -323,7 +323,7 @@ const xml_map_tree::element* xml_map_tree::walker::push_element(xmlns_id_t ns, c
             return nullptr;
         }
 
-        const element* p = m_parent.mp_root.get();
+        element* p = m_parent.mp_root.get();
         if (p->ns != ns || p->name != name)
         {
             // Names differ.
@@ -338,7 +338,7 @@ const xml_map_tree::element* xml_map_tree::walker::push_element(xmlns_id_t ns, c
     if (m_stack.back()->elem_type == element_unlinked)
     {
         // Check if the current element has a child of the same name.
-        const element* p = m_stack.back()->get_child(ns, name);
+        element* p = m_stack.back()->get_child(ns, name);
         if (p)
         {
             m_stack.push_back(p);
@@ -350,7 +350,7 @@ const xml_map_tree::element* xml_map_tree::walker::push_element(xmlns_id_t ns, c
     return nullptr;
 }
 
-const xml_map_tree::element* xml_map_tree::walker::pop_element(xmlns_id_t ns, const pstring& name)
+xml_map_tree::element* xml_map_tree::walker::pop_element(xmlns_id_t ns, const pstring& name)
 {
     if (!m_unlinked_stack.empty())
     {
@@ -451,6 +451,12 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
     linked_node_type linked_node = get_linked_node(xpath, reference_range_field);
     if (linked_node.elem_stack.size() < 2)
         throw xpath_error("Path of a range field link must be at least 2 levels.");
+
+    if (linked_node.node->node_type == node_unknown)
+        throw xpath_error("Unrecognized node type");
+
+    element* anchor_elem = linked_node.elem_stack.back();
+    anchor_elem->linked_range_fields.push_back(range_ref->field_nodes.size());
 
     switch (linked_node.node->node_type)
     {

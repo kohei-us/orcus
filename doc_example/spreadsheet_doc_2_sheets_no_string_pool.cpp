@@ -65,6 +65,7 @@ public:
     virtual void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override {}
     virtual void set_format(row_t row, col_t col, size_t xf_index) override {}
     virtual void set_format(row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t xf_index) override {}
+    virtual void fill_down_cells(row_t src_row, col_t src_col, row_t range_size) override {}
 };
 
 class my_import_factory : public iface::import_factory

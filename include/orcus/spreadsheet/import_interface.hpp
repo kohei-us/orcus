@@ -771,6 +771,8 @@ public:
     virtual void set_format(row_t row_start, col_t col_start,
         row_t row_end, col_t col_end, size_t xf_index) = 0;
 
+    virtual void fill_down_cells(row_t src_row, col_t src_col, row_t range_size) = 0;
+
     /**
      * Get the size of the sheet.
      *

@@ -70,6 +70,8 @@ public:
 
     void set_merge_cell_range(const range_t& range);
 
+    void fill_down_cells(row_t src_row, col_t src_col, row_t range_size);
+
     /**
      * Return the size of a merged cell range.
      *

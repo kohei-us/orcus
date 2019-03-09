@@ -183,10 +183,14 @@ public:
          */
         range_reference* row_group;
 
+        spreadsheet::row_t row_group_position;
+
+        std::vector<spreadsheet::col_t> linked_range_fields;
+
         element(xmlns_id_t _ns, const pstring& _name, element_type _elem_type, reference_type _ref_type);
         ~element();
 
-        const element* get_child(xmlns_id_t _ns, const pstring& _name) const;
+        element* get_child(xmlns_id_t _ns, const pstring& _name);
 
         std::pair<element*, bool> get_or_create_child(string_pool& _name_pool, xmlns_id_t _ns, const pstring& _name);
 
@@ -207,7 +211,7 @@ public:
      */
     class walker
     {
-        typedef std::vector<const element*> ref_element_stack_type;
+        typedef std::vector<element*> ref_element_stack_type;
         typedef std::vector<xml_name_t> name_stack_type;
         const xml_map_tree& m_parent;
         ref_element_stack_type m_stack;
@@ -217,8 +221,8 @@ public:
         walker(const walker& r);
 
         void reset();
-        const element* push_element(xmlns_id_t ns, const pstring& name);
-        const element* pop_element(xmlns_id_t ns, const pstring& name);
+        element* push_element(xmlns_id_t ns, const pstring& name);
+        element* pop_element(xmlns_id_t ns, const pstring& name);
     };
 
     xml_map_tree() = delete;

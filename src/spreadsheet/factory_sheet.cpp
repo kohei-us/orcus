@@ -359,6 +359,11 @@ void import_sheet::set_value(row_t row, col_t col, double value)
     m_sheet.set_value(row, col, value);
 }
 
+void import_sheet::fill_down_cells(row_t src_row, col_t src_col, row_t range_size)
+{
+    m_sheet.fill_down_cells(src_row, src_col, range_size);
+}
+
 range_size_t import_sheet::get_sheet_size() const
 {
     range_size_t ret;

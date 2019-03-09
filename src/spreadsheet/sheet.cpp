@@ -373,6 +373,13 @@ void sheet::set_merge_cell_range(const range_t& range)
         detail::merge_size_type::value_type(range.first.row, sz));
 }
 
+void sheet::fill_down_cells(row_t src_row, col_t src_col, row_t range_size)
+{
+    ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
+    ixion::abs_address_t src_pos(mp_impl->m_sheet, src_row, src_col);
+    cxt.fill_down_cells(src_pos, range_size);
+}
+
 range_t sheet::get_merge_cell_range(row_t row, col_t col) const
 {
     range_t ret;
