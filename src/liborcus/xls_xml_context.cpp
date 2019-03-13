@@ -21,6 +21,18 @@ using namespace std;
 
 namespace orcus {
 
+namespace {
+
+spreadsheet::color_rgb_t to_rgb(const pstring& s)
+{
+    if (!s.empty() && s[0] == '#')
+        return spreadsheet::to_color_rgb(s.data(), s.size());
+    else
+        return spreadsheet::to_color_rgb_from_name(s.data(), s.size());
+}
+
+}
+
 void xls_xml_data_context::format_type::merge(const format_type& fmt)
 {
     if (fmt.bold)
@@ -117,8 +129,7 @@ void xls_xml_data_context::start_element(xmlns_id_t ns, xml_token_t name, const:
                     switch (attr.name)
                     {
                         case XML_Color:
-                            fmt.color = spreadsheet::to_color_rgb(
-                                attr.value.data(), attr.value.size());
+                            fmt.color = to_rgb(attr.value);
                             break;
                         default:
                             ;
@@ -897,8 +908,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                         }
                         case XML_Color:
                         {
-                            m_current_style->font.color =
-                                spreadsheet::to_color_rgb(attr.value.data(), attr.value.size());
+                            m_current_style->font.color = to_rgb(attr.value);
                             break;
                         }
                         default:
@@ -920,8 +930,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                     {
                         case XML_Color:
                         {
-                            m_current_style->fill.color =
-                                spreadsheet::to_color_rgb(attr.value.data(), attr.value.size());
+                            m_current_style->fill.color = to_rgb(attr.value);
                             break;
                         }
                         case XML_Pattern:
@@ -1229,7 +1238,7 @@ void xls_xml_context::start_element_border(const xml_token_pair_t& parent, const
             }
             case XML_Color:
             {
-                color = spreadsheet::to_color_rgb(attr.value.data(), attr.value.size());
+                color = to_rgb(attr.value);
                 break;
             }
             default:
