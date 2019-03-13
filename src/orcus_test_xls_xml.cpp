@@ -517,6 +517,36 @@ void test_xls_xml_background_fill()
     }
 }
 
+void test_xls_xml_named_colors()
+{
+    pstring path(SRCDIR"/test/xls-xml/named-colors/input.xml");
+    cout << path << endl;
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path.str());
+
+    spreadsheet::styles& styles = doc->get_styles();
+    const ixion::model_context& model = doc->get_model_context();
+
+    spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    for (spreadsheet::row_t row = 1; row < 141; ++row)
+    {
+        // Column B stores the expected RGB value in hex.
+        size_t sid = model.get_string_identifier(ixion::abs_address_t(sh->get_index(), row, 1));
+        const string* s = model.get_string(sid);
+        assert(s);
+        spreadsheet::color_rgb_t expected = spreadsheet::to_color_rgb(s->data(), s->size());
+
+        size_t xf = sh->get_cell_format(row, 0);
+        const spreadsheet::fill_t* fill_data = styles.get_fill(xf);
+        const spreadsheet::color_t& actual = fill_data->fg_color;
+        cout << "expected: " << expected << "; actual: " << actual << endl;
+        assert(expected.red == actual.red);
+        assert(expected.green == actual.green);
+        assert(expected.blue == actual.blue);
+    }
+}
+
 void test_xls_xml_text_alignment()
 {
     pstring path(SRCDIR"/test/xls-xml/text-alignment/input.xml");
@@ -1175,6 +1205,7 @@ int main()
     test_xls_xml_colored_text();
     test_xls_xml_column_width_row_height();
     test_xls_xml_background_fill();
+    test_xls_xml_named_colors();
     test_xls_xml_text_alignment();
     test_xls_xml_cell_borders_single_cells();
     test_xls_xml_cell_borders_directions();
