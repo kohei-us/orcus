@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include <iosfwd>
+#include <initializer_list>
 
 // NB: This header should only use primitive data types and enums.
 
@@ -390,6 +391,7 @@ struct ORCUS_DLLPUBLIC color_rgb_t
     color_elem_t blue;
 
     color_rgb_t();
+    color_rgb_t(std::initializer_list<color_elem_t> vs);
     color_rgb_t(const color_rgb_t& other);
     color_rgb_t(color_rgb_t&& other);
 
@@ -441,6 +443,17 @@ ORCUS_DLLPUBLIC error_value_t to_error_value_enum(const char* p, size_t n);
  * @return struct value representing an RGB value.
  */
 ORCUS_DLLPUBLIC color_rgb_t to_color_rgb(const char* p, size_t n);
+
+/**
+ * Convert a color name to an RGB value.  It supports SVG 1.0 color keyword
+ * names minus those gray colors with 'grey' spelling variants.
+ *
+ * @param p pointer to the string buffer that stores the color name.
+ * @param n length of the buffer.
+ *
+ * @return struct value representing an RGB value.
+ */
+ORCUS_DLLPUBLIC color_rgb_t to_color_rgb_from_name(const char* p, size_t n);
 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, error_value_t ev);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar);

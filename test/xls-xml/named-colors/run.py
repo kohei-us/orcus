@@ -33,6 +33,12 @@ def replace_color_rgb(line, colors):
 
 def main():
     colors = build_color_map(sys.argv[1])
+    for k, v in colors.items():
+        r = k[1:3]
+        g = k[3:5]
+        b = k[5:7]
+        print(f"{{ ORCUS_ASCII(\"{v}\"), {{ 0x{r}, 0x{g}, 0x{b} }} }},")
+
     out_buffer = []
     with open(sys.argv[1], 'r') as f:
         for line in f.readlines():
