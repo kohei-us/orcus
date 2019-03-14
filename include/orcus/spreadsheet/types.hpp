@@ -446,7 +446,8 @@ ORCUS_DLLPUBLIC color_rgb_t to_color_rgb(const char* p, size_t n);
 
 /**
  * Convert a color name to an RGB value.  It supports SVG 1.0 color keyword
- * names minus those gray colors with 'grey' spelling variants.
+ * names minus those gray colors with 'grey' spelling variants.  Note that
+ * the name must be all in lowercase.
  *
  * @param p pointer to the string buffer that stores the color name.
  * @param n length of the buffer.

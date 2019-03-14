@@ -28,7 +28,22 @@ spreadsheet::color_rgb_t to_rgb(const pstring& s)
     if (!s.empty() && s[0] == '#')
         return spreadsheet::to_color_rgb(s.data(), s.size());
     else
-        return spreadsheet::to_color_rgb_from_name(s.data(), s.size());
+    {
+        // This may be a color name.  Lower-case it before sending it to the
+        // function.
+        std::string s_lower(s.size(), '\0');
+        const char* p = s.data();
+        std::transform(p, p + s.size(), s_lower.begin(),
+            [](char c) -> char
+            {
+                if ('A' <= c && c <= 'Z')
+                    c += 'a' - 'A';
+                return c;
+            }
+        );
+
+        return spreadsheet::to_color_rgb_from_name(s_lower.data(), s_lower.size());
+    }
 }
 
 }
