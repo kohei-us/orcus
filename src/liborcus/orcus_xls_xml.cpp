@@ -21,6 +21,8 @@
 #include "detection_result.hpp"
 
 #include <iostream>
+#include <locale>
+#include <codecvt>
 
 using namespace std;
 
@@ -76,7 +78,8 @@ void orcus_xls_xml::read_file(const string& filepath)
     if (strm.empty())
         return;
 
-    read_stream(&strm[0], strm.size());
+    strm = convert_to_utf8(std::move(strm));
+    read_stream(strm.data(), strm.size());
 }
 
 void orcus_xls_xml::read_stream(const char* content, size_t len)

@@ -14,6 +14,8 @@
 #include <tuple>
 #include <cassert>
 #include <algorithm>
+#include <locale>
+#include <codecvt>
 
 namespace orcus {
 
@@ -164,6 +166,36 @@ size_t locate_first_different_char(const pstring& left, const pstring& right)
     }
 
     return n;
+}
+
+std::string convert_to_utf8(std::string src)
+{
+    size_t n_src = src.size();
+
+    if (n_src > 2 && src[0] == '\xFE' && src[1] == '\xFF')
+    {
+        if (n_src & 0x01)
+            throw std::invalid_argument("size of a UTF-16 string must be divisible by 2.");
+
+        // big-endian utf-16
+        const char* p = src.data();
+        p += 2; // skip the BOM.
+
+        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conversion;
+        size_t n_buf = n_src / 2u - 1;
+        std::u16string buf(n_buf, 0);
+
+        for (size_t i = 0; i < n_buf; ++i)
+        {
+            size_t offset = i * 2;
+            buf[i] = static_cast<char16_t>(p[offset+1] | p[offset] << 8);
+        }
+
+        return conversion.to_bytes(buf);
+    }
+
+    // No conversion needed.
+    return src;
 }
 
 }

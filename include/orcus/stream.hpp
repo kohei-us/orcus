@@ -46,7 +46,11 @@ ORCUS_PSR_DLLPUBLIC std::string create_parse_error_output(
  */
 ORCUS_PSR_DLLPUBLIC size_t locate_first_different_char(
     const pstring& left, const pstring& right);
-}
+
+ORCUS_PSR_DLLPUBLIC std::string convert_to_utf8(std::string src);
+
+} // namespace orcus
 
 #endif
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
