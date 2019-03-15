@@ -41,6 +41,7 @@ config test_config(format_t::xls_xml);
 std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/basic/",
     SRCDIR"/test/xls-xml/basic-utf-16-be/",
+    SRCDIR"/test/xls-xml/basic-utf-16-le/",
     SRCDIR"/test/xls-xml/bold-and-italic/",
     SRCDIR"/test/xls-xml/colored-text/",
     SRCDIR"/test/xls-xml/empty-rows/",

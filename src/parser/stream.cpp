@@ -21,6 +21,68 @@ namespace orcus {
 
 namespace {
 
+enum class unicode_t
+{
+    unknown,
+    utf16_be,
+    utf16_le
+};
+
+unicode_t check_unicode_type(const std::string& s)
+{
+    if (s.size() > 2)
+    {
+        if (s[0] == '\xFE' && s[1] == '\xFF')
+            return unicode_t::utf16_be;
+
+        if (s[0] == '\xFF' && s[1] == '\xFE')
+            return unicode_t::utf16_le;
+    }
+
+    return unicode_t::unknown;
+}
+
+std::string convert_utf16_to_utf8(std::string&& src, unicode_t ut)
+{
+    assert(ut == unicode_t::utf16_be || ut == unicode_t::utf16_le);
+
+    if (src.size() & 0x01)
+        throw std::invalid_argument("size of a UTF-16 string must be divisible by 2.");
+
+    const char* p = src.data();
+    p += 2; // skip the BOM.
+
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conversion;
+    size_t n_buf = src.size() / 2u - 1;
+    std::u16string buf(n_buf, 0);
+
+    switch (ut)
+    {
+        case unicode_t::utf16_be:
+        {
+            for (size_t i = 0; i < n_buf; ++i)
+            {
+                size_t offset = i * 2;
+                buf[i] = static_cast<char16_t>(p[offset+1] | p[offset] << 8);
+            }
+            break;
+        }
+        case unicode_t::utf16_le:
+        {
+            for (size_t i = 0; i < n_buf; ++i)
+            {
+                size_t offset = i * 2;
+                buf[i] = static_cast<char16_t>(p[offset] | p[offset+1]);
+            }
+            break;
+        }
+        default:
+            ;
+    }
+
+    return conversion.to_bytes(buf);
+}
+
 std::tuple<pstring, size_t, size_t> find_line_with_offset(
     const pstring& strm, std::ptrdiff_t offset)
 {
@@ -170,28 +232,15 @@ size_t locate_first_different_char(const pstring& left, const pstring& right)
 
 std::string convert_to_utf8(std::string src)
 {
-    size_t n_src = src.size();
+    unicode_t ut = check_unicode_type(src);
 
-    if (n_src > 2 && src[0] == '\xFE' && src[1] == '\xFF')
+    switch (ut)
     {
-        if (n_src & 0x01)
-            throw std::invalid_argument("size of a UTF-16 string must be divisible by 2.");
-
-        // big-endian utf-16
-        const char* p = src.data();
-        p += 2; // skip the BOM.
-
-        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conversion;
-        size_t n_buf = n_src / 2u - 1;
-        std::u16string buf(n_buf, 0);
-
-        for (size_t i = 0; i < n_buf; ++i)
-        {
-            size_t offset = i * 2;
-            buf[i] = static_cast<char16_t>(p[offset+1] | p[offset] << 8);
-        }
-
-        return conversion.to_bytes(buf);
+        case unicode_t::utf16_be:
+        case unicode_t::utf16_le:
+            return convert_utf16_to_utf8(std::move(src), ut);
+        default:
+            ;
     }
 
     // No conversion needed.
