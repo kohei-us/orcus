@@ -136,8 +136,8 @@ orcus_csv::orcus_csv(spreadsheet::iface::import_factory* factory) :
 
 void orcus_csv::read_file(const string& filepath)
 {
-    string strm = load_file_content(filepath.c_str());
-    parse(strm.data(), strm.size());
+    file_content fc(filepath.data());
+    parse(fc.data(), fc.size());
 
     mp_factory->finalize();
 }

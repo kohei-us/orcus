@@ -11,7 +11,21 @@
 #include "env.hpp"
 #include "orcus/pstring.hpp"
 
+#include <memory>
+
 namespace orcus {
+
+class ORCUS_PSR_DLLPUBLIC file_content
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+public:
+    file_content(const char* filepath);
+    ~file_content();
+
+    const char* data() const;
+    size_t size() const;
+};
 
 /**
  * Load the content of a file into a file stream.

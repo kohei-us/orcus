@@ -8,6 +8,7 @@
 #include "orcus/stream.hpp"
 #include "orcus/exception.hpp"
 #include "orcus/pstring.hpp"
+#include "orcus/global.hpp"
 
 #include <sstream>
 #include <fstream>
@@ -16,8 +17,49 @@
 #include <algorithm>
 #include <locale>
 #include <codecvt>
+#include <iostream>
+
+#include <boost/filesystem.hpp>
+#include <boost/interprocess/file_mapping.hpp>
+#include <boost/interprocess/mapped_region.hpp>
+
+namespace fs = boost::filesystem;
+namespace bip = boost::interprocess;
 
 namespace orcus {
+
+struct file_content::impl
+{
+    boost::uintmax_t content_size;
+    bip::file_mapping mapped_file;
+    bip::mapped_region mapped_region;
+
+    const char* content;
+
+    impl(const char* filepath) :
+        content_size(fs::file_size(filepath)),
+        mapped_file(filepath, bip::read_only),
+        mapped_region(mapped_file, bip::read_only, 0, content_size),
+        content(nullptr)
+    {
+        content = static_cast<const char*>(mapped_region.get_address());
+    }
+};
+
+file_content::file_content(const char* filepath) :
+    mp_impl(orcus::make_unique<impl>(filepath)) {}
+
+file_content::~file_content() {}
+
+const char* file_content::data() const
+{
+    return mp_impl->content;
+}
+
+size_t file_content::size() const
+{
+    return mp_impl->content_size;
+}
 
 namespace {
 

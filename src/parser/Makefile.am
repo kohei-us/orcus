@@ -34,9 +34,14 @@ liborcus_parser_@ORCUS_API_VERSION@_la_SOURCES = \
 	zip_archive_stream.cpp
 
 
-liborcus_parser_@ORCUS_API_VERSION@_la_LDFLAGS = -no-undefined $(BOOST_SYSTEM_LDFLAGS)
+liborcus_parser_@ORCUS_API_VERSION@_la_LDFLAGS = \
+	-no-undefined \
+	$(BOOST_SYSTEM_LDFLAGS) \
+	$(BOOST_FILESYSTEM_LDFLAGS)
+
 liborcus_parser_@ORCUS_API_VERSION@_la_LIBADD = \
 	$(BOOST_SYSTEM_LIBS) \
+	$(BOOST_FILESYSTEM_LIBS) \
 	$(ZLIB_LIBS)
 
 EXTRA_PROGRAMS = \
