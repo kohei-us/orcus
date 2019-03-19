@@ -25,6 +25,13 @@ public:
 
     const char* data() const;
     size_t size() const;
+    bool empty() const;
+
+    /**
+     * Convert a non-utf-8 stream to a utf-8 one if the source stream contains
+     * a byte order mark.  If not, it does nothing.
+     */
+    void convert_to_utf8();
 };
 
 /**
@@ -60,18 +67,6 @@ ORCUS_PSR_DLLPUBLIC std::string create_parse_error_output(
  */
 ORCUS_PSR_DLLPUBLIC size_t locate_first_different_char(
     const pstring& left, const pstring& right);
-
-/**
- * Convert a non-utf-8 stream to a utf-8 one if the source stream contains a
- * byte order mark.
- *
- *
- * @param src source stream to convert from.
- *
- * @return a converted utf-8 string if the source string contains a byte
- *         order mark.  Otherwise the source string is returned as-is.
- */
-ORCUS_PSR_DLLPUBLIC std::string convert_to_utf8(std::string src);
 
 } // namespace orcus
 

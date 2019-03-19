@@ -28,39 +28,6 @@ namespace bip = boost::interprocess;
 
 namespace orcus {
 
-struct file_content::impl
-{
-    boost::uintmax_t content_size;
-    bip::file_mapping mapped_file;
-    bip::mapped_region mapped_region;
-
-    const char* content;
-
-    impl(const char* filepath) :
-        content_size(fs::file_size(filepath)),
-        mapped_file(filepath, bip::read_only),
-        mapped_region(mapped_file, bip::read_only, 0, content_size),
-        content(nullptr)
-    {
-        content = static_cast<const char*>(mapped_region.get_address());
-    }
-};
-
-file_content::file_content(const char* filepath) :
-    mp_impl(orcus::make_unique<impl>(filepath)) {}
-
-file_content::~file_content() {}
-
-const char* file_content::data() const
-{
-    return mp_impl->content;
-}
-
-size_t file_content::size() const
-{
-    return mp_impl->content_size;
-}
-
 namespace {
 
 enum class unicode_t
@@ -70,31 +37,30 @@ enum class unicode_t
     utf16_le
 };
 
-unicode_t check_unicode_type(const std::string& s)
+unicode_t check_unicode_type(const char* p, size_t n)
 {
-    if (s.size() > 2)
+    if (n > 2)
     {
-        if (s[0] == '\xFE' && s[1] == '\xFF')
+        if (p[0] == '\xFE' && p[1] == '\xFF')
             return unicode_t::utf16_be;
 
-        if (s[0] == '\xFF' && s[1] == '\xFE')
+        if (p[0] == '\xFF' && p[1] == '\xFE')
             return unicode_t::utf16_le;
     }
 
     return unicode_t::unknown;
 }
 
-std::string convert_utf16_to_utf8(std::string&& src, unicode_t ut)
+std::string convert_utf16_to_utf8(const char* p, size_t n, unicode_t ut)
 {
     assert(ut == unicode_t::utf16_be || ut == unicode_t::utf16_le);
 
-    if (src.size() & 0x01)
+    if (n & 0x01)
         throw std::invalid_argument("size of a UTF-16 string must be divisible by 2.");
 
-    const char* p = src.data();
     p += 2; // skip the BOM.
 
-    size_t n_buf = src.size() / 2u - 1;
+    size_t n_buf = n / 2u - 1;
     std::u16string buf(n_buf, 0);
 
     switch (ut)
@@ -183,6 +149,66 @@ std::tuple<pstring, size_t, size_t> find_line_with_offset(
     return std::make_tuple(line, line_num, offset_on_line);
 }
 
+} // anonymous namespace
+
+struct file_content::impl
+{
+    boost::uintmax_t content_size;
+    bip::file_mapping mapped_file;
+    bip::mapped_region mapped_region;
+
+    std::string buffer; // its own buffer in case of stream conversion.
+
+    const char* content;
+
+    impl(const char* filepath) :
+        content_size(fs::file_size(filepath)),
+        mapped_file(filepath, bip::read_only),
+        mapped_region(mapped_file, bip::read_only, 0, content_size),
+        content(nullptr)
+    {
+        content = static_cast<const char*>(mapped_region.get_address());
+    }
+};
+
+file_content::file_content(const char* filepath) :
+    mp_impl(orcus::make_unique<impl>(filepath)) {}
+
+file_content::~file_content() {}
+
+const char* file_content::data() const
+{
+    return mp_impl->content;
+}
+
+size_t file_content::size() const
+{
+    return mp_impl->content_size;
+}
+
+bool file_content::empty() const
+{
+    return mp_impl->content_size == 0;
+}
+
+void file_content::convert_to_utf8()
+{
+    unicode_t ut = check_unicode_type(mp_impl->content, mp_impl->content_size);
+
+    switch (ut)
+    {
+        case unicode_t::utf16_be:
+        case unicode_t::utf16_le:
+        {
+            // Convert to utf-8 stream, and reset the content pointer and size.
+            mp_impl->buffer = convert_utf16_to_utf8(mp_impl->content, mp_impl->content_size, ut);
+            mp_impl->content = mp_impl->buffer.data();
+            mp_impl->content_size = mp_impl->buffer.size();
+            break;
+        }
+        default:
+            ;
+    }
 }
 
 std::string load_file_content(const char* filepath)
@@ -279,23 +305,6 @@ size_t locate_first_different_char(const pstring& left, const pstring& right)
     }
 
     return n;
-}
-
-std::string convert_to_utf8(std::string src)
-{
-    unicode_t ut = check_unicode_type(src);
-
-    switch (ut)
-    {
-        case unicode_t::utf16_be:
-        case unicode_t::utf16_le:
-            return convert_utf16_to_utf8(std::move(src), ut);
-        default:
-            ;
-    }
-
-    // No conversion needed.
-    return src;
 }
 
 }

@@ -74,12 +74,12 @@ bool orcus_xls_xml::detect(const unsigned char* buffer, size_t size)
 
 void orcus_xls_xml::read_file(const string& filepath)
 {
-    string strm = load_file_content(filepath.c_str());
-    if (strm.empty())
+    file_content content(filepath.data());
+    if (content.empty())
         return;
 
-    strm = convert_to_utf8(std::move(strm));
-    read_stream(strm.data(), strm.size());
+    content.convert_to_utf8();
+    read_stream(content.data(), content.size());
 }
 
 void orcus_xls_xml::read_stream(const char* content, size_t len)
