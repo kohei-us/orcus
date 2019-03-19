@@ -94,7 +94,6 @@ std::string convert_utf16_to_utf8(std::string&& src, unicode_t ut)
     const char* p = src.data();
     p += 2; // skip the BOM.
 
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conversion;
     size_t n_buf = src.size() / 2u - 1;
     std::u16string buf(n_buf, 0);
 
@@ -122,7 +121,17 @@ std::string convert_utf16_to_utf8(std::string&& src, unicode_t ut)
             ;
     }
 
+#if defined(_WIN32)
+    // char16_t does not work with MSVC just yet. This is a workaround. c.f.
+    // https://stackoverflow.com/questions/32055357/visual-studio-c-2015-stdcodecvt-with-char16-t-or-char32-t
+    const int16_t* pi16 = reinterpret_cast<const int16_t*>(buf.data());
+    const int16_t* pi16_end = pi16 + buf.size();
+    std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t> conversion;
+    return conversion.to_bytes(pi16, pi16_end);
+#else
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conversion;
     return conversion.to_bytes(buf);
+#endif
 }
 
 std::tuple<pstring, size_t, size_t> find_line_with_offset(
