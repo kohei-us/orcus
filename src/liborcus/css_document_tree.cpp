@@ -544,17 +544,13 @@ css_document_tree::~css_document_tree()
     delete mp_impl;
 }
 
-void css_document_tree::load(const std::string& strm)
+void css_document_tree::load(const char* p, size_t n)
 {
-    if (strm.empty())
+    if (!n)
         return;
 
-#if ORCUS_DEBUG_CSS_DOCTREE
-    cout << "original: '" << strm << "'" << endl << endl;
-#endif
-
     parser_handler handler(*this);
-    css_parser<parser_handler> parser(&strm[0], strm.size(), handler);
+    css_parser<parser_handler> parser(p, n, handler);
     parser.parse();
 }
 

@@ -38,9 +38,10 @@ public:
      * Load raw string stream containing CSS rules to populate the document
      * tree.
      *
-     * @param strm stream containing raw CSS rules.
+     * @param p pointer to the buffer that contains raw CSS rules.
+     * @param n size of the above buffer.
      */
-    void load(const std::string& strm);
+    void load(const char* p, size_t n);
 
     /**
      * Insert or replace properties for given selector and pseudo element

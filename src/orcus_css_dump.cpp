@@ -18,9 +18,9 @@ int main(int argc, char** argv)
     const char* filepath = argv[1];
     try
     {
-        std::string strm = orcus::load_file_content(filepath);
+        orcus::file_content content(filepath);
         orcus::css_document_tree doc;
-        doc.load(strm);
+        doc.load(content.data(), content.size());
         doc.dump();
     }
     catch (const std::exception& e)
