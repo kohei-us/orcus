@@ -335,10 +335,10 @@ int main()
 {
     orcus::string_pool string_pool;
     const char* path = SRCDIR"/test/ods/styles/cell-styles.xml";
-    std::string content = orcus::load_file_content(path);
+    orcus::file_content content(path);
     orcus::spreadsheet::styles styles;
     orcus::spreadsheet::import_styles istyles(styles, string_pool);
-    orcus::import_ods::read_styles(content.c_str(), content.size(), &istyles);
+    orcus::import_ods::read_styles(content.data(), content.size(), &istyles);
 
     test_odf_fill(styles);
     test_odf_border(styles);
@@ -349,10 +349,10 @@ int main()
 
     orcus::string_pool string_pool2;
     path = SRCDIR"/test/ods/styles/number-format.xml";
-    std::string content2 = orcus::load_file_content(path);
+    orcus::file_content content2(path);
     orcus::spreadsheet::styles styles2;
     orcus::spreadsheet::import_styles istyles2(styles2, string_pool2);
-    orcus::import_ods::read_styles(content2.c_str(), content2.size(), &istyles2);
+    orcus::import_ods::read_styles(content2.data(), content2.size(), &istyles2);
 
     test_odf_number_formatting(styles2);
 

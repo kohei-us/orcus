@@ -586,10 +586,10 @@ void document_tree::load(const std::string& strm)
     parser.parse();
 }
 
-void document_tree::load(const char* p_strm, size_t n_strm, bool transient)
+void document_tree::load(const char* p_strm, size_t n_strm)
 {
     sax_ns_parser<impl> parser(
-        p_strm, n_strm, transient, mp_impl->m_ns_cxt, *mp_impl);
+        p_strm, n_strm, false, mp_impl->m_ns_cxt, *mp_impl);
     parser.parse();
 }
 

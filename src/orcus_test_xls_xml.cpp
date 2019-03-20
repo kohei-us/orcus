@@ -97,7 +97,8 @@ void update_config(spreadsheet::document& doc, const string& path)
         spreadsheet::document_config cfg = doc.get_config();
 
         yaml::document_tree config;
-        config.load(load_file_content(path.data()));
+        file_content content(path.data());
+        config.load(content.data(), content.size());
         yaml::const_node root = config.get_document_root(0);
         std::vector<yaml::const_node> keys = root.keys();
         for (size_t i = 0; i < keys.size(); ++i)
@@ -143,12 +144,13 @@ void test_xls_xml_import()
         // Check that against known control.
         path = dir;
         path.append("check.txt");
-        string control = load_file_content(path.c_str());
+        file_content control(path.data());
 
         assert(!check.empty());
         assert(!control.empty());
 
-        pstring s1(&check[0], check.size()), s2(&control[0], control.size());
+        pstring s1(&check[0], check.size());
+        pstring s2 = control.str();
         assert(s1.trim() == s2.trim());
     }
 }

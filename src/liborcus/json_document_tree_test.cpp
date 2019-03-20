@@ -91,7 +91,7 @@ string dump_check_content(const json::document_tree& doc)
     return os.str();
 }
 
-bool compare_check_contents(const std::string& expected, const std::string& actual)
+bool compare_check_contents(const file_content& expected, const std::string& actual)
 {
     pstring _expected(expected.data(), expected.size());
     pstring _actual(actual.data(), actual.size());
@@ -109,16 +109,17 @@ void verify_input(json_config& test_config, const char* basedir)
 
     cout << "Testing " << json_file << endl;
 
-    string strm = load_file_content(json_file.c_str());
+    file_content content(json_file.data());
     json::document_tree doc;
-    doc.load(strm, test_config);
+    doc.load(content.data(), content.size(), test_config);
 
     string check_file(basedir);
     check_file += "check.txt";
-    string check_master = load_file_content(check_file.c_str());
+    file_content check_master(check_file.data());
     string check_doc = dump_check_content(doc);
 
-    assert(compare_check_contents(check_master, check_doc));
+    bool result = compare_check_contents(check_master, check_doc);
+    assert(result);
 }
 
 void test_json_parse()
@@ -209,12 +210,12 @@ std::unique_ptr<json::document_tree> get_doc_tree(const char* filepath)
     json_config test_config;
 
     cout << filepath << endl;
-    string strm = load_file_content(filepath);
+    file_content content(filepath);
     cout << "--- original" << endl;
-    cout << strm << endl;
+    cout << content.str() << endl;
 
     auto doc = orcus::make_unique<json::document_tree>();
-    doc->load(strm, test_config);
+    doc->load(content.data(), content.size(), test_config);
 
     return doc;
 }

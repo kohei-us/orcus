@@ -1290,19 +1290,19 @@ void document_tree::load(const char* p, size_t n, const json_config& config)
         extpath /= extfile;
 
         // Get the stream content from the path.
-        std::string ext_strm = load_file_content(extpath.string().c_str());
+        file_content ext_content(extpath.string().data());
 
         ext_config.input_path = extpath.string();
         document_tree doc(mp_impl->m_res);
         try
         {
-            doc.load(ext_strm, ext_config);
+            doc.load(ext_content.data(), ext_content.size(), ext_config);
         }
         catch (const json::parse_error& e)
         {
             std::ostringstream os;
             os << "Error while parsing " << extpath.string() << std::endl;
-            os << create_parse_error_output(ext_strm, e.offset()) << std::endl;
+            os << create_parse_error_output(ext_content.str(), e.offset()) << std::endl;
             os << e.what();
 
             // Re-throw as general_error to avoid getting caught as parse

@@ -26,10 +26,11 @@ int main(int argc, char** argv)
     if (argc < 2)
         return EXIT_FAILURE;
 
-    string strm;
+    file_content content;
+
     try
     {
-        strm = load_file_content(argv[1]);
+        content.load(argv[1]);
     }
     catch (const std::exception& e)
     {
@@ -37,7 +38,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    if (strm.empty())
+    if (content.empty())
         return EXIT_FAILURE;
 
     try
@@ -45,14 +46,14 @@ int main(int argc, char** argv)
         xmlns_repository repo;
         xmlns_context cxt = repo.create_context();
         dom::document_tree tree(cxt);
-        tree.load(strm);
+        tree.load(content.data(), content.size());
         ostringstream os;
         tree.dump_compact(os);
         cout << os.str();
     }
     catch (const sax::malformed_xml_error& e)
     {
-        cerr << create_parse_error_output(strm, e.offset()) << endl;
+        cerr << create_parse_error_output(content.str(), e.offset()) << endl;
         cerr << e.what() << endl;
         return EXIT_FAILURE;
     }

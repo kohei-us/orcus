@@ -159,16 +159,16 @@ std::unique_ptr<json_config> parse_json_args(int argc, char** argv)
     return config;
 }
 
-std::unique_ptr<json::document_tree> load_doc(const std::string& strm, const json_config& config)
+std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content, const json_config& config)
 {
     std::unique_ptr<json::document_tree> doc(orcus::make_unique<json::document_tree>());
     try
     {
-        doc->load(strm, config);
+        doc->load(content.data(), content.size(), config);
     }
     catch (const json::parse_error& e)
     {
-        cerr << create_parse_error_output(strm, e.offset()) << endl;
+        cerr << create_parse_error_output(content.str(), e.offset()) << endl;
         throw;
     }
     return doc;
@@ -193,8 +193,8 @@ int main(int argc, char** argv)
 
     try
     {
-        std::string strm = load_file_content(config->input_path.c_str());
-        std::unique_ptr<json::document_tree> doc = load_doc(strm, *config);
+        file_content content(config->input_path.data());
+        std::unique_ptr<json::document_tree> doc = load_doc(content, *config);
 
         switch (config->output_format)
         {

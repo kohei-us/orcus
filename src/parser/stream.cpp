@@ -161,6 +161,8 @@ struct file_content::impl
 
     const char* content;
 
+    impl() : content_size(0), content(nullptr) {}
+
     impl(const char* filepath) :
         content_size(fs::file_size(filepath)),
         mapped_file(filepath, bip::read_only),
@@ -170,6 +172,9 @@ struct file_content::impl
         content = static_cast<const char*>(mapped_region.get_address());
     }
 };
+
+file_content::file_content() :
+    mp_impl(orcus::make_unique<impl>()) {}
 
 file_content::file_content(const char* filepath) :
     mp_impl(orcus::make_unique<impl>(filepath)) {}
@@ -196,6 +201,12 @@ void file_content::swap(file_content& other)
     std::swap(mp_impl, other.mp_impl);
 }
 
+void file_content::load(const char* filepath)
+{
+    file_content tmp(filepath);
+    swap(tmp);
+}
+
 void file_content::convert_to_utf8()
 {
     unicode_t ut = check_unicode_type(mp_impl->content, mp_impl->content_size);
@@ -214,6 +225,11 @@ void file_content::convert_to_utf8()
         default:
             ;
     }
+}
+
+pstring file_content::str() const
+{
+    return pstring(mp_impl->content, mp_impl->content_size);
 }
 
 std::string load_file_content(const char* filepath)

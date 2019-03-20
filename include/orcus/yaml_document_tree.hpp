@@ -96,6 +96,8 @@ public:
 
     void load(const std::string& strm);
 
+    void load(const char* p, size_t n);
+
     size_t get_document_count() const;
 
     const_node get_document_root(size_t index) const;

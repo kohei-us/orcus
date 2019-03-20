@@ -58,12 +58,12 @@ void test_csv_import()
         // Check that against known control.
         path = dir;
         path.append("check.txt");
-        std::string control = load_file_content(path.c_str());
+        file_content control(path.c_str());
 
         assert(!check.empty());
         assert(!control.empty());
 
-        test::verify_content(__FILE__, __LINE__, control, check);
+        test::verify_content(__FILE__, __LINE__, control.str(), check);
 
         // Dump the first sheet as csv.
         std::string stream = test::get_content_as_csv(doc, 0);
@@ -82,7 +82,7 @@ void test_csv_import()
         check = test::get_content_check(doc);
         assert(!check.empty());
 
-        test::verify_content(__FILE__, __LINE__, control, check);
+        test::verify_content(__FILE__, __LINE__, control.str(), check);
     }
 }
 
@@ -117,9 +117,9 @@ void test_csv_import_split_sheet()
     // Check that against known control.
     path = dir;
     path.append("check-1.txt");
-    std::string control = load_file_content(path.c_str());
+    file_content control(path.data());
 
-    test::verify_content(__FILE__, __LINE__, control, check);
+    test::verify_content(__FILE__, __LINE__, control.str(), check);
 
     // Re-import the same input file, but have the first row repeated on every
     // sheet.
@@ -144,9 +144,9 @@ void test_csv_import_split_sheet()
     // Check that against known control.
     path = dir;
     path.append("check-2.txt");
-    control = load_file_content(path.c_str());
+    control.load(path.data());
 
-    test::verify_content(__FILE__, __LINE__, control, check);
+    test::verify_content(__FILE__, __LINE__, control.str(), check);
 
     // Re-import it again, but this time disable the splitting.  The data should
     // get trucated on the first sheet.
@@ -172,9 +172,9 @@ void test_csv_import_split_sheet()
     // Check that against known control.
     path = dir;
     path.append("check-3.txt");
-    control = load_file_content(path.c_str());
+    control.load(path.data());
 
-    test::verify_content(__FILE__, __LINE__, control, check);
+    test::verify_content(__FILE__, __LINE__, control.str(), check);
 }
 
 }

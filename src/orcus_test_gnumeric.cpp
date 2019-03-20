@@ -49,12 +49,12 @@ void test_gnumeric_import()
         // Check that against known control.
         path = dir;
         path.append("check.txt");
-        string control = load_file_content(path.c_str());
+        file_content control(path.data());
 
         assert(!check.empty());
         assert(!control.empty());
 
-        test::verify_content(__FILE__, __LINE__, control, check);
+        test::verify_content(__FILE__, __LINE__, control.str(), check);
     }
 }
 

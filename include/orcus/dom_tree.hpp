@@ -110,7 +110,7 @@ public:
      */
     void load(const std::string& strm);
 
-    void load(const char* p_strm, size_t n_strm, bool transient);
+    void load(const char* p_strm, size_t n_strm);
 
     dom::const_node root() const;
 

@@ -86,10 +86,10 @@ const char* sax_parser_parse_only_test_dirs[] = {
 void parse_file(dom::document_tree& tree, const char* filepath, string& strm)
 {
     cout << "testing " << filepath << endl;
-    strm = load_file_content(filepath);
-    assert(!strm.empty());
+    file_content content(filepath);
+    assert(!content.empty());
 
-    tree.load(strm);
+    tree.load(content.data(), content.size());
 }
 
 void test_xml_sax_parser()
@@ -116,9 +116,9 @@ void test_xml_sax_parser()
         // Load the check form.
         file = dir_path;
         file.append("check.txt");
-        string check = load_file_content(file.c_str());
+        file_content check(file.data());
         pstring psource(content.c_str(), content.size());
-        pstring pcheck(check.c_str(), check.size());
+        pstring pcheck = check.str();
 
         // They must be equal, minus preceding or trailing spaces (if any).
         assert(psource.trim() == pcheck.trim());
@@ -198,11 +198,11 @@ void test_xml_encoded_attrs()
     const char* filepath = SRCDIR"/test/xml/encoded-attrs/test1.xml";
 
     cout << "testing " << filepath << endl;
-    string strm = load_file_content(filepath);
-    assert(!strm.empty());
+    file_content content(filepath);
+    assert(!content.empty());
 
     sax_handler_encoded_attrs hdl;
-    sax_parser<sax_handler_encoded_attrs> parser(&strm[0], strm.size(), hdl);
+    sax_parser<sax_handler_encoded_attrs> parser(content.data(), content.size(), hdl);
     parser.parse();
 
     vector<string> expected;

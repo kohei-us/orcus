@@ -58,9 +58,9 @@ const char* temp_output_xml = "out.xml";
 
 void dump_xml_structure(string& dump_content, string& strm, const char* filepath, xmlns_context& cxt)
 {
-    strm = load_file_content(filepath);
+    file_content content(filepath);
     dom::document_tree tree(cxt);
-    tree.load(strm);
+    tree.load(content.data(), content.size());
     ostringstream os;
     tree.dump_compact(os);
     dump_content = os.str();
@@ -79,7 +79,8 @@ void test_mapped_xml_import()
 
         // Load the data file content.
         cout << "reading " << data_file << endl;
-        string data_strm = load_file_content(data_file.data());
+        file_content content(data_file.data());
+        string data_strm = content.str().str();
 
         spreadsheet::document doc;
         spreadsheet::import_factory import_fact(doc);
@@ -103,7 +104,8 @@ void test_mapped_xml_import()
         ostringstream os;
         doc.dump_check(os);
         string loaded = os.str();
-        strm = load_file_content(check_file.c_str());
+        content.load(check_file.data());
+        strm = content.str().str();
 
         assert(!loaded.empty());
         assert(!strm.empty());
@@ -121,7 +123,8 @@ void test_mapped_xml_import()
             cout << "writing to " << out_file << endl;
             {
                 // Create a duplicate source XML stream.
-                string data_strm_dup = load_file_content(data_file.data());
+                content.load(data_file.data());
+                string data_strm_dup = content.str().str();
                 std::ofstream file(out_file);
                 assert(file);
                 app.write(data_strm_dup.data(), data_strm_dup.size(), file);

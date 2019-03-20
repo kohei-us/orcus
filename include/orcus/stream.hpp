@@ -20,6 +20,7 @@ class ORCUS_PSR_DLLPUBLIC file_content
     struct impl;
     std::unique_ptr<impl> mp_impl;
 public:
+    file_content();
     file_content(const char* filepath);
     ~file_content();
 
@@ -29,11 +30,15 @@ public:
 
     void swap(file_content& other);
 
+    void load(const char* filepath);
+
     /**
      * Convert a non-utf-8 stream to a utf-8 one if the source stream contains
      * a byte order mark.  If not, it does nothing.
      */
     void convert_to_utf8();
+
+    pstring str() const;
 };
 
 /**

@@ -14,6 +14,8 @@
 
 namespace orcus {
 
+class pstring;
+
 namespace spreadsheet {
 
 class document;
@@ -44,7 +46,7 @@ std::string get_content_as_csv(const spreadsheet::document& doc, spreadsheet::sh
  * @param actual string representative of the actual content.
  */
 void verify_content(
-    const char* filename, size_t line_no, const std::string& expected, const std::string& actual);
+    const char* filename, size_t line_no, const pstring& expected, const std::string& actual);
 
 void verify_value_to_decimals(
     const char* filename, size_t line_no, double expected, double actual, int decimals);

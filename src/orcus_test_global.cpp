@@ -47,9 +47,9 @@ std::string get_content_as_csv(const spreadsheet::document& doc, spreadsheet::sh
 }
 
 void verify_content(
-    const char* filename, size_t line_no, const std::string& expected, const std::string& actual)
+    const char* filename, size_t line_no, const pstring& expected, const std::string& actual)
 {
-    pstring s1(expected.data(), expected.size());
+    pstring s1 = expected;
     pstring s2(actual.data(), actual.size());
     s1 = s1.trim();
     s2 = s2.trim();

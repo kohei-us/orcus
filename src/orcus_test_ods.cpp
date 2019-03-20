@@ -60,12 +60,13 @@ void test_ods_import_cell_values()
         // Check that against known control.
         path = dir;
         path.append("check.txt");
-        string control = load_file_content(path.c_str());
+        file_content control(path.data());
 
         assert(!check.empty());
         assert(!control.empty());
 
-        pstring s1(&check[0], check.size()), s2(&control[0], control.size());
+        pstring s1(&check[0], check.size());
+        pstring s2 = control.str();
         assert(s1.trim() == s2.trim());
     }
 }
