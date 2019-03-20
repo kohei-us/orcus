@@ -29,9 +29,10 @@ void test_detect_formats()
     size_t n = sizeof(tests[0]) / sizeof(tests);
     for (size_t i = 0; i < n; ++i)
     {
-        string strm = load_file_content(tests[i].path);
-        assert(!strm.empty());
-        format_t detected = detect(reinterpret_cast<const unsigned char*>(&strm[0]), strm.size());
+        file_content content(tests[i].path);
+        assert(!content.empty());
+        format_t detected = detect(
+            reinterpret_cast<const unsigned char*>(content.data()), content.size());
         assert(detected == tests[i].format);
     }
 }

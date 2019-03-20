@@ -191,6 +191,11 @@ bool file_content::empty() const
     return mp_impl->content_size == 0;
 }
 
+void file_content::swap(file_content& other)
+{
+    std::swap(mp_impl, other.mp_impl);
+}
+
 void file_content::convert_to_utf8()
 {
     unicode_t ut = check_unicode_type(mp_impl->content, mp_impl->content_size);

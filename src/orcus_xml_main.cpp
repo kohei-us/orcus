@@ -167,13 +167,13 @@ int main(int argc, char** argv)
     try
     {
         xmlns_repository repo;
-        std::string strm = load_file_content(input_path.data());
+        file_content content(input_path.data());
 
         if (mode == output_mode::type::xml_structure)
         {
             xmlns_context cxt = repo.create_context();
             xml_structure_tree tree(cxt);
-            tree.parse(strm.data(), strm.size());
+            tree.parse(content.data(), content.size());
 
             if (output.empty())
             {
@@ -200,7 +200,7 @@ int main(int argc, char** argv)
         orcus_xml app(repo, &import_fact, &export_fact);
 
         read_map_file(app, map_path.data());
-        app.read_stream(strm.data(), strm.size());
+        app.read_stream(content.data(), content.size());
 
         switch (mode)
         {
@@ -257,7 +257,7 @@ int main(int argc, char** argv)
                 }
 
                 // Write transformed xml content to file.
-                app.write(strm.data(), strm.size(), file);
+                app.write(content.data(), content.size(), file);
                 break;
             }
             case output_mode::type::dump_document_check:

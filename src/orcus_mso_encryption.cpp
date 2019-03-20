@@ -17,12 +17,12 @@ int main(int argc, char** argv) try
         return EXIT_FAILURE;
 
     mso::encryption_info_reader reader;
-    string strm = load_file_content(argv[1]);
+    file_content content(argv[1]);
 
-    if (strm.empty())
+    if (content.empty())
         return EXIT_FAILURE;
 
-    reader.read(&strm[0], strm.size());
+    reader.read(content.data(), content.size());
 
     return EXIT_SUCCESS;
 }

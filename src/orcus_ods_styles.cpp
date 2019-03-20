@@ -30,8 +30,8 @@ int main(int argc, char** argv)
 
     try
     {
-        std::string content = load_file_content(argv[1]);
-        import_ods::read_styles(content.c_str(), content.length(), &istyles);
+        file_content content(argv[1]);
+        import_ods::read_styles(content.data(), content.size(), &istyles);
     }
     catch(std::exception& ex)
     {

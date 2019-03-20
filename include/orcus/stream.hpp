@@ -27,6 +27,8 @@ public:
     size_t size() const;
     bool empty() const;
 
+    void swap(file_content& other);
+
     /**
      * Convert a non-utf-8 stream to a utf-8 one if the source stream contains
      * a byte order mark.  If not, it does nothing.

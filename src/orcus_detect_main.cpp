@@ -22,15 +22,15 @@ int main(int argc, char** argv) try
         return EXIT_FAILURE;
 
     const char* filepath = argv[1];
-    string strm = load_file_content(filepath);
+    file_content content(filepath);
 
-    if (strm.empty())
+    if (content.empty())
     {
         cerr << "file is empty" << endl;
         return EXIT_FAILURE;
     }
 
-    format_t detected_type = detect(reinterpret_cast<const unsigned char*>(&strm[0]), strm.size());
+    format_t detected_type = detect(reinterpret_cast<const unsigned char*>(content.data()), content.size());
 
     cout << "type: ";
     switch (detected_type)

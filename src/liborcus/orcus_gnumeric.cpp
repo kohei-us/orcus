@@ -129,11 +129,11 @@ void orcus_gnumeric::read_file(const string& filepath)
     cout << "reading " << filepath << endl;
 #endif
 
-    string strm = load_file_content(filepath.c_str());
-    if (strm.empty())
+    file_content content(filepath.data());
+    if (content.empty())
         return;
 
-    read_stream(&strm[0], strm.size());
+    read_stream(content.data(), content.size());
 }
 
 void orcus_gnumeric::read_stream(const char* content, size_t len)
