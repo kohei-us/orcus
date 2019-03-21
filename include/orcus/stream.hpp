@@ -42,14 +42,6 @@ public:
 };
 
 /**
- * Load the content of a file into a file stream.
- *
- * @param filepath file to open
- * @return content of the file
- */
-ORCUS_PSR_DLLPUBLIC std::string load_file_content(const char* filepath);
-
-/**
  * Generate a sensible error output for parse error including the line where
  * the error occurred and the offset of the error position on that line.
  *

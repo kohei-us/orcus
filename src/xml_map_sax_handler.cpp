@@ -150,12 +150,12 @@ void xml_map_sax_handler::attribute(const sax::parser_attribute& attr)
 
 void read_map_file(orcus_xml& app, const char* filepath)
 {
-    string strm = load_file_content(filepath);
-    if (strm.empty())
+    file_content content(filepath);
+    if (content.empty())
         return;
 
     xml_map_sax_handler handler(app);
-    sax_parser<xml_map_sax_handler> parser(strm.c_str(), strm.size(), handler);
+    sax_parser<xml_map_sax_handler> parser(content.data(), content.size(), handler);
     parser.parse();
 }
 

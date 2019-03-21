@@ -7,20 +7,20 @@
 
 using namespace orcus::dom;
 
-orcus::dom::document_tree load_document_tree(const std::string& content)
+orcus::dom::document_tree load_document_tree(const orcus::pstring& content)
 {
     orcus::xmlns_repository repo;
     orcus::xmlns_context cxt = repo.create_context();
     orcus::dom::document_tree tree(cxt);
 
-    tree.load(content);
+    tree.load(content.data(), content.size());
     return tree;
 }
 
 orcus::dom::document_tree load_document_tree_from_file(const char* filepath)
 {
-    std::string content = orcus::load_file_content(filepath);
-    return load_document_tree(content);
+    orcus::file_content content(filepath);
+    return load_document_tree(content.str());
 }
 
 void test_encoded_attr()

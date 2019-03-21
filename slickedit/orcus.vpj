@@ -276,6 +276,7 @@
 				<F N="../src/liborcus/detection_result.cpp"/>
 				<F N="../src/liborcus/detection_result.hpp"/>
 				<F N="../src/liborcus/dom_tree.cpp"/>
+				<F N="../src/liborcus/dom_tree_test.cpp"/>
 				<F N="../src/liborcus/format_detection.cpp"/>
 				<F N="../src/liborcus/format_detection_test.cpp"/>
 				<F N="../src/liborcus/formula_result.cpp"/>

@@ -34,12 +34,12 @@ void test_basic()
     {
         string filepath(base_dirs[i]);
         filepath.append("input.xml");
-        string strm = load_file_content(filepath.c_str());
+        file_content strm(filepath.data());
         assert(!strm.empty());
         xmlns_repository xmlns_repo;
         xmlns_context cxt = xmlns_repo.create_context();
         xml_structure_tree tree(cxt);
-        tree.parse(&strm[0], strm.size());
+        tree.parse(strm.data(), strm.size());
         ostringstream os;
         tree.dump_compact(os);
         string data_content = os.str();
@@ -49,12 +49,12 @@ void test_basic()
         // Check the dump content against known datum.
         filepath = base_dirs[i];
         filepath.append("check.txt");
-        string strm_check = load_file_content(filepath.c_str());
+        file_content strm_check(filepath.data());
         assert(!strm_check.empty());
 
         // They should be identical, plus or minus leading/trailing whitespaces.
-        pstring s1(&data_content[0], data_content.size());
-        pstring s2(&strm_check[0], strm_check.size());
+        pstring s1(data_content.data(), data_content.size());
+        pstring s2 = strm_check.str();
         assert(s1.trim() == s2.trim());
     }
 }
@@ -64,12 +64,12 @@ void test_walker()
     {
         string filepath(base_dirs[0]);
         filepath.append("input.xml");
-        string strm = load_file_content(filepath.c_str());
+        file_content strm(filepath.data());
         assert(!strm.empty());
         xmlns_repository xmlns_repo;
         xmlns_context cxt = xmlns_repo.create_context();
         xml_structure_tree tree(cxt);
-        tree.parse(&strm[0], strm.size());
+        tree.parse(strm.data(), strm.size());
 
         // Get walker from the tree.
         xml_structure_tree::entity_names_type elem_names;
@@ -133,12 +133,12 @@ void test_walker()
         string filepath(base_dirs[3]); // attribute-1
         filepath.append("input.xml");
 
-        string strm = load_file_content(filepath.c_str());
+        file_content strm(filepath.data());
         assert(!strm.empty());
         xmlns_repository xmlns_repo;
         xmlns_context cxt = xmlns_repo.create_context();
         xml_structure_tree tree(cxt);
-        tree.parse(&strm[0], strm.size());
+        tree.parse(strm.data(), strm.size());
 
         // Get walker from the tree.
         xml_structure_tree::entity_names_type elem_names;
@@ -177,12 +177,12 @@ void test_walker_path()
 {
     string filepath(base_dirs[0]);
     filepath.append("input.xml");
-    string strm = load_file_content(filepath.c_str());
+    file_content strm(filepath.data());
     assert(!strm.empty());
     xmlns_repository xmlns_repo;
     xmlns_context cxt = xmlns_repo.create_context();
     xml_structure_tree tree(cxt);
-    tree.parse(&strm[0], strm.size());
+    tree.parse(strm.data(), strm.size());
 
     // Get walker from the tree.
     xml_structure_tree::entity_names_type elem_names;

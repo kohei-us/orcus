@@ -232,24 +232,6 @@ pstring file_content::str() const
     return pstring(mp_impl->content, mp_impl->content_size);
 }
 
-std::string load_file_content(const char* filepath)
-{
-    std::ifstream file(filepath, std::ios::binary);
-    if (!file)
-    {
-        // failed to open the specified file.
-        std::ostringstream os;
-        os << "failed to load " << filepath;
-        throw general_error(os.str());
-    }
-
-    std::ostringstream os;
-    os << file.rdbuf();
-    file.close();
-
-    return os.str();
-}
-
 std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset)
 {
     if (offset < 0)

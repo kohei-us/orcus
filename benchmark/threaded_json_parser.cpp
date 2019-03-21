@@ -168,7 +168,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
 
     const char* filepath = argv[1];
-    string content = orcus::load_file_content(filepath);
+    orcus::file_content content(filepath);
 
     size_t min_token_size = 0;
     size_t max_token_size = 0;

@@ -62,10 +62,10 @@ bool number_expected(
 yaml::document_tree load_doc(const char* filepath)
 {
     cout << filepath << endl;
-    string strm = load_file_content(filepath);
-    cout << strm << endl;
+    file_content strm(filepath);
+    cout << strm.str() << endl;
     yaml::document_tree doc;
-    doc.load(strm);
+    doc.load(strm.data(), strm.size());
 
     return doc;
 }
@@ -89,12 +89,12 @@ void test_yaml_invalids()
 
         ++file_count;
 
-        string strm = load_file_content(path.string().data());
+        file_content strm(path.string().data());
         yaml::document_tree doc;
 
         try
         {
-            doc.load(strm);
+            doc.load(strm.data(), strm.size());
             assert(!"yaml::parse_error was not thrown, but expected to be.");
         }
         catch (const yaml::parse_error&)
