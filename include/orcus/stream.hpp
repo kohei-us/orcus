@@ -15,6 +15,11 @@
 
 namespace orcus {
 
+/**
+ * Represents the content of a file.  The file content may be either
+ * in-memory, or memory-mapped; it is initially memory-mapped, but it may
+ * become in-memory when converted to a different encoding.
+ */
 class ORCUS_PSR_DLLPUBLIC file_content
 {
     struct impl;
@@ -30,11 +35,19 @@ public:
 
     void swap(file_content& other);
 
+    /**
+     * Load from a new file.  This will invalidate the pointer returned from
+     * the {@link data()} method prior to the call.
+     *
+     *
+     * @param filepath path of the file to load from.
+     */
     void load(const char* filepath);
 
     /**
      * Convert a non-utf-8 stream to a utf-8 one if the source stream contains
-     * a byte order mark.  If not, it does nothing.
+     * a byte order mark.  If not, it does nothing.  When the conversion
+     * happens, the converted content will be stored in-memory.
      */
     void convert_to_utf8();
 
