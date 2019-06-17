@@ -41,7 +41,7 @@ parser_base::~parser_base() {}
 
 void parser_base::skip_ws()
 {
-    skip(" \n\r\t", 4);
+    skip(ORCUS_ASCII(" \n\r\t"));
 }
 
 void parser_base::parse_true()
