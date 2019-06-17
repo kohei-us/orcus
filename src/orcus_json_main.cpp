@@ -27,7 +27,7 @@ namespace po = boost::program_options;
 namespace fs = boost::filesystem;
 
 const char* help_program =
-"The FILE must specify a path to an existing file.";
+"The FILE must specify the path to an existing file.";
 
 const char* help_json_output =
 "Output file path.";
