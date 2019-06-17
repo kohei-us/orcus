@@ -18,6 +18,7 @@
 #include <string>
 #include <memory>
 
+#include <mdds/sorted_string_map.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
@@ -25,6 +26,33 @@ using namespace std;
 using namespace orcus;
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
+
+namespace {
+
+namespace mode {
+
+enum class type {
+    unknown,
+    convert,
+    structure
+};
+
+typedef mdds::sorted_string_map<type> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
+{
+    { ORCUS_ASCII("convert"),   type::convert   },
+    { ORCUS_ASCII("structure"), type::structure },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), type::unknown);
+    return mt;
+}
+
+} // namespace mode
 
 const char* help_program =
 "The FILE must specify the path to an existing file.";
@@ -47,15 +75,38 @@ void print_json_usage(std::ostream& os, const po::options_description& desc)
     os << help_program << endl << endl << desc;
 }
 
+std::string build_mode_help_text()
+{
+    std::ostringstream os;
+    os << "Mode of operation. Select one of the following options: ";
+    auto it = mode::entries.cbegin(), ite = mode::entries.cend();
+    --ite;
+
+    for (; it != ite; ++it)
+        os << std::string(it->key, it->keylen) << ", ";
+
+    os << "or " << std::string(it->key, it->keylen) << ".";
+    return os.str();
+}
+
+struct cmd_context
+{
+    std::unique_ptr<json_config> config;
+    mode::type mode = mode::type::convert;
+};
+
 /**
  * Parse the command-line options, populate the json_config object, and
  * return that to the caller.
  */
-std::unique_ptr<json_config> parse_json_args(int argc, char** argv)
+cmd_context parse_json_args(int argc, char** argv)
 {
+    cmd_context cxt;
+
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help,h", "Print this help.")
+        ("mode", po::value<std::string>(), build_mode_help_text().data())
         ("resolve-refs", "Resolve JSON references to external files.")
         ("output,o", po::value<string>(), help_json_output)
         ("output-format,f", po::value<string>(), help_json_output_format);
@@ -82,81 +133,101 @@ std::unique_ptr<json_config> parse_json_args(int argc, char** argv)
         // Unknown options.
         cerr << e.what() << endl;
         print_json_usage(cerr, desc);
-        return nullptr;
+        return cxt;
     }
 
     if (vm.count("help"))
     {
         print_json_usage(cout, desc);
-        return nullptr;
+        return cxt;
     }
 
-    std::unique_ptr<json_config> config = orcus::make_unique<json_config>();
+    if (vm.count("mode"))
+    {
+        std::string s = vm["mode"].as<std::string>();
+        cxt.mode = mode::get().find(s.data(), s.size());
+        if (cxt.mode == mode::type::unknown)
+        {
+            cerr << "Unknown mode string '" << s << "'." << endl;
+            return cxt;
+        }
+    }
+
+    if (cxt.mode == mode::type::structure)
+        return cxt;
+
+    cxt.config = orcus::make_unique<json_config>();
 
     if (vm.count("input"))
-        config->input_path = vm["input"].as<string>();
+        cxt.config->input_path = vm["input"].as<string>();
 
     if (vm.count("output"))
-        config->output_path = vm["output"].as<string>();
+        cxt.config->output_path = vm["output"].as<string>();
 
     if (vm.count("resolve-refs"))
-        config->resolve_references = true;
+        cxt.config->resolve_references = true;
 
     if (vm.count("output-format"))
     {
         std::string outformat = vm["output-format"].as<string>();
         if (outformat == "none")
-            config->output_format = json_config::output_format_type::none;
+            cxt.config->output_format = json_config::output_format_type::none;
         else if (outformat == "xml")
-            config->output_format = json_config::output_format_type::xml;
+            cxt.config->output_format = json_config::output_format_type::xml;
         else if (outformat == "json")
-            config->output_format = orcus::json_config::output_format_type::json;
+            cxt.config->output_format = orcus::json_config::output_format_type::json;
         else if (outformat == "check")
-            config->output_format = orcus::json_config::output_format_type::check;
+            cxt.config->output_format = orcus::json_config::output_format_type::check;
         else
         {
             cerr << "Unknown output format type '" << outformat << "'." << endl;
-            return nullptr;
+            cxt.config.reset();
+            return cxt;
         }
     }
     else
     {
         cerr << "Output format is not specified." << endl;
         print_json_usage(cerr, desc);
-        return nullptr;
+        cxt.config.reset();
+        return cxt;
     }
 
-    if (config->input_path.empty())
+    if (cxt.config->input_path.empty())
     {
         cerr << err_no_input_file << endl;
         print_json_usage(cerr, desc);
-        return nullptr;
+        cxt.config.reset();
+        return cxt;
     }
 
-    if (!fs::exists(config->input_path))
+    if (!fs::exists(cxt.config->input_path))
     {
-        cerr << "Input file does not exist: " << config->input_path << endl;
-        return nullptr;
+        cerr << "Input file does not exist: " << cxt.config->input_path << endl;
+        cxt.config.reset();
+        return cxt;
     }
 
-    if (config->output_format != json_config::output_format_type::none)
+    if (cxt.config->output_format != json_config::output_format_type::none)
     {
-        if (config->output_path.empty())
+        if (cxt.config->output_path.empty())
         {
             cerr << "Output file not given." << endl;
-            return nullptr;
+            cxt.config.reset();
+            return cxt;
         }
 
         // Check to make sure the output path doesn't point to an existing
         // directory.
-        if (fs::is_directory(config->output_path))
+        if (fs::is_directory(cxt.config->output_path))
         {
             cerr << "Output file path points to an existing directory.  Aborting." << endl;
-            return nullptr;
+            cxt.config.reset();
+            return cxt;
         }
     }
 
-    return config;
+    return cxt;
 }
 
 std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content, const json_config& config)
@@ -174,13 +245,15 @@ std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content
     return doc;
 }
 
+} // anonymous namespace
+
 int main(int argc, char** argv)
 {
-    std::unique_ptr<json_config> config;
+    cmd_context cxt;
 
     try
     {
-        config = parse_json_args(argc, argv);
+        cxt = parse_json_args(argc, argv);
     }
     catch (const std::exception& e)
     {
@@ -188,25 +261,32 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    if (!config)
+
+    if (cxt.mode == mode::type::structure)
+    {
+        cout << "TODO: implement this" << endl;
+        return EXIT_SUCCESS;
+    }
+
+    if (!cxt.config || cxt.mode == mode::type::unknown)
         return EXIT_FAILURE;
 
     try
     {
-        file_content content(config->input_path.data());
-        std::unique_ptr<json::document_tree> doc = load_doc(content, *config);
+        file_content content(cxt.config->input_path.data());
+        std::unique_ptr<json::document_tree> doc = load_doc(content, *cxt.config);
 
-        switch (config->output_format)
+        switch (cxt.config->output_format)
         {
             case json_config::output_format_type::xml:
             {
-                ofstream fs(config->output_path.c_str());
+                ofstream fs(cxt.config->output_path.c_str());
                 fs << doc->dump_xml();
                 break;
             }
             case json_config::output_format_type::json:
             {
-                ofstream fs(config->output_path.c_str());
+                ofstream fs(cxt.config->output_path.c_str());
                 fs << doc->dump();
                 break;
             }
@@ -214,11 +294,11 @@ int main(int argc, char** argv)
             {
                 string xml_strm = doc->dump_xml();
                 xmlns_repository repo;
-                xmlns_context cxt = repo.create_context();
-                dom::document_tree dom(cxt);
+                xmlns_context ns_cxt = repo.create_context();
+                dom::document_tree dom(ns_cxt);
                 dom.load(xml_strm);
 
-                ofstream fs(config->output_path.c_str());
+                ofstream fs(cxt.config->output_path.c_str());
                 dom.dump_compact(fs);
                 break;
             }
