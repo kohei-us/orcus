@@ -31,15 +31,6 @@ namespace fs = boost::filesystem;
 
 namespace {
 
-const char* help_output =
-"Output directory path, or output file in the dump-check mode.";
-
-void print_usage(ostream& os, const po::options_description& desc)
-{
-    os << "Usage: orcus-xml [OPTIONS] FILE" << endl << endl;
-    os << desc;
-}
-
 namespace output_mode {
 
 enum class type {
@@ -69,6 +60,29 @@ const map_type& get()
 
 } // namespace output_mode
 
+std::string to_string(output_mode::type t)
+{
+    for (const output_mode::map_type::entry& e : output_mode::entries)
+        if (t == e.value)
+            return std::string(e.key, e.keylen);
+
+    return std::string();
+}
+
+void print_usage(ostream& os, const po::options_description& desc)
+{
+    os << "Usage: orcus-xml [OPTIONS] FILE" << endl << endl;
+    os << desc;
+}
+
+std::string build_output_help_text()
+{
+    std::ostringstream os;
+    os << "Output directory path, or output file in the "
+        << to_string(output_mode::type::dump_document_check) << " mode.";
+    return os.str();
+}
+
 std::string build_mode_help_text()
 {
     std::ostringstream os;
@@ -80,7 +94,14 @@ std::string build_mode_help_text()
         os << std::string(it->key, it->keylen) << ", ";
 
     os << "or " << std::string(it->key, it->keylen) << ".";
+    return os.str();
+}
 
+std::string build_map_help_text()
+{
+    std::ostringstream os;
+    os << "Path to the map file. A map file is required for all modes except for the "
+        << to_string(output_mode::type::xml_structure) << " mode.";
     return os.str();
 }
 
@@ -88,14 +109,12 @@ std::string build_mode_help_text()
 
 int main(int argc, char** argv)
 {
-    std::string help_mode = build_mode_help_text();
-
     po::options_description desc("Options");
     desc.add_options()
         ("help,h", "Print this help.")
-        ("mode", po::value<std::string>(), help_mode.data())
-        ("map,m", po::value<std::string>(), "Path to the map file.")
-        ("output,o", po::value<std::string>(), help_output)
+        ("mode", po::value<std::string>(), build_mode_help_text().data())
+        ("map,m", po::value<std::string>(), build_map_help_text().data())
+        ("output,o", po::value<std::string>(), build_output_help_text().data())
         ("output-format,f", po::value<string>(), gen_help_output_format().data())
     ;
 
@@ -191,6 +210,19 @@ int main(int argc, char** argv)
             tree.dump_compact(file);
 
             return EXIT_SUCCESS;
+        }
+
+        if (!vm.count("map") || map_path.empty())
+        {
+            cerr << "Map file is required, but is not given." << endl;
+            print_usage(cout, desc);
+            return EXIT_FAILURE;
+        }
+
+        if (!fs::is_regular_file(map_path))
+        {
+            cerr << "'" << map_path << "' is not a valid map file." << endl;
+            return EXIT_FAILURE;
         }
 
         spreadsheet::document doc;
