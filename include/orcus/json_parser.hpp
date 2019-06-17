@@ -43,6 +43,7 @@ private:
     void root_value();
     void value();
     void array();
+    void end_array();
     void object();
     void number();
     void string();
@@ -145,9 +146,7 @@ void json_parser<_Handler>::array()
 
         if (cur_char() == ']')
         {
-            m_handler.end_array();
-            next();
-            skip_ws();
+            end_array();
             return;
         }
 
@@ -159,9 +158,7 @@ void json_parser<_Handler>::array()
             switch (cur_char())
             {
                 case ']':
-                    m_handler.end_array();
-                    next();
-                    skip_ws();
+                    end_array();
                     return;
                 case ',':
                     if (next_char() == ']')
@@ -185,6 +182,14 @@ void json_parser<_Handler>::array()
     }
 
     throw json::parse_error("array: failed to parse array.", offset());
+}
+
+template<typename _Handler>
+void json_parser<_Handler>::end_array()
+{
+    m_handler.end_array();
+    next();
+    skip_ws();
 }
 
 template<typename _Handler>
