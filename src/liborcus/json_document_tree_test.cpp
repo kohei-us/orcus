@@ -26,6 +26,9 @@ const char* json_test_dirs[] = {
     SRCDIR"/test/json/basic2/",
     SRCDIR"/test/json/basic3/",
     SRCDIR"/test/json/basic4/",
+    SRCDIR"/test/json/empty-array-1/",
+    SRCDIR"/test/json/empty-array-2/",
+    SRCDIR"/test/json/empty-array-3/",
     SRCDIR"/test/json/nested1/",
     SRCDIR"/test/json/nested2/",
     SRCDIR"/test/json/swagger/"

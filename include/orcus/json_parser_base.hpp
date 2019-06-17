@@ -41,6 +41,7 @@ protected:
     parser_base(const char* p, size_t n);
     ~parser_base();
 
+    void skip_ws();
     void parse_true();
     void parse_false();
     void parse_null();
