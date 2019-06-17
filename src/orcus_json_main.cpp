@@ -202,14 +202,14 @@ int main(int argc, char** argv)
             {
                 ofstream fs(config->output_path.c_str());
                 fs << doc->dump_xml();
+                break;
             }
-            break;
             case json_config::output_format_type::json:
             {
                 ofstream fs(config->output_path.c_str());
                 fs << doc->dump();
+                break;
             }
-            break;
             case json_config::output_format_type::check:
             {
                 string xml_strm = doc->dump_xml();
@@ -220,8 +220,8 @@ int main(int argc, char** argv)
 
                 ofstream fs(config->output_path.c_str());
                 dom.dump_compact(fs);
+                break;
             }
-            break;
             default:
                 ;
         }
