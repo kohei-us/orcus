@@ -89,7 +89,7 @@ std::string build_mode_help_text()
     return os.str();
 }
 
-struct cmd_context
+struct cmd_params
 {
     std::unique_ptr<json_config> config;
     mode::type mode = mode::type::convert;
@@ -99,9 +99,9 @@ struct cmd_context
  * Parse the command-line options, populate the json_config object, and
  * return that to the caller.
  */
-cmd_context parse_json_args(int argc, char** argv)
+cmd_params parse_json_args(int argc, char** argv)
 {
-    cmd_context cxt;
+    cmd_params params;
 
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -133,94 +133,94 @@ cmd_context parse_json_args(int argc, char** argv)
         // Unknown options.
         cerr << e.what() << endl;
         print_json_usage(cerr, desc);
-        return cxt;
+        return params;
     }
 
     if (vm.count("help"))
     {
         print_json_usage(cout, desc);
-        return cxt;
+        return params;
     }
 
     if (vm.count("mode"))
     {
         std::string s = vm["mode"].as<std::string>();
-        cxt.mode = mode::get().find(s.data(), s.size());
-        if (cxt.mode == mode::type::unknown)
+        params.mode = mode::get().find(s.data(), s.size());
+        if (params.mode == mode::type::unknown)
         {
             cerr << "Unknown mode string '" << s << "'." << endl;
-            return cxt;
+            return params;
         }
     }
 
-    if (cxt.mode == mode::type::structure)
-        return cxt;
+    if (params.mode == mode::type::structure)
+        return params;
 
-    cxt.config = orcus::make_unique<json_config>();
+    params.config = orcus::make_unique<json_config>();
 
     if (vm.count("input"))
-        cxt.config->input_path = vm["input"].as<string>();
+        params.config->input_path = vm["input"].as<string>();
 
     if (vm.count("output"))
-        cxt.config->output_path = vm["output"].as<string>();
+        params.config->output_path = vm["output"].as<string>();
 
     if (vm.count("resolve-refs"))
-        cxt.config->resolve_references = true;
+        params.config->resolve_references = true;
 
     if (vm.count("output-format"))
     {
         std::string outformat = vm["output-format"].as<string>();
         if (outformat == "none")
-            cxt.config->output_format = json_config::output_format_type::none;
+            params.config->output_format = json_config::output_format_type::none;
         else if (outformat == "xml")
-            cxt.config->output_format = json_config::output_format_type::xml;
+            params.config->output_format = json_config::output_format_type::xml;
         else if (outformat == "json")
-            cxt.config->output_format = orcus::json_config::output_format_type::json;
+            params.config->output_format = orcus::json_config::output_format_type::json;
         else if (outformat == "check")
-            cxt.config->output_format = orcus::json_config::output_format_type::check;
+            params.config->output_format = orcus::json_config::output_format_type::check;
         else
         {
             cerr << "Unknown output format type '" << outformat << "'." << endl;
-            cxt.config.reset();
-            return cxt;
+            params.config.reset();
+            return params;
         }
     }
     else
     {
         cerr << "Output format is not specified." << endl;
         print_json_usage(cerr, desc);
-        cxt.config.reset();
-        return cxt;
+        params.config.reset();
+        return params;
     }
 
-    if (cxt.config->input_path.empty())
+    if (params.config->input_path.empty())
     {
         cerr << err_no_input_file << endl;
         print_json_usage(cerr, desc);
-        cxt.config.reset();
-        return cxt;
+        params.config.reset();
+        return params;
     }
 
-    if (!fs::exists(cxt.config->input_path))
+    if (!fs::exists(params.config->input_path))
     {
-        cerr << "Input file does not exist: " << cxt.config->input_path << endl;
-        cxt.config.reset();
-        return cxt;
+        cerr << "Input file does not exist: " << params.config->input_path << endl;
+        params.config.reset();
+        return params;
     }
 
-    if (cxt.config->output_format != json_config::output_format_type::none)
+    if (params.config->output_format != json_config::output_format_type::none)
     {
         // Check to make sure the output path doesn't point to an existing
         // directory.
-        if (fs::is_directory(cxt.config->output_path))
+        if (fs::is_directory(params.config->output_path))
         {
             cerr << "Output file path points to an existing directory.  Aborting." << endl;
-            cxt.config.reset();
-            return cxt;
+            params.config.reset();
+            return params;
         }
     }
 
-    return cxt;
+    return params;
 }
 
 std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content, const json_config& config)
@@ -242,11 +242,11 @@ std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content
 
 int main(int argc, char** argv)
 {
-    cmd_context cxt;
+    cmd_params params;
 
     try
     {
-        cxt = parse_json_args(argc, argv);
+        params = parse_json_args(argc, argv);
     }
     catch (const std::exception& e)
     {
@@ -255,31 +255,31 @@ int main(int argc, char** argv)
     }
 
 
-    if (cxt.mode == mode::type::structure)
+    if (params.mode == mode::type::structure)
     {
         cout << "TODO: implement this" << endl;
         return EXIT_SUCCESS;
     }
 
-    if (!cxt.config || cxt.mode == mode::type::unknown)
+    if (!params.config || params.mode == mode::type::unknown)
         return EXIT_FAILURE;
 
     try
     {
-        file_content content(cxt.config->input_path.data());
-        std::unique_ptr<json::document_tree> doc = load_doc(content, *cxt.config);
+        file_content content(params.config->input_path.data());
+        std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
 
         std::ostream* os = &cout;
         std::unique_ptr<std::ofstream> fs;
 
-        if (!cxt.config->output_path.empty())
+        if (!params.config->output_path.empty())
         {
             // Output to stdout when output path is not given.
-            fs = std::make_unique<std::ofstream>(cxt.config->output_path.data());
+            fs = std::make_unique<std::ofstream>(params.config->output_path.data());
             os = fs.get();
         }
 
-        switch (cxt.config->output_format)
+        switch (params.config->output_format)
         {
             case json_config::output_format_type::xml:
             {
