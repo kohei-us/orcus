@@ -159,6 +159,22 @@ cmd_params parse_json_args(int argc, char** argv)
     if (vm.count("input"))
         params.config->input_path = vm["input"].as<string>();
 
+    if (params.config->input_path.empty())
+    {
+        // No input file is given.
+        cerr << err_no_input_file << endl;
+        print_json_usage(cerr, desc);
+        params.config.reset();
+        return params;
+    }
+
+    if (!fs::exists(params.config->input_path))
+    {
+        cerr << "Input file does not exist: " << params.config->input_path << endl;
+        params.config.reset();
+        return params;
+    }
+
     if (params.mode == mode::type::structure)
         return params;
 
@@ -190,21 +206,6 @@ cmd_params parse_json_args(int argc, char** argv)
     {
         cerr << "Output format is not specified." << endl;
         print_json_usage(cerr, desc);
-        params.config.reset();
-        return params;
-    }
-
-    if (params.config->input_path.empty())
-    {
-        cerr << err_no_input_file << endl;
-        print_json_usage(cerr, desc);
-        params.config.reset();
-        return params;
-    }
-
-    if (!fs::exists(params.config->input_path))
-    {
-        cerr << "Input file does not exist: " << params.config->input_path << endl;
         params.config.reset();
         return params;
     }
@@ -243,35 +244,25 @@ std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content
 
 int main(int argc, char** argv)
 {
-    cmd_params params;
-    file_content content;
-
     try
     {
-        params = parse_json_args(argc, argv);
-        content.load(params.config->input_path.data());
-    }
-    catch (const std::exception& e)
-    {
-        cerr << e.what() << endl;
-        return EXIT_FAILURE;
-    }
+        cmd_params params = parse_json_args(argc, argv);
 
+        if (!params.config || params.mode == mode::type::unknown)
+            return EXIT_FAILURE;
 
-    if (params.mode == mode::type::structure)
-    {
-        cout << "TODO: implement this" << endl;
-        json_structure_tree tree;
-        tree.parse(content.data(), content.size());
+        assert(!params.config->input_path.empty());
+        file_content content(params.config->input_path.data());
 
-        return EXIT_SUCCESS;
-    }
+        if (params.mode == mode::type::structure)
+        {
+            cout << "TODO: implement this" << endl;
+            json_structure_tree tree;
+            tree.parse(content.data(), content.size());
 
-    if (!params.config || params.mode == mode::type::unknown)
-        return EXIT_FAILURE;
+            return EXIT_SUCCESS;
+        }
 
-    try
-    {
         std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
 
         std::ostream* os = &cout;
