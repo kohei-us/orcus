@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_XML_STRUCTURE_TREE_HPP__
-#define __ORCUS_XML_STRUCTURE_TREE_HPP__
+#ifndef INCLUDED_ORCUS_XML_STRUCTURE_TREE_HPP
+#define INCLUDED_ORCUS_XML_STRUCTURE_TREE_HPP
 
 #include "env.hpp"
 #include "types.hpp"
@@ -69,11 +69,12 @@ public:
     class ORCUS_DLLPUBLIC walker
     {
         friend class xml_structure_tree;
-        walker_impl* mp_impl;
 
-        walker(); // disabled
+        std::unique_ptr<walker_impl> mp_impl;
+
         walker(const xml_structure_tree::impl& parent_impl);
     public:
+        walker() = delete;
         walker(const walker& r);
         ~walker();
         walker& operator= (const walker& r);

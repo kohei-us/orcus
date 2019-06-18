@@ -332,19 +332,16 @@ xml_structure_tree::element::element(const entity_name& _name, bool _repeat) :
     name(_name), repeat(_repeat) {}
 
 xml_structure_tree::walker::walker(const xml_structure_tree::impl& parent_impl) :
-    mp_impl(new walker_impl(parent_impl))
+    mp_impl(orcus::make_unique<walker_impl>(parent_impl))
 {
 }
 
 xml_structure_tree::walker::walker(const walker& r) :
-    mp_impl(new walker_impl(*r.mp_impl))
+    mp_impl(orcus::make_unique<walker_impl>(*r.mp_impl))
 {
 }
 
-xml_structure_tree::walker::~walker()
-{
-    delete mp_impl;
-}
+xml_structure_tree::walker::~walker() {}
 
 xml_structure_tree::walker& xml_structure_tree::walker::operator= (const walker& r)
 {
@@ -489,7 +486,7 @@ xml_structure_tree::element xml_structure_tree::walker::select_by_path(const std
 }
 
 xml_structure_tree::xml_structure_tree(xmlns_context& xmlns_cxt) :
-    mp_impl(std::make_unique<impl>(xmlns_cxt)) {}
+    mp_impl(orcus::make_unique<impl>(xmlns_cxt)) {}
 
 xml_structure_tree::~xml_structure_tree() {}
 
