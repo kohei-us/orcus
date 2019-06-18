@@ -214,6 +214,7 @@
 				<F N="../include/orcus/json_parser.hpp"/>
 				<F N="../include/orcus/json_parser_base.hpp"/>
 				<F N="../include/orcus/json_parser_thread.hpp"/>
+				<F N="../include/orcus/json_structure_tree.hpp"/>
 				<F N="../include/orcus/measurement.hpp"/>
 				<F N="../include/orcus/orcus_csv.hpp"/>
 				<F N="../include/orcus/orcus_gnumeric.hpp"/>
@@ -308,6 +309,7 @@
 				<F N="../src/liborcus/interface.cpp"/>
 				<F N="../src/liborcus/json_document_tree.cpp"/>
 				<F N="../src/liborcus/json_document_tree_test.cpp"/>
+				<F N="../src/liborcus/json_structure_tree.cpp"/>
 				<F N="../src/liborcus/json_util.cpp"/>
 				<F N="../src/liborcus/json_util.hpp"/>
 				<F N="../src/liborcus/measurement.cpp"/>

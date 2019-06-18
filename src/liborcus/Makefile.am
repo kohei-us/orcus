@@ -46,6 +46,7 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	info.cpp \
 	interface.cpp \
 	json_document_tree.cpp \
+	json_structure_tree.cpp \
 	json_util.hpp \
 	json_util.cpp \
 	spreadsheet_interface.cpp \

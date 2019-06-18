@@ -7,6 +7,7 @@
 
 #include "orcus/json_document_tree.hpp"
 #include "orcus/json_parser_base.hpp"
+#include "orcus/json_structure_tree.hpp"
 #include "orcus/config.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/xml_namespace.hpp"
@@ -153,13 +154,13 @@ cmd_params parse_json_args(int argc, char** argv)
         }
     }
 
-    if (params.mode == mode::type::structure)
-        return params;
-
     params.config = orcus::make_unique<json_config>();
 
     if (vm.count("input"))
         params.config->input_path = vm["input"].as<string>();
+
+    if (params.mode == mode::type::structure)
+        return params;
 
     if (vm.count("output"))
         params.config->output_path = vm["output"].as<string>();
@@ -243,10 +244,12 @@ std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content
 int main(int argc, char** argv)
 {
     cmd_params params;
+    file_content content;
 
     try
     {
         params = parse_json_args(argc, argv);
+        content.load(params.config->input_path.data());
     }
     catch (const std::exception& e)
     {
@@ -258,6 +261,9 @@ int main(int argc, char** argv)
     if (params.mode == mode::type::structure)
     {
         cout << "TODO: implement this" << endl;
+        json_structure_tree tree;
+        tree.parse(content.data(), content.size());
+
         return EXIT_SUCCESS;
     }
 
@@ -266,7 +272,6 @@ int main(int argc, char** argv)
 
     try
     {
-        file_content content(params.config->input_path.data());
         std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
 
         std::ostream* os = &cout;
