@@ -210,13 +210,6 @@ cmd_context parse_json_args(int argc, char** argv)
 
     if (cxt.config->output_format != json_config::output_format_type::none)
     {
-        if (cxt.config->output_path.empty())
-        {
-            cerr << "Output file not given." << endl;
-            cxt.config.reset();
-            return cxt;
-        }
-
         // Check to make sure the output path doesn't point to an existing
         // directory.
         if (fs::is_directory(cxt.config->output_path))
@@ -276,18 +269,26 @@ int main(int argc, char** argv)
         file_content content(cxt.config->input_path.data());
         std::unique_ptr<json::document_tree> doc = load_doc(content, *cxt.config);
 
+        std::ostream* os = &cout;
+        std::unique_ptr<std::ofstream> fs;
+
+        if (!cxt.config->output_path.empty())
+        {
+            // Output to stdout when output path is not given.
+            fs = std::make_unique<std::ofstream>(cxt.config->output_path.data());
+            os = fs.get();
+        }
+
         switch (cxt.config->output_format)
         {
             case json_config::output_format_type::xml:
             {
-                ofstream fs(cxt.config->output_path.c_str());
-                fs << doc->dump_xml();
+                *os << doc->dump_xml();
                 break;
             }
             case json_config::output_format_type::json:
             {
-                ofstream fs(cxt.config->output_path.c_str());
-                fs << doc->dump();
+                *os << doc->dump();
                 break;
             }
             case json_config::output_format_type::check:
@@ -298,8 +299,7 @@ int main(int argc, char** argv)
                 dom::document_tree dom(ns_cxt);
                 dom.load(xml_strm);
 
-                ofstream fs(cxt.config->output_path.c_str());
-                dom.dump_compact(fs);
+                dom.dump_compact(*os);
                 break;
             }
             default:
