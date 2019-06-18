@@ -260,19 +260,18 @@ void print_scope(ostream& os, const scopes_type& scopes, const xmlns_context& cx
 
 }
 
-struct xml_structure_tree_impl
+struct xml_structure_tree::impl
 {
     string_pool m_pool;
     xmlns_context& m_xmlns_cxt;
     root* mp_root;
 
-    xml_structure_tree_impl(const xml_structure_tree_impl&) = delete;
-    xml_structure_tree_impl& operator=(const xml_structure_tree_impl&) = delete;
+    impl(const impl&) = delete;
+    impl& operator=(const impl&) = delete;
 
-    xml_structure_tree_impl(xmlns_context& xmlns_cxt) :
-        m_xmlns_cxt(xmlns_cxt), mp_root(nullptr) {}
+    impl(xmlns_context& xmlns_cxt) : m_xmlns_cxt(xmlns_cxt), mp_root(nullptr) {}
 
-    ~xml_structure_tree_impl()
+    ~impl()
     {
         delete mp_root;
     }
@@ -289,14 +288,14 @@ struct xml_structure_tree_impl
 
 struct xml_structure_tree::walker_impl
 {
-    const xml_structure_tree_impl& m_parent_impl;
+    const xml_structure_tree::impl& m_parent_impl;
     root* mp_root; /// Root element of the authoritative tree.
     element_ref m_cur_elem;
     std::vector<element_ref> m_scopes;
 
     walker_impl& operator=(const walker_impl&) = delete;
 
-    walker_impl(const xml_structure_tree_impl& parent_impl) :
+    walker_impl(const xml_structure_tree::impl& parent_impl) :
         m_parent_impl(parent_impl), mp_root(parent_impl.mp_root) {}
 
     walker_impl(const walker_impl& r) :
@@ -336,7 +335,7 @@ xml_structure_tree::element::element() :
 xml_structure_tree::element::element(const entity_name& _name, bool _repeat) :
     name(_name), repeat(_repeat) {}
 
-xml_structure_tree::walker::walker(const xml_structure_tree_impl& parent_impl) :
+xml_structure_tree::walker::walker(const xml_structure_tree::impl& parent_impl) :
     mp_impl(new walker_impl(parent_impl))
 {
 }
@@ -494,12 +493,9 @@ xml_structure_tree::element xml_structure_tree::walker::select_by_path(const std
 }
 
 xml_structure_tree::xml_structure_tree(xmlns_context& xmlns_cxt) :
-    mp_impl(new xml_structure_tree_impl(xmlns_cxt)) {}
+    mp_impl(std::make_unique<impl>(xmlns_cxt)) {}
 
-xml_structure_tree::~xml_structure_tree()
-{
-    delete mp_impl;
-}
+xml_structure_tree::~xml_structure_tree() {}
 
 void xml_structure_tree::parse(const char* p, size_t n)
 {

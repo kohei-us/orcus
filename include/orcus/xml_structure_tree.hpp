@@ -12,11 +12,11 @@
 #include "types.hpp"
 
 #include <ostream>
+#include <memory>
 
 namespace orcus {
 
 class xmlns_context;
-struct xml_structure_tree_impl;
 
 /**
  * Tree representing the structure of elements in XML content.  Recurring
@@ -26,10 +26,12 @@ struct xml_structure_tree_impl;
  */
 class ORCUS_DLLPUBLIC xml_structure_tree
 {
-    xml_structure_tree(const xml_structure_tree&); // disabled;
-    xml_structure_tree& operator= (const xml_structure_tree&); // disabled
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
 public:
+    xml_structure_tree(const xml_structure_tree&) = delete;
+    xml_structure_tree& operator= (const xml_structure_tree&) = delete;
 
     struct ORCUS_DLLPUBLIC entity_name
     {
@@ -70,7 +72,7 @@ public:
         walker_impl* mp_impl;
 
         walker(); // disabled
-        walker(const xml_structure_tree_impl& parent_impl);
+        walker(const xml_structure_tree::impl& parent_impl);
     public:
         walker(const walker& r);
         ~walker();
@@ -151,9 +153,6 @@ public:
     void dump_compact(std::ostream& os) const;
 
     walker get_walker() const;
-
-private:
-    xml_structure_tree_impl* mp_impl;
 };
 
 }
