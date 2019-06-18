@@ -202,9 +202,9 @@ public:
         m_attrs.push_back(xml_structure_tree::entity_name(attr.ns, attr.name));
     }
 
-    root* release_root_element()
+    std::unique_ptr<root> release_root_element()
     {
-        return mp_root.release();
+        return std::move(mp_root);
     }
 };
 
@@ -264,17 +264,13 @@ struct xml_structure_tree::impl
 {
     string_pool m_pool;
     xmlns_context& m_xmlns_cxt;
-    root* mp_root;
+    std::unique_ptr<root> mp_root;
 
     impl(const impl&) = delete;
     impl& operator=(const impl&) = delete;
 
-    impl(xmlns_context& xmlns_cxt) : m_xmlns_cxt(xmlns_cxt), mp_root(nullptr) {}
-
-    ~impl()
-    {
-        delete mp_root;
-    }
+    impl(xmlns_context& xmlns_cxt) : m_xmlns_cxt(xmlns_cxt) {}
+    ~impl() {}
 
     std::string get_element_str(const xml_structure_tree::entity_name& name) const
     {
@@ -296,7 +292,7 @@ struct xml_structure_tree::walker_impl
     walker_impl& operator=(const walker_impl&) = delete;
 
     walker_impl(const xml_structure_tree::impl& parent_impl) :
-        m_parent_impl(parent_impl), mp_root(parent_impl.mp_root) {}
+        m_parent_impl(parent_impl), mp_root(parent_impl.mp_root.get()) {}
 
     walker_impl(const walker_impl& r) :
         m_parent_impl(r.m_parent_impl), mp_root(r.mp_root), m_cur_elem(r.m_cur_elem), m_scopes(r.m_scopes) {}
