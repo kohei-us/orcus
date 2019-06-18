@@ -30,6 +30,27 @@ namespace fs = boost::filesystem;
 
 namespace {
 
+namespace output_format {
+
+typedef mdds::sorted_string_map<json_config::output_format_type> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
+{
+    { ORCUS_ASCII("check"), json_config::output_format_type::check },
+    { ORCUS_ASCII("json"),  json_config::output_format_type::json  },
+    { ORCUS_ASCII("none"),  json_config::output_format_type::none  },
+    { ORCUS_ASCII("xml"),   json_config::output_format_type::xml   },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), json_config::output_format_type::unknown);
+    return mt;
+}
+
+} // namespace output_format
+
 namespace mode {
 
 enum class type {
@@ -186,18 +207,12 @@ cmd_params parse_json_args(int argc, char** argv)
 
     if (vm.count("output-format"))
     {
-        std::string outformat = vm["output-format"].as<string>();
-        if (outformat == "none")
-            params.config->output_format = json_config::output_format_type::none;
-        else if (outformat == "xml")
-            params.config->output_format = json_config::output_format_type::xml;
-        else if (outformat == "json")
-            params.config->output_format = orcus::json_config::output_format_type::json;
-        else if (outformat == "check")
-            params.config->output_format = orcus::json_config::output_format_type::check;
-        else
+        std::string s = vm["output-format"].as<string>();
+        params.config->output_format = output_format::get().find(s.data(), s.size());
+
+        if (params.config->output_format == json_config::output_format_type::unknown)
         {
-            cerr << "Unknown output format type '" << outformat << "'." << endl;
+            cerr << "Unknown output format type '" << s << "'." << endl;
             params.config.reset();
             return params;
         }

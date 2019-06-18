@@ -61,7 +61,9 @@ struct ORCUS_DLLPUBLIC json_config
 {
     enum class output_format_type
     {
-        /** Output format is not specified.  */
+        /** Output format is unknown or unspecified. */
+        unknown,
+        /** Output format is intentionally set to none.  */
         none,
         /** Output format is XML. */
         xml,
