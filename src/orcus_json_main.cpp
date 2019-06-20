@@ -269,17 +269,6 @@ int main(int argc, char** argv)
         assert(!params.config->input_path.empty());
         file_content content(params.config->input_path.data());
 
-        if (params.mode == mode::type::structure)
-        {
-            cout << "TODO: implement this" << endl;
-            json_structure_tree tree;
-            tree.parse(content.data(), content.size());
-
-            return EXIT_SUCCESS;
-        }
-
-        std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
-
         std::ostream* os = &cout;
         std::unique_ptr<std::ofstream> fs;
 
@@ -289,6 +278,17 @@ int main(int argc, char** argv)
             fs = std::make_unique<std::ofstream>(params.config->output_path.data());
             os = fs.get();
         }
+
+        if (params.mode == mode::type::structure)
+        {
+            json::structure_tree tree;
+            tree.parse(content.data(), content.size());
+            tree.dump_compact(*os);
+
+            return EXIT_SUCCESS;
+        }
+
+        std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
 
         switch (params.config->output_format)
         {

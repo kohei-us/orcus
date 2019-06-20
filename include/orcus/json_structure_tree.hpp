@@ -14,26 +14,26 @@
 #include <ostream>
 #include <memory>
 
-namespace orcus {
+namespace orcus { namespace json {
 
-class ORCUS_DLLPUBLIC json_structure_tree
+class ORCUS_DLLPUBLIC structure_tree
 {
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
 public:
-    json_structure_tree(const json_structure_tree&) = delete;
-    json_structure_tree& operator= (const json_structure_tree&) = delete;
+    structure_tree(const structure_tree&) = delete;
+    structure_tree& operator= (const structure_tree&) = delete;
 
-    json_structure_tree();
-    ~json_structure_tree();
+    structure_tree();
+    ~structure_tree();
 
     void parse(const char* p, size_t n);
 
     void dump_compact(std::ostream& os) const;
 };
 
-}
+}}
 
 #endif
 
