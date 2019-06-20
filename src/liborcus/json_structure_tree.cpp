@@ -27,7 +27,20 @@ struct structure_node
 
     std::deque<structure_node> children;
 
+    pstring name;
+
     structure_node(node_type _type) : type(_type) {}
+
+    bool operator== (const structure_node& other) const
+    {
+        if (type != other.type)
+            return false;
+
+        if (type != object_key)
+            return true;
+
+        return name == other.name;
+    }
 };
 
 } // anonymous namespace
@@ -66,7 +79,9 @@ struct structure_tree::impl
 
     void object_key(const char* p, size_t len, bool transient)
     {
-
+        structure_node node(structure_node::object_key);
+        node.name = pstring(p, len);
+        push_stack(node);
     }
 
     void end_object()
@@ -108,30 +123,25 @@ private:
         return *m_stack.back();
     }
 
-    void push_stack(structure_node::node_type type)
+    void push_stack(const structure_node& node)
     {
         if (!m_root)
         {
             // This is the very first node.
-            m_root = orcus::make_unique<structure_node>(type);
+            assert(node.type != structure_node::object_key);
+            m_root = orcus::make_unique<structure_node>(node.type);
             m_stack.push_back(m_root.get());
             return;
         }
 
         // See if the current node has a child node of the specified type.
         structure_node& cur_node = get_current_node();
-        auto it = std::find_if(
-            cur_node.children.begin(), cur_node.children.end(),
-            [type](const structure_node& nd) -> bool
-            {
-                return nd.type == type;
-            }
-        );
+        auto it = std::find(cur_node.children.begin(), cur_node.children.end(), node);
 
         if (it == cur_node.children.end())
         {
             // current node doesn't have an array child.  Add one.
-            cur_node.children.emplace_back(type);
+            cur_node.children.emplace_back(node);
             m_stack.push_back(&cur_node.children.back());
         }
         else
