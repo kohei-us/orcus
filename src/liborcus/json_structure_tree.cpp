@@ -23,9 +23,14 @@ struct structure_node;
 
 using node_children_type = std::deque<structure_node>;
 
+/**
+ * Represents a node inside a JSON structure tree.
+ */
 struct structure_node
 {
     enum node_type { unknown, array, object, object_key, value };
+
+    bool repeat = false;
 
     node_type type = unknown;
 
@@ -49,6 +54,9 @@ struct structure_node
 
 using stack_type = std::vector<structure_node*>;
 
+/**
+ * Represents a scope during structure tree traversal.
+ */
 struct scope
 {
     const structure_node& node;
@@ -73,6 +81,10 @@ void print_scopes(std::ostream& os, const scope_stack_type& scopes)
             default:
                 os << "???";
         }
+
+        if (s.node.repeat)
+            os << "(*)";
+
         os << '/';
     }
 }
@@ -180,7 +192,8 @@ struct structure_tree::impl
                 assert(!cur_node.children.empty());
 
                 // This node has child nodes. Push a new scope and trigger a new inner loop.
-                ++cur_scope.current_pos;
+
+                ++cur_scope.current_pos; // Don't forget to move to the next sibling for when we return to this scope.
                 scopes.emplace_back(cur_node);
                 new_scope = true;
                 break;
@@ -201,6 +214,14 @@ private:
         return *m_stack.back();
     }
 
+    bool is_node_repeatable(const structure_node& node) const
+    {
+        if (m_stack.back()->type != structure_node::array)
+            return false;
+
+        return node.type == structure_node::array || node.type == structure_node::object;
+    }
+
     void push_stack(const structure_node& node)
     {
         if (!m_root)
@@ -218,15 +239,18 @@ private:
 
         if (it == cur_node.children.end())
         {
-            // current node doesn't have an array child.  Add one.
+            // current node doesn't have a child of specified type.  Add one.
             cur_node.children.emplace_back(node);
             m_stack.push_back(&cur_node.children.back());
         }
         else
         {
-            // current node does have an array child.
+            // current node does have a child of specified type.
+            bool repeat = is_node_repeatable(node);
             structure_node& child = *it;
+            child.repeat = repeat;
             m_stack.push_back(&child);
+
             std::cout << __FILE__ << ":" << __LINE__ << " (structure_tree:impl:push_stack): repeat" << std::endl;
         }
     }
