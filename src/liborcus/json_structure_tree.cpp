@@ -19,13 +19,17 @@ namespace orcus { namespace json {
 
 namespace {
 
+struct structure_node;
+
+using node_children_type = std::deque<structure_node>;
+
 struct structure_node
 {
     enum node_type { unknown, array, object, object_key, value };
 
     node_type type = unknown;
 
-    std::deque<structure_node> children;
+    node_children_type children;
 
     pstring name;
 
@@ -43,12 +47,40 @@ struct structure_node
     }
 };
 
+using stack_type = std::vector<structure_node*>;
+
+struct scope
+{
+    const structure_node& node;
+    node_children_type::const_iterator current_pos;
+
+    scope(const structure_node& _node) :
+        node(_node),
+        current_pos(node.children.begin()) {}
+};
+
+using scope_stack_type = std::vector<scope>;
+
+void print_scopes(std::ostream& os, const scope_stack_type& scopes)
+{
+    for (const scope& s : scopes)
+    {
+        switch (s.node.type)
+        {
+            case structure_node::array:
+                os << "array";
+                break;
+            default:
+                os << "???";
+        }
+        os << '/';
+    }
+}
+
 } // anonymous namespace
 
 struct structure_tree::impl
 {
-    using stack_type = std::vector<structure_node*>;
-
     std::unique_ptr<structure_node> m_root;
     stack_type m_stack;
 
@@ -113,6 +145,52 @@ struct structure_tree::impl
     void number(double val)
     {
         push_value();
+    }
+
+    void dump_compact(std::ostream& os) const
+    {
+        if (!m_root)
+            return;
+
+        os << '/';
+
+        scope_stack_type scopes;
+        scopes.emplace_back(*m_root);
+
+        while (!scopes.empty())
+        {
+            scope& cur_scope = scopes.back();
+
+            bool new_scope = false;
+
+            for (; cur_scope.current_pos != cur_scope.node.children.end(); ++cur_scope.current_pos)
+            {
+                const structure_node& cur_node = *cur_scope.current_pos;
+
+                if (cur_node.type == structure_node::value)
+                {
+                    assert(cur_node.children.empty());
+
+                    // Print this leaf node and all its parent scopes.
+                    print_scopes(os, scopes);
+                    os << "value" << std::endl;
+                    continue;
+                }
+
+                assert(!cur_node.children.empty());
+
+                // This node has child nodes. Push a new scope and trigger a new inner loop.
+                ++cur_scope.current_pos;
+                scopes.emplace_back(cur_node);
+                new_scope = true;
+                break;
+            }
+
+            if (new_scope)
+                continue;
+
+            scopes.pop_back();
+        }
     }
 
 private:
@@ -180,7 +258,7 @@ void structure_tree::parse(const char* p, size_t n)
 
 void structure_tree::dump_compact(std::ostream& os) const
 {
-    std::cout << __FILE__ << ":" << __LINE__ << " (structure_tree:dump_compact): " << std::endl;
+    mp_impl->dump_compact(os);
 }
 
 }}
