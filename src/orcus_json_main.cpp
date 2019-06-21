@@ -196,11 +196,11 @@ cmd_params parse_json_args(int argc, char** argv)
         return params;
     }
 
-    if (params.mode == mode::type::structure)
-        return params;
-
     if (vm.count("output"))
         params.config->output_path = vm["output"].as<string>();
+
+    if (params.mode == mode::type::structure)
+        return params;
 
     if (vm.count("resolve-refs"))
         params.config->resolve_references = true;
