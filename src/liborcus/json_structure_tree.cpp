@@ -82,12 +82,20 @@ using scope_stack_type = std::vector<scope>;
 
 void print_scopes(std::ostream& os, const scope_stack_type& scopes)
 {
+    os << '/';
+
     for (const scope& s : scopes)
     {
         switch (s.node.type)
         {
             case structure_node::array:
                 os << "array";
+                break;
+            case structure_node::object:
+                os << "object";
+                break;
+            case structure_node::object_key:
+                os << "['" << s.node.name << "']";
                 break;
             default:
                 os << "???";
@@ -181,8 +189,6 @@ struct structure_tree::impl
     {
         if (!m_root)
             return;
-
-        os << '/';
 
         scope_stack_type scopes;
         scopes.emplace_back(*m_root);
@@ -294,6 +300,10 @@ private:
             cur_node.child_count = cur_scope.child_count;
 
         m_stack.pop_back();
+
+        if (!m_stack.empty() && get_current_scope().node.type == structure_node::object_key)
+            // Object key is a special non-leaf node that can only have one child.
+            m_stack.pop_back();
     }
 };
 
