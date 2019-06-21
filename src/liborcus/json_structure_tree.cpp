@@ -36,6 +36,8 @@ struct structure_node
 
     node_children_type children;
 
+    uint32_t child_count = 0;
+
     pstring name;
 
     structure_node(node_type _type) : type(_type) {}
@@ -52,7 +54,16 @@ struct structure_node
     }
 };
 
-using stack_type = std::vector<structure_node*>;
+struct parse_scope
+{
+    structure_node& node;
+
+    uint32_t child_count = 0;
+
+    parse_scope(structure_node& _node) : node(_node) {}
+};
+
+using parse_scopes_type = std::vector<parse_scope>;
 
 /**
  * Represents a scope during structure tree traversal.
@@ -83,7 +94,14 @@ void print_scopes(std::ostream& os, const scope_stack_type& scopes)
         }
 
         if (s.node.repeat)
-            os << "(*)";
+        {
+            if (s.node.type == structure_node::array && s.node.child_count)
+                os << "(*; w=" << s.node.child_count;
+            else
+                os << "(*";
+
+            os << ')';
+        }
 
         os << '/';
     }
@@ -94,7 +112,7 @@ void print_scopes(std::ostream& os, const scope_stack_type& scopes)
 struct structure_tree::impl
 {
     std::unique_ptr<structure_node> m_root;
-    stack_type m_stack;
+    parse_scopes_type m_stack;
 
     impl() {}
     ~impl() {}
@@ -208,15 +226,17 @@ struct structure_tree::impl
 
 private:
 
-    structure_node& get_current_node()
+    parse_scope& get_current_scope()
     {
         assert(!m_stack.empty());
-        return *m_stack.back();
+        return m_stack.back();
     }
 
     bool is_node_repeatable(const structure_node& node) const
     {
-        if (m_stack.back()->type != structure_node::array)
+        const structure_node& cur = m_stack.back().node;
+
+        if (cur.type != structure_node::array)
             return false;
 
         return node.type == structure_node::array || node.type == structure_node::object;
@@ -229,19 +249,23 @@ private:
             // This is the very first node.
             assert(node.type != structure_node::object_key);
             m_root = orcus::make_unique<structure_node>(node.type);
-            m_stack.push_back(m_root.get());
+            m_stack.emplace_back(*m_root);
             return;
         }
 
         // See if the current node has a child node of the specified type.
-        structure_node& cur_node = get_current_node();
+        parse_scope& cur_scope = get_current_scope();
+        ++cur_scope.child_count;
+
+        structure_node& cur_node = cur_scope.node;
+
         auto it = std::find(cur_node.children.begin(), cur_node.children.end(), node);
 
         if (it == cur_node.children.end())
         {
             // current node doesn't have a child of specified type.  Add one.
             cur_node.children.emplace_back(node);
-            m_stack.push_back(&cur_node.children.back());
+            m_stack.emplace_back(cur_node.children.back());
         }
         else
         {
@@ -249,7 +273,7 @@ private:
             bool repeat = is_node_repeatable(node);
             structure_node& child = *it;
             child.repeat = repeat;
-            m_stack.push_back(&child);
+            m_stack.emplace_back(child);
 
             std::cout << __FILE__ << ":" << __LINE__ << " (structure_tree:impl:push_stack): repeat" << std::endl;
         }
@@ -264,7 +288,11 @@ private:
 
     void pop_stack()
     {
-        assert(!m_stack.empty());
+        parse_scope& cur_scope = get_current_scope();
+        structure_node& cur_node = cur_scope.node;
+        if (cur_scope.child_count > cur_node.child_count)
+            cur_node.child_count = cur_scope.child_count;
+
         m_stack.pop_back();
     }
 };
