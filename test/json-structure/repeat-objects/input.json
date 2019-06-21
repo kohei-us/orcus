@@ -1,5 +1,6 @@
 [
     {"name": "a", "age": 12},
-    {"name": "b", "age": 13},
-    {"name": "c", "age": 14},
+    {"name": "b", "age": true},
+    {"name": "c", "age": null},
+    {"name": "d", "age": "n/a"},
 ]
