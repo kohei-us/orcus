@@ -1,0 +1,6 @@
+[
+    {"name": "a", "age": 12, "props": {"alpha": 1, "beta": 2}},
+    {"name": "b", "age": 13, "props": {"gamma": 3}},
+    {"name": "c", "age": 14, "props": {"theta": 4}},
+]
+
