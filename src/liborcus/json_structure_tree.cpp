@@ -104,7 +104,7 @@ void print_scopes(std::ostream& os, const scope_stack_type& scopes)
         if (s.node.repeat)
         {
             if (s.node.type == structure_node::array && s.node.child_count)
-                os << "(*; w=" << s.node.child_count;
+                os << "(*|w=" << s.node.child_count;
             else
                 os << "(*";
 
