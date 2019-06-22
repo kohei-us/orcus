@@ -9,7 +9,8 @@ EXTRA_PROGRAMS = \
 	liborcus-test-xml-structure-tree \
 	liborcus-test-common \
 	liborcus-test-format-detection \
-	dom-tree-test
+	dom-tree-test \
+	json-structure-tree-test
 
 TESTS =
 
@@ -429,6 +430,13 @@ dom_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
+# json-structure-tree-test
+
+json_structure_tree_test_SOURCES = json_structure_tree_test.cpp
+json_structure_tree_test_LDADD = \
+	liborcus-@ORCUS_API_VERSION@.la \
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+
 TESTS += \
 	liborcus-test-css-document-tree \
 	liborcus-test-json-document-tree \
@@ -437,7 +445,8 @@ TESTS += \
 	liborcus-test-xml-structure-tree \
 	liborcus-test-common \
 	liborcus-test-format-detection \
-	dom-tree-test
+	dom-tree-test \
+	json-structure-tree-test
 
 distclean-local:
 	rm -rf $(TESTS)
