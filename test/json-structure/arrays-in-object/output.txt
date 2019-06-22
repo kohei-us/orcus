@@ -1,0 +1,4 @@
+/object/['rows']/array/object(*)/['name']/value
+/object/['rows']/array/object(*)/['age']/value
+/object/['rows']/array/object(*)/['error']/value
+/object/['footnotes']/value

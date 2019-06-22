@@ -1,0 +1,2 @@
+/array/object(*)/['name']/value
+/array/object(*)/['age']/value

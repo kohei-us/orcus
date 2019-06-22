@@ -1,0 +1,6 @@
+/array/object(*)/['name']/value
+/array/object(*)/['age']/value
+/array/object(*)/['props']/object/['alpha']/value
+/array/object(*)/['props']/object/['beta']/value
+/array/object(*)/['props']/object/['gamma']/value
+/array/object(*)/['props']/object/['theta']/value
