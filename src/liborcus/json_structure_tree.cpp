@@ -8,6 +8,7 @@
 #include "orcus/json_structure_tree.hpp"
 #include "orcus/json_parser.hpp"
 #include "orcus/global.hpp"
+#include "orcus/string_pool.hpp"
 
 #include <vector>
 #include <deque>
@@ -120,6 +121,7 @@ struct structure_tree::impl
 {
     std::unique_ptr<structure_node> m_root;
     parse_scopes_type m_stack;
+    string_pool m_pool;
 
     impl() {}
     ~impl() {}
@@ -147,6 +149,10 @@ struct structure_tree::impl
     {
         structure_node node(structure_node::object_key);
         node.name = pstring(p, len);
+
+        if (transient)
+            node.name = m_pool.intern(node.name).first;
+
         push_stack(node);
     }
 
