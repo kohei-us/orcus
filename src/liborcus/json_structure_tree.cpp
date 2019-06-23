@@ -9,7 +9,6 @@
 #include "orcus/json_parser.hpp"
 #include "orcus/global.hpp"
 
-#include <iostream>
 #include <vector>
 #include <deque>
 #include <memory>
@@ -131,19 +130,16 @@ struct structure_tree::impl
 
     void begin_array()
     {
-        std::cout << __FILE__ << ":" << __LINE__ << " (json_structure_tree:impl:begin_array): " << std::endl;
         push_stack(structure_node::array);
     }
 
     void end_array()
     {
-        std::cout << __FILE__ << ":" << __LINE__ << " (json_structure_tree:impl:end_array): " << std::endl;
         pop_stack();
     }
 
     void begin_object()
     {
-        std::cout << __FILE__ << ":" << __LINE__ << " (json_structure_tree:impl:begin_object): " << std::endl;
         push_stack(structure_node::object);
     }
 
@@ -156,7 +152,6 @@ struct structure_tree::impl
 
     void end_object()
     {
-        std::cout << __FILE__ << ":" << __LINE__ << " (json_structure_tree:impl:end_object): " << std::endl;
         pop_stack();
     }
 
@@ -280,14 +275,11 @@ private:
             structure_node& child = *it;
             child.repeat = repeat;
             m_stack.emplace_back(child);
-
-            std::cout << __FILE__ << ":" << __LINE__ << " (structure_tree:impl:push_stack): repeat" << std::endl;
         }
     }
 
     void push_value()
     {
-        std::cout << __FILE__ << ":" << __LINE__ << " (structure_tree:impl:push_value): " << std::endl;
         push_stack(structure_node::value);
         pop_stack();
     }
@@ -314,8 +306,6 @@ void structure_tree::parse(const char* p, size_t n)
 {
     json_parser<impl> parser(p, n, *mp_impl);
     parser.parse();
-
-    std::cout << __FILE__ << ":" << __LINE__ << " (structure_tree:parse): stack size = " << mp_impl->m_stack.size() << std::endl;
 }
 
 void structure_tree::dump_compact(std::ostream& os) const
