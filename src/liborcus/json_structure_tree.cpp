@@ -80,36 +80,47 @@ struct scope
 
 using scope_stack_type = std::vector<scope>;
 
+void print_scope(std::ostream& os, const scope& s)
+{
+    switch (s.node.type)
+    {
+        case structure_node::array:
+            os << "array";
+            break;
+        case structure_node::object:
+            os << "object";
+            break;
+        case structure_node::object_key:
+            os << "['" << s.node.name << "']";
+            break;
+        default:
+            os << "???";
+    }
+
+    if (s.node.repeat)
+    {
+        if (s.node.type == structure_node::array && s.node.child_count)
+            os << "(*|w=" << s.node.child_count;
+        else
+            os << "(*";
+
+        os << ')';
+    }
+}
+
 void print_scopes(std::ostream& os, const scope_stack_type& scopes)
 {
-    for (const scope& s : scopes)
+    auto it = scopes.cbegin();
+    auto ite = scopes.cend();
+
+    os << '$';
+    print_scope(os, *it);
+
+    for (++it; it != ite; ++it)
     {
-        os << '/';
-
-        switch (s.node.type)
-        {
-            case structure_node::array:
-                os << "array";
-                break;
-            case structure_node::object:
-                os << "object";
-                break;
-            case structure_node::object_key:
-                os << "['" << s.node.name << "']";
-                break;
-            default:
-                os << "???";
-        }
-
-        if (s.node.repeat)
-        {
-            if (s.node.type == structure_node::array && s.node.child_count)
-                os << "(*|w=" << s.node.child_count;
-            else
-                os << "(*";
-
-            os << ')';
-        }
+        if (it->node.type != structure_node::object_key)
+            os << '.';
+        print_scope(os, *it);
     }
 
     os << std::endl;
