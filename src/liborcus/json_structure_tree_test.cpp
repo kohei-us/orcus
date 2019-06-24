@@ -12,7 +12,10 @@
 #include <sstream>
 #include <cassert>
 
+#include <boost/filesystem.hpp>
+
 using namespace orcus;
+namespace fs = boost::filesystem;
 
 std::vector<const char*> base_dirs = {
     SRCDIR"/test/json-structure/arrays-in-object/",
@@ -21,6 +24,35 @@ std::vector<const char*> base_dirs = {
     SRCDIR"/test/json-structure/repeat-objects/",
     SRCDIR"/test/json-structure/repeat-objects-2/",
 };
+
+/**
+ * All json contents under this directory have no value nodes. Since the
+ * structure output of a JSON content only dumps value nodes, the output
+ * string should be empty when the source content does not have any value
+ * nodes.
+ */
+void test_no_value_nodes()
+{
+    fs::path base_dir(SRCDIR"/test/json-structure/no-value-nodes");
+
+    for (const fs::path& p : fs::directory_iterator(base_dir))
+    {
+        if (!fs::is_regular_file(p))
+            continue;
+
+        if (fs::extension(p) != ".json")
+            continue;
+
+        file_content strm(p.string().data());
+        json::structure_tree tree;
+        tree.parse(strm.data(), strm.size());
+
+        std::ostringstream os;
+        tree.dump_compact(os);
+
+        assert(os.str().empty());
+    }
+}
 
 void test_basic()
 {
@@ -52,6 +84,7 @@ void test_basic()
 
 int main()
 {
+    test_no_value_nodes();
     test_basic();
 
     return EXIT_SUCCESS;

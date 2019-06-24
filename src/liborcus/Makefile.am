@@ -435,7 +435,8 @@ dom_tree_test_LDADD = \
 json_structure_tree_test_SOURCES = json_structure_tree_test.cpp
 json_structure_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	$(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS)
 
 TESTS += \
 	liborcus-test-css-document-tree \

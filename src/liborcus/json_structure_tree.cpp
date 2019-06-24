@@ -224,7 +224,8 @@ struct structure_tree::impl
                     continue;
                 }
 
-                assert(!cur_node.children.empty());
+                if (cur_node.children.empty())
+                    continue;
 
                 // This node has child nodes. Push a new scope and trigger a new inner loop.
 
