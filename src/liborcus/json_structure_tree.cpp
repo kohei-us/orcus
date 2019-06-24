@@ -82,10 +82,10 @@ using scope_stack_type = std::vector<scope>;
 
 void print_scopes(std::ostream& os, const scope_stack_type& scopes)
 {
-    os << '/';
-
     for (const scope& s : scopes)
     {
+        os << '/';
+
         switch (s.node.type)
         {
             case structure_node::array:
@@ -110,9 +110,9 @@ void print_scopes(std::ostream& os, const scope_stack_type& scopes)
 
             os << ')';
         }
-
-        os << '/';
     }
+
+    os << std::endl;
 }
 
 } // anonymous namespace
@@ -208,9 +208,8 @@ struct structure_tree::impl
                 {
                     assert(cur_node.children.empty());
 
-                    // Print this leaf node and all its parent scopes.
+                    // Print all its parent scopes.
                     print_scopes(os, scopes);
-                    os << "value" << std::endl;
                     continue;
                 }
 
