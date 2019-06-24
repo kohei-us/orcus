@@ -1,2 +1,2 @@
-/array/object(*)/['name']/value
-/array/object(*)/['age']/value
+$array.object(*)['name']
+$array.object(*)['age']
