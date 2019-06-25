@@ -119,6 +119,45 @@ struct cmd_params
     mode::type mode = mode::type::convert;
 };
 
+void parse_args_for_convert(
+    cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
+{
+    if (vm.count("resolve-refs"))
+        params.config->resolve_references = true;
+
+    if (vm.count("output-format"))
+    {
+        std::string s = vm["output-format"].as<string>();
+        params.config->output_format = output_format::get().find(s.data(), s.size());
+
+        if (params.config->output_format == json_config::output_format_type::unknown)
+        {
+            cerr << "Unknown output format type '" << s << "'." << endl;
+            params.config.reset();
+            return;
+        }
+    }
+    else
+    {
+        cerr << "Output format is not specified." << endl;
+        print_json_usage(cerr, desc);
+        params.config.reset();
+        return;
+    }
+
+    if (params.config->output_format != json_config::output_format_type::none)
+    {
+        // Check to make sure the output path doesn't point to an existing
+        // directory.
+        if (fs::is_directory(params.config->output_path))
+        {
+            cerr << "Output file path points to an existing directory.  Aborting." << endl;
+            params.config.reset();
+            return;
+        }
+    }
+}
+
 /**
  * Parse the command-line options, populate the json_config object, and
  * return that to the caller.
@@ -201,42 +240,18 @@ cmd_params parse_json_args(int argc, char** argv)
     if (vm.count("output"))
         params.config->output_path = vm["output"].as<string>();
 
-    if (params.mode == mode::type::structure)
-        return params;
-
-    if (vm.count("resolve-refs"))
-        params.config->resolve_references = true;
-
-    if (vm.count("output-format"))
+    switch (params.mode)
     {
-        std::string s = vm["output-format"].as<string>();
-        params.config->output_format = output_format::get().find(s.data(), s.size());
-
-        if (params.config->output_format == json_config::output_format_type::unknown)
-        {
-            cerr << "Unknown output format type '" << s << "'." << endl;
-            params.config.reset();
-            return params;
-        }
-    }
-    else
-    {
-        cerr << "Output format is not specified." << endl;
-        print_json_usage(cerr, desc);
-        params.config.reset();
-        return params;
-    }
-
-    if (params.config->output_format != json_config::output_format_type::none)
-    {
-        // Check to make sure the output path doesn't point to an existing
-        // directory.
-        if (fs::is_directory(params.config->output_path))
-        {
-            cerr << "Output file path points to an existing directory.  Aborting." << endl;
-            params.config.reset();
-            return params;
-        }
+        case mode::type::structure:
+            break;
+        case mode::type::convert:
+            parse_args_for_convert(params, desc, vm);
+            break;
+        case mode::type::map:
+            cerr << "TODO: parse args for map mode." << endl;
+            break;
+        default:
+            assert(!"This should not happen since the mode check is done way earlier.");
     }
 
     return params;
