@@ -56,6 +56,7 @@ namespace mode {
 enum class type {
     unknown,
     convert,
+    map,
     structure
 };
 
@@ -65,6 +66,7 @@ typedef mdds::sorted_string_map<type> map_type;
 const std::vector<map_type::entry> entries =
 {
     { ORCUS_ASCII("convert"),   type::convert   },
+    { ORCUS_ASCII("map"),       type::map       },
     { ORCUS_ASCII("structure"), type::structure },
 };
 
@@ -255,6 +257,38 @@ std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content
     return doc;
 }
 
+void build_doc_and_dump(std::ostream& os, const orcus::file_content& content, const cmd_params& params)
+{
+    std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
+
+    switch (params.config->output_format)
+    {
+        case json_config::output_format_type::xml:
+        {
+            os << doc->dump_xml();
+            break;
+        }
+        case json_config::output_format_type::json:
+        {
+            os << doc->dump();
+            break;
+        }
+        case json_config::output_format_type::check:
+        {
+            string xml_strm = doc->dump_xml();
+            xmlns_repository repo;
+            xmlns_context ns_cxt = repo.create_context();
+            dom::document_tree dom(ns_cxt);
+            dom.load(xml_strm);
+
+            dom.dump_compact(os);
+            break;
+        }
+        default:
+            ;
+    }
+}
+
 } // anonymous namespace
 
 int main(int argc, char** argv)
@@ -279,42 +313,26 @@ int main(int argc, char** argv)
             os = fs.get();
         }
 
-        if (params.mode == mode::type::structure)
+        switch (params.mode)
         {
-            json::structure_tree tree;
-            tree.parse(content.data(), content.size());
-            tree.dump_compact(*os);
-
-            return EXIT_SUCCESS;
-        }
-
-        std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
-
-        switch (params.config->output_format)
-        {
-            case json_config::output_format_type::xml:
+            case mode::type::structure:
             {
-                *os << doc->dump_xml();
+                json::structure_tree tree;
+                tree.parse(content.data(), content.size());
+                tree.dump_compact(*os);
                 break;
             }
-            case json_config::output_format_type::json:
-            {
-                *os << doc->dump();
+            case mode::type::map:
+                cout << "TODO: implement this." << endl;
                 break;
-            }
-            case json_config::output_format_type::check:
+            case mode::type::convert:
             {
-                string xml_strm = doc->dump_xml();
-                xmlns_repository repo;
-                xmlns_context ns_cxt = repo.create_context();
-                dom::document_tree dom(ns_cxt);
-                dom.load(xml_strm);
-
-                dom.dump_compact(*os);
+                build_doc_and_dump(*os, content, params);
                 break;
             }
             default:
-                ;
+                cerr << "Unkonwn mode has been given." << endl;
+                return EXIT_FAILURE;
         }
     }
     catch (const std::exception& e)
