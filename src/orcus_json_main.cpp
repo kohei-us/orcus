@@ -91,6 +91,11 @@ const char* help_json_output_format =
 "  * flat tree dump (check)\n"
 "  * no output (none)";
 
+const char* help_json_map =
+"Path to a map file.  This parameter is only used for map mode, and it is "
+"required for map mode."
+;
+
 const char* err_no_input_file = "No input file.";
 
 void print_json_usage(std::ostream& os, const po::options_description& desc)
@@ -119,6 +124,9 @@ struct cmd_params
     mode::type mode = mode::type::convert;
 };
 
+/**
+ * Reset params.config in case of failure.
+ */
 void parse_args_for_convert(
     cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
 {
@@ -159,6 +167,30 @@ void parse_args_for_convert(
 }
 
 /**
+ * Reset params.config in case of failure.
+ */
+void parse_args_for_map(
+    cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
+{
+    if (!vm.count("map"))
+    {
+        cerr << "Path to a map file is required, but is not given.";
+        params.config.reset();
+        return;
+    }
+
+    fs::path map_path = vm["map"].as<std::string>();
+    if (!fs::is_regular_file(map_path))
+    {
+        cerr << map_path.string() << " is not a valid file." << endl;
+        params.config.reset();
+        return;
+    }
+
+    parse_args_for_convert(params, desc, vm);
+}
+
+/**
  * Parse the command-line options, populate the json_config object, and
  * return that to the caller.
  */
@@ -172,7 +204,9 @@ cmd_params parse_json_args(int argc, char** argv)
         ("mode", po::value<std::string>(), build_mode_help_text().data())
         ("resolve-refs", "Resolve JSON references to external files.")
         ("output,o", po::value<string>(), help_json_output)
-        ("output-format,f", po::value<string>(), help_json_output_format);
+        ("output-format,f", po::value<string>(), help_json_output_format)
+        ("map,m", po::value<string>(), help_json_map)
+    ;
 
     po::options_description hidden("Hidden options");
     hidden.add_options()
@@ -243,12 +277,13 @@ cmd_params parse_json_args(int argc, char** argv)
     switch (params.mode)
     {
         case mode::type::structure:
+            // Structure mode only needs input and output parameters.
             break;
         case mode::type::convert:
             parse_args_for_convert(params, desc, vm);
             break;
         case mode::type::map:
-            cerr << "TODO: parse args for map mode." << endl;
+            parse_args_for_map(params, desc, vm);
             break;
         default:
             assert(!"This should not happen since the mode check is done way earlier.");
