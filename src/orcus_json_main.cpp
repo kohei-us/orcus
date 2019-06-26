@@ -260,15 +260,7 @@ cmd_params parse_json_args(int argc, char** argv)
 std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content, const json_config& config)
 {
     std::unique_ptr<json::document_tree> doc(orcus::make_unique<json::document_tree>());
-    try
-    {
-        doc->load(content.data(), content.size(), config);
-    }
-    catch (const json::parse_error& e)
-    {
-        cerr << create_parse_error_output(content.str(), e.offset()) << endl;
-        throw;
-    }
+    doc->load(content.data(), content.size(), config);
     return doc;
 }
 
@@ -308,6 +300,8 @@ void build_doc_and_dump(std::ostream& os, const orcus::file_content& content, co
 
 int main(int argc, char** argv)
 {
+    file_content content;
+
     try
     {
         cmd_params params = parse_json_args(argc, argv);
@@ -316,7 +310,7 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
 
         assert(!params.config->input_path.empty());
-        file_content content(params.config->input_path.data());
+        content.load(params.config->input_path.data());
 
         std::ostream* os = &cout;
         std::unique_ptr<std::ofstream> fs;
@@ -349,6 +343,12 @@ int main(int argc, char** argv)
                 cerr << "Unkonwn mode has been given." << endl;
                 return EXIT_FAILURE;
         }
+    }
+    catch (const json::parse_error& e)
+    {
+        cerr << create_parse_error_output(content.str(), e.offset()) << endl;
+        cerr << e.what() << endl;
+        return EXIT_FAILURE;
     }
     catch (const std::exception& e)
     {
