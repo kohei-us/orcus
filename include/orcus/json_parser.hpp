@@ -255,7 +255,7 @@ void json_parser<_Handler>::object()
 
         skip_ws();
         if (!has_char())
-            throw json::parse_error("object: stream ended prematurely before reaching either ']' or ','.", offset());
+            throw json::parse_error("object: stream ended prematurely before reaching either '}' or ','.", offset());
 
         switch (cur_char())
         {
