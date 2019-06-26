@@ -269,7 +269,7 @@ void json_parser<_Handler>::object()
                 continue;
             default:
                 json::parse_error::throw_with(
-                    "object: either ']' or ',' expected, but '", cur_char(), "' found.", offset());
+                    "object: either '}' or ',' expected, but '", cur_char(), "' found.", offset());
         }
     }
 
