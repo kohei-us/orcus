@@ -1,0 +1,19 @@
+{
+    "sheets": ["data"],
+    "cells": [
+        {"path": "$array[0]", "sheet": "data", "row": 0, "column": 0},
+        {"path": "$array[1]", "sheet": "data", "row": 1, "column": 0}
+    ],
+    "ranges": [
+        {"sheet": "data", "row": 2, "column": 0,
+         "fields": [
+             {"path": "$array.array[0]"},
+             {"path": "$array.array[1]"},
+             {"path": "$array.array[2]"}
+         ],
+         "row-groups": [
+             {"path": "$array.array"}
+         ]
+        }
+    ]
+}
