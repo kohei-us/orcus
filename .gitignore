@@ -31,6 +31,8 @@ test-driver
 VERSION
 stamp-h1
 src/liborcus/constants.inl
+benchmark/json-parser-test
+benchmark/threaded-json-parser-test
 doc/_build/
 doc/_doxygen/
 doc/html/
@@ -41,4 +43,11 @@ doc_example/doc-example-json-doc-1
 doc_example/json-doc-1
 doc_example/json-doc-2
 doc_example/json-parser-1
+doc_example/spreadsheet-doc-1
+doc_example/spreadsheet-doc-1-num-and-formula
+doc_example/spreadsheet-doc-2
+doc_example/spreadsheet-doc-2-sheets-no-string-pool
+doc_example/spreadsheet-doc-2-sheets-with-formula
+doc_example/spreadsheet-doc-2-sheets-with-string-pool
+doc_example/xml-mapping-1
 
