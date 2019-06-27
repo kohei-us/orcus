@@ -15,6 +15,7 @@ add_library(liborcus SHARED
 	json_util.cpp
 	spreadsheet_interface.cpp
 	orcus_csv.cpp
+    orcus_json.cpp
 	orcus_xml.cpp
 	measurement.cpp
 	xml_context_base.cpp
