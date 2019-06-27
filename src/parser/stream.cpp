@@ -176,6 +176,12 @@ struct file_content::impl
 file_content::file_content() :
     mp_impl(orcus::make_unique<impl>()) {}
 
+file_content::file_content(file_content&& other) :
+    mp_impl(std::move(other.mp_impl))
+{
+    other.mp_impl = orcus::make_unique<impl>();
+}
+
 file_content::file_content(const char* filepath) :
     mp_impl(orcus::make_unique<impl>(filepath)) {}
 

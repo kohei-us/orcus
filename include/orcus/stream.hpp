@@ -25,7 +25,11 @@ class ORCUS_PSR_DLLPUBLIC file_content
     struct impl;
     std::unique_ptr<impl> mp_impl;
 public:
+    file_content(const file_content&) = delete;
+    file_content& operator= (const file_content&) = delete;
+
     file_content();
+    file_content(file_content&& other);
     file_content(const char* filepath);
     ~file_content();
 

@@ -120,8 +120,9 @@ std::string build_mode_help_text()
 
 struct cmd_params
 {
-    std::unique_ptr<json_config> config;
+    std::unique_ptr<json_config> config; //< json parser configuration.
     mode::type mode = mode::type::convert;
+    file_content map_file;
 };
 
 /**
@@ -186,6 +187,8 @@ void parse_args_for_map(
         params.config.reset();
         return;
     }
+
+    params.map_file.load(map_path.string().data());
 
     parse_args_for_convert(params, desc, vm);
 }
@@ -368,6 +371,7 @@ int main(int argc, char** argv)
             }
             case mode::type::map:
                 cout << "TODO: implement this." << endl;
+                cout << params.map_file.data() << endl;
                 break;
             case mode::type::convert:
             {
