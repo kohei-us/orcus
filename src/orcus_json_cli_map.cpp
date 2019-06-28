@@ -86,6 +86,13 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
                 << "; row=" << link_node.child("row").numeric_value()
                 << "; column=" << link_node.child("column").numeric_value()
                 << ")" << endl;
+
+            auto fields_node = link_node.child("fields");
+            for (size_t field_pos = 0, n_fields = fields_node.child_count(); field_pos < n_fields; ++field_pos)
+            {
+                auto field_node = fields_node.child(field_pos);
+                cout << "  * field: (path=" << field_node.child("path").string_value() << ')' << endl;
+            }
         }
     }
 
@@ -98,6 +105,8 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
 void map_to_sheets_and_dump(
     std::ostream& /*os*/, const file_content& /*content*/, const cmd_params& /*params*/)
 {
+    throw std::runtime_error(
+        "map mode disabled as the spreadsheet model backend is not available.");
 }
 
 #endif
