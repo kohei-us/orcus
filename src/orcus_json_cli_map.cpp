@@ -46,10 +46,8 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
     {
         // Create sheets first.
 
-        auto node = root.child("sheets");
-        for (size_t i = 0, n = node.child_count(); i < n; ++i)
+        for (const json::const_node& node_name : root.child("sheets"))
         {
-            auto node_name = node.child(i);
             cout << "* sheet: " << node_name.string_value() << endl;
             app.append_sheet(node_name.string_value());
         }
@@ -57,10 +55,8 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
 
     {
         // Set cell links.
-        auto node = root.child("cells");
-        for (size_t i = 0, n = node.child_count(); i < n; ++i)
+        for (const json::const_node& link_node : root.child("cells"))
         {
-            auto link_node = node.child(i);
             pstring path = link_node.child("path").string_value();
             pstring sheet = link_node.child("sheet").string_value();
             spreadsheet::row_t row = link_node.child("row").numeric_value();
@@ -78,10 +74,8 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
 
     {
         // Set range links.
-        auto node = root.child("ranges");
-        for (size_t i = 0, n = node.child_count(); i < n; ++i)
+        for (const json::const_node& link_node : root.child("ranges"))
         {
-            auto link_node = node.child(i);
             cout << "* range link: (sheet=" << link_node.child("sheet").string_value()
                 << "; row=" << link_node.child("row").numeric_value()
                 << "; column=" << link_node.child("column").numeric_value()

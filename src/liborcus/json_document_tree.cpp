@@ -624,6 +624,22 @@ uintptr_t const_node::identity() const
     return reinterpret_cast<uintptr_t>(mp_impl->m_node);
 }
 
+const_node_iterator const_node::begin() const
+{
+    if (mp_impl->m_node->type != detail::node_t::array)
+        throw document_error("const_node::begin: this method only supports array nodes.");
+
+    return const_node_iterator(mp_impl->m_doc, *this, true);
+}
+
+const_node_iterator const_node::end() const
+{
+    if (mp_impl->m_node->type != detail::node_t::array)
+        throw document_error("const_node::end: this method only supports array nodes.");
+
+    return const_node_iterator(mp_impl->m_doc, *this, false);
+}
+
 node_t const_node::type() const
 {
     // Convert it back to the public enum type.
@@ -836,6 +852,102 @@ void node::push_back(const detail::init::node& v)
     json_value_array* jva = mp_impl->m_node->value.array;
     const document_resource& res = mp_impl->m_doc->get_resource();
     jva->value_array.push_back(v.to_json_value(const_cast<document_resource&>(res)));
+}
+
+struct const_node_iterator::impl
+{
+    const document_tree* m_doc;
+    std::vector<json_value*>::const_iterator m_pos;
+    std::vector<json_value*>::const_iterator m_end;
+    const_node m_current_node;
+
+    impl() : m_doc(nullptr), m_current_node(nullptr, nullptr) {}
+
+    impl(const impl& other) :
+        m_doc(other.m_doc),
+        m_pos(other.m_pos),
+        m_end(other.m_end),
+        m_current_node(other.m_current_node) {}
+
+    impl(const document_tree* doc, const const_node& v, bool begin) :
+        m_doc(doc), m_current_node(nullptr, nullptr)
+    {
+        const json_value_array* jva = v.mp_impl->m_node->value.array;
+        m_pos = begin ? jva->value_array.cbegin() : jva->value_array.cend();
+        m_end = jva->value_array.cend();
+
+        if (m_pos != m_end)
+            m_current_node = const_node(m_doc, *m_pos);
+    }
+};
+
+const_node_iterator::const_node_iterator() :
+    mp_impl(orcus::make_unique<impl>()) {}
+
+const_node_iterator::const_node_iterator(const const_node_iterator& other) :
+    mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
+
+const_node_iterator::const_node_iterator(const document_tree* doc, const const_node& v, bool begin) :
+    mp_impl(orcus::make_unique<impl>(doc, v, begin)) {}
+
+const_node_iterator::~const_node_iterator() {}
+
+const const_node& const_node_iterator::operator*() const
+{
+    return mp_impl->m_current_node;
+}
+
+const const_node* const_node_iterator::operator->() const
+{
+    return &mp_impl->m_current_node;
+}
+
+const_node_iterator& const_node_iterator::operator++()
+{
+    ++mp_impl->m_pos;
+    mp_impl->m_current_node = const_node(
+        mp_impl->m_doc,
+        mp_impl->m_pos == mp_impl->m_end ? nullptr : *mp_impl->m_pos);
+    return *this;
+}
+
+const_node_iterator const_node_iterator::operator++(int)
+{
+    const_node_iterator tmp(*this);
+    ++mp_impl->m_pos;
+    mp_impl->m_current_node = const_node(
+        mp_impl->m_doc,
+        mp_impl->m_pos == mp_impl->m_end ? nullptr : *mp_impl->m_pos);
+    return tmp;
+}
+
+const_node_iterator& const_node_iterator::operator--()
+{
+    --mp_impl->m_pos;
+    mp_impl->m_current_node = const_node(
+        mp_impl->m_doc,
+        mp_impl->m_pos == mp_impl->m_end ? nullptr : *mp_impl->m_pos);
+    return *this;
+}
+
+const_node_iterator const_node_iterator::operator--(int)
+{
+    const_node_iterator tmp(*this);
+    --mp_impl->m_pos;
+    mp_impl->m_current_node = const_node(
+        mp_impl->m_doc,
+        mp_impl->m_pos == mp_impl->m_end ? nullptr : *mp_impl->m_pos);
+    return tmp;
+}
+
+bool const_node_iterator::operator== (const const_node_iterator& other) const
+{
+    return mp_impl->m_pos == other.mp_impl->m_pos && mp_impl->m_end == other.mp_impl->m_end;
+}
+
+bool const_node_iterator::operator!= (const const_node_iterator& other) const
+{
+    return !operator==(other);
 }
 
 array::array() {}

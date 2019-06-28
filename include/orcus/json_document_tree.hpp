@@ -81,6 +81,36 @@ enum class node_t : uint8_t
 
 namespace detail { namespace init { class node; }}
 
+class const_node;
+class document_tree;
+
+class ORCUS_DLLPUBLIC const_node_iterator
+{
+    friend class const_node;
+
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+    const_node_iterator(const document_tree* doc, const const_node& v, bool begin);
+
+public:
+    const_node_iterator();
+    const_node_iterator(const const_node_iterator& other);
+    ~const_node_iterator();
+
+    const const_node& operator*() const;
+    const const_node* operator->() const;
+
+    const_node_iterator& operator++();
+    const_node_iterator operator++(int);
+
+    const_node_iterator& operator--();
+    const_node_iterator operator--(int);
+
+    bool operator== (const const_node_iterator& other) const;
+    bool operator!= (const const_node_iterator& other) const;
+};
+
 /**
  * Each node instance represents a JSON value stored in the document tree.
  * It's immutable.
@@ -88,6 +118,7 @@ namespace detail { namespace init { class node; }}
 class ORCUS_DLLPUBLIC const_node
 {
     friend class document_tree;
+    friend class const_node_iterator;
 
 protected:
     struct impl;
@@ -208,6 +239,9 @@ public:
      * @return identifier of the JSON value object.
      */
     uintptr_t identity() const;
+
+    const_node_iterator begin() const;
+    const_node_iterator end() const;
 };
 
 /**
