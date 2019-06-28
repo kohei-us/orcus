@@ -9,16 +9,28 @@
 #include "orcus/json_document_tree.hpp"
 #include "orcus/config.hpp"
 
+#ifdef __ORCUS_SPREADSHEET_MODEL
+#include "orcus/spreadsheet/document.hpp"
+#include "orcus/spreadsheet/factory.hpp"
+#include "orcus/orcus_json.hpp"
+#endif
+
 #include <iostream>
 
 using namespace std;
 
 namespace orcus { namespace detail {
 
+#ifdef __ORCUS_SPREADSHEET_MODEL
+
 void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const cmd_params& params)
 {
     cout << "TODO: implement this." << endl;
     cout << params.map_file.data() << endl;
+
+    spreadsheet::document doc;
+    spreadsheet::import_factory factory(doc);
+    orcus_json app(&factory);
 
     // Since a typical map file will likely be very small, let's be lazy and
     // load the whole thing into a in-memory tree.
@@ -39,6 +51,7 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
         {
             auto node_name = node.child(i);
             cout << "* sheet: " << node_name.string_value() << endl;
+            app.append_sheet(node_name.string_value());
         }
     }
 
@@ -48,11 +61,18 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
         for (size_t i = 0, n = node.child_count(); i < n; ++i)
         {
             auto link_node = node.child(i);
-            cout << "* cell link: (path=" << link_node.child("path").string_value()
-                << "; sheet=" << link_node.child("sheet").string_value()
-                << "; row=" << link_node.child("row").numeric_value()
-                << "; column=" << link_node.child("column").numeric_value()
+            pstring path = link_node.child("path").string_value();
+            pstring sheet = link_node.child("sheet").string_value();
+            spreadsheet::row_t row = link_node.child("row").numeric_value();
+            spreadsheet::col_t col = link_node.child("column").numeric_value();
+
+            cout << "* cell link: (path=" << path
+                << "; sheet=" << sheet
+                << "; row=" << row
+                << "; column=" << col
                 << ")" << endl;
+
+            app.set_cell_link(path, sheet, row, col);
         }
     }
 
@@ -68,7 +88,19 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
                 << ")" << endl;
         }
     }
+
+    app.read_stream(content.data(), content.size());
+    doc.dump_check(os);
 }
+
+#else
+
+void map_to_sheets_and_dump(
+    std::ostream& /*os*/, const file_content& /*content*/, const cmd_params& /*params*/)
+{
+}
+
+#endif
 
 }}
 

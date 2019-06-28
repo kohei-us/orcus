@@ -158,6 +158,9 @@ orcus_env_dump_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLA
 
 if BUILD_SPREADSHEET_MODEL
 
+orcus_json_LDADD += \
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
+
 bin_PROGRAMS += \
 	orcus-csv orcus-xml
 
