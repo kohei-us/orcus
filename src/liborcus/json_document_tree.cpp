@@ -879,6 +879,11 @@ struct const_node_iterator::impl
         if (m_pos != m_end)
             m_current_node = const_node(m_doc, *m_pos);
     }
+
+    void update_current()
+    {
+        m_current_node = const_node(m_doc, m_pos == m_end ? nullptr : *m_pos);
+    }
 };
 
 const_node_iterator::const_node_iterator() :
@@ -905,9 +910,7 @@ const const_node* const_node_iterator::operator->() const
 const_node_iterator& const_node_iterator::operator++()
 {
     ++mp_impl->m_pos;
-    mp_impl->m_current_node = const_node(
-        mp_impl->m_doc,
-        mp_impl->m_pos == mp_impl->m_end ? nullptr : *mp_impl->m_pos);
+    mp_impl->update_current();
     return *this;
 }
 
@@ -915,18 +918,14 @@ const_node_iterator const_node_iterator::operator++(int)
 {
     const_node_iterator tmp(*this);
     ++mp_impl->m_pos;
-    mp_impl->m_current_node = const_node(
-        mp_impl->m_doc,
-        mp_impl->m_pos == mp_impl->m_end ? nullptr : *mp_impl->m_pos);
+    mp_impl->update_current();
     return tmp;
 }
 
 const_node_iterator& const_node_iterator::operator--()
 {
     --mp_impl->m_pos;
-    mp_impl->m_current_node = const_node(
-        mp_impl->m_doc,
-        mp_impl->m_pos == mp_impl->m_end ? nullptr : *mp_impl->m_pos);
+    mp_impl->update_current();
     return *this;
 }
 
@@ -934,9 +933,7 @@ const_node_iterator const_node_iterator::operator--(int)
 {
     const_node_iterator tmp(*this);
     --mp_impl->m_pos;
-    mp_impl->m_current_node = const_node(
-        mp_impl->m_doc,
-        mp_impl->m_pos == mp_impl->m_end ? nullptr : *mp_impl->m_pos);
+    mp_impl->update_current();
     return tmp;
 }
 
@@ -955,10 +952,7 @@ const_node_iterator& const_node_iterator::operator= (const const_node_iterator& 
     mp_impl->m_doc = other.mp_impl->m_doc;
     mp_impl->m_pos = other.mp_impl->m_pos;
     mp_impl->m_end = other.mp_impl->m_end;
-
-    mp_impl->m_current_node = const_node(
-        mp_impl->m_doc,
-        mp_impl->m_pos == mp_impl->m_end ? nullptr : *mp_impl->m_pos);
+    mp_impl->update_current();
 
     return *this;
 }
