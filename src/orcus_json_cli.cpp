@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "orcus_json_cli.hpp"
 #include "orcus/json_document_tree.hpp"
 #include "orcus/json_parser_base.hpp"
 #include "orcus/json_structure_tree.hpp"
@@ -27,6 +28,21 @@ using namespace std;
 using namespace orcus;
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
+
+namespace orcus { namespace detail {
+
+cmd_params::cmd_params() {}
+
+cmd_params::cmd_params(cmd_params&& other) :
+    config(std::move(other.config)),
+    mode(other.mode),
+    map_file(std::move(other.map_file))
+{
+}
+
+cmd_params::~cmd_params() {}
+
+}}
 
 namespace {
 
@@ -53,26 +69,19 @@ const map_type& get()
 
 namespace mode {
 
-enum class type {
-    unknown,
-    convert,
-    map,
-    structure
-};
-
-typedef mdds::sorted_string_map<type> map_type;
+typedef mdds::sorted_string_map<detail::mode_t> map_type;
 
 // Keys must be sorted.
 const std::vector<map_type::entry> entries =
 {
-    { ORCUS_ASCII("convert"),   type::convert   },
-    { ORCUS_ASCII("map"),       type::map       },
-    { ORCUS_ASCII("structure"), type::structure },
+    { ORCUS_ASCII("convert"),   detail::mode_t::convert   },
+    { ORCUS_ASCII("map"),       detail::mode_t::map       },
+    { ORCUS_ASCII("structure"), detail::mode_t::structure },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), type::unknown);
+    static map_type mt(entries.data(), entries.size(), detail::mode_t::unknown);
     return mt;
 }
 
@@ -118,18 +127,11 @@ std::string build_mode_help_text()
     return os.str();
 }
 
-struct cmd_params
-{
-    std::unique_ptr<json_config> config; //< json parser configuration.
-    mode::type mode = mode::type::convert;
-    file_content map_file;
-};
-
 /**
  * Reset params.config in case of failure.
  */
 void parse_args_for_convert(
-    cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
+    detail::cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
 {
     if (vm.count("resolve-refs"))
         params.config->resolve_references = true;
@@ -171,7 +173,7 @@ void parse_args_for_convert(
  * Reset params.config in case of failure.
  */
 void parse_args_for_map(
-    cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
+    detail::cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
 {
     if (!vm.count("map"))
     {
@@ -197,9 +199,9 @@ void parse_args_for_map(
  * Parse the command-line options, populate the json_config object, and
  * return that to the caller.
  */
-cmd_params parse_json_args(int argc, char** argv)
+detail::cmd_params parse_json_args(int argc, char** argv)
 {
-    cmd_params params;
+    detail::cmd_params params;
 
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -246,7 +248,7 @@ cmd_params parse_json_args(int argc, char** argv)
     {
         std::string s = vm["mode"].as<std::string>();
         params.mode = mode::get().find(s.data(), s.size());
-        if (params.mode == mode::type::unknown)
+        if (params.mode == detail::mode_t::unknown)
         {
             cerr << "Unknown mode string '" << s << "'." << endl;
             return params;
@@ -279,13 +281,13 @@ cmd_params parse_json_args(int argc, char** argv)
 
     switch (params.mode)
     {
-        case mode::type::structure:
+        case detail::mode_t::structure:
             // Structure mode only needs input and output parameters.
             break;
-        case mode::type::convert:
+        case detail::mode_t::convert:
             parse_args_for_convert(params, desc, vm);
             break;
-        case mode::type::map:
+        case detail::mode_t::map:
             parse_args_for_map(params, desc, vm);
             break;
         default:
@@ -302,7 +304,7 @@ std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content
     return doc;
 }
 
-void build_doc_and_dump(std::ostream& os, const orcus::file_content& content, const cmd_params& params)
+void build_doc_and_dump(std::ostream& os, const orcus::file_content& content, const detail::cmd_params& params)
 {
     std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
 
@@ -334,61 +336,6 @@ void build_doc_and_dump(std::ostream& os, const orcus::file_content& content, co
     }
 }
 
-void map_to_sheets_and_dump(std::ostream& os, const orcus::file_content& content, const cmd_params& params)
-{
-    cout << "TODO: implement this." << endl;
-    cout << params.map_file.data() << endl;
-
-    // Since a typical map file will likely be very small, let's be lazy and
-    // load the whole thing into a in-memory tree.
-    json::document_tree map_doc;
-    json_config jc;
-    jc.preserve_object_order = false;
-    jc.persistent_string_values = false;
-    jc.resolve_references = false;
-
-    map_doc.load(params.map_file.data(), params.map_file.size(), jc);
-    json::const_node root = map_doc.get_document_root();
-
-    {
-        // Create sheets first.
-
-        auto node = root.child("sheets");
-        for (size_t i = 0, n = node.child_count(); i < n; ++i)
-        {
-            auto node_name = node.child(i);
-            cout << "* sheet: " << node_name.string_value() << endl;
-        }
-    }
-
-    {
-        // Set cell links.
-        auto node = root.child("cells");
-        for (size_t i = 0, n = node.child_count(); i < n; ++i)
-        {
-            auto link_node = node.child(i);
-            cout << "* cell link: (path=" << link_node.child("path").string_value()
-                << "; sheet=" << link_node.child("sheet").string_value()
-                << "; row=" << link_node.child("row").numeric_value()
-                << "; column=" << link_node.child("column").numeric_value()
-                << ")" << endl;
-        }
-    }
-
-    {
-        // Set range links.
-        auto node = root.child("ranges");
-        for (size_t i = 0, n = node.child_count(); i < n; ++i)
-        {
-            auto link_node = node.child(i);
-            cout << "* range link: (sheet=" << link_node.child("sheet").string_value()
-                << "; row=" << link_node.child("row").numeric_value()
-                << "; column=" << link_node.child("column").numeric_value()
-                << ")" << endl;
-        }
-    }
-}
-
 } // anonymous namespace
 
 int main(int argc, char** argv)
@@ -397,9 +344,9 @@ int main(int argc, char** argv)
 
     try
     {
-        cmd_params params = parse_json_args(argc, argv);
+        detail::cmd_params params = parse_json_args(argc, argv);
 
-        if (!params.config || params.mode == mode::type::unknown)
+        if (!params.config || params.mode == detail::mode_t::unknown)
             return EXIT_FAILURE;
 
         assert(!params.config->input_path.empty());
@@ -417,19 +364,19 @@ int main(int argc, char** argv)
 
         switch (params.mode)
         {
-            case mode::type::structure:
+            case detail::mode_t::structure:
             {
                 json::structure_tree tree;
                 tree.parse(content.data(), content.size());
                 tree.dump_compact(*os);
                 break;
             }
-            case mode::type::map:
+            case detail::mode_t::map:
             {
                 map_to_sheets_and_dump(*os, content, params);
                 break;
             }
-            case mode::type::convert:
+            case detail::mode_t::convert:
             {
                 build_doc_and_dump(*os, content, params);
                 break;
