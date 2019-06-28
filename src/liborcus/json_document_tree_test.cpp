@@ -426,6 +426,27 @@ void test_json_init_list_flat1()
     assert(node.numeric_value() == 4.0);
     node = node.parent();
 
+    // Use iterators.
+    auto it = node.begin();
+    assert(it->type() == json::node_t::number);
+    assert(it->numeric_value() == 1.0);
+    ++it;
+    assert(it->type() == json::node_t::number);
+    assert(it->numeric_value() == 2.0);
+    auto test = it++; // post increment
+    assert(test->numeric_value() == 2.0);
+    assert(it->type() == json::node_t::number);
+    assert(it->numeric_value() == 3.0);
+    test = ++it; // pre increment
+    assert(test->numeric_value() == 4.0);
+    ++it;
+    assert(it == node.end());
+    --it;
+    assert(it->numeric_value() == 4.0);
+    test = it--;
+    assert(test->numeric_value() == 4.0);
+    assert(it->numeric_value() == 3.0);
+
     doc = { nullptr };
     node = doc.get_document_root();
     assert(node.type() == json::node_t::array);

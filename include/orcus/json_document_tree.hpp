@@ -109,6 +109,8 @@ public:
 
     bool operator== (const const_node_iterator& other) const;
     bool operator!= (const const_node_iterator& other) const;
+
+    const_node_iterator& operator= (const const_node_iterator& other);
 };
 
 /**

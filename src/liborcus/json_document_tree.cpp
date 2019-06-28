@@ -950,6 +950,19 @@ bool const_node_iterator::operator!= (const const_node_iterator& other) const
     return !operator==(other);
 }
 
+const_node_iterator& const_node_iterator::operator= (const const_node_iterator& other)
+{
+    mp_impl->m_doc = other.mp_impl->m_doc;
+    mp_impl->m_pos = other.mp_impl->m_pos;
+    mp_impl->m_end = other.mp_impl->m_end;
+
+    mp_impl->m_current_node = const_node(
+        mp_impl->m_doc,
+        mp_impl->m_pos == mp_impl->m_end ? nullptr : *mp_impl->m_pos);
+
+    return *this;
+}
+
 array::array() {}
 array::array(array&& other) : m_vs(std::move(other.m_vs)) {}
 array::array(std::initializer_list<detail::init::node> vs)
