@@ -7,7 +7,11 @@
 
 #include <memory>
 
+#include "spreadsheet_impl_types.hpp"
+
 namespace orcus {
+
+using spreadsheet::detail::cell_position_t;
 
 class json_map_tree
 {
@@ -17,6 +21,13 @@ class json_map_tree
 public:
     json_map_tree();
     ~json_map_tree();
+
+    void set_cell_link(const pstring& path, const cell_position_t& pos);
+
+    void start_range(const cell_position_t& pos);
+    void append_field_link(const pstring& path);
+    void set_range_row_group(const pstring& path);
+    void commit_range();
 };
 
 }

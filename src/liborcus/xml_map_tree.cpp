@@ -147,15 +147,6 @@ void print_element_stack(ostream& os, const T& elem_stack)
 
 xml_map_tree::xpath_error::xpath_error(const string& msg) : general_error(msg) {}
 
-xml_map_tree::cell_position::cell_position() :
-    row(-1), col(-1) {}
-
-xml_map_tree::cell_position::cell_position(const pstring& _sheet, spreadsheet::row_t _row, spreadsheet::col_t _col) :
-    sheet(_sheet), row(_row), col(_col) {}
-
-xml_map_tree::cell_position::cell_position(const cell_position& r) :
-    sheet(r.sheet), row(r.row), col(r.col) {}
-
 xml_map_tree::element_position::element_position() :
     open_begin(0), open_end(0), close_begin(0), close_end(0) {}
 
@@ -809,29 +800,12 @@ xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
     return cur_element;
 }
 
-std::ostream& operator<< (std::ostream& os, const xml_map_tree::cell_position& ref)
-{
-    os << "[sheet='" << ref.sheet << "' row=" << ref.row << " column=" << ref.col << "]";
-    return os;
-}
-
 std::ostream& operator<< (std::ostream& os, const xml_map_tree::linkable& link)
 {
     if (!link.ns_alias.empty())
         os << link.ns_alias << ':';
     os << link.name;
     return os;
-}
-
-bool operator< (const xml_map_tree::cell_position& left, const xml_map_tree::cell_position& right)
-{
-    if (left.sheet != right.sheet)
-        return left.sheet < right.sheet;
-
-    if (left.row != right.row)
-        return left.row < right.row;
-
-    return left.col < right.col;
 }
 
 }

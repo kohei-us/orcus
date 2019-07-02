@@ -15,6 +15,8 @@
 #include "orcus/xml_namespace.hpp"
 #include "orcus/string_pool.hpp"
 
+#include "spreadsheet_impl_types.hpp"
+
 #include <ostream>
 #include <map>
 #include <vector>
@@ -48,16 +50,7 @@ public:
      * links.  For a range link, this represents the upper-left cell of a
      * range.
      */
-    struct cell_position
-    {
-        pstring sheet;
-        spreadsheet::row_t row;
-        spreadsheet::col_t col;
-
-        cell_position();
-        cell_position(const pstring& _sheet, spreadsheet::row_t _row, spreadsheet::col_t _col);
-        cell_position(const cell_position& r);
-    };
+    using cell_position = spreadsheet::detail::cell_position_t;
 
     /**
      * Positions of opening and closing elements in xml stream.
@@ -292,10 +285,7 @@ private:
     std::unique_ptr<element> mp_root;
 };
 
-std::ostream& operator<< (std::ostream& os, const xml_map_tree::cell_position& ref);
 std::ostream& operator<< (std::ostream& os, const xml_map_tree::linkable& link);
-
-bool operator< (const xml_map_tree::cell_position& left, const xml_map_tree::cell_position& right);
 
 }
 

@@ -37,6 +37,7 @@ add_library(liborcus SHARED
     spreadsheet_interface.cpp
 	spreadsheet_iface_util.cpp
 	spreadsheet_types.cpp
+    spreadsheet_impl_types.cpp
 	string_helper.cpp
 # xlsx filter
 	ooxml_content_types.cpp
@@ -172,6 +173,7 @@ add_executable(xlsx-sheet-context-test EXCLUDE_FROM_ALL
 
 add_executable(xml-map-tree-test EXCLUDE_FROM_ALL
     xml_map_tree_test.cpp
+    spreadsheet_impl_types.cpp
     xml_map_tree.cpp
 )
 

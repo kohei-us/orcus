@@ -83,6 +83,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	xls_xml_namespace_types.cpp \
 	session_context.hpp \
 	session_context.cpp \
+	spreadsheet_impl_types.hpp \
+	spreadsheet_impl_types.cpp \
 	spreadsheet_types.cpp \
 	spreadsheet_iface_util.hpp \
 	spreadsheet_iface_util.cpp \
@@ -388,6 +390,8 @@ liborcus_test_yaml_document_tree_CPPFLAGS = -I$(top_builddir)/lib/liborcus/libor
 liborcus_test_xml_map_tree_SOURCES = \
 	xml_map_tree.cpp \
 	xml_map_tree.hpp \
+	spreadsheet_impl_types.hpp \
+	spreadsheet_impl_types.cpp \
 	xml_map_tree_test.cpp
 
 liborcus_test_xml_map_tree_LDADD = \

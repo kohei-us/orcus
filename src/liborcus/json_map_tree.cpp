@@ -17,6 +17,13 @@ struct json_map_tree::impl
 json_map_tree::json_map_tree() : mp_impl(orcus::make_unique<impl>()) {}
 json_map_tree::~json_map_tree() {}
 
+void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& pos) {}
+
+void json_map_tree::start_range(const cell_position_t& pos) {}
+void json_map_tree::append_field_link(const pstring& path) {}
+void json_map_tree::set_range_row_group(const pstring& path) {}
+void json_map_tree::commit_range() {}
+
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
