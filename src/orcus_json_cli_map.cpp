@@ -32,62 +32,85 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
     spreadsheet::import_factory factory(doc);
     orcus_json app(&factory);
 
-    // Since a typical map file will likely be very small, let's be lazy and
-    // load the whole thing into a in-memory tree.
-    json::document_tree map_doc;
-    json_config jc;
-    jc.preserve_object_order = false;
-    jc.persistent_string_values = false;
-    jc.resolve_references = false;
-
-    map_doc.load(params.map_file.data(), params.map_file.size(), jc);
-    json::const_node root = map_doc.get_document_root();
-
+    try
     {
-        // Create sheets first.
+        // Since a typical map file will likely be very small, let's be lazy and
+        // load the whole thing into a in-memory tree.
+        json::document_tree map_doc;
+        json_config jc;
+        jc.preserve_object_order = false;
+        jc.persistent_string_values = false;
+        jc.resolve_references = false;
 
-        for (const json::const_node& node_name : root.child("sheets"))
+        map_doc.load(params.map_file.data(), params.map_file.size(), jc);
+        json::const_node root = map_doc.get_document_root();
+
         {
-            cout << "* sheet: " << node_name.string_value() << endl;
-            app.append_sheet(node_name.string_value());
-        }
-    }
+            // Create sheets first.
 
-    {
-        // Set cell links.
-        for (const json::const_node& link_node : root.child("cells"))
-        {
-            pstring path = link_node.child("path").string_value();
-            pstring sheet = link_node.child("sheet").string_value();
-            spreadsheet::row_t row = link_node.child("row").numeric_value();
-            spreadsheet::col_t col = link_node.child("column").numeric_value();
-
-            cout << "* cell link: (path=" << path
-                << "; sheet=" << sheet
-                << "; row=" << row
-                << "; column=" << col
-                << ")" << endl;
-
-            app.set_cell_link(path, sheet, row, col);
-        }
-    }
-
-    {
-        // Set range links.
-        for (const json::const_node& link_node : root.child("ranges"))
-        {
-            cout << "* range link: (sheet=" << link_node.child("sheet").string_value()
-                << "; row=" << link_node.child("row").numeric_value()
-                << "; column=" << link_node.child("column").numeric_value()
-                << ")" << endl;
-
-            auto fields_node = link_node.child("fields");
-            for (size_t field_pos = 0, n_fields = fields_node.child_count(); field_pos < n_fields; ++field_pos)
+            for (const json::const_node& node_name : root.child("sheets"))
             {
-                auto field_node = fields_node.child(field_pos);
-                cout << "  * field: (path=" << field_node.child("path").string_value() << ')' << endl;
+                cout << "* sheet: " << node_name.string_value() << endl;
+                app.append_sheet(node_name.string_value());
             }
         }
+
+        {
+            // Set cell links.
+            for (const json::const_node& link_node : root.child("cells"))
+            {
+                pstring path = link_node.child("path").string_value();
+                pstring sheet = link_node.child("sheet").string_value();
+                spreadsheet::row_t row = link_node.child("row").numeric_value();
+                spreadsheet::col_t col = link_node.child("column").numeric_value();
+
+                cout << "* cell link: (path=" << path
+                    << "; sheet=" << sheet
+                    << "; row=" << row
+                    << "; column=" << col
+                    << ")" << endl;
+
+                app.set_cell_link(path, sheet, row, col);
+            }
+        }
+
+        {
+            // Set range links.
+            for (const json::const_node& link_node : root.child("ranges"))
+            {
+                pstring sheet = link_node.child("sheet").string_value();
+                spreadsheet::row_t row = link_node.child("row").numeric_value();
+                spreadsheet::col_t col = link_node.child("column").numeric_value();
+
+                cout << "* range link: (sheet=" << sheet
+                    << "; row=" << row
+                    << "; column=" << col
+                    << ")" << endl;
+
+                app.start_range(sheet, row, col);
+
+                for (const json::const_node& field_node : link_node.child("fields"))
+                {
+                    pstring path = field_node.child("path").string_value();
+                    cout << "  * field: (path=" << path << ')' << endl;
+                    app.append_field_link(path);
+                }
+
+                for (const json::const_node& rg_node : link_node.child("row-groups"))
+                {
+                    pstring path = rg_node.child("path").string_value();
+                    cout << "  * row-group: (path=" << path << ')' << endl;
+                    app.set_range_row_group(path);
+                }
+
+                app.commit_range();
+            }
+        }
+    }
+    catch (const json::document_error& e)
+    {
+        cerr << "Error occurred while parsing the map file." << endl;
+        throw;
     }
 
     app.read_stream(content.data(), content.size());
