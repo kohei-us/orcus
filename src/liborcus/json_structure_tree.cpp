@@ -98,14 +98,10 @@ void print_scope(std::ostream& os, const scope& s)
     }
 
     if (s.node.repeat)
-    {
-        if (s.node.type == structure_node::array && s.node.child_count)
-            os << "(*|w=" << s.node.child_count;
-        else
-            os << "(*";
+        os << "(*)";
 
-        os << ')';
-    }
+    if (s.node.type == structure_node::array && s.node.child_count)
+        os << '[' << s.node.child_count << ']';
 }
 
 void print_scopes(std::ostream& os, const scope_stack_type& scopes)
