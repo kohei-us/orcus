@@ -21,7 +21,7 @@ class json_map_tree
 public:
 
     struct node;
-    using node_children_type = std::map<size_t, node>;
+    using node_children_type = std::map<uint16_t, node>;
 
     enum class node_type { unknown, array, object, value };
 
@@ -30,6 +30,7 @@ public:
         node_type type = node_type::unknown;
 
         node_children_type* children = nullptr;
+        node* default_child = nullptr; /// used for non-mapped array children.
         bool linked = false;
 
         node(const node&) = delete;

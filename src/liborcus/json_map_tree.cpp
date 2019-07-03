@@ -7,6 +7,7 @@
 
 #include "json_map_tree.hpp"
 #include "orcus/global.hpp"
+#include "orcus/measurement.hpp"
 
 #include <iostream>
 
@@ -14,23 +15,27 @@ namespace orcus {
 
 namespace {
 
-enum class json_path_token_t { unknown, array };
+enum class json_path_token_t { unknown, root, array, array_pos, object, value };
 
 class json_path_parser
 {
     const char* mp_cur;
     const char* mp_end;
+
 public:
 
     struct token
     {
         json_path_token_t type = json_path_token_t::unknown;
+        long array_pos = -1;
 
         token(json_path_token_t _type) : type(_type) {}
+        token(long _array_pos) : type(json_path_token_t::array_pos), array_pos(_array_pos) {}
     };
 
     json_path_parser(const pstring& path) :
-        mp_cur(path.data()), mp_end(mp_cur + path.size())
+        mp_cur(path.data()),
+        mp_end(mp_cur + path.size())
     {
         assert(!path.empty());
         assert(path[0] == '$');
@@ -39,6 +44,22 @@ public:
 
     token next()
     {
+        if (mp_cur == mp_end)
+            return json_path_token_t::value;
+
+        switch (*mp_cur)
+        {
+            case '[':
+                return next_position();
+            default:
+                ;
+        }
+
+        return next_name();
+    }
+
+    token next_name()
+    {
         const char* p_head = mp_cur;
 
         for (; mp_cur != mp_end; ++mp_cur)
@@ -46,7 +67,7 @@ public:
             switch (*mp_cur)
             {
                 case '[':
-                    return to_token(p_head, mp_cur - p_head);
+                    return name_to_token(p_head, mp_cur - p_head);
                 default:
                     ;
             }
@@ -55,8 +76,37 @@ public:
         return json_path_token_t::unknown;
     }
 
+    token next_position()
+    {
+        assert(*mp_cur == '[');
+        ++mp_cur;
+        const char* p_head = mp_cur;
+
+        for (; mp_cur != mp_end; ++mp_cur)
+        {
+            if (*mp_cur != ']')
+                continue;
+
+            const char* p_parse_ended = nullptr;
+            long pos = to_long(p_head, mp_cur, &p_parse_ended);
+
+            if (p_parse_ended != mp_cur)
+                // Parsing failed.
+                break;
+
+            if (pos < 0)
+                // array position cannot be negative.
+                break;
+
+            ++mp_cur; // skip the ']'.
+            return pos;
+        }
+
+        return json_path_token_t::unknown;
+    }
+
 private:
-    token to_token(const char* p, size_t n) const
+    token name_to_token(const char* p, size_t n) const
     {
         pstring name(p, n);
 
@@ -88,7 +138,12 @@ json_map_tree::node* json_map_tree::get_linked_node(const pstring& path)
 {
     std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): path='" << path << "'" << std::endl;
 
+    if (path.empty() || path[0] != '$')
+        // A valid path must begin with a '$'.
+        return nullptr;
+
     json_path_parser parser(path);
+
     for (auto t = parser.next(); t.type != json_path_token_t::unknown; t = parser.next())
     {
         switch (t.type)
@@ -96,12 +151,20 @@ json_map_tree::node* json_map_tree::get_linked_node(const pstring& path)
             case json_path_token_t::array:
                 std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): array" << std::endl;
                 break;
+            case json_path_token_t::array_pos:
+                std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): array pos = " << t.array_pos << std::endl;
+                break;
+            case json_path_token_t::value:
+                std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): value" << std::endl;
+                return nullptr;
             case json_path_token_t::unknown:
             default:
-                std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): unknown" << std::endl;
+                // Something has gone wrong. Bail out.
+                break;
         }
     }
 
+    // If this code path reaches here, something has gone wrong.
     return nullptr;
 }
 
