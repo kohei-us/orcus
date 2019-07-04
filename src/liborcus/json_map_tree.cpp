@@ -156,6 +156,23 @@ json_map_tree::node::node(node&& other) :
     other.type = node_type::unknown;
 }
 
+json_map_tree::node& json_map_tree::node::get_or_create_child_node(long pos)
+{
+    node_children_type& children = *value.children;
+
+    auto it = children.lower_bound(pos);
+
+    if (it != children.end() && !children.key_comp()(pos, it->first))
+        // The specified node already exists at the specified position.
+        return it->second;
+
+    // Insert a new array child node of unspecified type at the specified position.
+    it = children.insert(
+        it, node_children_type::value_type(pos, node()));
+
+    return it->second;
+}
+
 json_map_tree::json_map_tree() {}
 json_map_tree::~json_map_tree() {}
 
@@ -235,21 +252,7 @@ json_map_tree::node* json_map_tree::get_destination_node(const pstring& path)
             }
 
             cur_node = m_root.get();
-            node_children_type& children = *cur_node->value.children;
-
-            auto it = children.lower_bound(t.array_pos);
-            if (it != children.end() && !children.key_comp()(t.array_pos, it->first))
-                // The specified node already exists at the specified position.
-                cur_node = &it->second;
-            else
-            {
-                // Insert a new array child node of unspecified type at the specified position.
-                it = children.insert(
-                    it, node_children_type::value_type(t.array_pos, node()));
-
-                cur_node = &it->second;
-            }
-
+            cur_node = &cur_node->get_or_create_child_node(t.array_pos);
             break;
         }
         default:

@@ -59,6 +59,8 @@ public:
 
         node();
         node(node&& other);
+
+        node& get_or_create_child_node(long pos);
     };
 
     json_map_tree();
