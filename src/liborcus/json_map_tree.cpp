@@ -15,7 +15,7 @@ namespace orcus {
 
 namespace {
 
-enum class json_path_token_t { unknown, root, array, array_pos, object, value };
+enum class json_path_token_t { unknown, array, array_pos, object, end };
 
 class json_path_parser
 {
@@ -45,12 +45,12 @@ public:
     token next()
     {
         if (mp_cur == mp_end)
-            return json_path_token_t::value;
+            return json_path_token_t::end;
 
         switch (*mp_cur)
         {
             case '[':
-                return next_position();
+                return next_array_pos();
             default:
                 ;
         }
@@ -76,7 +76,7 @@ public:
         return json_path_token_t::unknown;
     }
 
-    token next_position()
+    token next_array_pos()
     {
         assert(*mp_cur == '[');
         ++mp_cur;
@@ -86,6 +86,13 @@ public:
         {
             if (*mp_cur != ']')
                 continue;
+
+            if (p_head == mp_cur)
+            {
+                // empty brackets.
+                ++mp_cur;
+                return -1;
+            }
 
             const char* p_parse_ended = nullptr;
             long pos = to_long(p_head, mp_cur, &p_parse_ended);
@@ -130,8 +137,20 @@ void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& po
 }
 
 void json_map_tree::start_range(const cell_position_t& pos) {}
-void json_map_tree::append_field_link(const pstring& path) {}
-void json_map_tree::set_range_row_group(const pstring& path) {}
+void json_map_tree::append_field_link(const pstring& path)
+{
+    node* p = get_linked_node(path);
+    if (!p)
+        return;
+}
+
+void json_map_tree::set_range_row_group(const pstring& path)
+{
+    node* p = get_linked_node(path);
+    if (!p)
+        return;
+}
+
 void json_map_tree::commit_range() {}
 
 json_map_tree::node* json_map_tree::get_linked_node(const pstring& path)
@@ -154,8 +173,8 @@ json_map_tree::node* json_map_tree::get_linked_node(const pstring& path)
             case json_path_token_t::array_pos:
                 std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): array pos = " << t.array_pos << std::endl;
                 break;
-            case json_path_token_t::value:
-                std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): value" << std::endl;
+            case json_path_token_t::end:
+                std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): end" << std::endl;
                 return nullptr;
             case json_path_token_t::unknown:
             default:
