@@ -20,6 +20,8 @@ using spreadsheet::detail::cell_position_t;
 class json_map_tree
 {
 public:
+    static constexpr long node_child_default_position = -1;
+
     /**
      * Error indicating improper path.
      */

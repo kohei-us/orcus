@@ -28,7 +28,7 @@ public:
     struct token
     {
         json_path_token_t type = json_path_token_t::unknown;
-        long array_pos = -1;
+        long array_pos = json_map_tree::node_child_default_position;
 
         token(json_path_token_t _type) : type(_type) {}
         token(long _array_pos) : type(json_path_token_t::array_pos), array_pos(_array_pos) {}
@@ -92,7 +92,7 @@ public:
             {
                 // empty brackets.
                 ++mp_cur;
-                return -1;
+                return json_map_tree::node_child_default_position;
             }
 
             const char* p_parse_ended = nullptr;
