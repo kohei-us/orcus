@@ -7,6 +7,7 @@
 
 #include "spreadsheet_impl_types.hpp"
 #include "orcus/string_pool.hpp"
+#include "orcus/exception.hpp"
 
 #include <boost/pool/object_pool.hpp>
 #include <memory>
@@ -19,22 +20,43 @@ using spreadsheet::detail::cell_position_t;
 class json_map_tree
 {
 public:
+    /**
+     * Error indicating improper path.
+     */
+    class path_error : public general_error
+    {
+    public:
+        path_error(const std::string& msg);
+    };
 
     struct node;
-    using node_children_type = std::map<uint16_t, node>;
+    using node_children_type = std::map<long, node>;
 
-    enum class node_type { unknown, array, object, value };
+    enum class node_type { unknown, array, object, cell_ref };
+
+    struct cell_reference_type
+    {
+        cell_position_t pos;
+
+        cell_reference_type(const cell_position_t& _pos);
+    };
 
     struct node
     {
         node_type type = node_type::unknown;
 
-        node_children_type* children = nullptr;
-        node* default_child = nullptr; /// used for non-mapped array children.
-        bool linked = false;
+        union
+        {
+            node_children_type* children = nullptr;
+            cell_reference_type* cell_ref;
+
+        } value;
 
         node(const node&) = delete;
         node& operator=(const node&) = delete;
+
+        node();
+        node(node&& other);
     };
 
     json_map_tree();
@@ -48,10 +70,11 @@ public:
     void commit_range();
 
 private:
-    node* get_linked_node(const pstring& path);
+    node* get_destination_node(const pstring& path);
 
 private:
     boost::object_pool<node_children_type> m_node_children_pool;
+    boost::object_pool<cell_reference_type> m_cell_ref_pool;
     string_pool m_str_pool;
     std::unique_ptr<node> m_root;
 };
