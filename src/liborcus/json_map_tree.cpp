@@ -160,16 +160,16 @@ json_map_tree::node& json_map_tree::node::get_or_create_child_node(long pos)
 {
     node_children_type& children = *value.children;
 
-    auto it = children.lower_bound(pos);
+    auto it = children.lower_bound(pos); // get the first position where pos <= k is true.
 
-    if (it != children.end() && !children.key_comp()(pos, it->first))
-        // The specified node already exists at the specified position.
-        return it->second;
+    if (it == children.end() || children.key_comp()(pos, it->first))
+    {
+        // Insert a new array child node of unspecified type at the specified position.
+        it = children.insert(
+            it, node_children_type::value_type(pos, node()));
+    }
 
-    // Insert a new array child node of unspecified type at the specified position.
-    it = children.insert(
-        it, node_children_type::value_type(pos, node()));
-
+    assert(it->first == pos);
     return it->second;
 }
 
