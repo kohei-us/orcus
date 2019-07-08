@@ -250,7 +250,8 @@ const json_map_tree::node* json_map_tree::get_destination_node(const pstring& pa
                     return nullptr;
                 }
 
-                return &it->second;
+                cur_node = &it->second;
+                break;
             }
             case json_path_token_t::end:
                 std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_destination_node): end" << std::endl;
@@ -316,8 +317,28 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
         switch (t.type)
         {
             case json_path_token_t::array_pos:
+            {
                 std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): array pos = " << t.array_pos << std::endl;
+                switch (cur_node->type)
+                {
+                    case node_type::array:
+                        // Do nothing.
+                        break;
+                    case node_type::unknown:
+                        // Turn this node into an array node.
+                        cur_node->type = node_type::array;
+                        cur_node->value.children = m_node_children_pool.construct();
+                        break;
+                    default:
+                    {
+                        std::ostringstream os;
+                        os << "failed to link this path '" << path << "'";
+                        throw path_error(os.str());
+                    }
+                }
+                cur_node = &cur_node->get_or_create_child_node(t.array_pos);
                 break;
+            }
             case json_path_token_t::end:
                 std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): end" << std::endl;
                 return cur_node;

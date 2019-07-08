@@ -14,14 +14,23 @@ using namespace orcus;
 
 void test_link_array_values()
 {
+    json_map_tree tree;
+
     cell_position_t pos("sheet", 0, 0);
 
-    json_map_tree tree;
     tree.set_cell_link("$[0]", pos);
+    pos.row = 1;
+    tree.set_cell_link("$[][0]", pos);
+
     const json_map_tree::node* p = tree.get_link("$[0]");
     assert(p);
     assert(p->type == json_map_tree::node_type::cell_ref);
-    assert(p->value.cell_ref->pos == pos);
+    assert(p->value.cell_ref->pos == cell_position_t("sheet", 0, 0));
+
+    p = tree.get_link("$[][0]");
+    assert(p);
+    assert(p->type == json_map_tree::node_type::cell_ref);
+    assert(p->value.cell_ref->pos == cell_position_t("sheet", 1, 0));
 }
 
 int main()
