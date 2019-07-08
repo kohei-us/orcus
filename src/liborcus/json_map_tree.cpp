@@ -56,25 +56,7 @@ public:
                 ;
         }
 
-        return next_name();
-    }
-
-    token next_name()
-    {
-        const char* p_head = mp_cur;
-
-        for (; mp_cur != mp_end; ++mp_cur)
-        {
-            switch (*mp_cur)
-            {
-                case '[':
-                    return name_to_token(p_head, mp_cur - p_head);
-                default:
-                    ;
-            }
-        }
-
-        return json_path_token_t::unknown;
+        throw json_map_tree::path_error("invalid path");
     }
 
     token next_array_pos()
@@ -109,17 +91,6 @@ public:
             ++mp_cur; // skip the ']'.
             return pos;
         }
-
-        return json_path_token_t::unknown;
-    }
-
-private:
-    token name_to_token(const char* p, size_t n) const
-    {
-        pstring name(p, n);
-
-        if (name == "array")
-            return json_path_token_t::array;
 
         return json_path_token_t::unknown;
     }
