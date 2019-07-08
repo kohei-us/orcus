@@ -68,13 +68,16 @@ public:
 
     void set_cell_link(const pstring& path, const cell_position_t& pos);
 
+    const node* get_link(const pstring& path) const;
+
     void start_range(const cell_position_t& pos);
     void append_field_link(const pstring& path);
     void set_range_row_group(const pstring& path);
     void commit_range();
 
 private:
-    node* get_destination_node(const pstring& path);
+    const node* get_destination_node(const pstring& path) const;
+    node* get_or_create_destination_node(const pstring& path);
 
 private:
     boost::object_pool<node_children_type> m_node_children_pool;

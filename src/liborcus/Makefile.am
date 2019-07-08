@@ -10,7 +10,8 @@ EXTRA_PROGRAMS = \
 	liborcus-test-common \
 	liborcus-test-format-detection \
 	dom-tree-test \
-	json-structure-tree-test
+	json-structure-tree-test \
+	json-map-tree-test
 
 TESTS =
 
@@ -445,6 +446,15 @@ json_structure_tree_test_LDADD = \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS)
 
+# json-map-tree-test
+
+json_map_tree_test_SOURCES = json_map_tree_test.cpp \
+	json_map_tree.cpp \
+	spreadsheet_impl_types.cpp
+json_map_tree_test_LDADD = \
+	liborcus-@ORCUS_API_VERSION@.la \
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+
 TESTS += \
 	liborcus-test-css-document-tree \
 	liborcus-test-json-document-tree \
@@ -454,7 +464,8 @@ TESTS += \
 	liborcus-test-common \
 	liborcus-test-format-detection \
 	dom-tree-test \
-	json-structure-tree-test
+	json-structure-tree-test \
+	json-map-tree-test
 
 distclean-local:
 	rm -rf $(TESTS)

@@ -24,6 +24,9 @@ struct cell_position_t
     cell_position_t();
     cell_position_t(const pstring& _sheet, spreadsheet::row_t _row, spreadsheet::col_t _col);
     cell_position_t(const cell_position_t& r);
+
+    bool operator== (const cell_position_t& other) const;
+    bool operator!= (const cell_position_t& other) const;
 };
 
 std::ostream& operator<< (std::ostream& os, const cell_position_t& ref);

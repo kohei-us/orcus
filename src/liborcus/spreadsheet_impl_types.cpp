@@ -18,6 +18,16 @@ cell_position_t::cell_position_t(const pstring& _sheet, spreadsheet::row_t _row,
 
 cell_position_t::cell_position_t(const cell_position_t& r) : sheet(r.sheet), row(r.row), col(r.col) {}
 
+bool cell_position_t::operator== (const cell_position_t& other) const
+{
+    return sheet == other.sheet && row == other.row && col == other.col;
+}
+
+bool cell_position_t::operator!= (const cell_position_t& other) const
+{
+    return !operator==(other);
+}
+
 std::ostream& operator<< (std::ostream& os, const cell_position_t& ref)
 {
     os << "[sheet='" << ref.sheet << "' row=" << ref.row << " column=" << ref.col << "]";

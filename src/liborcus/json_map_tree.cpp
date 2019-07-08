@@ -178,7 +178,7 @@ json_map_tree::~json_map_tree() {}
 
 void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& pos)
 {
-    node* p = get_destination_node(path);
+    node* p = get_or_create_destination_node(path);
     if (!p)
         return;
 
@@ -198,24 +198,75 @@ void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& po
     std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:set_cell_link): cell link set" << std::endl;
 }
 
+const json_map_tree::node* json_map_tree::get_link(const pstring& path) const
+{
+    return get_destination_node(path);
+}
+
 void json_map_tree::start_range(const cell_position_t& pos) {}
 void json_map_tree::append_field_link(const pstring& path)
 {
-    node* p = get_destination_node(path);
+    node* p = get_or_create_destination_node(path);
     if (!p)
         return;
 }
 
 void json_map_tree::set_range_row_group(const pstring& path)
 {
-    node* p = get_destination_node(path);
+    node* p = get_or_create_destination_node(path);
     if (!p)
         return;
 }
 
 void json_map_tree::commit_range() {}
 
-json_map_tree::node* json_map_tree::get_destination_node(const pstring& path)
+const json_map_tree::node* json_map_tree::get_destination_node(const pstring& path) const
+{
+    if (!m_root)
+        // The tree is empty.
+        return nullptr;
+
+    if (path.empty() || path[0] != '$')
+        // A valid path must begin with a '$'.
+        return nullptr;
+
+    json_path_parser parser(path);
+    const node* cur_node = m_root.get();
+
+    for (json_path_parser::token t = parser.next(); t.type != json_path_token_t::unknown; t = parser.next())
+    {
+        switch (t.type)
+        {
+            case json_path_token_t::array_pos:
+            {
+                if (cur_node->type != node_type::array)
+                    return nullptr;
+
+                std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_destination_node): array pos = " << t.array_pos << std::endl;
+                auto it = cur_node->value.children->find(t.array_pos);
+                if (it == cur_node->value.children->end())
+                {
+                    std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_destination_node): no node at the array pos." << std::endl;
+                    return nullptr;
+                }
+
+                return &it->second;
+            }
+            case json_path_token_t::end:
+                std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_destination_node): end" << std::endl;
+                return cur_node;
+            case json_path_token_t::unknown:
+            default:
+                // Something has gone wrong. Bail out.
+                break;
+        }
+    }
+
+    // If this code path reaches here, something has gone wrong.
+    return nullptr;
+}
+
+json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring& path)
 {
     std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): path='" << path << "'" << std::endl;
 
