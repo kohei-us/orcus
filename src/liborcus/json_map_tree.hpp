@@ -48,6 +48,8 @@ public:
     {
         cell_position_t pos;
         std::vector<const node*> fields;
+
+        range_reference_type(const cell_position_t& _pos);
     };
 
     /** Represents a field within a range reference. */

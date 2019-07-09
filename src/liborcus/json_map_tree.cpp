@@ -111,6 +111,9 @@ json_map_tree::path_error::path_error(const std::string& msg) :
 json_map_tree::cell_reference_type::cell_reference_type(const cell_position_t& _pos) :
     pos(_pos) {}
 
+json_map_tree::range_reference_type::range_reference_type(const cell_position_t& _pos) :
+    pos(_pos) {}
+
 json_map_tree::node::node() {}
 json_map_tree::node::node(node&& other) :
     type(other.type)
@@ -211,7 +214,7 @@ void json_map_tree::commit_range()
 
         it = m_range_refs.insert(
             it, range_ref_store_type::value_type(
-                m_current_range.pos, range_reference_type()));
+                m_current_range.pos, range_reference_type(m_current_range.pos)));
     }
 
     range_reference_type* ref = &it->second;
