@@ -12,6 +12,7 @@
 #include <boost/pool/object_pool.hpp>
 #include <memory>
 #include <map>
+#include <vector>
 
 namespace orcus {
 
@@ -34,13 +35,26 @@ public:
     struct node;
     using node_children_type = std::map<long, node>;
 
-    enum class node_type { unknown, array, object, cell_ref };
+    enum class node_type { unknown, array, object, cell_ref, range_field_ref };
 
     struct cell_reference_type
     {
         cell_position_t pos;
 
         cell_reference_type(const cell_position_t& _pos);
+    };
+
+    struct range_reference_type
+    {
+        cell_position_t pos;
+        std::vector<const node*> fields;
+    };
+
+    /** Represents a field within a range reference. */
+    struct range_field_reference_type
+    {
+        range_reference_type* ref;
+        spreadsheet::col_t column_pos;
     };
 
     struct node
@@ -51,8 +65,16 @@ public:
         {
             node_children_type* children = nullptr;
             cell_reference_type* cell_ref;
+            range_field_reference_type* range_field_ref;
 
         } value;
+
+        /**
+         * The node is a row-group node (node that defines a row boundary)
+         * if this value is set to a non-null value.  If this is not null, it
+         * points to the range_reference instance it belongs to.
+         */
+        range_reference_type* row_group = nullptr;
 
         node(const node&) = delete;
         node& operator=(const node&) = delete;
@@ -80,10 +102,25 @@ private:
     node* get_or_create_destination_node(const pstring& path);
 
 private:
+    using range_ref_store_type = std::map<cell_position_t, range_reference_type>;
+
     boost::object_pool<node_children_type> m_node_children_pool;
     boost::object_pool<cell_reference_type> m_cell_ref_pool;
+    boost::object_pool<range_field_reference_type> m_range_field_ref_pool;
+
     string_pool m_str_pool;
+
     std::unique_ptr<node> m_root;
+
+    range_ref_store_type m_range_refs;
+
+    struct
+    {
+        cell_position_t pos;
+        std::vector<pstring> field_paths;
+        std::vector<pstring> row_groups;
+
+    } m_current_range;
 };
 
 }

@@ -16,6 +16,13 @@ namespace orcus {
 
 namespace {
 
+void throw_path_error(const pstring& path)
+{
+    std::ostringstream os;
+    os << "failed to link this path '" << path << "'";
+    throw json_map_tree::path_error(os.str());
+}
+
 enum class json_path_token_t { unknown, array, array_pos, object, end };
 
 class json_path_parser
@@ -120,6 +127,9 @@ json_map_tree::node::node(node&& other) :
             value.cell_ref = other.value.cell_ref;
             other.value.cell_ref = nullptr;
             break;
+        case node_type::range_field_ref:
+            value.range_field_ref = other.value.range_field_ref;
+            other.value.range_field_ref = nullptr;
         default:
             ;
     }
@@ -174,22 +184,64 @@ const json_map_tree::node* json_map_tree::get_link(const pstring& path) const
     return get_destination_node(path);
 }
 
-void json_map_tree::start_range(const cell_position_t& pos) {}
+void json_map_tree::start_range(const cell_position_t& pos)
+{
+    m_current_range.pos = pos;
+    m_current_range.field_paths.clear();
+    m_current_range.row_groups.clear();
+}
+
 void json_map_tree::append_field_link(const pstring& path)
 {
-    node* p = get_or_create_destination_node(path);
-    if (!p)
-        return;
+    m_current_range.field_paths.push_back(path);
 }
 
 void json_map_tree::set_range_row_group(const pstring& path)
 {
-    node* p = get_or_create_destination_node(path);
-    if (!p)
-        return;
+    m_current_range.row_groups.push_back(path);
 }
 
-void json_map_tree::commit_range() {}
+void json_map_tree::commit_range()
+{
+    auto it = m_range_refs.lower_bound(m_current_range.pos);
+    if (it == m_range_refs.end() || m_range_refs.key_comp()(m_current_range.pos, it->first))
+    {
+        // Ensure that we own the sheet name instance before storing it.
+        m_current_range.pos.sheet = m_str_pool.intern(m_current_range.pos.sheet).first;
+
+        it = m_range_refs.insert(
+            it, range_ref_store_type::value_type(
+                m_current_range.pos, range_reference_type()));
+    }
+
+    range_reference_type* ref = &it->second;
+    spreadsheet::col_t column_pos = 0;
+
+    for (const pstring& path : m_current_range.field_paths)
+    {
+        node* p = get_or_create_destination_node(path);
+        if (!p || p->type != node_type::unknown)
+            throw_path_error(path);
+
+        p->type = node_type::range_field_ref;
+        p->value.range_field_ref = m_range_field_ref_pool.construct();
+        p->value.range_field_ref->column_pos = column_pos++;
+        p->value.range_field_ref->ref = ref;
+
+        ref->fields.push_back(p);
+    }
+
+    for (const pstring& path : m_current_range.row_groups)
+    {
+        node* p = get_or_create_destination_node(path);
+        if (!p)
+            throw_path_error(path);
+
+        p->row_group = ref;
+    }
+
+    std::cout << __FILE__ << "#" << __LINE__ << " (json_map_tree:commit_range): all good!" << std::endl;
+}
 
 const json_map_tree::node* json_map_tree::get_destination_node(const pstring& path) const
 {
@@ -301,11 +353,7 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                         cur_node->value.children = m_node_children_pool.construct();
                         break;
                     default:
-                    {
-                        std::ostringstream os;
-                        os << "failed to link this path '" << path << "'";
-                        throw path_error(os.str());
-                    }
+                        throw_path_error(path);
                 }
                 cur_node = &cur_node->get_or_create_child_node(t.array_pos);
                 break;
