@@ -66,6 +66,12 @@ void test_link_range_fields()
     const json_map_tree::range_reference_type* ref = p->value.range_field_ref->ref;
     assert(ref->fields.size() == 3);
     assert(ref->pos == pos);
+
+    // Make sure the row group is set.
+    p = tree.get_link("$[]");
+    assert(p);
+    assert(p->type == json_map_tree::node_type::array);
+    assert(p->row_group == ref);
 }
 
 int main()
