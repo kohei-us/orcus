@@ -20,40 +20,70 @@ namespace {
 class json_content_handler
 {
     json_map_tree::walker m_walker;
+    const json_map_tree::node* mp_current_node;
 
 public:
     json_content_handler(const json_map_tree& map_tree) :
-        m_walker(map_tree.get_tree_walker()) {}
+        m_walker(map_tree.get_tree_walker()),
+        mp_current_node(nullptr) {}
 
     void begin_parse() {}
-
     void end_parse() {}
 
     void begin_array()
     {
-        m_walker.push_node(json_map_tree::node_type::array);
+        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::array);
     }
 
     void end_array()
     {
-        m_walker.pop_node(json_map_tree::node_type::array);
+        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::array);
     }
 
-    void begin_object() {}
+    void begin_object()
+    {
+        throw std::runtime_error("WIP: begin_object");
+    }
 
-    void object_key(const char* p, size_t len, bool transient) {}
+    void object_key(const char* p, size_t len, bool transient)
+    {
+        throw std::runtime_error("WIP: object_key");
+    }
 
-    void end_object() {}
+    void end_object()
+    {
+        throw std::runtime_error("WIP: end_object");
+    }
 
-    void boolean_true() {}
+    void boolean_true()
+    {
+        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::value);
+        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::value);
+    }
 
-    void boolean_false() {}
+    void boolean_false()
+    {
+        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::value);
+        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::value);
+    }
 
-    void null() {}
+    void null()
+    {
+        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::value);
+        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::value);
+    }
 
-    void string(const char* p, size_t len, bool transient) {}
+    void string(const char* p, size_t len, bool transient)
+    {
+        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::value);
+        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::value);
+    }
 
-    void number(double val) {}
+    void number(double val)
+    {
+        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::value);
+        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::value);
+    }
 };
 
 } // anonymous namespace

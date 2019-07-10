@@ -13,6 +13,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <iosfwd>
 
 namespace orcus {
 
@@ -35,7 +36,15 @@ public:
     struct node;
     using node_children_type = std::map<long, node>;
 
-    enum class node_type { unknown, array, object, cell_ref, range_field_ref };
+    /** Types of nodes in the json input tree. */
+    enum class input_node_type { unknown = 0x00, array = 0x01, object = 0x02, value = 0x04 };
+
+    /**
+     * Types of nodes in the map tree.  The lower 4-bits specify the input
+     * node type which are kept in sync with the input_node_type values. The
+     * next 4-bits specify the link type.
+     */
+    enum class map_node_type { unknown = 0x00, array = 0x01, object = 0x02, cell_ref = 0x14, range_field_ref = 0x24 };
 
     struct cell_reference_type
     {
@@ -61,7 +70,7 @@ public:
 
     struct node
     {
-        node_type type = node_type::unknown;
+        map_node_type type = map_node_type::unknown;
 
         union
         {
@@ -101,7 +110,7 @@ public:
         };
 
         using stack_type = std::vector<scope>;
-        using unlinked_stack_type = std::vector<node_type>;
+        using unlinked_stack_type = std::vector<input_node_type>;
 
         const json_map_tree& m_parent;
         stack_type m_stack;
@@ -110,8 +119,8 @@ public:
         walker(const json_map_tree& parent);
     public:
 
-        const node* push_node(node_type nt);
-        const node* pop_node(node_type nt);
+        const node* push_node(input_node_type nt);
+        const node* pop_node(input_node_type nt);
     };
 
     json_map_tree();
@@ -131,6 +140,8 @@ public:
 private:
     const node* get_destination_node(const pstring& path) const;
     node* get_or_create_destination_node(const pstring& path);
+
+    static bool is_equivalent(input_node_type input_node, map_node_type map_node);
 
 private:
     using range_ref_store_type = std::map<cell_position_t, range_reference_type>;
@@ -153,6 +164,9 @@ private:
 
     } m_current_range;
 };
+
+std::ostream& operator<< (std::ostream& os, json_map_tree::input_node_type nt);
+std::ostream& operator<< (std::ostream& os, json_map_tree::map_node_type nt);
 
 }
 

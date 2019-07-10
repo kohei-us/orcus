@@ -25,12 +25,12 @@ void test_link_array_values()
 
     const json_map_tree::node* p = tree.get_link("$[0]");
     assert(p);
-    assert(p->type == json_map_tree::node_type::cell_ref);
+    assert(p->type == json_map_tree::map_node_type::cell_ref);
     assert(p->value.cell_ref->pos == cell_position_t("sheet", 0, 0));
 
     p = tree.get_link("$[][0]");
     assert(p);
-    assert(p->type == json_map_tree::node_type::cell_ref);
+    assert(p->type == json_map_tree::map_node_type::cell_ref);
     assert(p->value.cell_ref->pos == cell_position_t("sheet", 1, 0));
 }
 
@@ -49,17 +49,17 @@ void test_link_range_fields()
 
     const json_map_tree::node* p = tree.get_link("$[][0]");
     assert(p);
-    assert(p->type == json_map_tree::node_type::range_field_ref);
+    assert(p->type == json_map_tree::map_node_type::range_field_ref);
     assert(p->value.range_field_ref->column_pos == 0);
 
     p = tree.get_link("$[][1]");
     assert(p);
-    assert(p->type == json_map_tree::node_type::range_field_ref);
+    assert(p->type == json_map_tree::map_node_type::range_field_ref);
     assert(p->value.range_field_ref->column_pos == 1);
 
     p = tree.get_link("$[][2]");
     assert(p);
-    assert(p->type == json_map_tree::node_type::range_field_ref);
+    assert(p->type == json_map_tree::map_node_type::range_field_ref);
     assert(p->value.range_field_ref->column_pos == 2);
 
     // Check the range reference data itself.
@@ -70,7 +70,7 @@ void test_link_range_fields()
     // Make sure the row group is set.
     p = tree.get_link("$[]");
     assert(p);
-    assert(p->type == json_map_tree::node_type::array);
+    assert(p->type == json_map_tree::map_node_type::array);
     assert(p->row_group == ref);
 }
 

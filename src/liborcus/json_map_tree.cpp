@@ -122,22 +122,22 @@ json_map_tree::node::node(node&& other) :
 
     switch (type)
     {
-        case node_type::array:
+        case map_node_type::array:
             value.children = other.value.children;
             other.value.children = nullptr;
             break;
-        case node_type::cell_ref:
+        case map_node_type::cell_ref:
             value.cell_ref = other.value.cell_ref;
             other.value.cell_ref = nullptr;
             break;
-        case node_type::range_field_ref:
+        case map_node_type::range_field_ref:
             value.range_field_ref = other.value.range_field_ref;
             other.value.range_field_ref = nullptr;
         default:
             ;
     }
 
-    other.type = node_type::unknown;
+    other.type = map_node_type::unknown;
 }
 
 json_map_tree::node& json_map_tree::node::get_or_create_child_node(long pos)
@@ -161,7 +161,7 @@ json_map_tree::walker::scope::scope(const node* _p) : p(_p), array_position(0) {
 
 json_map_tree::walker::walker(const json_map_tree& parent) : m_parent(parent) {}
 
-const json_map_tree::node* json_map_tree::walker::push_node(node_type nt)
+const json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
 {
     if (!m_unlinked_stack.empty())
     {
@@ -181,7 +181,7 @@ const json_map_tree::node* json_map_tree::walker::push_node(node_type nt)
 
         const node* p = m_parent.m_root.get();
 
-        if (p->type != nt)
+        if (!is_equivalent(nt, p->type))
         {
             // Different node type.
             m_unlinked_stack.push_back(nt);
@@ -196,7 +196,7 @@ const json_map_tree::node* json_map_tree::walker::push_node(node_type nt)
 
     switch (cur_scope.p->type)
     {
-        case json_map_tree::node_type::array:
+        case json_map_tree::map_node_type::array:
         {
             const node_children_type& node_children = *cur_scope.p->value.children;
 
@@ -208,10 +208,18 @@ const json_map_tree::node* json_map_tree::walker::push_node(node_type nt)
                 throw std::logic_error("empty array should never happen!");
 
             const node* p = &it->second;
+
+            if (!is_equivalent(nt, p->type))
+            {
+                // Different node type.
+                m_unlinked_stack.push_back(nt);
+                return nullptr;
+            }
+
             m_stack.push_back(p);
             return p;
         }
-        case json_map_tree::node_type::object:
+        case json_map_tree::map_node_type::object:
             throw std::runtime_error("WIP: handle this");
         default:
             ;
@@ -221,7 +229,7 @@ const json_map_tree::node* json_map_tree::walker::push_node(node_type nt)
     return nullptr;
 }
 
-const json_map_tree::node* json_map_tree::walker::pop_node(node_type nt)
+const json_map_tree::node* json_map_tree::walker::pop_node(input_node_type nt)
 {
     if (!m_unlinked_stack.empty())
     {
@@ -241,7 +249,7 @@ const json_map_tree::node* json_map_tree::walker::pop_node(node_type nt)
     if (m_stack.empty())
         throw general_error("A node was popped while the stack was empty.");
 
-    if (m_stack.back().p->type != nt)
+    if (!is_equivalent(nt, m_stack.back().p->type))
         throw general_error("Closing node is of different type than the opening node in the linked node stack.");
 
     m_stack.pop_back();
@@ -262,14 +270,14 @@ void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& po
     if (!p)
         return;
 
-    if (p->type != node_type::unknown)
+    if (p->type != map_node_type::unknown)
     {
         std::ostringstream os;
         os << "this path is not linkable: '" << path << '\'';
         throw path_error(os.str());
     }
 
-    p->type = node_type::cell_ref;
+    p->type = map_node_type::cell_ref;
     p->value.cell_ref = m_cell_ref_pool.construct(pos);
 
     // Ensure that this tree owns the instance of the string.
@@ -319,10 +327,10 @@ void json_map_tree::commit_range()
     for (const pstring& path : m_current_range.field_paths)
     {
         node* p = get_or_create_destination_node(path);
-        if (!p || p->type != node_type::unknown)
+        if (!p || p->type != map_node_type::unknown)
             throw_path_error(path);
 
-        p->type = node_type::range_field_ref;
+        p->type = map_node_type::range_field_ref;
         p->value.range_field_ref = m_range_field_ref_pool.construct();
         p->value.range_field_ref->column_pos = column_pos++;
         p->value.range_field_ref->ref = ref;
@@ -361,7 +369,7 @@ const json_map_tree::node* json_map_tree::get_destination_node(const pstring& pa
         {
             case json_path_token_t::array_pos:
             {
-                if (cur_node->type != node_type::array)
+                if (cur_node->type != map_node_type::array)
                     return nullptr;
 
                 std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_destination_node): array pos = " << t.array_pos << std::endl;
@@ -413,7 +421,7 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
 
             if (m_root)
             {
-                if (m_root->type != node_type::array)
+                if (m_root->type != map_node_type::array)
                     throw path_error("root node was expected to be of type array, but is not.");
 
                 assert(m_root->value.children);
@@ -421,7 +429,7 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
             else
             {
                 m_root = orcus::make_unique<node>();
-                m_root->type = node_type::array;
+                m_root->type = map_node_type::array;
                 m_root->value.children = m_node_children_pool.construct();
             }
 
@@ -443,12 +451,12 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                 std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): array pos = " << t.array_pos << std::endl;
                 switch (cur_node->type)
                 {
-                    case node_type::array:
+                    case map_node_type::array:
                         // Do nothing.
                         break;
-                    case node_type::unknown:
+                    case map_node_type::unknown:
                         // Turn this node into an array node.
-                        cur_node->type = node_type::array;
+                        cur_node->type = map_node_type::array;
                         cur_node->value.children = m_node_children_pool.construct();
                         break;
                     default:
@@ -470,6 +478,67 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
     // If this code path reaches here, something has gone wrong.
     return nullptr;
 }
+
+bool json_map_tree::is_equivalent(input_node_type input_node, map_node_type map_node)
+{
+    uint8_t left = (0x0F & uint8_t(input_node));
+    uint8_t right = (0x0F & uint8_t(map_node));
+    return left == right;
+}
+
+std::ostream& operator<< (std::ostream& os, json_map_tree::input_node_type nt)
+{
+    os << "(input-node-type: ";
+
+    switch (nt)
+    {
+        case json_map_tree::input_node_type::array:
+            os << "array";
+            break;
+        case json_map_tree::input_node_type::object:
+            os << "object";
+            break;
+        case json_map_tree::input_node_type::value:
+            os << "value";
+            break;
+        case json_map_tree::input_node_type::unknown:
+            os << "unknown";
+            break;
+    }
+
+    os << ')';
+
+    return os;
+}
+
+std::ostream& operator<< (std::ostream& os, json_map_tree::map_node_type nt)
+{
+    os << "(map-node-type: ";
+
+    switch (nt)
+    {
+        case json_map_tree::map_node_type::array:
+            os << "array";
+            break;
+        case json_map_tree::map_node_type::cell_ref:
+            os << "cell-ref";
+            break;
+        case json_map_tree::map_node_type::object:
+            os << "object";
+            break;
+        case json_map_tree::map_node_type::range_field_ref:
+            os << "range-field-ref";
+            break;
+        case json_map_tree::map_node_type::unknown:
+            os << "unknown";
+            break;
+    }
+
+    os << ')';
+
+    return os;
+}
+
 
 }
 
