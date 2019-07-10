@@ -200,7 +200,7 @@ const json_map_tree::node* json_map_tree::walker::push_node(node_type nt)
         {
             const node_children_type& node_children = *cur_scope.p->value.children;
 
-            auto it = node_children.find(cur_scope.array_position);
+            auto it = node_children.find(cur_scope.array_position++);
             if (it == node_children.end())
                 it = node_children.find(json_map_tree::node_child_default_position);
 
@@ -223,8 +223,29 @@ const json_map_tree::node* json_map_tree::walker::push_node(node_type nt)
 
 const json_map_tree::node* json_map_tree::walker::pop_node(node_type nt)
 {
-    throw std::runtime_error("WIP: node popping has yet to be implemented.");
-    return nullptr;
+    if (!m_unlinked_stack.empty())
+    {
+        // We're in the unlinked region.  Pop a node from the unlinked stack.
+        if (m_unlinked_stack.back() != nt)
+            throw general_error("Closing node is of different type than the opening node in the unlinked node stack.");
+
+        m_unlinked_stack.pop_back();
+
+        if (!m_unlinked_stack.empty())
+            // We are still in the unlinked region.
+            return nullptr;
+
+        return m_stack.empty() ? nullptr : m_stack.back().p;
+    }
+
+    if (m_stack.empty())
+        throw general_error("A node was popped while the stack was empty.");
+
+    if (m_stack.back().p->type != nt)
+        throw general_error("Closing node is of different type than the opening node in the linked node stack.");
+
+    m_stack.pop_back();
+    return m_stack.empty() ? nullptr : m_stack.back().p;
 }
 
 json_map_tree::json_map_tree() {}
