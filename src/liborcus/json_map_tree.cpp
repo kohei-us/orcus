@@ -157,8 +157,83 @@ json_map_tree::node& json_map_tree::node::get_or_create_child_node(long pos)
     return it->second;
 }
 
+json_map_tree::walker::scope::scope(const node* _p) : p(_p), array_position(0) {}
+
+json_map_tree::walker::walker(const json_map_tree& parent) : m_parent(parent) {}
+
+const json_map_tree::node* json_map_tree::walker::push_node(node_type nt)
+{
+    if (!m_unlinked_stack.empty())
+    {
+        // We're still in the unlinked region.
+        m_unlinked_stack.push_back(nt);
+        return nullptr;
+    }
+
+    if (m_stack.empty())
+    {
+        if (!m_parent.m_root)
+        {
+            // Tree is empty.
+            m_unlinked_stack.push_back(nt);
+            return nullptr;
+        }
+
+        const node* p = m_parent.m_root.get();
+
+        if (p->type != nt)
+        {
+            // Different node type.
+            m_unlinked_stack.push_back(nt);
+            return nullptr;
+        }
+
+        m_stack.push_back(p);
+        return p;
+    }
+
+    scope& cur_scope = m_stack.back();
+
+    switch (cur_scope.p->type)
+    {
+        case json_map_tree::node_type::array:
+        {
+            const node_children_type& node_children = *cur_scope.p->value.children;
+
+            auto it = node_children.find(cur_scope.array_position);
+            if (it == node_children.end())
+                it = node_children.find(json_map_tree::node_child_default_position);
+
+            if (it == node_children.end())
+                throw std::logic_error("empty array should never happen!");
+
+            const node* p = &it->second;
+            m_stack.push_back(p);
+            return p;
+        }
+        case json_map_tree::node_type::object:
+            throw std::runtime_error("WIP: handle this");
+        default:
+            ;
+    }
+
+    m_unlinked_stack.push_back(nt);
+    return nullptr;
+}
+
+const json_map_tree::node* json_map_tree::walker::pop_node(node_type nt)
+{
+    throw std::runtime_error("WIP: node popping has yet to be implemented.");
+    return nullptr;
+}
+
 json_map_tree::json_map_tree() {}
 json_map_tree::~json_map_tree() {}
+
+json_map_tree::walker json_map_tree::get_tree_walker() const
+{
+    return walker(*this);
+}
 
 void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& pos)
 {

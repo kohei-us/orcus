@@ -85,10 +85,39 @@ public:
         node(node&& other);
 
         node& get_or_create_child_node(long pos);
+        node* get_child_node(long pos);
+    };
+
+    class walker
+    {
+        friend class json_map_tree;
+
+        struct scope
+        {
+            const node* p;
+            long array_position;
+
+            scope(const node* _p);
+        };
+
+        using stack_type = std::vector<scope>;
+        using unlinked_stack_type = std::vector<node_type>;
+
+        const json_map_tree& m_parent;
+        stack_type m_stack;
+        unlinked_stack_type m_unlinked_stack;
+
+        walker(const json_map_tree& parent);
+    public:
+
+        const node* push_node(node_type nt);
+        const node* pop_node(node_type nt);
     };
 
     json_map_tree();
     ~json_map_tree();
+
+    walker get_tree_walker() const;
 
     void set_cell_link(const pstring& path, const cell_position_t& pos);
 

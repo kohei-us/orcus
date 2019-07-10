@@ -8,9 +8,55 @@
 #include "orcus/orcus_json.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/global.hpp"
+#include "orcus/json_parser.hpp"
 #include "json_map_tree.hpp"
 
+#include <iostream>
+
 namespace orcus {
+
+namespace {
+
+class json_content_handler
+{
+    json_map_tree::walker m_walker;
+
+public:
+    json_content_handler(const json_map_tree& map_tree) :
+        m_walker(map_tree.get_tree_walker()) {}
+
+    void begin_parse() {}
+
+    void end_parse() {}
+
+    void begin_array()
+    {
+        m_walker.push_node(json_map_tree::node_type::array);
+    }
+
+    void end_array()
+    {
+        m_walker.pop_node(json_map_tree::node_type::array);
+    }
+
+    void begin_object() {}
+
+    void object_key(const char* p, size_t len, bool transient) {}
+
+    void end_object() {}
+
+    void boolean_true() {}
+
+    void boolean_false() {}
+
+    void null() {}
+
+    void string(const char* p, size_t len, bool transient) {}
+
+    void number(double val) {}
+};
+
+} // anonymous namespace
 
 struct orcus_json::impl
 {
@@ -60,7 +106,12 @@ void orcus_json::append_sheet(const pstring& name)
     mp_impl->im_factory->append_sheet(mp_impl->sheet_count++, name.data(), name.size());
 }
 
-void orcus_json::read_stream(const char* p, size_t n) {}
+void orcus_json::read_stream(const char* p, size_t n)
+{
+    json_content_handler hdl(mp_impl->map_tree);
+    json_parser<json_content_handler> parser(p, n, hdl);
+    parser.parse();
+}
 
 }
 
