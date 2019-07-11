@@ -397,11 +397,13 @@ enum class format_t
 enum class dump_format_t
 {
     unknown,
+    none,
+    check,
     csv,
     flat,
-    json,
     html,
-    none
+    json,
+    xml
 };
 
 struct ORCUS_PSR_DLLPUBLIC length_t

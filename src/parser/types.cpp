@@ -170,11 +170,13 @@ typedef mdds::sorted_string_map<dump_format_t> map_type;
 // Keys must be sorted.
 const std::vector<map_type::entry> entries =
 {
-    { ORCUS_ASCII("csv"),  dump_format_t::csv  },
-    { ORCUS_ASCII("flat"), dump_format_t::flat },
-    { ORCUS_ASCII("html"), dump_format_t::html },
-    { ORCUS_ASCII("json"), dump_format_t::json },
-    { ORCUS_ASCII("none"), dump_format_t::none },
+    { ORCUS_ASCII("check"), dump_format_t::check },
+    { ORCUS_ASCII("csv"),   dump_format_t::csv   },
+    { ORCUS_ASCII("flat"),  dump_format_t::flat  },
+    { ORCUS_ASCII("html"),  dump_format_t::html  },
+    { ORCUS_ASCII("json"),  dump_format_t::json  },
+    { ORCUS_ASCII("none"),  dump_format_t::none  },
+    { ORCUS_ASCII("xml"),   dump_format_t::xml   },
 };
 
 const map_type& get()

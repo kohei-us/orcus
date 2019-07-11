@@ -59,20 +59,6 @@ struct ORCUS_DLLPUBLIC config
 
 struct ORCUS_DLLPUBLIC json_config
 {
-    enum class output_format_type
-    {
-        /** Output format is unknown or unspecified. */
-        unknown,
-        /** Output format is intentionally set to none.  */
-        none,
-        /** Output format is XML. */
-        xml,
-        /** Output format is JSON. */
-        json,
-        /** Special output format used in unit tests to verify content. */
-        check
-    };
-
     /**
      * Path of the JSON file being parsed, in case the JSON string originates
      * from a file.  This parameter is required if external JSON files need to
@@ -89,7 +75,7 @@ struct ORCUS_DLLPUBLIC json_config
     /**
      * Output format type.  Used only from the orcus-json command line tool.
      */
-    output_format_type output_format;
+    dump_format_t output_format;
 
     /**
      * Control whether or not to preserve the order of object's child

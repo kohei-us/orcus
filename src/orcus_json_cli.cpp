@@ -60,27 +60,6 @@ std::ostream& cmd_params::get_output_stream()
 
 namespace {
 
-namespace output_format {
-
-typedef mdds::sorted_string_map<json_config::output_format_type> map_type;
-
-// Keys must be sorted.
-const std::vector<map_type::entry> entries =
-{
-    { ORCUS_ASCII("check"), json_config::output_format_type::check },
-    { ORCUS_ASCII("json"),  json_config::output_format_type::json  },
-    { ORCUS_ASCII("none"),  json_config::output_format_type::none  },
-    { ORCUS_ASCII("xml"),   json_config::output_format_type::xml   },
-};
-
-const map_type& get()
-{
-    static map_type mt(entries.data(), entries.size(), json_config::output_format_type::unknown);
-    return mt;
-}
-
-} // namespace output_format
-
 namespace mode {
 
 typedef mdds::sorted_string_map<detail::mode_t> map_type;
@@ -153,9 +132,9 @@ void parse_args_for_convert(
     if (vm.count("output-format"))
     {
         std::string s = vm["output-format"].as<string>();
-        params.config->output_format = output_format::get().find(s.data(), s.size());
+        params.config->output_format = to_dump_format_enum(s.data(), s.size());
 
-        if (params.config->output_format == json_config::output_format_type::unknown)
+        if (params.config->output_format == dump_format_t::unknown)
         {
             cerr << "Unknown output format type '" << s << "'." << endl;
             params.config.reset();
@@ -170,7 +149,7 @@ void parse_args_for_convert(
         return;
     }
 
-    if (params.config->output_format != json_config::output_format_type::none)
+    if (params.config->output_format != dump_format_t::none)
     {
         // Check to make sure the output path doesn't point to an existing
         // directory.
@@ -325,17 +304,17 @@ void build_doc_and_dump(const orcus::file_content& content, detail::cmd_params& 
 
     switch (params.config->output_format)
     {
-        case json_config::output_format_type::xml:
+        case dump_format_t::xml:
         {
             os << doc->dump_xml();
             break;
         }
-        case json_config::output_format_type::json:
+        case dump_format_t::json:
         {
             os << doc->dump();
             break;
         }
-        case json_config::output_format_type::check:
+        case dump_format_t::check:
         {
             string xml_strm = doc->dump_xml();
             xmlns_repository repo;
