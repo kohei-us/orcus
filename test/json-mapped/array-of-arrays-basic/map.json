@@ -1,11 +1,11 @@
 {
     "sheets": ["data"],
     "cells": [
-        {"path": "$[0]", "sheet": "data", "row": 0, "column": 0},
-        {"path": "$[1]", "sheet": "data", "row": 1, "column": 0}
+        {"path": "$[0]", "sheet": "data", "row": 0, "column": 2},
+        {"path": "$[1]", "sheet": "data", "row": 1, "column": 2}
     ],
     "ranges": [
-        {"sheet": "data", "row": 2, "column": 0,
+        {"sheet": "data", "row": 2, "column": 1,
          "fields": [
              {"path": "$[][0]"},
              {"path": "$[][1]"},

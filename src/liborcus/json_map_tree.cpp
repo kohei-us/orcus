@@ -112,7 +112,7 @@ json_map_tree::cell_reference_type::cell_reference_type(const cell_position_t& _
     pos(_pos) {}
 
 json_map_tree::range_reference_type::range_reference_type(const cell_position_t& _pos) :
-    pos(_pos) {}
+    pos(_pos), row_position(0) {}
 
 json_map_tree::node::node() {}
 json_map_tree::node::node(node&& other) :
@@ -157,11 +157,11 @@ json_map_tree::node& json_map_tree::node::get_or_create_child_node(long pos)
     return it->second;
 }
 
-json_map_tree::walker::scope::scope(const node* _p) : p(_p), array_position(0) {}
+json_map_tree::walker::scope::scope(node* _p) : p(_p), array_position(0) {}
 
 json_map_tree::walker::walker(const json_map_tree& parent) : m_parent(parent) {}
 
-const json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
+json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
 {
     if (!m_unlinked_stack.empty())
     {
@@ -179,7 +179,7 @@ const json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
             return nullptr;
         }
 
-        const node* p = m_parent.m_root.get();
+        node* p = m_parent.m_root.get();
 
         if (!is_equivalent(nt, p->type))
         {
@@ -189,7 +189,7 @@ const json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
         }
 
         m_stack.push_back(p);
-        return p;
+        return m_stack.back().p;
     }
 
     scope& cur_scope = m_stack.back();
@@ -198,7 +198,7 @@ const json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
     {
         case json_map_tree::map_node_type::array:
         {
-            const node_children_type& node_children = *cur_scope.p->value.children;
+            node_children_type& node_children = *cur_scope.p->value.children;
 
             auto it = node_children.find(cur_scope.array_position++);
             if (it == node_children.end())
@@ -207,7 +207,7 @@ const json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
             if (it == node_children.end())
                 throw std::logic_error("empty array should never happen!");
 
-            const node* p = &it->second;
+            node* p = &it->second;
 
             if (!is_equivalent(nt, p->type))
             {
@@ -217,7 +217,7 @@ const json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
             }
 
             m_stack.push_back(p);
-            return p;
+            return m_stack.back().p;
         }
         case json_map_tree::map_node_type::object:
             throw std::runtime_error("WIP: handle this");
@@ -229,7 +229,7 @@ const json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
     return nullptr;
 }
 
-const json_map_tree::node* json_map_tree::walker::pop_node(input_node_type nt)
+json_map_tree::node* json_map_tree::walker::pop_node(input_node_type nt)
 {
     if (!m_unlinked_stack.empty())
     {

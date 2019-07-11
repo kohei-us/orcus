@@ -17,27 +17,96 @@ namespace orcus {
 
 namespace {
 
+struct json_value
+{
+    enum class value_type { string, numeric, boolean, null };
+
+    value_type type;
+
+    union
+    {
+        struct { const char* p; size_t n; } str;
+        double numeric;
+        bool boolean;
+
+    } value;
+
+    json_value(double v) : type(value_type::numeric)
+    {
+        value.numeric = v;
+    }
+
+    json_value(const char* p, size_t n) : type(value_type::string)
+    {
+        value.str.p = p;
+        value.str.n = n;
+    }
+
+    json_value(bool v) : type(value_type::boolean)
+    {
+        value.boolean = v;
+    }
+
+    json_value(value_type vt) : type(vt) {}
+
+    void commit(spreadsheet::iface::import_factory& im_factory, const cell_position_t& pos) const
+    {
+        spreadsheet::iface::import_sheet* sheet =
+            im_factory.get_sheet(pos.sheet.data(), pos.sheet.size());
+
+        if (!sheet)
+            return;
+
+        switch (type)
+        {
+            case value_type::string:
+            {
+                spreadsheet::iface::import_shared_strings* ss = im_factory.get_shared_strings();
+                if (!ss)
+                    break;
+
+                size_t sid = ss->add(value.str.p, value.str.n);
+                sheet->set_string(pos.row, pos.col, sid);
+                break;
+            }
+            case value_type::numeric:
+                sheet->set_value(pos.row, pos.col, value.numeric);
+                break;
+            case value_type::boolean:
+                sheet->set_bool(pos.row, pos.col, value.boolean);
+                break;
+            case value_type::null:
+                break;
+        }
+    }
+};
+
 class json_content_handler
 {
     json_map_tree::walker m_walker;
-    const json_map_tree::node* mp_current_node;
+    json_map_tree::node* mp_current_node;
+    json_map_tree::range_reference_type* mp_increment_row;
+
+    spreadsheet::iface::import_factory& m_im_factory;
 
 public:
-    json_content_handler(const json_map_tree& map_tree) :
+    json_content_handler(const json_map_tree& map_tree, spreadsheet::iface::import_factory& im_factory) :
         m_walker(map_tree.get_tree_walker()),
-        mp_current_node(nullptr) {}
+        mp_current_node(nullptr),
+        mp_increment_row(nullptr),
+        m_im_factory(im_factory) {}
 
     void begin_parse() {}
     void end_parse() {}
 
     void begin_array()
     {
-        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::array);
+        push_node(json_map_tree::input_node_type::array);
     }
 
     void end_array()
     {
-        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::array);
+        pop_node(json_map_tree::input_node_type::array);
     }
 
     void begin_object()
@@ -57,32 +126,98 @@ public:
 
     void boolean_true()
     {
-        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::value);
-        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::value);
+        push_node(json_map_tree::input_node_type::value);
+        commit_value(true);
+        pop_node(json_map_tree::input_node_type::value);
     }
 
     void boolean_false()
     {
-        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::value);
-        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::value);
+        push_node(json_map_tree::input_node_type::value);
+        commit_value(false);
+        pop_node(json_map_tree::input_node_type::value);
     }
 
     void null()
     {
-        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::value);
-        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::value);
+        push_node(json_map_tree::input_node_type::value);
+        commit_value(json_value::value_type::null);
+        pop_node(json_map_tree::input_node_type::value);
     }
 
     void string(const char* p, size_t len, bool transient)
     {
-        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::value);
-        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::value);
+        push_node(json_map_tree::input_node_type::value);
+        commit_value(json_value(p, len));
+        pop_node(json_map_tree::input_node_type::value);
     }
 
     void number(double val)
     {
-        mp_current_node = m_walker.push_node(json_map_tree::input_node_type::value);
-        mp_current_node = m_walker.pop_node(json_map_tree::input_node_type::value);
+        push_node(json_map_tree::input_node_type::value);
+        commit_value(val);
+        pop_node(json_map_tree::input_node_type::value);
+    }
+
+private:
+
+    void push_node(json_map_tree::input_node_type nt)
+    {
+        mp_current_node = m_walker.push_node(nt);
+
+        if (mp_current_node)
+        {
+            if (mp_current_node->row_group && mp_increment_row == mp_current_node->row_group)
+            {
+                // The last closing node was a row group boundary.  Increment the row position.
+                ++mp_current_node->row_group->row_position;
+                mp_increment_row = nullptr;
+            }
+        }
+    }
+
+    void pop_node(json_map_tree::input_node_type nt)
+    {
+        mp_current_node = m_walker.pop_node(nt);
+
+        if (mp_current_node)
+        {
+            if (mp_current_node->row_group)
+            {
+                mp_increment_row = mp_current_node->row_group;
+            }
+        }
+    }
+
+    void commit_value(const json_value& v)
+    {
+        if (!mp_current_node)
+            return;
+
+        switch (mp_current_node->type)
+        {
+            case json_map_tree::map_node_type::cell_ref:
+            {
+                // Single cell reference
+                v.commit(m_im_factory, mp_current_node->value.cell_ref->pos);
+                break;
+            }
+            case json_map_tree::map_node_type::range_field_ref:
+            {
+                // Range field reference.  Offset from the origin before
+                // pushing the value.
+                spreadsheet::col_t col_offset = mp_current_node->value.range_field_ref->column_pos;
+                json_map_tree::range_reference_type* ref = mp_current_node->value.range_field_ref->ref;
+
+                cell_position_t pos = ref->pos; // copy
+                pos.col += col_offset;
+                pos.row += ref->row_position;
+                v.commit(m_im_factory, pos);
+                break;
+            }
+            default:
+                ;
+        }
     }
 };
 
@@ -138,7 +273,7 @@ void orcus_json::append_sheet(const pstring& name)
 
 void orcus_json::read_stream(const char* p, size_t n)
 {
-    json_content_handler hdl(mp_impl->map_tree);
+    json_content_handler hdl(mp_impl->map_tree, *mp_impl->im_factory);
     json_parser<json_content_handler> parser(p, n, hdl);
     parser.parse();
 }

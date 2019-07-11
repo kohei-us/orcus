@@ -57,6 +57,7 @@ public:
     {
         cell_position_t pos;
         std::vector<const node*> fields;
+        spreadsheet::row_t row_position;
 
         range_reference_type(const cell_position_t& _pos);
     };
@@ -103,10 +104,10 @@ public:
 
         struct scope
         {
-            const node* p;
+            node* p;
             long array_position;
 
-            scope(const node* _p);
+            scope(node* _p);
         };
 
         using stack_type = std::vector<scope>;
@@ -119,8 +120,8 @@ public:
         walker(const json_map_tree& parent);
     public:
 
-        const node* push_node(input_node_type nt);
-        const node* pop_node(input_node_type nt);
+        node* push_node(input_node_type nt);
+        node* pop_node(input_node_type nt);
     };
 
     json_map_tree();
