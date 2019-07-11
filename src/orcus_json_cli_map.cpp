@@ -23,7 +23,7 @@ namespace orcus { namespace detail {
 
 #ifdef __ORCUS_SPREADSHEET_MODEL
 
-void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const cmd_params& params)
+void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
 {
     cout << "TODO: implement this." << endl;
     cout << params.map_file.data() << endl;
@@ -31,6 +31,8 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
     spreadsheet::document doc;
     spreadsheet::import_factory factory(doc);
     orcus_json app(&factory);
+
+    std::ostream& os = params.get_output_stream();
 
     try
     {
@@ -119,8 +121,7 @@ void map_to_sheets_and_dump(std::ostream& os, const file_content& content, const
 
 #else
 
-void map_to_sheets_and_dump(
-    std::ostream& /*os*/, const file_content& /*content*/, const cmd_params& /*params*/)
+void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
 {
     throw std::runtime_error(
         "map mode disabled as the spreadsheet model backend is not available.");

@@ -29,6 +29,7 @@ enum class mode_t
 struct cmd_params
 {
     std::unique_ptr<json_config> config; //< json parser configuration.
+    std::unique_ptr<std::ofstream> fs; //< output stream instance that we own.
     mode_t mode = mode_t::convert;
     file_content map_file;
 
@@ -38,10 +39,11 @@ struct cmd_params
     cmd_params();
     cmd_params(cmd_params&& other);
     ~cmd_params();
+
+    std::ostream& get_output_stream();
 };
 
-void map_to_sheets_and_dump(
-    std::ostream& os, const file_content& content, const cmd_params& params);
+void map_to_sheets_and_dump(const file_content& content, cmd_params& params);
 
 }
 

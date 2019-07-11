@@ -42,6 +42,20 @@ cmd_params::cmd_params(cmd_params&& other) :
 
 cmd_params::~cmd_params() {}
 
+std::ostream& cmd_params::get_output_stream()
+{
+    std::ostream* os = &cout;
+
+    if (!config->output_path.empty())
+    {
+        // Output to stdout when output path is not given.
+        fs = std::make_unique<std::ofstream>(config->output_path.data());
+        os = fs.get();
+    }
+
+    return *os;
+}
+
 }}
 
 namespace {
@@ -304,9 +318,10 @@ std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content
     return doc;
 }
 
-void build_doc_and_dump(std::ostream& os, const orcus::file_content& content, const detail::cmd_params& params)
+void build_doc_and_dump(const orcus::file_content& content, detail::cmd_params& params)
 {
     std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
+    std::ostream& os = params.get_output_stream();
 
     switch (params.config->output_format)
     {
@@ -352,33 +367,23 @@ int main(int argc, char** argv)
         assert(!params.config->input_path.empty());
         content.load(params.config->input_path.data());
 
-        std::ostream* os = &cout;
-        std::unique_ptr<std::ofstream> fs;
-
-        if (!params.config->output_path.empty())
-        {
-            // Output to stdout when output path is not given.
-            fs = std::make_unique<std::ofstream>(params.config->output_path.data());
-            os = fs.get();
-        }
-
         switch (params.mode)
         {
             case detail::mode_t::structure:
             {
                 json::structure_tree tree;
                 tree.parse(content.data(), content.size());
-                tree.dump_compact(*os);
+                tree.dump_compact(params.get_output_stream());
                 break;
             }
             case detail::mode_t::map:
             {
-                map_to_sheets_and_dump(*os, content, params);
+                map_to_sheets_and_dump(content, params);
                 break;
             }
             case detail::mode_t::convert:
             {
-                build_doc_and_dump(*os, content, params);
+                build_doc_and_dump(content, params);
                 break;
             }
             default:
