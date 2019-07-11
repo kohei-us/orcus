@@ -470,6 +470,9 @@ void document::clear()
 
 void document::dump(dump_format_t format, const std::string& outdir) const
 {
+    if (format == dump_format_t::none)
+        return;
+
     if (outdir.empty())
         throw std::invalid_argument("No output directory.");
 

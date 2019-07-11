@@ -193,15 +193,16 @@ bool parse_import_filter_args(
         return false;
     }
 
-    if (outformat == dump_format_t::none)
+    try
     {
-        // When "none" format is specified, just read the input file and exit.
         app.read_file(infile);
-        return true;
+        doc.dump(outformat, outdir);
     }
-
-    app.read_file(infile);
-    doc.dump(outformat, outdir);
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return false;
+    }
 
     return true;
 }
