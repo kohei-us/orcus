@@ -72,14 +72,14 @@ void test_mapped_xml_import()
 
     for (const test_case& tc : tests)
     {
-        string base_dir(tc.base_dir);
-        string data_file = base_dir + "/input.xml";
-        string map_file = base_dir + "/map.xml";
-        string check_file = base_dir + "/check.txt";
+        fs::path base_dir(tc.base_dir);
+        fs::path data_file = base_dir / "input.xml";
+        fs::path map_file = base_dir / "map.xml";
+        fs::path check_file = base_dir / "check.txt";
 
         // Load the data file content.
-        cout << "reading " << data_file << endl;
-        file_content content(data_file.data());
+        cout << "reading " << data_file.string() << endl;
+        file_content content(data_file.string().data());
         string data_strm = content.str().str();
 
         spreadsheet::document doc;
@@ -91,7 +91,7 @@ void test_mapped_xml_import()
 
         // Parse the map file to define map rules, and parse the data file.
         orcus_xml app(repo, &import_fact, &export_fact);
-        read_map_file(app, map_file.c_str());
+        read_map_file(app, map_file.string().data());
         app.read_stream(data_strm.data(), data_strm.size());
 
         // Zero the source data stream to make sure it's completely erased off
@@ -104,7 +104,7 @@ void test_mapped_xml_import()
         ostringstream os;
         doc.dump_check(os);
         string loaded = os.str();
-        content.load(check_file.data());
+        content.load(check_file.string().data());
         strm = content.str().str();
 
         assert(!loaded.empty());
@@ -123,7 +123,7 @@ void test_mapped_xml_import()
             cout << "writing to " << out_file << endl;
             {
                 // Create a duplicate source XML stream.
-                content.load(data_file.data());
+                content.load(data_file.string().data());
                 string data_strm_dup = content.str().str();
                 std::ofstream file(out_file);
                 assert(file);
