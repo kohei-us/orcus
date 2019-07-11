@@ -26,12 +26,15 @@
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/interface/table_handler.hpp>
 #include <ixion/config.hpp>
+#include <boost/filesystem.hpp>
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <map>
 
 using namespace std;
+namespace fs = boost::filesystem;
 
 namespace orcus { namespace spreadsheet {
 
@@ -467,6 +470,21 @@ void document::clear()
 
 void document::dump(dump_format_t format, const std::string& outdir) const
 {
+    if (outdir.empty())
+        throw std::invalid_argument("No output directory.");
+
+    if (fs::exists(outdir))
+    {
+        if (!fs::is_directory(outdir))
+        {
+            std::ostringstream os;
+            os << "A file named '" << outdir << "' already exists, and is not a directory.";
+            throw std::invalid_argument(os.str());
+        }
+    }
+    else
+        fs::create_directory(outdir);
+
     switch (format)
     {
         case dump_format_t::csv:

@@ -200,23 +200,6 @@ bool parse_import_filter_args(
         return true;
     }
 
-    if (outdir.empty())
-    {
-        cerr << "No output directory." << endl;
-        return false;
-    }
-
-    if (fs::exists(outdir))
-    {
-        if (!fs::is_directory(outdir))
-        {
-            cerr << "A file named '" << outdir << "' already exists, and is not a directory." << endl;
-            return false;
-        }
-    }
-    else
-        fs::create_directory(outdir);
-
     app.read_file(infile);
     doc.dump(outformat, outdir);
 

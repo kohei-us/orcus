@@ -238,23 +238,6 @@ int main(int argc, char** argv)
         {
             case output_mode::type::dump_document:
             {
-                if (output.empty())
-                {
-                    cerr << "Output directory path is required, but is not given." << endl;
-                    return EXIT_FAILURE;
-                }
-
-                if (fs::exists(output))
-                {
-                    if (!fs::is_directory(output))
-                    {
-                        cerr << "A file named '" << output << "' already exists, and is not a directory." << endl;
-                        return EXIT_FAILURE;
-                    }
-                }
-                else
-                    fs::create_directory(output);
-
                 dump_format_t format = dump_format_t::unknown;
 
                 if (vm.count("output-format"))
