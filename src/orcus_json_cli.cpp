@@ -19,6 +19,7 @@
 #include <fstream>
 #include <string>
 #include <memory>
+#include <sstream>
 
 #include <mdds/sorted_string_map.hpp>
 #include <boost/program_options.hpp>
@@ -44,16 +45,25 @@ cmd_params::~cmd_params() {}
 
 std::ostream& cmd_params::get_output_stream()
 {
-    std::ostream* os = &cout;
+    std::ostream* ostrm = &cout;
 
     if (!config->output_path.empty())
     {
+        // Check to make sure the output path doesn't point to an existing
+        // directory.
+        if (fs::is_directory(config->output_path))
+        {
+            std::ostringstream os;
+            os << "Output file path points to an existing directory.";
+            throw std::invalid_argument(os.str());
+        }
+
         // Output to stdout when output path is not given.
         fs = std::make_unique<std::ofstream>(config->output_path.data());
-        os = fs.get();
+        ostrm = fs.get();
     }
 
-    return *os;
+    return *ostrm;
 }
 
 }}
@@ -147,18 +157,6 @@ void parse_args_for_convert(
         print_json_usage(cerr, desc);
         params.config.reset();
         return;
-    }
-
-    if (params.config->output_format != dump_format_t::none)
-    {
-        // Check to make sure the output path doesn't point to an existing
-        // directory.
-        if (fs::is_directory(params.config->output_path))
-        {
-            cerr << "Output file path points to an existing directory.  Aborting." << endl;
-            params.config.reset();
-            return;
-        }
     }
 }
 

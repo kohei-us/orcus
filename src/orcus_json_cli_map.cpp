@@ -32,8 +32,6 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
     spreadsheet::import_factory factory(doc);
     orcus_json app(&factory);
 
-    std::ostream& os = params.get_output_stream();
-
     try
     {
         // Since a typical map file will likely be very small, let's be lazy and
@@ -116,7 +114,16 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
     }
 
     app.read_stream(content.data(), content.size());
-    doc.dump_check(os);
+
+    if (params.config->output_format == dump_format_t::check)
+    {
+        std::ostream& os = params.get_output_stream();
+        doc.dump_check(os);
+    }
+    else
+    {
+        doc.dump(params.config->output_format, params.config->output_path);
+    }
 }
 
 #else
