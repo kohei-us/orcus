@@ -468,39 +468,63 @@ void document::clear()
     mp_impl.reset(new document_impl(*this));
 }
 
-void document::dump(dump_format_t format, const std::string& outdir) const
+void document::dump(dump_format_t format, const std::string& output) const
 {
     if (format == dump_format_t::none)
         return;
 
-    if (outdir.empty())
+    if (format == dump_format_t::check)
+    {
+        // For this output, we write to a single file.
+        std::ostream* ostrm = &std::cout;
+        std::unique_ptr<std::ofstream> fs;
+
+        if (!output.empty())
+        {
+            if (fs::is_directory(output))
+            {
+                std::ostringstream os;
+                os << "Output file path points to an existing directory.";
+                throw std::invalid_argument(os.str());
+            }
+
+            // Output to stdout when output path is not given.
+            fs = std::make_unique<std::ofstream>(output.data());
+            ostrm = fs.get();
+        }
+
+        dump_check(*ostrm);
+        return;
+    }
+
+    if (output.empty())
         throw std::invalid_argument("No output directory.");
 
-    if (fs::exists(outdir))
+    if (fs::exists(output))
     {
-        if (!fs::is_directory(outdir))
+        if (!fs::is_directory(output))
         {
             std::ostringstream os;
-            os << "A file named '" << outdir << "' already exists, and is not a directory.";
+            os << "A file named '" << output << "' already exists, and is not a directory.";
             throw std::invalid_argument(os.str());
         }
     }
     else
-        fs::create_directory(outdir);
+        fs::create_directory(output);
 
     switch (format)
     {
         case dump_format_t::csv:
-            dump_csv(outdir);
+            dump_csv(output);
             break;
         case dump_format_t::flat:
-            dump_flat(outdir);
+            dump_flat(output);
             break;
         case dump_format_t::html:
-            dump_html(outdir);
+            dump_html(output);
             break;
         case dump_format_t::json:
-            dump_json(outdir);
+            dump_json(output);
             break;
         case dump_format_t::none:
         case dump_format_t::unknown:

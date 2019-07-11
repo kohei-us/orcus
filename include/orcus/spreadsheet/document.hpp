@@ -77,7 +77,7 @@ public:
      */
     void clear();
 
-    virtual void dump(dump_format_t format, const std::string& outdir) const override;
+    virtual void dump(dump_format_t format, const std::string& output) const override;
     /**
      * Dump document content to specified output directory.
      */

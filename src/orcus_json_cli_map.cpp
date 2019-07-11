@@ -25,9 +25,6 @@ namespace orcus { namespace detail {
 
 void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
 {
-    cout << "TODO: implement this." << endl;
-    cout << params.map_file.data() << endl;
-
     spreadsheet::document doc;
     spreadsheet::import_factory factory(doc);
     orcus_json app(&factory);
@@ -114,16 +111,7 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
     }
 
     app.read_stream(content.data(), content.size());
-
-    if (params.config->output_format == dump_format_t::check)
-    {
-        std::ostream& os = params.get_output_stream();
-        doc.dump_check(os);
-    }
-    else
-    {
-        doc.dump(params.config->output_format, params.config->output_path);
-    }
+    doc.dump(params.config->output_format, params.config->output_path);
 }
 
 #else
