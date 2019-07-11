@@ -562,6 +562,7 @@
             <F N="../src/orcus_test_global.cpp"/>
             <F N="../src/orcus_test_global.hpp"/>
             <F N="../src/orcus_test_gnumeric.cpp"/>
+            <F N="../src/orcus_test_json_mapped.cpp"/>
             <F N="../src/orcus_test_ods.cpp"/>
             <F N="../src/orcus_test_xls_xml.cpp"/>
             <F N="../src/orcus_test_xlsx.cpp"/>

@@ -46,6 +46,14 @@ public:
     void append_sheet(const pstring& name);
 
     void read_stream(const char* p, size_t n);
+
+    /**
+     * Read a JSON string that contains an entire set of mapping rules.
+     *
+     * @param p pointer to the in-memory buffer that contains the JSON string.
+     * @param n size of the buffer.
+     */
+    void read_map_definition(const char* p, size_t n);
 };
 
 }

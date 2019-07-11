@@ -107,6 +107,10 @@ add_executable(orcus-test-xml-mapped EXCLUDE_FROM_ALL
 	orcus_test_xml_mapped.cpp
 )
 
+add_executable(orcus-test-json-mapped EXCLUDE_FROM_ALL
+	orcus_test_json_mapped.cpp
+)
+
 set(_TESTS
     orcus-test-csv
     orcus-test-ods
@@ -114,6 +118,7 @@ set(_TESTS
     orcus-test-xlsx
     orcus-test-xml
     orcus-test-xml-mapped
+    orcus-test-json-mapped
 )
 
 foreach(_TEST ${_TESTS})

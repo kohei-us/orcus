@@ -1,0 +1,11 @@
+data/0/2:string:"Simple list of arrays"
+data/1/2:string:"This file contains a list of arrays as data and some title strings at the top."
+data/3/1:numeric:1
+data/3/2:numeric:2
+data/3/3:numeric:3
+data/4/1:numeric:4
+data/4/2:numeric:5
+data/4/3:numeric:6
+data/5/1:numeric:7
+data/5/2:numeric:8
+data/5/3:numeric:9

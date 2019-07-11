@@ -354,7 +354,8 @@ if BUILD_SPREADSHEET_MODEL
 
 EXTRA_PROGRAMS += \
 	orcus-test-csv \
-	orcus-test-xml-mapped
+	orcus-test-xml-mapped \
+	orcus-test-json-mapped
 
 # orcus-test-csv
 
@@ -390,9 +391,28 @@ orcus_test_xml_mapped_LDADD = \
 
 orcus_test_xml_mapped_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS) -DSRCDIR=\""$(top_srcdir)"\"
 
+# orcus-test-json-mapped
+
+orcus_test_json_mapped_SOURCES = \
+	orcus_test_json_mapped.cpp
+
+orcus_test_json_mapped_LDFLAGS = \
+	$(BOOST_FILESYSTEM_LDFLAGS) \
+	$(BOOST_SYSTEM_LDFLAGS)
+
+orcus_test_json_mapped_LDADD = \
+	liborcus/liborcus-@ORCUS_API_VERSION@.la \
+	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	$(BOOST_FILESYSTEM_LIBS) \
+	$(BOOST_SYSTEM_LIBS)
+
+orcus_test_json_mapped_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS) -DSRCDIR=\""$(top_srcdir)"\"
+
 TESTS += \
 	orcus-test-csv \
-	orcus-test-xml-mapped
+	orcus-test-xml-mapped \
+	orcus-test-json-mapped
 
 if WITH_ODS_FILTER
 
