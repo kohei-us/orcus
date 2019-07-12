@@ -25,6 +25,7 @@ namespace {
 const std::vector<const char*> tests =
 {
     SRCDIR"/test/json-mapped/array-of-arrays-basic",
+    SRCDIR"/test/json-mapped/array-of-objects-basic",
 };
 
 } // anonymous namespace
