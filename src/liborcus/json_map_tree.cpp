@@ -282,8 +282,6 @@ void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& po
 
     // Ensure that this tree owns the instance of the string.
     p->value.cell_ref->pos.sheet = m_str_pool.intern(p->value.cell_ref->pos.sheet).first;
-
-    std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:set_cell_link): cell link set" << std::endl;
 }
 
 const json_map_tree::node* json_map_tree::get_link(const pstring& path) const
@@ -346,8 +344,6 @@ void json_map_tree::commit_range()
 
         p->row_group = ref;
     }
-
-    std::cout << __FILE__ << "#" << __LINE__ << " (json_map_tree:commit_range): all good!" << std::endl;
 }
 
 const json_map_tree::node* json_map_tree::get_destination_node(const pstring& path) const
@@ -372,19 +368,14 @@ const json_map_tree::node* json_map_tree::get_destination_node(const pstring& pa
                 if (cur_node->type != map_node_type::array)
                     return nullptr;
 
-                std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_destination_node): array pos = " << t.array_pos << std::endl;
                 auto it = cur_node->value.children->find(t.array_pos);
                 if (it == cur_node->value.children->end())
-                {
-                    std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_destination_node): no node at the array pos." << std::endl;
                     return nullptr;
-                }
 
                 cur_node = &it->second;
                 break;
             }
             case json_path_token_t::end:
-                std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_destination_node): end" << std::endl;
                 return cur_node;
             case json_path_token_t::unknown:
             default:
@@ -399,8 +390,6 @@ const json_map_tree::node* json_map_tree::get_destination_node(const pstring& pa
 
 json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring& path)
 {
-    std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): path='" << path << "'" << std::endl;
-
     if (path.empty() || path[0] != '$')
         // A valid path must begin with a '$'.
         return nullptr;
@@ -416,8 +405,6 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
         case json_path_token_t::array_pos:
         {
             // Insert or re-use an array node and its child at specified position.
-
-            std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): array pos = " << t.array_pos << std::endl;
 
             if (m_root)
             {
@@ -448,7 +435,6 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
         {
             case json_path_token_t::array_pos:
             {
-                std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): array pos = " << t.array_pos << std::endl;
                 switch (cur_node->type)
                 {
                     case map_node_type::array:
@@ -466,7 +452,6 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                 break;
             }
             case json_path_token_t::end:
-                std::cout << __FILE__ << ":" << __LINE__ << " (json_map_tree:get_linked_node): end" << std::endl;
                 return cur_node;
             case json_path_token_t::unknown:
             default:
@@ -538,7 +523,6 @@ std::ostream& operator<< (std::ostream& os, json_map_tree::map_node_type nt)
 
     return os;
 }
-
 
 }
 
