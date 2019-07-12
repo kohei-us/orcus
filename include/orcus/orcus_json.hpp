@@ -50,6 +50,8 @@ public:
     /**
      * Read a JSON string that contains an entire set of mapping rules.
      *
+     * This method also inserts all necessary sheets into the document model.
+     *
      * @param p pointer to the in-memory buffer that contains the JSON string.
      * @param n size of the buffer.
      */
