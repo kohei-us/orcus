@@ -123,6 +123,8 @@ public:
 
         node* push_node(input_node_type nt);
         node* pop_node(input_node_type nt);
+
+        void set_object_key(const char* p, size_t n);
     };
 
     json_map_tree();
@@ -152,7 +154,7 @@ private:
     boost::object_pool<cell_reference_type> m_cell_ref_pool;
     boost::object_pool<range_field_reference_type> m_range_field_ref_pool;
 
-    string_pool m_str_pool;
+    mutable string_pool m_str_pool;
 
     std::unique_ptr<node> m_root;
 

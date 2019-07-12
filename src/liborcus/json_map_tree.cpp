@@ -274,7 +274,28 @@ json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
             return m_stack.back().p;
         }
         case json_map_tree::map_node_type::object:
-            throw std::runtime_error("WIP: handle this");
+        {
+            node_children_type& node_children = *cur_scope.p->value.children;
+            auto it = node_children.find(cur_scope.array_position);
+            if (it == node_children.end())
+            {
+                // The currently specified key does not exist in this object.
+                m_unlinked_stack.push_back(nt);
+                return nullptr;
+            }
+
+            node* p = &it->second;
+
+            if (!is_equivalent(nt, p->type))
+            {
+                // Different node type.
+                m_unlinked_stack.push_back(nt);
+                return nullptr;
+            }
+
+            m_stack.push_back(p);
+            return m_stack.back().p;
+        }
         default:
             ;
     }
@@ -308,6 +329,22 @@ json_map_tree::node* json_map_tree::walker::pop_node(input_node_type nt)
 
     m_stack.pop_back();
     return m_stack.empty() ? nullptr : m_stack.back().p;
+}
+
+void json_map_tree::walker::set_object_key(const char* p, size_t n)
+{
+    if (!m_unlinked_stack.empty())
+        return;
+
+    if (m_stack.empty())
+        return;
+
+    scope& cur_scope = m_stack.back();
+    if (cur_scope.p->type != map_node_type::object)
+        return;
+
+    pstring pooled = m_parent.m_str_pool.intern(p, n).first;
+    cur_scope.array_position = reinterpret_cast<child_position_type>(pooled.data());
 }
 
 json_map_tree::json_map_tree() {}

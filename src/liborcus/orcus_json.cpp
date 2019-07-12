@@ -115,20 +115,17 @@ public:
 
     void begin_object()
     {
-        std::cerr << __FILE__ << "#" << __LINE__ << " (json_content_handler:begin_object): TODO" << std::endl;
-        throw std::runtime_error("WIP: begin_object");
+        push_node(json_map_tree::input_node_type::object);
     }
 
     void object_key(const char* p, size_t len, bool transient)
     {
-        std::cerr << __FILE__ << "#" << __LINE__ << " (json_content_handler:object_key): TODO" << std::endl;
-        throw std::runtime_error("WIP: object_key");
+        m_walker.set_object_key(p, len);
     }
 
     void end_object()
     {
-        std::cerr << __FILE__ << "#" << __LINE__ << " (std:end_object): TODO" << std::endl;
-        throw std::runtime_error("WIP: end_object");
+        pop_node(json_map_tree::input_node_type::object);
     }
 
     void boolean_true()
