@@ -23,7 +23,7 @@ void throw_path_error(const pstring& path)
     throw json_map_tree::path_error(os.str());
 }
 
-enum class json_path_token_t { unknown, array, array_pos, object, end };
+enum class json_path_token_t { unknown, array, array_pos, object, object_key, end };
 
 class json_path_parser
 {
@@ -35,10 +35,32 @@ public:
     struct token
     {
         json_path_token_t type = json_path_token_t::unknown;
-        long array_pos = json_map_tree::node_child_default_position;
+
+        union
+        {
+            std::uintptr_t array_pos = json_map_tree::node_child_default_position;
+
+            struct
+            {
+                const char* p;
+                size_t n;
+
+            } str;
+
+        } value;
 
         token(json_path_token_t _type) : type(_type) {}
-        token(long _array_pos) : type(json_path_token_t::array_pos), array_pos(_array_pos) {}
+
+        token(long array_pos) : type(json_path_token_t::array_pos)
+        {
+            value.array_pos = array_pos;
+        }
+
+        token(const char* p, size_t n) : type(json_path_token_t::object_key)
+        {
+            value.str.p = p;
+            value.str.n = n;
+        }
     };
 
     json_path_parser(const pstring& path) :
@@ -63,13 +85,45 @@ public:
                 ;
         }
 
-        throw json_map_tree::path_error("invalid path");
+        return json_path_token_t::unknown;
+    }
+
+    token next_object_key()
+    {
+        assert(*mp_cur == '\'');
+        ++mp_cur;
+        const char* p_head = mp_cur;
+
+        for (; mp_cur != mp_end && *mp_cur != '\''; ++mp_cur)
+        {
+            // Skip until we reach the closing quote.
+        }
+
+        if (*mp_cur != '\'')
+            return json_path_token_t::unknown;
+
+        size_t n = std::distance(p_head, mp_cur);
+
+        ++mp_cur; // Skip the quote.
+        if (*mp_cur != ']')
+            return json_path_token_t::unknown;
+
+        ++mp_cur; // Skip the ']'.
+
+        return token(p_head, n);
     }
 
     token next_array_pos()
     {
         assert(*mp_cur == '[');
         ++mp_cur;
+
+        if (mp_cur == mp_end)
+            return json_path_token_t::unknown;
+
+        if (*mp_cur == '\'')
+            return next_object_key();
+
         const char* p_head = mp_cur;
 
         for (; mp_cur != mp_end; ++mp_cur)
@@ -140,7 +194,7 @@ json_map_tree::node::node(node&& other) :
     other.type = map_node_type::unknown;
 }
 
-json_map_tree::node& json_map_tree::node::get_or_create_child_node(long pos)
+json_map_tree::node& json_map_tree::node::get_or_create_child_node(child_position_type pos)
 {
     node_children_type& children = *value.children;
 
@@ -368,11 +422,17 @@ const json_map_tree::node* json_map_tree::get_destination_node(const pstring& pa
                 if (cur_node->type != map_node_type::array)
                     return nullptr;
 
-                auto it = cur_node->value.children->find(t.array_pos);
+                auto it = cur_node->value.children->find(t.value.array_pos);
                 if (it == cur_node->value.children->end())
                     return nullptr;
 
                 cur_node = &it->second;
+                break;
+            }
+            case json_path_token_t::object_key:
+            {
+                std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_destination_node): TODO: handle this" << std::endl;
+                throw std::runtime_error("WIP");
                 break;
             }
             case json_path_token_t::end:
@@ -421,7 +481,13 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
             }
 
             cur_node = m_root.get();
-            cur_node = &cur_node->get_or_create_child_node(t.array_pos);
+            cur_node = &cur_node->get_or_create_child_node(t.value.array_pos);
+            break;
+        }
+        case json_path_token_t::object_key:
+        {
+            std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_or_create_destination_node): TODO: handle this" << std::endl;
+            throw std::runtime_error("WIP");
             break;
         }
         default:
@@ -448,7 +514,30 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                     default:
                         throw_path_error(path);
                 }
-                cur_node = &cur_node->get_or_create_child_node(t.array_pos);
+                cur_node = &cur_node->get_or_create_child_node(t.value.array_pos);
+                break;
+            }
+            case json_path_token_t::object_key:
+            {
+                switch (cur_node->type)
+                {
+                    case map_node_type::object:
+                        // Do nothing.
+                        break;
+                    case map_node_type::unknown:
+                        // Turn this node into an object node.
+                        cur_node->type = map_node_type::object;
+                        cur_node->value.children = m_node_children_pool.construct();
+                        break;
+                    default:
+                        throw_path_error(path);
+                }
+
+                // For an object children, we use the memory address of a
+                // pooled key string as its position.
+                pstring pooled_key = m_str_pool.intern(t.value.str.p, t.value.str.n).first;
+                child_position_type pos = reinterpret_cast<child_position_type>(pooled_key.data());
+                cur_node = &cur_node->get_or_create_child_node(pos);
                 break;
             }
             case json_path_token_t::end:

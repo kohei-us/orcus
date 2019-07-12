@@ -22,7 +22,9 @@ using spreadsheet::detail::cell_position_t;
 class json_map_tree
 {
 public:
-    static constexpr long node_child_default_position = -1;
+    using child_position_type = std::uintptr_t;
+
+    static constexpr child_position_type node_child_default_position = -1;
 
     /**
      * Error indicating improper path.
@@ -34,7 +36,7 @@ public:
     };
 
     struct node;
-    using node_children_type = std::map<long, node>;
+    using node_children_type = std::map<child_position_type, node>;
 
     /** Types of nodes in the json input tree. */
     enum class input_node_type { unknown = 0x00, array = 0x01, object = 0x02, value = 0x04 };
@@ -94,8 +96,7 @@ public:
         node();
         node(node&& other);
 
-        node& get_or_create_child_node(long pos);
-        node* get_child_node(long pos);
+        node& get_or_create_child_node(child_position_type pos);
     };
 
     class walker
@@ -105,7 +106,7 @@ public:
         struct scope
         {
             node* p;
-            long array_position;
+            child_position_type array_position;
 
             scope(node* _p);
         };
