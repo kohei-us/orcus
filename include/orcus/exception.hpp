@@ -44,6 +44,13 @@ public:
     virtual ~xml_structure_error() throw();
 };
 
+class ORCUS_PSR_DLLPUBLIC json_structure_error : public general_error
+{
+public:
+    explicit json_structure_error(const ::std::string& msg);
+    virtual ~json_structure_error() throw();
+};
+
 class ORCUS_PSR_DLLPUBLIC value_error : public general_error
 {
 public:

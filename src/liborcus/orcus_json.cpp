@@ -297,42 +297,51 @@ void orcus_json::read_map_definition(const char* p, size_t n)
 
     // Create sheets first.
 
+    if (!root.has_key("sheets"))
+        throw json_structure_error("The map definition must contains 'sheets' section.");
+
     for (const json::const_node& node_name : root.child("sheets"))
         append_sheet(node_name.string_value());
 
-    // Set cell links.
-    for (const json::const_node& link_node : root.child("cells"))
+    if (root.has_key("cells"))
     {
-        pstring path = link_node.child("path").string_value();
-        pstring sheet = link_node.child("sheet").string_value();
-        spreadsheet::row_t row = link_node.child("row").numeric_value();
-        spreadsheet::col_t col = link_node.child("column").numeric_value();
+        // Set cell links.
+        for (const json::const_node& link_node : root.child("cells"))
+        {
+            pstring path = link_node.child("path").string_value();
+            pstring sheet = link_node.child("sheet").string_value();
+            spreadsheet::row_t row = link_node.child("row").numeric_value();
+            spreadsheet::col_t col = link_node.child("column").numeric_value();
 
-        set_cell_link(path, sheet, row, col);
+            set_cell_link(path, sheet, row, col);
+        }
     }
 
-    // Set range links.
-    for (const json::const_node& link_node : root.child("ranges"))
+    if (root.has_key("ranges"))
     {
-        pstring sheet = link_node.child("sheet").string_value();
-        spreadsheet::row_t row = link_node.child("row").numeric_value();
-        spreadsheet::col_t col = link_node.child("column").numeric_value();
-
-        start_range(sheet, row, col);
-
-        for (const json::const_node& field_node : link_node.child("fields"))
+        // Set range links.
+        for (const json::const_node& link_node : root.child("ranges"))
         {
-            pstring path = field_node.child("path").string_value();
-            append_field_link(path);
-        }
+            pstring sheet = link_node.child("sheet").string_value();
+            spreadsheet::row_t row = link_node.child("row").numeric_value();
+            spreadsheet::col_t col = link_node.child("column").numeric_value();
 
-        for (const json::const_node& rg_node : link_node.child("row-groups"))
-        {
-            pstring path = rg_node.child("path").string_value();
-            set_range_row_group(path);
-        }
+            start_range(sheet, row, col);
 
-        commit_range();
+            for (const json::const_node& field_node : link_node.child("fields"))
+            {
+                pstring path = field_node.child("path").string_value();
+                append_field_link(path);
+            }
+
+            for (const json::const_node& rg_node : link_node.child("row-groups"))
+            {
+                pstring path = rg_node.child("path").string_value();
+                set_range_row_group(path);
+            }
+
+            commit_range();
+        }
     }
 }
 

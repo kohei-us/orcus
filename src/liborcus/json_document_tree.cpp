@@ -700,6 +700,17 @@ pstring const_node::key(size_t index) const
     return jvo->key_order[index];
 }
 
+bool const_node::has_key(const pstring& key) const
+{
+    if (mp_impl->m_node->type != detail::node_t::object)
+        return false;
+
+    const json_value_object* jvo = mp_impl->m_node->value.object;
+    const json_value_object::object_type& children = jvo->value_object;
+
+    return children.count(key) != 0;
+}
+
 const_node const_node::child(size_t index) const
 {
     switch (mp_impl->m_node->type)

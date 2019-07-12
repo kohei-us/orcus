@@ -175,6 +175,16 @@ public:
     pstring key(size_t index) const;
 
     /**
+     * Query whether or not a particular key exists in a JSON object node.
+     *
+     * @param key key value.
+     *
+     * @return true if this object node contains the specified key, otherwise
+     *         false.  If this node is not of a JSON object type, false is
+     *         returned.
+     */
+    bool has_key(const pstring& key) const;
+    /**
      * Get a child node by index.
      *
      * @param index 0-based index of a child node.

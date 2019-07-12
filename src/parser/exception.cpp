@@ -49,6 +49,11 @@ xml_structure_error::xml_structure_error(const string& msg) :
 
 xml_structure_error::~xml_structure_error() throw() {}
 
+json_structure_error::json_structure_error(const string& msg) :
+    general_error(msg) {}
+
+json_structure_error::~json_structure_error() throw() {}
+
 value_error::value_error(const string& msg) :
     general_error(msg) {}
 
