@@ -77,13 +77,8 @@ public:
         if (mp_cur == mp_end)
             return json_path_token_t::end;
 
-        switch (*mp_cur)
-        {
-            case '[':
-                return next_array_pos();
-            default:
-                ;
-        }
+        if (*mp_cur == '[')
+            return next_pos();
 
         return json_path_token_t::unknown;
     }
@@ -113,10 +108,10 @@ public:
         return token(p_head, n);
     }
 
-    token next_array_pos()
+    token next_pos()
     {
         assert(*mp_cur == '[');
-        ++mp_cur;
+        ++mp_cur; // Skip the '['.
 
         if (mp_cur == mp_end)
             return json_path_token_t::unknown;
