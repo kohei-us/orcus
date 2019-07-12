@@ -1,0 +1,16 @@
+{
+    "sheets": ["Imported"],
+    "ranges": [
+        {"sheet": "Imported", "row": 0, "column": 0,
+         "fields": [
+             {"path": "$[]['id']"},
+             {"path": "$[]['first_name']"},
+             {"path": "$[]['last_name']"},
+             {"path": "$[]['email']"}
+         ],
+         "row-groups": [
+             {"path": "$[]"}
+         ]
+        }
+    ]
+}

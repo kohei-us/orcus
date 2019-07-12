@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "first_name": "Caitlin",
+        "last_name": "Kealy",
+        "email": "ckealy0@hud.gov"
+    },
+    {
+        "id": 2,
+        "first_name": "Bernice",
+        "last_name": "McEvilly",
+        "email": "bmcevilly1@comsenz.com"
+    },
+    {
+        "id": 3,
+        "first_name": "Ariel",
+        "last_name": "Casajuana",
+        "email": "acasajuana2@fema.gov"
+    },
+    {
+        "id": 4,
+        "first_name": "Grannie",
+        "last_name": "Parlot",
+        "email": "gparlot3@soup.io"
+    },
+    {
+        "id": 5,
+        "first_name": "Merridie",
+        "last_name": "Dungey",
+        "email": "mdungey4@nifty.com"
+    }
+]
