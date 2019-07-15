@@ -145,6 +145,8 @@ private:
     const node* get_destination_node(const pstring& path) const;
     node* get_or_create_destination_node(const pstring& path);
 
+    child_position_type to_key_position(const char* p, size_t n) const;
+
     static bool is_equivalent(input_node_type input_node, map_node_type map_node);
 
 private:

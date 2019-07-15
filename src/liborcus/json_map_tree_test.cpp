@@ -34,6 +34,35 @@ void test_link_array_values()
     assert(p->value.cell_ref->pos == cell_position_t("sheet", 1, 0));
 }
 
+void test_link_object_values()
+{
+    struct entry
+    {
+        const char* path;
+        cell_position_t pos;
+    };
+
+    std::vector<entry> entries =
+    {
+        { "$[]['id']",      cell_position_t("sheet", 2, 3) },
+        { "$[]['name']",    cell_position_t("sheet", 2, 4) },
+        { "$[]['address']", cell_position_t("sheet", 2, 5) },
+    };
+
+    json_map_tree tree;
+
+    for (const entry& e : entries)
+        tree.set_cell_link(e.path, e.pos);
+
+    for (const entry& e : entries)
+    {
+        const json_map_tree::node* p = tree.get_link(e.path);
+        assert(p);
+        assert(p->type == json_map_tree::map_node_type::cell_ref);
+        assert(e.pos == p->value.cell_ref->pos);
+    }
+}
+
 void test_link_range_fields()
 {
     json_map_tree tree;
@@ -77,6 +106,7 @@ void test_link_range_fields()
 int main()
 {
     test_link_array_values();
+    test_link_object_values();
     test_link_range_fields();
 
     return EXIT_SUCCESS;

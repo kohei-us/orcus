@@ -463,8 +463,16 @@ const json_map_tree::node* json_map_tree::get_destination_node(const pstring& pa
             }
             case json_path_token_t::object_key:
             {
-                std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_destination_node): TODO: handle this" << std::endl;
-                throw std::runtime_error("WIP");
+                if (cur_node->type != map_node_type::object)
+                    return nullptr;
+
+                child_position_type pos = to_key_position(t.value.str.p, t.value.str.n);
+
+                auto it = cur_node->value.children->find(pos);
+                if (it == cur_node->value.children->end())
+                    return nullptr;
+
+                cur_node = &it->second;
                 break;
             }
             case json_path_token_t::end:
@@ -567,8 +575,7 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
 
                 // For an object children, we use the memory address of a
                 // pooled key string as its position.
-                pstring pooled_key = m_str_pool.intern(t.value.str.p, t.value.str.n).first;
-                child_position_type pos = reinterpret_cast<child_position_type>(pooled_key.data());
+                child_position_type pos = to_key_position(t.value.str.p, t.value.str.n);
                 cur_node = &cur_node->get_or_create_child_node(pos);
                 break;
             }
@@ -583,6 +590,13 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
 
     // If this code path reaches here, something has gone wrong.
     return nullptr;
+}
+
+json_map_tree::child_position_type json_map_tree::to_key_position(const char* p, size_t n) const
+{
+    pstring pooled_key = m_str_pool.intern(p, n).first;
+    child_position_type pos = reinterpret_cast<child_position_type>(pooled_key.data());
+    return pos;
 }
 
 bool json_map_tree::is_equivalent(input_node_type input_node, map_node_type map_node)
