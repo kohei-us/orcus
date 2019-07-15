@@ -63,6 +63,20 @@ void test_link_object_values()
     }
 }
 
+void test_link_object_root()
+{
+    json_map_tree tree;
+
+    const char* path = "$['root'][2]";
+    cell_position_t pos("sheet", 3, 4);
+    tree.set_cell_link(path, pos);
+
+    const json_map_tree::node* p = tree.get_link(path);
+    assert(p);
+    assert(p->type == json_map_tree::map_node_type::cell_ref);
+    assert(p->value.cell_ref->pos == pos);
+}
+
 void test_link_range_fields()
 {
     json_map_tree tree;
@@ -107,6 +121,7 @@ int main()
 {
     test_link_array_values();
     test_link_object_values();
+    test_link_object_root();
     test_link_range_fields();
 
     return EXIT_SUCCESS;

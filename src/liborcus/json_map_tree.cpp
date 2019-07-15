@@ -526,8 +526,23 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
         }
         case json_path_token_t::object_key:
         {
-            std::cerr << __FILE__ << "#" << __LINE__ << " (json_map_tree:get_or_create_destination_node): TODO: handle this" << std::endl;
-            throw std::runtime_error("WIP");
+            if (m_root)
+            {
+                if (m_root->type != map_node_type::object)
+                    throw path_error("root node was expected to be of type array, but is not.");
+
+                assert(m_root->value.children);
+            }
+            else
+            {
+                m_root = orcus::make_unique<node>();
+                m_root->type = map_node_type::object;
+                m_root->value.children = m_node_children_pool.construct();
+            }
+
+            cur_node = m_root.get();
+            child_position_type pos = to_key_position(t.value.str.p, t.value.str.n);
+            cur_node = &cur_node->get_or_create_child_node(pos);
             break;
         }
         default:
