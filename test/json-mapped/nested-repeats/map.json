@@ -1,0 +1,21 @@
+{
+    "sheets": ["nested repeats"],
+
+    "ranges": [
+        {"sheet": "nested repeats",
+         "row": 1,
+         "column": 2,
+
+         "fields": [
+             {"path": "$['data'][]['category']"},
+             {"path": "$['data'][]['records'][]['id']"},
+             {"path": "$['data'][]['records'][]['ref']"}
+         ],
+
+         "row-groups": [
+             {"path": "$['data'][]"},
+             {"path": "$['data'][]['records'][]"},
+         ]
+        }
+    ]
+}
