@@ -408,6 +408,15 @@ void json_map_tree::commit_range()
     range_reference_type* ref = &it->second;
     spreadsheet::col_t column_pos = 0;
 
+    for (const pstring& path : m_current_range.row_groups)
+    {
+        node* p = get_or_create_destination_node(path);
+        if (!p)
+            throw_path_error(__FILE__, __LINE__, path);
+
+        p->row_group = ref;
+    }
+
     for (const pstring& path : m_current_range.field_paths)
     {
         node* p = get_or_create_destination_node(path);
@@ -420,15 +429,6 @@ void json_map_tree::commit_range()
         p->value.range_field_ref->ref = ref;
 
         ref->fields.push_back(p);
-    }
-
-    for (const pstring& path : m_current_range.row_groups)
-    {
-        node* p = get_or_create_destination_node(path);
-        if (!p)
-            throw_path_error(__FILE__, __LINE__, path);
-
-        p->row_group = ref;
     }
 }
 
@@ -508,10 +508,14 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
 
             if (m_root)
             {
+                if (m_root->type == map_node_type::unknown)
+                {
+                    m_root->type = map_node_type::array;
+                    m_root->value.children = m_node_children_pool.construct();
+                }
+
                 if (m_root->type != map_node_type::array)
                     throw path_error("root node was expected to be of type array, but is not.");
-
-                assert(m_root->value.children);
             }
             else
             {
@@ -528,10 +532,14 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
         {
             if (m_root)
             {
+                if (m_root->type == map_node_type::unknown)
+                {
+                    m_root->type = map_node_type::object;
+                    m_root->value.children = m_node_children_pool.construct();
+                }
+
                 if (m_root->type != map_node_type::object)
                     throw path_error("root node was expected to be of type array, but is not.");
-
-                assert(m_root->value.children);
             }
             else
             {
