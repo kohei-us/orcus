@@ -203,21 +203,23 @@ private:
 
     void pop_node(json_map_tree::input_node_type nt)
     {
-        bool fill_down = false;
         spreadsheet::row_t row_start = -1;
         spreadsheet::row_t row_end = -1;
+        json_map_tree::range_reference_type* fill_down_ref = nullptr;
 
         if (mp_current_node && mp_current_node->row_group)
         {
+            // We are exiting a row group.
             assert(!m_row_group_stack.empty());
             assert(m_row_group_stack.back().node == mp_current_node);
 
-            // Record the current row range for this depth.
+            // Record the current row range for this level.
             row_start = m_row_group_stack.back().row_position;
             row_end = mp_current_node->row_group->row_position;
 
             if (row_end > row_start && m_row_group_stack.size() > 1)
-                fill_down = true;
+                // The current range is longer than 1. We need to perform fill-downs for the parent level.
+                fill_down_ref = mp_current_node->row_group;
 
             m_row_group_stack.pop_back();
         }
@@ -232,12 +234,23 @@ private:
                 mp_increment_row = mp_current_node->row_group;
             }
 
-            if (fill_down)
+            if (fill_down_ref)
             {
-                std::cerr << __FILE__ << "#" << __LINE__ << " (json_content_handler:pop_node): fill down (rows:" << row_start << "-" << row_end << ")" << std::endl;
-                for (const json_map_tree::node* anchored_field : m_row_group_stack.back().node->anchored_fields)
+                // Perform fill-downs for all anchored fields.
+                const cell_position_t& pos = fill_down_ref->pos;
+                spreadsheet::iface::import_sheet* sheet =
+                    m_im_factory.get_sheet(pos.sheet.data(), pos.sheet.size());
+
+                if (sheet)
                 {
-                    std::cerr << __FILE__ << "#" << __LINE__ << " (json_content_handler:pop_node): col=" << anchored_field->value.range_field_ref->column_pos << std::endl;
+                    json_map_tree::node* node = m_row_group_stack.back().node;
+                    for (const json_map_tree::node* anchored_field : node->anchored_fields)
+                    {
+                        spreadsheet::col_t col_offset =
+                            anchored_field->value.range_field_ref->column_pos;
+                        sheet->fill_down_cells(
+                            pos.row + row_start, pos.col + col_offset, row_end - row_start);
+                    }
                 }
             }
         }
