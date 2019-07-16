@@ -1,0 +1,20 @@
+[
+    {"parent": "foo",
+     "data":
+        [
+            {"category": "A", "region": "en-US",
+                "records": [
+                    {"id": 1000, "ref": "A123456789"},
+                    {"id": 1001, "ref": "A987654321"}
+                ]
+            },
+            {"category": "B", "region": "ja-JP",
+                "records": [
+                    {"id": 2000, "ref": "B123456789"},
+                    {"id": 2001, "ref": "B987654321"},
+                    {"id": 2002, "ref": "B987654323"}
+                ]
+            }
+        ]
+    }
+]

@@ -1,0 +1,24 @@
+{
+    "sheets": ["nested repeats 2"],
+
+    "ranges": [
+        {"sheet": "nested repeats 2",
+         "row": 1,
+         "column": 0,
+
+         "fields": [
+             {"path": "$[]['parent']"},
+             {"path": "$[]['data'][]['category']"},
+             {"path": "$[]['data'][]['records'][]['id']"},
+             {"path": "$[]['data'][]['records'][]['ref']"},
+             {"path": "$[]['data'][]['region']"}
+         ],
+
+         "row-groups": [
+             {"path": "$"},
+             {"path": "$[]['data']"},
+             {"path": "$[]['data'][]['records']"}
+         ]
+        }
+    ]
+}
