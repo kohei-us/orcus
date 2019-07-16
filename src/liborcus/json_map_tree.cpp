@@ -352,10 +352,11 @@ json_map_tree::walker json_map_tree::get_tree_walker() const
 
 void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& pos)
 {
-    node* p = get_or_create_destination_node(path);
-    if (!p)
+    std::vector<node*> node_stack = get_or_create_destination_node(path);
+    if (node_stack.empty())
         return;
 
+    node* p = node_stack.back();
     if (p->type != map_node_type::unknown)
     {
         std::ostringstream os;
@@ -410,19 +411,20 @@ void json_map_tree::commit_range()
 
     for (const pstring& path : m_current_range.row_groups)
     {
-        node* p = get_or_create_destination_node(path);
-        if (!p)
+        std::vector<node*> node_stack = get_or_create_destination_node(path);
+        if (node_stack.empty())
             throw_path_error(__FILE__, __LINE__, path);
 
-        p->row_group = ref;
+        node_stack.back()->row_group = ref;
     }
 
     for (const pstring& path : m_current_range.field_paths)
     {
-        node* p = get_or_create_destination_node(path);
-        if (!p || p->type != map_node_type::unknown)
+        std::vector<node*> node_stack = get_or_create_destination_node(path);
+        if (node_stack.empty() || node_stack.back()->type != map_node_type::unknown)
             throw_path_error(__FILE__, __LINE__, path);
 
+        node* p = node_stack.back();
         p->type = map_node_type::range_field_ref;
         p->value.range_field_ref = m_range_field_ref_pool.construct();
         p->value.range_field_ref->column_pos = column_pos++;
@@ -488,16 +490,15 @@ const json_map_tree::node* json_map_tree::get_destination_node(const pstring& pa
     return nullptr;
 }
 
-json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring& path)
+std::vector<json_map_tree::node*> json_map_tree::get_or_create_destination_node(const pstring& path)
 {
+    std::vector<json_map_tree::node*> node_stack;
+
     if (path.empty() || path[0] != '$')
         // A valid path must begin with a '$'.
-        return nullptr;
+        return node_stack;
 
     json_path_parser parser(path);
-
-    node* cur_node = nullptr;
-
     json_path_parser::token t = parser.next();
 
     switch (t.type)
@@ -524,8 +525,9 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                 m_root->value.children = m_node_children_pool.construct();
             }
 
-            cur_node = m_root.get();
-            cur_node = &cur_node->get_or_create_child_node(t.value.array_pos);
+            node_stack.push_back(m_root.get());
+            node* p = &node_stack.back()->get_or_create_child_node(t.value.array_pos);
+            node_stack.push_back(p);
             break;
         }
         case json_path_token_t::object_key:
@@ -548,9 +550,10 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                 m_root->value.children = m_node_children_pool.construct();
             }
 
-            cur_node = m_root.get();
+            node_stack.push_back(m_root.get());
             child_position_type pos = to_key_position(t.value.str.p, t.value.str.n);
-            cur_node = &cur_node->get_or_create_child_node(pos);
+            node* p = &node_stack.back()->get_or_create_child_node(pos);
+            node_stack.push_back(p);
             break;
         }
         case json_path_token_t::end:
@@ -561,15 +564,19 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                 m_root->type = map_node_type::unknown;
             }
 
-            return m_root.get();
+            node_stack.push_back(m_root.get());
+            return node_stack;
         }
         default:
             // Something has gone wrong. Bail out.
-            return nullptr;
+            node_stack.clear();
+            return node_stack;
     }
 
     for (t = parser.next(); t.type != json_path_token_t::unknown; t = parser.next())
     {
+        node* cur_node = node_stack.back();
+
         switch (t.type)
         {
             case json_path_token_t::array_pos:
@@ -587,7 +594,8 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                     default:
                         throw_path_error(__FILE__, __LINE__, path);
                 }
-                cur_node = &cur_node->get_or_create_child_node(t.value.array_pos);
+                node* p = &node_stack.back()->get_or_create_child_node(t.value.array_pos);
+                node_stack.push_back(p);
                 break;
             }
             case json_path_token_t::object_key:
@@ -609,11 +617,12 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                 // For an object children, we use the memory address of a
                 // pooled key string as its position.
                 child_position_type pos = to_key_position(t.value.str.p, t.value.str.n);
-                cur_node = &cur_node->get_or_create_child_node(pos);
+                node* p = &node_stack.back()->get_or_create_child_node(pos);
+                node_stack.push_back(p);
                 break;
             }
             case json_path_token_t::end:
-                return cur_node;
+                return node_stack;
             case json_path_token_t::unknown:
             default:
                 // Something has gone wrong. Bail out.
@@ -622,7 +631,8 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
     }
 
     // If this code path reaches here, something has gone wrong.
-    return nullptr;
+    node_stack.clear();
+    return node_stack;
 }
 
 json_map_tree::child_position_type json_map_tree::to_key_position(const char* p, size_t n) const
