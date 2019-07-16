@@ -203,33 +203,42 @@ private:
 
     void pop_node(json_map_tree::input_node_type nt)
     {
+        bool fill_down = false;
+        spreadsheet::row_t row_start = -1;
+        spreadsheet::row_t row_end = -1;
+
         if (mp_current_node && mp_current_node->row_group)
         {
             assert(!m_row_group_stack.empty());
             assert(m_row_group_stack.back().node == mp_current_node);
 
-            spreadsheet::row_t row_start = m_row_group_stack.back().row_position;
-            spreadsheet::row_t row_end = mp_current_node->row_group->row_position;
+            // Record the current row range for this depth.
+            row_start = m_row_group_stack.back().row_position;
+            row_end = mp_current_node->row_group->row_position;
 
             if (row_end > row_start && m_row_group_stack.size() > 1)
-            {
-                // TODO : fill down the blank rows in the parent fields.
-                std::cerr << __FILE__ << "#" << __LINE__ << " (json_content_handler:pop_node): (rows="
-                    << row_start << "-" << row_end << "; stack="
-                    << m_row_group_stack.size() << ")" << std::endl;
-            }
+                fill_down = true;
 
             m_row_group_stack.pop_back();
         }
 
         mp_current_node = m_walker.pop_node(nt);
 
-        if (!m_row_group_stack.empty() && mp_current_node)
+        if (!m_row_group_stack.empty())
         {
-            if (mp_current_node->row_group)
+            if (mp_current_node && mp_current_node->row_group)
             {
                 assert(m_row_group_stack.back().node == mp_current_node);
                 mp_increment_row = mp_current_node->row_group;
+            }
+
+            if (fill_down)
+            {
+                std::cerr << __FILE__ << "#" << __LINE__ << " (json_content_handler:pop_node): fill down (rows:" << row_start << "-" << row_end << ")" << std::endl;
+                for (const json_map_tree::node* anchored_field : m_row_group_stack.back().node->anchored_fields)
+                {
+                    std::cerr << __FILE__ << "#" << __LINE__ << " (json_content_handler:pop_node): col=" << anchored_field->value.range_field_ref->column_pos << std::endl;
+                }
             }
         }
     }

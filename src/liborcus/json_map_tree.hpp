@@ -90,6 +90,8 @@ public:
          */
         range_reference_type* row_group = nullptr;
 
+        std::vector<node*> anchored_fields;
+
         node(const node&) = delete;
         node& operator=(const node&) = delete;
 
@@ -142,6 +144,8 @@ public:
     void commit_range();
 
 private:
+    range_reference_type& get_range_reference(const cell_position_t& pos);
+
     const node* get_destination_node(const pstring& path) const;
     std::vector<node*> get_or_create_destination_node(const pstring& path);
 

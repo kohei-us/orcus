@@ -187,6 +187,11 @@ json_map_tree::node::node(node&& other) :
     }
 
     other.type = map_node_type::unknown;
+
+    row_group = other.row_group;
+    other.row_group = nullptr;
+
+    anchored_fields = std::move(other.anchored_fields);
 }
 
 json_map_tree::node& json_map_tree::node::get_or_create_child_node(child_position_type pos)
@@ -395,18 +400,7 @@ void json_map_tree::set_range_row_group(const pstring& path)
 
 void json_map_tree::commit_range()
 {
-    auto it = m_range_refs.lower_bound(m_current_range.pos);
-    if (it == m_range_refs.end() || m_range_refs.key_comp()(m_current_range.pos, it->first))
-    {
-        // Ensure that we own the sheet name instance before storing it.
-        m_current_range.pos.sheet = m_str_pool.intern(m_current_range.pos.sheet).first;
-
-        it = m_range_refs.insert(
-            it, range_ref_store_type::value_type(
-                m_current_range.pos, range_reference_type(m_current_range.pos)));
-    }
-
-    range_reference_type* ref = &it->second;
+    range_reference_type* ref = &get_range_reference(m_current_range.pos);
     spreadsheet::col_t column_pos = 0;
 
     for (const pstring& path : m_current_range.row_groups)
@@ -431,7 +425,35 @@ void json_map_tree::commit_range()
         p->value.range_field_ref->ref = ref;
 
         ref->fields.push_back(p);
+
+        // Find the first row group node ancountered going up from the field
+        // node, and anchor itself to it.
+        for (auto it = node_stack.rbegin(); it != node_stack.rend(); ++it)
+        {
+            node* anchor_node = *it;
+            if (anchor_node->row_group)
+            {
+                anchor_node->anchored_fields.push_back(p);
+                break;
+            }
+        }
     }
+}
+
+json_map_tree::range_reference_type& json_map_tree::get_range_reference(const cell_position_t& pos)
+{
+    auto it = m_range_refs.lower_bound(pos);
+    if (it == m_range_refs.end() || m_range_refs.key_comp()(m_current_range.pos, it->first))
+    {
+        // Ensure that we own the sheet name instance before storing it.
+        m_current_range.pos.sheet = m_str_pool.intern(m_current_range.pos.sheet).first;
+
+        it = m_range_refs.insert(
+            it, range_ref_store_type::value_type(
+                m_current_range.pos, range_reference_type(m_current_range.pos)));
+    }
+
+    return it->second;
 }
 
 const json_map_tree::node* json_map_tree::get_destination_node(const pstring& path) const

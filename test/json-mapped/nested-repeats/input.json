@@ -1,19 +1,19 @@
 {
     "data": [
-        {"category": "A",
+        {"category": "A", "region": "en-US",
             "records": [
                 {"id": 1000, "ref": "A123456789"},
                 {"id": 1001, "ref": "A987654321"}
             ]
         },
-        {"category": "B",
+        {"category": "B", "region": "ja-JP",
             "records": [
                 {"id": 2000, "ref": "B123456789"},
                 {"id": 2001, "ref": "B987654321"},
                 {"id": 2002, "ref": "B987654323"}
             ]
         },
-        {"category": "C",
+        {"category": "C", "region": "fr-CA",
             "records": [
                 {"id": 3000, "ref": "C123456789"},
                 {"id": 3001, "ref": "C987654320"},
@@ -24,7 +24,7 @@
                 {"id": 3006, "ref": "C987654325"}
             ]
         },
-        {"category": "D",
+        {"category": "D", "region": "unknown",
             "records": [
                 {"id": 4000, "ref": "D123456789"},
             ]
@@ -35,7 +35,7 @@
                 {"id": 6000, "ref": "F123456789"}
             ]
         },
-        {"category": "G",
+        {"category": "G", "region": "en-GB",
             "records": [
                 {"id": 7000, "ref": "G123456789"},
                 {"id": 7000, "ref": "G123456780"}

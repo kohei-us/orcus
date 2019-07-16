@@ -9,7 +9,8 @@
          "fields": [
              {"path": "$['data'][]['category']"},
              {"path": "$['data'][]['records'][]['id']"},
-             {"path": "$['data'][]['records'][]['ref']"}
+             {"path": "$['data'][]['records'][]['ref']"},
+             {"path": "$['data'][]['region']"}
          ],
 
          "row-groups": [
