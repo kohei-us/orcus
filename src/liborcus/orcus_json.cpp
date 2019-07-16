@@ -91,6 +91,12 @@ class json_content_handler
     json_map_tree::node* mp_current_node;
     json_map_tree::range_reference_type* mp_increment_row;
 
+    /**
+     * Stack of row group nodes, used to keep track of whether or not we are
+     * currently within a linked range.
+     */
+    std::vector<json_map_tree::node*> m_row_group_stack;
+
     spreadsheet::iface::import_factory& m_im_factory;
 
 public:
@@ -167,9 +173,7 @@ private:
 
     void push_node(json_map_tree::input_node_type nt)
     {
-        mp_current_node = m_walker.push_node(nt);
-
-        if (mp_current_node)
+        if (!m_row_group_stack.empty() && mp_current_node)
         {
             if (mp_current_node->row_group && mp_increment_row == mp_current_node->row_group)
             {
@@ -178,18 +182,28 @@ private:
                 mp_increment_row = nullptr;
             }
         }
+
+        mp_current_node = m_walker.push_node(nt);
+
+        if (mp_current_node && mp_current_node->row_group)
+            m_row_group_stack.push_back(mp_current_node);
     }
 
     void pop_node(json_map_tree::input_node_type nt)
     {
+        if (mp_current_node && mp_current_node->row_group)
+        {
+            assert(!m_row_group_stack.empty());
+            assert(m_row_group_stack.back() == mp_current_node);
+            m_row_group_stack.pop_back();
+        }
+
         mp_current_node = m_walker.pop_node(nt);
 
-        if (mp_current_node)
+        if (!m_row_group_stack.empty() && mp_current_node)
         {
             if (mp_current_node->row_group)
-            {
                 mp_increment_row = mp_current_node->row_group;
-            }
         }
     }
 

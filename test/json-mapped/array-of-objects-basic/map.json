@@ -9,7 +9,7 @@
              {"path": "$[]['email']"}
          ],
          "row-groups": [
-             {"path": "$[]"}
+             {"path": "$"}
          ]
         }
     ]

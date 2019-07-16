@@ -16,10 +16,10 @@ namespace orcus {
 
 namespace {
 
-void throw_path_error(const pstring& path)
+void throw_path_error(const char* file, int line, const pstring& path)
 {
     std::ostringstream os;
-    os << "failed to link this path '" << path << "'";
+    os << file << "#" << line << ": failed to link this path '" << path << "'";
     throw json_map_tree::path_error(os.str());
 }
 
@@ -412,7 +412,7 @@ void json_map_tree::commit_range()
     {
         node* p = get_or_create_destination_node(path);
         if (!p || p->type != map_node_type::unknown)
-            throw_path_error(path);
+            throw_path_error(__FILE__, __LINE__, path);
 
         p->type = map_node_type::range_field_ref;
         p->value.range_field_ref = m_range_field_ref_pool.construct();
@@ -426,7 +426,7 @@ void json_map_tree::commit_range()
     {
         node* p = get_or_create_destination_node(path);
         if (!p)
-            throw_path_error(path);
+            throw_path_error(__FILE__, __LINE__, path);
 
         p->row_group = ref;
     }
@@ -545,6 +545,16 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
             cur_node = &cur_node->get_or_create_child_node(pos);
             break;
         }
+        case json_path_token_t::end:
+        {
+            if (!m_root)
+            {
+                m_root = orcus::make_unique<node>();
+                m_root->type = map_node_type::unknown;
+            }
+
+            return m_root.get();
+        }
         default:
             // Something has gone wrong. Bail out.
             return nullptr;
@@ -567,7 +577,7 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                         cur_node->value.children = m_node_children_pool.construct();
                         break;
                     default:
-                        throw_path_error(path);
+                        throw_path_error(__FILE__, __LINE__, path);
                 }
                 cur_node = &cur_node->get_or_create_child_node(t.value.array_pos);
                 break;
@@ -585,7 +595,7 @@ json_map_tree::node* json_map_tree::get_or_create_destination_node(const pstring
                         cur_node->value.children = m_node_children_pool.construct();
                         break;
                     default:
-                        throw_path_error(path);
+                        throw_path_error(__FILE__, __LINE__, path);
                 }
 
                 // For an object children, we use the memory address of a

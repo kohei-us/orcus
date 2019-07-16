@@ -13,8 +13,8 @@
          ],
 
          "row-groups": [
-             {"path": "$['data'][]"},
-             {"path": "$['data'][]['records'][]"},
+             {"path": "$['data']"},
+             {"path": "$['data'][]['records']"}
          ]
         }
     ]

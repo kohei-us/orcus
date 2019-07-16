@@ -7,9 +7,9 @@
     "ranges": [
         {"sheet": "data", "row": 3, "column": 1,
          "fields": [
-             {"path": "$[][0]"},
-             {"path": "$[][1]"},
-             {"path": "$[][2]"}
+             {"path": "$[][][0]"},
+             {"path": "$[][][1]"},
+             {"path": "$[][][2]"}
          ],
          "row-groups": [
              {"path": "$[]"}
