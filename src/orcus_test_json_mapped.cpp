@@ -26,6 +26,7 @@ const std::vector<const char*> tests =
 {
     SRCDIR"/test/json-mapped/array-of-arrays-basic",
     SRCDIR"/test/json-mapped/array-of-objects-basic",
+    SRCDIR"/test/json-mapped/nested-repeats",
 };
 
 } // anonymous namespace
