@@ -91,11 +91,20 @@ class json_content_handler
     json_map_tree::node* mp_current_node;
     json_map_tree::range_reference_type* mp_increment_row;
 
+    struct row_group_scope
+    {
+        json_map_tree::node* node;
+        spreadsheet::row_t row_position;
+
+        row_group_scope(json_map_tree::node* _node, spreadsheet::row_t _row_position) :
+            node(_node), row_position(_row_position) {}
+    };
+
     /**
      * Stack of row group nodes, used to keep track of whether or not we are
      * currently within a linked range.
      */
-    std::vector<json_map_tree::node*> m_row_group_stack;
+    std::vector<row_group_scope> m_row_group_stack;
 
     spreadsheet::iface::import_factory& m_im_factory;
 
@@ -186,7 +195,10 @@ private:
         mp_current_node = m_walker.push_node(nt);
 
         if (mp_current_node && mp_current_node->row_group)
-            m_row_group_stack.push_back(mp_current_node);
+        {
+            m_row_group_stack.emplace_back(
+                mp_current_node, mp_current_node->row_group->row_position);
+        }
     }
 
     void pop_node(json_map_tree::input_node_type nt)
@@ -194,7 +206,19 @@ private:
         if (mp_current_node && mp_current_node->row_group)
         {
             assert(!m_row_group_stack.empty());
-            assert(m_row_group_stack.back() == mp_current_node);
+            assert(m_row_group_stack.back().node == mp_current_node);
+
+            spreadsheet::row_t row_start = m_row_group_stack.back().row_position;
+            spreadsheet::row_t row_end = mp_current_node->row_group->row_position;
+
+            if (row_end > row_start && m_row_group_stack.size() > 1)
+            {
+                // TODO : fill down the blank rows in the parent fields.
+                std::cerr << __FILE__ << "#" << __LINE__ << " (json_content_handler:pop_node): (rows="
+                    << row_start << "-" << row_end << "; stack="
+                    << m_row_group_stack.size() << ")" << std::endl;
+            }
+
             m_row_group_stack.pop_back();
         }
 
@@ -203,7 +227,10 @@ private:
         if (!m_row_group_stack.empty() && mp_current_node)
         {
             if (mp_current_node->row_group)
+            {
+                assert(m_row_group_stack.back().node == mp_current_node);
                 mp_increment_row = mp_current_node->row_group;
+            }
         }
     }
 
