@@ -440,12 +440,7 @@ EXTRA_PROGRAMS += \
 	orcus-odf-styles-context-test
 
 orcus_odf_styles_context_test_SOURCES = \
-	liborcus/odf_styles_context_test.cpp \
-	liborcus/session_context.cpp \
-	liborcus/xml_context_base.cpp \
-	liborcus/xml_context_global.cpp \
-	liborcus/global.cpp \
-	liborcus/spreadsheet_interface.cpp
+	odf_styles_context_test.cpp
 
 orcus_odf_styles_context_test_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
