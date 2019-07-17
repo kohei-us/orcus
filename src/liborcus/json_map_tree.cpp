@@ -259,7 +259,11 @@ json_map_tree::node* json_map_tree::walker::push_node(input_node_type nt)
                 it = node_children.find(json_map_tree::node_child_default_position);
 
             if (it == node_children.end())
-                throw std::logic_error("empty array should never happen!");
+            {
+                // This array node has no children.
+                m_unlinked_stack.push_back(nt);
+                return nullptr;
+            }
 
             node* p = &it->second;
 
