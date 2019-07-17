@@ -18,6 +18,10 @@
 
 namespace orcus {
 
+/**
+ * Exception related to parsing error that includes the offset in the stream
+ * where the error occurred.
+ */
 class ORCUS_PSR_DLLPUBLIC parse_error : public general_error
 {
     std::ptrdiff_t m_offset;  /// offset in the stream where the error occurred.

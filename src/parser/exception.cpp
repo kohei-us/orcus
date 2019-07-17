@@ -54,6 +54,11 @@ json_structure_error::json_structure_error(const string& msg) :
 
 json_structure_error::~json_structure_error() throw() {}
 
+invalid_map_error::invalid_map_error(const string& msg) :
+    general_error(msg) {}
+
+invalid_map_error::~invalid_map_error() throw() {}
+
 value_error::value_error(const string& msg) :
     general_error(msg) {}
 

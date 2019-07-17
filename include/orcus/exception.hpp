@@ -51,6 +51,13 @@ public:
     virtual ~json_structure_error() throw();
 };
 
+class ORCUS_PSR_DLLPUBLIC invalid_map_error : public general_error
+{
+public:
+    explicit invalid_map_error(const ::std::string& msg);
+    virtual ~invalid_map_error() throw();
+};
+
 class ORCUS_PSR_DLLPUBLIC value_error : public general_error
 {
 public:

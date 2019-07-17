@@ -9,6 +9,8 @@
 #include "orcus/stream.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/factory.hpp"
+#include "orcus/exception.hpp"
+#include "orcus/global.hpp"
 
 #include <iostream>
 #include <vector>
@@ -63,9 +65,27 @@ void test_mapped_json_import()
     }
 }
 
+void test_invalid_map_definition()
+{
+    spreadsheet::document doc;
+    spreadsheet::import_factory import_fact(doc);
+
+    orcus_json app(&import_fact);
+    try
+    {
+        app.read_map_definition(ORCUS_ASCII("asdfdasf"));
+        assert(false); // We were expecting an exception, but didn't get one.
+    }
+    catch (const invalid_map_error&)
+    {
+        // Success!
+    }
+}
+
 int main(int argc, char** argv)
 {
     test_mapped_json_import();
+    test_invalid_map_definition();
 
     return EXIT_SUCCESS;
 }
