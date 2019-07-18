@@ -161,7 +161,7 @@ json_map_tree::cell_reference_type::cell_reference_type(const cell_position_t& _
     pos(_pos) {}
 
 json_map_tree::range_reference_type::range_reference_type(const cell_position_t& _pos) :
-    pos(_pos), row_position(0) {}
+    pos(_pos), row_position(0), row_header(false) {}
 
 json_map_tree::node::node() {}
 json_map_tree::node::node(node&& other) :
@@ -416,6 +416,8 @@ void json_map_tree::commit_range()
         node_stack.back()->row_group = ref;
     }
 
+    long unlabeled_field_count = 0;
+
     for (const pstring& path : m_current_range.field_paths)
     {
         std::vector<node*> node_stack = get_or_create_destination_node(path);
@@ -427,6 +429,11 @@ void json_map_tree::commit_range()
         p->value.range_field_ref = m_range_field_ref_pool.construct();
         p->value.range_field_ref->column_pos = column_pos++;
         p->value.range_field_ref->ref = ref;
+
+        std::ostringstream os;
+        os << "field " << unlabeled_field_count++;
+        pstring label = m_str_pool.intern(os.str()).first;
+        p->value.range_field_ref->label = label;
 
         ref->fields.push_back(p);
 
@@ -442,6 +449,11 @@ void json_map_tree::commit_range()
             }
         }
     }
+}
+
+json_map_tree::range_ref_store_type& json_map_tree::get_range_references()
+{
+    return m_range_refs;
 }
 
 json_map_tree::range_reference_type& json_map_tree::get_range_reference(const cell_position_t& pos)

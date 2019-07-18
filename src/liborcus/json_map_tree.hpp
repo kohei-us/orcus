@@ -36,7 +36,9 @@ public:
     };
 
     struct node;
+    struct range_reference_type;
     using node_children_type = std::map<child_position_type, node>;
+    using range_ref_store_type = std::map<cell_position_t, range_reference_type>;
 
     /** Types of nodes in the json input tree. */
     enum class input_node_type { unknown = 0x00, array = 0x01, object = 0x02, value = 0x04 };
@@ -60,6 +62,7 @@ public:
         cell_position_t pos;
         std::vector<const node*> fields;
         spreadsheet::row_t row_position;
+        bool row_header;
 
         range_reference_type(const cell_position_t& _pos);
     };
@@ -69,6 +72,7 @@ public:
     {
         range_reference_type* ref;
         spreadsheet::col_t column_pos;
+        pstring label;
     };
 
     struct node
@@ -143,6 +147,8 @@ public:
     void set_range_row_group(const pstring& path);
     void commit_range();
 
+    range_ref_store_type& get_range_references();
+
 private:
     range_reference_type& get_range_reference(const cell_position_t& pos);
 
@@ -154,8 +160,6 @@ private:
     static bool is_equivalent(input_node_type input_node, map_node_type map_node);
 
 private:
-    using range_ref_store_type = std::map<cell_position_t, range_reference_type>;
-
     boost::object_pool<node_children_type> m_node_children_pool;
     boost::object_pool<cell_reference_type> m_cell_ref_pool;
     boost::object_pool<range_field_reference_type> m_range_field_ref_pool;

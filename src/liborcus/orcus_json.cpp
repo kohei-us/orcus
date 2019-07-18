@@ -220,8 +220,17 @@ private:
             row_end = mp_current_node->row_group->row_position;
 
             if (row_end > row_start && m_row_group_stack.size() > 1)
+            {
                 // The current range is longer than 1. We need to perform fill-downs for the parent level.
                 fill_down_ref = mp_current_node->row_group;
+
+                if (fill_down_ref->row_header)
+                {
+                    // Account for the row header.
+                    ++row_start;
+                    ++row_end;
+                }
+            }
 
             m_row_group_stack.pop_back();
         }
@@ -281,6 +290,9 @@ private:
                 cell_position_t pos = ref->pos; // copy
                 pos.col += col_offset;
                 pos.row += ref->row_position;
+                if (ref->row_header)
+                    ++pos.row; // Account for the row header.
+
                 v.commit(m_im_factory, pos);
                 break;
             }
@@ -342,6 +354,39 @@ void orcus_json::append_sheet(const pstring& name)
 
 void orcus_json::read_stream(const char* p, size_t n)
 {
+    if (!mp_impl->im_factory)
+        return;
+
+    spreadsheet::iface::import_shared_strings* ss = mp_impl->im_factory->get_shared_strings();
+    if (!ss)
+        return;
+
+    // Insert range headers first (if applicable).
+    for (auto& entry : mp_impl->map_tree.get_range_references())
+    {
+        json_map_tree::range_reference_type& ref = entry.second;
+        if (!ref.row_header)
+            // This range does not use row header.
+            continue;
+
+        const cell_position_t& origin = ref.pos;
+
+        spreadsheet::iface::import_sheet* sheet =
+            mp_impl->im_factory->get_sheet(origin.sheet.data(), origin.sheet.size());
+
+        if (!sheet)
+            continue;
+
+        for (const json_map_tree::node* pn : ref.fields)
+        {
+            cell_position_t pos = origin;
+            json_map_tree::range_field_reference_type* field = pn->value.range_field_ref;
+            pos.col += field->column_pos;
+            size_t sid = ss->add(field->label.data(), field->label.size());
+            sheet->set_string(pos.row, pos.col, sid);
+        }
+    }
+
     json_content_handler hdl(mp_impl->map_tree, *mp_impl->im_factory);
     json_parser<json_content_handler> parser(p, n, hdl);
     parser.parse();
