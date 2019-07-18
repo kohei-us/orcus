@@ -435,7 +435,7 @@ void json_map_tree::commit_range()
         pstring label = m_str_pool.intern(os.str()).first;
         p->value.range_field_ref->label = label;
 
-        ref->fields.push_back(p);
+        ref->fields.push_back(p->value.range_field_ref);
 
         // Find the first row group node ancountered going up from the field
         // node, and anchor itself to it.

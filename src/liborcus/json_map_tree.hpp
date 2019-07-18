@@ -57,10 +57,12 @@ public:
         cell_reference_type(const cell_position_t& _pos);
     };
 
+    struct range_field_reference_type;
+
     struct range_reference_type
     {
         cell_position_t pos;
-        std::vector<const node*> fields;
+        std::vector<const range_field_reference_type*> fields;
         spreadsheet::row_t row_position;
         bool row_header;
 

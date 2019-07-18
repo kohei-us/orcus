@@ -377,10 +377,9 @@ void orcus_json::read_stream(const char* p, size_t n)
         if (!sheet)
             continue;
 
-        for (const json_map_tree::node* pn : ref.fields)
+        for (const json_map_tree::range_field_reference_type* field : ref.fields)
         {
             cell_position_t pos = origin;
-            json_map_tree::range_field_reference_type* field = pn->value.range_field_ref;
             pos.col += field->column_pos;
             size_t sid = ss->add(field->label.data(), field->label.size());
             sheet->set_string(pos.row, pos.col, sid);
