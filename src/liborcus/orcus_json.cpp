@@ -362,9 +362,9 @@ void orcus_json::read_stream(const char* p, size_t n)
         return;
 
     // Insert range headers first (if applicable).
-    for (auto& entry : mp_impl->map_tree.get_range_references())
+    for (const auto& entry : mp_impl->map_tree.get_range_references())
     {
-        json_map_tree::range_reference_type& ref = entry.second;
+        const json_map_tree::range_reference_type& ref = entry.second;
         if (!ref.row_header)
             // This range does not use row header.
             continue;
