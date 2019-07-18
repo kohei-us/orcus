@@ -4,6 +4,7 @@ build:
   stage: build
   before_script: 
     - uname -a
+    - lsb_release -a
     - apt update
     - apt -y install gfortran-8
     - apt -y install make autoconf automake libtool pkg-config git python3-dev libspdlog-dev
