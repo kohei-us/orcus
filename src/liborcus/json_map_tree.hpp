@@ -155,7 +155,14 @@ private:
     range_reference_type& get_range_reference(const cell_position_t& pos);
 
     const node* get_destination_node(const pstring& path) const;
-    std::vector<node*> get_or_create_destination_node(const pstring& path);
+
+    struct path_stack_type
+    {
+        std::vector<node*> node_stack;
+        pstring dest_key; //< object key associated with the destination value (if applicable)
+    };
+
+    path_stack_type get_or_create_destination_node(const pstring& path);
 
     child_position_type to_key_position(const char* p, size_t n) const;
 

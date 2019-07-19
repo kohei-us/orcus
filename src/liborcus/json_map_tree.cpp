@@ -23,7 +23,52 @@ void throw_path_error(const char* file, int line, const pstring& path)
     throw json_map_tree::path_error(os.str());
 }
 
-enum class json_path_token_t { unknown, array, array_pos, object, object_key, end };
+enum class json_path_token_t { unknown, array_pos, object_key, end };
+
+struct json_path_token_value_t
+{
+    json_path_token_t type = json_path_token_t::unknown;
+
+    union
+    {
+        std::uintptr_t array_pos = json_map_tree::node_child_default_position;
+
+        struct
+        {
+            const char* p;
+            size_t n;
+
+        } str;
+
+    } value;
+
+    json_path_token_value_t(json_path_token_t _type) : type(_type) {}
+
+    json_path_token_value_t(long array_pos) : type(json_path_token_t::array_pos)
+    {
+        value.array_pos = array_pos;
+    }
+
+    json_path_token_value_t(const char* p, size_t n) : type(json_path_token_t::object_key)
+    {
+        value.str.p = p;
+        value.str.n = n;
+    }
+};
+
+pstring get_last_object_key(const std::vector<json_path_token_value_t>& stack)
+{
+    if (stack.size() < 2)
+        return pstring();
+
+    auto it = stack.rbegin();
+    ++it;
+    const json_path_token_value_t& t2 = *it;
+    if (t2.type != json_path_token_t::object_key)
+        return pstring();
+
+    return pstring(t2.value.str.p, t2.value.str.n);
+}
 
 class json_path_parser
 {
@@ -31,37 +76,6 @@ class json_path_parser
     const char* mp_end;
 
 public:
-
-    struct token
-    {
-        json_path_token_t type = json_path_token_t::unknown;
-
-        union
-        {
-            std::uintptr_t array_pos = json_map_tree::node_child_default_position;
-
-            struct
-            {
-                const char* p;
-                size_t n;
-
-            } str;
-
-        } value;
-
-        token(json_path_token_t _type) : type(_type) {}
-
-        token(long array_pos) : type(json_path_token_t::array_pos)
-        {
-            value.array_pos = array_pos;
-        }
-
-        token(const char* p, size_t n) : type(json_path_token_t::object_key)
-        {
-            value.str.p = p;
-            value.str.n = n;
-        }
-    };
 
     json_path_parser(const pstring& path) :
         mp_cur(path.data()),
@@ -72,7 +86,7 @@ public:
         ++mp_cur; // skip the first '$'.
     }
 
-    token next()
+    json_path_token_value_t next()
     {
         if (mp_cur == mp_end)
             return json_path_token_t::end;
@@ -83,7 +97,7 @@ public:
         return json_path_token_t::unknown;
     }
 
-    token next_object_key()
+    json_path_token_value_t next_object_key()
     {
         assert(*mp_cur == '\'');
         ++mp_cur;
@@ -105,10 +119,10 @@ public:
 
         ++mp_cur; // Skip the ']'.
 
-        return token(p_head, n);
+        return json_path_token_value_t(p_head, n);
     }
 
-    token next_pos()
+    json_path_token_value_t next_pos()
     {
         assert(*mp_cur == '[');
         ++mp_cur; // Skip the '['.
@@ -361,11 +375,11 @@ json_map_tree::walker json_map_tree::get_tree_walker() const
 
 void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& pos)
 {
-    std::vector<node*> node_stack = get_or_create_destination_node(path);
-    if (node_stack.empty())
+    path_stack_type stack = get_or_create_destination_node(path);
+    if (stack.node_stack.empty())
         return;
 
-    node* p = node_stack.back();
+    node* p = stack.node_stack.back();
     if (p->type != map_node_type::unknown)
     {
         std::ostringstream os;
@@ -409,37 +423,43 @@ void json_map_tree::commit_range()
 
     for (const pstring& path : m_current_range.row_groups)
     {
-        std::vector<node*> node_stack = get_or_create_destination_node(path);
-        if (node_stack.empty())
+        path_stack_type stack = get_or_create_destination_node(path);
+        if (stack.node_stack.empty())
             throw_path_error(__FILE__, __LINE__, path);
 
-        node_stack.back()->row_group = ref;
+        stack.node_stack.back()->row_group = ref;
     }
 
     long unlabeled_field_count = 0;
 
     for (const pstring& path : m_current_range.field_paths)
     {
-        std::vector<node*> node_stack = get_or_create_destination_node(path);
-        if (node_stack.empty() || node_stack.back()->type != map_node_type::unknown)
+        path_stack_type stack = get_or_create_destination_node(path);
+        if (stack.node_stack.empty() || stack.node_stack.back()->type != map_node_type::unknown)
             throw_path_error(__FILE__, __LINE__, path);
 
-        node* p = node_stack.back();
+        node* p = stack.node_stack.back();
         p->type = map_node_type::range_field_ref;
         p->value.range_field_ref = m_range_field_ref_pool.construct();
         p->value.range_field_ref->column_pos = column_pos++;
         p->value.range_field_ref->ref = ref;
 
-        std::ostringstream os;
-        os << "field " << unlabeled_field_count++;
-        pstring label = m_str_pool.intern(os.str()).first;
-        p->value.range_field_ref->label = label;
+        if (stack.dest_key.empty())
+        {
+            // This field is probably associated with an array.
+            std::ostringstream os;
+            os << "field " << unlabeled_field_count++;
+            p->value.range_field_ref->label = m_str_pool.intern(os.str()).first;
+        }
+        else
+            // This field is associated with an object key.  Use its key as the label.
+            p->value.range_field_ref->label = m_str_pool.intern(stack.dest_key).first;
 
         ref->fields.push_back(p->value.range_field_ref);
 
         // Find the first row group node ancountered going up from the field
         // node, and anchor itself to it.
-        for (auto it = node_stack.rbegin(); it != node_stack.rend(); ++it)
+        for (auto it = stack.node_stack.rbegin(); it != stack.node_stack.rend(); ++it)
         {
             node* anchor_node = *it;
             if (anchor_node->row_group)
@@ -485,7 +505,7 @@ const json_map_tree::node* json_map_tree::get_destination_node(const pstring& pa
     json_path_parser parser(path);
     const node* cur_node = m_root.get();
 
-    for (json_path_parser::token t = parser.next(); t.type != json_path_token_t::unknown; t = parser.next())
+    for (json_path_token_value_t t = parser.next(); t.type != json_path_token_t::unknown; t = parser.next())
     {
         switch (t.type)
         {
@@ -528,16 +548,19 @@ const json_map_tree::node* json_map_tree::get_destination_node(const pstring& pa
     return nullptr;
 }
 
-std::vector<json_map_tree::node*> json_map_tree::get_or_create_destination_node(const pstring& path)
+json_map_tree::path_stack_type json_map_tree::get_or_create_destination_node(const pstring& path)
 {
-    std::vector<json_map_tree::node*> node_stack;
+    path_stack_type stack;
 
     if (path.empty() || path[0] != '$')
         // A valid path must begin with a '$'.
-        return node_stack;
+        return stack;
 
     json_path_parser parser(path);
-    json_path_parser::token t = parser.next();
+    json_path_token_value_t t = parser.next();
+
+    std::vector<json_path_token_value_t> token_stack;
+    token_stack.push_back(t);
 
     switch (t.type)
     {
@@ -563,9 +586,9 @@ std::vector<json_map_tree::node*> json_map_tree::get_or_create_destination_node(
                 m_root->value.children = m_node_children_pool.construct();
             }
 
-            node_stack.push_back(m_root.get());
-            node* p = &node_stack.back()->get_or_create_child_node(t.value.array_pos);
-            node_stack.push_back(p);
+            stack.node_stack.push_back(m_root.get());
+            node* p = &stack.node_stack.back()->get_or_create_child_node(t.value.array_pos);
+            stack.node_stack.push_back(p);
             break;
         }
         case json_path_token_t::object_key:
@@ -588,10 +611,10 @@ std::vector<json_map_tree::node*> json_map_tree::get_or_create_destination_node(
                 m_root->value.children = m_node_children_pool.construct();
             }
 
-            node_stack.push_back(m_root.get());
+            stack.node_stack.push_back(m_root.get());
             child_position_type pos = to_key_position(t.value.str.p, t.value.str.n);
-            node* p = &node_stack.back()->get_or_create_child_node(pos);
-            node_stack.push_back(p);
+            node* p = &stack.node_stack.back()->get_or_create_child_node(pos);
+            stack.node_stack.push_back(p);
             break;
         }
         case json_path_token_t::end:
@@ -602,18 +625,19 @@ std::vector<json_map_tree::node*> json_map_tree::get_or_create_destination_node(
                 m_root->type = map_node_type::unknown;
             }
 
-            node_stack.push_back(m_root.get());
-            return node_stack;
+            stack.node_stack.push_back(m_root.get());
+            return stack;
         }
         default:
             // Something has gone wrong. Bail out.
-            node_stack.clear();
-            return node_stack;
+            stack.node_stack.clear();
+            return stack;
     }
 
     for (t = parser.next(); t.type != json_path_token_t::unknown; t = parser.next())
     {
-        node* cur_node = node_stack.back();
+        token_stack.push_back(t);
+        node* cur_node = stack.node_stack.back();
 
         switch (t.type)
         {
@@ -632,8 +656,8 @@ std::vector<json_map_tree::node*> json_map_tree::get_or_create_destination_node(
                     default:
                         throw_path_error(__FILE__, __LINE__, path);
                 }
-                node* p = &node_stack.back()->get_or_create_child_node(t.value.array_pos);
-                node_stack.push_back(p);
+                node* p = &stack.node_stack.back()->get_or_create_child_node(t.value.array_pos);
+                stack.node_stack.push_back(p);
                 break;
             }
             case json_path_token_t::object_key:
@@ -655,12 +679,17 @@ std::vector<json_map_tree::node*> json_map_tree::get_or_create_destination_node(
                 // For an object children, we use the memory address of a
                 // pooled key string as its position.
                 child_position_type pos = to_key_position(t.value.str.p, t.value.str.n);
-                node* p = &node_stack.back()->get_or_create_child_node(pos);
-                node_stack.push_back(p);
+                node* p = &stack.node_stack.back()->get_or_create_child_node(pos);
+                stack.node_stack.push_back(p);
                 break;
             }
             case json_path_token_t::end:
-                return node_stack;
+            {
+                assert(token_stack.size() >= 2);
+                stack.dest_key = get_last_object_key(token_stack);
+
+                return stack;
+            }
             case json_path_token_t::unknown:
             default:
                 // Something has gone wrong. Bail out.
@@ -669,8 +698,8 @@ std::vector<json_map_tree::node*> json_map_tree::get_or_create_destination_node(
     }
 
     // If this code path reaches here, something has gone wrong.
-    node_stack.clear();
-    return node_stack;
+    stack.node_stack.clear();
+    return stack;
 }
 
 json_map_tree::child_position_type json_map_tree::to_key_position(const char* p, size_t n) const
