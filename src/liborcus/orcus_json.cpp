@@ -389,6 +389,8 @@ void orcus_json::read_stream(const char* p, size_t n)
     json_content_handler hdl(mp_impl->map_tree, *mp_impl->im_factory);
     json_parser<json_content_handler> parser(p, n, hdl);
     parser.parse();
+
+    mp_impl->im_factory->finalize();
 }
 
 void orcus_json::read_map_definition(const char* p, size_t n)
