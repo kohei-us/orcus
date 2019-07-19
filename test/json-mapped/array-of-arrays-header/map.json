@@ -1,0 +1,15 @@
+{
+    "sheets": ["city"],
+    "ranges": [
+        {"row": 0, "column": 0, "sheet": "city", "row-header": true,
+         "fields": [
+                {"path": "$[][0]", "label": "RID"},
+                {"path": "$[][1]", "label": "Country"},
+                {"path": "$[][2]", "label": "City"},
+            ],
+         "row-groups": [
+             {"path": "$"},
+            ]
+        }
+    ]
+}
