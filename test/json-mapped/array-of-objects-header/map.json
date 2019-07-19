@@ -1,0 +1,16 @@
+{
+    "sheets": ["models"],
+    "ranges": [
+        {"row": 0, "column": 0, "sheet": "models", "row-header": true,
+         "fields": [
+                {"path": "$[]['Record ID']"},
+                {"path": "$[]['Model Year']"},
+                {"path": "$[]['Make']"},
+                {"path": "$[]['Model']"},
+            ],
+         "row-groups": [
+             {"path": "$"},
+            ]
+        }
+    ]
+}

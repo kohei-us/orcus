@@ -144,7 +144,7 @@ public:
 
     const node* get_link(const pstring& path) const;
 
-    void start_range(const cell_position_t& pos);
+    void start_range(const cell_position_t& pos, bool row_header);
     void append_field_link(const pstring& path);
     void set_range_row_group(const pstring& path);
     void commit_range();
@@ -184,6 +184,7 @@ private:
         cell_position_t pos;
         std::vector<pstring> field_paths;
         std::vector<pstring> row_groups;
+        bool row_header;
 
     } m_current_range;
 };

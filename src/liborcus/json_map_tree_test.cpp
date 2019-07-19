@@ -83,7 +83,7 @@ void test_link_range_fields()
 
     cell_position_t pos("sheet", 1, 2);
 
-    tree.start_range(pos);
+    tree.start_range(pos, false);
     tree.append_field_link("$[][0]");
     tree.append_field_link("$[][1]");
     tree.append_field_link("$[][2]");

@@ -38,7 +38,9 @@ public:
 
     void set_cell_link(const pstring& path, const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col);
 
-    void start_range(const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col);
+    void start_range(
+        const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col, bool row_header);
+
     void append_field_link(const pstring& path);
     void set_range_row_group(const pstring& path);
     void commit_range();

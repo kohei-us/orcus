@@ -399,11 +399,12 @@ const json_map_tree::node* json_map_tree::get_link(const pstring& path) const
     return get_destination_node(path);
 }
 
-void json_map_tree::start_range(const cell_position_t& pos)
+void json_map_tree::start_range(const cell_position_t& pos, bool row_header)
 {
     m_current_range.pos = pos;
     m_current_range.field_paths.clear();
     m_current_range.row_groups.clear();
+    m_current_range.row_header = row_header;
 }
 
 void json_map_tree::append_field_link(const pstring& path)
@@ -419,6 +420,7 @@ void json_map_tree::set_range_row_group(const pstring& path)
 void json_map_tree::commit_range()
 {
     range_reference_type* ref = &get_range_reference(m_current_range.pos);
+    ref->row_header = m_current_range.row_header;
     spreadsheet::col_t column_pos = 0;
 
     for (const pstring& path : m_current_range.row_groups)
