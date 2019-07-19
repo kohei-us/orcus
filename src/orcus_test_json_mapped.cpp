@@ -27,6 +27,7 @@ namespace {
 const std::vector<const char*> tests =
 {
     SRCDIR"/test/json-mapped/array-of-arrays-basic",
+    SRCDIR"/test/json-mapped/array-of-arrays-header",
     SRCDIR"/test/json-mapped/array-of-objects-basic",
     SRCDIR"/test/json-mapped/array-of-objects-header",
     SRCDIR"/test/json-mapped/nested-repeats",

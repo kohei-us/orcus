@@ -145,7 +145,7 @@ public:
     const node* get_link(const pstring& path) const;
 
     void start_range(const cell_position_t& pos, bool row_header);
-    void append_field_link(const pstring& path);
+    void append_field_link(const pstring& path, const pstring& label);
     void set_range_row_group(const pstring& path);
     void commit_range();
 
@@ -182,7 +182,7 @@ private:
     struct
     {
         cell_position_t pos;
-        std::vector<pstring> field_paths;
+        std::vector<std::pair<pstring, pstring>> fields; // path, label
         std::vector<pstring> row_groups;
         bool row_header;
 

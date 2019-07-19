@@ -402,14 +402,14 @@ const json_map_tree::node* json_map_tree::get_link(const pstring& path) const
 void json_map_tree::start_range(const cell_position_t& pos, bool row_header)
 {
     m_current_range.pos = pos;
-    m_current_range.field_paths.clear();
+    m_current_range.fields.clear();
     m_current_range.row_groups.clear();
     m_current_range.row_header = row_header;
 }
 
-void json_map_tree::append_field_link(const pstring& path)
+void json_map_tree::append_field_link(const pstring& path, const pstring& label)
 {
-    m_current_range.field_paths.push_back(path);
+    m_current_range.fields.emplace_back(path, label);
 }
 
 void json_map_tree::set_range_row_group(const pstring& path)
@@ -434,8 +434,11 @@ void json_map_tree::commit_range()
 
     long unlabeled_field_count = 0;
 
-    for (const pstring& path : m_current_range.field_paths)
+    for (const auto& field : m_current_range.fields)
     {
+        pstring path = field.first;
+        pstring label = field.second;
+
         path_stack_type stack = get_or_create_destination_node(path);
         if (stack.node_stack.empty() || stack.node_stack.back()->type != map_node_type::unknown)
             throw_path_error(__FILE__, __LINE__, path);
@@ -446,7 +449,12 @@ void json_map_tree::commit_range()
         p->value.range_field_ref->column_pos = column_pos++;
         p->value.range_field_ref->ref = ref;
 
-        if (stack.dest_key.empty())
+        if (!label.empty())
+        {
+            // A custom label is specified.  This one takes precedence.
+            p->value.range_field_ref->label = m_str_pool.intern(label).first;
+        }
+        else if (stack.dest_key.empty())
         {
             // This field is probably associated with an array.
             std::ostringstream os;

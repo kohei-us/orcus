@@ -329,9 +329,9 @@ void orcus_json::start_range(const pstring& sheet, spreadsheet::row_t row, sprea
     mp_impl->map_tree.start_range(cell_position_t(sheet, row, col), row_header);
 }
 
-void orcus_json::append_field_link(const pstring& path)
+void orcus_json::append_field_link(const pstring& path, const pstring& label)
 {
-    mp_impl->map_tree.append_field_link(path);
+    mp_impl->map_tree.append_field_link(path, label);
 }
 
 void orcus_json::set_range_row_group(const pstring& path)
@@ -444,7 +444,15 @@ void orcus_json::read_map_definition(const char* p, size_t n)
                 for (const json::const_node& field_node : link_node.child("fields"))
                 {
                     pstring path = field_node.child("path").string_value();
-                    append_field_link(path);
+                    pstring label;
+                    if (field_node.has_key("label"))
+                    {
+                        json::const_node label_node = field_node.child("label");
+                        if (label_node.type() == json::node_t::string)
+                            label = label_node.string_value();
+                    }
+
+                    append_field_link(path, label);
                 }
 
                 for (const json::const_node& rg_node : link_node.child("row-groups"))
