@@ -29,7 +29,13 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
     spreadsheet::import_factory factory(doc);
     orcus_json app(&factory);
 
-    app.read_map_definition(params.map_file.data(), params.map_file.size());
+    if (params.map_file.empty())
+    {
+        std::cerr << __FILE__ << "#" << __LINE__ << " (detail:map_to_sheets_and_dump): TODO: implement auto-mapping." << std::endl;
+    }
+    else
+        app.read_map_definition(params.map_file.data(), params.map_file.size());
+
     app.read_stream(content.data(), content.size());
     doc.dump(params.config->output_format, params.config->output_path);
 }

@@ -166,22 +166,22 @@ void parse_args_for_convert(
 void parse_args_for_map(
     detail::cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
 {
-    if (!vm.count("map"))
+    if (vm.count("map"))
     {
-        cerr << "Path to a map file is required, but is not given." << endl;
-        params.config.reset();
-        return;
-    }
+        fs::path map_path = vm["map"].as<std::string>();
+        if (!fs::is_regular_file(map_path))
+        {
+            cerr << map_path.string() << " is not a valid file." << endl;
+            params.config.reset();
+            return;
+        }
 
-    fs::path map_path = vm["map"].as<std::string>();
-    if (!fs::is_regular_file(map_path))
+        params.map_file.load(map_path.string().data());
+    }
+    else
     {
-        cerr << map_path.string() << " is not a valid file." << endl;
-        params.config.reset();
-        return;
+        // Auto-mapping mode
     }
-
-    params.map_file.load(map_path.string().data());
 
     parse_args_for_convert(params, desc, vm);
 }
