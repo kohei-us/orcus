@@ -7,6 +7,7 @@
 
 #include "orcus_json_cli.hpp"
 #include "orcus/json_document_tree.hpp"
+#include "orcus/json_structure_tree.hpp"
 #include "orcus/config.hpp"
 
 #ifdef __ORCUS_SPREADSHEET_MODEL
@@ -31,6 +32,10 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
 
     if (params.map_file.empty())
     {
+        json::structure_tree structure;
+        structure.parse(content.data(), content.size());
+        json::structure_tree::walker walker = structure.get_walker();
+
         std::cerr << __FILE__ << "#" << __LINE__ << " (detail:map_to_sheets_and_dump): TODO: implement auto-mapping." << std::endl;
     }
     else

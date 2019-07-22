@@ -312,7 +312,26 @@ private:
     }
 };
 
-structure_tree::structure_tree() : mp_impl(std::make_unique<impl>()) {}
+struct structure_tree::walker::impl
+{
+    const structure_tree::impl* parent_impl;
+
+    impl() : parent_impl(nullptr) {}
+
+    impl(const structure_tree::impl* _parent_impl) : parent_impl(_parent_impl)
+    {
+    }
+
+    impl(const structure_tree::walker::impl& other) :
+        parent_impl(other.parent_impl) {}
+};
+
+structure_tree::walker::walker() : mp_impl(orcus::make_unique<impl>()) {}
+structure_tree::walker::walker(const walker& other) : mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
+structure_tree::walker::walker(const structure_tree::impl* parent_impl) : mp_impl(orcus::make_unique<impl>(parent_impl)) {}
+structure_tree::walker::~walker() {}
+
+structure_tree::structure_tree() : mp_impl(orcus::make_unique<impl>()) {}
 structure_tree::~structure_tree() {}
 
 void structure_tree::parse(const char* p, size_t n)
@@ -324,6 +343,11 @@ void structure_tree::parse(const char* p, size_t n)
 void structure_tree::dump_compact(std::ostream& os) const
 {
     mp_impl->dump_compact(os);
+}
+
+structure_tree::walker structure_tree::get_walker() const
+{
+    return walker(mp_impl.get());
 }
 
 }}

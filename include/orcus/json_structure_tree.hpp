@@ -22,6 +22,23 @@ class ORCUS_DLLPUBLIC structure_tree
     std::unique_ptr<impl> mp_impl;
 
 public:
+
+    enum class node_type { unknown, array, object, object_key, value };
+
+    class ORCUS_DLLPUBLIC walker
+    {
+        friend class structure_tree;
+
+        struct impl;
+        std::unique_ptr<impl> mp_impl;
+
+        walker(const structure_tree::impl* parent_impl);
+    public:
+        walker();
+        walker(const walker& other);
+        ~walker();
+    };
+
     structure_tree(const structure_tree&) = delete;
     structure_tree& operator= (const structure_tree&) = delete;
 
@@ -31,6 +48,8 @@ public:
     void parse(const char* p, size_t n);
 
     void dump_compact(std::ostream& os) const;
+
+    walker get_walker() const;
 };
 
 }}
