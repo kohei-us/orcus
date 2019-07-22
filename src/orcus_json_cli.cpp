@@ -168,7 +168,7 @@ void parse_args_for_map(
 {
     if (!vm.count("map"))
     {
-        cerr << "Path to a map file is required, but is not given.";
+        cerr << "Path to a map file is required, but is not given." << endl;
         params.config.reset();
         return;
     }
