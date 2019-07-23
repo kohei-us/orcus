@@ -57,6 +57,8 @@ public:
         size_t child_count() const;
 
         node_properties get_node() const;
+
+        std::string build_path() const;
     };
 
     structure_tree(const structure_tree&) = delete;

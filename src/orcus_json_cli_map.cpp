@@ -17,6 +17,7 @@
 #endif
 
 #include <iostream>
+#include <cassert>
 
 using namespace std;
 
@@ -26,31 +27,49 @@ namespace orcus { namespace detail {
 
 namespace {
 
-void traverse(json::structure_tree::walker& walker)
+class StructureMapper
 {
-    json::structure_tree::node_properties node = walker.get_node();
-    std::cout << __FILE__ << "#" << __LINE__ << " (detail:traverse): " << node.type << std::endl;
+    json::structure_tree::walker m_walker;
+    size_t m_repeat_count;
 
-    switch (node.type)
+public:
+    StructureMapper(const json::structure_tree::walker& walker) :
+        m_walker(walker),
+        m_repeat_count(0) {}
+
+    void run()
     {
-        case json::structure_tree::node_type::array:
-        case json::structure_tree::node_type::object:
-        case json::structure_tree::node_type::object_key:
-        {
-            for (size_t i = 0, n = walker.child_count(); i < n; ++i)
-            {
-                walker.descend(i);
-                traverse(walker);
-                walker.ascend();
-            }
-            break;
-        }
-        case json::structure_tree::node_type::value:
-            break;
-        case json::structure_tree::node_type::unknown:
-            break;
+        m_walker.root();
+        traverse(0);
+
+        assert(!m_repeat_count);
     }
-}
+private:
+    void traverse(size_t pos)
+    {
+        json::structure_tree::node_properties node = m_walker.get_node();
+        std::cout << __FILE__ << "#" << __LINE__ << " (detail:traverse): " << node.type << std::endl;
+
+        if (node.repeat)
+            ++m_repeat_count;
+
+        if (m_repeat_count && node.type == json::structure_tree::node_type::value)
+        {
+            std::cerr << __FILE__ << "#" << __LINE__ << " (StructureMapper:traverse): path = " << m_walker.build_path() << std::endl;
+        }
+
+        for (size_t i = 0, n = m_walker.child_count(); i < n; ++i)
+        {
+            m_walker.descend(i);
+            traverse(i);
+            m_walker.ascend();
+        }
+
+        if (node.repeat)
+            --m_repeat_count;
+    }
+};
+
 
 } // anonymous namespace
 
@@ -65,10 +84,9 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
         json::structure_tree structure;
         structure.parse(content.data(), content.size());
         structure.dump_compact(std::cout);
-        json::structure_tree::walker walker = structure.get_walker();
 
-        walker.root();
-        traverse(walker);
+        StructureMapper mapper(structure.get_walker());
+        mapper.run();
         std::cerr << __FILE__ << "#" << __LINE__ << " (detail:map_to_sheets_and_dump): TODO: implement auto-mapping." << std::endl;
     }
     else

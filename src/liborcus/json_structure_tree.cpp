@@ -408,6 +408,35 @@ structure_tree::node_properties structure_tree::walker::get_node() const
     return to_node_properties(*p);
 }
 
+std::string structure_tree::walker::build_path() const
+{
+    std::ostringstream os;
+    os << '$';
+
+    for (const structure_node* p : mp_impl->stack)
+    {
+        if (p->repeat)
+            os << "(*)";
+
+        if (p->child_count)
+            os << "(" << p->child_count << ")";
+
+        switch (p->type)
+        {
+            case structure_tree::node_type::array:
+                os << "[]";
+                break;
+            case structure_tree::node_type::object_key:
+                os << "['" << p->name << "']";
+                break;
+            default:
+                ;
+        }
+    }
+
+    return os.str();
+}
+
 structure_tree::structure_tree() : mp_impl(orcus::make_unique<impl>()) {}
 structure_tree::~structure_tree() {}
 
