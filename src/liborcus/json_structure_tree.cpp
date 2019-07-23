@@ -22,17 +22,16 @@ namespace {
 struct structure_node;
 
 using node_children_type = std::deque<structure_node>;
+using node_type = structure_tree::node_type;
 
 /**
  * Represents a node inside a JSON structure tree.
  */
 struct structure_node
 {
-    enum node_type { unknown, array, object, object_key, value };
-
     bool repeat = false;
 
-    node_type type = unknown;
+    node_type type = node_type::unknown;
 
     node_children_type children;
 
@@ -47,7 +46,7 @@ struct structure_node
         if (type != other.type)
             return false;
 
-        if (type != object_key)
+        if (type != node_type::object_key)
             return true;
 
         return name == other.name;
@@ -84,13 +83,13 @@ void print_scope(std::ostream& os, const scope& s)
 {
     switch (s.node.type)
     {
-        case structure_node::array:
+        case node_type::array:
             os << "array";
             break;
-        case structure_node::object:
+        case node_type::object:
             os << "object";
             break;
-        case structure_node::object_key:
+        case node_type::object_key:
             os << "['" << s.node.name << "']";
             break;
         default:
@@ -100,7 +99,7 @@ void print_scope(std::ostream& os, const scope& s)
     if (s.node.repeat)
         os << "(*)";
 
-    if (s.node.type == structure_node::array && s.node.child_count)
+    if (s.node.type == node_type::array && s.node.child_count)
         os << '[' << s.node.child_count << ']';
 }
 
@@ -114,12 +113,20 @@ void print_scopes(std::ostream& os, const scope_stack_type& scopes)
 
     for (++it; it != ite; ++it)
     {
-        if (it->node.type != structure_node::object_key)
+        if (it->node.type != node_type::object_key)
             os << '.';
         print_scope(os, *it);
     }
 
     os << std::endl;
+}
+
+structure_tree::node_properties to_node_properties(const structure_node& sn)
+{
+    structure_tree::node_properties np;
+    np.type = sn.type;
+    np.repeat = sn.repeat;
+    return np;
 }
 
 } // anonymous namespace
@@ -139,7 +146,7 @@ struct structure_tree::impl
 
     void begin_array()
     {
-        push_stack(structure_node::array);
+        push_stack(node_type::array);
     }
 
     void end_array()
@@ -149,12 +156,12 @@ struct structure_tree::impl
 
     void begin_object()
     {
-        push_stack(structure_node::object);
+        push_stack(node_type::object);
     }
 
     void object_key(const char* p, size_t len, bool transient)
     {
-        structure_node node(structure_node::object_key);
+        structure_node node(node_type::object_key);
         node.name = pstring(p, len);
 
         if (transient)
@@ -211,7 +218,7 @@ struct structure_tree::impl
             {
                 const structure_node& cur_node = *cur_scope.current_pos;
 
-                if (cur_node.type == structure_node::value)
+                if (cur_node.type == node_type::value)
                 {
                     assert(cur_node.children.empty());
 
@@ -250,10 +257,10 @@ private:
     {
         const structure_node& cur = m_stack.back().node;
 
-        if (cur.type != structure_node::array)
+        if (cur.type != node_type::array)
             return false;
 
-        return node.type == structure_node::array || node.type == structure_node::object;
+        return node.type == node_type::array || node.type == node_type::object;
     }
 
     void push_stack(const structure_node& node)
@@ -261,7 +268,7 @@ private:
         if (!m_root)
         {
             // This is the very first node.
-            assert(node.type != structure_node::object_key);
+            assert(node.type != node_type::object_key);
             m_root = orcus::make_unique<structure_node>(node.type);
             m_stack.emplace_back(*m_root);
             return;
@@ -293,7 +300,7 @@ private:
 
     void push_value()
     {
-        push_stack(structure_node::value);
+        push_stack(node_type::value);
         pop_stack();
     }
 
@@ -306,7 +313,7 @@ private:
 
         m_stack.pop_back();
 
-        if (!m_stack.empty() && get_current_scope().node.type == structure_node::object_key)
+        if (!m_stack.empty() && get_current_scope().node.type == node_type::object_key)
             // Object key is a special non-leaf node that can only have one child.
             m_stack.pop_back();
     }
@@ -314,22 +321,92 @@ private:
 
 struct structure_tree::walker::impl
 {
+    using stack_type = std::vector<const structure_node*>;
+
     const structure_tree::impl* parent_impl;
+
+    stack_type stack;
 
     impl() : parent_impl(nullptr) {}
 
-    impl(const structure_tree::impl* _parent_impl) : parent_impl(_parent_impl)
-    {
-    }
+    impl(const structure_tree::impl* _parent_impl) : parent_impl(_parent_impl) {}
 
     impl(const structure_tree::walker::impl& other) :
         parent_impl(other.parent_impl) {}
+
+    void check_tree()
+    {
+        if (!parent_impl)
+            throw json_structure_error(
+                "This walker is not associated with any json_structure_tree instance.");
+
+        if (!parent_impl->m_root)
+            throw json_structure_error("Empty tree.");
+    }
 };
 
 structure_tree::walker::walker() : mp_impl(orcus::make_unique<impl>()) {}
 structure_tree::walker::walker(const walker& other) : mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
 structure_tree::walker::walker(const structure_tree::impl* parent_impl) : mp_impl(orcus::make_unique<impl>(parent_impl)) {}
 structure_tree::walker::~walker() {}
+
+void structure_tree::walker::root()
+{
+    mp_impl->check_tree();
+
+    mp_impl->stack.clear();
+    mp_impl->stack.push_back(mp_impl->parent_impl->m_root.get());
+}
+
+void structure_tree::walker::descend(size_t child_pos)
+{
+    mp_impl->check_tree();
+    assert(!mp_impl->stack.empty());
+
+    const structure_node* p = mp_impl->stack.back();
+    assert(p);
+
+    if (child_pos >= p->children.size())
+    {
+        std::ostringstream os;
+        os << "Specified child position of " << child_pos << " exceeds the child count of " << p->children.size() << '.';
+        throw json_structure_error(os.str());
+    }
+
+    p = &p->children[child_pos];
+    assert(p);
+    mp_impl->stack.push_back(p);
+}
+
+void structure_tree::walker::ascend()
+{
+    mp_impl->check_tree();
+    assert(!mp_impl->stack.empty());
+
+    if (mp_impl->stack.size() == 1u)
+        throw json_structure_error("You cannot ascend from the root node.");
+
+    mp_impl->stack.pop_back();
+}
+
+size_t structure_tree::walker::child_count() const
+{
+    mp_impl->check_tree();
+    assert(!mp_impl->stack.empty());
+
+    const structure_node* p = mp_impl->stack.back();
+    return p->children.size();
+}
+
+structure_tree::node_properties structure_tree::walker::get_node() const
+{
+    mp_impl->check_tree();
+    assert(!mp_impl->stack.empty());
+
+    const structure_node* p = mp_impl->stack.back();
+    assert(p);
+    return to_node_properties(*p);
+}
 
 structure_tree::structure_tree() : mp_impl(orcus::make_unique<impl>()) {}
 structure_tree::~structure_tree() {}
@@ -348,6 +425,31 @@ void structure_tree::dump_compact(std::ostream& os) const
 structure_tree::walker structure_tree::get_walker() const
 {
     return walker(mp_impl.get());
+}
+
+std::ostream& operator<< (std::ostream& os, structure_tree::node_type nt)
+{
+
+    switch (nt)
+    {
+        case structure_tree::node_type::array:
+            os << "structure_tree::node_type::array";
+            break;
+        case structure_tree::node_type::object:
+            os << "structure_tree::node_type::object";
+            break;
+        case structure_tree::node_type::object_key:
+            os << "structure_tree::node_type::object_key";
+            break;
+        case structure_tree::node_type::unknown:
+            os << "structure_tree::node_type::unknown";
+            break;
+        case structure_tree::node_type::value:
+            os << "structure_tree::node_type::value";
+            break;
+    }
+
+    return os;
 }
 
 }}

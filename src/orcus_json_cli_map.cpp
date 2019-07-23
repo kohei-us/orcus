@@ -24,6 +24,36 @@ namespace orcus { namespace detail {
 
 #ifdef __ORCUS_SPREADSHEET_MODEL
 
+namespace {
+
+void traverse(json::structure_tree::walker& walker)
+{
+    json::structure_tree::node_properties node = walker.get_node();
+    std::cout << __FILE__ << "#" << __LINE__ << " (detail:traverse): " << node.type << std::endl;
+
+    switch (node.type)
+    {
+        case json::structure_tree::node_type::array:
+        case json::structure_tree::node_type::object:
+        case json::structure_tree::node_type::object_key:
+        {
+            for (size_t i = 0, n = walker.child_count(); i < n; ++i)
+            {
+                walker.descend(i);
+                traverse(walker);
+                walker.ascend();
+            }
+            break;
+        }
+        case json::structure_tree::node_type::value:
+            break;
+        case json::structure_tree::node_type::unknown:
+            break;
+    }
+}
+
+} // anonymous namespace
+
 void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
 {
     spreadsheet::document doc;
@@ -34,8 +64,11 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
     {
         json::structure_tree structure;
         structure.parse(content.data(), content.size());
+        structure.dump_compact(std::cout);
         json::structure_tree::walker walker = structure.get_walker();
 
+        walker.root();
+        traverse(walker);
         std::cerr << __FILE__ << "#" << __LINE__ << " (detail:map_to_sheets_and_dump): TODO: implement auto-mapping." << std::endl;
     }
     else

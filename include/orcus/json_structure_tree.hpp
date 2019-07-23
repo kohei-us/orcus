@@ -25,6 +25,12 @@ public:
 
     enum class node_type { unknown, array, object, object_key, value };
 
+    struct node_properties
+    {
+        node_type type;
+        bool repeat;
+    };
+
     class ORCUS_DLLPUBLIC walker
     {
         friend class structure_tree;
@@ -37,6 +43,20 @@ public:
         walker();
         walker(const walker& other);
         ~walker();
+
+        /**
+         * Set the current position to the root node, and return its
+         * properties.
+         */
+        void root();
+
+        void descend(size_t child_pos);
+
+        void ascend();
+
+        size_t child_count() const;
+
+        node_properties get_node() const;
     };
 
     structure_tree(const structure_tree&) = delete;
@@ -51,6 +71,8 @@ public:
 
     walker get_walker() const;
 };
+
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, structure_tree::node_type nt);
 
 }}
 
