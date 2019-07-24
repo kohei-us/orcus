@@ -613,7 +613,7 @@ std::string structure_tree::walker::build_path_to_parent() const
     os << '$';
 
     auto it = mp_impl->stack.cbegin(), ite = mp_impl->stack.cend();
-    --ite; // skip the current node.
+    ite -= 2; // jump to the parent node, and we don't include the last node in the path output.
 
     for (; it != ite; ++it)
     {
