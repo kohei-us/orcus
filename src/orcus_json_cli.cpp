@@ -350,6 +350,7 @@ int main(int argc, char** argv)
             {
                 json::structure_tree tree;
                 tree.parse(content.data(), content.size());
+                tree.normalize_tree();
                 tree.dump_compact(params.get_output_stream());
                 break;
             }

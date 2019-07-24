@@ -1,6 +1,6 @@
-$array[3].object(*)['name']
-$array[3].object(*)['age']
-$array[3].object(*)['props'].object['alpha']
-$array[3].object(*)['props'].object['beta']
-$array[3].object(*)['props'].object['gamma']
-$array[3].object(*)['props'].object['theta']
+$array[3].object(*)['age'].value
+$array[3].object(*)['name'].value
+$array[3].object(*)['props'].object['alpha'].value
+$array[3].object(*)['props'].object['beta'].value
+$array[3].object(*)['props'].object['gamma'].value
+$array[3].object(*)['props'].object['theta'].value

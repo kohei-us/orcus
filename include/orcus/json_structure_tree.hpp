@@ -23,7 +23,7 @@ class ORCUS_DLLPUBLIC structure_tree
 
 public:
 
-    enum class node_type { unknown, array, object, object_key, value };
+    enum class node_type : short { unknown = 0, array = 1, object = 2, object_key = 3, value = 4 };
 
     struct node_properties
     {
@@ -68,6 +68,8 @@ public:
     ~structure_tree();
 
     void parse(const char* p, size_t n);
+
+    void normalize_tree();
 
     void dump_compact(std::ostream& os) const;
 

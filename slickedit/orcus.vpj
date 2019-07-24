@@ -314,6 +314,7 @@
                 <F N="../src/liborcus/json_map_tree.hpp"/>
                 <F N="../src/liborcus/json_map_tree_test.cpp"/>
                 <F N="../src/liborcus/json_structure_tree.cpp"/>
+                <F N="../src/liborcus/json_structure_tree_test.cpp"/>
                 <F N="../src/liborcus/json_util.cpp"/>
                 <F N="../src/liborcus/json_util.hpp"/>
                 <F N="../src/liborcus/measurement.cpp"/>

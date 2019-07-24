@@ -1,2 +1,2 @@
-$array[4].object(*)['name']
-$array[4].object(*)['age']
+$array[4].object(*)['age'].value
+$array[4].object(*)['name'].value

@@ -1,4 +1,4 @@
-$object['rows'].array[4].object(*)['name']
-$object['rows'].array[4].object(*)['age']
-$object['rows'].array[4].object(*)['error']
-$object['footnotes']
+$object['footnotes'].value
+$object['rows'].array[4].object(*)['age'].value
+$object['rows'].array[4].object(*)['error'].value
+$object['rows'].array[4].object(*)['name'].value

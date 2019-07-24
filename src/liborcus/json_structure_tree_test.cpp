@@ -46,7 +46,7 @@ void test_no_value_nodes()
         file_content strm(p.string().data());
         json::structure_tree tree;
         tree.parse(strm.data(), strm.size());
-
+        tree.normalize_tree();
         std::ostringstream os;
         tree.dump_compact(os);
 
@@ -65,6 +65,7 @@ void test_basic()
         assert(!strm.empty());
         json::structure_tree tree;
         tree.parse(strm.data(), strm.size());
+        tree.normalize_tree();
         std::ostringstream os;
         tree.dump_compact(os);
         std::string data_content = os.str();

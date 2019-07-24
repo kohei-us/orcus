@@ -14,6 +14,8 @@
 #include <deque>
 #include <memory>
 #include <algorithm>
+#include <map>
+#include <functional>
 
 namespace orcus { namespace json {
 
@@ -23,6 +25,24 @@ struct structure_node;
 
 using node_children_type = std::deque<structure_node>;
 using node_type = structure_tree::node_type;
+using array_positions_type = std::map<int32_t, bool>;
+
+/**
+ * Only pick those array positions that are marked "valid" - the associated
+ * boolean value is true.
+ */
+std::vector<int32_t> to_valid_array_positions(const array_positions_type& array_positions)
+{
+    std::vector<int32_t> aps;
+
+    for (const auto& e : array_positions)
+    {
+        if (e.second)
+            aps.push_back(e.first);
+    }
+
+    return aps;
+}
 
 /**
  * Represents a node inside a JSON structure tree.
@@ -35,9 +55,11 @@ struct structure_node
 
     node_children_type children;
 
-    uint32_t child_count = 0;
+    int32_t child_count = 0;
 
     pstring name;
+
+    array_positions_type array_positions;
 
     structure_node(node_type _type) : type(_type) {}
 
@@ -51,13 +73,24 @@ struct structure_node
 
         return name == other.name;
     }
+
+    bool operator< (const structure_node& other) const
+    {
+        if (type != other.type)
+            return type < other.type;
+
+        if (name != other.name)
+            return name < other.name;
+
+        return true;
+    }
 };
 
 struct parse_scope
 {
     structure_node& node;
 
-    uint32_t child_count = 0;
+    int32_t child_count = 0;
 
     parse_scope(structure_node& _node) : node(_node) {}
 };
@@ -117,8 +150,6 @@ void print_scopes(std::ostream& os, const scope_stack_type& scopes)
             os << '.';
         print_scope(os, *it);
     }
-
-    os << std::endl;
 }
 
 structure_tree::node_properties to_node_properties(const structure_node& sn)
@@ -200,6 +231,26 @@ struct structure_tree::impl
         push_value();
     }
 
+    void normalize_tree()
+    {
+        if (!m_root)
+            return;
+
+        std::function<void(structure_node&)> descend = [&descend](structure_node& node)
+        {
+            if (node.children.empty())
+                return;
+
+            // Sort all children.
+            std::sort(node.children.begin(), node.children.end());
+
+            for (auto& child : node.children)
+                descend(child);
+        };
+
+        descend(*m_root);
+    }
+
     void dump_compact(std::ostream& os) const
     {
         if (!m_root)
@@ -224,6 +275,24 @@ struct structure_tree::impl
 
                     // Print all its parent scopes.
                     print_scopes(os, scopes);
+
+                    // Print the value node at the end.
+                    os << ".value";
+
+                    // Print array positions if applicable.
+                    std::vector<int32_t> aps = to_valid_array_positions(cur_node.array_positions);
+
+                    if (!aps.empty())
+                    {
+                        os << '[';
+                        auto it = aps.cbegin();
+                        os << *it;
+                        for (++it; it != aps.cend(); ++it)
+                            os << ',' << *it;
+                        os << ']';
+                    }
+
+                    os << std::endl;
                     continue;
                 }
 
@@ -274,27 +343,78 @@ private:
             return;
         }
 
-        // See if the current node has a child node of the specified type.
         parse_scope& cur_scope = get_current_scope();
-        ++cur_scope.child_count;
-
         structure_node& cur_node = cur_scope.node;
 
-        auto it = std::find(cur_node.children.begin(), cur_node.children.end(), node);
+        // Record the position of this new child in case the parent is an
+        // array and the new node is a value node.
 
-        if (it == cur_node.children.end())
+        int32_t array_pos = -1;
+
+        if (cur_node.type == node_type::array)
         {
-            // current node doesn't have a child of specified type.  Add one.
-            cur_node.children.emplace_back(node);
-            m_stack.emplace_back(cur_node.children.back());
+            array_pos = cur_scope.child_count;
+
+            if (node.type != node_type::value)
+            {
+                // See if this array has a child value node.
+                auto it = std::find_if(
+                    cur_node.children.begin(), cur_node.children.end(),
+                    [](const structure_node& n) -> bool { return n.type == node_type::value; }
+                );
+
+                if (it != cur_node.children.end())
+                {
+                    // It has a child value node.  See if this value node has
+                    // this array position recorded.  If yes, turn it off
+                    // since this position is not always a value.
+                    array_positions_type& aps = it->array_positions;
+                    auto it_array_pos = aps.find(array_pos);
+                    if (it_array_pos != aps.end())
+                        it_array_pos->second = false;
+                }
+
+                array_pos = -1;
+            }
         }
-        else
+
+        ++cur_scope.child_count;
+
         {
-            // current node does have a child of specified type.
-            bool repeat = is_node_repeatable(node);
-            structure_node& child = *it;
-            child.repeat = repeat;
-            m_stack.emplace_back(child);
+            // See if the current node has a child node of the specified type.
+            auto it = std::find(cur_node.children.begin(), cur_node.children.end(), node);
+
+            if (it == cur_node.children.end())
+            {
+                // current node doesn't have a child of specified type.  Add one.
+                cur_node.children.emplace_back(node);
+                m_stack.emplace_back(cur_node.children.back());
+            }
+            else
+            {
+                // current node does have a child of specified type.
+                bool repeat = is_node_repeatable(node);
+                structure_node& child = *it;
+                child.repeat = repeat;
+                m_stack.emplace_back(child);
+            }
+        }
+
+        if (array_pos >= 0)
+        {
+            array_positions_type& aps = m_stack.back().node.array_positions;
+            int32_t min_pos = aps.empty() ? 0 : aps.begin()->first;
+            if (array_pos >= min_pos)
+            {
+                auto it = aps.lower_bound(array_pos);
+
+                if (it == aps.end() || aps.key_comp()(array_pos, it->first))
+                {
+                    // Insert a new array child node of unspecified type at the specified position.
+                    aps.insert(
+                        it, array_positions_type::value_type(array_pos, true));
+                }
+            }
         }
     }
 
@@ -444,6 +564,11 @@ void structure_tree::parse(const char* p, size_t n)
 {
     json_parser<impl> parser(p, n, *mp_impl);
     parser.parse();
+}
+
+void structure_tree::normalize_tree()
+{
+    mp_impl->normalize_tree();
 }
 
 void structure_tree::dump_compact(std::ostream& os) const
