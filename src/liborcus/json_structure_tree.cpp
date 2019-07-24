@@ -55,10 +55,19 @@ struct structure_node
 
     node_children_type children;
 
+    /**
+     * The number of child nodes in the source data tree, not to be confused
+     * with the number of child nodes in the structure tree.
+     */
     int32_t child_count = 0;
 
-    pstring name;
+    pstring name; //< value of a key for a object key node.
 
+    /**
+     * For a value node that is an immediate child of an array node, these
+     * positions are the positions of the parent array that values always
+     * occur in the source data tree.
+     */
     array_positions_type array_positions;
 
     structure_node(node_type _type) : type(_type) {}
