@@ -592,8 +592,9 @@ std::vector<std::string> structure_tree::walker::build_field_paths() const
                         return ret;
                     }
                 }
-            }
+
                 break;
+            }
             default:
                 ;
         }
