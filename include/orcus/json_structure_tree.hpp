@@ -58,7 +58,9 @@ public:
 
         node_properties get_node() const;
 
-        std::string build_path() const;
+        std::vector<std::string> build_field_paths() const;
+
+        std::string build_path_to_parent() const;
     };
 
     structure_tree(const structure_tree&) = delete;

@@ -51,11 +51,17 @@ private:
         std::cout << __FILE__ << "#" << __LINE__ << " (detail:traverse): " << node.type << std::endl;
 
         if (node.repeat)
+        {
             ++m_repeat_count;
+            std::cout << __FILE__ << ":" << __LINE__ << " (structure_mapper:traverse): group = " << m_walker.build_path_to_parent() << std::endl;
+        }
 
         if (m_repeat_count && node.type == json::structure_tree::node_type::value)
         {
-            std::cerr << __FILE__ << "#" << __LINE__ << " (StructureMapper:traverse): path = " << m_walker.build_path() << std::endl;
+            for (const std::string& path : m_walker.build_field_paths())
+            {
+                std::cout << __FILE__ << "#" << __LINE__ << " (StructureMapper:traverse): path = " << path << std::endl;
+            }
         }
 
         for (size_t i = 0, n = m_walker.child_count(); i < n; ++i)

@@ -472,6 +472,15 @@ struct structure_tree::walker::impl
         if (!parent_impl->m_root)
             throw json_structure_error("Empty tree.");
     }
+
+    void check_stack()
+    {
+        check_tree();
+
+        if (stack.empty())
+            throw json_structure_error(
+                "Walker stack is empty. Most likely caused by not calling root() to start the traversal.");
+    }
 };
 
 structure_tree::walker::walker() : mp_impl(orcus::make_unique<impl>()) {}
@@ -489,7 +498,7 @@ void structure_tree::walker::root()
 
 void structure_tree::walker::descend(size_t child_pos)
 {
-    mp_impl->check_tree();
+    mp_impl->check_stack();
     assert(!mp_impl->stack.empty());
 
     const structure_node* p = mp_impl->stack.back();
@@ -509,7 +518,7 @@ void structure_tree::walker::descend(size_t child_pos)
 
 void structure_tree::walker::ascend()
 {
-    mp_impl->check_tree();
+    mp_impl->check_stack();
     assert(!mp_impl->stack.empty());
 
     if (mp_impl->stack.size() == 1u)
@@ -520,7 +529,7 @@ void structure_tree::walker::ascend()
 
 size_t structure_tree::walker::child_count() const
 {
-    mp_impl->check_tree();
+    mp_impl->check_stack();
     assert(!mp_impl->stack.empty());
 
     const structure_node* p = mp_impl->stack.back();
@@ -529,7 +538,7 @@ size_t structure_tree::walker::child_count() const
 
 structure_tree::node_properties structure_tree::walker::get_node() const
 {
-    mp_impl->check_tree();
+    mp_impl->check_stack();
     assert(!mp_impl->stack.empty());
 
     const structure_node* p = mp_impl->stack.back();
@@ -537,18 +546,79 @@ structure_tree::node_properties structure_tree::walker::get_node() const
     return to_node_properties(*p);
 }
 
-std::string structure_tree::walker::build_path() const
+std::vector<std::string> structure_tree::walker::build_field_paths() const
 {
+    mp_impl->check_stack();
+    assert(!mp_impl->stack.empty());
+
+    if (mp_impl->stack.empty() || mp_impl->stack.back()->type != node_type::value)
+        throw json_structure_error("You can only build field paths from a value node.");
+
     std::ostringstream os;
     os << '$';
 
-    for (const structure_node* p : mp_impl->stack)
-    {
-        if (p->repeat)
-            os << "(*)";
+    auto it = mp_impl->stack.cbegin(), ite = mp_impl->stack.cend();
+    ++it; // skip the root.
 
-        if (p->child_count)
-            os << "(" << p->child_count << ")";
+    for (; it != ite; ++it)
+    {
+        const structure_node* p = *it;
+
+        switch (p->type)
+        {
+            case structure_tree::node_type::array:
+                os << "[]";
+                break;
+            case structure_tree::node_type::object_key:
+                os << "['" << p->name << "']";
+                break;
+            case structure_tree::node_type::value:
+            {
+                if (!p->array_positions.empty())
+                {
+                    // non-empty array positions implies that the parent is an array.
+                    std::vector<int32_t> aps = to_valid_array_positions(p->array_positions);
+                    if (!aps.empty())
+                    {
+                        std::vector<std::string> ret;
+                        std::string base = os.str();
+                        for (int32_t ap : aps)
+                        {
+                            std::ostringstream path;
+                            path << base << '[' << ap << ']';
+                            ret.push_back(path.str());
+                        }
+
+                        return ret;
+                    }
+                }
+            }
+                break;
+            default:
+                ;
+        }
+    }
+
+    return std::vector<std::string>(1u, os.str());
+}
+
+std::string structure_tree::walker::build_path_to_parent() const
+{
+    mp_impl->check_stack();
+
+    if (mp_impl->stack.size() < 2u)
+        throw json_structure_error("Current node is root - it doesn't have a parent.");
+
+    std::ostringstream os;
+    os << '$';
+
+    auto it = mp_impl->stack.cbegin(), ite = mp_impl->stack.cend();
+    ++it; // skip the root.
+    --ite; // skip the current node.
+
+    for (; it != ite; ++it)
+    {
+        const structure_node* p = *it;
 
         switch (p->type)
         {
