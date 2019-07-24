@@ -27,13 +27,13 @@ namespace orcus { namespace detail {
 
 namespace {
 
-class StructureMapper
+class structure_mapper
 {
     json::structure_tree::walker m_walker;
     size_t m_repeat_count;
 
 public:
-    StructureMapper(const json::structure_tree::walker& walker) :
+    structure_mapper(const json::structure_tree::walker& walker) :
         m_walker(walker),
         m_repeat_count(0) {}
 
@@ -85,7 +85,7 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
         structure.parse(content.data(), content.size());
         structure.dump_compact(std::cout);
 
-        StructureMapper mapper(structure.get_walker());
+        structure_mapper mapper(structure.get_walker());
         mapper.run();
         std::cerr << __FILE__ << "#" << __LINE__ << " (detail:map_to_sheets_and_dump): TODO: implement auto-mapping." << std::endl;
     }
