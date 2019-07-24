@@ -21,6 +21,7 @@ std::vector<const char*> base_dirs = {
     SRCDIR"/test/json-structure/arrays-in-object/",
     SRCDIR"/test/json-structure/nested-arrays/",
     SRCDIR"/test/json-structure/nested-arrays-mixed/",
+    SRCDIR"/test/json-structure/nested-arrays-mixed-2/",
     SRCDIR"/test/json-structure/repeat-objects/",
     SRCDIR"/test/json-structure/repeat-objects-2/",
 };
