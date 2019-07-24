@@ -558,45 +558,44 @@ std::vector<std::string> structure_tree::walker::build_field_paths() const
     os << '$';
 
     auto it = mp_impl->stack.cbegin(), ite = mp_impl->stack.cend();
-    ++it; // skip the root.
 
-    for (; it != ite; ++it)
+    const structure_node* p = nullptr;
+    const structure_node* p_prev = *it;
+
+    for (++it; it != ite; ++it, p_prev = p)
     {
-        const structure_node* p = *it;
+        p = *it;
 
-        switch (p->type)
+        switch (p_prev->type)
         {
             case structure_tree::node_type::array:
-                os << "[]";
+                if (p->type != structure_tree::node_type::value)
+                    os << "[]";
                 break;
             case structure_tree::node_type::object_key:
-                os << "['" << p->name << "']";
+                os << "['" << p_prev->name << "']";
                 break;
-            case structure_tree::node_type::value:
-            {
-                if (!p->array_positions.empty())
-                {
-                    // non-empty array positions implies that the parent is an array.
-                    std::vector<int32_t> aps = to_valid_array_positions(p->array_positions);
-                    if (!aps.empty())
-                    {
-                        std::vector<std::string> ret;
-                        std::string base = os.str();
-                        for (int32_t ap : aps)
-                        {
-                            std::ostringstream path;
-                            path << base << '[' << ap << ']';
-                            ret.push_back(path.str());
-                        }
-
-                        return ret;
-                    }
-                }
-
-                break;
-            }
             default:
                 ;
+        }
+    }
+
+    if (p_prev->type == structure_tree::node_type::value && !p->array_positions.empty())
+    {
+        // non-empty array positions implies that the parent is an array.
+        std::vector<int32_t> aps = to_valid_array_positions(p->array_positions);
+        if (!aps.empty())
+        {
+            std::vector<std::string> ret;
+            std::string base = os.str();
+            for (int32_t ap : aps)
+            {
+                std::ostringstream path;
+                path << base << '[' << ap << ']';
+                ret.push_back(path.str());
+            }
+
+            return ret;
         }
     }
 
@@ -614,7 +613,6 @@ std::string structure_tree::walker::build_path_to_parent() const
     os << '$';
 
     auto it = mp_impl->stack.cbegin(), ite = mp_impl->stack.cend();
-    ++it; // skip the root.
     --ite; // skip the current node.
 
     for (; it != ite; ++it)
