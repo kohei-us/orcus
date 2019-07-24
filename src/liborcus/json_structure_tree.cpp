@@ -552,7 +552,7 @@ std::vector<std::string> structure_tree::walker::build_field_paths() const
     assert(!mp_impl->stack.empty());
 
     if (mp_impl->stack.empty() || mp_impl->stack.back()->type != node_type::value)
-        throw json_structure_error("You can only build field paths from a value node.");
+        throw json_structure_error("You can only build field paths to value node.");
 
     std::ostringstream os;
     os << '$';
