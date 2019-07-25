@@ -20,6 +20,7 @@
 #include <cassert>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
@@ -35,6 +36,8 @@ class structure_mapper
 
     json::structure_tree::walker m_walker;
     size_t m_repeat_count;
+    size_t m_range_count;
+    std::string m_sheet_name_prefix;
 
     struct
     {
@@ -55,11 +58,16 @@ class structure_mapper
 
     } m_current_range;
 
+    bool m_sort_before_push;
+
 public:
     structure_mapper(orcus_json& app, const json::structure_tree::walker& walker) :
         m_app(app),
         m_walker(walker),
-        m_repeat_count(0) {}
+        m_repeat_count(0),
+        m_range_count(0),
+        m_sheet_name_prefix("range-"),
+        m_sort_before_push(false) {}
 
     void run()
     {
@@ -78,18 +86,28 @@ private:
 
     void push_range()
     {
-        std::cout << __FILE__ << "#" << __LINE__ << " (structure_mapper:push_range): --" << std::endl;
-        m_current_range.sort();
+        if (m_sort_before_push)
+            m_current_range.sort();
+
+        // Build sheet name first and insert a new sheet.
+        std::ostringstream os_sheet_name;
+        os_sheet_name << m_sheet_name_prefix << m_range_count;
+        std::string sheet_name = os_sheet_name.str();
+        m_app.append_sheet(sheet_name);
+
+        // Push the linked range.
+        m_app.start_range(sheet_name, 0, 0, true);
 
         for (const std::string& s : m_current_range.paths)
-            std::cout << __FILE__ << "#" << __LINE__ << " (structure_mapper:push_range): path = " << s << std::endl;
+            m_app.append_field_link(s, pstring());
 
         for (const std::string& s : m_current_range.row_groups)
-            std::cout << __FILE__ << "#" << __LINE__ << " (structure_mapper:push_range): row group = " << s << std::endl;
+            m_app.set_range_row_group(s);
 
-        // TODO : push this range to the app as a linked range.
+        m_app.commit_range();
 
         m_current_range.clear();
+        ++m_range_count;
     }
 
     void traverse(size_t pos)
@@ -135,13 +153,13 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
 
     if (params.map_file.empty())
     {
+        // Automatic mapping of JSON to table.
         json::structure_tree structure;
         structure.parse(content.data(), content.size());
         structure.dump_compact(std::cout);
 
         structure_mapper mapper(app, structure.get_walker());
         mapper.run();
-        std::cerr << __FILE__ << "#" << __LINE__ << " (detail:map_to_sheets_and_dump): TODO: implement auto-mapping." << std::endl;
     }
     else
         app.read_map_definition(params.map_file.data(), params.map_file.size());
