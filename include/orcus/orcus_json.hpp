@@ -58,6 +58,15 @@ public:
      * @param n size of the buffer.
      */
     void read_map_definition(const char* p, size_t n);
+
+    /**
+     * Read a JSON string, and detect and define mapping rules for one or more
+     * ranges.
+     *
+     * @param p pointer to the in-memory buffer that contains the JSON string.
+     * @param n size of the buffer.
+     */
+    void detect_map_definition(const char* p, size_t n);
 };
 
 }
