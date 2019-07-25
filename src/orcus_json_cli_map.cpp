@@ -18,6 +18,8 @@
 
 #include <iostream>
 #include <cassert>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -29,39 +31,81 @@ namespace {
 
 class structure_mapper
 {
+    orcus_json& m_app;
+
     json::structure_tree::walker m_walker;
     size_t m_repeat_count;
 
+    struct
+    {
+        std::vector<std::string> paths;
+        std::vector<std::string> row_groups;
+
+        void sort()
+        {
+            std::sort(paths.begin(), paths.end());
+            std::sort(row_groups.begin(), row_groups.end());
+        }
+
+        void clear()
+        {
+            paths.clear();
+            row_groups.clear();
+        }
+
+    } m_current_range;
+
 public:
-    structure_mapper(const json::structure_tree::walker& walker) :
+    structure_mapper(orcus_json& app, const json::structure_tree::walker& walker) :
+        m_app(app),
         m_walker(walker),
         m_repeat_count(0) {}
 
     void run()
     {
-        m_walker.root();
+        reset();
         traverse(0);
-
-        assert(!m_repeat_count);
     }
+
 private:
+
+    void reset()
+    {
+        m_walker.root();
+        m_current_range.clear();
+        m_repeat_count = 0;
+    }
+
+    void push_range()
+    {
+        std::cout << __FILE__ << "#" << __LINE__ << " (structure_mapper:push_range): --" << std::endl;
+        m_current_range.sort();
+
+        for (const std::string& s : m_current_range.paths)
+            std::cout << __FILE__ << "#" << __LINE__ << " (structure_mapper:push_range): path = " << s << std::endl;
+
+        for (const std::string& s : m_current_range.row_groups)
+            std::cout << __FILE__ << "#" << __LINE__ << " (structure_mapper:push_range): row group = " << s << std::endl;
+
+        // TODO : push this range to the app as a linked range.
+
+        m_current_range.clear();
+    }
+
     void traverse(size_t pos)
     {
         json::structure_tree::node_properties node = m_walker.get_node();
-        std::cout << __FILE__ << "#" << __LINE__ << " (detail:traverse): " << node.type << std::endl;
 
         if (node.repeat)
         {
             ++m_repeat_count;
-            std::cout << __FILE__ << ":" << __LINE__ << " (structure_mapper:traverse): group = " << m_walker.build_path_to_parent() << std::endl;
+            m_current_range.row_groups.push_back(m_walker.build_path_to_parent());
         }
 
         if (m_repeat_count && node.type == json::structure_tree::node_type::value)
         {
-            for (const std::string& path : m_walker.build_field_paths())
-            {
-                std::cout << __FILE__ << "#" << __LINE__ << " (StructureMapper:traverse): path = " << path << std::endl;
-            }
+            for (std::string path : m_walker.build_field_paths())
+                m_current_range.paths.push_back(std::move(path));
         }
 
         for (size_t i = 0, n = m_walker.child_count(); i < n; ++i)
@@ -72,10 +116,14 @@ private:
         }
 
         if (node.repeat)
+        {
             --m_repeat_count;
+
+            if (!m_repeat_count)
+                push_range();
+        }
     }
 };
-
 
 } // anonymous namespace
 
@@ -91,7 +139,7 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
         structure.parse(content.data(), content.size());
         structure.dump_compact(std::cout);
 
-        structure_mapper mapper(structure.get_walker());
+        structure_mapper mapper(app, structure.get_walker());
         mapper.run();
         std::cerr << __FILE__ << "#" << __LINE__ << " (detail:map_to_sheets_and_dump): TODO: implement auto-mapping." << std::endl;
     }
