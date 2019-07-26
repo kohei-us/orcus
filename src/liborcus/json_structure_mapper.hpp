@@ -27,28 +27,21 @@ public:
 
     using range_handler_type = std::function<void(range_type&)>;
 
-private:
-    json::structure_tree::walker m_walker;
-    size_t m_repeat_count;
-    size_t m_range_count;
-    std::string m_sheet_name_prefix;
-
-    range_type m_current_range;
-
-    bool m_sort_before_push;
-
-    range_handler_type m_range_handler;
-
-public:
     structure_mapper(range_handler_type rh, const json::structure_tree::walker& walker);
 
     void run();
 
 private:
-
     void reset();
     void push_range();
     void traverse(size_t pos);
+
+private:
+    json::structure_tree::walker m_walker;
+    size_t m_repeat_count;
+    range_type m_current_range;
+    range_handler_type m_range_handler;
+
 };
 
 }}}

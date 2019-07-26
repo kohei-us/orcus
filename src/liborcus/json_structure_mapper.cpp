@@ -27,9 +27,6 @@ void structure_mapper::range_type::clear()
 structure_mapper::structure_mapper(range_handler_type rh, const json::structure_tree::walker& walker) :
     m_walker(walker),
     m_repeat_count(0),
-    m_range_count(0),
-    m_sheet_name_prefix("range-"),
-    m_sort_before_push(false),
     m_range_handler(std::move(rh)) {}
 
 void structure_mapper::run()
