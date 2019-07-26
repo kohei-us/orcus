@@ -330,6 +330,29 @@ void build_doc_and_dump(const orcus::file_content& content, detail::cmd_params& 
     }
 }
 
+void parse_and_write_map_file(const orcus::file_content& content, detail::cmd_params& params)
+{
+    std::vector<json::table_range_t> ranges;
+
+    json::structure_tree::range_handler_type rh = [&ranges](json::table_range_t&& range)
+    {
+        ranges.push_back(std::move(range));
+    };
+
+    json::structure_tree tree;
+    tree.parse(content.data(), content.size());
+
+    tree.process_ranges(rh);
+
+    json::document_tree map_doc = {
+        {"sheets", json::array()},
+        {"ranges", json::array()}
+    };
+
+    std::ostream& os = params.get_output_stream();
+    os << map_doc.dump();
+}
+
 } // anonymous namespace
 
 int main(int argc, char** argv)
@@ -363,9 +386,7 @@ int main(int argc, char** argv)
             }
             case detail::mode_t::map_gen:
             {
-                json::structure_tree tree;
-                tree.parse(content.data(), content.size());
-
+                parse_and_write_map_file(content, params);
                 break;
             }
             case detail::mode_t::convert:

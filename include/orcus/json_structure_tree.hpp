@@ -89,7 +89,7 @@ public:
 
     walker get_walker() const;
 
-    using range_handler_type = std::function<void(const table_range_t&)>;
+    using range_handler_type = std::function<void(table_range_t&&)>;
 
     void process_ranges(range_handler_type rh) const;
 };

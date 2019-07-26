@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <cassert>
 
 namespace orcus { namespace json { namespace detail {
 
@@ -33,9 +34,10 @@ void structure_mapper::reset()
 
 void structure_mapper::push_range()
 {
-    m_range_handler(m_current_range);
-    m_current_range.paths.clear();
-    m_current_range.row_groups.clear();
+    m_range_handler(std::move(m_current_range));
+
+    assert(m_current_range.paths.empty());
+    assert(m_current_range.row_groups.empty());
 }
 
 void structure_mapper::traverse(size_t pos)
