@@ -79,6 +79,7 @@ const std::vector<map_type::entry> entries =
 {
     { ORCUS_ASCII("convert"),   detail::mode_t::convert   },
     { ORCUS_ASCII("map"),       detail::mode_t::map       },
+    { ORCUS_ASCII("map-gen"),   detail::mode_t::map_gen   },
     { ORCUS_ASCII("structure"), detail::mode_t::structure },
 };
 
@@ -272,8 +273,9 @@ detail::cmd_params parse_json_args(int argc, char** argv)
 
     switch (params.mode)
     {
+        case detail::mode_t::map_gen:
         case detail::mode_t::structure:
-            // Structure mode only needs input and output parameters.
+            // Structure and map-gen modes only need input and output parameters.
             break;
         case detail::mode_t::convert:
             parse_args_for_convert(params, desc, vm);
@@ -357,6 +359,14 @@ int main(int argc, char** argv)
             case detail::mode_t::map:
             {
                 map_to_sheets_and_dump(content, params);
+                break;
+            }
+            case detail::mode_t::map_gen:
+            {
+                json::structure_tree tree;
+                tree.parse(content.data(), content.size());
+
+                throw std::runtime_error("WIP");
                 break;
             }
             case detail::mode_t::convert:

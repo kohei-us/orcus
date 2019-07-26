@@ -71,6 +71,10 @@ public:
 
     void parse(const char* p, size_t n);
 
+    /**
+     * For now, normalizing a tree just means sorting child nodes.  We may add
+     * other normalization stuff later.
+     */
     void normalize_tree();
 
     void dump_compact(std::ostream& os) const;
