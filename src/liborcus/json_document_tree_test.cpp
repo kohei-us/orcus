@@ -764,6 +764,25 @@ void test_json_init_root_object_add_child()
     assert(node.child("key2").numeric_value() == 12.34);
 }
 
+void test_json_init_empty_array()
+{
+    json::document_tree doc = json::array();
+    json::node node = doc.get_document_root();
+    assert(node.type() == json::node_t::array);
+
+    doc = {
+        { "key1", json::array({true, false}) },
+        { "key2", json::array() } // empty array
+    };
+
+    node = doc.get_document_root();
+    assert(node.type() == json::node_t::object);
+    node = node["key1"];
+    assert(node.type() == json::node_t::array);
+    node = node.parent()["key2"];
+    assert(node.type() == json::node_t::array);
+}
+
 int main()
 {
     try
@@ -786,6 +805,7 @@ int main()
         test_json_init_list_explicit_array();
         test_json_init_list_explicit_object();
         test_json_init_root_object_add_child();
+        test_json_init_empty_array();
     }
     catch (const orcus::general_error& e)
     {

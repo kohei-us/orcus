@@ -1200,7 +1200,7 @@ json_value* node::to_json_value(document_resource& res) const
         case detail::node_t::array:
         {
             std::vector<json_value*> nodes;
-            bool object = true;
+            bool object = !mp_impl->m_value_array.empty();
             for (const detail::init::node& v2 : mp_impl->m_value_array)
             {
                 json_value* r = v2.to_json_value(res);
