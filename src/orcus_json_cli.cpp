@@ -366,7 +366,6 @@ int main(int argc, char** argv)
                 json::structure_tree tree;
                 tree.parse(content.data(), content.size());
 
-                throw std::runtime_error("WIP");
                 break;
             }
             case detail::mode_t::convert:

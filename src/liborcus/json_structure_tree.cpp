@@ -10,6 +10,8 @@
 #include "orcus/global.hpp"
 #include "orcus/string_pool.hpp"
 
+#include "json_structure_mapper.hpp"
+
 #include <vector>
 #include <deque>
 #include <memory>
@@ -657,6 +659,12 @@ void structure_tree::dump_compact(std::ostream& os) const
 structure_tree::walker structure_tree::get_walker() const
 {
     return walker(mp_impl.get());
+}
+
+void structure_tree::process_ranges(range_handler_type rh) const
+{
+    detail::structure_mapper mapper(rh, get_walker());
+    mapper.run();
 }
 
 std::ostream& operator<< (std::ostream& os, structure_tree::node_type nt)

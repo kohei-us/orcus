@@ -486,7 +486,7 @@ void orcus_json::detect_map_definition(const char* p, size_t n)
     size_t range_count = 0;
     std::string sheet_name_prefix = "range-";
 
-    json::detail::structure_mapper::range_handler_type rh = [&](const json::detail::structure_mapper::range_type& range)
+    json::structure_tree::range_handler_type rh = [&](const json::table_range_t& range)
     {
         // Build sheet name first and insert a new sheet.
         std::ostringstream os_sheet_name;
@@ -511,9 +511,7 @@ void orcus_json::detect_map_definition(const char* p, size_t n)
     json::structure_tree structure;
     structure.parse(p, n);
     structure.dump_compact(std::cout);
-
-    json::detail::structure_mapper mapper(rh, structure.get_walker());
-    mapper.run();
+    structure.process_ranges(rh);
 }
 
 }

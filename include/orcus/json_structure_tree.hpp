@@ -13,8 +13,16 @@
 
 #include <ostream>
 #include <memory>
+#include <vector>
+#include <functional>
 
 namespace orcus { namespace json {
+
+struct ORCUS_DLLPUBLIC table_range_t
+{
+    std::vector<std::string> paths;
+    std::vector<std::string> row_groups;
+};
 
 class ORCUS_DLLPUBLIC structure_tree
 {
@@ -80,6 +88,10 @@ public:
     void dump_compact(std::ostream& os) const;
 
     walker get_walker() const;
+
+    using range_handler_type = std::function<void(const table_range_t&)>;
+
+    void process_ranges(range_handler_type rh) const;
 };
 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, structure_tree::node_type nt);

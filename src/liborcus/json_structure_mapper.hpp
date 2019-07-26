@@ -15,19 +15,7 @@ namespace orcus { namespace json { namespace detail {
 class structure_mapper
 {
 public:
-
-    struct range_type
-    {
-        std::vector<std::string> paths;
-        std::vector<std::string> row_groups;
-
-        void sort();
-        void clear();
-    };
-
-    using range_handler_type = std::function<void(range_type&)>;
-
-    structure_mapper(range_handler_type rh, const json::structure_tree::walker& walker);
+    structure_mapper(json::structure_tree::range_handler_type rh, const json::structure_tree::walker& walker);
 
     void run();
 
@@ -38,9 +26,9 @@ private:
 
 private:
     json::structure_tree::walker m_walker;
+    json::structure_tree::range_handler_type m_range_handler;
     size_t m_repeat_count;
-    range_type m_current_range;
-    range_handler_type m_range_handler;
+    json::table_range_t m_current_range;
 
 };
 

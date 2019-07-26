@@ -12,22 +12,10 @@
 
 namespace orcus { namespace json { namespace detail {
 
-void structure_mapper::range_type::sort()
-{
-    std::sort(paths.begin(), paths.end());
-    std::sort(row_groups.begin(), row_groups.end());
-}
-
-void structure_mapper::range_type::clear()
-{
-    paths.clear();
-    row_groups.clear();
-}
-
-structure_mapper::structure_mapper(range_handler_type rh, const json::structure_tree::walker& walker) :
+structure_mapper::structure_mapper(structure_tree::range_handler_type rh, const json::structure_tree::walker& walker) :
     m_walker(walker),
-    m_repeat_count(0),
-    m_range_handler(std::move(rh)) {}
+    m_range_handler(std::move(rh)),
+    m_repeat_count(0) {}
 
 void structure_mapper::run()
 {
@@ -38,14 +26,16 @@ void structure_mapper::run()
 void structure_mapper::reset()
 {
     m_walker.root();
-    m_current_range.clear();
+    m_current_range.paths.clear();
+    m_current_range.row_groups.clear();
     m_repeat_count = 0;
 }
 
 void structure_mapper::push_range()
 {
     m_range_handler(m_current_range);
-    m_current_range.clear();
+    m_current_range.paths.clear();
+    m_current_range.row_groups.clear();
 }
 
 void structure_mapper::traverse(size_t pos)
