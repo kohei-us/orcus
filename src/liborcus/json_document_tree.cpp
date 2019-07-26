@@ -64,6 +64,11 @@ enum class node_t : int
      * only type, and only to be used in the initializer.
      */
     key_value = 10,
+
+    /**
+     * Implicit array initialized with a {} instead of explicit array().
+     */
+    array_implicit = 11,
 };
 
 }
@@ -1128,7 +1133,7 @@ struct node::impl
     impl(const char* p) : m_type(detail::node_t::string), m_value_string(p) {}
 
     impl(std::initializer_list<detail::init::node> vs) :
-        m_type(detail::node_t::array)
+        m_type(detail::node_t::array_implicit)
     {
         for (const detail::init::node& v : vs)
             m_value_array.push_back(std::move(const_cast<detail::init::node&>(v)));
@@ -1198,6 +1203,21 @@ json_value* node::to_json_value(document_resource& res) const
             break;
         }
         case detail::node_t::array:
+        {
+            std::vector<json_value*> nodes;
+            for (const detail::init::node& v2 : mp_impl->m_value_array)
+            {
+                json_value* r = v2.to_json_value(res);
+                nodes.push_back(r);
+            }
+
+            jv = aggregate_nodes(res, std::move(nodes), false);
+#ifndef NDEBUG
+            verify_parent_pointers(jv, false);
+#endif
+            break;
+        }
+        case detail::node_t::array_implicit:
         {
             std::vector<json_value*> nodes;
             bool object = !mp_impl->m_value_array.empty();
@@ -1277,7 +1297,7 @@ void node::store_to_node(document_resource& res, json_value* parent) const
             parent->value.object = res.obj_pool_jvo.construct();
             break;
         }
-        case detail::node_t::array:
+        case detail::node_t::array_implicit:
         {
             std::vector<json_value*> nodes;
             bool object = true;
@@ -1295,8 +1315,23 @@ void node::store_to_node(document_resource& res, json_value* parent) const
                 aggregate_nodes_to_object(res, std::move(nodes), parent);
             }
             else
+            {
+                parent->type = detail::node_t::array;
                 aggregate_nodes_to_array(res, std::move(nodes), parent);
+            }
 
+            break;
+        }
+        case detail::node_t::array:
+        {
+            std::vector<json_value*> nodes;
+            for (const detail::init::node& v2 : mp_impl->m_value_array)
+            {
+                json_value* r = v2.to_json_value(res);
+                nodes.push_back(r);
+            }
+
+            aggregate_nodes_to_array(res, std::move(nodes), parent);
             break;
         }
         case detail::node_t::boolean_true:
