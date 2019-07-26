@@ -17,7 +17,6 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
-#include <algorithm>
 #include <sstream>
 
 using namespace std;

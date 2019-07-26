@@ -14,6 +14,7 @@
 #include "orcus/json_parser.hpp"
 #include "orcus/stream.hpp"
 #include "json_map_tree.hpp"
+#include "json_structure_mapper.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -23,119 +24,6 @@ using namespace std;
 namespace orcus {
 
 namespace {
-
-class structure_mapper
-{
-    orcus_json& m_app;
-
-    json::structure_tree::walker m_walker;
-    size_t m_repeat_count;
-    size_t m_range_count;
-    std::string m_sheet_name_prefix;
-
-    struct
-    {
-        std::vector<std::string> paths;
-        std::vector<std::string> row_groups;
-
-        void sort()
-        {
-            std::sort(paths.begin(), paths.end());
-            std::sort(row_groups.begin(), row_groups.end());
-        }
-
-        void clear()
-        {
-            paths.clear();
-            row_groups.clear();
-        }
-
-    } m_current_range;
-
-    bool m_sort_before_push;
-
-public:
-    structure_mapper(orcus_json& app, const json::structure_tree::walker& walker) :
-        m_app(app),
-        m_walker(walker),
-        m_repeat_count(0),
-        m_range_count(0),
-        m_sheet_name_prefix("range-"),
-        m_sort_before_push(false) {}
-
-    void run()
-    {
-        reset();
-        traverse(0);
-    }
-
-private:
-
-    void reset()
-    {
-        m_walker.root();
-        m_current_range.clear();
-        m_repeat_count = 0;
-    }
-
-    void push_range()
-    {
-        if (m_sort_before_push)
-            m_current_range.sort();
-
-        // Build sheet name first and insert a new sheet.
-        std::ostringstream os_sheet_name;
-        os_sheet_name << m_sheet_name_prefix << m_range_count;
-        std::string sheet_name = os_sheet_name.str();
-        m_app.append_sheet(sheet_name);
-
-        // Push the linked range.
-        m_app.start_range(sheet_name, 0, 0, true);
-
-        for (const std::string& s : m_current_range.paths)
-            m_app.append_field_link(s, pstring());
-
-        for (const std::string& s : m_current_range.row_groups)
-            m_app.set_range_row_group(s);
-
-        m_app.commit_range();
-
-        m_current_range.clear();
-        ++m_range_count;
-    }
-
-    void traverse(size_t pos)
-    {
-        json::structure_tree::node_properties node = m_walker.get_node();
-
-        if (node.repeat)
-        {
-            ++m_repeat_count;
-            m_current_range.row_groups.push_back(m_walker.build_path_to_parent());
-        }
-
-        if (m_repeat_count && node.type == json::structure_tree::node_type::value)
-        {
-            for (std::string path : m_walker.build_field_paths())
-                m_current_range.paths.push_back(std::move(path));
-        }
-
-        for (size_t i = 0, n = m_walker.child_count(); i < n; ++i)
-        {
-            m_walker.descend(i);
-            traverse(i);
-            m_walker.ascend();
-        }
-
-        if (node.repeat)
-        {
-            --m_repeat_count;
-
-            if (!m_repeat_count)
-                push_range();
-        }
-    }
-};
 
 struct json_value
 {
@@ -595,11 +483,36 @@ void orcus_json::read_map_definition(const char* p, size_t n)
 
 void orcus_json::detect_map_definition(const char* p, size_t n)
 {
+    size_t range_count = 0;
+    std::string sheet_name_prefix = "range-";
+
+    json::detail::structure_mapper::range_handler_type rh = [&](const json::detail::structure_mapper::range_type& range)
+    {
+        // Build sheet name first and insert a new sheet.
+        std::ostringstream os_sheet_name;
+        os_sheet_name << sheet_name_prefix << range_count;
+        std::string sheet_name = os_sheet_name.str();
+        append_sheet(sheet_name);
+
+        // Push the linked range.
+        start_range(sheet_name, 0, 0, true);
+
+        for (const std::string& s : range.paths)
+            append_field_link(s, pstring());
+
+        for (const std::string& s : range.row_groups)
+            set_range_row_group(s);
+
+        commit_range();
+
+        ++range_count;
+    };
+
     json::structure_tree structure;
     structure.parse(p, n);
     structure.dump_compact(std::cout);
 
-    structure_mapper mapper(*this, structure.get_walker());
+    json::detail::structure_mapper mapper(rh, structure.get_walker());
     mapper.run();
 }
 

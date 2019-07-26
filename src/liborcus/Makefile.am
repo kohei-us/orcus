@@ -50,6 +50,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	json_document_tree.cpp \
 	json_map_tree.hpp \
 	json_map_tree.cpp \
+	json_structure_mapper.hpp \
+	json_structure_mapper.cpp \
 	json_structure_tree.cpp \
 	json_util.hpp \
 	json_util.cpp \
