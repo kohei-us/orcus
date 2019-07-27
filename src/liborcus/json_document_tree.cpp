@@ -778,6 +778,18 @@ const_node const_node::parent() const
     return const_node(mp_impl->m_doc, mp_impl->m_node->parent);
 }
 
+const_node const_node::back() const
+{
+    if (mp_impl->m_node->type != detail::node_t::array)
+        throw document_error("const_node::child: this node is not of array type.");
+
+    const json_value_array* jva = mp_impl->m_node->value.array;
+    if (jva->value_array.empty())
+        throw document_error("const_node::child: this node has no children.");
+
+    return const_node(mp_impl->m_doc, jva->value_array.back());
+}
+
 pstring const_node::string_value() const
 {
     if (mp_impl->m_node->type != detail::node_t::string)
@@ -857,6 +869,12 @@ node node::child(const pstring& key)
 node node::parent()
 {
     const_node cn = const_node::parent();
+    return node(std::move(cn));
+}
+
+node node::back()
+{
+    const_node cn = const_node::back();
     return node(std::move(cn));
 }
 
@@ -1131,6 +1149,7 @@ struct node::impl
     impl(bool b) : m_type(b ? detail::node_t::boolean_true : detail::node_t::boolean_false) {}
     impl(decltype(nullptr)) : m_type(detail::node_t::null) {}
     impl(const char* p) : m_type(detail::node_t::string), m_value_string(p) {}
+    impl(const std::string& s) : m_type(detail::node_t::string), m_value_string(s.data()) {}
 
     impl(std::initializer_list<detail::init::node> vs) :
         m_type(detail::node_t::array_implicit)
@@ -1163,6 +1182,7 @@ node::node(int v) : mp_impl(orcus::make_unique<impl>(v)) {}
 node::node(bool b) : mp_impl(orcus::make_unique<impl>(b)) {}
 node::node(std::nullptr_t) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
 node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
+node::node(const std::string& s) : mp_impl(orcus::make_unique<impl>(s)) {}
 node::node(std::initializer_list<detail::init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
 node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array))) {}
 node::node(json::object obj) : mp_impl(orcus::make_unique<impl>(std::move(obj))) {}

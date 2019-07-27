@@ -222,6 +222,16 @@ public:
     const_node parent() const;
 
     /**
+     * Get the last child node.
+     *
+     * @exception orcus::json::document_error if the node is not of array type
+     *                 or node has no children.
+     *
+     * @return last child node instance.
+     */
+    const_node back() const;
+
+    /**
      * Get the string value of a JSON string node.
      *
      * @exception orcus::json::document_error if the node is not of the string
@@ -316,6 +326,16 @@ public:
     node parent();
 
     /**
+     * Get the last child node.
+     *
+     * @exception orcus::json::document_error if the node is not of array type
+     *                 or node has no children.
+     *
+     * @return last child node instance.
+     */
+    node back();
+
+    /**
      * Append a new node value to the end of the array.
      *
      * @exception orcus::json::document_error if the node is not of array
@@ -377,6 +397,7 @@ public:
     node(bool b);
     node(std::nullptr_t);
     node(const char* p);
+    node(const std::string& s);
     node(std::initializer_list<detail::init::node> vs);
     node(json::array array);
     node(json::object obj);

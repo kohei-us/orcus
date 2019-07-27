@@ -349,6 +349,45 @@ void parse_and_write_map_file(const orcus::file_content& content, detail::cmd_pa
         {"ranges", json::array()}
     };
 
+    json::node root = map_doc.get_document_root();
+    json::node sheets_node = root["sheets"];
+    json::node ranges_node = root["ranges"];
+
+    size_t range_count = 0;
+    for (const json::table_range_t& range : ranges)
+    {
+        std::ostringstream os;
+        os << "range-" << range_count++;
+        std::string sheet = os.str();
+        sheets_node.push_back(sheet);
+
+        ranges_node.push_back({
+            {"sheet", sheet},
+            {"row", 0},
+            {"column", 0},
+            {"fields", json::array()},
+            {"row-groups", json::array()},
+        });
+
+        json::node range_node = ranges_node.back();
+        json::node fields_node = range_node["fields"];
+        json::node row_groups_node = range_node["row-groups"];
+
+        for (const std::string& path : range.paths)
+        {
+            fields_node.push_back(json::object());
+            json::node path_node = fields_node.back();
+            path_node["path"] = path;
+        }
+
+        for (const std::string& row_group : range.row_groups)
+        {
+            row_groups_node.push_back(json::object());
+            json::node path_node = row_groups_node.back();
+            path_node["path"] = row_group;
+        }
+    }
+
     std::ostream& os = params.get_output_stream();
     os << map_doc.dump();
 }
