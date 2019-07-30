@@ -604,12 +604,16 @@ std::vector<std::string> structure_tree::walker::build_field_paths() const
     return std::vector<std::string>(1u, os.str());
 }
 
-std::string structure_tree::walker::build_path_to_parent() const
+std::string structure_tree::walker::build_row_group_path() const
 {
     mp_impl->check_stack();
 
     if (mp_impl->stack.size() < 2u)
         throw json_structure_error("Current node is root - it doesn't have a parent.");
+
+    if (!mp_impl->stack.back()->repeat)
+        throw json_structure_error(
+            "Current node is not a repeating node. Only the parent node of a repeating node can be a row group.");
 
     std::ostringstream os;
     os << '$';

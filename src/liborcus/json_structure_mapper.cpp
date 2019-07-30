@@ -47,7 +47,7 @@ void structure_mapper::traverse(size_t pos)
     if (node.repeat)
     {
         ++m_repeat_count;
-        m_current_range.row_groups.push_back(m_walker.build_path_to_parent());
+        m_current_range.row_groups.push_back(m_walker.build_row_group_path());
     }
 
     if (m_repeat_count && node.type == json::structure_tree::node_type::value)

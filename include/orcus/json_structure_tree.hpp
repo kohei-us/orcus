@@ -68,7 +68,7 @@ public:
 
         std::vector<std::string> build_field_paths() const;
 
-        std::string build_path_to_parent() const;
+        std::string build_row_group_path() const;
     };
 
     structure_tree(const structure_tree&) = delete;
