@@ -23,7 +23,7 @@ class xml_map_sax_handler
         pstring ns;
         pstring name;
 
-        scope(const pstring& _ns, const pstring& _name);
+        scope(const pstring& _ns, const pstring& _name) : ns(_ns), name(_name) {}
     };
 
     std::vector<sax::parser_attribute> m_attrs;
@@ -31,34 +31,34 @@ class xml_map_sax_handler
     orcus_xml& m_app;
 
 public:
-    xml_map_sax_handler(orcus_xml& app);
 
-    void doctype(const sax::doctype_declaration&);
-    void start_declaration(const pstring& name);
-    void end_declaration(const pstring& name);
+    xml_map_sax_handler(orcus_xml& app) : m_app(app) {}
+
+    void doctype(const sax::doctype_declaration&) {}
+    void start_declaration(const pstring& name) {}
+
+    void end_declaration(const pstring& name)
+    {
+        m_attrs.clear();
+    }
+
     void start_element(const sax::parser_element& elem);
-    void end_element(const sax::parser_element& elem);
-    void characters(const pstring&, bool);
-    void attribute(const sax::parser_attribute& attr);
+
+    void end_element(const sax::parser_element& elem)
+    {
+        if (elem.name == "range")
+            m_app.commit_range();
+
+        m_scopes.pop_back();
+    }
+
+    void attribute(const sax::parser_attribute& attr)
+    {
+        m_attrs.push_back(attr);
+    }
+
+    void characters(const pstring&, bool) {}
 };
-
-xml_map_sax_handler::scope::scope(const pstring& _ns, const pstring& _name) :
-    ns(_ns), name(_name) {}
-
-xml_map_sax_handler::xml_map_sax_handler(orcus_xml& app) : m_app(app) {}
-
-void xml_map_sax_handler::doctype(const sax::doctype_declaration& dtd)
-{
-}
-
-void xml_map_sax_handler::start_declaration(const pstring& name)
-{
-}
-
-void xml_map_sax_handler::end_declaration(const pstring& name)
-{
-    m_attrs.clear();
-}
 
 void xml_map_sax_handler::start_element(const sax::parser_element& elem)
 {
@@ -156,21 +156,6 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
 
     m_scopes.push_back(scope(elem.ns, elem.name));
     m_attrs.clear();
-}
-
-void xml_map_sax_handler::end_element(const sax::parser_element& elem)
-{
-    if (elem.name == "range")
-        m_app.commit_range();
-
-    m_scopes.pop_back();
-}
-
-void xml_map_sax_handler::characters(const pstring&, bool) {}
-
-void xml_map_sax_handler::attribute(const sax::parser_attribute& attr)
-{
-    m_attrs.push_back(attr);
 }
 
 } // anonymous namespace
