@@ -783,6 +783,28 @@ void test_json_init_empty_array()
     assert(node.type() == json::node_t::array);
 }
 
+void test_json_dynamic_object_keys()
+{
+    json::document_tree doc = json::object();
+    json::node root = doc.get_document_root();
+
+    /* {"test": [1.2, 1.3]} */
+    auto node = root["test"];
+    node = json::array();
+    node.push_back(1.2);
+    node.push_back(1.3);
+
+    // Dump the doc as a string and reload it.
+    doc.load(doc.dump(), json_config());
+    root = doc.get_document_root();
+    assert(root.type() == json::node_t::object);
+    node = root["test"];
+    assert(node.type() == json::node_t::array);
+    assert(node.child_count() == 2u);
+    assert(node.child(0).numeric_value() == 1.2);
+    assert(node.child(1).numeric_value() == 1.3);
+}
+
 int main()
 {
     try
@@ -806,6 +828,7 @@ int main()
         test_json_init_list_explicit_object();
         test_json_init_root_object_add_child();
         test_json_init_empty_array();
+        test_json_dynamic_object_keys();
     }
     catch (const orcus::general_error& e)
     {

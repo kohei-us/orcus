@@ -71,6 +71,36 @@ enum class node_t : int
     array_implicit = 11,
 };
 
+std::ostream& operator<< (std::ostream& os, node_t nt)
+{
+    static const char* unknown = "???";
+
+    static std::vector<const char*> values =
+    {
+        "unset",          // 0
+        "string",         // 1
+        "number",         // 2
+        "object",         // 3
+        "array",          // 4
+        "boolean_true",   // 5
+        "boolean_false",  // 6
+        "null",           // 7
+        unknown,          // 8
+        unknown,          // 9
+        "key_value",      // 10
+        "array_implicit", // 11
+    };
+
+    size_t nt_value = size_t(nt);
+
+    if (nt_value < values.size())
+        os << values[nt_value];
+    else
+        os << unknown;
+
+    return os;
+}
+
 }
 
 document_error::document_error(const std::string& msg) :
@@ -881,7 +911,11 @@ node node::back()
 void node::push_back(const detail::init::node& v)
 {
     if (mp_impl->m_node->type != detail::node_t::array)
-        throw document_error("node::push_back: the node must be of array type.");
+    {
+        std::ostringstream os;
+        os << "node::push_back: the node must be of array type, but the value of this node type is '" << mp_impl->m_node->type << "'.";
+        throw document_error(os.str());
+    }
 
     json_value_array* jva = mp_impl->m_node->value.array;
     const document_resource& res = mp_impl->m_doc->get_resource();
