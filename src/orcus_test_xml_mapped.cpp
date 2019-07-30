@@ -149,11 +149,37 @@ void test_mapped_xml_import()
     }
 }
 
+void test_invalid_map_definition()
+{
+    xmlns_repository repo;
+
+    spreadsheet::document doc;
+    spreadsheet::import_factory import_fact(doc);
+    orcus_xml app(repo, &import_fact, nullptr);
+
+    try
+    {
+        app.read_map_definition(ORCUS_ASCII("asdfdasf"));
+        assert(false); // We were expecting an exception, but didn't get one.
+    }
+    catch (const invalid_map_error&)
+    {
+        // Success!
+    }
+    catch (const std::exception& e)
+    {
+        cerr << e.what() << endl;
+        assert(!"Wrong exception thrown.");
+    }
+}
+
 } // anonymous namespace
 
 int main()
 {
     test_mapped_xml_import();
+    test_invalid_map_definition();
+
     return EXIT_SUCCESS;
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

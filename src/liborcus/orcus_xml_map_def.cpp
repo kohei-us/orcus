@@ -9,6 +9,7 @@
 #include "orcus/pstring.hpp"
 #include "orcus/sax_parser_base.hpp"
 #include "orcus/sax_parser.hpp"
+#include "orcus/stream.hpp"
 
 #include <vector>
 
@@ -162,9 +163,22 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
 
 void orcus_xml::read_map_definition(const char* p, size_t n)
 {
-    xml_map_sax_handler handler(*this);
-    sax_parser<xml_map_sax_handler> parser(p, n, handler);
-    parser.parse();
+    try
+    {
+        xml_map_sax_handler handler(*this);
+        sax_parser<xml_map_sax_handler> parser(p, n, handler);
+        parser.parse();
+    }
+    catch (const parse_error& e)
+    {
+        std::ostringstream os;
+        os << "Error parsing the map definition file:" << std::endl
+            << std::endl
+            << create_parse_error_output(pstring(p, n), e.offset()) << std::endl
+            << e.what();
+
+        throw invalid_map_error(os.str());
+    }
 }
 
 }
