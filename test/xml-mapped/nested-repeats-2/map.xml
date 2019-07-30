@@ -2,11 +2,11 @@
 <map xmlns="http://gitorious.org/orcus/xml-map">
     <sheet name="data"/>
     <range row="0" column="0" sheet="data">
-        <field xpath="/osm/parent@name"/>
-        <field xpath="/osm/parent/way@id"/>
-        <field xpath="/osm/parent/way/nd@ref"/>
-        <row-group xpath="/osm/parent"/>
-        <row-group xpath="/osm/parent/way"/>
-        <row-group xpath="/osm/parent/way/nd"/>
+        <field path="/osm/parent@name"/>
+        <field path="/osm/parent/way@id"/>
+        <field path="/osm/parent/way/nd@ref"/>
+        <row-group path="/osm/parent"/>
+        <row-group path="/osm/parent/way"/>
+        <row-group path="/osm/parent/way/nd"/>
     </range>
 </map>

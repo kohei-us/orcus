@@ -2,11 +2,11 @@
 <map xmlns="http://gitorious.org/orcus/xml-map">
     <ns alias="a" uri="http://some-namespace"/>
     <sheet name="data"/>
-    <cell xpath="/a:table/a:title" row="0" column="0" sheet="data"/>
+    <cell path="/a:table/a:title" row="0" column="0" sheet="data"/>
     <range row="2" column="0" sheet="data">
-        <field xpath="/a:table/a:rows/a:row/a:city"/>
-        <field xpath="/a:table/a:rows/a:row/a:population"/>
-        <field xpath="/a:table/a:rows/a:row/a:year"/>
-        <row-group xpath="/a:table/a:rows/a:row"/>
+        <field path="/a:table/a:rows/a:row/a:city"/>
+        <field path="/a:table/a:rows/a:row/a:population"/>
+        <field path="/a:table/a:rows/a:row/a:year"/>
+        <row-group path="/a:table/a:rows/a:row"/>
     </range>
 </map>

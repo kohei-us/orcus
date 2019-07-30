@@ -5,9 +5,9 @@
     <ns alias="z" uri="http://namespace-3"/>
     <sheet name="data"/>
     <range row="2" column="0" sheet="data">
-        <field xpath="/x:data/y:monthly/y:entries/y:entry/z:date"/>
-        <field xpath="/x:data/y:monthly/y:entries/y:entry/z:category"/>
-        <field xpath="/x:data/y:monthly/y:entries/y:entry/z:amount"/>
-        <row-group xpath="/x:data/y:monthly/y:entries/y:entry"/>
+        <field path="/x:data/y:monthly/y:entries/y:entry/z:date"/>
+        <field path="/x:data/y:monthly/y:entries/y:entry/z:category"/>
+        <field path="/x:data/y:monthly/y:entries/y:entry/z:amount"/>
+        <row-group path="/x:data/y:monthly/y:entries/y:entry"/>
     </range>
 </map>

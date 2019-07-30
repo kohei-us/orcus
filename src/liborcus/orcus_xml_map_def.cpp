@@ -86,7 +86,7 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
     {
         for (; it != it_end; ++it)
         {
-            if (it->name == "xpath")
+            if (it->name == "path")
                 xpath = it->value;
             else if (it->name == "sheet")
                 sheet = it->value;
@@ -116,7 +116,7 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
     {
         for (; it != it_end; ++it)
         {
-            if (it->name == "xpath")
+            if (it->name == "path")
             {
                 xpath = it->value;
                 break;
@@ -129,7 +129,7 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
     {
         for (const sax::parser_attribute& attr : m_attrs)
         {
-            if (attr.name == "xpath")
+            if (attr.name == "path")
             {
                 xpath = attr.value;
                 break;

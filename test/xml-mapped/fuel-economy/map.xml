@@ -2,8 +2,8 @@
 <map xmlns="http://gitorious.org/orcus/xml-map">
     <sheet name="data"/>
     <range row="0" column="0" sheet="data">
-        <field xpath="/vehicles/vehicle/atvType"/>
-        <field xpath="/vehicles/vehicle/barrels08"/>
-        <row-group xpath="/vehicles/vehicle"/>
+        <field path="/vehicles/vehicle/atvType"/>
+        <field path="/vehicles/vehicle/barrels08"/>
+        <row-group path="/vehicles/vehicle"/>
     </range>
 </map>
