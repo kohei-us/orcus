@@ -615,6 +615,14 @@ std::string structure_tree::walker::build_row_group_path() const
         throw json_structure_error(
             "Current node is not a repeating node. Only the parent node of a repeating node can be a row group.");
 
+    {
+        auto it = mp_impl->stack.crbegin();
+        ++it;
+        if ((*it)->type != structure_tree::node_type::array)
+            throw json_structure_error(
+                "Parent node of the current node is not of array type, but it should be.");
+    }
+
     std::ostringstream os;
     os << '$';
 
