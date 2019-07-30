@@ -58,16 +58,50 @@ public:
          */
         void root();
 
+        /**
+         * Move down to a child node at specified position.  Call
+         * child_count() to get the number of child nodes the current node
+         * has. A child node position is 0-based and must be less than the
+         * child count.
+         *
+         * @param child_pos 0-based index of the child node to move down to.
+         */
         void descend(size_t child_pos);
 
+        /**
+         * Move up to the parent node of the current node.
+         */
         void ascend();
 
+        /**
+         * Return the number of child nodes the current node has.
+         *
+         * @return number of child nodes of the current node.
+         */
         size_t child_count() const;
 
+        /**
+         * Get the properties of the current node.
+         */
         node_properties get_node() const;
 
+        /**
+         * Build one or more field paths for the current value node.  For a
+         * value node that is a child of an object, you'll always get one
+         * path, whereas a value node that is a chlid of an array, you may get
+         * more than one field paths.
+         *
+         * @return one or more field paths built for the current value node.
+         */
         std::vector<std::string> build_field_paths() const;
 
+        /**
+         * Build a path for the parent of the current repeating node.  A row
+         * group is an anchor to which repeating nodes get anchored to.  It is
+         * used to determine when to increment row position during mapping.
+         *
+         * @return path for the row group of the current repeating node.
+         */
         std::string build_row_group_path() const;
     };
 
