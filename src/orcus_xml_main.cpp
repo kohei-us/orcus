@@ -13,7 +13,6 @@
 #include "orcus/stream.hpp"
 #include "orcus/global.hpp"
 
-#include "xml_map_sax_handler.hpp"
 #include "orcus_filter_global.hpp"
 
 #include <cstdlib>
@@ -230,8 +229,8 @@ int main(int argc, char** argv)
         spreadsheet::export_factory export_fact(doc);
 
         orcus_xml app(repo, &import_fact, &export_fact);
-
-        read_map_file(app, map_path.data());
+        file_content map_content(map_path.data());
+        app.read_map_definition(map_content.data(), map_content.size());
         app.read_stream(content.data(), content.size());
 
         switch (mode)

@@ -15,8 +15,6 @@
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
-#include "xml_map_sax_handler.hpp"
-
 #include <cstdlib>
 #include <cassert>
 #include <string>
@@ -91,7 +89,8 @@ void test_mapped_xml_import()
 
         // Parse the map file to define map rules, and parse the data file.
         orcus_xml app(repo, &import_fact, &export_fact);
-        read_map_file(app, map_file.string().data());
+        file_content map_content(map_file.string().data());
+        app.read_map_definition(map_content.data(), map_content.size());
         app.read_stream(data_strm.data(), data_strm.size());
 
         // Zero the source data stream to make sure it's completely erased off

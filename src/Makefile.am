@@ -188,7 +188,6 @@ orcus_csv_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 # orcus-xml
 
 orcus_xml_SOURCES = \
-	xml_map_sax_handler.cpp \
 	orcus_filter_global.cpp \
 	orcus_xml_main.cpp
 
@@ -374,8 +373,6 @@ orcus_test_csv_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLA
 # orcus-test-xml-mapped
 
 orcus_test_xml_mapped_SOURCES = \
-	xml_map_sax_handler.cpp \
-	xml_map_sax_handler.hpp \
 	orcus_test_xml_mapped.cpp
 
 orcus_test_xml_mapped_LDFLAGS = \

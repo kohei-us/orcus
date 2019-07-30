@@ -51,6 +51,17 @@ public:
     void append_sheet(const pstring& name);
 
     void read_stream(const char* p, size_t n);
+
+    /**
+     * Read an XML string that contains an entire set of mapping rules.
+     *
+     * This method also inserts all necessary sheets into the document model.
+     *
+     * @param p pointer to the in-memory buffer that contains the XML string.
+     * @param n size of the buffer.
+     */
+    void read_map_definition(const char* p, size_t n);
+
     void write(const char* p_in, size_t n_in, std::ostream& out) const;
 };
 

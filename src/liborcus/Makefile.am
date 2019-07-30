@@ -59,6 +59,7 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	orcus_csv.cpp \
 	orcus_json.cpp \
 	orcus_xml.cpp \
+	orcus_xml_map_def.cpp \
 	measurement.cpp \
 	xml_context_base.hpp \
 	xml_context_base.cpp \

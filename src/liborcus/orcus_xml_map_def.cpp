@@ -5,17 +5,42 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "xml_map_sax_handler.hpp"
-
-#include "orcus/spreadsheet/types.hpp"
 #include "orcus/orcus_xml.hpp"
-#include "orcus/global.hpp"
+#include "orcus/pstring.hpp"
+#include "orcus/sax_parser_base.hpp"
 #include "orcus/sax_parser.hpp"
-#include "orcus/stream.hpp"
 
-using namespace std;
+#include <vector>
 
 namespace orcus {
+
+namespace {
+
+class xml_map_sax_handler
+{
+    struct scope
+    {
+        pstring ns;
+        pstring name;
+
+        scope(const pstring& _ns, const pstring& _name);
+    };
+
+    std::vector<sax::parser_attribute> m_attrs;
+    std::vector<scope> m_scopes;
+    orcus_xml& m_app;
+
+public:
+    xml_map_sax_handler(orcus_xml& app);
+
+    void doctype(const sax::doctype_declaration&);
+    void start_declaration(const pstring& name);
+    void end_declaration(const pstring& name);
+    void start_element(const sax::parser_element& elem);
+    void end_element(const sax::parser_element& elem);
+    void characters(const pstring&, bool);
+    void attribute(const sax::parser_attribute& attr);
+};
 
 xml_map_sax_handler::scope::scope(const pstring& _ns, const pstring& _name) :
     ns(_ns), name(_name) {}
@@ -40,7 +65,7 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
     pstring xpath, sheet;
     spreadsheet::row_t row = -1;
     spreadsheet::col_t col = -1;
-    vector<sax::parser_attribute>::const_iterator it = m_attrs.begin(), it_end = m_attrs.end();
+    std::vector<sax::parser_attribute>::const_iterator it = m_attrs.begin(), it_end = m_attrs.end();
 
     if (elem.name == "ns")
     {
@@ -148,16 +173,15 @@ void xml_map_sax_handler::attribute(const sax::parser_attribute& attr)
     m_attrs.push_back(attr);
 }
 
-void read_map_file(orcus_xml& app, const char* filepath)
-{
-    file_content content(filepath);
-    if (content.empty())
-        return;
+} // anonymous namespace
 
-    xml_map_sax_handler handler(app);
-    sax_parser<xml_map_sax_handler> parser(content.data(), content.size(), handler);
+void orcus_xml::read_map_definition(const char* p, size_t n)
+{
+    xml_map_sax_handler handler(*this);
+    sax_parser<xml_map_sax_handler> parser(p, n, handler);
     parser.parse();
 }
 
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -380,6 +380,7 @@
                 <F N="../src/liborcus/orcus_xls_xml.cpp"/>
                 <F N="../src/liborcus/orcus_xlsx.cpp"/>
                 <F N="../src/liborcus/orcus_xml.cpp"/>
+                <F N="../src/liborcus/orcus_xml_map_def.cpp"/>
                 <F N="../src/liborcus/session_context.cpp"/>
                 <F N="../src/liborcus/session_context.hpp"/>
                 <F N="../src/liborcus/spreadsheet_iface_util.cpp"/>
@@ -577,8 +578,6 @@
             <F N="../src/orcus_xml_main.cpp"/>
             <F N="../src/orcus_yaml_main.cpp"/>
             <F N="../src/orcus_zip_dump.cpp"/>
-            <F N="../src/xml_map_sax_handler.cpp"/>
-            <F N="../src/xml_map_sax_handler.hpp"/>
         </Folder>
         <Folder Name="../test">
             <Folder Name="python">

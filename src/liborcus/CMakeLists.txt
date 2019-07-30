@@ -19,6 +19,7 @@ add_library(liborcus SHARED
 	orcus_csv.cpp
     orcus_json.cpp
 	orcus_xml.cpp
+	orcus_xml_map_def.cpp
 	measurement.cpp
 	xml_context_base.cpp
 	xml_context_global.cpp
