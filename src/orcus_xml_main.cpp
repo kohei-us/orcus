@@ -37,7 +37,7 @@ enum class type {
     dump_document,
     transform_xml,
     dump_document_check,
-    xml_structure,
+    structure,
 };
 
 typedef mdds::sorted_string_map<type> map_type;
@@ -45,10 +45,10 @@ typedef mdds::sorted_string_map<type> map_type;
 // Keys must be sorted.
 const std::vector<map_type::entry> entries =
 {
-    { ORCUS_ASCII("dump"),          type::dump_document       },
-    { ORCUS_ASCII("dump-check"),    type::dump_document_check },
-    { ORCUS_ASCII("transform"),     type::transform_xml       },
-    { ORCUS_ASCII("xml-structure"), type::xml_structure       },
+    { ORCUS_ASCII("dump"),       type::dump_document       },
+    { ORCUS_ASCII("dump-check"), type::dump_document_check },
+    { ORCUS_ASCII("structure"),  type::structure           },
+    { ORCUS_ASCII("transform"),  type::transform_xml       },
 };
 
 const map_type& get()
@@ -100,7 +100,7 @@ std::string build_map_help_text()
 {
     std::ostringstream os;
     os << "Path to the map file. A map file is required for all modes except for the "
-        << to_string(output_mode::type::xml_structure) << " mode.";
+        << to_string(output_mode::type::structure) << " mode.";
     return os.str();
 }
 
@@ -187,7 +187,7 @@ int main(int argc, char** argv)
         xmlns_repository repo;
         file_content content(input_path.data());
 
-        if (mode == output_mode::type::xml_structure)
+        if (mode == output_mode::type::structure)
         {
             xmlns_context cxt = repo.create_context();
             xml_structure_tree tree(cxt);
