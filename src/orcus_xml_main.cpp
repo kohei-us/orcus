@@ -104,6 +104,31 @@ std::string build_map_help_text()
     return os.str();
 }
 
+bool parse_and_dump_structure(const file_content& content, const std::string& output)
+{
+    xmlns_repository repo;
+    xmlns_context cxt = repo.create_context();
+    xml_structure_tree tree(cxt);
+    tree.parse(content.data(), content.size());
+
+    if (output.empty())
+    {
+        tree.dump_compact(cout);
+        return true;
+    }
+
+    ofstream file(output);
+    if (!file)
+    {
+        cerr << "failed to create output file: " << output << endl;
+        return false;
+    }
+
+    tree.dump_compact(file);
+
+    return true;
+}
+
 } // anonymous namespace
 
 int main(int argc, char** argv)
@@ -184,31 +209,12 @@ int main(int argc, char** argv)
 
     try
     {
-        xmlns_repository repo;
         file_content content(input_path.data());
 
         if (mode == output_mode::type::structure)
         {
-            xmlns_context cxt = repo.create_context();
-            xml_structure_tree tree(cxt);
-            tree.parse(content.data(), content.size());
-
-            if (output.empty())
-            {
-                tree.dump_compact(cout);
-                return EXIT_SUCCESS;
-            }
-
-            ofstream file(output);
-            if (!file)
-            {
-                cerr << "failed to create output file: " << output << endl;
-                return EXIT_FAILURE;
-            }
-
-            tree.dump_compact(file);
-
-            return EXIT_SUCCESS;
+            bool success = parse_and_dump_structure(content, output);
+            return success ? EXIT_SUCCESS : EXIT_FAILURE;
         }
 
         if (!vm.count("map") || map_path.empty())
@@ -228,6 +234,7 @@ int main(int argc, char** argv)
         spreadsheet::import_factory import_fact(doc);
         spreadsheet::export_factory export_fact(doc);
 
+        xmlns_repository repo;
         orcus_xml app(repo, &import_fact, &export_fact);
         file_content map_content(map_path.data());
         app.read_map_definition(map_content.data(), map_content.size());
