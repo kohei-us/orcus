@@ -36,7 +36,6 @@ enum class type {
     unknown,
     map,
     transform_xml,
-    dump_document_check,
     structure,
 };
 
@@ -45,7 +44,6 @@ typedef mdds::sorted_string_map<type> map_type;
 // Keys must be sorted.
 const std::vector<map_type::entry> entries =
 {
-    { ORCUS_ASCII("dump-check"), type::dump_document_check },
     { ORCUS_ASCII("map"),        type::map                 },
     { ORCUS_ASCII("structure"),  type::structure           },
     { ORCUS_ASCII("transform"),  type::transform_xml       },
@@ -77,8 +75,7 @@ void print_usage(ostream& os, const po::options_description& desc)
 std::string build_output_help_text()
 {
     std::ostringstream os;
-    os << "Output directory path, or output file in the "
-        << to_string(output_mode::type::dump_document_check) << " mode.";
+    os << "Path to either an output directory, or an output file.";
     return os.str();
 }
 
@@ -280,24 +277,6 @@ int main(int argc, char** argv)
 
                 // Write transformed xml content to file.
                 app.write(content.data(), content.size(), file);
-                break;
-            }
-            case output_mode::type::dump_document_check:
-            {
-                if (output.empty())
-                {
-                    doc.dump_check(cout);
-                    break;
-                }
-
-                ofstream file(output);
-                if (!file)
-                {
-                    cerr << "failed to create output file: " << output << endl;
-                    return EXIT_FAILURE;
-                }
-
-                doc.dump_check(file);
                 break;
             }
             default:

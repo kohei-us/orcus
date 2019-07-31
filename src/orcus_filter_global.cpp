@@ -32,11 +32,13 @@ namespace {
 
 const std::map<dump_format_t, pstring> descriptions =
 {
-    std::make_pair(dump_format_t::csv,  "CSV format"),
-    std::make_pair(dump_format_t::flat, "flat text format"),
-    std::make_pair(dump_format_t::html, "HTML format"),
-    std::make_pair(dump_format_t::json, "JSON format"),
-    std::make_pair(dump_format_t::none, "no output"),
+    std::make_pair(dump_format_t::check, "Flat format that fully encodes document content. Suitable for automated testing."),
+    std::make_pair(dump_format_t::csv,   "CSV format."),
+    std::make_pair(dump_format_t::flat,  "Flat text format that displays document content in grid."),
+    std::make_pair(dump_format_t::html,  "HTML format."),
+    std::make_pair(dump_format_t::json,  "JSON format."),
+    std::make_pair(dump_format_t::xml,   "This format is currently unsupported."),
+    std::make_pair(dump_format_t::none,  "No output to be generated. Maybe useful during development."),
 };
 
 const char* help_program =
@@ -62,7 +64,7 @@ const char* err_no_input_file = "No input file.";
 std::string gen_help_output_format()
 {
     std::ostringstream os;
-    os << "Specify the format of output file.  Supported format types are:";
+    os << "Specify the output format.  Supported format types are:" << endl;
 
     for (const std::pair<pstring, dump_format_t>& entry : get_dump_format_entries())
     {
@@ -71,7 +73,7 @@ std::string gen_help_output_format()
         if (it_desc != descriptions.end())
             desc = it_desc->second;
 
-        os << std::endl << "  * " << entry.first << " - " << desc;
+        os << std::endl << "* " << entry.first << " - " << desc;
     }
 
     return os.str();
