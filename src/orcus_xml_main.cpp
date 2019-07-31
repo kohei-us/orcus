@@ -34,7 +34,7 @@ namespace output_mode {
 
 enum class type {
     unknown,
-    dump_document,
+    map,
     transform_xml,
     dump_document_check,
     structure,
@@ -45,8 +45,8 @@ typedef mdds::sorted_string_map<type> map_type;
 // Keys must be sorted.
 const std::vector<map_type::entry> entries =
 {
-    { ORCUS_ASCII("dump"),       type::dump_document       },
     { ORCUS_ASCII("dump-check"), type::dump_document_check },
+    { ORCUS_ASCII("map"),        type::map                 },
     { ORCUS_ASCII("structure"),  type::structure           },
     { ORCUS_ASCII("transform"),  type::transform_xml       },
 };
@@ -235,14 +235,21 @@ int main(int argc, char** argv)
 
         switch (mode)
         {
-            case output_mode::type::dump_document:
+            case output_mode::type::map:
             {
                 dump_format_t format = dump_format_t::unknown;
+                s.clear();
 
                 if (vm.count("output-format"))
                 {
                     s = vm["output-format"].as<std::string>();
                     format = to_dump_format_enum(s.data(), s.size());
+                }
+                else
+                {
+                    cerr << "Output format is not specified." << endl;
+                    print_usage(cout, desc);
+                    return EXIT_FAILURE;
                 }
 
                 if (format == dump_format_t::unknown)
