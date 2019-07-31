@@ -224,12 +224,6 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
-        if (!fs::is_regular_file(map_path))
-        {
-            cerr << "'" << map_path << "' is not a valid map file." << endl;
-            return EXIT_FAILURE;
-        }
-
         spreadsheet::document doc;
         spreadsheet::import_factory import_fact(doc);
         spreadsheet::export_factory export_fact(doc);
