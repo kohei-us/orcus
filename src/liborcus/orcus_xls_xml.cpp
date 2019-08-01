@@ -28,26 +28,23 @@ using namespace std;
 
 namespace orcus {
 
-struct orcus_xls_xml_impl
+struct orcus_xls_xml::impl
 {
     xmlns_repository m_ns_repo;
     session_context m_cxt;
     spreadsheet::iface::import_factory* mp_factory;
 
-    orcus_xls_xml_impl(spreadsheet::iface::import_factory* factory) : mp_factory(factory) {}
+    impl(spreadsheet::iface::import_factory* factory) : mp_factory(factory) {}
 };
 
 orcus_xls_xml::orcus_xls_xml(spreadsheet::iface::import_factory* factory) :
     iface::import_filter(format_t::xls_xml),
-    mp_impl(new orcus_xls_xml_impl(factory))
+    mp_impl(orcus::make_unique<impl>(factory))
 {
     mp_impl->m_ns_repo.add_predefined_values(NS_xls_xml_all);
 }
 
-orcus_xls_xml::~orcus_xls_xml()
-{
-    delete mp_impl;
-}
+orcus_xls_xml::~orcus_xls_xml() {}
 
 bool orcus_xls_xml::detect(const unsigned char* buffer, size_t size)
 {

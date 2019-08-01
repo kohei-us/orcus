@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_ORCUS_XLS_XML_HPP
-#define ORCUS_ORCUS_XLS_XML_HPP
+#ifndef INCLUDED_ORCUS_ORCUS_XLS_XML_HPP
+#define INCLUDED_ORCUS_ORCUS_XLS_XML_HPP
 
 #include "interface.hpp"
+#include <memory>
 
 namespace orcus {
 
@@ -18,12 +19,15 @@ struct orcus_xls_xml_impl;
 
 class ORCUS_DLLPUBLIC orcus_xls_xml : public iface::import_filter
 {
-    orcus_xls_xml(const orcus_xls_xml&); // disabled
-    orcus_xls_xml& operator= (const orcus_xls_xml&); // disabled
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
 public:
     orcus_xls_xml(spreadsheet::iface::import_factory* factory);
     ~orcus_xls_xml();
+
+    orcus_xls_xml(const orcus_xls_xml&) = delete;
+    orcus_xls_xml& operator= (const orcus_xls_xml&) = delete;
 
     static bool detect(const unsigned char* blob, size_t size);
 
@@ -31,9 +35,6 @@ public:
     virtual void read_stream(const char* content, size_t len);
 
     virtual const char* get_name() const;
-
-private:
-    orcus_xls_xml_impl* mp_impl;
 };
 
 }
