@@ -238,6 +238,74 @@ pstring file_content::str() const
     return pstring(mp_impl->content, mp_impl->content_size);
 }
 
+struct memory_content::impl
+{
+    const char* content;
+    size_t content_size;
+    std::string buffer; // its own buffer in case of stream conversion.
+
+    impl() : content(nullptr), content_size(0) {}
+    impl(const char* p, size_t n) : content(p), content_size(n) {}
+};
+
+memory_content::memory_content() : mp_impl(orcus::make_unique<impl>()) {}
+
+memory_content::memory_content(const char* p, size_t n) :
+    mp_impl(orcus::make_unique<impl>(p, n)) {}
+
+memory_content::memory_content(memory_content&& other) :
+    mp_impl(std::move(other.mp_impl))
+{
+    other.mp_impl = orcus::make_unique<impl>();
+}
+
+memory_content::~memory_content() {}
+
+const char* memory_content::data() const
+{
+    return mp_impl->content;
+}
+
+size_t memory_content::size() const
+{
+    return mp_impl->content_size;
+}
+
+bool memory_content::empty() const
+{
+    return mp_impl->content_size == 0;
+}
+
+void memory_content::swap(memory_content& other)
+{
+    std::swap(mp_impl, other.mp_impl);
+}
+
+void memory_content::convert_to_utf8()
+{
+    unicode_t ut = check_unicode_type(mp_impl->content, mp_impl->content_size);
+
+    switch (ut)
+    {
+        case unicode_t::utf16_be:
+        case unicode_t::utf16_le:
+        {
+            // Convert to utf-8 stream, and reset the content pointer and size.
+            mp_impl->buffer = convert_utf16_to_utf8(mp_impl->content, mp_impl->content_size, ut);
+            mp_impl->content = mp_impl->buffer.data();
+            mp_impl->content_size = mp_impl->buffer.size();
+            break;
+        }
+        default:
+            ;
+    }
+}
+
+pstring memory_content::str() const
+{
+    return pstring(mp_impl->content, mp_impl->content_size);
+}
+
 std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset)
 {
     if (offset < 0)

@@ -41,8 +41,7 @@ public:
 
     /**
      * Load from a new file.  This will invalidate the pointer returned from
-     * the {@link data()} method prior to the call.
-     *
+     * the {@link file_content#data()} method prior to the call.
      *
      * @param filepath path of the file to load from.
      */
@@ -52,6 +51,42 @@ public:
      * Convert a non-utf-8 stream to a utf-8 one if the source stream contains
      * a byte order mark.  If not, it does nothing.  When the conversion
      * happens, the converted content will be stored in-memory.
+     */
+    void convert_to_utf8();
+
+    pstring str() const;
+};
+
+/**
+ * Represents the content of an in-memory buffer.  Note that this class will
+ * NOT own the content of the source buffer but simply will reference it,
+ * except when the original buffer is a non-utf-8 stream and the caller
+ * chooses to convert it to utf-8 by calling its {@link
+ * memory_content#convert_to_utf8()} method.
+ */
+class ORCUS_PSR_DLLPUBLIC memory_content
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+public:
+    memory_content(const file_content&) = delete;
+    memory_content& operator= (const file_content&) = delete;
+
+    memory_content();
+    memory_content(const char* p, size_t n);
+    memory_content(memory_content&& other);
+    ~memory_content();
+
+    const char* data() const;
+    size_t size() const;
+    bool empty() const;
+
+    void swap(memory_content& other);
+
+    /**
+     * Convert a non-utf-8 stream to a utf-8 one if the source stream contains
+     * a byte order mark.  If not, it does nothing.  When the conversion
+     * happens, the converted content will be owned by the object.
      */
     void convert_to_utf8();
 
