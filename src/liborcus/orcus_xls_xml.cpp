@@ -35,6 +35,39 @@ struct orcus_xls_xml::impl
     spreadsheet::iface::import_factory* mp_factory;
 
     impl(spreadsheet::iface::import_factory* factory) : mp_factory(factory) {}
+
+    void read_stream(const char* content, size_t len, const config& cnf)
+    {
+        if (!content || !len)
+            return;
+
+        spreadsheet::iface::import_global_settings* gs =
+            mp_factory->get_global_settings();
+
+        if (!gs)
+            return;
+
+        gs->set_origin_date(1899, 12, 30);
+        gs->set_default_formula_grammar(spreadsheet::formula_grammar_t::xls_xml);
+
+        xml_stream_parser parser(cnf, m_ns_repo, xls_xml_tokens, content, len);
+
+        auto handler = orcus::make_unique<xls_xml_handler>(m_cxt, xls_xml_tokens, mp_factory);
+
+        parser.set_handler(handler.get());
+        try
+        {
+            parser.parse();
+        }
+        catch (const parse_error& e)
+        {
+            std::cerr << create_parse_error_output(pstring(content, len), e.offset()) << std::endl;
+            std::cerr << e.what() << std::endl;
+            return;
+        }
+
+        mp_factory->finalize();
+    }
 };
 
 orcus_xls_xml::orcus_xls_xml(spreadsheet::iface::import_factory* factory) :
@@ -76,42 +109,12 @@ void orcus_xls_xml::read_file(const string& filepath)
         return;
 
     content.convert_to_utf8();
-    read_stream(content.data(), content.size());
+    mp_impl->read_stream(content.data(), content.size(), get_config());
 }
 
 void orcus_xls_xml::read_stream(const char* content, size_t len)
 {
-    if (!content || !len)
-        return;
-
-    spreadsheet::iface::import_global_settings* gs =
-        mp_impl->mp_factory->get_global_settings();
-
-    if (!gs)
-        return;
-
-    gs->set_origin_date(1899, 12, 30);
-    gs->set_default_formula_grammar(spreadsheet::formula_grammar_t::xls_xml);
-
-    xml_stream_parser parser(
-        get_config(), mp_impl->m_ns_repo, xls_xml_tokens, content, len);
-
-    auto handler = orcus::make_unique<xls_xml_handler>(
-        mp_impl->m_cxt, xls_xml_tokens, mp_impl->mp_factory);
-
-    parser.set_handler(handler.get());
-    try
-    {
-        parser.parse();
-    }
-    catch (const parse_error& e)
-    {
-        std::cerr << create_parse_error_output(pstring(content, len), e.offset()) << std::endl;
-        std::cerr << e.what() << std::endl;
-        return;
-    }
-
-    mp_impl->mp_factory->finalize();
+    mp_impl->read_stream(content, len, get_config());
 }
 
 const char* orcus_xls_xml::get_name() const
