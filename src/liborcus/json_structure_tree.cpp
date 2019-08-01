@@ -13,7 +13,6 @@
 #include "json_structure_mapper.hpp"
 
 #include <vector>
-#include <deque>
 #include <memory>
 #include <algorithm>
 #include <map>
@@ -25,7 +24,7 @@ namespace {
 
 struct structure_node;
 
-using node_children_type = std::deque<structure_node>;
+using node_children_type = std::vector<structure_node>;
 using node_type = structure_tree::node_type;
 using array_positions_type = std::map<int32_t, bool>;
 

@@ -134,8 +134,8 @@ void test_mapped_xml_import()
 
             string dump_input, dump_output;
             string strm_data_file, strm_out_file; // Hold the stream content in memory while the namespace context is being used.
-            dump_xml_structure(dump_input, strm_data_file, data_file.c_str(), cxt);
-            dump_xml_structure(dump_output, strm_out_file, out_file.c_str(), cxt);
+            dump_xml_structure(dump_input, strm_data_file, data_file.string().data(), cxt);
+            dump_xml_structure(dump_output, strm_out_file, out_file.data(), cxt);
             assert(!dump_input.empty() && !dump_output.empty());
 
             cout << dump_input << endl;

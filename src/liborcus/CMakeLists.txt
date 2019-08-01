@@ -12,6 +12,7 @@ add_library(liborcus SHARED
 	info.cpp
 	interface.cpp
 	json_document_tree.cpp
+        json_map_tree.cpp
 	json_structure_mapper.cpp
 	json_structure_tree.cpp
 	json_util.cpp
