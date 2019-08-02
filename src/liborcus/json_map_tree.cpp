@@ -31,7 +31,7 @@ struct json_path_token_value_t
 
     union
     {
-        std::uintptr_t array_pos = json_map_tree::node_child_default_position;
+        json_map_tree::child_position_type array_pos = json_map_tree::node_child_default_position;
 
         struct
         {
@@ -44,7 +44,7 @@ struct json_path_token_value_t
 
     json_path_token_value_t(json_path_token_t _type) : type(_type) {}
 
-    json_path_token_value_t(long array_pos) : type(json_path_token_t::array_pos)
+    json_path_token_value_t(json_map_tree::child_position_type array_pos): type(json_path_token_t::array_pos)
     {
         value.array_pos = array_pos;
     }
