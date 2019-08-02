@@ -139,8 +139,7 @@ void update_config(spreadsheet::document& doc, const string& path)
 
 void test_xls_xml_import()
 {
-    std::function<void(spreadsheet::document& doc, const std::string&)> verify =
-    [](spreadsheet::document& doc, const std::string& dir)
+    auto verify = [](spreadsheet::document& doc, const std::string& dir)
     {
         std::string path = dir;
         path.append("config.yaml");
