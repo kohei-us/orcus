@@ -97,7 +97,9 @@ add_library(liborcus-${ORCUS_API_VERSION} SHARED
 #   orcus_gnumeric.cpp
 )
 
-configure_file(constants.inl.in constants.inl)
+configure_file(constants.inl.in ${CMAKE_CURRENT_BINARY_DIR}/constants.inl)
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
 
