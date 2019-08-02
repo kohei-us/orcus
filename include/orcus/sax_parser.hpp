@@ -457,9 +457,10 @@ void sax_parser<_Handler,_Config>::attribute()
     attribute_name(attr.ns, attr.name);
 
 #if ORCUS_DEBUG_SAX_PARSER
-    std::ostringstream os;
-    os << "sax_parser::attribute: ns='" << attr.ns << "', name='" << attr.name << "'";
+    cout << "sax_parser::attribute: ns='" << attr.ns << "', name='" << attr.name << "'" << endl;
 #endif
+
+    skip_space_and_control();
 
     char c = cur_char();
     if (c != '=')
@@ -469,15 +470,16 @@ void sax_parser<_Handler,_Config>::attribute()
         throw sax::malformed_xml_error(os.str(), offset());
     }
 
-    next_check();
+    next_check(); // skip the '='.
+    skip_space_and_control();
+
     attr.transient = value(attr.value, true);
     if (attr.transient)
         // Value is stored in a temporary buffer. Push a new buffer.
         inc_buffer_pos();
 
 #if ORCUS_DEBUG_SAX_PARSER
-    os << " value='" << attr.value << "'" << endl;
-    cout << os.str();
+    cout << "sax_parser::attribute: value='" << attr.value << "'" << endl;
 #endif
 
     m_handler.attribute(attr);
