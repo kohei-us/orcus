@@ -21,6 +21,8 @@ find_package(Threads)
 find_package(Python3)
 find_package(Zlib)
 
+include(GNUInstallDirs)
+
 enable_testing()
 set(CMAKE_CTEST_COMMAND ctest)
 

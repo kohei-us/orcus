@@ -27,3 +27,11 @@ add_library(liborcus-spreadsheet-model SHARED
 
 target_link_libraries(liborcus-spreadsheet-model liborcus-parser liborcus ${IXION_LIB})
 target_compile_definitions(liborcus-spreadsheet-model PRIVATE __ORCUS_SPM_BUILDING_DLL)
+
+install(
+    TARGETS
+        liborcus-spreadsheet-model
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)

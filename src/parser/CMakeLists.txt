@@ -53,3 +53,11 @@ foreach(_TEST ${_TESTS})
 endforeach()
 
 add_dependencies(check ${_TESTS})
+
+install(
+    TARGETS
+        liborcus-parser
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)

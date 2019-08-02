@@ -198,3 +198,11 @@ add_dependencies(check
     xlsx-sheet-context-test
     xml-map-tree-test
 )
+
+install(
+    TARGETS
+        liborcus
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)

@@ -140,3 +140,22 @@ foreach(_TEST ${_TESTS})
 endforeach()
 
 add_dependencies(check ${_TESTS})
+
+install(
+    TARGETS
+        orcus-detect
+        orcus-css-dump
+        orcus-xml-dump
+        orcus-zip-dump
+        orcus-json
+        orcus-yaml
+        orcus-csv
+        orcus-xml
+        orcus-ods
+        orcus-styles-ods
+        orcus-xlsx
+        orcus-xls-xml
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
