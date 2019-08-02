@@ -71,6 +71,11 @@
             Filters=""
             GUID="{48B76FDC-F021-4FEC-F274-6CD2FF24E3B4}">
             <F N="../CMakeLists.txt"/>
+            <F N="../include/CMakeLists.txt"/>
+            <F N="../include/orcus/CMakeLists.txt"/>
+            <F N="../include/orcus/detail/CMakeLists.txt"/>
+            <F N="../include/orcus/mso/CMakeLists.txt"/>
+            <F N="../include/orcus/spreadsheet/CMakeLists.txt"/>
             <F N="../src/CMakeLists.txt"/>
             <F N="../src/liborcus/CMakeLists.txt"/>
             <F N="../src/parser/CMakeLists.txt"/>

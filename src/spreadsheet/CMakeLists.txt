@@ -1,5 +1,5 @@
 
-add_library(liborcus-spreadsheet-model SHARED
+add_library(liborcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     auto_filter.cpp
 	config.cpp
 	csv_dumper.cpp
@@ -25,12 +25,12 @@ add_library(liborcus-spreadsheet-model SHARED
 	view.cpp
 )
 
-target_link_libraries(liborcus-spreadsheet-model liborcus-parser liborcus ${IXION_LIB})
-target_compile_definitions(liborcus-spreadsheet-model PRIVATE __ORCUS_SPM_BUILDING_DLL)
+target_link_libraries(liborcus-spreadsheet-model-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION} ${IXION_LIB})
+target_compile_definitions(liborcus-spreadsheet-model-${ORCUS_API_VERSION} PRIVATE __ORCUS_SPM_BUILDING_DLL)
 
 install(
     TARGETS
-        liborcus-spreadsheet-model
+        liborcus-spreadsheet-model-${ORCUS_API_VERSION}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

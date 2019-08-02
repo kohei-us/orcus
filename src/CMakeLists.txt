@@ -58,24 +58,24 @@ add_executable(orcus-xls-xml
     ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
 )
 
-target_link_libraries(orcus-detect liborcus)
-target_link_libraries(orcus-css-dump liborcus-parser liborcus)
-target_link_libraries(orcus-xml-dump liborcus-parser liborcus)
-target_link_libraries(orcus-zip-dump liborcus-parser)
-target_link_libraries(orcus-json liborcus-parser liborcus)
-target_link_libraries(orcus-yaml liborcus-parser liborcus)
-target_link_libraries(orcus-csv liborcus-parser liborcus-spreadsheet-model liborcus)
-target_link_libraries(orcus-xml liborcus-parser liborcus-spreadsheet-model liborcus)
-target_link_libraries(orcus-ods liborcus-parser liborcus-spreadsheet-model liborcus)
-target_link_libraries(orcus-styles-ods liborcus-parser liborcus-spreadsheet-model liborcus)
-target_link_libraries(orcus-xlsx liborcus-parser liborcus-spreadsheet-model liborcus)
-target_link_libraries(orcus-xls-xml liborcus-parser liborcus-spreadsheet-model liborcus)
+target_link_libraries(orcus-detect liborcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-css-dump liborcus-parser-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-xml-dump liborcus-parser-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-zip-dump liborcus-parser-${ORCUS_API_VERSION})
+target_link_libraries(orcus-json liborcus-parser-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-yaml liborcus-parser-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-csv liborcus-parser-${ORCUS_API_VERSION} liborcus-spreadsheet-model-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-xml liborcus-parser-${ORCUS_API_VERSION} liborcus-spreadsheet-model-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-ods liborcus-parser-${ORCUS_API_VERSION} liborcus-spreadsheet-model-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-styles-ods liborcus-parser-${ORCUS_API_VERSION} liborcus-spreadsheet-model-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-xlsx liborcus-parser-${ORCUS_API_VERSION} liborcus-spreadsheet-model-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-xls-xml liborcus-parser-${ORCUS_API_VERSION} liborcus-spreadsheet-model-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
 
 add_executable(orcus-env-dump EXCLUDE_FROM_ALL
     orcus_env_dump.cpp
 )
 
-target_link_libraries(orcus-env-dump liborcus-parser liborcus)
+target_link_libraries(orcus-env-dump liborcus-parser-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
 
 # test programs
 
@@ -120,7 +120,7 @@ set(_TESTS
 )
 
 foreach(_TEST ${_TESTS})
-    target_link_libraries(${_TEST} liborcus-parser liborcus-spreadsheet-model liborcus)
+    target_link_libraries(${_TEST} liborcus-parser-${ORCUS_API_VERSION} liborcus-spreadsheet-model-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
 
     target_compile_definitions(${_TEST} PRIVATE
         SRCDIR="${PROJECT_SOURCE_DIR}"
@@ -132,9 +132,9 @@ foreach(_TEST ${_TESTS})
     # as the test program.
     add_custom_command(TARGET ${_TEST} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:liborcus-parser>
-        $<TARGET_FILE:liborcus>
-        $<TARGET_FILE:liborcus-spreadsheet-model>
+        $<TARGET_FILE:liborcus-parser-${ORCUS_API_VERSION}>
+        $<TARGET_FILE:liborcus-${ORCUS_API_VERSION}>
+        $<TARGET_FILE:liborcus-spreadsheet-model-${ORCUS_API_VERSION}>
         $<TARGET_FILE_DIR:${_TEST}>
     )
 endforeach()

@@ -1,5 +1,5 @@
 
-add_library(liborcus SHARED
+add_library(liborcus-${ORCUS_API_VERSION} SHARED
 # core
     config.cpp
     css_document_tree.cpp
@@ -99,9 +99,9 @@ add_library(liborcus SHARED
 
 configure_file(constants.inl.in constants.inl)
 
-target_link_libraries(liborcus liborcus-parser)
+target_link_libraries(liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
 
-target_compile_definitions(liborcus PRIVATE
+target_compile_definitions(liborcus-${ORCUS_API_VERSION} PRIVATE
     __ORCUS_BUILDING_DLL
     __ORCUS_XLSX
     __ORCUS_ODS
@@ -138,7 +138,7 @@ foreach(_TEST ${_TESTS})
     # as the test program.
     add_custom_command(TARGET ${_TEST} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    $<TARGET_FILE:liborcus-parser>
+    $<TARGET_FILE:liborcus-parser-${ORCUS_API_VERSION}>
     $<TARGET_FILE_DIR:${_TEST}>
     )
 
@@ -185,9 +185,9 @@ target_compile_definitions(xlsx-sheet-context-test PRIVATE
     __ORCUS_STATIC_LIB
 )
 
-target_link_libraries(odf-helper-test liborcus liborcus-parser)
-target_link_libraries(xlsx-sheet-context-test liborcus liborcus-parser)
-target_link_libraries(xml-map-tree-test liborcus liborcus-parser)
+target_link_libraries(odf-helper-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
+target_link_libraries(xlsx-sheet-context-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
+target_link_libraries(xml-map-tree-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
 add_test(odf-helper-test odf-helper-test)
 add_test(xlsx-sheet-context-test xlsx-sheet-context-test)
 add_test(xml-map-tree-test xml-map-tree-test)
@@ -201,7 +201,7 @@ add_dependencies(check
 
 install(
     TARGETS
-        liborcus
+        liborcus-${ORCUS_API_VERSION}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
