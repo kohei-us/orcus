@@ -128,7 +128,7 @@ foreach(_TEST ${_TESTS})
     set(_TEST_FILE ${_TEST}.cpp)
     string(REPLACE "-" "_" _TEST_FILE ${_TEST_FILE})
     add_executable(${_TEST} EXCLUDE_FROM_ALL ${_TEST_FILE})
-    target_link_libraries(${_TEST} liborcus liborcus-parser)
+    target_link_libraries(${_TEST} liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
     target_compile_definitions(${_TEST} PRIVATE
     SRCDIR="${PROJECT_SOURCE_DIR}"
     )
