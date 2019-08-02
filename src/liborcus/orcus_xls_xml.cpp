@@ -114,7 +114,12 @@ void orcus_xls_xml::read_file(const string& filepath)
 
 void orcus_xls_xml::read_stream(const char* content, size_t len)
 {
-    mp_impl->read_stream(content, len, get_config());
+    memory_content mem_content(content, len);
+    if (mem_content.empty())
+        return;
+
+    mem_content.convert_to_utf8();
+    mp_impl->read_stream(mem_content.data(), mem_content.size(), get_config());
 }
 
 const char* orcus_xls_xml::get_name() const
