@@ -11,20 +11,27 @@
 
 using namespace std;
 
+struct handler_base
+{
+    void doctype(const orcus::sax::doctype_declaration& param) {}
+
+    void start_declaration(const orcus::pstring& decl) {}
+
+    void end_declaration(const orcus::pstring& decl) {}
+
+    void start_element(const orcus::sax::parser_element& elem) {}
+
+    void end_element(const orcus::sax::parser_element& elem) {}
+
+    void characters(const orcus::pstring& val, bool transient) {}
+
+    void attribute(const orcus::sax::parser_attribute& attr) {}
+};
+
 void test_transient_stream()
 {
-    struct _handler
+    struct _handler : public handler_base
     {
-        void doctype(const orcus::sax::doctype_declaration& param) {}
-
-        void start_declaration(const orcus::pstring& decl) {}
-
-        void end_declaration(const orcus::pstring& decl) {}
-
-        void start_element(const orcus::sax::parser_element& elem) {}
-
-        void end_element(const orcus::sax::parser_element& elem) {}
-
         void characters(const orcus::pstring& val, bool transient)
         {
             cout << "characters: '" << val << "' (transient=" << transient << ")" << endl;
@@ -81,9 +88,24 @@ void test_transient_stream()
     }
 }
 
+void test_attr_equal_with_whitespace()
+{
+    struct _handler : public handler_base {};
+
+    const char* content =
+        "<?xml version=\"1.0\"?>"
+        "<root attr1='some value' attr2 = \"some value\"/>"
+    ;
+
+    _handler hdl;
+    orcus::sax_parser<_handler> parser(content, strlen(content), hdl);
+    parser.parse();
+}
+
 int main()
 {
     test_transient_stream();
+    test_attr_equal_with_whitespace();
 
     return EXIT_SUCCESS;
 }
