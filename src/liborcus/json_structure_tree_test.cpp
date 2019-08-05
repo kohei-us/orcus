@@ -11,6 +11,7 @@
 #include <vector>
 #include <sstream>
 #include <cassert>
+#include <unordered_set>
 
 #include <boost/filesystem.hpp>
 
@@ -84,10 +85,72 @@ void test_basic()
     }
 }
 
+void test_automatic_range_detection()
+{
+    using detected_group_type = std::unordered_set<std::string>;
+    using detected_groups_type = std::vector<detected_group_type>;
+
+    struct check
+    {
+        fs::path filepath;
+        detected_groups_type expected_groups;
+    };
+
+    std::vector<check> checks =
+    {
+        {
+            SRCDIR"/test/json-structure/arrays-in-object/input.json",
+            {
+                {
+                    "row-group:$['rows']",
+                    "path:$['rows'][]['name']",
+                    "path:$['rows'][]['age']",
+                    "path:$['rows'][]['error']",
+                }
+            }
+        },
+    };
+
+    for (const check& c : checks)
+    {
+        file_content strm(c.filepath.string().data());
+        assert(!strm.empty());
+        json::structure_tree tree;
+        tree.parse(strm.data(), strm.size());
+
+        detected_groups_type observed_groups;
+
+        json::structure_tree::range_handler_type rh = [&observed_groups](json::table_range_t&& range)
+        {
+            detected_group_type observed;
+            for (const std::string& s : range.row_groups)
+            {
+                std::ostringstream os;
+                os << "row-group:" << s;
+                observed.insert(os.str());
+            }
+
+            for (const std::string& s : range.paths)
+            {
+                std::ostringstream os;
+                os << "path:" << s;
+                observed.insert(os.str());
+            }
+
+            observed_groups.push_back(std::move(observed));
+        };
+
+        tree.process_ranges(rh);
+
+        assert(observed_groups == c.expected_groups);
+    }
+}
+
 int main()
 {
     test_no_value_nodes();
     test_basic();
+    test_automatic_range_detection();
 
     return EXIT_SUCCESS;
 }

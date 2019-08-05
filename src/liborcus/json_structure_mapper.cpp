@@ -36,8 +36,8 @@ void structure_mapper::push_range()
 {
     m_range_handler(std::move(m_current_range));
 
-    assert(m_current_range.paths.empty());
-    assert(m_current_range.row_groups.empty());
+    m_current_range.paths.clear();
+    m_current_range.row_groups.clear();
 }
 
 void structure_mapper::traverse(size_t pos)
