@@ -1,0 +1,49 @@
+{
+    "data": [
+        {"category": "A", "region": "en-US",
+            "records": [
+                {"id": 1000, "ref": "A123456789"},
+                {"id": 1001, "ref": "A987654321"}
+            ]
+        },
+        {"category": "B", "region": "ja-JP",
+            "records": [
+                {"id": 2000, "ref": "B123456789"},
+                {"id": 2001, "ref": "B987654321"},
+                {"id": 2002, "ref": "B987654323"}
+            ]
+        },
+        {"category": "C", "region": "fr-CA",
+            "records": [
+                {"id": 3000, "ref": "C123456789"},
+                {"id": 3001, "ref": "C987654320"},
+                {"id": 3002, "ref": "C987654321"},
+                {"id": 3003, "ref": "C987654322"},
+                {"id": 3004, "ref": "C987654323"},
+                {"id": 3005, "ref": "C987654324"},
+                {"id": 3006, "ref": "C987654325"}
+            ]
+        },
+        {"category": "D", "region": "unknown",
+            "records": [
+                {"id": 4000, "ref": "D123456789"},
+            ]
+        },
+        {"category": "E", "records": []},
+        {"category": "F",
+            "records": [
+                {"id": 6000, "ref": "F123456789"}
+            ]
+        },
+        {"category": "G", "region": "en-GB",
+            "records": [
+                {"id": 7000, "ref": "G123456789"},
+                {"id": 7000, "ref": "G123456780"}
+            ]
+        }
+    ],
+    "misc": [
+        [1, 2, 3],
+        [4, 5, 6],
+    ]
+}

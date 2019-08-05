@@ -25,6 +25,7 @@ std::vector<const char*> base_dirs = {
     SRCDIR"/test/json-structure/nested-arrays-mixed-2/",
     SRCDIR"/test/json-structure/repeat-objects/",
     SRCDIR"/test/json-structure/repeat-objects-2/",
+    SRCDIR"/test/json-structure/multiple-ranges/",
 };
 
 /**
@@ -130,6 +131,25 @@ void test_automatic_range_detection()
                     "path:$[]['props']['gamma']",
                     "path:$[]['props']['theta']",
                     "row-group:$",
+                }
+            }
+        },
+        {
+            SRCDIR"/test/json-structure/multiple-ranges/input.json",
+            {
+                {
+                    "path:$['data'][]['category']",
+                    "path:$['data'][]['region']",
+                    "path:$['data'][]['records'][]['id']",
+                    "path:$['data'][]['records'][]['ref']",
+                    "row-group:$['data']",
+                    "row-group:$['data'][]['records']",
+                },
+                {
+                    "path:$['misc'][][0]",
+                    "path:$['misc'][][1]",
+                    "path:$['misc'][][2]",
+                    "row-group:$['misc']",
                 }
             }
         },

@@ -1,0 +1,5 @@
+$object['data'].array[7].object(*)['category'].value
+$object['data'].array[7].object(*)['records'].array[7].object(*)['id'].value
+$object['data'].array[7].object(*)['records'].array[7].object(*)['ref'].value
+$object['data'].array[7].object(*)['region'].value
+$object['misc'].array[2].array(*)[3].value[0,1,2]
