@@ -109,6 +109,30 @@ void test_automatic_range_detection()
                 }
             }
         },
+        {
+            SRCDIR"/test/json-structure/repeat-objects/input.json",
+            {
+                {
+                    "path:$[]['name']",
+                    "path:$[]['age']",
+                    "row-group:$",
+                }
+            }
+        },
+        {
+            SRCDIR"/test/json-structure/repeat-objects-2/input.json",
+            {
+                {
+                    "path:$[]['name']",
+                    "path:$[]['age']",
+                    "path:$[]['props']['alpha']",
+                    "path:$[]['props']['beta']",
+                    "path:$[]['props']['gamma']",
+                    "path:$[]['props']['theta']",
+                    "row-group:$",
+                }
+            }
+        },
     };
 
     for (const check& c : checks)
