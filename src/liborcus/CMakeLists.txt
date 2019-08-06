@@ -183,6 +183,12 @@ add_executable(xml-map-tree-test EXCLUDE_FROM_ALL
     xml_map_tree.cpp
 )
 
+add_executable(json-map-tree-test EXCLUDE_FROM_ALL
+    json_map_tree_test.cpp
+    json_map_tree.cpp
+    spreadsheet_impl_types.cpp
+)
+
 target_compile_definitions(xlsx-sheet-context-test PRIVATE
     __ORCUS_STATIC_LIB
 )
@@ -190,6 +196,7 @@ target_compile_definitions(xlsx-sheet-context-test PRIVATE
 target_link_libraries(odf-helper-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(xlsx-sheet-context-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(xml-map-tree-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
+target_link_libraries(json-map-tree-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
 add_test(odf-helper-test odf-helper-test)
 add_test(xlsx-sheet-context-test xlsx-sheet-context-test)
 add_test(xml-map-tree-test xml-map-tree-test)
@@ -199,6 +206,7 @@ add_dependencies(check
     odf-helper-test
     xlsx-sheet-context-test
     xml-map-tree-test
+    json-map-tree-test
 )
 
 install(
