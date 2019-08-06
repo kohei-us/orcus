@@ -76,7 +76,7 @@ orcus_xml_dump_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLA
 # orcus-json
 
 orcus_json_SOURCES = \
-	orucs_json_cli.hpp \
+	orcus_json_cli.hpp \
 	orcus_json_cli.cpp \
 	orcus_json_cli_map.cpp
 

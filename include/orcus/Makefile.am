@@ -24,6 +24,7 @@ liborcus_HEADERS = \
 	json_parser.hpp \
 	json_parser_base.hpp \
 	json_parser_thread.hpp \
+	json_structure_tree.hpp \
 	measurement.hpp \
 	orcus_csv.hpp \
 	orcus_json.hpp \
