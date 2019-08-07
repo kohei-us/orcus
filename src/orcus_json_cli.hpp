@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_ORCUS_JSON_CLI_HPP
 
 #include "orcus/stream.hpp"
+#include "cli_global.hpp"
 
 #include <ostream>
 
@@ -30,7 +31,7 @@ enum class mode_t
 struct cmd_params
 {
     std::unique_ptr<json_config> config; //< json parser configuration.
-    std::unique_ptr<std::ofstream> fs; //< output stream instance that we own.
+    std::unique_ptr<output_stream> os;
     mode_t mode = mode_t::convert;
     file_content map_file;
 
@@ -40,8 +41,6 @@ struct cmd_params
     cmd_params();
     cmd_params(cmd_params&& other);
     ~cmd_params();
-
-    std::ostream& get_output_stream();
 };
 
 void map_to_sheets_and_dump(const file_content& content, cmd_params& params);

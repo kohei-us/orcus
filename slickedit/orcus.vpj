@@ -550,6 +550,8 @@
                 <F N="../src/spreadsheet/styles.cpp"/>
                 <F N="../src/spreadsheet/view.cpp"/>
             </Folder>
+            <F N="../src/cli_global.cpp"/>
+            <F N="../src/cli_global.hpp"/>
             <F N="../src/orcus_css_dump.cpp"/>
             <F N="../src/orcus_csv_main.cpp"/>
             <F N="../src/orcus_detect_main.cpp"/>

@@ -16,6 +16,7 @@ add_executable(orcus-zip-dump
 )
 
 add_executable(orcus-json
+	${PROJECT_SOURCE_DIR}/src/cli_global.cpp
 	${PROJECT_SOURCE_DIR}/src/orcus_json_cli.cpp
 	${PROJECT_SOURCE_DIR}/src/orcus_json_cli_map.cpp
 )
@@ -31,6 +32,7 @@ add_executable(orcus-csv
 
 add_executable(orcus-xml
     ${PROJECT_SOURCE_DIR}/src/orcus_xml_main.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli_global.cpp
     ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
 )
 

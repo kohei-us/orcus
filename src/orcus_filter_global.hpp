@@ -47,17 +47,6 @@ bool parse_import_filter_args(
 
 std::string gen_help_output_format();
 
-class output_stream
-{
-    std::unique_ptr<std::ofstream> m_ofs;
-    std::ostream* m_os;
-
-public:
-    output_stream(const boost::program_options::variables_map& vm);
-
-    std::ostream& get();
-};
-
 }
 
 #endif

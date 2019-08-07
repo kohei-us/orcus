@@ -16,6 +16,7 @@
 #include "orcus/sax_parser_base.hpp"
 
 #include "orcus_filter_global.hpp"
+#include "cli_global.hpp"
 
 #include <cstdlib>
 #include <cstring>

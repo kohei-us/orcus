@@ -43,29 +43,6 @@ cmd_params::cmd_params(cmd_params&& other) :
 
 cmd_params::~cmd_params() {}
 
-std::ostream& cmd_params::get_output_stream()
-{
-    std::ostream* ostrm = &cout;
-
-    if (!config->output_path.empty())
-    {
-        // Check to make sure the output path doesn't point to an existing
-        // directory.
-        if (fs::is_directory(config->output_path))
-        {
-            std::ostringstream os;
-            os << "Output file path points to an existing directory.";
-            throw std::invalid_argument(os.str());
-        }
-
-        // Output to stdout when output path is not given.
-        fs = std::make_unique<std::ofstream>(config->output_path.data());
-        ostrm = fs.get();
-    }
-
-    return *ostrm;
-}
-
 }}
 
 namespace {
@@ -236,6 +213,8 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         return params;
     }
 
+    params.os = orcus::make_unique<output_stream>(vm);
+
     if (vm.count("mode"))
     {
         std::string s = vm["mode"].as<std::string>();
@@ -300,7 +279,7 @@ std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content
 void build_doc_and_dump(const orcus::file_content& content, detail::cmd_params& params)
 {
     std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
-    std::ostream& os = params.get_output_stream();
+    std::ostream& os = params.os->get();
 
     switch (params.config->output_format)
     {
@@ -388,7 +367,7 @@ void parse_and_write_map_file(const orcus::file_content& content, detail::cmd_pa
         }
     }
 
-    std::ostream& os = params.get_output_stream();
+    std::ostream& os = params.os->get();
     os << map_doc.dump();
 }
 
@@ -415,7 +394,7 @@ int main(int argc, char** argv)
                 json::structure_tree tree;
                 tree.parse(content.data(), content.size());
                 tree.normalize_tree();
-                tree.dump_compact(params.get_output_stream());
+                tree.dump_compact(params.os->get());
                 break;
             }
             case detail::mode_t::map:

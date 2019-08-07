@@ -66,6 +66,8 @@ orcus_zip_dump_CPPFLAGS = $(AM_CPPFLAGS)
 orcus_json_SOURCES = \
 	orcus_json_cli.hpp \
 	orcus_json_cli.cpp \
+	cli_global.hpp \
+	cli_global.cpp \
 	orcus_json_cli_map.cpp
 
 orcus_json_LDFLAGS = \
@@ -177,6 +179,8 @@ orcus_csv_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 orcus_xml_SOURCES = \
 	orcus_filter_global.cpp \
+	cli_global.hpp \
+	cli_global.cpp \
 	orcus_xml_main.cpp
 
 orcus_xml_LDFLAGS = \
