@@ -209,5 +209,36 @@ bool parse_import_filter_args(
     return true;
 }
 
+output_stream::output_stream(const boost::program_options::variables_map& vm) :
+    m_os(&std::cout)
+{
+    if (vm.count("output"))
+    {
+        std::string output_path = vm["output"].as<std::string>();
+
+        if (!output_path.empty())
+        {
+            // Check to make sure the output path doesn't point to an existing
+            // directory.
+            if (fs::is_directory(output_path))
+            {
+                std::ostringstream os;
+                os << "Output file path points to an existing directory.";
+                throw std::invalid_argument(os.str());
+            }
+
+            // Output to stdout when output path is not given.
+            m_ofs = std::make_unique<std::ofstream>(output_path.data());
+            m_os = m_ofs.get();
+        }
+    }
 }
+
+std::ostream& output_stream::get()
+{
+    return *m_os;
+}
+
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

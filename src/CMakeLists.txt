@@ -11,10 +11,6 @@ add_executable(orcus-css-dump
 	${PROJECT_SOURCE_DIR}/src/orcus_css_dump.cpp
 )
 
-add_executable(orcus-xml-dump
-	${PROJECT_SOURCE_DIR}/src/orcus_xml_dump.cpp
-)
-
 add_executable(orcus-zip-dump
 	${PROJECT_SOURCE_DIR}/src/orcus_zip_dump.cpp
 )

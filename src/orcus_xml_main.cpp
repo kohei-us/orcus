@@ -8,10 +8,12 @@
 #include "orcus/orcus_xml.hpp"
 #include "orcus/xml_namespace.hpp"
 #include "orcus/xml_structure_tree.hpp"
+#include "orcus/dom_tree.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/global.hpp"
+#include "orcus/sax_parser_base.hpp"
 
 #include "orcus_filter_global.hpp"
 
@@ -34,6 +36,7 @@ namespace output_mode {
 
 enum class type {
     unknown,
+    dump,
     map,
     transform_xml,
     structure,
@@ -44,6 +47,7 @@ typedef mdds::sorted_string_map<type> map_type;
 // Keys must be sorted.
 const std::vector<map_type::entry> entries =
 {
+    { ORCUS_ASCII("dump"),       type::dump                },
     { ORCUS_ASCII("map"),        type::map                 },
     { ORCUS_ASCII("structure"),  type::structure           },
     { ORCUS_ASCII("transform"),  type::transform_xml       },
@@ -56,6 +60,8 @@ const map_type& get()
 }
 
 } // namespace output_mode
+
+
 
 std::string to_string(output_mode::type t)
 {
@@ -204,14 +210,27 @@ int main(int argc, char** argv)
     if (vm.count("output"))
         output = vm["output"].as<std::string>();
 
+    file_content content(input_path.data());
+
     try
     {
-        file_content content(input_path.data());
-
         if (mode == output_mode::type::structure)
         {
             bool success = parse_and_dump_structure(content, output);
             return success ? EXIT_SUCCESS : EXIT_FAILURE;
+        }
+
+        if (mode == output_mode::type::dump)
+        {
+            xmlns_repository repo;
+            xmlns_context cxt = repo.create_context();
+            dom::document_tree tree(cxt);
+            tree.load(content.data(), content.size());
+
+            output_stream os(vm);
+            tree.dump_compact(os.get());
+
+            return EXIT_SUCCESS;
         }
 
         if (!vm.count("map") || map_path.empty())
@@ -282,6 +301,12 @@ int main(int argc, char** argv)
             default:
                 ;
         }
+    }
+    catch (const sax::malformed_xml_error& e)
+    {
+        cerr << create_parse_error_output(content.str(), e.offset()) << endl;
+        cerr << e.what() << endl;
+        return EXIT_FAILURE;
     }
     catch (const std::exception& e)
     {

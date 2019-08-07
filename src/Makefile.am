@@ -35,7 +35,6 @@ if WITH_TOOLS
 bin_PROGRAMS += \
 	orcus-css-dump \
 	orcus-zip-dump \
-	orcus-xml-dump \
 	orcus-mso-encryption \
 	orcus-detect \
 	orcus-json \
@@ -61,17 +60,6 @@ orcus_zip_dump_LDADD = \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
 orcus_zip_dump_CPPFLAGS = $(AM_CPPFLAGS)
-
-# orcus-xml-dump
-
-orcus_xml_dump_SOURCES = \
-	orcus_xml_dump.cpp
-
-orcus_xml_dump_LDADD = \
-	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	liborcus/liborcus-@ORCUS_API_VERSION@.la
-
-orcus_xml_dump_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 # orcus-json
 
