@@ -1,3 +1,65 @@
+* json parser
+
+  * added test cases from JSONTestSuite.
+
+  * fixed a bug on parsing an empty array containing one or more blank
+    chracters between the brackets.
+
+* sax parser
+
+  * fixed a bug on parsing an attribute value with encoded character
+    immediately followed by a ';', such as '&amp;;'.
+
+  * fixed a bug on parsing an assignment character '=' that either preceded or
+    followed by whitespaces in attribute definition.
+
+  * optionally use SSE4.2 intrinsics to speed up element name parsing.
+
+* orcus-xml
+
+  * revised its cli internface to make use of boost's program_options.
+
+  * orcus-xml-dump's functionality has been combined into orcus-xml.
+
+  * map mode now supports nested repeat elements to be mapped as range fields.
+
+* orcus-json
+
+  * map mode has been added to allow mapping of JSON documents to spreadsheet
+    document model.  This mode either takes explicit mapping rule via map
+    file, or performs automatic mapping by auto-identifying mappable ranges by
+    analyzing the structure of the JSON document.
+
+  * structure mode has been added to display the logical structures of JSON
+    documents.
+
+  * significantly improved performance of json document tree by utilizing
+    object pool to manage the life cycles of json value instances.
+
+* xls-xml
+
+  * added support for importing named color values in the ss:Color attributes.
+
+  * added support for handling UTF-16 streams that contains byte order marks.
+
+* spreadsheet document
+
+  * significantly improved performance of flat format output generation.
+
+* internal
+
+  * string_pool now uses boost's object_pool to manage the instances of stored
+    strings.
+
+  * file_content class has been added to memory-map file contents instead of
+    loading them in-memory.
+
+  * memory_content class has been added to map in-memory buffer with the
+    optional ability to perform unicode conversion.
+
+  * dom_tree has been renamed to dom::document_tree, and its interface has
+    been cleaned up to hide its implementation details.
+
 orcus 0.14.1
 
 * addressed a number of coverity issues.
