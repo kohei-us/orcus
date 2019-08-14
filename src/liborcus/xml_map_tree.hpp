@@ -108,8 +108,8 @@ public:
 
     struct field_in_range
     {
-        range_reference* ref;
-        spreadsheet::col_t column_pos;
+        range_reference* ref = nullptr;
+        spreadsheet::col_t column_pos = -1;
     };
 
     typedef std::map<cell_position, std::unique_ptr<range_reference>> range_ref_map_type;
