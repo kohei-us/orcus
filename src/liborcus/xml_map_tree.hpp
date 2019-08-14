@@ -20,6 +20,7 @@
 #include <ostream>
 #include <map>
 #include <vector>
+#include <deque>
 #include <memory>
 
 namespace orcus {
@@ -77,7 +78,7 @@ public:
 
     struct element;
     struct linkable;
-    typedef std::vector<std::unique_ptr<element>> element_store_type;
+    typedef std::deque<std::unique_ptr<element>> element_store_type;
     typedef std::vector<element*> element_list_type;
     typedef std::vector<const element*> const_element_list_type;
 
