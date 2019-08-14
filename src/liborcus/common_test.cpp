@@ -130,7 +130,8 @@ void test_measurement_conversion_2()
 
     for (const check& c : checks)
     {
-        double observed = convert(c.original, c.from, c.to);
+        // without volatile, sometimes the following assert evaluates to false on 32-bit debian platforms.
+        volatile double observed = convert(c.original, c.from, c.to);
         assert(observed == c.expected);
     }
 }
