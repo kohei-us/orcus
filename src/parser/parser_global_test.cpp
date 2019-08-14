@@ -12,9 +12,6 @@
 #include <cstring>
 #include <cassert>
 #include <limits>
-#include <iostream>
-
-using namespace std;
 
 namespace {
 
@@ -22,57 +19,36 @@ struct test_case
 {
     const char* str;
     double val;
-    double multiplier;
 };
-
-/**
- * To work around double-precision rounding errors, this function compares
- * the two values as integers, after both values get multiplifed by the
- * specified multiplier to make the values large enough to allow integer
- * comparison.
- */
-bool compare_equal(double a, double b, double multiplier)
-{
-    int ia = std::round(a * multiplier * 10);
-    int ib = std::round(b * multiplier * 10);
-
-    if (ia != ib)
-    {
-        cout << "failed integer comparison: (ia = " << ia << "; ib = " << ib << ")" << endl;
-    }
-
-    return ia == ib;
-}
 
 void test_parse_numbers()
 {
-    std::vector<test_case> test_cases =
-    {
-        { "1", 1.0, 1.0 },
-        { "1.0", 1.0, 1.0 },
-        { "-1.0", -1.0, 1.0 },
-        { "2e2", 200.0, 1.0 },
-        { "1.2", 1.2, 10.0 },
-        { "-0.0001", -0.0001, 10000.0 },
-        { "-0.0", 0.0, 1.0 },
-        { "+.", std::numeric_limits<double>::signaling_NaN(), 1.0 },
-        { "+e", std::numeric_limits<double>::signaling_NaN(), 1.0 },
-        { "+e1", std::numeric_limits<double>::signaling_NaN(), 1.0 },
-        { "+ ",  std::numeric_limits<double>::signaling_NaN(), 1.0 },
-        { "- ",  std::numeric_limits<double>::signaling_NaN(), 1.0 },
+    std::vector<test_case> test_cases = {
+        {"1", 1.0},
+        {"1.0", 1.0},
+        {"-1.0", -1.0},
+        {"2e2", 200.0},
+        {"1.2", 1.2},
+        {"-0.0001", -0.0001},
+        {"-0.0", 0.0},
+        {"+.", std::numeric_limits<double>::signaling_NaN()},
+        {"+e", std::numeric_limits<double>::signaling_NaN()},
+        {"+e1", std::numeric_limits<double>::signaling_NaN()},
+        {"+ ",  std::numeric_limits<double>::signaling_NaN()},
+        {"- ",  std::numeric_limits<double>::signaling_NaN()}
     };
 
     for (const test_case& test_data : test_cases)
     {
         const char* str = test_data.str;
-        const double val = orcus::parse_numeric(str, std::strlen(test_data.str));
+        volatile double val = orcus::parse_numeric(str, std::strlen(test_data.str));
         if (std::isnan(test_data.val))
         {
             assert(std::isnan(val));
         }
         else
         {
-            assert(compare_equal(val, test_data.val, test_data.multiplier));
+            assert(val == test_data.val);
         }
     }
 }
