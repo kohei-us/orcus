@@ -55,7 +55,6 @@ bin_data = \
     bin/orcus-test.sh \
     bin/orcus-xls-xml.sh \
     bin/orcus-xlsx.sh \
-    bin/orcus-xml-dump.sh \
     bin/orcus-xml.sh \
     bin/orcus-yaml.sh \
     bin/orcus-zip-dump.sh \

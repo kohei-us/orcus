@@ -58,7 +58,6 @@ add_executable(orcus-xls-xml
 
 target_link_libraries(orcus-detect liborcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-css-dump liborcus-parser-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
-target_link_libraries(orcus-xml-dump liborcus-parser-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-zip-dump liborcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(orcus-json liborcus-parser-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-yaml liborcus-parser-${ORCUS_API_VERSION} liborcus-${ORCUS_API_VERSION})
@@ -143,7 +142,6 @@ install(
     TARGETS
         orcus-detect
         orcus-css-dump
-        orcus-xml-dump
         orcus-zip-dump
         orcus-json
         orcus-yaml
