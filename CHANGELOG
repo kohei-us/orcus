@@ -1,5 +1,10 @@
 orcus 0.15.0
 
+* spreadsheet interface
+
+  * import_sheet::fill_down_cells() has been added as a required method, to
+    allow the import filter code to duplicate cell value downward in one step.
+
 * json parser
 
   * added test cases from JSONTestSuite.
