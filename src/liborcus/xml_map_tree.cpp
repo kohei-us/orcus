@@ -723,34 +723,27 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
         element* elem = r.first;
         bool created = r.second;
 
-        if (created)
-        {
-            // No element of that name exists.
-            elem->elem_type = element_linked;
-            elem->ref_type = ref_type;
-        }
-        else
+        if (!created)
         {
             // This element already exists.  Check if this is already linked.
             if (elem->ref_type != reference_unknown || elem->elem_type != element_unlinked)
                 throw xpath_error("This element is already linked.  You can't link the same element twice.");
+        }
 
-            // Turn this existing non-linked element into a linked one.
-            delete elem->child_elements;
-            elem->elem_type = element_linked;
-            elem->ref_type = ref_type;
-            switch (ref_type)
-            {
-                case reference_cell:
-                    elem->cell_ref = new cell_reference;
-                    break;
-                case reference_range_field:
-                    elem->field_ref = new field_in_range;
-                    break;
-                default:
-                    throw general_error("Unknown reference type in xml_map_tree::get_element_stack.");
-            }
-
+        // Turn this existing non-linked element into a linked one.
+        delete elem->child_elements;
+        elem->elem_type = element_linked;
+        elem->ref_type = ref_type;
+        switch (ref_type)
+        {
+            case reference_cell:
+                elem->cell_ref = new cell_reference;
+                break;
+            case reference_range_field:
+                elem->field_ref = new field_in_range;
+                break;
+            default:
+                throw general_error("Unknown reference type in xml_map_tree::get_element_stack.");
         }
 
         ret.elem_stack.push_back(elem);
