@@ -10,7 +10,7 @@ orcus 0.15.0
   * added test cases from JSONTestSuite.
 
   * fixed a bug on parsing an empty array containing one or more blank
-    chracters between the brackets.
+    characters between the brackets.
 
 * sax parser
 
