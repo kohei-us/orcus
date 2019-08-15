@@ -1,3 +1,12 @@
+* fixed incorrect handling of newly created elements in xml_map_tree.
+
+* fixed segfault caused by double deletion of allocated memory for
+  xml_map_tree::element, which seemed to happen only on 32-bit gcc builds.
+
+* fixed weird test failures related to equality check of two double-precision
+  values, caused probably by aggressive compiler optimization which only seems
+  to get triggered in 32-bit gcc builds.
+
 orcus 0.15.0
 
 * spreadsheet interface
