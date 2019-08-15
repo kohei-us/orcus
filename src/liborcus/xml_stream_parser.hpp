@@ -59,7 +59,7 @@ public:
         xmlns_repository& ns_repo, const tokens& tokens, const char* content, size_t size);
     virtual ~xml_stream_parser() override;
 
-    virtual void parse();
+    virtual void parse() override;
 };
 
 class threaded_xml_stream_parser : public xml_stream_parser_base
@@ -72,7 +72,7 @@ public:
         xmlns_repository& ns_repo, const tokens& tokens, const char* content, size_t size);
     virtual ~threaded_xml_stream_parser() override;
 
-    virtual void parse();
+    virtual void parse() override;
 
     void swap_string_pool(string_pool& pool);
 };
