@@ -271,7 +271,6 @@ private:
     named_expressions_type m_named_exps_sheet;
     selection m_cursor_selection; /// cursor selection in a single pane.
     split_pane m_split_pane;
-    spreadsheet::sheet_pane_t m_active_pane;
 
     std::unique_ptr<style_type> m_current_style;
     std::unique_ptr<style_type> m_default_style;
