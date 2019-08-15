@@ -19,7 +19,7 @@ orcus 0.15.0
 
 * orcus-xml
 
-  * revised its cli internface to make use of boost's program_options.
+  * revised its cli interface to make use of boost's program_options.
 
   * orcus-xml-dump's functionality has been combined into orcus-xml.
 
