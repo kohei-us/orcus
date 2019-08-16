@@ -23,6 +23,8 @@
 #include <deque>
 #include <memory>
 
+#include <boost/pool/object_pool.hpp>
+
 namespace orcus {
 
 class xmlns_repository;
@@ -152,7 +154,7 @@ public:
         reference_type ref_type;
 
         union {
-            element_store_type* child_elements;
+            element_store_type* child_elements = nullptr;
             cell_reference* cell_ref;
             field_in_range* field_ref;
         };
@@ -179,12 +181,13 @@ public:
 
         std::vector<spreadsheet::col_t> linked_range_fields;
 
-        element(xmlns_id_t _ns, const pstring& _name, element_type _elem_type, reference_type _ref_type);
+        element(xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, element_type _elem_type, reference_type _ref_type);
         ~element();
 
         element* get_child(xmlns_id_t _ns, const pstring& _name);
 
-        std::pair<element*, bool> get_or_create_child(string_pool& _name_pool, xmlns_id_t _ns, const pstring& _name);
+        std::pair<element*, bool> get_or_create_child(
+            xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name);
 
         /**
          * Unlinked attribute anchor is an element that's not linked but has
@@ -195,6 +198,8 @@ public:
          */
         bool unlinked_attribute_anchor() const;
     };
+
+    friend class linkable;
 
 public:
 
@@ -282,6 +287,8 @@ private:
 
     /** pool of element names. */
     mutable string_pool m_names;
+
+    boost::object_pool<element_store_type> m_element_store_pool;
 
     std::unique_ptr<element> mp_root;
 };

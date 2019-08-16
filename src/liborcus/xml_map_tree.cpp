@@ -190,6 +190,7 @@ xml_map_tree::attribute::~attribute()
 }
 
 xml_map_tree::element::element(
+    xml_map_tree& parent,
     xmlns_id_t _ns, const pstring& _name, element_type _elem_type, reference_type _ref_type) :
     linkable(_ns, _name, node_element),
     elem_type(_elem_type),
@@ -200,7 +201,7 @@ xml_map_tree::element::element(
 {
     if (elem_type == element_unlinked)
     {
-        child_elements = new element_store_type;
+        child_elements = parent.m_element_store_pool.construct();
         return;
     }
 
@@ -222,10 +223,7 @@ xml_map_tree::element::element(
 xml_map_tree::element::~element()
 {
     if (elem_type == element_unlinked)
-    {
-        delete child_elements;
         return;
-    }
 
     assert(elem_type == element_linked);
 
@@ -256,7 +254,7 @@ xml_map_tree::element* xml_map_tree::element::get_child(xmlns_id_t _ns, const ps
 }
 
 std::pair<xml_map_tree::element*, bool> xml_map_tree::element::get_or_create_child(
-    string_pool& _name_pool, xmlns_id_t _ns, const pstring& _name)
+    xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name)
 {
     using ret_type = std::pair<xml_map_tree::element*, bool>;
 
@@ -266,10 +264,12 @@ std::pair<xml_map_tree::element*, bool> xml_map_tree::element::get_or_create_chi
     if (it != child_elements->end())
         return ret_type(it->get(), false);
 
+    string_pool& sp = parent.m_names;
+
     // Insert a new element of this name.
     child_elements->push_back(
         orcus::make_unique<element>(
-            _ns, _name_pool.intern(_name.get(), _name.size()).first,
+            parent, _ns, sp.intern(_name.get(), _name.size()).first,
             element_unlinked, reference_unknown));
 
     return ret_type(child_elements->back().get(), true);
@@ -674,7 +674,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
             throw xpath_error("root element cannot be an attribute.");
 
         mp_root = orcus::make_unique<element>(
-            token.ns, m_names.intern(token.name).first,
+            *this, token.ns, m_names.intern(token.name).first,
             element_unlinked, reference_unknown);
     }
 
@@ -690,7 +690,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
         if (token.attribute)
             throw xpath_error("attribute must always be at the end of the path.");
 
-        cur_element = cur_element->get_or_create_child(m_names, token.ns, token.name).first;
+        cur_element = cur_element->get_or_create_child(*this, token.ns, token.name).first;
         ret.elem_stack.push_back(cur_element);
         token = token_next;
     }
@@ -719,7 +719,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
     else
     {
         // Check if an element of the same name already exists.
-        auto r = cur_element->get_or_create_child(m_names, token.ns, token.name);
+        auto r = cur_element->get_or_create_child(*this, token.ns, token.name);
         element* elem = r.first;
         bool created = r.second;
 
@@ -731,7 +731,6 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
         }
 
         // Turn this existing non-linked element into a linked one.
-        delete elem->child_elements;
         elem->elem_type = element_linked;
         elem->ref_type = ref_type;
         switch (ref_type)
@@ -773,7 +772,7 @@ xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
             throw xpath_error("root element cannot be an attribute.");
 
         mp_root = orcus::make_unique<element>(
-            token.ns, m_names.intern(token.name).first,
+            *this, token.ns, m_names.intern(token.name).first,
             element_unlinked, reference_unknown);
     }
 
@@ -786,7 +785,7 @@ xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
         if (token.attribute)
             throw xpath_error("attribute was not expected.");
 
-        cur_element = cur_element->get_or_create_child(m_names, token.ns, token.name).first;
+        cur_element = cur_element->get_or_create_child(*this, token.ns, token.name).first;
     }
 
     assert(cur_element);
