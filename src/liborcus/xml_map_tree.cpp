@@ -158,36 +158,24 @@ xml_map_tree::range_reference::range_reference(const cell_position& _pos) :
 xml_map_tree::linkable::linkable(xmlns_id_t _ns, const pstring& _name, linkable_node_type _node_type) :
     ns(_ns), name(_name), node_type(_node_type) {}
 
-xml_map_tree::attribute::attribute(xmlns_id_t _ns, const pstring& _name, reference_type _ref_type) :
+xml_map_tree::attribute::attribute(
+    xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type) :
     linkable(_ns, _name, node_attribute), ref_type(_ref_type)
 {
     switch (ref_type)
     {
         case reference_cell:
-            cell_ref = new cell_reference;
-        break;
+            cell_ref = parent.m_cell_reference_pool.construct();
+            break;
         case reference_range_field:
-            field_ref = new field_in_range;
-        break;
+            field_ref = parent.m_field_in_range_pool.construct();
+            break;
         default:
             throw general_error("unexpected reference type in the constructor of attribute.");
     }
 }
 
-xml_map_tree::attribute::~attribute()
-{
-    switch (ref_type)
-    {
-        case reference_cell:
-            delete cell_ref;
-        break;
-        case reference_range_field:
-            delete field_ref;
-        break;
-        default:
-            assert(!"unexpected reference type in the destructor of attribute.");
-    }
-}
+xml_map_tree::attribute::~attribute() {}
 
 xml_map_tree::element::element(
     xml_map_tree& parent,
@@ -210,35 +198,17 @@ xml_map_tree::element::element(
     switch (ref_type)
     {
         case reference_cell:
-            cell_ref = new cell_reference;
-        break;
+            cell_ref = parent.m_cell_reference_pool.construct();
+            break;
         case reference_range_field:
-            field_ref = new field_in_range;
-        break;
+            field_ref = parent.m_field_in_range_pool.construct();
+            break;
         default:
             throw general_error("unexpected reference type in the constructor of element.");
     }
 }
 
-xml_map_tree::element::~element()
-{
-    if (elem_type == element_unlinked)
-        return;
-
-    assert(elem_type == element_linked);
-
-    switch (ref_type)
-    {
-        case reference_cell:
-            delete cell_ref;
-        break;
-        case reference_range_field:
-            delete field_ref;
-        break;
-        default:
-            assert(!"unexpected reference type in the destructor of element.");
-    }
-}
+xml_map_tree::element::~element() {}
 
 xml_map_tree::element* xml_map_tree::element::get_child(xmlns_id_t _ns, const pstring& _name)
 {
@@ -712,7 +682,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
 
         attrs.push_back(
             orcus::make_unique<attribute>(
-                token.ns, m_names.intern(token.name.get(), token.name.size()).first, ref_type));
+                *this, token.ns, m_names.intern(token.name.get(), token.name.size()).first, ref_type));
 
         ret.node = attrs.back().get();
     }
@@ -736,10 +706,10 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
         switch (ref_type)
         {
             case reference_cell:
-                elem->cell_ref = new cell_reference;
+                elem->cell_ref = m_cell_reference_pool.construct();
                 break;
             case reference_range_field:
-                elem->field_ref = new field_in_range;
+                elem->field_ref = m_field_in_range_pool.construct();
                 break;
             default:
                 throw general_error("Unknown reference type in xml_map_tree::get_element_stack.");

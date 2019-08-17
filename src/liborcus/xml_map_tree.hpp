@@ -137,12 +137,14 @@ public:
     struct attribute : public linkable
     {
         reference_type ref_type;
-        union {
-            cell_reference* cell_ref;
+
+        union
+        {
+            cell_reference* cell_ref = nullptr;
             field_in_range* field_ref;
         };
 
-        attribute(xmlns_id_t _ns, const pstring& _name, reference_type _ref_type);
+        attribute(xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type);
         ~attribute();
     };
 
@@ -153,7 +155,8 @@ public:
         element_type elem_type;
         reference_type ref_type;
 
-        union {
+        union
+        {
             element_store_type* child_elements = nullptr;
             cell_reference* cell_ref;
             field_in_range* field_ref;
@@ -289,6 +292,8 @@ private:
     mutable string_pool m_names;
 
     boost::object_pool<element_store_type> m_element_store_pool;
+    boost::object_pool<cell_reference> m_cell_reference_pool;
+    boost::object_pool<field_in_range> m_field_in_range_pool;
 
     std::unique_ptr<element> mp_root;
 };
