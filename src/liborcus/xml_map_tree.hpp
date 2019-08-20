@@ -114,7 +114,7 @@ public:
         spreadsheet::col_t column_pos = -1;
     };
 
-    typedef std::map<cell_position, std::unique_ptr<range_reference>> range_ref_map_type;
+    typedef std::map<cell_position, range_reference*> range_ref_map_type;
 
     enum linkable_node_type { node_unknown, node_element, node_attribute };
     enum reference_type { reference_unknown, reference_cell, reference_range_field };
@@ -296,6 +296,7 @@ private:
 
     boost::object_pool<element_store_type> m_element_store_pool;
     boost::object_pool<cell_reference> m_cell_reference_pool;
+    boost::object_pool<range_reference> m_range_reference_pool;
     boost::object_pool<field_in_range> m_field_in_range_pool;
     boost::object_pool<attribute> m_attribute_pool;
     boost::object_pool<element> m_element_pool;

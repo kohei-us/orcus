@@ -656,10 +656,11 @@ xml_map_tree::range_reference* xml_map_tree::get_range_reference(const cell_posi
 
         it = m_field_refs.insert(
             it, range_ref_map_type::value_type(
-                pos_safe, orcus::make_unique<range_reference>(pos_safe)));
+                pos_safe,
+                m_range_reference_pool.construct(pos_safe)));
     }
 
-    return it->second.get();
+    return it->second;
 }
 
 void xml_map_tree::create_ref_store(linkable& node)
