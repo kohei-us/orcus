@@ -1,3 +1,9 @@
+orcus 0.15.1
+
+* switched xml_map_tree to using boost::object_pool to manage the life
+  cycles of the objects within xml_map_tree, to avoid memory
+  fragmentation.
+
 * fixed incorrect handling of newly created elements in xml_map_tree.
 
 * fixed segfault caused by double deletion of allocated memory for
