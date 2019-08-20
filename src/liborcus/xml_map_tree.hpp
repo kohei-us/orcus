@@ -181,7 +181,7 @@ public:
 
         element* get_child(xmlns_id_t _ns, const pstring& _name);
 
-        std::pair<element*, bool> get_or_create_child(
+        element* get_or_create_child(
             xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name);
 
         element* get_or_create_linked_child(

@@ -203,16 +203,14 @@ xml_map_tree::element* xml_map_tree::element::get_child(xmlns_id_t _ns, const ps
     return it == child_elements->end() ? nullptr : it->get();
 }
 
-std::pair<xml_map_tree::element*, bool> xml_map_tree::element::get_or_create_child(
+xml_map_tree::element* xml_map_tree::element::get_or_create_child(
     xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name)
 {
-    using ret_type = std::pair<xml_map_tree::element*, bool>;
-
     auto it = std::find_if(
         child_elements->begin(), child_elements->end(), find_by_name<element>(_ns, _name));
 
     if (it != child_elements->end())
-        return ret_type(it->get(), false);
+        return it->get();
 
     string_pool& sp = parent.m_names;
 
@@ -222,7 +220,7 @@ std::pair<xml_map_tree::element*, bool> xml_map_tree::element::get_or_create_chi
             parent, _ns, sp.intern(_name.get(), _name.size()).first,
             element_unlinked, reference_unknown));
 
-    return ret_type(child_elements->back().get(), true);
+    return child_elements->back().get();
 }
 
 xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
@@ -693,7 +691,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
         if (token.attribute)
             throw xpath_error("attribute must always be at the end of the path.");
 
-        cur_element = cur_element->get_or_create_child(*this, token.ns, token.name).first;
+        cur_element = cur_element->get_or_create_child(*this, token.ns, token.name);
         ret.elem_stack.push_back(cur_element);
         token = token_next;
     }
@@ -762,7 +760,7 @@ xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
         if (token.attribute)
             throw xpath_error("attribute was not expected.");
 
-        cur_element = cur_element->get_or_create_child(*this, token.ns, token.name).first;
+        cur_element = cur_element->get_or_create_child(*this, token.ns, token.name);
     }
 
     assert(cur_element);
