@@ -149,7 +149,7 @@ public:
         ~attribute();
     };
 
-    typedef std::deque<attribute*> attribute_store_type;
+    using attribute_store_type = std::deque<attribute*>;
 
     struct element : public linkable
     {
@@ -178,7 +178,9 @@ public:
 
         std::vector<spreadsheet::col_t> linked_range_fields;
 
-        element(xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, element_type _elem_type, reference_type _ref_type);
+        using args_type = std::tuple<xml_map_tree&, xmlns_id_t, const pstring&, element_type, reference_type>;
+
+        element(args_type args);
         ~element();
 
         element* get_child(xmlns_id_t _ns, const pstring& _name);

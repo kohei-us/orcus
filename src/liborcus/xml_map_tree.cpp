@@ -155,16 +155,16 @@ xml_map_tree::attribute::attribute(args_type args) :
 
 xml_map_tree::attribute::~attribute() {}
 
-xml_map_tree::element::element(
-    xml_map_tree& parent,
-    xmlns_id_t _ns, const pstring& _name, element_type _elem_type, reference_type _ref_type) :
-    linkable(parent, _ns, _name, node_element, _ref_type),
-    elem_type(_elem_type),
+xml_map_tree::element::element(args_type args) :
+    linkable(std::get<0>(args), std::get<1>(args), std::get<2>(args), node_element, std::get<4>(args)),
+    elem_type(std::get<3>(args)),
     child_elements(nullptr),
     range_parent(nullptr),
     row_group(nullptr),
     row_group_position(0)
 {
+    xml_map_tree& parent = std::get<0>(args);
+
     if (elem_type == element_unlinked)
     {
         child_elements = parent.m_element_store_pool.construct();
@@ -213,8 +213,15 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_child(
     // Insert a new element of this name.
     child_elements->push_back(
         orcus::make_unique<element>(
-            parent, _ns, sp.intern(_name.get(), _name.size()).first,
-            element_unlinked, reference_unknown));
+            element::args_type(
+                parent,
+                _ns,
+                sp.intern(_name.get(), _name.size()).first,
+                element_unlinked,
+                reference_unknown
+            )
+        )
+    );
 
     return child_elements->back().get();
 }
@@ -246,8 +253,15 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
     // Insert a new linked element of this name.
     child_elements->push_back(
         orcus::make_unique<element>(
-            parent, _ns, sp.intern(_name.get(), _name.size()).first,
-            element_linked, _ref_type));
+            element::args_type(
+                parent,
+                _ns,
+                sp.intern(_name.get(), _name.size()).first,
+                element_linked,
+                _ref_type
+            )
+        )
+    );
 
     return child_elements->back().get();
 }
@@ -685,8 +699,14 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
             throw xpath_error("root element cannot be an attribute.");
 
         mp_root = orcus::make_unique<element>(
-            *this, token.ns, m_names.intern(token.name).first,
-            element_unlinked, reference_unknown);
+            element::args_type(
+                *this,
+                token.ns,
+                m_names.intern(token.name).first,
+                element_unlinked,
+                reference_unknown
+            )
+        );
     }
 
     ret.elem_stack.push_back(mp_root.get());
@@ -769,8 +789,14 @@ xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
             throw xpath_error("root element cannot be an attribute.");
 
         mp_root = orcus::make_unique<element>(
-            *this, token.ns, m_names.intern(token.name).first,
-            element_unlinked, reference_unknown);
+            element::args_type(
+                *this,
+                token.ns,
+                m_names.intern(token.name).first,
+                element_unlinked,
+                reference_unknown
+            )
+        );
     }
 
     element* cur_element = mp_root.get();
