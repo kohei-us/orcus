@@ -156,34 +156,25 @@ xml_map_tree::cell_reference::cell_reference() {}
 xml_map_tree::range_reference::range_reference(const cell_position& _pos) :
     pos(_pos), row_position(0) {}
 
-xml_map_tree::linkable::linkable(xmlns_id_t _ns, const pstring& _name, linkable_node_type _node_type) :
-    ns(_ns), name(_name), node_type(_node_type) {}
+xml_map_tree::linkable::linkable(
+    xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, linkable_node_type _node_type, reference_type _ref_type) :
+    ns(_ns), name(_name), node_type(_node_type), ref_type(_ref_type)
+{
+    parent.create_ref_store(*this);
+}
 
 xml_map_tree::attribute::attribute(
     xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type) :
-    linkable(_ns, _name, node_attribute), ref_type(_ref_type)
-{
-    switch (ref_type)
-    {
-        case reference_cell:
-            cell_ref = parent.m_cell_reference_pool.construct();
-            break;
-        case reference_range_field:
-            field_ref = parent.m_field_in_range_pool.construct();
-            break;
-        default:
-            throw general_error("unexpected reference type in the constructor of attribute.");
-    }
-}
+    linkable(parent, _ns, _name, node_attribute, _ref_type) {}
 
 xml_map_tree::attribute::~attribute() {}
 
 xml_map_tree::element::element(
     xml_map_tree& parent,
     xmlns_id_t _ns, const pstring& _name, element_type _elem_type, reference_type _ref_type) :
-    linkable(_ns, _name, node_element),
+    linkable(parent, _ns, _name, node_element, _ref_type),
     elem_type(_elem_type),
-    ref_type(_ref_type),
+    child_elements(nullptr),
     range_parent(nullptr),
     row_group(nullptr),
     row_group_position(0)
@@ -195,7 +186,6 @@ xml_map_tree::element::element(
     }
 
     assert(elem_type == element_linked);
-    parent.create_ref_store(*this);
 }
 
 xml_map_tree::element::~element() {}
@@ -254,7 +244,7 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
 
     string_pool& sp = parent.m_names;
 
-    // Insert a new element of this name.
+    // Insert a new linked element of this name.
     child_elements->push_back(
         orcus::make_unique<element>(
             parent, _ns, sp.intern(_name.get(), _name.size()).first,
@@ -650,18 +640,18 @@ xml_map_tree::range_reference* xml_map_tree::get_range_reference(const cell_posi
     return it->second.get();
 }
 
-void xml_map_tree::create_ref_store(element& elem)
+void xml_map_tree::create_ref_store(linkable& node)
 {
-    switch (elem.ref_type)
+    switch (node.ref_type)
     {
         case xml_map_tree::reference_cell:
-            elem.cell_ref = m_cell_reference_pool.construct();
+            node.cell_ref = m_cell_reference_pool.construct();
             break;
         case xml_map_tree::reference_range_field:
-            elem.field_ref = m_field_in_range_pool.construct();
+            node.field_ref = m_field_in_range_pool.construct();
             break;
-        default:
-            throw general_error("unexpected reference type in the constructor of element.");
+        case xml_map_tree::reference_unknown:
+            break;
     }
 }
 
@@ -731,7 +721,6 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
     }
     else
     {
-        // Check if an element of the same name already exists.
         element* elem = cur_element->get_or_create_linked_child(*this, token.ns, token.name, ref_type);
         ret.elem_stack.push_back(elem);
         ret.node = elem;

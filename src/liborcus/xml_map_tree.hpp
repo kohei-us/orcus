@@ -125,17 +125,6 @@ public:
         xmlns_id_t ns;
         pstring name;
         linkable_node_type node_type;
-
-        mutable pstring ns_alias; // namespace alias used in the content stream.
-
-        linkable(const linkable&) = delete;
-        linkable& operator=(const linkable&) = delete;
-
-        linkable(xmlns_id_t _ns, const pstring& _name, linkable_node_type _node_type);
-    };
-
-    struct attribute : public linkable
-    {
         reference_type ref_type;
 
         union
@@ -144,6 +133,16 @@ public:
             field_in_range* field_ref;
         };
 
+        mutable pstring ns_alias; // namespace alias used in the content stream.
+
+        linkable(const linkable&) = delete;
+        linkable& operator=(const linkable&) = delete;
+
+        linkable(xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, linkable_node_type _node_type, reference_type _ref_type);
+    };
+
+    struct attribute : public linkable
+    {
         attribute(xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type);
         ~attribute();
     };
@@ -153,14 +152,7 @@ public:
     struct element : public linkable
     {
         element_type elem_type;
-        reference_type ref_type;
-
-        union
-        {
-            element_store_type* child_elements = nullptr;
-            cell_reference* cell_ref;
-            field_in_range* field_ref;
-        };
+        element_store_type* child_elements;
 
         mutable element_position stream_pos; // position of this element in the content stream
 
@@ -258,7 +250,7 @@ public:
 private:
     range_reference* get_range_reference(const cell_position& pos);
 
-    void create_ref_store(element& elem);
+    void create_ref_store(linkable& node);
 
     struct linked_node_type
     {
