@@ -203,7 +203,7 @@ public:
         bool unlinked_attribute_anchor() const;
     };
 
-    friend class linkable;
+    friend struct linkable;
 
 public:
 
