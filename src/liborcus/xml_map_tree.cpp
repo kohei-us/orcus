@@ -16,6 +16,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -194,18 +195,7 @@ xml_map_tree::element::element(
     }
 
     assert(elem_type == element_linked);
-
-    switch (ref_type)
-    {
-        case reference_cell:
-            cell_ref = parent.m_cell_reference_pool.construct();
-            break;
-        case reference_range_field:
-            field_ref = parent.m_field_in_range_pool.construct();
-            break;
-        default:
-            throw general_error("unexpected reference type in the constructor of element.");
-    }
+    parent.create_ref_store(*this);
 }
 
 xml_map_tree::element::~element() {}
@@ -243,6 +233,44 @@ std::pair<xml_map_tree::element*, bool> xml_map_tree::element::get_or_create_chi
             element_unlinked, reference_unknown));
 
     return ret_type(child_elements->back().get(), true);
+}
+
+xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
+    xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type)
+{
+    auto it = std::find_if(
+        child_elements->begin(), child_elements->end(), find_by_name<element>(_ns, _name));
+
+    if (it != child_elements->end())
+    {
+        // Specified child element already exists. Make sure it's unlinked.
+        element* elem = it->get();
+        if (elem->ref_type != reference_unknown || elem->elem_type != element_unlinked)
+            throw xpath_error("This element is already linked.  You can't link the same element twice.");
+
+        elem->link_reference(parent, _ref_type);
+        return elem;
+    }
+
+    string_pool& sp = parent.m_names;
+
+    // Insert a new element of this name.
+    child_elements->push_back(
+        orcus::make_unique<element>(
+            parent, _ns, sp.intern(_name.get(), _name.size()).first,
+            element_linked, _ref_type));
+
+    return child_elements->back().get();
+}
+
+void xml_map_tree::element::link_reference(xml_map_tree& parent, reference_type _ref_type)
+{
+    if (elem_type == element_unlinked)
+        parent.m_element_store_pool.destroy(child_elements);
+
+    elem_type = element_linked;
+    ref_type = _ref_type;
+    parent.create_ref_store(*this);
 }
 
 bool xml_map_tree::element::unlinked_attribute_anchor() const
@@ -622,6 +650,21 @@ xml_map_tree::range_reference* xml_map_tree::get_range_reference(const cell_posi
     return it->second.get();
 }
 
+void xml_map_tree::create_ref_store(element& elem)
+{
+    switch (elem.ref_type)
+    {
+        case xml_map_tree::reference_cell:
+            elem.cell_ref = m_cell_reference_pool.construct();
+            break;
+        case xml_map_tree::reference_range_field:
+            elem.field_ref = m_field_in_range_pool.construct();
+            break;
+        default:
+            throw general_error("unexpected reference type in the constructor of element.");
+    }
+}
+
 xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpath, reference_type ref_type)
 {
     linked_node_type ret;
@@ -689,32 +732,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
     else
     {
         // Check if an element of the same name already exists.
-        auto r = cur_element->get_or_create_child(*this, token.ns, token.name);
-        element* elem = r.first;
-        bool created = r.second;
-
-        if (!created)
-        {
-            // This element already exists.  Check if this is already linked.
-            if (elem->ref_type != reference_unknown || elem->elem_type != element_unlinked)
-                throw xpath_error("This element is already linked.  You can't link the same element twice.");
-        }
-
-        // Turn this existing non-linked element into a linked one.
-        elem->elem_type = element_linked;
-        elem->ref_type = ref_type;
-        switch (ref_type)
-        {
-            case reference_cell:
-                elem->cell_ref = m_cell_reference_pool.construct();
-                break;
-            case reference_range_field:
-                elem->field_ref = m_field_in_range_pool.construct();
-                break;
-            default:
-                throw general_error("Unknown reference type in xml_map_tree::get_element_stack.");
-        }
-
+        element* elem = cur_element->get_or_create_linked_child(*this, token.ns, token.name, ref_type);
         ret.elem_stack.push_back(elem);
         ret.node = elem;
     }

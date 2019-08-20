@@ -192,6 +192,11 @@ public:
         std::pair<element*, bool> get_or_create_child(
             xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name);
 
+        element* get_or_create_linked_child(
+            xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type);
+
+        void link_reference(xml_map_tree& parent, reference_type _ref_type);
+
         /**
          * Unlinked attribute anchor is an element that's not linked but has
          * one or more attributes that are linked.
@@ -252,6 +257,8 @@ public:
 
 private:
     range_reference* get_range_reference(const cell_position& pos);
+
+    void create_ref_store(element& elem);
 
     struct linked_node_type
     {
