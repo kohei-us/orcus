@@ -185,13 +185,13 @@ xml_map_tree::element* xml_map_tree::element::get_child(xmlns_id_t _ns, const ps
 
     auto it = std::find_if(
         child_elements->begin(), child_elements->end(),
-        [&_ns,&_name](const std::unique_ptr<element>& e) -> bool
+        [&_ns,&_name](const element* p) -> bool
         {
-            return e->ns == _ns && e->name == _name;
+            return p->ns == _ns && p->name == _name;
         }
     );
 
-    return it == child_elements->end() ? nullptr : it->get();
+    return it == child_elements->end() ? nullptr : *it;
 }
 
 xml_map_tree::element* xml_map_tree::element::get_or_create_child(
@@ -199,20 +199,20 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_child(
 {
     auto it = std::find_if(
         child_elements->begin(), child_elements->end(),
-        [&_ns,&_name](const std::unique_ptr<element>& e) -> bool
+        [&_ns,&_name](const element* p) -> bool
         {
-            return e->ns == _ns && e->name == _name;
+            return p->ns == _ns && p->name == _name;
         }
     );
 
     if (it != child_elements->end())
-        return it->get();
+        return *it;
 
     string_pool& sp = parent.m_names;
 
     // Insert a new element of this name.
     child_elements->push_back(
-        orcus::make_unique<element>(
+        parent.m_element_pool.construct(
             element::args_type(
                 parent,
                 _ns,
@@ -223,7 +223,7 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_child(
         )
     );
 
-    return child_elements->back().get();
+    return child_elements->back();
 }
 
 xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
@@ -231,16 +231,16 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
 {
     auto it = std::find_if(
         child_elements->begin(), child_elements->end(),
-        [&_ns,&_name](const std::unique_ptr<element>& e) -> bool
+        [&_ns,&_name](const element* p) -> bool
         {
-            return e->ns == _ns && e->name == _name;
+            return p->ns == _ns && p->name == _name;
         }
     );
 
     if (it != child_elements->end())
     {
         // Specified child element already exists. Make sure it's unlinked.
-        element* elem = it->get();
+        element* elem = *it;
         if (elem->ref_type != reference_unknown || elem->elem_type != element_unlinked)
             throw xpath_error("This element is already linked.  You can't link the same element twice.");
 
@@ -252,7 +252,7 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
 
     // Insert a new linked element of this name.
     child_elements->push_back(
-        orcus::make_unique<element>(
+        parent.m_element_pool.construct(
             element::args_type(
                 parent,
                 _ns,
@@ -263,7 +263,7 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
         )
     );
 
-    return child_elements->back().get();
+    return child_elements->back();
 }
 
 void xml_map_tree::element::link_reference(xml_map_tree& parent, reference_type _ref_type)
@@ -310,7 +310,7 @@ xml_map_tree::element* xml_map_tree::walker::push_element(xmlns_id_t ns, const p
             return nullptr;
         }
 
-        element* p = m_parent.mp_root.get();
+        element* p = m_parent.mp_root;
         if (p->ns != ns || p->name != name)
         {
             // Names differ.
@@ -556,7 +556,7 @@ const xml_map_tree::linkable* xml_map_tree::get_link(const pstring& xpath) const
 #if ORCUS_DEBUG_XML_MAP_TREE
     cout << "xml_map_tree::get_link: xpath = '" << xpath << "'" << endl;
 #endif
-    const linkable* cur_node = mp_root.get();
+    const linkable* cur_node = mp_root;
 
     xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size());
 
@@ -608,9 +608,9 @@ const xml_map_tree::linkable* xml_map_tree::get_link(const pstring& xpath) const
 
         auto it = std::find_if(
             elem->child_elements->begin(), elem->child_elements->end(),
-            [&token](const std::unique_ptr<element>& e) -> bool
+            [&token](const element* p) -> bool
             {
-                return e->ns == token.ns && e->name == token.name;
+                return p->ns == token.ns && p->name == token.name;
             }
         );
 
@@ -618,7 +618,7 @@ const xml_map_tree::linkable* xml_map_tree::get_link(const pstring& xpath) const
             // No such child element exists.
             return nullptr;
 
-        cur_node = it->get();
+        cur_node = *it;
     }
 
     if (cur_node->node_type != node_element || static_cast<const element*>(cur_node)->elem_type == element_unlinked)
@@ -698,7 +698,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
         if (token.attribute)
             throw xpath_error("root element cannot be an attribute.");
 
-        mp_root = orcus::make_unique<element>(
+        mp_root = m_element_pool.construct(
             element::args_type(
                 *this,
                 token.ns,
@@ -709,7 +709,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
         );
     }
 
-    ret.elem_stack.push_back(mp_root.get());
+    ret.elem_stack.push_back(mp_root);
     element* cur_element = ret.elem_stack.back();
     assert(cur_element);
     assert(cur_element->child_elements);
@@ -788,7 +788,7 @@ xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
         if (token.attribute)
             throw xpath_error("root element cannot be an attribute.");
 
-        mp_root = orcus::make_unique<element>(
+        mp_root = m_element_pool.construct(
             element::args_type(
                 *this,
                 token.ns,
@@ -799,7 +799,7 @@ xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
         );
     }
 
-    element* cur_element = mp_root.get();
+    element* cur_element = mp_root;
     assert(cur_element->child_elements);
 
     for (token = parser.next(); !token.name.empty(); token = parser.next())

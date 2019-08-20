@@ -80,9 +80,9 @@ public:
 
     struct element;
     struct linkable;
-    typedef std::deque<std::unique_ptr<element>> element_store_type;
-    typedef std::vector<element*> element_list_type;
-    typedef std::vector<const element*> const_element_list_type;
+    using element_store_type = std::deque<element*>;
+    using element_list_type = std::vector<element*>;
+    using const_element_list_type = std::vector<const element*>;
 
     struct range_reference
     {
@@ -298,8 +298,9 @@ private:
     boost::object_pool<cell_reference> m_cell_reference_pool;
     boost::object_pool<field_in_range> m_field_in_range_pool;
     boost::object_pool<attribute> m_attribute_pool;
+    boost::object_pool<element> m_element_pool;
 
-    std::unique_ptr<element> mp_root;
+    element* mp_root;
 };
 
 std::ostream& operator<< (std::ostream& os, const xml_map_tree::linkable& link);
