@@ -143,11 +143,13 @@ public:
 
     struct attribute : public linkable
     {
-        attribute(xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type);
+        using args_type = std::tuple<xml_map_tree&, xmlns_id_t, const pstring&, reference_type>;
+
+        attribute(args_type args);
         ~attribute();
     };
 
-    typedef std::vector<std::unique_ptr<attribute>> attribute_store_type;
+    typedef std::deque<attribute*> attribute_store_type;
 
     struct element : public linkable
     {
@@ -293,6 +295,7 @@ private:
     boost::object_pool<element_store_type> m_element_store_pool;
     boost::object_pool<cell_reference> m_cell_reference_pool;
     boost::object_pool<field_in_range> m_field_in_range_pool;
+    boost::object_pool<attribute> m_attribute_pool;
 
     std::unique_ptr<element> mp_root;
 };

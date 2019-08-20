@@ -24,19 +24,6 @@ namespace orcus {
 
 namespace {
 
-template<typename T>
-class find_by_name : std::unary_function<std::unique_ptr<T>, bool>
-{
-    xmlns_id_t m_ns;
-    pstring m_name;
-public:
-    find_by_name(xmlns_id_t ns, const pstring& name) : m_ns(ns), m_name(name) {}
-    bool operator() (const std::unique_ptr<T>& e) const
-    {
-        return m_ns == e->ns && m_name == e->name;
-    }
-};
-
 class xpath_parser
 {
     const xmlns_context& m_cxt;
@@ -163,9 +150,8 @@ xml_map_tree::linkable::linkable(
     parent.create_ref_store(*this);
 }
 
-xml_map_tree::attribute::attribute(
-    xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type) :
-    linkable(parent, _ns, _name, node_attribute, _ref_type) {}
+xml_map_tree::attribute::attribute(args_type args) :
+    linkable(std::get<0>(args), std::get<1>(args), std::get<2>(args), node_attribute, std::get<3>(args)) {}
 
 xml_map_tree::attribute::~attribute() {}
 
@@ -198,7 +184,12 @@ xml_map_tree::element* xml_map_tree::element::get_child(xmlns_id_t _ns, const ps
     assert(child_elements);
 
     auto it = std::find_if(
-        child_elements->begin(), child_elements->end(), find_by_name<element>(_ns, _name));
+        child_elements->begin(), child_elements->end(),
+        [&_ns,&_name](const std::unique_ptr<element>& e) -> bool
+        {
+            return e->ns == _ns && e->name == _name;
+        }
+    );
 
     return it == child_elements->end() ? nullptr : it->get();
 }
@@ -207,7 +198,12 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_child(
     xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name)
 {
     auto it = std::find_if(
-        child_elements->begin(), child_elements->end(), find_by_name<element>(_ns, _name));
+        child_elements->begin(), child_elements->end(),
+        [&_ns,&_name](const std::unique_ptr<element>& e) -> bool
+        {
+            return e->ns == _ns && e->name == _name;
+        }
+    );
 
     if (it != child_elements->end())
         return it->get();
@@ -227,7 +223,12 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
     xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type)
 {
     auto it = std::find_if(
-        child_elements->begin(), child_elements->end(), find_by_name<element>(_ns, _name));
+        child_elements->begin(), child_elements->end(),
+        [&_ns,&_name](const std::unique_ptr<element>& e) -> bool
+        {
+            return e->ns == _ns && e->name == _name;
+        }
+    );
 
     if (it != child_elements->end())
     {
@@ -565,13 +566,18 @@ const xml_map_tree::linkable* xml_map_tree::get_link(const pstring& xpath) const
             const element* elem = static_cast<const element*>(cur_node);
             const attribute_store_type& attrs = elem->attributes;
             auto it = std::find_if(
-                attrs.begin(), attrs.end(), find_by_name<attribute>(token.ns, token.name));
+                attrs.begin(), attrs.end(),
+                [&token](const attribute* p) -> bool
+                {
+                    return p->ns == token.ns && p->name == token.name;
+                }
+            );
 
             if (it == attrs.end())
                 // No such attribute exists.
                 return nullptr;
 
-            return it->get();
+            return *it;
         }
 
         // See if an element of this name exists below the current element.
@@ -588,7 +594,11 @@ const xml_map_tree::linkable* xml_map_tree::get_link(const pstring& xpath) const
 
         auto it = std::find_if(
             elem->child_elements->begin(), elem->child_elements->end(),
-            find_by_name<element>(token.ns, token.name));
+            [&token](const std::unique_ptr<element>& e) -> bool
+            {
+                return e->ns == token.ns && e->name == token.name;
+            }
+        );
 
         if (it == elem->child_elements->end())
             // No such child element exists.
@@ -707,15 +717,27 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
 
         // Check if an attribute of the same name already exists.
         auto it = std::find_if(
-            attrs.begin(), attrs.end(), find_by_name<attribute>(token.ns, token.name));
+            attrs.begin(), attrs.end(),
+            [&token](const attribute* p) -> bool
+            {
+                return p->ns == token.ns && p->name == token.name;
+            }
+        );
+
         if (it != attrs.end())
             throw xpath_error("This attribute is already linked.  You can't link the same attribute twice.");
 
-        attrs.push_back(
-            orcus::make_unique<attribute>(
-                *this, token.ns, m_names.intern(token.name.get(), token.name.size()).first, ref_type));
+        attribute* p = m_attribute_pool.construct(
+            attribute::args_type(
+                *this,
+                token.ns,
+                m_names.intern(token.name.get(), token.name.size()).first,
+                ref_type
+            )
+        );
 
-        ret.node = attrs.back().get();
+        attrs.push_back(p);
+        ret.node = attrs.back();
     }
     else
     {
