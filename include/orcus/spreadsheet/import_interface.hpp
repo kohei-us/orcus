@@ -771,6 +771,15 @@ public:
     virtual void set_format(row_t row_start, col_t col_start,
         row_t row_end, col_t col_end, size_t xf_index) = 0;
 
+    /**
+     * Duplicate the value of the source cell to one or more cells located
+     * immediately below it.
+     *
+     * @param src_row row ID of the source cell
+     * @param src_col column ID of the source cell
+     * @param range_size number of cells below the source cell to copy the
+     *                   source cell value to.  It must be at least one.
+     */
     virtual void fill_down_cells(row_t src_row, col_t src_col, row_t range_size) = 0;
 
     /**
