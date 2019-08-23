@@ -575,10 +575,6 @@ void orcus_xml::append_sheet(const pstring& name)
 
 void orcus_xml::read_stream(const char* p, size_t n)
 {
-#if ORCUS_DEBUG_XML
-    cout << "reading file " << filepath << endl;
-#endif
-
     pstring strm(p, n);
     read_impl(strm);
 }

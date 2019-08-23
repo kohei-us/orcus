@@ -259,7 +259,8 @@ private:
     struct linked_node_type
     {
         element_list_type elem_stack;
-        linkable* node;
+        linkable* node = nullptr;
+        element* anchor_elem = nullptr;
     };
 
     /**

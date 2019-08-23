@@ -442,8 +442,7 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
     if (linked_node.node->node_type == node_unknown)
         throw xpath_error("Unrecognized node type");
 
-    element* anchor_elem = linked_node.elem_stack.back();
-    anchor_elem->linked_range_fields.push_back(range_ref->field_nodes.size());
+    linked_node.anchor_elem->linked_range_fields.push_back(range_ref->field_nodes.size());
 
     switch (linked_node.node->node_type)
     {
@@ -759,10 +758,12 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
 
         attrs.push_back(p);
         ret.node = attrs.back();
+        ret.anchor_elem = ret.elem_stack.back();
     }
     else
     {
         element* elem = cur_element->get_or_create_linked_child(*this, token.ns, token.name, ref_type);
+        ret.anchor_elem = ret.elem_stack.back();
         ret.elem_stack.push_back(elem);
         ret.node = elem;
     }
