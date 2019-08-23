@@ -7,8 +7,8 @@ orcus 0.15.2 (not released yet)
     a linked range is associated with an element content rather than an
     attribute.
 
-  * fixed a build issue on older macOS environment, related to passing an
-    rvalue to a tuple expecting a const reference.
+* fixed a build issue on older macOS environment, related to passing an rvalue
+  to a tuple expecting a const reference.
 
 orcus 0.15.1
 
