@@ -1,3 +1,12 @@
+orcus 0.15.2 (not released yet)
+
+* orcus-xml
+
+  * fixed a bug that prevented filling of cells down the column in a linked
+    range with nested repeat elements.  The bug would occur when the field in
+    a linked range is associated with an element content rather than an
+    attribute.
+
 orcus 0.15.1
 
 * switched xml_map_tree to using boost::object_pool to manage the life
