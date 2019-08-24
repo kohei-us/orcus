@@ -489,7 +489,7 @@ void document::dump(dump_format_t format, const std::string& output) const
             }
 
             // Output to stdout when output path is not given.
-            fs = std::make_unique<std::ofstream>(output.data());
+            fs = orcus::make_unique<std::ofstream>(output.data());
             ostrm = fs.get();
         }
 
