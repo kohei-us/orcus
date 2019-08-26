@@ -7,6 +7,7 @@
 
 #include "orcus/spreadsheet/styles.hpp"
 #include "orcus/global.hpp"
+#include "orcus/string_pool.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -189,6 +190,8 @@ struct styles::impl
     std::vector<cell_format_t> m_cell_formats;
     std::vector<cell_format_t> m_dxf_formats;
     std::vector<cell_style_t> m_cell_styles;
+
+    string_pool m_string_pool;
 };
 
 styles::styles() : mp_impl(orcus::make_unique<impl>()) {}
@@ -240,7 +243,9 @@ void styles::reserve_number_format_store(size_t n)
 
 size_t styles::append_number_format(const number_format_t& nf)
 {
-    mp_impl->m_number_formats.push_back(nf);
+    number_format_t copied = nf;
+    copied.format_string = mp_impl->m_string_pool.intern(nf.format_string).first;
+    mp_impl->m_number_formats.push_back(copied);
     return mp_impl->m_number_formats.size() - 1;
 }
 

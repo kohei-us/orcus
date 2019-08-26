@@ -34,6 +34,7 @@
 
 using namespace orcus;
 using namespace std;
+namespace ss = orcus::spreadsheet;
 
 namespace {
 
@@ -973,6 +974,43 @@ void test_xls_xml_character_set()
     assert(loader.get_factory().get_character_set() == character_set_t::windows_1252);
 }
 
+void test_xls_xml_number_format()
+{
+    pstring path(SRCDIR"/test/xls-xml/number-format/date-time.xml");
+    doc_loader loader(path);
+
+    const spreadsheet::document& doc = loader.get_doc();
+    const spreadsheet::styles& styles = doc.get_styles();
+
+    const spreadsheet::sheet* sh = doc.get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        ss::row_t row;
+        ss::col_t col;
+        pstring expected;
+    };
+
+    std::vector<check> checks =
+    {
+        { 1, 1, "[$-F800]dddd\\,\\ mmmm\\ dd\\,\\ yyyy" },
+        { 2, 1, "[ENG][$-409]mmmm\\ d\\,\\ yyyy;@" },
+        { 3, 1, "m/d/yy;@" },
+    };
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
+        assert(cf);
+
+        const spreadsheet::number_format_t* nf = styles.get_number_format(cf->number_format);
+        assert(nf);
+        assert(nf->format_string == c.expected);
+    }
+}
+
 void test_xls_xml_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
@@ -1245,6 +1283,7 @@ int main()
     test_xls_xml_cell_borders_colors();
     test_xls_xml_hidden_rows_columns();
     test_xls_xml_character_set();
+    test_xls_xml_number_format();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();
