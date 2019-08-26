@@ -323,7 +323,7 @@ bool xlsx_sheet_context::can_handle_element(xmlns_id_t ns, xml_token_t name) con
 {
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
         return false;
-    else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting)
+    else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting && m_sheet.get_conditional_format())
         return false;
 
     return true;
@@ -337,8 +337,7 @@ xml_context_base* xlsx_sheet_context::create_child_context(xmlns_id_t ns, xml_to
         mp_child->transfer_common(*this);
         return mp_child.get();
     }
-    else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting
-            && m_sheet.get_conditional_format())
+    else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting && m_sheet.get_conditional_format())
     {
         mp_child.reset(new xlsx_conditional_format_context(get_session_context(), get_tokens(),
                     *m_sheet.get_conditional_format()));
