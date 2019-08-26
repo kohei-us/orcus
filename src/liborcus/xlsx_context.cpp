@@ -904,13 +904,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
         }
         break;
         case XML_numFmt:
-        {
-            xml_elem_stack_t expected_elements;
-            expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_numFmts));
-            expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
-            xml_element_expected(parent, expected_elements);
-        }
-        break;
+            start_element_number_format(parent, attrs);
+            break;
         default:
             warn_unhandled();
     }
@@ -945,8 +940,11 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
         {
             size_t id = mp_styles->commit_cell_protection();
             mp_styles->set_xf_protection(id);
+            break;
         }
-        break;
+        case XML_numFmt:
+            end_element_number_format();
+            break;
     }
     return pop_stack(ns, name);
 }
@@ -954,6 +952,38 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
 void xlsx_styles_context::characters(const pstring& /*str*/, bool /*transient*/)
 {
     // not used in the styles.xml part.
+}
+
+void xlsx_styles_context::start_element_number_format(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_elem_stack_t expected_elements;
+    expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_numFmts));
+    expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
+    xml_element_expected(parent, expected_elements);
+
+    if (mp_styles)
+    {
+        for (const xml_token_attr_t& attr : attrs)
+        {
+            if (attr.ns != NS_ooxml_xlsx)
+                continue;
+
+            switch (attr.name)
+            {
+                case XML_numFmtId:
+                {
+                    long id = to_long(attr.value);
+                    mp_styles->set_number_format_identifier(id);
+                    break;
+                }
+                case XML_formatCode:
+                {
+                    mp_styles->set_number_format_code(attr.value.data(), attr.value.size());
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void xlsx_styles_context::start_element_border(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
@@ -1044,5 +1074,14 @@ void xlsx_styles_context::start_font_color(const xml_attrs_t& attrs)
         mp_styles->set_font_color(alpha, red, green, blue);
 }
 
+void xlsx_styles_context::end_element_number_format()
+{
+    if (!mp_styles)
+        return;
+
+    mp_styles->commit_number_format();
 }
+
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

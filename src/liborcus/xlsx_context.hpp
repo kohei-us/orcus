@@ -67,10 +67,14 @@ public:
     virtual void characters(const pstring& str, bool transient);
 
 private:
+    void start_element_number_format(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+
     void start_element_border(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_diagonal(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_border_color(const xml_attrs_t& attrs);
     void start_font_color(const xml_attrs_t& attrs);
+
+    void end_element_number_format();
 
 private:
     spreadsheet::iface::import_styles* mp_styles;
