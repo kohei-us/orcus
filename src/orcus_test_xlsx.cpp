@@ -33,6 +33,7 @@
 
 using namespace orcus;
 using namespace orcus::spreadsheet;
+namespace ss = orcus::spreadsheet;
 using namespace std;
 
 namespace {
@@ -351,6 +352,44 @@ void test_xlsx_background_fill()
         assert(fill_data->pattern_type == c.pattern_type);
         assert(fill_data->fg_color == c.fg_color);
     }
+}
+
+void test_xlsx_number_format()
+{
+    pstring path(SRCDIR"/test/xlsx/number-format/date-time.xlsx");
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path);
+
+    spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        ss::row_t row;
+        ss::col_t col;
+        pstring expected;
+    };
+
+    std::vector<check> checks =
+    {
+        { 1, 1, "[$-F800]dddd\\,\\ mmmm\\ dd\\,\\ yyyy" },
+        { 2, 1, "[ENG][$-409]mmmm\\ d\\,\\ yyyy;@" },
+        { 3, 1, "m/d/yy;@" },
+    };
+
+#if 0
+    spreadsheet::styles& styles = doc->get_styles();
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
+        assert(cf);
+
+        const spreadsheet::number_format_t* nf = styles.get_number_format(cf->number_format);
+        assert(nf);
+        assert(nf->format_string == c.expected);
+    }
+#endif
 }
 
 void test_xlsx_text_alignment()
@@ -1577,6 +1616,7 @@ int main()
     test_xlsx_merged_cells();
     test_xlsx_date_time();
     test_xlsx_background_fill();
+    test_xlsx_number_format();
     test_xlsx_text_alignment();
     test_xlsx_cell_borders_single_cells();
     test_xlsx_cell_borders_directions();
