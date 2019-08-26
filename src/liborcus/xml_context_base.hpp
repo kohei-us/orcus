@@ -29,8 +29,47 @@ public:
     virtual ~xml_context_base() = 0;
 
     virtual void declaration(const xml_declaration_t& decl);
+
+    /**
+     * Whether or not the current context object can handle the specified
+     * element.  This method is used by the caller to determine whether to use
+     * a child context to handle the specified element and its child elements.
+     * If a child context needs to be used, the caller will call the
+     * create_child_context method to obtain the child context object.
+     *
+     * @param ns namespace value for the element.
+     * @param name name of the element.
+     *
+     * @return true if the current context object can handle this element,
+     *         false if the caller needs to create a child context to handle
+     *         the element.
+     */
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const = 0;
+
+    /**
+     * This method gets called by the stream handler to fetch a child context
+     * object when the call to can_handle_element() returns false.  The caller
+     * is not responsible for managing the life cycle of the returned context
+     * object; the current context object must manage the life cycle of the
+     * context object it returns.
+     *
+     * @param ns namespace value for the element.
+     * @param name name of the element.
+     *
+     * @return pointer to the context object that should handle the element.
+     */
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) = 0;
+
+    /**
+     * This method gets called when the child context is about to get phased
+     * out, to give the parent context object to communicate with the child
+     * context object before it gets phased out.
+     *
+     * @param ns namespace value for the element.
+     * @param name name of the element.
+     * @param child pointer to the child context object that is about to get
+     *              phased out.
+     */
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) = 0;
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const ::std::vector<xml_token_attr_t>& attrs) = 0;
