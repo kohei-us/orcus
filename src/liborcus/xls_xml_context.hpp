@@ -155,6 +155,7 @@ class xls_xml_context : public xml_context_base
         font_style_type font;
         fill_style_type fill;
         text_alignment_type text_alignment;
+        pstring number_format;
         std::vector<border_style_type> borders;
     };
 
@@ -218,12 +219,14 @@ public:
 private:
     void start_element_borders(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_border(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_element_number_format(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_column(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_row(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
 
     void end_element_borders();
     void end_element_border();
+    void end_element_number_format();
     void end_element_cell();
     void end_element_column();
     void end_element_row();

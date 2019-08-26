@@ -899,6 +899,9 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             case XML_Border:
                 start_element_border(parent, attrs);
                 break;
+            case XML_NumberFormat:
+                start_element_number_format(parent, attrs);
+                break;
             case XML_Font:
             {
                 xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
@@ -1083,6 +1086,9 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
                 break;
             case XML_Border:
                 end_element_border();
+                break;
+            case XML_NumberFormat:
+                end_element_number_format();
                 break;
             case XML_Row:
                 end_element_row();
@@ -1309,6 +1315,29 @@ void xls_xml_context::start_element_border(const xml_token_pair_t& parent, const
     }
 }
 
+void xls_xml_context::start_element_number_format(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
+    m_current_style->number_format.clear();
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns != NS_xls_xml_ss)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_Format:
+            {
+                m_current_style->number_format = intern(attr);
+                break;
+            }
+            default:
+                ;
+        }
+    }
+}
+
 void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
 {
     xml_element_expected(parent, NS_xls_xml_ss, XML_Row);
@@ -1484,6 +1513,10 @@ void xls_xml_context::end_element_borders()
 }
 
 void xls_xml_context::end_element_border()
+{
+}
+
+void xls_xml_context::end_element_number_format()
 {
 }
 
@@ -1753,6 +1786,13 @@ void xls_xml_context::commit_styles()
         styles->set_xf_apply_alignment(apply_alignment);
         styles->set_xf_horizontal_alignment(style->text_alignment.hor);
         styles->set_xf_vertical_alignment(style->text_alignment.ver);
+
+        if (!style->number_format.empty())
+        {
+            styles->set_number_format_code(style->number_format.data(), style->number_format.size());
+            size_t number_format_id = styles->commit_number_format();
+            styles->set_xf_number_format(number_format_id);
+        }
 
         // TODO : handle text indent level.
 
