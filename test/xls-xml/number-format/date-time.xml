@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Kohei Yoshida</Author>
+  <LastAuthor>Kohei Yoshida</LastAuthor>
+  <Created>2019-08-26T12:53:11Z</Created>
+  <LastSaved>2019-08-26T12:59:50Z</LastSaved>
+  <Version>16.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>6890</WindowHeight>
+  <WindowWidth>19180</WindowWidth>
+  <WindowTopX>0</WindowTopX>
+  <WindowTopY>0</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s16">
+   <NumberFormat ss:Format="[$-F800]dddd\,\ mmmm\ dd\,\ yyyy"/>
+  </Style>
+  <Style ss:ID="s17">
+   <NumberFormat ss:Format="[ENG][$-409]mmmm\ d\,\ yyyy;@"/>
+  </Style>
+  <Style ss:ID="s18">
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s19">
+   <NumberFormat ss:Format="m/d/yy;@"/>
+  </Style>
+  <Style ss:ID="s20">
+   <NumberFormat ss:Format="General Date"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Sheet1">
+  <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="5" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="14.5">
+   <Column ss:AutoFitWidth="0" ss:Width="124"/>
+   <Column ss:AutoFitWidth="0" ss:Width="168"/>
+   <Column ss:StyleID="s18" ss:Width="156"/>
+   <Row>
+    <Cell><Data ss:Type="String">Type</Data></Cell>
+    <Cell><Data ss:Type="String">Value</Data></Cell>
+    <Cell><Data ss:Type="String">String</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Date</Data></Cell>
+    <Cell ss:StyleID="s16"><Data ss:Type="DateTime">2003-09-24T00:00:00.000</Data></Cell>
+    <Cell><Data ss:Type="String">Wednesday, September 24, 2003</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Date</Data></Cell>
+    <Cell ss:StyleID="s17"><Data ss:Type="DateTime">2003-09-24T00:00:00.000</Data></Cell>
+    <Cell><Data ss:Type="String">September 24, 2003</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Date</Data></Cell>
+    <Cell ss:StyleID="s19"><Data ss:Type="DateTime">2003-09-24T00:00:00.000</Data></Cell>
+    <Cell><Data ss:Type="String">9/24/03</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">Date &amp; Time</Data></Cell>
+    <Cell ss:StyleID="s20"><Data ss:Type="DateTime">2019-08-26T08:57:31.280</Data></Cell>
+    <Cell><Data ss:Type="String">8/26/2019 8:57</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>5</ActiveRow>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>
