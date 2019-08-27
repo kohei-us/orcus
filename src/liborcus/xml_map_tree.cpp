@@ -211,7 +211,7 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_child(
     string_pool& sp = parent.m_names;
 
     // Insert a new element of this name.
-    auto const nm = sp.intern(_name.get(), _name.size()).first;
+    auto const nm = sp.intern(_name.get(), _name.size()).first; // work around LLVM < 7 libc++ bug
     child_elements->push_back(
         parent.m_element_pool.construct(
             element::args_type(
@@ -252,7 +252,7 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
     string_pool& sp = parent.m_names;
 
     // Insert a new linked element of this name.
-    auto const nm = sp.intern(_name.get(), _name.size()).first;
+    auto const nm = sp.intern(_name.get(), _name.size()).first; // work around LLVM < 7 libc++ bug
     child_elements->push_back(
         parent.m_element_pool.construct(
             element::args_type(
@@ -700,7 +700,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
         if (token.attribute)
             throw xpath_error("root element cannot be an attribute.");
 
-        auto const nm = m_names.intern(token.name).first;
+        auto const nm = m_names.intern(token.name).first; // work around LLVM < 7 libc++ bug
         mp_root = m_element_pool.construct(
             element::args_type(
                 *this,
@@ -750,7 +750,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
         if (it != attrs.end())
             throw xpath_error("This attribute is already linked.  You can't link the same attribute twice.");
 
-        auto const nm = m_names.intern(token.name.get(), token.name.size()).first;
+        auto const nm = m_names.intern(token.name.get(), token.name.size()).first; // work around LLVM < 7 libc++ bug
         attribute* p = m_attribute_pool.construct(
             attribute::args_type(
                 *this,
@@ -794,7 +794,7 @@ xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
         if (token.attribute)
             throw xpath_error("root element cannot be an attribute.");
 
-        auto const nm = m_names.intern(token.name).first;
+        auto const nm = m_names.intern(token.name).first; // work around LLVM < 7 libc++ bug
         mp_root = m_element_pool.construct(
             element::args_type(
                 *this,
