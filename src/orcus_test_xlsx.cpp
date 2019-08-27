@@ -376,6 +376,11 @@ void test_xlsx_number_format()
         { 3, 1, "m/d/yy;@" },
     };
 
+// TODO : We need to build our own internal number format code table for
+// xlsx.  Firstly, xlsx uses numFmtId explicitly to link between the xf and
+// the format string and the ID's are not sequential. Secondly, there is a
+// set of built-in format strings for ID < 164, and that information is not
+// stored in the file.
 #if 0
     spreadsheet::styles& styles = doc->get_styles();
 
