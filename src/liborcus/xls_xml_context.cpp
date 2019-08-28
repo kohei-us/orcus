@@ -642,7 +642,6 @@ const std::vector<map_type::entry> entries =
     { ORCUS_ASCII("Fixed"), "0.00" },
     { ORCUS_ASCII("General Date"), "m/d/yyyy h:mm" },
     { ORCUS_ASCII("General Number"), "General" },
-    { ORCUS_ASCII("General"), "General" },
     { ORCUS_ASCII("Long Date"), "d-mmm-yy" },
     { ORCUS_ASCII("Long Time"), "h:mm:ss AM/PM" },
     { ORCUS_ASCII("Medium Date"), "d-mmm-yy" },
