@@ -638,7 +638,7 @@ typedef mdds::sorted_string_map<pstring> map_type;
 const std::vector<map_type::entry> entries =
 {
     { ORCUS_ASCII("Currency"), "$#,##0.00_);[Red]($#,##0.00)" },
-    { ORCUS_ASCII("Euro Currency"), "[$€-x-euro2] #,##0.00_);[Red]([$€-x-euro2] #,##0.00)" },
+    { ORCUS_ASCII("Euro Currency"), "[$\xe2\x82\xac-x-euro2] #,##0.00_);[Red]([$\xe2\x82\xac-x-euro2] #,##0.00)" },
     { ORCUS_ASCII("Fixed"), "0.00" },
     { ORCUS_ASCII("General Date"), "m/d/yyyy h:mm" },
     { ORCUS_ASCII("General Number"), "General" },

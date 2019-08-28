@@ -997,7 +997,21 @@ void test_xls_xml_number_format()
         { 1, 1, "[$-F800]dddd\\,\\ mmmm\\ dd\\,\\ yyyy" },
         { 2, 1, "[ENG][$-409]mmmm\\ d\\,\\ yyyy;@" },
         { 3, 1, "m/d/yy;@" },
-        { 4, 1, "m/d/yyyy h:mm" },
+        { 4, 1, "m/d/yyyy h:mm" }, // General Date
+        { 5, 1, "d-mmm-yy" }, // Medium Date
+        { 6, 1, "m/d/yyyy" }, // Short Date
+        { 7, 1, "h:mm:ss AM/PM" }, // Long Time
+        { 8, 1, "h:mm AM/PM" }, // Medium Time
+        { 9, 1, "h:mm" }, // Short Time
+        { 10, 1, "0.00" }, // Fixed
+        { 11, 1, "#,##0.00" }, // Standard
+        { 12, 1, "0.00%" }, // Percent
+        { 13, 1, "0.00E+00" }, // Scientific
+        { 14, 1, "\"Yes\";\"Yes\";\"No\"" }, // Yes/No
+        { 15, 1, "\"True\";\"True\";\"False\"" }, // True/False
+        { 16, 1, "\"On\";\"On\";\"Off\"" }, // On/Off
+        { 17, 1, "$#,##0.00_);[Red]($#,##0.00)" }, // Currency
+        { 18, 1, "[$\xe2\x82\xac-x-euro2] #,##0.00_);[Red]([$\xe2\x82\xac-x-euro2] #,##0.00)" }, // Euro Currency
     };
 
     for (const check& c : checks)
