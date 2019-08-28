@@ -997,6 +997,7 @@ void test_xls_xml_number_format()
         { 1, 1, "[$-F800]dddd\\,\\ mmmm\\ dd\\,\\ yyyy" },
         { 2, 1, "[ENG][$-409]mmmm\\ d\\,\\ yyyy;@" },
         { 3, 1, "m/d/yy;@" },
+        { 4, 1, "m/d/yyyy h:mm" },
     };
 
     for (const check& c : checks)

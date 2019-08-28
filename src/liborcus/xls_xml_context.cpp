@@ -630,7 +630,42 @@ const map_type& get()
 
 }
 
+namespace num_format {
+
+typedef mdds::sorted_string_map<pstring> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
+{
+    { ORCUS_ASCII("Currency"), "$#,##0.00_);[Red]($#,##0.00)" },
+    { ORCUS_ASCII("Euro Currency"), "[$€-x-euro2] #,##0.00_);[Red]([$€-x-euro2] #,##0.00)" },
+    { ORCUS_ASCII("Fixed"), "0.00" },
+    { ORCUS_ASCII("General Date"), "m/d/yyyy h:mm" },
+    { ORCUS_ASCII("General Number"), "General" },
+    { ORCUS_ASCII("General"), "General" },
+    { ORCUS_ASCII("Long Date"), "d-mmm-yy" },
+    { ORCUS_ASCII("Long Time"), "h:mm:ss AM/PM" },
+    { ORCUS_ASCII("Medium Date"), "d-mmm-yy" },
+    { ORCUS_ASCII("Medium Time"), "h:mm AM/PM" },
+    { ORCUS_ASCII("On/Off"), "\"On\";\"On\";\"Off\"" },
+    { ORCUS_ASCII("Percent"), "0.00%" },
+    { ORCUS_ASCII("Scientific"), "0.00E+00" },
+    { ORCUS_ASCII("Short Date"), "m/d/yyyy" },
+    { ORCUS_ASCII("Short Time"), "h:mm" },
+    { ORCUS_ASCII("Standard"), "#,##0.00" },
+    { ORCUS_ASCII("True/False"), "\"True\";\"True\";\"False\"" },
+    { ORCUS_ASCII("Yes/No"), "\"Yes\";\"Yes\";\"No\"" },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), pstring());
+    return mt;
 }
+
+} // namespace num_format
+
+} // anonymous namespace
 
 xls_xml_context::array_formula_type::array_formula_type(
     const spreadsheet::range_t& _range, const pstring& _formula) :
@@ -1329,7 +1364,8 @@ void xls_xml_context::start_element_number_format(const xml_token_pair_t& parent
         {
             case XML_Format:
             {
-                m_current_style->number_format = intern(attr);
+                pstring code = num_format::get().find(attr.value.data(), attr.value.size());
+                m_current_style->number_format = code.empty() ? intern(attr) : code;
                 break;
             }
             default:
