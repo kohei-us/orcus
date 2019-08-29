@@ -1,13 +1,13 @@
-orcus 0.15.2 (not released yet)
+orcus 0.15.2
 
-* orcus-xml
+* xml-map
 
   * fixed a bug that prevented filling of cells down the column in a linked
     range with nested repeat elements.  The bug would occur when the field in
     a linked range is associated with an element content rather than an
     attribute.
 
-* orcus-xls-xml
+* xls-xml
 
   * added code to properly pick up and pass the number format codes, including
     named number format values such as 'General Date', 'Long Time, 'Currency'
