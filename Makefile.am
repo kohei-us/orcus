@@ -548,6 +548,7 @@ test_data = \
     test/xlsx/hidden-rows-columns/input.xlsx \
     test/xlsx/matrix-results/input.xlsx \
     test/xlsx/merged-cells/simple.xlsx \
+    test/xlsx/number-format/date-time.xlsx \
     test/xls-xml/background-color/standard.xml \
     test/xls-xml/basic/check.txt \
     test/xls-xml/basic/input.xml \
@@ -590,6 +591,7 @@ test_data = \
     test/xls-xml/named-expression/input.xml \
     test/xls-xml/named-expression-sheet-local/check.txt \
     test/xls-xml/named-expression-sheet-local/input.xml \
+    test/xls-xml/number-format/date-time.xml \
     test/xls-xml/raw-values-1/check.txt \
     test/xls-xml/raw-values-1/input.xml \
     test/xls-xml/table/autofilter.xml \
@@ -665,6 +667,9 @@ test_data = \
     test/xml-mapped/nested-repeats-2/check.txt \
     test/xml-mapped/nested-repeats-2/input.xml \
     test/xml-mapped/nested-repeats-2/map.xml \
+    test/xml-mapped/nested-repeats-3/check.txt \
+    test/xml-mapped/nested-repeats-3/input.xml \
+    test/xml-mapped/nested-repeats-3/map.xml \
     test/xml-mapped/nested-repeats/check.txt \
     test/xml-mapped/nested-repeats/input.xml \
     test/xml-mapped/nested-repeats/map.xml \
