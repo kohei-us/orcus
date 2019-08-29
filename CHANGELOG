@@ -9,7 +9,9 @@ orcus 0.15.2 (not released yet)
 
 * orcus-xls-xml
 
-  * added code to properly pick up and pass the number format codes.
+  * added code to properly pick up and pass the number format codes, including
+    named number format values such as 'General Date', 'Long Time, 'Currency'
+    etc.
 
 * fixed a build issue on older macOS environment, related to passing an rvalue
   to a tuple expecting a const reference.  The root cause was a bug in libc++
