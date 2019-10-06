@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40">
+  <Styles>
+    <Style ss:ID="s1">
+      <Font ss:Bold="1" ss:Color="#008000"/>
+      <NumberFormat ss:Format="0.00_ ;[Red]\-0.00\ "/>
+    </Style>
+    <Style ss:ID="s2">
+      <Font ss:Color="red"/>
+    </Style>
+    <Style ss:ID="s3">
+      <Font ss:Color="blue"/>
+      <NumberFormat ss:Format="yyyy/mm\-dd;@"/>
+    </Style>
+  </Styles>
+  <Worksheet ss:Name="Sheet1">
+    <Table ss:TopCell="2" ss:LeftCell="2" ss:DefaultColumnWidth="20" ss:ExpandedColumnCount="3">
+      <Column ss:StyleID="s1" ss:AutoFitWidth="1"/>
+      <Column ss:StyleID="s2"/>
+      <Column ss:StyleID="s3" ss:Index="3" ss:AutoFitWidth="1"/>
+      <Row ss:StyleID="s1">
+        <Cell ss:Index="2">
+          <Data ss:Type="String">Title</Data>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>
+          <Data ss:Type="Number">111</Data>
+        </Cell>
+        <Cell>
+          <Data ss:Type="String">aaaa</Data>
+        </Cell>
+        <Cell>
+          <Data ss:Type="DateTime">1999-04-01</Data>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell>
+          <Data ss:Type="Number">2222</Data>
+        </Cell>
+        <Cell>
+          <Data ss:Type="String">bbbb</Data>
+        </Cell>
+        <Cell>
+          <Data ss:Type="DateTime">1999-04-02T00:00:00.000</Data>
+        </Cell>
+      </Row>
+    </Table>
+  </Worksheet>
+</Workbook>
