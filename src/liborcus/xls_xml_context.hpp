@@ -196,6 +196,14 @@ class xls_xml_context : public xml_context_base
         spreadsheet::address_t get_top_left_cell() const;
     };
 
+    struct table_properties
+    {
+        spreadsheet::address_t pos; // top-left position
+
+        table_properties();
+        void reset();
+    };
+
     using named_expressions_type = std::vector<named_exp>;
     using styles_type = std::vector<std::unique_ptr<style_type>>;
     using style_id_xf_map_type = std::unordered_map<pstring, size_t, pstring::hash>;
@@ -223,6 +231,7 @@ private:
     void start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_column(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_row(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_element_table(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
 
     void end_element_borders();
     void end_element_border();
@@ -278,6 +287,7 @@ private:
     std::unique_ptr<style_type> m_current_style;
     std::unique_ptr<style_type> m_default_style;
     styles_type m_styles;
+    table_properties m_table_props;
 
     style_id_xf_map_type m_style_map;
 

@@ -733,6 +733,17 @@ spreadsheet::address_t xls_xml_context::split_pane::get_top_left_cell() const
     return pos;
 }
 
+xls_xml_context::table_properties::table_properties()
+{
+    reset();
+}
+
+void xls_xml_context::table_properties::reset()
+{
+    pos.row = 0;
+    pos.column = 0;
+}
+
 xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
@@ -832,7 +843,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 break;
             }
             case XML_Table:
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Worksheet);
+                start_element_table(parent, attrs);
                 break;
             case XML_Row:
                 start_element_row(parent, attrs);
@@ -1438,7 +1449,7 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
     if (col_index > 0)
     {
         // 1-based column index. Convert it to a 0-based one.
-        m_cur_col = col_index - 1;
+        m_cur_col = m_table_props.pos.column + col_index - 1;
     }
 }
 
@@ -1496,7 +1507,7 @@ void xls_xml_context::start_element_column(const xml_token_pair_t& parent, const
 void xls_xml_context::start_element_row(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
 {
     xml_element_expected(parent, NS_xls_xml_ss, XML_Table);
-    m_cur_col = 0;
+    m_cur_col = m_table_props.pos.column;
     spreadsheet::row_t row_index = -1;
     bool has_height = false;
     bool hidden = false;
@@ -1541,6 +1552,46 @@ void xls_xml_context::start_element_row(const xml_token_pair_t& parent, const xm
         if (hidden)
             mp_sheet_props->set_row_hidden(m_cur_row, true);
     }
+}
+
+void xls_xml_context::start_element_table(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_xls_xml_ss, XML_Worksheet);
+
+    spreadsheet::row_t row_index = -1;
+    spreadsheet::col_t col_index = -1;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.value.empty())
+            return;
+
+        if (attr.ns == NS_xls_xml_ss)
+        {
+            switch (attr.name)
+            {
+                case XML_TopCell:
+                    col_index = to_long(attr.value);
+                    break;
+                case XML_LeftCell:
+                    row_index = to_long(attr.value);
+                    break;
+                default:
+                    ;
+            }
+        }
+    }
+
+    // Convert 1-based indices to 0-based.
+
+    if (row_index > 0)
+    {
+        m_table_props.pos.row = row_index - 1;
+        m_cur_row = m_table_props.pos.row;
+    }
+
+    if (col_index > 0)
+        m_table_props.pos.column = col_index - 1;
 }
 
 void xls_xml_context::end_element_borders()
@@ -1613,6 +1664,7 @@ void xls_xml_context::end_element_table()
 {
     push_all_array_formulas();
     m_array_formulas.clear();
+    m_table_props.reset();
 }
 
 void xls_xml_context::end_element_workbook()
