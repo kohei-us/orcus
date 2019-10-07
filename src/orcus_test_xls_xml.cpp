@@ -56,6 +56,7 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/named-expression/",
     SRCDIR"/test/xls-xml/named-expression-sheet-local/",
     SRCDIR"/test/xls-xml/raw-values-1/",
+    SRCDIR"/test/xls-xml/table-offset/",
 };
 
 std::unique_ptr<spreadsheet::document> load_doc_from_filepath(const string& path)
