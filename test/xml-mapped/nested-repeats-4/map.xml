@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<map xmlns="http://gitorious.org/orcus/xml-map">
+    <sheet name="data"/>
+    <range row="0" column="0" sheet="data">
+        <field path="/dataset/record/id"/>
+        <field path="/dataset/record/name/first"/>
+        <field path="/dataset/record/name/last"/>
+        <field path="/dataset/record/gender"/>
+        <field path="/dataset/record/scores/score"/>
+        <row-group path="/dataset/record"/>
+        <row-group path="/dataset/record/scores/score"/>
+    </range>
+</map>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <record>
+    <id>1</id>
+    <name>
+        <first>Mace</first>
+        <last>Stainton</last>
+    </name>
+    <gender>Male</gender>
+    <scores>
+        <score>39</score>
+        <score>42</score>
+        <score>58</score>
+    </scores>
+  </record>
+  <record>
+    <id>2</id>
+    <name>
+        <first>Kelley</first>
+        <last>Schelle</last>
+    </name>
+    <gender>Female</gender>
+    <scores>
+        <score>96</score>
+        <score>158</score>
+        <score>23</score>
+        <score>44</score>
+    </scores>
+  </record>
+  <record>
+    <id>3</id>
+    <name>
+        <first>Ashbey</first>
+        <last>Fishly</last>
+    </name>
+    <gender>Male</gender>
+  </record>
+</dataset>
