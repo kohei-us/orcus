@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "orcus_test_global.hpp"
 #include "orcus/orcus_xls_xml.hpp"
 #include "orcus/pstring.hpp"
 #include "orcus/global.hpp"
@@ -22,7 +23,6 @@
 #include <ixion/model_context.hpp>
 #include <ixion/address.hpp>
 
-#include <cassert>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -30,7 +30,6 @@
 #include <iostream>
 #include <fstream>
 
-#include "orcus_test_global.hpp"
 
 using namespace orcus;
 using namespace std;

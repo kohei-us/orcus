@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include <orcus/parser_global.hpp>
 
 #include <vector>
 #include <cmath>
 #include <cstring>
-#include <cassert>
 #include <limits>
 
 namespace {

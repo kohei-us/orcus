@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include <orcus/threaded_json_parser.hpp>
 #include <orcus/global.hpp>
 
-#include <cassert>
 #include <cstring>
-#include <iostream>
 
 using namespace orcus;
 using namespace std;

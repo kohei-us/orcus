@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "orcus_test_global.hpp"
 #include "orcus/orcus_csv.hpp"
 #include "orcus/config.hpp"
 #include "orcus/pstring.hpp"
@@ -14,10 +15,7 @@
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 
-#include "orcus_test_global.hpp"
-
 #include <cstdlib>
-#include <cassert>
 #include <string>
 #include <iostream>
 #include <sstream>

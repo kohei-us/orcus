@@ -5,14 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "orcus_test_global.hpp"
 #include "orcus/orcus_gnumeric.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
-#include "orcus_test_global.hpp"
-
-#include <cassert>
 #include <iostream>
 
 #include <mdds/flat_segment_tree.hpp>

@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include "orcus/sax_token_parser.hpp"
 #include "orcus/tokens.hpp"
 #include "orcus/global.hpp"
 #include "orcus/xml_namespace.hpp"
 
 #include <cstring>
-#include <iostream>
 
 using namespace std;
 using namespace orcus;

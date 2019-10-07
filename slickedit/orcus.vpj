@@ -267,6 +267,7 @@
         <Folder Name="../src">
             <Folder Name="include">
                 <F N="../src/include/cpu_features.hpp"/>
+                <F N="../src/include/test_global.hpp"/>
             </Folder>
             <Folder Name="liborcus">
                 <F N="../src/liborcus/common_test.cpp"/>

@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include "orcus/sax_parser.hpp"
-#include <cassert>
-#include <iostream>
 
 using namespace std;
 

@@ -8,6 +8,7 @@
 #ifndef INCLUDED_ORCUS_TEST_GLOBAL_HPP
 #define INCLUDED_ORCUS_TEST_GLOBAL_HPP
 
+#include "test_global.hpp"
 #include "orcus/spreadsheet/types.hpp"
 
 #include <string>

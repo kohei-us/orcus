@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include <algorithm>
-#include <cassert>
 #include <cstdlib>
 #include <vector>
 

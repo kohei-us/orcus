@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include "orcus/base64.hpp"
 
 #include <cstdlib>
 #include <cstring>
-#include <cassert>
 #include <vector>
 #include <string>
-#include <iostream>
 
 using namespace orcus;
 using namespace std;
