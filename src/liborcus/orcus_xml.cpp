@@ -546,17 +546,17 @@ void orcus_xml::start_range(const pstring& sheet, spreadsheet::row_t row, spread
 {
     pstring sheet_safe = mp_impl->m_map_tree.intern_string(sheet);
     mp_impl->m_cur_range_ref = xml_map_tree::cell_position(sheet_safe, row, col);
-    mp_impl->m_map_tree.start_range();
+    mp_impl->m_map_tree.start_range(mp_impl->m_cur_range_ref);
 }
 
 void orcus_xml::append_field_link(const pstring& xpath)
 {
-    mp_impl->m_map_tree.append_range_field_link(xpath, mp_impl->m_cur_range_ref);
+    mp_impl->m_map_tree.append_range_field_link(xpath);
 }
 
 void orcus_xml::set_range_row_group(const pstring& xpath)
 {
-    mp_impl->m_map_tree.set_range_row_group(xpath, mp_impl->m_cur_range_ref);
+    mp_impl->m_map_tree.set_range_row_group(xpath);
 }
 
 void orcus_xml::commit_range()

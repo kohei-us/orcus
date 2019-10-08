@@ -238,9 +238,9 @@ public:
 
     void set_cell_link(const pstring& xpath, const cell_position& ref);
 
-    void start_range();
-    void append_range_field_link(const pstring& xpath, const cell_position& pos);
-    void set_range_row_group(const pstring& xpath, const cell_position& pos);
+    void start_range(const cell_position& pos);
+    void append_range_field_link(const pstring& xpath);
+    void set_range_row_group(const pstring& xpath);
     void commit_range();
 
     const linkable* get_link(const pstring& xpath) const;
@@ -278,15 +278,7 @@ private:
 
 private:
 
-    struct range_field_link
-    {
-        pstring path;
-        cell_position pos;
-
-        range_field_link(const pstring& _path, const cell_position& _pos);
-    };
-
-    using range_field_links = std::vector<range_field_link>;
+    using range_field_links = std::vector<pstring>;
 
     xmlns_context m_xmlns_cxt;
 
@@ -303,6 +295,8 @@ private:
     range_field_links m_cur_range_field_links;
 
     range_reference* mp_cur_range_ref;
+
+    cell_position m_cur_range_pos;
 
     /**
      * All range references present in the tree.  This container manages the

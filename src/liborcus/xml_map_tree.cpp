@@ -135,9 +135,6 @@ void print_element_stack(ostream& os, const T& elem_stack)
 
 xml_map_tree::xpath_error::xpath_error(const string& msg) : general_error(msg) {}
 
-xml_map_tree::range_field_link::range_field_link(const pstring& _path, const cell_position& _pos) :
-    path(_path), pos(_pos) {}
-
 xml_map_tree::element_position::element_position() :
     open_begin(0), open_end(0), close_begin(0), close_end(0) {}
 
@@ -420,19 +417,20 @@ void xml_map_tree::set_cell_link(const pstring& xpath, const cell_position& ref)
     cell_ref->pos = ref;
 }
 
-void xml_map_tree::start_range()
+void xml_map_tree::start_range(const cell_position& pos)
 {
     m_cur_range_parent.clear();
     m_cur_range_field_links.clear();
     mp_cur_range_ref = nullptr;
+    m_cur_range_pos = pos;
 }
 
-void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_position& pos)
+void xml_map_tree::append_range_field_link(const pstring& xpath)
 {
     if (xpath.empty())
         return;
 
-    m_cur_range_field_links.emplace_back(xpath, pos);
+    m_cur_range_field_links.emplace_back(xpath);
 }
 
 void xml_map_tree::insert_range_field_link(const pstring& xpath, const cell_position& pos)
@@ -523,12 +521,12 @@ void xml_map_tree::insert_range_field_link(const pstring& xpath, const cell_posi
     }
 }
 
-void xml_map_tree::set_range_row_group(const pstring& xpath, const cell_position& pos)
+void xml_map_tree::set_range_row_group(const pstring& xpath)
 {
     if (xpath.empty())
         return;
 
-    range_reference* range_ref = get_range_reference(pos);
+    range_reference* range_ref = get_range_reference(m_cur_range_pos);
     assert(range_ref);
 
     element* elem = get_element(xpath);
@@ -542,8 +540,8 @@ void xml_map_tree::commit_range()
         // Nothing to commit.
         return;
 
-    for (const range_field_link& fld : m_cur_range_field_links)
-        insert_range_field_link(fld.path, fld.pos);
+    for (const pstring& path : m_cur_range_field_links)
+        insert_range_field_link(path, m_cur_range_pos);
 
     assert(mp_cur_range_ref);
 
@@ -558,6 +556,10 @@ void xml_map_tree::commit_range()
     assert(!m_cur_range_parent.empty());
     // Mark the range parent element.
     m_cur_range_parent.back()->range_parent = mp_cur_range_ref;
+
+    // Set the current position invalid.
+    m_cur_range_pos.row = -1;
+    m_cur_range_pos.col = -1;
 }
 
 const xml_map_tree::linkable* xml_map_tree::get_link(const pstring& xpath) const
