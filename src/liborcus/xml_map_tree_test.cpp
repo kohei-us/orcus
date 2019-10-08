@@ -67,9 +67,11 @@ void test_path_insertion()
     ref.row = 5;
     ref.col = 0;
     ref.sheet = pstring("test3");
+    tree.start_range();
     tree.append_range_field_link("/data/entries/entry/id", ref);
     tree.append_range_field_link("/data/entries/entry/name", ref);
     tree.append_range_field_link("/data/entries/entry/score", ref);
+    tree.commit_range();
     p0 = tree.get_link("/data/entries/entry/id");
     assert(p0 && p0->node_type == xml_map_tree::node_element);
     p = static_cast<const xml_map_tree::element*>(p0);

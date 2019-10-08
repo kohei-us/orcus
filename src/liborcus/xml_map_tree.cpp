@@ -135,6 +135,9 @@ void print_element_stack(ostream& os, const T& elem_stack)
 
 xml_map_tree::xpath_error::xpath_error(const string& msg) : general_error(msg) {}
 
+xml_map_tree::range_field_link::range_field_link(const pstring& _path, const cell_position& _pos) :
+    path(_path), pos(_pos) {}
+
 xml_map_tree::element_position::element_position() :
     open_begin(0), open_end(0), close_begin(0), close_end(0) {}
 
@@ -420,6 +423,7 @@ void xml_map_tree::set_cell_link(const pstring& xpath, const cell_position& ref)
 void xml_map_tree::start_range()
 {
     m_cur_range_parent.clear();
+    m_cur_range_field_links.clear();
     mp_cur_range_ref = nullptr;
 }
 
@@ -428,6 +432,11 @@ void xml_map_tree::append_range_field_link(const pstring& xpath, const cell_posi
     if (xpath.empty())
         return;
 
+    m_cur_range_field_links.emplace_back(xpath, pos);
+}
+
+void xml_map_tree::insert_range_field_link(const pstring& xpath, const cell_position& pos)
+{
     range_reference* range_ref = get_range_reference(pos);
     assert(range_ref);
 
@@ -529,9 +538,14 @@ void xml_map_tree::set_range_row_group(const pstring& xpath, const cell_position
 
 void xml_map_tree::commit_range()
 {
-    if (!mp_cur_range_ref)
+    if (m_cur_range_field_links.empty())
         // Nothing to commit.
         return;
+
+    for (const range_field_link& fld : m_cur_range_field_links)
+        insert_range_field_link(fld.path, fld.pos);
+
+    assert(mp_cur_range_ref);
 
 #if ORCUS_DEBUG_XML_MAP_TREE
     cout << "parent element path for this range: ";

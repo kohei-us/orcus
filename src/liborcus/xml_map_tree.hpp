@@ -252,6 +252,8 @@ public:
     pstring intern_string(const pstring& str) const;
 
 private:
+    void insert_range_field_link(const pstring& xpath, const cell_position& pos);
+
     range_reference* get_range_reference(const cell_position& pos);
 
     void create_ref_store(linkable& node);
@@ -275,6 +277,17 @@ private:
     element* get_element(const pstring& xpath);
 
 private:
+
+    struct range_field_link
+    {
+        pstring path;
+        cell_position pos;
+
+        range_field_link(const pstring& _path, const cell_position& _pos);
+    };
+
+    using range_field_links = std::vector<range_field_link>;
+
     xmlns_context m_xmlns_cxt;
 
     /**
@@ -283,6 +296,11 @@ private:
      * range reference.
      */
     element_list_type m_cur_range_parent;
+
+    /**
+     * Stores field links to insert into the current range reference.
+     */
+    range_field_links m_cur_range_field_links;
 
     range_reference* mp_cur_range_ref;
 
