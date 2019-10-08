@@ -252,7 +252,7 @@ public:
     pstring intern_string(const pstring& str) const;
 
 private:
-    void insert_range_field_link(const pstring& xpath, const cell_position& pos);
+    void insert_range_field_link(range_reference* range_ref, const pstring& xpath);
 
     range_reference* get_range_reference(const cell_position& pos);
 
@@ -293,8 +293,6 @@ private:
      * Stores field links to insert into the current range reference.
      */
     range_field_links m_cur_range_field_links;
-
-    range_reference* mp_cur_range_ref;
 
     cell_position m_cur_range_pos;
 

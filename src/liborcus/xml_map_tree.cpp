@@ -367,7 +367,7 @@ xml_map_tree::element* xml_map_tree::walker::pop_element(xmlns_id_t ns, const ps
 }
 
 xml_map_tree::xml_map_tree(xmlns_repository& xmlns_repo) :
-    m_xmlns_cxt(xmlns_repo.create_context()), mp_cur_range_ref(nullptr), mp_root(nullptr) {}
+    m_xmlns_cxt(xmlns_repo.create_context()), mp_root(nullptr) {}
 
 xml_map_tree::~xml_map_tree() {}
 
@@ -421,7 +421,6 @@ void xml_map_tree::start_range(const cell_position& pos)
 {
     m_cur_range_parent.clear();
     m_cur_range_field_links.clear();
-    mp_cur_range_ref = nullptr;
     m_cur_range_pos = pos;
 }
 
@@ -433,17 +432,8 @@ void xml_map_tree::append_range_field_link(const pstring& xpath)
     m_cur_range_field_links.emplace_back(xpath);
 }
 
-void xml_map_tree::insert_range_field_link(const pstring& xpath, const cell_position& pos)
+void xml_map_tree::insert_range_field_link(range_reference* range_ref, const pstring& xpath)
 {
-    range_reference* range_ref = get_range_reference(pos);
-    assert(range_ref);
-
-    if (!mp_cur_range_ref)
-        mp_cur_range_ref = range_ref;
-
-#if ORCUS_DEBUG_XML_MAP_TREE
-    cout << "xml_map_tree::append_range_field_link: " << xpath << " (ref=" << pos << ")" << endl;
-#endif
     linked_node_type linked_node = get_linked_node(xpath, reference_range_field);
     if (linked_node.elem_stack.size() < 2)
         throw xpath_error("Path of a range field link must be at least 2 levels.");
@@ -540,10 +530,11 @@ void xml_map_tree::commit_range()
         // Nothing to commit.
         return;
 
-    for (const pstring& path : m_cur_range_field_links)
-        insert_range_field_link(path, m_cur_range_pos);
+    range_reference* range_ref = get_range_reference(m_cur_range_pos);
+    assert(range_ref);
 
-    assert(mp_cur_range_ref);
+    for (const pstring& path : m_cur_range_field_links)
+        insert_range_field_link(range_ref, path);
 
 #if ORCUS_DEBUG_XML_MAP_TREE
     cout << "parent element path for this range: ";
@@ -555,7 +546,7 @@ void xml_map_tree::commit_range()
 
     assert(!m_cur_range_parent.empty());
     // Mark the range parent element.
-    m_cur_range_parent.back()->range_parent = mp_cur_range_ref;
+    m_cur_range_parent.back()->range_parent = range_ref;
 
     // Set the current position invalid.
     m_cur_range_pos.row = -1;
