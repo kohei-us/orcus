@@ -252,7 +252,7 @@ public:
     pstring intern_string(const pstring& str) const;
 
 private:
-    void insert_range_field_link(range_reference* range_ref, const pstring& xpath);
+    void insert_range_field_link(range_reference& range_ref, element_list_type& range_parent, const pstring& xpath);
 
     range_reference* get_range_reference(const cell_position& pos);
 
@@ -281,13 +281,6 @@ private:
     using range_field_links = std::vector<pstring>;
 
     xmlns_context m_xmlns_cxt;
-
-    /**
-     * Element stack of current range parent element. This is used to
-     * determine a common parent element for all field links of a current
-     * range reference.
-     */
-    element_list_type m_cur_range_parent;
 
     /**
      * Stores field links to insert into the current range reference.

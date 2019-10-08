@@ -419,7 +419,6 @@ void xml_map_tree::set_cell_link(const pstring& xpath, const cell_position& ref)
 
 void xml_map_tree::start_range(const cell_position& pos)
 {
-    m_cur_range_parent.clear();
     m_cur_range_field_links.clear();
     m_cur_range_pos = pos;
 }
@@ -432,7 +431,8 @@ void xml_map_tree::append_range_field_link(const pstring& xpath)
     m_cur_range_field_links.emplace_back(xpath);
 }
 
-void xml_map_tree::insert_range_field_link(range_reference* range_ref, const pstring& xpath)
+void xml_map_tree::insert_range_field_link(
+    range_reference& range_ref, element_list_type& range_parent, const pstring& xpath)
 {
     linked_node_type linked_node = get_linked_node(xpath, reference_range_field);
     if (linked_node.elem_stack.size() < 2)
@@ -441,7 +441,7 @@ void xml_map_tree::insert_range_field_link(range_reference* range_ref, const pst
     if (linked_node.node->node_type == node_unknown)
         throw xpath_error("Unrecognized node type");
 
-    linked_node.anchor_elem->linked_range_fields.push_back(range_ref->field_nodes.size());
+    linked_node.anchor_elem->linked_range_fields.push_back(range_ref.field_nodes.size());
 
     switch (linked_node.node->node_type)
     {
@@ -449,20 +449,20 @@ void xml_map_tree::insert_range_field_link(range_reference* range_ref, const pst
         {
             element* p = static_cast<element*>(linked_node.node);
             assert(p && p->ref_type == reference_range_field && p->field_ref);
-            p->field_ref->ref = range_ref;
-            p->field_ref->column_pos = range_ref->field_nodes.size();
+            p->field_ref->ref = &range_ref;
+            p->field_ref->column_pos = range_ref.field_nodes.size();
 
-            range_ref->field_nodes.push_back(p);
+            range_ref.field_nodes.push_back(p);
         }
         break;
         case node_attribute:
         {
             attribute* p = static_cast<attribute*>(linked_node.node);
             assert(p && p->ref_type == reference_range_field && p->field_ref);
-            p->field_ref->ref = range_ref;
-            p->field_ref->column_pos = range_ref->field_nodes.size();
+            p->field_ref->ref = &range_ref;
+            p->field_ref->column_pos = range_ref.field_nodes.size();
 
-            range_ref->field_nodes.push_back(p);
+            range_ref.field_nodes.push_back(p);
         }
         break;
         default:
@@ -471,7 +471,7 @@ void xml_map_tree::insert_range_field_link(range_reference* range_ref, const pst
 
     // Determine the deepest common element for all field link elements in the
     // current range reference.
-    if (m_cur_range_parent.empty())
+    if (range_parent.empty())
     {
         // First field link in this range.
         element_list_type::iterator it_end = linked_node.elem_stack.end();
@@ -479,9 +479,9 @@ void xml_map_tree::insert_range_field_link(range_reference* range_ref, const pst
             --it_end; // Skip the linked element, which is used as a field in a range.
 
         --it_end; // Skip the next-up element, which is used to group a single record entry.
-        m_cur_range_parent.assign(linked_node.elem_stack.begin(), it_end);
+        range_parent.assign(linked_node.elem_stack.begin(), it_end);
 #if ORCUS_DEBUG_XML_MAP_TREE
-        print_element_stack(cout, m_cur_range_parent);
+        print_element_stack(cout, range_parent);
         cout << endl;
 #endif
     }
@@ -489,7 +489,7 @@ void xml_map_tree::insert_range_field_link(range_reference* range_ref, const pst
     {
         // Determine the deepest common element between the two.
         element_list_type::iterator it_elem = linked_node.elem_stack.begin(), it_elem_end = linked_node.elem_stack.end();
-        element_list_type::iterator it_cur = m_cur_range_parent.begin(), it_cur_end = m_cur_range_parent.end();
+        element_list_type::iterator it_cur = range_parent.begin(), it_cur_end = range_parent.end();
         if (*it_elem != *it_cur)
             throw xpath_error("Two field links in the same range reference start with different root elements.");
 
@@ -502,11 +502,11 @@ void xml_map_tree::insert_range_field_link(range_reference* range_ref, const pst
                 continue;
 
             // The two elements differ.  Take their parent element as the new common element.
-            m_cur_range_parent.assign(linked_node.elem_stack.begin(), it_elem); // current elemnt excluded.
+            range_parent.assign(linked_node.elem_stack.begin(), it_elem); // current elemnt excluded.
             break;
         }
 
-        if (m_cur_range_parent.empty())
+        if (range_parent.empty())
             throw xpath_error("Two field links in the same range reference must at least share the first level of their paths.");
     }
 }
@@ -533,20 +533,23 @@ void xml_map_tree::commit_range()
     range_reference* range_ref = get_range_reference(m_cur_range_pos);
     assert(range_ref);
 
+    // commont parent element for this range.
+    element_list_type range_parent;
+
     for (const pstring& path : m_cur_range_field_links)
-        insert_range_field_link(range_ref, path);
+        insert_range_field_link(*range_ref, range_parent, path);
 
 #if ORCUS_DEBUG_XML_MAP_TREE
     cout << "parent element path for this range: ";
-    element_list_type::iterator it = m_cur_range_parent.begin(), it_end = m_cur_range_parent.end();
+    element_list_type::iterator it = range_parent.begin(), it_end = range_parent.end();
     for (; it != it_end; ++it)
         cout << "/" << (**it).name;
     cout << endl;
 #endif
 
-    assert(!m_cur_range_parent.empty());
+    assert(!range_parent.empty());
     // Mark the range parent element.
-    m_cur_range_parent.back()->range_parent = range_ref;
+    range_parent.back()->range_parent = range_ref;
 
     // Set the current position invalid.
     m_cur_range_pos.row = -1;
