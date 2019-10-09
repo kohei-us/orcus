@@ -1,3 +1,10 @@
+* xml-map
+
+  * fixed another bug related to filling of cells down the column in a linked
+    range with nested repeat elements.  The bug would occur when the field in
+    a linked range is more than one level deeper than the nearest row group
+    element.
+
 * xls-xml
 
   * fixed a bug where TopCell and LeftCell attributes of the Table element
