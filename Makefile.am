@@ -595,6 +595,8 @@ test_data = \
     test/xls-xml/raw-values-1/check.txt \
     test/xls-xml/raw-values-1/input.xml \
     test/xls-xml/table/autofilter.xml \
+    test/xls-xml/table-offset/input.xml \
+    test/xls-xml/table-offset/check.txt \
     test/xls-xml/text-alignment/input.xml \
     test/xls-xml/view/cursor-per-sheet.xml \
     test/xls-xml/view/cursor-split-pane.xml \
@@ -670,6 +672,9 @@ test_data = \
     test/xml-mapped/nested-repeats-3/check.txt \
     test/xml-mapped/nested-repeats-3/input.xml \
     test/xml-mapped/nested-repeats-3/map.xml \
+    test/xml-mapped/nested-repeats-4/check.txt \
+    test/xml-mapped/nested-repeats-4/input.xml \
+    test/xml-mapped/nested-repeats-4/map.xml \
     test/xml-mapped/nested-repeats/check.txt \
     test/xml-mapped/nested-repeats/input.xml \
     test/xml-mapped/nested-repeats/map.xml \
