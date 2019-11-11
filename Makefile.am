@@ -44,20 +44,6 @@ doc_example_data = \
 
 bin_data = \
     bin/env-osx.sh \
-    bin/orcus-common-func.sh \
-    bin/orcus-css-dump.sh \
-    bin/orcus-csv.sh \
-    bin/orcus-detect.sh \
-    bin/orcus-gnumeric.sh \
-    bin/orcus-json.sh \
-    bin/orcus-mso-encryption.sh \
-    bin/orcus-ods.sh \
-    bin/orcus-test.sh \
-    bin/orcus-xls-xml.sh \
-    bin/orcus-xlsx.sh \
-    bin/orcus-xml.sh \
-    bin/orcus-yaml.sh \
-    bin/orcus-zip-dump.sh \
     bin/run-python.sh
 
 misc_data = \
