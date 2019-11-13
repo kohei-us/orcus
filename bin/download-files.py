@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+########################################################################
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+########################################################################
 
 import argparse
 import requests
@@ -28,6 +35,7 @@ def get_cache_content(cache_file, func_fetch):
 
 
 def get_bug_ids(bz_params):
+    """Get all bug ID's for specified bugzilla query parameters."""
 
     def _fetch():
         r = requests.get(
@@ -55,6 +63,7 @@ def get_bug_ids(bz_params):
 
 
 def get_attachments(bug_id):
+    """Fetch all attachments for specified bug."""
 
     def _fetch():
         r = requests.get(f"https://{BZURL}/rest/bug/{bug_id}/attachment")
@@ -79,11 +88,14 @@ def get_attachments(bug_id):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--outdir", "-o", type=str, required=True)
-    parser.add_argument("--limit", type=int, default=500)
-    parser.add_argument("--offset", type=int, default=0)
-    parser.add_argument("--cont", action="store_true", default=False)
-    parser.add_argument("--worker", type=int, default=8)
+    parser.add_argument("--outdir", "-o", type=str, required=True, help="Output directory for downloaded files.")
+    parser.add_argument("--limit", type=int, default=500, help="Number of bugs to include in a single search.")
+    parser.add_argument("--offset", type=int, default=0, help="Number of bugs to skip in the search results.")
+    parser.add_argument("--cont", action="store_true", default=False,
+        help="""When specified, the search continues after the initial search
+        is returned until the entire search results are exhausted.""")
+    parser.add_argument("--worker", type=int, default=8,
+        help="Number of worker threads to use for parallel downloads of files.")
     args = parser.parse_args()
 
     bz_params = {"product": "LibreOffice", "component": "Calc"}
@@ -93,7 +105,9 @@ def main():
     os.makedirs(os.path.join(CACHE_DIR, BZURL), exist_ok=True)
 
     def _run(bug_id, index, totals):
+        """Top-level function for each worker thread."""
         print(f"({index+1}/{totals}) fetching attachments for bug {bug_id} ...", flush=True)
+
         attachments = get_attachments(bug_id)
         for attachment in attachments:
             filepath = os.path.join(args.outdir, str(bug_id), attachment["filename"])
