@@ -54,6 +54,9 @@ PyMethodDef orcus_methods[] =
 {
     { "info", (PyCFunction)info, METH_NOARGS, "Print orcus module information." },
 
+    { "detect_format", (PyCFunction)detect_format, METH_VARARGS | METH_KEYWORDS,
+      "Detect the format type of a spreadsheet file." },
+
     { "_csv_read", (PyCFunction)csv_read, METH_VARARGS | METH_KEYWORDS,
       "Load specified csv file into a document model." },
 

@@ -209,6 +209,28 @@ std::ostream& operator<< (std::ostream& os, const date_time_t& v)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, format_t v)
+{
+    static const char* values[] = {
+        "unknown",
+        "ods",
+        "xlsx",
+        "gnumeric",
+        "xls-xml",
+        "csv"
+    };
+
+    size_t vi = static_cast<std::underlying_type_t<format_t>>(v);
+    size_t n = ORCUS_N_ELEMENTS(values);
+
+    if (vi >= n)
+        os << "???";
+    else
+        os << values[vi];
+
+    return os;
+}
+
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

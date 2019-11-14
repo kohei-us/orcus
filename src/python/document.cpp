@@ -10,6 +10,7 @@
 #include "orcus/pstring.hpp"
 
 #include <structmember.h>
+#include <object.h>
 
 using namespace std;
 
@@ -208,17 +209,23 @@ PyObject* read_stream_object_from_args(PyObject* args, PyObject* kwargs)
         return nullptr;
     }
 
-    PyObject* func_read = PyObject_GetAttrString(file, "read");
-    if (!func_read)
+    PyObject* obj_bytes = nullptr;
+
+    if (PyObject_HasAttrString(file, "read"))
     {
-        PyErr_SetString(PyExc_RuntimeError, "'read' function was expected, but not found.");
-        return nullptr;
+        PyObject* func_read = PyObject_GetAttrString(file, "read");
+        obj_bytes = PyObject_CallFunction(func_read, nullptr);
     }
 
-    PyObject* obj_bytes = PyObject_CallFunction(func_read, nullptr);
     if (!obj_bytes)
     {
-        PyErr_SetString(PyExc_RuntimeError, "The read function didn't return bytes.");
+        if (PyObject_TypeCheck(file, &PyBytes_Type))
+            obj_bytes = PyBytes_FromObject(file);
+    }
+
+    if (!obj_bytes)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "failed to extract bytes from this object.");
         return nullptr;
     }
 

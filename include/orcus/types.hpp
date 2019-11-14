@@ -446,6 +446,7 @@ ORCUS_PSR_DLLPUBLIC dump_format_t to_dump_format_enum(const char* p, size_t n);
 ORCUS_PSR_DLLPUBLIC std::vector<std::pair<pstring, dump_format_t>> get_dump_format_entries();
 
 ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const date_time_t& v);
+ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, format_t v);
 
 typedef ::std::vector<xml_token_attr_t> xml_attrs_t;
 

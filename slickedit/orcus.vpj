@@ -495,8 +495,11 @@
                     <F N="../src/python/orcus/ods.py"/>
                     <F N="../src/python/orcus/xlsx.py"/>
                 </Folder>
+                <F N="../src/python/csv.cpp"/>
+                <F N="../src/python/csv.hpp"/>
                 <F N="../src/python/document.cpp"/>
                 <F N="../src/python/document.hpp"/>
+                <F N="../src/python/gnumeric.cpp"/>
                 <F N="../src/python/gnumeric.hpp"/>
                 <F N="../src/python/json.cpp"/>
                 <F N="../src/python/ods.cpp"/>

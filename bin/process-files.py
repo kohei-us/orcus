@@ -6,9 +6,11 @@ import os.path
 import sys
 import string
 
+import orcus
+
 
 def sanitize_string(s):
-    """Replace non-printable characters with \x[value]."""
+    """Replace non-printable characters with \\x[value]."""
 
     buf = list()
     for c in s:
@@ -35,7 +37,12 @@ def main():
             print(sanitize_string(filepath), flush=True)
             with open(filepath, 'rb') as f:
                 bytes = f.read()
-                print(f"* {len(bytes)} bytes")
+                print(f"* size: {len(bytes)} bytes")
+                try:
+                    format_type = orcus.detect_format(bytes)
+                except:
+                    format_type = "(detection failed)"
+                print(f"* format type: {format_type}")
 
 
 if __name__ == "__main__":
