@@ -40,9 +40,24 @@ def main():
                 try:
                     format_type = orcus.detect_format(bytes)
                 except:
-                    format_type = "(detection failed)"
+                    continue
                 print(f"* format type: {format_type}")
                 print(f"* size: {len(bytes)} bytes")
+
+                doc = None
+
+                if format_type == "ods":
+                    from orcus import ods
+                    doc = ods.read(bytes)
+                elif format_type == "xlsx":
+                    from orcus import xlsx
+                    doc = xlsx.read(bytes)
+
+                if doc:
+                    for sh in doc.sheets:
+                        print(f"sheet: {sh.name}")
+                        for i, row in enumerate(sh.get_rows()):
+                            print(f"row {i}: {row}")
 
 
 if __name__ == "__main__":
