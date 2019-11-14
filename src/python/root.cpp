@@ -9,11 +9,12 @@
 #include "document.hpp"
 
 #include "orcus/format_detection.hpp"
-
 #include "orcus/info.hpp"
 
 #include <iostream>
 #include <sstream>
+
+#include <object.h>
 
 using namespace std;
 
@@ -46,10 +47,12 @@ PyObject* detect_format(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
         os << ft;
         std::string s = os.str();
 
+        Py_XDECREF(obj_bytes);
         return PyUnicode_FromStringAndSize(s.data(), s.size());
     }
     catch (const std::exception&)
     {
+        Py_XDECREF(obj_bytes);
         PyErr_SetString(PyExc_ValueError, "failed to perform deep detection on this file.");
         return nullptr;
     }

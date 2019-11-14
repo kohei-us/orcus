@@ -121,6 +121,8 @@ void import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes)
     size_t n = PyBytes_Size(obj_bytes);
 
     app.read_stream(p, n);
+
+    Py_XDECREF(obj_bytes);
 }
 
 PyObject* create_document_object()
