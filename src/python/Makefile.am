@@ -6,6 +6,8 @@ pyexec_LTLIBRARIES = _orcus.la _orcus_json.la
 
 _orcus_la_SOURCES = \
 	python.cpp \
+	memory.hpp \
+	memory.cpp \
 	root.hpp \
 	root.cpp \
 	xlsx.hpp \

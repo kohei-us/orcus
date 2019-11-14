@@ -33,12 +33,12 @@ PyObject* info(PyObject*, PyObject*, PyObject*)
 
 PyObject* detect_format(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    PyObject* obj_bytes = read_stream_object_from_args(args, kwargs);
+    py_unique_ptr obj_bytes = read_stream_object_from_args(args, kwargs);
     if (!obj_bytes)
         return nullptr;
 
-    const char* p = PyBytes_AS_STRING(obj_bytes);
-    size_t n = PyBytes_Size(obj_bytes);
+    const char* p = PyBytes_AS_STRING(obj_bytes.get());
+    size_t n = PyBytes_Size(obj_bytes.get());
 
     try
     {
@@ -47,12 +47,10 @@ PyObject* detect_format(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
         os << ft;
         std::string s = os.str();
 
-        Py_XDECREF(obj_bytes);
         return PyUnicode_FromStringAndSize(s.data(), s.size());
     }
     catch (const std::exception&)
     {
-        Py_XDECREF(obj_bytes);
         PyErr_SetString(PyExc_ValueError, "failed to perform deep detection on this file.");
         return nullptr;
     }

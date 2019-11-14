@@ -10,8 +10,7 @@
 
 #include "orcus/spreadsheet/document.hpp"
 
-#include <memory>
-#include <Python.h>
+#include "memory.hpp"
 
 namespace orcus { namespace python {
 
@@ -34,7 +33,7 @@ document_data* get_document_data(PyObject* self);
  *
  * @return object representing the bytes.
  */
-PyObject* read_stream_object_from_args(PyObject* args, PyObject* kwargs);
+py_unique_ptr read_stream_object_from_args(PyObject* args, PyObject* kwargs);
 
 /**
  * Import a document from a python object containing the byte stream, and

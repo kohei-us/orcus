@@ -21,7 +21,7 @@ namespace orcus { namespace python {
 
 PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    PyObject* obj_bytes = read_stream_object_from_args(args, kwargs);
+    py_unique_ptr obj_bytes = read_stream_object_from_args(args, kwargs);
     if (!obj_bytes)
         return nullptr;
 
@@ -29,7 +29,7 @@ PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
     spreadsheet::import_factory fact(*doc);
     orcus_csv app(&fact);
 
-    return import_from_stream_into_document(obj_bytes, app, std::move(doc));
+    return import_from_stream_into_document(obj_bytes.get(), app, std::move(doc));
 }
 
 #else

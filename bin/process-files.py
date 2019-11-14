@@ -37,12 +37,12 @@ def main():
             print(sanitize_string(filepath), flush=True)
             with open(filepath, 'rb') as f:
                 bytes = f.read()
-                print(f"* size: {len(bytes)} bytes")
                 try:
                     format_type = orcus.detect_format(bytes)
                 except:
                     format_type = "(detection failed)"
                 print(f"* format type: {format_type}")
+                print(f"* size: {len(bytes)} bytes")
 
 
 if __name__ == "__main__":

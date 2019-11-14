@@ -121,8 +121,6 @@ void import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes)
     size_t n = PyBytes_Size(obj_bytes);
 
     app.read_stream(p, n);
-
-    Py_XDECREF(obj_bytes);
 }
 
 PyObject* create_document_object()
@@ -196,7 +194,7 @@ document_data* get_document_data(PyObject* self)
     return reinterpret_cast<pyobj_document*>(self)->m_data;
 }
 
-PyObject* read_stream_object_from_args(PyObject* args, PyObject* kwargs)
+py_unique_ptr read_stream_object_from_args(PyObject* args, PyObject* kwargs)
 {
     static const char* kwlist[] = { "stream", nullptr };
 
@@ -231,7 +229,7 @@ PyObject* read_stream_object_from_args(PyObject* args, PyObject* kwargs)
         return nullptr;
     }
 
-    return obj_bytes;
+    return py_unique_ptr(obj_bytes);
 }
 
 PyObject* import_from_stream_into_document(

@@ -502,6 +502,8 @@
                 <F N="../src/python/gnumeric.cpp"/>
                 <F N="../src/python/gnumeric.hpp"/>
                 <F N="../src/python/json.cpp"/>
+                <F N="../src/python/memory.cpp"/>
+                <F N="../src/python/memory.hpp"/>
                 <F N="../src/python/ods.cpp"/>
                 <F N="../src/python/ods.hpp"/>
                 <F N="../src/python/python.cpp"/>
