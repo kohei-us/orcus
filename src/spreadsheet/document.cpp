@@ -308,6 +308,7 @@ struct document_impl
         m_grammar(formula_grammar_t::xlsx),
         m_table_handler(m_context, m_tables)
     {
+        ixion::init();
         m_context.set_table_handler(&m_table_handler);
     }
 
