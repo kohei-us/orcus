@@ -46,18 +46,25 @@ def main():
 
                 doc = None
 
-                if format_type == "ods":
-                    from orcus import ods
-                    doc = ods.read(bytes)
-                elif format_type == "xlsx":
-                    from orcus import xlsx
-                    doc = xlsx.read(bytes)
+                try:
+                    if format_type == "ods":
+                        from orcus import ods
+                        doc = ods.read(bytes)
+                    elif format_type == "xlsx":
+                        from orcus import xlsx
+                        doc = xlsx.read(bytes)
+                except Exception as e:
+                    print(f"exception: {e}")
+                    continue
 
                 if doc:
                     for sh in doc.sheets:
                         print(f"sheet: {sh.name}")
                         for i, row in enumerate(sh.get_rows()):
                             print(f"row {i}: {row}")
+                            if i > 10:
+                                print("...")
+                                break
 
 
 if __name__ == "__main__":
