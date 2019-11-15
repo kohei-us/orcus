@@ -54,7 +54,7 @@ def main():
                         from orcus import xlsx
                         doc = xlsx.read(bytes)
                 except Exception as e:
-                    print(f"exception: {e}")
+                    print(f"{e.__class__.__name__}: {e}")
                     continue
 
                 if doc:
