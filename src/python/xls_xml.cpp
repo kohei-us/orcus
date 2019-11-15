@@ -6,6 +6,7 @@
  */
 
 #include "xls_xml.hpp"
+#include "global.hpp"
 
 #ifdef __ORCUS_PYTHON_XLS_XML
 #include "document.hpp"
@@ -25,11 +26,19 @@ PyObject* xls_xml_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
     if (!obj_bytes)
         return nullptr;
 
-    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
-    spreadsheet::import_factory fact(*doc);
-    orcus_xls_xml app(&fact);
+    try
+    {
+        std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
+        spreadsheet::import_factory fact(*doc);
+        orcus_xls_xml app(&fact);
 
-    return import_from_stream_into_document(obj_bytes.get(), app, std::move(doc));
+        return import_from_stream_into_document(obj_bytes.get(), app, std::move(doc));
+    }
+    catch (const std::exception& e)
+    {
+        set_python_exception(PyExc_RuntimeError, e);
+        return nullptr;
+    }
 }
 
 #else
