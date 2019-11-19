@@ -141,7 +141,6 @@ PyObject* create_document_object()
 
     doc_type->tp_init(obj_doc, nullptr, nullptr);
 
-    Py_INCREF(obj_doc);
     return obj_doc;
 }
 
