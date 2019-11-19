@@ -65,7 +65,18 @@ public:
     virtual ~value_error() throw();
 };
 
+namespace detail {
+
+/**
+ * Internal error used in multi-threaded parsing to signal that the parser
+ * thread has been aborted.
+ */
+class ORCUS_PSR_DLLPUBLIC parsing_aborted_error : public std::exception {};
+
+}
+
 }
 
 #endif
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

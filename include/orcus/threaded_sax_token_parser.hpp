@@ -95,10 +95,18 @@ void threaded_sax_token_parser<_Handler>::parse()
 
     sax::parse_tokens_t tokens;
 
-    while (m_parser_thread.next_tokens(tokens))
-        process_tokens(tokens);
+    try
+    {
+        while (m_parser_thread.next_tokens(tokens))
+            process_tokens(tokens);
 
-    process_tokens(tokens);
+        process_tokens(tokens);
+    }
+    catch (const std::exception& e)
+    {
+        m_parser_thread.abort();
+        throw;
+    }
 }
 
 template<typename _Handler>

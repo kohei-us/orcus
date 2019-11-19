@@ -123,6 +123,11 @@ struct parser_thread::impl
         m_token_buffer.notify_and_finish(m_parser_tokens);
     }
 
+    void abort()
+    {
+        m_token_buffer.abort();
+    }
+
     void declaration(const orcus::xml_declaration_t& decl)
     {
     }
@@ -171,16 +176,25 @@ struct parser_thread::impl
     {
         try
         {
-            orcus::sax_token_parser<impl> parser(mp_char, m_size, m_tokens, m_ns_cxt, *this);
-            parser.parse();
-        }
-        catch (const malformed_xml_error& e)
-        {
-            pstring s = m_pool.intern(e.what()).first;
-            m_parser_tokens.emplace_back(parse_token_t::parse_error, s.get(), s.size(), e.offset());
-        }
+            try
+            {
+                orcus::sax_token_parser<impl> parser(mp_char, m_size, m_tokens, m_ns_cxt, *this);
+                parser.parse();
+            }
+            catch (const malformed_xml_error& e)
+            {
+                pstring s = m_pool.intern(e.what()).first;
+                m_parser_tokens.emplace_back(parse_token_t::parse_error, s.get(), s.size(), e.offset());
+            }
 
-        notify_and_finish();
+            // TODO : add more exceptions that need to be tokenized and processed by the client thread.
+
+            notify_and_finish();
+        }
+        catch (const orcus::detail::parsing_aborted_error&)
+        {
+            // This is used only to abort the parsing thread prematurely.
+        }
     }
 
     bool next_tokens(parse_tokens_t& tokens)
@@ -221,6 +235,11 @@ bool parser_thread::next_tokens(parse_tokens_t& tokens)
 void parser_thread::swap_string_pool(string_pool& pool)
 {
     mp_impl->swap_string_pool(pool);
+}
+
+void parser_thread::abort()
+{
+    mp_impl->abort();
 }
 
 }}

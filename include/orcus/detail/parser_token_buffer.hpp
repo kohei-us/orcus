@@ -52,11 +52,15 @@ class parser_token_buffer
     void wait_until_tokens_empty()
     {
         std::unique_lock<std::mutex> lock(m_mtx_tokens);
-        while (!m_tokens.empty())
+        while (!m_tokens.empty() && m_state == state_type::parsing_progress)
             m_cv_tokens_empty.wait(lock);
+
+        if (m_state == state_type::parsing_aborted)
+            throw detail::parsing_aborted_error();
     }
 
 public:
+
     parser_token_buffer(size_t min_token_size, size_t max_token_size) :
         m_token_size_threshold(std::max<size_t>(min_token_size, 1)),
         m_max_token_size(max_token_size),
@@ -120,6 +124,16 @@ public:
             m_state = state_type::parsing_ended;
         }
         m_cv_tokens_ready.notify_one();
+    }
+
+    void abort()
+    {
+        {
+            std::lock_guard<std::mutex> lock(m_mtx_tokens);
+            m_tokens.clear();
+            m_state = state_type::parsing_aborted;
+        }
+        m_cv_tokens_empty.notify_one();
     }
 
     /**

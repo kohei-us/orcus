@@ -97,6 +97,8 @@ public:
     bool next_tokens(parse_tokens_t& tokens);
 
     void swap_string_pool(string_pool& pool);
+
+    void abort();
 };
 
 }}
