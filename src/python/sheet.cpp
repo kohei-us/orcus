@@ -89,7 +89,6 @@ PyObject* sheet_get_rows(PyObject* self, PyObject* args, PyObject* kwargs)
     // Populate the sheet rows data.
     store_sheet_rows_data(rows, get_core_sheet(self));
 
-    Py_INCREF(rows);
     return rows;
 }
 
