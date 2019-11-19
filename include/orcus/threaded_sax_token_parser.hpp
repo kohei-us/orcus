@@ -11,6 +11,7 @@
 #include "orcus/tokens.hpp"
 #include "orcus/xml_namespace.hpp"
 #include "orcus/sax_token_parser_thread.hpp"
+#include "orcus/sax_parser_base.hpp"
 #include "orcus/exception.hpp"
 #include "orcus/detail/thread.hpp"
 
@@ -130,6 +131,8 @@ void threaded_sax_token_parser<_Handler>::process_tokens(sax::parse_tokens_t& tk
                 case sax::parse_token_t::characters:
                     m_handler.characters(pstring(t.characters.p, t.characters.n), false);
                     break;
+                case sax::parse_token_t::parse_error:
+                    throw sax::malformed_xml_error(std::string(t.error_value.p, t.error_value.len), t.error_value.offset);
                 default:
                     throw general_error("unknown token type encountered.");
             }

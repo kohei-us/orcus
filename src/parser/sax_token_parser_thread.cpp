@@ -174,7 +174,7 @@ struct parser_thread::impl
             orcus::sax_token_parser<impl> parser(mp_char, m_size, m_tokens, m_ns_cxt, *this);
             parser.parse();
         }
-        catch (const parse_error& e)
+        catch (const malformed_xml_error& e)
         {
             pstring s = m_pool.intern(e.what()).first;
             m_parser_tokens.emplace_back(parse_token_t::parse_error, s.get(), s.size(), e.offset());
