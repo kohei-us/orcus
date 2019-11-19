@@ -22,6 +22,8 @@ namespace orcus { namespace detail { namespace thread {
 template<typename _TokensT>
 class parser_token_buffer
 {
+    enum class state_type { parsing_progress, parsing_ended, parsing_aborted };
+
     typedef _TokensT tokens_type;
 
     mutable std::mutex m_mtx_tokens;
@@ -33,7 +35,7 @@ class parser_token_buffer
     size_t m_token_size_threshold;
     const size_t m_max_token_size;
 
-    bool m_parsing_progress;
+    state_type m_state;
 
     bool tokens_empty() const
     {
@@ -58,7 +60,7 @@ public:
     parser_token_buffer(size_t min_token_size, size_t max_token_size) :
         m_token_size_threshold(std::max<size_t>(min_token_size, 1)),
         m_max_token_size(max_token_size),
-        m_parsing_progress(true)
+        m_state(state_type::parsing_progress)
     {
         if (m_token_size_threshold > m_max_token_size)
             throw invalid_arg_error(
@@ -115,7 +117,7 @@ public:
         {
             std::lock_guard<std::mutex> lock(m_mtx_tokens);
             m_tokens.swap(parser_tokens);
-            m_parsing_progress = false;
+            m_state = state_type::parsing_ended;
         }
         m_cv_tokens_ready.notify_one();
     }
@@ -136,18 +138,18 @@ public:
 
         // Wait until the parser passes a new set of tokens.
         std::unique_lock<std::mutex> lock(m_mtx_tokens);
-        while (m_tokens.empty() && m_parsing_progress)
+        while (m_tokens.empty() && m_state == state_type::parsing_progress)
             m_cv_tokens_ready.wait(lock);
 
         // Get the new tokens and notify the parser.
         tokens.swap(m_tokens);
-        bool parsing_progress = m_parsing_progress; // Make a copy so that lock can be released safely.
+        state_type parsing_progress = m_state; // Make a copy so that lock can be released safely.
 
         lock.unlock();
 
         m_cv_tokens_empty.notify_one();
 
-        return parsing_progress;
+        return parsing_progress == state_type::parsing_progress;
     }
 
     /**
@@ -158,7 +160,7 @@ public:
      */
     size_t token_size_threshold() const
     {
-        if (m_parsing_progress)
+        if (m_state == state_type::parsing_progress)
             return 0;
 
         return m_token_size_threshold;
