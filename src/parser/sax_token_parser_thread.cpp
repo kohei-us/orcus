@@ -32,6 +32,14 @@ parse_token::parse_token(parse_token_t _type, const xml_token_element_t* _elemen
 {
 }
 
+parse_token::parse_token(parse_token_t _type, const char* p, size_t len, std::ptrdiff_t offset) :
+    type(_type)
+{
+    error_value.p = p;
+    error_value.len = len;
+    error_value.offset = offset;
+}
+
 parse_token::parse_token(const parse_token& other) :
     type(other.type)
 {
@@ -45,6 +53,11 @@ parse_token::parse_token(const parse_token& other) :
             characters.p = other.characters.p;
             characters.n = other.characters.n;
             break;
+        case parse_token_t::parse_error:
+            error_value.p = other.error_value.p;
+            error_value.len = other.error_value.len;
+            error_value.offset = other.error_value.offset;
+            break;
         case parse_token_t::unknown:
         default:
             ;
@@ -55,6 +68,23 @@ bool parse_token::operator== (const parse_token& other) const
 {
     if (type != other.type)
         return false;
+
+    switch (type)
+    {
+        case parse_token_t::start_element:
+        case parse_token_t::end_element:
+            return element == other.element;
+        case parse_token_t::characters:
+            return characters.p == other.characters.p &&
+                characters.n == other.characters.n;
+        case parse_token_t::parse_error:
+            return error_value.p == other.error_value.p &&
+                error_value.len == other.error_value.len &&
+                error_value.offset == other.error_value.offset;
+        case parse_token_t::unknown:
+        default:
+            ;
+    }
 
     return true;
 }
@@ -139,8 +169,17 @@ struct parser_thread::impl
 
     void start()
     {
-        orcus::sax_token_parser<impl> parser(mp_char, m_size, m_tokens, m_ns_cxt, *this);
-        parser.parse();
+        try
+        {
+            orcus::sax_token_parser<impl> parser(mp_char, m_size, m_tokens, m_ns_cxt, *this);
+            parser.parse();
+        }
+        catch (const parse_error& e)
+        {
+            pstring s = m_pool.intern(e.what()).first;
+            m_parser_tokens.emplace_back(parse_token_t::parse_error, s.get(), s.size(), e.offset());
+        }
+
         notify_and_finish();
     }
 

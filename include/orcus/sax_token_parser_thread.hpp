@@ -29,7 +29,8 @@ enum class parse_token_t
     unknown,
     start_element,
     end_element,
-    characters
+    characters,
+    parse_error,
 };
 
 struct ORCUS_PSR_DLLPUBLIC parse_token
@@ -45,12 +46,21 @@ struct ORCUS_PSR_DLLPUBLIC parse_token
 
         } characters;
 
+        struct
+        {
+            const char* p;
+            size_t len;
+            std::ptrdiff_t offset;
+
+        } error_value;
+
         const xml_token_element_t* element;
     };
 
     parse_token();
     parse_token(const pstring& _characters);
     parse_token(parse_token_t _type, const xml_token_element_t* _element);
+    parse_token(parse_token_t _type, const char* p, size_t len, std::ptrdiff_t offset);
 
     parse_token(const parse_token& other);
 
