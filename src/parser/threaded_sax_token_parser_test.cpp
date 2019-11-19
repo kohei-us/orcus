@@ -144,6 +144,42 @@ void test_sax_token_parser_1()
             assert(!"Wrong exception was thrown!");
         }
     }
+
+    {
+        // Test XML content.
+        const char* content = "<?xml version=\"1.0\"?><root><andy/><bruce/><charlie/><david/><edward/><frank/></root>";
+        size_t content_size = strlen(content);
+
+        class mock_exception : public std::exception {};
+
+        class handler
+        {
+        public:
+            handler() {}
+
+            void start_element(const orcus::xml_token_element_t& /*elem*/) {}
+
+            void end_element(const orcus::xml_token_element_t& /*elem*/)
+            {
+                throw mock_exception();
+            }
+
+            void characters(const orcus::pstring& /*val*/, bool /*transient*/) {}
+        };
+
+        handler hdl;
+        threaded_sax_token_parser<handler> parser(content, content_size, token_map, ns_cxt, hdl, 1, 100);
+
+        try
+        {
+            parser.parse();
+            assert(!"A mock exception was expected but not thrown.");
+        }
+        catch (const mock_exception&)
+        {
+            // expected.
+        }
+    }
 }
 
 int main()
