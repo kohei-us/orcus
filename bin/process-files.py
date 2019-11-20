@@ -31,10 +31,13 @@ def main():
         help="Root directory below which to recursively find and process test files.")
     args = parser.parse_args()
 
+    file_count = 0
     for root, dir, files in os.walk(args.rootdir):
         for filename in files:
             filepath = os.path.join(root, filename)
-            print(sanitize_string(filepath), flush=True)
+            print(file_count, sanitize_string(filepath), flush=True)
+            file_count += 1
+
             with open(filepath, 'rb') as f:
                 bytes = f.read()
                 try:
