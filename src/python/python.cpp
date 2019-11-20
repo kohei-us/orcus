@@ -120,21 +120,36 @@ ORCUS_DLLPUBLIC PyObject* PyInit__orcus()
     if (!PyType_Ready(doc_type))
     {
         Py_INCREF(doc_type);
-        PyModule_AddObject(m, "Document", reinterpret_cast<PyObject*>(doc_type));
+        if (PyModule_AddObject(m, "Document", reinterpret_cast<PyObject*>(doc_type)) < 0)
+        {
+            Py_DECREF(m);
+            Py_DECREF(doc_type);
+            return nullptr;
+        }
     }
 
     PyTypeObject* sheet_type = orcus::python::get_sheet_type();
     if (!PyType_Ready(sheet_type))
     {
         Py_INCREF(sheet_type);
-        PyModule_AddObject(m, "Sheet", reinterpret_cast<PyObject*>(sheet_type));
+        if (PyModule_AddObject(m, "Sheet", reinterpret_cast<PyObject*>(sheet_type)) < 0)
+        {
+            Py_DECREF(m);
+            Py_DECREF(sheet_type);
+            return nullptr;
+        }
     }
 
     PyTypeObject* sheet_rows_type = orcus::python::get_sheet_rows_type();
     if (!PyType_Ready(sheet_rows_type))
     {
         Py_INCREF(sheet_rows_type);
-        PyModule_AddObject(m, "SheetRows", reinterpret_cast<PyObject*>(sheet_rows_type));
+        if (PyModule_AddObject(m, "SheetRows", reinterpret_cast<PyObject*>(sheet_rows_type)) < 0)
+        {
+            Py_DECREF(m);
+            Py_DECREF(sheet_rows_type);
+            return nullptr;
+        }
     }
 #endif
 

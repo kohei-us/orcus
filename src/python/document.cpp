@@ -212,8 +212,9 @@ py_unique_ptr read_stream_object_from_args(PyObject* args, PyObject* kwargs)
 
     if (PyObject_HasAttrString(file, "read"))
     {
-        PyObject* func_read = PyObject_GetAttrString(file, "read");
+        PyObject* func_read = PyObject_GetAttrString(file, "read"); // new reference
         obj_bytes = PyObject_CallFunction(func_read, nullptr);
+        Py_XDECREF(func_read);
     }
 
     if (!obj_bytes)

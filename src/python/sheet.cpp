@@ -155,7 +155,7 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
 
     if (!s.empty())
     {
-        PyObject* func_write = PyObject_GetAttrString(file, "write");
+        PyObject* func_write = PyObject_GetAttrString(file, "write"); // new reference
         if (!func_write)
         {
             PyErr_SetString(PyExc_RuntimeError, "'write' function was expected, but not found.");
@@ -163,6 +163,7 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
         }
 
         PyObject_CallFunction(func_write, "y", s.data(), nullptr);
+        Py_XDECREF(func_write);
     }
 
     Py_INCREF(Py_None);
