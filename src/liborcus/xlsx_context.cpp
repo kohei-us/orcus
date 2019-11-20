@@ -815,8 +815,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
             pstring ps = for_each(
                 attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
-            size_t n = strtoul(ps.get(), nullptr, 10);
-            mp_styles->set_cell_style_xf_count(n);
+            if (!ps.empty())
+            {
+                size_t n = strtoul(ps.data(), nullptr, 10);
+                mp_styles->set_cell_style_xf_count(n);
+            }
             m_cell_style_xf = true;
         }
         break;
@@ -826,8 +829,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
             pstring ps = for_each(
                 attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
-            size_t n = strtoul(ps.get(), nullptr, 10);
-            mp_styles->set_cell_xf_count(n);
+            if (!ps.empty())
+            {
+                size_t n = strtoul(ps.data(), nullptr, 10);
+                mp_styles->set_cell_xf_count(n);
+            }
             m_cell_style_xf = false;
         }
         break;
@@ -837,8 +843,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
             pstring ps = for_each(
                 attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
-            size_t n = strtoul(ps.get(), nullptr, 10);
-            mp_styles->set_dxf_count(n);
+            if (!ps.empty())
+            {
+                size_t n = strtoul(ps.data(), nullptr, 10);
+                mp_styles->set_dxf_count(n);
+            }
         }
         break;
         case XML_cellStyles:
@@ -846,8 +855,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
             pstring ps = for_each(
                 attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
-            size_t n = strtoul(ps.get(), nullptr, 10);
-            mp_styles->set_cell_style_count(n);
+            if (!ps.empty())
+            {
+                size_t n = strtoul(ps.data(), nullptr, 10);
+                mp_styles->set_cell_style_count(n);
+            }
         }
         break;
         case XML_cellStyle:
@@ -899,8 +911,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 for_each(
                     attrs.begin(), attrs.end(),
                     single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
-            size_t n = to_long(val);
-            mp_styles->set_number_format_count(n);
+            if (!val.empty())
+            {
+                size_t n = to_long(val);
+                mp_styles->set_number_format_count(n);
+            }
         }
         break;
         case XML_numFmt:
