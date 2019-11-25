@@ -6,6 +6,7 @@
  */
 
 #include "sheet_rows.hpp"
+#include "memory.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 
 #include <ixion/cell.hpp>
@@ -75,8 +76,29 @@ PyObject* sheet_rows_iternext(PyObject* self)
         return nullptr;
     }
 
+    py_scoped_ref orcus_mod = PyImport_ImportModule("orcus");
+    if (!orcus_mod)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "failed to import orcus module.");
+        return nullptr;
+    }
+
+    py_scoped_ref cls_celltype = PyObject_GetAttrString(orcus_mod.get(), "CellType");
+    if (!cls_celltype)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "failed to find class orcus.CellType.");
+        return nullptr;
+    }
+
+    py_scoped_ref ct_empty = PyObject_GetAttrString(cls_celltype.get(), "EMPTY");
+    py_scoped_ref ct_boolean = PyObject_GetAttrString(cls_celltype.get(), "BOOLEAN");
+    py_scoped_ref ct_numeric = PyObject_GetAttrString(cls_celltype.get(), "NUMERIC");
+    py_scoped_ref ct_string = PyObject_GetAttrString(cls_celltype.get(), "STRING");
+    py_scoped_ref ct_formula = PyObject_GetAttrString(cls_celltype.get(), "FORMULA");
+
     size_t row_position = row_pos->position;
     PyObject* pyobj_row = PyTuple_New(data->m_range.last.column+1);
+
     for (; row_pos != row_end && row_position == row_pos->position; ++row_pos)
     {
         size_t col_pos = row_pos->index;
@@ -85,78 +107,127 @@ PyObject* sheet_rows_iternext(PyObject* self)
         {
             case ixion::element_type_empty:
             {
+                PyObject* cv = PyTuple_New(2);
+                PyObject* ct = ct_empty.get();
+                Py_INCREF(ct);
+                PyTuple_SetItem(cv, 0, ct);
                 Py_INCREF(Py_None);
-                PyTuple_SetItem(pyobj_row, col_pos, Py_None);
+                PyTuple_SetItem(cv, 1, Py_None);
+
+                PyTuple_SetItem(pyobj_row, col_pos, cv);
+                break;
             }
-            break;
             case ixion::element_type_boolean:
             {
+                PyObject* cv = PyTuple_New(2);
+                PyObject* ct = ct_boolean.get();
+                Py_INCREF(ct);
+                PyTuple_SetItem(cv, 0, ct);
+
                 bool v = row_pos->get<ixion::boolean_element_block>();
                 if (v)
                 {
                     Py_INCREF(Py_True);
-                    PyTuple_SetItem(pyobj_row, col_pos, Py_True);
+                    PyTuple_SetItem(cv, 1, Py_True);
                 }
                 else
                 {
                     Py_INCREF(Py_False);
-                    PyTuple_SetItem(pyobj_row, col_pos, Py_False);
+                    PyTuple_SetItem(cv, 1, Py_False);
                 }
+
+                PyTuple_SetItem(pyobj_row, col_pos, cv);
+                break;
             }
-            break;
             case ixion::element_type_string:
             {
                 ixion::string_id_t sid = row_pos->get<ixion::string_element_block>();
                 const std::string* ps = data->m_sheet_range.get_string(sid);
+
                 if (ps)
                 {
-                    PyTuple_SetItem(
-                        pyobj_row, col_pos,
-                        PyUnicode_FromStringAndSize(ps->data(), ps->size()));
+                    PyObject* cv = PyTuple_New(2);
+                    PyObject* ct = ct_string.get();
+                    Py_INCREF(ct);
+                    PyTuple_SetItem(cv, 0, ct);
+                    PyTuple_SetItem(cv, 1, PyUnicode_FromStringAndSize(ps->data(), ps->size()));
+
+                    PyTuple_SetItem(pyobj_row, col_pos, cv);
                 }
+                else
+                {
+                    // This should not be hit, but just in case...
+                    Py_INCREF(Py_None);
+                    PyTuple_SetItem(pyobj_row, col_pos, Py_None);
+                }
+                break;
             }
-            break;
             case ixion::element_type_numeric:
-                PyTuple_SetItem(
-                    pyobj_row, col_pos,
-                    PyFloat_FromDouble(row_pos->get<ixion::numeric_element_block>()));
-            break;
+            {
+                PyObject* cv = PyTuple_New(2);
+                PyObject* ct = ct_numeric.get();
+                Py_INCREF(ct);
+                PyTuple_SetItem(cv, 0, ct);
+                PyTuple_SetItem(cv, 1, PyFloat_FromDouble(row_pos->get<ixion::numeric_element_block>()));
+
+                PyTuple_SetItem(pyobj_row, col_pos, cv);
+                break;
+            }
             case ixion::element_type_formula:
             {
+                PyObject* cv = PyTuple_New(2);
+                PyObject* ct = ct_formula.get();
+                Py_INCREF(ct);
+                PyTuple_SetItem(cv, 0, ct);
+
                 const ixion::formula_cell* fc = row_pos->get<ixion::formula_element_block>();
                 ixion::formula_result res = fc->get_result_cache();
                 switch (res.get_type())
                 {
                     case ixion::formula_result::result_type::value:
-                        PyTuple_SetItem(
-                            pyobj_row, col_pos,
-                            PyFloat_FromDouble(res.get_value()));
-                    break;
+                    {
+                        PyTuple_SetItem(cv, 1, PyFloat_FromDouble(res.get_value()));
+                        break;
+                    }
                     case ixion::formula_result::result_type::string:
                     {
                         ixion::string_id_t sid = res.get_string();
                         const std::string* ps = data->m_sheet_range.get_string(sid);
                         if (ps)
+                            PyTuple_SetItem(cv, 1, PyUnicode_FromStringAndSize(ps->data(), ps->size()));
+                        else
                         {
-                            PyTuple_SetItem(
-                                pyobj_row, col_pos,
-                                PyUnicode_FromStringAndSize(ps->data(), ps->size()));
+                            // This should not be hit, but just in case...
+                            Py_INCREF(Py_None);
+                            PyTuple_SetItem(cv, 1, Py_None);
                         }
+                        break;
                     }
-                    break;
                     case ixion::formula_result::result_type::error:
                     {
                         ixion::formula_error_t fe = res.get_error();
                         const char* fename = ixion::get_formula_error_name(fe);
                         if (fename)
-                            PyTuple_SetItem(pyobj_row, col_pos, PyUnicode_FromString(fename));
+                            PyTuple_SetItem(cv, 1, PyUnicode_FromString(fename));
+                        else
+                        {
+                            // This should not be hit, but just in case...
+                            Py_INCREF(Py_None);
+                            PyTuple_SetItem(cv, 1, Py_None);
+                        }
+                        break;
                     }
-                    break;
                     default:
-                        ;
+                    {
+                        // This should not be hit, but just in case...
+                        Py_INCREF(Py_None);
+                        PyTuple_SetItem(cv, 1, Py_None);
+                    }
                 }
+
+                PyTuple_SetItem(pyobj_row, col_pos, cv);
+                break;
             }
-            break;
             default:
                 ;
         }

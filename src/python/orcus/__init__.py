@@ -22,3 +22,14 @@ class FormatType(Enum):
     YAML       = 6
     JSON       = 7
     XML        = 8
+
+
+class CellType(Enum):
+    """Collection of cell types stored in spreadsheet."""
+
+    UNKNOWN = 0
+    EMPTY   = 1
+    BOOLEAN = 2
+    NUMERIC = 3
+    STRING  = 4
+    FORMULA = 5

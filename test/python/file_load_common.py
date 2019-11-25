@@ -44,7 +44,7 @@ class ExpectedSheet(object):
     def get_rows(self):
         rows = list()
         for i in range(self.__max_row+1):
-            row = [None for _ in range(self.__max_column+1)]
+            row = [(orcus.CellType.EMPTY, None) for _ in range(self.__max_column+1)]
             if i in self.__rows:
                 for col_pos, cell in self.__rows[i].items():
                     row[col_pos] = cell
@@ -58,18 +58,18 @@ class ExpectedSheet(object):
         row_data = self.__rows[row]
 
         if cell_type == "numeric":
-            row_data[column] = float(cell_value)
+            row_data[column] = (orcus.CellType.NUMERIC, float(cell_value))
         elif cell_type == "string":
-            row_data[column] = self.__unescape_string_cell_value(cell_value)
+            row_data[column] = (orcus.CellType.STRING, self.__unescape_string_cell_value(cell_value))
         elif cell_type == "boolean":
             if cell_value == "true":
-                row_data[column] = True
+                row_data[column] = (orcus.CellType.BOOLEAN, True)
             elif cell_value == "false":
-                row_data[column] = False
+                row_data[column] = (orcus.CellType.BOOLEAN, False)
             else:
                 raise RuntimeError("invalid boolean value: {}".format(cell_value))
         elif cell_type == "formula":
-            row_data[column] = result
+            row_data[column] = (orcus.CellType.FORMULA, result)
         else:
             raise RuntimeError("unhandled cell value type: {}".format(cell_type))
 

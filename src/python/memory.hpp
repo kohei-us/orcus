@@ -20,6 +20,19 @@ struct pyobj_unique_deleter
 
 using py_unique_ptr = std::unique_ptr<PyObject, pyobj_unique_deleter>;
 
+class py_scoped_ref
+{
+    PyObject* m_pyobj;
+public:
+    py_scoped_ref();
+    py_scoped_ref(PyObject* p);
+    ~py_scoped_ref();
+
+    py_scoped_ref& operator= (PyObject* p);
+    PyObject* get();
+    operator bool() const;
+};
+
 }}
 
 

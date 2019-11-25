@@ -14,6 +14,33 @@ void pyobj_unique_deleter::operator ()(PyObject* p) const
     Py_XDECREF(p);
 }
 
+py_scoped_ref::py_scoped_ref() : m_pyobj(nullptr) {}
+py_scoped_ref::py_scoped_ref(PyObject* p) : m_pyobj(p) {}
+
+py_scoped_ref::~py_scoped_ref()
+{
+    if (m_pyobj)
+        Py_DECREF(m_pyobj);
+}
+
+py_scoped_ref& py_scoped_ref::operator= (PyObject* p)
+{
+    if (m_pyobj)
+        Py_DECREF(m_pyobj);
+    m_pyobj = p;
+    return *this;
+}
+
+PyObject* py_scoped_ref::get()
+{
+    return m_pyobj;
+}
+
+py_scoped_ref::operator bool() const
+{
+    return m_pyobj != nullptr;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

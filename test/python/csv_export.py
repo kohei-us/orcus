@@ -75,6 +75,9 @@ class TestCase(unittest.TestCase):
                 doc_reload = csv.read(mfo)
                 self.assertEqual(1, len(doc_reload.sheets))
                 for row1, row2 in zip(sheet.get_rows(), doc_reload.sheets[0].get_rows()):
+                    # Only comare cell values, not cell types.
+                    row1 = [c[1] for c in row1]
+                    row2 = [c[1] for c in row2]
                     self.assertEqual(row1, row2)
 
             # Make sure we raise an exception on invalid format type.
