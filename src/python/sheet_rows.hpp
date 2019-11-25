@@ -39,7 +39,6 @@ struct sheet_rows_data
     ixion::abs_range_t m_range;
 
     ixion::row_t m_current_row;
-    std::unique_ptr<ixion::formula_name_resolver> m_resolver;
 
     spreadsheet::sheet_range::const_row_iterator m_row_pos;
     spreadsheet::sheet_range::const_row_iterator m_row_end;

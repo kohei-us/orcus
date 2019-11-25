@@ -64,9 +64,6 @@ PyObject* sheet_rows_iter(PyObject* self)
     data->m_row_pos = data->m_sheet_range.row_begin();
     data->m_row_end = data->m_sheet_range.row_end();
 
-    data->m_resolver = ixion::formula_name_resolver::get(
-        ixion::formula_name_resolver_t::excel_a1, &data->m_doc->get_model_context());
-
     Py_INCREF(self);
     return self;
 }
@@ -193,7 +190,8 @@ PyObject* sheet_rows_iternext(PyObject* self)
                 const ixion::formula_tokens_t& tokens = fc->get_tokens()->get();
                 ixion::abs_address_t pos(data->m_sheet->get_index(), row_pos->position, col_pos);
 
-                std::string formula_s = ixion::print_formula_tokens(cxt, pos, *data->m_resolver, tokens);
+                auto* resolver = data->m_doc->get_formula_name_resolver();
+                std::string formula_s = ixion::print_formula_tokens(cxt, pos, *resolver, tokens);
                 PyTuple_SetItem(cv, 2, PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size()));
 
                 ixion::formula_result res = fc->get_result_cache();
