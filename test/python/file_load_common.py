@@ -69,7 +69,7 @@ class ExpectedSheet(object):
             else:
                 raise RuntimeError("invalid boolean value: {}".format(cell_value))
         elif cell_type == "formula":
-            row_data[column] = (orcus.CellType.FORMULA, result)
+            row_data[column] = (orcus.CellType.FORMULA, result, cell_value)
         else:
             raise RuntimeError("unhandled cell value type: {}".format(cell_type))
 

@@ -19,9 +19,8 @@
 
 namespace orcus { namespace python {
 
-sheet_data::~sheet_data()
-{
-}
+sheet_data::sheet_data() : m_doc(nullptr), m_sheet(nullptr) {}
+sheet_data::~sheet_data() {}
 
 namespace {
 
@@ -87,7 +86,8 @@ PyObject* sheet_get_rows(PyObject* self, PyObject* args, PyObject* kwargs)
     sr_type->tp_init(rows, nullptr, nullptr);
 
     // Populate the sheet rows data.
-    store_sheet_rows_data(rows, get_core_sheet(self));
+    sheet_data* data = get_sheet_data(self);
+    store_sheet_rows_data(rows, data->m_doc, data->m_sheet);
 
     return rows;
 }
@@ -240,16 +240,17 @@ PyTypeObject* get_sheet_type()
 }
 
 void store_sheet(
-    PyObject* self, const spreadsheet::document& doc, spreadsheet::sheet* orcus_sheet)
+    PyObject* self, const spreadsheet::document* doc, spreadsheet::sheet* orcus_sheet)
 {
     pyobj_sheet* pysheet = reinterpret_cast<pyobj_sheet*>(self);
+    pysheet->m_data->m_doc = doc;
     pysheet->m_data->m_sheet = orcus_sheet;
 
     // Populate the python members.
 
     // Sheet name
     spreadsheet::sheet_t sid = orcus_sheet->get_index();
-    pstring name = doc.get_sheet_name(sid);
+    pstring name = doc->get_sheet_name(sid);
     pysheet->name = PyUnicode_FromStringAndSize(name.get(), name.size());
 
     // Data size - size of the data area.

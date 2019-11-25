@@ -8,13 +8,18 @@
 #include "sheet_rows.hpp"
 #include "memory.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
+#include "orcus/spreadsheet/document.hpp"
 
 #include <ixion/cell.hpp>
 #include <ixion/formula_result.hpp>
+#include <ixion/formula.hpp>
+#include <ixion/formula_name_resolver.hpp>
+#include <ixion/model_context.hpp>
 
 namespace orcus { namespace python {
 
 sheet_rows_data::sheet_rows_data() :
+    m_doc(nullptr),
     m_sheet(nullptr),
     m_range(ixion::abs_range_t::invalid),
     m_current_row(-1) {}
@@ -59,6 +64,9 @@ PyObject* sheet_rows_iter(PyObject* self)
     data->m_row_pos = data->m_sheet_range.row_begin();
     data->m_row_end = data->m_sheet_range.row_end();
 
+    data->m_resolver = ixion::formula_name_resolver::get(
+        ixion::formula_name_resolver_t::excel_a1, &data->m_doc->get_model_context());
+
     Py_INCREF(self);
     return self;
 }
@@ -68,6 +76,7 @@ PyObject* sheet_rows_iternext(PyObject* self)
     sheet_rows_data* data = reinterpret_cast<pyobj_sheet_rows*>(self)->m_data;
     spreadsheet::sheet_range::const_row_iterator& row_pos = data->m_row_pos;
     const spreadsheet::sheet_range::const_row_iterator& row_end = data->m_row_end;
+    const ixion::model_context& cxt = data->m_doc->get_model_context();
 
     if (row_pos == row_end)
     {
@@ -175,12 +184,18 @@ PyObject* sheet_rows_iternext(PyObject* self)
             }
             case ixion::element_type_formula:
             {
-                PyObject* cv = PyTuple_New(2);
+                PyObject* cv = PyTuple_New(3);
                 PyObject* ct = ct_formula.get();
                 Py_INCREF(ct);
                 PyTuple_SetItem(cv, 0, ct);
 
                 const ixion::formula_cell* fc = row_pos->get<ixion::formula_element_block>();
+                const ixion::formula_tokens_t& tokens = fc->get_tokens()->get();
+                ixion::abs_address_t pos(data->m_sheet->get_index(), row_pos->position, col_pos);
+
+                std::string formula_s = ixion::print_formula_tokens(cxt, pos, *data->m_resolver, tokens);
+                PyTuple_SetItem(cv, 2, PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size()));
+
                 ixion::formula_result res = fc->get_result_cache();
                 switch (res.get_type())
                 {
@@ -285,9 +300,10 @@ PyTypeObject* get_sheet_rows_type()
     return &sheet_rows_type;
 }
 
-void store_sheet_rows_data(PyObject* self, const spreadsheet::sheet* orcus_sheet)
+void store_sheet_rows_data(PyObject* self, const spreadsheet::document* orcus_doc, const spreadsheet::sheet* orcus_sheet)
 {
     sheet_rows_data* data = reinterpret_cast<pyobj_sheet_rows*>(self)->m_data;
+    data->m_doc = orcus_doc;
     data->m_sheet = orcus_sheet;
     data->m_range = orcus_sheet->get_data_range();
 

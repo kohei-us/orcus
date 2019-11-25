@@ -13,6 +13,12 @@
 #include <Python.h>
 #include <ixion/address.hpp>
 
+namespace ixion {
+
+class formula_name_resolver;
+
+}
+
 namespace orcus {
 
 namespace spreadsheet {
@@ -27,11 +33,13 @@ namespace python {
 /** non-python part. */
 struct sheet_rows_data
 {
+    const spreadsheet::document* m_doc;
     const spreadsheet::sheet* m_sheet;
     spreadsheet::sheet_range m_sheet_range;
     ixion::abs_range_t m_range;
 
     ixion::row_t m_current_row;
+    std::unique_ptr<ixion::formula_name_resolver> m_resolver;
 
     spreadsheet::sheet_range::const_row_iterator m_row_pos;
     spreadsheet::sheet_range::const_row_iterator m_row_end;
@@ -42,7 +50,7 @@ struct sheet_rows_data
 
 PyTypeObject* get_sheet_rows_type();
 
-void store_sheet_rows_data(PyObject* self, const spreadsheet::sheet* orcus_sheet);
+void store_sheet_rows_data(PyObject* self, const spreadsheet::document* orcus_doc, const spreadsheet::sheet* orcus_sheet);
 
 }}
 

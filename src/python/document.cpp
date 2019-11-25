@@ -177,7 +177,7 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
         Py_INCREF(pysheet);
         PyTuple_SetItem(pydoc->sheets, i, pysheet);
 
-        store_sheet(pysheet, *pydoc_data->m_doc, sheet);
+        store_sheet(pysheet, pydoc_data->m_doc.get(), sheet);
     }
 }
 
