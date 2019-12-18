@@ -92,6 +92,14 @@ def print_results(inpath):
         print()
 
 
+def remove_result_files(rootdir):
+    for root, dir, files in os.walk(rootdir):
+        for filename in files:
+            if filename.endswith(FILEEXT_OUT) or filename.endswith(FILEEXT_GOOD) or filename.endswith(FILEEXT_BAD):
+                filepath = os.path.join(root, filename)
+                os.remove(filepath)
+
+
 def show_results(rootdir, good, bad):
     for root, dir, files in os.walk(rootdir):
         for filename in files:
@@ -116,6 +124,9 @@ def main():
         description="""This script allows you to load a collection of input files
         for testing purpuses.""")
     parser.add_argument(
+        "--remove-results", action="store_true", default=False,
+        help="Remove all cached results files from the directory tree.")
+    parser.add_argument(
         "--results", action="store_true", default=False,
         help="Display the results of the processed files.")
     parser.add_argument(
@@ -128,6 +139,10 @@ def main():
         "rootdir", metavar="ROOT-DIR",
         help="Root directory below which to recursively find and process test files.")
     args = parser.parse_args()
+
+    if args.remove_results:
+        remove_result_files(args.rootdir)
+        return
 
     if args.results:
         show_results(args.rootdir, args.good, args.bad)
