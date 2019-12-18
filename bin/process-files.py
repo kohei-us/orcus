@@ -100,6 +100,36 @@ def remove_result_files(rootdir):
                 os.remove(filepath)
 
 
+def show_result_stats(rootdir):
+    counts = dict(good=0, bad=0, skipped=0, unprocessed=0)
+    for root, dir, files in os.walk(rootdir):
+        for filename in files:
+            if filename.endswith(FILEEXT_OUT) or filename.endswith(FILEEXT_GOOD) or filename.endswith(FILEEXT_BAD):
+                continue
+
+            inpath = os.path.join(root, filename)
+            out_filepath = f"{inpath}.{FILEEXT_OUT}"
+            good_filepath = f"{inpath}.{FILEEXT_GOOD}"
+            bad_filepath = f"{inpath}.{FILEEXT_BAD}"
+            if os.path.isfile(good_filepath):
+                counts["good"] += 1
+            elif os.path.isfile(bad_filepath):
+                counts["bad"] += 1
+            elif os.path.isfile(out_filepath):
+                counts["skipped"] += 1
+            else:
+                counts["unprocessed"] += 1
+
+    print("* result counts")
+    for cat in ("good", "bad", "skipped", "unprocessed"):
+        print(f"  * {cat}: {counts[cat]}")
+
+    print("* ratios")
+    total = counts["good"] + counts["bad"]
+    print(f"  * good: {counts['good']/total*100:.1f}%")
+    print(f"  * bad: {counts['bad']/total*100:.1f}%")
+
+
 def show_results(rootdir, good, bad):
     for root, dir, files in os.walk(rootdir):
         for filename in files:
@@ -136,6 +166,9 @@ def main():
         "--bad", action="store_true", default=False,
         help="Display the results of the unsuccessfully processed files.")
     parser.add_argument(
+        "--stats", action="store_true", default=False,
+        help="Display statistics of the results.  Use it with --results.")
+    parser.add_argument(
         "rootdir", metavar="ROOT-DIR",
         help="Root directory below which to recursively find and process test files.")
     args = parser.parse_args()
@@ -145,6 +178,10 @@ def main():
         return
 
     if args.results:
+        if args.stats:
+            show_result_stats(args.rootdir)
+            return
+
         show_results(args.rootdir, args.good, args.bad)
         return
 
