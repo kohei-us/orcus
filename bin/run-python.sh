@@ -25,12 +25,15 @@ export PYTHONPATH=$_PYTHONPATH:$PYTHONPATH
 export LD_LIBRARY_PATH="$PROGDIR/../src/liborcus/.libs:$PROGDIR/../src/parser/.libs"
 export DYLD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
+EXEC="$1"
+shift
+
 case $RUNMODE in
     gdb)
-    gdb --args $PYTHON $PWD/"$1"
+    gdb --args $PYTHON "$PWD/$EXEC" "$@"
         ;;
     *)
-        exec $PWD/"$1"
+        exec "$PWD/$EXEC" "$@"
         ;;
 esac
 
