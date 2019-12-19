@@ -45,62 +45,42 @@
                 MenuCaption="E&amp;xecute"
                 SaveOption="SaveNone"
                 RunFromDir="%rw">
-                <Exec CmdLine='"cmake.exe"'/>
+                <Exec CmdLine='"python.exe"'/>
             </Target>
         </Menu>
     </Config>
-    <CustomFolders>
+    <Files>
         <Folder
             Name="Source Files"
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
-            GUID="{B36B5047-1F53-4425-9E05-016BAD8947B9}"/>
+            GUID="{F5A8F7E8-3CA5-495A-9013-3B118350F9DE}">
+            <F N="../src/python/orcus/__init__.py"/>
+            <F N="../src/python/orcus/csv.py"/>
+            <F N="../bin/download-files.py"/>
+            <F N="../bin/extract-formulas.py"/>
+            <F N="../bin/gen-files.py"/>
+            <F N="../src/python/orcus/gnumeric.py"/>
+            <F N="../src/python/orcus/json.py"/>
+            <F N="../src/python/orcus/ods.py"/>
+            <F N="../bin/process-files.py"/>
+            <F N="../src/python/orcus/xls_xml.py"/>
+            <F N="../src/python/orcus/xlsx.py"/>
+        </Folder>
         <Folder
             Name="Header Files"
             Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
-            GUID="{C2ED2798-BE1E-41A1-B92A-EE092F0A30AC}"/>
+            GUID="{07C64958-611E-4D92-9D8B-0FA102D25070}"/>
         <Folder
             Name="Resource Files"
             Filters="*.ico;*.cur;*.dlg"
-            GUID="{CDF06D54-CD2B-4D6B-2577-D79C09C1A38E}"/>
+            GUID="{13BD4747-B0B1-44E3-A4D9-64773F8FCBE7}"/>
         <Folder
             Name="Bitmaps"
             Filters="*.bmp"
-            GUID="{FE939B93-264B-4FA9-9E7D-752DEC8465AE}"/>
+            GUID="{832B5267-B704-4B1A-B3A1-385517302913}"/>
         <Folder
             Name="Other Files"
             Filters=""
-            GUID="{48B76FDC-F021-4FEC-F274-6CD2FF24E3B4}"></Folder>
-    </CustomFolders>
-    <Files AutoFolders="DirectoryView">
-        <Folder Name="..">
-            <F N="../CMakeLists.txt"/>
-        </Folder>
-        <Folder Name="../include">
-            <Folder Name="orcus">
-                <Folder Name="detail">
-                    <F N="../include/orcus/detail/CMakeLists.txt"/>
-                </Folder>
-                <Folder Name="mso">
-                    <F N="../include/orcus/mso/CMakeLists.txt"/>
-                </Folder>
-                <Folder Name="spreadsheet">
-                    <F N="../include/orcus/spreadsheet/CMakeLists.txt"/>
-                </Folder>
-                <F N="../include/orcus/CMakeLists.txt"/>
-            </Folder>
-            <F N="../include/CMakeLists.txt"/>
-        </Folder>
-        <Folder Name="../src">
-            <Folder Name="liborcus">
-                <F N="../src/liborcus/CMakeLists.txt"/>
-            </Folder>
-            <Folder Name="parser">
-                <F N="../src/parser/CMakeLists.txt"/>
-            </Folder>
-            <Folder Name="spreadsheet">
-                <F N="../src/spreadsheet/CMakeLists.txt"/>
-            </Folder>
-            <F N="../src/CMakeLists.txt"/>
-        </Folder>
+            GUID="{9E10DE22-363A-4DC3-9212-A71DA6800CDB}"/>
     </Files>
 </Project>

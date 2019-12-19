@@ -45,7 +45,7 @@
                 MenuCaption="E&amp;xecute"
                 SaveOption="SaveNone"
                 RunFromDir="%rw">
-                <Exec CmdLine='"cmake.exe"'/>
+                <Exec CmdLine='"sh.exe"'/>
             </Target>
         </Menu>
     </Config>
@@ -53,54 +53,30 @@
         <Folder
             Name="Source Files"
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
-            GUID="{B36B5047-1F53-4425-9E05-016BAD8947B9}"/>
+            GUID="{871B3C7A-5835-4B89-941B-A3A00BE4B4F9}"/>
         <Folder
             Name="Header Files"
             Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
-            GUID="{C2ED2798-BE1E-41A1-B92A-EE092F0A30AC}"/>
+            GUID="{BE3A4AE3-BB06-40A5-BF18-E7C00AC43BB4}"></Folder>
         <Folder
             Name="Resource Files"
             Filters="*.ico;*.cur;*.dlg"
-            GUID="{CDF06D54-CD2B-4D6B-2577-D79C09C1A38E}"/>
+            GUID="{3037F078-C30B-4946-9281-F27299396157}"/>
         <Folder
             Name="Bitmaps"
             Filters="*.bmp"
-            GUID="{FE939B93-264B-4FA9-9E7D-752DEC8465AE}"/>
+            GUID="{A99BD58B-508E-4FE8-9D44-3519E2F4242D}"/>
         <Folder
             Name="Other Files"
             Filters=""
-            GUID="{48B76FDC-F021-4FEC-F274-6CD2FF24E3B4}"></Folder>
+            GUID="{F5391F55-9E73-48D2-92B4-957A6CE89D94}"/>
     </CustomFolders>
     <Files AutoFolders="DirectoryView">
-        <Folder Name="..">
-            <F N="../CMakeLists.txt"/>
-        </Folder>
-        <Folder Name="../include">
-            <Folder Name="orcus">
-                <Folder Name="detail">
-                    <F N="../include/orcus/detail/CMakeLists.txt"/>
-                </Folder>
-                <Folder Name="mso">
-                    <F N="../include/orcus/mso/CMakeLists.txt"/>
-                </Folder>
-                <Folder Name="spreadsheet">
-                    <F N="../include/orcus/spreadsheet/CMakeLists.txt"/>
-                </Folder>
-                <F N="../include/orcus/CMakeLists.txt"/>
-            </Folder>
-            <F N="../include/CMakeLists.txt"/>
-        </Folder>
-        <Folder Name="../src">
-            <Folder Name="liborcus">
-                <F N="../src/liborcus/CMakeLists.txt"/>
-            </Folder>
-            <Folder Name="parser">
-                <F N="../src/parser/CMakeLists.txt"/>
-            </Folder>
-            <Folder Name="spreadsheet">
-                <F N="../src/spreadsheet/CMakeLists.txt"/>
-            </Folder>
-            <F N="../src/CMakeLists.txt"/>
+        <Folder Name="../bin">
+            <F N="../bin/env-osx.sh"/>
+            <F N="../bin/gen-test-json-structure-outputs.sh"/>
+            <F N="../bin/run-python.sh"/>
+            <F N="../bin/unpack-zipped-xml.sh"/>
         </Folder>
     </Files>
 </Project>
