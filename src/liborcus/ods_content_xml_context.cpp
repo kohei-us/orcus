@@ -430,7 +430,8 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
             {
                 static const xml_elem_stack_t expected = {
                     { NS_odf_table, XML_table },
-                    { NS_odf_table, XML_table_column_group }
+                    { NS_odf_table, XML_table_column_group },
+                    { NS_odf_table, XML_table_header_columns }
                 };
                 xml_element_expected(parent, expected);
                 start_column(attrs);
