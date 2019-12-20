@@ -423,9 +423,15 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
                 start_null_date(attrs);
                 break;
             case XML_table:
-                xml_element_expected(parent, NS_odf_office, XML_spreadsheet);
+            {
+                static const xml_elem_stack_t expected = {
+                    { NS_odf_office, XML_spreadsheet },
+                    { NS_odf_table, XML_dde_link },
+                };
+                xml_element_expected(parent, expected);
                 start_table(attrs);
                 break;
+            }
             case XML_table_column:
             {
                 static const xml_elem_stack_t expected = {
@@ -451,6 +457,12 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
             case XML_table_cell:
                 xml_element_expected(parent, NS_odf_table, XML_table_row);
                 start_cell(attrs);
+                break;
+            case XML_dde_links:
+                xml_element_expected(parent, NS_odf_office, XML_spreadsheet);
+                break;
+            case XML_dde_link:
+                xml_element_expected(parent, NS_odf_table, XML_dde_links);
                 break;
             default:
                 warn_unhandled();
