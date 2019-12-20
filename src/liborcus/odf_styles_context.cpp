@@ -567,7 +567,7 @@ void styles_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, 
 {
 }
 
-void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
+void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
     if (ns == NS_odf_office)
@@ -632,98 +632,8 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const std::v
             }
             break;
             case XML_text_properties:
-            {
-                xml_element_expected(parent, NS_odf_style, XML_style);
-                if (mp_styles)
-                {
-                    text_prop_attr_parser func;
-                    func = std::for_each(attrs.begin(), attrs.end(), func);
-
-                    // Commit the font data.
-                    pstring font_name = func.get_font_name();
-                    if (!font_name.empty())
-                        mp_styles->set_font_name(font_name.get(), font_name.size());
-
-                    length_t font_size = func.get_font_size();
-                    if (font_size.unit == length_unit_t::point)
-                        mp_styles->set_font_size(font_size.value);
-
-                    if (func.is_bold())
-                        mp_styles->set_font_bold(true);
-
-                    if (func.is_italic())
-                        mp_styles->set_font_italic(true);
-
-                    if (func.has_color())
-                    {
-                        spreadsheet::color_elem_t red, green, blue;
-                        func.get_color(red, green, blue);
-                        mp_styles->set_font_color(0, red, green, blue);
-                    }
-
-                    if (func.has_underline())
-                    {
-                        if (func.underline_is_text_color() && func.has_color())
-                        {
-                            spreadsheet::color_elem_t red, green, blue;
-                            func.get_color(red, green, blue);
-                            mp_styles->set_font_underline_color(0, red, green, blue);
-                        }
-                        else
-                        {
-                            spreadsheet::color_elem_t red, green, blue;
-                            func.get_underline_color(red, green, blue);
-                            mp_styles->set_font_underline_color(0, red, green, blue);
-                        }
-                        spreadsheet::underline_width_t width = func.get_underline_width();
-                        mp_styles->set_font_underline_width(width);
-
-                        spreadsheet::underline_t style = func.get_underline_style();
-                        mp_styles->set_font_underline(style);
-
-                        spreadsheet::underline_type_t type = func.get_underline_type();
-                        mp_styles->set_font_underline_type(type);
-
-                        spreadsheet::underline_mode_t mode = func.get_underline_mode();
-                        mp_styles->set_font_underline_mode(mode);
-                    }
-                    if (func.has_strikethrough())
-                    {
-                        spreadsheet::strikethrough_style_t style = func.get_strikethrough_style();
-                        mp_styles->set_strikethrough_style(style);
-
-                        spreadsheet::strikethrough_width_t width = func.get_strikethrough_width();
-                        mp_styles->set_strikethrough_width(width);
-
-                        spreadsheet::strikethrough_type_t type = func.get_strikethrough_type();
-                        mp_styles->set_strikethrough_type(type);
-
-                        spreadsheet::strikethrough_text_t text = func.get_strikethrough_text();
-                        mp_styles->set_strikethrough_text(text);
-                    }
-
-                    size_t font_id = mp_styles->commit_font();
-
-                    switch (m_current_style->family)
-                    {
-                        case style_family_table_cell:
-                        {
-                            odf_style::cell* data = m_current_style->cell_data;
-                            data->font = font_id;
-                        }
-                        break;
-                        case style_family_text:
-                        {
-                            odf_style::text* data = m_current_style->text_data;
-                            data->font = font_id;
-                        }
-                        break;
-                        default:
-                            ;
-                    }
-                }
-            }
-            break;
+                start_text_properties(parent, attrs);
+                break;
             case XML_table_cell_properties:
             {
                 xml_element_expected(parent, NS_odf_style, XML_style);
@@ -844,6 +754,99 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void styles_context::characters(const pstring& /*str*/, bool /*transient*/)
 {
+}
+
+void styles_context::start_text_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_odf_style, XML_style);
+    if (mp_styles)
+    {
+        text_prop_attr_parser func;
+        func = std::for_each(attrs.begin(), attrs.end(), func);
+
+        // Commit the font data.
+        pstring font_name = func.get_font_name();
+        if (!font_name.empty())
+            mp_styles->set_font_name(font_name.get(), font_name.size());
+
+        length_t font_size = func.get_font_size();
+        if (font_size.unit == length_unit_t::point)
+            mp_styles->set_font_size(font_size.value);
+
+        if (func.is_bold())
+            mp_styles->set_font_bold(true);
+
+        if (func.is_italic())
+            mp_styles->set_font_italic(true);
+
+        if (func.has_color())
+        {
+            spreadsheet::color_elem_t red, green, blue;
+            func.get_color(red, green, blue);
+            mp_styles->set_font_color(0, red, green, blue);
+        }
+
+        if (func.has_underline())
+        {
+            if (func.underline_is_text_color() && func.has_color())
+            {
+                spreadsheet::color_elem_t red, green, blue;
+                func.get_color(red, green, blue);
+                mp_styles->set_font_underline_color(0, red, green, blue);
+            }
+            else
+            {
+                spreadsheet::color_elem_t red, green, blue;
+                func.get_underline_color(red, green, blue);
+                mp_styles->set_font_underline_color(0, red, green, blue);
+            }
+            spreadsheet::underline_width_t width = func.get_underline_width();
+            mp_styles->set_font_underline_width(width);
+
+            spreadsheet::underline_t style = func.get_underline_style();
+            mp_styles->set_font_underline(style);
+
+            spreadsheet::underline_type_t type = func.get_underline_type();
+            mp_styles->set_font_underline_type(type);
+
+            spreadsheet::underline_mode_t mode = func.get_underline_mode();
+            mp_styles->set_font_underline_mode(mode);
+        }
+        if (func.has_strikethrough())
+        {
+            spreadsheet::strikethrough_style_t style = func.get_strikethrough_style();
+            mp_styles->set_strikethrough_style(style);
+
+            spreadsheet::strikethrough_width_t width = func.get_strikethrough_width();
+            mp_styles->set_strikethrough_width(width);
+
+            spreadsheet::strikethrough_type_t type = func.get_strikethrough_type();
+            mp_styles->set_strikethrough_type(type);
+
+            spreadsheet::strikethrough_text_t text = func.get_strikethrough_text();
+            mp_styles->set_strikethrough_text(text);
+        }
+
+        size_t font_id = mp_styles->commit_font();
+
+        switch (m_current_style->family)
+        {
+            case style_family_table_cell:
+            {
+                odf_style::cell* data = m_current_style->cell_data;
+                data->font = font_id;
+            }
+            break;
+            case style_family_text:
+            {
+                odf_style::text* data = m_current_style->text_data;
+                data->font = font_id;
+            }
+            break;
+            default:
+                ;
+        }
+    }
 }
 
 void styles_context::commit_default_styles()
