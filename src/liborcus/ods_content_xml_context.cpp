@@ -417,27 +417,39 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
         switch (name)
         {
             case XML_calculation_settings:
-            break;
+                break;
             case XML_null_date:
                 xml_element_expected(parent, NS_odf_table, XML_calculation_settings);
                 start_null_date(attrs);
-            break;
+                break;
             case XML_table:
                 xml_element_expected(parent, NS_odf_office, XML_spreadsheet);
                 start_table(attrs);
-            break;
+                break;
             case XML_table_column:
-                xml_element_expected(parent, NS_odf_table, XML_table);
+            {
+                static const xml_elem_stack_t expected = {
+                    { NS_odf_table, XML_table },
+                    { NS_odf_table, XML_table_column_group }
+                };
+                xml_element_expected(parent, expected);
                 start_column(attrs);
-            break;
+                break;
+            }
             case XML_table_row:
-                xml_element_expected(parent, NS_odf_table, XML_table);
+            {
+                static const xml_elem_stack_t expected = {
+                    { NS_odf_table, XML_table },
+                    { NS_odf_table, XML_table_row_group }
+                };
+                xml_element_expected(parent, expected);
                 start_row(attrs);
-            break;
+                break;
+            }
             case XML_table_cell:
                 xml_element_expected(parent, NS_odf_table, XML_table_row);
                 start_cell(attrs);
-            break;
+                break;
             default:
                 warn_unhandled();
         }
