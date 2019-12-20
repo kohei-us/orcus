@@ -107,10 +107,12 @@ bool parse_import_filter_args(
     iface::import_filter& app, iface::document_dumper& doc,
     extra_args_handler* args_handler)
 {
+    bool debug = false;
+
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help,h", "Print this help.")
-        ("debug,d", po::value<uint16_t>()->default_value(0u)->implicit_value(1u), help_debug)
+        ("debug,d", po::bool_switch(&debug), help_debug)
         ("dump-check", help_dump_check)
         ("output,o", po::value<string>(), help_output)
         ("output-format,f", po::value<string>(), gen_help_output_format().data())
@@ -176,7 +178,7 @@ bool parse_import_filter_args(
     }
 
     config opt = app.get_config();
-    opt.debug = vm["debug"].as<uint16_t>();
+    opt.debug = debug ? 1 : 0;
 
     if (args_handler)
         args_handler->map_to_config(opt, vm);
