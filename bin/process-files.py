@@ -74,12 +74,16 @@ def load_doc(bytes):
 def print_doc_preview(doc):
     buf = list()
     for sh in doc.sheets:
-        buf.append(f"sheet: {sh.name}")
-        for i, row in enumerate(sh.get_rows()):
-            if i > 10:
-                buf.append("...")
-                break
-            buf.append(f"row {i}: {row}")
+        try:
+            buf.append(f"sheet: {sh.name}")
+            for i, row in enumerate(sh.get_rows()):
+                if i > 10:
+                    buf.append("...")
+                    break
+                buf.append(f"row {i}: {row}")
+        except:
+            buf.append("???")
+
     return buf
 
 
