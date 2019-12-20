@@ -761,6 +761,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     static const xml_elem_stack_t expected = {
         { NS_odf_style, XML_style },
         { NS_odf_text, XML_list_level_style_number },
+        { NS_odf_text, XML_list_level_style_bullet },
     };
     xml_element_expected(parent, expected);
 
