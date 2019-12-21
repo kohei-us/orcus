@@ -128,10 +128,11 @@ def show_result_stats(rootdir):
     for cat in ("good", "bad", "skipped", "unprocessed"):
         print(f"  * {cat}: {counts[cat]}")
 
-    print("* ratios")
     total = counts["good"] + counts["bad"]
-    print(f"  * good: {counts['good']/total*100:.1f}%")
-    print(f"  * bad: {counts['bad']/total*100:.1f}%")
+    if total:
+        print("* ratios")
+        print(f"  * good: {counts['good']/total*100:.1f}%")
+        print(f"  * bad: {counts['bad']/total*100:.1f}%")
 
 
 def show_results(rootdir, good, bad):
