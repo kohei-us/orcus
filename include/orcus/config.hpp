@@ -41,11 +41,6 @@ struct ORCUS_DLLPUBLIC config
     bool debug;
 
     /**
-     * Enable or disable re-calculation of formula cells on document load.
-     */
-    bool recalc_formula_cells;
-
-    /**
      * Control whether or not to perform strict check of the xml structure of
      * a stream being parsed.  When enabled, it throws an xml_structure_error
      * exception when an incorrect xml structure is detected.

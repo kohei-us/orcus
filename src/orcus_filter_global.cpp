@@ -184,7 +184,6 @@ bool parse_import_filter_args(
 
     config opt = app.get_config();
     opt.debug = debug;
-    opt.recalc_formula_cells = recalc_formula_cells;
 
     if (args_handler)
         args_handler->map_to_config(opt, vm);
@@ -206,7 +205,7 @@ bool parse_import_filter_args(
     try
     {
         app.read_file(infile);
-        if (opt.recalc_formula_cells)
+        if (recalc_formula_cells)
             doc.recalc_formula_cells();
         doc.dump(outformat, outdir);
     }
