@@ -11,7 +11,7 @@ namespace orcus {
 
 config::config(format_t input) :
     input_format(input),
-    debug(0),
+    debug(false),
     recalc_formula_cells(false),
     structure_check(true)
 {

@@ -38,7 +38,7 @@ struct ORCUS_DLLPUBLIC config
     /**
      * Enable or disable runtime debug output to stdout or stderr.
      */
-    uint16_t debug;
+    bool debug;
 
     /**
      * Enable or disable re-calculation of formula cells on document load.

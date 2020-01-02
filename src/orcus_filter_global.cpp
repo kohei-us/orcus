@@ -183,7 +183,7 @@ bool parse_import_filter_args(
     }
 
     config opt = app.get_config();
-    opt.debug = debug ? 1 : 0;
+    opt.debug = debug;
     opt.recalc_formula_cells = recalc_formula_cells;
 
     if (args_handler)
