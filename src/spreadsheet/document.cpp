@@ -414,8 +414,6 @@ void document::finalize()
             sh->data.finalize();
         }
     );
-
-    calc_formulas();
 }
 
 sheet* document::append_sheet(const pstring& sheet_name, row_t row_size, col_t col_size)
@@ -464,7 +462,7 @@ const sheet* document::get_sheet(sheet_t sheet_pos) const
     return &mp_impl->m_sheets[sheet_pos]->data;
 }
 
-void document::calc_formulas()
+void document::recalc_formula_cells()
 {
     ixion::abs_range_set_t empty;
 

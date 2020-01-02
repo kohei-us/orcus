@@ -206,6 +206,8 @@ bool parse_import_filter_args(
     try
     {
         app.read_file(infile);
+        if (opt.recalc_formula_cells)
+            doc.recalc_formula_cells();
         doc.dump(outformat, outdir);
     }
     catch (const std::exception& e)

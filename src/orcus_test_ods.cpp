@@ -51,6 +51,7 @@ void test_ods_import_cell_values()
         spreadsheet::import_factory factory(doc);
         orcus_ods app(&factory);
         app.read_file(path.c_str());
+        doc.recalc_formula_cells();
 
         // Dump the content of the model.
         ostringstream os;

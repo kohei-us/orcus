@@ -70,14 +70,15 @@ public:
     sheet* get_sheet(sheet_t sheet_pos);
     const sheet* get_sheet(sheet_t sheet_pos) const;
 
-    void calc_formulas();
-
     /**
      * Clear document content, to make it empty.
      */
     void clear();
 
     virtual void dump(dump_format_t format, const std::string& output) const override;
+
+    virtual void recalc_formula_cells();
+
     /**
      * Dump document content to specified output directory.
      */

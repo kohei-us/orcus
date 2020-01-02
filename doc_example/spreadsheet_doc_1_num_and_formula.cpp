@@ -20,6 +20,7 @@ int main()
     // to populate the document.
     orcus_ods loader(&factory);
     loader.read_file(SRCDIR"/doc_example/files/document.ods");
+    doc.recalc_formula_cells();
 
     // Now that the document is fully populated, access its content.
     const ixion::model_context& model = doc.get_model_context();

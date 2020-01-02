@@ -47,6 +47,7 @@ std::unique_ptr<spreadsheet::document> load_doc(const pstring& path)
     orcus_xlsx app(&factory);
     app.read_file(path.str());
     app.set_config(test_config);
+    doc->recalc_formula_cells();
 
     return doc;
 }
@@ -101,14 +102,11 @@ void test_xlsx_import()
 
         // Read the input.xlsx document.
         path.append("input.xlsx");
-        spreadsheet::document doc;
-        spreadsheet::import_factory factory(doc);
-        orcus_xlsx app(&factory);
-        app.read_file(path.c_str());
+        auto doc = load_doc(path);
 
         // Dump the content of the model.
         ostringstream os;
-        doc.dump_check(os);
+        doc->dump_check(os);
         string check = os.str();
 
         // Check that against known control.

@@ -64,6 +64,7 @@ std::unique_ptr<spreadsheet::document> load_doc_from_filepath(const string& path
     spreadsheet::import_factory factory(*doc);
     orcus_xls_xml app(&factory);
     app.read_file(path.c_str());
+    doc->recalc_formula_cells();
 
     return doc;
 }
@@ -79,7 +80,10 @@ std::unique_ptr<spreadsheet::document> load_doc_from_stream(const string& path)
     ifs.seekg(0);
     std::vector<char> content(n, '\0');
     if (ifs.read(content.data(), n))
+    {
         app.read_stream(content.data(), content.size());
+        doc->recalc_formula_cells();
+    }
 
     return doc;
 }
