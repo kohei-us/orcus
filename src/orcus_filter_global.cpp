@@ -54,6 +54,9 @@ const char* help_dump_check =
 const char* help_debug =
 "Turn on a debug mode and optionally specify a debug level in order to generate run-time debug outputs.";
 
+const char* help_recalc =
+"Re-calculate all formula cells after the documetn is loaded.";
+
 const char* help_row_size =
 "Specify the number of maximum rows in each sheet.";
 
@@ -108,11 +111,13 @@ bool parse_import_filter_args(
     extra_args_handler* args_handler)
 {
     bool debug = false;
+    bool recalc_formula_cells = false;
 
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help,h", "Print this help.")
         ("debug,d", po::bool_switch(&debug), help_debug)
+        ("recalc,r", po::bool_switch(&recalc_formula_cells), help_recalc)
         ("dump-check", help_dump_check)
         ("output,o", po::value<string>(), help_output)
         ("output-format,f", po::value<string>(), gen_help_output_format().data())
@@ -179,6 +184,7 @@ bool parse_import_filter_args(
 
     config opt = app.get_config();
     opt.debug = debug ? 1 : 0;
+    opt.recalc_formula_cells = recalc_formula_cells;
 
     if (args_handler)
         args_handler->map_to_config(opt, vm);
