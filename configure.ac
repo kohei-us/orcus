@@ -15,7 +15,7 @@ m4_define([orcus_version], [orcus_major_version.orcus_minor_version.orcus_micro_
 # API information
 # ===============
 m4_define([orcus_major_api_version], [0])
-m4_define([orcus_minor_api_version], [15])
+m4_define([orcus_minor_api_version], [16])
 m4_define([orcus_api_version], [orcus_major_version.orcus_minor_api_version])
 
 # =============
