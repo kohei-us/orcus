@@ -76,7 +76,8 @@ public:
     void clear();
 
     /**
-     * Re-calculate those formula cells that are marked "dirty".
+     * Calculate those formula cells that have been newly inserted and have
+     * not yet been calculated.
      */
     void recalc_formula_cells();
 
