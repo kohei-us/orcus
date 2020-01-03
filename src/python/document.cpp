@@ -240,7 +240,6 @@ PyObject* import_from_stream_into_document(
     if (!obj_doc)
         return nullptr;
 
-    doc->recalc_formula_cells();
     store_document(obj_doc, std::move(doc));
     return obj_doc;
 }
