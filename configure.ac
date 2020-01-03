@@ -8,7 +8,7 @@ AC_PREREQ([2.65])
 # ===================
 m4_define([orcus_major_version], [0])
 m4_define([orcus_minor_version], [15])
-m4_define([orcus_micro_version], [3])
+m4_define([orcus_micro_version], [99])
 m4_define([orcus_version], [orcus_major_version.orcus_minor_version.orcus_micro_version])
 
 # ===============
@@ -227,7 +227,7 @@ AC_ARG_ENABLE(spreadsheet-model,
 	[enable_spreadsheet_model=yes]
 )
 AS_IF([test "x$enable_spreadsheet_model" != "xno"], [
-	PKG_CHECK_MODULES([LIBIXION],[libixion-$IXION_REQUIRED_API_VERSION >= 0.14.0])
+	PKG_CHECK_MODULES([LIBIXION],[libixion-$IXION_REQUIRED_API_VERSION >= 0.15.99])
 	CXXFLAGS="$CXXFLAGS -D__ORCUS_SPREADSHEET_MODEL"
         BOOST_DATE_TIME
 ])
