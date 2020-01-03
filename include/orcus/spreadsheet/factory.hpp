@@ -52,6 +52,15 @@ public:
 
     void set_character_set(character_set_t charset);
     character_set_t get_character_set() const;
+
+    /**
+     * When setting this flag to true, those formula cells with no cached
+     * results will be re-calculated upon loading.
+     *
+     *
+     * @param b value of this flag.
+     */
+    void set_recalc_formula_cells(bool b);
 };
 
 class ORCUS_SPM_DLLPUBLIC import_styles : public iface::import_styles

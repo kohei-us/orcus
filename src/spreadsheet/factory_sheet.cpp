@@ -239,17 +239,29 @@ void import_formula::commit()
             if (!ts)
                 return;
 
-            m_sheet.set_formula(m_row, m_col, ts);
+            if (m_result)
+                m_sheet.set_formula(m_row, m_col, ts, *m_result);
+            else
+                m_sheet.set_formula(m_row, m_col, ts);
         }
         return;
     }
 
-    m_sheet.set_formula(m_row, m_col, m_tokens_store);
+    if (m_result)
+        m_sheet.set_formula(m_row, m_col, m_tokens_store, *m_result);
+    else
+        m_sheet.set_formula(m_row, m_col, m_tokens_store);
+}
+
+void import_formula::set_missing_formula_result(ixion::formula_result result)
+{
+    m_result.reset(std::move(result));
 }
 
 void import_formula::reset()
 {
     m_tokens_store.reset();
+    m_result.reset();
     m_row = -1;
     m_col = -1;
     m_shared_index = 0;
@@ -266,7 +278,8 @@ import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_data_table(sh),
     m_auto_filter(sh, doc.get_string_pool()),
     m_table(doc, sh),
-    m_charset(character_set_t::unspecified)
+    m_charset(character_set_t::unspecified),
+    m_fill_missing_formula_results(false)
 {
     if (view)
         m_sheet_view = orcus::make_unique<import_sheet_view>(*view, sh.get_index());
@@ -314,6 +327,13 @@ iface::import_table* import_sheet::get_table()
 iface::import_formula* import_sheet::get_formula()
 {
     m_formula.reset();
+
+    if (m_fill_missing_formula_results)
+    {
+        m_formula.set_missing_formula_result(
+            ixion::formula_result(ixion::formula_error_t::no_result_error));
+    }
+
     return &m_formula;
 }
 
@@ -375,6 +395,11 @@ range_size_t import_sheet::get_sheet_size() const
 void import_sheet::set_character_set(character_set_t charset)
 {
     m_charset = charset;
+}
+
+void import_sheet::set_fill_missing_formula_results(bool b)
+{
+    m_fill_missing_formula_results = b;
 }
 
 import_sheet_view::import_sheet_view(sheet_view& view, sheet_t si) :

@@ -19,6 +19,8 @@
 
 #include <memory>
 #include <ixion/formula_name_resolver.hpp>
+#include <ixion/formula_result.hpp>
+#include <boost/optional.hpp>
 
 namespace orcus {
 
@@ -147,6 +149,7 @@ class import_formula : public iface::import_formula
     bool m_shared;
 
     ixion::formula_tokens_store_ptr_t m_tokens_store;
+    boost::optional<ixion::formula_result> m_result;
 
 public:
     import_formula(document& doc, sheet& sheet, shared_formula_pool& pool);
@@ -160,6 +163,8 @@ public:
     virtual void set_result_empty() override;
     virtual void set_result_bool(bool value) override;
     virtual void commit() override;
+
+    void set_missing_formula_result(ixion::formula_result result);
 
     void reset();
 };
@@ -179,6 +184,8 @@ class import_sheet : public iface::import_sheet
     character_set_t m_charset;
 
     std::unique_ptr<import_sheet_view> m_sheet_view;
+
+    bool m_fill_missing_formula_results;
 
 public:
     import_sheet(document& doc, sheet& sh, sheet_view* view);
@@ -204,6 +211,7 @@ public:
     virtual range_size_t get_sheet_size() const override;
 
     void set_character_set(character_set_t charset);
+    void set_fill_missing_formula_results(bool b);
 };
 
 class import_sheet_view : public iface::import_sheet_view

@@ -190,6 +190,8 @@ bool parse_import_filter_args(
 
     app.set_config(opt);
 
+    fact.set_recalc_formula_cells(recalc_formula_cells);
+
     if (vm.count("dump-check"))
     {
         // 'outdir' is used as the output file path in this mode.
@@ -205,8 +207,6 @@ bool parse_import_filter_args(
     try
     {
         app.read_file(infile);
-        if (recalc_formula_cells)
-            doc.recalc_formula_cells();
         doc.dump(outformat, outdir);
     }
     catch (const std::exception& e)
