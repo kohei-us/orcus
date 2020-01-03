@@ -250,6 +250,18 @@ void sheet::set_formula(row_t row, col_t col, const ixion::formula_tokens_store_
     mp_impl->m_doc.insert_dirty_cell(pos);
 }
 
+void sheet::set_formula(
+    row_t row, col_t col, const ixion::formula_tokens_store_ptr_t& tokens,
+    ixion::formula_result result)
+{
+    ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
+    ixion::abs_address_t pos(mp_impl->m_sheet, row, col);
+
+    cxt.set_formula_cell(pos, tokens, result);
+    ixion::register_formula_cell(cxt, pos);
+    mp_impl->m_doc.insert_dirty_cell(pos);
+}
+
 void sheet::set_grouped_formula(const range_t range, ixion::formula_tokens_t tokens)
 {
     ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
@@ -265,14 +277,6 @@ void sheet::set_grouped_formula(const range_t range, ixion::formula_tokens_t tok
     cxt.set_grouped_formula_cells(pos, std::move(tokens));
     ixion::register_formula_cell(cxt, pos.first);
     mp_impl->m_doc.insert_dirty_cell(pos.first);
-}
-
-void sheet::set_formula_result(row_t row, col_t col, double value)
-{
-}
-
-void sheet::set_formula_result(row_t row, col_t col, const char* p, size_t n)
-{
 }
 
 void sheet::set_col_width(col_t col, col_width_t width)
