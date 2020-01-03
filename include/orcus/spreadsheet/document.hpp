@@ -75,9 +75,12 @@ public:
      */
     void clear();
 
-    virtual void dump(dump_format_t format, const std::string& output) const override;
+    /**
+     * Re-calculate those formula cells that are marked "dirty".
+     */
+    void recalc_formula_cells();
 
-    virtual void recalc_formula_cells();
+    virtual void dump(dump_format_t format, const std::string& output) const override;
 
     /**
      * Dump document content to specified output directory.

@@ -45,7 +45,6 @@ class ORCUS_DLLPUBLIC document_dumper
 {
 public:
     virtual ~document_dumper();
-    virtual void recalc_formula_cells() = 0;
     virtual void dump(dump_format_t format, const std::string& output) const = 0;
     virtual void dump_check(std::ostream& os) const = 0;
 };
