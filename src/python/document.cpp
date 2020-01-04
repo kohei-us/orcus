@@ -193,19 +193,20 @@ document_data* get_document_data(PyObject* self)
     return reinterpret_cast<pyobj_document*>(self)->m_data;
 }
 
-py_unique_ptr read_stream_object_from_args(PyObject* args, PyObject* kwargs)
+stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs)
 {
     static const char* kwlist[] = { "stream", nullptr };
 
+    stream_data ret;
     PyObject* file = nullptr;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", const_cast<char**>(kwlist), &file))
-        return nullptr;
+        return ret;
 
     if (!file)
     {
         PyErr_SetString(PyExc_RuntimeError, "Invalid file object has been passed.");
-        return nullptr;
+        return ret;
     }
 
     PyObject* obj_bytes = nullptr;
@@ -226,10 +227,12 @@ py_unique_ptr read_stream_object_from_args(PyObject* args, PyObject* kwargs)
     if (!obj_bytes)
     {
         PyErr_SetString(PyExc_RuntimeError, "failed to extract bytes from this object.");
-        return nullptr;
+        return ret;
     }
 
-    return py_unique_ptr(obj_bytes);
+    ret.stream.reset(obj_bytes);
+
+    return ret;
 }
 
 PyObject* import_from_stream_into_document(

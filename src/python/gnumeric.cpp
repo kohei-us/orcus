@@ -22,8 +22,8 @@ namespace orcus { namespace python {
 
 PyObject* gnumeric_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    py_unique_ptr obj_bytes = read_stream_object_from_args(args, kwargs);
-    if (!obj_bytes)
+    stream_data data = read_stream_object_from_args(args, kwargs);
+    if (!data.stream)
         return nullptr;
 
     try
@@ -33,7 +33,7 @@ PyObject* gnumeric_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
         fact.set_recalc_formula_cells(true);
         orcus_gnumeric app(&fact);
 
-        return import_from_stream_into_document(obj_bytes.get(), app, std::move(doc));
+        return import_from_stream_into_document(data.stream.get(), app, std::move(doc));
     }
     catch (const std::exception& e)
     {

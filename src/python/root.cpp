@@ -33,12 +33,12 @@ PyObject* info(PyObject*, PyObject*, PyObject*)
 
 PyObject* detect_format(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    py_unique_ptr obj_bytes = read_stream_object_from_args(args, kwargs);
-    if (!obj_bytes)
+    stream_data data = read_stream_object_from_args(args, kwargs);
+    if (!data.stream)
         return nullptr;
 
-    const char* p = PyBytes_AS_STRING(obj_bytes.get());
-    size_t n = PyBytes_Size(obj_bytes.get());
+    const char* p = PyBytes_AS_STRING(data.stream.get());
+    size_t n = PyBytes_Size(data.stream.get());
 
     try
     {

@@ -24,6 +24,11 @@ struct document_data
 
 document_data* get_document_data(PyObject* self);
 
+struct stream_data
+{
+    py_unique_ptr stream;
+};
+
 /**
  * Extract a python object representing the byte stream from the arguments
  * passed to the python orcus.<file format>.read() function.
@@ -33,7 +38,7 @@ document_data* get_document_data(PyObject* self);
  *
  * @return object representing the bytes.
  */
-py_unique_ptr read_stream_object_from_args(PyObject* args, PyObject* kwargs);
+stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs);
 
 /**
  * Import a document from a python object containing the byte stream, and
