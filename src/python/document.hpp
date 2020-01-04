@@ -27,6 +27,7 @@ document_data* get_document_data(PyObject* self);
 struct stream_data
 {
     py_unique_ptr stream;
+    bool recalc_formula_cells = false;
 };
 
 /**

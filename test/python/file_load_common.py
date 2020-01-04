@@ -177,7 +177,7 @@ def run_test_dir(self, test_dir, mod_loader):
     self.assertIsNot(input_file, None)
 
     with open(input_file, "rb") as f:
-        doc = mod_loader.read(f)
+        doc = mod_loader.read(f, recalc=True)
 
     self.assertIsInstance(doc, orcus.Document)
 

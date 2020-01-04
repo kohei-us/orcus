@@ -30,7 +30,7 @@ PyObject* xls_xml_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
     {
         std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
         spreadsheet::import_factory fact(*doc);
-        fact.set_recalc_formula_cells(true);
+        fact.set_recalc_formula_cells(data.recalc_formula_cells);
         orcus_xls_xml app(&fact);
 
         return import_from_stream_into_document(data.stream.get(), app, std::move(doc));

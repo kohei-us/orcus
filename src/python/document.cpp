@@ -195,12 +195,13 @@ document_data* get_document_data(PyObject* self)
 
 stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs)
 {
-    static const char* kwlist[] = { "stream", nullptr };
+    static const char* kwlist[] = { "stream", "recalc", nullptr };
 
     stream_data ret;
     PyObject* file = nullptr;
+    int recalc_formula_cells = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", const_cast<char**>(kwlist), &file))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|p", const_cast<char**>(kwlist), &file, &recalc_formula_cells))
         return ret;
 
     if (!file)
@@ -231,6 +232,7 @@ stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs)
     }
 
     ret.stream.reset(obj_bytes);
+    ret.recalc_formula_cells = recalc_formula_cells != 0;
 
     return ret;
 }
