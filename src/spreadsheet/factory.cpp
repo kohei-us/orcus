@@ -241,8 +241,8 @@ iface::import_sheet* import_factory::append_sheet(
     mp_impl->m_sheets.push_back(
         orcus::make_unique<import_sheet>(mp_impl->m_doc, *sh, sv));
 
-    mp_impl->m_sheets.back()->set_character_set(mp_impl->m_charset);
     import_sheet* p = mp_impl->m_sheets.back().get();
+    p->set_character_set(mp_impl->m_charset);
     p->set_fill_missing_formula_results(!mp_impl->m_recalc_formula_cells);
     return p;
 }
