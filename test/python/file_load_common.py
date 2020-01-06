@@ -200,3 +200,9 @@ def run_test_dir(self, test_dir, mod_loader):
             # Make sure it returns empty row set.
             rows = [row for row in actual_sheet.get_rows()]
             self.assertEqual(len(rows), 0)
+
+    # Also make sure the document loads fine without recalc.
+    with open(input_file, "rb") as f:
+        doc = mod_loader.read(f, recalc=False)
+
+    self.assertIsInstance(doc, orcus.Document)
