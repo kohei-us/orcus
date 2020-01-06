@@ -230,7 +230,11 @@ void import_formula::commit()
     {
         if (m_tokens_store)
         {
-            m_sheet.set_formula(m_row, m_col, m_tokens_store);
+            if (m_result)
+                m_sheet.set_formula(m_row, m_col, m_tokens_store, *m_result);
+            else
+                m_sheet.set_formula(m_row, m_col, m_tokens_store);
+
             m_shared_formula_pool.add(m_shared_index, m_tokens_store);
         }
         else
