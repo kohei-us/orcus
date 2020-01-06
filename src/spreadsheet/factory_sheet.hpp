@@ -115,6 +115,7 @@ class import_array_formula : public iface::import_array_formula
 
     range_t m_range;
     ixion::formula_tokens_t m_tokens;
+    boost::optional<ixion::formula_result> m_result;
 
 public:
     import_array_formula(document& doc, sheet& sheet);
@@ -133,6 +134,8 @@ public:
     virtual void set_result_bool(row_t row, col_t col, bool value) override;
 
     virtual void commit() override;
+
+    void set_missing_formula_result(ixion::formula_result result);
 
     void reset();
 };
