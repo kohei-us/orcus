@@ -144,7 +144,10 @@ class ExpectedDocument(object):
             if idx < 0:
                 raise RuntimeError("formula line is expected to contain a result value.")
             cell_value, result = cell_value[:idx], cell_value[idx+1:]
-            result = float(result)
+            try:
+                result = float(result)
+            except ValueError:
+                pass
 
         pos = Address(pos)
 

@@ -25,7 +25,7 @@ class TestCase(unittest.TestCase):
         cls.basedir = os.path.normpath(basedir)
 
     def test_import(self):
-        test_dirs = ("raw-values-1", "formula-1")
+        test_dirs = ("raw-values-1", "formula-1", "formula-2")
         for test_dir in test_dirs:
             test_dir = os.path.join(self.basedir, test_dir)
             common.run_test_dir(self, test_dir, ods)
