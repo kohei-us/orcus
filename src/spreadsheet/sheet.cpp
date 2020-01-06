@@ -67,6 +67,20 @@ typedef mdds::flat_segment_tree<row_t, row_height_t> row_heights_store_type;
 typedef mdds::flat_segment_tree<col_t, bool> col_hidden_store_type;
 typedef mdds::flat_segment_tree<row_t, bool> row_hidden_store_type;
 
+ixion::abs_range_t to_ixion_range(sheet_t sheet, const range_t& range)
+{
+    ixion::abs_range_t pos;
+
+    pos.first.sheet  = sheet;
+    pos.first.row    = range.first.row;
+    pos.first.column = range.first.column;
+    pos.last.sheet   = sheet;
+    pos.last.row     = range.last.row;
+    pos.last.column  = range.last.column;
+
+    return pos;
+}
+
 }
 
 struct sheet_impl
@@ -262,19 +276,22 @@ void sheet::set_formula(
     mp_impl->m_doc.insert_dirty_cell(pos);
 }
 
-void sheet::set_grouped_formula(const range_t range, ixion::formula_tokens_t tokens)
+void sheet::set_grouped_formula(const range_t& range, ixion::formula_tokens_t tokens)
 {
+    ixion::abs_range_t pos = to_ixion_range(mp_impl->m_sheet, range);
     ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
 
-    ixion::abs_range_t pos;
-    pos.first.sheet  = mp_impl->m_sheet;
-    pos.first.row    = range.first.row;
-    pos.first.column = range.first.column;
-    pos.last.sheet   = mp_impl->m_sheet;
-    pos.last.row     = range.last.row;
-    pos.last.column  = range.last.column;
-
     cxt.set_grouped_formula_cells(pos, std::move(tokens));
+    ixion::register_formula_cell(cxt, pos.first);
+    mp_impl->m_doc.insert_dirty_cell(pos.first);
+}
+
+void sheet::set_grouped_formula(const range_t& range, ixion::formula_tokens_t tokens, ixion::formula_result result)
+{
+    ixion::abs_range_t pos = to_ixion_range(mp_impl->m_sheet, range);
+    ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
+
+    cxt.set_grouped_formula_cells(pos, std::move(tokens), std::move(result));
     ixion::register_formula_cell(cxt, pos.first);
     mp_impl->m_doc.insert_dirty_cell(pos.first);
 }

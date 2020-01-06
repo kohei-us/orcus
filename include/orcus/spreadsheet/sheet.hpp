@@ -53,7 +53,8 @@ public:
 
     void set_formula(row_t row, col_t col, const ixion::formula_tokens_store_ptr_t& tokens);
     void set_formula(row_t row, col_t col, const ixion::formula_tokens_store_ptr_t& tokens, ixion::formula_result result);
-    void set_grouped_formula(const range_t range, ixion::formula_tokens_t tokens);
+    void set_grouped_formula(const range_t& range, ixion::formula_tokens_t tokens);
+    void set_grouped_formula(const range_t& range, ixion::formula_tokens_t tokens, ixion::formula_result result);
 
     void set_col_width(col_t col, col_width_t width);
     col_width_t get_col_width(col_t col, col_t* col_start, col_t* col_end) const;
