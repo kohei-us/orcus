@@ -27,11 +27,13 @@ class TestCase(unittest.TestCase):
     def test_import(self):
 
         test_dirs = (
-            "raw-values-1",
             "boolean-values",
             "empty-shared-strings",
+            "formula-cells",
+            "formula-shared",
             "named-expression",
             "named-expression-sheet-local",
+            "raw-values-1",
         )
 
         for test_dir in test_dirs:
