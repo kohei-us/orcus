@@ -83,14 +83,20 @@ void xlsx_drawing_context::start_element(xmlns_id_t ns, xml_token_t name, const:
             case XML_style:
             case XML_txBody:
             {
-                xml_element_expected(parent, NS_ooxml_xdr, XML_sp);
+                const xml_elem_stack_t expected = {
+                    { NS_ooxml_xdr, XML_cxnSp },
+                    { NS_ooxml_xdr, XML_sp },
+                };
+                xml_element_expected(parent, expected);
                 break;
             }
             case XML_spPr:
             {
-                xml_elem_stack_t expected;
-                expected.emplace_back(NS_ooxml_xdr, XML_sp);
-                expected.emplace_back(NS_ooxml_xdr, XML_pic);
+                const xml_elem_stack_t expected = {
+                    { NS_ooxml_xdr, XML_cxnSp },
+                    { NS_ooxml_xdr, XML_sp },
+                    { NS_ooxml_xdr, XML_pic },
+                };
                 xml_element_expected(parent, expected);
                 break;
             }
