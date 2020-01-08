@@ -367,177 +367,184 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
 {
     xml_token_pair_t parent = push_stack(ns, name);
 
-    switch (name)
+    if (ns == NS_ooxml_xlsx)
     {
-        case XML_worksheet:
+        switch (name)
         {
-            if (get_config().debug)
-                print_attrs(get_tokens(), attrs);
-        }
-        break;
-        case XML_cols:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
-        break;
-        case XML_col:
-        {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_cols);
-            col_attr_parser func;
-            func = for_each(attrs.begin(), attrs.end(), func);
-
-            spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
-            if (sheet_props)
+            case XML_worksheet:
             {
-                double width = func.get_width();
-                bool contains_width = func.contains_width();
-                bool hidden = func.is_hidden();
-                for (spreadsheet::col_t col = func.get_min(); col <= func.get_max(); ++col)
+                if (get_config().debug)
+                    print_attrs(get_tokens(), attrs);
+                break;
+            }
+            case XML_cols:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
+                break;
+            case XML_col:
+            {
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_cols);
+                col_attr_parser func;
+                func = for_each(attrs.begin(), attrs.end(), func);
+
+                spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
+                if (sheet_props)
                 {
-                    if (contains_width)
-                        sheet_props->set_column_width(col-1, width, length_unit_t::xlsx_column_digit);
-                    sheet_props->set_column_hidden(col-1, hidden);
+                    double width = func.get_width();
+                    bool contains_width = func.contains_width();
+                    bool hidden = func.is_hidden();
+                    for (spreadsheet::col_t col = func.get_min(); col <= func.get_max(); ++col)
+                    {
+                        if (contains_width)
+                            sheet_props->set_column_width(col-1, width, length_unit_t::xlsx_column_digit);
+                        sheet_props->set_column_hidden(col-1, hidden);
+                    }
                 }
+                break;
             }
-        }
-        break;
-        case XML_dimension:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
-        break;
-        case XML_mergeCells:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
-        break;
-        case XML_mergeCell:
-        {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_mergeCells);
-
-            spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
-            if (sheet_props)
+            case XML_dimension:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
+                break;
+            case XML_mergeCells:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
+                break;
+            case XML_mergeCell:
             {
-                // ref contains merged range in A1 reference style.
-                pstring ref = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_ref)).get_value();
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_mergeCells);
 
-                spreadsheet::range_t range = m_resolver.resolve_range(ref.get(), ref.size());
-                sheet_props->set_merge_cell_range(range);
+                spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
+                if (sheet_props)
+                {
+                    // ref contains merged range in A1 reference style.
+                    pstring ref = for_each(
+                        attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_ref)).get_value();
+
+                    spreadsheet::range_t range = m_resolver.resolve_range(ref.get(), ref.size());
+                    sheet_props->set_merge_cell_range(range);
+                }
+                break;
             }
-        }
-        break;
-        case XML_pageMargins:
-        {
-            xml_elem_stack_t elems;
-            elems.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_worksheet));
-            elems.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_customSheetView));
-            xml_element_expected(parent, elems);
-        }
-        break;
-        case XML_sheetViews:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
-        break;
-        case XML_sheetView:
-            start_element_sheet_view(parent, attrs);
-            break;
-        case XML_selection:
-            start_element_selection(parent, attrs);
-            break;
-        case XML_pane:
-            start_element_pane(parent, attrs);
-            break;
-        case XML_sheetData:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
-        break;
-        case XML_sheetFormatPr:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
-        break;
-        case XML_row:
-        {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_sheetData);
-            row_attr_parser func;
-            func = for_each(attrs.begin(), attrs.end(), func);
-            if (func.contains_address())
-                m_cur_row = func.get_row();
-            else
-                ++m_cur_row;
-
-            m_cur_col = -1;
-
-            spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
-            if (sheet_props)
+            case XML_pageMargins:
             {
-                length_t ht = func.get_height();
-                if (ht.unit != length_unit_t::unknown)
-                    sheet_props->set_row_height(m_cur_row, ht.value, ht.unit);
-
-                bool hidden = func.is_hidden();
-                sheet_props->set_row_hidden(m_cur_row, hidden);
+                xml_elem_stack_t elems;
+                elems.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_worksheet));
+                elems.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_customSheetView));
+                xml_element_expected(parent, elems);
+                break;
             }
-        }
-        break;
-        case XML_c:
-        {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_row);
-            cell_attr_parser func;
-            func = for_each(attrs.begin(), attrs.end(), func);
-
-            if (func.contains_address())
+            case XML_sheetViews:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
+                break;
+            case XML_sheetView:
+                start_element_sheet_view(parent, attrs);
+                break;
+            case XML_selection:
+                start_element_selection(parent, attrs);
+                break;
+            case XML_pane:
+                start_element_pane(parent, attrs);
+                break;
+            case XML_sheetData:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
+                break;
+            case XML_sheetFormatPr:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
+                break;
+            case XML_row:
             {
-                if (m_cur_row != func.get_row())
-                    throw xml_structure_error("row numbers differ!");
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_sheetData);
+                row_attr_parser func;
+                func = for_each(attrs.begin(), attrs.end(), func);
+                if (func.contains_address())
+                    m_cur_row = func.get_row();
+                else
+                    ++m_cur_row;
 
-                m_cur_col = func.get_col();
+                m_cur_col = -1;
+
+                spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
+                if (sheet_props)
+                {
+                    length_t ht = func.get_height();
+                    if (ht.unit != length_unit_t::unknown)
+                        sheet_props->set_row_height(m_cur_row, ht.value, ht.unit);
+
+                    bool hidden = func.is_hidden();
+                    sheet_props->set_row_hidden(m_cur_row, hidden);
+                }
+                break;
             }
-            else
+            case XML_c:
             {
-                ++m_cur_col;
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_row);
+                cell_attr_parser func;
+                func = for_each(attrs.begin(), attrs.end(), func);
+
+                if (func.contains_address())
+                {
+                    if (m_cur_row != func.get_row())
+                        throw xml_structure_error("row numbers differ!");
+
+                    m_cur_col = func.get_col();
+                }
+                else
+                {
+                    ++m_cur_col;
+                }
+
+                m_cur_cell_type = func.get_cell_type();
+                m_cur_cell_xf = func.get_xf();
+                break;
             }
+            case XML_f:
+                start_element_formula(parent, attrs);
+                break;
+            case XML_v:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_c);
+                break;
+            case XML_tableParts:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
+                break;
+            case XML_tablePart:
+            {
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_tableParts);
 
-            m_cur_cell_type = func.get_cell_type();
-            m_cur_cell_xf = func.get_xf();
+                // The rid string must be pooled to the session context's string
+                // pool as it is used long after thet sheet context is deleted.
+                single_attr_getter func(get_session_context().m_string_pool, NS_ooxml_r, XML_id);
+                pstring rid = for_each(attrs.begin(), attrs.end(), func).get_value();
+
+                unique_ptr<xlsx_rel_table_info> p(new xlsx_rel_table_info);
+                p->sheet_interface = &m_sheet;
+                m_rel_extras.data.insert(
+                    opc_rel_extras_t::map_type::value_type(rid, std::move(p)));
+                break;
+            }
+            default:
+                warn_unhandled();
         }
-        break;
-        case XML_f:
-            start_element_formula(parent, attrs);
-            break;
-        case XML_v:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_c);
-        break;
-        case XML_tableParts:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
-        break;
-        case XML_tablePart:
-        {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_tableParts);
-
-            // The rid string must be pooled to the session context's string
-            // pool as it is used long after thet sheet context is deleted.
-            single_attr_getter func(get_session_context().m_string_pool, NS_ooxml_r, XML_id);
-            pstring rid = for_each(attrs.begin(), attrs.end(), func).get_value();
-
-            unique_ptr<xlsx_rel_table_info> p(new xlsx_rel_table_info);
-            p->sheet_interface = &m_sheet;
-            m_rel_extras.data.insert(
-                opc_rel_extras_t::map_type::value_type(rid, std::move(p)));
-        }
-        break;
-        default:
-            warn_unhandled();
     }
-
+    else
+        warn_unhandled();
 }
 
 bool xlsx_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
-    switch (name)
+    if (ns == NS_ooxml_xlsx)
     {
-        case XML_c:
-            end_element_cell();
-        break;
-        case XML_f:
-            m_cur_formula.str = m_cur_str;
-        break;
-        case XML_v:
-            m_cur_value = m_cur_str;
-        break;
-        default:
-            ;
+        switch (name)
+        {
+            case XML_c:
+                end_element_cell();
+                break;
+            case XML_f:
+                m_cur_formula.str = m_cur_str;
+                break;
+            case XML_v:
+                m_cur_value = m_cur_str;
+                break;
+            default:
+                ;
+        }
     }
 
     m_cur_str.clear();
