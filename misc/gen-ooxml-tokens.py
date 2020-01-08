@@ -11,7 +11,6 @@ import xml.parsers.expat
 import zipfile
 import argparse
 import sys
-import enum
 import token_util
 
 
@@ -58,16 +57,8 @@ def get_all_tokens_from_zip(fpath):
     return sorted(tokens.keys())
 
 
-class SchemaType(enum.Enum):
-    OOXML = "ooxml"
-    OPC = "opc"
-
-
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-t", "--schema-type", default=SchemaType.OOXML, type=SchemaType,
-        help="Specify the schema type.  Possible values are: 'ooxml', or 'opc'.  The default value is 'ooxml'.")
     parser.add_argument(
         "-i", "--input", required=True, type=str,
         help="Zip file containing schemas.")
