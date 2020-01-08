@@ -74,6 +74,11 @@ void xml_context_base::transfer_common(const xml_context_base& parent)
     mp_ns_cxt = parent.mp_ns_cxt;
 }
 
+void xml_context_base::set_always_allowed_elements(xml_elem_set_t elems)
+{
+    m_always_allowed_elements = std::move(elems);
+}
+
 session_context& xml_context_base::get_session_context()
 {
     return m_session_cxt;
@@ -162,13 +167,16 @@ void xml_context_base::warn(const char* msg) const
 
 void xml_context_base::xml_element_expected(
     const xml_token_pair_t& elem, xmlns_id_t ns, xml_token_t name,
-    const string* error)
+    const string* error) const
 {
     if (!m_config.structure_check)
         return;
 
     if (elem.first == ns && elem.second == name)
         // This is an expected element.  Good.
+        return;
+
+    if (m_always_allowed_elements.count(elem))
         return;
 
     if (error)
@@ -184,17 +192,19 @@ void xml_context_base::xml_element_expected(
 }
 
 void xml_context_base::xml_element_expected(
-    const xml_token_pair_t& elem, const xml_elem_stack_t& expected_elems)
+    const xml_token_pair_t& elem, const xml_elem_stack_t& expected_elems) const
 {
     if (!m_config.structure_check)
         return;
 
-    xml_elem_stack_t::const_iterator itr = expected_elems.begin(), itr_end = expected_elems.end();
-    for (; itr != itr_end; ++itr)
+    for (const xml_token_pair_t& e : expected_elems)
     {
-        if (elem == *itr)
+        if (elem == e)
             return;
     }
+
+    if (m_always_allowed_elements.count(elem))
+        return;
 
     // Create a generic error message.
     ostringstream os;

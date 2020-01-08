@@ -18,6 +18,7 @@ namespace orcus {
 
 struct opc_rel_t;
 struct xml_token_attr_t;
+class xml_context_base;
 
 /**
  * Function object to print relationship information.
@@ -38,6 +39,8 @@ struct print_opc_rel : ::std::unary_function<opc_rel_t, void>
  * @return full file path.
  */
 std::string resolve_file_path(const std::string& dir_path, const std::string& file_name);
+
+void init_ooxml_context(xml_context_base& cxt);
 
 }
 

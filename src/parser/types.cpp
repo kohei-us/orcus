@@ -17,6 +17,11 @@ namespace orcus {
 const xmlns_id_t XMLNS_UNKNOWN_ID = nullptr;
 const xml_token_t XML_UNKNOWN_TOKEN = 0;
 
+size_t xml_token_pair_hash::operator()(const xml_token_pair_t& v) const
+{
+    return std::hash<const char*>()(v.first) ^ std::hash<size_t>()(v.second);
+}
+
 const size_t index_not_found = std::numeric_limits<size_t>::max();
 
 xml_token_attr_t::xml_token_attr_t() :

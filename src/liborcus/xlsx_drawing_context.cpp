@@ -8,6 +8,7 @@
 #include "xlsx_drawing_context.hpp"
 #include "ooxml_namespace_types.hpp"
 #include "ooxml_token_constants.hpp"
+#include "ooxml_global.hpp"
 
 #include "orcus/measurement.hpp"
 
@@ -19,7 +20,10 @@ namespace orcus {
 
 xlsx_drawing_context::xlsx_drawing_context(session_context& cxt, const tokens& tkns) :
     xml_context_base(cxt, tkns),
-    m_col(-1), m_row(-1), m_col_offset(-1), m_row_offset(-1) {}
+    m_col(-1), m_row(-1), m_col_offset(-1), m_row_offset(-1)
+{
+    init_ooxml_context(*this);
+}
 
 xlsx_drawing_context::~xlsx_drawing_context() {}
 

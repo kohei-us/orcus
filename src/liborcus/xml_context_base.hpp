@@ -16,9 +16,6 @@ struct session_context;
 class tokens;
 class xmlns_context;
 
-typedef ::std::pair<xmlns_id_t, xml_token_t> xml_token_pair_t;
-typedef ::std::vector<xml_token_pair_t>         xml_elem_stack_t;
-
 class xml_context_base
 {
 public:
@@ -96,9 +93,13 @@ public:
 
     void set_ns_context(const xmlns_context* p);
 
+    const config& get_config() const;
+
     void set_config(const config& opt);
 
     void transfer_common(const xml_context_base& parent);
+
+    void set_always_allowed_elements(xml_elem_set_t elems);
 
 protected:
     session_context& get_session_context();
@@ -124,12 +125,10 @@ protected:
      */
     void xml_element_expected(
         const xml_token_pair_t& elem, xmlns_id_t ns, xml_token_t name,
-        const ::std::string* error = nullptr);
+        const ::std::string* error = nullptr) const;
 
     void xml_element_expected(
-        const xml_token_pair_t& elem, const xml_elem_stack_t& expected_elems);
-
-    const config& get_config() const;
+        const xml_token_pair_t& elem, const xml_elem_stack_t& expected_elems) const;
 
     pstring intern(const xml_token_attr_t& attr);
     pstring intern(const pstring& s);
@@ -140,6 +139,7 @@ private:
     session_context& m_session_cxt;
     const tokens& m_tokens;
     xml_elem_stack_t m_stack;
+    xml_elem_set_t m_always_allowed_elements;
 };
 
 

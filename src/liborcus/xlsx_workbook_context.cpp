@@ -28,7 +28,10 @@ xlsx_workbook_context::xlsx_workbook_context(
     m_defined_name_scope(-1),
     m_sheet_count(0),
     m_factory(factory),
-    mp_named_exp(factory.get_named_expression()) {}
+    mp_named_exp(factory.get_named_expression())
+{
+    init_ooxml_context(*this);
+}
 
 xlsx_workbook_context::~xlsx_workbook_context() {}
 

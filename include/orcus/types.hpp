@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <vector>
 #include <string>
+#include <unordered_set>
 #include "pstring.hpp"
 #include "env.hpp"
 
@@ -26,6 +27,16 @@ ORCUS_PSR_DLLPUBLIC extern const size_t index_not_found;
 
 typedef size_t xml_token_t;
 typedef const char* xmlns_id_t;
+
+using xml_token_pair_t = std::pair<xmlns_id_t, xml_token_t>;
+
+struct ORCUS_PSR_DLLPUBLIC xml_token_pair_hash
+{
+    size_t operator()(const xml_token_pair_t& v) const;
+};
+
+using xml_elem_stack_t = std::vector<xml_token_pair_t>;
+using xml_elem_set_t = std::unordered_set<xml_token_pair_t, xml_token_pair_hash>;
 
 ORCUS_PSR_DLLPUBLIC extern const xmlns_id_t XMLNS_UNKNOWN_ID;
 ORCUS_PSR_DLLPUBLIC extern const xml_token_t XML_UNKNOWN_TOKEN;

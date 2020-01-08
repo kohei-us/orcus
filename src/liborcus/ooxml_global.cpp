@@ -8,6 +8,8 @@
 #include "ooxml_global.hpp"
 #include "ooxml_types.hpp"
 #include "ooxml_token_constants.hpp"
+#include "ooxml_namespace_types.hpp"
+#include "xml_context_base.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -86,5 +88,14 @@ std::string resolve_file_path(const std::string& dir_path, const std::string& fi
     return full_path.str();
 }
 
+void init_ooxml_context(xml_context_base& cxt)
+{
+    cxt.set_always_allowed_elements({
+        { NS_mc, XML_Choice },
+        { NS_mc, XML_Fallback },
+    });
 }
+
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

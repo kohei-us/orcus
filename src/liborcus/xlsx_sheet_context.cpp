@@ -313,6 +313,7 @@ xlsx_sheet_context::xlsx_sheet_context(
     m_cur_cell_type(xlsx_ct_numeric),
     m_cur_cell_xf(0)
 {
+    init_ooxml_context(*this);
 }
 
 xlsx_sheet_context::~xlsx_sheet_context()
