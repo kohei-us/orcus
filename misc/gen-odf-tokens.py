@@ -30,7 +30,7 @@ import xml.parsers.expat, sys
 
 import token_util
 
-class xml_parser:
+class XMLParser:
 
     def __init__ (self, strm):
         self.__strm = strm
@@ -136,7 +136,7 @@ def main (args):
     chars = file.read()
     file.close()
 
-    parser = xml_parser(chars)
+    parser = XMLParser(chars)
     parser.parse()
     tokens = parser.tokens.keys()
     tokens.sort()

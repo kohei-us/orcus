@@ -29,7 +29,7 @@
 import xml.parsers.expat, argparse, sys
 import token_util
 
-class xml_parser:
+class XMLParser:
 
     def __init__ (self, strm):
         self.__strm = strm
@@ -76,7 +76,7 @@ def parse_files(filenames):
         chars = file.read()
         file.close()
 
-        parser = xml_parser(chars)
+        parser = XMLParser(chars)
         parser.parse()
         for token in parser.tokens:
             tokens[token] = True
@@ -95,7 +95,7 @@ def parse_files_ns(filenames):
         chars = file.read()
         file.close()
 
-        parser = xml_parser(chars)
+        parser = XMLParser(chars)
         parser.parse()
         for ns_token in parser.ns_tokens:
             alias, value = ns_token # each namespace token consists of an alias and a value.
