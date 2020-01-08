@@ -18,6 +18,7 @@ const xmlns_id_t NS_opc_ct  = "http://schemas.openxmlformats.org/package/2006/co
 const xmlns_id_t NS_opc_rel = "http://schemas.openxmlformats.org/package/2006/relationships";
 
 const xmlns_id_t NS_mc = "http://schemas.openxmlformats.org/markup-compatibility/2006";
+const xmlns_id_t NS_mso_x14 = "http://schemas.microsoft.com/office/spreadsheetml/2009/9/main";
 
 namespace {
 
@@ -37,6 +38,7 @@ xmlns_id_t opc_ns[] = {
 
 xmlns_id_t misc_ns[] = {
     NS_mc,
+    NS_mso_x14,
     nullptr
 };
 

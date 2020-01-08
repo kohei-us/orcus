@@ -551,7 +551,10 @@ void xlsx_sheet_context::characters(const pstring& str, bool transient)
 
 void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_ooxml_xlsx, XML_c);
+    xml_element_expected(parent, {
+        { NS_ooxml_xlsx, XML_c },
+        { NS_mso_x14, XML_cfRule },
+    });
 
     m_cur_formula.reset();
 

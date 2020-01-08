@@ -21,6 +21,7 @@ extern const xmlns_id_t NS_opc_ct;
 extern const xmlns_id_t NS_opc_rel;
 
 extern const xmlns_id_t NS_mc;
+extern const xmlns_id_t NS_mso_x14;
 
 /**
  * Null-terminated array of all ooxml namespaces.
