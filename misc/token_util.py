@@ -36,31 +36,21 @@ def gen_token_constants(outfile, tokens):
 
     outfile.write(get_auto_gen_warning())
 
-    token_id = 1
-    token_size = len(tokens)
-    for i in range(token_size):
-        token = normalize_name(tokens[i])
-        outfile.write("const xml_token_t XML_%s = %d;\n"%(token, token_id))
-        token_id += 1
-    outfile.write("\n")
-    outfile.close()
+    for i, token in enumerate(tokens):
+        token = normalize_name(token)
+        outfile.write(f"const xml_token_t XML_{token} = {i+1};\n")
 
 
 def gen_token_names(outfile, tokens):
 
     outfile.write(get_auto_gen_warning())
-
     outfile.write("const char* token_names[] = {\n")
-    outfile.write("    \"%s\", // 0\n"%unknown_token_name)
-    token_id = 1
-    token_size = len(tokens)
-    for i in range(token_size):
-        token = tokens[i]
+    outfile.write(f"    \"{unknown_token_name}\", // 0\n")
+
+    for i, token in enumerate(tokens):
         s = ','
-        if i == token_size-1:
+        if i == len(tokens) - 1:
             s = ' '
-        outfile.write("    \"%s\"%s // %d\n"%(token, s, token_id))
-        token_id += 1
+        outfile.write(f"    \"{token}\"{s} // {i+1}\n")
     outfile.write("};\n\n")
-    outfile.write("size_t token_name_count = %d;\n\n"%token_id)
-    outfile.close()
+    outfile.write(f"size_t token_name_count = {len(tokens)+1};")
