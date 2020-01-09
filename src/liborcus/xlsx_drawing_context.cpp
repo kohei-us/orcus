@@ -61,6 +61,7 @@ void xlsx_drawing_context::start_element(xmlns_id_t ns, xml_token_t name, const:
             case XML_clientData:
             {
                 const xml_elem_set_t expected = {
+                    { NS_ooxml_xdr, XML_absoluteAnchor },
                     { NS_ooxml_xdr, XML_grpSp },
                     { NS_ooxml_xdr, XML_oneCellAnchor },
                     { NS_ooxml_xdr, XML_twoCellAnchor },
