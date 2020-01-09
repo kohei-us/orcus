@@ -212,6 +212,24 @@ void xml_context_base::xml_element_expected(
     throw xml_structure_error(os.str());
 }
 
+void xml_context_base::xml_element_expected(
+    const xml_token_pair_t& elem, const xml_elem_set_t& expected_elems) const
+{
+    if (!m_config.structure_check)
+        return;
+
+    if (expected_elems.count(elem))
+        return;
+
+    if (m_always_allowed_elements.count(elem))
+        return;
+
+    // Create a generic error message.
+    ostringstream os;
+    os << "unexpected element encountered: " << elem.first << ":" << m_tokens.get_token_name(elem.second);
+    throw xml_structure_error(os.str());
+}
+
 const config& xml_context_base::get_config() const
 {
     return m_config;

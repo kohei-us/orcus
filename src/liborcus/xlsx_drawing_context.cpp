@@ -60,15 +60,16 @@ void xlsx_drawing_context::start_element(xmlns_id_t ns, xml_token_t name, const:
             case XML_sp:
             case XML_clientData:
             {
-                xml_elem_stack_t expected;
-                expected.emplace_back(NS_ooxml_xdr, XML_twoCellAnchor);
-                expected.emplace_back(NS_ooxml_xdr, XML_oneCellAnchor);
+                const xml_elem_set_t expected = {
+                    { NS_ooxml_xdr, XML_grpSp },
+                    { NS_ooxml_xdr, XML_oneCellAnchor },
+                    { NS_ooxml_xdr, XML_twoCellAnchor },
+                };
                 xml_element_expected(parent, expected);
                 break;
             }
             case XML_to:
             {
-                xml_elem_stack_t expected;
                 xml_element_expected(parent, NS_ooxml_xdr, XML_twoCellAnchor);
                 break;
             }

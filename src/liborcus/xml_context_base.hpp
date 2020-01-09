@@ -130,6 +130,9 @@ protected:
     void xml_element_expected(
         const xml_token_pair_t& elem, const xml_elem_stack_t& expected_elems) const;
 
+    void xml_element_expected(
+        const xml_token_pair_t& elem, const xml_elem_set_t& expected_elems) const;
+
     pstring intern(const xml_token_attr_t& attr);
     pstring intern(const pstring& s);
 
