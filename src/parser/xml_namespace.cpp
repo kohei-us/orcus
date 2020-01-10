@@ -68,9 +68,6 @@ xmlns_repository::~xmlns_repository() {}
 
 xmlns_id_t xmlns_repository::intern(const pstring& uri)
 {
-    if (uri.empty())
-        return XMLNS_UNKNOWN_ID;
-
     // See if the uri is already registered.
     strid_map_type::iterator it = mp_impl->m_strid_map.find(uri);
     if (it != mp_impl->m_strid_map.end())
@@ -199,9 +196,6 @@ xmlns_id_t xmlns_context::push(const pstring& key, const pstring& uri)
 #if ORCUS_DEBUG_XML_NAMESPACE
     cout << "xmlns_context::push: key='" << key << "', uri='" << uri << "'" << endl;
 #endif
-    if (uri.empty())
-        return XMLNS_UNKNOWN_ID;
-
     mp_impl->m_trim_all_ns = true;
 
     pstring uri_interned = mp_impl->m_repo.intern(uri);
