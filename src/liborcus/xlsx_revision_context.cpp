@@ -423,9 +423,16 @@ void xlsx_revlog_context::start_element(xmlns_id_t ns, xml_token_t name, const v
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_revisions);
             break;
             case XML_rfmt:
+            {
                 // revision format
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_revisions);
-            break;
+                const xml_elem_set_t expected = {
+                    { NS_ooxml_xlsx, XML_revisions },
+                    { NS_ooxml_xlsx, XML_rm },
+                    { NS_ooxml_xlsx, XML_rrc },
+                };
+                xml_element_expected(parent, expected);
+                break;
+            }
             case XML_ris:
                 // revision insert sheet
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_revisions);

@@ -468,7 +468,11 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_x:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_discretePr);
+            const xml_elem_set_t expected = {
+                { NS_ooxml_xlsx, XML_discretePr },
+                { NS_ooxml_xlsx, XML_reference },
+            };
+            xml_element_expected(parent, expected);
 
             long index = -1;
 
