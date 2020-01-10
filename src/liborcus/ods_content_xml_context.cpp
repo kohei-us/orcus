@@ -87,50 +87,6 @@ private:
     pstring m_name;
 };
 
-class column_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-    pstring m_style_name;
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_odf_table)
-        {
-            if (attr.name == XML_style_name)
-                m_style_name = attr.value;
-        }
-    }
-
-    const pstring& get_style_name() const { return m_style_name; }
-};
-
-class row_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-    long m_number_rows_repeated;
-    pstring m_style_name;
-
-public:
-    row_attr_parser() : m_number_rows_repeated(1) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_odf_table)
-        {
-            switch (attr.name)
-            {
-                case XML_number_rows_repeated:
-                    m_number_rows_repeated = to_long(attr.value);
-                break;
-                case XML_style_name:
-                    m_style_name = attr.value;
-                break;
-            }
-        }
-    }
-
-    long get_number_rows_repeated() const { return m_number_rows_repeated; }
-    const pstring& get_style_name() const { return m_style_name; }
-};
-
 class cell_attr_parser : public unary_function<xml_token_attr_t, void>
 {
 public:
@@ -561,10 +517,20 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
     if (!sheet_props)
         return;
 
-    column_attr_parser func;
-    func = for_each(attrs.begin(), attrs.end(), func);
+    pstring style_name;
 
-    odf_styles_map_type::const_iterator it = m_styles.find(func.get_style_name());
+    std::for_each(attrs.begin(), attrs.end(),
+        [&style_name](const xml_token_attr_t& attr)
+        {
+            if (attr.ns == NS_odf_table)
+            {
+                if (attr.name == XML_style_name)
+                    style_name = attr.value;
+            }
+        }
+    );
+
+    odf_styles_map_type::const_iterator it = m_styles.find(style_name);
     if (it == m_styles.end())
         // Style by this name not found.
         return;
@@ -582,9 +548,26 @@ void ods_content_xml_context::start_row(const xml_attrs_t& attrs)
 {
     m_col = 0;
     m_row_attr = row_attr();
-    row_attr_parser func;
-    func = for_each(attrs.begin(), attrs.end(), func);
-    m_row_attr.number_rows_repeated = func.get_number_rows_repeated();
+
+    pstring style_name;
+
+    std::for_each(attrs.begin(), attrs.end(),
+        [&](const xml_token_attr_t& attr)
+        {
+            if (attr.ns == NS_odf_table)
+            {
+                switch (attr.name)
+                {
+                    case XML_number_rows_repeated:
+                        m_row_attr.number_rows_repeated = to_long(attr.value);
+                        break;
+                    case XML_style_name:
+                        style_name = attr.value;
+                        break;
+                }
+            }
+        }
+    );
 
     if (!m_tables.back())
         return;
@@ -595,7 +578,7 @@ void ods_content_xml_context::start_row(const xml_attrs_t& attrs)
 
     if (sheet_props)
     {
-        odf_styles_map_type::const_iterator it = m_styles.find(func.get_style_name());
+        odf_styles_map_type::const_iterator it = m_styles.find(style_name);
         if (it != m_styles.end())
         {
             const odf_style::row& row_data = *it->second->row_data;
