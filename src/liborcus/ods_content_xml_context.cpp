@@ -424,7 +424,7 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
                 break;
             case XML_table:
             {
-                static const xml_elem_stack_t expected = {
+                static const xml_elem_set_t expected = {
                     { NS_odf_office, XML_spreadsheet },
                     { NS_odf_table, XML_dde_link },
                 };
@@ -434,9 +434,10 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
             }
             case XML_table_column:
             {
-                static const xml_elem_stack_t expected = {
+                static const xml_elem_set_t expected = {
                     { NS_odf_table, XML_table },
                     { NS_odf_table, XML_table_column_group },
+                    { NS_odf_table, XML_table_columns },
                     { NS_odf_table, XML_table_header_columns }
                 };
                 xml_element_expected(parent, expected);
@@ -445,10 +446,10 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
             }
             case XML_table_row:
             {
-                static const xml_elem_stack_t expected = {
+                static const xml_elem_set_t expected = {
                     { NS_odf_table, XML_table },
+                    { NS_odf_table, XML_table_header_rows },
                     { NS_odf_table, XML_table_row_group },
-                    { NS_odf_table, XML_table_header_rows }
                 };
                 xml_element_expected(parent, expected);
                 start_row(attrs);
