@@ -175,7 +175,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 throw xml_structure_error(
                     "worksheetSource element encountered while the source type is not worksheet.");
 
-            pstring ref, sheet_name;
+            pstring ref, sheet_name, table_name;
 
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
@@ -187,10 +187,13 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     {
                         case XML_ref:
                             ref = attr.value;
-                        break;
+                            break;
                         case XML_sheet:
                             sheet_name = attr.value;
-                        break;
+                            break;
+                        case XML_name:
+                            table_name = attr.value;
+                            break;
                         default:
                             ;
                     }
@@ -199,12 +202,16 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
 
             if (get_config().debug)
             {
+                cout << "table: " << table_name << endl;
                 cout << "ref: " << ref << endl;
                 cout << "sheet: " << sheet_name << endl;
             }
 
-            m_pcache.set_worksheet_source(
-                ref.get(), ref.size(), sheet_name.get(), sheet_name.size());
+            if (!table_name.empty())
+                m_pcache.set_worksheet_source(table_name.data(), table_name.size());
+            else
+                m_pcache.set_worksheet_source(
+                    ref.get(), ref.size(), sheet_name.get(), sheet_name.size());
             break;
         }
         case XML_cacheFields:

@@ -156,6 +156,13 @@ void import_pivot_cache_def::set_worksheet_source(
     m_src_range = ixion::to_range(fn.range).to_abs(ixion::abs_address_t(0,0,0));
 }
 
+void import_pivot_cache_def::set_worksheet_source(const char* table_name, size_t n_table_name)
+{
+    assert(m_cache);
+
+    m_src_table_name = intern(table_name, n_table_name);
+}
+
 void import_pivot_cache_def::set_field_count(size_t n)
 {
     m_current_fields.reserve(n);
@@ -239,6 +246,13 @@ void import_pivot_cache_def::commit()
 {
     m_cache->insert_fields(std::move(m_current_fields));
     assert(m_current_fields.empty());
+
+    if (!m_src_table_name.empty())
+    {
+        m_doc.get_pivot_collection().insert_worksheet_cache(
+            m_src_table_name, std::move(m_cache));
+        return;
+    }
 
     m_doc.get_pivot_collection().insert_worksheet_cache(
         m_src_sheet_name, m_src_range, std::move(m_cache));

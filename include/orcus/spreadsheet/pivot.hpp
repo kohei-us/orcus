@@ -278,9 +278,18 @@ public:
      * @param sheet_name name of the sheet where the source data is.
      * @param range range of the source data.  Note that the sheet indices are
      *              not used.
+     * @param cache pivot cache instance to store.
      */
     void insert_worksheet_cache(
         const pstring& sheet_name, const ixion::abs_range_t& range, std::unique_ptr<pivot_cache>&& cache);
+
+    /**
+     * Insert a new pivot cache associated with a table name.
+     *
+     * @param table_name source table name.
+     * @param cache pivot cache instance to store.
+     */
+    void insert_worksheet_cache(const pstring& table_name, std::unique_ptr<pivot_cache>&& cache);
 
     /**
      * Count the number of pivot caches currently stored.

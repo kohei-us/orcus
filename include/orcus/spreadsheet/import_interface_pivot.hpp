@@ -46,6 +46,16 @@ public:
         const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name) = 0;
 
     /**
+     * Specify that the source data of this pivot cache is associated with a
+     * table.
+     *
+     * @param table_name pointer to the char array that contains the name of
+     *                   the table.
+     * @param n_table_name size of the aforementioned char array.
+     */
+    virtual void set_worksheet_source(const char* table_name, size_t n_table_name) = 0;
+
+    /**
      * Set the total number of fields present in this pivot cache.
      *
      * @param n total number of fields in this pivot cache.

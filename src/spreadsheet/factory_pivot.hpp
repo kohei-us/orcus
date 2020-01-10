@@ -32,6 +32,7 @@ class import_pivot_cache_def : public iface::import_pivot_cache_definition
     source_type m_src_type = unknown;
     pstring m_src_sheet_name;
     ixion::abs_range_t m_src_range;
+    pstring m_src_table_name;
 
     std::unique_ptr<pivot_cache> m_cache;
     pivot_cache::fields_type m_current_fields;
@@ -51,6 +52,8 @@ public:
 
     virtual void set_worksheet_source(
         const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name) override;
+
+    virtual void set_worksheet_source(const char* table_name, size_t n_table_name) override;
 
     virtual void set_field_count(size_t n) override;
 
