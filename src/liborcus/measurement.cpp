@@ -198,6 +198,9 @@ double convert_xlsx_column_digit(double value, length_unit_t unit_to)
 
 double convert(double value, length_unit_t unit_from, length_unit_t unit_to)
 {
+    if (value == 0.0)
+        return value;
+
     switch (unit_from)
     {
         case length_unit_t::point:
