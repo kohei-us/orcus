@@ -458,11 +458,7 @@ void pivot_collection::insert_worksheet_cache(
     {
         // sheet name must be interned with the document it belongs to.
         key.sheet = mp_impl->m_doc.get_string_pool().intern(key.sheet).first;
-
-        std::unordered_set<pivot_cache_id_t> id_set;
-        id_set.insert(cache_id);
-
-        range_map.insert(range_map_type::value_type(std::move(key), std::move(id_set)));
+        range_map.insert(range_map_type::value_type(std::move(key), {cache_id}));
         return;
     }
 
@@ -486,9 +482,7 @@ void pivot_collection::insert_worksheet_cache(
     {
         // First cache to be associated with this name.
         pstring table_name_interned = mp_impl->m_doc.get_string_pool().intern(table_name).first;
-        std::unordered_set<pivot_cache_id_t> id_set;
-        id_set.insert(cache_id);
-        name_map.insert(name_map_type::value_type(table_name_interned, std::move(id_set)));
+        name_map.insert(name_map_type::value_type(table_name_interned, {cache_id}));
         return;
     }
 
