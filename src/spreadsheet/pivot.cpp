@@ -404,7 +404,7 @@ struct worksheet_range
     };
 };
 
-using range_map_type = std::unordered_map<worksheet_range, pivot_cache_id_t, worksheet_range::hash>;
+using range_map_type = std::unordered_map<worksheet_range, std::unordered_set<pivot_cache_id_t>, worksheet_range::hash>;
 using name_map_type = std::unordered_map<pstring, std::unordered_set<pivot_cache_id_t>, pstring::hash>;
 
 using caches_type = std::unordered_map<pivot_cache_id_t, std::unique_ptr<pivot_cache>>;
@@ -447,24 +447,27 @@ void pivot_collection::insert_worksheet_cache(
 
     // Check and see if there is already a cache for this location.  If yes,
     // overwrite the existing cache.
+    mp_impl->m_caches[cache_id] = std::move(cache);
 
     worksheet_range key(sheet_name, range);
 
     range_map_type& range_map = mp_impl->m_worksheet_range_map;
     auto it = range_map.find(key);
 
-    if (it != range_map.end())
+    if (it == range_map.end())
     {
-        std::ostringstream os;
-        os << "Another cache is already associated with this worksheet range.";
-        throw std::logic_error(os.str());
+        // sheet name must be interned with the document it belongs to.
+        key.sheet = mp_impl->m_doc.get_string_pool().intern(key.sheet).first;
+
+        std::unordered_set<pivot_cache_id_t> id_set;
+        id_set.insert(cache_id);
+
+        range_map.insert(range_map_type::value_type(std::move(key), std::move(id_set)));
+        return;
     }
 
-    // sheet name must be interned with the document it belongs to.
-    key.sheet = mp_impl->m_doc.get_string_pool().intern(key.sheet).first;
-
-    mp_impl->m_caches[cache_id] = std::move(cache);
-    range_map.insert(range_map_type::value_type(std::move(key), cache_id));
+    auto& id_set = it->second;
+    id_set.insert(cache_id);
 }
 
 void pivot_collection::insert_worksheet_cache(
@@ -507,7 +510,9 @@ const pivot_cache* pivot_collection::get_cache(
     if (it == mp_impl->m_worksheet_range_map.end())
         return nullptr;
 
-    size_t cache_id = it->second;
+    // Pick the first cache ID.
+    assert(!it->second.empty());
+    pivot_cache_id_t cache_id = *it->second.cbegin();
     return mp_impl->m_caches[cache_id].get();
 }
 
