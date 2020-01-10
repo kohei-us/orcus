@@ -405,7 +405,7 @@ struct worksheet_range
 };
 
 using range_map_type = std::unordered_map<worksheet_range, pivot_cache_id_t, worksheet_range::hash>;
-using name_map_type = std::unordered_map<pstring, pivot_cache_id_t, pstring::hash>;
+using name_map_type = std::unordered_map<pstring, std::unordered_set<pivot_cache_id_t>, pstring::hash>;
 
 using caches_type = std::unordered_map<pivot_cache_id_t, std::unique_ptr<pivot_cache>>;
 
@@ -474,19 +474,23 @@ void pivot_collection::insert_worksheet_cache(
     pivot_cache_id_t cache_id = cache->get_id();
     mp_impl->ensure_unique_cache(cache_id);
 
+    mp_impl->m_caches[cache_id] = std::move(cache);
+
     name_map_type& name_map = mp_impl->m_table_map;
     auto it = name_map.find(table_name);
 
-    if (it != name_map.end())
+    if (it == name_map.end())
     {
-        std::ostringstream os;
-        os << "Another pivot cache is already associated with this table name.";
-        throw std::logic_error(os.str());
+        // First cache to be associated with this name.
+        pstring table_name_interned = mp_impl->m_doc.get_string_pool().intern(table_name).first;
+        std::unordered_set<pivot_cache_id_t> id_set;
+        id_set.insert(cache_id);
+        name_map.insert(name_map_type::value_type(table_name_interned, std::move(id_set)));
+        return;
     }
 
-    pstring table_name_interned = mp_impl->m_doc.get_string_pool().intern(table_name).first;
-    mp_impl->m_caches[cache_id] = std::move(cache);
-    name_map.insert(name_map_type::value_type(table_name_interned, cache_id));
+    auto& id_set = it->second;
+    id_set.insert(cache_id);
 }
 
 size_t pivot_collection::get_cache_count() const
