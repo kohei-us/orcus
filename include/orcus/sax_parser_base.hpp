@@ -202,7 +202,7 @@ protected:
     void expects_next(const char* p, size_t n);
 
     void parse_encoded_char(cell_buffer& buf);
-    void value_with_encoded_char(cell_buffer& buf, pstring& str);
+    void value_with_encoded_char(cell_buffer& buf, pstring& str, char quote_char);
 
     /**
      * Parse quoted value.  Note that the retrieved string may be stored in

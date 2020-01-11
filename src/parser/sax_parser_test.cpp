@@ -101,10 +101,32 @@ void test_attr_equal_with_whitespace()
     parser.parse();
 }
 
+void test_attr_with_encoded_chars_single_quotes()
+{
+    struct _handler : public handler_base
+    {
+        void attribute(const orcus::sax::parser_attribute& attr)
+        {
+            if (attr.name == "attr1")
+                assert(attr.value == "'some value'");
+        }
+    };
+
+    const char* content =
+        "<?xml version=\"1.0\"?>"
+        "<root attr1='&apos;some value&apos;'/>"
+    ;
+
+    _handler hdl;
+    orcus::sax_parser<_handler> parser(content, strlen(content), hdl);
+    parser.parse();
+}
+
 int main()
 {
     test_transient_stream();
     test_attr_equal_with_whitespace();
+    test_attr_with_encoded_chars_single_quotes();
 
     return EXIT_SUCCESS;
 }

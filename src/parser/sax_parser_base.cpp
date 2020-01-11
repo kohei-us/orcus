@@ -260,7 +260,7 @@ void parser_base::parse_encoded_char(cell_buffer& buf)
         "error parsing encoded character: terminating character is not found.", offset());
 }
 
-void parser_base::value_with_encoded_char(cell_buffer& buf, pstring& str)
+void parser_base::value_with_encoded_char(cell_buffer& buf, pstring& str, char quote_char)
 {
     assert(cur_char() == '&');
     parse_encoded_char(buf);
@@ -278,7 +278,7 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, pstring& str)
             p0 = mp_char;
         }
 
-        if (cur_char() == '"')
+        if (cur_char() == quote_char)
             break;
 
         if (cur_char() != '&')
@@ -292,7 +292,7 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, pstring& str)
         str = pstring(buf.get(), buf.size());
 
     // Skip the closing quote.
-    assert(!has_char() || cur_char() == '"');
+    assert(!has_char() || cur_char() == quote_char);
     next();
 }
 
@@ -315,7 +315,7 @@ bool parser_base::value(pstring& str, bool decode)
             cell_buffer& buf = get_cell_buffer();
             buf.reset();
             buf.append(p0, mp_char-p0);
-            value_with_encoded_char(buf, str);
+            value_with_encoded_char(buf, str, quote_char);
             return true;
         }
     }
