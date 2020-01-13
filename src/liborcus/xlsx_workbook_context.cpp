@@ -55,134 +55,137 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
     session_context& cxt = get_session_context();
     string_pool& sp = cxt.m_string_pool;
 
-    switch (name)
+    if (ns == NS_ooxml_xlsx)
     {
-        case XML_workbook:
+        switch (name)
         {
-            xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-            if (get_config().debug)
-                print_attrs(get_tokens(), attrs);
+            case XML_workbook:
+            {
+                xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
+                if (get_config().debug)
+                    print_attrs(get_tokens(), attrs);
 
-            break;
-        }
-        case XML_sheets:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_workbook);
-            break;
-        case XML_sheet:
-        {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_sheets);
+                break;
+            }
+            case XML_sheets:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_workbook);
+                break;
+            case XML_sheet:
+            {
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_sheets);
 
-            pstring rid;
-            xlsx_rel_sheet_info sheet;
+                pstring rid;
+                xlsx_rel_sheet_info sheet;
 
-            std::for_each(attrs.begin(), attrs.end(),
-                [&](const xml_token_attr_t& attr)
-                {
-                    if (attr.ns == NS_ooxml_xlsx)
+                std::for_each(attrs.begin(), attrs.end(),
+                    [&](const xml_token_attr_t& attr)
                     {
+                        if (attr.ns == NS_ooxml_xlsx)
+                        {
+                            switch (attr.name)
+                            {
+                                case XML_name:
+                                    sheet.name = sp.intern(attr.value).first;
+                                    break;
+                                case XML_sheetId:
+                                {
+                                    const pstring& val = attr.value;
+                                    if (!val.empty())
+                                        sheet.id = to_long(val);
+                                    break;
+                                }
+                                default:
+                                    ;
+                            }
+                        }
+                        else if (attr.ns == NS_ooxml_r && attr.name == XML_id)
+                        {
+                            rid = sp.intern(attr.value).first;
+                        }
+                    }
+                );
+
+                if (sheet.name.empty())
+                    throw xml_structure_error("workbook.xml: sheet element must have a valid name element.");
+
+                // Insert the sheet here so that we have all the sheets available
+                // prior to parsing global named expressions.
+                m_factory.append_sheet(m_sheet_count++, sheet.name.data(), sheet.name.size());
+
+                m_workbook_info.data.insert(
+                    opc_rel_extras_t::map_type::value_type(
+                        rid, orcus::make_unique<xlsx_rel_sheet_info>(sheet)));
+
+                break;
+            }
+            case XML_definedNames:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_workbook);
+                break;
+            case XML_definedName:
+            {
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_definedNames);
+
+                std::for_each(attrs.begin(), attrs.end(),
+                    [&](const xml_token_attr_t& attr)
+                    {
+                        if (attr.ns != NS_ooxml_xlsx)
+                            return;
+
                         switch (attr.name)
                         {
                             case XML_name:
-                                sheet.name = sp.intern(attr.value).first;
-                                break;
-                            case XML_sheetId:
                             {
-                                const pstring& val = attr.value;
-                                if (!val.empty())
-                                    sheet.id = to_long(val);
+                                m_defined_name = attr.value;
+                                if (attr.transient)
+                                {
+                                    m_defined_name =
+                                        cxt.m_string_pool.intern(m_defined_name).first;
+                                }
                                 break;
                             }
+                            case XML_localSheetId:
+                                m_defined_name_scope = to_long(attr.value);
+                                break;
                             default:
                                 ;
                         }
                     }
-                    else if (attr.ns == NS_ooxml_r && attr.name == XML_id)
+                );
+
+                break;
+            }
+            case XML_pivotCaches:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_workbook);
+                break;
+            case XML_pivotCache:
+            {
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCaches);
+
+                pstring rid;
+                long cache_id = -1;
+                for_each(attrs.begin(), attrs.end(),
+                    [&](const xml_token_attr_t& attr)
                     {
-                        rid = sp.intern(attr.value).first;
-                    }
-                }
-            );
-
-            if (sheet.name.empty())
-                throw xml_structure_error("workbook.xml: sheet element must have a valid name element.");
-
-            // Insert the sheet here so that we have all the sheets available
-            // prior to parsing global named expressions.
-            m_factory.append_sheet(m_sheet_count++, sheet.name.data(), sheet.name.size());
-
-            m_workbook_info.data.insert(
-                opc_rel_extras_t::map_type::value_type(
-                    rid, orcus::make_unique<xlsx_rel_sheet_info>(sheet)));
-
-            break;
-        }
-        case XML_definedNames:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_workbook);
-            break;
-        case XML_definedName:
-        {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_definedNames);
-
-            std::for_each(attrs.begin(), attrs.end(),
-                [&](const xml_token_attr_t& attr)
-                {
-                    if (attr.ns != NS_ooxml_xlsx)
-                        return;
-
-                    switch (attr.name)
-                    {
-                        case XML_name:
+                        if (attr.ns == NS_ooxml_xlsx && attr.name == XML_cacheId)
                         {
-                            m_defined_name = attr.value;
-                            if (attr.transient)
-                            {
-                                m_defined_name =
-                                    cxt.m_string_pool.intern(m_defined_name).first;
-                            }
-                            break;
+                            cache_id = to_long(attr.value);
                         }
-                        case XML_localSheetId:
-                            m_defined_name_scope = to_long(attr.value);
-                            break;
-                        default:
-                            ;
+                        else if (attr.ns == NS_ooxml_r && attr.name == XML_id)
+                        {
+                            rid = attr.value;
+                        }
                     }
-                }
-            );
+                );
 
-            break;
+                m_workbook_info.data.insert(
+                    opc_rel_extras_t::map_type::value_type(
+                        rid, orcus::make_unique<xlsx_rel_pivot_cache_info>(cache_id)));
+
+                break;
+            }
+            default:
+                warn_unhandled();
         }
-        case XML_pivotCaches:
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_workbook);
-            break;
-        case XML_pivotCache:
-        {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCaches);
-
-            pstring rid;
-            long cache_id = -1;
-            for_each(attrs.begin(), attrs.end(),
-                [&](const xml_token_attr_t& attr)
-                {
-                    if (attr.ns == NS_ooxml_xlsx && attr.name == XML_cacheId)
-                    {
-                        cache_id = to_long(attr.value);
-                    }
-                    else if (attr.ns == NS_ooxml_r && attr.name == XML_id)
-                    {
-                        rid = attr.value;
-                    }
-                }
-            );
-
-            m_workbook_info.data.insert(
-                opc_rel_extras_t::map_type::value_type(
-                    rid, orcus::make_unique<xlsx_rel_pivot_cache_info>(cache_id)));
-
-            break;
-        }
-        default:
-            warn_unhandled();
     }
 }
 
