@@ -379,15 +379,8 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
                 start_null_date(attrs);
                 break;
             case XML_table:
-            {
-                static const xml_elem_set_t expected = {
-                    { NS_odf_office, XML_spreadsheet },
-                    { NS_odf_table, XML_dde_link },
-                };
-                xml_element_expected(parent, expected);
-                start_table(attrs);
+                start_table(parent, attrs);
                 break;
-            }
             case XML_table_column:
             {
                 static const xml_elem_set_t expected = {
@@ -488,16 +481,30 @@ void ods_content_xml_context::start_null_date(const xml_attrs_t& attrs)
     gs->set_origin_date(val.year, val.month, val.day);
 }
 
-void ods_content_xml_context::start_table(const xml_attrs_t& attrs)
+void ods_content_xml_context::start_table(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
 {
-    table_attr_parser parser = for_each(attrs.begin(), attrs.end(), table_attr_parser());
-    const pstring& name = parser.get_name();
-    m_tables.push_back(mp_factory->append_sheet(m_tables.size(), name.get(), name.size()));
+    static const xml_elem_set_t expected = {
+        { NS_odf_office, XML_spreadsheet },
+        { NS_odf_table, XML_dde_link },
+    };
+    xml_element_expected(parent, expected);
 
-    if (get_config().debug)
-        cout << "start table " << name << endl;
+    if (parent == xml_token_pair_t(NS_odf_office, XML_spreadsheet))
+    {
+        table_attr_parser parser = for_each(attrs.begin(), attrs.end(), table_attr_parser());
+        const pstring& name = parser.get_name();
+        m_tables.push_back(mp_factory->append_sheet(m_tables.size(), name.get(), name.size()));
 
-    m_row = m_col = 0;
+        if (get_config().debug)
+            cout << "start table " << name << endl;
+
+        m_row = m_col = 0;
+    }
+    else if (parent == xml_token_pair_t(NS_odf_table, XML_dde_link))
+    {
+        if (get_config().debug)
+            cout << "start table (DDE link)" << endl;
+    }
 }
 
 void ods_content_xml_context::end_table()

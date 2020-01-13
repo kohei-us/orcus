@@ -66,7 +66,7 @@ public:
 private:
     void start_null_date(const xml_attrs_t& attrs);
 
-    void start_table(const xml_attrs_t& attrs);
+    void start_table(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void end_table();
 
     void start_column(const xml_attrs_t& attrs);
