@@ -483,7 +483,11 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
                 if (func.contains_address())
                 {
                     if (m_cur_row != func.get_row())
-                        throw xml_structure_error("row numbers differ!");
+                    {
+                        std::ostringstream os;
+                        os << "row numbers differ! (current=" << m_cur_row << ")";
+                        throw xml_structure_error(os.str());
+                    }
 
                     m_cur_col = func.get_col();
                 }
