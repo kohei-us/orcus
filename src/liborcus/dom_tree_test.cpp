@@ -3,21 +3,31 @@
 #include <orcus/stream.hpp>
 #include <orcus/xml_namespace.hpp>
 #include <orcus/pstring.hpp>
+#include <orcus/global.hpp>
 #include <cassert>
+#include <iostream>
 
 using namespace orcus::dom;
 
-orcus::dom::document_tree load_document_tree(const orcus::pstring& content)
+struct doctree
 {
     orcus::xmlns_repository repo;
-    orcus::xmlns_context cxt = repo.create_context();
-    orcus::dom::document_tree tree(cxt);
+    orcus::xmlns_context cxt;
+    orcus::dom::document_tree tree;
 
-    tree.load(content.data(), content.size());
-    return tree;
+    doctree(const orcus::pstring& content) : repo(), cxt(repo.create_context()), tree(cxt)
+    {
+        tree.load(content.data(), content.size());
+    }
+};
+
+std::unique_ptr<doctree> load_document_tree(const orcus::pstring& content)
+{
+    std::unique_ptr<doctree> ret = orcus::make_unique<doctree>(content);
+    return ret;
 }
 
-orcus::dom::document_tree load_document_tree_from_file(const char* filepath)
+std::unique_ptr<doctree> load_document_tree_from_file(const char* filepath)
 {
     orcus::file_content content(filepath);
     return load_document_tree(content.str());
@@ -26,16 +36,18 @@ orcus::dom::document_tree load_document_tree_from_file(const char* filepath)
 void test_encoded_attr()
 {
     std::string content = "<?xml version=\"1.0\"?><root attr=\"&amp;;\"/>";
-    auto tree = load_document_tree(content);
-    const_node root = tree.root();
+    auto doctree = load_document_tree(content);
+    const_node root = doctree->tree.root();
+    doctree->tree.dump_compact(std::cout);
+    std::cout << __FILE__ << "#" << __LINE__ << " (:test_encoded_attr): " << root.attribute("attr") << std::endl;
     assert(root.attribute("attr") == "&;");
 }
 
 void test_declaration()
 {
-    orcus::dom::document_tree tree = load_document_tree_from_file(SRCDIR"/test/xml/osm/street-in-aizu.osm");
+    auto doctree = load_document_tree_from_file(SRCDIR"/test/xml/osm/street-in-aizu.osm");
 
-    const_node decl = tree.declaration("xml");
+    const_node decl = doctree->tree.declaration("xml");
     assert(decl.type() == node_t::declaration);
     assert(decl.attribute("version") == "1.0");
     assert(decl.attribute("encoding") == "UTF-8");
@@ -46,9 +58,9 @@ void test_declaration()
 
 void test_attributes()
 {
-    orcus::dom::document_tree tree = load_document_tree_from_file(SRCDIR"/test/xml/osm/street-in-aizu.osm");
+    auto doctree = load_document_tree_from_file(SRCDIR"/test/xml/osm/street-in-aizu.osm");
 
-    const_node root = tree.root();
+    const_node root = doctree->tree.root();
     assert(root.name() == entity_name("osm"));
     assert(root.type() == node_t::element);
     assert(root.attribute("version") == "0.6");
@@ -62,9 +74,9 @@ void test_attributes()
 
 void test_element_hierarchy()
 {
-    orcus::dom::document_tree tree = load_document_tree_from_file(SRCDIR"/test/xml/osm/street-in-aizu.osm");
+    auto doctree = load_document_tree_from_file(SRCDIR"/test/xml/osm/street-in-aizu.osm");
 
-    const_node root = tree.root();
+    const_node root = doctree->tree.root();
     assert(root.name() == entity_name("osm"));
     assert(root.child_count() > 0);
     assert(root.parent().type() == node_t::unset);

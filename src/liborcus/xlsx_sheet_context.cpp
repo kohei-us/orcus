@@ -573,7 +573,7 @@ void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, c
 
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             continue;
 
         switch (attr.name)
@@ -622,7 +622,7 @@ void xlsx_sheet_context::start_element_sheet_view(
 
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns == NS_ooxml_xlsx)
+        if (!attr.ns || attr.ns == NS_ooxml_xlsx)
         {
             switch (attr.name)
             {
@@ -660,7 +660,7 @@ void xlsx_sheet_context::start_element_selection(
 
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns == NS_ooxml_xlsx)
+        if (!attr.ns || attr.ns == NS_ooxml_xlsx)
         {
             switch (attr.name)
             {
@@ -713,7 +713,7 @@ void xlsx_sheet_context::start_element_pane(
 
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             continue;
 
         switch (attr.name)

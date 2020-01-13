@@ -39,7 +39,7 @@ public:
 
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         switch (attr.name)
@@ -92,7 +92,7 @@ public:
 
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         switch (attr.name)
@@ -137,7 +137,7 @@ public:
 
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         bool b = false;

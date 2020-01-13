@@ -101,6 +101,13 @@ bool compare_check_contents(const file_content& expected, const std::string& act
     _expected = _expected.trim();
     _actual = _actual.trim();
 
+    if (_expected != _actual)
+    {
+        size_t pos = locate_first_different_char(_expected, _actual);
+        cout << create_parse_error_output(_expected, pos) << endl;
+        cout << create_parse_error_output(_actual, pos) << endl;
+    }
+
     return _expected == _actual;
 }
 

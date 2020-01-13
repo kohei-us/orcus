@@ -80,7 +80,7 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
                 std::for_each(attrs.begin(), attrs.end(),
                     [&](const xml_token_attr_t& attr)
                     {
-                        if (attr.ns == NS_ooxml_xlsx)
+                        if (!attr.ns || attr.ns == NS_ooxml_xlsx)
                         {
                             switch (attr.name)
                             {
@@ -128,7 +128,7 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
                 std::for_each(attrs.begin(), attrs.end(),
                     [&](const xml_token_attr_t& attr)
                     {
-                        if (attr.ns != NS_ooxml_xlsx)
+                        if (attr.ns && attr.ns != NS_ooxml_xlsx)
                             return;
 
                         switch (attr.name)
@@ -166,13 +166,27 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
                 for_each(attrs.begin(), attrs.end(),
                     [&](const xml_token_attr_t& attr)
                     {
-                        if (attr.ns == NS_ooxml_xlsx && attr.name == XML_cacheId)
+                        if (!attr.ns || attr.ns == NS_ooxml_xlsx)
                         {
-                            cache_id = to_long(attr.value);
+                            switch (attr.name)
+                            {
+                                case XML_cacheId:
+                                    cache_id = to_long(attr.value);
+                                    break;
+                                default:
+                                    ;
+                            }
                         }
-                        else if (attr.ns == NS_ooxml_r && attr.name == XML_id)
+                        else if (attr.ns == NS_ooxml_r)
                         {
-                            rid = attr.value;
+                            switch (attr.name)
+                            {
+                                case XML_id:
+                                    rid = attr.value;
+                                    break;
+                                default:
+                                    ;
+                            }
                         }
                     }
                 );

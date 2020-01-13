@@ -2,43 +2,43 @@ ns0="http://schemas.kohei.us/orcus/2015/json"
 /ns0:array
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="I am string"
+/ns0:array/ns0:item/ns0:string@value="I am string"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="me too"
+/ns0:array/ns0:item/ns0:string@value="me too"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value=""
+/ns0:array/ns0:item/ns0:string@value=""
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="\\"
+/ns0:array/ns0:item/ns0:string@value="\\"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="/"
+/ns0:array/ns0:item/ns0:string@value="/"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="\\b"
+/ns0:array/ns0:item/ns0:string@value="\\b"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="\\f"
+/ns0:array/ns0:item/ns0:string@value="\\f"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="\\n"
+/ns0:array/ns0:item/ns0:string@value="\\n"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="\\r"
+/ns0:array/ns0:item/ns0:string@value="\\r"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="\\t"
+/ns0:array/ns0:item/ns0:string@value="\\t"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="\"quoted\""
+/ns0:array/ns0:item/ns0:string@value="\"quoted\""
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="http://www.google.com"
+/ns0:array/ns0:item/ns0:string@value="http://www.google.com"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="one \\n two \\n three"
+/ns0:array/ns0:item/ns0:string@value="one \\n two \\n three"
 /ns0:array/ns0:item
 /ns0:array/ns0:item/ns0:string
-/ns0:array/ns0:item/ns0:string@ns0:value="front segment 'single quote' and \"double quote\" end segment"
+/ns0:array/ns0:item/ns0:string@value="front segment 'single quote' and \"double quote\" end segment"

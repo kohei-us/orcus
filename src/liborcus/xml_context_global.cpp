@@ -21,7 +21,10 @@ single_attr_getter::single_attr_getter(xmlns_id_t ns, xml_token_t name) :
 
 void single_attr_getter::operator() (const xml_token_attr_t& attr)
 {
-    if (attr.ns != m_ns || attr.name != m_name)
+    if (attr.name != m_name)
+        return;
+
+    if (attr.ns && attr.ns != m_ns)
         return;
 
     m_value = attr.value;
@@ -53,7 +56,10 @@ single_long_attr_getter::single_long_attr_getter(xmlns_id_t ns, xml_token_t name
 
 void single_long_attr_getter::operator() (const xml_token_attr_t& attr)
 {
-    if (attr.ns != m_ns || attr.name != m_name)
+    if (attr.name != m_name)
+        return;
+
+    if (attr.ns && attr.ns != m_ns)
         return;
 
     m_value = to_long(attr.value);
@@ -75,7 +81,10 @@ single_double_attr_getter::single_double_attr_getter(xmlns_id_t ns, xml_token_t 
 
 void single_double_attr_getter::operator() (const xml_token_attr_t& attr)
 {
-    if (attr.ns != m_ns || attr.name != m_name)
+    if (attr.name != m_name)
+        return;
+
+    if (attr.ns && attr.ns != m_ns)
         return;
 
     m_value = to_double(attr.value);

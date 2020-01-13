@@ -218,7 +218,7 @@ private:
                 return;
             }
 
-            m_attr.ns = m_ns_cxt.get(attr.ns);
+            m_attr.ns = attr.ns.empty() ? XMLNS_UNKNOWN_ID : m_ns_cxt.get(attr.ns);
             m_attr.ns_alias = attr.ns;
             m_attr.name = attr.name;
             m_attr.value = attr.value;

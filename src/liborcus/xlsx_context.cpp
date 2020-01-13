@@ -994,7 +994,7 @@ void xlsx_styles_context::start_element_number_format(const xml_token_pair_t& pa
     {
         for (const xml_token_attr_t& attr : attrs)
         {
-            if (attr.ns != NS_ooxml_xlsx)
+            if (attr.ns && attr.ns != NS_ooxml_xlsx)
                 continue;
 
             switch (attr.name)
@@ -1028,7 +1028,7 @@ void xlsx_styles_context::start_element_border(const xml_token_pair_t& parent, c
     std::for_each(attrs.begin(), attrs.end(),
         [&diagonal_up,&diagonal_down](const xml_token_attr_t& attr)
         {
-            if (attr.ns != NS_ooxml_xlsx)
+            if (attr.ns && attr.ns != NS_ooxml_xlsx)
                 return;
 
             switch (attr.name)

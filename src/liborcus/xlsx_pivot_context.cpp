@@ -86,7 +86,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns == NS_ooxml_xlsx)
+                    if (!attr.ns || attr.ns == NS_ooxml_xlsx)
                     {
                         switch (attr.name)
                         {
@@ -146,7 +146,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -180,7 +180,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -239,7 +239,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -275,7 +275,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -316,7 +316,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -355,7 +355,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -434,7 +434,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -486,7 +486,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -586,7 +586,7 @@ void xlsx_pivot_cache_def_context::start_element_s(
     for_each(attrs.begin(), attrs.end(),
         [&](const xml_token_attr_t& attr)
         {
-            if (attr.ns != NS_ooxml_xlsx)
+            if (attr.ns && attr.ns != NS_ooxml_xlsx)
                 return;
 
             switch (attr.name)
@@ -675,7 +675,7 @@ void xlsx_pivot_cache_def_context::start_element_n(
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -750,7 +750,7 @@ void xlsx_pivot_cache_def_context::start_element_d(
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -825,7 +825,7 @@ void xlsx_pivot_cache_def_context::start_element_e(
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
                 {
-                    if (attr.ns != NS_ooxml_xlsx)
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
                         return;
 
                     switch (attr.name)
@@ -909,7 +909,7 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
     for_each(attrs.begin(), attrs.end(),
         [&](const xml_token_attr_t& attr)
         {
-            if (attr.ns != NS_ooxml_xlsx)
+            if (attr.ns && attr.ns != NS_ooxml_xlsx)
                 return;
 
             switch (attr.name)
@@ -1124,7 +1124,7 @@ class pivot_table_def_attr_parser : public unary_function<xml_token_attr_t, void
 public:
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         long v = 0;
@@ -1228,7 +1228,7 @@ class location_attr_parser : public unary_function<xml_token_attr_t, void>
 public:
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         long v = -1;
@@ -1260,7 +1260,7 @@ class pivot_field_attr_parser : public unary_function<xml_token_attr_t, void>
 public:
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         switch (attr.name)
@@ -1315,7 +1315,7 @@ public:
 
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         switch (attr.name)
@@ -1363,7 +1363,7 @@ class item_attr_parser : public unary_function<xml_token_attr_t, void>
 public:
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         switch (attr.name)
@@ -1406,7 +1406,7 @@ public:
 
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         switch (attr.name)
@@ -1448,7 +1448,7 @@ class i_attr_parser : public unary_function<xml_token_attr_t, void>
 public:
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         switch (attr.name)
@@ -1498,7 +1498,7 @@ public:
 
     void operator() (const xml_token_attr_t& attr)
     {
-        if (attr.ns != NS_ooxml_xlsx)
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
             return;
 
         bool b = false;
