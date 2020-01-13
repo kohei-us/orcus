@@ -576,6 +576,9 @@ void ods_content_xml_context::start_row(const xml_attrs_t& attrs)
         }
     );
 
+    if (get_config().debug)
+        cout << "row: (style='" << style_name << "')" << endl;
+
     if (!m_tables.back())
         return;
 
@@ -588,8 +591,13 @@ void ods_content_xml_context::start_row(const xml_attrs_t& attrs)
         odf_styles_map_type::const_iterator it = m_styles.find(style_name);
         if (it != m_styles.end())
         {
-            const odf_style::row& row_data = *it->second->row_data;
-            sheet_props->set_row_height(m_row, row_data.height.value, row_data.height.unit);
+            const odf_style& style = *it->second;
+            if (style.family == style_family_table_row)
+            {
+                const odf_style::row& row_data = *style.row_data;
+                if (row_data.height_set)
+                    sheet_props->set_row_height(m_row, row_data.height.value, row_data.height.unit);
+            }
         }
     }
 }

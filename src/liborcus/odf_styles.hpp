@@ -41,6 +41,7 @@ struct odf_style
     struct row
     {
         length_t height;
+        bool height_set = false;
     };
 
     struct cell

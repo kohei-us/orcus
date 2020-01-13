@@ -222,7 +222,7 @@ double convert(double value, length_unit_t unit_from, length_unit_t unit_to)
     std::ostringstream os;
     os << "convert: unsupported unit of measurement (from "
         << static_cast<int>(unit_from) << " to "
-        << static_cast<int>(unit_to) << ")";
+        << static_cast<int>(unit_to) << ") (value=" << value << ")";
     throw general_error(os.str());
 }
 

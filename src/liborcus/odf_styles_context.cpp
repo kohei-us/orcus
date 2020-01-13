@@ -111,26 +111,6 @@ public:
     const length_t& get_width() const { return m_width; }
 };
 
-class row_prop_attr_parser : public std::unary_function<xml_token_attr_t, void>
-{
-    length_t m_height;
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_odf_style)
-        {
-            switch (attr.name)
-            {
-                case XML_row_height:
-                    m_height = to_length(attr.value);
-                break;
-            }
-        }
-    }
-
-    const length_t& get_height() const { return m_height; }
-};
-
 typedef mdds::sorted_string_map<spreadsheet::strikethrough_style_t> strikethrough_style_map;
 
 strikethrough_style_map::entry strikethrough_style_entries[] =
@@ -612,12 +592,26 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_at
             case XML_table_row_properties:
             {
                 xml_element_expected(parent, NS_odf_style, XML_style);
-                row_prop_attr_parser func;
-                func = std::for_each(attrs.begin(), attrs.end(), func);
+
+                std::for_each(attrs.begin(), attrs.end(),
+                    [&](const xml_token_attr_t& attr)
+                    {
+                        if (attr.ns == NS_odf_style)
+                        {
+                            switch (attr.name)
+                            {
+                                case XML_row_height:
+                                    m_current_style->row_data->height = to_length(attr.value);
+                                    m_current_style->row_data->height_set = true;
+                                    break;
+                            }
+                        }
+                    }
+                );
+
                 assert(m_current_style->family == style_family_table_row);
-                m_current_style->row_data->height = func.get_height();
+                break;
             }
-            break;
             case XML_table_properties:
                 xml_element_expected(parent, NS_odf_style, XML_style);
             break;
