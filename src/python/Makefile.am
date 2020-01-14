@@ -38,7 +38,9 @@ _orcus_la_SOURCES += \
 	sheet.hpp \
 	sheet.cpp \
 	sheet_rows.hpp \
-	sheet_rows.cpp
+	sheet_rows.cpp \
+	cell.hpp \
+	cell.cpp
 
 _orcus_la_LIBADD += \
 	../spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \

@@ -19,6 +19,7 @@
 #include "document.hpp"
 #include "sheet.hpp"
 #include "sheet_rows.hpp"
+#include "cell.hpp"
 #endif
 
 #include <iostream>
@@ -151,6 +152,19 @@ ORCUS_DLLPUBLIC PyObject* PyInit__orcus()
             return nullptr;
         }
     }
+
+    PyTypeObject* cell_type = orcus::python::get_cell_type();
+    if (!PyType_Ready(cell_type))
+    {
+        Py_INCREF(cell_type);
+        if (PyModule_AddObject(m, "Cell", reinterpret_cast<PyObject*>(cell_type)) < 0)
+        {
+            Py_DECREF(m);
+            Py_DECREF(cell_type);
+            return nullptr;
+        }
+    }
+
 #endif
 
     return m;
