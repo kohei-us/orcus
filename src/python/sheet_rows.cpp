@@ -7,6 +7,7 @@
 
 #include "sheet_rows.hpp"
 #include "memory.hpp"
+#include "cell.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
@@ -113,59 +114,32 @@ PyObject* sheet_rows_iternext(PyObject* self)
         {
             case ixion::element_type_empty:
             {
-                PyObject* cv = PyTuple_New(2);
-                PyObject* ct = ct_empty.get();
-                Py_INCREF(ct);
-                PyTuple_SetItem(cv, 0, ct);
-                Py_INCREF(Py_None);
-                PyTuple_SetItem(cv, 1, Py_None);
+                PyObject* obj = create_cell_object_empty();
+                if (!obj)
+                    return nullptr;
 
-                PyTuple_SetItem(pyobj_row, col_pos, cv);
+                PyTuple_SetItem(pyobj_row, col_pos, obj);
                 break;
             }
             case ixion::element_type_boolean:
             {
-                PyObject* cv = PyTuple_New(2);
-                PyObject* ct = ct_boolean.get();
-                Py_INCREF(ct);
-                PyTuple_SetItem(cv, 0, ct);
-
                 bool v = row_pos->get<ixion::boolean_element_block>();
-                if (v)
-                {
-                    Py_INCREF(Py_True);
-                    PyTuple_SetItem(cv, 1, Py_True);
-                }
-                else
-                {
-                    Py_INCREF(Py_False);
-                    PyTuple_SetItem(cv, 1, Py_False);
-                }
+                PyObject* obj = create_cell_object_boolean(v);
+                if (!obj)
+                    return nullptr;
 
-                PyTuple_SetItem(pyobj_row, col_pos, cv);
+                PyTuple_SetItem(pyobj_row, col_pos, obj);
                 break;
             }
             case ixion::element_type_string:
             {
                 ixion::string_id_t sid = row_pos->get<ixion::string_element_block>();
                 const std::string* ps = data->m_sheet_range.get_string(sid);
+                PyObject* obj = create_cell_object_string(ps);
+                if (!obj)
+                    return nullptr;
 
-                if (ps)
-                {
-                    PyObject* cv = PyTuple_New(2);
-                    PyObject* ct = ct_string.get();
-                    Py_INCREF(ct);
-                    PyTuple_SetItem(cv, 0, ct);
-                    PyTuple_SetItem(cv, 1, PyUnicode_FromStringAndSize(ps->data(), ps->size()));
-
-                    PyTuple_SetItem(pyobj_row, col_pos, cv);
-                }
-                else
-                {
-                    // This should not be hit, but just in case...
-                    Py_INCREF(Py_None);
-                    PyTuple_SetItem(pyobj_row, col_pos, Py_None);
-                }
+                PyTuple_SetItem(pyobj_row, col_pos, obj);
                 break;
             }
             case ixion::element_type_numeric:

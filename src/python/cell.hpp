@@ -8,6 +8,7 @@
 #ifndef INCLUDED_ORCUS_PYTHON_CELL_HPP
 #define INCLUDED_ORCUS_PYTHON_CELL_HPP
 
+#include <string>
 #include <Python.h>
 
 namespace orcus { namespace python {
@@ -18,6 +19,10 @@ struct cell_data
     cell_data();
     ~cell_data();
 };
+
+PyObject* create_cell_object_empty();
+PyObject* create_cell_object_boolean(bool v);
+PyObject* create_cell_object_string(const std::string* p);
 
 PyTypeObject* get_cell_type();
 

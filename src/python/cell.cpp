@@ -26,6 +26,7 @@ struct pyobj_cell
     PyObject_HEAD
 
     PyObject* type;
+    PyObject* value;
 
     cell_data* m_data;
 };
@@ -35,6 +36,7 @@ void cell_dealloc(pyobj_cell* self)
     delete self->m_data;
 
     Py_CLEAR(self->type);
+    Py_CLEAR(self->value);
 
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
@@ -46,23 +48,49 @@ PyObject* cell_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
     return reinterpret_cast<PyObject*>(self);
 }
 
-int cell_init(pyobj_cell* self, PyObject* /*args*/, PyObject* /*kwargs*/)
+PyObject* create_celltype_enum(const char* value_name)
 {
     py_scoped_ref orcus_mod = PyImport_ImportModule("orcus");
     if (!orcus_mod)
     {
         PyErr_SetString(PyExc_RuntimeError, "failed to import orcus module.");
-        return -1;
+        return nullptr;
     }
 
     py_scoped_ref cls_celltype = PyObject_GetAttrString(orcus_mod.get(), "CellType");
     if (!cls_celltype)
     {
         PyErr_SetString(PyExc_RuntimeError, "failed to find class orcus.CellType.");
-        return -1;
+        return nullptr;
     }
 
-    self->type = PyObject_GetAttrString(cls_celltype.get(), "UNKNOWN");
+    return PyObject_GetAttrString(cls_celltype.get(), value_name);
+}
+
+PyObject* create_and_init_cell_object()
+{
+    PyTypeObject* cell_type = get_cell_type();
+    if (!cell_type)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to get the cell type object.");
+        return nullptr;
+    }
+
+    PyObject* obj = cell_type->tp_new(cell_type, nullptr, nullptr);
+    if (!obj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to instantiate a cell object.");
+        return nullptr;
+    }
+
+    cell_type->tp_init(obj, nullptr, nullptr);
+    return obj;
+}
+
+int cell_init(pyobj_cell* self, PyObject* /*args*/, PyObject* /*kwargs*/)
+{
+    Py_INCREF(Py_None);
+    self->value = Py_None;
 
     return 0;
 }
@@ -70,6 +98,7 @@ int cell_init(pyobj_cell* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 PyMemberDef cell_members[] =
 {
     { (char*)"type", T_OBJECT_EX, offsetof(pyobj_cell, type), READONLY, (char*)"cell type" },
+    { (char*)"value", T_OBJECT_EX, offsetof(pyobj_cell, value), READONLY, (char*)"cell value" },
     { nullptr }
 };
 
@@ -115,6 +144,61 @@ PyTypeObject cell_type =
     cell_new,                                 // tp_new
 };
 
+}
+
+PyObject* create_cell_object_empty()
+{
+    PyObject* obj = create_and_init_cell_object();
+    if (!obj)
+        return nullptr;
+
+    pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
+    obj_data->type = create_celltype_enum("EMPTY");
+
+    return obj;
+}
+
+PyObject* create_cell_object_boolean(bool v)
+{
+    PyObject* obj = create_and_init_cell_object();
+    if (!obj)
+        return nullptr;
+
+    pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
+    obj_data->type = create_celltype_enum("BOOLEAN");
+
+    if (v)
+    {
+        Py_INCREF(Py_True);
+        obj_data->value = Py_True;
+    }
+    else
+    {
+        Py_INCREF(Py_False);
+        obj_data->value = Py_False;
+    }
+
+    return obj;
+}
+
+PyObject* create_cell_object_string(const std::string* p)
+{
+    PyObject* obj = create_and_init_cell_object();
+    if (!obj)
+        return nullptr;
+
+    pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
+    obj_data->type = create_celltype_enum("STRING");
+
+    if (p)
+        obj_data->value = PyUnicode_FromStringAndSize(p->data(), p->size());
+    else
+    {
+        Py_INCREF(Py_None);
+        obj_data->value = Py_None;
+    }
+
+    return obj;
 }
 
 PyTypeObject* get_cell_type()
