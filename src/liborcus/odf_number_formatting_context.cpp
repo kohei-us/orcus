@@ -389,11 +389,10 @@ public:
 
 number_formatting_context::number_formatting_context(
     session_context& session_cxt, const tokens& tk, odf_styles_map_type& styles,
-    spreadsheet::iface::import_styles* iface_styles, number_formatting_style* number_format_style) :
+    spreadsheet::iface::import_styles* iface_styles) :
     xml_context_base(session_cxt, tk),
     mp_styles(iface_styles),
-    m_styles(styles),
-    m_current_style(number_format_style)
+    m_styles(styles)
 {}
 
 bool number_formatting_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
@@ -412,7 +411,7 @@ void number_formatting_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t
 
 void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
 {
-    m_current_style->character_stream.clear();
+    m_current_style.character_stream.clear();
     if (ns == NS_odf_number)
     {
         switch(name)
@@ -421,8 +420,8 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
             {
                 number_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->name = func.get_style_name();
-                m_current_style->is_volatile = func.is_volatile();
+                m_current_style.name = func.get_style_name();
+                m_current_style.is_volatile = func.is_volatile();
             }
             break;
             case XML_number:
@@ -433,14 +432,14 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                 {
                     if (func.get_min_int_digits() < 4)
                     {
-                        m_current_style->number_formatting_code += "#,";
+                        m_current_style.number_formatting_code += "#,";
                         for (size_t i = 0; i < 3 - func.get_min_int_digits(); i++)
                         {
-                            m_current_style->number_formatting_code += "#";
+                            m_current_style.number_formatting_code += "#";
                         }
                         for (size_t i = 0; i < func.get_min_int_digits(); i++)
                         {
-                            m_current_style->number_formatting_code += "0";
+                            m_current_style.number_formatting_code += "0";
                         }
                     }
                     else
@@ -453,24 +452,24 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                             temporary_code += "0";
                         }
                         std::reverse(temporary_code.begin(), temporary_code.end());
-                        m_current_style->number_formatting_code += temporary_code;
+                        m_current_style.number_formatting_code += temporary_code;
                     }
                 }
                 else
                 {
                     if (func.get_min_int_digits() == 0)
-                        m_current_style->number_formatting_code += "#";
+                        m_current_style.number_formatting_code += "#";
 
                     for (size_t i = 0; i < func.get_min_int_digits(); i++)
                     {
-                        m_current_style->number_formatting_code += "0";
+                        m_current_style.number_formatting_code += "0";
                     }
                 }
                 if (func.has_decimal_places())
                 {
-                    m_current_style->number_formatting_code += ".";
+                    m_current_style.number_formatting_code += ".";
                     for(size_t i = 0; i < func.get_decimal_places() ; i++)
-                        m_current_style->number_formatting_code += "0";
+                        m_current_style.number_formatting_code += "0";
                 }
             }
             break;
@@ -478,16 +477,16 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
             {
                 generic_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->name = func.get_style_name();
-                m_current_style->is_volatile = func.is_volatile();
+                m_current_style.name = func.get_style_name();
+                m_current_style.is_volatile = func.is_volatile();
             }
             break;
             case XML_percentage_style:
             {
                 generic_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->name = func.get_style_name();
-                m_current_style->is_volatile = func.is_volatile();
+                m_current_style.name = func.get_style_name();
+                m_current_style.is_volatile = func.is_volatile();
             }
             break;
             case XML_scientific_number:
@@ -499,14 +498,14 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                 {
                     if (func.get_min_int_digits() < 4)
                     {
-                        m_current_style->number_formatting_code += "#,";
+                        m_current_style.number_formatting_code += "#,";
                         for (size_t i = 0; i < 3 - func.get_min_int_digits(); i++)
                         {
-                            m_current_style->number_formatting_code += "#";
+                            m_current_style.number_formatting_code += "#";
                         }
                         for (size_t i = 0; i < func.get_min_int_digits(); i++)
                         {
-                            m_current_style->number_formatting_code += "0";
+                            m_current_style.number_formatting_code += "0";
                         }
                     }
                     else
@@ -519,40 +518,40 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                             temporary_code += "0";
                         }
                         std::reverse(temporary_code.begin(), temporary_code.end());
-                        m_current_style->number_formatting_code += temporary_code;
+                        m_current_style.number_formatting_code += temporary_code;
                     }
                 }
                 else
                 {
                     if (func.get_min_int_digits() == 0)
-                        m_current_style->number_formatting_code += "#";
+                        m_current_style.number_formatting_code += "#";
 
                     for (size_t i = 0; i < func.get_min_int_digits(); i++)
                     {
-                        m_current_style->number_formatting_code += "0";
+                        m_current_style.number_formatting_code += "0";
                     }
                 }
 
-                m_current_style->number_formatting_code += ".";
+                m_current_style.number_formatting_code += ".";
                 for(size_t i = 0; i < func.get_decimal_places() ; i++)
-                    m_current_style->number_formatting_code += "0";
+                    m_current_style.number_formatting_code += "0";
 
-                m_current_style->number_formatting_code += "E+";
+                m_current_style.number_formatting_code += "E+";
                 for(size_t i = 0; i < func.get_min_exp_digits() ; i++)
-                    m_current_style->number_formatting_code += "0";
+                    m_current_style.number_formatting_code += "0";
             }
             break;
             case XML_boolean_style:
             {
                 generic_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->name = func.get_style_name();
-                m_current_style->is_volatile = func.is_volatile();
+                m_current_style.name = func.get_style_name();
+                m_current_style.is_volatile = func.is_volatile();
             }
             break;
             case XML_boolean:
             {
-                m_current_style->number_formatting_code += "BOOLEAN";
+                m_current_style.number_formatting_code += "BOOLEAN";
             }
             break;
             case XML_fraction:
@@ -561,115 +560,115 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                 func = std::for_each(attrs.begin(), attrs.end(), func);
 
                 for (size_t i = 0; i < func.get_min_int_digits(); i++)
-                    m_current_style->number_formatting_code += "#";
+                    m_current_style.number_formatting_code += "#";
 
                 if (func.get_min_int_digits() != 0)
-                    m_current_style->number_formatting_code += " ";
+                    m_current_style.number_formatting_code += " ";
 
                 for (size_t i = 0; i < func.get_min_num_digits(); i++)
-                    m_current_style->number_formatting_code += "?";
+                    m_current_style.number_formatting_code += "?";
 
-                m_current_style->number_formatting_code += "/";
+                m_current_style.number_formatting_code += "/";
                 if (func.has_predefined_deno())
-                    m_current_style->number_formatting_code += func.get_deno_value();
+                    m_current_style.number_formatting_code += func.get_deno_value();
                 else
                     for(size_t i = 0; i < func.get_min_deno_digits(); i++)
-                        m_current_style->number_formatting_code += "?";
+                        m_current_style.number_formatting_code += "?";
             }
             break;
             case XML_date_style:
             {
                 generic_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->name = func.get_style_name();
-                m_current_style->is_volatile = func.is_volatile();
+                m_current_style.name = func.get_style_name();
+                m_current_style.is_volatile = func.is_volatile();
             }
             break;
             case XML_day:
             {
                 generic_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->number_formatting_code += "D";
+                m_current_style.number_formatting_code += "D";
                 if (func.has_long())
-                    m_current_style->number_formatting_code += "D";
+                    m_current_style.number_formatting_code += "D";
             }
             break;
             case XML_month:
             {
                 month_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->number_formatting_code += "M";
+                m_current_style.number_formatting_code += "M";
                 if (func.has_long())
-                    m_current_style->number_formatting_code += "M";
+                    m_current_style.number_formatting_code += "M";
                 if (func.is_textual())
-                    m_current_style->number_formatting_code += "M";
+                    m_current_style.number_formatting_code += "M";
                 if (func.has_long() && func.is_textual())
-                    m_current_style->number_formatting_code += "M";
+                    m_current_style.number_formatting_code += "M";
             }
             break;
             case XML_year:
             {
                 generic_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->number_formatting_code += "YY";
+                m_current_style.number_formatting_code += "YY";
                 if (func.has_long())
-                    m_current_style->number_formatting_code += "YY";
+                    m_current_style.number_formatting_code += "YY";
             }
             break;
             case XML_time_style:
             {
                 generic_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->name = func.get_style_name();
-                m_current_style->is_volatile = func.is_volatile();
+                m_current_style.name = func.get_style_name();
+                m_current_style.is_volatile = func.is_volatile();
             }
             break;
             case XML_hours:
             {
                 generic_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->number_formatting_code += "H";
+                m_current_style.number_formatting_code += "H";
                 if (func.has_long())
-                    m_current_style->number_formatting_code += "H";
+                    m_current_style.number_formatting_code += "H";
             }
             break;
             case XML_minutes:
             {
                 generic_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->number_formatting_code += "M";
+                m_current_style.number_formatting_code += "M";
                 if (func.has_long())
-                    m_current_style->number_formatting_code += "M";
+                    m_current_style.number_formatting_code += "M";
             }
             break;
             case XML_seconds:
             {
                 seconds_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->number_formatting_code += "S";
+                m_current_style.number_formatting_code += "S";
                 if (func.has_long())
-                    m_current_style->number_formatting_code += "S";
+                    m_current_style.number_formatting_code += "S";
                 if (func.has_decimal_places())
                     for (size_t i = 0; i < func.get_decimal_places(); i++)
-                        m_current_style->number_formatting_code += "S";
+                        m_current_style.number_formatting_code += "S";
             }
             break;
             case XML_am_pm:
             {
-                m_current_style->number_formatting_code += " AM/PM";
+                m_current_style.number_formatting_code += " AM/PM";
             }
             break;
             case XML_text_style:
             {
                 generic_style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style->name = func.get_style_name();
-                m_current_style->is_volatile = func.is_volatile();
+                m_current_style.name = func.get_style_name();
+                m_current_style.is_volatile = func.is_volatile();
             }
             break;
             case XML_text_content:
             {
-                m_current_style->number_formatting_code += "@";
+                m_current_style.number_formatting_code += "@";
             }
             break;
             default:
@@ -685,7 +684,7 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                 text_properties_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
                 if (func.has_color())
-                    m_current_style->number_formatting_code = m_current_style->number_formatting_code + "[" + func.get_color() + "]";
+                    m_current_style.number_formatting_code = m_current_style.number_formatting_code + "[" + func.get_color() + "]";
             }
             break;
             case XML_map:
@@ -694,8 +693,8 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                 func = std::for_each(attrs.begin(), attrs.end(), func);
                 if (func.has_map())
                 {
-                    m_current_style->number_formatting_code = "[" + func.get_sign() + func.get_value() + "]"
-                        + m_current_style->number_formatting_code;
+                    m_current_style.number_formatting_code = "[" + func.get_sign() + func.get_value() + "]"
+                        + m_current_style.number_formatting_code;
                 }
             }
             break;
@@ -707,36 +706,36 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
 
 bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
-    pstring character_content = m_current_style->character_stream;
+    pstring character_content = m_current_style.character_stream;
     if (ns == NS_odf_number)
     {
         if (name == XML_number_style || name == XML_currency_style || name == XML_percentage_style
                 || name == XML_text_style || name == XML_boolean_style || name == XML_date_style
                 || name == XML_time_style)
         {
-            if (m_current_style->is_volatile)
+            if (m_current_style.is_volatile)
             {
-                m_current_style->number_formatting_code += ";";
+                m_current_style.number_formatting_code += ";";
             }
             else
             {
-                mp_styles->set_number_format_code(m_current_style->number_formatting_code.c_str(),
-                        m_current_style->number_formatting_code.size());
+                mp_styles->set_number_format_code(m_current_style.number_formatting_code.c_str(),
+                        m_current_style.number_formatting_code.size());
                 mp_styles->set_xf_number_format(mp_styles->commit_number_format());
 
-                mp_styles->set_cell_style_name( m_current_style->name.get(), m_current_style->name.size());
+                mp_styles->set_cell_style_name( m_current_style.name.get(), m_current_style.name.size());
                 mp_styles->set_cell_style_xf(mp_styles->commit_cell_style_xf());
                 mp_styles->commit_cell_style();
                 return true;
             }
         }
         else if (name == XML_currency_symbol)
-            m_current_style->number_formatting_code = m_current_style->number_formatting_code + "[$"
+            m_current_style.number_formatting_code = m_current_style.number_formatting_code + "[$"
                 + character_content + "]";
 
         else if (name == XML_text)
         {
-            m_current_style->number_formatting_code += character_content;
+            m_current_style.number_formatting_code += character_content;
         }
     }
     return false;
@@ -748,9 +747,9 @@ void number_formatting_context::characters(const pstring& str, bool transient)
     if (str != "\n")
     {
         if (transient)
-            m_current_style->character_stream = m_pool.intern(str).first;
+            m_current_style.character_stream = m_pool.intern(str).first;
         else
-            m_current_style->character_stream = str;
+            m_current_style.character_stream = str;
     }
 }
 

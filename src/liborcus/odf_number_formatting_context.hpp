@@ -29,7 +29,7 @@ class number_formatting_context : public xml_context_base
 {
 public:
     number_formatting_context(
-        session_context& session_cxt, const tokens& tk, odf_styles_map_type& styles, spreadsheet::iface::import_styles* iface_styles, number_formatting_style*);
+        session_context& session_cxt, const tokens& tk, odf_styles_map_type& styles, spreadsheet::iface::import_styles* iface_styles);
 
     virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
@@ -42,7 +42,7 @@ private:
 
     spreadsheet::iface::import_styles* mp_styles;
     odf_styles_map_type& m_styles;
-    number_formatting_style* m_current_style;
+    number_formatting_style m_current_style;
 
     string_pool m_pool;
 };
