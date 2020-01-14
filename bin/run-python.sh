@@ -10,6 +10,9 @@ RUNMODE=
 if [ "$1" == "gdb" ]; then
     RUNMODE=gdb
     shift
+elif [ "$1" == "valgrind" ]; then
+    RUNMODE=valgrind
+    shift
 fi
 
 if [ ! -e "$1" ]; then
@@ -31,6 +34,9 @@ shift
 case $RUNMODE in
     gdb)
     gdb --args $PYTHON "$PWD/$EXEC" "$@"
+        ;;
+    valgrind)
+    valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes $PYTHON "$PWD/$EXEC" "$@"
         ;;
     *)
         exec "$PWD/$EXEC" "$@"
