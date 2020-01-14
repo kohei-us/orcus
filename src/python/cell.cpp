@@ -6,6 +6,10 @@
  */
 
 #include "cell.hpp"
+#include "memory.hpp"
+
+#include <structmember.h>
+#include <string>
 
 namespace orcus { namespace python {
 
@@ -21,12 +25,16 @@ struct pyobj_cell
 {
     PyObject_HEAD
 
+    PyObject* type;
+
     cell_data* m_data;
 };
 
 void cell_dealloc(pyobj_cell* self)
 {
     delete self->m_data;
+
+    Py_CLEAR(self->type);
 
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
@@ -40,8 +48,30 @@ PyObject* cell_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 
 int cell_init(pyobj_cell* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
+    py_scoped_ref orcus_mod = PyImport_ImportModule("orcus");
+    if (!orcus_mod)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "failed to import orcus module.");
+        return -1;
+    }
+
+    py_scoped_ref cls_celltype = PyObject_GetAttrString(orcus_mod.get(), "CellType");
+    if (!cls_celltype)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "failed to find class orcus.CellType.");
+        return -1;
+    }
+
+    self->type = PyObject_GetAttrString(cls_celltype.get(), "UNKNOWN");
+
     return 0;
 }
+
+PyMemberDef cell_members[] =
+{
+    { (char*)"type", T_OBJECT_EX, offsetof(pyobj_cell, type), READONLY, (char*)"cell type" },
+    { nullptr }
+};
 
 PyTypeObject cell_type =
 {
@@ -73,7 +103,7 @@ PyTypeObject cell_type =
     0,		                                  // tp_iter
     0,                                        // tp_iternext
     0,                                        // tp_methods
-    0,                                        // tp_members
+    cell_members,                             // tp_members
     0,                                        // tp_getset
     0,                                        // tp_base
     0,                                        // tp_dict
