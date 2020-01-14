@@ -93,6 +93,22 @@ int orcus_clear(PyObject* m)
     return 0;
 }
 
+bool add_type_to_module(PyObject* m, PyTypeObject* typeobj, const char* type_name)
+{
+    if (PyType_Ready(typeobj))
+        return false;
+
+    Py_INCREF(typeobj);
+    if (PyModule_AddObject(m, type_name, reinterpret_cast<PyObject*>(typeobj)) < 0)
+    {
+        Py_DECREF(m);
+        Py_DECREF(typeobj);
+        return false;
+    }
+
+    return true;
+}
+
 }
 
 struct PyModuleDef moduledef =
@@ -117,53 +133,17 @@ ORCUS_DLLPUBLIC PyObject* PyInit__orcus()
     PyObject* m = PyModule_Create(&orcus::python::moduledef);
 
 #ifdef __ORCUS_SPREADSHEET_MODEL
-    PyTypeObject* doc_type = orcus::python::get_document_type();
-    if (!PyType_Ready(doc_type))
-    {
-        Py_INCREF(doc_type);
-        if (PyModule_AddObject(m, "Document", reinterpret_cast<PyObject*>(doc_type)) < 0)
-        {
-            Py_DECREF(m);
-            Py_DECREF(doc_type);
-            return nullptr;
-        }
-    }
+    if (!orcus::python::add_type_to_module(m, orcus::python::get_document_type(), "Document"))
+        return nullptr;
 
-    PyTypeObject* sheet_type = orcus::python::get_sheet_type();
-    if (!PyType_Ready(sheet_type))
-    {
-        Py_INCREF(sheet_type);
-        if (PyModule_AddObject(m, "Sheet", reinterpret_cast<PyObject*>(sheet_type)) < 0)
-        {
-            Py_DECREF(m);
-            Py_DECREF(sheet_type);
-            return nullptr;
-        }
-    }
+    if (!orcus::python::add_type_to_module(m, orcus::python::get_sheet_type(), "Sheet"))
+        return nullptr;
 
-    PyTypeObject* sheet_rows_type = orcus::python::get_sheet_rows_type();
-    if (!PyType_Ready(sheet_rows_type))
-    {
-        Py_INCREF(sheet_rows_type);
-        if (PyModule_AddObject(m, "SheetRows", reinterpret_cast<PyObject*>(sheet_rows_type)) < 0)
-        {
-            Py_DECREF(m);
-            Py_DECREF(sheet_rows_type);
-            return nullptr;
-        }
-    }
+    if (!orcus::python::add_type_to_module(m, orcus::python::get_sheet_rows_type(), "SheetRows"))
+        return nullptr;
 
-    PyTypeObject* cell_type = orcus::python::get_cell_type();
-    if (!PyType_Ready(cell_type))
-    {
-        Py_INCREF(cell_type);
-        if (PyModule_AddObject(m, "Cell", reinterpret_cast<PyObject*>(cell_type)) < 0)
-        {
-            Py_DECREF(m);
-            Py_DECREF(cell_type);
-            return nullptr;
-        }
-    }
+    if (!orcus::python::add_type_to_module(m, orcus::python::get_cell_type(), "Cell"))
+        return nullptr;
 
 #endif
 
