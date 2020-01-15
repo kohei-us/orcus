@@ -39,22 +39,13 @@ struct pyobj_cell
     cell_data* m_data;
 };
 
-void cell_dealloc(pyobj_cell* self)
+void initialize_cell_members(pyobj_cell* self)
 {
-    delete self->m_data;
+    Py_INCREF(Py_None);
+    self->value = Py_None;
 
-    Py_CLEAR(self->type);
-    Py_CLEAR(self->value);
-    Py_CLEAR(self->formula);
-
-    Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
-}
-
-PyObject* cell_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
-{
-    pyobj_cell* self = (pyobj_cell*)type->tp_alloc(type, 0);
-    self->m_data = new cell_data;
-    return reinterpret_cast<PyObject*>(self);
+    Py_INCREF(Py_None);
+    self->formula = Py_None;
 }
 
 PyObject* create_celltype_enum(const char* value_name)
@@ -76,7 +67,7 @@ PyObject* create_celltype_enum(const char* value_name)
     return PyObject_GetAttrString(cls_celltype.get(), value_name);
 }
 
-PyObject* create_and_init_cell_object()
+PyObject* create_and_init_cell_object(const char* type_name)
 {
     PyTypeObject* cell_type = get_cell_type();
     if (!cell_type)
@@ -92,18 +83,43 @@ PyObject* create_and_init_cell_object()
         return nullptr;
     }
 
-    cell_type->tp_init(obj, nullptr, nullptr);
+    pyobj_cell* self = reinterpret_cast<pyobj_cell*>(obj);
+    self->type = create_celltype_enum(type_name);
+    initialize_cell_members(self);
+
     return obj;
 }
 
-int cell_init(pyobj_cell* self, PyObject* /*args*/, PyObject* /*kwargs*/)
+void cell_dealloc(pyobj_cell* self)
 {
-    Py_INCREF(Py_None);
-    self->value = Py_None;
+    delete self->m_data;
 
-    Py_INCREF(Py_None);
-    self->formula = Py_None;
+    Py_CLEAR(self->type);
+    Py_CLEAR(self->value);
+    Py_CLEAR(self->formula);
 
+    Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
+}
+
+PyObject* cell_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
+{
+    pyobj_cell* self = (pyobj_cell*)type->tp_alloc(type, 0);
+    self->m_data = new cell_data;
+    return reinterpret_cast<PyObject*>(self);
+}
+
+int cell_init(pyobj_cell* self, PyObject* args, PyObject* kwargs)
+{
+    static const char* kwlist[] = { "type", nullptr };
+
+    self->type = nullptr;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|O", const_cast<char**>(kwlist), &self->type))
+        return -1;
+
+    if (!self->type)
+        self->type = create_celltype_enum("UNKNOWN");
+
+    initialize_cell_members(self);
     return 0;
 }
 
@@ -157,28 +173,24 @@ PyTypeObject cell_type =
     cell_new,                                 // tp_new
 };
 
-}
+} // anonymous namespace
 
 PyObject* create_cell_object_empty()
 {
-    PyObject* obj = create_and_init_cell_object();
+    PyObject* obj = create_and_init_cell_object("EMPTY");
     if (!obj)
         return nullptr;
-
-    pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
-    obj_data->type = create_celltype_enum("EMPTY");
 
     return obj;
 }
 
 PyObject* create_cell_object_boolean(bool v)
 {
-    PyObject* obj = create_and_init_cell_object();
+    PyObject* obj = create_and_init_cell_object("BOOLEAN");
     if (!obj)
         return nullptr;
 
     pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
-    obj_data->type = create_celltype_enum("BOOLEAN");
 
     if (v)
     {
@@ -196,12 +208,11 @@ PyObject* create_cell_object_boolean(bool v)
 
 PyObject* create_cell_object_string(const std::string* p)
 {
-    PyObject* obj = create_and_init_cell_object();
+    PyObject* obj = create_and_init_cell_object("STRING");
     if (!obj)
         return nullptr;
 
     pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
-    obj_data->type = create_celltype_enum("STRING");
 
     if (p)
         obj_data->value = PyUnicode_FromStringAndSize(p->data(), p->size());
@@ -216,12 +227,11 @@ PyObject* create_cell_object_string(const std::string* p)
 
 PyObject* create_cell_object_numeric(double v)
 {
-    PyObject* obj = create_and_init_cell_object();
+    PyObject* obj = create_and_init_cell_object("NUMERIC");
     if (!obj)
         return nullptr;
 
     pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
-    obj_data->type = create_celltype_enum("NUMERIC");
     obj_data->value = PyFloat_FromDouble(v);
 
     return obj;
@@ -236,12 +246,11 @@ PyObject* create_cell_object_formula(
         return nullptr;
     }
 
-    PyObject* obj = create_and_init_cell_object();
+    PyObject* obj = create_and_init_cell_object("FORMULA");
     if (!obj)
         return nullptr;
 
     pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
-    obj_data->type = create_celltype_enum("FORMULA");
 
     const ixion::formula_tokens_t& tokens = fc->get_tokens()->get();
 
