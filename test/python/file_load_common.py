@@ -157,6 +157,24 @@ class ExpectedDocument(object):
         self.sheets[-1].insert_cell(pos.row, pos.column, cell_type, cell_value, result)
 
 
+def _compare_cells(expected, actual):
+    type = expected[0]
+
+    if type != actual.type:
+        return False
+
+    if type == orcus.CellType.EMPTY:
+        return True
+
+    if type in (orcus.CellType.BOOLEAN, orcus.CellType.NUMERIC, orcus.CellType.STRING):
+        return expected[1] == actual.value
+
+    if type == orcus.CellType.FORMULA:
+        return expected[1] == actual.value and expected[2] == actual.formula
+
+    return False
+
+
 def run_test_dir(self, test_dir, mod_loader):
     """Run test case for loading a file into a document.
 
@@ -197,7 +215,8 @@ def run_test_dir(self, test_dir, mod_loader):
             expected_sheet = expected_sheets[sheet_name]
             self.assertEqual(expected_sheet.data_size, actual_sheet.data_size)
             for expected_row, actual_row in zip(expected_sheet.get_rows(), actual_sheet.get_rows()):
-                self.assertEqual(expected_row, actual_row)
+                for expected, actual in zip(expected_row, actual_row):
+                    self.assertTrue(_compare_cells(expected, actual))
         else:
             # This sheet must be empty since it's not in the expected document.
             # Make sure it returns empty row set.
