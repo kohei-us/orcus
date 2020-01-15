@@ -7,6 +7,7 @@
 
 #include "cell.hpp"
 #include "memory.hpp"
+#include "global.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
 #include <ixion/cell.hpp>
@@ -48,25 +49,6 @@ void initialize_cell_members(pyobj_cell* self)
     self->formula = Py_None;
 }
 
-PyObject* create_celltype_enum(const char* value_name)
-{
-    py_scoped_ref orcus_mod = PyImport_ImportModule("orcus");
-    if (!orcus_mod)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "failed to import orcus module.");
-        return nullptr;
-    }
-
-    py_scoped_ref cls_celltype = PyObject_GetAttrString(orcus_mod.get(), "CellType");
-    if (!cls_celltype)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "failed to find class orcus.CellType.");
-        return nullptr;
-    }
-
-    return PyObject_GetAttrString(cls_celltype.get(), value_name);
-}
-
 PyObject* create_and_init_cell_object(const char* type_name)
 {
     PyTypeObject* cell_type = get_cell_type();
@@ -84,7 +66,7 @@ PyObject* create_and_init_cell_object(const char* type_name)
     }
 
     pyobj_cell* self = reinterpret_cast<pyobj_cell*>(obj);
-    self->type = create_celltype_enum(type_name);
+    self->type = get_python_enum_value("CellType", type_name);
     initialize_cell_members(self);
 
     return obj;
@@ -117,7 +99,7 @@ int cell_init(pyobj_cell* self, PyObject* args, PyObject* kwargs)
         return -1;
 
     if (!self->type)
-        self->type = create_celltype_enum("UNKNOWN");
+        self->type = get_python_enum_value("CellType", "UNKNOWN");
 
     initialize_cell_members(self);
     return 0;
