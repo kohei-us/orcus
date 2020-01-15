@@ -144,13 +144,12 @@ PyObject* sheet_rows_iternext(PyObject* self)
             }
             case ixion::element_type_numeric:
             {
-                PyObject* cv = PyTuple_New(2);
-                PyObject* ct = ct_numeric.get();
-                Py_INCREF(ct);
-                PyTuple_SetItem(cv, 0, ct);
-                PyTuple_SetItem(cv, 1, PyFloat_FromDouble(row_pos->get<ixion::numeric_element_block>()));
+                double v = row_pos->get<ixion::numeric_element_block>();
+                PyObject* obj = create_cell_object_numeric(v);
+                if (!obj)
+                    return nullptr;
 
-                PyTuple_SetItem(pyobj_row, col_pos, cv);
+                PyTuple_SetItem(pyobj_row, col_pos, obj);
                 break;
             }
             case ixion::element_type_formula:

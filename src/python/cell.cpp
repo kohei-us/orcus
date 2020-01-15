@@ -201,6 +201,19 @@ PyObject* create_cell_object_string(const std::string* p)
     return obj;
 }
 
+PyObject* create_cell_object_numeric(double v)
+{
+    PyObject* obj = create_and_init_cell_object();
+    if (!obj)
+        return nullptr;
+
+    pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
+    obj_data->type = create_celltype_enum("NUMERIC");
+    obj_data->value = PyFloat_FromDouble(v);
+
+    return obj;
+}
+
 PyTypeObject* get_cell_type()
 {
     return &cell_type;
