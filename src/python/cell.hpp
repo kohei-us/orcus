@@ -11,7 +11,22 @@
 #include <string>
 #include <Python.h>
 
-namespace orcus { namespace python {
+namespace ixion {
+
+class formula_cell;
+struct abs_address_t;
+
+}
+
+namespace orcus {
+
+namespace spreadsheet {
+
+class document;
+
+}
+
+namespace python {
 
 /** non-python part. */
 struct cell_data
@@ -24,6 +39,8 @@ PyObject* create_cell_object_empty();
 PyObject* create_cell_object_boolean(bool v);
 PyObject* create_cell_object_string(const std::string* p);
 PyObject* create_cell_object_numeric(double v);
+PyObject* create_cell_object_formula(
+    const spreadsheet::document& doc, const ixion::abs_address_t& pos, const ixion::formula_cell* fc);
 
 PyTypeObject* get_cell_type();
 

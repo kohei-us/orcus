@@ -11,12 +11,6 @@
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
-#include <ixion/cell.hpp>
-#include <ixion/formula_result.hpp>
-#include <ixion/formula.hpp>
-#include <ixion/formula_name_resolver.hpp>
-#include <ixion/model_context.hpp>
-
 namespace orcus { namespace python {
 
 sheet_rows_data::sheet_rows_data() :
@@ -74,7 +68,6 @@ PyObject* sheet_rows_iternext(PyObject* self)
     sheet_rows_data* data = reinterpret_cast<pyobj_sheet_rows*>(self)->m_data;
     spreadsheet::sheet_range::const_row_iterator& row_pos = data->m_row_pos;
     const spreadsheet::sheet_range::const_row_iterator& row_end = data->m_row_end;
-    const ixion::model_context& cxt = data->m_doc->get_model_context();
 
     if (row_pos == row_end)
     {
@@ -97,126 +90,55 @@ PyObject* sheet_rows_iternext(PyObject* self)
         return nullptr;
     }
 
-    py_scoped_ref ct_empty = PyObject_GetAttrString(cls_celltype.get(), "EMPTY");
-    py_scoped_ref ct_boolean = PyObject_GetAttrString(cls_celltype.get(), "BOOLEAN");
-    py_scoped_ref ct_numeric = PyObject_GetAttrString(cls_celltype.get(), "NUMERIC");
-    py_scoped_ref ct_string = PyObject_GetAttrString(cls_celltype.get(), "STRING");
-    py_scoped_ref ct_formula = PyObject_GetAttrString(cls_celltype.get(), "FORMULA");
-
     size_t row_position = row_pos->position;
     PyObject* pyobj_row = PyTuple_New(data->m_range.last.column+1);
 
     for (; row_pos != row_end && row_position == row_pos->position; ++row_pos)
     {
         size_t col_pos = row_pos->index;
+        PyObject* obj = nullptr;
 
         switch (row_pos->type)
         {
             case ixion::element_type_empty:
             {
-                PyObject* obj = create_cell_object_empty();
-                if (!obj)
-                    return nullptr;
-
-                PyTuple_SetItem(pyobj_row, col_pos, obj);
+                obj = create_cell_object_empty();
                 break;
             }
             case ixion::element_type_boolean:
             {
                 bool v = row_pos->get<ixion::boolean_element_block>();
-                PyObject* obj = create_cell_object_boolean(v);
-                if (!obj)
-                    return nullptr;
-
-                PyTuple_SetItem(pyobj_row, col_pos, obj);
+                obj = create_cell_object_boolean(v);
                 break;
             }
             case ixion::element_type_string:
             {
                 ixion::string_id_t sid = row_pos->get<ixion::string_element_block>();
                 const std::string* ps = data->m_sheet_range.get_string(sid);
-                PyObject* obj = create_cell_object_string(ps);
-                if (!obj)
-                    return nullptr;
-
-                PyTuple_SetItem(pyobj_row, col_pos, obj);
+                obj = create_cell_object_string(ps);
                 break;
             }
             case ixion::element_type_numeric:
             {
                 double v = row_pos->get<ixion::numeric_element_block>();
-                PyObject* obj = create_cell_object_numeric(v);
-                if (!obj)
-                    return nullptr;
-
-                PyTuple_SetItem(pyobj_row, col_pos, obj);
+                obj = create_cell_object_numeric(v);
                 break;
             }
             case ixion::element_type_formula:
             {
-                PyObject* cv = PyTuple_New(3);
-                PyObject* ct = ct_formula.get();
-                Py_INCREF(ct);
-                PyTuple_SetItem(cv, 0, ct);
-
                 const ixion::formula_cell* fc = row_pos->get<ixion::formula_element_block>();
-                const ixion::formula_tokens_t& tokens = fc->get_tokens()->get();
                 ixion::abs_address_t pos(data->m_sheet->get_index(), row_pos->position, col_pos);
-
-                auto* resolver = data->m_doc->get_formula_name_resolver();
-                std::string formula_s = ixion::print_formula_tokens(cxt, pos, *resolver, tokens);
-                PyTuple_SetItem(cv, 2, PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size()));
-
-                ixion::formula_result res = fc->get_result_cache();
-                switch (res.get_type())
-                {
-                    case ixion::formula_result::result_type::value:
-                    {
-                        PyTuple_SetItem(cv, 1, PyFloat_FromDouble(res.get_value()));
-                        break;
-                    }
-                    case ixion::formula_result::result_type::string:
-                    {
-                        ixion::string_id_t sid = res.get_string();
-                        const std::string* ps = data->m_sheet_range.get_string(sid);
-                        if (ps)
-                            PyTuple_SetItem(cv, 1, PyUnicode_FromStringAndSize(ps->data(), ps->size()));
-                        else
-                        {
-                            // This should not be hit, but just in case...
-                            Py_INCREF(Py_None);
-                            PyTuple_SetItem(cv, 1, Py_None);
-                        }
-                        break;
-                    }
-                    case ixion::formula_result::result_type::error:
-                    {
-                        ixion::formula_error_t fe = res.get_error();
-                        const char* fename = ixion::get_formula_error_name(fe);
-                        if (fename)
-                            PyTuple_SetItem(cv, 1, PyUnicode_FromString(fename));
-                        else
-                        {
-                            // This should not be hit, but just in case...
-                            Py_INCREF(Py_None);
-                            PyTuple_SetItem(cv, 1, Py_None);
-                        }
-                        break;
-                    }
-                    default:
-                    {
-                        // This should not be hit, but just in case...
-                        Py_INCREF(Py_None);
-                        PyTuple_SetItem(cv, 1, Py_None);
-                    }
-                }
-
-                PyTuple_SetItem(pyobj_row, col_pos, cv);
+                obj = create_cell_object_formula(*data->m_doc, pos, fc);
                 break;
             }
             default:
                 ;
         }
+
+        if (!obj)
+            return nullptr;
+
+        PyTuple_SetItem(pyobj_row, col_pos, obj);
     }
 
     return pyobj_row;

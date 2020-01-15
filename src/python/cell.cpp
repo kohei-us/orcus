@@ -7,6 +7,13 @@
 
 #include "cell.hpp"
 #include "memory.hpp"
+#include "orcus/spreadsheet/document.hpp"
+
+#include <ixion/cell.hpp>
+#include <ixion/formula_result.hpp>
+#include <ixion/formula.hpp>
+#include <ixion/formula_name_resolver.hpp>
+#include <ixion/model_context.hpp>
 
 #include <structmember.h>
 #include <string>
@@ -27,6 +34,7 @@ struct pyobj_cell
 
     PyObject* type;
     PyObject* value;
+    PyObject* formula;
 
     cell_data* m_data;
 };
@@ -37,6 +45,7 @@ void cell_dealloc(pyobj_cell* self)
 
     Py_CLEAR(self->type);
     Py_CLEAR(self->value);
+    Py_CLEAR(self->formula);
 
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
@@ -92,6 +101,9 @@ int cell_init(pyobj_cell* self, PyObject* /*args*/, PyObject* /*kwargs*/)
     Py_INCREF(Py_None);
     self->value = Py_None;
 
+    Py_INCREF(Py_None);
+    self->formula = Py_None;
+
     return 0;
 }
 
@@ -99,6 +111,7 @@ PyMemberDef cell_members[] =
 {
     { (char*)"type", T_OBJECT_EX, offsetof(pyobj_cell, type), READONLY, (char*)"cell type" },
     { (char*)"value", T_OBJECT_EX, offsetof(pyobj_cell, value), READONLY, (char*)"cell value" },
+    { (char*)"formula", T_OBJECT_EX, offsetof(pyobj_cell, formula), READONLY, (char*)"formula string" },
     { nullptr }
 };
 
@@ -210,6 +223,76 @@ PyObject* create_cell_object_numeric(double v)
     pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
     obj_data->type = create_celltype_enum("NUMERIC");
     obj_data->value = PyFloat_FromDouble(v);
+
+    return obj;
+}
+
+PyObject* create_cell_object_formula(
+    const spreadsheet::document& doc, const ixion::abs_address_t& pos, const ixion::formula_cell* fc)
+{
+    if (!fc)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "failed to find class orcus.CellType.");
+        return nullptr;
+    }
+
+    PyObject* obj = create_and_init_cell_object();
+    if (!obj)
+        return nullptr;
+
+    pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
+    obj_data->type = create_celltype_enum("FORMULA");
+
+    const ixion::formula_tokens_t& tokens = fc->get_tokens()->get();
+
+    const ixion::model_context& cxt = doc.get_model_context();
+    auto* resolver = doc.get_formula_name_resolver();
+    std::string formula_s = ixion::print_formula_tokens(cxt, pos, *resolver, tokens);
+    obj_data->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
+
+    ixion::formula_result res = fc->get_result_cache();
+    switch (res.get_type())
+    {
+        case ixion::formula_result::result_type::value:
+        {
+            obj_data->value = PyFloat_FromDouble(res.get_value());
+            break;
+        }
+        case ixion::formula_result::result_type::string:
+        {
+            ixion::string_id_t sid = res.get_string();
+            const std::string* ps = cxt.get_string(sid);
+            if (ps)
+                obj_data->value = PyUnicode_FromStringAndSize(ps->data(), ps->size());
+            else
+            {
+                // This should not be hit, but just in case...
+                Py_INCREF(Py_None);
+                obj_data->value = Py_None;
+            }
+            break;
+        }
+        case ixion::formula_result::result_type::error:
+        {
+            ixion::formula_error_t fe = res.get_error();
+            const char* fename = ixion::get_formula_error_name(fe);
+            if (fename)
+                obj_data->value = PyUnicode_FromString(fename);
+            else
+            {
+                // This should not be hit, but just in case...
+                Py_INCREF(Py_None);
+                obj_data->value = Py_None;
+            }
+            break;
+        }
+        default:
+        {
+            // This should not be hit, but just in case...
+            Py_INCREF(Py_None);
+            obj_data->value = Py_None;
+        }
+    }
 
     return obj;
 }
