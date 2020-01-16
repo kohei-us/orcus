@@ -74,12 +74,14 @@
     </Config>
     <Files AutoFolders="DirectoryView">
         <Folder Name="../misc">
-            <F N="../misc/dump-xsd-keys.py"/>
-            <F N="../misc/gen-gnumeric-tokens.py"/>
-            <F N="../misc/gen-odf-tokens.py"/>
-            <F N="../misc/gen-ooxml-tokens.py"/>
-            <F N="../misc/gen-tokens.py"/>
-            <F N="../misc/token_util.py"/>
+            <Folder Name="xml-tokens">
+                <F N="../misc/xml-tokens/dump-xsd-keys.py"/>
+                <F N="../misc/xml-tokens/gen-gnumeric-tokens.py"/>
+                <F N="../misc/xml-tokens/gen-odf-tokens.py"/>
+                <F N="../misc/xml-tokens/gen-ooxml-tokens.py"/>
+                <F N="../misc/xml-tokens/gen-tokens.py"/>
+                <F N="../misc/xml-tokens/token_util.py"/>
+            </Folder>
         </Folder>
     </Files>
 </Project>
