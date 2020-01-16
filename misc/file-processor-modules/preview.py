@@ -9,7 +9,7 @@
 import orcus
 
 
-def process_document(filepath, doc):
+def process_document(config, filepath, doc):
     buf = list()
     for sh in doc.sheets:
         try:

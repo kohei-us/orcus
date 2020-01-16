@@ -22,6 +22,23 @@ import orcus
 FILEEXT_GOOD = "orcus-pf.good"
 FILEEXT_BAD = "orcus-pf.bad"
 FILEEXT_OUT = "orcus-pf.out"
+FILEPREFIX_SKIP = ".orcus-pf.skip."
+
+
+class _Config:
+    ext_good = FILEEXT_GOOD
+    ext_bad = FILEEXT_BAD
+    ext_out = FILEEXT_OUT
+    prefix_skip = FILEPREFIX_SKIP
+
+config = _Config()
+
+
+def is_special_file(filename):
+    if filename.startswith(FILEPREFIX_SKIP):
+        return True
+
+    return filename.endswith(FILEEXT_OUT) or filename.endswith(FILEEXT_GOOD) or filename.endswith(FILEEXT_BAD)
 
 
 def sanitize_string(s):
@@ -91,7 +108,7 @@ def print_results(inpath):
 def remove_result_files(rootdir):
     for root, dir, files in os.walk(rootdir):
         for filename in files:
-            if filename.endswith(FILEEXT_OUT) or filename.endswith(FILEEXT_GOOD) or filename.endswith(FILEEXT_BAD):
+            if is_special_file(filename):
                 filepath = os.path.join(root, filename)
                 os.remove(filepath)
 
@@ -100,7 +117,7 @@ def show_result_stats(rootdir):
     counts = dict(good=0, bad=0, skipped=0, unprocessed=0)
     for root, dir, files in os.walk(rootdir):
         for filename in files:
-            if filename.endswith(FILEEXT_OUT) or filename.endswith(FILEEXT_GOOD) or filename.endswith(FILEEXT_BAD):
+            if is_special_file(filename):
                 continue
 
             inpath = os.path.join(root, filename)
@@ -130,7 +147,7 @@ def show_result_stats(rootdir):
 def show_results(rootdir, good, bad):
     for root, dir, files in os.walk(rootdir):
         for filename in files:
-            if filename.endswith(FILEEXT_OUT) or filename.endswith(FILEEXT_GOOD) or filename.endswith(FILEEXT_BAD):
+            if is_special_file(filename):
                 continue
             inpath = os.path.join(root, filename)
             good_filepath = f"{inpath}.{FILEEXT_GOOD}"
@@ -199,7 +216,7 @@ def main():
     file_count = 0
     for root, dir, files in os.walk(args.rootdir):
         for filename in files:
-            if filename.endswith(FILEEXT_OUT) or filename.endswith(FILEEXT_GOOD) or filename.endswith(FILEEXT_BAD):
+            if is_special_file(filename):
                 continue
 
             inpath = os.path.join(root, filename)
@@ -222,7 +239,7 @@ def main():
             doc, status, output = load_doc(bytes)
             buf.extend(output)
             if doc and mod:
-                buf.extend(mod.process_document(inpath, doc))
+                buf.extend(mod.process_document(config, inpath, doc))
 
             with open(outpath, "w") as f:
                 f.write("\n".join(buf))
