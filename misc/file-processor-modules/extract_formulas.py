@@ -72,11 +72,13 @@ def dump_json_as_xml(data, stream):
         elem_doc = ET.SubElement(root, "doc")
         elem_doc.attrib["filepath"] = doc["filepath"]
         elem_sheets = ET.SubElement(elem_doc, "sheets")
+        elem_sheets.attrib["count"] = str(len(doc["sheets"]))
         for sheet in doc["sheets"]:
             elem = ET.SubElement(elem_sheets, "sheet")
             elem.attrib["name"] = sheet
 
         elem_formulas = ET.SubElement(elem_doc, "formulas")
+        elem_formulas.attrib["count"] = str(len(doc["formulas"]))
         for formula_cell in doc["formulas"]:
             elem = ET.SubElement(elem_formulas, "formula")
             elem.attrib["sheet"] = formula_cell["sheet"]
