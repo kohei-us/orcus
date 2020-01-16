@@ -7,9 +7,10 @@
 ########################################################################
 
 import orcus
+from common import config
 
 
-def process_document(config, filepath, doc):
+def process_document(filepath, doc):
     buf = list()
     for sh in doc.sheets:
         try:

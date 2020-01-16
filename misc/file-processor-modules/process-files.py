@@ -16,29 +16,16 @@ import pathlib
 import enum
 import importlib.util
 
+from common import config
+
 import orcus
 
 
-FILEEXT_GOOD = "orcus-pf.good"
-FILEEXT_BAD = "orcus-pf.bad"
-FILEEXT_OUT = "orcus-pf.out"
-FILEPREFIX_SKIP = ".orcus-pf.skip."
-
-
-class _Config:
-    ext_good = FILEEXT_GOOD
-    ext_bad = FILEEXT_BAD
-    ext_out = FILEEXT_OUT
-    prefix_skip = FILEPREFIX_SKIP
-
-config = _Config()
-
-
 def is_special_file(filename):
-    if filename.startswith(FILEPREFIX_SKIP):
+    if filename.startswith(config.prefix_skip):
         return True
 
-    return filename.endswith(FILEEXT_OUT) or filename.endswith(FILEEXT_GOOD) or filename.endswith(FILEEXT_BAD)
+    return filename.endswith(config.ext_out) or filename.endswith(config.ext_good) or filename.endswith(config.ext_bad)
 
 
 def sanitize_string(s):
@@ -121,9 +108,9 @@ def show_result_stats(rootdir):
                 continue
 
             inpath = os.path.join(root, filename)
-            out_filepath = f"{inpath}.{FILEEXT_OUT}"
-            good_filepath = f"{inpath}.{FILEEXT_GOOD}"
-            bad_filepath = f"{inpath}.{FILEEXT_BAD}"
+            out_filepath = f"{inpath}.{config.ext_out}"
+            good_filepath = f"{inpath}.{config.ext_good}"
+            bad_filepath = f"{inpath}.{config.ext_bad}"
             if os.path.isfile(good_filepath):
                 counts["good"] += 1
             elif os.path.isfile(bad_filepath):
@@ -150,8 +137,8 @@ def show_results(rootdir, good, bad):
             if is_special_file(filename):
                 continue
             inpath = os.path.join(root, filename)
-            good_filepath = f"{inpath}.{FILEEXT_GOOD}"
-            bad_filepath = f"{inpath}.{FILEEXT_BAD}"
+            good_filepath = f"{inpath}.{config.ext_good}"
+            bad_filepath = f"{inpath}.{config.ext_bad}"
 
             if os.path.isfile(good_filepath) and good:
                 print(sanitize_string(inpath), flush=True)
@@ -220,13 +207,13 @@ def main():
                 continue
 
             inpath = os.path.join(root, filename)
-            outpath = f"{inpath}.{FILEEXT_OUT}"
+            outpath = f"{inpath}.{config.ext_out}"
             print(file_count, sanitize_string(inpath), flush=True)
             file_count += 1
             buf = list()
 
-            good_filepath = f"{inpath}.{FILEEXT_GOOD}"
-            bad_filepath = f"{inpath}.{FILEEXT_BAD}"
+            good_filepath = f"{inpath}.{config.ext_good}"
+            bad_filepath = f"{inpath}.{config.ext_bad}"
 
             if os.path.isfile(good_filepath) or os.path.isfile(bad_filepath):
                 print("already processed. skipping...")
@@ -239,7 +226,7 @@ def main():
             doc, status, output = load_doc(bytes)
             buf.extend(output)
             if doc and mod:
-                buf.extend(mod.process_document(config, inpath, doc))
+                buf.extend(mod.process_document(inpath, doc))
 
             with open(outpath, "w") as f:
                 f.write("\n".join(buf))
