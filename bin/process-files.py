@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+########################################################################
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+########################################################################
 
 import argparse
 import os
@@ -7,6 +14,7 @@ import sys
 import string
 import pathlib
 import enum
+import importlib.util
 
 import orcus
 
@@ -53,10 +61,10 @@ def load_doc(bytes):
 
     try:
         status = LoadStatus.SUCCESS
-        if format_type == "ods":
+        if format_type == orcus.FormatType.ODS:
             from orcus import ods
             doc = ods.read(bytes)
-        elif format_type == "xlsx":
+        elif format_type == orcus.FormatType.XLSX:
             from orcus import xlsx
             doc = xlsx.read(bytes)
         else:
@@ -69,22 +77,6 @@ def load_doc(bytes):
         buf.append(f"{e.__class__.__name__}: {e}")
         status = LoadStatus.FAILURE
         return None, status, buf
-
-
-def print_doc_preview(doc):
-    buf = list()
-    for sh in doc.sheets:
-        try:
-            buf.append(f"sheet: {sh.name}")
-            for i, row in enumerate(sh.get_rows()):
-                if i > 10:
-                    buf.append("...")
-                    break
-                buf.append(f"row {i}: {row}")
-        except:
-            buf.append("???")
-
-    return buf
 
 
 def print_results(inpath):
@@ -154,10 +146,22 @@ def show_results(rootdir, good, bad):
                 continue
 
 
+def load_module_from_filepath(filepath):
+    if not os.path.isfile(filepath):
+        raise RuntimeError(f"{filepath} is not a valid file.")
+
+    mod_name = os.path.splitext(os.path.basename(filepath))[0]
+    spec = importlib.util.spec_from_file_location(mod_name, filepath)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="""This script allows you to load a collection of input files
         for testing purpuses.""")
+    parser.add_argument("-p", "--processor", type=str, help="Python module file containing callback functions.")
     parser.add_argument(
         "--remove-results", action="store_true", default=False,
         help="Remove all cached results files from the directory tree.")
@@ -190,6 +194,8 @@ def main():
         show_results(args.rootdir, args.good, args.bad)
         return
 
+    mod = load_module_from_filepath(args.processor) if args.processor else None
+
     file_count = 0
     for root, dir, files in os.walk(args.rootdir):
         for filename in files:
@@ -215,8 +221,8 @@ def main():
 
             doc, status, output = load_doc(bytes)
             buf.extend(output)
-            if doc:
-                buf.extend(print_doc_preview(doc))
+            if doc and mod:
+                buf.extend(mod.process_document(inpath, doc))
 
             with open(outpath, "w") as f:
                 f.write("\n".join(buf))

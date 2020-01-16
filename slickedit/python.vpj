@@ -57,11 +57,10 @@
             <F N="../src/python/orcus/__init__.py"/>
             <F N="../src/python/orcus/csv.py"/>
             <F N="../bin/download-files.py"/>
-            <F N="../bin/extract-formulas.py"/>
-            <F N="../bin/gen-files.py"/>
             <F N="../src/python/orcus/gnumeric.py"/>
             <F N="../src/python/orcus/json.py"/>
             <F N="../src/python/orcus/ods.py"/>
+            <F N="../misc/file-processor-modules/preview.py"/>
             <F N="../bin/process-files.py"/>
             <F N="../src/python/orcus/xls_xml.py"/>
             <F N="../src/python/orcus/xlsx.py"/>
