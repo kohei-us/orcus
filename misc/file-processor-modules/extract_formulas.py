@@ -12,6 +12,7 @@ import json
 import os
 import os.path
 import sys
+import enum
 
 from common import config
 
@@ -58,10 +59,45 @@ def process_document(filepath, doc):
     return output_buffer
 
 
+class OutputFormat(enum.Enum):
+    JSON = "json"
+    XML = "xml"
+
+
+def dump_json_as_xml(data, stream):
+    import xml.etree.ElementTree as ET
+    root = ET.Element("docs")
+
+    for doc in data:
+        elem_doc = ET.SubElement(root, "doc")
+        elem_doc.attrib["filepath"] = doc["filepath"]
+        elem_sheets = ET.SubElement(elem_doc, "sheets")
+        for sheet in doc["sheets"]:
+            elem = ET.SubElement(elem_sheets, "sheet")
+            elem.attrib["name"] = sheet
+
+        elem_formulas = ET.SubElement(elem_doc, "formulas")
+        for formula_cell in doc["formulas"]:
+            elem = ET.SubElement(elem_formulas, "formula")
+            elem.attrib["sheet"] = formula_cell["sheet"]
+            elem.attrib["row"] = str(formula_cell["row"])
+            elem.attrib["column"] = str(formula_cell["column"])
+            elem.attrib["s"] = formula_cell["formula"]
+            for token in formula_cell["formula_tokens"]:
+                elem_token = ET.SubElement(elem, "token")
+                elem_token.attrib["s"] = token
+
+    s = ET.tostring(root, "utf-8").decode("utf-8")
+    from xml.dom import minidom
+    s = minidom.parseString(s).toprettyxml(indent="    ")
+    stream.write(s)
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-o", "--output", type=argparse.FileType("w"), help="Output file to write all the formula data to.")
+    parser.add_argument("-f", "--format", type=OutputFormat, default=OutputFormat.JSON, help="Output file format.")
     parser.add_argument("rootdir", help="Root directory from which to traverse for the formula files.")
     args = parser.parse_args()
 
@@ -76,8 +112,11 @@ def main():
                 data.append(json.loads(f.read()))
 
     output = args.output if args.output else sys.stdout
-    import pprint
-    pprint.pprint(data, stream=output, width=256)
+    if args.format == OutputFormat.JSON:
+        import pprint
+        pprint.pprint(data, stream=output, width=256)
+    elif args.format == OutputFormat.XML:
+        dump_json_as_xml(data, output)
 
 
 if __name__ == "__main__":
