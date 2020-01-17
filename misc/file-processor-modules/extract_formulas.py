@@ -67,6 +67,7 @@ class OutputFormat(enum.Enum):
 def dump_json_as_xml(data, stream):
     import xml.etree.ElementTree as ET
     root = ET.Element("docs")
+    root.attrib["count"] = str(len(data))
 
     for doc in data:
         elem_doc = ET.SubElement(root, "doc")
@@ -85,6 +86,7 @@ def dump_json_as_xml(data, stream):
             elem.attrib["row"] = str(formula_cell["row"])
             elem.attrib["column"] = str(formula_cell["column"])
             elem.attrib["s"] = formula_cell["formula"]
+            elem.attrib["token-count"] = str(len(formula_cell["formula_tokens"]))
             for token in formula_cell["formula_tokens"]:
                 elem_token = ET.SubElement(elem, "token")
                 elem_token.attrib["s"] = token
@@ -98,12 +100,18 @@ def dump_json_as_xml(data, stream):
 def main():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-o", "--output", type=argparse.FileType("w"), help="Output file to write all the formula data to.")
+    parser.add_argument("-o", "--output", type=str, help="Output directory to write all the formula data to.")
     parser.add_argument("-f", "--format", type=OutputFormat, default=OutputFormat.JSON, help="Output file format.")
+    parser.add_argument("-b", "--batch-size", type=int, default=20)
     parser.add_argument("rootdir", help="Root directory from which to traverse for the formula files.")
     args = parser.parse_args()
 
+    os.makedirs(args.output, exist_ok=True)
+
+    batches = list()
     data = list()
+    file_count = 0
+
     for root, dir, files in os.walk(args.rootdir):
         for filename in files:
             if filename != FORMULAS_JSON_FILENAME:
@@ -113,12 +121,24 @@ def main():
             with open(filepath, "r") as f:
                 data.append(json.loads(f.read()))
 
+            file_count += 1
+            if file_count == args.batch_size:
+                batches.append(data)
+                data = list()
+                file_count = 0
+
     output = args.output if args.output else sys.stdout
-    if args.format == OutputFormat.JSON:
-        import pprint
-        pprint.pprint(data, stream=output, width=256)
-    elif args.format == OutputFormat.XML:
-        dump_json_as_xml(data, output)
+
+    for i, batch in enumerate(batches):
+        if args.format == OutputFormat.JSON:
+            outpath = os.path.join(args.output, f"{i+1:04}.json")
+            import pprint
+            with open(outpath, "w") as f:
+                pprint.pprint(batch, stream=f, width=256)
+        elif args.format == OutputFormat.XML:
+            outpath = os.path.join(args.output, f"{i+1:04}.xml")
+            with open(outpath, "w") as f:
+                dump_json_as_xml(batch, f)
 
 
 if __name__ == "__main__":
