@@ -418,6 +418,12 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
             case XML_dde_link:
                 xml_element_expected(parent, NS_odf_table, XML_dde_links);
                 break;
+            case XML_named_expressions:
+                xml_element_expected(parent, NS_odf_office, XML_spreadsheet);
+                break;
+            case XML_named_range:
+                start_named_range(parent, attrs);
+                break;
             default:
                 warn_unhandled();
         }
@@ -460,6 +466,9 @@ bool ods_content_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
                 break;
             case XML_table_cell:
                 end_cell();
+                break;
+            case XML_named_range:
+                end_named_range();
                 break;
             default:
                 ;
@@ -515,6 +524,33 @@ void ods_content_xml_context::end_table()
 {
     if (get_config().debug)
         cout << "end table" << endl;
+}
+
+void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_odf_table, XML_named_expressions);
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns != NS_odf_table)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_name:
+                break;
+            case XML_base_cell_address:
+                break;
+            case XML_cell_range_address:
+                break;
+        }
+    }
+
+    // TODO : pick up the attributes and register a named range here.
+}
+
+void ods_content_xml_context::end_named_range()
+{
 }
 
 void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
