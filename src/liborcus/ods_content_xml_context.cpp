@@ -365,9 +365,9 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
         switch (name)
         {
             case XML_body:
-            break;
+                break;
             case XML_spreadsheet:
-            break;
+                break;
             default:
                 warn_unhandled();
         }
@@ -433,10 +433,10 @@ bool ods_content_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
         switch (name)
         {
             case XML_body:
-            break;
+                break;
             case XML_spreadsheet:
                 end_spreadsheet();
-            break;
+                break;
             default:
                 ;
         }
@@ -446,21 +446,21 @@ bool ods_content_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
         switch (name)
         {
             case XML_calculation_settings:
-            break;
+                break;
             case XML_null_date:
-            break;
+                break;
             case XML_table:
                 end_table();
-            break;
+                break;
             case XML_table_column:
                 end_column();
-            break;
+                break;
             case XML_table_row:
                 end_row();
-            break;
+                break;
             case XML_table_cell:
                 end_cell();
-            break;
+                break;
             default:
                 ;
         }
@@ -663,12 +663,12 @@ void ods_content_xml_context::push_cell_value()
             {
                 formula_data.result.type = orcus::ods_session_data::rt_numeric;
                 formula_data.result.numeric_value = m_cell_attr.value;
+                break;
             }
-            break;
             case vt_string:
                 // TODO : pass string result here.  We need to decide whether
                 // to pass a string ID or a raw string.
-            break;
+                break;
             default:
                 ;
         }
@@ -681,18 +681,18 @@ void ods_content_xml_context::push_cell_value()
         {
             case vt_float:
                 sheet->set_value(m_row, m_col, m_cell_attr.value);
-            break;
+                break;
             case vt_string:
                 if (m_has_content)
                     sheet->set_string(m_row, m_col, m_para_index);
-            break;
+                break;
             case vt_date:
             {
                 date_time_t val = to_date_time(m_cell_attr.date_value);
                 sheet->set_date_time(
                     m_row, m_col, val.year, val.month, val.day, val.hour, val.minute, val.second);
+                break;
             }
-            break;
             default:
                 ;
         }
