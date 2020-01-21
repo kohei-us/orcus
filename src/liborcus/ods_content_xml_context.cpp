@@ -87,7 +87,7 @@ private:
     pstring m_name;
 };
 
-class cell_attr_parser : public unary_function<xml_token_attr_t, void>
+class cell_attr_parser
 {
 public:
     cell_attr_parser(session_context& cxt, ods_content_xml_context::cell_attr& attr) :
@@ -171,14 +171,18 @@ private:
         switch (attr.name)
         {
             case XML_style_name:
+            {
                 m_attr.style_name = attr.value;
-            break;
+                if (attr.transient)
+                    m_attr.style_name = m_cxt.m_string_pool.intern(m_attr.style_name).first;
+                break;
+            }
             case XML_number_columns_repeated:
                 m_attr.number_columns_repeated = to_long(attr.value);
-            break;
+                break;
             case XML_formula:
                 process_formula(attr.value, attr.transient);
-            break;
+                break;
             default:
                 ;
         }
