@@ -12,8 +12,7 @@
 
 #include "orcus/spreadsheet/types.hpp"
 
-#include <vector>
-#include <memory>
+#include <deque>
 
 namespace orcus {
 
@@ -39,7 +38,6 @@ struct ods_session_data : public session_context::custom_data
         spreadsheet::formula_grammar_t grammar;
         pstring exp;
 
-
         formula_result result;
 
         formula(
@@ -47,7 +45,7 @@ struct ods_session_data : public session_context::custom_data
             spreadsheet::formula_grammar_t _grammar, const pstring& _exp);
     };
 
-    typedef std::vector<std::unique_ptr<formula>> formulas_type;
+    typedef std::deque<formula> formulas_type;
 
     formulas_type m_formulas;
 

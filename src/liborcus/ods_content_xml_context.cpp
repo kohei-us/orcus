@@ -648,13 +648,13 @@ void ods_content_xml_context::push_cell_value()
     bool has_formula = !m_cell_attr.formula.empty();
     if (has_formula)
     {
+        // Store formula cell data for later processing.
         ods_session_data& ods_data =
             static_cast<ods_session_data&>(*get_session_context().mp_data);
-        ods_data.m_formulas.push_back(
-            orcus::make_unique<ods_session_data::formula>(
-                m_tables.size()-1, m_row, m_col, m_cell_attr.formula_grammar, m_cell_attr.formula));
+        ods_data.m_formulas.emplace_back(
+            m_tables.size()-1, m_row, m_col, m_cell_attr.formula_grammar, m_cell_attr.formula);
 
-        ods_session_data::formula& formula_data = *ods_data.m_formulas.back();
+        ods_session_data::formula& formula_data = ods_data.m_formulas.back();
 
         // Store formula result.
         switch (m_cell_attr.type)
@@ -707,10 +707,8 @@ void ods_content_xml_context::end_spreadsheet()
     // Push all formula cells.  Formula cells needs to be processed after all
     // the sheet data have been imported, else 3D reference would fail to
     // resolve.
-    ods_session_data::formulas_type::iterator it = ods_data.m_formulas.begin(), ite = ods_data.m_formulas.end();
-    for (; it != ite; ++it)
+    for (ods_session_data::formula& data : ods_data.m_formulas)
     {
-        ods_session_data::formula& data = **it;
         if (data.sheet < 0 || static_cast<size_t>(data.sheet) >= m_tables.size())
             // Invalid sheet index.
             continue;
