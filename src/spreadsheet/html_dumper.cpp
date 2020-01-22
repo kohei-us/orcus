@@ -434,7 +434,8 @@ void html_dumper::dump(std::ostream& os) const
             return;
 
         const ixion::model_context& cxt = m_doc.get_model_context();
-        const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+        const ixion::formula_name_resolver* resolver =
+            m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
         const import_shared_strings* sstrings = m_doc.get_shared_strings();
 
         elem table(os, p_table);

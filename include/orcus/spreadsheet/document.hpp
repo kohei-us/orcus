@@ -117,7 +117,7 @@ public:
     void set_formula_grammar(formula_grammar_t grammar);
     formula_grammar_t get_formula_grammar() const;
 
-    const ixion::formula_name_resolver* get_formula_name_resolver() const;
+    const ixion::formula_name_resolver* get_formula_name_resolver(formula_ref_context_t cxt) const;
 
     ixion::model_context& get_model_context();
     const ixion::model_context& get_model_context() const;

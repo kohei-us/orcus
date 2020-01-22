@@ -640,7 +640,8 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
         return;
 
     const ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
-    const ixion::formula_name_resolver* resolver = mp_impl->m_doc.get_formula_name_resolver();
+    const ixion::formula_name_resolver* resolver =
+        mp_impl->m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
 
     size_t row_count = range.last.row + 1;
     size_t col_count = range.last.column + 1;

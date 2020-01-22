@@ -138,7 +138,8 @@ void import_pivot_cache_def::set_worksheet_source(
 {
     assert(m_cache);
 
-    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+    const ixion::formula_name_resolver* resolver =
+        m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
     assert(resolver);
 
     m_src_type = worksheet;

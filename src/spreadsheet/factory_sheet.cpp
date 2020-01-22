@@ -30,7 +30,7 @@ import_sheet_named_exp::~import_sheet_named_exp() {}
 void import_sheet_named_exp::define_name(
     const char* p_name, size_t n_name, const char* p_exp, size_t n_exp)
 {
-    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::named_expression);
     assert(resolver);
 
     ixion::model_context& cxt = m_doc.get_model_context();
@@ -134,7 +134,8 @@ void import_array_formula::set_range(const range_t& range)
 
 void import_array_formula::set_formula(formula_grammar_t grammar, const char* p, size_t n)
 {
-    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+    const ixion::formula_name_resolver* resolver =
+        m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
     if (!resolver)
         return;
 
@@ -244,7 +245,8 @@ void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_
     if (m_row < 0 || m_col < 0)
         return;
 
-    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+    const ixion::formula_name_resolver* resolver =
+        m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
     if (!resolver)
         return;
 

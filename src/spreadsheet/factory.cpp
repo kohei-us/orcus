@@ -42,7 +42,8 @@ public:
 
     virtual address_t resolve_address(const char* p, size_t n) override
     {
-        const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+        const ixion::formula_name_resolver* resolver =
+            m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
         if (!resolver)
             throw std::runtime_error("import_ref_resolver::resolve_address: formula resolver is null!");
 
@@ -63,7 +64,8 @@ public:
 
     virtual range_t resolve_range(const char* p, size_t n) override
     {
-        const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+        const ixion::formula_name_resolver* resolver =
+            m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
         if (!resolver)
             throw std::runtime_error("import_ref_resolver::resolve_range: formula resolver is null!");
 
@@ -111,7 +113,8 @@ public:
 
     virtual void define_name(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) override
     {
-        const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+        const ixion::formula_name_resolver* resolver =
+            m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::named_expression);
         assert(resolver);
 
         ixion::model_context& cxt = m_doc.get_model_context();

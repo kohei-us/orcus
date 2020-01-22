@@ -243,7 +243,7 @@ PyObject* create_cell_object_formula(
     const ixion::formula_tokens_t& tokens = fc->get_tokens()->get();
 
     const ixion::model_context& cxt = doc.get_model_context();
-    auto* resolver = doc.get_formula_name_resolver();
+    auto* resolver = doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
 
     // Create formula expression string.
     std::string formula_s = ixion::print_formula_tokens(cxt, pos, *resolver, tokens);

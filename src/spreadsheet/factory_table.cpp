@@ -108,7 +108,8 @@ iface::import_auto_filter* import_table::get_auto_filter()
 
 void import_table::set_range(const char* p_ref, size_t n_ref)
 {
-    const ixion::formula_name_resolver* resolver = mp_impl->m_doc.get_formula_name_resolver();
+    const ixion::formula_name_resolver* resolver =
+        mp_impl->m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
     if (!resolver)
         return;
 

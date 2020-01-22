@@ -35,7 +35,8 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
         // Sheet is empty.  Nothing to print.
         return;
 
-    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver();
+    const ixion::formula_name_resolver* resolver =
+        m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
     if (!resolver)
         return;
 
