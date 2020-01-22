@@ -223,6 +223,15 @@ private:
 
 // ============================================================================
 
+ods_content_xml_context::sheet_data::sheet_data() :
+    sheet(nullptr), index(-1) {}
+
+void ods_content_xml_context::sheet_data::reset()
+{
+    sheet = nullptr;
+    index = -1;
+}
+
 ods_content_xml_context::row_attr::row_attr() :
     number_rows_repeated(1)
 {
@@ -507,6 +516,8 @@ void ods_content_xml_context::start_table(const xml_token_pair_t& parent, const 
         table_attr_parser parser = for_each(attrs.begin(), attrs.end(), table_attr_parser());
         const pstring& name = parser.get_name();
         m_tables.push_back(mp_factory->append_sheet(m_tables.size(), name.get(), name.size()));
+        m_cur_sheet.sheet = m_tables.back();
+        m_cur_sheet.index = m_tables.size() - 1;
 
         if (get_config().debug)
             cout << "start table " << name << endl;
@@ -522,8 +533,13 @@ void ods_content_xml_context::start_table(const xml_token_pair_t& parent, const 
 
 void ods_content_xml_context::end_table()
 {
-    if (get_config().debug)
-        cout << "end table" << endl;
+    if (m_cur_sheet.sheet)
+    {
+        if (get_config().debug)
+            cout << "end table" << endl;
+
+        m_cur_sheet.reset();
+    }
 }
 
 void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
@@ -555,11 +571,11 @@ void ods_content_xml_context::end_named_range()
 
 void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
 {
-    if (!m_tables.back())
+    if (!m_cur_sheet.sheet)
         return;
 
     spreadsheet::iface::import_sheet_properties* sheet_props =
-        m_tables.back()->get_sheet_properties();
+        m_cur_sheet.sheet->get_sheet_properties();
 
     if (!sheet_props)
         return;
@@ -619,12 +635,12 @@ void ods_content_xml_context::start_row(const xml_attrs_t& attrs)
     if (get_config().debug)
         cout << "row: (style='" << style_name << "')" << endl;
 
-    if (!m_tables.back())
+    if (!m_cur_sheet.sheet)
         return;
 
     // Pass row properties to the interface.
     spreadsheet::iface::import_sheet_properties* sheet_props =
-        m_tables.back()->get_sheet_properties();
+        m_cur_sheet.sheet->get_sheet_properties();
 
     if (sheet_props)
     {
@@ -662,8 +678,8 @@ void ods_content_xml_context::start_cell(const xml_attrs_t& attrs)
 void ods_content_xml_context::end_cell()
 {
     name2id_type::const_iterator it = m_cell_format_map.find(m_cell_attr.style_name);
-    if (m_tables.back() && it != m_cell_format_map.end())
-        m_tables.back()->set_format(m_row, m_col, it->second);
+    if (m_cur_sheet.sheet && it != m_cell_format_map.end())
+        m_cur_sheet.sheet->set_format(m_row, m_col, it->second);
 
     push_cell_value();
 
@@ -679,7 +695,7 @@ void ods_content_xml_context::end_cell()
 
 void ods_content_xml_context::push_cell_value()
 {
-    spreadsheet::iface::import_sheet* sheet = m_tables.back();
+    assert(m_cur_sheet.index >= 0); // this is expected to be called only within a valid sheet scope.
 
     bool has_formula = !m_cell_attr.formula.empty();
     if (has_formula)
@@ -688,7 +704,7 @@ void ods_content_xml_context::push_cell_value()
         ods_session_data& ods_data =
             static_cast<ods_session_data&>(*get_session_context().mp_data);
         ods_data.m_formulas.emplace_back(
-            m_tables.size()-1, m_row, m_col, m_cell_attr.formula_grammar, m_cell_attr.formula);
+            m_cur_sheet.index, m_row, m_col, m_cell_attr.formula_grammar, m_cell_attr.formula);
 
         ods_session_data::formula& formula_data = ods_data.m_formulas.back();
 
@@ -711,21 +727,21 @@ void ods_content_xml_context::push_cell_value()
         return;
     }
 
-    if (sheet)
+    if (m_cur_sheet.sheet)
     {
         switch (m_cell_attr.type)
         {
             case vt_float:
-                sheet->set_value(m_row, m_col, m_cell_attr.value);
+                m_cur_sheet.sheet->set_value(m_row, m_col, m_cell_attr.value);
                 break;
             case vt_string:
                 if (m_has_content)
-                    sheet->set_string(m_row, m_col, m_para_index);
+                    m_cur_sheet.sheet->set_string(m_row, m_col, m_para_index);
                 break;
             case vt_date:
             {
                 date_time_t val = to_date_time(m_cell_attr.date_value);
-                sheet->set_date_time(
+                m_cur_sheet.sheet->set_date_time(
                     m_row, m_col, val.year, val.month, val.day, val.hour, val.minute, val.second);
                 break;
             }

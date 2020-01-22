@@ -30,6 +30,16 @@ class ods_content_xml_context : public xml_context_base
     typedef std::unordered_map<pstring, size_t, pstring::hash> name2id_type;
 
 public:
+    struct sheet_data
+    {
+        spreadsheet::iface::import_sheet* sheet;
+        spreadsheet::sheet_t index;
+
+        sheet_data();
+
+        void reset();
+    };
+
     struct row_attr
     {
         long number_rows_repeated;
@@ -88,6 +98,7 @@ private:
 private:
     spreadsheet::iface::import_factory* mp_factory;
     std::vector<spreadsheet::iface::import_sheet*> m_tables;
+    sheet_data m_cur_sheet;
 
     std::unique_ptr<xml_context_base> mp_child;
 
