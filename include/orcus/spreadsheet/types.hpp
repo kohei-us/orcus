@@ -387,11 +387,31 @@ struct src_address_t
     col_t column;
 };
 
+/**
+ * Stores 3-dimensional range address.  The 'src' stands for
+ * sheet-row-column.
+ */
+struct src_range_t
+{
+    src_address_t first;
+    src_address_t last;
+};
+
+ORCUS_DLLPUBLIC address_t to_rc_address(const src_address_t& r);
+ORCUS_DLLPUBLIC range_t to_rc_range(const src_range_t& r);
+
 ORCUS_DLLPUBLIC bool operator== (const address_t& left, const address_t& right);
 ORCUS_DLLPUBLIC bool operator!= (const address_t& left, const address_t& right);
 
+ORCUS_DLLPUBLIC bool operator== (const src_address_t& left, const src_address_t& right);
+ORCUS_DLLPUBLIC bool operator!= (const src_address_t& left, const src_address_t& right);
+
 ORCUS_DLLPUBLIC bool operator== (const range_t& left, const range_t& right);
 ORCUS_DLLPUBLIC bool operator!= (const range_t& left, const range_t& right);
+
+ORCUS_DLLPUBLIC bool operator== (const src_range_t& left, const src_range_t& right);
+ORCUS_DLLPUBLIC bool operator!= (const src_range_t& left, const src_range_t& right);
+
 ORCUS_DLLPUBLIC bool operator< (const range_t& left, const range_t& right);
 ORCUS_DLLPUBLIC bool operator> (const range_t& left, const range_t& right);
 

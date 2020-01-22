@@ -151,18 +151,19 @@ import_reference_resolver::~import_reference_resolver()
 {
 }
 
-spreadsheet::address_t import_reference_resolver::resolve_address(const char*, size_t)
+spreadsheet::src_address_t import_reference_resolver::resolve_address(const char*, size_t)
 {
-    spreadsheet::address_t ret;
-    ret.column = ret.row = 0;
+    spreadsheet::src_address_t ret;
+    ret.column = ret.row = ret.sheet = 0;
     assert(false);
     return ret;
 }
 
-spreadsheet::range_t import_reference_resolver::resolve_range(const char*, size_t)
+spreadsheet::src_range_t import_reference_resolver::resolve_range(const char*, size_t)
 {
-    spreadsheet::range_t ret;
+    spreadsheet::src_range_t ret;
     ret.first.column = ret.first.row = ret.last.column = ret.last.row = 0;
+    ret.first.sheet = ret.last.sheet = 0;
     assert(false);
     return ret;
 }

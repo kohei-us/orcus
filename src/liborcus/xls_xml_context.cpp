@@ -1254,7 +1254,7 @@ void xls_xml_context::characters(const pstring& str, bool /*transient*/)
                     mp_factory->get_reference_resolver(spreadsheet::formula_ref_context_t::global);
 
                 if (resolver)
-                    m_cursor_selection.range = resolver->resolve_range(str.data(), str.size());
+                    m_cursor_selection.range = to_rc_range(resolver->resolve_range(str.data(), str.size()));
 
                 break;
             }
@@ -1435,7 +1435,7 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
                 spreadsheet::iface::import_reference_resolver* resolver =
                     mp_factory->get_reference_resolver(spreadsheet::formula_ref_context_t::global);
                 if (resolver)
-                    m_cur_array_range = resolver->resolve_range(attr.value.data(), attr.value.size());
+                    m_cur_array_range = to_rc_range(resolver->resolve_range(attr.value.data(), attr.value.size()));
 
                 break;
             }

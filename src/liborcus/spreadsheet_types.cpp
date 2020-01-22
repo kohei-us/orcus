@@ -277,6 +277,24 @@ color_rgb_t::color_rgb_t(color_rgb_t&& other) :
     other.blue = 0;
 }
 
+address_t to_rc_address(const src_address_t& r)
+{
+    address_t ret;
+    ret.row = r.row;
+    ret.column = r.column;
+    return ret;
+}
+
+range_t to_rc_range(const src_range_t& r)
+{
+    range_t ret;
+    ret.first.row = r.first.row;
+    ret.first.column = r.first.column;
+    ret.last.row = r.last.row;
+    ret.last.column = r.last.column;
+    return ret;
+}
+
 bool operator== (const address_t& left, const address_t& right)
 {
     return left.column == right.column && left.row == right.row;
@@ -287,12 +305,32 @@ bool operator!= (const address_t& left, const address_t& right)
     return !operator== (left, right);
 }
 
+bool operator== (const src_address_t& left, const src_address_t& right)
+{
+    return left.column == right.column && left.row == right.row;
+}
+
+bool operator!= (const src_address_t& left, const src_address_t& right)
+{
+    return !operator== (left, right);
+}
+
 bool operator== (const range_t& left, const range_t& right)
 {
     return left.first == right.first && left.last == right.last;
 }
 
 bool operator!= (const range_t& left, const range_t& right)
+{
+    return !operator== (left, right);
+}
+
+bool operator== (const src_range_t& left, const src_range_t& right)
+{
+    return left.first == right.first && left.last == right.last;
+}
+
+bool operator!= (const src_range_t& left, const src_range_t& right)
 {
     return !operator== (left, right);
 }

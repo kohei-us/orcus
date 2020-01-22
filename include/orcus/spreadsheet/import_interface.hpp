@@ -863,7 +863,7 @@ public:
      * @exception orcus::invalid_arg_error the string is not a valid
      *        single cell addreess.
      */
-    virtual address_t resolve_address(const char* p, size_t n) = 0;
+    virtual src_address_t resolve_address(const char* p, size_t n) = 0;
 
     /**
      * Resolve a textural representation of a range address.  Note that a
@@ -878,7 +878,7 @@ public:
      *
      * @exception invalid_arg_error the string is not a valid range addreess.
      */
-    virtual range_t resolve_range(const char* p, size_t n) = 0;
+    virtual src_range_t resolve_range(const char* p, size_t n) = 0;
 };
 
 /**

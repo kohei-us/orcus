@@ -41,7 +41,7 @@ public:
         m_doc(doc)
     {}
 
-    virtual address_t resolve_address(const char* p, size_t n) override
+    virtual src_address_t resolve_address(const char* p, size_t n) override
     {
         const ixion::formula_name_resolver* resolver =
             m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
@@ -57,13 +57,14 @@ public:
             throw orcus::invalid_arg_error(os.str());
         }
 
-        address_t ret;
+        src_address_t ret;
+        ret.sheet = name.address.sheet;
         ret.column = name.address.col;
         ret.row = name.address.row;
         return ret;
     }
 
-    virtual range_t resolve_range(const char* p, size_t n) override
+    virtual src_range_t resolve_range(const char* p, size_t n) override
     {
         const ixion::formula_name_resolver* resolver =
             m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
@@ -76,9 +77,11 @@ public:
         {
             case ixion::formula_name_t::range_reference:
             {
-                range_t ret;
+                src_range_t ret;
+                ret.first.sheet = name.range.first.sheet;
                 ret.first.column = name.range.first.col;
                 ret.first.row = name.range.first.row;
+                ret.last.sheet = name.range.last.sheet;
                 ret.last.column = name.range.last.col;
                 ret.last.row = name.range.last.row;
                 return ret;
@@ -86,11 +89,12 @@ public:
             case ixion::formula_name_t::cell_reference:
             {
                 // Single cell address is still considered a valid "range".
-                address_t cell;
+                src_address_t cell;
+                cell.sheet = name.address.sheet;
                 cell.column = name.address.col;
                 cell.row = name.address.row;
 
-                range_t ret;
+                src_range_t ret;
                 ret.first = cell;
                 ret.last = cell;
                 return ret;
