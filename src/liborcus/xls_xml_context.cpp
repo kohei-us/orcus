@@ -1251,7 +1251,7 @@ void xls_xml_context::characters(const pstring& str, bool /*transient*/)
             case XML_RangeSelection:
             {
                 spreadsheet::iface::import_reference_resolver* resolver =
-                    mp_factory->get_reference_resolver();
+                    mp_factory->get_reference_resolver(spreadsheet::formula_ref_context_t::global);
 
                 if (resolver)
                     m_cursor_selection.range = resolver->resolve_range(str.data(), str.size());
@@ -1432,7 +1432,8 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
                 break;
             case XML_ArrayRange:
             {
-                spreadsheet::iface::import_reference_resolver* resolver = mp_factory->get_reference_resolver();
+                spreadsheet::iface::import_reference_resolver* resolver =
+                    mp_factory->get_reference_resolver(spreadsheet::formula_ref_context_t::global);
                 if (resolver)
                     m_cur_array_range = resolver->resolve_range(attr.value.data(), attr.value.size());
 

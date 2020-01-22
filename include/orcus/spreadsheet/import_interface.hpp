@@ -899,7 +899,7 @@ public:
      */
     virtual import_styles* get_styles();
 
-    virtual import_reference_resolver* get_reference_resolver();
+    virtual import_reference_resolver* get_reference_resolver(formula_ref_context_t cxt);
 
     /**
      * Create an interface for pivot cache definition import for a specified

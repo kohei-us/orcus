@@ -570,7 +570,7 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
             case XML_Filter:
             {
                 spreadsheet::iface::import_reference_resolver* resolver =
-                    mp_factory->get_reference_resolver();
+                    mp_factory->get_reference_resolver(spreadsheet::formula_ref_context_t::global);
 
                 mp_auto_filter = mp_sheet->get_auto_filter();
 

@@ -1049,7 +1049,8 @@ void test_xls_xml_view_cursor_per_sheet()
     assert(sv);
 
     // NB : the resolver type is set to R1C1 for Excel XML 2003.
-    spreadsheet::iface::import_reference_resolver* resolver = factory.get_reference_resolver();
+    spreadsheet::iface::import_reference_resolver* resolver =
+        factory.get_reference_resolver(spreadsheet::formula_ref_context_t::global);
     assert(resolver);
 
     // On Sheet1, the cursor should be set to C4.
@@ -1102,7 +1103,8 @@ void test_xls_xml_view_cursor_split_pane()
     app.read_file(path.c_str());
 
     // NB : the resolver type is set to R1C1 for Excel XML 2003.
-    spreadsheet::iface::import_reference_resolver* resolver = factory.get_reference_resolver();
+    spreadsheet::iface::import_reference_resolver* resolver =
+        factory.get_reference_resolver(spreadsheet::formula_ref_context_t::global);
     assert(resolver);
 
     // Sheet4 should be active.
@@ -1238,7 +1240,8 @@ void test_xls_xml_view_frozen_pane()
     app.read_file(path.c_str());
 
     // NB : the resolver type is set to R1C1 for Excel XML 2003.
-    spreadsheet::iface::import_reference_resolver* resolver = factory.get_reference_resolver();
+    spreadsheet::iface::import_reference_resolver* resolver =
+        factory.get_reference_resolver(spreadsheet::formula_ref_context_t::global);
     assert(resolver);
 
     // Sheet3 should be active.

@@ -430,7 +430,8 @@ void orcus_xlsx::read_sheet(const string& dir_path, const string& file_name, xls
         throw general_error(os.str());
     }
 
-    spreadsheet::iface::import_reference_resolver* resolver = mp_impl->mp_factory->get_reference_resolver();
+    spreadsheet::iface::import_reference_resolver* resolver =
+        mp_impl->mp_factory->get_reference_resolver(spreadsheet::formula_ref_context_t::global);
     if (!resolver)
         throw general_error("orcus_xlsx::read_sheet: reference resolver interface is not available.");
 
@@ -522,7 +523,7 @@ void orcus_xlsx::read_table(const std::string& dir_path, const std::string& file
         return;
 
     spreadsheet::iface::import_reference_resolver* resolver =
-        mp_impl->mp_factory->get_reference_resolver();
+        mp_impl->mp_factory->get_reference_resolver(spreadsheet::formula_ref_context_t::global);
 
     if (!resolver)
         // This client doesn't support reference resolver, but is required.

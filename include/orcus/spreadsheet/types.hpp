@@ -163,6 +163,12 @@ enum class formula_t
     shared
 };
 
+enum class formula_ref_context_t
+{
+    global = 0,
+    named_expression,
+};
+
 enum class underline_t
 {
     none = 0,

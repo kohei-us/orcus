@@ -118,7 +118,7 @@ import_styles* import_factory::get_styles()
     return nullptr;
 }
 
-import_reference_resolver* import_factory::get_reference_resolver()
+import_reference_resolver* import_factory::get_reference_resolver(formula_ref_context_t /*cxt*/)
 {
     return nullptr;
 }

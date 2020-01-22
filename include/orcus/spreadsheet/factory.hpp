@@ -37,7 +37,7 @@ public:
     virtual iface::import_shared_strings* get_shared_strings() override;
     virtual iface::import_styles* get_styles() override;
     virtual iface::import_named_expression* get_named_expression() override;
-    virtual iface::import_reference_resolver* get_reference_resolver() override;
+    virtual iface::import_reference_resolver* get_reference_resolver(formula_ref_context_t cxt) override;
     virtual iface::import_pivot_cache_definition* create_pivot_cache_definition(
         orcus::spreadsheet::pivot_cache_id_t cache_id) override;
     virtual iface::import_pivot_cache_records* create_pivot_cache_records(

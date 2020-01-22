@@ -199,7 +199,7 @@ iface::import_named_expression* import_factory::get_named_expression()
     return &mp_impl->m_global_named_exp;
 }
 
-iface::import_reference_resolver* import_factory::get_reference_resolver()
+iface::import_reference_resolver* import_factory::get_reference_resolver(formula_ref_context_t cxt)
 {
     return &mp_impl->m_ref_resolver;
 }
