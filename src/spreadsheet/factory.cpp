@@ -118,6 +118,7 @@ class import_global_named_exp : public iface::import_named_expression
 
 public:
     import_global_named_exp(document& doc) : m_doc(doc), m_base(0, 0, 0) {}
+    virtual ~import_global_named_exp() override {}
 
     virtual void set_base_position(const src_address_t& pos) override
     {
