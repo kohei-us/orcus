@@ -49,9 +49,9 @@ struct ods_session_data : public session_context::custom_data
     {
         pstring name;
         pstring expression;
-        spreadsheet::src_address_t base;
+        pstring base;
 
-        named_exp(const pstring& _name, const pstring& _expression, const spreadsheet::src_address_t& _base);
+        named_exp(const pstring& _name, const pstring& _expression, const pstring& _base);
     };
 
     std::deque<formula> m_formulas;

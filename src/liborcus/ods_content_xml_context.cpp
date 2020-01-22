@@ -23,6 +23,7 @@
 #include <mdds/sorted_string_map.hpp>
 
 using namespace std;
+namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
@@ -548,7 +549,7 @@ void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, 
 
     pstring name;
     pstring expression;
-    spreadsheet::src_address_t base;
+    pstring base;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -561,7 +562,7 @@ void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, 
                 name = intern(attr);
                 break;
             case XML_base_cell_address:
-                // TODO : parse this address.
+                base = intern(attr);
                 break;
             case XML_cell_range_address:
                 expression = intern(attr);
@@ -572,7 +573,8 @@ void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, 
     ods_session_data& ods_data =
         static_cast<ods_session_data&>(*get_session_context().mp_data);
 
-    ods_data.m_named_exps.emplace_back(name, expression, base);
+    if (!name.empty() && !expression.empty() && !base.empty())
+        ods_data.m_named_exps.emplace_back(name, expression, base);
 }
 
 void ods_content_xml_context::end_named_range()
@@ -765,6 +767,18 @@ void ods_content_xml_context::end_spreadsheet()
 {
     ods_session_data& ods_data =
         static_cast<ods_session_data&>(*get_session_context().mp_data);
+
+    ss::iface::import_reference_resolver* resolver =
+        mp_factory->get_reference_resolver(ss::formula_ref_context_t::named_expression);
+
+    for (const ods_session_data::named_exp& data : ods_data.m_named_exps)
+    {
+        if (get_config().debug)
+            cout << "named expression: name='" << data.name << "'; base='" << data.base << "'; expression='" << data.expression << "'" << endl;
+
+        ss::src_address_t base = resolver->resolve_address(data.base.data(), data.base.size());
+        // TODO : continue ...
+    }
 
     // Push all formula cells.  Formula cells needs to be processed after all
     // the sheet data have been imported, else 3D reference would fail to

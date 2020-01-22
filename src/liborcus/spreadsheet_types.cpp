@@ -389,6 +389,12 @@ std::ostream& operator<< (std::ostream& os, const address_t& v)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, const src_address_t& v)
+{
+    os << "(sheet=" << v.sheet << ",column=" << v.column << ",row=" << v.row << ")";
+    return os;
+}
+
 std::ostream& operator<< (std::ostream& os, const range_t& v)
 {
     os << v.first << "-" << v.last;

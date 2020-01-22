@@ -20,7 +20,7 @@ ods_session_data::formula::formula(
     sheet(_sheet), row(_row), column(_col), grammar(_grammar), exp(_exp) {}
 
 ods_session_data::named_exp::named_exp(
-    const pstring& _name, const pstring& _expression, const spreadsheet::src_address_t& _base) :
+    const pstring& _name, const pstring& _expression, const pstring& _base) :
     name(_name), expression(_expression), base(_base) {}
 
 ods_session_data::~ods_session_data() {}
