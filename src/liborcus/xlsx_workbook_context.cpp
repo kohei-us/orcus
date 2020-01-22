@@ -252,9 +252,10 @@ void xlsx_workbook_context::push_defined_name()
 
     if (named_exp)
     {
-        named_exp->define_name(
+        named_exp->set_named_expression(
             m_defined_name.data(), m_defined_name.size(),
             m_defined_name_exp.data(), m_defined_name_exp.size());
+        named_exp->commit();
     }
 }
 

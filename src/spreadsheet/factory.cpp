@@ -14,6 +14,7 @@
 #include "orcus/spreadsheet/view.hpp"
 #include "orcus/exception.hpp"
 #include "orcus/global.hpp"
+#include "orcus/string_pool.hpp"
 
 #include "factory_pivot.hpp"
 #include "factory_sheet.hpp"
@@ -107,26 +108,43 @@ public:
 class import_global_named_exp : public iface::import_named_expression
 {
     document& m_doc;
+    pstring m_name;
+    ixion::abs_address_t m_base;
+    std::unique_ptr<ixion::formula_tokens_t> m_tokens;
 
 public:
-    import_global_named_exp(document& doc) : m_doc(doc) {}
+    import_global_named_exp(document& doc) : m_doc(doc), m_base(0, 0, 0) {}
 
-    virtual void define_name(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) override
+    virtual void set_base_position(sheet_t sheet, const address_t& pos) override
     {
+        m_base.sheet = sheet;
+        m_base.row = pos.row;
+        m_base.column = pos.column;
+    }
+
+    virtual void set_named_expression(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) override
+    {
+        string_pool& sp = m_doc.get_string_pool();
+        m_name = sp.intern(p_name, n_name).first;
+
         const ixion::formula_name_resolver* resolver =
             m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::named_expression);
         assert(resolver);
 
         ixion::model_context& cxt = m_doc.get_model_context();
+        ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, m_base, *resolver, p_exp, n_exp);
+        m_tokens = orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
+    }
 
-        ixion::formula_tokens_t tokens =
-            ixion::parse_formula_string(
-                cxt, ixion::abs_address_t(0,0,0), *resolver, p_exp, n_exp);
+    virtual void commit() override
+    {
+        ixion::model_context& cxt = m_doc.get_model_context();
+        cxt.set_named_expression(m_name.data(), m_name.size(), std::move(m_tokens));
 
-        std::unique_ptr<ixion::formula_tokens_t> tokens_p =
-            orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
-
-        cxt.set_named_expression(p_name, n_name, std::move(tokens_p));
+        m_name.clear();
+        m_base.sheet = 0;
+        m_base.row = 0;
+        m_base.column = 0;
     }
 };
 

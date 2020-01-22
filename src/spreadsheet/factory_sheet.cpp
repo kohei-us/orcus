@@ -23,26 +23,41 @@
 namespace orcus { namespace spreadsheet {
 
 import_sheet_named_exp::import_sheet_named_exp(document& doc, sheet_t sheet_index) :
-    m_doc(doc), m_sheet_index(sheet_index) {}
+    m_doc(doc), m_sheet_index(sheet_index), m_base(0, 0, 0) {}
 
 import_sheet_named_exp::~import_sheet_named_exp() {}
 
-void import_sheet_named_exp::define_name(
+void import_sheet_named_exp::set_base_position(sheet_t sheet, const address_t& pos)
+{
+    m_base.sheet = sheet;
+    m_base.row = pos.row;
+    m_base.column = pos.column;
+}
+
+void import_sheet_named_exp::set_named_expression(
     const char* p_name, size_t n_name, const char* p_exp, size_t n_exp)
 {
-    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::named_expression);
+    string_pool& sp = m_doc.get_string_pool();
+    m_name = sp.intern(p_name, n_name).first;
+
+    const ixion::formula_name_resolver* resolver =
+        m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::named_expression);
     assert(resolver);
 
     ixion::model_context& cxt = m_doc.get_model_context();
+    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, m_base, *resolver, p_exp, n_exp);
+    m_tokens = orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
+}
 
-    ixion::formula_tokens_t tokens =
-        ixion::parse_formula_string(
-            cxt, ixion::abs_address_t(0,0,0), *resolver, p_exp, n_exp);
+void import_sheet_named_exp::commit()
+{
+    ixion::model_context& cxt = m_doc.get_model_context();
+    cxt.set_named_expression(m_sheet_index, m_name.data(), m_name.size(), std::move(m_tokens));
 
-    std::unique_ptr<ixion::formula_tokens_t> tokens_p =
-        orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
-
-    cxt.set_named_expression(m_sheet_index, p_name, n_name, std::move(tokens_p));
+    m_name.clear();
+    m_base.sheet = 0;
+    m_base.row = 0;
+    m_base.column = 0;
 }
 
 import_data_table::import_data_table(sheet& sh) : m_sheet(sh) {}

@@ -37,12 +37,17 @@ class import_sheet_named_exp : public iface::import_named_expression
 {
     document& m_doc;
     sheet_t m_sheet_index;
+    pstring m_name;
+    ixion::abs_address_t m_base;
+    std::unique_ptr<ixion::formula_tokens_t> m_tokens;
 
 public:
     import_sheet_named_exp(document& doc, sheet_t sheet_index);
     virtual ~import_sheet_named_exp() override;
 
-    virtual void define_name(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) override;
+    virtual void set_base_position(sheet_t sheet, const address_t& pos) override;
+    virtual void set_named_expression(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) override;
+    virtual void commit();
 };
 
 /**

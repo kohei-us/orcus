@@ -304,6 +304,17 @@ public:
     virtual ~import_named_expression();
 
     /**
+     * Specify an optional base position from which to evaluate a named
+     * expression.  If not specified, the implementor should use the top-left
+     * cell position on the first sheet as its implied base position.
+     *
+     * @param sheet 0-based index of the sheet that contains the base
+     *              position.
+     * @param pos cell position to be used as the base.
+     */
+    virtual void set_base_position(sheet_t sheet, const address_t& pos) = 0;
+
+    /**
      * Define a new named expression or overwrite an existing one.
      *
      * @param p_name pointer to the buffer that stores the name of the
@@ -315,7 +326,9 @@ public:
      * @param n_exp size of the buffer that stores the expression to be
      *              associated with the name.
      */
-    virtual void define_name(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) = 0;
+    virtual void set_named_expression(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) = 0;
+
+    virtual void commit() = 0;
 };
 
 /**
