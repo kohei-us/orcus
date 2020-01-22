@@ -376,6 +376,17 @@ struct range_t
     address_t last;
 };
 
+/**
+ * Stores 3-dimensional cell address.  The 'src' stands for
+ * sheet-row-column.
+ */
+struct src_address_t
+{
+    sheet_t sheet;
+    row_t row;
+    col_t column;
+};
+
 ORCUS_DLLPUBLIC bool operator== (const address_t& left, const address_t& right);
 ORCUS_DLLPUBLIC bool operator!= (const address_t& left, const address_t& right);
 

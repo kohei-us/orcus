@@ -45,9 +45,17 @@ struct ods_session_data : public session_context::custom_data
             spreadsheet::formula_grammar_t _grammar, const pstring& _exp);
     };
 
-    typedef std::deque<formula> formulas_type;
+    struct named_exp
+    {
+        pstring name;
+        pstring expression;
+        spreadsheet::src_address_t base;
 
-    formulas_type m_formulas;
+        named_exp(const pstring& _name, const pstring& _expression, const spreadsheet::src_address_t& _base);
+    };
+
+    std::deque<formula> m_formulas;
+    std::deque<named_exp> m_named_exps;
 
     virtual ~ods_session_data();
 };

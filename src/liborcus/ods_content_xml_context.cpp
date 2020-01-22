@@ -546,6 +546,10 @@ void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, 
 {
     xml_element_expected(parent, NS_odf_table, XML_named_expressions);
 
+    pstring name;
+    pstring expression;
+    spreadsheet::src_address_t base;
+
     for (const xml_token_attr_t& attr : attrs)
     {
         if (attr.ns != NS_odf_table)
@@ -554,15 +558,21 @@ void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, 
         switch (attr.name)
         {
             case XML_name:
+                name = intern(attr);
                 break;
             case XML_base_cell_address:
+                // TODO : parse this address.
                 break;
             case XML_cell_range_address:
+                expression = intern(attr);
                 break;
         }
     }
 
-    // TODO : pick up the attributes and register a named range here.
+    ods_session_data& ods_data =
+        static_cast<ods_session_data&>(*get_session_context().mp_data);
+
+    ods_data.m_named_exps.emplace_back(name, expression, base);
 }
 
 void ods_content_xml_context::end_named_range()
