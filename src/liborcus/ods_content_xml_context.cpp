@@ -574,7 +574,7 @@ void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, 
         static_cast<ods_session_data&>(*get_session_context().mp_data);
 
     if (!name.empty() && !expression.empty() && !base.empty())
-        ods_data.m_named_exps.emplace_back(name, expression, base);
+        ods_data.m_named_exps.emplace_back(name, expression, base, m_cur_sheet.index);
 }
 
 void ods_content_xml_context::end_named_range()
@@ -771,13 +771,40 @@ void ods_content_xml_context::end_spreadsheet()
     ss::iface::import_reference_resolver* resolver =
         mp_factory->get_reference_resolver(ss::formula_ref_context_t::named_expression);
 
-    for (const ods_session_data::named_exp& data : ods_data.m_named_exps)
+    if (resolver)
     {
-        if (get_config().debug)
-            cout << "named expression: name='" << data.name << "'; base='" << data.base << "'; expression='" << data.expression << "'" << endl;
+        for (const ods_session_data::named_exp& data : ods_data.m_named_exps)
+        {
+            if (get_config().debug)
+            {
+                cout << "named expression: name='" << data.name
+                     << "'; base='" << data.base
+                     << "'; expression='" << data.expression
+                     << "'; sheet-scope=" << data.scope
+                     << endl;
+            }
 
-        ss::src_address_t base = resolver->resolve_address(data.base.data(), data.base.size());
-        // TODO : continue ...
+            ss::src_address_t base = resolver->resolve_address(data.base.data(), data.base.size());
+
+            ss::iface::import_named_expression* named_exp = nullptr;
+
+            if (data.scope >= 0)
+            {
+                // TODO : handle this.
+            }
+            else
+            {
+                // global scope.
+                named_exp = mp_factory->get_named_expression();
+            }
+
+            if (named_exp)
+            {
+                named_exp->set_base_position(base);
+                named_exp->set_named_expression(data.name.data(), data.name.size(), data.expression.data(), data.expression.size());
+                named_exp->commit();
+            }
+        }
     }
 
     // Push all formula cells.  Formula cells needs to be processed after all

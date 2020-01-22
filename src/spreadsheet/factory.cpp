@@ -119,9 +119,9 @@ class import_global_named_exp : public iface::import_named_expression
 public:
     import_global_named_exp(document& doc) : m_doc(doc), m_base(0, 0, 0) {}
 
-    virtual void set_base_position(sheet_t sheet, const address_t& pos) override
+    virtual void set_base_position(const src_address_t& pos) override
     {
-        m_base.sheet = sheet;
+        m_base.sheet = pos.sheet;
         m_base.row = pos.row;
         m_base.column = pos.column;
     }

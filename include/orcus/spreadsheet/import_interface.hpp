@@ -308,11 +308,9 @@ public:
      * expression.  If not specified, the implementor should use the top-left
      * cell position on the first sheet as its implied base position.
      *
-     * @param sheet 0-based index of the sheet that contains the base
-     *              position.
      * @param pos cell position to be used as the base.
      */
-    virtual void set_base_position(sheet_t sheet, const address_t& pos) = 0;
+    virtual void set_base_position(const src_address_t& pos) = 0;
 
     /**
      * Define a new named expression or overwrite an existing one.

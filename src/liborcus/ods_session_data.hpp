@@ -51,7 +51,9 @@ struct ods_session_data : public session_context::custom_data
         pstring expression;
         pstring base;
 
-        named_exp(const pstring& _name, const pstring& _expression, const pstring& _base);
+        spreadsheet::sheet_t scope; // >= 0 for sheet scope, or < 0 for global scope.
+
+        named_exp(const pstring& _name, const pstring& _expression, const pstring& _base, spreadsheet::sheet_t _scope);
     };
 
     std::deque<formula> m_formulas;

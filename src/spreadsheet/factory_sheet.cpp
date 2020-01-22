@@ -27,9 +27,9 @@ import_sheet_named_exp::import_sheet_named_exp(document& doc, sheet_t sheet_inde
 
 import_sheet_named_exp::~import_sheet_named_exp() {}
 
-void import_sheet_named_exp::set_base_position(sheet_t sheet, const address_t& pos)
+void import_sheet_named_exp::set_base_position(const src_address_t& pos)
 {
-    m_base.sheet = sheet;
+    m_base.sheet = pos.sheet;
     m_base.row = pos.row;
     m_base.column = pos.column;
 }
