@@ -35,20 +35,22 @@ namespace {
 class import_ref_resolver : public iface::import_reference_resolver
 {
     document& m_doc;
+    const ixion::formula_name_resolver* m_resolver;
 
 public:
-    import_ref_resolver(document& doc) :
-        m_doc(doc)
-    {}
+    import_ref_resolver(document& doc) : m_doc(doc), m_resolver(nullptr) {}
+
+    void set_formula_ref_context(formula_ref_context_t cxt)
+    {
+        m_resolver = m_doc.get_formula_name_resolver(cxt);
+    }
 
     virtual src_address_t resolve_address(const char* p, size_t n) override
     {
-        const ixion::formula_name_resolver* resolver =
-            m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
-        if (!resolver)
+        if (!m_resolver)
             throw std::runtime_error("import_ref_resolver::resolve_address: formula resolver is null!");
 
-        ixion::formula_name_t name = resolver->resolve(p, n, ixion::abs_address_t());
+        ixion::formula_name_t name = m_resolver->resolve(p, n, ixion::abs_address_t());
 
         if (name.type != ixion::formula_name_t::cell_reference)
         {
@@ -66,12 +68,10 @@ public:
 
     virtual src_range_t resolve_range(const char* p, size_t n) override
     {
-        const ixion::formula_name_resolver* resolver =
-            m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
-        if (!resolver)
+        if (!m_resolver)
             throw std::runtime_error("import_ref_resolver::resolve_range: formula resolver is null!");
 
-        ixion::formula_name_t name = resolver->resolve(p, n, ixion::abs_address_t());
+        ixion::formula_name_t name = m_resolver->resolve(p, n, ixion::abs_address_t());
 
         switch (name.type)
         {
@@ -226,6 +226,7 @@ iface::import_named_expression* import_factory::get_named_expression()
 
 iface::import_reference_resolver* import_factory::get_reference_resolver(formula_ref_context_t cxt)
 {
+    mp_impl->m_ref_resolver.set_formula_ref_context(cxt);
     return &mp_impl->m_ref_resolver;
 }
 
