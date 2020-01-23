@@ -304,7 +304,8 @@ struct document_impl
     pivot_collection m_pivots;
 
     std::unique_ptr<ixion::formula_name_resolver> mp_name_resolver_global;
-    std::unique_ptr<ixion::formula_name_resolver> mp_name_resolver_named_exp;
+    std::unique_ptr<ixion::formula_name_resolver> mp_name_resolver_named_exp_base;
+    std::unique_ptr<ixion::formula_name_resolver> mp_name_resolver_named_range;
     formula_grammar_t m_grammar;
 
     table_store_type m_tables;
@@ -316,7 +317,6 @@ struct document_impl
         mp_strings(new import_shared_strings(m_string_pool, m_context, m_styles)),
         m_pivots(doc),
         mp_name_resolver_global(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &m_context)),
-        mp_name_resolver_named_exp(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &m_context)),
         m_grammar(formula_grammar_t::xlsx),
         m_table_handler(m_context, m_tables)
     {
@@ -690,30 +690,29 @@ void document::set_formula_grammar(formula_grammar_t grammar)
     mp_impl->m_grammar = grammar;
 
     ixion::formula_name_resolver_t resolver_type_global = ixion::formula_name_resolver_t::unknown;
-    ixion::formula_name_resolver_t resolver_type_named_exp = ixion::formula_name_resolver_t::unknown;
+    ixion::formula_name_resolver_t resolver_type_named_exp_base = ixion::formula_name_resolver_t::unknown;
+    ixion::formula_name_resolver_t resolver_type_named_range = ixion::formula_name_resolver_t::unknown;
     char arg_sep = 0;
 
     switch (mp_impl->m_grammar)
     {
         case formula_grammar_t::xls_xml:
             resolver_type_global = ixion::formula_name_resolver_t::excel_r1c1;
-            resolver_type_named_exp = resolver_type_global;
             arg_sep = ',';
             break;
         case formula_grammar_t::xlsx:
             resolver_type_global = ixion::formula_name_resolver_t::excel_a1;
-            resolver_type_named_exp = resolver_type_global;
             arg_sep = ',';
             break;
         case formula_grammar_t::ods:
             resolver_type_global = ixion::formula_name_resolver_t::odff;
-            resolver_type_named_exp = ixion::formula_name_resolver_t::calc_a1;
+            resolver_type_named_exp_base = ixion::formula_name_resolver_t::calc_a1;
+            resolver_type_named_range = ixion::formula_name_resolver_t::odf_cra;
             arg_sep = ';';
             break;
         case formula_grammar_t::gnumeric:
             // TODO : Use Excel A1 name resolver for now.
             resolver_type_global = ixion::formula_name_resolver_t::excel_a1;
-            resolver_type_named_exp = resolver_type_global;
             arg_sep = ',';
             break;
         default:
@@ -721,17 +720,24 @@ void document::set_formula_grammar(formula_grammar_t grammar)
     }
 
     mp_impl->mp_name_resolver_global.reset();
-    mp_impl->mp_name_resolver_named_exp.reset();
+    mp_impl->mp_name_resolver_named_exp_base.reset();
 
     if (resolver_type_global != ixion::formula_name_resolver_t::unknown)
     {
         mp_impl->mp_name_resolver_global =
             ixion::formula_name_resolver::get(resolver_type_global, &mp_impl->m_context);
 
-        assert(resolver_type_named_exp != ixion::formula_name_resolver_t::unknown);
+        if (resolver_type_named_exp_base != ixion::formula_name_resolver_t::unknown)
+        {
+            mp_impl->mp_name_resolver_named_exp_base =
+                ixion::formula_name_resolver::get(resolver_type_named_exp_base, &mp_impl->m_context);
+        }
 
-        mp_impl->mp_name_resolver_named_exp =
-            ixion::formula_name_resolver::get(resolver_type_named_exp, &mp_impl->m_context);
+        if (resolver_type_named_range != ixion::formula_name_resolver_t::unknown)
+        {
+            mp_impl->mp_name_resolver_named_range =
+                ixion::formula_name_resolver::get(resolver_type_named_range, &mp_impl->m_context);
+        }
 
         ixion::config cfg = mp_impl->m_context.get_config();
         cfg.sep_function_arg = arg_sep;
@@ -751,13 +757,17 @@ const ixion::formula_name_resolver* document::get_formula_name_resolver(formula_
     {
         case formula_ref_context_t::global:
             return mp_impl->mp_name_resolver_global.get();
-        case formula_ref_context_t::named_expression:
-            return mp_impl->mp_name_resolver_named_exp.get();
+        case formula_ref_context_t::named_expression_base:
+            if (mp_impl->mp_name_resolver_named_exp_base)
+                return mp_impl->mp_name_resolver_named_exp_base.get();
+        case formula_ref_context_t::named_range:
+            if (mp_impl->mp_name_resolver_named_range)
+                return mp_impl->mp_name_resolver_named_range.get();
         default:
             ;
     }
 
-    return nullptr;
+    return mp_impl->mp_name_resolver_global.get();
 }
 
 void document::insert_dirty_cell(const ixion::abs_address_t& pos)

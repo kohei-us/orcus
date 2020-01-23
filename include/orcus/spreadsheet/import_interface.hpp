@@ -296,7 +296,7 @@ public:
 };
 
 /**
- * Interface for importing named expressions.
+ * Interface for importing named expressions or ranges.
  */
 class ORCUS_DLLPUBLIC import_named_expression
 {
@@ -325,6 +325,21 @@ public:
      *              associated with the name.
      */
     virtual void set_named_expression(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) = 0;
+
+    /**
+     * Define a new named range or overwrite an existin gone.  Note that you
+     * can only define only one named range or expression per single commit.
+     *
+     * @param p_name pointer to the buffer that stores the name of the
+     *               expression to be defined.
+     * @param n_name size of the buffer that stores the name of the expression
+     *               to be defined.
+     * @param p_range pointer to the buffer that stores the range to be
+     *                associated with the name.
+     * @param n_range size of the buffer that stores the range to be
+     *                associated with the name.
+     */
+    virtual void set_named_range(const char* p_name, size_t n_name, const char* p_range, size_t n_range) = 0;
 
     virtual void commit() = 0;
 };

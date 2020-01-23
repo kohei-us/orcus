@@ -27,6 +27,19 @@ import_sheet_named_exp::import_sheet_named_exp(document& doc, sheet_t sheet_inde
 
 import_sheet_named_exp::~import_sheet_named_exp() {}
 
+void import_sheet_named_exp::define(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp, formula_ref_context_t ref_cxt)
+{
+    string_pool& sp = m_doc.get_string_pool();
+    m_name = sp.intern(p_name, n_name).first;
+
+    const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver(ref_cxt);
+    assert(resolver);
+
+    ixion::model_context& cxt = m_doc.get_model_context();
+    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, m_base, *resolver, p_exp, n_exp);
+    m_tokens = orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
+}
+
 void import_sheet_named_exp::set_base_position(const src_address_t& pos)
 {
     m_base.sheet = pos.sheet;
@@ -37,16 +50,13 @@ void import_sheet_named_exp::set_base_position(const src_address_t& pos)
 void import_sheet_named_exp::set_named_expression(
     const char* p_name, size_t n_name, const char* p_exp, size_t n_exp)
 {
-    string_pool& sp = m_doc.get_string_pool();
-    m_name = sp.intern(p_name, n_name).first;
+    define(p_name, n_name, p_exp, n_exp, formula_ref_context_t::global);
+}
 
-    const ixion::formula_name_resolver* resolver =
-        m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::named_expression);
-    assert(resolver);
-
-    ixion::model_context& cxt = m_doc.get_model_context();
-    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, m_base, *resolver, p_exp, n_exp);
-    m_tokens = orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
+void import_sheet_named_exp::set_named_range(
+    const char* p_name, size_t n_name, const char* p_range, size_t n_range)
+{
+    define(p_name, n_name, p_range, n_range, formula_ref_context_t::named_range);
 }
 
 void import_sheet_named_exp::commit()

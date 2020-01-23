@@ -769,7 +769,7 @@ void ods_content_xml_context::end_spreadsheet()
         static_cast<ods_session_data&>(*get_session_context().mp_data);
 
     ss::iface::import_reference_resolver* resolver =
-        mp_factory->get_reference_resolver(ss::formula_ref_context_t::named_expression);
+        mp_factory->get_reference_resolver(ss::formula_ref_context_t::named_expression_base);
 
     if (resolver)
     {
@@ -801,7 +801,8 @@ void ods_content_xml_context::end_spreadsheet()
             if (named_exp)
             {
                 named_exp->set_base_position(base);
-                named_exp->set_named_expression(data.name.data(), data.name.size(), data.expression.data(), data.expression.size());
+                named_exp->set_named_range(
+                    data.name.data(), data.name.size(), data.expression.data(), data.expression.size());
                 named_exp->commit();
             }
         }

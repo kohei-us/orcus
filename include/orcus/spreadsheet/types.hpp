@@ -163,10 +163,27 @@ enum class formula_t
     shared
 };
 
+/**
+ * Formula reference context specifies the location where a formula
+ * expression is used.  This is used mainly for those document formats that
+ * make use of multiple formula reference syntaxes, such as ODS.
+ */
 enum class formula_ref_context_t
 {
+    /**
+     * Default context, that is, the context that is NOT any of the other
+     * contexts specified below.
+     */
     global = 0,
-    named_expression,
+
+    /** base cell position of either a named range or expression. */
+    named_expression_base,
+
+    /**
+     * named range is a special case of named expression where the expression
+     * consists of only one range token.
+     */
+    named_range,
 };
 
 enum class underline_t
