@@ -36,6 +36,7 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/ods/raw-values-1/",
     SRCDIR"/test/ods/formula-1/",
     SRCDIR"/test/ods/formula-2/",
+    SRCDIR"/test/ods/named-range/",
 };
 
 void test_ods_import_cell_values()
