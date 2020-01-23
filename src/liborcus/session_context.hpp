@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_SESSION_CONTEXT_HPP
-#define ORCUS_SESSION_CONTEXT_HPP
+#ifndef INCLUDED_ORCUS_SESSION_CONTEXT_HPP
+#define INCLUDED_ORCUS_SESSION_CONTEXT_HPP
 
 #include "orcus/string_pool.hpp"
+#include "orcus/types.hpp"
 
 #include <memory>
 
@@ -35,6 +36,9 @@ struct session_context
     session_context();
     session_context(custom_data* data);
     ~session_context();
+
+    pstring intern(const xml_token_attr_t& attr);
+    pstring intern(const pstring& s);
 };
 
 }

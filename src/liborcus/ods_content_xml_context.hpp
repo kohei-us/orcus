@@ -82,6 +82,9 @@ private:
     void start_named_range(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void end_named_range();
 
+    void start_named_expression(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void end_named_expression();
+
     void start_column(const xml_attrs_t& attrs);
     void end_column();
 

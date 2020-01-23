@@ -220,6 +220,39 @@ private:
     ods_content_xml_context::cell_attr& m_attr;
 };
 
+void pick_up_named_range_or_expression(
+    session_context& cxt, const xml_attrs_t& attrs, xmlns_id_t exp_attr_ns, xml_token_t exp_attr_name,
+    ods_session_data::named_exp_type name_type, ss::sheet_t scope)
+{
+    pstring name;
+    pstring expression;
+    pstring base;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns == exp_attr_ns && attr.name == exp_attr_name)
+        {
+            expression = cxt.intern(attr);
+            continue;
+        }
+
+        switch (attr.name)
+        {
+            case XML_name:
+                name = cxt.intern(attr);
+                break;
+            case XML_base_cell_address:
+                base = cxt.intern(attr);
+                break;
+        }
+    }
+
+    ods_session_data& ods_data = static_cast<ods_session_data&>(*cxt.mp_data);
+
+    if (!name.empty() && !expression.empty() && !base.empty())
+        ods_data.m_named_exps.emplace_back(name, expression, base, name_type, scope);
+}
+
 }
 
 // ============================================================================
@@ -434,6 +467,9 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
             case XML_named_range:
                 start_named_range(parent, attrs);
                 break;
+            case XML_named_expression:
+                start_named_expression(parent, attrs);
+                break;
             default:
                 warn_unhandled();
         }
@@ -479,6 +515,9 @@ bool ods_content_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
                 break;
             case XML_named_range:
                 end_named_range();
+                break;
+            case XML_named_expression:
+                end_named_expression();
                 break;
             default:
                 ;
@@ -547,37 +586,25 @@ void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, 
 {
     xml_element_expected(parent, NS_odf_table, XML_named_expressions);
 
-    pstring name;
-    pstring expression;
-    pstring base;
-
-    for (const xml_token_attr_t& attr : attrs)
-    {
-        if (attr.ns != NS_odf_table)
-            continue;
-
-        switch (attr.name)
-        {
-            case XML_name:
-                name = intern(attr);
-                break;
-            case XML_base_cell_address:
-                base = intern(attr);
-                break;
-            case XML_cell_range_address:
-                expression = intern(attr);
-                break;
-        }
-    }
-
-    ods_session_data& ods_data =
-        static_cast<ods_session_data&>(*get_session_context().mp_data);
-
-    if (!name.empty() && !expression.empty() && !base.empty())
-        ods_data.m_named_exps.emplace_back(name, expression, base, m_cur_sheet.index);
+    pick_up_named_range_or_expression(
+        get_session_context(), attrs, NS_odf_table, XML_cell_range_address,
+        ods_session_data::ne_range, m_cur_sheet.index);
 }
 
 void ods_content_xml_context::end_named_range()
+{
+}
+
+void ods_content_xml_context::start_named_expression(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_odf_table, XML_named_expressions);
+
+    pick_up_named_range_or_expression(
+        get_session_context(), attrs, NS_odf_table, XML_expression,
+        ods_session_data::ne_expression, m_cur_sheet.index);
+}
+
+void ods_content_xml_context::end_named_expression()
 {
 }
 
@@ -801,8 +828,19 @@ void ods_content_xml_context::end_spreadsheet()
             if (named_exp)
             {
                 named_exp->set_base_position(base);
-                named_exp->set_named_range(
-                    data.name.data(), data.name.size(), data.expression.data(), data.expression.size());
+                switch (data.type)
+                {
+                    case ods_session_data::ne_range:
+                        named_exp->set_named_range(
+                            data.name.data(), data.name.size(), data.expression.data(), data.expression.size());
+                        break;
+                    case ods_session_data::ne_expression:
+                        named_exp->set_named_expression(
+                            data.name.data(), data.name.size(), data.expression.data(), data.expression.size());
+                        break;
+                    default:
+                        ;
+                }
                 named_exp->commit();
             }
         }

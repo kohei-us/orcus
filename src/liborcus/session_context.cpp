@@ -19,6 +19,19 @@ session_context::~session_context()
     mp_data.reset();
 }
 
+pstring session_context::intern(const xml_token_attr_t& attr)
+{
+    if (!attr.transient)
+        return attr.value;
+
+    return m_string_pool.intern(attr.value).first;
+}
+
+pstring session_context::intern(const pstring& s)
+{
+    return m_string_pool.intern(s).first;
+}
+
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

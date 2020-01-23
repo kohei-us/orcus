@@ -237,15 +237,12 @@ const config& xml_context_base::get_config() const
 
 pstring xml_context_base::intern(const xml_token_attr_t& attr)
 {
-    if (!attr.transient)
-        return attr.value;
-
-    return m_session_cxt.m_string_pool.intern(attr.value).first;
+    return m_session_cxt.intern(attr);
 }
 
 pstring xml_context_base::intern(const pstring& s)
 {
-    return m_session_cxt.m_string_pool.intern(s).first;
+    return m_session_cxt.intern(s);
 }
 
 }

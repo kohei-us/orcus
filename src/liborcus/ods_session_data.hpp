@@ -19,6 +19,7 @@ namespace orcus {
 struct ods_session_data : public session_context::custom_data
 {
     enum formula_result_type { rt_none, rt_numeric, rt_string, rt_error };
+    enum named_exp_type { ne_unknown, ne_range, ne_expression };
 
     struct formula_result
     {
@@ -51,9 +52,10 @@ struct ods_session_data : public session_context::custom_data
         pstring expression;
         pstring base;
 
+        named_exp_type type;
         spreadsheet::sheet_t scope; // >= 0 for sheet scope, or < 0 for global scope.
 
-        named_exp(const pstring& _name, const pstring& _expression, const pstring& _base, spreadsheet::sheet_t _scope);
+        named_exp(const pstring& _name, const pstring& _expression, const pstring& _base, named_exp_type _type, spreadsheet::sheet_t _scope);
     };
 
     std::deque<formula> m_formulas;
