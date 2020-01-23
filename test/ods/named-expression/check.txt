@@ -1,0 +1,14 @@
+Sheet1/1/1:formula:MyCalc:128
+Sheet1/1/4:numeric:7
+Sheet1/2/4:numeric:3
+Sheet1/3/2:formula:128/MyCalc:1
+Sheet1/3/4:formula:MyCalcWithRef:1024
+Sheet1/6/0:formula:INT(MyCalcWithRef2*PI()):65
+Sheet1/7/0:formula:INT(MyCalcWithRef2*PI()):50
+Sheet1/8/0:formula:INT(MyCalcWithRef2*PI()):28
+Sheet2/0/0:numeric:1
+Sheet2/0/1:numeric:4
+Sheet2/1/0:numeric:2
+Sheet2/1/1:numeric:5
+Sheet2/2/0:numeric:3
+Sheet2/2/1:numeric:6
