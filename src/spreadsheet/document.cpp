@@ -760,9 +760,11 @@ const ixion::formula_name_resolver* document::get_formula_name_resolver(formula_
         case formula_ref_context_t::named_expression_base:
             if (mp_impl->mp_name_resolver_named_exp_base)
                 return mp_impl->mp_name_resolver_named_exp_base.get();
+            break;
         case formula_ref_context_t::named_range:
             if (mp_impl->mp_name_resolver_named_range)
                 return mp_impl->mp_name_resolver_named_range.get();
+            break;
         default:
             ;
     }
