@@ -462,8 +462,14 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
                 xml_element_expected(parent, NS_odf_table, XML_dde_links);
                 break;
             case XML_named_expressions:
-                xml_element_expected(parent, NS_odf_office, XML_spreadsheet);
+            {
+                static const xml_elem_set_t expected = {
+                    { NS_odf_office, XML_spreadsheet },
+                    { NS_odf_table, XML_table },
+                };
+                xml_element_expected(parent, expected);
                 break;
+            }
             case XML_named_range:
                 start_named_range(parent, attrs);
                 break;
@@ -817,7 +823,9 @@ void ods_content_xml_context::end_spreadsheet()
 
             if (data.scope >= 0)
             {
-                // TODO : handle this.
+                // sheet local scope
+                assert(data.scope < ss::sheet_t(m_tables.size()));
+                named_exp = m_tables[data.scope]->get_named_expression();
             }
             else
             {
