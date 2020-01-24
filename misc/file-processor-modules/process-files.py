@@ -84,7 +84,7 @@ def load_doc(bytes):
 
 
 def print_results(inpath):
-    outpath = f"{inpath}.{FILEEXT_OUT}"
+    outpath = f"{inpath}.{config.ext_out}"
     with open(outpath, "r") as f:
         print()
         for line in f.readlines():
