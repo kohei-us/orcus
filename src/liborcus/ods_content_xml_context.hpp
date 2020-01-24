@@ -10,6 +10,7 @@
 
 #include "xml_context_base.hpp"
 #include "odf_para_context.hpp"
+#include "ods_dde_links_context.hpp"
 #include "odf_styles.hpp"
 #include "orcus/spreadsheet/types.hpp"
 
@@ -117,6 +118,7 @@ private:
     name2id_type m_cell_format_map; /// map of style names to cell format (xf) IDs.
 
     text_para_context m_child_para;
+    ods_dde_links_context m_child_dde_links;
 };
 
 }

@@ -80,6 +80,7 @@ add_library(liborcus-${ORCUS_API_VERSION} SHARED
     odf_tokens.cpp
     ods_content_xml_context.cpp
     ods_content_xml_handler.cpp
+    ods_dde_links_context.cpp
     ods_session_data.cpp
     odf_helper.cpp
     orcus_ods.cpp

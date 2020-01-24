@@ -288,7 +288,8 @@ ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, c
     m_para_index(0),
     m_has_content(false),
     m_styles(),
-    m_child_para(session_cxt, tokens, factory->get_shared_strings(), m_styles)
+    m_child_para(session_cxt, tokens, factory->get_shared_strings(), m_styles),
+    m_child_dde_links(session_cxt, tokens)
 {
     spreadsheet::iface::import_global_settings* gs = mp_factory->get_global_settings();
     if (gs)
@@ -310,6 +311,9 @@ bool ods_content_xml_context::can_handle_element(xmlns_id_t ns, xml_token_t name
     if (ns == NS_odf_office && name == XML_automatic_styles)
         return false;
 
+    if (ns == NS_odf_table && name == XML_dde_links)
+        return false;
+
     return true;
 }
 
@@ -327,6 +331,13 @@ xml_context_base* ods_content_xml_context::create_child_context(xmlns_id_t ns, x
         mp_child.reset(new styles_context(get_session_context(), get_tokens(), m_styles, mp_factory->get_styles()));
         mp_child->transfer_common(*this);
         return mp_child.get();
+    }
+
+    if (ns == NS_odf_table && name == XML_dde_links)
+    {
+        m_child_dde_links.reset();
+        m_child_dde_links.transfer_common(*this);
+        return &m_child_dde_links;
     }
 
     return nullptr;
