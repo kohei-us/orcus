@@ -40,7 +40,9 @@ _orcus_la_SOURCES += \
 	sheet_rows.hpp \
 	sheet_rows.cpp \
 	cell.hpp \
-	cell.cpp
+	cell.cpp \
+	named_expression.hpp \
+	named_expression.cpp
 
 _orcus_la_LIBADD += \
 	../spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \

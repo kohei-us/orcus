@@ -20,6 +20,7 @@
 #include "sheet.hpp"
 #include "sheet_rows.hpp"
 #include "cell.hpp"
+#include "named_expression.hpp"
 #endif
 
 #include <iostream>
@@ -145,6 +146,8 @@ ORCUS_DLLPUBLIC PyObject* PyInit__orcus()
     if (!orcus::python::add_type_to_module(m, orcus::python::get_cell_type(), "Cell"))
         return nullptr;
 
+    if (!orcus::python::add_type_to_module(m, orcus::python::get_named_exp_type(), "NamedExpression"))
+        return nullptr;
 #endif
 
     return m;
