@@ -6,7 +6,10 @@
  */
 
 #include "named_expression.hpp"
+#include "orcus/spreadsheet/document.hpp"
 
+#include <ixion/formula.hpp>
+#include <ixion/model_context.hpp>
 #include <structmember.h>
 
 namespace orcus { namespace python {
@@ -111,6 +114,48 @@ PyTypeObject named_exp_type =
 };
 
 } // anonymous namespace
+
+PyObject* create_named_exp_object(
+    const spreadsheet::document& doc, const ixion::formula_tokens_t* tokens)
+{
+    PyTypeObject* named_exp_type = get_named_exp_type();
+    if (!named_exp_type)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to get the named expression type object.");
+        return nullptr;
+    }
+
+    PyObject* obj = named_exp_type->tp_new(named_exp_type, nullptr, nullptr);
+    if (!obj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to instantiate a named expression object.");
+        return nullptr;
+    }
+
+    pyobj_named_exp* self = reinterpret_cast<pyobj_named_exp*>(obj);
+    init_members(self);
+
+    if (tokens)
+    {
+        ixion::abs_address_t pos(0, 0, 0);
+        const ixion::model_context& cxt = doc.get_model_context();
+        auto* resolver = doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
+
+        // Create formula expression string.
+        std::string formula_s = ixion::print_formula_tokens(cxt, pos, *resolver, *tokens);
+        self->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
+
+        // Create a tuple of individual formula token strings.
+        self->formula_tokens = PyTuple_New(tokens->size());
+        for (size_t i = 0; i < tokens->size(); ++i)
+        {
+            std::string ft_s = ixion::print_formula_token(cxt, pos, *resolver, *(*tokens)[i]);
+            PyTuple_SetItem(self->formula_tokens, i, PyUnicode_FromStringAndSize(ft_s.data(), ft_s.size()));
+        }
+    }
+
+    return obj;
+}
 
 PyTypeObject* get_named_exp_type()
 {

@@ -9,8 +9,17 @@
 #define INCLUDED_NAMED_EXPRESSION_HPP
 
 #include <Python.h>
+#include <ixion/formula_tokens_fwd.hpp>
 
-namespace orcus { namespace python {
+namespace orcus {
+
+namespace spreadsheet {
+
+class document;
+
+}
+
+namespace python {
 
 /** non-python part. */
 struct named_exp_data
@@ -18,6 +27,9 @@ struct named_exp_data
     named_exp_data();
     ~named_exp_data();
 };
+
+PyObject* create_named_exp_object(
+    const spreadsheet::document& doc, const ixion::formula_tokens_t* tokens);
 
 PyTypeObject* get_named_exp_type();
 
