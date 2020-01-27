@@ -160,9 +160,9 @@ PyObject* create_named_exp_object(
     return obj;
 }
 
-void populate_named_exp_dict(
-    ss::sheet_t origin_sheet, const ss::document& doc, PyObject* dict, ixion::named_expressions_iterator iter)
+PyObject* create_named_exp_dict(ss::sheet_t origin_sheet, const ss::document& doc, ixion::named_expressions_iterator iter)
 {
+    PyObject* dict = PyDict_New();
     for (; iter.has(); iter.next())
     {
         auto ne = iter.get();
@@ -170,6 +170,8 @@ void populate_named_exp_dict(
         PyObject* tokens = create_named_exp_object(origin_sheet, doc, ne.tokens);
         PyDict_SetItem(dict, name, tokens);
     }
+
+    return dict;
 }
 
 PyTypeObject* get_named_exp_type()
