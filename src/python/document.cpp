@@ -7,8 +7,11 @@
 
 #include "document.hpp"
 #include "sheet.hpp"
+#include "named_expression.hpp"
 #include "orcus/pstring.hpp"
 
+#include <ixion/model_context.hpp>
+#include <ixion/named_expressions_iterator.hpp>
 #include <structmember.h>
 #include <object.h>
 
@@ -39,7 +42,7 @@ void document_dealloc(pyobj_document* self)
 {
     delete self->m_data;
 
-    PyDict_Clear(self->named_expressions);
+    PyDict_Clear(self->named_expressions); // This should unref all its members.
     Py_CLEAR(self->named_expressions);
 
     // Destroy all sheet objects.
@@ -164,6 +167,16 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
 
     // Create a dictionary of global named expressions.
     pydoc->named_expressions = PyDict_New();
+
+    const ixion::model_context& cxt = pydoc_data->m_doc->get_model_context();
+    auto iter = cxt.get_named_expressions_iterator();
+    for (; iter.has(); iter.next())
+    {
+        auto ne = iter.get();
+        PyObject* name = PyUnicode_FromStringAndSize(ne.name->data(), ne.name->size());
+        PyObject* tokens = create_named_exp_object(*pydoc_data->m_doc, ne.tokens);
+        PyDict_SetItem(pydoc->named_expressions, name, tokens);
+    }
 
     // Create a tuple of sheet objects and store it with the pydoc instance.
     size_t sheet_size = pydoc_data->m_doc->sheet_size();

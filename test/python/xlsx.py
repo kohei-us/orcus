@@ -44,8 +44,12 @@ class TestCase(unittest.TestCase):
         filepath = os.path.join(self.basedir, "named-expression", "input.xlsx")
         with open(filepath, "rb") as f:
             doc = xlsx.read(f.read())
-        print(doc)
-        print(doc.named_expressions)
+
+        self.assertEqual(len(doc.named_expressions), 2)
+        self.assertEqual(doc.named_expressions["MyRange"].formula, "$A$1:$A$5")
+        self.assertEqual(doc.named_expressions["MyRange"].formula_tokens[0], "$A$1:$A$5")
+        self.assertEqual(doc.named_expressions["MyRange2"].formula, "$A$1:$B$5")
+        self.assertEqual(doc.named_expressions["MyRange2"].formula_tokens[0], "$A$1:$B$5")
 
 
 if __name__ == '__main__':
