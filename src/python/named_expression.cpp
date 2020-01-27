@@ -12,6 +12,8 @@
 #include <ixion/model_context.hpp>
 #include <structmember.h>
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus { namespace python {
 
 named_exp_data::named_exp_data() {}
@@ -116,7 +118,7 @@ PyTypeObject named_exp_type =
 } // anonymous namespace
 
 PyObject* create_named_exp_object(
-    const spreadsheet::document& doc, const ixion::formula_tokens_t* tokens)
+    ss::sheet_t origin_sheet, const spreadsheet::document& doc, const ixion::formula_tokens_t* tokens)
 {
     PyTypeObject* named_exp_type = get_named_exp_type();
     if (!named_exp_type)
@@ -137,7 +139,7 @@ PyObject* create_named_exp_object(
 
     if (tokens)
     {
-        ixion::abs_address_t pos(0, 0, 0);
+        ixion::abs_address_t pos(origin_sheet, 0, 0);
         const ixion::model_context& cxt = doc.get_model_context();
         auto* resolver = doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
 

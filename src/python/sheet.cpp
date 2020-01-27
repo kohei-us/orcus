@@ -7,10 +7,14 @@
 
 #include "sheet.hpp"
 #include "sheet_rows.hpp"
+#include "named_expression.hpp"
 
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
+
+#include <ixion/model_context.hpp>
+#include <ixion/named_expressions_iterator.hpp>
 
 #include <structmember.h>
 #include <bytesobject.h>
@@ -34,6 +38,7 @@ struct pyobj_sheet
     PyObject* name;
     PyObject* sheet_size;
     PyObject* data_size;
+    PyObject* named_expressions;
 
     sheet_data* m_data;
 };
@@ -55,6 +60,9 @@ inline spreadsheet::sheet* get_core_sheet(PyObject* self)
 void sheet_dealloc(pyobj_sheet* self)
 {
     delete self->m_data;
+
+    PyDict_Clear(self->named_expressions); // This should unref all its members.
+    Py_CLEAR(self->named_expressions);
 
     Py_CLEAR(self->name);
     Py_CLEAR(self->sheet_size);
@@ -182,6 +190,7 @@ PyMemberDef sheet_members[] =
     { (char*)"name",       T_OBJECT_EX, offsetof(pyobj_sheet, name),       READONLY, (char*)"sheet name" },
     { (char*)"sheet_size", T_OBJECT_EX, offsetof(pyobj_sheet, sheet_size), READONLY, (char*)"sheet size" },
     { (char*)"data_size",  T_OBJECT_EX, offsetof(pyobj_sheet, data_size),  READONLY, (char*)"data size" },
+    { (char*)"named_expressions", T_OBJECT_EX, offsetof(pyobj_sheet, named_expressions), READONLY, (char*)"named expressions" },
     { nullptr }
 };
 
@@ -250,8 +259,8 @@ void store_sheet(
 
     // Sheet name
     spreadsheet::sheet_t sid = orcus_sheet->get_index();
-    pstring name = doc->get_sheet_name(sid);
-    pysheet->name = PyUnicode_FromStringAndSize(name.get(), name.size());
+    pstring sheet_name = doc->get_sheet_name(sid);
+    pysheet->name = PyUnicode_FromStringAndSize(sheet_name.data(), sheet_name.size());
 
     // Data size - size of the data area.
     ixion::abs_range_t range = orcus_sheet->get_data_range();
@@ -271,6 +280,19 @@ void store_sheet(
     pysheet->sheet_size = PyDict_New();
     PyDict_SetItemString(pysheet->sheet_size, "column", PyLong_FromLong(orcus_sheet->col_size()));
     PyDict_SetItemString(pysheet->sheet_size, "row", PyLong_FromLong(orcus_sheet->row_size()));
+
+    // sheet-local named expressions
+    const ixion::model_context& cxt = pysheet->m_data->m_doc->get_model_context();
+    pysheet->named_expressions = PyDict_New();
+
+    auto iter = cxt.get_named_expressions_iterator(sid);
+    for (; iter.has(); iter.next())
+    {
+        auto ne = iter.get();
+        PyObject* name = PyUnicode_FromStringAndSize(ne.name->data(), ne.name->size());
+        PyObject* tokens = create_named_exp_object(sid, *pysheet->m_data->m_doc, ne.tokens);
+        PyDict_SetItem(pysheet->named_expressions, name, tokens);
+    }
 }
 
 }}

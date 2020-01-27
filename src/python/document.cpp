@@ -174,7 +174,7 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
     {
         auto ne = iter.get();
         PyObject* name = PyUnicode_FromStringAndSize(ne.name->data(), ne.name->size());
-        PyObject* tokens = create_named_exp_object(*pydoc_data->m_doc, ne.tokens);
+        PyObject* tokens = create_named_exp_object(0, *pydoc_data->m_doc, ne.tokens);
         PyDict_SetItem(pydoc->named_expressions, name, tokens);
     }
 

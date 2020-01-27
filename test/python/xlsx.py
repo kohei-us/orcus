@@ -51,6 +51,19 @@ class TestCase(unittest.TestCase):
         self.assertEqual(doc.named_expressions["MyRange2"].formula, "$A$1:$B$5")
         self.assertEqual(doc.named_expressions["MyRange2"].formula_tokens[0], "$A$1:$B$5")
 
+    def test_named_expression_sheet_local(self):
+        filepath = os.path.join(self.basedir, "named-expression-sheet-local", "input.xlsx")
+        with open(filepath, "rb") as f:
+            doc = xlsx.read(f.read())
+
+        self.assertEqual(len(doc.sheets[0].named_expressions), 1)
+        self.assertEqual(doc.sheets[0].named_expressions["MyRange"].formula, "$A$1:$B$3")
+        self.assertEqual(doc.sheets[0].named_expressions["MyRange"].formula_tokens[0], "$A$1:$B$3")
+
+        self.assertEqual(len(doc.sheets[1].named_expressions), 1)
+        self.assertEqual(doc.sheets[1].named_expressions["MyRange"].formula, "$A$4:$B$5")
+        self.assertEqual(doc.sheets[1].named_expressions["MyRange"].formula_tokens[0], "$A$4:$B$5")
+
 
 if __name__ == '__main__':
     unittest.main()
