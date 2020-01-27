@@ -39,7 +39,7 @@ class import_sheet_named_exp : public iface::import_named_expression
     sheet_t m_sheet_index;
     pstring m_name;
     ixion::abs_address_t m_base;
-    std::unique_ptr<ixion::formula_tokens_t> m_tokens;
+    ixion::formula_tokens_t m_tokens;
 
     void define(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp, formula_ref_context_t ref_cxt);
 

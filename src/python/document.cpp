@@ -30,6 +30,7 @@ struct pyobj_document
     PyObject_HEAD
 
     PyObject* sheets; // tuple of sheet objects.
+    PyObject* named_expressions; // dictionary storing global named expressions.
 
     document_data* m_data;
 };
@@ -37,6 +38,9 @@ struct pyobj_document
 void document_dealloc(pyobj_document* self)
 {
     delete self->m_data;
+
+    PyDict_Clear(self->named_expressions);
+    Py_CLEAR(self->named_expressions);
 
     // Destroy all sheet objects.
     Py_ssize_t n = PyTuple_Size(self->sheets);
@@ -70,6 +74,7 @@ PyMethodDef document_methods[] =
 PyMemberDef document_members[] =
 {
     { (char*)"sheets", T_OBJECT_EX, offsetof(pyobj_document, sheets), READONLY, (char*)"sheet objects" },
+    { (char*)"named_expressions", T_OBJECT_EX, offsetof(pyobj_document, named_expressions), READONLY, (char*)"dictionary storing named expression objects" },
     { nullptr }
 };
 
@@ -156,6 +161,9 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
     PyTypeObject* sheet_type = get_sheet_type();
     if (!sheet_type)
         return;
+
+    // Create a dictionary of global named expressions.
+    pydoc->named_expressions = PyDict_New();
 
     // Create a tuple of sheet objects and store it with the pydoc instance.
     size_t sheet_size = pydoc_data->m_doc->sheet_size();

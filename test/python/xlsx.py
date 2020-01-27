@@ -40,6 +40,13 @@ class TestCase(unittest.TestCase):
             test_dir = os.path.join(self.basedir, test_dir)
             common.run_test_dir(self, test_dir, xlsx)
 
+    def test_named_expression(self):
+        filepath = os.path.join(self.basedir, "named-expression", "input.xlsx")
+        with open(filepath, "rb") as f:
+            doc = xlsx.read(f.read())
+        print(doc)
+        print(doc.named_expressions)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -114,7 +114,7 @@ class import_global_named_exp : public iface::import_named_expression
     document& m_doc;
     pstring m_name;
     ixion::abs_address_t m_base;
-    std::unique_ptr<ixion::formula_tokens_t> m_tokens;
+    ixion::formula_tokens_t m_tokens;
 
     void define(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp, formula_ref_context_t ref_cxt)
     {
@@ -125,8 +125,7 @@ class import_global_named_exp : public iface::import_named_expression
         assert(resolver);
 
         ixion::model_context& cxt = m_doc.get_model_context();
-        ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, m_base, *resolver, p_exp, n_exp);
-        m_tokens = orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
+        m_tokens = ixion::parse_formula_string(cxt, m_base, *resolver, p_exp, n_exp);
     }
 public:
     import_global_named_exp(document& doc) : m_doc(doc), m_base(0, 0, 0) {}

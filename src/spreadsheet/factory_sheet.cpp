@@ -36,8 +36,7 @@ void import_sheet_named_exp::define(const char* p_name, size_t n_name, const cha
     assert(resolver);
 
     ixion::model_context& cxt = m_doc.get_model_context();
-    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, m_base, *resolver, p_exp, n_exp);
-    m_tokens = orcus::make_unique<ixion::formula_tokens_t>(std::move(tokens));
+    m_tokens = ixion::parse_formula_string(cxt, m_base, *resolver, p_exp, n_exp);
 }
 
 void import_sheet_named_exp::set_base_position(const src_address_t& pos)
