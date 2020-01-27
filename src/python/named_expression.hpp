@@ -13,6 +13,12 @@
 #include <Python.h>
 #include <ixion/formula_tokens_fwd.hpp>
 
+namespace ixion {
+
+class named_expressions_iterator;
+
+}
+
 namespace orcus {
 
 namespace spreadsheet {
@@ -32,6 +38,10 @@ struct named_exp_data
 
 PyObject* create_named_exp_object(
     spreadsheet::sheet_t origin_sheet, const spreadsheet::document& doc, const ixion::formula_tokens_t* tokens);
+
+void populate_named_exp_dict(
+    spreadsheet::sheet_t origin_sheet, const spreadsheet::document& doc,
+    PyObject* dict, ixion::named_expressions_iterator iter);
 
 PyTypeObject* get_named_exp_type();
 

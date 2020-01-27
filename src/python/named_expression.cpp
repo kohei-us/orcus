@@ -10,6 +10,7 @@
 
 #include <ixion/formula.hpp>
 #include <ixion/model_context.hpp>
+#include <ixion/named_expressions_iterator.hpp>
 #include <structmember.h>
 
 namespace ss = orcus::spreadsheet;
@@ -157,6 +158,18 @@ PyObject* create_named_exp_object(
     }
 
     return obj;
+}
+
+void populate_named_exp_dict(
+    ss::sheet_t origin_sheet, const ss::document& doc, PyObject* dict, ixion::named_expressions_iterator iter)
+{
+    for (; iter.has(); iter.next())
+    {
+        auto ne = iter.get();
+        PyObject* name = PyUnicode_FromStringAndSize(ne.name->data(), ne.name->size());
+        PyObject* tokens = create_named_exp_object(origin_sheet, doc, ne.tokens);
+        PyDict_SetItem(dict, name, tokens);
+    }
 }
 
 PyTypeObject* get_named_exp_type()

@@ -284,15 +284,7 @@ void store_sheet(
     // sheet-local named expressions
     const ixion::model_context& cxt = pysheet->m_data->m_doc->get_model_context();
     pysheet->named_expressions = PyDict_New();
-
-    auto iter = cxt.get_named_expressions_iterator(sid);
-    for (; iter.has(); iter.next())
-    {
-        auto ne = iter.get();
-        PyObject* name = PyUnicode_FromStringAndSize(ne.name->data(), ne.name->size());
-        PyObject* tokens = create_named_exp_object(sid, *pysheet->m_data->m_doc, ne.tokens);
-        PyDict_SetItem(pysheet->named_expressions, name, tokens);
-    }
+    populate_named_exp_dict(sid, *pysheet->m_data->m_doc, pysheet->named_expressions, cxt.get_named_expressions_iterator(sid));
 }
 
 }}

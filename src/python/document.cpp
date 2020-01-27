@@ -169,14 +169,7 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
     pydoc->named_expressions = PyDict_New();
 
     const ixion::model_context& cxt = pydoc_data->m_doc->get_model_context();
-    auto iter = cxt.get_named_expressions_iterator();
-    for (; iter.has(); iter.next())
-    {
-        auto ne = iter.get();
-        PyObject* name = PyUnicode_FromStringAndSize(ne.name->data(), ne.name->size());
-        PyObject* tokens = create_named_exp_object(0, *pydoc_data->m_doc, ne.tokens);
-        PyDict_SetItem(pydoc->named_expressions, name, tokens);
-    }
+    populate_named_exp_dict(-1, *pydoc_data->m_doc, pydoc->named_expressions, cxt.get_named_expressions_iterator());
 
     // Create a tuple of sheet objects and store it with the pydoc instance.
     size_t sheet_size = pydoc_data->m_doc->sheet_size();
