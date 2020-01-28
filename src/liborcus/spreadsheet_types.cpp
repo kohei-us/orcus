@@ -246,6 +246,24 @@ const map_type& get()
 
 } // namespace named_color
 
+namespace formula_error_policy {
+
+using map_type = mdds::sorted_string_map<formula_error_policy_t>;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries = {
+    { ORCUS_ASCII("fail"), formula_error_policy_t::fail },
+    { ORCUS_ASCII("skip"), formula_error_policy_t::skip },
+};
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), formula_error_policy_t::unknown);
+    return mt;
+}
+
+}
+
 } // anonymous namespace
 
 color_rgb_t::color_rgb_t() : red(0), green(0), blue(0) {}
@@ -497,6 +515,11 @@ color_rgb_t to_color_rgb(const char* p, size_t n)
 color_rgb_t to_color_rgb_from_name(const char* p, size_t n)
 {
     return named_colors::get().find(p, n);
+}
+
+formula_error_policy_t to_formula_error_policy(const char* p, size_t n)
+{
+    return formula_error_policy::get().find(p, n);
 }
 
 std::ostream& operator<< (std::ostream& os, error_value_t ev)

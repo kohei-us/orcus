@@ -57,6 +57,10 @@ const char* help_debug =
 const char* help_recalc =
 "Re-calculate all formula cells after the documetn is loaded.";
 
+const char* help_formula_error_policy =
+"Specify whether to abort immediately when the loader fails to parse the first "
+"formula cell ('fail'), or skip the offending cells and continue ('skip').";
+
 const char* help_row_size =
 "Specify the number of maximum rows in each sheet.";
 
@@ -118,6 +122,7 @@ bool parse_import_filter_args(
         ("help,h", "Print this help.")
         ("debug,d", po::bool_switch(&debug), help_debug)
         ("recalc,r", po::bool_switch(&recalc_formula_cells), help_recalc)
+        ("error-policy,e", po::value<string>()->default_value("fail"), help_formula_error_policy)
         ("dump-check", help_dump_check)
         ("output,o", po::value<string>(), help_output)
         ("output-format,f", po::value<string>(), gen_help_output_format().data())
@@ -175,6 +180,18 @@ bool parse_import_filter_args(
 
     if (vm.count("row-size"))
         fact.set_default_row_size(vm["row-size"].as<spreadsheet::row_t>());
+
+    std::string error_policy_s = vm["error-policy"].as<std::string>();
+    spreadsheet::formula_error_policy_t error_policy =
+        spreadsheet::to_formula_error_policy(error_policy_s.data(), error_policy_s.size());
+
+    if (error_policy == spreadsheet::formula_error_policy_t::unknown)
+    {
+        cerr << "Unrecognized error policy: " << error_policy_s << endl;
+        return false;
+    }
+
+    fact.set_formula_error_policy(error_policy);
 
     if (infile.empty())
     {

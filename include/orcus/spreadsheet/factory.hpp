@@ -61,6 +61,8 @@ public:
      * @param b value of this flag.
      */
     void set_recalc_formula_cells(bool b);
+
+    void set_formula_error_policy(formula_error_policy_t policy);
 };
 
 class ORCUS_SPM_DLLPUBLIC import_styles : public iface::import_styles

@@ -140,7 +140,7 @@ void import_auto_filter::commit()
 }
 
 import_array_formula::import_array_formula(document& doc, sheet& sheet) :
-    m_doc(doc), m_sheet(sheet)
+    m_doc(doc), m_sheet(sheet), m_error_policy(formula_error_policy_t::fail)
 {
     m_range.first.column = -1;
     m_range.first.row = -1;
@@ -237,6 +237,11 @@ void import_array_formula::set_missing_formula_result(ixion::formula_result resu
     m_result.reset(std::move(result));
 }
 
+void import_array_formula::set_formula_error_policy(formula_error_policy_t policy)
+{
+    m_error_policy = policy;
+}
+
 void import_array_formula::reset()
 {
     m_tokens.clear();
@@ -254,7 +259,8 @@ import_formula::import_formula(document& doc, sheet& sheet, shared_formula_pool&
     m_row(-1),
     m_col(-1),
     m_shared_index(0),
-    m_shared(false) {}
+    m_shared(false),
+    m_error_policy(formula_error_policy_t::fail) {}
 
 import_formula::~import_formula() {}
 
@@ -278,7 +284,20 @@ void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_
     ixion::model_context& cxt = m_doc.get_model_context();
     ixion::abs_address_t pos(m_sheet.get_index(), m_row, m_col);
 
-    ixion::formula_tokens_t tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
+    ixion::formula_tokens_t tokens;
+    try
+    {
+        tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
+    }
+    catch (const std::exception& e)
+    {
+        if (m_error_policy == formula_error_policy_t::fail)
+            throw;
+
+        const char* p_error = e.what();
+        size_t n_error = strlen(p_error);
+        tokens = ixion::create_formula_error_tokens(cxt, p, n, p_error, n_error);
+    }
 
     m_tokens_store = ixion::formula_tokens_store::create();
     m_tokens_store->get() = std::move(tokens);
@@ -334,6 +353,11 @@ void import_formula::commit()
 void import_formula::set_missing_formula_result(ixion::formula_result result)
 {
     m_result.reset(std::move(result));
+}
+
+void import_formula::set_formula_error_policy(formula_error_policy_t policy)
+{
+    m_error_policy = policy;
 }
 
 void import_formula::reset()
@@ -485,6 +509,12 @@ void import_sheet::set_character_set(character_set_t charset)
 void import_sheet::set_fill_missing_formula_results(bool b)
 {
     m_fill_missing_formula_results = b;
+}
+
+void import_sheet::set_formula_error_policy(formula_error_policy_t policy)
+{
+    m_formula.set_formula_error_policy(policy);
+    m_array_formula.set_formula_error_policy(policy);
 }
 
 import_sheet_view::import_sheet_view(sheet_view& view, sheet_t si) :

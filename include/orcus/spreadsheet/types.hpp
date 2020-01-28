@@ -186,6 +186,19 @@ enum class formula_ref_context_t
     named_range,
 };
 
+/**
+ * Policy on how to handle a formula cell containing an expression that has
+ * not been successfully parsed.
+ */
+enum class formula_error_policy_t
+{
+    unknown,
+    /** loading of the document will be halted. */
+    fail,
+    /** the error cell will be skipped. */
+    skip
+};
+
 enum class underline_t
 {
     none = 0,
@@ -510,6 +523,16 @@ ORCUS_DLLPUBLIC color_rgb_t to_color_rgb(const char* p, size_t n);
  * @return struct value representing an RGB value.
  */
 ORCUS_DLLPUBLIC color_rgb_t to_color_rgb_from_name(const char* p, size_t n);
+
+/**
+ * Convert a formula error policy name to its enum value equivalent.
+ *
+ * @param p pointer to the string buffer that stores the policy name.
+ * @param n length of the buffer.
+ *
+ * @return enum value equivalent for the original error policy name.
+ */
+ORCUS_DLLPUBLIC formula_error_policy_t to_formula_error_policy(const char* p, size_t n);
 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, error_value_t ev);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar);

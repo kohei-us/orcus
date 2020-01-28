@@ -58,13 +58,16 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/table-offset/",
 };
 
-std::unique_ptr<spreadsheet::document> load_doc_from_filepath(const string& path)
+std::unique_ptr<spreadsheet::document> load_doc_from_filepath(const string& path, bool recalc=true)
 {
     std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
     spreadsheet::import_factory factory(*doc);
     orcus_xls_xml app(&factory);
+    app.set_config(test_config);
     app.read_file(path.c_str());
-    doc->recalc_formula_cells();
+
+    if (recalc)
+        doc->recalc_formula_cells();
 
     return doc;
 }
@@ -1284,6 +1287,11 @@ void test_xls_xml_view_frozen_pane()
     }
 }
 
+void test_xls_xml_skip_error_cells()
+{
+    string path(SRCDIR"/test/xls-xml/formula-cells-parse-error/index.xml");
+}
+
 }
 
 int main()
@@ -1311,6 +1319,8 @@ int main()
     test_xls_xml_view_cursor_per_sheet();
     test_xls_xml_view_cursor_split_pane();
     test_xls_xml_view_frozen_pane();
+
+    test_xls_xml_skip_error_cells();
 
     return EXIT_SUCCESS;
 }

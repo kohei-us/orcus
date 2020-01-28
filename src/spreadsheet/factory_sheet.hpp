@@ -124,6 +124,7 @@ class import_array_formula : public iface::import_array_formula
     range_t m_range;
     ixion::formula_tokens_t m_tokens;
     boost::optional<ixion::formula_result> m_result;
+    formula_error_policy_t m_error_policy;
 
 public:
     import_array_formula(document& doc, sheet& sheet);
@@ -145,6 +146,8 @@ public:
 
     void set_missing_formula_result(ixion::formula_result result);
 
+    void set_formula_error_policy(formula_error_policy_t policy);
+
     void reset();
 };
 
@@ -161,6 +164,7 @@ class import_formula : public iface::import_formula
 
     ixion::formula_tokens_store_ptr_t m_tokens_store;
     boost::optional<ixion::formula_result> m_result;
+    formula_error_policy_t m_error_policy;
 
 public:
     import_formula(document& doc, sheet& sheet, shared_formula_pool& pool);
@@ -176,6 +180,7 @@ public:
     virtual void commit() override;
 
     void set_missing_formula_result(ixion::formula_result result);
+    void set_formula_error_policy(formula_error_policy_t policy);
 
     void reset();
 };
@@ -223,6 +228,7 @@ public:
 
     void set_character_set(character_set_t charset);
     void set_fill_missing_formula_results(bool b);
+    void set_formula_error_policy(formula_error_policy_t policy);
 };
 
 class import_sheet_view : public iface::import_sheet_view

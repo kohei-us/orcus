@@ -183,6 +183,7 @@ struct import_factory::impl
     sheet_ifaces_type m_sheets;
 
     bool m_recalc_formula_cells;
+    formula_error_policy_t m_error_policy;
 
     impl(import_factory& envelope, document& doc, row_t row_size, col_t col_size) :
         m_envelope(envelope),
@@ -197,7 +198,8 @@ struct import_factory::impl
         m_ref_resolver(doc),
         m_global_named_exp(doc),
         m_styles(doc.get_styles(), doc.get_string_pool()),
-        m_recalc_formula_cells(false) {}
+        m_recalc_formula_cells(false),
+        m_error_policy(formula_error_policy_t::fail) {}
 };
 
 import_factory::import_factory(document& doc, row_t row_size, col_t col_size) :
@@ -278,6 +280,7 @@ iface::import_sheet* import_factory::append_sheet(
     import_sheet* p = mp_impl->m_sheets.back().get();
     p->set_character_set(mp_impl->m_charset);
     p->set_fill_missing_formula_results(!mp_impl->m_recalc_formula_cells);
+    p->set_formula_error_policy(mp_impl->m_error_policy);
     return p;
 }
 
@@ -332,6 +335,11 @@ character_set_t import_factory::get_character_set() const
 void import_factory::set_recalc_formula_cells(bool b)
 {
     mp_impl->m_recalc_formula_cells = b;
+}
+
+void import_factory::set_formula_error_policy(formula_error_policy_t policy)
+{
+    mp_impl->m_error_policy = policy;
 }
 
 struct export_factory::impl
