@@ -58,16 +58,18 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/table-offset/",
 };
 
-std::unique_ptr<spreadsheet::document> load_doc_from_filepath(const string& path, bool recalc=true)
+std::unique_ptr<spreadsheet::document> load_doc_from_filepath(
+    const std::string& path,
+    bool recalc=true,
+    ss::formula_error_policy_t error_policy=ss::formula_error_policy_t::fail)
 {
     std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
     spreadsheet::import_factory factory(*doc);
+    factory.set_recalc_formula_cells(recalc);
+    factory.set_formula_error_policy(error_policy);
     orcus_xls_xml app(&factory);
     app.set_config(test_config);
     app.read_file(path.c_str());
-
-    if (recalc)
-        doc->recalc_formula_cells();
 
     return doc;
 }
@@ -1289,7 +1291,38 @@ void test_xls_xml_view_frozen_pane()
 
 void test_xls_xml_skip_error_cells()
 {
-    string path(SRCDIR"/test/xls-xml/formula-cells-parse-error/index.xml");
+    string path(SRCDIR"/test/xls-xml/formula-cells-parse-error/input.xml");
+
+    try
+    {
+        auto doc = load_doc_from_filepath(path, false, ss::formula_error_policy_t::fail);
+        (void)doc;
+        assert(!"exception was expected, but was not thrown.");
+    }
+    catch (const std::exception& e)
+    {
+        // works as expected
+    }
+
+    auto doc = load_doc_from_filepath(path, false, ss::formula_error_policy_t::skip);
+    const ixion::model_context& cxt = doc->get_model_context();
+
+    auto is_formula_cell_with_error = [&cxt](const ixion::abs_address_t& pos) -> bool
+    {
+        const ixion::formula_cell* fc = cxt.get_formula_cell(pos);
+        if (!fc)
+            return false;
+
+        const ixion::formula_tokens_t& tokens = fc->get_tokens()->get();
+        if (tokens.empty())
+            return false;
+
+        return tokens[0]->get_opcode() == ixion::fop_error;
+    };
+
+    // Make sure these two cells have been imported as formula cells with error.
+    assert(is_formula_cell_with_error(ixion::abs_address_t(0, 1, 1)));
+    assert(is_formula_cell_with_error(ixion::abs_address_t(0, 4, 0)));
 }
 
 }
