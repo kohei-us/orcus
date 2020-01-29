@@ -28,6 +28,7 @@ struct stream_data
 {
     py_unique_ptr stream;
     bool recalc_formula_cells = false;
+    spreadsheet::formula_error_policy_t error_policy = spreadsheet::formula_error_policy_t::fail;
 };
 
 /**

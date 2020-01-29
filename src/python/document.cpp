@@ -16,6 +16,7 @@
 #include <object.h>
 
 using namespace std;
+namespace ss = orcus::spreadsheet;
 
 namespace orcus { namespace python {
 
@@ -209,13 +210,14 @@ document_data* get_document_data(PyObject* self)
 
 stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs)
 {
-    static const char* kwlist[] = { "stream", "recalc", nullptr };
+    static const char* kwlist[] = { "stream", "recalc", "error_policy", nullptr };
 
     stream_data ret;
     PyObject* file = nullptr;
     int recalc_formula_cells = 0;
+    const char* error_policy_s = nullptr;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|p", const_cast<char**>(kwlist), &file, &recalc_formula_cells))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|ps", const_cast<char**>(kwlist), &file, &recalc_formula_cells, &error_policy_s))
         return ret;
 
     if (!file)
@@ -243,6 +245,21 @@ stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs)
     {
         PyErr_SetString(PyExc_RuntimeError, "failed to extract bytes from this object.");
         return ret;
+    }
+
+    if (error_policy_s)
+    {
+        size_t n = strlen(error_policy_s);
+        ss::formula_error_policy_t error_policy = ss::to_formula_error_policy(error_policy_s, n);
+        if (error_policy == ss::formula_error_policy_t::unknown)
+        {
+            std::ostringstream os;
+            os << "invalid error policy value: '" << error_policy_s << "'. The value must be either 'fail' or 'skip'.";
+            PyErr_SetString(PyExc_RuntimeError, os.str().data());
+            return ret;
+        }
+
+        ret.error_policy = error_policy;
     }
 
     ret.stream.reset(obj_bytes);
