@@ -121,7 +121,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                         ixion::abs_address_t pos(sheet_id, c.row, c.col);
                         pos = cell->get_parent_position(pos);
                         formula = ixion::print_formula_tokens(
-                           cxt, pos, *resolver, tokens);
+                            cxt, pos, *resolver, tokens);
                     }
                     else
                         formula = "???";
