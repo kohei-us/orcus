@@ -227,27 +227,25 @@ PyObject* create_cell_object_formula(
         return nullptr;
     }
 
-    PyObject* obj = create_and_init_cell_object("FORMULA");
+    const ixion::formula_tokens_t& tokens = fc->get_tokens()->get();
+    bool is_error = !tokens.empty() && tokens[0]->get_opcode() == ixion::fop_error;
+
+    PyObject* obj = create_and_init_cell_object(is_error ? "FORMULA_WITH_ERROR": "FORMULA");
     if (!obj)
         return nullptr;
 
     pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
 
-    const ixion::formula_tokens_t& tokens = fc->get_tokens()->get();
-
-    const ixion::model_context& cxt = doc.get_model_context();
-    auto* resolver = doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
-
     // Create formula expression string.
+    auto* resolver = doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
+    const ixion::model_context& cxt = doc.get_model_context();
     std::string formula_s = ixion::print_formula_tokens(cxt, pos, *resolver, tokens);
     obj_data->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
 
     // Create a tuple of individual formula token strings.
     obj_data->formula_tokens = PyTuple_New(tokens.size());
     for (size_t i = 0; i < tokens.size(); ++i)
-    {
         PyTuple_SetItem(obj_data->formula_tokens, i, create_formula_token_object(doc, *tokens[i]));
-    }
 
     ixion::formula_result res = fc->get_result_cache();
     switch (res.get_type())

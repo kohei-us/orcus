@@ -33,6 +33,7 @@ class CellType(Enum):
     NUMERIC = 3
     STRING  = 4
     FORMULA = 5
+    FORMULA_WITH_ERROR = 6
 
 
 class FormulaTokenType(Enum):
