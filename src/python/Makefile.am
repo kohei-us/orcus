@@ -41,6 +41,8 @@ _orcus_la_SOURCES += \
 	sheet_rows.cpp \
 	cell.hpp \
 	cell.cpp \
+	formula_token.hpp \
+	formula_token.cpp \
 	named_expression.hpp \
 	named_expression.cpp
 

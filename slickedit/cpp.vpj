@@ -503,6 +503,8 @@
                 <F N="../src/python/csv.hpp"/>
                 <F N="../src/python/document.cpp"/>
                 <F N="../src/python/document.hpp"/>
+                <F N="../src/python/formula_token.cpp"/>
+                <F N="../src/python/formula_token.hpp"/>
                 <F N="../src/python/global.cpp"/>
                 <F N="../src/python/global.hpp"/>
                 <F N="../src/python/gnumeric.cpp"/>
