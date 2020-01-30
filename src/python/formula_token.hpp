@@ -29,7 +29,7 @@ class document;
 
 namespace python {
 
-PyObject* create_formula_token_object(const spreadsheet::document& doc, const ixion::formula_token& token);
+PyObject* create_formula_token_object(const spreadsheet::document& doc, const ixion::abs_address_t& pos, const ixion::formula_token& token);
 
 PyTypeObject* get_formula_token_type();
 

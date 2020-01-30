@@ -187,12 +187,11 @@ PyTypeObject formula_token_type =
 
 } // anonymous namespace
 
-PyObject* create_formula_token_object(const ss::document& doc, const ixion::formula_token& token)
+PyObject* create_formula_token_object(const ss::document& doc, const ixion::abs_address_t& pos, const ixion::formula_token& token)
 {
     const ixion::model_context& cxt = doc.get_model_context();
     auto* resolver = doc.get_formula_name_resolver(ss::formula_ref_context_t::global);
     assert(resolver);
-    ixion::abs_address_t pos(0, 0, 0);
     std::string ft_s = ixion::print_formula_token(cxt, pos, *resolver, token);
 
     PyObject* obj = create_and_init_formula_token_object(token.get_opcode(), std::move(ft_s));

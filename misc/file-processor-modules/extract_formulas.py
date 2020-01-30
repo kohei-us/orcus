@@ -20,6 +20,14 @@ from common import config
 FORMULAS_JSON_FILENAME = f"{config.prefix_skip}formulas.json"
 
 
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, orcus.FormulaToken):
+            return str(obj)
+
+        return json.JSONEncoder.default(self, obj)
+
+
 def process_document(filepath, doc):
     """File processor callback function."""
 
@@ -31,12 +39,23 @@ def process_document(filepath, doc):
 
         for row_pos, row in enumerate(sh.get_rows()):
             for col_pos, cell in enumerate(row):
-                if cell.type != orcus.CellType.FORMULA or not cell.formula:
-                    # Skip this cell.
+                data = dict(sheet=sh.name, row=row_pos, column=col_pos)
+                if cell.type == orcus.CellType.FORMULA:
+                    data.update({
+                        "valid": True,
+                        "formula": cell.formula,
+                        "formula_tokens": cell.formula_tokens,
+                    })
+                elif cell.type == orcus.CellType.FORMULA_WITH_ERROR:
+                    data.update({
+                        "valid": False,
+                        "formula": cell.formula_tokens[1],  # original formula string
+                        "error": cell.formula_tokens[2],
+                    })
+                else:
                     continue
 
-                formula_cells.append(
-                    dict(sheet=sh.name, row=row_pos, column=col_pos, formula=cell.formula, formula_tokens=cell.formula_tokens))
+                formula_cells.append(data)
 
     data = dict()
     data["filepath"] = filepath
@@ -53,7 +72,7 @@ def process_document(filepath, doc):
     dirpath = os.path.dirname(filepath)
     outpath = os.path.join(dirpath, FORMULAS_JSON_FILENAME)
     with open(outpath, "w") as f:
-        s = json.dumps(data)
+        s = json.dumps(data, cls=JSONEncoder)
         f.write(s)
 
     return output_buffer
@@ -86,10 +105,15 @@ def dump_json_as_xml(data, stream):
             elem.attrib["row"] = str(formula_cell["row"])
             elem.attrib["column"] = str(formula_cell["column"])
             elem.attrib["s"] = formula_cell["formula"]
-            elem.attrib["token-count"] = str(len(formula_cell["formula_tokens"]))
-            for token in formula_cell["formula_tokens"]:
-                elem_token = ET.SubElement(elem, "token")
-                elem_token.attrib["s"] = token
+            elem.attrib["valid"] = "true" if formula_cell["valid"] else "false"
+            if formula_cell["valid"]:
+                elem.attrib["token-count"] = str(len(formula_cell["formula_tokens"]))
+                for token in formula_cell["formula_tokens"]:
+                    elem_token = ET.SubElement(elem, "token")
+                    elem_token.attrib["s"] = token
+            else:
+                # invalid formula
+                elem.attrib["error"] = formula_cell["error"]
 
     s = ET.tostring(root, "utf-8").decode("utf-8")
     from xml.dom import minidom

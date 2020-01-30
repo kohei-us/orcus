@@ -245,7 +245,7 @@ PyObject* create_cell_object_formula(
     // Create a tuple of individual formula token strings.
     obj_data->formula_tokens = PyTuple_New(tokens.size());
     for (size_t i = 0; i < tokens.size(); ++i)
-        PyTuple_SetItem(obj_data->formula_tokens, i, create_formula_token_object(doc, *tokens[i]));
+        PyTuple_SetItem(obj_data->formula_tokens, i, create_formula_token_object(doc, pos, *tokens[i]));
 
     ixion::formula_result res = fc->get_result_cache();
     switch (res.get_type())
