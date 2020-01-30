@@ -58,14 +58,15 @@ class TestCase(unittest.TestCase):
         doc = xls_xml.read(bytes, error_policy="skip")
 
         # Make sure cells B2 and A5 are imported as formula cells.
-        # TODO: for now, there is no way of checking whether they are normal
-        # formula cells or formula cells with errors.  We will add such check
-        # when we can get that info via Python API.
         rows = [row for row in doc.sheets[0].get_rows()]
         c = rows[1][1]
         self.assertEqual(c.type, orcus.CellType.FORMULA)
+        self.assertFalse(c.formula)  # formula string should be empty
+        self.assertEqual(c.formula_tokens[0].type, orcus.FormulaTokenType.ERROR)
         c = rows[4][0]
         self.assertEqual(c.type, orcus.CellType.FORMULA)
+        self.assertFalse(c.formula)  # formula string should be empty
+        self.assertEqual(c.formula_tokens[0].type, orcus.FormulaTokenType.ERROR)
 
 
 if __name__ == '__main__':
