@@ -12,7 +12,24 @@
 
 #include <Python.h>
 
-namespace orcus { namespace python {
+namespace ixion {
+
+struct abs_address_t;
+class formula_token;
+
+}
+
+namespace orcus {
+
+namespace spreadsheet {
+
+class document;
+
+}
+
+namespace python {
+
+PyObject* create_formula_token_object(const spreadsheet::document& doc, const ixion::formula_token& token);
 
 PyTypeObject* get_formula_token_type();
 

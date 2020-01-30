@@ -6,12 +6,24 @@
  */
 
 #include "formula_token.hpp"
+#include "orcus/spreadsheet/document.hpp"
 
+#include <ixion/formula.hpp>
+#include <ixion/formula_name_resolver.hpp>
+#include <ixion/model_context.hpp>
 #include <structmember.h>
+
+namespace ss = orcus::spreadsheet;
 
 namespace orcus { namespace python {
 
 namespace {
+
+/** non-python part of the object's internal. */
+struct data_formula_token
+{
+    std::string repr;
+};
 
 /**
  * Python object for orcus.NamedExpression.
@@ -21,6 +33,8 @@ struct pyobj_formula_token
     PyObject_HEAD
 
     PyObject* type;
+
+    data_formula_token* data;
 };
 
 void init_members(pyobj_formula_token* self)
@@ -29,8 +43,34 @@ void init_members(pyobj_formula_token* self)
     self->type = Py_None;
 }
 
+PyObject* create_and_init_formula_token_object(std::string repr)
+{
+    PyTypeObject* ft_type = get_formula_token_type();
+    if (!ft_type)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to get the formula token type object.");
+        return nullptr;
+    }
+
+    PyObject* obj = ft_type->tp_new(ft_type, nullptr, nullptr);
+    if (!obj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to instantiate a formula token object.");
+        return nullptr;
+    }
+
+    pyobj_formula_token* self = reinterpret_cast<pyobj_formula_token*>(obj);
+    init_members(self);
+    self->data->repr = std::move(repr);
+
+    return obj;
+}
+
 void tp_dealloc(pyobj_formula_token* self)
 {
+    delete self->data;
+    self->data = nullptr;
+
     Py_CLEAR(self->type);
 
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
@@ -45,7 +85,13 @@ int tp_init(pyobj_formula_token* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     pyobj_formula_token* self = (pyobj_formula_token*)type->tp_alloc(type, 0);
+    self->data = new data_formula_token;
     return reinterpret_cast<PyObject*>(self);
+}
+
+PyObject* tp_repr(pyobj_formula_token* self)
+{
+    return PyUnicode_FromStringAndSize(self->data->repr.data(), self->data->repr.size());
 }
 
 PyMemberDef tp_members[] =
@@ -65,7 +111,7 @@ PyTypeObject formula_token_type =
     0,                                        // tp_getattr
     0,                                        // tp_setattr
     0,                                        // tp_compare
-    0,                                        // tp_repr
+    (reprfunc)tp_repr,                        // tp_repr
     0,                                        // tp_as_number
     0,                                        // tp_as_sequence
     0,                                        // tp_as_mapping
@@ -97,6 +143,18 @@ PyTypeObject formula_token_type =
 };
 
 } // anonymous namespace
+
+PyObject* create_formula_token_object(const ss::document& doc, const ixion::formula_token& token)
+{
+    const ixion::model_context& cxt = doc.get_model_context();
+    auto* resolver = doc.get_formula_name_resolver(ss::formula_ref_context_t::global);
+    assert(resolver);
+    ixion::abs_address_t pos(0, 0, 0);
+    std::string ft_s = ixion::print_formula_token(cxt, pos, *resolver, token);
+
+    PyObject* obj = create_and_init_formula_token_object(std::move(ft_s));
+    return obj;
+}
 
 PyTypeObject* get_formula_token_type()
 {

@@ -8,6 +8,7 @@
 #include "cell.hpp"
 #include "memory.hpp"
 #include "global.hpp"
+#include "formula_token.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
 #include <ixion/cell.hpp>
@@ -245,8 +246,7 @@ PyObject* create_cell_object_formula(
     obj_data->formula_tokens = PyTuple_New(tokens.size());
     for (size_t i = 0; i < tokens.size(); ++i)
     {
-        std::string ft_s = ixion::print_formula_token(cxt, pos, *resolver, *tokens[i]);
-        PyTuple_SetItem(obj_data->formula_tokens, i, PyUnicode_FromStringAndSize(ft_s.data(), ft_s.size()));
+        PyTuple_SetItem(obj_data->formula_tokens, i, create_formula_token_object(doc, *tokens[i]));
     }
 
     ixion::formula_result res = fc->get_result_cache();
