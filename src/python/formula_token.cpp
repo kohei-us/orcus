@@ -6,6 +6,7 @@
  */
 
 #include "formula_token.hpp"
+#include "global.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
 #include <ixion/formula.hpp>
@@ -37,13 +38,54 @@ struct pyobj_formula_token
     data_formula_token* data;
 };
 
+const char* to_formula_token_type(ixion::fopcode_t op)
+{
+    switch (op)
+    {
+        case ixion::fop_single_ref:
+        case ixion::fop_range_ref:
+        case ixion::fop_table_ref:
+            return "REFERENCE";
+        case ixion::fop_named_expression:
+            return "NAME";
+        case ixion::fop_function:
+            return "FUNCTION";
+        case ixion::fop_string:
+        case ixion::fop_value:
+            return "VALUE";
+        case ixion::fop_plus:
+        case ixion::fop_minus:
+        case ixion::fop_divide:
+        case ixion::fop_multiply:
+        case ixion::fop_exponent:
+        case ixion::fop_concat:
+        case ixion::fop_equal:
+        case ixion::fop_not_equal:
+        case ixion::fop_less:
+        case ixion::fop_greater:
+        case ixion::fop_less_equal:
+        case ixion::fop_greater_equal:
+        case ixion::fop_open:
+        case ixion::fop_close:
+        case ixion::fop_sep:
+            return "OPERATOR";
+        case ixion::fop_error:
+            return "ERROR";
+        case ixion::fop_unknown:
+        default:
+            ;
+    }
+
+    return "UNKNOWN";
+}
+
 void init_members(pyobj_formula_token* self)
 {
     Py_INCREF(Py_None);
     self->type = Py_None;
 }
 
-PyObject* create_and_init_formula_token_object(std::string repr)
+PyObject* create_and_init_formula_token_object(ixion::fopcode_t op, std::string repr)
 {
     PyTypeObject* ft_type = get_formula_token_type();
     if (!ft_type)
@@ -61,6 +103,7 @@ PyObject* create_and_init_formula_token_object(std::string repr)
 
     pyobj_formula_token* self = reinterpret_cast<pyobj_formula_token*>(obj);
     init_members(self);
+    self->type = get_python_enum_value("FormulaTokenType", to_formula_token_type(op));
     self->data->repr = std::move(repr);
 
     return obj;
@@ -152,7 +195,10 @@ PyObject* create_formula_token_object(const ss::document& doc, const ixion::form
     ixion::abs_address_t pos(0, 0, 0);
     std::string ft_s = ixion::print_formula_token(cxt, pos, *resolver, token);
 
-    PyObject* obj = create_and_init_formula_token_object(std::move(ft_s));
+    PyObject* obj = create_and_init_formula_token_object(token.get_opcode(), std::move(ft_s));
+    if (!obj)
+        return nullptr;
+
     return obj;
 }
 

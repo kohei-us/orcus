@@ -33,3 +33,15 @@ class CellType(Enum):
     NUMERIC = 3
     STRING  = 4
     FORMULA = 5
+
+
+class FormulaTokenType(Enum):
+    """Collection of formula token types."""
+
+    UNKNOWN   = 0
+    REFERENCE = 1
+    VALUE     = 2
+    NAME      = 3
+    FUNCTION  = 4
+    OPERATOR  = 5
+    ERROR     = 6
