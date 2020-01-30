@@ -167,7 +167,19 @@ void import_array_formula::set_formula(formula_grammar_t grammar, const char* p,
     ixion::model_context& cxt = m_doc.get_model_context();
     ixion::abs_address_t pos(m_sheet.get_index(), m_range.first.row, m_range.first.column);
 
-    m_tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
+    try
+    {
+        m_tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
+    }
+    catch (const std::exception& e)
+    {
+        if (m_error_policy == formula_error_policy_t::fail)
+            throw;
+
+        const char* p_error = e.what();
+        size_t n_error = strlen(p_error);
+        m_tokens = ixion::create_formula_error_tokens(cxt, p, n, p_error, n_error);
+    }
 }
 
 void import_array_formula::set_result_value(row_t row, col_t col, double value)
