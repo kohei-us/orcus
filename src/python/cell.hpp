@@ -28,13 +28,6 @@ class document;
 
 namespace python {
 
-/** non-python part. */
-struct cell_data
-{
-    cell_data();
-    ~cell_data();
-};
-
 PyObject* create_cell_object_empty();
 PyObject* create_cell_object_boolean(bool v);
 PyObject* create_cell_object_string(const std::string* p);

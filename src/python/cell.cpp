@@ -21,9 +21,6 @@
 
 namespace orcus { namespace python {
 
-cell_data::cell_data() {}
-cell_data::~cell_data() {}
-
 namespace {
 
 /**
@@ -37,8 +34,6 @@ struct pyobj_cell
     PyObject* value;
     PyObject* formula;
     PyObject* formula_tokens;
-
-    cell_data* m_data;
 };
 
 void initialize_cell_members(pyobj_cell* self)
@@ -78,8 +73,6 @@ PyObject* create_and_init_cell_object(const char* type_name)
 
 void cell_dealloc(pyobj_cell* self)
 {
-    delete self->m_data;
-
     Py_CLEAR(self->type);
     Py_CLEAR(self->value);
     Py_CLEAR(self->formula);
@@ -91,7 +84,6 @@ void cell_dealloc(pyobj_cell* self)
 PyObject* cell_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     pyobj_cell* self = (pyobj_cell*)type->tp_alloc(type, 0);
-    self->m_data = new cell_data;
     return reinterpret_cast<PyObject*>(self);
 }
 
