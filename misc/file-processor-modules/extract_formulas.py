@@ -24,6 +24,10 @@ class JSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, orcus.FormulaToken):
             return str(obj)
+        if isinstance(obj, orcus.FormulaTokenType):
+            n = len("FormulaTokenType.")
+            s = str(obj)
+            return s[n:].lower()
 
         return json.JSONEncoder.default(self, obj)
 
@@ -44,8 +48,14 @@ def process_document(filepath, doc):
                     data.update({
                         "valid": True,
                         "formula": cell.formula,
-                        "formula_tokens": cell.formula_tokens,
                     })
+
+                    formula_tokens = list()
+                    for token in cell.formula_tokens:
+                        formula_tokens.append([token, token.type])
+
+                    data["formula_tokens"] = formula_tokens
+
                 elif cell.type == orcus.CellType.FORMULA_WITH_ERROR:
                     data.update({
                         "valid": False,
@@ -110,7 +120,8 @@ def dump_json_as_xml(data, stream):
                 elem.attrib["token-count"] = str(len(formula_cell["formula_tokens"]))
                 for token in formula_cell["formula_tokens"]:
                     elem_token = ET.SubElement(elem, "token")
-                    elem_token.attrib["s"] = token
+                    elem_token.attrib["s"] = token[0]
+                    elem_token.attrib["type"] = token[1]
             else:
                 # invalid formula
                 elem.attrib["error"] = formula_cell["error"]
