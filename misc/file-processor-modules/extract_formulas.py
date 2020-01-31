@@ -32,11 +32,27 @@ class JSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+def process_formula_tokens(obj):
+    formula_tokens = list()
+    for token in obj.formula_tokens:
+        formula_tokens.append([token, token.type])
+    return formula_tokens
+
+
 def process_document(filepath, doc):
     """File processor callback function."""
 
     sheet_names = list()
     formula_cells =  list()
+    named_exps = list()
+
+    for name, named_exp in doc.named_expressions.items():
+        named_exps.append({
+            "name": name,
+            "formula": named_exp.formula,
+            "formula_tokens": process_formula_tokens(named_exp),
+            "scope": "global"
+        })
 
     for sh in doc.sheets:
         sheet_names.append(sh.name)
@@ -50,11 +66,7 @@ def process_document(filepath, doc):
                         "formula": cell.formula,
                     })
 
-                    formula_tokens = list()
-                    for token in cell.formula_tokens:
-                        formula_tokens.append([token, token.type])
-
-                    data["formula_tokens"] = formula_tokens
+                    data["formula_tokens"] = process_formula_tokens(cell)
 
                 elif cell.type == orcus.CellType.FORMULA_WITH_ERROR:
                     data.update({
@@ -71,6 +83,7 @@ def process_document(filepath, doc):
     data["filepath"] = filepath
     data["sheets"] = sheet_names
     data["formulas"] = formula_cells
+    data["named_expressions"] = named_exps
 
     output_buffer = list()
     for sn in data["sheets"]:
@@ -126,6 +139,19 @@ def dump_json_as_xml(data, stream):
                 # invalid formula
                 elem.attrib["error"] = formula_cell["error"]
 
+        elem_named_exps = ET.SubElement(elem_doc, "named-expressions")
+        elem_named_exps.attrib["count"] = str(len(doc["named_expressions"]))
+        for named_exp in doc["named_expressions"]:
+            elem = ET.SubElement(elem_named_exps, "named-expressions")
+            elem.attrib["name"] = named_exp["name"]
+            elem.attrib["formula"] = named_exp["formula"]
+            elem.attrib["scope"] = named_exp["scope"]
+            elem.attrib["token-count"] = str(len(named_exp["formula_tokens"]))
+            for token in named_exp["formula_tokens"]:
+                elem_token = ET.SubElement(elem, "token")
+                elem_token.attrib["s"] = token[0]
+                elem_token.attrib["type"] = token[1]
+
     s = ET.tostring(root, "utf-8").decode("utf-8")
     from xml.dom import minidom
     s = minidom.parseString(s).toprettyxml(indent="    ")
@@ -161,6 +187,9 @@ def main():
                 batches.append(data)
                 data = list()
                 file_count = 0
+
+    if file_count:
+        batches.append(data)
 
     output = args.output if args.output else sys.stdout
 

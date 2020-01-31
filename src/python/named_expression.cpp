@@ -6,6 +6,7 @@
  */
 
 #include "named_expression.hpp"
+#include "formula_token.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
 #include <ixion/formula.hpp>
@@ -151,10 +152,7 @@ PyObject* create_named_exp_object(
         // Create a tuple of individual formula token strings.
         self->formula_tokens = PyTuple_New(tokens->size());
         for (size_t i = 0; i < tokens->size(); ++i)
-        {
-            std::string ft_s = ixion::print_formula_token(cxt, pos, *resolver, *(*tokens)[i]);
-            PyTuple_SetItem(self->formula_tokens, i, PyUnicode_FromStringAndSize(ft_s.data(), ft_s.size()));
-        }
+            PyTuple_SetItem(self->formula_tokens, i, create_formula_token_object(doc, pos, *(*tokens)[i]));
     }
 
     return obj;
