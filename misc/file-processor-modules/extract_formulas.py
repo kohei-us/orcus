@@ -106,7 +106,7 @@ class OutputFormat(enum.Enum):
     XML = "xml"
 
 
-def dump_json_as_xml(data, stream):
+def dump_json_as_xml(data, stream, add_tokens):
     import xml.etree.ElementTree as ET
     root = ET.Element("docs")
     root.attrib["count"] = str(len(data))
@@ -131,10 +131,11 @@ def dump_json_as_xml(data, stream):
             elem.attrib["valid"] = "true" if formula_cell["valid"] else "false"
             if formula_cell["valid"]:
                 elem.attrib["token-count"] = str(len(formula_cell["formula_tokens"]))
-                for token in formula_cell["formula_tokens"]:
-                    elem_token = ET.SubElement(elem, "token")
-                    elem_token.attrib["s"] = token[0]
-                    elem_token.attrib["type"] = token[1]
+                if add_tokens:
+                    for token in formula_cell["formula_tokens"]:
+                        elem_token = ET.SubElement(elem, "token")
+                        elem_token.attrib["s"] = token[0]
+                        elem_token.attrib["type"] = token[1]
             else:
                 # invalid formula
                 elem.attrib["error"] = formula_cell["error"]
@@ -147,10 +148,11 @@ def dump_json_as_xml(data, stream):
             elem.attrib["formula"] = named_exp["formula"]
             elem.attrib["scope"] = named_exp["scope"]
             elem.attrib["token-count"] = str(len(named_exp["formula_tokens"]))
-            for token in named_exp["formula_tokens"]:
-                elem_token = ET.SubElement(elem, "token")
-                elem_token.attrib["s"] = token[0]
-                elem_token.attrib["type"] = token[1]
+            if add_tokens:
+                for token in named_exp["formula_tokens"]:
+                    elem_token = ET.SubElement(elem, "token")
+                    elem_token.attrib["s"] = token[0]
+                    elem_token.attrib["type"] = token[1]
 
     s = ET.tostring(root, "utf-8").decode("utf-8")
     from xml.dom import minidom
@@ -167,7 +169,7 @@ def dump_batch_to_file(i, batch, args):
     elif args.format == OutputFormat.XML:
         outpath = os.path.join(args.output, f"{i+1:04}.xml")
         with open(outpath, "w") as f:
-            dump_json_as_xml(batch, f)
+            dump_json_as_xml(batch, f, args.add_tokens)
 
 
 def main():
@@ -176,6 +178,7 @@ def main():
     parser.add_argument("-o", "--output", type=str, help="Output directory to write all the formula data to.")
     parser.add_argument("-f", "--format", type=OutputFormat, default=OutputFormat.JSON, help="Output file format.")
     parser.add_argument("-b", "--batch-size", type=int, default=20)
+    parser.add_argument("--add-tokens", action="store_true", default=False, help="Whether to include formula token data in the output.")
     parser.add_argument("rootdir", help="Root directory from which to traverse for the formula files.")
     args = parser.parse_args()
 
@@ -195,7 +198,7 @@ def main():
                 data.append(json.loads(f.read()))
 
             if len(data) == args.batch_size:
-                print(f"dumping batch {i+1}...", flush=True)
+                print(f"dumping batch {i+1} ...", flush=True)
                 dump_batch_to_file(i, data, args)
                 data.clear()
                 i += 1
