@@ -95,7 +95,7 @@ def process_document(filepath, doc):
     dirpath = os.path.dirname(filepath)
     outpath = os.path.join(dirpath, FORMULAS_JSON_FILENAME)
     with open(outpath, "w") as f:
-        s = json.dumps(data, cls=JSONEncoder)
+        s = json.dumps(data, cls=JSONEncoder, ensure_ascii=False)
         f.write(s)
 
     return output_buffer
