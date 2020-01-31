@@ -158,6 +158,18 @@ def dump_json_as_xml(data, stream):
     stream.write(s)
 
 
+def dump_batch_to_file(i, batch, args):
+    if args.format == OutputFormat.JSON:
+        outpath = os.path.join(args.output, f"{i+1:04}.json")
+        import pprint
+        with open(outpath, "w") as f:
+            pprint.pprint(batch, stream=f, width=256)
+    elif args.format == OutputFormat.XML:
+        outpath = os.path.join(args.output, f"{i+1:04}.xml")
+        with open(outpath, "w") as f:
+            dump_json_as_xml(batch, f)
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser()
@@ -169,10 +181,10 @@ def main():
 
     os.makedirs(args.output, exist_ok=True)
 
-    batches = list()
     data = list()
-    file_count = 0
+    args.output = args.output if args.output else sys.stdout
 
+    i = 0
     for root, dir, files in os.walk(args.rootdir):
         for filename in files:
             if filename != FORMULAS_JSON_FILENAME:
@@ -182,27 +194,13 @@ def main():
             with open(filepath, "r") as f:
                 data.append(json.loads(f.read()))
 
-            file_count += 1
-            if file_count == args.batch_size:
-                batches.append(data)
-                data = list()
-                file_count = 0
+            if len(data) == args.batch_size:
+                dump_batch_to_file(i, data, args)
+                data.clear()
+                i += 1
 
-    if file_count:
-        batches.append(data)
-
-    output = args.output if args.output else sys.stdout
-
-    for i, batch in enumerate(batches):
-        if args.format == OutputFormat.JSON:
-            outpath = os.path.join(args.output, f"{i+1:04}.json")
-            import pprint
-            with open(outpath, "w") as f:
-                pprint.pprint(batch, stream=f, width=256)
-        elif args.format == OutputFormat.XML:
-            outpath = os.path.join(args.output, f"{i+1:04}.xml")
-            with open(outpath, "w") as f:
-                dump_json_as_xml(batch, f)
+    if data:
+        dump_batch_to_file(i, data, args)
 
 
 if __name__ == "__main__":
