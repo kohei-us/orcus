@@ -106,7 +106,7 @@ class OutputFormat(enum.Enum):
     XML = "xml"
 
 
-def dump_json_as_xml(data, stream, add_tokens):
+def dump_json_as_xml(data, stream, add_tokens, pretty):
     import xml.etree.ElementTree as ET
     root = ET.Element("docs")
     root.attrib["count"] = str(len(data))
@@ -155,8 +155,9 @@ def dump_json_as_xml(data, stream, add_tokens):
                     elem_token.attrib["type"] = token[1]
 
     s = ET.tostring(root, "utf-8").decode("utf-8")
-    from xml.dom import minidom
-    s = minidom.parseString(s).toprettyxml(indent="    ")
+    if pretty:
+        from xml.dom import minidom
+        s = minidom.parseString(s).toprettyxml(indent="    ")
     stream.write(s)
 
 
@@ -169,7 +170,7 @@ def dump_batch_to_file(i, batch, args):
     elif args.format == OutputFormat.XML:
         outpath = os.path.join(args.output, f"{i+1:04}.xml")
         with open(outpath, "w") as f:
-            dump_json_as_xml(batch, f, args.add_tokens)
+            dump_json_as_xml(batch, f, args.add_tokens, args.pretty)
 
 
 def main():
@@ -179,6 +180,7 @@ def main():
     parser.add_argument("-f", "--format", type=OutputFormat, default=OutputFormat.JSON, help="Output file format.")
     parser.add_argument("-b", "--batch-size", type=int, default=20)
     parser.add_argument("--add-tokens", action="store_true", default=False, help="Whether to include formula token data in the output.")
+    parser.add_argument("--pretty", action="store_true", default=False, help="Whether to pretty-print the XML output.")
     parser.add_argument("rootdir", help="Root directory from which to traverse for the formula files.")
     args = parser.parse_args()
 
