@@ -195,6 +195,7 @@ def main():
                 data.append(json.loads(f.read()))
 
             if len(data) == args.batch_size:
+                print(f"dumping batch {i+1}...", flush=True)
                 dump_batch_to_file(i, data, args)
                 data.clear()
                 i += 1
