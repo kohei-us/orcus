@@ -58,6 +58,7 @@
             <F N="../misc/file-processor-modules/common.py"/>
             <F N="../src/python/orcus/csv.py"/>
             <F N="../bin/download-files.py"/>
+            <F N="../misc/file-processor-modules/extract_formulas.py"/>
             <F N="../src/python/orcus/gnumeric.py"/>
             <F N="../src/python/orcus/json.py"/>
             <F N="../src/python/orcus/ods.py"/>
