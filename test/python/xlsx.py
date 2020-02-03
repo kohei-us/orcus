@@ -46,8 +46,10 @@ class TestCase(unittest.TestCase):
             doc = xlsx.read(f.read())
 
         self.assertEqual(len(doc.named_expressions), 2)
+        self.assertEqual(doc.named_expressions["MyRange"].origin, "Sheet1!$A$1")
         self.assertEqual(doc.named_expressions["MyRange"].formula, "$A$1:$A$5")
         self.assertEqual(str(doc.named_expressions["MyRange"].formula_tokens[0]), "$A$1:$A$5")
+        self.assertEqual(doc.named_expressions["MyRange2"].origin, "Sheet1!$A$1")
         self.assertEqual(doc.named_expressions["MyRange2"].formula, "$A$1:$B$5")
         self.assertEqual(str(doc.named_expressions["MyRange2"].formula_tokens[0]), "$A$1:$B$5")
 
