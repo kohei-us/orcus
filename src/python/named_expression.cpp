@@ -18,9 +18,6 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus { namespace python {
 
-named_exp_data::named_exp_data() {}
-named_exp_data::~named_exp_data() {}
-
 namespace {
 
 /**
@@ -32,8 +29,6 @@ struct pyobj_named_exp
 
     PyObject* formula;
     PyObject* formula_tokens;
-
-    named_exp_data* data;
 };
 
 void init_members(pyobj_named_exp* self)
@@ -47,8 +42,6 @@ void init_members(pyobj_named_exp* self)
 
 void tp_dealloc(pyobj_named_exp* self)
 {
-    delete self->data;
-
     Py_CLEAR(self->formula);
     Py_CLEAR(self->formula_tokens);
 
@@ -64,7 +57,6 @@ int tp_init(pyobj_named_exp* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     pyobj_named_exp* self = (pyobj_named_exp*)type->tp_alloc(type, 0);
-    self->data = new named_exp_data;
     return reinterpret_cast<PyObject*>(self);
 }
 
