@@ -120,7 +120,7 @@ PyTypeObject named_exp_type =
 } // anonymous namespace
 
 PyObject* create_named_exp_object(
-    ss::sheet_t origin_sheet, const spreadsheet::document& doc, const ixion::formula_tokens_t* tokens)
+    ss::sheet_t origin_sheet, const spreadsheet::document& doc, const ixion::named_expression_t* exp)
 {
     PyTypeObject* named_exp_type = get_named_exp_type();
     if (!named_exp_type)
@@ -139,20 +139,20 @@ PyObject* create_named_exp_object(
     pyobj_named_exp* self = reinterpret_cast<pyobj_named_exp*>(obj);
     init_members(self);
 
-    if (tokens)
+    if (exp)
     {
         ixion::abs_address_t pos(origin_sheet, 0, 0);
         const ixion::model_context& cxt = doc.get_model_context();
         auto* resolver = doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
 
         // Create formula expression string.
-        std::string formula_s = ixion::print_formula_tokens(cxt, pos, *resolver, *tokens);
+        std::string formula_s = ixion::print_formula_tokens(cxt, pos, *resolver, exp->tokens);
         self->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
 
         // Create a tuple of individual formula token strings.
-        self->formula_tokens = PyTuple_New(tokens->size());
-        for (size_t i = 0; i < tokens->size(); ++i)
-            PyTuple_SetItem(self->formula_tokens, i, create_formula_token_object(doc, pos, *(*tokens)[i]));
+        self->formula_tokens = PyTuple_New(exp->tokens.size());
+        for (size_t i = 0; i < exp->tokens.size(); ++i)
+            PyTuple_SetItem(self->formula_tokens, i, create_formula_token_object(doc, pos, *exp->tokens[i]));
     }
 
     return obj;
@@ -165,7 +165,7 @@ PyObject* create_named_exp_dict(ss::sheet_t origin_sheet, const ss::document& do
     {
         auto ne = iter.get();
         PyObject* name = PyUnicode_FromStringAndSize(ne.name->data(), ne.name->size());
-        PyObject* tokens = create_named_exp_object(origin_sheet, doc, ne.tokens);
+        PyObject* tokens = create_named_exp_object(origin_sheet, doc, ne.expression);
         PyDict_SetItem(dict, name, tokens);
     }
 

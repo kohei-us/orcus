@@ -37,7 +37,7 @@ struct named_exp_data
 };
 
 PyObject* create_named_exp_object(
-    spreadsheet::sheet_t origin_sheet, const spreadsheet::document& doc, const ixion::formula_tokens_t* tokens);
+    spreadsheet::sheet_t origin_sheet, const spreadsheet::document& doc, const ixion::named_expression_t* exp);
 
 PyObject* create_named_exp_dict(
     spreadsheet::sheet_t origin_sheet, const spreadsheet::document& doc, ixion::named_expressions_iterator iter);
