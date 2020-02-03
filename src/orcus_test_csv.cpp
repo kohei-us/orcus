@@ -109,7 +109,7 @@ void test_csv_import_split_sheet()
         app.read_file(path.c_str());
     }
 
-    assert(doc.sheet_size() == 2);
+    assert(doc.get_sheet_count() == 2);
 
     // Dump the content of the model.
     std::string check = test::get_content_check(doc);
@@ -135,7 +135,7 @@ void test_csv_import_split_sheet()
         app.read_file(path.c_str());
     }
 
-    assert(doc.sheet_size() == 2);
+    assert(doc.get_sheet_count() == 2);
 
     // Dump the content of the model.
     check = test::get_content_check(doc);
@@ -163,7 +163,7 @@ void test_csv_import_split_sheet()
         app.read_file(path.c_str());
     }
 
-    assert(doc.sheet_size() == 1);
+    assert(doc.get_sheet_count() == 1);
 
     // Dump the content of the model.
     check = test::get_content_check(doc);

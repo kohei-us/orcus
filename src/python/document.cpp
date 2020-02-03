@@ -173,7 +173,7 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
         create_named_exp_dict(-1, *pydoc_data->m_doc, cxt.get_named_expressions_iterator());
 
     // Create a tuple of sheet objects and store it with the pydoc instance.
-    size_t sheet_size = pydoc_data->m_doc->sheet_size();
+    size_t sheet_size = pydoc_data->m_doc->get_sheet_count();
 
     pydoc->sheets = PyTuple_New(sheet_size);
 

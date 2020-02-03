@@ -1602,7 +1602,7 @@ void test_xlsx_doc_structure_unordered_sheet_positions()
         "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"
     };
 
-    assert(doc->sheet_size() == expected_sheet_names.size());
+    assert(doc->get_sheet_count() == expected_sheet_names.size());
 
     sheet_t n = expected_sheet_names.size();
     for (sheet_t i = 0; i < n; ++i)

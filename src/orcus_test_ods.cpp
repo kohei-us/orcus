@@ -85,7 +85,7 @@ void test_ods_import_column_widths_row_heights()
     orcus_ods app(&factory);
     app.read_file(filepath);
 
-    assert(doc.sheet_size() > 0);
+    assert(doc.get_sheet_count() > 0);
     spreadsheet::sheet* sh = doc.get_sheet(0);
     assert(sh);
 
@@ -116,7 +116,7 @@ void test_ods_import_formatted_text()
     orcus_ods app(&factory);
     app.read_file(filepath);
 
-    assert(doc.sheet_size() > 0);
+    assert(doc.get_sheet_count() > 0);
     spreadsheet::sheet* sh = doc.get_sheet(0);
     assert(sh);
 

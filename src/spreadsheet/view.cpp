@@ -32,7 +32,7 @@ sheet_view* view::get_or_create_sheet_view(sheet_t sheet)
     if (sheet < 0)
         return nullptr;
 
-    sheet_t n = mp_impl->m_doc.sheet_size();
+    sheet_t n = mp_impl->m_doc.get_sheet_count();
     if (sheet >= n)
         return nullptr;
 
@@ -52,7 +52,7 @@ const sheet_view* view::get_sheet_view(sheet_t sheet) const
     if (sheet < 0)
         return nullptr;
 
-    sheet_t n = mp_impl->m_doc.sheet_size();
+    sheet_t n = mp_impl->m_doc.get_sheet_count();
     if (sheet >= n)
         return nullptr;
 

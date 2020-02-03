@@ -678,7 +678,7 @@ void document::set_sheet_size(const range_size_t& sheet_size)
     mp_impl->m_context.set_sheet_size({sheet_size.rows, sheet_size.columns});
 }
 
-size_t document::sheet_size() const
+size_t document::get_sheet_count() const
 {
     return mp_impl->m_sheets.size();
 }

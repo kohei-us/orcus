@@ -111,7 +111,7 @@ public:
 
     range_size_t get_sheet_size() const;
     void set_sheet_size(const range_size_t& sheet_size);
-    size_t sheet_size() const;
+    size_t get_sheet_count() const;
 
     void set_origin_date(int year, int month, int day);
     date_time_t get_origin_date() const;
