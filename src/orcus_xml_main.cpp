@@ -241,7 +241,8 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
-        spreadsheet::document doc;
+        spreadsheet::range_size_t ss{1048576, 16384};
+        spreadsheet::document doc{ss};
         spreadsheet::import_factory import_fact(doc);
         spreadsheet::export_factory export_fact(doc);
 

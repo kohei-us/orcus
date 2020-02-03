@@ -507,10 +507,7 @@ void import_sheet::fill_down_cells(row_t src_row, col_t src_col, row_t range_siz
 
 range_size_t import_sheet::get_sheet_size() const
 {
-    range_size_t ret;
-    ret.rows = m_sheet.row_size();
-    ret.columns = m_sheet.col_size();
-    return ret;
+    return m_doc.get_sheet_size();
 }
 
 void import_sheet::set_character_set(character_set_t charset)

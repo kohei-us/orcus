@@ -16,7 +16,8 @@ using namespace orcus;
 
 int main(int argc, char** argv)
 {
-    spreadsheet::document doc;
+    spreadsheet::range_size_t ss{1048576, 16384};
+    spreadsheet::document doc{ss};
     spreadsheet::view view(doc);
     spreadsheet::import_factory fact(doc, view);
     orcus_xls_xml app(&fact);

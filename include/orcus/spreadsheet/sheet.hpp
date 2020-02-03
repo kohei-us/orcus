@@ -40,7 +40,7 @@ class ORCUS_SPM_DLLPUBLIC sheet
     static const col_t max_col_limit;
 
 public:
-    sheet(document& doc, sheet_t sheet_index, row_t row_size, col_t col_size);
+    sheet(document& doc, sheet_t sheet_index);
     virtual ~sheet();
 
     void set_auto(row_t row, col_t col, const char* p, size_t n);
@@ -113,8 +113,6 @@ public:
     sheet_range get_sheet_range(
         row_t row_start, col_t col_start, row_t row_end, col_t col_end) const;
 
-    row_t row_size() const;
-    col_t col_size() const;
     sheet_t get_index() const;
 
     date_time_t get_date_time(row_t row, col_t col) const;

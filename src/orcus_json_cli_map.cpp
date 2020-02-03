@@ -27,7 +27,8 @@ namespace orcus { namespace detail {
 
 void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
 {
-    spreadsheet::document doc;
+    spreadsheet::range_size_t ss{1048576, 16384};
+    spreadsheet::document doc{ss};
     spreadsheet::import_factory factory(doc);
     orcus_json app(&factory);
 

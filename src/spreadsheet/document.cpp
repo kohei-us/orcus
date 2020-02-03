@@ -60,13 +60,13 @@ struct sheet_item
 
     pstring name;
     sheet   data;
-    sheet_item(document& doc, const pstring& _name, sheet_t sheet_index, row_t row_size, col_t col_size);
+    sheet_item(document& doc, const pstring& _name, sheet_t sheet_index);
 };
 
 typedef std::map<pstring, std::unique_ptr<table_t>> table_store_type;
 
-sheet_item::sheet_item(document& doc, const pstring& _name, sheet_t sheet_index, row_t row_size, col_t col_size) :
-    name(_name), data(doc, sheet_index, row_size, col_size) {}
+sheet_item::sheet_item(document& doc, const pstring& _name, sheet_t sheet_index) :
+    name(_name), data(doc, sheet_index) {}
 
 class find_sheet_by_name : std::unary_function<std::unique_ptr<sheet_item> , bool>
 {
@@ -311,8 +311,9 @@ struct document_impl
     table_store_type m_tables;
     table_handler m_table_handler;
 
-    document_impl(document& doc) :
+    document_impl(document& doc, const range_size_t& sheet_size) :
         m_doc(doc),
+        m_context({sheet_size.rows, sheet_size.columns}),
         m_styles(),
         mp_strings(new import_shared_strings(m_string_pool, m_context, m_styles)),
         m_pivots(doc),
@@ -330,7 +331,7 @@ struct document_impl
     }
 };
 
-document::document() : mp_impl(new document_impl(*this)) {}
+document::document(const range_size_t& sheet_size) : mp_impl(new document_impl(*this, sheet_size)) {}
 
 document::~document() {}
 
@@ -418,17 +419,15 @@ void document::finalize()
     );
 }
 
-sheet* document::append_sheet(const pstring& sheet_name, row_t row_size, col_t col_size)
+sheet* document::append_sheet(const pstring& sheet_name)
 {
     pstring sheet_name_safe = mp_impl->m_string_pool.intern(sheet_name).first;
     sheet_t sheet_index = static_cast<sheet_t>(mp_impl->m_sheets.size());
 
     mp_impl->m_sheets.push_back(
-        orcus::make_unique<sheet_item>(
-            *this, sheet_name_safe, sheet_index, row_size, col_size));
+        orcus::make_unique<sheet_item>(*this, sheet_name_safe, sheet_index));
 
-    mp_impl->m_context.append_sheet(
-        sheet_name_safe.get(), sheet_name_safe.size(), row_size, col_size);
+    mp_impl->m_context.append_sheet(sheet_name_safe.get(), sheet_name_safe.size());
 
     return &mp_impl->m_sheets.back()->data;
 }
@@ -476,7 +475,7 @@ void document::recalc_formula_cells()
 
 void document::clear()
 {
-    mp_impl.reset(new document_impl(*this));
+    mp_impl.reset(new document_impl(*this, get_sheet_size()));
 }
 
 void document::dump(dump_format_t format, const std::string& output) const
@@ -663,6 +662,20 @@ pstring document::get_sheet_name(sheet_t sheet_pos) const
         return pstring();
 
     return mp_impl->m_sheets[pos]->name;
+}
+
+range_size_t document::get_sheet_size() const
+{
+    ixion::rc_size_t ss = mp_impl->m_context.get_sheet_size();
+    range_size_t ret;
+    ret.rows = ss.row;
+    ret.columns = ss.column;
+    return ret;
+}
+
+void document::set_sheet_size(const range_size_t& sheet_size)
+{
+    mp_impl->m_context.set_sheet_size({sheet_size.rows, sheet_size.columns});
 }
 
 size_t document::sheet_size() const

@@ -49,7 +49,8 @@ void test_mapped_json_import()
         file_content map_content(map_file.string().data());
         file_content check_content(check_file.string().data());
 
-        spreadsheet::document doc;
+        spreadsheet::range_size_t ss{1048576, 16384};
+        spreadsheet::document doc{ss};
         spreadsheet::import_factory import_fact(doc);
 
         orcus_json app(&import_fact);
@@ -70,7 +71,8 @@ void test_mapped_json_import()
 
 void test_invalid_map_definition()
 {
-    spreadsheet::document doc;
+    spreadsheet::range_size_t ss{1048576, 16384};
+    spreadsheet::document doc{ss};
     spreadsheet::import_factory import_fact(doc);
 
     orcus_json app(&import_fact);

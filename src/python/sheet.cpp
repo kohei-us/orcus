@@ -21,6 +21,8 @@
 #include <iostream>
 #include <cstring>
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus { namespace python {
 
 sheet_data::sheet_data() : m_doc(nullptr), m_sheet(nullptr) {}
@@ -278,8 +280,9 @@ void store_sheet(
 
     // Sheet size - size of the entire sheet.
     pysheet->sheet_size = PyDict_New();
-    PyDict_SetItemString(pysheet->sheet_size, "column", PyLong_FromLong(orcus_sheet->col_size()));
-    PyDict_SetItemString(pysheet->sheet_size, "row", PyLong_FromLong(orcus_sheet->row_size()));
+    ss::range_size_t sheet_size = doc->get_sheet_size();
+    PyDict_SetItemString(pysheet->sheet_size, "column", PyLong_FromLong(sheet_size.columns));
+    PyDict_SetItemString(pysheet->sheet_size, "row", PyLong_FromLong(sheet_size.rows));
 
     // sheet-local named expressions
     const ixion::model_context& cxt = pysheet->m_data->m_doc->get_model_context();

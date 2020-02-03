@@ -52,7 +52,7 @@ public:
     document(const document&) = delete;
     document& operator= (const document&) = delete;
 
-    document();
+    document(const range_size_t& sheet_size);
     ~document();
 
     import_shared_strings* get_shared_strings();
@@ -64,7 +64,7 @@ public:
     pivot_collection& get_pivot_collection();
     const pivot_collection& get_pivot_collection() const;
 
-    sheet* append_sheet(const pstring& sheet_name, row_t row_size, col_t col_size);
+    sheet* append_sheet(const pstring& sheet_name);
     sheet* get_sheet(const pstring& sheet_name);
     const sheet* get_sheet(const pstring& sheet_name) const;
     sheet* get_sheet(sheet_t sheet_pos);
@@ -109,6 +109,8 @@ public:
     sheet_t get_sheet_index(const pstring& name) const;
     pstring get_sheet_name(sheet_t sheet_pos) const;
 
+    range_size_t get_sheet_size() const;
+    void set_sheet_size(const range_size_t& sheet_size);
     size_t sheet_size() const;
 
     void set_origin_date(int year, int month, int day);

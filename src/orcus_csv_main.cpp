@@ -54,7 +54,8 @@ public:
 
 int main(int argc, char** argv)
 {
-    spreadsheet::document doc;
+    spreadsheet::range_size_t ss{1048576, 16384};
+    spreadsheet::document doc{ss};
     spreadsheet::import_factory fact(doc);
     orcus_csv app(&fact);
     csv_args_handler hdl(fact);

@@ -43,7 +43,8 @@ void test_csv_import()
 
         std::cout << "checking " << path << "..." << std::endl;
 
-        spreadsheet::document doc;
+        spreadsheet::range_size_t ss{1048576, 16384};
+        spreadsheet::document doc{ss};
         {
             spreadsheet::import_factory factory(doc);
             orcus_csv app(&factory);
@@ -97,10 +98,11 @@ void test_csv_import_split_sheet()
     conf.csv.header_row_size = 0;
     conf.csv.split_to_multiple_sheets = true;
 
-    spreadsheet::document doc;
+    // Set the row size to 11 to make sure the split occurs.
+    spreadsheet::range_size_t ss{11, 4};
+    spreadsheet::document doc{ss};
     {
-        // Set the row size to 11 to make sure the split occurs.
-        spreadsheet::import_factory factory(doc, 11, 4);
+        spreadsheet::import_factory factory(doc);
         orcus_csv app(&factory);
         app.set_config(conf);
 
@@ -126,8 +128,7 @@ void test_csv_import_split_sheet()
     doc.clear();
     conf.csv.header_row_size = 1;
     {
-        // Set the row size to 11 to make sure the split occurs.
-        spreadsheet::import_factory factory(doc, 11, 4);
+        spreadsheet::import_factory factory(doc);
         orcus_csv app(&factory);
         app.set_config(conf);
 
@@ -155,7 +156,7 @@ void test_csv_import_split_sheet()
     doc.clear();
 
     {
-        spreadsheet::import_factory factory(doc, 11, 4);
+        spreadsheet::import_factory factory(doc);
         orcus_csv app(&factory);
         app.set_config(conf);
 

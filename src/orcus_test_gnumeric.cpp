@@ -34,7 +34,8 @@ void test_gnumeric_import()
 
         // Read the input.gnumeric document.
         path.append("input.gnumeric");
-        spreadsheet::document doc;
+        spreadsheet::range_size_t ss{1048576, 16384};
+        spreadsheet::document doc{ss};
         spreadsheet::import_factory factory(doc);
         orcus_gnumeric app(&factory);
         app.read_file(path.c_str());

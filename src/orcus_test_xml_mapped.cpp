@@ -82,7 +82,8 @@ void test_mapped_xml_import()
         file_content content(data_file.string().data());
         string data_strm = content.str().str();
 
-        spreadsheet::document doc;
+        spreadsheet::range_size_t ss{1048576, 16384};
+        spreadsheet::document doc{ss};
         spreadsheet::import_factory import_fact(doc);
         spreadsheet::export_factory export_fact(doc);
 
@@ -155,7 +156,8 @@ void test_invalid_map_definition()
 {
     xmlns_repository repo;
 
-    spreadsheet::document doc;
+    spreadsheet::range_size_t ss{1048576, 16384};
+    spreadsheet::document doc{ss};
     spreadsheet::import_factory import_fact(doc);
     orcus_xml app(repo, &import_fact, nullptr);
 

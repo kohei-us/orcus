@@ -28,7 +28,8 @@ PyObject* xls_xml_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 
     try
     {
-        std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
+        spreadsheet::range_size_t ss{1048576, 16384};
+        std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>(ss);
         spreadsheet::import_factory fact(*doc);
         fact.set_recalc_formula_cells(data.recalc_formula_cells);
         fact.set_formula_error_policy(data.error_policy);

@@ -42,7 +42,8 @@ config test_config(format_t::xlsx);
 
 std::unique_ptr<spreadsheet::document> load_doc(const pstring& path)
 {
-    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
+    spreadsheet::range_size_t ss{1048576, 16384};
+    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>(ss);
     spreadsheet::import_factory factory(*doc);
     orcus_xlsx app(&factory);
     app.read_file(path.str());
@@ -126,7 +127,8 @@ void test_xlsx_import()
 void test_xlsx_table_autofilter()
 {
     string path(SRCDIR"/test/xlsx/table/autofilter.xlsx");
-    document doc;
+    spreadsheet::range_size_t ss{1048576, 16384};
+    document doc{ss};
     import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.read_file(path.c_str());
@@ -160,7 +162,7 @@ void test_xlsx_table_autofilter()
 void test_xlsx_table()
 {
     string path(SRCDIR"/test/xlsx/table/table-1.xlsx");
-    document doc;
+    document doc{{1048576, 16384}};
     import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.read_file(path.c_str());
@@ -227,7 +229,8 @@ void test_xlsx_merged_cells()
 {
     string path(SRCDIR"/test/xlsx/merged-cells/simple.xlsx");
 
-    document doc;
+    spreadsheet::range_size_t ss{1048576, 16384};
+    document doc{ss};
     import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
@@ -272,7 +275,7 @@ void test_xlsx_date_time()
 {
     string path(SRCDIR"/test/xlsx/date-time/input.xlsx");
 
-    document doc;
+    document doc{{1048576, 16384}};
     import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
@@ -735,7 +738,7 @@ void test_xlsx_hidden_rows_columns()
     // The rest of the rows are visible.
     assert(!sh->is_row_hidden(9, &row_start, &row_end));
     assert(row_start == 9);
-    assert(row_end == sh->row_size()); // the end position is non-inclusive.
+    assert(row_end == doc->get_sheet_size().rows); // the end position is non-inclusive.
 
     sh = doc->get_sheet("Hidden Columns");
     assert(sh);
@@ -765,14 +768,14 @@ void test_xlsx_hidden_rows_columns()
     // The rest of the columns are all visible.
     assert(!sh->is_col_hidden(11, &col_start, &col_end));
     assert(col_start == 11);
-    assert(col_end == sh->col_size()); // non-inclusive
+    assert(col_end == doc->get_sheet_size().columns); // non-inclusive
 }
 
 void test_xlsx_pivot_two_pivot_caches()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
 
-    document doc;
+    document doc{{1048576, 16384}};
     import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
@@ -880,7 +883,7 @@ void test_xlsx_pivot_mixed_type_field()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/mixed-type-field.xlsx");
 
-    document doc;
+    document doc{{1048576, 16384}};
     import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
@@ -1006,7 +1009,7 @@ void test_xlsx_pivot_group_field()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/group-field.xlsx");
 
-    document doc;
+    document doc{{1048576, 16384}};
     import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
@@ -1099,7 +1102,7 @@ void test_xlsx_pivot_group_by_numbers()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/group-by-numbers.xlsx");
 
-    document doc;
+    document doc{{1048576, 16384}};
     import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
@@ -1180,7 +1183,7 @@ void test_xlsx_pivot_group_by_dates()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/group-by-dates.xlsx");
 
-    document doc;
+    document doc{{1048576, 16384}};
     import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
@@ -1291,7 +1294,7 @@ void test_xlsx_pivot_error_values()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/error-values.xlsx");
 
-    document doc;
+    document doc{{1048576, 16384}};
     import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
@@ -1342,7 +1345,7 @@ void test_xlsx_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xlsx/view/cursor-per-sheet.xlsx");
 
-    document doc;
+    document doc{{1048576, 16384}};
     spreadsheet::view view(doc);
     spreadsheet::import_factory factory(doc, view);
     orcus_xlsx app(&factory);
@@ -1401,7 +1404,7 @@ void test_xlsx_view_cursor_split_pane()
 {
     string path(SRCDIR"/test/xlsx/view/cursor-split-pane.xlsx");
 
-    document doc;
+    document doc{{1048576, 16384}};
     spreadsheet::view view(doc);
     spreadsheet::import_factory factory(doc, view);
     orcus_xlsx app(&factory);
@@ -1537,7 +1540,7 @@ void test_xlsx_view_frozen_pane()
 {
     string path(SRCDIR"/test/xlsx/view/frozen-pane.xlsx");
 
-    document doc;
+    document doc{{1048576, 16384}};
     spreadsheet::view view(doc);
     spreadsheet::import_factory factory(doc, view);
     orcus_xlsx app(&factory);

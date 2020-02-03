@@ -169,8 +169,6 @@ struct import_factory::impl
     import_factory& m_envelope;
     document& m_doc;
     view* m_view;
-    row_t m_default_row_size;
-    col_t m_default_col_size;
     character_set_t m_charset;
 
     import_global_settings m_global_settings;
@@ -185,12 +183,10 @@ struct import_factory::impl
     bool m_recalc_formula_cells;
     formula_error_policy_t m_error_policy;
 
-    impl(import_factory& envelope, document& doc, row_t row_size, col_t col_size) :
+    impl(import_factory& envelope, document& doc) :
         m_envelope(envelope),
         m_doc(doc),
         m_view(nullptr),
-        m_default_row_size(row_size),
-        m_default_col_size(col_size),
         m_charset(character_set_t::unspecified),
         m_global_settings(envelope, doc),
         m_pc_def(doc),
@@ -202,11 +198,11 @@ struct import_factory::impl
         m_error_policy(formula_error_policy_t::fail) {}
 };
 
-import_factory::import_factory(document& doc, row_t row_size, col_t col_size) :
-    mp_impl(orcus::make_unique<impl>(*this, doc, row_size, col_size)) {}
+import_factory::import_factory(document& doc) :
+    mp_impl(orcus::make_unique<impl>(*this, doc)) {}
 
-import_factory::import_factory(document& doc, view& view, row_t row_size, col_t col_size) :
-    mp_impl(orcus::make_unique<impl>(*this, doc, row_size, col_size))
+import_factory::import_factory(document& doc, view& view) :
+    mp_impl(orcus::make_unique<impl>(*this, doc))
 {
     // Store the optional view store.
     mp_impl->m_view = &view;
@@ -264,8 +260,7 @@ iface::import_sheet* import_factory::append_sheet(
 {
     assert(sheet_index == static_cast<sheet_t>(mp_impl->m_doc.sheet_size()));
 
-    sheet* sh = mp_impl->m_doc.append_sheet(
-        pstring(sheet_name, sheet_name_length), mp_impl->m_default_row_size, mp_impl->m_default_col_size);
+    sheet* sh = mp_impl->m_doc.append_sheet(pstring(sheet_name, sheet_name_length));
 
     if (!sh)
         return nullptr;
@@ -311,12 +306,16 @@ void import_factory::finalize()
 
 void import_factory::set_default_row_size(row_t row_size)
 {
-    mp_impl->m_default_row_size = row_size;
+    range_size_t ss = mp_impl->m_doc.get_sheet_size();
+    ss.rows = row_size;
+    mp_impl->m_doc.set_sheet_size(ss);
 }
 
 void import_factory::set_default_column_size(col_t col_size)
 {
-    mp_impl->m_default_col_size = col_size;
+    range_size_t ss = mp_impl->m_doc.get_sheet_size();
+    ss.columns = col_size;
+    mp_impl->m_doc.set_sheet_size(ss);
 }
 
 void import_factory::set_character_set(character_set_t charset)

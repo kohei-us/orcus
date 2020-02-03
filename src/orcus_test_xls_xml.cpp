@@ -63,7 +63,8 @@ std::unique_ptr<spreadsheet::document> load_doc_from_filepath(
     bool recalc=true,
     ss::formula_error_policy_t error_policy=ss::formula_error_policy_t::fail)
 {
-    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
+    spreadsheet::range_size_t ss{1048576, 16384};
+    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>(ss);
     spreadsheet::import_factory factory(*doc);
     factory.set_recalc_formula_cells(recalc);
     factory.set_formula_error_policy(error_policy);
@@ -76,7 +77,8 @@ std::unique_ptr<spreadsheet::document> load_doc_from_filepath(
 
 std::unique_ptr<spreadsheet::document> load_doc_from_stream(const string& path)
 {
-    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>();
+    spreadsheet::range_size_t ss{1048576, 16384};
+    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>(ss);
     spreadsheet::import_factory factory(*doc);
     orcus_xls_xml app(&factory);
 
@@ -100,7 +102,7 @@ class doc_loader
 
 public:
     doc_loader(const pstring& path) :
-        m_doc(), m_factory(m_doc)
+        m_doc({1048576, 16384}), m_factory(m_doc)
     {
         orcus_xls_xml app(&m_factory);
         app.read_file(path.data());
@@ -941,7 +943,7 @@ void test_xls_xml_hidden_rows_columns()
     // The rest of the rows are visible.
     assert(!sh->is_row_hidden(9, &row_start, &row_end));
     assert(row_start == 9);
-    assert(row_end == sh->row_size()); // the end position is non-inclusive.
+    assert(row_end == doc->get_sheet_size().rows); // the end position is non-inclusive.
 
     sh = doc->get_sheet("Hidden Columns");
     assert(sh);
@@ -971,7 +973,7 @@ void test_xls_xml_hidden_rows_columns()
     // The rest of the columns are all visible.
     assert(!sh->is_col_hidden(11, &col_start, &col_end));
     assert(col_start == 11);
-    assert(col_end == sh->col_size()); // non-inclusive
+    assert(col_end == doc->get_sheet_size().columns); // non-inclusive
 }
 
 void test_xls_xml_character_set()
@@ -1039,7 +1041,8 @@ void test_xls_xml_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
 
-    spreadsheet::document doc;
+    spreadsheet::range_size_t ss{1048576, 16384};
+    spreadsheet::document doc{ss};
     spreadsheet::view view(doc);
     spreadsheet::import_factory factory(doc, view);
     orcus_xls_xml app(&factory);
@@ -1099,7 +1102,8 @@ void test_xls_xml_view_cursor_split_pane()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-split-pane.xml");
 
-    spreadsheet::document doc;
+    spreadsheet::range_size_t ss{1048576, 16384};
+    spreadsheet::document doc{ss};
     spreadsheet::view view(doc);
     spreadsheet::import_factory factory(doc, view);
     orcus_xls_xml app(&factory);
@@ -1236,7 +1240,8 @@ void test_xls_xml_view_frozen_pane()
 {
     string path(SRCDIR"/test/xls-xml/view/frozen-pane.xml");
 
-    spreadsheet::document doc;
+    spreadsheet::range_size_t ss{1048576, 16384};
+    spreadsheet::document doc{ss};
     spreadsheet::view view(doc);
     spreadsheet::import_factory factory(doc, view);
     orcus_xls_xml app(&factory);

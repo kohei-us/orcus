@@ -102,25 +102,23 @@ struct sheet_impl
     std::unique_ptr<auto_filter_t> mp_auto_filter_data;
 
     cell_format_type m_cell_formats;
-    row_t m_row_size;
-    col_t m_col_size;
     const sheet_t m_sheet; /// sheet ID
 
     sheet_impl() = delete;
     sheet_impl(const sheet_impl&) = delete;
     sheet_impl& operator=(const sheet_impl&) = delete;
 
-    sheet_impl(document& doc, sheet& sh, sheet_t sheet_index, row_t row_size, col_t col_size) :
+    sheet_impl(document& doc, sheet& sh, sheet_t sheet_index) :
         m_doc(doc),
-        m_col_widths(0, col_size, get_default_column_width()),
-        m_row_heights(0, row_size, get_default_row_height()),
+        m_col_widths(0, m_doc.get_sheet_size().columns, get_default_column_width()),
+        m_row_heights(0, m_doc.get_sheet_size().rows, get_default_row_height()),
         m_col_width_pos(m_col_widths.begin()),
         m_row_height_pos(m_row_heights.begin()),
-        m_col_hidden(0, col_size, false),
-        m_row_hidden(0, row_size, false),
+        m_col_hidden(0, m_doc.get_sheet_size().columns, false),
+        m_row_hidden(0, m_doc.get_sheet_size().rows, false),
         m_col_hidden_pos(m_col_hidden.begin()),
         m_row_hidden_pos(m_row_hidden.begin()),
-        m_row_size(row_size), m_col_size(col_size), m_sheet(sheet_index) {}
+        m_sheet(sheet_index) {}
 
     ~sheet_impl() {}
 
@@ -148,8 +146,8 @@ struct sheet_impl
 const row_t sheet::max_row_limit = 1048575;
 const col_t sheet::max_col_limit = 1023;
 
-sheet::sheet(document& doc, sheet_t sheet_index, row_t row_size, col_t col_size) :
-    mp_impl(new sheet_impl(doc, *this, sheet_index, row_size, col_size)) {}
+sheet::sheet(document& doc, sheet_t sheet_index) :
+    mp_impl(new sheet_impl(doc, *this, sheet_index)) {}
 
 sheet::~sheet()
 {
@@ -235,7 +233,7 @@ void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t co
         cell_format_type::iterator itr = mp_impl->m_cell_formats.find(col);
         if (itr == mp_impl->m_cell_formats.end())
         {
-            auto p = orcus::make_unique<segment_row_index_type>(0, mp_impl->m_row_size+1, 0);
+            auto p = orcus::make_unique<segment_row_index_type>(0, mp_impl->m_doc.get_sheet_size().rows+1, 0);
 
             pair<cell_format_type::iterator, bool> r =
                 mp_impl->m_cell_formats.insert(cell_format_type::value_type(col, std::move(p)));
@@ -508,16 +506,6 @@ sheet_range sheet::get_sheet_range(
             "sheet::get_sheet_range: failed to get column stores from the model.");
 
     return sheet_range(cxt, *stores, row_start, col_start, row_end, col_end);
-}
-
-row_t sheet::row_size() const
-{
-    return mp_impl->m_row_size;
-}
-
-col_t sheet::col_size() const
-{
-    return mp_impl->m_col_size;
 }
 
 sheet_t sheet::get_index() const

@@ -615,6 +615,8 @@ void html_dumper::build_overlapped_ranges()
     if (!sh)
         return;
 
+    range_size_t sheet_size = m_doc.get_sheet_size();
+
     detail::col_merge_size_type::const_iterator it_col = m_merge_ranges.begin(), it_col_end = m_merge_ranges.end();
     for (; it_col != it_col_end; ++it_col)
     {
@@ -631,7 +633,7 @@ void html_dumper::build_overlapped_ranges()
                 detail::overlapped_cells_type::iterator it_cont = m_overlapped_ranges.find(row);
                 if (it_cont == m_overlapped_ranges.end())
                 {
-                    auto p = orcus::make_unique<detail::overlapped_col_index_type>(0, sh->col_size(), false);
+                    auto p = orcus::make_unique<detail::overlapped_col_index_type>(0, sheet_size.columns, false);
                     std::pair<detail::overlapped_cells_type::iterator, bool> r =
                         m_overlapped_ranges.insert(detail::overlapped_cells_type::value_type(row, std::move(p)));
 

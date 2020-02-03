@@ -11,8 +11,9 @@ using namespace orcus;
 int main()
 {
     // Instantiate a document, and wrap it with a factory.
-    spreadsheet::document doc;
-    spreadsheet::import_factory factory(doc);
+    spreadsheet::range_size_t ss{1048576, 16384};
+    spreadsheet::document doc{ss};
+    spreadsheet::import_factory factory{doc};
 
     // Pass the factory to the document loader, and read the content from a file
     // to populate the document.
