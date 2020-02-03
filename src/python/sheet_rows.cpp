@@ -76,20 +76,6 @@ PyObject* sheet_rows_iternext(PyObject* self)
         return nullptr;
     }
 
-    py_scoped_ref orcus_mod = PyImport_ImportModule("orcus");
-    if (!orcus_mod)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "failed to import orcus module.");
-        return nullptr;
-    }
-
-    py_scoped_ref cls_celltype = PyObject_GetAttrString(orcus_mod.get(), "CellType");
-    if (!cls_celltype)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "failed to find class orcus.CellType.");
-        return nullptr;
-    }
-
     size_t row_position = row_pos->position;
     PyObject* pyobj_row = PyTuple_New(data->m_range.last.column+1);
 
