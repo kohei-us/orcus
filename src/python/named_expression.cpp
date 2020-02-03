@@ -141,18 +141,17 @@ PyObject* create_named_exp_object(
 
     if (exp)
     {
-        ixion::abs_address_t pos(origin_sheet, 0, 0);
         const ixion::model_context& cxt = doc.get_model_context();
         auto* resolver = doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
 
         // Create formula expression string.
-        std::string formula_s = ixion::print_formula_tokens(cxt, pos, *resolver, exp->tokens);
+        std::string formula_s = ixion::print_formula_tokens(cxt, exp->origin, *resolver, exp->tokens);
         self->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
 
         // Create a tuple of individual formula token strings.
         self->formula_tokens = PyTuple_New(exp->tokens.size());
         for (size_t i = 0; i < exp->tokens.size(); ++i)
-            PyTuple_SetItem(self->formula_tokens, i, create_formula_token_object(doc, pos, *exp->tokens[i]));
+            PyTuple_SetItem(self->formula_tokens, i, create_formula_token_object(doc, exp->origin, *exp->tokens[i]));
     }
 
     return obj;

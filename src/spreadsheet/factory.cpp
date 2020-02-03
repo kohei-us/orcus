@@ -151,7 +151,7 @@ public:
     virtual void commit() override
     {
         ixion::model_context& cxt = m_doc.get_model_context();
-        cxt.set_named_expression(m_name.data(), m_name.size(), std::move(m_tokens));
+        cxt.set_named_expression(m_name.data(), m_name.size(), m_base, std::move(m_tokens));
 
         m_name.clear();
         m_base.sheet = 0;

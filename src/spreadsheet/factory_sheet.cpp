@@ -23,7 +23,7 @@
 namespace orcus { namespace spreadsheet {
 
 import_sheet_named_exp::import_sheet_named_exp(document& doc, sheet_t sheet_index) :
-    m_doc(doc), m_sheet_index(sheet_index), m_base(0, 0, 0) {}
+    m_doc(doc), m_sheet_index(sheet_index), m_base(sheet_index, 0, 0) {}
 
 import_sheet_named_exp::~import_sheet_named_exp() {}
 
@@ -61,7 +61,7 @@ void import_sheet_named_exp::set_named_range(
 void import_sheet_named_exp::commit()
 {
     ixion::model_context& cxt = m_doc.get_model_context();
-    cxt.set_named_expression(m_sheet_index, m_name.data(), m_name.size(), std::move(m_tokens));
+    cxt.set_named_expression(m_sheet_index, m_name.data(), m_name.size(), m_base, std::move(m_tokens));
 
     m_name.clear();
     m_base.sheet = 0;
