@@ -9,6 +9,7 @@
 #include "memory.hpp"
 #include "global.hpp"
 #include "formula_token.hpp"
+#include "formula_tokens.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
 #include <ixion/cell.hpp>
@@ -20,9 +21,19 @@
 #include <structmember.h>
 #include <string>
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus { namespace python {
 
 namespace {
+
+/** non-python part of the object. */
+struct cell_data
+{
+    const ss::document* doc = nullptr;
+    const ixion::formula_cell* formula_cell = nullptr;
+    ixion::abs_address_t origin;
+};
 
 /**
  * Python object for orcus.Cell.
@@ -35,6 +46,8 @@ struct pyobj_cell
     PyObject* value;
     PyObject* formula;
     PyObject* formula_tokens;
+
+    cell_data* data = nullptr;
 };
 
 void initialize_cell_members(pyobj_cell* self)
@@ -72,8 +85,11 @@ PyObject* create_and_init_cell_object(const char* type_name)
     return obj;
 }
 
-void cell_dealloc(pyobj_cell* self)
+void tp_dealloc(pyobj_cell* self)
 {
+    delete self->data;
+    self->data = nullptr;
+
     Py_CLEAR(self->type);
     Py_CLEAR(self->value);
     Py_CLEAR(self->formula);
@@ -82,13 +98,14 @@ void cell_dealloc(pyobj_cell* self)
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
 
-PyObject* cell_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
+PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     pyobj_cell* self = (pyobj_cell*)type->tp_alloc(type, 0);
+    self->data = new cell_data;
     return reinterpret_cast<PyObject*>(self);
 }
 
-int cell_init(pyobj_cell* self, PyObject* args, PyObject* kwargs)
+int tp_init(pyobj_cell* self, PyObject* args, PyObject* kwargs)
 {
     static const char* kwlist[] = { "type", nullptr };
 
@@ -103,7 +120,28 @@ int cell_init(pyobj_cell* self, PyObject* args, PyObject* kwargs)
     return 0;
 }
 
-PyMemberDef cell_members[] =
+PyObject* cell_get_formula_tokens(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    pyobj_cell* obj = reinterpret_cast<pyobj_cell*>(self);
+    cell_data& data = *obj->data;
+    if (!data.formula_cell)
+    {
+        // This is not a formula cell.
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
+    const ixion::formula_tokens_t& tokens = data.formula_cell->get_tokens()->get();
+    return create_formula_tokens_iterator_object(*data.doc, data.origin, tokens);
+}
+
+PyMethodDef tp_methods[] =
+{
+    { "get_formula_tokens", (PyCFunction)cell_get_formula_tokens, METH_NOARGS, "Get a formula tokens iterator." },
+    { nullptr }
+};
+
+PyMemberDef tp_members[] =
 {
     { (char*)"type", T_OBJECT_EX, offsetof(pyobj_cell, type), READONLY, (char*)"cell type" },
     { (char*)"value", T_OBJECT_EX, offsetof(pyobj_cell, value), READONLY, (char*)"cell value" },
@@ -118,7 +156,7 @@ PyTypeObject cell_type =
     "orcus.Cell",                             // tp_name
     sizeof(pyobj_cell),                       // tp_basicsize
     0,                                        // tp_itemsize
-    (destructor)cell_dealloc,                 // tp_dealloc
+    (destructor)tp_dealloc,                   // tp_dealloc
     0,                                        // tp_print
     0,                                        // tp_getattr
     0,                                        // tp_setattr
@@ -141,17 +179,17 @@ PyTypeObject cell_type =
     0,		                                  // tp_weaklistoffset
     0,		                                  // tp_iter
     0,                                        // tp_iternext
-    0,                                        // tp_methods
-    cell_members,                             // tp_members
+    tp_methods,                               // tp_methods
+    tp_members,                               // tp_members
     0,                                        // tp_getset
     0,                                        // tp_base
     0,                                        // tp_dict
     0,                                        // tp_descr_get
     0,                                        // tp_descr_set
     0,                                        // tp_dictoffset
-    (initproc)cell_init,                      // tp_init
+    (initproc)tp_init,                        // tp_init
     0,                                        // tp_alloc
-    cell_new,                                 // tp_new
+    tp_new,                                   // tp_new
 };
 
 } // anonymous namespace
@@ -219,7 +257,7 @@ PyObject* create_cell_object_numeric(double v)
 }
 
 PyObject* create_cell_object_formula(
-    const spreadsheet::document& doc, const ixion::abs_address_t& pos, const ixion::formula_cell* fc)
+    const spreadsheet::document& doc, const ixion::abs_address_t& origin, const ixion::formula_cell* fc)
 {
     if (!fc)
     {
@@ -235,17 +273,20 @@ PyObject* create_cell_object_formula(
         return nullptr;
 
     pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
+    obj_data->data->doc = &doc;
+    obj_data->data->origin = origin;
+    obj_data->data->formula_cell = fc;
 
     // Create formula expression string.
     auto* resolver = doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
     const ixion::model_context& cxt = doc.get_model_context();
-    std::string formula_s = ixion::print_formula_tokens(cxt, pos, *resolver, tokens);
+    std::string formula_s = ixion::print_formula_tokens(cxt, origin, *resolver, tokens);
     obj_data->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
 
     // Create a tuple of individual formula token strings.
     obj_data->formula_tokens = PyTuple_New(tokens.size());
     for (size_t i = 0; i < tokens.size(); ++i)
-        PyTuple_SetItem(obj_data->formula_tokens, i, create_formula_token_object(doc, pos, *tokens[i]));
+        PyTuple_SetItem(obj_data->formula_tokens, i, create_formula_token_object(doc, origin, *tokens[i]));
 
     ixion::formula_result res = fc->get_result_cache();
     switch (res.get_type())

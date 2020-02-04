@@ -78,7 +78,6 @@ PyObject* tp_iternext(PyObject* self)
 {
     pyobj_formula_tokens* obj = reinterpret_cast<pyobj_formula_tokens*>(self);
     formula_tokens_data& data = *obj->data;
-    ++data.pos;
 
     if (data.pos == data.end)
     {
@@ -87,7 +86,9 @@ PyObject* tp_iternext(PyObject* self)
         return nullptr;
     }
 
-    return create_formula_token_object(*data.doc, data.origin, **data.pos);
+    PyObject* ft_obj = create_formula_token_object(*data.doc, data.origin, **data.pos);
+    ++data.pos;
+    return ft_obj;
 }
 
 PyMethodDef tp_methods[] =
