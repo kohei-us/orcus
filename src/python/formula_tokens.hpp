@@ -8,9 +8,27 @@
 #ifndef INCLUDED_ORCUS_PYTHON_FORMULA_TOKENS_HPP
 #define INCLUDED_ORCUS_PYTHON_FORMULA_TOKENS_HPP
 
+#include <ixion/formula_tokens_fwd.hpp>
 #include <Python.h>
 
-namespace orcus { namespace python {
+namespace ixion {
+
+struct abs_address_t;
+
+}
+
+namespace orcus {
+
+namespace spreadsheet {
+
+class document;
+
+}
+
+namespace python {
+
+PyObject* create_formula_tokens_iterator_object(
+    const spreadsheet::document& doc, const ixion::abs_address_t& origin, const ixion::formula_tokens_t& tokens);
 
 PyTypeObject* get_formula_tokens_type();
 

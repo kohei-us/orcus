@@ -6,8 +6,10 @@
  */
 
 #include "formula_tokens.hpp"
+#include "formula_token.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
+#include <ixion/formula_tokens.hpp>
 #include <structmember.h>
 
 namespace ss = orcus::spreadsheet;
@@ -19,6 +21,11 @@ namespace {
 /** non-python part. */
 struct formula_tokens_data
 {
+    const ss::document* doc;
+    ixion::abs_address_t origin;
+    const ixion::formula_tokens_t* tokens = nullptr;
+    ixion::formula_tokens_t::const_iterator pos;
+    ixion::formula_tokens_t::const_iterator end;
 };
 
 /** python object */
@@ -26,8 +33,17 @@ struct pyobj_formula_tokens
 {
     PyObject_HEAD
 
-    formula_tokens_data* data;
+    formula_tokens_data* data = nullptr;
 };
+
+void init_members(
+    pyobj_formula_tokens* self, const ss::document& doc, const ixion::abs_address_t& origin, const ixion::formula_tokens_t& tokens)
+{
+    assert(self->data);
+    self->data->doc = &doc;
+    self->data->origin = origin;
+    self->data->tokens = &tokens;
+}
 
 void tp_dealloc(pyobj_formula_tokens* self)
 {
@@ -49,15 +65,29 @@ PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 
 PyObject* tp_iter(PyObject* self)
 {
+    pyobj_formula_tokens* obj = reinterpret_cast<pyobj_formula_tokens*>(self);
+    const ixion::formula_tokens_t* tokens = obj->data->tokens;
+    obj->data->pos = tokens->cbegin();
+    obj->data->end = tokens->cend();
+
     Py_INCREF(self);
     return self;
 }
 
 PyObject* tp_iternext(PyObject* self)
 {
-    // No more elements.  Stop the iteration.
-    PyErr_SetNone(PyExc_StopIteration);
-    return nullptr;
+    pyobj_formula_tokens* obj = reinterpret_cast<pyobj_formula_tokens*>(self);
+    formula_tokens_data& data = *obj->data;
+    ++data.pos;
+
+    if (data.pos == data.end)
+    {
+        // No more elements.  Stop the iteration.
+        PyErr_SetNone(PyExc_StopIteration);
+        return nullptr;
+    }
+
+    return create_formula_token_object(*data.doc, data.origin, **data.pos);
 }
 
 PyMethodDef tp_methods[] =
@@ -113,6 +143,28 @@ PyTypeObject formula_tokens_type =
 };
 
 } // anonymous namespace
+
+PyObject* create_formula_tokens_iterator_object(
+    const ss::document& doc, const ixion::abs_address_t& origin, const ixion::formula_tokens_t& tokens)
+{
+    PyTypeObject* ft_type = get_formula_tokens_type();
+    if (!ft_type)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to get the formula tokens type object.");
+        return nullptr;
+    }
+
+    PyObject* obj = ft_type->tp_new(ft_type, nullptr, nullptr);
+    if (!obj)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to instantiate a formula tokens object.");
+        return nullptr;
+    }
+
+    init_members(reinterpret_cast<pyobj_formula_tokens*>(obj), doc, origin, tokens);
+
+    return obj;
+}
 
 PyTypeObject* get_formula_tokens_type()
 {
