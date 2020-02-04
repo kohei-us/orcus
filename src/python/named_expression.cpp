@@ -39,7 +39,6 @@ struct pyobj_named_exp
 
     PyObject* origin;
     PyObject* formula;
-    PyObject* formula_tokens;
 
     named_exp_data* data;
 };
@@ -56,9 +55,6 @@ void init_members(pyobj_named_exp* self)
 
     Py_INCREF(Py_None);
     self->formula = Py_None;
-
-    Py_INCREF(Py_None);
-    self->formula_tokens = Py_None;
 }
 
 void tp_dealloc(pyobj_named_exp* self)
@@ -68,7 +64,6 @@ void tp_dealloc(pyobj_named_exp* self)
 
     Py_CLEAR(self->origin);
     Py_CLEAR(self->formula);
-    Py_CLEAR(self->formula_tokens);
 
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
@@ -108,7 +103,6 @@ PyMemberDef tp_members[] =
 {
     { (char*)"origin", T_OBJECT_EX, offsetof(pyobj_named_exp, origin), READONLY, (char*)"anchoring cell for the named expression" },
     { (char*)"formula", T_OBJECT_EX, offsetof(pyobj_named_exp, formula), READONLY, (char*)"formula string" },
-    { (char*)"formula_tokens", T_OBJECT_EX, offsetof(pyobj_named_exp, formula_tokens), READONLY, (char*)"tuple of individual formula token strings" },
     { nullptr }
 };
 
@@ -193,11 +187,6 @@ PyObject* create_named_exp_object(
         // Create formula expression string.
         std::string formula_s = ixion::print_formula_tokens(cxt, exp->origin, *resolver, exp->tokens);
         self->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
-
-        // Create a tuple of individual formula token strings.
-        self->formula_tokens = PyTuple_New(exp->tokens.size());
-        for (size_t i = 0; i < exp->tokens.size(); ++i)
-            PyTuple_SetItem(self->formula_tokens, i, create_formula_token_object(doc, exp->origin, *exp->tokens[i]));
     }
 
     return obj;
