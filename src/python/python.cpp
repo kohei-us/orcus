@@ -21,6 +21,7 @@
 #include "sheet_rows.hpp"
 #include "cell.hpp"
 #include "named_expression.hpp"
+#include "named_expressions.hpp"
 #include "formula_token.hpp"
 #include "formula_tokens.hpp"
 #endif
@@ -149,6 +150,9 @@ ORCUS_DLLPUBLIC PyObject* PyInit__orcus()
         return nullptr;
 
     if (!orcus::python::add_type_to_module(m, orcus::python::get_named_exp_type(), "NamedExpression"))
+        return nullptr;
+
+    if (!orcus::python::add_type_to_module(m, orcus::python::get_named_exps_type(), "NamedExpressions"))
         return nullptr;
 
     if (!orcus::python::add_type_to_module(m, orcus::python::get_formula_token_type(), "FormulaToken"))

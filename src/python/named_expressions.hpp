@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_NAMED_EXPRESSION_HPP
-#define INCLUDED_ORCUS_PYTHON_NAMED_EXPRESSION_HPP
+#ifndef INCLUDED_ORCUS_PYTHON_NAMED_EXPRESSIONS_HPP
+#define INCLUDED_ORCUS_PYTHON_NAMED_EXPRESSIONS_HPP
 
 #include "orcus/spreadsheet/types.hpp"
 
@@ -29,13 +29,10 @@ class document;
 
 namespace python {
 
-PyObject* create_named_exp_object(
-    spreadsheet::sheet_t origin_sheet, const spreadsheet::document& doc, const ixion::named_expression_t* exp);
-
-PyObject* create_named_exp_dict(
+PyObject* create_named_expressions_object(
     spreadsheet::sheet_t origin_sheet, const spreadsheet::document& doc, ixion::named_expressions_iterator iter);
 
-PyTypeObject* get_named_exp_type();
+PyTypeObject* get_named_exps_type();
 
 }}
 

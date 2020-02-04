@@ -45,6 +45,8 @@ _orcus_la_SOURCES += \
 	formula_token.cpp \
 	formula_tokens.hpp \
 	formula_tokens.cpp \
+	named_expressions.hpp \
+	named_expressions.cpp \
 	named_expression.hpp \
 	named_expression.cpp
 
