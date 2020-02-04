@@ -22,6 +22,7 @@
 #include "cell.hpp"
 #include "named_expression.hpp"
 #include "formula_token.hpp"
+#include "formula_tokens.hpp"
 #endif
 
 #include <iostream>
@@ -151,6 +152,9 @@ ORCUS_DLLPUBLIC PyObject* PyInit__orcus()
         return nullptr;
 
     if (!orcus::python::add_type_to_module(m, orcus::python::get_formula_token_type(), "FormulaToken"))
+        return nullptr;
+
+    if (!orcus::python::add_type_to_module(m, orcus::python::get_formula_tokens_type(), "FormulaTokens"))
         return nullptr;
 #endif
 

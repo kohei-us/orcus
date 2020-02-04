@@ -43,6 +43,8 @@ _orcus_la_SOURCES += \
 	cell.cpp \
 	formula_token.hpp \
 	formula_token.cpp \
+	formula_tokens.hpp \
+	formula_tokens.cpp \
 	named_expression.hpp \
 	named_expression.cpp
 
