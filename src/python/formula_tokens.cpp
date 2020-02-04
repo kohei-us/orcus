@@ -36,6 +36,11 @@ struct pyobj_formula_tokens
     formula_tokens_data* data = nullptr;
 };
 
+inline pyobj_formula_tokens* t(PyObject* self)
+{
+    return reinterpret_cast<pyobj_formula_tokens*>(self);
+}
+
 void init_members(
     pyobj_formula_tokens* self, const ss::document& doc, const ixion::abs_address_t& origin, const ixion::formula_tokens_t& tokens)
 {
@@ -58,17 +63,16 @@ int tp_init(pyobj_formula_tokens* self, PyObject* /*args*/, PyObject* /*kwargs*/
 
 PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
-    pyobj_formula_tokens* self = (pyobj_formula_tokens*)type->tp_alloc(type, 0);
+    pyobj_formula_tokens* self = t(type->tp_alloc(type, 0));
     self->data = new formula_tokens_data;
     return reinterpret_cast<PyObject*>(self);
 }
 
 PyObject* tp_iter(PyObject* self)
 {
-    pyobj_formula_tokens* obj = reinterpret_cast<pyobj_formula_tokens*>(self);
-    const ixion::formula_tokens_t* tokens = obj->data->tokens;
-    obj->data->pos = tokens->cbegin();
-    obj->data->end = tokens->cend();
+    formula_tokens_data& data = *t(self)->data;
+    data.pos = data.tokens->cbegin();
+    data.end = data.tokens->cend();
 
     Py_INCREF(self);
     return self;
@@ -76,8 +80,7 @@ PyObject* tp_iter(PyObject* self)
 
 PyObject* tp_iternext(PyObject* self)
 {
-    pyobj_formula_tokens* obj = reinterpret_cast<pyobj_formula_tokens*>(self);
-    formula_tokens_data& data = *obj->data;
+    formula_tokens_data& data = *t(self)->data;
 
     if (data.pos == data.end)
     {
@@ -90,6 +93,26 @@ PyObject* tp_iternext(PyObject* self)
     ++data.pos;
     return ft_obj;
 }
+
+Py_ssize_t sq_length(PyObject* self)
+{
+    formula_tokens_data& data = *t(self)->data;
+    return data.tokens->size();
+}
+
+PySequenceMethods tp_as_sequence =
+{
+    sq_length, // lenfunc sq_length
+    0,         // binaryfunc sq_concat
+    0,         // ssizeargfunc sq_repeat
+    0,         // ssizeargfunc sq_item
+    0,         // void *was_sq_slice
+    0,         // ssizeobjargproc sq_ass_item
+    0,         // void *was_sq_ass_slice
+    0,         // objobjproc sq_contains
+    0,         // binaryfunc sq_inplace_concat
+    0,         // ssizeargfunc sq_inplace_repeat
+};
 
 PyMethodDef tp_methods[] =
 {
@@ -114,7 +137,7 @@ PyTypeObject formula_tokens_type =
     0,                                        // tp_compare
     0,                                        // tp_repr
     0,                                        // tp_as_number
-    0,                                        // tp_as_sequence
+    &tp_as_sequence,                          // tp_as_sequence
     0,                                        // tp_as_mapping
     0,                                        // tp_hash
     0,                                        // tp_call
@@ -162,7 +185,7 @@ PyObject* create_formula_tokens_iterator_object(
         return nullptr;
     }
 
-    init_members(reinterpret_cast<pyobj_formula_tokens*>(obj), doc, origin, tokens);
+    init_members(t(obj), doc, origin, tokens);
 
     return obj;
 }
