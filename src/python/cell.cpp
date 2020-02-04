@@ -45,7 +45,6 @@ struct pyobj_cell
     PyObject* type;
     PyObject* value;
     PyObject* formula;
-    PyObject* formula_tokens;
 
     cell_data* data = nullptr;
 };
@@ -57,9 +56,6 @@ void initialize_cell_members(pyobj_cell* self)
 
     Py_INCREF(Py_None);
     self->formula = Py_None;
-
-    Py_INCREF(Py_None);
-    self->formula_tokens = Py_None;
 }
 
 PyObject* create_and_init_cell_object(const char* type_name)
@@ -93,7 +89,6 @@ void tp_dealloc(pyobj_cell* self)
     Py_CLEAR(self->type);
     Py_CLEAR(self->value);
     Py_CLEAR(self->formula);
-    Py_CLEAR(self->formula_tokens);
 
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
@@ -146,7 +141,6 @@ PyMemberDef tp_members[] =
     { (char*)"type", T_OBJECT_EX, offsetof(pyobj_cell, type), READONLY, (char*)"cell type" },
     { (char*)"value", T_OBJECT_EX, offsetof(pyobj_cell, value), READONLY, (char*)"cell value" },
     { (char*)"formula", T_OBJECT_EX, offsetof(pyobj_cell, formula), READONLY, (char*)"formula string" },
-    { (char*)"formula_tokens", T_OBJECT_EX, offsetof(pyobj_cell, formula_tokens), READONLY, (char*)"tuple of individual formula token strings" },
     { nullptr }
 };
 
@@ -282,11 +276,6 @@ PyObject* create_cell_object_formula(
     const ixion::model_context& cxt = doc.get_model_context();
     std::string formula_s = ixion::print_formula_tokens(cxt, origin, *resolver, tokens);
     obj_data->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
-
-    // Create a tuple of individual formula token strings.
-    obj_data->formula_tokens = PyTuple_New(tokens.size());
-    for (size_t i = 0; i < tokens.size(); ++i)
-        PyTuple_SetItem(obj_data->formula_tokens, i, create_formula_token_object(doc, origin, *tokens[i]));
 
     ixion::formula_result res = fc->get_result_cache();
     switch (res.get_type())

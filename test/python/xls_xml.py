@@ -63,15 +63,17 @@ class TestCase(unittest.TestCase):
         self.assertEqual(c.type, orcus.CellType.FORMULA_WITH_ERROR)
         self.assertFalse(c.formula)  # formula string should be empty
         # error formula tokens consist of: error token, string token (original formula), string token (error message).
-        self.assertEqual(c.formula_tokens[0].type, orcus.FormulaTokenType.ERROR)
-        self.assertEqual(c.formula_tokens[1].type, orcus.FormulaTokenType.VALUE)
-        self.assertEqual(c.formula_tokens[2].type, orcus.FormulaTokenType.VALUE)
+        formula_tokens = [t for t in c.get_formula_tokens()]
+        self.assertEqual(formula_tokens[0].type, orcus.FormulaTokenType.ERROR)
+        self.assertEqual(formula_tokens[1].type, orcus.FormulaTokenType.VALUE)
+        self.assertEqual(formula_tokens[2].type, orcus.FormulaTokenType.VALUE)
         c = rows[4][0]
         self.assertEqual(c.type, orcus.CellType.FORMULA_WITH_ERROR)
         self.assertFalse(c.formula)  # formula string should be empty
-        self.assertEqual(c.formula_tokens[0].type, orcus.FormulaTokenType.ERROR)
-        self.assertEqual(c.formula_tokens[1].type, orcus.FormulaTokenType.VALUE)
-        self.assertEqual(c.formula_tokens[2].type, orcus.FormulaTokenType.VALUE)
+        formula_tokens = [t for t in c.get_formula_tokens()]
+        self.assertEqual(formula_tokens[0].type, orcus.FormulaTokenType.ERROR)
+        self.assertEqual(formula_tokens[1].type, orcus.FormulaTokenType.VALUE)
+        self.assertEqual(formula_tokens[2].type, orcus.FormulaTokenType.VALUE)
 
 
 if __name__ == '__main__':
