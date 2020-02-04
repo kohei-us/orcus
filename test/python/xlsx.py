@@ -46,12 +46,22 @@ class TestCase(unittest.TestCase):
             doc = xlsx.read(f.read())
 
         self.assertEqual(len(doc.named_expressions), 2)
-        self.assertEqual(doc.named_expressions["MyRange"].origin, "Sheet1!$A$1")
-        self.assertEqual(doc.named_expressions["MyRange"].formula, "$A$1:$A$5")
-        self.assertEqual(str(doc.named_expressions["MyRange"].formula_tokens[0]), "$A$1:$A$5")
-        self.assertEqual(doc.named_expressions["MyRange2"].origin, "Sheet1!$A$1")
-        self.assertEqual(doc.named_expressions["MyRange2"].formula, "$A$1:$B$5")
-        self.assertEqual(str(doc.named_expressions["MyRange2"].formula_tokens[0]), "$A$1:$B$5")
+
+        exp = doc.named_expressions["MyRange"]
+        self.assertEqual(exp.origin, "Sheet1!$A$1")
+        self.assertEqual(exp.formula, "$A$1:$A$5")
+        iter = exp.get_formula_tokens()
+        self.assertEqual(len(iter), 1)
+        tokens = [t for t in iter]
+        self.assertEqual(str(tokens[0]), "$A$1:$A$5")
+
+        exp = doc.named_expressions["MyRange2"]
+        self.assertEqual(exp.origin, "Sheet1!$A$1")
+        self.assertEqual(exp.formula, "$A$1:$B$5")
+        iter = exp.get_formula_tokens()
+        self.assertEqual(len(iter), 1)
+        tokens = [t for t in iter]
+        self.assertEqual(str(tokens[0]), "$A$1:$B$5")
 
     def test_named_expression_sheet_local(self):
         filepath = os.path.join(self.basedir, "named-expression-sheet-local", "input.xlsx")
@@ -59,12 +69,22 @@ class TestCase(unittest.TestCase):
             doc = xlsx.read(f.read())
 
         self.assertEqual(len(doc.sheets[0].named_expressions), 1)
-        self.assertEqual(doc.sheets[0].named_expressions["MyRange"].formula, "$A$1:$B$3")
-        self.assertEqual(str(doc.sheets[0].named_expressions["MyRange"].formula_tokens[0]), "$A$1:$B$3")
+
+        exp = doc.sheets[0].named_expressions["MyRange"]
+        self.assertEqual(exp.formula, "$A$1:$B$3")
+        iter = exp.get_formula_tokens()
+        self.assertEqual(len(iter), 1)
+        tokens = [t for t in iter]
+        self.assertEqual(str(tokens[0]), "$A$1:$B$3")
 
         self.assertEqual(len(doc.sheets[1].named_expressions), 1)
-        self.assertEqual(doc.sheets[1].named_expressions["MyRange"].formula, "$A$4:$B$5")
-        self.assertEqual(str(doc.sheets[1].named_expressions["MyRange"].formula_tokens[0]), "$A$4:$B$5")
+
+        exp = doc.sheets[1].named_expressions["MyRange"]
+        self.assertEqual(exp.formula, "$A$4:$B$5")
+        iter = exp.get_formula_tokens()
+        self.assertEqual(len(iter), 1)
+        tokens = [t for t in iter]
+        self.assertEqual(str(tokens[0]), "$A$4:$B$5")
 
 
 if __name__ == '__main__':

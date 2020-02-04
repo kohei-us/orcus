@@ -7,6 +7,7 @@
 
 #include "named_expression.hpp"
 #include "formula_token.hpp"
+#include "formula_tokens.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
 #include <ixion/formula.hpp>
@@ -21,6 +22,14 @@ namespace orcus { namespace python {
 
 namespace {
 
+/** non-python part of the object. */
+struct named_exp_data
+{
+    const ss::document* doc = nullptr;
+    const ixion::formula_tokens_t* tokens = nullptr;
+    ixion::abs_address_t origin;
+};
+
 /**
  * Python object for orcus.NamedExpression.
  */
@@ -31,7 +40,14 @@ struct pyobj_named_exp
     PyObject* origin;
     PyObject* formula;
     PyObject* formula_tokens;
+
+    named_exp_data* data;
 };
+
+inline pyobj_named_exp* t(PyObject* self)
+{
+    return reinterpret_cast<pyobj_named_exp*>(self);
+}
 
 void init_members(pyobj_named_exp* self)
 {
@@ -47,6 +63,9 @@ void init_members(pyobj_named_exp* self)
 
 void tp_dealloc(pyobj_named_exp* self)
 {
+    delete self->data;
+    self->data = nullptr;
+
     Py_CLEAR(self->origin);
     Py_CLEAR(self->formula);
     Py_CLEAR(self->formula_tokens);
@@ -63,8 +82,27 @@ int tp_init(pyobj_named_exp* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     pyobj_named_exp* self = (pyobj_named_exp*)type->tp_alloc(type, 0);
+    self->data = new named_exp_data;
     return reinterpret_cast<PyObject*>(self);
 }
+
+PyObject* ne_get_formula_tokens(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    named_exp_data& data = *t(self)->data;
+    if (!data.tokens)
+    {
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
+    return create_formula_tokens_iterator_object(*data.doc, data.origin, *data.tokens);
+}
+
+PyMethodDef tp_methods[] =
+{
+    { "get_formula_tokens", (PyCFunction)ne_get_formula_tokens, METH_NOARGS, "Get a formula tokens iterator." },
+    { nullptr }
+};
 
 PyMemberDef tp_members[] =
 {
@@ -103,7 +141,7 @@ PyTypeObject named_exp_type =
     0,		                                  // tp_weaklistoffset
     0,		                                  // tp_iter
     0,                                        // tp_iternext
-    0,                                        // tp_methods
+    tp_methods,                               // tp_methods
     tp_members,                               // tp_members
     0,                                        // tp_getset
     0,                                        // tp_base
@@ -140,6 +178,11 @@ PyObject* create_named_exp_object(
 
     if (exp)
     {
+        named_exp_data& data = *self->data;
+        data.doc = &doc;
+        data.origin = exp->origin;
+        data.tokens = &exp->tokens;
+
         const ixion::model_context& cxt = doc.get_model_context();
         auto* resolver = doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
 
