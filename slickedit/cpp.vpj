@@ -505,6 +505,8 @@
                 <F N="../src/python/document.hpp"/>
                 <F N="../src/python/formula_token.cpp"/>
                 <F N="../src/python/formula_token.hpp"/>
+                <F N="../src/python/formula_tokens.cpp"/>
+                <F N="../src/python/formula_tokens.hpp"/>
                 <F N="../src/python/global.cpp"/>
                 <F N="../src/python/global.hpp"/>
                 <F N="../src/python/gnumeric.cpp"/>
