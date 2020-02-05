@@ -54,7 +54,7 @@ def add_named_expression(parent, name, exp, add_tokens, scope):
 
 def process_document(filepath, doc):
 
-    add_tokens = True
+    add_tokens = False
     output_buffer = list()
 
     elem_doc = ET.Element("doc")
@@ -106,8 +106,8 @@ def process_document(filepath, doc):
                 elem.attrib["s"] = data["formula"]
                 elem.attrib["valid"] = "true" if data["valid"] else "false"
                 if data["valid"]:
-                    elem.attrib["token-count"] = str(len(data["formula_tokens"]))
                     if "formula_tokens" in data:
+                        elem.attrib["token-count"] = str(len(data["formula_tokens"]))
                         for token in data["formula_tokens"]:
                             elem_token = ET.SubElement(elem, "token")
                             elem_token.attrib["s"] = token[0]
