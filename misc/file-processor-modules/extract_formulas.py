@@ -90,7 +90,7 @@ def process_document(filepath, doc):
                         data["formula_tokens"] = process_formula_tokens(cell)
 
                 elif cell.type == orcus.CellType.FORMULA_WITH_ERROR:
-                    tokens = [x for x in cell.get_formula_tokens()]
+                    tokens = [str(x) for x in cell.get_formula_tokens()]
                     data.update({
                         "valid": False,
                         "formula": tokens[1],  # original formula string
