@@ -8,6 +8,7 @@
 #include "sheet.hpp"
 #include "sheet_rows.hpp"
 #include "named_expression.hpp"
+#include "named_expressions.hpp"
 
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
@@ -42,12 +43,17 @@ struct pyobj_sheet
     PyObject* data_size;
     PyObject* named_expressions;
 
-    sheet_data* m_data;
+    sheet_data* data;
 };
+
+inline pyobj_sheet* t(PyObject* self)
+{
+    return reinterpret_cast<pyobj_sheet*>(self);
+}
 
 inline sheet_data* get_sheet_data(PyObject* self)
 {
-    return reinterpret_cast<pyobj_sheet*>(self)->m_data;
+    return t(self)->data;
 }
 
 /**
@@ -59,9 +65,9 @@ inline spreadsheet::sheet* get_core_sheet(PyObject* self)
     return get_sheet_data(self)->m_sheet;
 }
 
-void sheet_dealloc(pyobj_sheet* self)
+void tp_dealloc(pyobj_sheet* self)
 {
-    delete self->m_data;
+    delete self->data;
 
     PyDict_Clear(self->named_expressions); // This should unref all its members.
     Py_CLEAR(self->named_expressions);
@@ -73,14 +79,14 @@ void sheet_dealloc(pyobj_sheet* self)
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
 
-PyObject* sheet_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
+PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     pyobj_sheet* self = (pyobj_sheet*)type->tp_alloc(type, 0);
-    self->m_data = new sheet_data;
+    self->data = new sheet_data;
     return reinterpret_cast<PyObject*>(self);
 }
 
-int sheet_init(pyobj_sheet* self, PyObject* /*args*/, PyObject* /*kwargs*/)
+int tp_init(pyobj_sheet* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     return 0;
 }
@@ -180,14 +186,23 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
     return Py_None;
 }
 
-PyMethodDef sheet_methods[] =
+PyObject* sheet_get_named_expressions(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    const ss::document& doc = *t(self)->data->m_doc;
+    ss::sheet_t si = t(self)->data->m_sheet->get_index();
+    const ixion::model_context& cxt = doc.get_model_context();
+    return create_named_expressions_object(si, doc, cxt.get_named_expressions_iterator(si));
+}
+
+PyMethodDef tp_methods[] =
 {
     { "get_rows", (PyCFunction)sheet_get_rows, METH_VARARGS, "Get a sheet row iterator." },
     { "write", (PyCFunction)sheet_write, METH_VARARGS | METH_KEYWORDS, "Write sheet content to specified file object." },
+    { "get_named_expressions", (PyCFunction)sheet_get_named_expressions, METH_NOARGS, "Get a named expressions iterator." },
     { nullptr }
 };
 
-PyMemberDef sheet_members[] =
+PyMemberDef tp_members[] =
 {
     { (char*)"name",       T_OBJECT_EX, offsetof(pyobj_sheet, name),       READONLY, (char*)"sheet name" },
     { (char*)"sheet_size", T_OBJECT_EX, offsetof(pyobj_sheet, sheet_size), READONLY, (char*)"sheet size" },
@@ -200,9 +215,9 @@ PyTypeObject sheet_type =
 {
     PyVarObject_HEAD_INIT(nullptr, 0)
     "orcus.Sheet",                            // tp_name
-    sizeof(pyobj_sheet),                            // tp_basicsize
+    sizeof(pyobj_sheet),                      // tp_basicsize
     0,                                        // tp_itemsize
-    (destructor)sheet_dealloc,                // tp_dealloc
+    (destructor)tp_dealloc,                   // tp_dealloc
     0,                                        // tp_print
     0,                                        // tp_getattr
     0,                                        // tp_setattr
@@ -225,24 +240,24 @@ PyTypeObject sheet_type =
     0,		                                  // tp_weaklistoffset
     0,		                                  // tp_iter
     0,		                                  // tp_iternext
-    sheet_methods,                            // tp_methods
-    sheet_members,                            // tp_members
+    tp_methods,                               // tp_methods
+    tp_members,                               // tp_members
     0,                                        // tp_getset
     0,                                        // tp_base
     0,                                        // tp_dict
     0,                                        // tp_descr_get
     0,                                        // tp_descr_set
     0,                                        // tp_dictoffset
-    (initproc)sheet_init,                     // tp_init
+    (initproc)tp_init,                     // tp_init
     0,                                        // tp_alloc
-    sheet_new,                                // tp_new
+    tp_new,                                // tp_new
 };
 
 }
 
 sheet_data* get_sheet_data(PyObject* self)
 {
-    return reinterpret_cast<pyobj_sheet*>(self)->m_data;
+    return reinterpret_cast<pyobj_sheet*>(self)->data;
 }
 
 PyTypeObject* get_sheet_type()
@@ -254,8 +269,8 @@ void store_sheet(
     PyObject* self, const spreadsheet::document* doc, spreadsheet::sheet* orcus_sheet)
 {
     pyobj_sheet* pysheet = reinterpret_cast<pyobj_sheet*>(self);
-    pysheet->m_data->m_doc = doc;
-    pysheet->m_data->m_sheet = orcus_sheet;
+    pysheet->data->m_doc = doc;
+    pysheet->data->m_sheet = orcus_sheet;
 
     // Populate the python members.
 
@@ -285,8 +300,8 @@ void store_sheet(
     PyDict_SetItemString(pysheet->sheet_size, "row", PyLong_FromLong(sheet_size.rows));
 
     // sheet-local named expressions
-    const ixion::model_context& cxt = pysheet->m_data->m_doc->get_model_context();
-    pysheet->named_expressions = create_named_exp_dict(*pysheet->m_data->m_doc, cxt.get_named_expressions_iterator(sid));
+    const ixion::model_context& cxt = pysheet->data->m_doc->get_model_context();
+    pysheet->named_expressions = create_named_exp_dict(*pysheet->data->m_doc, cxt.get_named_expressions_iterator(sid));
 }
 
 }}

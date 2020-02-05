@@ -80,10 +80,9 @@ PyObject* doc_get_named_expressions(PyObject* self, PyObject* args, PyObject* kw
     return create_named_expressions_object(-1, doc, cxt.get_named_expressions_iterator());
 }
 
-
 PyMethodDef tp_methods[] =
 {
-    { "get_named_expressions", (PyCFunction)doc_get_named_expressions, METH_NOARGS, "Get a formula tokens iterator." },
+    { "get_named_expressions", (PyCFunction)doc_get_named_expressions, METH_NOARGS, "Get a named expressions iterator." },
     { nullptr }
 };
 
