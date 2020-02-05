@@ -85,7 +85,19 @@ PyObject* tp_iternext(PyObject* self)
     ixion::named_expressions_iterator::named_expression item = iter.get();
     iter.next();
 
-    return create_named_exp_object(data.origin_sheet, *data.doc, item.expression);
+    PyObject* name = PyUnicode_FromStringAndSize(item.name->data(), item.name->size());
+    if (!name)
+        return nullptr;
+
+    PyObject* ne = create_named_exp_object(data.origin_sheet, *data.doc, item.expression);
+    if (!ne)
+        return nullptr;
+
+    PyObject* tup = PyTuple_New(2);
+    PyTuple_SET_ITEM(tup, 0, name);
+    PyTuple_SET_ITEM(tup, 1, ne);
+
+    return tup;
 }
 
 PySequenceMethods tp_as_sequence =
