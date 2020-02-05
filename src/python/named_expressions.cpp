@@ -44,6 +44,20 @@ inline pyobj_named_exps* t(PyObject* self)
     return reinterpret_cast<pyobj_named_exps*>(self);
 }
 
+PyObject* named_exps_names(PyObject* self, PyObject* args, PyObject* kwargs)
+{
+    named_exps_data& data = *t(self)->data;
+    PyObject* s = PySet_New(nullptr);
+
+    for (auto iter = data.src; iter.has(); iter.next())
+    {
+        const std::string* name = iter.get().name;
+        PySet_Add(s, PyUnicode_FromStringAndSize(name->data(), name->size()));
+    }
+
+    return s;
+}
+
 void tp_dealloc(pyobj_named_exps* self)
 {
     delete self->data;
@@ -122,6 +136,7 @@ PySequenceMethods tp_as_sequence =
 
 PyMethodDef tp_methods[] =
 {
+    { "names", (PyCFunction)named_exps_names, METH_NOARGS, "Get names for all named expressions stored." },
     { nullptr }
 };
 

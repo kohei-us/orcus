@@ -46,6 +46,7 @@ class TestCase(unittest.TestCase):
             doc = xlsx.read(f.read())
 
         named_exps = doc.get_named_expressions()
+        self.assertEqual(named_exps.names(), {"MyRange", "MyRange2"})
         self.assertEqual(len(named_exps), 2)
 
         named_exps_dict = {x[0]: x[1] for x in named_exps}
@@ -73,6 +74,7 @@ class TestCase(unittest.TestCase):
         sheet = doc.sheets[0]
         named_exps = sheet.get_named_expressions()
         self.assertEqual(len(named_exps), 1)
+        self.assertEqual(named_exps.names(), {"MyRange",})
 
         named_exps_dict = {x[0]: x[1] for x in named_exps}
         exp = named_exps_dict["MyRange"]
@@ -84,6 +86,7 @@ class TestCase(unittest.TestCase):
 
         sheet = doc.sheets[1]
         named_exps = sheet.get_named_expressions()
+        self.assertEqual(named_exps.names(), {"MyRange",})
         self.assertEqual(len(named_exps), 1)
 
         named_exps_dict = {x[0]: x[1] for x in named_exps}
