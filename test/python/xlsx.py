@@ -45,9 +45,11 @@ class TestCase(unittest.TestCase):
         with open(filepath, "rb") as f:
             doc = xlsx.read(f.read())
 
-        self.assertEqual(len(doc.named_expressions), 2)
+        named_exps = doc.get_named_expressions()
+        self.assertEqual(len(named_exps), 2)
 
-        exp = doc.named_expressions["MyRange"]
+        named_exps_dict = {x[0]: x[1] for x in named_exps}
+        exp = named_exps_dict["MyRange"]
         self.assertEqual(exp.origin, "Sheet1!$A$1")
         self.assertEqual(exp.formula, "$A$1:$A$5")
         iter = exp.get_formula_tokens()
@@ -55,7 +57,7 @@ class TestCase(unittest.TestCase):
         tokens = [t for t in iter]
         self.assertEqual(str(tokens[0]), "$A$1:$A$5")
 
-        exp = doc.named_expressions["MyRange2"]
+        exp = named_exps_dict["MyRange2"]
         self.assertEqual(exp.origin, "Sheet1!$A$1")
         self.assertEqual(exp.formula, "$A$1:$B$5")
         iter = exp.get_formula_tokens()
