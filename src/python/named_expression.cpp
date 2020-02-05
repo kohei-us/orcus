@@ -150,8 +150,7 @@ PyTypeObject named_exp_type =
 
 } // anonymous namespace
 
-PyObject* create_named_exp_object(
-    ss::sheet_t origin_sheet, const spreadsheet::document& doc, const ixion::named_expression_t* exp)
+PyObject* create_named_exp_object(const spreadsheet::document& doc, const ixion::named_expression_t* exp)
 {
     PyTypeObject* named_exp_type = get_named_exp_type();
     if (!named_exp_type)
@@ -192,14 +191,14 @@ PyObject* create_named_exp_object(
     return obj;
 }
 
-PyObject* create_named_exp_dict(ss::sheet_t origin_sheet, const ss::document& doc, ixion::named_expressions_iterator iter)
+PyObject* create_named_exp_dict(const ss::document& doc, ixion::named_expressions_iterator iter)
 {
     PyObject* dict = PyDict_New();
     for (; iter.has(); iter.next())
     {
         auto ne = iter.get();
         PyObject* name = PyUnicode_FromStringAndSize(ne.name->data(), ne.name->size());
-        PyObject* tokens = create_named_exp_object(origin_sheet, doc, ne.expression);
+        PyObject* tokens = create_named_exp_object(doc, ne.expression);
         PyDict_SetItem(dict, name, tokens);
     }
 

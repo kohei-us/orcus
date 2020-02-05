@@ -286,8 +286,7 @@ void store_sheet(
 
     // sheet-local named expressions
     const ixion::model_context& cxt = pysheet->m_data->m_doc->get_model_context();
-    pysheet->named_expressions = create_named_exp_dict(
-        sid, *pysheet->m_data->m_doc, cxt.get_named_expressions_iterator(sid));
+    pysheet->named_expressions = create_named_exp_dict(*pysheet->m_data->m_doc, cxt.get_named_expressions_iterator(sid));
 }
 
 }}

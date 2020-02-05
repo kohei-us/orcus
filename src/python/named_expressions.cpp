@@ -89,7 +89,7 @@ PyObject* tp_iternext(PyObject* self)
     if (!name)
         return nullptr;
 
-    PyObject* ne = create_named_exp_object(data.origin_sheet, *data.doc, item.expression);
+    PyObject* ne = create_named_exp_object(*data.doc, item.expression);
     if (!ne)
         return nullptr;
 

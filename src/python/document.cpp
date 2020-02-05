@@ -178,7 +178,7 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
 
     const ixion::model_context& cxt = pydoc_data->m_doc->get_model_context();
     pydoc->named_expressions =
-        create_named_exp_dict(-1, *pydoc_data->m_doc, cxt.get_named_expressions_iterator());
+        create_named_exp_dict(*pydoc_data->m_doc, cxt.get_named_expressions_iterator());
 
     // Create a tuple of sheet objects and store it with the pydoc instance.
     size_t sheet_size = pydoc_data->m_doc->get_sheet_count();
