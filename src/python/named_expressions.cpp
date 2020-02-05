@@ -100,9 +100,15 @@ PyObject* tp_iternext(PyObject* self)
     return tup;
 }
 
+Py_ssize_t sq_length(PyObject* self)
+{
+    named_exps_data& data = *t(self)->data;
+    return data.src.size();
+}
+
 PySequenceMethods tp_as_sequence =
 {
-    0,         // lenfunc sq_length
+    sq_length, // lenfunc sq_length
     0,         // binaryfunc sq_concat
     0,         // ssizeargfunc sq_repeat
     0,         // ssizeargfunc sq_item
