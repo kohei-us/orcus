@@ -69,9 +69,6 @@ void tp_dealloc(pyobj_sheet* self)
 {
     delete self->data;
 
-    PyDict_Clear(self->named_expressions); // This should unref all its members.
-    Py_CLEAR(self->named_expressions);
-
     Py_CLEAR(self->name);
     Py_CLEAR(self->sheet_size);
     Py_CLEAR(self->data_size);
@@ -207,7 +204,6 @@ PyMemberDef tp_members[] =
     { (char*)"name",       T_OBJECT_EX, offsetof(pyobj_sheet, name),       READONLY, (char*)"sheet name" },
     { (char*)"sheet_size", T_OBJECT_EX, offsetof(pyobj_sheet, sheet_size), READONLY, (char*)"sheet size" },
     { (char*)"data_size",  T_OBJECT_EX, offsetof(pyobj_sheet, data_size),  READONLY, (char*)"data size" },
-    { (char*)"named_expressions", T_OBJECT_EX, offsetof(pyobj_sheet, named_expressions), READONLY, (char*)"named expressions" },
     { nullptr }
 };
 
@@ -298,10 +294,6 @@ void store_sheet(
     ss::range_size_t sheet_size = doc->get_sheet_size();
     PyDict_SetItemString(pysheet->sheet_size, "column", PyLong_FromLong(sheet_size.columns));
     PyDict_SetItemString(pysheet->sheet_size, "row", PyLong_FromLong(sheet_size.rows));
-
-    // sheet-local named expressions
-    const ixion::model_context& cxt = pysheet->data->m_doc->get_model_context();
-    pysheet->named_expressions = create_named_exp_dict(*pysheet->data->m_doc, cxt.get_named_expressions_iterator(sid));
 }
 
 }}
