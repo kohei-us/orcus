@@ -40,6 +40,26 @@ PyObject* get_python_enum_value(const char* enum_class_name, const char* value_n
     return PyObject_GetAttrString(cls.get(), value_name);
 }
 
+PyObject* create_object_from_type(PyTypeObject* type)
+{
+    if (!type)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Type object is null.");
+        return nullptr;
+    }
+
+    PyObject* obj = type->tp_new(type, nullptr, nullptr);
+    if (!obj)
+    {
+        std::ostringstream os;
+        os << "Failed to instantiate an object of type " << type->tp_name << ".";
+        PyErr_SetString(PyExc_RuntimeError, os.str().data());
+        return nullptr;
+    }
+
+    return obj;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

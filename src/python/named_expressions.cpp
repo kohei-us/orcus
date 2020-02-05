@@ -6,6 +6,8 @@
  */
 
 #include "named_expressions.hpp"
+#include "named_expression.hpp"
+#include "global.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
 #include <ixion/formula.hpp>
@@ -23,6 +25,9 @@ namespace {
 /** non-python part. */
 struct named_exps_data
 {
+    ss::sheet_t origin_sheet = -1; // -1 for global, >=0 for sheet local.
+    const ss::document* doc = nullptr;
+    ixion::named_expressions_iterator src; // original iterator to copy from.
     ixion::named_expressions_iterator iter;
 };
 
@@ -59,14 +64,28 @@ PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 
 PyObject* tp_iter(PyObject* self)
 {
+    named_exps_data& data = *t(self)->data;
+    data.iter = data.src;
+
     Py_INCREF(self);
     return self;
 }
 
 PyObject* tp_iternext(PyObject* self)
 {
-    PyErr_SetNone(PyExc_StopIteration);
-    return nullptr;
+    named_exps_data& data = *t(self)->data;
+    auto& iter = data.iter;
+
+    if (!iter.has())
+    {
+        PyErr_SetNone(PyExc_StopIteration);
+        return nullptr;
+    }
+
+    ixion::named_expressions_iterator::named_expression item = iter.get();
+    iter.next();
+
+    return create_named_exp_object(data.origin_sheet, *data.doc, item.expression);
 }
 
 PySequenceMethods tp_as_sequence =
@@ -140,7 +159,20 @@ PyTypeObject named_exps_type =
 PyObject* create_named_expressions_object(
     spreadsheet::sheet_t origin_sheet, const spreadsheet::document& doc, ixion::named_expressions_iterator iter)
 {
-    return nullptr;
+    PyTypeObject* type = get_named_exps_type();
+
+    PyObject* obj = create_object_from_type(type);
+    if (!obj)
+        return nullptr;
+
+    type->tp_init(obj, nullptr, nullptr);
+
+    named_exps_data& data = *t(obj)->data;
+    data.src = iter;
+    data.origin_sheet = origin_sheet;
+    data.doc = &doc;
+
+    return obj;
 }
 
 PyTypeObject* get_named_exps_type()

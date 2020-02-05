@@ -7,7 +7,9 @@
 
 #include "document.hpp"
 #include "sheet.hpp"
+#include "global.hpp"
 #include "named_expression.hpp"
+#include "named_expressions.hpp"
 #include "orcus/pstring.hpp"
 
 #include <ixion/model_context.hpp>
@@ -36,12 +38,17 @@ struct pyobj_document
     PyObject* sheets; // tuple of sheet objects.
     PyObject* named_expressions; // dictionary storing global named expressions.
 
-    document_data* m_data;
+    document_data* data;
 };
 
-void document_dealloc(pyobj_document* self)
+inline pyobj_document* t(PyObject* self)
 {
-    delete self->m_data;
+    return reinterpret_cast<pyobj_document*>(self);
+}
+
+void tp_dealloc(pyobj_document* self)
+{
+    delete self->data;
 
     PyDict_Clear(self->named_expressions); // This should unref all its members.
     Py_CLEAR(self->named_expressions);
@@ -58,24 +65,33 @@ void document_dealloc(pyobj_document* self)
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
 
-PyObject* document_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
+PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
-    pyobj_document* self = (pyobj_document*)type->tp_alloc(type, 0);
-    self->m_data = new document_data;
+    pyobj_document* self = t(type->tp_alloc(type, 0));
+    self->data = new document_data;
     return reinterpret_cast<PyObject*>(self);
 }
 
-int document_init(pyobj_document* self, PyObject* /*args*/, PyObject* /*kwargs*/)
+int tp_init(pyobj_document* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     return 0;
 }
 
-PyMethodDef document_methods[] =
+PyObject* doc_get_named_expressions(PyObject* self, PyObject* args, PyObject* kwargs)
 {
+    const ss::document& doc = *t(self)->data->m_doc;
+    const ixion::model_context& cxt = doc.get_model_context();
+    return create_named_expressions_object(-1, doc, cxt.get_named_expressions_iterator());
+}
+
+
+PyMethodDef tp_methods[] =
+{
+    { "get_named_expressions", (PyCFunction)doc_get_named_expressions, METH_NOARGS, "Get a formula tokens iterator." },
     { nullptr }
 };
 
-PyMemberDef document_members[] =
+PyMemberDef tp_members[] =
 {
     { (char*)"sheets", T_OBJECT_EX, offsetof(pyobj_document, sheets), READONLY, (char*)"sheet objects" },
     { (char*)"named_expressions", T_OBJECT_EX, offsetof(pyobj_document, named_expressions), READONLY, (char*)"dictionary storing named expression objects" },
@@ -86,9 +102,9 @@ PyTypeObject document_type =
 {
     PyVarObject_HEAD_INIT(nullptr, 0)
     "orcus.Document",                         // tp_name
-    sizeof(pyobj_document),                         // tp_basicsize
+    sizeof(pyobj_document),                   // tp_basicsize
     0,                                        // tp_itemsize
-    (destructor)document_dealloc,             // tp_dealloc
+    (destructor)tp_dealloc,                   // tp_dealloc
     0,                                        // tp_print
     0,                                        // tp_getattr
     0,                                        // tp_setattr
@@ -111,17 +127,17 @@ PyTypeObject document_type =
     0,		                                  // tp_weaklistoffset
     0,		                                  // tp_iter
     0,		                                  // tp_iternext
-    document_methods,                         // tp_methods
-    document_members,                         // tp_members
+    tp_methods,                               // tp_methods
+    tp_members,                               // tp_members
     0,                                        // tp_getset
     0,                                        // tp_base
     0,                                        // tp_dict
     0,                                        // tp_descr_get
     0,                                        // tp_descr_set
     0,                                        // tp_dictoffset
-    (initproc)document_init,                  // tp_init
+    (initproc)tp_init,                        // tp_init
     0,                                        // tp_alloc
-    document_new,                             // tp_new
+    tp_new,                                   // tp_new
 };
 
 void import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes)
@@ -134,21 +150,13 @@ void import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes)
 
 PyObject* create_document_object()
 {
-    PyTypeObject* doc_type = get_document_type();
-    if (!doc_type)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "Failed to get the document type object.");
-        return nullptr;
-    }
+    PyTypeObject* type = get_document_type();
 
-    PyObject* obj_doc = doc_type->tp_new(doc_type, nullptr, nullptr);
+    PyObject* obj_doc = create_object_from_type(type);
     if (!obj_doc)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "Failed to instantiate a document object.");
         return nullptr;
-    }
 
-    doc_type->tp_init(obj_doc, nullptr, nullptr);
+    type->tp_init(obj_doc, nullptr, nullptr);
 
     return obj_doc;
 }
@@ -159,7 +167,7 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
         return;
 
     pyobj_document* pydoc = reinterpret_cast<pyobj_document*>(self);
-    document_data* pydoc_data = pydoc->m_data;
+    document_data* pydoc_data = pydoc->data;
     pydoc_data->m_doc = std::move(doc);
 
     PyTypeObject* sheet_type = get_sheet_type();
@@ -205,7 +213,7 @@ PyTypeObject* get_document_type()
 
 document_data* get_document_data(PyObject* self)
 {
-    return reinterpret_cast<pyobj_document*>(self)->m_data;
+    return reinterpret_cast<pyobj_document*>(self)->data;
 }
 
 stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs)
