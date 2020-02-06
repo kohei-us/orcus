@@ -22,7 +22,7 @@ import orcus
 
 
 def is_special_file(filename):
-    if filename.startswith(config.prefix_skip):
+    if filename.find(config.prefix_skip) >= 0:
         return True
 
     return filename.endswith(config.ext_out) or filename.endswith(config.ext_good) or filename.endswith(config.ext_bad)

@@ -13,7 +13,6 @@ import os.path
 import sys
 import enum
 import shutil
-import xml.etree.ElementTree as ET
 
 from common import config
 
@@ -30,29 +29,32 @@ def to_string(obj):
     return str(obj)
 
 
-def process_formula_tokens(obj):
-    formula_tokens = list()
-    for token in obj.get_formula_tokens():
-        formula_tokens.append([str(token), to_string(token.type)])
-    return formula_tokens
-
-
-def add_named_expression(parent, name, exp, add_tokens, scope):
-    elem = ET.SubElement(parent, "named-expression")
-    elem.attrib["name"] = name
-    elem.attrib["formula"] = exp.formula
-    elem.attrib["scope"] = scope
-    elem.attrib["origin"] = exp.origin
-
-    if add_tokens:
-        tokens = process_formula_tokens(exp)
-        for token in tokens:
-            elem_token = ET.SubElement(elem, "token")
-            elem_token.attrib["s"] = token[0]
-            elem_token.attrib["type"] = token[1]
-
-
 def process_document(filepath, doc):
+    return process_document_xml_etree(filepath, doc)
+
+
+def process_document_xml_etree(filepath, doc):
+    import xml.etree.ElementTree as ET
+
+    def process_formula_tokens(obj):
+        formula_tokens = list()
+        for token in obj.get_formula_tokens():
+            formula_tokens.append([str(token), to_string(token.type)])
+        return formula_tokens
+
+    def add_named_expression(parent, name, exp, add_tokens, scope):
+        elem = ET.SubElement(parent, "named-expression")
+        elem.attrib["name"] = name
+        elem.attrib["formula"] = exp.formula
+        elem.attrib["scope"] = scope
+        elem.attrib["origin"] = exp.origin
+
+        if add_tokens:
+            tokens = process_formula_tokens(exp)
+            for token in tokens:
+                elem_token = ET.SubElement(elem, "token")
+                elem_token.attrib["s"] = token[0]
+                elem_token.attrib["type"] = token[1]
 
     add_tokens = False
     output_buffer = list()
@@ -116,8 +118,7 @@ def process_document(filepath, doc):
                     # invalid formula
                     elem.attrib["error"] = data["error"]
 
-    dirpath = os.path.dirname(filepath)
-    outpath = os.path.join(dirpath, FORMULAS_FILENAME_XML)
+    outpath = f"{filepath}{FORMULAS_FILENAME_XML}"
     with open(outpath, "w") as f:
         s = ET.tostring(elem_doc, "utf-8").decode("utf-8")
         f.write(s)
@@ -137,7 +138,7 @@ def main():
     i = 0
     for root, dir, files in os.walk(args.rootdir):
         for filename in files:
-            if filename != FORMULAS_FILENAME_XML:
+            if not filename.endswith(FORMULAS_FILENAME_XML):
                 continue
 
             inpath = os.path.join(root, filename)
