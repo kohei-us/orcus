@@ -89,9 +89,8 @@ def process_document_direct_xml(filepath, doc):
                         write_tokens(cell.get_formula_tokens(), f)
                         f.write("</formula>")
                     elif cell.type == orcus.CellType.FORMULA_WITH_ERROR:
-                        tokens = [t for t in cell.get_formula_tokens()]
-                        f.write(f'<formula sheet="{sheet.name}" row="{row_pos}" column="{col_pos}" formula="{escape_str(tokens[1])}" error="{escape_str(tokens[2])}" valid="false">')
-                        f.write("</formula>")
+                        tokens = [str(t) for t in cell.get_formula_tokens()]
+                        f.write(f'<formula sheet="{sheet.name}" row="{row_pos}" column="{col_pos}" formula="{escape_str(tokens[1])}" error="{escape_str(tokens[2])}" valid="false"/>')
                     else:
                         continue
 
