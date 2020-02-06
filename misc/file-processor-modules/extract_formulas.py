@@ -29,8 +29,76 @@ def to_string(obj):
     return str(obj)
 
 
+def escape_str(s):
+    buf = []
+    for c in s:
+        if c == '"':
+            buf.append("&quot;")
+        elif c == '&':
+            buf.append("&amp;")
+        elif c == '<':
+            buf.append("&lt;")
+        elif c == '>':
+            buf.append("&gt;")
+        elif c == "'":
+            buf.append("&apos;")
+        else:
+            buf.append(c)
+    return "".join(buf)
+
+
 def process_document(filepath, doc):
-    return process_document_xml_etree(filepath, doc)
+    return process_document_direct_xml(filepath, doc)
+
+
+def process_document_direct_xml(filepath, doc):
+
+    def write_tokens(iter, f):
+        for token in iter:
+            f.write(f'<token s="{escape_str(str(token))}" type="{to_string(token.type)}"/>')
+
+    def write_named_exps(iter, f, scope):
+        for name, exp in iter:
+            f.write(f'<named-expression name="{name}" origin="{exp.origin}" formula="{escape_str(exp.formula)}" scope="{scope}">')
+            write_tokens(exp.get_formula_tokens(), f)
+            f.write("</named-expression>")
+
+    outpath = f"{filepath}{FORMULAS_FILENAME_XML}"
+    with open(outpath, "w") as f:
+        output_buffer = list()
+        f.write(f'<doc filepath="{filepath}"><sheets count="{len(doc.sheets)}">')
+        for sheet in doc.sheets:
+            f.write(f'<sheet name="{sheet.name}"/>')
+        f.write("</sheets>")
+        f.write("<named-expressions>")
+
+        write_named_exps(doc.get_named_expressions(), f, "global")
+        for sheet in doc.sheets:
+            write_named_exps(sheet.get_named_expressions(), f, "sheet")
+
+        f.write("</named-expressions>")
+
+        f.write("<formulas>")
+
+        for sheet in doc.sheets:
+            output_buffer.append(f"* sheet: {sheet.name}")
+            for row_pos, row in enumerate(sheet.get_rows()):
+                for col_pos, cell in enumerate(row):
+                    if cell.type == orcus.CellType.FORMULA:
+                        f.write(f'<formula sheet="{sheet.name}" row="{row_pos}" column="{col_pos}" formula="{escape_str(cell.formula)}" valid="true">')
+                        write_tokens(cell.get_formula_tokens(), f)
+                        f.write("</formula>")
+                    elif cell.type == orcus.CellType.FORMULA_WITH_ERROR:
+                        tokens = [t for t in cell.get_formula_tokens()]
+                        f.write(f'<formula sheet="{sheet.name}" row="{row_pos}" column="{col_pos}" formula="{escape_str(tokens[1])}" error="{escape_str(tokens[2])}" valid="false">')
+                        f.write("</formula>")
+                    else:
+                        continue
+
+        f.write("</formulas>")
+        f.write("</doc>")
+
+        return output_buffer
 
 
 def process_document_xml_etree(filepath, doc):
