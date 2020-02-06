@@ -59,16 +59,16 @@ def process_document_direct_xml(filepath, doc):
 
     def write_named_exps(iter, f, scope):
         for name, exp in iter:
-            f.write(f'<named-expression name="{name}" origin="{exp.origin}" formula="{escape_str(exp.formula)}" scope="{scope}">')
+            f.write(f'<named-expression name="{escape_str(name)}" origin="{escape_str(exp.origin)}" formula="{escape_str(exp.formula)}" scope="{scope}">')
             write_tokens(exp.get_formula_tokens(), f)
             f.write("</named-expression>")
 
     outpath = f"{filepath}{FORMULAS_FILENAME_XML}"
     with open(outpath, "w") as f:
         output_buffer = list()
-        f.write(f'<doc filepath="{filepath}"><sheets count="{len(doc.sheets)}">')
+        f.write(f'<doc filepath="{escape_str(filepath)}"><sheets count="{len(doc.sheets)}">')
         for sheet in doc.sheets:
-            f.write(f'<sheet name="{sheet.name}"/>')
+            f.write(f'<sheet name="{escape_str(sheet.name)}"/>')
         f.write("</sheets>")
         f.write("<named-expressions>")
 
@@ -85,12 +85,12 @@ def process_document_direct_xml(filepath, doc):
             for row_pos, row in enumerate(sheet.get_rows()):
                 for col_pos, cell in enumerate(row):
                     if cell.type == orcus.CellType.FORMULA:
-                        f.write(f'<formula sheet="{sheet.name}" row="{row_pos}" column="{col_pos}" formula="{escape_str(cell.formula)}" valid="true">')
+                        f.write(f'<formula sheet="{escape_str(sheet.name)}" row="{row_pos}" column="{col_pos}" formula="{escape_str(cell.formula)}" valid="true">')
                         write_tokens(cell.get_formula_tokens(), f)
                         f.write("</formula>")
                     elif cell.type == orcus.CellType.FORMULA_WITH_ERROR:
                         tokens = [str(t) for t in cell.get_formula_tokens()]
-                        f.write(f'<formula sheet="{sheet.name}" row="{row_pos}" column="{col_pos}" formula="{escape_str(tokens[1])}" error="{escape_str(tokens[2])}" valid="false"/>')
+                        f.write(f'<formula sheet="{escape_str(sheet.name)}" row="{row_pos}" column="{col_pos}" formula="{escape_str(tokens[1])}" error="{escape_str(tokens[2])}" valid="false"/>')
                     else:
                         continue
 
