@@ -116,7 +116,7 @@ AS_IF([test "x$enable_debug" != "xno"], [
 	AC_DEFINE([NDEBUG], [], [Disable debugging information])
 ])
 
-AS_IF([test "x$eanble_debug_utils" != "xno"], [
+AS_IF([test "x$enable_debug_utils" != "xno"], [
         CXXFLAGS="$CXXFLAGS -D__ORCUS_DEBUG_UTILS"
 ])
 
