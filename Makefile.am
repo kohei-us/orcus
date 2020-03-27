@@ -47,18 +47,14 @@ bin_data = \
     bin/run-python.sh
 
 misc_data = \
-    misc/OpenDocument-v1.2-os-schema.rng \
-    misc/gnumeric.xsd \
-    misc/xls-xml-tokens.txt \
-    misc/gen-odf-tokens.py \
-    misc/ooxml-ecma-376/OfficeOpenXML-XMLSchema.zip \
-    misc/ooxml-ecma-376/OpenPackagingConventions-XMLSchema.zip \
-    misc/gen-gnumeric-tokens.py \
-    misc/gen-tokens.py \
-    misc/gen-ooxml-tokens.py \
-    misc/generate-tokens.sh \
-    misc/dump-xsd-keys.py \
-    misc/token_util.py
+    misc/xml-tokens/gnumeric.xsd \
+    misc/xml-tokens/xls-xml-tokens.txt \
+    misc/xml-tokens/gen-odf-tokens.py \
+    misc/xml-tokens/gen-gnumeric-tokens.py \
+    misc/xml-tokens/gen-tokens.py \
+    misc/xml-tokens/gen-ooxml-tokens.py \
+    misc/xml-tokens/dump-xsd-keys.py \
+    misc/xml-tokens/token_util.py
 
 slickedit_data = \
     slickedit/token-gen.vpj \
