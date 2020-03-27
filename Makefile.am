@@ -47,20 +47,29 @@ bin_data = \
     bin/run-python.sh
 
 misc_data = \
-    misc/xml-tokens/gnumeric.xsd \
-    misc/xml-tokens/xls-xml-tokens.txt \
-    misc/xml-tokens/gen-odf-tokens.py \
     misc/xml-tokens/gen-gnumeric-tokens.py \
-    misc/xml-tokens/gen-tokens.py \
     misc/xml-tokens/gen-ooxml-tokens.py \
+    misc/xml-tokens/gen-odf-tokens.py \
+    misc/xml-tokens/ooxml-extra-tokens.txt \
+    misc/xml-tokens/xls-xml-tokens.txt \
     misc/xml-tokens/dump-xsd-keys.py \
-    misc/xml-tokens/token_util.py
+    misc/xml-tokens/gnumeric.xsd \
+    misc/xml-tokens/gen-tokens.py \
+    misc/xml-tokens/token_util.py \
+    misc/file-processor-modules/preview.py \
+    misc/file-processor-modules/extract_formulas.py \
+    misc/file-processor-modules/common.py \
+    misc/file-processor-modules/process-files.py \
+    misc/notes/column-width-and-row-height.txt \
+    misc/notes/zlib-in-memory-gzip.txt
 
 slickedit_data = \
+    slickedit/sh.vpj \
+    slickedit/cpp.vpj \
     slickedit/token-gen.vpj \
+    slickedit/cmake.vpj \
     slickedit/orcus.vpw \
-    slickedit/external-headers.vpj \
-    slickedit/orcus.vpj
+    slickedit/python.vpj
 
 test_data = \
     test/css/basic10.css \
