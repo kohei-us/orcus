@@ -1,3 +1,11 @@
+orcus 0.15.4
+
+* fixed a build error with gcc 10 with LTO.  For more details, visit
+  (https://bugs.gentoo.org/715154).
+
+* removed potentially non-free specification and schema files from the
+  package.
+
 orcus 0.15.3
 
 * xml-map
