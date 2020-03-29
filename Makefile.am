@@ -61,12 +61,9 @@ bin_data = \
     bin/run-python.sh
 
 misc_data = \
-    misc/OpenDocument-v1.2-os-schema.rng \
     misc/gnumeric.xsd \
     misc/xls-xml-tokens.txt \
     misc/gen-odf-tokens.py \
-    misc/ooxml-ecma-376/OfficeOpenXML-XMLSchema.zip \
-    misc/ooxml-ecma-376/OpenPackagingConventions-XMLSchema.zip \
     misc/gen-gnumeric-tokens.py \
     misc/gen-tokens.py \
     misc/gen-ooxml-tokens.py \
