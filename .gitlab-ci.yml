@@ -10,7 +10,7 @@ build:
     - apt -y install make autoconf automake libtool pkg-config git python3-dev libspdlog-dev
     - apt -y install libboost-all-dev
     - git clone https://gitlab.com/mdds/mdds.git /mdds && (cd /mdds && ./autogen.sh && make install)
-    - git clone https://gitlab.com/ixion/ixion.git /ixion && (cd /ixion && ./autogen.sh && make -j $(nproc) && make install)
+    - git clone https://gitlab.com/ixion/ixion.git /ixion && (cd /ixion && git checkout 0.15.0 && ./autogen.sh && make -j $(nproc) && make install)
     - ldconfig
   script: 
     - ./autogen.sh && make -j $(nproc) && make -j $(nproc) check
