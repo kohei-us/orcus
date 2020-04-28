@@ -7,14 +7,14 @@
 #
 ########################################################################
 
-import orcus
 import os
 import os.path
 import sys
 import enum
 import shutil
 
-from common import config
+import orcus
+from orcus.tools.file_processor import config
 
 
 FORMULAS_FILENAME_XML = f"{config.prefix_skip}formulas.xml"

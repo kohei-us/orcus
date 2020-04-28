@@ -7,7 +7,7 @@
 ########################################################################
 
 import orcus
-from common import config
+from orcus.tools.file_processor import config
 
 
 def process_document(filepath, doc):
