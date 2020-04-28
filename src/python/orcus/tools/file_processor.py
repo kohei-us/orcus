@@ -243,3 +243,7 @@ def main():
                 pathlib.Path(good_filepath).touch()
             elif status == LoadStatus.FAILURE:
                 pathlib.Path(bad_filepath).touch()
+
+
+if __name__ == "__main__":
+    main()
