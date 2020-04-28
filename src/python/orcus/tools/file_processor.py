@@ -71,17 +71,14 @@ def load_doc(bytes):
     doc = None
 
     try:
-        status = LoadStatus.SUCCESS
-        if format_type == orcus.FormatType.ODS:
-            from orcus import ods
-            doc = ods.read(bytes, error_policy="skip")
-        elif format_type == orcus.FormatType.XLSX:
-            from orcus import xlsx
-            doc = xlsx.read(bytes, error_policy="skip")
-        else:
+        loader = orcus.get_document_loader_module(format_type)
+        if loader is None:
             buf.append(f"unhandled format type: {format_type}")
             status = LoadStatus.SKIPPED
+            return doc, status, buf
 
+        status = LoadStatus.SUCCESS
+        doc = loader.read(bytes, error_policy="skip")
         return doc, status, buf
 
     except Exception as e:

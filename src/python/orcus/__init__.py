@@ -46,3 +46,28 @@ class FormulaTokenType(Enum):
     FUNCTION  = 4
     OPERATOR  = 5
     ERROR     = 6
+
+
+def get_document_loader_module(format_type):
+    """Obtain a document loader module for the specified format type.
+
+    Args:
+        format_type (orcus.FormatType):
+            Format type for which to load a document loader.
+
+    Returns:
+        Document loader module.
+    """
+    m = None
+    if format_type == FormatType.ODS:
+        from . import ods as m
+    elif format_type == FormatType.XLSX:
+        from . import xlsx as m
+    elif format_type == FormatType.XLS_XML:
+        from . import xls_xml as m
+    elif format_type == FormatType.GNUMERIC:
+        from . import gnumeric as m
+    elif format_type == FormatType.CSV:
+        from . import csv as m
+
+    return m
