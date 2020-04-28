@@ -67,6 +67,8 @@ _orcus_json_la_LIBADD = \
 	$(PYTHON_LIBS)
 
 orcusdir = $(pythondir)/orcus
+orcustoolsdir = $(pythondir)/orcus/tools
+
 orcus_DATA = \
 	./orcus/__init__.py \
 	./orcus/csv.py \
@@ -76,6 +78,10 @@ orcus_DATA = \
 	./orcus/xls_xml.py \
 	./orcus/xlsx.py
 
+orcustools_DATA = \
+	./orcus/tools/__init__.py \
+	./orcus/tools/file_processor.py
+
 EXTRA_DIST = \
 	./orcus/__init__.py \
 	./orcus/csv.py \
@@ -83,7 +89,9 @@ EXTRA_DIST = \
 	./orcus/json.py \
 	./orcus/ods.py \
 	./orcus/xls_xml.py \
-	./orcus/xlsx.py
+	./orcus/xlsx.py \
+	./orcus/tools/__init__.py \
+	./orcus/tools/file_processor.py
 
 AM_TESTS_ENVIRONMENT = PYTHONPATH=$(top_srcdir)/src/python:.libs$${PYTHONPATH:+:$${PYTHONPATH}}; export PYTHONPATH;
 

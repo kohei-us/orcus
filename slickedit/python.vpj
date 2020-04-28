@@ -55,15 +55,15 @@
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
             GUID="{F5A8F7E8-3CA5-495A-9013-3B118350F9DE}">
             <F N="../src/python/orcus/__init__.py"/>
-            <F N="../misc/file-processor-modules/common.py"/>
+            <F N="../src/python/orcus/tools/__init__.py"/>
             <F N="../src/python/orcus/csv.py"/>
             <F N="../bin/download-files.py"/>
             <F N="../misc/file-processor-modules/extract_formulas.py"/>
+            <F N="../src/python/orcus/tools/file_processor.py"/>
             <F N="../src/python/orcus/gnumeric.py"/>
             <F N="../src/python/orcus/json.py"/>
             <F N="../src/python/orcus/ods.py"/>
             <F N="../misc/file-processor-modules/preview.py"/>
-            <F N="../misc/file-processor-modules/process-files.py"/>
             <F N="../src/python/orcus/xls_xml.py"/>
             <F N="../src/python/orcus/xlsx.py"/>
         </Folder>
