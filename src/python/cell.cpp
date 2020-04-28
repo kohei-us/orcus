@@ -228,7 +228,17 @@ PyObject* create_cell_object_string(const std::string* p)
     pyobj_cell* obj_data = reinterpret_cast<pyobj_cell*>(obj);
 
     if (p)
+    {
         obj_data->value = PyUnicode_FromStringAndSize(p->data(), p->size());
+        if (!obj_data->value)
+        {
+            // The string contains invalid utf-8 sequence, and the function has
+            // already set a python exception which needs to be cleared.
+            PyErr_Clear();
+            Py_XDECREF(obj);
+            obj = create_and_init_cell_object("STRING_WITH_ERROR");
+        }
+    }
     else
     {
         Py_INCREF(Py_None);

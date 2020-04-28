@@ -32,8 +32,9 @@ class CellType(Enum):
     BOOLEAN = 2
     NUMERIC = 3
     STRING  = 4
-    FORMULA = 5
-    FORMULA_WITH_ERROR = 6
+    STRING_WITH_ERROR = 5
+    FORMULA = 6
+    FORMULA_WITH_ERROR = 7
 
 
 class FormulaTokenType(Enum):
