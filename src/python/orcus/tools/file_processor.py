@@ -13,6 +13,7 @@ import sys
 import string
 import pathlib
 import enum
+import re
 import importlib.util
 
 import orcus
@@ -33,6 +34,13 @@ def is_special_file(filename):
         return True
 
     return filename.endswith(config.ext_out) or filename.endswith(config.ext_good) or filename.endswith(config.ext_bad)
+
+
+def skips_by_rule(filename, skip_rules):
+    for rule in skip_rules:
+        if rule.search(filename):
+            return True
+    return False
 
 
 def sanitize_string(s):
@@ -169,6 +177,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="""This script allows you to load a collection of input files
         for testing purpuses.""")
+    parser.add_argument(
+        "--skip-file", type=argparse.FileType("r"),
+        help="Optional text file containing a set of regular expressions (one per line). Files that match one of these rules will be skipped.")
     parser.add_argument("-p", "--processor", type=str, help="Python module file containing callback functions.")
     parser.add_argument(
         "--remove-results", action="store_true", default=False,
@@ -202,6 +213,16 @@ def main():
         show_results(args.rootdir, args.good, args.bad)
         return
 
+    skip_rules = list()
+
+    if args.skip_file:
+        for line in args.skip_file.readlines():
+            line = line.strip()
+            if not line:
+                continue
+            rule = re.compile(line)
+            skip_rules.append(rule)
+
     mod = load_module_from_filepath(args.processor) if args.processor else None
 
     file_count = 0
@@ -212,6 +233,11 @@ def main():
 
             inpath = os.path.join(root, filename)
             outpath = f"{inpath}.{config.ext_out}"
+            if skips_by_rule(inpath, skip_rules):
+                print("skipping per rule...")
+                pathlib.Path(outpath).touch()
+                continue
+
             print(file_count, sanitize_string(inpath), flush=True)
             file_count += 1
             buf = list()
