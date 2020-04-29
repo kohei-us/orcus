@@ -57,9 +57,6 @@ misc_data = \
     misc/xml-tokens/gen-tokens.py \
     misc/xml-tokens/token_util.py \
     misc/file-processor-modules/preview.py \
-    misc/file-processor-modules/extract_formulas.py \
-    misc/file-processor-modules/common.py \
-    misc/file-processor-modules/process-files.py \
     misc/notes/column-width-and-row-height.txt \
     misc/notes/zlib-in-memory-gzip.txt
 
