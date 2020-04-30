@@ -191,6 +191,11 @@ add_executable(json-map-tree-test EXCLUDE_FROM_ALL
     spreadsheet_impl_types.cpp
 )
 
+add_executable(xpath-parser-test EXCLUDE_FROM_ALL
+    xpath_parser_test.cpp
+    xpath_parser.cpp
+)
+
 target_compile_definitions(xlsx-sheet-context-test PRIVATE
     __ORCUS_STATIC_LIB
 )
@@ -199,6 +204,7 @@ target_link_libraries(odf-helper-test liborcus-${ORCUS_API_VERSION} liborcus-par
 target_link_libraries(xlsx-sheet-context-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(xml-map-tree-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(json-map-tree-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
+target_link_libraries(xpath-parser-test liborcus-${ORCUS_API_VERSION} liborcus-parser-${ORCUS_API_VERSION})
 add_test(odf-helper-test odf-helper-test)
 add_test(xlsx-sheet-context-test xlsx-sheet-context-test)
 add_test(xml-map-tree-test xml-map-tree-test)
@@ -209,6 +215,7 @@ add_dependencies(check
     xlsx-sheet-context-test
     xml-map-tree-test
     json-map-tree-test
+    xpath-parser-test
 )
 
 install(
