@@ -39,9 +39,35 @@ void test_elements()
     assert(token.name.empty());
 }
 
+void test_attributes()
+{
+    xmlns_repository repo;
+    xmlns_context cxt = repo.create_context();
+
+    pstring path("/A/B/C@foo");
+
+    xpath_parser parser(cxt, path.data(), path.size());
+    auto token = parser.next();
+    assert(token.name == "A");
+    assert(!token.attribute);
+
+    token = parser.next();
+    assert(token.name == "B");
+    assert(!token.attribute);
+
+    token = parser.next();
+    assert(token.name == "C");
+    assert(!token.attribute);
+
+    token = parser.next();
+    assert(token.name == "foo");
+    assert(token.attribute);
+}
+
 int main(int argc, char** argv)
 {
     test_elements();
+    test_attributes();
 
     return EXIT_SUCCESS;
 }
