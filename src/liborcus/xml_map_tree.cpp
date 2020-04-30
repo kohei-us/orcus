@@ -38,8 +38,6 @@ void print_element_stack(ostream& os, const T& elem_stack)
 
 }
 
-xml_map_tree::xpath_error::xpath_error(const string& msg) : general_error(msg) {}
-
 xml_map_tree::element_position::element_position() :
     open_begin(0), open_end(0), close_begin(0), close_end(0) {}
 

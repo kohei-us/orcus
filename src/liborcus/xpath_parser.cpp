@@ -6,7 +6,8 @@
  */
 
 #include "xpath_parser.hpp"
-#include "xml_map_tree.hpp"
+#include "orcus/exception.hpp"
+#include "orcus/xml_namespace.hpp"
 
 #define ORCUS_DEBUG_XPATH_PARSER 0
 
@@ -27,10 +28,10 @@ xpath_parser::xpath_parser(const xmlns_context& cxt, const char* p, size_t n) :
     m_cxt(cxt), mp_char(p), mp_end(p+n), m_next_token_type(token_type::element)
 {
     if (!n)
-        throw xml_map_tree::xpath_error("empty path");
+        throw xpath_error("empty path");
 
     if (*p != '/')
-        throw xml_map_tree::xpath_error("first character must be '/'.");
+        throw xpath_error("first character must be '/'.");
 
     ++mp_char;
 }
@@ -58,7 +59,7 @@ xpath_parser::token xpath_parser::next()
             {
                 // '/' encountered.  Next token is an element name.
                 if (m_next_token_type == token_type::attribute)
-                    throw xml_map_tree::xpath_error("attribute name should not contain '/'.");
+                    throw xpath_error("attribute name should not contain '/'.");
 
                 m_next_token_type = token_type::element;
                 ++mp_char; // skip the '/'.

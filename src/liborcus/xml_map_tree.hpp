@@ -38,16 +38,6 @@ class xmlns_repository;
 class xml_map_tree
 {
 public:
-
-    /**
-     * Error indicating improper xpath syntax.
-     */
-    class xpath_error : public general_error
-    {
-    public:
-        xpath_error(const std::string& msg);
-    };
-
     /**
      * A single cell position.  Used both for single cell as well as range
      * links.  For a range link, this represents the upper-left cell of a

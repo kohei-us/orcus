@@ -65,6 +65,16 @@ public:
     virtual ~value_error() throw();
 };
 
+/**
+ * Error indicating improper xpath syntax.
+ */
+class ORCUS_PSR_DLLPUBLIC xpath_error : public general_error
+{
+public:
+    xpath_error(const std::string& msg);
+    virtual ~xpath_error() throw();
+};
+
 namespace detail {
 
 /**

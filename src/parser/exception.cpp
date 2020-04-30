@@ -64,5 +64,9 @@ value_error::value_error(const string& msg) :
 
 value_error::~value_error() throw() {}
 
+xpath_error::xpath_error(const string& msg) : general_error(msg) {}
+
+xpath_error::~xpath_error() throw() {}
+
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
