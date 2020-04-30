@@ -451,6 +451,7 @@
                 <F N="../src/liborcus/xml_structure_tree_test.cpp"/>
                 <F N="../src/liborcus/xpath_parser.cpp"/>
                 <F N="../src/liborcus/xpath_parser.hpp"/>
+                <F N="../src/liborcus/xpath_parser_test.cpp"/>
                 <F N="../src/liborcus/yaml_document_tree.cpp"/>
                 <F N="../src/liborcus/yaml_document_tree_test.cpp"/>
             </Folder>

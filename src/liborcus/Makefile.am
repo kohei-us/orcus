@@ -11,7 +11,8 @@ EXTRA_PROGRAMS = \
 	liborcus-test-format-detection \
 	dom-tree-test \
 	json-structure-tree-test \
-	json-map-tree-test
+	json-map-tree-test \
+	xpath-parser-test
 
 TESTS =
 
@@ -463,6 +464,15 @@ json_map_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
+# xpath-parser-test
+
+xpath_parser_test_SOURCES = \
+	xpath_parser_test.cpp \
+	xpath_parser.cpp
+xpath_parser_test_LDADD = \
+	liborcus-@ORCUS_API_VERSION@.la \
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+
 TESTS += \
 	liborcus-test-css-document-tree \
 	liborcus-test-json-document-tree \
@@ -473,7 +483,8 @@ TESTS += \
 	liborcus-test-format-detection \
 	dom-tree-test \
 	json-structure-tree-test \
-	json-map-tree-test
+	json-map-tree-test \
+	xpath-parser-test
 
 distclean-local:
 	rm -rf $(TESTS)
