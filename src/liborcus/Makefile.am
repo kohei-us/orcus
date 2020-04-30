@@ -74,6 +74,7 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	xml_simple_stream_handler.hpp \
 	xml_simple_stream_handler.cpp \
 	xml_structure_tree.cpp \
+	xpath_parser.cpp \
 	yaml_document_tree.cpp \
 	ooxml_namespace_types.cpp \
 	ooxml_namespace_types.hpp \
@@ -396,6 +397,8 @@ liborcus_test_yaml_document_tree_CPPFLAGS = -I$(top_builddir)/lib/liborcus/libor
 liborcus_test_xml_map_tree_SOURCES = \
 	xml_map_tree.cpp \
 	xml_map_tree.hpp \
+	xpath_parser.hpp \
+	xpath_parser.cpp \
 	spreadsheet_impl_types.hpp \
 	spreadsheet_impl_types.cpp \
 	xml_map_tree_test.cpp

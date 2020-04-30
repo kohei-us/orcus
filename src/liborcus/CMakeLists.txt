@@ -30,6 +30,7 @@ add_library(liborcus-${ORCUS_API_VERSION} SHARED
     xml_stream_parser.cpp
     xml_simple_stream_handler.cpp
     xml_structure_tree.cpp
+    xpath_parser.cpp
     yaml_document_tree.cpp
     ooxml_namespace_types.cpp
     ooxml_namespace_types.hpp
