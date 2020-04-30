@@ -1,7 +1,7 @@
 /root
-/root@version
-/root@type
+/root/@version
+/root/@type
 /root/entry[*]
-/root/entry[*]@attr1
-/root/entry[*]@attr2
-/root/entry[*]@attr3
+/root/entry[*]/@attr1
+/root/entry[*]/@attr2
+/root/entry[*]/@attr3

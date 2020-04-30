@@ -539,7 +539,7 @@ void xml_structure_tree::dump_compact(ostream& os) const
                 const entity_names_type& attrs = this_elem.prop->attribute_names;
                 entity_names_type::const_iterator it = attrs.begin(), it_end = attrs.end();
                 for (; it != it_end; ++it)
-                    os << elem_name << '@' << it->name << endl;
+                    os << elem_name << "/@" << it->name << endl;
             }
 
             const element_store_type& child_elements = this_elem.prop->child_elements;

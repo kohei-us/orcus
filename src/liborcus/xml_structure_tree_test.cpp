@@ -34,6 +34,7 @@ void test_basic()
     {
         string filepath(base_dirs[i]);
         filepath.append("input.xml");
+        cout << filepath << endl;
         file_content strm(filepath.data());
         assert(!strm.empty());
         xmlns_repository xmlns_repo;
