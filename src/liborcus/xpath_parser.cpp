@@ -25,7 +25,7 @@ xpath_parser::token::token() : ns(XMLNS_UNKNOWN_ID), attribute(false) {}
 xpath_parser::token::token(const token& r) : ns(r.ns), name(r.name), attribute(r.attribute) {}
 
 xpath_parser::xpath_parser(const xmlns_context& cxt, const char* p, size_t n) :
-    m_cxt(cxt), mp_char(p), mp_end(p+n), m_next_token_type(token_type::element)
+    m_cxt(cxt), mp_char(p), mp_end(p+n)
 {
     if (!n)
         throw xpath_error("empty path");
@@ -45,6 +45,10 @@ xpath_parser::token xpath_parser::next()
     size_t len = 0;
     xmlns_id_t ns = XMLNS_UNKNOWN_ID;
 
+    bool attribute = *mp_char == '@';
+    if (attribute)
+        ++mp_char;
+
     for (; mp_char != mp_end; ++mp_char, ++len)
     {
         if (!p0)
@@ -57,37 +61,25 @@ xpath_parser::token xpath_parser::next()
         {
             case '/':
             {
-                // '/' encountered.  Next token is an element name.
-                if (m_next_token_type == token_type::attribute)
-                    throw xpath_error("attribute name should not contain '/'.");
-
-                m_next_token_type = token_type::element;
                 ++mp_char; // skip the '/'.
-                return token(ns, pstring(p0, len), false);
-            }
-            case '@':
-            {
-                // '@' encountered.  Next token is an attribute name.
-                m_next_token_type = token_type::attribute;
-                ++mp_char; // skip the '@'.
-                return token(ns, pstring(p0, len), false);
+                return token(ns, pstring(p0, len), attribute);
             }
             case ':':
             {
-                // What comes ':' is a namespace. Reset the name and
+                // What comes before ':' is a namespace. Reset the name and
                 // convert the namespace to a proper ID.
                 pstring ns_name(p0, len);
                 ns = m_cxt.get(ns_name);
                 p0 = nullptr; // reset the name.
+                break;
             }
-            break;
             default:
                 ;
         }
     }
 
     // '/' has never been encountered.  It must be the last name in the path.
-    return token(ns, pstring(p0, len), m_next_token_type == token_type::attribute);
+    return token(ns, pstring(p0, len), attribute);
 }
 
 }

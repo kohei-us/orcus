@@ -22,7 +22,6 @@ class xpath_parser
     const char* mp_end;
 
     enum class token_type { element, attribute };
-    token_type m_next_token_type;
 
 public:
 

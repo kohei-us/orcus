@@ -44,7 +44,7 @@ void test_attributes()
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
 
-    pstring path("/A/B/C@foo");
+    pstring path("/A/B/C/@foo");
 
     xpath_parser parser(cxt, path.data(), path.size());
     auto token = parser.next();

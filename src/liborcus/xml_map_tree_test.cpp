@@ -110,8 +110,8 @@ void test_attr_path_insertion()
     ref.col = 3;
 
     // 'attr1' is an attribute of 'elem'.
-    tree.set_cell_link("/root/elem@attr1", ref);
-    const xml_map_tree::linkable* p = tree.get_link("/root/elem@attr1");
+    tree.set_cell_link("/root/elem/@attr1", ref);
+    const xml_map_tree::linkable* p = tree.get_link("/root/elem/@attr1");
     assert(p && p->node_type == xml_map_tree::node_attribute);
     const xml_map_tree::attribute* attr = static_cast<const xml_map_tree::attribute*>(p);
     assert(attr->ref_type == xml_map_tree::reference_cell);
@@ -123,8 +123,8 @@ void test_attr_path_insertion()
     ref.sheet = pstring("test2");
     ref.row = 11;
     ref.col = 4;
-    tree.set_cell_link("/root/elem@attr2", ref);
-    p = tree.get_link("/root/elem@attr2");
+    tree.set_cell_link("/root/elem/@attr2", ref);
+    p = tree.get_link("/root/elem/@attr2");
     assert(p && p->node_type == xml_map_tree::node_attribute);
     attr = static_cast<const xml_map_tree::attribute*>(p);
     assert(attr->ref_type == xml_map_tree::reference_cell);
