@@ -2,10 +2,10 @@
 <map xmlns="http://gitorious.org/orcus/xml-map">
     <sheet name="data"/>
     <range row="3" column="0" sheet="data">
-        <field path="/data/entry@id"/>
-        <field path="/data/entry@first-name"/>
-        <field path="/data/entry@last-name"/>
-        <field path="/data/entry@score"/>
+        <field path="/data/entry/@id"/>
+        <field path="/data/entry/@first-name"/>
+        <field path="/data/entry/@last-name"/>
+        <field path="/data/entry/@score"/>
         <row-group path="/data/entry"/>
     </range>
 </map>

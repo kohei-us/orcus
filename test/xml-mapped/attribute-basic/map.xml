@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <map xmlns="http://gitorious.org/orcus/xml-map">
     <sheet name="data"/>
-    <cell path="/data/header@label" row="0" column="0" sheet="data"/>
+    <cell path="/data/header/@label" row="0" column="0" sheet="data"/>
     <cell path="/data/header" row="1" column="0" sheet="data"/>
-    <cell path="/data/footer@date" row="1" column="2" sheet="data"/>
-    <cell path="/data@version" row="0" column="2" sheet="data"/>
+    <cell path="/data/footer/@date" row="1" column="2" sheet="data"/>
+    <cell path="/data/@version" row="0" column="2" sheet="data"/>
     <range row="3" column="0" sheet="data">
-        <field path="/data/entries/entry@id"/>
-        <field path="/data/entries/entry@first-name"/>
-        <field path="/data/entries/entry@last-name"/>
-        <field path="/data/entries/entry@score"/>
+        <field path="/data/entries/entry/@id"/>
+        <field path="/data/entries/entry/@first-name"/>
+        <field path="/data/entries/entry/@last-name"/>
+        <field path="/data/entries/entry/@score"/>
         <field path="/data/entries/entry"/>
         <row-group path="/data/entries/entry"/>
     </range>

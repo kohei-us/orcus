@@ -4,9 +4,9 @@
     <ns alias="y" uri="http://ns-2"/>
     <sheet name="data"/>
     <range row="1" column="1" sheet="data">
-        <field path="/x:data/y:entries/y:entry@y:date-received"/>
-        <field path="/x:data/y:entries/y:entry@y:date-processed"/>
-        <field path="/x:data/y:entries/y:entry@y:received-by"/>
+        <field path="/x:data/y:entries/y:entry/@y:date-received"/>
+        <field path="/x:data/y:entries/y:entry/@y:date-processed"/>
+        <field path="/x:data/y:entries/y:entry/@y:received-by"/>
         <row-group path="/x:data/y:entries/y:entry"/>
     </range>
 </map>

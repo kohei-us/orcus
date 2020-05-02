@@ -2,8 +2,8 @@
 <map xmlns="http://gitorious.org/orcus/xml-map">
     <sheet name="data"/>
     <range row="0" column="0" sheet="data">
-        <field path="/osm/way@id"/>
-        <field path="/osm/way/nd@ref"/>
+        <field path="/osm/way/@id"/>
+        <field path="/osm/way/nd/@ref"/>
         <row-group path="/osm/way"/>
         <row-group path="/osm/way/nd"/>
     </range>
