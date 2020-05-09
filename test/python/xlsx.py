@@ -10,6 +10,7 @@
 import unittest
 import os
 import os.path
+import mmap
 
 from orcus import xlsx
 
@@ -43,7 +44,7 @@ class TestCase(unittest.TestCase):
     def test_named_expression(self):
         filepath = os.path.join(self.basedir, "named-expression", "input.xlsx")
         with open(filepath, "rb") as f:
-            doc = xlsx.read(f.read())
+            doc = xlsx.read(f)
 
         named_exps = doc.get_named_expressions()
         self.assertEqual(named_exps.names(), {"MyRange", "MyRange2"})
@@ -68,8 +69,9 @@ class TestCase(unittest.TestCase):
 
     def test_named_expression_sheet_local(self):
         filepath = os.path.join(self.basedir, "named-expression-sheet-local", "input.xlsx")
-        with open(filepath, "rb") as f:
-            doc = xlsx.read(f.read())
+        with open(filepath, "r+b") as f:
+            mm = mmap.mmap(f.fileno(), 0)
+            doc = xlsx.read(mm)
 
         sheet = doc.sheets[0]
         named_exps = sheet.get_named_expressions()
