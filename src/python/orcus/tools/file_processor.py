@@ -167,6 +167,7 @@ def load_module_from_filepath(filepath):
         raise RuntimeError(f"{filepath} is not a valid file.")
 
     mod_name = os.path.splitext(os.path.basename(filepath))[0]
+    mod_name = mod_name.replace('-', '_')
     spec = importlib.util.spec_from_file_location(mod_name, filepath)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
