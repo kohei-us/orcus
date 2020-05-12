@@ -5,20 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "json.hpp"
 #include <orcus/json_parser.hpp>
 
 #include <cstring>
 
-int main()
+void test_handler()
 {
     const char* test_code = "{\"key1\": [1,2,3,4,5], \"key2\": 12.3}";
     size_t n = strlen(test_code);
 
-    json_parser_handler hdl;
-    orcus::json_parser<json_parser_handler> parser(test_code, n, hdl);
+    orcus::json_handler hdl;
+    orcus::json_parser<orcus::json_handler> parser(test_code, n, hdl);
     parser.parse();
-    return 0;
+}
+
+int main()
+{
+    test_handler();
+
+    return EXIT_SUCCESS;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

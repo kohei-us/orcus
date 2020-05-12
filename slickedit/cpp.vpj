@@ -470,6 +470,7 @@
                 <F N="../src/parser/exception.cpp"/>
                 <F N="../src/parser/json_global.cpp"/>
                 <F N="../src/parser/json_parser_base.cpp"/>
+                <F N="../src/parser/json_parser_test.cpp"/>
                 <F N="../src/parser/json_parser_thread.cpp"/>
                 <F N="../src/parser/parser_base.cpp"/>
                 <F N="../src/parser/parser_base_test.cpp"/>
