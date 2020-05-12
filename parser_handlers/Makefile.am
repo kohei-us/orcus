@@ -5,21 +5,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/include
 bin_PROGRAMS =
 
 EXTRA_PROGRAMS = \
-	orcus-handler-test-css \
 	orcus-handler-test-csv \
 	orcus-handler-test-json \
 	orcus-handler-test-yaml
-
-# orcus-handler-test-css
-
-orcus_handler_test_css_SOURCES = \
-	css.hpp \
-	css_test.cpp
-
-orcus_handler_test_css_LDADD = \
-	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la
-
-orcus_handler_test_css_CPPFLAGS = $(AM_CPPFLAGS)
 
 # orcus-handler-test-csv
 
@@ -51,7 +39,6 @@ orcus_handler_test_yaml_LDADD = \
 	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
 TESTS = \
-	orcus-handler-test-css \
 	orcus-handler-test-csv \
 	orcus-handler-test-json \
 	orcus-handler-test-yaml

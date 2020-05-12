@@ -5,20 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "css.hpp"
 #include <orcus/css_parser.hpp>
 
 #include <cstring>
 
-int main()
+void test_handler()
 {
     const char* test_code = "p { background-color: white; }";
     size_t n = strlen(test_code);
 
-    css_parser_handler hdl;
-    orcus::css_parser<css_parser_handler> parser(test_code, n, hdl);
+    orcus::css_handler hdl;
+    orcus::css_parser<orcus::css_handler> parser(test_code, n, hdl);
     parser.parse();
-    return 0;
+}
+
+int main()
+{
+    test_handler();
+
+    return EXIT_SUCCESS;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
