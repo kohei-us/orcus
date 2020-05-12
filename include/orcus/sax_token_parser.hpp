@@ -62,6 +62,50 @@ public:
     void attribute(const sax_ns_parser_attribute& attr);
 };
 
+class sax_token_handler
+{
+public:
+
+    /**
+     * Called immediately after the entire XML declaration has been parsed.
+     *
+     * @param decl struct containing the attributes of the XML declaration.
+     */
+    void declaration(const orcus::xml_declaration_t& decl) {}
+
+    /**
+     * Called at the start of each element.
+     *
+     * @param elem struct containing the element's information as well as all
+     *             the attributes that belong to the element.
+     */
+    void start_element(const orcus::xml_token_element_t& elem) {}
+
+    /**
+     * Called at the end of each element.
+     *
+     * @param elem struct containing the element's information as well as all
+     *             the attributes that belong to the element.
+     */
+    void end_element(const orcus::xml_token_element_t& elem) {}
+
+    /**
+     * Called when a segment of a text content is parsed.  Each text content
+     * is a direct child of an element, which may have multiple child contents
+     * when the element also has a child element that are direct sibling to
+     * the text contents or the text contents are splitted by a comment.
+     *
+     * @param val value of the text content.
+     * @param transient when true, the text content has been converted and is
+     *                  stored in a temporary buffer due to presence of one or
+     *                  more encoded characters, in which case <em>the passed
+     *                  text value needs to be either immediately converted to
+     *                  a non-text value or be interned within the scope of
+     *                  the callback</em>.
+     */
+    void characters(const orcus::pstring& val, bool transient) {}
+};
+
 /**
  * XML parser that tokenizes element and attribute names while parsing.
  */

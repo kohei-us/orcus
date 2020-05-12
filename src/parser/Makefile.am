@@ -49,7 +49,8 @@ EXTRA_PROGRAMS = \
 	parser-test-xml-namespace \
 	parser-test-base64 \
 	sax-parser-test \
-	parser-test-sax-token-parser \
+	sax-ns-parser-test \
+	sax-token-parser-test \
 	parser-test-threaded-sax-token-parser \
 	parser-test-stream \
 	parser-test-threaded-json-parser \
@@ -93,13 +94,21 @@ sax_parser_test_SOURCES = \
 sax_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 sax_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
 
-# parser-test-sax-token-parser
+# sax-ns-parser-test
 
-parser_test_sax_token_parser_SOURCES = \
+sax_ns_parser_test_SOURCES = \
+	sax_ns_parser_test.cpp
+
+sax_ns_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+sax_ns_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
+
+# sax-token-parser-test
+
+sax_token_parser_test_SOURCES = \
 	sax_token_parser_test.cpp
 
-parser_test_sax_token_parser_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
-parser_test_sax_token_parser_CPPFLAGS = $(AM_CPPFLAGS)
+sax_token_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+sax_token_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
 
 # parser-test-threaded-sax-token-parser
 
@@ -164,7 +173,8 @@ TESTS = \
 	parser-test-xml-namespace \
 	parser-test-base64 \
 	sax-parser-test \
-	parser-test-sax-token-parser \
+	sax-ns-parser-test \
+	sax-token-parser-test \
 	parser-test-threaded-sax-token-parser \
 	parser-test-threaded-json-parser \
 	parser-test-stream \

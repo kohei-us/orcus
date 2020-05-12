@@ -7,9 +7,6 @@ bin_PROGRAMS =
 EXTRA_PROGRAMS = \
 	orcus-handler-test-css \
 	orcus-handler-test-csv \
-	orcus-handler-test-sax \
-	orcus-handler-test-sax-token \
-	orcus-handler-test-sax-ns \
 	orcus-handler-test-json \
 	orcus-handler-test-yaml
 
@@ -35,33 +32,6 @@ orcus_handler_test_csv_LDADD = \
 
 orcus_handler_test_csv_CPPFLAGS = $(AM_CPPFLAGS)
 
-# orcus-handler-test-sax
-
-orcus_handler_test_sax_SOURCES = \
-	sax.hpp \
-	sax_test.cpp
-
-orcus_handler_test_sax_LDADD = \
-	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la
-
-# orcus-handler-test-sax-token
-
-orcus_handler_test_sax_token_SOURCES = \
-	sax_token.hpp \
-	sax_token_test.cpp
-
-orcus_handler_test_sax_token_LDADD = \
-	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la
-
-# orcus-handler-test-sax-ns
-
-orcus_handler_test_sax_ns_SOURCES = \
-	sax_ns.hpp \
-	sax_ns_test.cpp
-
-orcus_handler_test_sax_ns_LDADD = \
-	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la
-
 # orcus-handler-test-json
 
 orcus_handler_test_json_SOURCES = \
@@ -83,9 +53,6 @@ orcus_handler_test_yaml_LDADD = \
 TESTS = \
 	orcus-handler-test-css \
 	orcus-handler-test-csv \
-	orcus-handler-test-sax \
-	orcus-handler-test-sax-token \
-	orcus-handler-test-sax-ns \
 	orcus-handler-test-json \
 	orcus-handler-test-yaml
 

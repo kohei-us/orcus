@@ -22,6 +22,73 @@ struct sax_parser_default_config
     static const uint8_t baseline_version = 10;
 };
 
+class sax_handler
+{
+public:
+    /**
+     * Called when a doctype declaration &lt;!DOCTYPE ... &gt; is encountered.
+     *
+     * @param param struct containing doctype declaration data.
+     */
+    void doctype(const orcus::sax::doctype_declaration& param) {}
+
+    /**
+     * Called when &lt;?... is encountered, where the '...' may be an
+     * arbitraray dentifier.  One common declaration is &lt;?xml which is
+     * typically given at the start of an XML stream.
+     *
+     * @param decl name of the identifier.
+     */
+    void start_declaration(const orcus::pstring& decl) {}
+
+    /**
+     * Called when the closing tag (&gt;) of a &lt;?... ?&gt; is encountered.
+     *
+     * @param decl name of the identifier.
+     */
+    void end_declaration(const orcus::pstring& decl) {}
+
+    /**
+     * Called at the start of each element.
+     *
+     * @param elem information of the element being parsed.
+     */
+    void start_element(const orcus::sax::parser_element& elem) {}
+
+    /**
+     * Called at the end of each element.
+     *
+     * @param elem information of the element being parsed.
+     */
+    void end_element(const orcus::sax::parser_element& elem) {}
+
+    /**
+     * Called when a segment of a text content is parsed.  Each text content
+     * is a direct child of an element, which may have multiple child contents
+     * when the element also has a child element that are direct sibling to
+     * the text contents or the text contents are splitted by a comment.
+     *
+     * @param val value of the text content.
+     * @param transient when true, the text content has been converted and is
+     *                  stored in a temporary buffer due to presence of one or
+     *                  more encoded characters, in which case <em>the passed
+     *                  text value needs to be either immediately converted to
+     *                  a non-text value or be interned within the scope of
+     *                  the callback</em>.
+     */
+    void characters(const orcus::pstring& val, bool transient) {}
+
+    /**
+     * Called upon parsing of an attribute of an element.  Note that <em>when
+     * the attribute's transient flag is set, the attribute value is stored in
+     * a temporary buffer due to presence of one or more encoded characters,
+     * and must be processed within the scope of the callback</em>.
+     *
+     * @param attr struct containing attribute information.
+     */
+    void attribute(const orcus::sax::parser_attribute& attr) {}
+};
+
 /**
  * Template-based sax parser that doesn't use function pointer for
  * callbacks for better performance, especially on large XML streams.

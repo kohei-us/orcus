@@ -16,6 +16,19 @@
 using namespace std;
 using namespace orcus;
 
+void test_handler()
+{
+    const char* test_code = "<?xml version=\"1.0\"?><root/>";
+    size_t len = strlen(test_code);
+
+    orcus::sax_token_handler hdl;
+    orcus::tokens token_map(nullptr, 0);
+    orcus::xmlns_repository repo;
+    orcus::xmlns_context cxt = repo.create_context();
+    orcus::sax_token_parser<orcus::sax_token_handler> parser(test_code, len, token_map, cxt, hdl);
+    parser.parse();
+}
+
 void test_sax_token_parser_1()
 {
     // Test XML content.
@@ -218,6 +231,7 @@ void test_declaration()
 
 int main()
 {
+    test_handler();
     test_sax_token_parser_1();
     test_unicode_string();
     test_declaration();

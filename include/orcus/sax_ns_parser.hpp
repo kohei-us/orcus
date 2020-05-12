@@ -87,6 +87,26 @@ public:
 
 }
 
+class sax_ns_handler
+{
+public:
+    void doctype(const orcus::sax::doctype_declaration& /*dtd*/) {}
+
+    void start_declaration(const orcus::pstring& /*decl*/) {}
+
+    void end_declaration(const orcus::pstring& /*decl*/) {}
+
+    void start_element(const orcus::sax_ns_parser_element& /*elem*/) {}
+
+    void end_element(const orcus::sax_ns_parser_element& /*elem*/) {}
+
+    void characters(const orcus::pstring& /*val*/, bool /*transient*/) {}
+
+    void attribute(const orcus::pstring& /*name*/, const orcus::pstring& /*val*/) {}
+
+    void attribute(const orcus::sax_ns_parser_attribute& /*attr*/) {}
+};
+
 /**
  * SAX based XML parser with proper namespace handling.
  */
