@@ -49,6 +49,7 @@ EXTRA_PROGRAMS = \
 	parser-test-xml-namespace \
 	parser-test-base64 \
 	css-parser-test \
+	csv-parser-test \
 	sax-parser-test \
 	sax-ns-parser-test \
 	sax-token-parser-test \
@@ -94,6 +95,14 @@ css_parser_test_SOURCES = \
 
 css_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 css_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
+
+# csv-parser-test
+
+csv_parser_test_SOURCES = \
+	csv_parser_test.cpp
+
+csv_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+csv_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
 
 # sax-parser-test
 
@@ -182,6 +191,7 @@ TESTS = \
 	parser-test-xml-namespace \
 	parser-test-base64 \
 	css-parser-test \
+	csv-parser-test \
 	sax-parser-test \
 	sax-ns-parser-test \
 	sax-token-parser-test \

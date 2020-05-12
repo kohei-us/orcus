@@ -12,6 +12,44 @@
 
 namespace orcus {
 
+class csv_handler
+{
+public:
+    /**
+     * Called when the parser starts parsing a stream.
+     */
+    void begin_parse() {}
+
+    /**
+     * Called when the parser finishes parsing a stream.
+     */
+    void end_parse() {}
+
+    /**
+     * Called at the beginning of every row.
+     */
+    void begin_row() {}
+
+    /**
+     * Called at the end of every row.
+     */
+    void end_row() {}
+
+    /**
+     * Called after every cell is parsed.
+     *
+     * @param p pointer to the first character of a cell content.
+     * @param n number of characters the cell content consists of.
+     * @param transient when true, the text content has been converted and is
+     *                  stored in a temporary buffer.  In such case, there is
+     *                  no guarantee that the text content remain available
+     *                  after the end of the call.  When this value is false,
+     *                  the text content is guaranteed to be valid so long as
+     *                  the original CSV stream content is valid.
+     */
+    void cell(const char* p, size_t n, bool transient) {}
+};
+
 template<typename _Handler>
 class csv_parser : public csv::parser_base
 {

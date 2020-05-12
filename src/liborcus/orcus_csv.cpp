@@ -38,10 +38,10 @@ struct header_cell
 
 class max_row_size_reached {};
 
-class csv_handler
+class orcus_csv_handler
 {
 public:
-    csv_handler(spreadsheet::iface::import_factory& factory, const orcus::config& app_config) :
+    orcus_csv_handler(spreadsheet::iface::import_factory& factory, const orcus::config& app_config) :
         m_factory(factory),
         m_app_config(app_config),
         mp_sheet(nullptr),
@@ -163,11 +163,11 @@ void orcus_csv::parse(const char* content, size_t len)
     if (!len)
         return;
 
-    csv_handler handler(*mp_factory, get_config());
+    orcus_csv_handler handler(*mp_factory, get_config());
     csv::parser_config config;
     config.delimiters.push_back(',');
     config.text_qualifier = '"';
-    csv_parser<csv_handler> parser(content, len, handler, config);
+    csv_parser<orcus_csv_handler> parser(content, len, handler, config);
     try
     {
         parser.parse();

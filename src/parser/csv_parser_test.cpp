@@ -5,22 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "csv.hpp"
 #include <orcus/csv_parser.hpp>
 
 #include <cstring>
 
-int main()
+void test_handler()
 {
     const char* test_code = "1,2,3,4,5\n6,7,8,9,10\n";
     size_t n = strlen(test_code);
 
-    csv_parser_handler hdl;
+    orcus::csv_handler hdl;
     orcus::csv::parser_config config;
-    orcus::csv_parser<csv_parser_handler> parser(test_code, n, hdl, config);
+    orcus::csv_parser<orcus::csv_handler> parser(test_code, n, hdl, config);
     parser.parse();
+}
 
-    return 0;
+int main()
+{
+    test_handler();
+
+    return EXIT_SUCCESS;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

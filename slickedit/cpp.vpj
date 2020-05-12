@@ -463,8 +463,10 @@
                 <F N="../src/parser/base64_test.cpp"/>
                 <F N="../src/parser/cell_buffer.cpp"/>
                 <F N="../src/parser/css_parser_base.cpp"/>
+                <F N="../src/parser/css_parser_test.cpp"/>
                 <F N="../src/parser/css_types.cpp"/>
                 <F N="../src/parser/csv_parser_base.cpp"/>
+                <F N="../src/parser/csv_parser_test.cpp"/>
                 <F N="../src/parser/exception.cpp"/>
                 <F N="../src/parser/json_global.cpp"/>
                 <F N="../src/parser/json_parser_base.cpp"/>
@@ -472,8 +474,10 @@
                 <F N="../src/parser/parser_base.cpp"/>
                 <F N="../src/parser/parser_base_test.cpp"/>
                 <F N="../src/parser/parser_global.cpp"/>
+                <F N="../src/parser/parser_global_test.cpp"/>
                 <F N="../src/parser/parser_test_json_validation.cpp"/>
                 <F N="../src/parser/pstring.cpp"/>
+                <F N="../src/parser/sax_ns_parser_test.cpp"/>
                 <F N="../src/parser/sax_parser_base.cpp"/>
                 <F N="../src/parser/sax_parser_test.cpp"/>
                 <F N="../src/parser/sax_token_parser.cpp"/>
@@ -575,6 +579,7 @@
             </Folder>
             <F N="../src/cli_global.cpp"/>
             <F N="../src/cli_global.hpp"/>
+            <F N="../src/odf_styles_context_test.cpp"/>
             <F N="../src/orcus_css_dump.cpp"/>
             <F N="../src/orcus_csv_main.cpp"/>
             <F N="../src/orcus_detect_main.cpp"/>
