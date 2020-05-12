@@ -322,7 +322,6 @@
                 <F N="../src/liborcus/odf_styles.hpp"/>
                 <F N="../src/liborcus/odf_styles_context.cpp"/>
                 <F N="../src/liborcus/odf_styles_context.hpp"/>
-                <F N="../src/liborcus/odf_styles_context_test.cpp"/>
                 <F N="../src/liborcus/odf_token_constants.hpp"/>
                 <F N="../src/liborcus/odf_token_constants.inl"/>
                 <F N="../src/liborcus/odf_tokens.cpp"/>
