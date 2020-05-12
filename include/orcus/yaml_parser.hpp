@@ -13,6 +13,90 @@
 
 namespace orcus {
 
+class yaml_handler
+{
+public:
+    /**
+     * Called when the parser starts parsing a content.
+     */
+    void begin_parse() {}
+
+    /**
+     * Called when the parser finishes parsing an entire content.
+     */
+    void end_parse() {}
+
+    /**
+     * Called when a new document is encountered.
+     */
+    void begin_document() {}
+
+    /**
+     * Called when the parser has finished parsing a document.
+     */
+    void end_document() {}
+
+    /**
+     * Called when a sequence begins.
+     */
+    void begin_sequence() {}
+
+    /**
+     * Called when a sequence ends.
+     */
+    void end_sequence() {}
+
+    /**
+     * Called when a map begins.
+     */
+    void begin_map() {}
+
+    /**
+     * Called when the parser starts parsing a map key.
+     */
+    void begin_map_key() {}
+
+    /**
+     * Called when the parser finishes parsing a map key.
+     */
+    void end_map_key() {}
+
+    /**
+     * Called when the parser finishes parsing an entire map.
+     */
+    void end_map() {}
+
+    /**
+     * Called when a string value is encountered.
+     *
+     * @param p pointer to the first character of the string value.
+     * @param len length of the string value.
+     */
+    void string(const char* p, size_t n) {}
+
+    /**
+     * Called when a numeric value is encountered.
+     *
+     * @param val numeric value.
+     */
+    void number(double val) {}
+
+    /**
+     * Called when a boolean 'true' keyword is encountered.
+     */
+    void boolean_true() {}
+
+    /**
+     * Called when a boolean 'false' keyword is encountered.
+     */
+    void boolean_false() {}
+
+    /**
+     * Called when a 'null' keyword is encountered.
+     */
+    void null() {}
+};
+
 template<typename _Handler>
 class yaml_parser : public yaml::parser_base
 {

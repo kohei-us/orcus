@@ -1,4 +1,4 @@
-SUBDIRS = src include parser_handlers benchmark	doc_example
+SUBDIRS = src include benchmark	doc_example
 ACLOCAL_AMFLAGS = -I m4
 
 pcfiles = liborcus-@ORCUS_API_VERSION@.pc

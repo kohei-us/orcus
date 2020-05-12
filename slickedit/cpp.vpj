@@ -248,22 +248,6 @@
                 <F N="../include/orcus/zip_archive_stream.hpp"/>
             </Folder>
         </Folder>
-        <Folder Name="../parser_handlers">
-            <F N="../parser_handlers/css.hpp"/>
-            <F N="../parser_handlers/css_test.cpp"/>
-            <F N="../parser_handlers/csv.hpp"/>
-            <F N="../parser_handlers/csv_test.cpp"/>
-            <F N="../parser_handlers/json.hpp"/>
-            <F N="../parser_handlers/json_test.cpp"/>
-            <F N="../parser_handlers/sax.hpp"/>
-            <F N="../parser_handlers/sax_ns.hpp"/>
-            <F N="../parser_handlers/sax_ns_test.cpp"/>
-            <F N="../parser_handlers/sax_test.cpp"/>
-            <F N="../parser_handlers/sax_token.hpp"/>
-            <F N="../parser_handlers/sax_token_test.cpp"/>
-            <F N="../parser_handlers/yaml.hpp"/>
-            <F N="../parser_handlers/yaml_test.cpp"/>
-        </Folder>
         <Folder Name="../src">
             <Folder Name="include">
                 <F N="../src/include/cpu_features.hpp"/>
@@ -496,6 +480,7 @@
                 <F N="../src/parser/xml_namespace.cpp"/>
                 <F N="../src/parser/xml_namespace_test.cpp"/>
                 <F N="../src/parser/yaml_parser_base.cpp"/>
+                <F N="../src/parser/yaml_parser_test.cpp"/>
                 <F N="../src/parser/zip_archive.cpp"/>
                 <F N="../src/parser/zip_archive_stream.cpp"/>
                 <F N="../src/parser/zip_archive_test.cpp"/>

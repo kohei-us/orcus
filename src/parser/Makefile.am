@@ -51,6 +51,7 @@ EXTRA_PROGRAMS = \
 	css-parser-test \
 	csv-parser-test \
 	json-parser-test \
+	yaml-parser-test \
 	sax-parser-test \
 	sax-ns-parser-test \
 	sax-token-parser-test \
@@ -112,6 +113,14 @@ json_parser_test_SOURCES = \
 
 json_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 json_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
+
+# yaml-parser-test
+
+yaml_parser_test_SOURCES = \
+	yaml_parser_test.cpp
+
+yaml_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+yaml_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
 
 # sax-parser-test
 

@@ -342,7 +342,6 @@ AC_CONFIG_FILES([Makefile
 	src/parser/Makefile
         src/python/Makefile
 	src/spreadsheet/Makefile
-        parser_handlers/Makefile
         benchmark/Makefile
         doc_example/Makefile
 ])

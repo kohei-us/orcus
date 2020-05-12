@@ -5,25 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "yaml.hpp"
 #include <orcus/yaml_parser.hpp>
 
 #include <cstring>
 
-const char* test_code =
-"section-one:\n"
-"  - item 1\n"
-"  - item 2\n"
-"\n";
+void test_handler()
+{
+    const char* test_code =
+    "section-one:\n"
+    "  - item 1\n"
+    "  - item 2\n"
+    "\n";
+
+    size_t n = strlen(test_code);
+
+    orcus::yaml_handler hdl;
+    orcus::yaml_parser<orcus::yaml_handler> parser(test_code, n, hdl);
+    parser.parse();
+}
 
 int main()
 {
-    size_t n = strlen(test_code);
+    test_handler();
 
-    yaml_parser_handler hdl;
-    orcus::yaml_parser<yaml_parser_handler> parser(test_code, n, hdl);
-    parser.parse();
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
