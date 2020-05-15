@@ -101,6 +101,23 @@ void test_predefined_ns()
     assert(cxt.get("tn3") == NS_test_name3);
 }
 
+void test_xml_name_t()
+{
+    xml_name_t name1;
+    name1.ns = NS_test_name1;
+    name1.name = "foo";
+
+    xml_name_t name2 = name1;
+    assert(name1 == name2);
+
+    name2.name = "foo2";
+    assert(name1 != name2);
+
+    xml_name_t name3 = name1;
+    name3.ns = NS_test_name2;
+    assert(name1 != name3);
+}
+
 } // anonymous namespace
 
 int main()
@@ -108,6 +125,8 @@ int main()
     test_basic();
     test_all_namespaces();
     test_predefined_ns();
+    test_xml_name_t();
+
     return EXIT_SUCCESS;
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

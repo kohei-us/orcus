@@ -24,6 +24,27 @@ size_t xml_token_pair_hash::operator()(const xml_token_pair_t& v) const
 
 const size_t index_not_found = std::numeric_limits<size_t>::max();
 
+xml_name_t::xml_name_t() : ns(XMLNS_UNKNOWN_ID), name() {}
+xml_name_t::xml_name_t(xmlns_id_t _ns, const pstring& _name) : ns(_ns), name(_name) {}
+xml_name_t::xml_name_t(const xml_name_t& r) : ns(r.ns), name(r.name) {}
+
+xml_name_t& xml_name_t::operator= (const xml_name_t& other)
+{
+    ns = other.ns;
+    name = other.name;
+    return *this;
+}
+
+bool xml_name_t::operator== (const xml_name_t& other) const
+{
+    return ns == other.ns && name == other.name;
+}
+
+bool xml_name_t::operator!= (const xml_name_t& other) const
+{
+    return !operator==(other);
+}
+
 xml_token_attr_t::xml_token_attr_t() :
     ns(XMLNS_UNKNOWN_ID), name(XML_UNKNOWN_TOKEN), transient(false) {}
 

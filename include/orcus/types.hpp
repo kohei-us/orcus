@@ -41,14 +41,19 @@ using xml_elem_set_t = std::unordered_set<xml_token_pair_t, xml_token_pair_hash>
 ORCUS_PSR_DLLPUBLIC extern const xmlns_id_t XMLNS_UNKNOWN_ID;
 ORCUS_PSR_DLLPUBLIC extern const xml_token_t XML_UNKNOWN_TOKEN;
 
-struct xml_name_t
+struct ORCUS_PSR_DLLPUBLIC xml_name_t
 {
     xmlns_id_t ns;
     pstring name;
 
-    xml_name_t() : ns(XMLNS_UNKNOWN_ID), name() {}
-    xml_name_t(xmlns_id_t _ns, const pstring& _name) : ns(_ns), name(_name) {}
-    xml_name_t(const xml_name_t& r) : ns(r.ns), name(r.name) {}
+    xml_name_t();
+    xml_name_t(xmlns_id_t _ns, const pstring& _name);
+    xml_name_t(const xml_name_t& r);
+
+    xml_name_t& operator= (const xml_name_t& other);
+
+    bool operator== (const xml_name_t& other) const;
+    bool operator!= (const xml_name_t& other) const;
 };
 
 struct ORCUS_PSR_DLLPUBLIC xml_token_attr_t
