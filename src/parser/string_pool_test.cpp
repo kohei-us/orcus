@@ -96,12 +96,16 @@ void test_merge()
     // v2 still points to the original string in pool2, which should now be in
     // the merged store in pool1 (thus valid).
     assert(v1 == v2);
+
+    std::vector<pstring> entries = pool1.get_interned_strings();
+    assert(entries.size() == pool1.size());
 }
 
 int main()
 {
     test_basic();
     test_merge();
+
     return EXIT_SUCCESS;
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -13,6 +13,7 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace orcus {
 
@@ -59,8 +60,17 @@ public:
      */
     std::pair<pstring, bool> intern(const pstring& str);
 
+    /**
+     * Return all interned strings.
+     *
+     * @return sequence of all interned strings.  The sequence will be sorted.
+     */
+    std::vector<pstring> get_interned_strings() const;
+
     void dump() const;
+
     void clear();
+
     size_t size() const;
 
     void swap(string_pool& other);

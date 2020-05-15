@@ -90,20 +90,26 @@ std::pair<pstring, bool> string_pool::intern(const pstring& str)
     return intern(str.get(), str.size());
 }
 
-void string_pool::dump() const
+std::vector<pstring> string_pool::get_interned_strings() const
 {
-    cout << "interned string count: " << mp_impl->m_set.size() << endl;
-
-    // Sort stored strings first.
     std::vector<pstring> sorted;
     sorted.reserve(mp_impl->m_set.size());
 
     for (const pstring& ps : mp_impl->m_set)
         sorted.push_back(ps);
 
-    sort(sorted.begin(), sorted.end());
+    std::sort(sorted.begin(), sorted.end());
 
-    // Now dump them all to stdout.
+    return sorted;
+}
+
+void string_pool::dump() const
+{
+    auto sorted = get_interned_strings();
+
+    cout << "interned string count: " << sorted.size() << endl;
+
+    // Dump them all to stdout.
     size_t counter = 0;
     for (const pstring& s : sorted)
         cout << counter++ << ": '" << s << "'" << endl;
