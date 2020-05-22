@@ -1119,38 +1119,6 @@ void xlsx_pivot_cache_rec_context::characters(const pstring& /*str*/, bool /*tra
 
 namespace {
 
-class location_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
-            return;
-
-        long v = -1;
-        switch (attr.name)
-        {
-            case XML_ref:
-                cout << "ref: " << attr.value << endl;
-            break;
-            case XML_firstHeaderRow:
-                v = to_long(attr.value);
-                cout << "first header row: " << v << endl;
-            break;
-            case XML_firstDataRow:
-                v = to_long(attr.value);
-                cout << "first data row: " << v << endl;
-            break;
-            case XML_firstDataCol:
-                v = to_long(attr.value);
-                cout << "first data column: " << v << endl;
-            break;
-            default:
-                ;
-        }
-    }
-};
-
 class pivot_field_attr_parser : public unary_function<xml_token_attr_t, void>
 {
 public:
@@ -1593,8 +1561,38 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             case XML_location:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-                location_attr_parser func;
-                for_each(attrs.begin(), attrs.end(), func);
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
+                        continue;
+
+                    long v = -1;
+                    switch (attr.name)
+                    {
+                        case XML_ref:
+                            if (get_config().debug)
+                                cout << "ref: " << attr.value << endl;
+                            break;
+                        case XML_firstHeaderRow:
+                            v = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "first header row: " << v << endl;
+                            break;
+                        case XML_firstDataRow:
+                            v = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "first data row: " << v << endl;
+                            break;
+                        case XML_firstDataCol:
+                            v = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "first data column: " << v << endl;
+                            break;
+                        default:
+                            ;
+                    }
+                }
             }
             break;
             case XML_pivotFields:
