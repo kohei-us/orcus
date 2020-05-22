@@ -1119,140 +1119,6 @@ void xlsx_pivot_cache_rec_context::characters(const pstring& /*str*/, bool /*tra
 
 namespace {
 
-class pivot_field_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
-            return;
-
-        switch (attr.name)
-        {
-            case XML_axis:
-                cout << "  * axis: " << attr.value << endl;
-            break;
-            case XML_compact:
-            {
-                bool b = to_bool(attr.value);
-                cout << "  * compact: " << b << endl;
-            }
-            break;
-            case XML_outline:
-            {
-                bool b = to_bool(attr.value);
-                cout << "  * outline: " << b << endl;
-            }
-            break;
-            case XML_showAll:
-            {
-                bool b = to_bool(attr.value);
-                cout << "  * show all: " << b << endl;
-            }
-            break;
-            case XML_dataField:
-            {
-                bool b = to_bool(attr.value);
-                cout << "  * data field: " << b << endl;
-            }
-            break;
-            default:
-                ;
-        }
-    }
-};
-
-class data_field_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-    bool m_first;
-
-    void sep()
-    {
-        if (m_first)
-            m_first = false;
-        else
-            cout << ";";
-    }
-
-public:
-    data_field_attr_parser() : m_first(true) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
-            return;
-
-        switch (attr.name)
-        {
-            case XML_name:
-            {
-                sep();
-                cout << " name = " << attr.value;
-            }
-            break;
-            case XML_fld:
-            {
-                sep();
-                long fld = to_long(attr.value);
-                cout << " field = " << fld;
-            }
-            break;
-            case XML_baseField:
-            {
-                sep();
-                long fld = to_long(attr.value);
-                cout << " base field = " << fld;
-            }
-            break;
-            case XML_baseItem:
-            {
-                sep();
-                long fld = to_long(attr.value);
-                cout << " base item = " << fld;
-            }
-            break;
-            case XML_subtotal:
-            {
-                sep();
-                cout << " subtotal = " << attr.value;
-            }
-            default:
-                ;
-        }
-    }
-};
-
-class item_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
-            return;
-
-        switch (attr.name)
-        {
-            case XML_x:
-            {
-                // field item index as defined in the pivot cache.
-                long idx = to_long(attr.value);
-                cout << "    * x = " << idx << endl;
-            }
-            break;
-            case XML_t:
-            {
-                // When the <item> element has attribute 't', it's subtotal or
-                // some sort of function item.  See 3.18.45 ST_ItemType
-                // (PivotItem Type) for possible values.
-                cout << "    * type = " << attr.value << endl;
-            }
-            break;
-            default:
-                ;
-        }
-    }
-};
-
 class page_field_attr_parser : public unary_function<xml_token_attr_t, void>
 {
     bool m_first;
@@ -1295,48 +1161,6 @@ public:
                 long hier = to_long(attr.value);
                 // -1 if not applicable.
                 cout << " OLAP hierarchy index = " << hier;
-            }
-            break;
-            default:
-                ;
-        }
-    }
-};
-
-/**
- * Attributes for the <i> element, which represents a single row under
- * <rowItems> structure.
- */
-class i_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
-            return;
-
-        switch (attr.name)
-        {
-            case XML_t:
-            {
-                // total or subtotal function type.
-                cout << "  * type = " << attr.value << endl;
-            }
-            break;
-            case XML_r:
-            {
-                // "repeated item count" which basically is the number of
-                // blank cells that occur after the preivous non-empty cell on
-                // the same row (in the classic layout mode).
-                long v = to_long(attr.value);
-                cout << "  * repeat item count = " << v << endl;
-            }
-            break;
-            case XML_i:
-            {
-                // zero-based data field index in case of multiple data fields.
-                long v = to_long(attr.value);
-                cout << "  * data field index = " << v << endl;
             }
             break;
             default:
@@ -1608,9 +1432,53 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             case XML_pivotField:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotFields);
-                cout << "---" << endl;
-                pivot_field_attr_parser func;
-                for_each(attrs.begin(), attrs.end(), func);
+
+                if (get_config().debug)
+                    cout << "---" << endl;
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_axis:
+                            if (get_config().debug)
+                                cout << "  * axis: " << attr.value << endl;
+                        break;
+                        case XML_compact:
+                        {
+                            bool b = to_bool(attr.value);
+                            if (get_config().debug)
+                                cout << "  * compact: " << b << endl;
+                        }
+                        break;
+                        case XML_outline:
+                        {
+                            bool b = to_bool(attr.value);
+                            if (get_config().debug)
+                                cout << "  * outline: " << b << endl;
+                        }
+                        break;
+                        case XML_showAll:
+                        {
+                            bool b = to_bool(attr.value);
+                            if (get_config().debug)
+                                cout << "  * show all: " << b << endl;
+                        }
+                        break;
+                        case XML_dataField:
+                        {
+                            bool b = to_bool(attr.value);
+                            if (get_config().debug)
+                                cout << "  * data field: " << b << endl;
+                        }
+                        break;
+                        default:
+                            ;
+                    }
+                }
             }
             break;
             case XML_items:
@@ -1624,8 +1492,35 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             case XML_item:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_items);
-                item_attr_parser func;
-                for_each(attrs.begin(), attrs.end(), func);
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_x:
+                        {
+                            // field item index as defined in the pivot cache.
+                            long idx = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "    * x = " << idx << endl;
+                        }
+                        break;
+                        case XML_t:
+                        {
+                            // When the <item> element has attribute 't', it's subtotal or
+                            // some sort of function item.  See 3.18.45 ST_ItemType
+                            // (PivotItem Type) for possible values.
+                            if (get_config().debug)
+                                cout << "    * type = " << attr.value << endl;
+                        }
+                        break;
+                        default:
+                            ;
+                    }
+                }
             }
             break;
             case XML_rowFields:
@@ -1702,10 +1597,57 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             case XML_dataField:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_dataFields);
-                data_field_attr_parser func;
-                cout << "  * data field:";
-                for_each(attrs.begin(), attrs.end(), func);
-                cout << endl;
+
+                if (get_config().debug)
+                    cout << "  * data field: ";
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_name:
+                        {
+                            if (get_config().debug)
+                                cout << "name = " << attr.value << "; ";
+                            break;
+                        }
+                        case XML_fld:
+                        {
+                            long fld = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "field = " << fld << "; ";
+                            break;
+                        }
+                        case XML_baseField:
+                        {
+                            long fld = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "base field = " << fld << "; ";
+                            break;
+                        }
+                        case XML_baseItem:
+                        {
+                            long fld = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "base item = " << fld << "; ";
+                            break;
+                        }
+                        case XML_subtotal:
+                        {
+                            if (get_config().debug)
+                                cout << "subtotal = " << attr.value << "; ";
+                            break;
+                        }
+                        default:
+                            ;
+                    }
+                }
+
+                if (get_config().debug)
+                    cout << endl;
             }
             break;
             case XML_rowItems:
@@ -1741,9 +1683,45 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
                 expected.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_colItems));
                 xml_element_expected(parent, expected);
 
-                cout << "---" << endl;
-                i_attr_parser func;
-                for_each(attrs.begin(), attrs.end(), func);
+                if (get_config().debug)
+                    cout << "---" << endl;
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_t:
+                        {
+                            // total or subtotal function type.
+                            if (get_config().debug)
+                                cout << "  * type = " << attr.value << endl;
+                        }
+                        break;
+                        case XML_r:
+                        {
+                            // "repeated item count" which basically is the number of
+                            // blank cells that occur after the preivous non-empty cell on
+                            // the same row (in the classic layout mode).
+                            long v = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "  * repeat item count = " << v << endl;
+                        }
+                        break;
+                        case XML_i:
+                        {
+                            // zero-based data field index in case of multiple data fields.
+                            long v = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "  * data field index = " << v << endl;
+                        }
+                        break;
+                        default:
+                            ;
+                    }
+                }
             }
             break;
             case XML_x:
