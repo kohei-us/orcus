@@ -1169,64 +1169,6 @@ public:
     }
 };
 
-class pt_style_info_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-    bool m_first;
-
-    void sep()
-    {
-        if (m_first)
-            m_first = false;
-        else
-            cout << ";";
-    }
-
-public:
-    pt_style_info_attr_parser() : m_first(true) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
-            return;
-
-        bool b = false;
-        switch (attr.name)
-        {
-            case XML_name:
-                sep();
-                cout << " name='" << attr.value << "'";
-            break;
-            case XML_showRowHeaders:
-                b = to_bool(attr.value);
-                sep();
-                cout << " show row headers=" << b;
-            break;
-            case XML_showColHeaders:
-                b = to_bool(attr.value);
-                sep();
-                cout << " show column headers=" << b;
-            break;
-            case XML_showRowStripes:
-                b = to_bool(attr.value);
-                sep();
-                cout << " show row stripes=" << b;
-            break;
-            case XML_showColStripes:
-                b = to_bool(attr.value);
-                sep();
-                cout << " show column stripes=" << b;
-            break;
-            case XML_showLastColumn:
-                b = to_bool(attr.value);
-                sep();
-                cout << " show last column=" << b;
-            break;
-            default:
-                ;
-        }
-    }
-};
-
 }
 
 xlsx_pivot_table_context::xlsx_pivot_table_context(session_context& cxt, const tokens& tokens) :
@@ -1750,13 +1692,60 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             case XML_pivotTableStyleInfo:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-                pt_style_info_attr_parser func;
-                cout << "---" << endl;
-                cout << "* style info:";
-                for_each(attrs.begin(), attrs.end(), func);
-                cout << endl;
+
+                if (get_config().debug)
+                {
+                    cout << "---" << endl;
+                    cout << "* style info: ";
+                }
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
+                        continue;
+
+                    bool b = false;
+
+                    switch (attr.name)
+                    {
+                        case XML_name:
+                            if (get_config().debug)
+                                cout << "name='" << attr.value << "'; ";
+                            break;
+                        case XML_showRowHeaders:
+                            b = to_bool(attr.value);
+                            if (get_config().debug)
+                                cout << "show row headers=" << b << "; ";
+                            break;
+                        case XML_showColHeaders:
+                            b = to_bool(attr.value);
+                            if (get_config().debug)
+                                cout << "show column headers=" << b << "; ";
+                        break;
+                        case XML_showRowStripes:
+                            b = to_bool(attr.value);
+                            if (get_config().debug)
+                                cout << "show row stripes=" << b << "; ";
+                        break;
+                        case XML_showColStripes:
+                            b = to_bool(attr.value);
+                            if (get_config().debug)
+                                cout << "show column stripes=" << b << "; ";
+                        break;
+                        case XML_showLastColumn:
+                            b = to_bool(attr.value);
+                            if (get_config().debug)
+                                cout << "show last column=" << b << "; ";
+                        break;
+                        default:
+                            ;
+                    }
+                }
+
+                if (get_config().debug)
+                    cout << endl;
+                break;
             }
-            break;
             default:
                 warn_unhandled();
         }
