@@ -9,6 +9,6 @@ YAML Parser
 Parser Handler
 --------------
 
-.. doxygenclass:: yaml_parser_handler
+.. doxygenclass:: orcus::yaml_handler
    :members:
 

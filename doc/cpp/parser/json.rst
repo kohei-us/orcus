@@ -9,6 +9,6 @@ JSON Parser
 Parser Handler
 --------------
 
-.. doxygenclass:: json_parser_handler
+.. doxygenclass:: orcus::json_handler
    :members:
 

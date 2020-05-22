@@ -12,6 +12,6 @@ CSV Parser
 Parser Handler
 --------------
 
-.. doxygenclass:: csv_parser_handler
+.. doxygenclass:: orcus::csv_handler
    :members:
 

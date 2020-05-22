@@ -1,10 +1,7 @@
 .. highlight:: cpp
 
-XML Parser
-==========
-
-SAX Parser
-----------
+XML Parsers
+===========
 
 .. doxygenclass:: orcus::sax_parser
    :members:
@@ -13,6 +10,19 @@ SAX Parser
    :members:
 
 .. doxygenclass:: orcus::sax_token_parser
+   :members:
+
+
+Parser Handlers
+---------------
+
+.. doxygenclass:: orcus::sax_handler
+   :members:
+
+.. doxygenclass:: orcus::sax_ns_handler
+   :members:
+
+.. doxygenclass:: orcus::sax_token_handler
    :members:
 
 
