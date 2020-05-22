@@ -1117,60 +1117,6 @@ void xlsx_pivot_cache_rec_context::characters(const pstring& /*str*/, bool /*tra
 {
 }
 
-namespace {
-
-class page_field_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-    bool m_first;
-
-    void sep()
-    {
-        if (m_first)
-            m_first = false;
-        else
-            cout << ";";
-    }
-
-public:
-    page_field_attr_parser() : m_first(true) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
-            return;
-
-        switch (attr.name)
-        {
-            case XML_fld:
-            {
-                sep();
-                long fld = to_long(attr.value);
-                cout << " field index = " << fld;
-            }
-            break;
-            case XML_item:
-            {
-                sep();
-                long item = to_long(attr.value);
-                cout << " item index = " << item;
-            }
-            break;
-            case XML_hier:
-            {
-                sep();
-                long hier = to_long(attr.value);
-                // -1 if not applicable.
-                cout << " OLAP hierarchy index = " << hier;
-            }
-            break;
-            default:
-                ;
-        }
-    }
-};
-
-}
-
 xlsx_pivot_table_context::xlsx_pivot_table_context(session_context& cxt, const tokens& tokens) :
     xml_context_base(cxt, tokens) {}
 
@@ -1501,12 +1447,48 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             case XML_pageField:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pageFields);
-                page_field_attr_parser func;
-                cout << "  * page field:";
-                for_each(attrs.begin(), attrs.end(), func);
-                cout << endl;
+
+                if (get_config().debug)
+                    cout << "  * page field:";
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns && attr.ns != NS_ooxml_xlsx)
+                        continue;
+
+                    switch (attr.name)
+                    {
+                        case XML_fld:
+                        {
+                            long fld = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "field index = " << fld << "; ";
+                            break;
+                        }
+                        case XML_item:
+                        {
+                            long item = to_long(attr.value);
+                            if (get_config().debug)
+                                cout << "item index = " << item << "; ";
+                            break;
+                        }
+                        case XML_hier:
+                        {
+                            long hier = to_long(attr.value);
+                            // -1 if not applicable.
+                            if (get_config().debug)
+                                cout << "OLAP hierarchy index = " << hier << "; ";
+                            break;
+                        }
+                        default:
+                            ;
+                    }
+                }
+
+                if (get_config().debug)
+                    cout << endl;
+                break;
             }
-            break;
             case XML_field:
             {
                 xml_elem_stack_t expected;
