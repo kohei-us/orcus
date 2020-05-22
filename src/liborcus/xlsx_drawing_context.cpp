@@ -126,7 +126,8 @@ bool xlsx_drawing_context::end_element(xmlns_id_t ns, xml_token_t name)
         {
             case XML_twoCellAnchor:
             case XML_oneCellAnchor:
-                cout << "col: " << m_col << "; row: " << m_row << "; col offset: " << m_col_offset << "; row offset: " << m_row_offset << endl;
+                if (get_config().debug)
+                    cout << "col: " << m_col << "; row: " << m_row << "; col offset: " << m_col_offset << "; row offset: " << m_row_offset << endl;
                 break;
             default:
                 ;
