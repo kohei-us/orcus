@@ -14,6 +14,7 @@ import string
 import pathlib
 import enum
 import re
+import multiprocessing as mp
 import importlib.util
 
 import orcus
@@ -174,13 +175,48 @@ def load_module_from_filepath(filepath):
     return mod
 
 
+def process_filepath(i, inpath, outpath, processor_path):
+    mod = load_module_from_filepath(processor_path) if processor_path else None
+    term_buf = list()  # terminal output buffer
+    term_buf.append(f"{i} {sanitize_string(inpath)}")
+
+    good_filepath = f"{inpath}.{config.ext_good}"
+    bad_filepath = f"{inpath}.{config.ext_bad}"
+
+    if os.path.isfile(good_filepath) or os.path.isfile(bad_filepath):
+        buf.append("already processed. skipping...")
+        return "\n".join(term_buf)
+
+    success = False
+    with open(inpath, 'rb') as f:
+        bytes = f.read()
+
+    buf = list()  # non-terminal output buffer
+    doc, status, output = load_doc(bytes)
+    buf.extend(output)
+    if doc and mod:
+        buf.extend(mod.process_document(inpath, doc))
+
+    with open(outpath, "w") as f:
+        f.write("\n".join(buf))
+
+    term_buf.extend(buf)
+
+    if status == LoadStatus.SUCCESS:
+        pathlib.Path(good_filepath).touch()
+    elif status == LoadStatus.FAILURE:
+        pathlib.Path(bad_filepath).touch()
+
+    return "\n".join(term_buf)
+
+
 def main():
     parser = argparse.ArgumentParser(
-        description="""This script allows you to load a collection of input files
-        for testing purpuses.""")
+        description="""This script allows you to process a collection of spreadsheet documents.""")
     parser.add_argument(
         "--skip-file", type=argparse.FileType("r"),
         help="Optional text file containing a set of regular expressions (one per line). Files that match one of these rules will be skipped.")
+    parser.add_argument("--processes", type=int, default=1, help="Number of worker processes to use.")
     parser.add_argument("-p", "--processor", type=str, help="Python module file containing callback functions.")
     parser.add_argument(
         "--remove-results", action="store_true", default=False,
@@ -224,9 +260,8 @@ def main():
             rule = re.compile(line)
             skip_rules.append(rule)
 
-    mod = load_module_from_filepath(args.processor) if args.processor else None
-
-    file_count = 0
+    # build a list of files to process.
+    filepaths = list()
     for root, dir, files in os.walk(args.rootdir):
         for filename in files:
             if is_special_file(filename):
@@ -235,38 +270,19 @@ def main():
             inpath = os.path.join(root, filename)
             outpath = f"{inpath}.{config.ext_out}"
             if skips_by_rule(inpath, skip_rules):
-                print("skipping per rule...")
-                pathlib.Path(outpath).touch()
                 continue
 
-            print(file_count, sanitize_string(inpath), flush=True)
-            file_count += 1
-            buf = list()
+            filepaths.append((inpath, outpath))
 
-            good_filepath = f"{inpath}.{config.ext_good}"
-            bad_filepath = f"{inpath}.{config.ext_bad}"
+    with mp.Pool(processes=args.processes) as pool:
+        futures = list()
+        for i, (inpath, outpath) in enumerate(filepaths):
+            future = pool.apply_async(process_filepath, (i, inpath, outpath, args.processor))
+            futures.append(future)
 
-            if os.path.isfile(good_filepath) or os.path.isfile(bad_filepath):
-                print("already processed. skipping...")
-                continue
-
-            success = False
-            with open(inpath, 'rb') as f:
-                bytes = f.read()
-
-            doc, status, output = load_doc(bytes)
-            buf.extend(output)
-            if doc and mod:
-                buf.extend(mod.process_document(inpath, doc))
-
-            with open(outpath, "w") as f:
-                f.write("\n".join(buf))
-            print("\n".join(buf))
-
-            if status == LoadStatus.SUCCESS:
-                pathlib.Path(good_filepath).touch()
-            elif status == LoadStatus.FAILURE:
-                pathlib.Path(bad_filepath).touch()
+        for future in futures:
+            output = future.get()
+            print(output)
 
 
 if __name__ == "__main__":
