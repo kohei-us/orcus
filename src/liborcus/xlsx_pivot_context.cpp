@@ -1464,7 +1464,8 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             case XML_pivotTableDefinition:
             {
                 xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-                cout << "---" << endl;
+                if (get_config().debug)
+                    cout << "---" << endl;
                 for (const xml_token_attr_t& attr : attrs)
                 {
                     if (attr.ns && attr.ns != NS_ooxml_xlsx)
@@ -1476,90 +1477,112 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
                     switch (attr.name)
                     {
                         case XML_name:
-                            cout << "name: " << attr.value << endl;
+                            if (get_config().debug)
+                                cout << "name: " << attr.value << endl;
                             break;
                         case XML_cacheId:
                             v = to_long(attr.value);
-                            cout << "cache ID: " << v << endl;
+                            if (get_config().debug)
+                                cout << "cache ID: " << v << endl;
                             break;
                         case XML_applyNumberFormats:
                             b = to_bool(attr.value);
-                            cout << "apply number formats: " << b << endl;
+                            if (get_config().debug)
+                                cout << "apply number formats: " << b << endl;
                             break;
                         case XML_applyBorderFormats:
                             b = to_bool(attr.value);
-                            cout << "apply border formats: " << b << endl;
+                            if (get_config().debug)
+                                cout << "apply border formats: " << b << endl;
                             break;
                         case XML_applyFontFormats:
                             b = to_bool(attr.value);
-                            cout << "apply font formats: " << b << endl;
+                            if (get_config().debug)
+                                cout << "apply font formats: " << b << endl;
                             break;
                         case XML_applyPatternFormats:
                             b = to_bool(attr.value);
-                            cout << "apply pattern formats: " << b << endl;
+                            if (get_config().debug)
+                                cout << "apply pattern formats: " << b << endl;
                             break;
                         case XML_applyAlignmentFormats:
                             b = to_bool(attr.value);
-                            cout << "apply alignment formats: " << b << endl;
+                            if (get_config().debug)
+                                cout << "apply alignment formats: " << b << endl;
                             break;
                         case XML_applyWidthHeightFormats:
                             b = to_bool(attr.value);
-                            cout << "apply width/height formats: " << b << endl;
+                            if (get_config().debug)
+                                cout << "apply width/height formats: " << b << endl;
                             break;
                         case XML_dataCaption:
-                            cout << "data caption: " << attr.value << endl;
+                            if (get_config().debug)
+                                cout << "data caption: " << attr.value << endl;
                             break;
                         case XML_updatedVersion:
                             v = to_long(attr.value);
-                            cout << "updated version: " << v << endl;
+                            if (get_config().debug)
+                                cout << "updated version: " << v << endl;
                             break;
                         case XML_minRefreshableVersion:
                             v = to_long(attr.value);
-                            cout << "minimum refreshable version: " << v << endl;
+                            if (get_config().debug)
+                                cout << "minimum refreshable version: " << v << endl;
                             break;
                         case XML_showCalcMbrs:
                             b = to_bool(attr.value);
-                            cout << "show calc members (?): " << b << endl;
+                            if (get_config().debug)
+                                cout << "show calc members (?): " << b << endl;
                             break;
                         case XML_useAutoFormatting:
                             b = to_bool(attr.value);
-                            cout << "use auto formatting: " << b << endl;
+                            if (get_config().debug)
+                                cout << "use auto formatting: " << b << endl;
                             break;
                         case XML_itemPrintTitles:
                             b = to_bool(attr.value);
-                            cout << "item print titles (?): " << b << endl;
+                            if (get_config().debug)
+                                cout << "item print titles (?): " << b << endl;
                             break;
                         case XML_createdVersion:
                             v = to_long(attr.value);
-                            cout << "created version: " << v << endl;
+                            if (get_config().debug)
+                                cout << "created version: " << v << endl;
                             break;
                         case XML_indent:
                             b = to_bool(attr.value);
-                            cout << "indent: " << b << endl;
+                            if (get_config().debug)
+                                cout << "indent: " << b << endl;
                             break;
                         case XML_compact:
                             b = to_bool(attr.value);
-                            cout << "compact: " << b << endl;
+                            if (get_config().debug)
+                                cout << "compact: " << b << endl;
                             break;
                         case XML_compactData:
                             b = to_bool(attr.value);
-                            cout << "compact data: " << b << endl;
+                            if (get_config().debug)
+                                cout << "compact data: " << b << endl;
                             break;
                         case XML_outline:
                             b = to_bool(attr.value);
-                            cout << "outline: " << b << endl;
+                            if (get_config().debug)
+                                cout << "outline: " << b << endl;
                             break;
                         case XML_outlineData:
                             b = to_bool(attr.value);
-                            cout << "outline data: " << b << endl;
+                            if (get_config().debug)
+                                cout << "outline data: " << b << endl;
                             break;
                         case XML_gridDropZones:
                             b = to_bool(attr.value);
-                            cout << "grid drop zones: " << b << endl;
+                            if (get_config().debug)
+                                cout << "grid drop zones: " << b << endl;
                             break;
                         case XML_multipleFieldFilters:
                             b = to_bool(attr.value);
-                            cout << "multiple field filters: " << b << endl;
+                            if (get_config().debug)
+                                cout << "multiple field filters: " << b << endl;
                             break;
                         default:
                             ;
