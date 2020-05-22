@@ -184,7 +184,7 @@ def process_filepath(i, inpath, outpath, processor_path):
     bad_filepath = f"{inpath}.{config.ext_bad}"
 
     if os.path.isfile(good_filepath) or os.path.isfile(bad_filepath):
-        buf.append("already processed. skipping...")
+        term_buf.append("already processed. skipping...")
         return "\n".join(term_buf)
 
     success = False
@@ -270,6 +270,7 @@ def main():
             inpath = os.path.join(root, filename)
             outpath = f"{inpath}.{config.ext_out}"
             if skips_by_rule(inpath, skip_rules):
+                pathlib.Path(outpath).touch()
                 continue
 
             filepaths.append((inpath, outpath))
