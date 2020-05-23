@@ -93,6 +93,18 @@ public:
     pstring str() const;
 };
 
+struct ORCUS_PSR_DLLPUBLIC line_with_offset
+{
+    std::string line;
+    size_t line_number;
+    size_t offset_on_line;
+
+    line_with_offset(std::string _line, size_t _line_number, size_t _offset_on_line);
+    line_with_offset(const line_with_offset& other);
+    line_with_offset(line_with_offset&& other);
+    ~line_with_offset();
+};
+
 /**
  * Generate a sensible error output for parse error including the line where
  * the error occurred and the offset of the error position on that line.
@@ -104,6 +116,18 @@ public:
  */
 ORCUS_PSR_DLLPUBLIC std::string create_parse_error_output(
     const pstring& strm, std::ptrdiff_t offset);
+
+/**
+ * Given a string consisting of multiple lines i.e. multiple line breaks,
+ * find the line that contains the specified offset position.
+ *
+ * @param strm string buffer containing multiple lines.
+ * @param offset offset position.
+ *
+ * @return structure containing information about the line containing the
+ *         offset position.
+ */
+ORCUS_PSR_DLLPUBLIC line_with_offset locate_line_with_offset(const pstring& strm, std::ptrdiff_t offset);
 
 /**
  * Given two strings, locate the position of the first character that is

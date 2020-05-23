@@ -1,0 +1,6 @@
+Sheet1/0/0:formula:Sheet2!R[1]C[1]:Reference ME!
+Sheet1/1/0:formula:SUM(Sheet2!R[3]C[2]:R[5]C[2]):6
+Sheet2/1/1:string:"Reference ME!"
+Sheet2/4/2:numeric:1
+Sheet2/5/2:numeric:2
+Sheet2/6/2:numeric:3

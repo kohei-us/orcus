@@ -306,6 +306,26 @@ pstring memory_content::str() const
     return pstring(mp_impl->content, mp_impl->content_size);
 }
 
+line_with_offset::line_with_offset(std::string _line, size_t _line_number, size_t _offset_on_line) :
+    line(std::move(_line)),
+    line_number(_line_number),
+    offset_on_line(_offset_on_line)
+{}
+
+line_with_offset::line_with_offset(const line_with_offset& other) :
+    line(other.line),
+    line_number(other.line_number),
+    offset_on_line(other.offset_on_line)
+{}
+
+line_with_offset::line_with_offset(line_with_offset&& other) :
+    line(std::move(other.line)),
+    line_number(other.line_number),
+    offset_on_line(other.offset_on_line)
+{}
+
+line_with_offset::~line_with_offset() {}
+
 std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset)
 {
     if (offset < 0)
@@ -361,6 +381,16 @@ std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset
     os << '^';
 
     return os.str();
+}
+
+line_with_offset locate_line_with_offset(const pstring& strm, std::ptrdiff_t offset)
+{
+    auto line_info = find_line_with_offset(strm, offset);
+    pstring line = std::get<0>(line_info);
+    size_t line_num = std::get<1>(line_info);
+    size_t offset_on_line = std::get<2>(line_info);
+
+    return line_with_offset(line.str(), line_num, offset_on_line);
 }
 
 size_t locate_first_different_char(const pstring& left, const pstring& right)

@@ -49,6 +49,7 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/xls-xml/formula-array-1/",
     SRCDIR"/test/xls-xml/formula-cells-1/",
     SRCDIR"/test/xls-xml/formula-cells-2/",
+    SRCDIR"/test/xls-xml/formula-cells-3/",
     SRCDIR"/test/xls-xml/leading-whitespace/",
     SRCDIR"/test/xls-xml/merged-cells/",
     SRCDIR"/test/xls-xml/named-colors/",
@@ -172,7 +173,18 @@ void test_xls_xml_import()
 
         pstring s1(check.data(), check.size());
         pstring s2 = control.str();
-        assert(s1.trim() == s2.trim());
+        s1 = s1.trim();
+        s2 = s2.trim();
+
+        if (s1 != s2)
+        {
+            size_t offset = locate_first_different_char(s1, s2);
+            auto line1 = locate_line_with_offset(s1, offset);
+            auto line2 = locate_line_with_offset(s2, offset);
+            cout << "expected: " << line2.line << endl;
+            cout << "observed: " << line1.line << endl;
+            assert(!"content verification failed");
+        }
     };
 
     for (const char* dir : dirs)
