@@ -259,29 +259,27 @@ void xls_xml_data_context::start_element_data(
     m_cell_string.clear();
     m_cell_datetime = date_time_t();
 
-    std::for_each(attrs.begin(), attrs.end(),
-        [&](const xml_token_attr_t& attr)
-        {
-            if (attr.ns != NS_xls_xml_ss)
-                return;
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns != NS_xls_xml_ss)
+            continue;
 
-            switch (attr.name)
+        switch (attr.name)
+        {
+            case XML_Type:
             {
-                case XML_Type:
-                {
-                    if (attr.value == "String")
-                        m_cell_type = ct_string;
-                    else if (attr.value == "Number")
-                        m_cell_type = ct_number;
-                    else if (attr.value == "DateTime")
-                        m_cell_type = ct_datetime;
-                }
+                if (attr.value == "String")
+                    m_cell_type = ct_string;
+                else if (attr.value == "Number")
+                    m_cell_type = ct_number;
+                else if (attr.value == "DateTime")
+                    m_cell_type = ct_datetime;
                 break;
-                default:
-                    ;
             }
+            default:
+                ;
         }
-    );
+    }
 }
 
 void xls_xml_data_context::end_element_data()
