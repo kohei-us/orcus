@@ -824,22 +824,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 break;
             case XML_Worksheet:
             {
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
-
-                ++m_cur_sheet;
-                pstring sheet_name = for_each(attrs.begin(), attrs.end(), sheet_attr_parser()).get_name();
-                mp_cur_sheet = mp_factory->append_sheet(m_cur_sheet, sheet_name.get(), sheet_name.size());
-                spreadsheet::iface::import_named_expression* sheet_named_exp = nullptr;
-                if (mp_cur_sheet)
-                {
-                    mp_sheet_props = mp_cur_sheet->get_sheet_properties();
-                    sheet_named_exp = mp_cur_sheet->get_named_expression();
-                }
-
-                m_sheet_named_exps.push_back(sheet_named_exp);
-
-                m_cur_row = 0;
-                m_cur_col = 0;
+                start_element_worksheet(parent, attrs);
                 break;
             }
             case XML_Table:
@@ -1151,7 +1136,7 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
                 end_element_workbook();
                 break;
             case XML_Worksheet:
-                mp_cur_sheet = nullptr;
+                end_element_worksheet();
                 break;
             case XML_Style:
             {
@@ -1595,6 +1580,29 @@ void xls_xml_context::start_element_table(const xml_token_pair_t& parent, const 
         m_table_props.pos.column = col_index - 1;
 }
 
+void xls_xml_context::start_element_worksheet(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
+
+    ++m_cur_sheet;
+    pstring sheet_name = for_each(attrs.begin(), attrs.end(), sheet_attr_parser()).get_name();
+    mp_cur_sheet = mp_factory->append_sheet(m_cur_sheet, sheet_name.get(), sheet_name.size());
+    spreadsheet::iface::import_named_expression* sheet_named_exp = nullptr;
+    if (mp_cur_sheet)
+    {
+        mp_sheet_props = mp_cur_sheet->get_sheet_properties();
+        sheet_named_exp = mp_cur_sheet->get_named_expression();
+    }
+
+    m_sheet_named_exps.push_back(sheet_named_exp);
+
+    m_cur_row = 0;
+    m_cur_col = 0;
+
+    if (get_config().debug)
+        cout << "worksheet: name: '" << sheet_name << "'" << endl;
+}
+
 void xls_xml_context::end_element_borders()
 {
 }
@@ -1666,6 +1674,11 @@ void xls_xml_context::end_element_table()
     push_all_array_formulas();
     m_array_formulas.clear();
     m_table_props.reset();
+}
+
+void xls_xml_context::end_element_worksheet()
+{
+    mp_cur_sheet = nullptr;
 }
 
 void xls_xml_context::end_element_workbook()

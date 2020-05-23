@@ -232,6 +232,7 @@ private:
     void start_element_column(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_row(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_table(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_element_worksheet(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
 
     void end_element_borders();
     void end_element_border();
@@ -240,6 +241,7 @@ private:
     void end_element_column();
     void end_element_row();
     void end_element_table();
+    void end_element_worksheet();
 
     void end_element_workbook();
     void end_element_styles();
