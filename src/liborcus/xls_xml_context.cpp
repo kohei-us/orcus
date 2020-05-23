@@ -517,28 +517,6 @@ void xls_xml_data_context::update_current_format()
 
 namespace {
 
-class sheet_attr_parser : public unary_function<xml_token_attr_t, void>
-{
-    pstring m_name;
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_xls_xml_ss)
-        {
-            switch (attr.name)
-            {
-                case XML_Name:
-                    m_name = attr.value;
-                break;
-                default:
-                    ;
-            }
-        }
-    }
-
-    pstring get_name() const { return m_name; }
-};
-
 namespace border_dir {
 
 typedef mdds::sorted_string_map<spreadsheet::border_direction_t> map_type;
@@ -1585,8 +1563,24 @@ void xls_xml_context::start_element_worksheet(const xml_token_pair_t& parent, co
     xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
 
     ++m_cur_sheet;
-    pstring sheet_name = for_each(attrs.begin(), attrs.end(), sheet_attr_parser()).get_name();
-    mp_cur_sheet = mp_factory->append_sheet(m_cur_sheet, sheet_name.get(), sheet_name.size());
+    pstring sheet_name;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns == NS_xls_xml_ss)
+        {
+            switch (attr.name)
+            {
+                case XML_Name:
+                    sheet_name = attr.value;
+                    break;
+                default:
+                    ;
+            }
+        }
+    }
+
+    mp_cur_sheet = mp_factory->append_sheet(m_cur_sheet, sheet_name.data(), sheet_name.size());
     spreadsheet::iface::import_named_expression* sheet_named_exp = nullptr;
     if (mp_cur_sheet)
     {
