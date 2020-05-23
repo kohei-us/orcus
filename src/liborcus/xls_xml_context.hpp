@@ -18,6 +18,7 @@
 #include <string>
 #include <unordered_map>
 #include <list>
+#include <deque>
 
 namespace orcus {
 
@@ -99,13 +100,20 @@ private:
         range_formula_results& res, size_t row_offset, size_t col_offset);
 
     void push_formula_cell(const pstring& formula);
-    void push_array_formula_parent_cell(const pstring& formula);
+    void store_array_formula_parent_cell(const pstring& formula);
     void update_current_format();
 };
 
 class xls_xml_context : public xml_context_base
 {
     friend class xls_xml_data_context;
+
+    struct cell_formula_type
+    {
+        spreadsheet::address_t pos;
+        pstring formula;
+        formula_result result;
+    };
 
     struct array_formula_type
     {
@@ -209,6 +217,7 @@ class xls_xml_context : public xml_context_base
     using style_id_xf_map_type = std::unordered_map<pstring, size_t, pstring::hash>;
     using array_formula_pair_type = std::pair<spreadsheet::range_t, std::unique_ptr<array_formula_type>>;
     using array_formulas_type = std::list<array_formula_pair_type>;
+    using cell_formulas_type = std::deque<std::deque<cell_formula_type>>;
 
 public:
     xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
@@ -242,7 +251,6 @@ private:
     void end_element_row();
     void end_element_table();
     void end_element_worksheet();
-
     void end_element_workbook();
     void end_element_styles();
     void end_element_pane();
@@ -263,6 +271,8 @@ private:
     const spreadsheet::range_t& get_array_range() const;
     array_formulas_type& get_array_formula_store();
 
+    void store_cell_formula(const pstring& formula, const formula_result& res);
+
 private:
     spreadsheet::iface::import_factory* mp_factory;
     spreadsheet::iface::import_sheet* mp_cur_sheet;
@@ -280,6 +290,7 @@ private:
     pstring m_cur_cell_formula;
     pstring m_cur_cell_style_id;
 
+    cell_formulas_type m_cell_formulas;
     array_formulas_type m_array_formulas;
     named_expressions_type m_named_exps_global;
     named_expressions_type m_named_exps_sheet;

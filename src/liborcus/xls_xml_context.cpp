@@ -18,6 +18,7 @@
 #include <iostream>
 
 using namespace std;
+namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
@@ -289,7 +290,7 @@ void xls_xml_data_context::end_element_data()
     if (!formula.empty())
     {
         if (m_parent_cxt.is_array_formula())
-            push_array_formula_parent_cell(formula);
+            store_array_formula_parent_cell(formula);
         else
             push_formula_cell(formula);
         m_cell_type = ct_unknown;
@@ -447,29 +448,20 @@ void xls_xml_data_context::push_array_result(
 
 void xls_xml_data_context::push_formula_cell(const pstring& formula)
 {
-    spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
-    spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
-    spreadsheet::iface::import_formula* xformula = sheet->get_formula();
-
-    if (xformula)
+    switch (m_cell_type)
     {
-        xformula->set_position(pos.row, pos.column);
-        xformula->set_formula(spreadsheet::formula_grammar_t::xls_xml, formula.data(), formula.size());
-
-        switch (m_cell_type)
+        case ct_number:
+            m_parent_cxt.store_cell_formula(formula, m_cell_value);
+            break;
+        default:
         {
-            case ct_number:
-                xformula->set_result_value(m_cell_value);
-                break;
-            default:
-                ;
+            formula_result res;
+            m_parent_cxt.store_cell_formula(formula, res);
         }
-
-        xformula->commit();
     }
 }
 
-void xls_xml_data_context::push_array_formula_parent_cell(const pstring& formula)
+void xls_xml_data_context::store_array_formula_parent_cell(const pstring& formula)
 {
     spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
     spreadsheet::range_t range = m_parent_cxt.get_array_range();
@@ -1562,6 +1554,7 @@ void xls_xml_context::start_element_worksheet(const xml_token_pair_t& parent, co
 
     ++m_cur_sheet;
     pstring sheet_name;
+    m_cell_formulas.emplace_back();
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -1633,16 +1626,7 @@ void xls_xml_context::end_element_cell()
     if (mp_cur_sheet && !m_cur_cell_formula.empty())
     {
         // Likely a Cell element without a child Data element.
-        spreadsheet::iface::import_formula* xformula = mp_cur_sheet->get_formula();
-
-        if (xformula)
-        {
-            xformula->set_position(m_cur_row, m_cur_col);
-            xformula->set_formula(
-                spreadsheet::formula_grammar_t::xls_xml,
-                m_cur_cell_formula.data(), m_cur_cell_formula.size());
-            xformula->commit();
-        }
+        store_cell_formula(m_cur_cell_formula, formula_result());
     }
 
     m_cur_cell_formula.clear();
@@ -1675,6 +1659,9 @@ void xls_xml_context::end_element_worksheet()
 
 void xls_xml_context::end_element_workbook()
 {
+    if (!mp_factory)
+        return;
+
     spreadsheet::iface::import_named_expression* ne_global = mp_factory->get_named_expression();
     if (ne_global)
     {
@@ -1701,6 +1688,38 @@ void xls_xml_context::end_element_workbook()
             p->set_named_expression(
                 ne.name.data(), ne.name.size(), ne.expression.data(), ne.expression.size());
             p->commit();
+        }
+    }
+
+    // push all cell formulas
+    for (size_t sheet_pos = 0; sheet_pos < m_cell_formulas.size(); ++sheet_pos)
+    {
+        spreadsheet::iface::import_sheet* sheet = mp_factory->get_sheet(sheet_pos);
+        if (!sheet)
+            continue;
+
+        spreadsheet::iface::import_formula* xformula = sheet->get_formula();
+        if (!xformula)
+            continue;
+
+        const std::deque<cell_formula_type>& store = m_cell_formulas[sheet_pos];
+        for (const cell_formula_type& cf : store)
+        {
+            xformula->set_position(cf.pos.row, cf.pos.column);
+            xformula->set_formula(ss::formula_grammar_t::xls_xml, cf.formula.data(), cf.formula.size());
+
+            switch (cf.result.type)
+            {
+                case formula_result::result_type::numeric:
+                    xformula->set_result_value(cf.result.value_numeric);
+                    break;
+                case formula_result::result_type::string:
+                case formula_result::result_type::boolean:
+                case formula_result::result_type::empty:
+                    ;
+            }
+
+            xformula->commit();
         }
     }
 }
@@ -1964,6 +1983,18 @@ const spreadsheet::range_t& xls_xml_context::get_array_range() const
 xls_xml_context::array_formulas_type& xls_xml_context::get_array_formula_store()
 {
     return m_array_formulas;
+}
+
+void xls_xml_context::store_cell_formula(const pstring& formula, const formula_result& res)
+{
+    assert(m_cur_sheet < ss::sheet_t(m_cell_formulas.size()));
+
+    cell_formula_type cf;
+    cf.pos = get_current_pos();
+    cf.formula = formula;
+    cf.result = res;
+    std::deque<cell_formula_type>& store = m_cell_formulas[m_cur_sheet];
+    store.push_back(std::move(cf));
 }
 
 }
