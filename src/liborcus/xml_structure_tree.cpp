@@ -13,6 +13,7 @@
 
 #include "orcus/string_pool.hpp"
 #include "string_helper.hpp"
+#include "xml_structure_mapper.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -259,6 +260,10 @@ void print_scope(ostream& os, const scopes_type& scopes, const xmlns_context& cx
 }
 
 }
+
+xml_table_range_t::xml_table_range_t() {}
+
+xml_table_range_t::~xml_table_range_t() {}
 
 struct xml_structure_tree::impl
 {
@@ -585,5 +590,12 @@ xml_structure_tree::walker xml_structure_tree::get_walker() const
     return walker(*mp_impl);
 }
 
+void xml_structure_tree::process_ranges(range_handler_type rh) const
+{
+    detail::xml_structure_mapper mapper(rh, get_walker());
+    mapper.run();
 }
+
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

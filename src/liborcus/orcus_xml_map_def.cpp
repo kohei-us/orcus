@@ -10,8 +10,11 @@
 #include "orcus/sax_parser_base.hpp"
 #include "orcus/sax_parser.hpp"
 #include "orcus/stream.hpp"
+#include "orcus/xml_structure_tree.hpp"
+#include "orcus/xml_namespace.hpp"
 
 #include <vector>
+#include <iostream>
 
 namespace orcus {
 
@@ -179,6 +182,41 @@ void orcus_xml::read_map_definition(const char* p, size_t n)
 
         throw invalid_map_error(os.str());
     }
+}
+
+void orcus_xml::detect_map_definition(const char* p, size_t n)
+{
+    size_t range_count = 0;
+    std::string sheet_name_prefix = "range-";
+
+    xml_structure_tree::range_handler_type rh = [&](xml_table_range_t&& range)
+    {
+        // Build sheet name first and insert a new sheet.
+        std::ostringstream os_sheet_name;
+        os_sheet_name << sheet_name_prefix << range_count;
+        std::string sheet_name = os_sheet_name.str();
+        append_sheet(sheet_name);
+
+        // Push the linked range.
+        start_range(sheet_name, 0, 0);
+
+        for (const auto& path : range.paths)
+            append_field_link(path);
+
+        for (const auto& row_group : range.row_groups)
+            set_range_row_group(row_group);
+
+        commit_range();
+
+        ++range_count;
+    };
+
+    xmlns_repository repo;
+    xmlns_context cxt = repo.create_context();
+    xml_structure_tree structure(cxt);
+    structure.parse(p, n);
+    structure.dump_compact(std::cout);
+    structure.process_ranges(rh);
 }
 
 }

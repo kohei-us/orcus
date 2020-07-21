@@ -62,8 +62,6 @@ const map_type& get()
 
 } // namespace output_mode
 
-
-
 std::string to_string(output_mode::type t)
 {
     for (const output_mode::map_type::entry& e : output_mode::entries)
@@ -234,13 +232,6 @@ int main(int argc, char** argv)
             return EXIT_SUCCESS;
         }
 
-        if (!vm.count("map") || map_path.empty())
-        {
-            cerr << "Map file is required, but is not given." << endl;
-            print_usage(cout, desc);
-            return EXIT_FAILURE;
-        }
-
         spreadsheet::range_size_t ss{1048576, 16384};
         spreadsheet::document doc{ss};
         spreadsheet::import_factory import_fact(doc);
@@ -248,8 +239,15 @@ int main(int argc, char** argv)
 
         xmlns_repository repo;
         orcus_xml app(repo, &import_fact, &export_fact);
-        file_content map_content(map_path.data());
-        app.read_map_definition(map_content.data(), map_content.size());
+
+        if (map_path.empty())
+            app.detect_map_definition(content.data(), content.size());
+        else
+        {
+            file_content map_content(map_path.data());
+            app.read_map_definition(map_content.data(), map_content.size());
+        }
+
         app.read_stream(content.data(), content.size());
 
         switch (mode)

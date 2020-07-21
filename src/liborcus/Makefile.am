@@ -74,6 +74,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	xml_stream_parser.cpp \
 	xml_simple_stream_handler.hpp \
 	xml_simple_stream_handler.cpp \
+	xml_structure_mapper.hpp \
+	xml_structure_mapper.cpp \
 	xml_structure_tree.cpp \
 	xpath_parser.cpp \
 	yaml_document_tree.cpp \
@@ -413,6 +415,7 @@ liborcus_test_xml_map_tree_LDADD = \
 liborcus_test_xml_structure_tree_SOURCES = \
 	string_helper.cpp \
 	xml_structure_tree.cpp \
+	xml_structure_mapper.cpp \
 	xml_structure_tree_test.cpp
 
 liborcus_test_xml_structure_tree_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)

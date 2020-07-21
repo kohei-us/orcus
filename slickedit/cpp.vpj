@@ -430,6 +430,8 @@
                 <F N="../src/liborcus/xml_stream_handler.hpp"/>
                 <F N="../src/liborcus/xml_stream_parser.cpp"/>
                 <F N="../src/liborcus/xml_stream_parser.hpp"/>
+                <F N="../src/liborcus/xml_structure_mapper.cpp"/>
+                <F N="../src/liborcus/xml_structure_mapper.hpp"/>
                 <F N="../src/liborcus/xml_structure_tree.cpp"/>
                 <F N="../src/liborcus/xml_structure_tree_test.cpp"/>
                 <F N="../src/liborcus/xpath_parser.cpp"/>

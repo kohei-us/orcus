@@ -62,6 +62,8 @@ public:
      */
     void read_map_definition(const char* p, size_t n);
 
+    void detect_map_definition(const char* p, size_t n);
+
     void write(const char* p_in, size_t n_in, std::ostream& out) const;
 };
 

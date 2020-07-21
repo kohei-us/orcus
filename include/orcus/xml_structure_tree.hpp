@@ -13,10 +13,20 @@
 
 #include <ostream>
 #include <memory>
+#include <functional>
 
 namespace orcus {
 
 class xmlns_context;
+
+struct ORCUS_DLLPUBLIC xml_table_range_t
+{
+    std::vector<std::string> paths;
+    std::vector<std::string> row_groups;
+
+    xml_table_range_t();
+    ~xml_table_range_t();
+};
 
 /**
  * Tree representing the structure of elements in XML content.  Recurring
@@ -154,6 +164,10 @@ public:
     void dump_compact(std::ostream& os) const;
 
     walker get_walker() const;
+
+    using range_handler_type = std::function<void(xml_table_range_t&&)>;
+
+    void process_ranges(range_handler_type rh) const;
 };
 
 }

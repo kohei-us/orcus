@@ -29,6 +29,7 @@ add_library(orcus-${ORCUS_API_VERSION} SHARED
     xml_stream_parser.hpp
     xml_stream_parser.cpp
     xml_simple_stream_handler.cpp
+    xml_structure_mapper.cpp
     xml_structure_tree.cpp
     xpath_parser.cpp
     yaml_document_tree.cpp
