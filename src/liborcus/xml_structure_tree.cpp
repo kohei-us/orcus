@@ -412,14 +412,16 @@ xml_structure_tree::entity_names_type xml_structure_tree::walker::get_children()
     return names;
 }
 
-void xml_structure_tree::walker::get_attributes(entity_names_type& names)
+xml_structure_tree::entity_names_type xml_structure_tree::walker::get_attributes()
 {
     if (mp_impl->m_scopes.empty())
         throw general_error("Scope is empty.");
 
+    entity_names_type names;
     assert(mp_impl->m_scopes.back().prop);
     const elem_prop& prop = *mp_impl->m_scopes.back().prop;
     names.assign(prop.attribute_names.begin(), prop.attribute_names.end());
+    return names;
 }
 
 size_t xml_structure_tree::walker::get_xmlns_index(xmlns_id_t ns) const

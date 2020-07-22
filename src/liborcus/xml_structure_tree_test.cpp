@@ -150,8 +150,7 @@ void test_walker()
         assert(!elem.repeat);
 
         // Check attributes of root, which should have 'version' and 'type' in this order.
-        xml_structure_tree::entity_names_type names;
-        wkr.get_attributes(names);
+        xml_structure_tree::entity_names_type names = wkr.get_attributes();
         assert(names.size() == 2);
         assert(names[0].name == "version");
         assert(names[1].name == "type");
@@ -165,7 +164,7 @@ void test_walker()
         assert(elem.repeat);
 
         // The 'entry' element should have 3 attributes 'attr1', 'attr2', and 'attr3'.
-        wkr.get_attributes(names);
+        names = wkr.get_attributes();
         assert(names.size() == 3);
         assert(names[0].name == "attr1");
         assert(names[1].name == "attr2");

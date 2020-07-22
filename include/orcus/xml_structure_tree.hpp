@@ -124,9 +124,9 @@ public:
          * Get a list of names of all attributes that belong to current
          * element.  The list of names is in order of appearance.
          *
-         * @param names list of attribute names in order of appearance.
+         * @return list of attribute names in order of appearance.
          */
-        void get_attributes(entity_names_type& names);
+        entity_names_type get_attributes();
 
         /**
          * Get a numerical, 0-based index of given XML namespace.
