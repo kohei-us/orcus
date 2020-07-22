@@ -6,7 +6,6 @@
  */
 
 #include "xml_structure_mapper.hpp"
-#include <iostream>
 
 namespace orcus { namespace detail {
 
