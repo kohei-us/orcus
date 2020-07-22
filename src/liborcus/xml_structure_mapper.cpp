@@ -53,7 +53,7 @@ void xml_structure_mapper::traverse()
         xml_structure_tree::entity_names_type attr_names = m_walker.get_attributes();
         for (const auto& attr_name : attr_names)
         {
-            std::string attr_path = path + "/@" + attr_name.name;
+            std::string attr_path = path + "/@" + m_walker.to_string(attr_name);
             m_current_range.paths.push_back(attr_path);
         }
     }

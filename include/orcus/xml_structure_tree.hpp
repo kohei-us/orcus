@@ -142,6 +142,16 @@ public:
         std::string get_xmlns_short_name(xmlns_id_t ns) const;
 
         /**
+         * Convert an entity name to its proper string representation.
+         *
+         * @param name entity name to convert to string.
+         *
+         * @return string representation of the entity name, including the
+         *         namespace.
+         */
+        std::string to_string(const entity_name& name) const;
+
+        /**
          * Get a XPath like ID for the element inside of the XML tree.
          *
          */
