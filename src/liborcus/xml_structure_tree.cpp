@@ -400,14 +400,16 @@ xml_structure_tree::element xml_structure_tree::walker::ascend()
     return element(ref.name, ref.prop->repeat);
 }
 
-void xml_structure_tree::walker::get_children(entity_names_type& names)
+xml_structure_tree::entity_names_type xml_structure_tree::walker::get_children()
 {
     if (mp_impl->m_scopes.empty())
         throw general_error("Scope is empty.");
 
+    entity_names_type names;
     assert(mp_impl->m_scopes.back().prop);
     const elem_prop& prop = *mp_impl->m_scopes.back().prop;
     names.assign(prop.child_element_names.begin(), prop.child_element_names.end());
+    return names;
 }
 
 void xml_structure_tree::walker::get_attributes(entity_names_type& names)

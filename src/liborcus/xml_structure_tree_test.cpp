@@ -82,7 +82,7 @@ void test_walker()
         assert(!elem.repeat);
 
         // Get names of child elements. There should only one one and it should be 'entry'.
-        wkr.get_children(elem_names);
+        elem_names = wkr.get_children();
         assert(elem_names.size() == 1);
         xml_structure_tree::entity_name elem_name = elem_names.front();
         assert(elem_name.name == "entry");
@@ -93,7 +93,7 @@ void test_walker()
         assert(elem.repeat);
 
         // Element 'entry' should have 2 child elements 'name' and 'id' in this order.
-        wkr.get_children(elem_names);
+        elem_names = wkr.get_children();
         assert(elem_names.size() == 2);
         assert(elem_names[0].name == "name");
         assert(elem_names[1].name == "id");
@@ -105,8 +105,7 @@ void test_walker()
         assert(!elem.repeat);
 
         // This is a leaf element. It should have no child elements.
-        xml_structure_tree::entity_names_type test_names;
-        wkr.get_children(test_names);
+        xml_structure_tree::entity_names_type test_names = wkr.get_children();
         assert(test_names.empty());
 
         // Move up to 'entry'.
@@ -158,7 +157,7 @@ void test_walker()
         assert(names[1].name == "type");
 
         // Root element should have only one child element 'entry'.
-        wkr.get_children(names);
+        names = wkr.get_children();
         assert(names.size() == 1);
         assert(names[0].name == "entry");
         elem = wkr.descend(names[0]);
@@ -191,7 +190,7 @@ void test_walker_path()
     wkr.root();
     assert("/root" == wkr.get_path());
 
-    wkr.get_children(elem_names);
+    elem_names = wkr.get_children();
     xml_structure_tree::entity_name elem_name = elem_names.front();
     wkr.descend(elem_name);
     assert("/root/entry" == wkr.get_path());

@@ -40,8 +40,7 @@ void xml_structure_mapper::traverse()
         m_current_range.row_groups.push_back(m_walker.get_path());
     }
 
-    xml_structure_tree::entity_names_type children;
-    m_walker.get_children(children);
+    xml_structure_tree::entity_names_type children = m_walker.get_children();
 
     if (m_repeat_count)
     {

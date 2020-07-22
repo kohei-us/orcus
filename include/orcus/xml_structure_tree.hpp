@@ -113,12 +113,12 @@ public:
         element ascend();
 
         /**
-         * Get a list of names of all child elements at current element
+         * Get a list of names of all child elements at the current element
          * position.  The list of names is in order of appearance.
          *
-         * @param names list of child element names in order of appearance.
+         * @return list of child element names in order of appearance.
          */
-        void get_children(entity_names_type& names);
+        entity_names_type get_children();
 
         /**
          * Get a list of names of all attributes that belong to current
