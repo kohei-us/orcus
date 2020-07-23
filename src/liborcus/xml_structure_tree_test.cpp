@@ -14,28 +14,31 @@
 #include <cassert>
 #include <iostream>
 #include <sstream>
+#include <vector>
+#include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace orcus;
+namespace fs = boost::filesystem;
 
-const char* base_dirs[] = {
-    SRCDIR"/test/xml-structure/basic-1/",
-    SRCDIR"/test/xml-structure/basic-2/",
-    SRCDIR"/test/xml-structure/basic-3/",
-    SRCDIR"/test/xml-structure/attribute-1/",
-    SRCDIR"/test/xml-structure/nested-repeat-1/",
-    SRCDIR"/test/xml-structure/namespace-default/"
+const fs::path test_base_dir(SRCDIR"/test/xml-structure");
+
+std::vector<fs::path> base_dirs = {
+    test_base_dir / "basic-1/",
+    test_base_dir / "basic-2/",
+    test_base_dir / "basic-3/",
+    test_base_dir / "attribute-1/",
+    test_base_dir / "nested-repeat-1/",
+    test_base_dir / "namespace-default/"
 };
 
 void test_basic()
 {
-    size_t n = sizeof(base_dirs)/sizeof(base_dirs[0]);
-    for (size_t i = 0; i < n; ++i)
+    for (const fs::path& base_dir : base_dirs)
     {
-        string filepath(base_dirs[i]);
-        filepath.append("input.xml");
+        fs::path filepath = base_dir / "input.xml";
         cout << filepath << endl;
-        file_content strm(filepath.data());
+        file_content strm(filepath.string().data());
         assert(!strm.empty());
         xmlns_repository xmlns_repo;
         xmlns_context cxt = xmlns_repo.create_context();
@@ -48,9 +51,8 @@ void test_basic()
         cout << data_content;
 
         // Check the dump content against known datum.
-        filepath = base_dirs[i];
-        filepath.append("check.txt");
-        file_content strm_check(filepath.data());
+        filepath = base_dir / "check.txt";
+        file_content strm_check(filepath.string().data());
         assert(!strm_check.empty());
 
         // They should be identical, plus or minus leading/trailing whitespaces.
@@ -63,9 +65,8 @@ void test_basic()
 void test_walker()
 {
     {
-        string filepath(base_dirs[0]);
-        filepath.append("input.xml");
-        file_content strm(filepath.data());
+        fs::path filepath = base_dirs[0] / "input.xml";
+        file_content strm(filepath.string().data());
         assert(!strm.empty());
         xmlns_repository xmlns_repo;
         xmlns_context cxt = xmlns_repo.create_context();
@@ -130,10 +131,9 @@ void test_walker()
     }
 
     {
-        string filepath(base_dirs[3]); // attribute-1
-        filepath.append("input.xml");
+        fs::path filepath = base_dirs[3] / "input.xml"; // attribute-1
 
-        file_content strm(filepath.data());
+        file_content strm(filepath.string().data());
         assert(!strm.empty());
         xmlns_repository xmlns_repo;
         xmlns_context cxt = xmlns_repo.create_context();
@@ -174,9 +174,8 @@ void test_walker()
 
 void test_walker_path()
 {
-    string filepath(base_dirs[0]);
-    filepath.append("input.xml");
-    file_content strm(filepath.data());
+    fs::path filepath = base_dirs[0] / "input.xml";
+    file_content strm(filepath.string().data());
     assert(!strm.empty());
     xmlns_repository xmlns_repo;
     xmlns_context cxt = xmlns_repo.create_context();
@@ -230,6 +229,7 @@ int main()
     test_basic();
     test_walker();
     test_walker_path();
+
     return EXIT_SUCCESS;
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

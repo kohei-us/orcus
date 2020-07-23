@@ -6,12 +6,12 @@ EXTRA_PROGRAMS = \
 	liborcus-test-json-document-tree \
 	liborcus-test-yaml-document-tree \
 	liborcus-test-xml-map-tree \
-	liborcus-test-xml-structure-tree \
 	liborcus-test-common \
 	liborcus-test-format-detection \
 	dom-tree-test \
 	json-structure-tree-test \
 	json-map-tree-test \
+	xml-structure-tree-test \
 	xpath-parser-test
 
 TESTS =
@@ -410,19 +410,20 @@ liborcus_test_xml_map_tree_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
-# liborcus-test-xml-structure-tree
+# xml-structure-tree-test
 
-liborcus_test_xml_structure_tree_SOURCES = \
+xml_structure_tree_test_SOURCES = \
 	string_helper.cpp \
 	xml_structure_tree.cpp \
 	xml_structure_mapper.cpp \
 	xml_structure_tree_test.cpp
 
-liborcus_test_xml_structure_tree_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
+xml_structure_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
-liborcus_test_xml_structure_tree_LDADD = \
+xml_structure_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
 
 # liborcus-test-common
 
@@ -481,12 +482,12 @@ TESTS += \
 	liborcus-test-json-document-tree \
 	liborcus-test-yaml-document-tree \
 	liborcus-test-xml-map-tree \
-	liborcus-test-xml-structure-tree \
 	liborcus-test-common \
 	liborcus-test-format-detection \
 	dom-tree-test \
 	json-structure-tree-test \
 	json-map-tree-test \
+	xml-structure-tree-test \
 	xpath-parser-test
 
 distclean-local:
