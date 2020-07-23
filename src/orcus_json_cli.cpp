@@ -213,8 +213,6 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         return params;
     }
 
-    params.os = orcus::make_unique<output_stream>(vm);
-
     if (vm.count("mode"))
     {
         std::string s = vm["mode"].as<std::string>();
@@ -255,8 +253,10 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         case detail::mode_t::map_gen:
         case detail::mode_t::structure:
             // Structure and map-gen modes only need input and output parameters.
+            params.os = orcus::make_unique<output_stream>(vm);
             break;
         case detail::mode_t::convert:
+            params.os = orcus::make_unique<output_stream>(vm);
             parse_args_for_convert(params, desc, vm);
             break;
         case detail::mode_t::map:
