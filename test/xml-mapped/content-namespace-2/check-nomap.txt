@@ -1,0 +1,12 @@
+range-0/0/0:string:"ns2:date"
+range-0/0/1:string:"ns2:category"
+range-0/0/2:string:"ns2:amount"
+range-0/1/0:string:"2011-01-02"
+range-0/1/1:string:"Lunch"
+range-0/1/2:numeric:6.32
+range-0/2/0:string:"2011-01-03"
+range-0/2/1:string:"Lunch"
+range-0/2/2:numeric:7.45
+range-0/3/0:string:"2011-01-04"
+range-0/3/1:string:"Gas"
+range-0/3/2:numeric:44.35

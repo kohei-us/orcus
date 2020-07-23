@@ -28,3 +28,4 @@ data/8/2:numeric:3.3
 data/9/0:string:"foo"
 data/9/1:string:"C"
 data/9/2:numeric:4.4
+data/10/0:string:"bah"

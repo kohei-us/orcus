@@ -164,6 +164,16 @@ void test_mapped_xml_import_no_map_definition()
 
     const std::vector<fs::path> tests = {
         test_base_dir / "attribute-basic",
+        test_base_dir / "attribute-namespace",
+        test_base_dir / "attribute-range-self-close",
+        test_base_dir / "content-basic",
+        test_base_dir / "content-namespace",
+        test_base_dir / "content-namespace-2",
+        test_base_dir / "fuel-economy",
+        test_base_dir / "nested-repeats",
+        test_base_dir / "nested-repeats-2",
+        test_base_dir / "nested-repeats-3",
+        test_base_dir / "nested-repeats-4",
     };
 
     for (const fs::path& base_dir : tests)

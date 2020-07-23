@@ -45,16 +45,16 @@ void xml_structure_mapper::traverse()
     {
         std::string path = m_walker.get_path();
 
-        if (!row_group && children.empty())
-            // Only add leaf elements to the range. Also skip the row-group elements.
-            m_current_range.paths.push_back(path);
-
         xml_structure_tree::entity_names_type attr_names = m_walker.get_attributes();
         for (const auto& attr_name : attr_names)
         {
             std::string attr_path = path + "/@" + m_walker.to_string(attr_name);
             m_current_range.paths.push_back(attr_path);
         }
+
+        if (children.empty())
+            // Only add leaf elements to the range.
+            m_current_range.paths.push_back(path);
     }
 
     for (const auto& child_name : children)

@@ -17,4 +17,5 @@
             <nd ref="4.4"/>
         </way>
     </parent>
+    <parent name="bah"/>
 </osm>
