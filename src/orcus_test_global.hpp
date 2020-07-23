@@ -25,6 +25,19 @@ class document;
 
 namespace test {
 
+class stack_printer
+{
+public:
+    explicit stack_printer(const char* msg);
+    ~stack_printer();
+
+private:
+    double get_time() const;
+
+    std::string m_msg;
+    double m_start_time;
+};
+
 class assert_error : public std::exception
 {
     std::string m_msg;
@@ -48,6 +61,9 @@ std::string get_content_as_csv(const spreadsheet::document& doc, spreadsheet::sh
  */
 void verify_content(
     const char* filename, size_t line_no, const pstring& expected, const std::string& actual);
+
+void verify_content(
+    const char* filename, size_t line_no, const spreadsheet::document& doc, const pstring& expected);
 
 void verify_value_to_decimals(
     const char* filename, size_t line_no, double expected, double actual, int decimals);

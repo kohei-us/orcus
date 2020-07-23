@@ -15,6 +15,8 @@
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
+#include "orcus_test_global.hpp"
+
 #include <cstdlib>
 #include <cassert>
 #include <string>
@@ -29,10 +31,14 @@ using namespace std;
 using namespace orcus;
 namespace fs = boost::filesystem;
 
+const fs::path test_base_dir(SRCDIR"/test/xml-mapped");
+
 namespace {
 
 void test_mapped_xml_import()
 {
+    test::stack_printer __stack_printer__("::test_mapped_xml_import");
+
     struct test_case
     {
         const char* base_dir;
@@ -154,11 +160,41 @@ void test_mapped_xml_import()
 
 void test_mapped_xml_import_no_map_definition()
 {
+    test::stack_printer __stack_printer__("::test_mapped_xml_import_no_map_definition");
 
+    const std::vector<fs::path> tests = {
+        test_base_dir / "attribute-basic",
+    };
+
+    for (const fs::path& base_dir : tests)
+    {
+        fs::path input_file = base_dir / "input.xml";
+        fs::path check_file = base_dir / "check-nomap.txt";
+
+        cout << "reading " << input_file.string() << endl;
+
+        file_content content(input_file.string().data());
+
+        spreadsheet::range_size_t ss{1048576, 16384};
+        spreadsheet::document doc{ss};
+        spreadsheet::import_factory import_fact(doc);
+
+        xmlns_repository repo;
+        xmlns_context cxt = repo.create_context();
+
+        orcus_xml app(repo, &import_fact, nullptr);
+        app.detect_map_definition(content.data(), content.size());
+        app.read_stream(content.data(), content.size());
+
+        file_content expected(check_file.string().data());
+        test::verify_content(__FILE__, __LINE__, doc, expected.str());
+    }
 }
 
 void test_invalid_map_definition()
 {
+    test::stack_printer __stack_printer__("::test_invalid_map_definition");
+
     xmlns_repository repo;
 
     spreadsheet::range_size_t ss{1048576, 16384};

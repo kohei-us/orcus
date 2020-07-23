@@ -13,8 +13,29 @@
 
 #include <sstream>
 #include <cmath>
+#include <iostream>
+#include <chrono>
 
 namespace orcus { namespace test {
+
+stack_printer::stack_printer(const char* msg) :
+    m_msg(msg)
+{
+    std::cerr << m_msg << ": --begin" << std::endl;
+    m_start_time = get_time();
+}
+
+stack_printer::~stack_printer()
+{
+    double end_time = get_time();
+    std::cerr << m_msg << ": --end (duration: " << (end_time-m_start_time) << " sec)" << std::endl;
+}
+
+double stack_printer::get_time() const
+{
+    double v = std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1);
+    return v / 1000.0;
+}
 
 assert_error::assert_error(const char* filename, size_t line_no, const char* msg)
 {
@@ -71,6 +92,13 @@ void verify_content(
 
         throw assert_error(filename, line_no, os.str().data());
     }
+}
+
+void verify_content(
+    const char* filename, size_t line_no, const spreadsheet::document& doc, const pstring& expected)
+{
+    std::string actual = get_content_check(doc);
+    verify_content(filename, line_no, expected, actual);
 }
 
 void verify_value_to_decimals(

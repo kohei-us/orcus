@@ -365,7 +365,9 @@ orcus_test_csv_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLA
 # orcus-test-xml-mapped
 
 orcus_test_xml_mapped_SOURCES = \
-	orcus_test_xml_mapped.cpp
+	orcus_test_xml_mapped.cpp \
+	orcus_test_global.hpp \
+	orcus_test_global.cpp
 
 orcus_test_xml_mapped_LDFLAGS = \
 	$(BOOST_FILESYSTEM_LDFLAGS) \

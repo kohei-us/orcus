@@ -220,7 +220,6 @@ void orcus_xml::detect_map_definition(const char* p, size_t n)
     for (const xmlns_id_t& ns : cxt.get_all_namespaces())
         set_namespace_alias(cxt.get_short_name(ns), pstring(ns));
 
-    structure.dump_compact(std::cout);
     structure.process_ranges(rh);
 }
 
