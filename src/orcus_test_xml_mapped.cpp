@@ -31,43 +31,43 @@ namespace fs = boost::filesystem;
 
 namespace {
 
-struct test_case
-{
-    const char* base_dir;
-    bool output_equals_input;
-};
-
-const std::vector<test_case> tests =
-{
-    { SRCDIR"/test/xml-mapped/attribute-basic", true },
-    { SRCDIR"/test/xml-mapped/attribute-namespace", true },
-    { SRCDIR"/test/xml-mapped/attribute-range-self-close", true },
-    { SRCDIR"/test/xml-mapped/attribute-single-element", true },
-    { SRCDIR"/test/xml-mapped/attribute-single-element-2", true },
-    { SRCDIR"/test/xml-mapped/content-basic", true },
-    { SRCDIR"/test/xml-mapped/content-namespace", false },
-    { SRCDIR"/test/xml-mapped/content-namespace-2", true },
-    { SRCDIR"/test/xml-mapped/fuel-economy", true },
-    { SRCDIR"/test/xml-mapped/nested-repeats", false },
-    { SRCDIR"/test/xml-mapped/nested-repeats-2", false },
-    { SRCDIR"/test/xml-mapped/nested-repeats-3", false },
-    { SRCDIR"/test/xml-mapped/nested-repeats-4", false },
-};
-
-const char* temp_output_xml = "out.xml";
-
-void dump_xml_structure(string& dump_content, string& strm, const char* filepath, xmlns_context& cxt)
-{
-    file_content content(filepath);
-    dom::document_tree tree(cxt);
-    tree.load(content.data(), content.size());
-    ostringstream os;
-    tree.dump_compact(os);
-    dump_content = os.str();
-}
-
 void test_mapped_xml_import()
 {
+    struct test_case
+    {
+        const char* base_dir;
+        bool output_equals_input;
+    };
+
+    const std::vector<test_case> tests =
+    {
+        { SRCDIR"/test/xml-mapped/attribute-basic", true },
+        { SRCDIR"/test/xml-mapped/attribute-namespace", true },
+        { SRCDIR"/test/xml-mapped/attribute-range-self-close", true },
+        { SRCDIR"/test/xml-mapped/attribute-single-element", true },
+        { SRCDIR"/test/xml-mapped/attribute-single-element-2", true },
+        { SRCDIR"/test/xml-mapped/content-basic", true },
+        { SRCDIR"/test/xml-mapped/content-namespace", false },
+        { SRCDIR"/test/xml-mapped/content-namespace-2", true },
+        { SRCDIR"/test/xml-mapped/fuel-economy", true },
+        { SRCDIR"/test/xml-mapped/nested-repeats", false },
+        { SRCDIR"/test/xml-mapped/nested-repeats-2", false },
+        { SRCDIR"/test/xml-mapped/nested-repeats-3", false },
+        { SRCDIR"/test/xml-mapped/nested-repeats-4", false },
+    };
+
+    auto dump_xml_structure = [](string& dump_content, string& strm, const char* filepath, xmlns_context& cxt)
+    {
+        file_content content(filepath);
+        dom::document_tree tree(cxt);
+        tree.load(content.data(), content.size());
+        ostringstream os;
+        tree.dump_compact(os);
+        dump_content = os.str();
+    };
+
+    const char* temp_output_xml = "out.xml";
+
     string strm;
 
     for (const test_case& tc : tests)
@@ -152,6 +152,11 @@ void test_mapped_xml_import()
     }
 }
 
+void test_mapped_xml_import_no_map_definition()
+{
+
+}
+
 void test_invalid_map_definition()
 {
     xmlns_repository repo;
@@ -182,6 +187,7 @@ void test_invalid_map_definition()
 int main()
 {
     test_mapped_xml_import();
+    test_mapped_xml_import_no_map_definition();
     test_invalid_map_definition();
 
     return EXIT_SUCCESS;
