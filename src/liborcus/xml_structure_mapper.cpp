@@ -52,8 +52,8 @@ void xml_structure_mapper::traverse()
             m_current_range.paths.push_back(attr_path);
         }
 
-        if (children.empty())
-            // Only add leaf elements to the range.
+        if (children.empty() && elem.has_content)
+            // Only add leaf elements to the range, and only those with contents.
             m_current_range.paths.push_back(path);
     }
 

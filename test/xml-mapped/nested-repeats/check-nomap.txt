@@ -1,6 +1,5 @@
 range-0/0/0:string:"id"
 range-0/0/1:string:"ref"
-range-0/0/2:string:"nd"
 range-0/1/0:string:"A"
 range-0/1/1:numeric:123456789
 range-0/2/0:string:"A"

@@ -2,7 +2,6 @@ range-0/0/0:string:"id"
 range-0/0/1:string:"first-name"
 range-0/0/2:string:"last-name"
 range-0/0/3:string:"score"
-range-0/0/4:string:"entry"
 range-0/1/0:numeric:1
 range-0/1/1:string:"Bill"
 range-0/1/2:string:"Clinton"

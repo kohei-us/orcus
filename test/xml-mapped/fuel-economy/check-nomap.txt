@@ -1,4 +1,3 @@
-range-0/0/0:string:"atvType"
-range-0/0/1:string:"barrels08"
-range-0/1/1:numeric:15
-range-0/2/1:numeric:29
+range-0/0/0:string:"barrels08"
+range-0/1/0:numeric:15
+range-0/2/0:numeric:29
