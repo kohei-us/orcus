@@ -145,7 +145,37 @@ void dump_document_structure(const file_content& content, output_stream& os)
 
 void generate_map_file(const file_content& content, output_stream& os)
 {
-    throw std::runtime_error("WIP");
+    std::ostream& outs = os.get();
+
+    xmlns_repository repo;
+    xmlns_context cxt = repo.create_context();
+    xml_structure_tree tree(cxt);
+    tree.parse(content.data(), content.size());
+
+    for (const xmlns_id_t& ns : cxt.get_all_namespaces())
+        outs << cxt.get_short_name(ns) << ":" << ns << endl;
+
+    size_t range_count = 0;
+    std::string sheet_name_prefix = "range-";
+
+    xml_structure_tree::range_handler_type rh = [&range_count,&sheet_name_prefix,&outs](xml_table_range_t&& range)
+    {
+        std::ostringstream os_sheet_name;
+        os_sheet_name << sheet_name_prefix << range_count;
+        std::string sheet_name = os_sheet_name.str();
+
+        outs << "- " << sheet_name << endl;
+
+        for (const auto& path : range.paths)
+            outs << "path: " << path << endl;
+
+        for (const auto& row_group : range.row_groups)
+            outs << "row-group: " << row_group << endl;
+
+        ++range_count;
+    };
+
+    tree.process_ranges(rh);
 }
 
 } // anonymous namespace
