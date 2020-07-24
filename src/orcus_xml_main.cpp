@@ -39,6 +39,7 @@ enum class type {
     unknown,
     dump,
     map,
+    map_gen,
     transform_xml,
     structure,
 };
@@ -48,10 +49,11 @@ typedef mdds::sorted_string_map<type> map_type;
 // Keys must be sorted.
 const std::vector<map_type::entry> entries =
 {
-    { ORCUS_ASCII("dump"),       type::dump                },
-    { ORCUS_ASCII("map"),        type::map                 },
-    { ORCUS_ASCII("structure"),  type::structure           },
-    { ORCUS_ASCII("transform"),  type::transform_xml       },
+    { ORCUS_ASCII("dump"),      type::dump          },
+    { ORCUS_ASCII("map"),       type::map           },
+    { ORCUS_ASCII("map-gen"),   type::map_gen       },
+    { ORCUS_ASCII("structure"), type::structure     },
+    { ORCUS_ASCII("transform"), type::transform_xml },
 };
 
 const map_type& get()
@@ -129,6 +131,21 @@ bool parse_and_dump_structure(const file_content& content, const std::string& ou
     tree.dump_compact(file);
 
     return true;
+}
+
+void dump_document_structure(const file_content& content, output_stream& os)
+{
+    xmlns_repository repo;
+    xmlns_context cxt = repo.create_context();
+    dom::document_tree tree(cxt);
+    tree.load(content.data(), content.size());
+
+    tree.dump_compact(os.get());
+}
+
+void generate_map_file(const file_content& content, output_stream& os)
+{
+    throw std::runtime_error("WIP");
 }
 
 } // anonymous namespace
@@ -213,23 +230,27 @@ int main(int argc, char** argv)
 
     try
     {
-        if (mode == output_mode::type::structure)
+        switch (mode)
         {
-            bool success = parse_and_dump_structure(content, output);
-            return success ? EXIT_SUCCESS : EXIT_FAILURE;
-        }
-
-        if (mode == output_mode::type::dump)
-        {
-            xmlns_repository repo;
-            xmlns_context cxt = repo.create_context();
-            dom::document_tree tree(cxt);
-            tree.load(content.data(), content.size());
-
-            output_stream os(vm);
-            tree.dump_compact(os.get());
-
-            return EXIT_SUCCESS;
+            case output_mode::type::structure:
+            {
+                bool success = parse_and_dump_structure(content, output);
+                return success ? EXIT_SUCCESS : EXIT_FAILURE;
+            }
+            case output_mode::type::dump:
+            {
+                output_stream os(vm);
+                dump_document_structure(content, os);
+                return EXIT_SUCCESS;
+            }
+            case output_mode::type::map_gen:
+            {
+                output_stream os(vm);
+                generate_map_file(content, os);
+                return EXIT_SUCCESS;
+            }
+            default:
+                ;
         }
 
         spreadsheet::range_size_t ss{1048576, 16384};

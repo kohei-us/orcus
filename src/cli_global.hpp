@@ -13,6 +13,11 @@
 
 namespace orcus {
 
+/**
+ * This class abstracts away an instance of std::ostream.  It's either
+ * std::cout (if no output file path is specified) or std::ofstream if an
+ * output file path is specified via CLI.
+ */
 class output_stream
 {
     std::unique_ptr<std::ofstream> m_ofs;
