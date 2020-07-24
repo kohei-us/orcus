@@ -23,8 +23,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-using namespace std;
-
 namespace orcus {
 
 namespace {
@@ -172,7 +170,7 @@ public:
         // New element.
         size_t order = current.prop->child_elements.size();
         key.name = m_pool.intern(key.name).first;
-        pair<element_store_type::const_iterator,bool> r =
+        std::pair<element_store_type::const_iterator,bool> r =
             current.prop->child_elements.insert(
                 element_store_type::value_type(key, new elem_prop(order)));
 
@@ -259,7 +257,7 @@ struct scope
 
 typedef std::vector<std::unique_ptr<scope>> scopes_type;
 
-void print_scope(ostream& os, const scopes_type& scopes, const xmlns_context& cxt)
+void print_scope(std::ostream& os, const scopes_type& scopes, const xmlns_context& cxt)
 {
     if (scopes.empty())
         throw general_error("scope stack shouldn't be empty while dumping tree.");
@@ -298,7 +296,7 @@ struct xml_structure_tree::impl
 
     std::string to_string(const xml_structure_tree::entity_name& name) const
     {
-        ostringstream ss;
+        std::ostringstream ss;
         if (m_xmlns_cxt.get_index(name.ns) != index_not_found)
             ss << m_xmlns_cxt.get_short_name(name.ns) << ":";
         ss << name.name;
@@ -448,7 +446,7 @@ size_t xml_structure_tree::walker::get_xmlns_index(xmlns_id_t ns) const
     return mp_impl->m_parent_impl.m_xmlns_cxt.get_index(ns);
 }
 
-string xml_structure_tree::walker::get_xmlns_short_name(xmlns_id_t ns) const
+std::string xml_structure_tree::walker::get_xmlns_short_name(xmlns_id_t ns) const
 {
     return mp_impl->m_parent_impl.m_xmlns_cxt.get_short_name(ns);
 }
@@ -458,9 +456,9 @@ std::string xml_structure_tree::walker::to_string(const entity_name& name) const
     return mp_impl->m_parent_impl.to_string(name);
 }
 
-string xml_structure_tree::walker::get_path() const
+std::string xml_structure_tree::walker::get_path() const
 {
-    ostringstream ss;
+    std::ostringstream ss;
     for (auto& element : mp_impl->m_scopes)
     {
         ss << "/" << mp_impl->m_parent_impl.to_string(element.name);
@@ -537,7 +535,7 @@ void xml_structure_tree::parse(const char* p, size_t n)
     mp_impl->mp_root = hdl.release_root_element();
 }
 
-void xml_structure_tree::dump_compact(ostream& os) const
+void xml_structure_tree::dump_compact(std::ostream& os) const
 {
     if (!mp_impl->mp_root)
         return;
@@ -559,7 +557,7 @@ void xml_structure_tree::dump_compact(ostream& os) const
         for (; cur_scope.current_pos != cur_scope.elements.end(); ++cur_scope.current_pos)
         {
             const element_ref& this_elem = *cur_scope.current_pos;
-            ostringstream ss;
+            std::ostringstream ss;
             print_scope(ss, scopes, cxt);
 
             ss << "/";
@@ -570,12 +568,12 @@ void xml_structure_tree::dump_compact(ostream& os) const
             if (this_elem.prop->repeat)
                 ss << "[*]";
 
-            string elem_name = ss.str();
-            os << elem_name << endl;
+            std::string elem_name = ss.str();
+            os << elem_name << std::endl;
 
             // Print all attributes that belong to this element.
             for (const entity_name& attr : this_elem.prop->attribute_names)
-                os << elem_name << "/@" << mp_impl->to_string(attr) << endl;
+                os << elem_name << "/@" << mp_impl->to_string(attr) << std::endl;
 
             const element_store_type& child_elements = this_elem.prop->child_elements;
             if (child_elements.empty())
