@@ -56,11 +56,23 @@ struct elem_prop
      */
     bool repeat;
 
+    bool has_content;
+
     elem_prop(const elem_prop&) = delete;
     elem_prop& operator=(const elem_prop&) = delete;
 
-    elem_prop() : appearance_order(0), in_scope_count(1), repeat(false) {}
-    elem_prop(size_t _appearance_order) : appearance_order(_appearance_order), in_scope_count(1), repeat(false) {}
+    elem_prop() :
+        appearance_order(0),
+        in_scope_count(1),
+        repeat(false),
+        has_content(false) {}
+
+    elem_prop(size_t _appearance_order) :
+        appearance_order(_appearance_order),
+        in_scope_count(1),
+        repeat(false),
+        has_content(false) {}
+
     ~elem_prop()
     {
         for_each(child_elements.begin(), child_elements.end(), map_object_deleter<element_store_type>());
@@ -191,7 +203,14 @@ public:
         m_stack.pop_back();
     }
 
-    void characters(const pstring&, bool) {}
+    void characters(const pstring&, bool)
+    {
+        if (m_stack.empty())
+            return;
+
+        element_ref& current = m_stack.back();
+        current.prop->has_content = true;
+    }
 
     void attribute(const pstring&, const pstring&)
     {
@@ -331,10 +350,10 @@ size_t xml_structure_tree::entity_name::hash::operator() (const entity_name& val
 }
 
 xml_structure_tree::element::element() :
-    repeat(false) {}
+    repeat(false), has_content(false) {}
 
-xml_structure_tree::element::element(const entity_name& _name, bool _repeat) :
-    name(_name), repeat(_repeat) {}
+xml_structure_tree::element::element(const entity_name& _name, bool _repeat, bool _has_content) :
+    name(_name), repeat(_repeat), has_content(_has_content) {}
 
 xml_structure_tree::walker::walker(const xml_structure_tree::impl& parent_impl) :
     mp_impl(orcus::make_unique<walker_impl>(parent_impl))
@@ -365,7 +384,7 @@ xml_structure_tree::element xml_structure_tree::walker::root()
     element_ref ref(mp_impl->mp_root->name, &mp_impl->mp_root->prop);
     mp_impl->m_cur_elem = ref;
     mp_impl->m_scopes.push_back(ref);
-    return xml_structure_tree::element(ref.name, false);
+    return xml_structure_tree::element(ref.name, false, ref.prop->has_content);
 }
 
 xml_structure_tree::element xml_structure_tree::walker::descend(const entity_name& name)
@@ -384,7 +403,7 @@ xml_structure_tree::element xml_structure_tree::walker::descend(const entity_nam
     element_ref ref(name, it->second);
     mp_impl->m_scopes.push_back(ref);
 
-    return element(name, it->second->repeat);
+    return element(name, it->second->repeat, it->second->has_content);
 }
 
 xml_structure_tree::element xml_structure_tree::walker::ascend()
@@ -397,7 +416,7 @@ xml_structure_tree::element xml_structure_tree::walker::ascend()
 
     mp_impl->m_scopes.pop_back();
     const element_ref& ref = mp_impl->m_scopes.back();
-    return element(ref.name, ref.prop->repeat);
+    return element(ref.name, ref.prop->repeat, ref.prop->has_content);
 }
 
 xml_structure_tree::entity_names_type xml_structure_tree::walker::get_children()
@@ -450,7 +469,7 @@ string xml_structure_tree::walker::get_path() const
     return ss.str();
 }
 
-xml_structure_tree::element xml_structure_tree::walker::select_by_path(const std::string& path)
+xml_structure_tree::element xml_structure_tree::walker::move_to(const std::string& path)
 {
     pstring p(path);
     std::vector<pstring> parts = string_helper::split_string(p, '/');
@@ -496,11 +515,17 @@ xml_structure_tree::element xml_structure_tree::walker::select_by_path(const std
 
     std::swap(mp_impl->m_scopes, scopes);
     const element_ref& ref = mp_impl->m_scopes.back();
-    return element(ref.name, ref.prop->repeat);
+    return element(ref.name, ref.prop->repeat, ref.prop->has_content);
 }
 
 xml_structure_tree::xml_structure_tree(xmlns_context& xmlns_cxt) :
     mp_impl(orcus::make_unique<impl>(xmlns_cxt)) {}
+
+xml_structure_tree::xml_structure_tree(xml_structure_tree&& other) :
+    mp_impl(std::move(other.mp_impl))
+{
+    other.mp_impl = orcus::make_unique<impl>(mp_impl->m_xmlns_cxt);
+}
 
 xml_structure_tree::~xml_structure_tree() {}
 
@@ -598,6 +623,11 @@ void xml_structure_tree::process_ranges(range_handler_type rh) const
 {
     detail::xml_structure_mapper mapper(rh, get_walker());
     mapper.run();
+}
+
+void xml_structure_tree::swap(xml_structure_tree& other)
+{
+    mp_impl.swap(other.mp_impl);
 }
 
 }

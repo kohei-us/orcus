@@ -32,20 +32,48 @@ std::vector<fs::path> base_dirs = {
     test_base_dir / "namespace-default/"
 };
 
+struct loaded_tree
+{
+    xmlns_context cxt;
+    file_content strm;
+    xml_structure_tree tree;
+
+    loaded_tree(xmlns_repository& repo) :
+        cxt(repo.create_context()),
+        tree(cxt) {}
+
+    loaded_tree(loaded_tree&& other) :
+        cxt(std::move(other.cxt)),
+        strm(std::move(other.strm)),
+        tree(std::move(other.tree))
+    {
+    }
+};
+
+loaded_tree load_tree(xmlns_repository& repo, fs::path& filepath)
+{
+    loaded_tree ret(repo);
+    ret.strm.load(filepath.string().data());
+    assert(!ret.strm.empty());
+    xml_structure_tree tree(ret.cxt);
+    tree.parse(ret.strm.data(), ret.strm.size());
+    ret.tree.swap(tree);
+
+    return ret;
+}
+
 void test_basic()
 {
+    xmlns_repository xmlns_repo;
+
     for (const fs::path& base_dir : base_dirs)
     {
         fs::path filepath = base_dir / "input.xml";
         cout << filepath << endl;
-        file_content strm(filepath.string().data());
-        assert(!strm.empty());
-        xmlns_repository xmlns_repo;
-        xmlns_context cxt = xmlns_repo.create_context();
-        xml_structure_tree tree(cxt);
-        tree.parse(strm.data(), strm.size());
-        ostringstream os;
-        tree.dump_compact(os);
+        auto lt = load_tree(xmlns_repo, filepath);
+
+        std::ostringstream os;
+        lt.tree.dump_compact(os);
         string data_content = os.str();
         cout << "--" << endl;
         cout << data_content;
@@ -64,18 +92,15 @@ void test_basic()
 
 void test_walker()
 {
+    xmlns_repository xmlns_repo;
+
     {
         fs::path filepath = base_dirs[0] / "input.xml";
-        file_content strm(filepath.string().data());
-        assert(!strm.empty());
-        xmlns_repository xmlns_repo;
-        xmlns_context cxt = xmlns_repo.create_context();
-        xml_structure_tree tree(cxt);
-        tree.parse(strm.data(), strm.size());
+        auto lt = load_tree(xmlns_repo, filepath);
 
         // Get walker from the tree.
         xml_structure_tree::entity_names_type elem_names;
-        xml_structure_tree::walker wkr = tree.get_walker();
+        xml_structure_tree::walker wkr = lt.tree.get_walker();
 
         // Root element.
         xml_structure_tree::element elem = wkr.root();
@@ -132,17 +157,11 @@ void test_walker()
 
     {
         fs::path filepath = base_dirs[3] / "input.xml"; // attribute-1
-
-        file_content strm(filepath.string().data());
-        assert(!strm.empty());
-        xmlns_repository xmlns_repo;
-        xmlns_context cxt = xmlns_repo.create_context();
-        xml_structure_tree tree(cxt);
-        tree.parse(strm.data(), strm.size());
+        auto lt = load_tree(xmlns_repo, filepath);
 
         // Get walker from the tree.
         xml_structure_tree::entity_names_type elem_names;
-        xml_structure_tree::walker wkr = tree.get_walker();
+        xml_structure_tree::walker wkr = lt.tree.get_walker();
 
         // Root element.
         xml_structure_tree::element elem = wkr.root();
@@ -175,16 +194,12 @@ void test_walker()
 void test_walker_path()
 {
     fs::path filepath = base_dirs[0] / "input.xml";
-    file_content strm(filepath.string().data());
-    assert(!strm.empty());
     xmlns_repository xmlns_repo;
-    xmlns_context cxt = xmlns_repo.create_context();
-    xml_structure_tree tree(cxt);
-    tree.parse(strm.data(), strm.size());
+    auto lt = load_tree(xmlns_repo, filepath);
 
     // Get walker from the tree.
     xml_structure_tree::entity_names_type elem_names;
-    xml_structure_tree::walker wkr = tree.get_walker();
+    xml_structure_tree::walker wkr = lt.tree.get_walker();
     wkr.root();
     assert("/root" == wkr.get_path());
 
@@ -193,12 +208,12 @@ void test_walker_path()
     wkr.descend(elem_name);
     assert("/root/entry" == wkr.get_path());
 
-    xml_structure_tree::element element = wkr.select_by_path("/root/entry");
+    xml_structure_tree::element element = wkr.move_to("/root/entry");
     assert(element.name.name == "entry");
 
     try
     {
-        wkr.select_by_path("/root/not-there");
+        wkr.move_to("/root/not-there");
         assert(false);
     }
     catch (...)
@@ -207,7 +222,7 @@ void test_walker_path()
 
     try
     {
-        wkr.select_by_path("something_different");
+        wkr.move_to("something_different");
         assert(false);
     }
     catch (...)
@@ -216,11 +231,51 @@ void test_walker_path()
 
     try
     {
-        wkr.select_by_path("/non-exist");
+        wkr.move_to("/non-exist");
         assert(false);
     }
     catch (...)
     {
+    }
+}
+
+void test_element_contents()
+{
+    xmlns_repository xmlns_repo;
+
+    {
+        fs::path filepath = test_base_dir / "attribute-1" / "input.xml";
+        auto lt = load_tree(xmlns_repo, filepath);
+        auto wkr = lt.tree.get_walker();
+        auto elem = wkr.move_to("/root/entry");
+        assert(wkr.to_string(elem.name) == "entry");
+        assert(elem.repeat);
+        assert(!elem.has_content);
+    }
+
+    {
+        fs::path filepath = test_base_dir / "basic-1" / "input.xml";
+        auto lt = load_tree(xmlns_repo, filepath);
+        auto wkr = lt.tree.get_walker();
+        auto elem = wkr.move_to("/root/entry/name");
+        assert(wkr.to_string(elem.name) == "name");
+        assert(!elem.repeat);
+        assert(elem.has_content);
+
+        elem = wkr.move_to("/root/entry/id");
+        assert(wkr.to_string(elem.name) == "id");
+        assert(!elem.repeat);
+        assert(elem.has_content);
+    }
+
+    {
+        fs::path filepath = test_base_dir / "nested-repeat-1" / "input.xml";
+        auto lt = load_tree(xmlns_repo, filepath);
+        auto wkr = lt.tree.get_walker();
+        auto elem = wkr.move_to("/root/mode/insert/command");
+        assert(wkr.to_string(elem.name) == "command");
+        assert(!elem.repeat);
+        assert(!elem.has_content);
     }
 }
 
@@ -229,6 +284,7 @@ int main()
     test_basic();
     test_walker();
     test_walker_path();
+    test_element_contents();
 
     return EXIT_SUCCESS;
 }
