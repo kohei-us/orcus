@@ -61,6 +61,18 @@ struct xml_writer::impl
             os << alias << ':';
         os << name.name;
     }
+
+    xml_name_t intern(const xml_name_t& name)
+    {
+        xml_name_t interned = name;
+        interned.name = str_pool.intern(interned.name).first;
+        return interned;
+    }
+
+    pstring intern(const pstring& value)
+    {
+        return str_pool.intern(value).first;
+    }
 };
 
 xml_writer::xml_writer(std::ostream& os) : mp_impl(orcus::make_unique<impl>(os))
@@ -70,9 +82,10 @@ xml_writer::xml_writer(std::ostream& os) : mp_impl(orcus::make_unique<impl>(os))
 
 xml_writer::~xml_writer() {}
 
-void xml_writer::push_element(const xml_name_t& name)
+void xml_writer::push_element(const xml_name_t& _name)
 {
     auto& os = mp_impl->os;
+    xml_name_t name = mp_impl->intern(_name);
 
     if (!mp_impl->elem_stack.empty())
     {
@@ -112,14 +125,14 @@ void xml_writer::push_element(const xml_name_t& name)
 
 void xml_writer::add_namespace(const pstring& alias, xmlns_id_t ns)
 {
-    pstring alias_safe = mp_impl->str_pool.intern(alias).first;
+    pstring alias_safe = mp_impl->intern(alias);
     mp_impl->cxt.push(alias_safe, ns);
     mp_impl->ns_decls.push_back(alias_safe);
 }
 
 void xml_writer::add_attribute(const xml_name_t& name, const pstring& value)
 {
-    mp_impl->attrs.emplace_back(name, value);
+    mp_impl->attrs.emplace_back(mp_impl->intern(name), mp_impl->intern(value));
 }
 
 void xml_writer::add_content(const pstring& content)
