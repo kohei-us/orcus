@@ -32,6 +32,8 @@ public:
         scope(const scope&) = delete;
         scope(scope&& other);
         ~scope();
+
+        scope& operator= (scope&& other);
     };
 
     xml_writer(std::ostream& os);

@@ -70,6 +70,13 @@ xml_writer::scope::scope(scope&& other) :
 
 xml_writer::scope::~scope() {}
 
+xml_writer::scope& xml_writer::scope::operator= (scope&& other)
+{
+    scope tmp(std::move(other));
+    mp_impl.swap(tmp.mp_impl);
+    return *this;
+}
+
 struct xml_writer::impl
 {
     std::ostream& os;
