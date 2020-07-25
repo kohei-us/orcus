@@ -80,7 +80,12 @@ xml_writer::xml_writer(std::ostream& os) : mp_impl(orcus::make_unique<impl>(os))
     os << "<?xml version=\"1.0\"?>";
 }
 
-xml_writer::~xml_writer() {}
+xml_writer::~xml_writer()
+{
+    // Pop all the elements currently on the stack.
+    while (!mp_impl->elem_stack.empty())
+        pop_element();
+}
 
 void xml_writer::push_element(const xml_name_t& _name)
 {

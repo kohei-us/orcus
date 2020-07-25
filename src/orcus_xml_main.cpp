@@ -201,8 +201,6 @@ void generate_map_file(const file_content& content, output_stream& os)
     };
 
     tree.process_ranges(rh);
-
-    writer.pop_element();
 }
 
 } // anonymous namespace
