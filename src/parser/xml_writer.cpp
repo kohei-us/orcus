@@ -126,6 +126,18 @@ xml_writer::~xml_writer()
         pop_element();
 }
 
+void xml_writer::close_current_element()
+{
+    if (!mp_impl->elem_stack.empty())
+    {
+        if (mp_impl->elem_stack.back().open)
+        {
+            mp_impl->os << '>';
+            mp_impl->elem_stack.back().open = false;
+        }
+    }
+}
+
 xml_writer::scope xml_writer::set_element_scope(const xml_name_t& name)
 {
     return scope(this, name);
@@ -133,17 +145,10 @@ xml_writer::scope xml_writer::set_element_scope(const xml_name_t& name)
 
 void xml_writer::push_element(const xml_name_t& _name)
 {
+    close_current_element();
+
     auto& os = mp_impl->os;
     xml_name_t name = mp_impl->intern(_name);
-
-    if (!mp_impl->elem_stack.empty())
-    {
-        if (mp_impl->elem_stack.back().open)
-        {
-            os << '>';
-            mp_impl->elem_stack.back().open = false;
-        }
-    }
 
     os << '<';
     mp_impl->print(name);
@@ -187,6 +192,10 @@ void xml_writer::add_attribute(const xml_name_t& name, const pstring& value)
 
 void xml_writer::add_content(const pstring& content)
 {
+    close_current_element();
+
+    auto& os = mp_impl->os;
+    os << content;
 }
 
 xml_name_t xml_writer::pop_element()

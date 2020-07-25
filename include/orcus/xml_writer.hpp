@@ -19,6 +19,8 @@ class ORCUS_PSR_DLLPUBLIC xml_writer
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
+    void close_current_element();
+
 public:
     class ORCUS_PSR_DLLPUBLIC scope
     {
