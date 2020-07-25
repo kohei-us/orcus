@@ -58,7 +58,8 @@ struct xml_writer::scope::impl
     }
 };
 
-xml_writer::scope::scope(xml_writer* parent, const xml_name_t& elem) : mp_impl(orcus::make_unique<impl>(parent, elem))
+xml_writer::scope::scope(xml_writer* parent, const xml_name_t& elem) :
+    mp_impl(orcus::make_unique<impl>(parent, elem))
 {
 }
 
