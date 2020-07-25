@@ -155,14 +155,13 @@ void generate_map_file(const file_content& content, output_stream& os)
 
     xml_writer writer(outs);
     xmlns_id_t default_ns = writer.add_namespace("", "https://gitlab.com/orcus/orcus");
-    writer.push_element(xml_name_t(default_ns, "map"));
+    auto map_scope = writer.set_element_scope(xml_name_t(default_ns, "map"));
 
     for (const xmlns_id_t& ns : cxt.get_all_namespaces())
     {
         writer.add_attribute(xml_name_t(default_ns, "alias"), cxt.get_short_name(ns));
         writer.add_attribute(xml_name_t(default_ns, "uri"), ns);
-        writer.push_element(xml_name_t(default_ns, "ns"));
-        writer.pop_element();
+        writer.set_element_scope(xml_name_t(default_ns, "ns"));
     }
 
     size_t range_count = 0;
@@ -175,27 +174,22 @@ void generate_map_file(const file_content& content, output_stream& os)
         std::string sheet_name = os_sheet_name.str();
 
         writer.add_attribute(xml_name_t(default_ns, "name"), sheet_name);
-        writer.push_element(xml_name_t(default_ns, "sheet"));
-        writer.pop_element();
+        writer.set_element_scope(xml_name_t(default_ns, "sheet"));
 
         writer.add_attribute(xml_name_t(default_ns, "sheet"), sheet_name);
-        writer.push_element(xml_name_t(default_ns, "range"));
+        auto range_scope = writer.set_element_scope(xml_name_t(default_ns, "range"));
 
         for (const auto& path : range.paths)
         {
             writer.add_attribute(xml_name_t(default_ns, "path"), path);
-            writer.push_element(xml_name_t(default_ns, "field"));
-            writer.pop_element();
+            writer.set_element_scope(xml_name_t(default_ns, "field"));
         }
 
         for (const auto& row_group : range.row_groups)
         {
             writer.add_attribute(xml_name_t(default_ns, "path"), row_group);
-            writer.push_element(xml_name_t(default_ns, "row-group"));
-            writer.pop_element();
+            writer.set_element_scope(xml_name_t(default_ns, "row-group"));
         }
-
-        writer.pop_element();
 
         ++range_count;
     };

@@ -20,8 +20,24 @@ class ORCUS_PSR_DLLPUBLIC xml_writer
     std::unique_ptr<impl> mp_impl;
 
 public:
+    class ORCUS_PSR_DLLPUBLIC scope
+    {
+        friend class xml_writer;
+
+        struct impl;
+        std::unique_ptr<impl> mp_impl;
+
+        scope(xml_writer* parent, const xml_name_t& name);
+    public:
+        scope(const scope&) = delete;
+        scope(scope&& other);
+        ~scope();
+    };
+
     xml_writer(std::ostream& os);
     ~xml_writer();
+
+    scope set_element_scope(const xml_name_t& name);
 
     void push_element(const xml_name_t& name);
 

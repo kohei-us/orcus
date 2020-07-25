@@ -38,6 +38,38 @@ struct _attr
 
 } // anonymous namespace
 
+struct xml_writer::scope::impl
+{
+    xml_writer* parent;
+    xml_name_t elem;
+
+    impl() : parent(nullptr) {}
+
+    impl(xml_writer* _parent, const xml_name_t& _elem) :
+        parent(_parent),
+        elem(_elem)
+    {
+        parent->push_element(elem);
+    }
+
+    ~impl()
+    {
+        parent->pop_element();
+    }
+};
+
+xml_writer::scope::scope(xml_writer* parent, const xml_name_t& elem) : mp_impl(orcus::make_unique<impl>(parent, elem))
+{
+}
+
+xml_writer::scope::scope(scope&& other) :
+    mp_impl(std::move(other.mp_impl))
+{
+    other.mp_impl = orcus::make_unique<impl>();
+}
+
+xml_writer::scope::~scope() {}
+
 struct xml_writer::impl
 {
     std::ostream& os;
@@ -85,6 +117,11 @@ xml_writer::~xml_writer()
     // Pop all the elements currently on the stack.
     while (!mp_impl->elem_stack.empty())
         pop_element();
+}
+
+xml_writer::scope xml_writer::set_element_scope(const xml_name_t& name)
+{
+    return scope(this, name);
 }
 
 void xml_writer::push_element(const xml_name_t& _name)
