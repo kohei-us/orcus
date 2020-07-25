@@ -65,7 +65,9 @@ xml_writer::scope::scope(xml_writer* parent, const xml_name_t& elem) : mp_impl(o
 xml_writer::scope::scope(scope&& other) :
     mp_impl(std::move(other.mp_impl))
 {
-    other.mp_impl = orcus::make_unique<impl>();
+    // NB: we shouldn't have to create an impl instance for the other object
+    // since everything happens in the impl, and the envelop class doesn't
+    // access the impl internals.
 }
 
 xml_writer::scope::~scope() {}
