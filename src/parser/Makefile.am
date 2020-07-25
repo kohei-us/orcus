@@ -29,6 +29,7 @@ liborcus_parser_@ORCUS_API_VERSION@_la_SOURCES = \
 	tokens.cpp \
 	types.cpp \
 	xml_namespace.cpp \
+	xml_writer.cpp \
 	yaml_parser_base.cpp \
 	zip_archive.cpp \
 	zip_archive_stream.cpp

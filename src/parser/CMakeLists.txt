@@ -20,6 +20,7 @@ add_library(orcus-parser-${ORCUS_API_VERSION} SHARED
 	tokens.cpp
 	types.cpp
 	xml_namespace.cpp
+    xml_writer.cpp
 	yaml_parser_base.cpp
 	zip_archive.cpp
 	zip_archive_stream.cpp

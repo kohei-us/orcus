@@ -14,6 +14,7 @@
 #include "orcus/stream.hpp"
 #include "orcus/global.hpp"
 #include "orcus/sax_parser_base.hpp"
+#include "orcus/xml_writer.hpp"
 
 #include "orcus_filter_global.hpp"
 #include "cli_global.hpp"
@@ -152,30 +153,57 @@ void generate_map_file(const file_content& content, output_stream& os)
     xml_structure_tree tree(cxt);
     tree.parse(content.data(), content.size());
 
+    xml_writer writer(outs);
+    xmlns_id_t default_ns = "https://gitlab.com/orcus/orcus";
+    writer.add_namespace("", default_ns);
+    writer.push_element(xml_name_t(default_ns, "map"));
+
     for (const xmlns_id_t& ns : cxt.get_all_namespaces())
-        outs << cxt.get_short_name(ns) << ":" << ns << endl;
+    {
+        writer.add_attribute(xml_name_t(default_ns, "alias"), cxt.get_short_name(ns));
+        writer.add_attribute(xml_name_t(default_ns, "uri"), ns);
+        writer.push_element(xml_name_t(default_ns, "ns"));
+        writer.pop_element();
+    }
 
     size_t range_count = 0;
     std::string sheet_name_prefix = "range-";
 
-    xml_structure_tree::range_handler_type rh = [&range_count,&sheet_name_prefix,&outs](xml_table_range_t&& range)
+    xml_structure_tree::range_handler_type rh = [&](xml_table_range_t&& range)
     {
         std::ostringstream os_sheet_name;
         os_sheet_name << sheet_name_prefix << range_count;
         std::string sheet_name = os_sheet_name.str();
 
-        outs << "- " << sheet_name << endl;
+        writer.add_attribute(xml_name_t(default_ns, "name"), sheet_name);
+        writer.push_element(xml_name_t(default_ns, "sheet"));
+        writer.pop_element();
+
+        writer.add_attribute(xml_name_t(default_ns, "sheet"), sheet_name);
+        writer.push_element(xml_name_t(default_ns, "range"));
 
         for (const auto& path : range.paths)
-            outs << "path: " << path << endl;
+        {
+            writer.add_attribute(xml_name_t(default_ns, "path"), path);
+            writer.push_element(xml_name_t(default_ns, "field"));
+            writer.pop_element();
+        }
 
         for (const auto& row_group : range.row_groups)
-            outs << "row-group: " << row_group << endl;
+        {
+            writer.add_attribute(xml_name_t(default_ns, "path"), row_group);
+            writer.push_element(xml_name_t(default_ns, "row-group"));
+            writer.pop_element();
+        }
+
+        writer.pop_element();
 
         ++range_count;
     };
 
     tree.process_ranges(rh);
+
+    writer.pop_element();
 }
 
 } // anonymous namespace
