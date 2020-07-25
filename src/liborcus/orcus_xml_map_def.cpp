@@ -12,6 +12,7 @@
 #include "orcus/stream.hpp"
 #include "orcus/xml_structure_tree.hpp"
 #include "orcus/xml_namespace.hpp"
+#include "orcus/xml_writer.hpp"
 
 #include <vector>
 #include <iostream>
@@ -221,6 +222,57 @@ void orcus_xml::detect_map_definition(const char* p, size_t n)
         set_namespace_alias(cxt.get_short_name(ns), pstring(ns));
 
     structure.process_ranges(rh);
+}
+
+void orcus_xml::write_map_file(const char* p, size_t n, std::ostream& out) const
+{
+    xmlns_repository repo;
+    xmlns_context cxt = repo.create_context();
+    xml_structure_tree tree(cxt);
+    tree.parse(p, n);
+
+    xml_writer writer(out);
+    xmlns_id_t default_ns = writer.add_namespace("", "https://gitlab.com/orcus/orcus");
+    auto map_scope = writer.set_element_scope(xml_name_t(default_ns, "map"));
+
+    for (const xmlns_id_t& ns : cxt.get_all_namespaces())
+    {
+        writer.add_attribute(xml_name_t(default_ns, "alias"), cxt.get_short_name(ns));
+        writer.add_attribute(xml_name_t(default_ns, "uri"), ns);
+        writer.set_element_scope(xml_name_t(default_ns, "ns"));
+    }
+
+    size_t range_count = 0;
+    std::string sheet_name_prefix = "range-";
+
+    xml_structure_tree::range_handler_type rh = [&](xml_table_range_t&& range)
+    {
+        std::ostringstream os_sheet_name;
+        os_sheet_name << sheet_name_prefix << range_count;
+        std::string sheet_name = os_sheet_name.str();
+
+        writer.add_attribute(xml_name_t(default_ns, "name"), sheet_name);
+        writer.set_element_scope(xml_name_t(default_ns, "sheet"));
+
+        writer.add_attribute(xml_name_t(default_ns, "sheet"), sheet_name);
+        auto range_scope = writer.set_element_scope(xml_name_t(default_ns, "range"));
+
+        for (const auto& path : range.paths)
+        {
+            writer.add_attribute(xml_name_t(default_ns, "path"), path);
+            writer.set_element_scope(xml_name_t(default_ns, "field"));
+        }
+
+        for (const auto& row_group : range.row_groups)
+        {
+            writer.add_attribute(xml_name_t(default_ns, "path"), row_group);
+            writer.set_element_scope(xml_name_t(default_ns, "row-group"));
+        }
+
+        ++range_count;
+    };
+
+    tree.process_ranges(rh);
 }
 
 }

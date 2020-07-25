@@ -14,7 +14,6 @@
 #include "orcus/stream.hpp"
 #include "orcus/global.hpp"
 #include "orcus/sax_parser_base.hpp"
-#include "orcus/xml_writer.hpp"
 
 #include "orcus_filter_global.hpp"
 #include "cli_global.hpp"
@@ -144,59 +143,6 @@ void dump_document_structure(const file_content& content, output_stream& os)
     tree.dump_compact(os.get());
 }
 
-void generate_map_file(const file_content& content, output_stream& os)
-{
-    std::ostream& outs = os.get();
-
-    xmlns_repository repo;
-    xmlns_context cxt = repo.create_context();
-    xml_structure_tree tree(cxt);
-    tree.parse(content.data(), content.size());
-
-    xml_writer writer(outs);
-    xmlns_id_t default_ns = writer.add_namespace("", "https://gitlab.com/orcus/orcus");
-    auto map_scope = writer.set_element_scope(xml_name_t(default_ns, "map"));
-
-    for (const xmlns_id_t& ns : cxt.get_all_namespaces())
-    {
-        writer.add_attribute(xml_name_t(default_ns, "alias"), cxt.get_short_name(ns));
-        writer.add_attribute(xml_name_t(default_ns, "uri"), ns);
-        writer.set_element_scope(xml_name_t(default_ns, "ns"));
-    }
-
-    size_t range_count = 0;
-    std::string sheet_name_prefix = "range-";
-
-    xml_structure_tree::range_handler_type rh = [&](xml_table_range_t&& range)
-    {
-        std::ostringstream os_sheet_name;
-        os_sheet_name << sheet_name_prefix << range_count;
-        std::string sheet_name = os_sheet_name.str();
-
-        writer.add_attribute(xml_name_t(default_ns, "name"), sheet_name);
-        writer.set_element_scope(xml_name_t(default_ns, "sheet"));
-
-        writer.add_attribute(xml_name_t(default_ns, "sheet"), sheet_name);
-        auto range_scope = writer.set_element_scope(xml_name_t(default_ns, "range"));
-
-        for (const auto& path : range.paths)
-        {
-            writer.add_attribute(xml_name_t(default_ns, "path"), path);
-            writer.set_element_scope(xml_name_t(default_ns, "field"));
-        }
-
-        for (const auto& row_group : range.row_groups)
-        {
-            writer.add_attribute(xml_name_t(default_ns, "path"), row_group);
-            writer.set_element_scope(xml_name_t(default_ns, "row-group"));
-        }
-
-        ++range_count;
-    };
-
-    tree.process_ranges(rh);
-}
-
 } // anonymous namespace
 
 int main(int argc, char** argv)
@@ -295,7 +241,9 @@ int main(int argc, char** argv)
             case output_mode::type::map_gen:
             {
                 output_stream os(vm);
-                generate_map_file(content, os);
+                xmlns_repository repo;
+                orcus_xml app(repo, nullptr, nullptr);
+                app.write_map_file(content.data(), content.size(), os.get());
                 return EXIT_SUCCESS;
             }
             default:
