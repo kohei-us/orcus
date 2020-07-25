@@ -20,8 +20,9 @@ struct _elem
 {
     xml_name_t name;
     std::vector<pstring> ns_aliases;
+    bool open;
 
-    _elem(const xml_name_t& _name) : name(_name) {}
+    _elem(const xml_name_t& _name) : name(_name), open(true) {}
 };
 
 struct _attr
@@ -64,6 +65,16 @@ xml_writer::~xml_writer() {}
 void xml_writer::push_element(const xml_name_t& name)
 {
     auto& os = mp_impl->os;
+
+    if (!mp_impl->elem_stack.empty())
+    {
+        if (mp_impl->elem_stack.back().open)
+        {
+            os << '>';
+            mp_impl->elem_stack.back().open = false;
+        }
+    }
+
     {
         pstring alias = mp_impl->cxt.get_alias(name.ns);
         os << '<';
@@ -93,8 +104,6 @@ void xml_writer::push_element(const xml_name_t& name)
         os << attr.value << '"';
     }
 
-    os << '>';
-
     mp_impl->attrs.clear();
     mp_impl->ns_decls.clear();
 
@@ -121,7 +130,15 @@ xml_name_t xml_writer::pop_element()
 {
     auto& os = mp_impl->os;
 
-    auto name = mp_impl->elem_stack.back().name;
+    const _elem& elem = mp_impl->elem_stack.back();
+    auto name = elem.name;
+
+    if (elem.open)
+    {
+        // self-closing element.
+        os << "/>";
+    }
+    else
     {
         pstring alias = mp_impl->cxt.get_alias(name.ns);
         os << "</";
