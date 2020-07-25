@@ -154,8 +154,7 @@ void generate_map_file(const file_content& content, output_stream& os)
     tree.parse(content.data(), content.size());
 
     xml_writer writer(outs);
-    xmlns_id_t default_ns = "https://gitlab.com/orcus/orcus";
-    writer.add_namespace("", default_ns);
+    xmlns_id_t default_ns = writer.add_namespace("", "https://gitlab.com/orcus/orcus");
     writer.push_element(xml_name_t(default_ns, "map"));
 
     for (const xmlns_id_t& ns : cxt.get_all_namespaces())

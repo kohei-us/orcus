@@ -25,7 +25,7 @@ public:
 
     void push_element(const xml_name_t& name);
 
-    void add_namespace(const pstring& alias, xmlns_id_t ns);
+    xmlns_id_t add_namespace(const pstring& alias, const pstring& value);
 
     void add_attribute(const xml_name_t& name, const pstring& value);
 

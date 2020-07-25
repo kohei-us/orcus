@@ -123,11 +123,12 @@ void xml_writer::push_element(const xml_name_t& _name)
     mp_impl->elem_stack.emplace_back(name);
 }
 
-void xml_writer::add_namespace(const pstring& alias, xmlns_id_t ns)
+xmlns_id_t xml_writer::add_namespace(const pstring& alias, const pstring& value)
 {
     pstring alias_safe = mp_impl->intern(alias);
-    mp_impl->cxt.push(alias_safe, ns);
+    xmlns_id_t ns = mp_impl->cxt.push(alias_safe, mp_impl->intern(value));
     mp_impl->ns_decls.push_back(alias_safe);
+    return ns;
 }
 
 void xml_writer::add_attribute(const xml_name_t& name, const pstring& value)
