@@ -53,6 +53,14 @@ struct xml_writer::impl
         os(_os),
         cxt(repo.create_context())
     {}
+
+    void print(const xml_name_t& name)
+    {
+        pstring alias = cxt.get_alias(name.ns);
+        if (!alias.empty())
+            os << alias << ':';
+        os << name.name;
+    }
 };
 
 xml_writer::xml_writer(std::ostream& os) : mp_impl(orcus::make_unique<impl>(os))
@@ -75,13 +83,8 @@ void xml_writer::push_element(const xml_name_t& name)
         }
     }
 
-    {
-        pstring alias = mp_impl->cxt.get_alias(name.ns);
-        os << '<';
-        if (!alias.empty())
-            os << alias << ':';
-        os << name.name;
-    }
+    os << '<';
+    mp_impl->print(name);
 
     for (const pstring& alias : mp_impl->ns_decls)
     {
@@ -96,10 +99,7 @@ void xml_writer::push_element(const xml_name_t& name)
     for (const _attr& attr : mp_impl->attrs)
     {
         os << ' ';
-        pstring alias = mp_impl->cxt.get_alias(attr.name.ns);
-        if (!alias.empty())
-            os << alias << ':';
-        os << attr.name.name;
+        mp_impl->print(attr.name);
         os << "=\"";
         os << attr.value << '"';
     }
@@ -140,11 +140,8 @@ xml_name_t xml_writer::pop_element()
     }
     else
     {
-        pstring alias = mp_impl->cxt.get_alias(name.ns);
         os << "</";
-        if (!alias.empty())
-            os << alias << ':';
-        os << name.name;
+        mp_impl->print(name);
         os << '>';
     }
 
