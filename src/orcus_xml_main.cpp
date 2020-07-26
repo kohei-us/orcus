@@ -243,7 +243,7 @@ int main(int argc, char** argv)
                 output_stream os(vm);
                 xmlns_repository repo;
                 orcus_xml app(repo, nullptr, nullptr);
-                app.write_map_file(content.data(), content.size(), os.get());
+                app.write_map_definition(content.data(), content.size(), os.get());
                 return EXIT_SUCCESS;
             }
             default:

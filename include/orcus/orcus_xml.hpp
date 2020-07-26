@@ -63,7 +63,7 @@ public:
 
     void detect_map_definition(const char* p, size_t n);
 
-    void write_map_file(const char* p, size_t n, std::ostream& out) const;
+    void write_map_definition(const char* p, size_t n, std::ostream& out) const;
 
     void write(const char* p_in, size_t n_in, std::ostream& out) const;
 };

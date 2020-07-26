@@ -226,7 +226,7 @@ void orcus_xml::detect_map_definition(const char* p, size_t n)
     structure.process_ranges(rh);
 }
 
-void orcus_xml::write_map_file(const char* p, size_t n, std::ostream& out) const
+void orcus_xml::write_map_definition(const char* p, size_t n, std::ostream& out) const
 {
     xmlns_context cxt = mp_impl->ns_repo.create_context();
     xml_structure_tree tree(cxt);
