@@ -18,7 +18,6 @@ namespace orcus {
 
 class pstring;
 class xmlns_repository;
-struct orcus_xml_impl;
 
 namespace spreadsheet { namespace iface {
     class import_factory;
