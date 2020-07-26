@@ -9,13 +9,13 @@
 
 namespace orcus {
 
-orcus_xml::impl::impl(xmlns_repository& ns_repo) :
-    mp_import_factory(nullptr),
-    mp_export_factory(nullptr),
-    m_ns_repo(ns_repo),
-    m_ns_cxt_map(ns_repo.create_context()),
-    m_map_tree(m_ns_repo),
-    m_sheet_count(0) {}
+orcus_xml::impl::impl(xmlns_repository& _ns_repo) :
+    im_factory(nullptr),
+    ex_factory(nullptr),
+    ns_repo(_ns_repo),
+    ns_cxt_map(ns_repo.create_context()),
+    map_tree(ns_repo),
+    sheet_count(0) {}
 
 }
 

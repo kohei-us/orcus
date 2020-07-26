@@ -17,19 +17,19 @@ namespace orcus {
 
 struct orcus_xml::impl
 {
-    spreadsheet::iface::import_factory* mp_import_factory;
-    spreadsheet::iface::export_factory* mp_export_factory;
+    spreadsheet::iface::import_factory* im_factory;
+    spreadsheet::iface::export_factory* ex_factory;
 
     /** xml namespace repository for the whole session. */
-    xmlns_repository& m_ns_repo;
+    xmlns_repository& ns_repo;
 
     /** xml namespace context  */
-    xmlns_context m_ns_cxt_map;
+    xmlns_context ns_cxt_map;
 
     /** xml element tree that represents all mapped paths. */
-    xml_map_tree m_map_tree;
+    xml_map_tree map_tree;
 
-    spreadsheet::sheet_t m_sheet_count;
+    spreadsheet::sheet_t sheet_count;
 
     /**
      * Positions of all linked elements, single and range reference alike.
@@ -37,11 +37,11 @@ struct orcus_xml::impl
      * as such, no linked elements should be nested; there should never be a
      * linked element inside the substructure of another linked element.
      */
-    xml_map_tree::const_element_list_type m_link_positions;
+    xml_map_tree::const_element_list_type link_positions;
 
-    xml_map_tree::cell_position m_cur_range_ref;
+    xml_map_tree::cell_position cur_range_ref;
 
-    explicit impl(xmlns_repository& ns_repo);
+    explicit impl(xmlns_repository& _ns_repo);
 };
 
 }

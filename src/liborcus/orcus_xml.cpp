@@ -489,44 +489,44 @@ struct less_by_opening_elem_pos : std::binary_function<xml_map_tree::element*, x
 orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact, spreadsheet::iface::export_factory* ex_fact) :
     mp_impl(orcus::make_unique<impl>(ns_repo))
 {
-    mp_impl->mp_import_factory = im_fact;
-    mp_impl->mp_export_factory = ex_fact;
+    mp_impl->im_factory = im_fact;
+    mp_impl->ex_factory = ex_fact;
 }
 
 orcus_xml::~orcus_xml() {}
 
 void orcus_xml::set_namespace_alias(const pstring& alias, const pstring& uri)
 {
-    mp_impl->m_map_tree.set_namespace_alias(alias, uri);
+    mp_impl->map_tree.set_namespace_alias(alias, uri);
 }
 
 void orcus_xml::set_cell_link(const pstring& xpath, const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col)
 {
-    pstring sheet_safe = mp_impl->m_map_tree.intern_string(sheet);
-    mp_impl->m_map_tree.set_cell_link(xpath, xml_map_tree::cell_position(sheet_safe, row, col));
+    pstring sheet_safe = mp_impl->map_tree.intern_string(sheet);
+    mp_impl->map_tree.set_cell_link(xpath, xml_map_tree::cell_position(sheet_safe, row, col));
 }
 
 void orcus_xml::start_range(const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col)
 {
-    pstring sheet_safe = mp_impl->m_map_tree.intern_string(sheet);
-    mp_impl->m_cur_range_ref = xml_map_tree::cell_position(sheet_safe, row, col);
-    mp_impl->m_map_tree.start_range(mp_impl->m_cur_range_ref);
+    pstring sheet_safe = mp_impl->map_tree.intern_string(sheet);
+    mp_impl->cur_range_ref = xml_map_tree::cell_position(sheet_safe, row, col);
+    mp_impl->map_tree.start_range(mp_impl->cur_range_ref);
 }
 
 void orcus_xml::append_field_link(const pstring& xpath)
 {
-    mp_impl->m_map_tree.append_range_field_link(xpath);
+    mp_impl->map_tree.append_range_field_link(xpath);
 }
 
 void orcus_xml::set_range_row_group(const pstring& xpath)
 {
-    mp_impl->m_map_tree.set_range_row_group(xpath);
+    mp_impl->map_tree.set_range_row_group(xpath);
 }
 
 void orcus_xml::commit_range()
 {
-    mp_impl->m_cur_range_ref = xml_map_tree::cell_position();
-    mp_impl->m_map_tree.commit_range();
+    mp_impl->cur_range_ref = xml_map_tree::cell_position();
+    mp_impl->map_tree.commit_range();
 }
 
 void orcus_xml::append_sheet(const pstring& name)
@@ -534,7 +534,7 @@ void orcus_xml::append_sheet(const pstring& name)
     if (name.empty())
         return;
 
-    mp_impl->mp_import_factory->append_sheet(mp_impl->m_sheet_count++, name.get(), name.size());
+    mp_impl->im_factory->append_sheet(mp_impl->sheet_count++, name.get(), name.size());
 }
 
 void orcus_xml::read_stream(const char* p, size_t n)
@@ -549,7 +549,7 @@ void orcus_xml::read_impl(const pstring& strm)
         return;
 
     // Insert the range headers and reset the row size counters.
-    xml_map_tree::range_ref_map_type& range_refs = mp_impl->m_map_tree.get_range_references();
+    xml_map_tree::range_ref_map_type& range_refs = mp_impl->map_tree.get_range_references();
     for (const auto& ref_pair : range_refs)
     {
         const xml_map_tree::cell_position& ref = ref_pair.first;
@@ -557,7 +557,7 @@ void orcus_xml::read_impl(const pstring& strm)
         range_ref.row_position = 1; // Reset the row offset.
 
         spreadsheet::iface::import_sheet* sheet =
-            mp_impl->mp_import_factory->get_sheet(ref.sheet.get(), ref.sheet.size());
+            mp_impl->im_factory->get_sheet(ref.sheet.get(), ref.sheet.size());
 
         if (!sheet)
             continue;
@@ -570,7 +570,7 @@ void orcus_xml::read_impl(const pstring& strm)
             const xml_map_tree::linkable& e = **it;
             ostringstream os;
             if (e.ns)
-                os << mp_impl->m_ns_repo.get_short_name(e.ns) << ':';
+                os << mp_impl->ns_repo.get_short_name(e.ns) << ':';
             os << e.name;
             string s = os.str();
             if (!s.empty())
@@ -579,9 +579,9 @@ void orcus_xml::read_impl(const pstring& strm)
     }
 
     // Parse the content xml.
-    xmlns_context ns_cxt = mp_impl->m_ns_repo.create_context(); // new ns context for the content xml stream.
+    xmlns_context ns_cxt = mp_impl->ns_repo.create_context(); // new ns context for the content xml stream.
     xml_data_sax_handler handler(
-       *mp_impl->mp_import_factory, mp_impl->m_link_positions, mp_impl->m_map_tree);
+       *mp_impl->im_factory, mp_impl->link_positions, mp_impl->map_tree);
 
     sax_ns_parser<xml_data_sax_handler> parser(strm.data(), strm.size(), ns_cxt, handler);
     parser.parse();
@@ -602,7 +602,7 @@ void dump_links(const xml_map_tree::const_element_list_type& links)
 
 void orcus_xml::write(const char* p_in, size_t n_in, std::ostream& out) const
 {
-    if (!mp_impl->mp_export_factory)
+    if (!mp_impl->ex_factory)
         // We can't export data witout export factory.
         return;
 
@@ -610,7 +610,7 @@ void orcus_xml::write(const char* p_in, size_t n_in, std::ostream& out) const
         // Source input stream is empty.
         return;
 
-    xml_map_tree::const_element_list_type& links = mp_impl->m_link_positions;
+    xml_map_tree::const_element_list_type& links = mp_impl->link_positions;
     if (links.empty())
         // nothing to write.
         return;
@@ -618,7 +618,7 @@ void orcus_xml::write(const char* p_in, size_t n_in, std::ostream& out) const
     // Sort all link position by opening element positions.
     std::sort(links.begin(), links.end(), less_by_opening_elem_pos());
 
-    spreadsheet::iface::export_factory& fact = *mp_impl->mp_export_factory;
+    spreadsheet::iface::export_factory& fact = *mp_impl->ex_factory;
     xml_map_tree::const_element_list_type::const_iterator it = links.begin(), it_end = links.end();
 
 #if ORCUS_DEBUG_XML
