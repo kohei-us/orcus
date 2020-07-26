@@ -10,11 +10,10 @@
 #include "orcus/sax_ns_parser.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/spreadsheet/export_interface.hpp"
-#include "orcus/xml_namespace.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/string_pool.hpp"
 
-#include "xml_map_tree.hpp"
+#include "orcus_xml_impl.hpp"
 
 #define ORCUS_DEBUG_XML 0
 
@@ -485,42 +484,7 @@ struct less_by_opening_elem_pos : std::binary_function<xml_map_tree::element*, x
     }
 };
 
-}
-
-struct orcus_xml::impl
-{
-    spreadsheet::iface::import_factory* mp_import_factory;
-    spreadsheet::iface::export_factory* mp_export_factory;
-
-    /** xml namespace repository for the whole session. */
-    xmlns_repository& m_ns_repo;
-
-    /** xml namespace context  */
-    xmlns_context m_ns_cxt_map;
-
-    /** xml element tree that represents all mapped paths. */
-    xml_map_tree m_map_tree;
-
-    spreadsheet::sheet_t m_sheet_count;
-
-    /**
-     * Positions of all linked elements, single and range reference alike.
-     * Stored link elements must be sorted in order of stream positions, and
-     * as such, no linked elements should be nested; there should never be a
-     * linked element inside the substructure of another linked element.
-     */
-    xml_map_tree::const_element_list_type m_link_positions;
-
-    xml_map_tree::cell_position m_cur_range_ref;
-
-    explicit impl(xmlns_repository& ns_repo) :
-        mp_import_factory(nullptr),
-        mp_export_factory(nullptr),
-        m_ns_repo(ns_repo),
-        m_ns_cxt_map(ns_repo.create_context()),
-        m_map_tree(m_ns_repo),
-        m_sheet_count(0) {}
-};
+} // anonymous namespace
 
 orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact, spreadsheet::iface::export_factory* ex_fact) :
     mp_impl(orcus::make_unique<impl>(ns_repo))

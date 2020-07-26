@@ -367,6 +367,8 @@
                 <F N="../src/liborcus/orcus_xls_xml.cpp"/>
                 <F N="../src/liborcus/orcus_xlsx.cpp"/>
                 <F N="../src/liborcus/orcus_xml.cpp"/>
+                <F N="../src/liborcus/orcus_xml_impl.cpp"/>
+                <F N="../src/liborcus/orcus_xml_impl.hpp"/>
                 <F N="../src/liborcus/orcus_xml_map_def.cpp"/>
                 <F N="../src/liborcus/session_context.cpp"/>
                 <F N="../src/liborcus/session_context.hpp"/>

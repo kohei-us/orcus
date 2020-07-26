@@ -20,6 +20,7 @@ add_library(orcus-${ORCUS_API_VERSION} SHARED
     orcus_csv.cpp
     orcus_json.cpp
     orcus_xml.cpp
+    orcus_xml_impl.cpp
     orcus_xml_map_def.cpp
     measurement.cpp
     xml_context_base.cpp

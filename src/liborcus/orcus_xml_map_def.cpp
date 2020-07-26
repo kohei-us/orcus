@@ -14,6 +14,8 @@
 #include "orcus/xml_namespace.hpp"
 #include "orcus/xml_writer.hpp"
 
+#include "orcus_xml_impl.hpp"
+
 #include <vector>
 #include <iostream>
 
@@ -226,8 +228,7 @@ void orcus_xml::detect_map_definition(const char* p, size_t n)
 
 void orcus_xml::write_map_file(const char* p, size_t n, std::ostream& out) const
 {
-    xmlns_repository repo;
-    xmlns_context cxt = repo.create_context();
+    xmlns_context cxt = mp_impl->m_ns_repo.create_context();
     xml_structure_tree tree(cxt);
     tree.parse(p, n);
 
