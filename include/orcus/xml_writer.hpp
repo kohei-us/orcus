@@ -14,6 +14,8 @@
 
 namespace orcus {
 
+class xmlns_repository;
+
 class ORCUS_PSR_DLLPUBLIC xml_writer
 {
     struct impl;
@@ -38,7 +40,7 @@ public:
         scope& operator= (scope&& other);
     };
 
-    xml_writer(std::ostream& os);
+    xml_writer(xmlns_repository& ns_repo, std::ostream& os);
     ~xml_writer();
 
     scope set_element_scope(const xml_name_t& name);

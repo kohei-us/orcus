@@ -82,6 +82,7 @@ xml_writer::scope& xml_writer::scope::operator= (scope&& other)
 
 struct xml_writer::impl
 {
+    xmlns_repository& ns_repo;
     std::ostream& os;
     std::vector<_elem> elem_stack;
     std::vector<pstring> ns_decls;
@@ -91,9 +92,10 @@ struct xml_writer::impl
     xmlns_repository repo;
     xmlns_context cxt;
 
-    impl(std::ostream& _os) :
+    impl(xmlns_repository& _ns_repo, std::ostream& _os) :
+        ns_repo(_ns_repo),
         os(_os),
-        cxt(repo.create_context())
+        cxt(ns_repo.create_context())
     {}
 
     void print(const xml_name_t& name)
@@ -117,7 +119,8 @@ struct xml_writer::impl
     }
 };
 
-xml_writer::xml_writer(std::ostream& os) : mp_impl(orcus::make_unique<impl>(os))
+xml_writer::xml_writer(xmlns_repository& ns_repo, std::ostream& os) :
+    mp_impl(orcus::make_unique<impl>(ns_repo, os))
 {
     os << "<?xml version=\"1.0\"?>";
 }
