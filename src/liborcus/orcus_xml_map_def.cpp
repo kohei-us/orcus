@@ -256,6 +256,8 @@ void orcus_xml::write_map_definition(const char* p, size_t n, std::ostream& out)
         writer.set_element_scope(xml_name_t(default_ns, "sheet"));
 
         writer.add_attribute(xml_name_t(default_ns, "sheet"), sheet_name);
+        writer.add_attribute({default_ns, "row"}, "0");
+        writer.add_attribute({default_ns, "column"}, "0");
         auto range_scope = writer.set_element_scope(xml_name_t(default_ns, "range"));
 
         for (const auto& path : range.paths)
