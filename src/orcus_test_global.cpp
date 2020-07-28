@@ -130,6 +130,32 @@ void verify_value_to_decimals(
     throw assert_error(filename, line_no, os.str().data());
 }
 
+std::string prefix_multiline_string(const pstring& str, const pstring& prefix)
+{
+    std::ostringstream os;
+
+    const char* p = str.data();
+    const char* p_end = p + str.size();
+
+    const char* p0 = nullptr;
+    for (; p != p_end; ++p)
+    {
+        if (!p0)
+            p0 = p;
+
+        if (*p == '\n')
+        {
+            os << prefix << pstring(p0, std::distance(p0, p)) << '\n';
+            p0 = nullptr;
+        }
+    }
+
+    if (p0)
+        os << prefix << pstring(p0, std::distance(p0, p));
+
+    return os.str();
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -256,7 +256,8 @@ void test_invalid_map_definition()
             cout << endl
                 << "Exception received as expected, with the following message:" << endl
                 << endl
-                << e.what() << endl << endl;
+                << test::prefix_multiline_string(e.what(), "  ") << endl
+                << endl;
         }
         catch (const std::exception& e)
         {

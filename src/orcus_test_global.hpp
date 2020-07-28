@@ -68,6 +68,8 @@ void verify_content(
 void verify_value_to_decimals(
     const char* filename, size_t line_no, double expected, double actual, int decimals);
 
+std::string prefix_multiline_string(const pstring& str, const pstring& prefix);
+
 }}
 
 #endif
