@@ -184,20 +184,40 @@ void test_mapped_xml_import_no_map_definition()
         cout << "reading " << input_file.string() << endl;
 
         file_content content(input_file.string().data());
-
-        spreadsheet::range_size_t ss{1048576, 16384};
-        spreadsheet::document doc{ss};
-        spreadsheet::import_factory import_fact(doc);
+        file_content expected(check_file.string().data());
 
         xmlns_repository repo;
-        xmlns_context cxt = repo.create_context();
 
-        orcus_xml app(repo, &import_fact, nullptr);
-        app.detect_map_definition(content.data(), content.size());
-        app.read_stream(content.data(), content.size());
+        {
+            // Automatically detect map definition without a map file.
+            spreadsheet::range_size_t ss{1048576, 16384};
+            spreadsheet::document doc{ss};
+            spreadsheet::import_factory import_fact(doc);
 
-        file_content expected(check_file.string().data());
-        test::verify_content(__FILE__, __LINE__, doc, expected.str());
+            orcus_xml app(repo, &import_fact, nullptr);
+
+            app.detect_map_definition(content.data(), content.size());
+            app.read_stream(content.data(), content.size());
+
+            test::verify_content(__FILE__, __LINE__, doc, expected.str());
+        }
+
+        {
+            // Generate a map file and use it to import the XML document.
+            spreadsheet::range_size_t ss{1048576, 16384};
+            spreadsheet::document doc{ss};
+            spreadsheet::import_factory import_fact(doc);
+
+            orcus_xml app(repo, &import_fact, nullptr);
+
+            std::ostringstream os;
+            app.write_map_definition(content.data(), content.size(), os);
+            std::string map_def = os.str();
+            app.read_map_definition(map_def.data(), map_def.size());
+            app.read_stream(content.data(), content.size());
+
+            test::verify_content(__FILE__, __LINE__, doc, expected.str());
+        }
     }
 }
 
