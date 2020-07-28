@@ -225,6 +225,12 @@ void test_invalid_map_definition()
 {
     test::stack_printer __stack_printer__("::test_invalid_map_definition");
 
+    fs::path invalids_dir = test_base_dir / "invalids" / "map-defs";
+
+    const std::vector<fs::path> tests = {
+        invalids_dir / "not-xml.xml",
+    };
+
     xmlns_repository repo;
 
     spreadsheet::range_size_t ss{1048576, 16384};
@@ -232,19 +238,25 @@ void test_invalid_map_definition()
     spreadsheet::import_factory import_fact(doc);
     orcus_xml app(repo, &import_fact, nullptr);
 
-    try
+    for (const fs::path& test : tests)
     {
-        app.read_map_definition(ORCUS_ASCII("asdfdasf"));
-        assert(false); // We were expecting an exception, but didn't get one.
-    }
-    catch (const invalid_map_error&)
-    {
-        // Success!
-    }
-    catch (const std::exception& e)
-    {
-        cerr << e.what() << endl;
-        assert(!"Wrong exception thrown.");
+        file_content content(test.string().data());
+        doc.clear();
+
+        try
+        {
+            app.read_map_definition(content.data(), content.size());
+            assert(false); // We were expecting an exception, but didn't get one.
+        }
+        catch (const invalid_map_error&)
+        {
+            // Success!
+        }
+        catch (const std::exception& e)
+        {
+            cerr << e.what() << endl;
+            assert(!"Wrong exception thrown.");
+        }
     }
 }
 
