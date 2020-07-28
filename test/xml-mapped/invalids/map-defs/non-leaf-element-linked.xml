@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<map xmlns="http://gitorious.org/orcus/xml-map">
+    <sheet name="data"/>
+    <range row="3" column="0" sheet="data">
+        <field path="/data/entries/entry/name"/>
+        <field path="/data/entries/entry/name/first"/>
+        <row-group path="/data/entries/entry"/>
+    </range>
+</map>

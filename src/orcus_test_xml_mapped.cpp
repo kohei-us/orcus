@@ -229,6 +229,7 @@ void test_invalid_map_definition()
 
     const std::vector<fs::path> tests = {
         invalids_dir / "not-xml.xml",
+        invalids_dir / "non-leaf-element-linked.xml",
     };
 
     xmlns_repository repo;
@@ -240,17 +241,22 @@ void test_invalid_map_definition()
 
     for (const fs::path& test : tests)
     {
+        cout << test.string() << endl;
         file_content content(test.string().data());
         doc.clear();
 
         try
         {
             app.read_map_definition(content.data(), content.size());
-            assert(false); // We were expecting an exception, but didn't get one.
+            assert(!"We were expecting an exception, but didn't get one.");
         }
-        catch (const invalid_map_error&)
+        catch (const invalid_map_error& e)
         {
             // Success!
+            cout << endl
+                << "Exception received as expected, with the following message:" << endl
+                << endl
+                << e.what() << endl << endl;
         }
         catch (const std::exception& e)
         {

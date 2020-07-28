@@ -18,6 +18,7 @@
 #include <cassert>
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -133,6 +134,23 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_child(
 xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
     xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type)
 {
+    if (!child_elements)
+    {
+        assert(elem_type == element_linked);
+        std::ostringstream os;
+
+        os << "You can't add a child element under an already linked element (this='";
+        if (ns)
+            os << parent.m_xmlns_cxt.get_alias(ns) << ':';
+
+        os << name << "'; child='";
+        if (_ns)
+            os << parent.m_xmlns_cxt.get_alias(_ns) << ':';
+
+        os << _name << "')";
+        throw invalid_map_error(os.str());
+    }
+
     auto it = std::find_if(
         child_elements->begin(), child_elements->end(),
         [&_ns,&_name](const element* p) -> bool
