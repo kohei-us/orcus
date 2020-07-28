@@ -137,16 +137,12 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
     {
         assert(elem_type == element_linked);
         std::ostringstream os;
+        constexpr xml_name_t::to_string_type type = xml_name_t::use_alias;
 
-        os << "You can't add a child element under an already linked element (this='";
-        if (name.ns)
-            os << parent.m_xmlns_cxt.get_alias(name.ns) << ':';
+        os << "You can't add a child element under an already linked element (this='"
+            << name.to_string(parent.m_xmlns_cxt, type) << "'; child='"
+            << _name.to_string(parent.m_xmlns_cxt, type) << "')";
 
-        os << name.name << "'; child='";
-        if (_name.ns)
-            os << parent.m_xmlns_cxt.get_alias(_name.ns) << ':';
-
-        os << _name.name << "')";
         throw invalid_map_error(os.str());
     }
 

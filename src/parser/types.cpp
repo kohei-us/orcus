@@ -7,6 +7,7 @@
 
 #include "orcus/types.hpp"
 #include "orcus/global.hpp"
+#include "orcus/xml_namespace.hpp"
 
 #include <limits>
 #include <sstream>
@@ -43,6 +44,31 @@ bool xml_name_t::operator== (const xml_name_t& other) const
 bool xml_name_t::operator!= (const xml_name_t& other) const
 {
     return !operator==(other);
+}
+
+std::string xml_name_t::to_string(const xmlns_context& cxt, to_string_type type) const
+{
+    std::ostringstream os;
+
+    if (ns)
+    {
+        pstring ns_str;
+        switch (type)
+        {
+            case use_alias:
+                ns_str = cxt.get_alias(ns);
+                break;
+            case use_short_name:
+                ns_str = cxt.get_short_name(ns);
+                break;
+
+        }
+        if (!ns_str.empty())
+            os << ns_str << ':';
+    }
+    os << name;
+
+    return os.str();
 }
 
 xml_token_attr_t::xml_token_attr_t() :

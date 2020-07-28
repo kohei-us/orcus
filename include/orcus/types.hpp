@@ -17,6 +17,8 @@
 
 namespace orcus {
 
+class xmlns_context;
+
 /**
  * Generic constant to be used to indicate that a valid index value is
  * expected but not found.
@@ -43,6 +45,8 @@ ORCUS_PSR_DLLPUBLIC extern const xml_token_t XML_UNKNOWN_TOKEN;
 
 struct ORCUS_PSR_DLLPUBLIC xml_name_t
 {
+    enum to_string_type { use_alias, use_short_name };
+
     xmlns_id_t ns;
     pstring name;
 
@@ -54,6 +58,8 @@ struct ORCUS_PSR_DLLPUBLIC xml_name_t
 
     bool operator== (const xml_name_t& other) const;
     bool operator!= (const xml_name_t& other) const;
+
+    std::string to_string(const xmlns_context& cxt, to_string_type type) const;
 };
 
 struct ORCUS_PSR_DLLPUBLIC xml_token_attr_t
