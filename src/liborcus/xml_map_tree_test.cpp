@@ -165,32 +165,32 @@ void test_tree_walk()
     walker.reset();
 
     // Root element.
-    const xml_map_tree::element* elem = walker.push_element(XMLNS_UNKNOWN_ID, "data");
+    const xml_map_tree::element* elem = walker.push_element({XMLNS_UNKNOWN_ID, "data"});
     assert(elem);
-    assert(elem->name == "data");
+    assert(elem->name.name == "data");
     assert(elem->elem_type == xml_map_tree::element_unlinked);
 
-    elem = walker.push_element(XMLNS_UNKNOWN_ID, "header");
+    elem = walker.push_element({XMLNS_UNKNOWN_ID, "header"});
     assert(elem);
-    assert(elem->name == "header");
+    assert(elem->name.name == "header");
     assert(elem->elem_type == xml_map_tree::element_unlinked);
 
-    elem = walker.push_element(XMLNS_UNKNOWN_ID, "title");
+    elem = walker.push_element({XMLNS_UNKNOWN_ID, "title"});
     assert(elem);
-    assert(elem->name == "title");
+    assert(elem->name.name == "title");
     assert(elem->ref_type == xml_map_tree::reference_cell);
 
-    elem = walker.pop_element(XMLNS_UNKNOWN_ID, "title");
+    elem = walker.pop_element({XMLNS_UNKNOWN_ID, "title"});
     assert(elem);
-    assert(elem->name == "header");
+    assert(elem->name.name == "header");
     assert(elem->elem_type == xml_map_tree::element_unlinked);
 
-    elem = walker.pop_element(XMLNS_UNKNOWN_ID, "header");
+    elem = walker.pop_element({XMLNS_UNKNOWN_ID, "header"});
     assert(elem);
-    assert(elem->name == "data");
+    assert(elem->name.name == "data");
     assert(elem->elem_type == xml_map_tree::element_unlinked);
 
-    elem = walker.pop_element(XMLNS_UNKNOWN_ID, "data");
+    elem = walker.pop_element({XMLNS_UNKNOWN_ID, "data"});
     assert(!elem);
 }
 
@@ -225,28 +225,28 @@ void test_tree_walk_namespace()
     walker.reset();
 
     // Root element.  This is not linked.
-    const xml_map_tree::element* elem = walker.push_element(ns_a, "table");
-    assert(elem && elem->ns == ns_a && elem->name == "table" && elem->node_type == xml_map_tree::node_element);
+    const xml_map_tree::element* elem = walker.push_element({ns_a, "table"});
+    assert(elem && elem->name.ns == ns_a && elem->name.name == "table" && elem->node_type == xml_map_tree::node_element);
     assert(elem->elem_type == xml_map_tree::element_unlinked);
     assert(elem->ref_type == xml_map_tree::reference_unknown);
 
     // Intentionally push a foreign element.
     const xml_map_tree::element* elem_old = elem;
-    elem = walker.push_element(ns_skip, "foo");
+    elem = walker.push_element({ns_skip, "foo"});
     assert(!elem);
-    elem = walker.pop_element(ns_skip, "foo");
+    elem = walker.pop_element({ns_skip, "foo"});
     assert(elem == elem_old);
 
     // Push a foreign element and a valid element under it.  A valid element
     // placed under a foreign element should be invalid.
     elem_old = elem;
-    elem = walker.push_element(ns_skip, "foo");
+    elem = walker.push_element({ns_skip, "foo"});
     assert(!elem);
-    elem = walker.push_element(ns_a, "title");
+    elem = walker.push_element({ns_a, "title"});
     assert(!elem);
-    elem = walker.pop_element(ns_a, "title");
+    elem = walker.pop_element({ns_a, "title"});
     assert(!elem);
-    elem = walker.pop_element(ns_skip, "foo");
+    elem = walker.pop_element({ns_skip, "foo"});
     assert(elem == elem_old);
 }
 

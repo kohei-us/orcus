@@ -112,8 +112,7 @@ public:
 
     struct linkable
     {
-        xmlns_id_t ns;
-        pstring name;
+        xml_name_t name;
         linkable_node_type node_type;
         reference_type ref_type;
 
@@ -128,12 +127,12 @@ public:
         linkable(const linkable&) = delete;
         linkable& operator=(const linkable&) = delete;
 
-        linkable(xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, linkable_node_type _node_type, reference_type _ref_type);
+        linkable(xml_map_tree& parent, const xml_name_t& _name, linkable_node_type _node_type, reference_type _ref_type);
     };
 
     struct attribute : public linkable
     {
-        using args_type = std::tuple<xml_map_tree&, xmlns_id_t, const pstring&, reference_type>;
+        using args_type = std::tuple<xml_map_tree&, const xml_name_t&, reference_type>;
 
         attribute(args_type args);
         ~attribute();
@@ -168,18 +167,18 @@ public:
 
         std::vector<spreadsheet::col_t> linked_range_fields;
 
-        using args_type = std::tuple<xml_map_tree&, xmlns_id_t, const pstring&, element_type, reference_type>;
+        using args_type = std::tuple<xml_map_tree&, const xml_name_t&, element_type, reference_type>;
 
         element(args_type args);
         ~element();
 
-        element* get_child(xmlns_id_t _ns, const pstring& _name);
+        element* get_child(const xml_name_t& _name);
 
         element* get_or_create_child(
-            xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name);
+            xml_map_tree& parent, const xml_name_t& _name);
 
         element* get_or_create_linked_child(
-            xml_map_tree& parent, xmlns_id_t _ns, const pstring& _name, reference_type _ref_type);
+            xml_map_tree& parent, const xml_name_t& _name, reference_type _ref_type);
 
         void link_reference(xml_map_tree& parent, reference_type _ref_type);
 
@@ -212,8 +211,8 @@ public:
         walker(const walker& r);
 
         void reset();
-        element* push_element(xmlns_id_t ns, const pstring& name);
-        element* pop_element(xmlns_id_t ns, const pstring& name);
+        element* push_element(const xml_name_t& name);
+        element* pop_element(const xml_name_t& name);
     };
 
     xml_map_tree() = delete;

@@ -63,11 +63,11 @@ class xml_data_sax_handler
 
 private:
 
-    const sax_ns_parser_attribute* find_attr_by_name(xmlns_id_t ns, const pstring& name)
+    const sax_ns_parser_attribute* find_attr_by_name(const xml_name_t& name)
     {
         for (const sax_ns_parser_attribute& attr : m_attrs)
         {
-            if (attr.ns == ns && attr.name == name)
+            if (attr.ns == name.ns && attr.name == name.name)
                 return &attr;
         }
         return nullptr;
@@ -128,7 +128,7 @@ public:
         cur.element_open_end = elem.end_pos;
         m_current_chars.clear();
 
-        mp_current_elem = m_map_tree_walker.push_element(elem.ns, elem.name);
+        mp_current_elem = m_map_tree_walker.push_element({elem.ns, elem.name});
         if (mp_current_elem)
         {
             if (mp_current_elem->row_group && mp_increment_row == mp_current_elem->row_group)
@@ -144,7 +144,7 @@ public:
             for (const auto& p_attr : mp_current_elem->attributes)
             {
                 const xml_map_tree::attribute& linked_attr = *p_attr;
-                const sax_ns_parser_attribute* p = find_attr_by_name(linked_attr.ns, linked_attr.name);
+                const sax_ns_parser_attribute* p = find_attr_by_name(linked_attr.name);
                 if (!p)
                     continue;
 
@@ -251,7 +251,7 @@ public:
         }
 
         m_scopes.pop_back();
-        mp_current_elem = m_map_tree_walker.pop_element(elem.ns, elem.name);
+        mp_current_elem = m_map_tree_walker.pop_element({elem.ns, elem.name});
     }
 
     void characters(const pstring& val, bool transient)
@@ -569,9 +569,9 @@ void orcus_xml::read_impl(const pstring& strm)
         {
             const xml_map_tree::linkable& e = **it;
             ostringstream os;
-            if (e.ns)
-                os << mp_impl->ns_repo.get_short_name(e.ns) << ':';
-            os << e.name;
+            if (e.name.ns)
+                os << mp_impl->ns_repo.get_short_name(e.name.ns) << ':';
+            os << e.name.name;
             string s = os.str();
             if (!s.empty())
                 sheet->set_auto(row, col++, &s[0], s.size());
