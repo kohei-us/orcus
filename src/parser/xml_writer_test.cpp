@@ -46,7 +46,6 @@ void test_encoded_content()
         }
 
         std::string stream = os.str();
-        std::cout << __FILE__ << ":" << __LINE__ << " (:test_encoded_content): " << stream << std::endl;
 
         _handler hdl;
 
@@ -58,9 +57,48 @@ void test_encoded_content()
     }
 }
 
+void test_move()
+{
+    xmlns_repository repo;
+
+    {
+        std::ostringstream os;
+        xml_writer writer(repo, os);
+
+        writer.push_element({nullptr, "foo"});
+
+        {
+            xml_writer moved(std::move(writer)); // move constructor
+            moved.add_content("stuff");
+        }
+
+        std::string stream = os.str();
+        assert(stream == "<?xml version=\"1.0\"?><foo>stuff</foo>");
+    }
+
+    {
+        std::ostringstream os;
+        xml_writer writer(repo, os);
+
+        writer.push_element({nullptr, "foo2"});
+
+        {
+            std::ostringstream os2;
+            xml_writer moved(repo, os2);
+
+            moved = std::move(writer); // move assignment.
+            moved.add_content("stuff2");
+        }
+
+        std::string stream = os.str();
+        assert(stream == "<?xml version=\"1.0\"?><foo2>stuff2</foo2>");
+    }
+}
+
 int main()
 {
     test_encoded_content();
+    test_move();
 
     return EXIT_SUCCESS;
 }

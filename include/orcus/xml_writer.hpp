@@ -44,7 +44,13 @@ public:
         scope& operator= (scope&& other);
     };
 
+    xml_writer(const xml_writer&) = delete;
+    xml_writer& operator= (const xml_writer&) = delete;
+
     xml_writer(xmlns_repository& ns_repo, std::ostream& os);
+    xml_writer(xml_writer&& other);
+
+    xml_writer& operator= (xml_writer&& other);
 
     /**
      * Destructor. Any remaining element(s) on the stack will get popped when

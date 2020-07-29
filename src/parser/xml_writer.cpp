@@ -172,6 +172,19 @@ xml_writer::xml_writer(xmlns_repository& ns_repo, std::ostream& os) :
     os << "<?xml version=\"1.0\"?>";
 }
 
+xml_writer::xml_writer(xml_writer&& other) :
+    mp_impl(std::move(other.mp_impl))
+{
+    other.mp_impl = orcus::make_unique<impl>(mp_impl->ns_repo, mp_impl->os);
+}
+
+xml_writer& xml_writer::operator= (xml_writer&& other)
+{
+    xml_writer tmp(std::move(other));
+    mp_impl.swap(tmp.mp_impl);
+    return *this;
+}
+
 xml_writer::~xml_writer()
 {
     // Pop all the elements currently on the stack.
