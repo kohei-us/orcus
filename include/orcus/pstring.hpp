@@ -91,7 +91,7 @@ private:
 
 inline ::std::ostream& operator<< (::std::ostream& os, const pstring& str)
 {
-    return os << str.str();
+    return os.write(str.data(), str.size());
 }
 
 ORCUS_PSR_DLLPUBLIC std::string operator+ (const std::string& left, const pstring& right);
