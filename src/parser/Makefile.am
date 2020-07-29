@@ -62,7 +62,8 @@ EXTRA_PROGRAMS = \
 	parser-test-zip-archive \
 	parser-test-base \
 	parser-test-global \
-	parser-test-json-validation
+	parser-test-json-validation \
+	xml-writer-test
 
 # parser-test-string-pool
 
@@ -201,9 +202,15 @@ parser_test_global_CPPFLAGS = $(AM_CPPFLAGS)
 parser_test_json_validation_SOURCES = \
 	parser_test_json_validation.cpp
 
-parser_test_json_validation = liborcus-parser-@ORCUS_API_VERSION@.la
 parser_test_json_validation_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 parser_test_json_validation_CPPFLAGS = $(AM_CPPFLAGS)
+
+# xml-writer-test
+
+xml_writer_test_SOURCES = xml_writer_test.cpp
+
+xml_writer_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+xml_writer_test_CPPFLAGS = $(AM_CPPFLAGS)
 
 TESTS = \
 	parser-test-string-pool \
@@ -221,7 +228,8 @@ TESTS = \
 	parser-test-zip-archive \
 	parser-test-base \
 	parser-test-global \
-	parser-test-json-validation
+	parser-test-json-validation \
+	xml-writer-test
 
 distclean-local:
 	rm -rf $(TESTS)

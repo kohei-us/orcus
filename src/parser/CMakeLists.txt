@@ -43,6 +43,7 @@ set(_TESTS
     threaded-sax-token-parser-test
     xml-namespace-test
     zip-archive-test
+    xml-writer-test
 )
 
 foreach(_TEST ${_TESTS})

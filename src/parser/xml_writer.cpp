@@ -36,6 +36,53 @@ struct _attr
     {}
 };
 
+void write_content_encoded(const pstring& content, std::ostream& os)
+{
+    auto _flush = [&os](const char*& p0, const char* p)
+    {
+        size_t n = std::distance(p0, p);
+        os.write(p0, n);
+        p0 = nullptr;
+    };
+
+    const char* p = content.data();
+    const char* p_end = p + content.size();
+    const char* p0 = nullptr;
+
+    for (; p != p_end; ++p)
+    {
+        if (!p0)
+            p0 = p;
+
+        switch (*p)
+        {
+            case '<':
+                _flush(p0, p);
+                os.write(ORCUS_ASCII("&lt;"));
+                break;
+            case '>':
+                _flush(p0, p);
+                os.write(ORCUS_ASCII("&gt;"));
+                break;
+            case '&':
+                _flush(p0, p);
+                os.write(ORCUS_ASCII("&amp;"));
+                break;
+            case '\'':
+                _flush(p0, p);
+                os.write(ORCUS_ASCII("&apos;"));
+                break;
+            case '"':
+                _flush(p0, p);
+                os.write(ORCUS_ASCII("&quot;"));
+                break;
+        }
+    }
+
+    if (p0)
+        _flush(p0, p);
+}
+
 } // anonymous namespace
 
 struct xml_writer::scope::impl
@@ -199,9 +246,7 @@ void xml_writer::add_attribute(const xml_name_t& name, const pstring& value)
 void xml_writer::add_content(const pstring& content)
 {
     close_current_element();
-
-    auto& os = mp_impl->os;
-    os << content;
+    write_content_encoded(content, mp_impl->os);
 }
 
 xml_name_t xml_writer::pop_element()
