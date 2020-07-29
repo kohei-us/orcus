@@ -10,3 +10,4 @@ Parser
    json.rst
    xml.rst
    yaml.rst
+   xml_writer.rst
