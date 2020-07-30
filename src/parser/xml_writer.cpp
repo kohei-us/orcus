@@ -194,13 +194,10 @@ xml_writer::~xml_writer()
 
 void xml_writer::close_current_element()
 {
-    if (!mp_impl->elem_stack.empty())
+    if (!mp_impl->elem_stack.empty() && mp_impl->elem_stack.back().open)
     {
-        if (mp_impl->elem_stack.back().open)
-        {
-            mp_impl->os << '>';
-            mp_impl->elem_stack.back().open = false;
-        }
+        mp_impl->os << '>';
+        mp_impl->elem_stack.back().open = false;
     }
 }
 
