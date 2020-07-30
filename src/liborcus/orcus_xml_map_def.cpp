@@ -234,13 +234,13 @@ void orcus_xml::write_map_definition(const char* p, size_t n, std::ostream& out)
 
     xml_writer writer(mp_impl->ns_repo, out);
     xmlns_id_t default_ns = writer.add_namespace("", "https://gitlab.com/orcus/orcus");
-    auto map_scope = writer.set_element_scope({default_ns, "map"});
+    auto map_scope = writer.push_element_scope({default_ns, "map"});
 
     for (const xmlns_id_t& ns : cxt.get_all_namespaces())
     {
         writer.add_attribute({default_ns, "alias"}, cxt.get_short_name(ns));
         writer.add_attribute({default_ns, "uri"}, ns);
-        writer.set_element_scope({default_ns, "ns"});
+        writer.push_element_scope({default_ns, "ns"});
     }
 
     size_t range_count = 0;
@@ -253,23 +253,23 @@ void orcus_xml::write_map_definition(const char* p, size_t n, std::ostream& out)
         std::string sheet_name = os_sheet_name.str();
 
         writer.add_attribute({default_ns, "name"}, sheet_name);
-        writer.set_element_scope({default_ns, "sheet"});
+        writer.push_element_scope({default_ns, "sheet"});
 
         writer.add_attribute({default_ns, "sheet"}, sheet_name);
         writer.add_attribute({default_ns, "row"}, "0");
         writer.add_attribute({default_ns, "column"}, "0");
-        auto range_scope = writer.set_element_scope({default_ns, "range"});
+        auto range_scope = writer.push_element_scope({default_ns, "range"});
 
         for (const auto& path : range.paths)
         {
             writer.add_attribute({default_ns, "path"}, path);
-            writer.set_element_scope({default_ns, "field"});
+            writer.push_element_scope({default_ns, "field"});
         }
 
         for (const auto& row_group : range.row_groups)
         {
             writer.add_attribute({default_ns, "path"}, row_group);
-            writer.set_element_scope({default_ns, "row-group"});
+            writer.push_element_scope({default_ns, "row-group"});
         }
 
         ++range_count;

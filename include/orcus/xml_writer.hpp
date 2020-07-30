@@ -69,7 +69,7 @@ public:
      * @return scope object which automatically pops the element when it goes
      *         out of scope.
      */
-    scope set_element_scope(const xml_name_t& name);
+    scope push_element_scope(const xml_name_t& name);
 
     /**
      * Push a new element to the stack, and write an opening element to the

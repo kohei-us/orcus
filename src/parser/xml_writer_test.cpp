@@ -41,7 +41,7 @@ void test_encoded_content()
 
         {
             xml_writer writer(repo, os);
-            auto scope_root = writer.set_element_scope({nullptr, "root"});
+            auto scope_root = writer.push_element_scope({nullptr, "root"});
             writer.add_content(test_content);
         }
 

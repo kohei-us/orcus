@@ -204,7 +204,7 @@ void xml_writer::close_current_element()
     }
 }
 
-xml_writer::scope xml_writer::set_element_scope(const xml_name_t& name)
+xml_writer::scope xml_writer::push_element_scope(const xml_name_t& name)
 {
     return scope(this, name);
 }
