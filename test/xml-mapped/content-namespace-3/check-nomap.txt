@@ -1,0 +1,12 @@
+range-0/0/0:string:"ns0:city"
+range-0/0/1:string:"ns0:population"
+range-0/0/2:string:"ns0:year"
+range-0/1/0:string:"Tokyo"
+range-0/1/1:numeric:13189000
+range-0/1/2:numeric:2011
+range-0/2/0:string:"New York City"
+range-0/2/1:numeric:8244910
+range-0/2/2:numeric:2011
+range-0/3/0:string:"London"
+range-0/3/1:numeric:8174100
+range-0/3/2:numeric:2011

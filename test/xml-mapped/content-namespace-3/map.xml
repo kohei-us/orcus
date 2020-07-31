@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<map xmlns="http://gitorious.org/orcus/xml-map">
+    <ns alias="a" uri="http://some-namespace" default="true"/>
+    <sheet name="data"/>
+    <cell path="/a:table/title" row="0" column="0" sheet="data"/>
+    <range row="2" column="0" sheet="data">
+        <field path="/a:table/rows/a:row/city"/>
+        <field path="/a:table/rows/a:row/population"/>
+        <field path="/a:table/rows/a:row/year"/>
+        <row-group path="/table/rows/row"/>
+    </range>
+</map>
