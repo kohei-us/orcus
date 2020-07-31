@@ -222,7 +222,7 @@ public:
     xml_map_tree(xmlns_repository& xmlns_repo);
     ~xml_map_tree();
 
-    void set_namespace_alias(const pstring& alias, const pstring& uri);
+    void set_namespace_alias(const pstring& alias, const pstring& uri, bool default_ns);
     xmlns_id_t get_namespace(const pstring& alias) const;
 
     void set_cell_link(const pstring& xpath, const cell_position& ref);
@@ -295,6 +295,8 @@ private:
     boost::object_pool<element> m_element_pool;
 
     element* mp_root;
+
+    xmlns_id_t m_default_ns;
 };
 
 std::ostream& operator<< (std::ostream& os, const xml_map_tree::linkable& link);

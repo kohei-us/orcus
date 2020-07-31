@@ -22,7 +22,7 @@ void test_elements()
 
     pstring path("/A/B/C");
 
-    xpath_parser parser(cxt, path.data(), path.size());
+    xpath_parser parser(cxt, path.data(), path.size(), XMLNS_UNKNOWN_ID);
     auto token = parser.next();
     assert(token.name == "A");
     assert(!token.attribute);
@@ -46,7 +46,7 @@ void test_attributes()
 
     pstring path("/A/B/C/@foo");
 
-    xpath_parser parser(cxt, path.data(), path.size());
+    xpath_parser parser(cxt, path.data(), path.size(), XMLNS_UNKNOWN_ID);
     auto token = parser.next();
     assert(token.name == "A");
     assert(!token.attribute);

@@ -13,6 +13,7 @@
 #include "orcus/xml_structure_tree.hpp"
 #include "orcus/xml_namespace.hpp"
 #include "orcus/xml_writer.hpp"
+#include "orcus/measurement.hpp"
 
 #include "orcus_xml_impl.hpp"
 
@@ -72,60 +73,63 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
     pstring xpath, sheet;
     spreadsheet::row_t row = -1;
     spreadsheet::col_t col = -1;
-    std::vector<sax::parser_attribute>::const_iterator it = m_attrs.begin(), it_end = m_attrs.end();
 
     if (elem.name == "ns")
     {
         // empty alias is associated with default namespace.
         pstring alias, uri;
-        for (; it != it_end; ++it)
+        bool default_ns = false;
+
+        for (const sax::parser_attribute& attr : m_attrs)
         {
-            if (it->name == "alias")
-                alias = it->value;
-            else if (it->name == "uri")
-                uri = it->value;
+            if (attr.name == "alias")
+                alias = attr.value;
+            else if (attr.name == "uri")
+                uri = attr.value;
+            else if (attr.name == "default")
+                default_ns = to_bool(attr.value);
         }
 
         if (!uri.empty())
-            m_app.set_namespace_alias(alias, uri);
+            m_app.set_namespace_alias(alias, uri, default_ns);
     }
     else if (elem.name == "cell")
     {
-        for (; it != it_end; ++it)
+        for (const sax::parser_attribute& attr : m_attrs)
         {
-            if (it->name == "path")
-                xpath = it->value;
-            else if (it->name == "sheet")
-                sheet = it->value;
-            else if (it->name == "row")
-                row = strtol(it->value.get(), nullptr, 10);
-            else if (it->name == "column")
-                col = strtol(it->value.get(), nullptr, 10);
+            if (attr.name == "path")
+                xpath = attr.value;
+            else if (attr.name == "sheet")
+                sheet = attr.value;
+            else if (attr.name == "row")
+                row = strtol(attr.value.get(), nullptr, 10);
+            else if (attr.name == "column")
+                col = strtol(attr.value.get(), nullptr, 10);
         }
 
         m_app.set_cell_link(xpath, sheet, row, col);
     }
     else if (elem.name == "range")
     {
-        for (; it != it_end; ++it)
+        for (const sax::parser_attribute& attr : m_attrs)
         {
-            if (it->name == "sheet")
-                sheet = it->value;
-            else if (it->name == "row")
-                row = strtol(it->value.get(), nullptr, 10);
-            else if (it->name == "column")
-                col = strtol(it->value.get(), nullptr, 10);
+            if (attr.name == "sheet")
+                sheet = attr.value;
+            else if (attr.name == "row")
+                row = strtol(attr.value.get(), nullptr, 10);
+            else if (attr.name == "column")
+                col = strtol(attr.value.get(), nullptr, 10);
         }
 
         m_app.start_range(sheet, row, col);
     }
     else if (elem.name == "field")
     {
-        for (; it != it_end; ++it)
+        for (const sax::parser_attribute& attr : m_attrs)
         {
-            if (it->name == "path")
+            if (attr.name == "path")
             {
-                xpath = it->value;
+                xpath = attr.value;
                 break;
             }
         }
@@ -148,11 +152,11 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
     else if (elem.name == "sheet")
     {
         pstring sheet_name;
-        for (; it != it_end; ++it)
+        for (const sax::parser_attribute& attr : m_attrs)
         {
-            if (it->name == "name")
+            if (attr.name == "name")
             {
-                sheet_name = it->value;
+                sheet_name = attr.value;
                 break;
             }
         }

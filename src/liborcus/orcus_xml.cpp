@@ -96,9 +96,9 @@ private:
 
 public:
     xml_data_sax_handler(
-       spreadsheet::iface::import_factory& factory,
-       xml_map_tree::const_element_list_type& link_positions,
-       const xml_map_tree& map_tree) :
+        spreadsheet::iface::import_factory& factory,
+        xml_map_tree::const_element_list_type& link_positions,
+        const xml_map_tree& map_tree) :
         m_factory(factory),
         m_link_positions(link_positions),
         m_map_tree(map_tree),
@@ -495,9 +495,9 @@ orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_facto
 
 orcus_xml::~orcus_xml() {}
 
-void orcus_xml::set_namespace_alias(const pstring& alias, const pstring& uri)
+void orcus_xml::set_namespace_alias(const pstring& alias, const pstring& uri, bool default_ns)
 {
-    mp_impl->map_tree.set_namespace_alias(alias, uri);
+    mp_impl->map_tree.set_namespace_alias(alias, uri, default_ns);
 }
 
 void orcus_xml::set_cell_link(const pstring& xpath, const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col)

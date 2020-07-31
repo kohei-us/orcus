@@ -21,6 +21,8 @@ class xpath_parser
     const char* mp_char;
     const char* mp_end;
 
+    xmlns_id_t m_default_ns;
+
     enum class token_type { element, attribute };
 
 public:
@@ -36,7 +38,7 @@ public:
         token(const token& r);
     };
 
-    xpath_parser(const xmlns_context& cxt, const char* p, size_t n);
+    xpath_parser(const xmlns_context& cxt, const char* p, size_t n, xmlns_id_t default_ns);
 
     token next();
 };

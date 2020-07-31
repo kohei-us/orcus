@@ -24,8 +24,11 @@ xpath_parser::token::token(xmlns_id_t _ns, const pstring& _name, bool _attribute
 xpath_parser::token::token() : ns(XMLNS_UNKNOWN_ID), attribute(false) {}
 xpath_parser::token::token(const token& r) : ns(r.ns), name(r.name), attribute(r.attribute) {}
 
-xpath_parser::xpath_parser(const xmlns_context& cxt, const char* p, size_t n) :
-    m_cxt(cxt), mp_char(p), mp_end(p+n)
+xpath_parser::xpath_parser(const xmlns_context& cxt, const char* p, size_t n, xmlns_id_t default_ns) :
+    m_cxt(cxt),
+    mp_char(p),
+    mp_end(p+n),
+    m_default_ns(default_ns)
 {
     if (!n)
         throw xpath_error("empty path");
@@ -43,7 +46,7 @@ xpath_parser::token xpath_parser::next()
 
     const char* p0 = nullptr;
     size_t len = 0;
-    xmlns_id_t ns = XMLNS_UNKNOWN_ID;
+    xmlns_id_t ns = m_default_ns;
 
     bool attribute = *mp_char == '@';
     if (attribute)

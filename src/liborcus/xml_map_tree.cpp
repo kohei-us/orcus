@@ -282,19 +282,24 @@ xml_map_tree::element* xml_map_tree::walker::pop_element(const xml_name_t& name)
 }
 
 xml_map_tree::xml_map_tree(xmlns_repository& xmlns_repo) :
-    m_xmlns_cxt(xmlns_repo.create_context()), mp_root(nullptr) {}
+    m_xmlns_cxt(xmlns_repo.create_context()),
+    mp_root(nullptr),
+    m_default_ns(XMLNS_UNKNOWN_ID) {}
 
 xml_map_tree::~xml_map_tree() {}
 
-void xml_map_tree::set_namespace_alias(const pstring& alias, const pstring& uri)
+void xml_map_tree::set_namespace_alias(const pstring& alias, const pstring& uri, bool default_ns)
 {
 #if ORCUS_DEBUG_XML_MAP_TREE
-    cout << "xml_map_tree::set_namespace_alias: alias='" << alias << "', uri='" << uri << "'" << endl;
+    cout << "xml_map_tree::set_namespace_alias: alias='" << alias << "', uri='" << uri << "', default=" << default_ns << endl;
 #endif
     // We need to turn the alias string persistent because the xmlns context
     // doesn't intern the alias strings.
     pstring alias_safe = m_names.intern(alias).first;
-    m_xmlns_cxt.push(alias_safe, uri);
+    xmlns_id_t ns = m_xmlns_cxt.push(alias_safe, uri);
+
+    if (default_ns)
+        m_default_ns = ns;
 }
 
 xmlns_id_t xml_map_tree::get_namespace(const pstring& alias) const
@@ -457,9 +462,8 @@ void xml_map_tree::commit_range()
 
 #if ORCUS_DEBUG_XML_MAP_TREE
     cout << "parent element path for this range: ";
-    element_list_type::iterator it = range_parent.begin(), it_end = range_parent.end();
-    for (; it != it_end; ++it)
-        cout << "/" << (**it).name;
+    for (const element* elem : range_parent)
+        cout << "/" << elem->name.to_string(m_xmlns_cxt, xml_name_t::use_alias);
     cout << endl;
 #endif
 
@@ -485,7 +489,7 @@ const xml_map_tree::linkable* xml_map_tree::get_link(const pstring& xpath) const
 #endif
     const linkable* cur_node = mp_root;
 
-    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size());
+    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size(), m_default_ns);
 
     // Check the root element first.
     xpath_parser::token token = parser.next();
@@ -610,7 +614,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
     linked_node_type ret;
 
     assert(!xpath.empty());
-    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size());
+    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size(), m_default_ns);
 
     // Get the root element first.
     xpath_parser::token token = parser.next();
@@ -709,7 +713,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
 xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
 {
     assert(!xpath.empty());
-    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size());
+    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size(), m_default_ns);
 
     // Get the root element first.
     xpath_parser::token token = parser.next();

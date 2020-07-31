@@ -203,8 +203,8 @@ void test_tree_walk_namespace()
     ref.row = 1;
     ref.col = 2;
 
-    tree.set_namespace_alias("a", "http://some-namespace");
-    tree.set_namespace_alias("skip", "http://namespace-to-skip");
+    tree.set_namespace_alias("a", "http://some-namespace", false);
+    tree.set_namespace_alias("skip", "http://namespace-to-skip", false);
     tree.set_cell_link("/a:table/a:title", ref);
     tree.start_range(ref);
     ref.row = 2;

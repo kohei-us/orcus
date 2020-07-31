@@ -49,6 +49,7 @@ void test_mapped_xml_import()
     {
         { SRCDIR"/test/xml-mapped/attribute-basic", true },
         { SRCDIR"/test/xml-mapped/attribute-namespace", true },
+        { SRCDIR"/test/xml-mapped/attribute-namespace-2", false },
         { SRCDIR"/test/xml-mapped/attribute-range-self-close", true },
         { SRCDIR"/test/xml-mapped/attribute-single-element", true },
         { SRCDIR"/test/xml-mapped/attribute-single-element-2", true },
@@ -165,6 +166,7 @@ void test_mapped_xml_import_no_map_definition()
     const std::vector<fs::path> tests = {
         test_base_dir / "attribute-basic",
         test_base_dir / "attribute-namespace",
+        test_base_dir / "attribute-namespace-2",
         test_base_dir / "attribute-range-self-close",
         test_base_dir / "content-basic",
         test_base_dir / "content-namespace",

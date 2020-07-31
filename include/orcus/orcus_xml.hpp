@@ -38,7 +38,7 @@ public:
     orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact, spreadsheet::iface::export_factory* ex_fact);
     ~orcus_xml();
 
-    void set_namespace_alias(const pstring& alias, const pstring& uri);
+    void set_namespace_alias(const pstring& alias, const pstring& uri, bool default_ns=false);
 
     void set_cell_link(const pstring& xpath, const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col);
 
