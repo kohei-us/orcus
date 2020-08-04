@@ -34,16 +34,16 @@ class xml_data_sax_handler
 {
     struct scope
     {
-        xmlns_id_t ns;
-        pstring name;
+        xml_name_t name;
         std::ptrdiff_t element_open_begin;
         std::ptrdiff_t element_open_end;
 
         xml_map_tree::element_type type;
 
         scope(xmlns_id_t _ns, const pstring& _name) :
-            ns(_ns), name(_name),
-            element_open_begin(0), element_open_end(0),
+            name(_ns, _name),
+            element_open_begin(0),
+            element_open_end(0),
             type(xml_map_tree::element_unknown) {}
     };
 
@@ -122,7 +122,7 @@ public:
 
     void start_element(const sax_ns_parser_element& elem)
     {
-        m_scopes.push_back(scope(elem.ns, elem.name));
+        m_scopes.emplace_back(elem.ns, elem.name);
         scope& cur = m_scopes.back();
         cur.element_open_begin = elem.begin_pos;
         cur.element_open_end = elem.end_pos;
@@ -566,11 +566,7 @@ void orcus_xml::read_impl(const pstring& strm)
         spreadsheet::col_t col = ref.col;
         for (const xml_map_tree::linkable* e : range_ref.field_nodes)
         {
-            std::ostringstream os;
-            if (e->name.ns)
-                os << mp_impl->ns_repo.get_short_name(e->name.ns) << ':';
-            os << e->name.name;
-            std::string s = os.str();
+            std::string s = e->name.to_string(mp_impl->ns_repo);
             if (!s.empty())
                 sheet->set_auto(row, col++, s.data(), s.size());
         }

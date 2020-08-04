@@ -71,6 +71,21 @@ std::string xml_name_t::to_string(const xmlns_context& cxt, to_string_type type)
     return os.str();
 }
 
+std::string xml_name_t::to_string(const xmlns_repository& repo) const
+{
+    std::ostringstream os;
+
+    if (ns)
+    {
+        pstring ns_str = repo.get_short_name(ns);
+        if (!ns_str.empty())
+            os << ns_str << ':';
+    }
+    os << name;
+
+    return os.str();
+}
+
 xml_token_attr_t::xml_token_attr_t() :
     ns(XMLNS_UNKNOWN_ID), name(XML_UNKNOWN_TOKEN), transient(false) {}
 

@@ -18,6 +18,7 @@
 namespace orcus {
 
 class xmlns_context;
+class xmlns_repository;
 
 /**
  * Generic constant to be used to indicate that a valid index value is
@@ -60,6 +61,8 @@ struct ORCUS_PSR_DLLPUBLIC xml_name_t
     bool operator!= (const xml_name_t& other) const;
 
     std::string to_string(const xmlns_context& cxt, to_string_type type) const;
+
+    std::string to_string(const xmlns_repository& repo) const;
 };
 
 struct ORCUS_PSR_DLLPUBLIC xml_token_attr_t
