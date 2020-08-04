@@ -80,6 +80,8 @@ public:
      */
     void append_field_link(const pstring& xpath);
 
+    void append_field_link(const pstring& xpath, const pstring& label);
+
     /**
      * Set the element located in the specified path as a row group in the
      * current linked range.

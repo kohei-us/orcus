@@ -37,6 +37,14 @@ class xmlns_repository;
  */
 class xml_map_tree
 {
+    struct range_field_link
+    {
+        pstring xpath;
+        pstring label;
+
+        range_field_link(const pstring& _xpath, const pstring& _label);
+    };
+
 public:
     /**
      * A single cell position.  Used both for single cell as well as range
@@ -122,6 +130,7 @@ public:
             field_in_range* field_ref;
         };
 
+        pstring label; // custom header label
         mutable pstring ns_alias; // namespace alias used in the content stream.
 
         linkable(const linkable&) = delete;
@@ -229,6 +238,7 @@ public:
 
     void start_range(const cell_position& pos);
     void append_range_field_link(const pstring& xpath);
+    void append_range_field_link(const pstring& xpath, const pstring& label);
     void set_range_row_group(const pstring& xpath);
     void commit_range();
 
@@ -241,7 +251,8 @@ public:
     pstring intern_string(const pstring& str) const;
 
 private:
-    void insert_range_field_link(range_reference& range_ref, element_list_type& range_parent, const pstring& xpath);
+    void insert_range_field_link(
+        range_reference& range_ref, element_list_type& range_parent, const range_field_link& field);
 
     range_reference* get_range_reference(const cell_position& pos);
 
@@ -267,7 +278,7 @@ private:
 
 private:
 
-    using range_field_links = std::vector<pstring>;
+    using range_field_links = std::vector<range_field_link>;
 
     xmlns_context m_xmlns_cxt;
 

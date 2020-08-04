@@ -39,6 +39,9 @@ void print_element_stack(ostream& os, const T& elem_stack)
 
 }
 
+xml_map_tree::range_field_link::range_field_link(const pstring& _xpath, const pstring& _label) :
+    xpath(_xpath), label(_label) {}
+
 xml_map_tree::element_position::element_position() :
     open_begin(0), open_end(0), close_begin(0), close_end(0) {}
 
@@ -348,13 +351,21 @@ void xml_map_tree::append_range_field_link(const pstring& xpath)
     if (xpath.empty())
         return;
 
-    m_cur_range_field_links.emplace_back(xpath);
+    m_cur_range_field_links.emplace_back(xpath, pstring());
+}
+
+void xml_map_tree::append_range_field_link(const pstring& xpath, const pstring& label)
+{
+    if (xpath.empty())
+        return;
+
+    m_cur_range_field_links.emplace_back(xpath, label);
 }
 
 void xml_map_tree::insert_range_field_link(
-    range_reference& range_ref, element_list_type& range_parent, const pstring& xpath)
+    range_reference& range_ref, element_list_type& range_parent, const range_field_link& field)
 {
-    linked_node_type linked_node = get_linked_node(xpath, reference_range_field);
+    linked_node_type linked_node = get_linked_node(field.xpath, reference_range_field);
     if (linked_node.elem_stack.size() < 2)
         throw xpath_error("Path of a range field link must be at least 2 levels.");
 
@@ -363,6 +374,9 @@ void xml_map_tree::insert_range_field_link(
 
     if (linked_node.anchor_elem)
         linked_node.anchor_elem->linked_range_fields.push_back(range_ref.field_nodes.size());
+
+    if (!field.label.empty())
+        linked_node.node->label = intern_string(field.label);
 
     switch (linked_node.node->node_type)
     {
@@ -374,8 +388,8 @@ void xml_map_tree::insert_range_field_link(
             p->field_ref->column_pos = range_ref.field_nodes.size();
 
             range_ref.field_nodes.push_back(p);
+            break;
         }
-        break;
         case node_attribute:
         {
             attribute* p = static_cast<attribute*>(linked_node.node);
@@ -384,8 +398,8 @@ void xml_map_tree::insert_range_field_link(
             p->field_ref->column_pos = range_ref.field_nodes.size();
 
             range_ref.field_nodes.push_back(p);
+            break;
         }
-        break;
         default:
             ;
     }
@@ -457,8 +471,8 @@ void xml_map_tree::commit_range()
     // commont parent element for this range.
     element_list_type range_parent;
 
-    for (const pstring& path : m_cur_range_field_links)
-        insert_range_field_link(*range_ref, range_parent, path);
+    for (const range_field_link& field : m_cur_range_field_links)
+        insert_range_field_link(*range_ref, range_parent, field);
 
 #if ORCUS_DEBUG_XML_MAP_TREE
     cout << "parent element path for this range: ";

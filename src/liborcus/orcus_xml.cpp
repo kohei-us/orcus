@@ -518,6 +518,11 @@ void orcus_xml::append_field_link(const pstring& xpath)
     mp_impl->map_tree.append_range_field_link(xpath);
 }
 
+void orcus_xml::append_field_link(const pstring& xpath, const pstring& label)
+{
+    mp_impl->map_tree.append_range_field_link(xpath, label);
+}
+
 void orcus_xml::set_range_row_group(const pstring& xpath)
 {
     mp_impl->map_tree.set_range_row_group(xpath);
@@ -550,6 +555,7 @@ void orcus_xml::read_impl(const pstring& strm)
 
     // Insert the range headers and reset the row size counters.
     xml_map_tree::range_ref_map_type& range_refs = mp_impl->map_tree.get_range_references();
+
     for (const auto& ref_pair : range_refs)
     {
         const xml_map_tree::cell_position& ref = ref_pair.first;
@@ -564,11 +570,20 @@ void orcus_xml::read_impl(const pstring& strm)
 
         spreadsheet::row_t row = ref.row;
         spreadsheet::col_t col = ref.col;
+
         for (const xml_map_tree::linkable* e : range_ref.field_nodes)
         {
-            std::string s = e->name.to_string(mp_impl->ns_repo);
-            if (!s.empty())
-                sheet->set_auto(row, col++, s.data(), s.size());
+            if (e->label.empty())
+            {
+                // No custom header label. Create a label from the name of the linkable.
+                std::string s = e->name.to_string(mp_impl->ns_repo);
+                if (!s.empty())
+                    sheet->set_auto(row, col, s.data(), s.size());
+            }
+            else
+                sheet->set_auto(row, col, e->label.data(), e->label.size());
+
+            ++col;
         }
     }
 
