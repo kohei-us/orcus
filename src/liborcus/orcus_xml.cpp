@@ -562,19 +562,17 @@ void orcus_xml::read_impl(const pstring& strm)
         if (!sheet)
             continue;
 
-        auto it = range_ref.field_nodes.cbegin(), it_end = range_ref.field_nodes.cend();
         spreadsheet::row_t row = ref.row;
         spreadsheet::col_t col = ref.col;
-        for (; it != it_end; ++it)
+        for (const xml_map_tree::linkable* e : range_ref.field_nodes)
         {
-            const xml_map_tree::linkable& e = **it;
-            ostringstream os;
-            if (e.name.ns)
-                os << mp_impl->ns_repo.get_short_name(e.name.ns) << ':';
-            os << e.name.name;
-            string s = os.str();
+            std::ostringstream os;
+            if (e->name.ns)
+                os << mp_impl->ns_repo.get_short_name(e->name.ns) << ':';
+            os << e->name.name;
+            std::string s = os.str();
             if (!s.empty())
-                sheet->set_auto(row, col++, &s[0], s.size());
+                sheet->set_auto(row, col++, s.data(), s.size());
         }
     }
 
