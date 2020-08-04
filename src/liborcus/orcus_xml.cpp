@@ -513,11 +513,6 @@ void orcus_xml::start_range(const pstring& sheet, spreadsheet::row_t row, spread
     mp_impl->map_tree.start_range(mp_impl->cur_range_ref);
 }
 
-void orcus_xml::append_field_link(const pstring& xpath)
-{
-    mp_impl->map_tree.append_range_field_link(xpath);
-}
-
 void orcus_xml::append_field_link(const pstring& xpath, const pstring& label)
 {
     mp_impl->map_tree.append_range_field_link(xpath, label);

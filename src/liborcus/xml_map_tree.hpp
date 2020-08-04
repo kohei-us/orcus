@@ -237,7 +237,6 @@ public:
     void set_cell_link(const pstring& xpath, const cell_position& ref);
 
     void start_range(const cell_position& pos);
-    void append_range_field_link(const pstring& xpath);
     void append_range_field_link(const pstring& xpath, const pstring& label);
     void set_range_row_group(const pstring& xpath);
     void commit_range();

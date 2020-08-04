@@ -77,9 +77,9 @@ public:
      * to the current linked range.
      *
      * @param xpath path to the element or attribute to link as a field.
+     * @param label custom header label to use in lieu of the name of the
+     *              linked entity.
      */
-    void append_field_link(const pstring& xpath);
-
     void append_field_link(const pstring& xpath, const pstring& label);
 
     /**

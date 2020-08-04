@@ -346,14 +346,6 @@ void xml_map_tree::start_range(const cell_position& pos)
     m_cur_range_pos = pos;
 }
 
-void xml_map_tree::append_range_field_link(const pstring& xpath)
-{
-    if (xpath.empty())
-        return;
-
-    m_cur_range_field_links.emplace_back(xpath, pstring());
-}
-
 void xml_map_tree::append_range_field_link(const pstring& xpath, const pstring& label)
 {
     if (xpath.empty())

@@ -68,9 +68,9 @@ void test_path_insertion()
     ref.col = 0;
     ref.sheet = pstring("test3");
     tree.start_range(ref);
-    tree.append_range_field_link("/data/entries/entry/id");
-    tree.append_range_field_link("/data/entries/entry/name");
-    tree.append_range_field_link("/data/entries/entry/score");
+    tree.append_range_field_link("/data/entries/entry/id", pstring());
+    tree.append_range_field_link("/data/entries/entry/name", pstring());
+    tree.append_range_field_link("/data/entries/entry/score", pstring());
     tree.commit_range();
     p0 = tree.get_link("/data/entries/entry/id");
     assert(p0 && p0->node_type == xml_map_tree::node_element);
@@ -209,11 +209,11 @@ void test_tree_walk_namespace()
     tree.start_range(ref);
     ref.row = 2;
     ref.col = 0;
-    tree.append_range_field_link("/a:table/a:rows/a:row/a:city");
+    tree.append_range_field_link("/a:table/a:rows/a:row/a:city", pstring());
     ++ref.col;
-    tree.append_range_field_link("/a:table/a:rows/a:row/a:population");
+    tree.append_range_field_link("/a:table/a:rows/a:row/a:population", pstring());
     ++ref.col;
-    tree.append_range_field_link("/a:table/a:rows/a:row/a:year");
+    tree.append_range_field_link("/a:table/a:rows/a:row/a:year", pstring());
     tree.commit_range();
 
     xmlns_id_t ns_a = tree.get_namespace("a");

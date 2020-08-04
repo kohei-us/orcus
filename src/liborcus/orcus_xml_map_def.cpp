@@ -207,7 +207,7 @@ void orcus_xml::detect_map_definition(const char* p, size_t n)
         start_range(sheet_name, 0, 0);
 
         for (const auto& path : range.paths)
-            append_field_link(path);
+            append_field_link(path, pstring());
 
         for (const auto& row_group : range.row_groups)
             set_range_row_group(row_group);
