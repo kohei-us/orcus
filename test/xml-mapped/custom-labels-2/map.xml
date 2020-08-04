@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<map xmlns="http://gitorious.org/orcus/xml-map">
+    <ns alias="x" uri="http://ns-1"/>
+    <ns alias="y" uri="http://ns-2" default="true"/>
+    <sheet name="data"/>
+    <range row="1" column="1" sheet="data">
+        <field path="/x:data/entries/entry/@date-received" label="Date Received"/>
+        <field path="/x:data/entries/entry/@date-processed" label="Date Processed"/>
+        <field path="/x:data/entries/entry/@received-by" label="Received by"/>
+        <row-group path="/x:data/entries/entry"/>
+    </range>
+</map>
