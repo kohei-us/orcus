@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<map xmlns="https://gitlab.com/orcus/orcus">
+    <sheet name="data"/>
+    <cell path="/data/label" row="0" column="0" sheet="data"/>
+    <cell path="/data/header/title" row="1" column="0" sheet="data"/>
+    <cell path="/data/footer/date" row="1" column="2" sheet="data"/>
+    <range row="3" column="0" sheet="data">
+        <field path="/data/entries/entry/id" label="ID"/>
+        <field path="/data/entries/entry/name/first" label="First Name"/>
+        <field path="/data/entries/entry/name/last" label="Last Name"/>
+        <field path="/data/entries/entry/score" label="Test Score"/>
+        <row-group path="/data/entries/entry"/>
+    </range>
+</map>

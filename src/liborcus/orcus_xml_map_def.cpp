@@ -70,7 +70,7 @@ public:
 
 void xml_map_sax_handler::start_element(const sax::parser_element& elem)
 {
-    pstring xpath, sheet;
+    pstring xpath, sheet, label;
     spreadsheet::row_t row = -1;
     spreadsheet::col_t col = -1;
 
@@ -128,13 +128,12 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
         for (const sax::parser_attribute& attr : m_attrs)
         {
             if (attr.name == "path")
-            {
                 xpath = attr.value;
-                break;
-            }
+            else if (attr.name == "label")
+                label = attr.value;
         }
 
-        m_app.append_field_link(xpath);
+        m_app.append_field_link(xpath, label);
     }
     else if (elem.name == "row-group")
     {
