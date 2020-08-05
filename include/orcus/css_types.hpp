@@ -17,9 +17,12 @@ namespace orcus { namespace css {
 
 enum class combinator_t
 {
-    descendant,   /// 'E F' where F is a descendant of E.
-    direct_child, /// 'E > F' where F is a direct child of E.
-    next_sibling  /// 'E + F' where F is a direct sibling of E where E precedes F.
+    /// 'E F' where F is a descendant of E.
+    descendant,
+    /// 'E > F' where F is a direct child of E.
+    direct_child,
+    /// 'E + F' where F is a direct sibling of E where E precedes F.
+    next_sibling
 };
 
 /**
@@ -46,8 +49,8 @@ enum class property_value_t
     url
 };
 
-typedef uint16_t pseudo_element_t;
-typedef uint64_t pseudo_class_t;
+using pseudo_element_t = uint16_t;
+using pseudo_class_t = uint64_t;
 
 ORCUS_PSR_DLLPUBLIC extern const pseudo_element_t pseudo_element_after;
 ORCUS_PSR_DLLPUBLIC extern const pseudo_element_t pseudo_element_before;

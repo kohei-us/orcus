@@ -25,54 +25,124 @@ using std::endl;
 namespace orcus {
 
 /**
- * Empty handler for CSS parser.  Either sub-class from it and implement
- * necessary methods, or copy-n-paste this and extend it.
+ * Empty handler for CSS parser.  Sub-class from it and implement necessary
+ * methods.
  */
 class css_handler
 {
 public:
-    void at_rule_name(const char* /*p*/, size_t /*n*/) {}
+    void at_rule_name(const char* p, size_t n) {}
 
-    void simple_selector_type(const char* /*p*/, size_t /*n*/) {}
+    void simple_selector_type(const char* p, size_t n) {}
 
-    void simple_selector_class(const char* /*p*/, size_t /*n*/) {}
+    void simple_selector_class(const char* p, size_t n) {}
 
-    void simple_selector_pseudo_element(orcus::css::pseudo_element_t /*pe*/) {}
+    void simple_selector_pseudo_element(orcus::css::pseudo_element_t pe) {}
 
-    void simple_selector_pseudo_class(orcus::css::pseudo_class_t /*pc*/) {}
+    void simple_selector_pseudo_class(orcus::css::pseudo_class_t pc) {}
 
-    void simple_selector_id(const char* /*p*/, size_t /*n*/) {}
+    void simple_selector_id(const char* p, size_t n) {}
 
     void end_simple_selector() {}
 
     void end_selector() {}
 
-    void combinator(orcus::css::combinator_t /*combinator*/) {}
+    void combinator(orcus::css::combinator_t combinator) {}
 
-    void property_name(const char* /*p*/, size_t /*n*/) {}
+    /**
+     * Called at each property name.
+     *
+     * @param p pointer to the char-array containing the property name string.
+     * @param n length of the property name string.
+     */
+    void property_name(const char* p, size_t n) {}
 
-    void value(const char* /*p*/, size_t /*n*/) {}
+    /**
+     * Called at each ordinary property value string.
+     *
+     * @param p pointer to the char-array containing the value string.
+     * @param n length of the value string.
+     */
+    void value(const char* p, size_t n) {}
 
-    void rgb(uint8_t /*red*/ , uint8_t /*green*/ , uint8_t /*blue*/ ) {}
+    /**
+     * Called at each RGB color value of a property.
+     *
+     * @param red value of red (0-255)
+     * @param green value of green (0-255)
+     * @param blue value of blue (0-255)
+     */
+    void rgb(uint8_t red, uint8_t green, uint8_t blue) {}
 
-    void rgba(uint8_t /*red*/ , uint8_t /*green*/ , uint8_t /*blue*/ , double /*alpha*/ ) {}
+    /**
+     * Called at each RGB color value of a property with alpha transparency
+     * value.
+     *
+     * @param red value of red (0-255)
+     * @param green value of green (0-255)
+     * @param blue value of blue (0-255)
+     * @param alpha alpha transparency value
+     */
+    void rgba(uint8_t red, uint8_t green, uint8_t blue, double alpha) {}
 
-    void hsl(uint8_t /*hue*/ , uint8_t /*sat*/ , uint8_t /*light*/ ) {}
+    /**
+     * Called at each HSL color value of a property.
+     *
+     * @param hue hue
+     * @param sat saturation
+     * @param light lightness
+     */
+    void hsl(uint8_t hue, uint8_t sat, uint8_t light) {}
 
-    void hsla(uint8_t /*hue*/ , uint8_t /*sat*/ , uint8_t /*light*/ , double /*alpha*/ ) {}
+    /**
+     * Called at each HSL color value of a property with alpha transparency
+     * value.
+     *
+     * @param hue hue
+     * @param sat saturation
+     * @param light lightness
+     * @param alpha alpha value
+     */
+    void hsla(uint8_t hue, uint8_t sat, uint8_t light, double alpha) {}
 
-    void url(const char* /*p*/, size_t /*n*/) {}
+    /**
+     * Called at each URL value of a property.
+     *
+     * @param p pointer to the char-array containing the URL value string.
+     * @param n length of the URL value string.
+     */
+    void url(const char* p, size_t n) {}
 
+    /**
+     * Called when the parsing begins.
+     */
     void begin_parse() {}
 
+    /**
+     * Called when the parsing ends.
+     */
     void end_parse() {}
 
+    /**
+     * Called at the beginning of each block.  An opening brace '{' marks the
+     * beginning of a block.
+     */
     void begin_block() {}
 
+    /**
+     * Called at the end of each block.  A closing brace '}' marks the end of
+     * a block.
+     */
     void end_block() {}
 
+    /**
+     * Called at the beginning of each property.
+     */
     void begin_property() {}
 
+    /**
+     * Called at the end of each property.
+     */
     void end_property() {}
 };
 
