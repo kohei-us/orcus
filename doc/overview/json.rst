@@ -115,57 +115,12 @@ class by providing an own handler class and passing it as a template argument::
 
     using namespace std;
 
-    class json_parser_handler
+    class json_parser_handler : public orcus::json_handler
     {
     public:
-        void begin_parse()
-        {
-            cout << "begin parse" << endl;
-        }
-
-        void end_parse()
-        {
-            cout << "end parse" << endl;
-        }
-
-        void begin_array()
-        {
-            cout << "begin array" << endl;
-        }
-
-        void end_array()
-        {
-            cout << "end array" << endl;
-        }
-
-        void begin_object()
-        {
-            cout << "begin object" << endl;
-        }
-
         void object_key(const char* p, size_t len, bool transient)
         {
             cout << "object key: " << orcus::pstring(p, len) << endl;
-        }
-
-        void end_object()
-        {
-            cout << "end object" << endl;
-        }
-
-        void boolean_true()
-        {
-            cout << "true" << endl;
-        }
-
-        void boolean_false()
-        {
-            cout << "false" << endl;
-        }
-
-        void null()
-        {
-            cout << "null" << endl;
         }
 
         void string(const char* p, size_t len, bool transient)
@@ -196,25 +151,29 @@ class by providing an own handler class and passing it as a template argument::
         return EXIT_SUCCESS;
     }
 
+The parser constructor expects the char array, its length, and the handler
+instance.  The base handler class :cpp:class:`~orcus::json_handler` implements
+all required handler methods.  By inheriting from it, you only need to
+implement the handler methods you need.  In this example, we are only
+implementing the :cpp:func:`~orcus::json_handler::object_key`,
+:cpp:func:`~orcus::json_handler::string`, and :cpp:func:`~orcus::json_handler::number`
+methods to process object key values, string values and numeric values,
+respectively.  Refer to the :cpp:class:`~orcus::json_handler` class definition
+for all available handler methods.
+
 Executing this code will generate the following output:
 
 .. code-block:: text
 
     JSON string: {"key1": [1,2,3,4,5], "key2": 12.3}
-    begin parse
-    begin object
     object key: key1
-    begin array
     number: 1
     number: 2
     number: 3
     number: 4
     number: 5
-    end array
     object key: key2
     number: 12.3
-    end object
-    end parse
 
 
 Building a document tree directly
