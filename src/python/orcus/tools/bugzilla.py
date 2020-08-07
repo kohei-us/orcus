@@ -18,72 +18,74 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 
-BZURL = None
-CACHE_DIR = None
+class BugzillaAccess:
 
+    def __init__(self, bzurl, cache_dir):
+        self._bzurl = bzurl
+        self._cache_dir = cache_dir
+        os.makedirs(self._cache_dir, exist_ok=True)
 
-def get_cache_content(cache_file, func_fetch):
-    if os.path.isfile(cache_file):
-        with open(cache_file, 'r') as f:
-            return f.read()
+    def _get_cache_content(self, cache_file, func_fetch):
+        if os.path.isfile(cache_file):
+            with open(cache_file, 'r') as f:
+                return f.read()
 
-    s = func_fetch()
-    with open(cache_file, 'w') as f:
-        f.write(s)
+        s = func_fetch()
+        with open(cache_file, 'w') as f:
+            f.write(s)
 
-    return s
+        return s
 
+    def get_bug_ids(self, bz_params):
+        """Get all bug ID's for specified bugzilla query parameters."""
 
-def get_bug_ids(bz_params):
-    """Get all bug ID's for specified bugzilla query parameters."""
+        def _fetch():
+            r = requests.get(
+                f"{self._bzurl}/rest/bug",
+                params=bz_params
+            )
 
-    def _fetch():
-        r = requests.get(
-            f"{BZURL}/rest/bug",
-            params=bz_params
-        )
+            if r.status_code != 200:
+                raise RuntimeError(f"failed to query bug ids from the TDF bugzilla! (status:{r.status_code})")
+            return r.text
 
-        if r.status_code != 200:
-            raise RuntimeError(f"failed to query bug ids from the TDF bugzilla! (status:{r.status_code})")
-        return r.text
+        limit = bz_params["limit"]
+        offset = bz_params["offset"]
+        cache_file = self._cache_dir / f"bug-ids-{limit}-{offset}.json"
+        s = self._get_cache_content(cache_file, _fetch)
 
-    limit = bz_params["limit"]
-    offset = bz_params["offset"]
-    cache_file = CACHE_DIR / f"bug-ids-{limit}-{offset}.json"
-    s = get_cache_content(cache_file, _fetch)
+        content = json.loads(s)
+        bugs = content.get("bugs")
+        if not bugs:
+            return []
 
-    content = json.loads(s)
-    bugs = content.get("bugs")
-    if not bugs:
-        return []
+        bug_ids = [bug.get("id") for bug in bugs]
+        bug_ids = [x for x in filter(None, bug_ids)]
+        return bug_ids
 
-    bug_ids = [bug.get("id") for bug in bugs]
-    bug_ids = [x for x in filter(None, bug_ids)]
-    return bug_ids
+    def get_attachments(self, bug_id):
+        """Fetch all attachments for specified bug."""
 
+        def _fetch():
+            r = requests.get(f"{self._bzurl}/rest/bug/{bug_id}/attachment")
+            if r.status_code != 200:
+                raise RuntimeError(
+                    f"failed to fetch the attachments for bug {bug_id}! (status:{r.status_code})")
+            return r.text
 
-def get_attachments(bug_id):
-    """Fetch all attachments for specified bug."""
-
-    def _fetch():
-        r = requests.get(f"{BZURL}/rest/bug/{bug_id}/attachment")
-        if r.status_code != 200:
-            raise RuntimeError(f"failed to fetch the attachments for bug {bug_id}! (status:{r.status_code})")
-        return r.text
-
-    cache_file = CACHE_DIR / f"attachments-{bug_id}.json"
-    s = get_cache_content(cache_file, _fetch)
-    content = json.loads(s)
-    attachments = list()
-    for d in content["bugs"][str(bug_id)]:
-        data = d["data"]
-        bytes = base64.b64decode(data)
-        attachments.append({
-            "content_type": d["content_type"],
-            "filename": d["file_name"],
-            "data": bytes
-        })
-    return attachments
+        cache_file = self._cache_dir / f"attachments-{bug_id}.json"
+        s = get_cache_content(cache_file, _fetch)
+        content = json.loads(s)
+        attachments = list()
+        for d in content["bugs"][str(bug_id)]:
+            data = d["data"]
+            bytes = base64.b64decode(data)
+            attachments.append({
+                "content_type": d["content_type"],
+                "filename": d["file_name"],
+                "data": bytes
+            })
+        return attachments
 
 
 def main():
@@ -109,17 +111,15 @@ def main():
     bz_params["limit"] = args.limit
     bz_params["offset"] = args.offset
 
-    global BZURL, CACHE_DIR
-    BZURL = args.url
     url = urlparse(args.url)
-    CACHE_DIR = Path(args.cache_dir) / url.netloc
-    os.makedirs(CACHE_DIR, exist_ok=True)
+    cache_dir = Path(args.cache_dir) / url.netloc
+    bz = BugzillaAccess(args.url, cache_dir)
 
     def _run(bug_id, index, totals):
         """Top-level function for each worker thread."""
         print(f"({index+1}/{totals}) fetching attachments for bug {bug_id} ...", flush=True)
 
-        attachments = get_attachments(bug_id)
+        attachments = bz.get_attachments(bug_id)
         for attachment in attachments:
             filepath = os.path.join(args.outdir, str(bug_id), attachment["filename"])
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
@@ -128,7 +128,7 @@ def main():
 
     iter_count = 0
     while True:
-        bug_ids = get_bug_ids(bz_params)
+        bug_ids = bz.get_bug_ids(bz_params)
         if not bug_ids:
             return
         print(f"-- iteration {iter_count+1}", flush=True)
