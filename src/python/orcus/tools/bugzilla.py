@@ -14,11 +14,12 @@ import os
 import os.path
 import base64
 import concurrent.futures as cf
+from pathlib import Path
+from urllib.parse import urlparse
 
 
-BZURL = "bugs.documentfoundation.org"
-CACHE_DIR = os.path.join(os.path.dirname(__file__), ".download-files")
-os.makedirs(CACHE_DIR, exist_ok=True)
+BZURL = None
+CACHE_DIR = None
 
 
 def get_cache_content(cache_file, func_fetch):
@@ -38,7 +39,7 @@ def get_bug_ids(bz_params):
 
     def _fetch():
         r = requests.get(
-            f"https://{BZURL}/rest/bug",
+            f"{BZURL}/rest/bug",
             params=bz_params
         )
 
@@ -48,7 +49,7 @@ def get_bug_ids(bz_params):
 
     limit = bz_params["limit"]
     offset = bz_params["offset"]
-    cache_file = os.path.join(CACHE_DIR, BZURL, f"bug-ids-{limit}-{offset}.json")
+    cache_file = CACHE_DIR / f"bug-ids-{limit}-{offset}.json"
     s = get_cache_content(cache_file, _fetch)
 
     content = json.loads(s)
@@ -65,12 +66,12 @@ def get_attachments(bug_id):
     """Fetch all attachments for specified bug."""
 
     def _fetch():
-        r = requests.get(f"https://{BZURL}/rest/bug/{bug_id}/attachment")
+        r = requests.get(f"{BZURL}/rest/bug/{bug_id}/attachment")
         if r.status_code != 200:
             raise RuntimeError(f"failed to fetch the attachments for bug {bug_id}! (status:{r.status_code})")
         return r.text
 
-    cache_file = os.path.join(CACHE_DIR, BZURL, f"attachments-{bug_id}.json")
+    cache_file = CACHE_DIR / f"attachments-{bug_id}.json"
     s = get_cache_content(cache_file, _fetch)
     content = json.loads(s)
     attachments = list()
@@ -86,22 +87,33 @@ def get_attachments(bug_id):
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Tool to download attachments from a bugzilla database.")
     parser.add_argument("--outdir", "-o", type=str, required=True, help="Output directory for downloaded files.")
-    parser.add_argument("--limit", type=int, default=500, help="Number of bugs to include in a single search.")
+    parser.add_argument("--limit", type=int, default=50, help="Number of bugs to include in a single search.")
     parser.add_argument("--offset", type=int, default=0, help="Number of bugs to skip in the search results.")
-    parser.add_argument("--cont", action="store_true", default=False,
+    parser.add_argument(
+        "--cont", action="store_true", default=False,
         help="""When specified, the search continues after the initial search
         is returned until the entire search results are exhausted.""")
-    parser.add_argument("--worker", type=int, default=8,
+    parser.add_argument(
+        "--worker", type=int, default=8,
         help="Number of worker threads to use for parallel downloads of files.")
+    parser.add_argument(
+        "--cache-dir", type=Path, default=Path(".bugzilla"),
+        help="Directory to keep cached downloads.")
+    parser.add_argument(
+        "--url", type=str, required=True, help="Base URL for bugzilla service.")
     args = parser.parse_args()
 
     bz_params = {"product": "LibreOffice", "component": "Calc"}
     bz_params["limit"] = args.limit
     bz_params["offset"] = args.offset
 
-    os.makedirs(os.path.join(CACHE_DIR, BZURL), exist_ok=True)
+    global BZURL, CACHE_DIR
+    BZURL = args.url
+    url = urlparse(args.url)
+    CACHE_DIR = Path(args.cache_dir) / url.netloc
+    os.makedirs(CACHE_DIR, exist_ok=True)
 
     def _run(bug_id, index, totals):
         """Top-level function for each worker thread."""
