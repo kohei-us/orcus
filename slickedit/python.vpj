@@ -56,8 +56,8 @@
             GUID="{F5A8F7E8-3CA5-495A-9013-3B118350F9DE}">
             <F N="../src/python/orcus/__init__.py"/>
             <F N="../src/python/orcus/tools/__init__.py"/>
+            <F N="../src/python/orcus/tools/bugzilla.py"/>
             <F N="../src/python/orcus/csv.py"/>
-            <F N="../bin/download-files.py"/>
             <F N="../misc/file-processor-modules/extract_formulas.py"/>
             <F N="../src/python/orcus/tools/file_processor.py"/>
             <F N="../src/python/orcus/gnumeric.py"/>
