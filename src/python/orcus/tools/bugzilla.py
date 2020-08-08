@@ -11,6 +11,7 @@ import requests
 import json
 import os
 import base64
+import traceback
 import concurrent.futures as cf
 from pathlib import Path
 from urllib.parse import urlparse
@@ -85,6 +86,8 @@ class BugzillaAccess:
         attachments = list()
         for d in content["bugs"][str(bug_id)]:
             data = d["data"]
+            if not data:
+                continue
             bytes = base64.b64decode(data)
             attachments.append({
                 "content_type": d["content_type"],
@@ -153,6 +156,7 @@ def main():
                 with open(filepath, "wb") as f:
                     f.write(attachment["data"])
         except Exception as e:
+            traceback.print_exc()
             print(e)
 
     iter_count = 0
