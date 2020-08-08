@@ -18,6 +18,12 @@ from urllib.parse import urlparse
 
 
 class BugzillaAccess:
+    """Encapsulates access to a bugzilla server by using its REST API.
+
+    Args:
+        bzurl (str): URL to the bugzilla server.
+        cache_dir (:obj:`pathlib.Path`): path to the cache directory.
+    """
 
     def __init__(self, bzurl, cache_dir):
         self._bzurl = bzurl
@@ -38,8 +44,13 @@ class BugzillaAccess:
     def get_bug_ids(self, bz_params):
         """Get all bug ID's for specified bugzilla query parameters.
 
-        Returns:
-            list of bug ID's.
+        Args:
+            bz_params (dict):
+                dictionary containing all search parameters. Each search term
+                must form a single key-value pair.
+
+        Returns (:obj:`list` of :obj:`str`):
+            list of bug ID strings.
         """
 
         def _fetch():
@@ -114,23 +125,42 @@ def parse_query_params(queries):
 
 
 def _create_argparser():
-    parser = argparse.ArgumentParser(description="Tool to download attachments from a bugzilla database.")
-    parser.add_argument("--outdir", "-o", type=str, required=True, help="Output directory for downloaded files.")
-    parser.add_argument("--limit", type=int, default=50, help="Number of bugs to include in a single search.")
-    parser.add_argument("--offset", type=int, default=0, help="Number of bugs to skip in the search results.")
+    parser = argparse.ArgumentParser(
+        description="""This command allows you to download attachments from a
+bugzilla server that supports REST API.""")
+    parser.add_argument(
+        "--outdir", "-o", type=str, required=True,
+        help="""output directory for downloaded files. Downloaded files are
+grouped by their respective bug ID's.""")
+    parser.add_argument(
+        "--limit", type=int, default=50,
+        help="number of bugs to include in a single set of search results.")
+    parser.add_argument(
+        "--offset", type=int, default=0,
+        help="number of bugs to skip in the search results.")
     parser.add_argument(
         "--cont", action="store_true", default=False,
-        help="""When specified, the search continues after the initial search
-        is returned until the entire search results are exhausted.""")
+        help="""when specified, the search continues after the initial batch
+is returned, by retrieving the next batch of results until the entire search
+results are returned. The number specified by the ``--limit`` option is used
+as the batch size.""")
     parser.add_argument(
         "--worker", type=int, default=8,
-        help="Number of worker threads to use for parallel downloads of files.")
+        help="number of worker threads to use for parallel downloads of files.")
     parser.add_argument(
         "--cache-dir", type=Path, default=Path(".bugzilla"),
-        help="Directory to keep cached downloads.")
+        help="""directory to keep downloaded bugzilla search results. The
+command will not send the query request to the remote server when the results
+are cached. You may want to delete the cache directory after you are finished.""")
     parser.add_argument(
-        "--url", type=str, required=True, help="Base URL for bugzilla service.")
-    parser.add_argument("query", type=str, nargs='*')
+        "--url", type=str, required=True,
+        help="""base URL for bugzilla service. It must begin with the
+``http(s)://`` prefix.""")
+    parser.add_argument(
+        "query", type=str, nargs='*',
+        help="""One or more query term to use to limit your search. Each query
+term must be in the form key=value. You need to quote the value string when the
+value string contains whitespace character i.e. key="value with space".""")
     return parser
 
 
