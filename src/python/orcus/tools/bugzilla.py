@@ -49,9 +49,15 @@ class BugzillaAccess:
                 raise RuntimeError(f"failed to query bug ids from the TDF bugzilla! (status:{r.status_code})")
             return r.text
 
-        limit = bz_params["limit"]
-        offset = bz_params["offset"]
-        cache_file = self._cache_dir / f"bug-ids-{limit}-{offset}.json"
+        buf = []
+        for key in bz_params.keys():
+            v = str(bz_params[key])
+            v = v.replace(' ', '-')
+            buf.append(key)
+            buf.append(v)
+
+        cache_file = '-'.join(buf) + ".json"
+        cache_file = self._cache_dir / cache_file
         s = self._get_cache_content(cache_file, _fetch)
 
         content = json.loads(s)
@@ -74,7 +80,7 @@ class BugzillaAccess:
             return r.text
 
         cache_file = self._cache_dir / f"attachments-{bug_id}.json"
-        s = get_cache_content(cache_file, _fetch)
+        s = self._get_cache_content(cache_file, _fetch)
         content = json.loads(s)
         attachments = list()
         for d in content["bugs"][str(bug_id)]:
@@ -86,6 +92,18 @@ class BugzillaAccess:
                 "data": bytes
             })
         return attachments
+
+
+def parse_query_params(queries):
+    bz_params = dict()
+    for query in queries:
+        k, v = query.split('=')
+        if v and v[0] in ('"', "'"):
+            if v[0] != v[-1]:
+                raise argparse.ArgumentError(f"mis-matched quotes in {query}")
+            v = v[1:-1]
+        bz_params[k] = v
+    return bz_params
 
 
 def main():
@@ -105,9 +123,14 @@ def main():
         help="Directory to keep cached downloads.")
     parser.add_argument(
         "--url", type=str, required=True, help="Base URL for bugzilla service.")
+    parser.add_argument("query", type=str, nargs='*')
     args = parser.parse_args()
 
-    bz_params = {"product": "LibreOffice", "component": "Calc"}
+    bz_params = parse_query_params(args.query)
+
+    for k, v in bz_params.items():
+        print(f"{k}: {v}")
+
     bz_params["limit"] = args.limit
     bz_params["offset"] = args.offset
 
@@ -119,12 +142,15 @@ def main():
         """Top-level function for each worker thread."""
         print(f"({index+1}/{totals}) fetching attachments for bug {bug_id} ...", flush=True)
 
-        attachments = bz.get_attachments(bug_id)
-        for attachment in attachments:
-            filepath = os.path.join(args.outdir, str(bug_id), attachment["filename"])
-            os.makedirs(os.path.dirname(filepath), exist_ok=True)
-            with open(filepath, "wb") as f:
-                f.write(attachment["data"])
+        try:
+            attachments = bz.get_attachments(bug_id)
+            for attachment in attachments:
+                filepath = os.path.join(args.outdir, str(bug_id), attachment["filename"])
+                os.makedirs(os.path.dirname(filepath), exist_ok=True)
+                with open(filepath, "wb") as f:
+                    f.write(attachment["data"])
+        except Exception as e:
+            print(e)
 
     iter_count = 0
     while True:
