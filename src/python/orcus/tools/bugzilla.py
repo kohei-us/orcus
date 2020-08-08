@@ -140,7 +140,10 @@ def main():
 
     def _run(bug_id, index, totals):
         """Top-level function for each worker thread."""
-        print(f"({index+1}/{totals}) fetching attachments for bug {bug_id} ...", flush=True)
+        width = len(str(totals))
+        index_s = str(index+1)
+        index_s = ' ' * (width - len(index_s)) + index_s
+        print(f"({index_s}/{totals}) fetching attachments for bug {bug_id} ...", flush=True)
 
         try:
             attachments = bz.get_attachments(bug_id)
