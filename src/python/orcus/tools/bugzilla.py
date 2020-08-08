@@ -36,7 +36,11 @@ class BugzillaAccess:
         return s
 
     def get_bug_ids(self, bz_params):
-        """Get all bug ID's for specified bugzilla query parameters."""
+        """Get all bug ID's for specified bugzilla query parameters.
+
+        Returns:
+            list of bug ID's.
+        """
 
         def _fetch():
             r = requests.get(

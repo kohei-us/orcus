@@ -36,7 +36,7 @@ sys.path.insert(0, str(py_root_path))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["breathe", "sphinxarg.ext", "sphinxcontrib.napoleon", "sphinx.ext.autodoc"]
+extensions = ["breathe", "sphinxarg.ext", "sphinx.ext.napoleon", "sphinx.ext.autodoc"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
