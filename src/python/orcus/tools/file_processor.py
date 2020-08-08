@@ -210,7 +210,7 @@ def process_filepath(i, inpath, outpath, processor_path):
     return "\n".join(term_buf)
 
 
-def main():
+def _create_argparser():
     parser = argparse.ArgumentParser(
         description="""This script allows you to process a collection of spreadsheet documents.""")
     parser.add_argument(
@@ -236,6 +236,11 @@ def main():
     parser.add_argument(
         "rootdir", metavar="ROOT-DIR",
         help="Root directory below which to recursively find and process test files.")
+    return parser
+
+
+def main():
+    parser = _create_argparser()
     args = parser.parse_args()
 
     if args.remove_results:

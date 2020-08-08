@@ -113,7 +113,7 @@ def parse_query_params(queries):
     return bz_params
 
 
-def main():
+def _create_argparser():
     parser = argparse.ArgumentParser(description="Tool to download attachments from a bugzilla database.")
     parser.add_argument("--outdir", "-o", type=str, required=True, help="Output directory for downloaded files.")
     parser.add_argument("--limit", type=int, default=50, help="Number of bugs to include in a single search.")
@@ -131,6 +131,11 @@ def main():
     parser.add_argument(
         "--url", type=str, required=True, help="Base URL for bugzilla service.")
     parser.add_argument("query", type=str, nargs='*')
+    return parser
+
+
+def main():
+    parser = _create_argparser()
     args = parser.parse_args()
 
     bz_params = parse_query_params(args.query)
