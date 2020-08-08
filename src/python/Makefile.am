@@ -80,6 +80,7 @@ orcus_DATA = \
 
 orcustools_DATA = \
 	./orcus/tools/__init__.py \
+	./orcus/tools/bugzilla.py \
 	./orcus/tools/file_processor.py
 
 EXTRA_DIST = \
@@ -91,6 +92,7 @@ EXTRA_DIST = \
 	./orcus/xls_xml.py \
 	./orcus/xlsx.py \
 	./orcus/tools/__init__.py \
+	./orcus/tools/bugzilla.py \
 	./orcus/tools/file_processor.py
 
 AM_TESTS_ENVIRONMENT = PYTHONPATH=$(top_srcdir)/src/python:.libs$${PYTHONPATH:+:$${PYTHONPATH}}; export PYTHONPATH;
