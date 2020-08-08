@@ -278,3 +278,6 @@ breathe_default_project = "orcus"
 breathe_default_members = ('members', 'undoc-members')
 
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
+
+autodoc_member_order = "bysource"
+

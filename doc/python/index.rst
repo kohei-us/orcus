@@ -7,4 +7,5 @@ Python API
 
    spreadsheet.rst
    file_loader.rst
+   types.rst
    tools.rst

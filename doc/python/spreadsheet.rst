@@ -14,6 +14,14 @@ Spreadsheet Document
       Read-only attribute that stores a tuple of :py:class:`.Sheet` instance
       objects.
 
+   .. py:function:: get_named_expressions
+
+      Get a named expressions iterator.
+
+      Returns (:obj:`.NamedExpressions`):
+          Named expression object.
+
+
 .. py:class:: Sheet
 
    An instance of this class represents a single sheet inside a document.
@@ -33,6 +41,24 @@ Spreadsheet Document
          for row in rows:
              print(row)  # tuple of cell values
 
+   .. py:function:: get_named_expressions
+
+      Get a named expressions iterator.
+
+      Returns (:obj:`.NamedExpressions`):
+          Named expression object.
+
+   .. py:function:: write
+
+      Write sheet content to specified file object.
+
+      Args:
+          file:
+              writable object to write the sheet content to.
+          format (:obj:`.FormatType`):
+              format of the output. Note that it currently only supports a
+              subset of the formats provided by the :obj:`.FormatType` type.
+
    .. py:attribute:: name
 
       Read-only attribute that stores the name of the sheet.
@@ -50,6 +76,17 @@ Spreadsheet Document
       cells in the sheet.  The top-left corner of the data region is always at
       the top-left corner of the sheet.
 
+
 .. py:class:: SheetRows
 
-   An instance of this class represents an iterator for rows inside a sheet.
+   Iterator for rows within a sheet.
+
+
+.. py:class:: NamedExpressions
+
+   Iterator for named expressions.
+
+   .. py:attribute:: names
+      :type: set
+
+      A set of strings representing the names of the named expressions.

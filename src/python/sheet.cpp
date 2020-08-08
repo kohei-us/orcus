@@ -162,6 +162,7 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
 
     spreadsheet::sheet* sheet = get_core_sheet(self);
 
+    // TODO: support format types other than CSV.
     std::ostringstream os;
     sheet->dump_csv(os);
     std::string s = os.str();
