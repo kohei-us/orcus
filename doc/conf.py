@@ -27,7 +27,6 @@ if rtd_build:
 py_root_path = Path(".") / ".." / "src" / "python"
 py_root_path = py_root_path.absolute()
 sys.path.insert(0, str(py_root_path))
-sys.path.insert(0, str(py_root_path / ".libs"))
 
 # -- General configuration ------------------------------------------------
 
