@@ -9,9 +9,7 @@
 import argparse
 import requests
 import json
-import pprint
 import os
-import os.path
 import base64
 import concurrent.futures as cf
 from pathlib import Path
@@ -49,10 +47,12 @@ class BugzillaAccess:
                 raise RuntimeError(f"failed to query bug ids from the TDF bugzilla! (status:{r.status_code})")
             return r.text
 
+        escape_chars = " /"
         buf = []
         for key in bz_params.keys():
             v = str(bz_params[key])
-            v = v.replace(' ', '-')
+            for c in escape_chars:
+                v = v.replace(c, '-')
             buf.append(key)
             buf.append(v)
 
@@ -145,7 +145,7 @@ def main():
         try:
             attachments = bz.get_attachments(bug_id)
             for attachment in attachments:
-                filepath = os.path.join(args.outdir, str(bug_id), attachment["filename"])
+                filepath = Path(args.outdir) / url.netloc / str(bug_id) / attachment["filename"]
                 os.makedirs(os.path.dirname(filepath), exist_ok=True)
                 with open(filepath, "wb") as f:
                     f.write(attachment["data"])
