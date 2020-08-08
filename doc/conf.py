@@ -15,6 +15,7 @@
 
 import sys
 import os
+from pathlib import Path
 import subprocess
 
 rtd_build = os.environ.get('READTHEDOCS', None) == 'True'
@@ -22,10 +23,11 @@ rtd_build = os.environ.get('READTHEDOCS', None) == 'True'
 if rtd_build:
     subprocess.call("cd doc; doxygen doxygen.conf", shell=True)
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+# Set paths for python modules (for autodoc). The paths must be absolute.
+py_root_path = Path(".") / ".." / "src" / "python"
+py_root_path = py_root_path.absolute()
+sys.path.insert(0, str(py_root_path))
+sys.path.insert(0, str(py_root_path / ".libs"))
 
 # -- General configuration ------------------------------------------------
 
@@ -35,7 +37,7 @@ if rtd_build:
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['breathe']
+extensions = ["breathe", "sphinxarg.ext", "sphinxcontrib.napoleon", "sphinx.ext.autodoc"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -51,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Orcus'
-copyright = '2018, Kohei Yoshida'
+copyright = '2020, Kohei Yoshida'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
