@@ -2,10 +2,12 @@
 Python API
 ==========
 
+Modules
+-------
+
 .. toctree::
    :maxdepth: 1
 
-   spreadsheet.rst
-   file_loader.rst
-   types.rst
-   tools.rst
+   orcus/index.rst
+   orcus/tools/index.rst
+   orcus/xlsx/index.rst

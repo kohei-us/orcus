@@ -1,28 +1,8 @@
 
-Spreadsheet Document
-====================
+Sheet
+=====
 
-.. py:module:: orcus
-
-.. py:class:: Document
-
-   An instance of this class represents a document model.  A document consists
-   of multiple sheet objects.
-
-   .. py:attribute:: sheets
-
-      Read-only attribute that stores a tuple of :py:class:`.Sheet` instance
-      objects.
-
-   .. py:function:: get_named_expressions
-
-      Get a named expressions iterator.
-
-      Returns (:obj:`.NamedExpressions`):
-          Named expression object.
-
-
-.. py:class:: Sheet
+.. py:class:: orcus.Sheet
 
    An instance of this class represents a single sheet inside a document.
 
@@ -75,18 +55,3 @@ Spreadsheet Document
       The data region is the smallest possible range that includes all non-empty
       cells in the sheet.  The top-left corner of the data region is always at
       the top-left corner of the sheet.
-
-
-.. py:class:: SheetRows
-
-   Iterator for rows within a sheet.
-
-
-.. py:class:: NamedExpressions
-
-   Iterator for named expressions.
-
-   .. py:attribute:: names
-      :type: set
-
-      A set of strings representing the names of the named expressions.

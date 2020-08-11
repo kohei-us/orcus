@@ -1,10 +1,8 @@
 
-File Loader
-===========
+orcus.xlsx
+==========
 
-.. py:module:: orcus.xlsx
-
-.. py:function:: read_file
+.. py:function:: orcus.xlsx.read_file
 
    Read an Excel file from a specified file path and create a
    :py:class:`orcus.Document` instance object.  The file must be of Excel 2007
