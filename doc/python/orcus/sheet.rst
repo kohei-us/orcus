@@ -25,19 +25,18 @@ Sheet
 
       Get a named expressions iterator.
 
-      Returns (:obj:`.NamedExpressions`):
-          Named expression object.
+      :rtype: :obj:`.NamedExpressions`
+      :return: named expression object.
 
    .. py:function:: write
 
       Write sheet content to specified file object.
 
-      Args:
-          file:
-              writable object to write the sheet content to.
-          format (:obj:`.FormatType`):
-              format of the output. Note that it currently only supports a
-              subset of the formats provided by the :obj:`.FormatType` type.
+      :param file: writable object to write the sheet content to.
+      :param format: format of the output. Note that it currently
+          only supports a subset of the formats provided by the :obj:`.FormatType`
+          type.
+      :type format: :obj:`.FormatType`
 
    .. py:attribute:: name
 

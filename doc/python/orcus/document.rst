@@ -16,5 +16,6 @@ Document
 
       Get a named expressions iterator.
 
-      Returns (:obj:`.NamedExpressions`):
-          Named expression object.
+      :rtype: :obj:`.NamedExpressions`
+      :return: named expression object.
+
