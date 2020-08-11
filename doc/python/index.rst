@@ -2,8 +2,8 @@
 Python API
 ==========
 
-Modules
--------
+Packages
+--------
 
 .. toctree::
    :maxdepth: 1
