@@ -2,8 +2,6 @@
 orcus
 =====
 
-TBD
-
 .. toctree::
    :maxdepth: 1
 
