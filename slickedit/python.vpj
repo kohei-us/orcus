@@ -59,11 +59,20 @@
             <F N="../src/python/orcus/tools/bugzilla.py"/>
             <F N="../src/python/orcus/csv.py"/>
             <F N="../misc/file-processor-modules/extract_formulas.py"/>
+            <F N="../test/python/file_load_common.py"/>
             <F N="../src/python/orcus/tools/file_processor.py"/>
             <F N="../src/python/orcus/gnumeric.py"/>
             <F N="../src/python/orcus/json.py"/>
             <F N="../src/python/orcus/ods.py"/>
             <F N="../misc/file-processor-modules/preview.py"/>
+            <F N="../test/python/test_csv.py"/>
+            <F N="../test/python/test_csv_export.py"/>
+            <F N="../test/python/test_gnumeric.py"/>
+            <F N="../test/python/test_json.py"/>
+            <F N="../test/python/test_module.py"/>
+            <F N="../test/python/test_ods.py"/>
+            <F N="../test/python/test_xls_xml.py"/>
+            <F N="../test/python/test_xlsx.py"/>
             <F N="../src/python/orcus/xls_xml.py"/>
             <F N="../src/python/orcus/xlsx.py"/>
         </Folder>
