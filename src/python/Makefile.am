@@ -98,35 +98,35 @@ EXTRA_DIST = \
 AM_TESTS_ENVIRONMENT = PYTHONPATH=$(top_srcdir)/src/python:.libs$${PYTHONPATH:+:$${PYTHONPATH}}; export PYTHONPATH;
 
 TESTS = \
-	../../test/python/json.py \
-	../../test/python/module.py \
-	../../test/python/csv.py \
-	../../test/python/csv_export.py
+	../../test/python/test_json.py \
+	../../test/python/test_module.py \
+	../../test/python/test_csv.py \
+	../../test/python/test_csv_export.py
 
 if WITH_PYTHON_XLSX
 
-TESTS += ../../test/python/xlsx.py
+TESTS += ../../test/python/test_xlsx.py
 AM_TESTS_ENVIRONMENT += export WITH_PYTHON_XLSX=1;
 
 endif # WITH_PYTHON_XLSX
 
 if WITH_PYTHON_ODS
 
-TESTS += ../../test/python/ods.py
+TESTS += ../../test/python/test_ods.py
 AM_TESTS_ENVIRONMENT += export WITH_PYTHON_ODS=1;
 
 endif # WITH_PYTHON_ODS
 
 if WITH_PYTHON_XLS_XML
 
-TESTS += ../../test/python/xls_xml.py
+TESTS += ../../test/python/test_xls_xml.py
 AM_TESTS_ENVIRONMENT += export WITH_PYTHON_XLS_XML=1;
 
 endif # WITH_PYTHON_XLS_XML
 
 if WITH_PYTHON_GNUMERIC
 
-TESTS += ../../test/python/gnumeric.py
+TESTS += ../../test/python/test_gnumeric.py
 AM_TESTS_ENVIRONMENT += export WITH_PYTHON_GNUMERIC=1;
 
 endif # WITH_PYTHON_GNUMERIC
