@@ -10,12 +10,21 @@
 import unittest
 import orcus
 import os.path
+import json
+from pathlib import Path
 
 
 class ModuleTest(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        with open(Path(__file__).parent / "env.json", "r") as f:
+            cls.env = json.load(f)
+
     def test_version(self):
         s = orcus.__version__
+        expected = f"{self.env['version-major']}.{self.env['version-minor']}.{self.env['version-micro']}"
+        self.assertEqual(expected, s)
 
     def test_detect_format(self):
         test_root_dir = os.path.join(os.path.dirname(__file__), "..")
