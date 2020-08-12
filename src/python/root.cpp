@@ -21,17 +21,6 @@ using namespace std;
 
 namespace orcus { namespace python {
 
-PyObject* info(PyObject*, PyObject*, PyObject*)
-{
-    cout << "orcus version: "
-        << orcus::get_version_major() << '.'
-        << orcus::get_version_minor() << '.'
-        << orcus::get_version_micro() << endl;
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
 PyObject* detect_format(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
     stream_data data = read_stream_object_from_args(args, kwargs);

@@ -8,6 +8,7 @@
 
 try:
     from _orcus import *
+    from _orcus import __version__
 except ModuleNotFoundError:
     # We do this to enable sphinx to generate documentation without having to
     # build the C++ part.

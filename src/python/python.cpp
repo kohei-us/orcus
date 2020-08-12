@@ -27,6 +27,7 @@
 #endif
 
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include <Python.h>
@@ -57,8 +58,6 @@ void print_args(PyObject* args)
 
 PyMethodDef orcus_methods[] =
 {
-    { "info", (PyCFunction)info, METH_NOARGS, "Print orcus module information." },
-
     { "detect_format", (PyCFunction)detect_format, METH_VARARGS | METH_KEYWORDS,
       "Detect the format type of a spreadsheet file." },
 
@@ -113,6 +112,20 @@ bool add_type_to_module(PyObject* m, PyTypeObject* typeobj, const char* type_nam
     return true;
 }
 
+bool populate_module_attributes(PyObject* m)
+{
+    std::ostringstream os;
+    os << orcus::get_version_major() << '.'
+        << orcus::get_version_minor() << '.'
+        << orcus::get_version_micro();
+
+    PyObject* version = PyUnicode_FromString(os.str().data());
+    if (PyModule_AddObject(m, "__version__", version) < 0)
+        return false;
+
+    return true;
+}
+
 }
 
 struct PyModuleDef moduledef =
@@ -135,6 +148,8 @@ extern "C" {
 ORCUS_DLLPUBLIC PyObject* PyInit__orcus()
 {
     PyObject* m = PyModule_Create(&orcus::python::moduledef);
+    if (!orcus::python::populate_module_attributes(m))
+        return nullptr;
 
 #ifdef __ORCUS_SPREADSHEET_MODEL
     if (!orcus::python::add_type_to_module(m, orcus::python::get_document_type(), "Document"))

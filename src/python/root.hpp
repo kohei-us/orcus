@@ -12,8 +12,6 @@
 
 namespace orcus { namespace python {
 
-PyObject* info(PyObject* module, PyObject* args, PyObject* kwargs);
-
 PyObject* detect_format(PyObject* module, PyObject* args, PyObject* kwargs);
 
 }}

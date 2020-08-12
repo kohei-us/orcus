@@ -14,8 +14,8 @@ import os.path
 
 class ModuleTest(unittest.TestCase):
 
-    def test_info(self):
-        orcus.info()
+    def test_version(self):
+        s = orcus.__version__
 
     def test_detect_format(self):
         test_root_dir = os.path.join(os.path.dirname(__file__), "..")
