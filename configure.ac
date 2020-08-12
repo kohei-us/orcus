@@ -1,4 +1,4 @@
-#		             -*- Autoconf -*-
+#                            -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
@@ -104,16 +104,16 @@ AC_ARG_ENABLE(debug-utils,
 # Debug
 # =====
 AC_ARG_ENABLE(debug,
-	AS_HELP_STRING([--enable-debug], [Build with debug features in mind.]),
-	[enable_debug="$enableval"],
-	[enable_debug=no]
+        AS_HELP_STRING([--enable-debug], [Build with debug features in mind.]),
+        [enable_debug="$enableval"],
+        [enable_debug=no]
 )
 AS_IF([test "x$enable_debug" != "xno"], [
-	CXXFLAGS="$CXXFLAGS -g -O0 -DMDDS_ASSERT_STRING_MAP"
+        CXXFLAGS="$CXXFLAGS -g -O0 -DMDDS_ASSERT_STRING_MAP"
         enable_debug_utils=yes
 ], [
-	CXXFLAGS="$CXXFLAGS -O2"
-	AC_DEFINE([NDEBUG], [], [Disable debugging information])
+        CXXFLAGS="$CXXFLAGS -O2"
+        AC_DEFINE([NDEBUG], [], [Disable debugging information])
 ])
 
 AS_IF([test "x$enable_debug_utils" != "xno"], [
@@ -129,8 +129,8 @@ PKG_CHECK_MODULES([ZLIB], [zlib])
 AC_ARG_WITH(tools,
             AS_HELP_STRING([--without-tools],
                            [Disables building of binary executable tools.]),
-	[with_tools="$withval"],
-	[with_tools=yes]
+        [with_tools="$withval"],
+        [with_tools=yes]
 )
 
 # ==================
@@ -139,8 +139,8 @@ AC_ARG_WITH(tools,
 AC_ARG_WITH(ods-filter,
             AS_HELP_STRING([--without-ods-filter],
                            [Disables the OpenDocument Format spreadsheet import filter.]),
-	[with_ods_filter="$withval"],
-	[with_ods_filter=yes]
+        [with_ods_filter="$withval"],
+        [with_ods_filter=yes]
 )
 
 # ===================
@@ -149,8 +149,8 @@ AC_ARG_WITH(ods-filter,
 AC_ARG_WITH(xlsx-filter,
             AS_HELP_STRING([--without-xlsx-filter],
                            [Disables the Microsoft Excel OOXML import filter.]),
-	[with_xlsx_filter="$withval"],
-	[with_xlsx_filter=yes]
+        [with_xlsx_filter="$withval"],
+        [with_xlsx_filter=yes]
 )
 
 # ======================
@@ -159,8 +159,8 @@ AC_ARG_WITH(xlsx-filter,
 AC_ARG_WITH(xls-xml-filter,
             AS_HELP_STRING([--without-xls-xml-filter],
                            [Disables the Microsoft Excel XML import filter.]),
-	[with_xls_xml_filter="$withval"],
-	[with_xls_xml_filter=yes]
+        [with_xls_xml_filter="$withval"],
+        [with_xls_xml_filter=yes]
 )
 
 # =======================
@@ -169,8 +169,8 @@ AC_ARG_WITH(xls-xml-filter,
 AC_ARG_WITH(gnumeric-filter,
             AS_HELP_STRING([--without-gnumeric-filter],
                            [Disables the gnumeric import filter. The gnumeric import filter depends on zLib.]),
-	[with_gnumeric_filter="$withval"],
-	[with_gnumeric_filter=yes]
+        [with_gnumeric_filter="$withval"],
+        [with_gnumeric_filter=yes]
 )
 
 AC_ARG_WITH(cpu-features,
@@ -186,19 +186,19 @@ AM_CONDITIONAL([WITH_GNUMERIC_FILTER], [test "x$with_gnumeric_filter" != "xno"])
 AM_CONDITIONAL([WITH_TOOLS], [test "x$with_tools" != "xno"])
 
 AS_IF([test "x$with_ods_filter" != "xno"], [
-	CXXFLAGS="$CXXFLAGS -D__ORCUS_ODS"
+        CXXFLAGS="$CXXFLAGS -D__ORCUS_ODS"
 ])
 
 AS_IF([test "x$with_xlsx_filter" != "xno"], [
-	CXXFLAGS="$CXXFLAGS -D__ORCUS_XLSX"
+        CXXFLAGS="$CXXFLAGS -D__ORCUS_XLSX"
 ])
 
 AS_IF([test "x$with_xls_xml_filter" != "xno"], [
-	CXXFLAGS="$CXXFLAGS -D__ORCUS_XLS_XML"
+        CXXFLAGS="$CXXFLAGS -D__ORCUS_XLS_XML"
 ])
 
 AS_IF([test "x$with_gnumeric_filter" != "xno"], [
-	CXXFLAGS="$CXXFLAGS -D__ORCUS_GNUMERIC"
+        CXXFLAGS="$CXXFLAGS -D__ORCUS_GNUMERIC"
         BOOST_IOSTREAMS
 ])
 
@@ -221,14 +221,14 @@ CXXFLAGS="$CXXFLAGS $MDDS_CFLAGS"
 # Spreadsheet model
 # =================
 AC_ARG_ENABLE(spreadsheet-model,
-	AS_HELP_STRING([--disable-spreadsheet-model],
-		[Disable the spreadsheet model implementation in orcus.  Note that the spreadsheet-specific command line utilities will not be built when this is disabled.]),
-	[enable_spreadsheet_model="$enableval"],
-	[enable_spreadsheet_model=yes]
+        AS_HELP_STRING([--disable-spreadsheet-model],
+                [Disable the spreadsheet model implementation in orcus.  Note that the spreadsheet-specific command line utilities will not be built when this is disabled.]),
+        [enable_spreadsheet_model="$enableval"],
+        [enable_spreadsheet_model=yes]
 )
 AS_IF([test "x$enable_spreadsheet_model" != "xno"], [
-	PKG_CHECK_MODULES([LIBIXION],[libixion-$IXION_REQUIRED_API_VERSION >= 0.15.99])
-	CXXFLAGS="$CXXFLAGS -D__ORCUS_SPREADSHEET_MODEL"
+        PKG_CHECK_MODULES([LIBIXION],[libixion-$IXION_REQUIRED_API_VERSION >= 0.15.99])
+        CXXFLAGS="$CXXFLAGS -D__ORCUS_SPREADSHEET_MODEL"
         BOOST_DATE_TIME
 ])
 AM_CONDITIONAL([BUILD_SPREADSHEET_MODEL], [test "x$enable_spreadsheet_model" != "xno"])
@@ -318,30 +318,30 @@ AM_CONDITIONAL([WITH_PYTHON_GNUMERIC], [test "x$with_python_gnumeric" != "xno"])
 # it may cause some header detections to fail.
 
 AC_ARG_ENABLE([werror],
-	[AS_HELP_STRING([--enable-werror], [Treat all warnings as errors, useful for development])],
-	[enable_werror="$enableval"],
-	[enable_werror=no]
+        [AS_HELP_STRING([--enable-werror], [Treat all warnings as errors, useful for development])],
+        [enable_werror="$enableval"],
+        [enable_werror=no]
 )
 AS_IF([test x"$enable_werror" = "xyes"], [
-	CXXFLAGS="$CXXFLAGS -Werror"
+        CXXFLAGS="$CXXFLAGS -Werror"
 ])
 
 AC_CONFIG_FILES([Makefile
-	liborcus-$ORCUS_API_VERSION.pc:liborcus.pc.in
-	liborcus-spreadsheet-model-$ORCUS_API_VERSION.pc:liborcus-spreadsheet-model.pc.in
-	include/Makefile
-	include/orcus/Makefile
-	include/orcus/detail/Makefile
-	include/orcus/mso/Makefile
-	include/orcus/spreadsheet/Makefile
-	src/Makefile
-	src/include/Makefile
-	src/liborcus/Makefile
+        liborcus-$ORCUS_API_VERSION.pc:liborcus.pc.in
+        liborcus-spreadsheet-model-$ORCUS_API_VERSION.pc:liborcus-spreadsheet-model.pc.in
+        include/Makefile
+        include/orcus/Makefile
+        include/orcus/detail/Makefile
+        include/orcus/mso/Makefile
+        include/orcus/spreadsheet/Makefile
+        src/Makefile
+        src/include/Makefile
+        src/liborcus/Makefile
         src/liborcus/constants.inl
-	src/mso/Makefile
-	src/parser/Makefile
+        src/mso/Makefile
+        src/parser/Makefile
         src/python/Makefile
-	src/spreadsheet/Makefile
+        src/spreadsheet/Makefile
         test/python/env.json
         benchmark/Makefile
         doc_example/Makefile
