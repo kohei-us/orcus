@@ -145,6 +145,30 @@ format_t to_format_type_enum(PyObject* format)
     return format_t::csv;
 }
 
+bool sheet_write_as_csv(spreadsheet::sheet* sheet, PyObject* file)
+{
+    std::ostringstream os;
+    sheet->dump_csv(os);
+    std::string s = os.str();
+
+    if (!s.empty())
+    {
+        PyObject* func_write = PyObject_GetAttrString(file, "write"); // new reference
+        if (!func_write)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "'write' function was expected, but not found.");
+            return false;
+        }
+
+        // write the content as python's utf-8 string ('s').  Use 'y' to write
+        // it as bytes (for future reference).
+        PyObject_CallFunction(func_write, "s", s.data(), nullptr);
+        Py_XDECREF(func_write);
+    }
+
+    return true;
+}
+
 }
 
 PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
@@ -157,29 +181,27 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO", const_cast<char**>(kwlist), &file, &format))
         return nullptr;
 
-    if (to_format_type_enum(format) == format_t::unknown)
+    format_t ft = to_format_type_enum(format);
+
+    if (ft == format_t::unknown)
         return nullptr;
 
     spreadsheet::sheet* sheet = get_core_sheet(self);
 
-    // TODO: support format types other than CSV.
-    std::ostringstream os;
-    sheet->dump_csv(os);
-    std::string s = os.str();
-
-    if (!s.empty())
+    switch (ft)
     {
-        PyObject* func_write = PyObject_GetAttrString(file, "write"); // new reference
-        if (!func_write)
+        case format_t::csv:
         {
-            PyErr_SetString(PyExc_RuntimeError, "'write' function was expected, but not found.");
+            if (!sheet_write_as_csv(sheet, file))
+                return nullptr;
+
+            break;
+        }
+        default:
+        {
+            PyErr_SetString(PyExc_RuntimeError, "this format is not yet supported.");
             return nullptr;
         }
-
-        // write the content as python's utf-8 string ('s').  Use 'y' to write
-        // it as bytes (for future reference).
-        PyObject_CallFunction(func_write, "s", s.data(), nullptr);
-        Py_XDECREF(func_write);
     }
 
     Py_INCREF(Py_None);
