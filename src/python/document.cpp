@@ -275,6 +275,11 @@ PyObject* import_from_stream_into_document(
     if (!import_from_stream_object(app, obj_bytes))
         return nullptr;
 
+    return create_document(std::move(doc));
+}
+
+PyObject* create_document(std::unique_ptr<spreadsheet::document>&& doc)
+{
     PyObject* obj_doc = create_document_object();
     if (!obj_doc)
         return nullptr;

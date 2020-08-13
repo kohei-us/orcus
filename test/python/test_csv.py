@@ -22,6 +22,11 @@ class DocLoader:
         with open(filepath, "r") as f:
             return csv.read(f)
 
+    def load_from_value(self, filepath):
+        with open(filepath, "r") as f:
+            content = f.read()
+        return csv.read(content)
+
 
 class TestCase(unittest.TestCase):
 

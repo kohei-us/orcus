@@ -20,10 +20,55 @@ namespace orcus { namespace python {
 
 #ifdef __ORCUS_PYTHON_CSV
 
+namespace {
+
+py_unique_ptr read_stream_object_from_string(PyObject* args, PyObject* kwargs)
+{
+    static const char* kwlist[] = { "stream", nullptr };
+
+    py_unique_ptr ret;
+    PyObject* file = nullptr;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", const_cast<char**>(kwlist), &file))
+        return ret;
+
+    if (!file)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Invalid file object has been passed.");
+        return ret;
+    }
+
+    PyObject* obj_str = nullptr;
+
+    if (PyObject_HasAttrString(file, "read"))
+    {
+        PyObject* func_read = PyObject_GetAttrString(file, "read"); // new reference
+        obj_str = PyObject_CallFunction(func_read, nullptr);
+        Py_XDECREF(func_read);
+    }
+
+    if (!obj_str)
+    {
+        if (PyObject_TypeCheck(file, &PyUnicode_Type))
+            obj_str = PyUnicode_FromObject(file); // new reference
+    }
+
+    if (!obj_str)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "failed to extract bytes from this object.");
+        return ret;
+    }
+
+    ret.reset(obj_str);
+    return ret;
+}
+
+} // anonymous namespace
+
 PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    stream_data data = read_stream_object_from_args(args, kwargs);
-    if (!data.stream)
+    py_unique_ptr str = read_stream_object_from_string(args, kwargs);
+    if (!str)
         return nullptr;
 
     try
@@ -31,11 +76,13 @@ PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
         spreadsheet::range_size_t ss{1048576, 16384};
         std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>(ss);
         spreadsheet::import_factory fact(*doc);
-        fact.set_recalc_formula_cells(data.recalc_formula_cells);
-        fact.set_formula_error_policy(data.error_policy);
         orcus_csv app(&fact);
 
-        return import_from_stream_into_document(data.stream.get(), app, std::move(doc));
+        Py_ssize_t n = 0;
+        const char* p = PyUnicode_AsUTF8AndSize(str.get(), &n);
+        app.read_stream(p, n);
+
+        return create_document(std::move(doc));
     }
     catch (const std::exception& e)
     {

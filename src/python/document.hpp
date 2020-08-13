@@ -56,6 +56,8 @@ stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs);
 PyObject* import_from_stream_into_document(
     PyObject* obj_bytes, iface::import_filter& app, std::unique_ptr<spreadsheet::document>&& doc);
 
+PyObject* create_document(std::unique_ptr<spreadsheet::document>&& doc);
+
 /**
  * Get the definition of the python class Document.
  */

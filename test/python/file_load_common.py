@@ -184,6 +184,11 @@ class DocLoader:
         with open(filepath, "rb") as f:
             return self._mod_loader.read(f, recalc=recalc)
 
+    def load_from_value(self, filepath):
+        with open(filepath, "rb") as f:
+            bytes = f.read()
+        return self._mod_loader.read(bytes, recalc=False)
+
 
 def run_test_dir(self, test_dir, doc_loader):
     """Run test case for loading a file into a document.
@@ -233,4 +238,8 @@ def run_test_dir(self, test_dir, doc_loader):
 
     # Also make sure the document loads fine without recalc.
     doc = doc_loader.load(input_file, False)
+    self.assertIsInstance(doc, orcus.Document)
+
+    # Make sure the document loads from in-memory value.
+    doc = doc_loader.load_from_value(input_file)
     self.assertIsInstance(doc, orcus.Document)
