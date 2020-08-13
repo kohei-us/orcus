@@ -40,7 +40,7 @@ class TestCase(unittest.TestCase):
 
         for test_dir in test_dirs:
             test_dir = os.path.join(self.basedir, test_dir)
-            common.run_test_dir(self, test_dir, xls_xml)
+            common.run_test_dir(self, test_dir, common.DocLoader(xls_xml))
 
     def test_skip_error_cells(self):
         filepath = os.path.join(self.basedir, "formula-cells-parse-error", "input.xml")

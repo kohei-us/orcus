@@ -16,6 +16,13 @@ from orcus import csv
 import file_load_common as common
 
 
+class DocLoader:
+
+    def load(self, filepath, recalc):
+        with open(filepath, "r") as f:
+            return csv.read(f)
+
+
 class TestCase(unittest.TestCase):
 
     @classmethod
@@ -28,7 +35,7 @@ class TestCase(unittest.TestCase):
         test_dirs = ("simple-numbers", "normal-quotes", "double-quotes", "quoted-with-delim")
         for test_dir in test_dirs:
             test_dir = os.path.join(self.basedir, test_dir)
-            common.run_test_dir(self, test_dir, csv)
+            common.run_test_dir(self, test_dir, DocLoader())
 
 
 if __name__ == '__main__':

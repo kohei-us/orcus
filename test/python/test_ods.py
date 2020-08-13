@@ -29,7 +29,7 @@ class TestCase(unittest.TestCase):
         test_dirs = ("raw-values-1", "formula-1", "formula-2")
         for test_dir in test_dirs:
             test_dir = os.path.join(self.basedir, test_dir)
-            common.run_test_dir(self, test_dir, ods)
+            common.run_test_dir(self, test_dir, common.DocLoader(ods))
 
     def test_formula_tokens(self):
         filepath = os.path.join(self.basedir, "formula-1", "input.ods")

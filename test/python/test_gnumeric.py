@@ -32,7 +32,7 @@ class TestCase(unittest.TestCase):
 
         for test_dir in test_dirs:
             test_dir = os.path.join(self.basedir, test_dir)
-            common.run_test_dir(self, test_dir, gnumeric)
+            common.run_test_dir(self, test_dir, common.DocLoader(gnumeric))
 
 
 if __name__ == '__main__':

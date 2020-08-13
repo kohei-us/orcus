@@ -39,7 +39,7 @@ class TestCase(unittest.TestCase):
 
         for test_dir in test_dirs:
             test_dir = os.path.join(self.basedir, test_dir)
-            common.run_test_dir(self, test_dir, xlsx)
+            common.run_test_dir(self, test_dir, common.DocLoader(xlsx))
 
     def test_named_expression(self):
         filepath = os.path.join(self.basedir, "named-expression", "input.xlsx")

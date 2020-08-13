@@ -134,12 +134,17 @@ PyTypeObject document_type =
     tp_new,                                   // tp_new
 };
 
-void import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes)
+bool import_from_stream_object(iface::import_filter& app, PyObject* obj_bytes)
 {
-    const char* p = PyBytes_AS_STRING(obj_bytes);
+    const char* p = PyBytes_AsString(obj_bytes);
+    if (!p)
+        return false;
+
     size_t n = PyBytes_Size(obj_bytes);
 
     app.read_stream(p, n);
+
+    return true;
 }
 
 PyObject* create_document_object()
@@ -267,7 +272,9 @@ stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs)
 PyObject* import_from_stream_into_document(
     PyObject* obj_bytes, iface::import_filter& app, std::unique_ptr<spreadsheet::document>&& doc)
 {
-    import_from_stream_object(app, obj_bytes);
+    if (!import_from_stream_object(app, obj_bytes))
+        return nullptr;
+
     PyObject* obj_doc = create_document_object();
     if (!obj_doc)
         return nullptr;

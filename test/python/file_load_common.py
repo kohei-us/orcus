@@ -175,7 +175,17 @@ def _compare_cells(expected, actual):
     return False
 
 
-def run_test_dir(self, test_dir, mod_loader):
+class DocLoader:
+
+    def __init__(self, mod_loader):
+        self._mod_loader = mod_loader
+
+    def load(self, filepath, recalc):
+        with open(filepath, "rb") as f:
+            return self._mod_loader.read(f, recalc=recalc)
+
+
+def run_test_dir(self, test_dir, doc_loader):
     """Run test case for loading a file into a document.
 
     :param test_dir: test directory that contains an input file (whose base
@@ -197,9 +207,7 @@ def run_test_dir(self, test_dir, mod_loader):
     print("input file: {}".format(input_file))
     self.assertIsNot(input_file, None)
 
-    with open(input_file, "rb") as f:
-        doc = mod_loader.read(f, recalc=True)
-
+    doc = doc_loader.load(input_file, True)
     self.assertIsInstance(doc, orcus.Document)
 
     # Sometimes the actual document contains trailing empty sheets, which the
@@ -224,7 +232,5 @@ def run_test_dir(self, test_dir, mod_loader):
             self.assertEqual(len(rows), 0)
 
     # Also make sure the document loads fine without recalc.
-    with open(input_file, "rb") as f:
-        doc = mod_loader.read(f, recalc=False)
-
+    doc = doc_loader.load(input_file, False)
     self.assertIsInstance(doc, orcus.Document)
