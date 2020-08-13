@@ -17,17 +17,17 @@ from orcus import FormatType, csv
 class MockFileObject(object):
 
     def __init__(self):
-        self.__bytes = None
+        self._content = None
 
     def write(self, bytes):
-        self.__bytes = bytes
+        self._content = bytes
 
     def read(self):
-        return self.__bytes
+        return self._content
 
     @property
     def bytes(self):
-        return self.__bytes
+        return self._content
 
 
 class TestCase(unittest.TestCase):

@@ -176,7 +176,9 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
             return nullptr;
         }
 
-        PyObject_CallFunction(func_write, "y", s.data(), nullptr);
+        // write the content as python's utf-8 string ('s').  Use 'y' to write
+        // it as bytes (for future reference).
+        PyObject_CallFunction(func_write, "s", s.data(), nullptr);
         Py_XDECREF(func_write);
     }
 
