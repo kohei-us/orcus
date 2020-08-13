@@ -209,11 +209,11 @@ document_data* get_document_data(PyObject* self)
     return reinterpret_cast<pyobj_document*>(self)->data;
 }
 
-stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs)
+stream_with_formulas read_stream_and_formula_params_from_args(PyObject* args, PyObject* kwargs)
 {
     static const char* kwlist[] = { "stream", "recalc", "error_policy", nullptr };
 
-    stream_data ret;
+    stream_with_formulas ret;
     PyObject* file = nullptr;
     int recalc_formula_cells = 0;
     const char* error_policy_s = nullptr;

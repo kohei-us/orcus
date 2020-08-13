@@ -22,7 +22,7 @@ namespace orcus { namespace python {
 
 PyObject* ods_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    stream_data data = read_stream_object_from_args(args, kwargs);
+    stream_with_formulas data = read_stream_and_formula_params_from_args(args, kwargs);
     if (!data.stream)
         return nullptr;
 

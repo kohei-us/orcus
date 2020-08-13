@@ -24,7 +24,7 @@ struct document_data
 
 document_data* get_document_data(PyObject* self);
 
-struct stream_data
+struct stream_with_formulas
 {
     py_unique_ptr stream;
     bool recalc_formula_cells = false;
@@ -33,14 +33,16 @@ struct stream_data
 
 /**
  * Extract a python object representing the byte stream from the arguments
- * passed to the python orcus.<file format>.read() function.
+ * passed to the python orcus.<file format>.read() function, as well as
+ * several parameters related to formula calculation settings.
  *
  * @param args positional argument object.
  * @param kwargs keyword argument object.
  *
- * @return object representing the bytes.
+ * @return object representing the bytes as well as formula calculation
+ *         settings.
  */
-stream_data read_stream_object_from_args(PyObject* args, PyObject* kwargs);
+stream_with_formulas read_stream_and_formula_params_from_args(PyObject* args, PyObject* kwargs);
 
 /**
  * Import a document from a python object containing the byte stream, and
