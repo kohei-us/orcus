@@ -36,6 +36,9 @@ struct stream_with_formulas
  * passed to the python orcus.<file format>.read() function, as well as
  * several parameters related to formula calculation settings.
  *
+ * This function handles the following python arguments: stream, recalc, and
+ * error_policy.
+ *
  * @param args positional argument object.
  * @param kwargs keyword argument object.
  *
@@ -43,6 +46,14 @@ struct stream_with_formulas
  *         settings.
  */
 stream_with_formulas read_stream_and_formula_params_from_args(PyObject* args, PyObject* kwargs);
+
+/**
+ * This one is similar to the function above, except that it only handles
+ * one argument called 'stream'.
+ *
+ * @return object representing the bytes.
+ */
+py_unique_ptr read_stream_from_args(PyObject* args, PyObject* kwargs);
 
 /**
  * Import a document from a python object containing the byte stream, and

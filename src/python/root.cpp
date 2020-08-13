@@ -23,12 +23,14 @@ namespace orcus { namespace python {
 
 PyObject* detect_format(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    stream_with_formulas data = read_stream_and_formula_params_from_args(args, kwargs);
-    if (!data.stream)
+    py_unique_ptr stream = read_stream_from_args(args, kwargs);
+    if (!stream)
         return nullptr;
 
-    const char* p = PyBytes_AS_STRING(data.stream.get());
-    size_t n = PyBytes_Size(data.stream.get());
+    char* p = nullptr;
+    Py_ssize_t n = 0;
+    if (PyBytes_AsStringAndSize(stream.get(), &p, &n) < 0)
+        return nullptr;
 
     try
     {

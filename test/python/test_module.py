@@ -39,7 +39,14 @@ class ModuleTest(unittest.TestCase):
         for check in checks:
             filepath = os.path.join(test_root_dir, *check[0])
             with open(filepath, "rb") as f:
-                fmt = orcus.detect_format(f.read())
+                # Pass the file object directly.
+                fmt = orcus.detect_format(f)
+                self.assertEqual(check[1], fmt)
+
+                # Pass the bytes.
+                f.seek(0)
+                bytes = f.read()
+                fmt = orcus.detect_format(bytes)
                 self.assertEqual(check[1], fmt)
 
 

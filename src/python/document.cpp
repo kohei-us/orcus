@@ -269,6 +269,44 @@ stream_with_formulas read_stream_and_formula_params_from_args(PyObject* args, Py
     return ret;
 }
 
+py_unique_ptr read_stream_from_args(PyObject* args, PyObject* kwargs)
+{
+    static const char* kwlist[] = { "stream", nullptr };
+
+    py_unique_ptr obj_bytes;
+    PyObject* file = nullptr;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", const_cast<char**>(kwlist), &file))
+        return obj_bytes;
+
+    if (!file)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Invalid file object has been passed.");
+        return obj_bytes;
+    }
+
+    if (PyObject_HasAttrString(file, "read"))
+    {
+        PyObject* func_read = PyObject_GetAttrString(file, "read"); // new reference
+        obj_bytes.reset(PyObject_CallFunction(func_read, nullptr));
+        Py_XDECREF(func_read);
+    }
+
+    if (!obj_bytes)
+    {
+        if (PyObject_TypeCheck(file, &PyBytes_Type))
+            obj_bytes.reset(PyBytes_FromObject(file));
+    }
+
+    if (!obj_bytes)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "failed to extract bytes from this object.");
+        return obj_bytes;
+    }
+
+    return obj_bytes;
+}
+
 PyObject* import_from_stream_into_document(
     PyObject* obj_bytes, iface::import_filter& app, std::unique_ptr<spreadsheet::document>&& doc)
 {
