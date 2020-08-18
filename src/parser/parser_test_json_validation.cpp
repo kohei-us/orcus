@@ -12,6 +12,15 @@
 
 namespace {
 
+// These test cases originate from https://github.com/nst/JSONTestSuite
+//
+// The name of these files tell if their contents should be accepted or
+// rejected.
+//
+// * y_ content must be accepted by parsers
+// * n_ content must be rejected by parsers
+// * i_ parsers are free to accept or reject content
+
 std::vector<const char*> test_files_indeterminate = {
     "i_number_double_huge_neg_exp.json",
     "i_number_huge_exp.json",
@@ -66,7 +75,7 @@ std::vector<const char*> test_files_failed = {
     "n_array_invalid_utf8.json",
     "n_array_items_separated_by_semicolon.json",
     "n_array_just_comma.json",
-     "n_array_just_minus.json",
+    "n_array_just_minus.json",
     "n_array_missing_value.json",
     "n_array_newlines_unclosed.json",
     "n_array_number_and_comma.json",
