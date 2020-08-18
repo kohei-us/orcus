@@ -34,6 +34,18 @@ void test_generic_number_parsing()
     std::vector<check> checks = {
         { ORCUS_ASCII("-6.e3"), -6e3 },
         { ORCUS_ASCII("true"), invalid },
+        { ORCUS_ASCII("1"), 1.0 },
+        { ORCUS_ASCII("1.0"), 1.0 },
+        { ORCUS_ASCII("-1.0"), -1.0 },
+        { ORCUS_ASCII("2e2"), 200.0 },
+        { ORCUS_ASCII("1.2"), 1.2 },
+        { ORCUS_ASCII("-0.0001"), -0.0001 },
+        { ORCUS_ASCII("-0.0"), 0.0 },
+        { ORCUS_ASCII("+."), invalid },
+        { ORCUS_ASCII("+e"), invalid },
+        { ORCUS_ASCII("+e1"), invalid },
+        { ORCUS_ASCII("+ "), invalid },
+        { ORCUS_ASCII("- "), invalid }
     };
 
     for (const check& c : checks)
