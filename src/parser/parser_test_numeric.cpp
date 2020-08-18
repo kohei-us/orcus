@@ -90,7 +90,7 @@ void test_json_number_parsing()
     using parser_type = detail::numeric_parser<detail::json_parser_trait>;
 
     std::vector<check> checks = {
-        // { ORCUS_ASCII("-01"), invalid }, // TODO: work on this
+        { ORCUS_ASCII("-01"), invalid }, // Leading zeros are invalid.
     };
 
     assert(run_checks<parser_type>(checks));

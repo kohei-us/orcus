@@ -15,10 +15,12 @@ namespace orcus { namespace detail {
 
 struct generic_parser_trait
 {
+    static constexpr bool allow_leading_zeros = true;
 };
 
 struct json_parser_trait
 {
+    static constexpr bool allow_leading_zeros = false;
 };
 
 template<typename _Trait>
@@ -28,6 +30,11 @@ class numeric_parser
 
     const char* mp_char;
     const char* mp_end;
+    int m_digit_count;
+    char m_first_digit;
+    double m_parsed_value;
+    double m_divisor;
+    bool m_negative_sign;
 
     bool check_sign()
     {
@@ -93,8 +100,26 @@ class numeric_parser
         return std::pow(10.0, exponent);
     }
 
+    double make_final_value() const
+    {
+        if (!trait_type::allow_leading_zeros)
+        {
+            if (m_digit_count > 1 && m_first_digit == 0)
+                return std::numeric_limits<double>::quiet_NaN();
+        }
+
+        return m_negative_sign ? -m_parsed_value : m_parsed_value;
+    }
+
 public:
-    numeric_parser(const char* p, const char* p_end) : mp_char(p), mp_end(p_end) {}
+    numeric_parser(const char* p, const char* p_end) :
+        mp_char(p),
+        mp_end(p_end),
+        m_digit_count(0),
+        m_first_digit(-1),
+        m_parsed_value(0.0),
+        m_divisor(1.0),
+        m_negative_sign(false) {}
 
     /**
      * Start parsing the string.
@@ -103,11 +128,8 @@ public:
      */
     double parse()
     {
-        double ret = 0.0, divisor = 1.0;
         bool before_decimal_pt = true;
-        bool has_digit = false;
-
-        bool negative_sign = check_sign();
+        m_negative_sign = check_sign();
 
         for (; mp_char != mp_end; ++mp_char)
         {
@@ -116,44 +138,48 @@ public:
                 if (!before_decimal_pt)
                 {
                     // Second '.' encountered. Terminate the parsing.
-                    ret /= divisor;
-                    return negative_sign ? -ret : ret;
+                    m_parsed_value /= m_divisor;
+                    return make_final_value();
                 }
 
                 before_decimal_pt = false;
                 continue;
             }
 
-            if (has_digit && (*mp_char == 'e' || *mp_char == 'E'))
+            if (m_digit_count && (*mp_char == 'e' || *mp_char == 'E'))
             {
                 ++mp_char;
                 double extra_divisor = parse_exponent();
                 if (extra_divisor)
-                    divisor *= extra_divisor;
+                    m_divisor *= extra_divisor;
                 break;
             }
 
             if (*mp_char < '0' || '9' < *mp_char)
             {
-                if (!has_digit) // without a digit we have no numbers
+                if (!m_digit_count) // without a digit we have no numbers
                     return std::numeric_limits<double>::quiet_NaN();
 
-                ret /= divisor;
-                return negative_sign ? -ret : ret;
+                m_parsed_value /= m_divisor;
+                return make_final_value();
             }
 
-            has_digit = true;
-            ret *= 10.0;
-            ret += *mp_char - '0';
+            char digit = *mp_char - '0';
+            if (!m_digit_count)
+                m_first_digit = digit;
+
+            ++m_digit_count;
+            m_parsed_value *= 10.0;
+            m_parsed_value += digit;
 
             if (!before_decimal_pt)
-                divisor *= 10.0;
+                m_divisor *= 10.0;
         }
-        if (!has_digit) // without a digit we have no numbers
+        if (!m_digit_count) // without a digit we have no numbers
             return std::numeric_limits<double>::quiet_NaN();
 
-        ret /= divisor;
-        return negative_sign ? -ret : ret;
+        m_parsed_value /= m_divisor;
+        return make_final_value();
     }
 
     const char* get_char_position() const
