@@ -387,7 +387,12 @@ void test_fail()
         {
             failed = true;
         }
-        assert(failed);
+
+        if (!failed)
+        {
+            std::cout << "invalid json string has been parsed as valid: content='" << content << "'" << std::endl;
+            assert(false);
+        }
     }
 }
 
