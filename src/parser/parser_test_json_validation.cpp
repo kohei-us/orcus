@@ -338,58 +338,6 @@ std::vector<const char*> test_files_pass = {
     "y_structure_true_in_array.json",
     "y_structure_whitespace_array.json",
 };
-
-class handler
-{
-public:
-    void begin_parse()
-    {
-    }
-
-    void end_parse()
-    {
-    }
-
-    void begin_array()
-    {
-    }
-
-    void end_array()
-    {
-    }
-
-    void begin_object()
-    {
-    }
-
-    void object_key(const char*, size_t, bool)
-    {
-    }
-
-    void end_object()
-    {
-    }
-
-    void boolean_true()
-    {
-    }
-
-    void boolean_false()
-    {
-    }
-
-    void null()
-    {
-    }
-
-    void string(const char*, size_t, bool)
-    {
-    }
-
-    void number(double)
-    {
-    }
-};
  
 std::string load_file(const std::string& file_name)
 {
@@ -402,26 +350,28 @@ std::string load_file(const std::string& file_name)
 
 void test_pass()
 {
-    handler json_handler;
+    orcus::json_handler hdl;
+
     for (const char* test_file_name : test_files_pass)
     {
         std::string content = load_file(test_file_name);
         std::cout << test_file_name << std::endl;
-        orcus::json_parser<handler> parser(content.c_str(), content.size(), json_handler);
+        orcus::json_parser<orcus::json_handler> parser(content.c_str(), content.size(), hdl);
         parser.parse();
     }
 }
 
 void test_fail()
 {
-    handler json_handler;
+    orcus::json_handler hdl;
+
     for (const char* test_file_name : test_files_failed)
     {
         std::string content = load_file(test_file_name);
         std::cout << test_file_name << std::endl;
         bool failed = false;
         try {
-            orcus::json_parser<handler> parser(content.c_str(), content.size(), json_handler);
+            orcus::json_parser<orcus::json_handler> parser(content.c_str(), content.size(), hdl);
             parser.parse();
         }
         catch (const orcus::parse_error&)
@@ -434,13 +384,14 @@ void test_fail()
 
 void test_indeterminate()
 {
-    handler json_handler;
+    orcus::json_handler hdl;
+
     for (const char* test_file_name : test_files_indeterminate)
     {
         std::string content = load_file(test_file_name);
         std::cout << test_file_name << std::endl;
         try {
-            orcus::json_parser<handler> parser(content.c_str(), content.size(), json_handler);
+            orcus::json_parser<orcus::json_handler> parser(content.c_str(), content.size(), hdl);
             parser.parse();
         }
         catch (const orcus::parse_error&)
