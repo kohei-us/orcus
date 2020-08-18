@@ -5,14 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include "orcus/global.hpp"
 #include "numeric_parser.hpp"
 
 #include <cassert>
+#include <iostream>
 #include <vector>
 #include <limits>
 
 using namespace orcus;
+using std::cout;
+using std::endl;
 
 namespace {
 
@@ -24,6 +28,35 @@ struct check
 };
 
 const double invalid = std::numeric_limits<double>::quiet_NaN();
+
+template<typename ParserT>
+bool run_checks(const std::vector<check>& checks)
+{
+    for (const check& c : checks)
+    {
+        ParserT parser(c.str, c.str + c.length);
+        double v = parser.parse();
+
+        if (std::isnan(c.expected))
+        {
+            if (!std::isnan(v))
+            {
+                cout << "'" << c.str << "' was expected to be invalid, but parser parsed as if it was valid." << endl;
+                return false;
+            }
+        }
+        else
+        {
+            if (v != c.expected)
+            {
+                cout << "'" << c.str << "' was expected to be parsed as (" << c.expected << "), but the parser parsed it as (" << v << ")" << endl;
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
 
 }
 
@@ -37,6 +70,7 @@ void test_generic_number_parsing()
         { ORCUS_ASCII("1"), 1.0 },
         { ORCUS_ASCII("1.0"), 1.0 },
         { ORCUS_ASCII("-1.0"), -1.0 },
+        { ORCUS_ASCII("-01"), -1.0 },
         { ORCUS_ASCII("2e2"), 200.0 },
         { ORCUS_ASCII("1.2"), 1.2 },
         { ORCUS_ASCII("-0.0001"), -0.0001 },
@@ -48,21 +82,18 @@ void test_generic_number_parsing()
         { ORCUS_ASCII("- "), invalid }
     };
 
-    for (const check& c : checks)
-    {
-        parser_type parser(c.str, c.str + c.length);
-        double v = parser.parse();
-
-        if (std::isnan(c.expected))
-            assert(std::isnan(v));
-        else
-            assert(v == c.expected);
-    }
+    assert(run_checks<parser_type>(checks));
 }
 
 void test_json_number_parsing()
 {
-    // TODO : add this.
+    using parser_type = detail::numeric_parser<detail::json_parser_trait>;
+
+    std::vector<check> checks = {
+        // { ORCUS_ASCII("-01"), invalid }, // TODO: work on this
+    };
+
+    assert(run_checks<parser_type>(checks));
 }
 
 int main()
