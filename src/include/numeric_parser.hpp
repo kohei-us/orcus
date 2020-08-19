@@ -8,6 +8,7 @@
 #ifndef INCLUDED_ORCUS_DETAIL_NUMERIC_PARSER_HPP
 #define INCLUDED_ORCUS_DETAIL_NUMERIC_PARSER_HPP
 
+#include <mdds/global.hpp>
 #include <limits>
 #include <cmath>
 
@@ -32,10 +33,30 @@ struct parser_state
     bool negative_sign = false;
 };
 
+template<typename _AllowLeadingZeros>
+double make_final_value(const parser_state& state);
+
+template<>
+inline double make_final_value<std::true_type>(const parser_state& state)
+{
+    return state.negative_sign ? -state.parsed_value : state.parsed_value;
+}
+
+template<>
+inline double make_final_value<std::false_type>(const parser_state& state)
+{
+    if (state.digit_count > 1 && state.first_digit == 0)
+        return std::numeric_limits<double>::quiet_NaN();
+
+    return state.negative_sign ? -state.parsed_value : state.parsed_value;
+}
+
 template<typename _Trait>
 class numeric_parser
 {
     using trait_type = _Trait;
+    using allow_leading_zeros_type =
+        mdds::bool_constant<trait_type::allow_leading_zeros>;
 
     const char* mp_char;
     const char* mp_end;
@@ -106,17 +127,6 @@ class numeric_parser
         return std::pow(10.0, exponent);
     }
 
-    double make_final_value() const
-    {
-        if (!trait_type::allow_leading_zeros)
-        {
-            if (m_state.digit_count > 1 && m_state.first_digit == 0)
-                return std::numeric_limits<double>::quiet_NaN();
-        }
-
-        return m_state.negative_sign ? -m_state.parsed_value : m_state.parsed_value;
-    }
-
 public:
     numeric_parser(const char* p, const char* p_end) :
         mp_char(p),
@@ -140,7 +150,7 @@ public:
                 {
                     // Second '.' encountered. Terminate the parsing.
                     m_state.parsed_value /= m_state.divisor;
-                    return make_final_value();
+                    return make_final_value<allow_leading_zeros_type>(m_state);
                 }
 
                 before_decimal_pt = false;
@@ -162,7 +172,7 @@ public:
                     return std::numeric_limits<double>::quiet_NaN();
 
                 m_state.parsed_value /= m_state.divisor;
-                return make_final_value();
+                return make_final_value<allow_leading_zeros_type>(m_state);
             }
 
             char digit = *mp_char - '0';
@@ -180,7 +190,7 @@ public:
             return std::numeric_limits<double>::quiet_NaN();
 
         m_state.parsed_value /= m_state.divisor;
-        return make_final_value();
+        return make_final_value<allow_leading_zeros_type>(m_state);
     }
 
     const char* get_char_position() const
