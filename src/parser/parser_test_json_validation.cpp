@@ -93,7 +93,7 @@ std::vector<const char*> test_files_failed = {
     "n_incomplete_true.json",
     "n_multidigit_number_then_00.json",
     "n_number_0.1.2.json",
-    // "n_number_-01.json",
+    "n_number_-01.json",
     "n_number_0.3e.json",
     "n_number_0.3e+.json",
     "n_number_0_capital_E.json",
