@@ -82,7 +82,8 @@ std::string parse_error::build_message(
 
 parser_base::parser_base(const char* p, size_t n, bool transient_stream) :
     mp_begin(p), mp_char(p), mp_end(p+n),
-    m_transient_stream(transient_stream)
+    m_transient_stream(transient_stream),
+    m_func_parse_numeric(parse_numeric)
 {
 }
 
@@ -233,7 +234,7 @@ double parser_base::parse_double()
 {
     size_t max_length = available_size();
     const char* p = mp_char;
-    double val = parse_numeric(p, max_length);
+    double val = m_func_parse_numeric(p, max_length);
     if (p == mp_char)
         return std::numeric_limits<double>::quiet_NaN();
 

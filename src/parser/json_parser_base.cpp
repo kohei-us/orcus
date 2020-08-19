@@ -8,11 +8,29 @@
 #include "orcus/json_parser_base.hpp"
 #include "orcus/global.hpp"
 #include "orcus/cell_buffer.hpp"
+#include "numeric_parser.hpp"
 
 #include <cassert>
 #include <cmath>
 
 namespace orcus { namespace json {
+
+namespace {
+
+double parse_numeric_json(const char*& p, size_t max_length)
+{
+    using numeric_parser_type = detail::numeric_parser<detail::json_parser_trait>;
+
+    const char* p_end = p + max_length;
+
+    numeric_parser_type parser(p, p_end);
+    double v = parser.parse();
+    if (!std::isnan(v))
+        p = parser.get_char_position();
+    return v;
+};
+
+} // anonymous namespace
 
 parse_error::parse_error(const std::string& msg, std::ptrdiff_t offset) :
     ::orcus::parse_error(msg, offset) {}
@@ -35,7 +53,11 @@ struct parser_base::impl
 };
 
 parser_base::parser_base(const char* p, size_t n) :
-    ::orcus::parser_base(p, n, false), mp_impl(orcus::make_unique<impl>()) {}
+    ::orcus::parser_base(p, n, false), mp_impl(orcus::make_unique<impl>())
+{
+
+    set_numeric_parser(parse_numeric_json);
+}
 
 parser_base::~parser_base() {}
 

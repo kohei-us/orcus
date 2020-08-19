@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <cstddef>
 #include <cassert>
+#include <functional>
 
 namespace orcus {
 
@@ -39,13 +40,23 @@ public:
 class ORCUS_PSR_DLLPUBLIC parser_base
 {
 protected:
+    using numeric_parser_type = std::function<double(const char*&, size_t)>;
+
     const char* const mp_begin;
     const char* mp_char;
     const char* mp_end;
     const bool m_transient_stream;
 
+private:
+    std::function<double(const char*&, size_t)> m_func_parse_numeric;
+
 protected:
     parser_base(const char* p, size_t n, bool transient_stream);
+
+    void set_numeric_parser(const numeric_parser_type& func)
+    {
+        m_func_parse_numeric = func;
+    }
 
     bool transient_stream() const { return m_transient_stream; }
 

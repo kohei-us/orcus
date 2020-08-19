@@ -27,9 +27,10 @@ struct json_parser_trait
 struct parser_state
 {
     int digit_count = 0;
-    char first_digit = -1;
+    char first_digit = 0;
     double parsed_value = 0.0;
     double divisor = 1.0;
+    bool has_digit = false;
     bool negative_sign = false;
 };
 
@@ -157,7 +158,7 @@ public:
                 continue;
             }
 
-            if (m_state.digit_count && (*mp_char == 'e' || *mp_char == 'E'))
+            if (m_state.has_digit && (*mp_char == 'e' || *mp_char == 'E'))
             {
                 ++mp_char;
                 double extra_divisor = parse_exponent();
@@ -168,25 +169,31 @@ public:
 
             if (*mp_char < '0' || '9' < *mp_char)
             {
-                if (!m_state.digit_count) // without a digit we have no numbers
+                if (!m_state.has_digit) // without a digit we have no numbers
                     return std::numeric_limits<double>::quiet_NaN();
 
                 m_state.parsed_value /= m_state.divisor;
                 return make_final_value<allow_leading_zeros_type>(m_state);
             }
 
+            m_state.has_digit = true;
             char digit = *mp_char - '0';
-            if (!m_state.digit_count)
-                m_state.first_digit = digit;
 
-            ++m_state.digit_count;
+            if (before_decimal_pt)
+            {
+                if (!m_state.digit_count)
+                    m_state.first_digit = digit;
+
+                ++m_state.digit_count;
+            }
+
             m_state.parsed_value *= 10.0;
             m_state.parsed_value += digit;
 
             if (!before_decimal_pt)
                 m_state.divisor *= 10.0;
         }
-        if (!m_state.digit_count) // without a digit we have no numbers
+        if (!m_state.has_digit) // without a digit we have no numbers
             return std::numeric_limits<double>::quiet_NaN();
 
         m_state.parsed_value /= m_state.divisor;

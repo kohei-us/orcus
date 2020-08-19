@@ -5,7 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <orcus/json_parser.hpp>
+#include "orcus/json_parser.hpp"
+#include "orcus/stream.hpp"
+
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -365,8 +367,17 @@ void test_pass()
     {
         std::string content = load_file(test_file_name);
         std::cout << test_file_name << std::endl;
-        orcus::json_parser<orcus::json_handler> parser(content.c_str(), content.size(), hdl);
-        parser.parse();
+        try
+        {
+            orcus::json_parser<orcus::json_handler> parser(content.c_str(), content.size(), hdl);
+            parser.parse();
+        }
+        catch (const orcus::json::parse_error& e)
+        {
+            std::cout << e.what() << std::endl;
+            std::cout << orcus::create_parse_error_output(content, e.offset()) << std::endl;
+            assert(false);
+        }
     }
 }
 
