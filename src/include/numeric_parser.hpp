@@ -14,15 +14,9 @@
 
 namespace orcus { namespace detail {
 
-struct generic_parser_trait
-{
-    static constexpr bool allow_leading_zeros = true;
-};
+struct generic_parser_trait {};
 
-struct json_parser_trait
-{
-    static constexpr bool allow_leading_zeros = false;
-};
+struct json_parser_trait {};
 
 struct parser_state
 {
@@ -66,8 +60,6 @@ template<typename _Trait>
 class numeric_parser
 {
     using trait_type = _Trait;
-    using allow_leading_zeros_type =
-        mdds::bool_constant<trait_type::allow_leading_zeros>;
 
     const char* mp_char;
     const char* mp_end;
