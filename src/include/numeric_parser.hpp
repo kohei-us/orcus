@@ -26,8 +26,10 @@ struct json_parser_trait
 
 struct parser_state
 {
-    int digit_count = 0;
-    char first_digit = 0;
+    /** number of digits before the decimal point. */
+    int int_digit_count = 0;
+    /** first digit before the decimal point. */
+    char first_int_digit = 0;
     double parsed_value = 0.0;
     double divisor = 1.0;
     bool has_digit = false;
@@ -46,7 +48,7 @@ inline double make_final_value<std::true_type>(const parser_state& state)
 template<>
 inline double make_final_value<std::false_type>(const parser_state& state)
 {
-    if (state.digit_count > 1 && state.first_digit == 0)
+    if (state.int_digit_count > 1 && state.first_int_digit == 0)
         return std::numeric_limits<double>::quiet_NaN();
 
     return state.negative_sign ? -state.parsed_value : state.parsed_value;
@@ -181,10 +183,10 @@ public:
 
             if (before_decimal_pt)
             {
-                if (!m_state.digit_count)
-                    m_state.first_digit = digit;
+                if (!m_state.int_digit_count)
+                    m_state.first_int_digit = digit;
 
-                ++m_state.digit_count;
+                ++m_state.int_digit_count;
             }
 
             m_state.parsed_value *= 10.0;
