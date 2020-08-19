@@ -28,27 +28,35 @@ struct parser_state
 {
     /** number of digits before the decimal point. */
     int int_digit_count = 0;
+    /** number of digits after the decimal point. */
+    int frac_digit_count = 0;
     /** first digit before the decimal point. */
     char first_int_digit = 0;
     double parsed_value = 0.0;
     double divisor = 1.0;
     bool has_digit = false;
+    bool has_decimal = false;
     bool negative_sign = false;
 };
 
-template<typename _AllowLeadingZeros>
+template<typename _Trait>
 double make_final_value(const parser_state& state);
 
 template<>
-inline double make_final_value<std::true_type>(const parser_state& state)
+inline double make_final_value<generic_parser_trait>(const parser_state& state)
 {
     return state.negative_sign ? -state.parsed_value : state.parsed_value;
 }
 
 template<>
-inline double make_final_value<std::false_type>(const parser_state& state)
+inline double make_final_value<json_parser_trait>(const parser_state& state)
 {
     if (state.int_digit_count > 1 && state.first_int_digit == 0)
+        // leading zeros not allowed.
+        return std::numeric_limits<double>::quiet_NaN();
+
+    if (state.has_decimal && state.frac_digit_count == 0)
+        // at least one digit is required past the decimal point.
         return std::numeric_limits<double>::quiet_NaN();
 
     return state.negative_sign ? -state.parsed_value : state.parsed_value;
@@ -153,9 +161,10 @@ public:
                 {
                     // Second '.' encountered. Terminate the parsing.
                     m_state.parsed_value /= m_state.divisor;
-                    return make_final_value<allow_leading_zeros_type>(m_state);
+                    return make_final_value<trait_type>(m_state);
                 }
 
+                m_state.has_decimal = true;
                 before_decimal_pt = false;
                 continue;
             }
@@ -175,7 +184,7 @@ public:
                     return std::numeric_limits<double>::quiet_NaN();
 
                 m_state.parsed_value /= m_state.divisor;
-                return make_final_value<allow_leading_zeros_type>(m_state);
+                return make_final_value<trait_type>(m_state);
             }
 
             m_state.has_digit = true;
@@ -188,6 +197,8 @@ public:
 
                 ++m_state.int_digit_count;
             }
+            else
+                ++m_state.frac_digit_count;
 
             m_state.parsed_value *= 10.0;
             m_state.parsed_value += digit;
@@ -199,7 +210,7 @@ public:
             return std::numeric_limits<double>::quiet_NaN();
 
         m_state.parsed_value /= m_state.divisor;
-        return make_final_value<allow_leading_zeros_type>(m_state);
+        return make_final_value<trait_type>(m_state);
     }
 
     const char* get_char_position() const
