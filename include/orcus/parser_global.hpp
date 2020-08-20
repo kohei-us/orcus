@@ -48,6 +48,12 @@ struct parse_quoted_string_state
      * long as the original character stream is alive.
      */
     bool transient;
+
+    /**
+     * When true, the string contains at least one control character - a
+     * character whose value ranges between 0x00 and 0x1F.
+     */
+    bool has_control_character;
 };
 
 ORCUS_PSR_DLLPUBLIC bool is_blank(char c);

@@ -396,13 +396,12 @@ parse_quoted_string_state parse_double_quoted_string(
     ret.str = nullptr;
     ret.length = 0;
     ret.transient = false;
+    ret.has_control_character = false;
 
     const char* p_end = p + max_length;
     ++p; // skip the opening quote.
 
     ret.str = p;
-    ret.length = 0;
-    ret.transient = false;
 
     if (p == p_end)
     {
@@ -416,9 +415,10 @@ parse_quoted_string_state parse_double_quoted_string(
 
     for (; p != p_end; ++p, ++ret.length)
     {
+        char c = *p;
+
         if (escape)
         {
-            char c = *p;
             escape = false;
 
             switch (get_string_escape_char_type(c))
@@ -451,6 +451,12 @@ parse_quoted_string_state parse_double_quoted_string(
             }
             default:
                 ;
+        }
+
+        if (0x00 <= c && c <= 0x1F)
+        {
+            // This is an unescaped control character.
+            ret.has_control_character = true;
         }
     }
 

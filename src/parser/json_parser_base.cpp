@@ -104,6 +104,9 @@ parse_quoted_string_state parser_base::parse_string()
     size_t max_length = remaining_size();
     const char* p = mp_char;
     parse_quoted_string_state ret = parse_double_quoted_string(p, max_length, mp_impl->m_buffer);
+    if (ret.has_control_character)
+        throw parse_error("parse_string: string contains a control character.", offset());
+
     mp_char = p;
 
     if (ret.str)
