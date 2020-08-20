@@ -49,8 +49,8 @@ inline double make_final_value<json_parser_trait>(const parser_state& state)
         // leading zeros not allowed.
         return std::numeric_limits<double>::quiet_NaN();
 
-    if (state.has_decimal && state.frac_digit_count == 0)
-        // at least one digit is required past the decimal point.
+    if (state.has_decimal && (state.frac_digit_count == 0 || state.int_digit_count == 0))
+        // at least one digit is required both before and after the decimal point.
         return std::numeric_limits<double>::quiet_NaN();
 
     return state.negative_sign ? -state.parsed_value : state.parsed_value;

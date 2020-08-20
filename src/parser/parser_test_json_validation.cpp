@@ -133,7 +133,7 @@ std::vector<const char*> test_files_failed = {
     "n_number_-NaN.json",
     "n_number_NaN.json",
     "n_number_neg_int_starting_with_zero.json",
-    // "n_number_neg_real_without_int_part.json",
+    "n_number_neg_real_without_int_part.json",
     "n_number_neg_with_garbage_at_end.json",
     "n_number_real_garbage_after_e.json",
     // "n_number_real_with_invalid_utf8_after_e.json",
