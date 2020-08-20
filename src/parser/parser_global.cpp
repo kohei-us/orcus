@@ -8,6 +8,7 @@
 #include "orcus/parser_global.hpp"
 #include "orcus/cell_buffer.hpp"
 #include "orcus/global.hpp"
+#include "orcus/exception.hpp"
 
 #include "numeric_parser.hpp"
 
@@ -388,22 +389,16 @@ const char* parse_to_closing_single_quote(const char* p, size_t max_length)
 parse_quoted_string_state parse_double_quoted_string(
     const char*& p, size_t max_length, cell_buffer& buffer)
 {
-    assert(*p == '"');
+    if (max_length == 0 || !p || *p != '"')
+        throw invalid_arg_error("parse_double_quoted_string: invalid input string");
 
     parse_quoted_string_state ret;
     ret.str = nullptr;
     ret.length = 0;
     ret.transient = false;
 
-    if (max_length == 0)
-    {
-        ret.str = nullptr;
-        ret.length = parse_quoted_string_state::error_no_closing_quote;
-        return ret;
-    }
-
     const char* p_end = p + max_length;
-    ++p;
+    ++p; // skip the opening quote.
 
     ret.str = p;
     ret.length = 0;
@@ -411,6 +406,7 @@ parse_quoted_string_state parse_double_quoted_string(
 
     if (p == p_end)
     {
+        // The string contains only the opening quote.
         ret.str = nullptr;
         ret.length = parse_quoted_string_state::error_no_closing_quote;
         return ret;
