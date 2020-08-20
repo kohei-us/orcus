@@ -439,16 +439,16 @@ parse_quoted_string_state parse_double_quoted_string(
         switch (*p)
         {
             case '"':
+            {
                 // closing quote.
                 ++p; // skip the quote.
                 return ret;
-            break;
+            }
             case '\\':
             {
                 escape = true;
                 continue;
             }
-            break;
             default:
                 ;
         }
