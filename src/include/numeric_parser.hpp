@@ -142,14 +142,13 @@ public:
      */
     double parse()
     {
-        bool before_decimal_pt = true;
         m_state.negative_sign = check_sign();
 
         for (; mp_char != mp_end; ++mp_char)
         {
             if (*mp_char == '.')
             {
-                if (!before_decimal_pt)
+                if (m_state.has_decimal)
                 {
                     // Second '.' encountered. Terminate the parsing.
                     m_state.parsed_value /= m_state.divisor;
@@ -157,7 +156,6 @@ public:
                 }
 
                 m_state.has_decimal = true;
-                before_decimal_pt = false;
                 continue;
             }
 
@@ -182,20 +180,20 @@ public:
             m_state.has_digit = true;
             char digit = *mp_char - '0';
 
-            if (before_decimal_pt)
+            if (m_state.has_decimal)
+                ++m_state.frac_digit_count;
+            else
             {
                 if (!m_state.int_digit_count)
                     m_state.first_int_digit = digit;
 
                 ++m_state.int_digit_count;
             }
-            else
-                ++m_state.frac_digit_count;
 
             m_state.parsed_value *= 10.0;
             m_state.parsed_value += digit;
 
-            if (!before_decimal_pt)
+            if (m_state.has_decimal)
                 m_state.divisor *= 10.0;
         }
         if (!m_state.has_digit) // without a digit we have no numbers
