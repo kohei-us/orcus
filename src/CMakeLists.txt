@@ -100,6 +100,7 @@ add_executable(orcus-test-xml EXCLUDE_FROM_ALL
 
 add_executable(orcus-test-xml-mapped EXCLUDE_FROM_ALL
 	orcus_test_xml_mapped.cpp
+    orcus_test_global.cpp
 )
 
 add_executable(orcus-test-json-mapped EXCLUDE_FROM_ALL

@@ -133,8 +133,16 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                     else
                         os2 << formula;
 
-                    ixion::formula_result res = cell->get_result_cache();
-                    os2 << " (" << res.str(cxt) << ")";
+                    try
+                    {
+                        ixion::formula_result res = cell->get_result_cache(
+                            ixion::formula_result_wait_policy_t::throw_exception);
+                        os2 << " (" << res.str(cxt) << ")";
+                    }
+                    catch (const std::exception&)
+                    {
+                        os2 << "(\#RES!)";
+                    }
 
                     std::string s = os2.str();
                     cell_str_width = s.size();

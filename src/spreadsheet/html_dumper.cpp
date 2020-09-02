@@ -572,8 +572,16 @@ void html_dumper::dump(std::ostream& os) const
                             else
                                 os << formula;
 
-                            ixion::formula_result res = cell->get_result_cache();
-                            os << " (" << res.str(m_doc.get_model_context()) << ")";
+                            try
+                            {
+                                ixion::formula_result res = cell->get_result_cache(
+                                    ixion::formula_result_wait_policy_t::throw_exception);
+                                os << " (" << res.str(m_doc.get_model_context()) << ")";
+                            }
+                            catch (const std::exception&)
+                            {
+                                os << " (\#RES!)";
+                            }
                         }
 
                         break;
