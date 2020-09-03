@@ -104,7 +104,7 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 if WITH_XLSX_FILTER
 
 EXTRA_PROGRAMS += \
-	orcus-xlsx-sheet-context-test
+	xlsx-sheet-context-test
 
 liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	ooxml_content_types.cpp \
@@ -157,9 +157,9 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	xlsx_workbook_context.cpp \
 	xlsx_workbook_context.hpp
 
-# orcus-xlsx-sheet-context-test
+# xlsx-sheet-context-test
 
-orcus_xlsx_sheet_context_test_SOURCES = \
+xlsx_sheet_context_test_SOURCES = \
 	formula_result.cpp \
 	global.cpp \
 	mock_spreadsheet.hpp \
@@ -181,15 +181,14 @@ orcus_xlsx_sheet_context_test_SOURCES = \
 	xml_context_base.cpp \
 	xml_context_global.cpp
 
-orcus_xlsx_sheet_context_test_LDADD = \
+xlsx_sheet_context_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
-orcus_xlsx_sheet_context_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
+xlsx_sheet_context_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 TESTS += \
-	 orcus-xlsx-sheet-context-test
-
+	 xlsx-sheet-context-test
 
 endif # WITH_XLSX_FILTER
 
@@ -240,24 +239,24 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	orcus_ods.cpp \
 	orcus_import_ods.cpp
 
-# orcus-odf-helper-test
+# odf-helper-test
 
 EXTRA_PROGRAMS += \
-	orcus-odf-helper-test
+	odf-helper-test
 
-orcus_odf_helper_test_SOURCES = \
+odf_helper_test_SOURCES = \
 	odf_helper.cpp \
 	string_helper.cpp \
 	odf_helper_test.cpp
 
-orcus_odf_helper_test_LDADD = \
+odf_helper_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
-orcus_odf_helper_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
+odf_helper_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 TESTS += \
-	 orcus-odf-helper-test
+	 odf-helper-test
 
 endif # WITH_ODS_FILTER
 
@@ -293,8 +292,8 @@ liborcus_@ORCUS_API_VERSION@_la_LIBADD += \
 
 EXTRA_PROGRAMS += \
 	gnumeric-cell-context-test \
-	orcus-gnumeric-sheet-context-test \
-	orcus-gnumeric-helper-test
+	gnumeric-sheet-context-test \
+	gnumeric-helper-test
 
 gnumeric_cell_context_test_SOURCES = \
 	session_context.cpp \
@@ -316,9 +315,9 @@ orcus_gnumeric_cell_context_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/libor
 
 TESTS += gnumeric-cell-context-test
 
-# orcus-gnumeric-sheet-context-test
+# gnumeric-sheet-context-test
 
-orcus_gnumeric_sheet_context_test_SOURCES = \
+gnumeric_sheet_context_test_SOURCES = \
 	session_context.cpp \
 	gnumeric_sheet_context_test.cpp \
 	gnumeric_sheet_context.cpp \
@@ -333,28 +332,28 @@ orcus_gnumeric_sheet_context_test_SOURCES = \
 	mock_spreadsheet.cpp \
 	string_helper.cpp
 
-orcus_gnumeric_sheet_context_test_LDADD = \
+gnumeric_sheet_context_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
-orcus_gnumeric_sheet_context_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
+gnumeric_sheet_context_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
-TESTS += orcus-gnumeric-sheet-context-test
+TESTS += gnumeric-sheet-context-test
 
-# orcus-gnumeric-helper-test
+# gnumeric-helper-test
 
-orcus_gnumeric_helper_test_SOURCES = \
+gnumeric_helper_test_SOURCES = \
 	gnumeric_helper_test.cpp \
 	string_helper.hpp \
 	string_helper.cpp
 
-orcus_gnumeric_helper_test_LDADD = \
+gnumeric_helper_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
-orcus_gnumeric_helper_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
+gnumeric_helper_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
-TESTS += orcus-gnumeric-helper-test
+TESTS += gnumeric-helper-test
 
 endif # WITH_GNUMERIC_FILTER
 
