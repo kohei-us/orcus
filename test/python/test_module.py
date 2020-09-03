@@ -11,6 +11,7 @@ import unittest
 import orcus
 import os.path
 import json
+import os
 from pathlib import Path
 
 
@@ -18,7 +19,8 @@ class ModuleTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(Path(__file__).parent / "env.json", "r") as f:
+        top_builddir = Path(os.environ["BUILDDIR"])
+        with open(top_builddir / "test" / "python" / "env.json", "r") as f:
             cls.env = json.load(f)
 
     def test_version(self):

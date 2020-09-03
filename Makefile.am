@@ -208,45 +208,72 @@ test_data = \
     test/xlsx/table/autofilter.xlsx \
     test/xlsx/date-time/input.xlsx \
     test/xlsx/named-expression-relative/input.xlsx \
-    test/xml-mapped/content-namespace/map.xml \
-    test/xml-mapped/content-namespace/check.txt \
-    test/xml-mapped/content-namespace/input.xml \
-    test/xml-mapped/attribute-basic/map.xml \
+    test/xml-mapped/attribute-basic/check-nomap.txt \
     test/xml-mapped/attribute-basic/check.txt \
     test/xml-mapped/attribute-basic/input.xml \
-    test/xml-mapped/attribute-single-element-2/map.xml \
-    test/xml-mapped/attribute-single-element-2/check.txt \
-    test/xml-mapped/attribute-single-element-2/input.xml \
-    test/xml-mapped/content-namespace-2/map.xml \
-    test/xml-mapped/content-namespace-2/check.txt \
-    test/xml-mapped/content-namespace-2/input.xml \
-    test/xml-mapped/attribute-single-element/map.xml \
-    test/xml-mapped/attribute-single-element/check.txt \
-    test/xml-mapped/attribute-single-element/input.xml \
-    test/xml-mapped/fuel-economy/map.xml \
-    test/xml-mapped/fuel-economy/check.txt \
-    test/xml-mapped/fuel-economy/input.xml \
-    test/xml-mapped/nested-repeats/map.xml \
-    test/xml-mapped/nested-repeats/check.txt \
-    test/xml-mapped/nested-repeats/input.xml \
-    test/xml-mapped/nested-repeats-2/map.xml \
-    test/xml-mapped/nested-repeats-2/check.txt \
-    test/xml-mapped/nested-repeats-2/input.xml \
-    test/xml-mapped/attribute-namespace/map.xml \
+    test/xml-mapped/attribute-basic/map.xml \
+    test/xml-mapped/attribute-namespace-2/check-nomap.txt \
+    test/xml-mapped/attribute-namespace-2/check.txt \
+    test/xml-mapped/attribute-namespace-2/input.xml \
+    test/xml-mapped/attribute-namespace-2/map.xml \
+    test/xml-mapped/attribute-namespace/check-nomap.txt \
     test/xml-mapped/attribute-namespace/check.txt \
     test/xml-mapped/attribute-namespace/input.xml \
-    test/xml-mapped/nested-repeats-4/map.xml \
-    test/xml-mapped/nested-repeats-4/check.txt \
-    test/xml-mapped/nested-repeats-4/input.xml \
-    test/xml-mapped/nested-repeats-3/map.xml \
-    test/xml-mapped/nested-repeats-3/check.txt \
-    test/xml-mapped/nested-repeats-3/input.xml \
-    test/xml-mapped/attribute-range-self-close/map.xml \
+    test/xml-mapped/attribute-namespace/map.xml \
+    test/xml-mapped/attribute-range-self-close/check-nomap.txt \
     test/xml-mapped/attribute-range-self-close/check.txt \
     test/xml-mapped/attribute-range-self-close/input.xml \
-    test/xml-mapped/content-basic/map.xml \
+    test/xml-mapped/attribute-range-self-close/map.xml \
+    test/xml-mapped/attribute-single-element-2/check.txt \
+    test/xml-mapped/attribute-single-element-2/input.xml \
+    test/xml-mapped/attribute-single-element-2/map.xml \
+    test/xml-mapped/attribute-single-element/check.txt \
+    test/xml-mapped/attribute-single-element/input.xml \
+    test/xml-mapped/attribute-single-element/map.xml \
+    test/xml-mapped/content-basic/check-nomap.txt \
     test/xml-mapped/content-basic/check.txt \
     test/xml-mapped/content-basic/input.xml \
+    test/xml-mapped/content-basic/map.xml \
+    test/xml-mapped/content-namespace-2/check-nomap.txt \
+    test/xml-mapped/content-namespace-2/check.txt \
+    test/xml-mapped/content-namespace-2/input.xml \
+    test/xml-mapped/content-namespace-2/map.xml \
+    test/xml-mapped/content-namespace-3/check-nomap.txt \
+    test/xml-mapped/content-namespace-3/check.txt \
+    test/xml-mapped/content-namespace-3/input.xml \
+    test/xml-mapped/content-namespace-3/map.xml \
+    test/xml-mapped/content-namespace/check-nomap.txt \
+    test/xml-mapped/content-namespace/check.txt \
+    test/xml-mapped/content-namespace/input.xml \
+    test/xml-mapped/content-namespace/map.xml \
+    test/xml-mapped/custom-labels-2/check.txt \
+    test/xml-mapped/custom-labels-2/input.xml \
+    test/xml-mapped/custom-labels-2/map.xml \
+    test/xml-mapped/custom-labels/check.txt \
+    test/xml-mapped/custom-labels/input.xml \
+    test/xml-mapped/custom-labels/map.xml \
+    test/xml-mapped/fuel-economy/check-nomap.txt \
+    test/xml-mapped/fuel-economy/check.txt \
+    test/xml-mapped/fuel-economy/input.xml \
+    test/xml-mapped/fuel-economy/map.xml \
+    test/xml-mapped/invalids/map-defs/non-leaf-element-linked.xml \
+    test/xml-mapped/invalids/map-defs/not-xml.xml \
+    test/xml-mapped/nested-repeats-2/check-nomap.txt \
+    test/xml-mapped/nested-repeats-2/check.txt \
+    test/xml-mapped/nested-repeats-2/input.xml \
+    test/xml-mapped/nested-repeats-2/map.xml \
+    test/xml-mapped/nested-repeats-3/check-nomap.txt \
+    test/xml-mapped/nested-repeats-3/check.txt \
+    test/xml-mapped/nested-repeats-3/input.xml \
+    test/xml-mapped/nested-repeats-3/map.xml \
+    test/xml-mapped/nested-repeats-4/check-nomap.txt \
+    test/xml-mapped/nested-repeats-4/check.txt \
+    test/xml-mapped/nested-repeats-4/input.xml \
+    test/xml-mapped/nested-repeats-4/map.xml \
+    test/xml-mapped/nested-repeats/check-nomap.txt \
+    test/xml-mapped/nested-repeats/check.txt \
+    test/xml-mapped/nested-repeats/input.xml \
+    test/xml-mapped/nested-repeats/map.xml \
     test/xml/simple/check.txt \
     test/xml/simple/input.xml \
     test/xml/no-decl-1/check.txt \
@@ -616,16 +643,16 @@ test_data = \
     test/json/basic3/input.json \
     test/json/empty-array-3/check.txt \
     test/json/empty-array-3/input.json \
-    test/python/perf/test_json.py \
-    test/python/ods.py \
-    test/python/gnumeric.py \
-    test/python/csv.py \
-    test/python/xls_xml.py \
-    test/python/module.py \
-    test/python/xlsx.py \
     test/python/file_load_common.py \
-    test/python/json.py \
-    test/python/csv_export.py \
+    test/python/perf/test_json.py \
+    test/python/test_csv_export.py \
+    test/python/test_csv.py \
+    test/python/test_gnumeric.py \
+    test/python/test_json.py \
+    test/python/test_module.py \
+    test/python/test_ods.py \
+    test/python/test_xls_xml.py \
+    test/python/test_xlsx.py \
     test/yaml/boolean/input.yaml \
     test/yaml/basic2/input.yaml \
     test/yaml/quoted-string/input.yaml \
@@ -673,6 +700,8 @@ test_data = \
     test/xls-xml/formula-cells-2/config.yaml \
     test/xls-xml/formula-cells-2/check.txt \
     test/xls-xml/formula-cells-2/input.xml \
+    test/xls-xml/formula-cells-3/check.txt \
+    test/xls-xml/formula-cells-3/input.xml \
     test/xls-xml/borders/grid-box.xml \
     test/xls-xml/borders/directions.xml \
     test/xls-xml/borders/colors.xml \

@@ -33,9 +33,8 @@ class TestCase(unittest.TestCase):
 
     def test_formula_tokens(self):
         filepath = os.path.join(self.basedir, "formula-1", "input.ods")
-        with open(filepath, "r+b") as f:
-            mm = mmap.mmap(f.fileno(), 0)
-            doc = ods.read(mm, recalc=False)
+        with open(filepath, "rb") as f:
+            doc = ods.read(f, recalc=False)
 
         self.assertEqual(len(doc.sheets), 1)
 

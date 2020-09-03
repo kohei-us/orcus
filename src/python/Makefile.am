@@ -95,7 +95,9 @@ EXTRA_DIST = \
 	./orcus/tools/bugzilla.py \
 	./orcus/tools/file_processor.py
 
-AM_TESTS_ENVIRONMENT = PYTHONPATH=$(top_srcdir)/src/python:.libs$${PYTHONPATH:+:$${PYTHONPATH}}; export PYTHONPATH;
+AM_TESTS_ENVIRONMENT = \
+	PYTHONPATH=$(top_srcdir)/src/python:.libs$${PYTHONPATH:+:$${PYTHONPATH}}; export PYTHONPATH; \
+	BUILDDIR=$(top_builddir); export BUILDDIR;
 
 TESTS = \
 	../../test/python/test_json.py \

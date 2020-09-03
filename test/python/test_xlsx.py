@@ -69,9 +69,8 @@ class TestCase(unittest.TestCase):
 
     def test_named_expression_sheet_local(self):
         filepath = os.path.join(self.basedir, "named-expression-sheet-local", "input.xlsx")
-        with open(filepath, "r+b") as f:
-            mm = mmap.mmap(f.fileno(), 0)
-            doc = xlsx.read(mm)
+        with open(filepath, "rb") as f:
+            doc = xlsx.read(f)
 
         sheet = doc.sheets[0]
         named_exps = sheet.get_named_expressions()
