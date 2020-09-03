@@ -2,12 +2,12 @@
 AM_CPPFLAGS = -I$(top_srcdir)/include -I./include $(BOOST_CPPFLAGS)
 
 EXTRA_PROGRAMS = \
-	liborcus-test-css-document-tree \
-	liborcus-test-json-document-tree \
-	liborcus-test-yaml-document-tree \
-	liborcus-test-xml-map-tree \
-	liborcus-test-common \
-	liborcus-test-format-detection \
+	css-document-tree-test \
+	json-document-tree-test \
+	yaml-document-tree-test \
+	xml-map-tree-test \
+	common-test \
+	format-detection-test \
 	dom-tree-test \
 	json-structure-tree-test \
 	json-map-tree-test \
@@ -358,48 +358,48 @@ TESTS += orcus-gnumeric-helper-test
 
 endif # WITH_GNUMERIC_FILTER
 
-# liborcus-test-css-document-tree
+# css-document-tree-test
 
-liborcus_test_css_document_tree_SOURCES = \
+css_document_tree_test_SOURCES = \
 	css_document_tree.cpp \
 	css_document_tree_test.cpp
 
-liborcus_test_css_document_tree_LDADD = \
+css_document_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
 
-# liborcus-test-json-document-tree
+# json-document-tree-test
 
-liborcus_test_json_document_tree_SOURCES = \
+json_document_tree_test_SOURCES = \
 	json_document_tree.cpp \
 	json_util.cpp \
 	json_document_tree_test.cpp
 
-liborcus_test_json_document_tree_LDADD = \
+json_document_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
 
-liborcus_test_json_document_tree_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
+json_document_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
-# liborcus-test-yaml-document-tree
+# yaml-document-tree-test
 
-liborcus_test_yaml_document_tree_SOURCES = \
+yaml_document_tree_test_SOURCES = \
 	yaml_document_tree.cpp \
 	json_util.cpp \
 	yaml_document_tree_test.cpp
 
-liborcus_test_yaml_document_tree_LDADD = \
+yaml_document_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
 
-liborcus_test_yaml_document_tree_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
+yaml_document_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
-# liborcus-test-xml-map-tree
+# xml-map-tree-test
 
-liborcus_test_xml_map_tree_SOURCES = \
+xml_map_tree_test_SOURCES = \
 	xml_map_tree.cpp \
 	xml_map_tree.hpp \
 	xpath_parser.hpp \
@@ -408,7 +408,7 @@ liborcus_test_xml_map_tree_SOURCES = \
 	spreadsheet_impl_types.cpp \
 	xml_map_tree_test.cpp
 
-liborcus_test_xml_map_tree_LDADD = \
+xml_map_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
@@ -427,22 +427,22 @@ xml_structure_tree_test_LDADD = \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
 
-# liborcus-test-common
+# common-test
 
-liborcus_test_common_SOURCES = \
+common_test_SOURCES = \
 	global.cpp \
 	common_test.cpp
 
-liborcus_test_common_LDADD = \
+common_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
-# liborcus-test-format-detection
+# format-detection-test
 
-liborcus_test_format_detection_SOURCES = \
+format_detection_test_SOURCES = \
 	format_detection_test.cpp
 
-liborcus_test_format_detection_LDADD = \
+format_detection_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
@@ -480,12 +480,12 @@ xpath_parser_test_LDADD = \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
 TESTS += \
-	liborcus-test-css-document-tree \
-	liborcus-test-json-document-tree \
-	liborcus-test-yaml-document-tree \
-	liborcus-test-xml-map-tree \
-	liborcus-test-common \
-	liborcus-test-format-detection \
+	css-document-tree-test \
+	json-document-tree-test \
+	yaml-document-tree-test \
+	xml-map-tree-test \
+	common-test \
+	format-detection-test \
 	dom-tree-test \
 	json-structure-tree-test \
 	json-map-tree-test \
