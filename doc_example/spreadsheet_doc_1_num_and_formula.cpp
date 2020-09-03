@@ -40,13 +40,12 @@ int main()
         assert(fc);
 
         // Get the formula cell results.
-        const ixion::formula_result& result = fc->get_result_cache();
+        const ixion::formula_result& result = fc->get_result_cache(
+            ixion::formula_result_wait_policy_t::throw_exception);
 
         // We already know the result is a string.
-        ixion::string_id_t sid = result.get_string();
-        const std::string* s = model.get_string(sid);
-        assert(s);
-        std::cout << "C" << (pos.row+1) << ": " << *s << std::endl;
+        const std::string& s = result.get_string();
+        std::cout << "C" << (pos.row+1) << ": " << s << std::endl;
     }
 
     return EXIT_SUCCESS;

@@ -580,7 +580,7 @@ void html_dumper::dump(std::ostream& os) const
                             }
                             catch (const std::exception&)
                             {
-                                os << " (\#RES!)";
+                                os << " (#RES!)";
                             }
                         }
 

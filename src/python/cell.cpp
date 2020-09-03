@@ -287,7 +287,20 @@ PyObject* create_cell_object_formula(
     std::string formula_s = ixion::print_formula_tokens(cxt, origin, *resolver, tokens);
     obj_data->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
 
-    ixion::formula_result res = fc->get_result_cache();
+    ixion::formula_result res;
+
+    try
+    {
+        res = fc->get_result_cache(
+            ixion::formula_result_wait_policy_t::throw_exception);
+    }
+    catch (const std::exception&)
+    {
+        Py_INCREF(Py_None);
+        obj_data->value = Py_None;
+        return obj;
+    }
+
     switch (res.get_type())
     {
         case ixion::formula_result::result_type::value:
@@ -297,16 +310,8 @@ PyObject* create_cell_object_formula(
         }
         case ixion::formula_result::result_type::string:
         {
-            ixion::string_id_t sid = res.get_string();
-            const std::string* ps = cxt.get_string(sid);
-            if (ps)
-                obj_data->value = PyUnicode_FromStringAndSize(ps->data(), ps->size());
-            else
-            {
-                // This should not be hit, but just in case...
-                Py_INCREF(Py_None);
-                obj_data->value = Py_None;
-            }
+            const std::string& s = res.get_string();
+            obj_data->value = PyUnicode_FromStringAndSize(s.data(), s.size());
             break;
         }
         case ixion::formula_result::result_type::error:

@@ -141,7 +141,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                     }
                     catch (const std::exception&)
                     {
-                        os2 << "(\#RES!)";
+                        os2 << "(#RES!)";
                     }
 
                     std::string s = os2.str();

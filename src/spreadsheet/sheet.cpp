@@ -703,7 +703,7 @@ void sheet::dump_check(ostream& os, const pstring& sheet_name) const
                         }
                         catch (const std::exception&)
                         {
-                            os << ":\#RES!";
+                            os << ":#RES!";
                         }
                     }
 
