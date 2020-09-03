@@ -33,8 +33,12 @@ target_link_libraries(orcus-parser-${ORCUS_API_VERSION} ${ZLIB_LIBRARIES})
 
 set(_TESTS
     base64-test
+    css-parser-test
+    csv-parser-test
+    json-parser-test
     parser-base-test
     parser-global-test
+    sax-ns-parser-test
     sax-parser-test
     sax-token-parser-test
     stream-test
@@ -42,8 +46,9 @@ set(_TESTS
     threaded-json-parser-test
     threaded-sax-token-parser-test
     xml-namespace-test
-    zip-archive-test
     xml-writer-test
+    yaml-parser-test
+    zip-archive-test
 )
 
 foreach(_TEST ${_TESTS})

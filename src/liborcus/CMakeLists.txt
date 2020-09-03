@@ -125,7 +125,6 @@ set(_TESTS
 #   gnumeric-sheet-context-test
     json-document-tree-test
     json-structure-tree-test
-#   odf-styles-context-test
     xml-structure-tree-test
     yaml-document-tree-test
 )

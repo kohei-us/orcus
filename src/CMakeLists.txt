@@ -107,6 +107,10 @@ add_executable(orcus-test-json-mapped EXCLUDE_FROM_ALL
 	orcus_test_json_mapped.cpp
 )
 
+add_executable(orcus-odf-styles-context-test EXCLUDE_FROM_ALL
+	odf_styles_context_test.cpp
+)
+
 set(_TESTS
     orcus-test-csv
     orcus-test-ods
@@ -115,6 +119,7 @@ set(_TESTS
     orcus-test-xml
     orcus-test-xml-mapped
     orcus-test-json-mapped
+    orcus-odf-styles-context-test
 )
 
 foreach(_TEST ${_TESTS})
