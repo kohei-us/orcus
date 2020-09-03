@@ -14,7 +14,7 @@ orcus 0.16.0
 
 * json-parser
 
-  * parsing of numeric values are now more strict for better comformance to
+  * parsing of numeric values are now more strict for better conformance to
     the specs.
 
 * ods
@@ -44,7 +44,7 @@ orcus 0.16.0
     map file.
 
   * added the ability to generate map file from XML documents for user
-    custimization.
+    customization.
 
   * added support to specify default namespace in the map file.
 
