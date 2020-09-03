@@ -1,3 +1,74 @@
+orcus 0.16.0
+
+* general
+
+  * full formula recalculations are now optional when loading documents.  It
+    makes more effective use of cached formula results.
+
+  * added the option of failing on the first faulty cell, or skipping them.
+
+  * fixed a bug that caused the threaded_sax_token_parser to deadlock.
+
+  * added base parser handler classes in the public headers so that they can
+    be sub-classed to overwrite necessary handler methods.
+
+* json-parser
+
+  * parsing of numeric values are now more strict for better comformance to
+    the specs.
+
+* ods
+
+  * added support for loading named expressions from ods documents.
+
+  * fixed an infinite loop when loading one of the attached ods documents from
+    https://bugs.documentfoundation.org/show_bug.cgi?id=82414
+
+* xlsx
+
+  * fixed a segfault when loading the xlsx document from
+    https://bugs.documentfoundation.org/show_bug.cgi?id=83711.
+
+* xls-xml
+
+  * fixed a bug that prevented formulas from referencing cells located in
+    later sheets.
+
+* xml-map
+
+  * adjusted the xml path expressions to be more like XPath.  Previously, an
+    attribute was expressed as '@' in the old expression, but XPath uses '/@'.
+    The new expression uses '/@' for an attribute.
+
+  * added the ability to identify and import ranges from XML documents without
+    map file.
+
+  * added the ability to generate map file from XML documents for user
+    custimization.
+
+  * added support to specify default namespace in the map file.
+
+* python
+
+  * added orcus.Cell class to represent individual cell values and attributes.
+
+  * fixed several memory leaks in the python binding layer.
+
+  * modified orcus.csv.read() function to take string input, instead of bytes.
+
+  * added __version__ attribute to the orcus module.
+
+  * cleaned up orcus.detect_format functions to only take the stream
+    parameter.
+
+  * added named_expressions properties to Document and Sheet class objects.
+
+  * added Python API to bulk-process a number of spreadsheet documents
+    (orcus.tools.file_processor).
+
+  * added Python API to download attachments from bugzilla services via REST
+    API (orcus.tools.bugzilla).
+
 orcus 0.15.4
 
 * fixed a build error with gcc 10 with LTO.  For more details, visit
