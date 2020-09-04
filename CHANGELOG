@@ -58,8 +58,7 @@ orcus 0.16.0
 
   * added __version__ attribute to the orcus module.
 
-  * cleaned up orcus.detect_format functions to only take the stream
-    parameter.
+  * cleaned up orcus.detect_format function to only take the stream parameter.
 
   * added named_expressions properties to Document and Sheet class objects.
 
