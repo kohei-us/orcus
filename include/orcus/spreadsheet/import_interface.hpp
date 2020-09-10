@@ -296,16 +296,16 @@ public:
 };
 
 /**
- * Interface for importing named expressions or ranges.  Note that this
- * interface has two different methods for defining named expressions -
- * set_named_expression() and set_named_range() because some format types
- * may use different expression syntaxes for named expressions and named
- * ranges.  A named range is a special case of named expression where the
- * expression only consists of one range token.
+ * Interface for importing named expressions or ranges.
  *
- * If the format does not differentiate the two types of named expressions
- * and/or the format uses common syntax for both, the implementation of
- * set_named_expression() and set_named_range() can be identical.
+ * Note that this interface has two different methods for defining named
+ * expressions - set_named_expression() and set_named_range().
+ *
+ * The set_named_expression() method is generally used to pass named
+ * expression strings.  The set_named_range() method is used only when the
+ * format uses a different syntax to express a named range.  A named range
+ * is a special case of named expression where the expression consists of
+ * one range token.
  */
 class ORCUS_DLLPUBLIC import_named_expression
 {
