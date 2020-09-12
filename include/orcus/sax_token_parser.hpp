@@ -71,7 +71,10 @@ public:
      *
      * @param decl struct containing the attributes of the XML declaration.
      */
-    void declaration(const orcus::xml_declaration_t& decl) {}
+    void declaration(const orcus::xml_declaration_t& decl)
+    {
+        (void)decl;
+    }
 
     /**
      * Called at the start of each element.
@@ -79,7 +82,10 @@ public:
      * @param elem struct containing the element's information as well as all
      *             the attributes that belong to the element.
      */
-    void start_element(const orcus::xml_token_element_t& elem) {}
+    void start_element(const orcus::xml_token_element_t& elem)
+    {
+        (void)elem;
+    }
 
     /**
      * Called at the end of each element.
@@ -87,7 +93,10 @@ public:
      * @param elem struct containing the element's information as well as all
      *             the attributes that belong to the element.
      */
-    void end_element(const orcus::xml_token_element_t& elem) {}
+    void end_element(const orcus::xml_token_element_t& elem)
+    {
+        (void)elem;
+    }
 
     /**
      * Called when a segment of a text content is parsed.  Each text content
@@ -103,7 +112,10 @@ public:
      *                  a non-text value or be interned within the scope of
      *                  the callback</em>.
      */
-    void characters(const orcus::pstring& val, bool transient) {}
+    void characters(const orcus::pstring& val, bool transient)
+    {
+        (void)val; (void)transient;
+    }
 };
 
 /**

@@ -47,7 +47,10 @@ public:
      *                  the text content is guaranteed to be valid so long as
      *                  the original CSV stream content is valid.
      */
-    void cell(const char* p, size_t n, bool transient) {}
+    void cell(const char* p, size_t n, bool transient)
+    {
+        (void)p; (void)n; (void)transient;
+    }
 };
 
 template<typename _Handler>

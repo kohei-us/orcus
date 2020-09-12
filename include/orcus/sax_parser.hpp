@@ -30,7 +30,10 @@ public:
      *
      * @param param struct containing doctype declaration data.
      */
-    void doctype(const orcus::sax::doctype_declaration& param) {}
+    void doctype(const orcus::sax::doctype_declaration& param)
+    {
+        (void)param;
+    }
 
     /**
      * Called when &lt;?... is encountered, where the '...' may be an
@@ -39,28 +42,40 @@ public:
      *
      * @param decl name of the identifier.
      */
-    void start_declaration(const orcus::pstring& decl) {}
+    void start_declaration(const orcus::pstring& decl)
+    {
+        (void)decl;
+    }
 
     /**
      * Called when the closing tag (&gt;) of a &lt;?... ?&gt; is encountered.
      *
      * @param decl name of the identifier.
      */
-    void end_declaration(const orcus::pstring& decl) {}
+    void end_declaration(const orcus::pstring& decl)
+    {
+        (void)decl;
+    }
 
     /**
      * Called at the start of each element.
      *
      * @param elem information of the element being parsed.
      */
-    void start_element(const orcus::sax::parser_element& elem) {}
+    void start_element(const orcus::sax::parser_element& elem)
+    {
+        (void)elem;
+    }
 
     /**
      * Called at the end of each element.
      *
      * @param elem information of the element being parsed.
      */
-    void end_element(const orcus::sax::parser_element& elem) {}
+    void end_element(const orcus::sax::parser_element& elem)
+    {
+        (void)elem;
+    }
 
     /**
      * Called when a segment of a text content is parsed.  Each text content
@@ -76,7 +91,10 @@ public:
      *                  a non-text value or be interned within the scope of
      *                  the callback</em>.
      */
-    void characters(const orcus::pstring& val, bool transient) {}
+    void characters(const orcus::pstring& val, bool transient)
+    {
+        (void)val; (void)transient;
+    }
 
     /**
      * Called upon parsing of an attribute of an element.  Note that <em>when
@@ -86,7 +104,10 @@ public:
      *
      * @param attr struct containing attribute information.
      */
-    void attribute(const orcus::sax::parser_attribute& attr) {}
+    void attribute(const orcus::sax::parser_attribute& attr)
+    {
+        (void)attr;
+    }
 };
 
 /**

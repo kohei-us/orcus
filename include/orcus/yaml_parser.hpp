@@ -72,14 +72,20 @@ public:
      * @param p pointer to the first character of the string value.
      * @param len length of the string value.
      */
-    void string(const char* p, size_t n) {}
+    void string(const char* p, size_t n)
+    {
+        (void)p; (void)n;
+    }
 
     /**
      * Called when a numeric value is encountered.
      *
      * @param val numeric value.
      */
-    void number(double val) {}
+    void number(double val)
+    {
+        (void)val;
+    }
 
     /**
      * Called when a boolean 'true' keyword is encountered.

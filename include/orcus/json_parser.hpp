@@ -54,7 +54,10 @@ public:
      *                  pointer points to somewhere in the JSON stream being
      *                  parsed.
      */
-    void object_key(const char* p, size_t len, bool transient) {}
+    void object_key(const char* p, size_t len, bool transient)
+    {
+        (void)p; (void)len; (void)transient;
+    }
 
     /**
      * Called when the closing curly brace of an object is encountered.
@@ -87,14 +90,20 @@ public:
      *                  pointer points to somewhere in the JSON stream being
      *                  parsed.
      */
-    void string(const char* p, size_t len, bool transient) {}
+    void string(const char* p, size_t len, bool transient)
+    {
+        (void)p; (void)len; (void)transient;
+    }
 
     /**
      * Called when a numeric value is encountered.
      *
      * @param val numeric value.
      */
-    void number(double val) {}
+    void number(double val)
+    {
+        (void)val;
+    }
 };
 
 /**

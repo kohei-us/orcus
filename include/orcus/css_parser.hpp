@@ -31,23 +31,44 @@ namespace orcus {
 class css_handler
 {
 public:
-    void at_rule_name(const char* p, size_t n) {}
+    void at_rule_name(const char* p, size_t n)
+    {
+        (void)p; (void)n;
+    }
 
-    void simple_selector_type(const char* p, size_t n) {}
+    void simple_selector_type(const char* p, size_t n)
+    {
+        (void)p; (void)n;
+    }
 
-    void simple_selector_class(const char* p, size_t n) {}
+    void simple_selector_class(const char* p, size_t n)
+    {
+        (void)p; (void)n;
+    }
 
-    void simple_selector_pseudo_element(orcus::css::pseudo_element_t pe) {}
+    void simple_selector_pseudo_element(orcus::css::pseudo_element_t pe)
+    {
+        (void)pe;
+    }
 
-    void simple_selector_pseudo_class(orcus::css::pseudo_class_t pc) {}
+    void simple_selector_pseudo_class(orcus::css::pseudo_class_t pc)
+    {
+        (void)pc;
+    }
 
-    void simple_selector_id(const char* p, size_t n) {}
+    void simple_selector_id(const char* p, size_t n)
+    {
+        (void)p; (void)n;
+    }
 
     void end_simple_selector() {}
 
     void end_selector() {}
 
-    void combinator(orcus::css::combinator_t combinator) {}
+    void combinator(orcus::css::combinator_t combinator)
+    {
+        (void)combinator;
+    }
 
     /**
      * Called at each property name.
@@ -55,7 +76,10 @@ public:
      * @param p pointer to the char-array containing the property name string.
      * @param n length of the property name string.
      */
-    void property_name(const char* p, size_t n) {}
+    void property_name(const char* p, size_t n)
+    {
+        (void)p; (void)n;
+    }
 
     /**
      * Called at each ordinary property value string.
@@ -63,7 +87,10 @@ public:
      * @param p pointer to the char-array containing the value string.
      * @param n length of the value string.
      */
-    void value(const char* p, size_t n) {}
+    void value(const char* p, size_t n)
+    {
+        (void)p; (void)n;
+    }
 
     /**
      * Called at each RGB color value of a property.
@@ -72,7 +99,10 @@ public:
      * @param green value of green (0-255)
      * @param blue value of blue (0-255)
      */
-    void rgb(uint8_t red, uint8_t green, uint8_t blue) {}
+    void rgb(uint8_t red, uint8_t green, uint8_t blue)
+    {
+        (void)red; (void)green; (void)blue;
+    }
 
     /**
      * Called at each RGB color value of a property with alpha transparency
@@ -83,7 +113,10 @@ public:
      * @param blue value of blue (0-255)
      * @param alpha alpha transparency value
      */
-    void rgba(uint8_t red, uint8_t green, uint8_t blue, double alpha) {}
+    void rgba(uint8_t red, uint8_t green, uint8_t blue, double alpha)
+    {
+        (void)red; (void)green; (void)blue; (void)alpha;
+    }
 
     /**
      * Called at each HSL color value of a property.
@@ -92,7 +125,10 @@ public:
      * @param sat saturation
      * @param light lightness
      */
-    void hsl(uint8_t hue, uint8_t sat, uint8_t light) {}
+    void hsl(uint8_t hue, uint8_t sat, uint8_t light)
+    {
+        (void)hue; (void)sat; (void)light;
+    }
 
     /**
      * Called at each HSL color value of a property with alpha transparency
@@ -103,7 +139,10 @@ public:
      * @param light lightness
      * @param alpha alpha value
      */
-    void hsla(uint8_t hue, uint8_t sat, uint8_t light, double alpha) {}
+    void hsla(uint8_t hue, uint8_t sat, uint8_t light, double alpha)
+    {
+        (void)hue; (void)sat; (void)light; (void)alpha;
+    }
 
     /**
      * Called at each URL value of a property.
@@ -111,7 +150,10 @@ public:
      * @param p pointer to the char-array containing the URL value string.
      * @param n length of the URL value string.
      */
-    void url(const char* p, size_t n) {}
+    void url(const char* p, size_t n)
+    {
+        (void)p; (void)n;
+    }
 
     /**
      * Called when the parsing begins.
