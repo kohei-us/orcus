@@ -58,7 +58,6 @@
             <F N="../src/python/orcus/tools/__init__.py"/>
             <F N="../src/python/orcus/tools/bugzilla.py"/>
             <F N="../src/python/orcus/csv.py"/>
-            <F N="../misc/file-processor-modules/extract_formulas.py"/>
             <F N="../test/python/file_load_common.py"/>
             <F N="../src/python/orcus/tools/file_processor.py"/>
             <F N="../src/python/orcus/gnumeric.py"/>
