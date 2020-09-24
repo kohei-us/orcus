@@ -55,6 +55,9 @@ AC_C_INLINE
 AC_TYPE_MODE_T
 AC_TYPE_SIZE_T
 
+AC_CHECK_SIZEOF([void *])
+CXXFLAGS="$CXXFLAGS -DSIZEOF_VOID_P=$ac_cv_sizeof_void_p"
+
 # ============================
 # Checks for library functions
 # ============================
