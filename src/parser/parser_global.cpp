@@ -155,6 +155,7 @@ parse_quoted_string_state parse_string_with_escaped_char(
     ret.str = nullptr;
     ret.length = 0;
     ret.transient = true;
+    ret.has_control_character = false;
 
     // Start the buffer with the string we've parsed so far.
     buffer.reset();
