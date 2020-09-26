@@ -1,3 +1,13 @@
+orcus 0.16.1
+
+* fixed a build issue on 32-bit linux platforms, which was indirectly caused
+  by ixion.
+
+* fixed json parsing bug caused by an uninitialized variable, which manifested
+  itself on debian 32-bit platform.
+
+* removed compiler warnings on unused variables from the base parser handlers.
+
 orcus 0.16.0
 
 * general
