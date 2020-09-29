@@ -494,28 +494,10 @@ sheet_t sheet::get_index() const
 date_time_t sheet::get_date_time(row_t row, col_t col) const
 {
     const ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
-    const ixion::column_stores_t* stores = cxt.get_columns(mp_impl->m_sheet);
-    if (!stores)
-        throw orcus::general_error(
-            "sheet::get_date_time: failed to get column stores from the model.");
 
-    if (col < 0 || static_cast<size_t>(col) >= stores->size())
-    {
-        std::ostringstream os;
-        os << "invalid column index (" << col << ")";
-        throw std::invalid_argument(os.str());
-    }
-
-    const ixion::column_store_t& col_store = (*stores)[col];
-
-    if (row < 0 || static_cast<size_t>(row) >= col_store.size())
-    {
-        std::ostringstream os;
-        os << "invalid row index (" << row << ")";
-        throw std::invalid_argument(os.str());
-    }
-
-    double dt_raw = col_store.get<double>(row); // raw value as days since epoch.
+    // raw value as days since epoch.
+    double dt_raw = cxt.get_numeric_value(
+        ixion::abs_address_t(mp_impl->m_sheet, row, col));
 
     double days_since_epoch = std::floor(dt_raw);
     double time_fraction = dt_raw - days_since_epoch;
