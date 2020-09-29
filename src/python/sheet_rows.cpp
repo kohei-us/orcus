@@ -11,6 +11,8 @@
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
 
+#include <ixion/model_context.hpp>
+
 namespace orcus { namespace python {
 
 sheet_rows_data::sheet_rows_data() :
@@ -55,9 +57,21 @@ int sheet_rows_init(pyobj_sheet_rows* self, PyObject* /*args*/, PyObject* /*kwar
 PyObject* sheet_rows_iter(PyObject* self)
 {
     sheet_rows_data* data = reinterpret_cast<pyobj_sheet_rows*>(self)->m_data;
-    data->m_current_row = 0;
-    data->m_row_pos = data->m_sheet_range.row_begin();
-    data->m_row_end = data->m_sheet_range.row_end();
+
+    const ixion::abs_range_t& range = data->m_range;
+    if (range.valid())
+    {
+        data->m_current_row = 0;
+
+        ixion::abs_rc_range_t sheet_range;
+        sheet_range.first.column = 0;
+        sheet_range.first.row = 0;
+        sheet_range.last.column = range.last.column;
+        sheet_range.last.row = range.last.row;
+
+        data->m_range_iterator = data->m_doc->get_model_context().get_model_iterator(
+            data->m_sheet->get_index(), ixion::rc_direction_t::horizontal, sheet_range);
+    }
 
     Py_INCREF(self);
     return self;
@@ -66,65 +80,68 @@ PyObject* sheet_rows_iter(PyObject* self)
 PyObject* sheet_rows_iternext(PyObject* self)
 {
     sheet_rows_data* data = reinterpret_cast<pyobj_sheet_rows*>(self)->m_data;
-    spreadsheet::sheet_range::const_row_iterator& row_pos = data->m_row_pos;
-    const spreadsheet::sheet_range::const_row_iterator& row_end = data->m_row_end;
+    ixion::model_iterator& iter = data->m_range_iterator;
 
-    if (row_pos == row_end)
+    if (!iter.has())
     {
         // No more elements.  Stop the iteration.
         PyErr_SetNone(PyExc_StopIteration);
         return nullptr;
     }
 
-    size_t row_position = row_pos->position;
     PyObject* pyobj_row = PyTuple_New(data->m_range.last.column+1);
 
-    for (; row_pos != row_end && row_position == row_pos->position; ++row_pos)
+    for (; iter.has(); iter.next())
     {
-        size_t col_pos = row_pos->index;
-        PyObject* obj = nullptr;
-
-        switch (row_pos->type)
+        const auto& cell = iter.get();
+        if (cell.row != data->m_current_row)
         {
-            case ixion::element_type_empty:
+            ++data->m_current_row;
+            assert(cell.row == data->m_current_row);
+            break;
+        }
+
+        PyObject* obj = nullptr;
+        switch (cell.type)
+        {
+            case ixion::celltype_t::empty:
             {
                 obj = create_cell_object_empty();
                 break;
             }
-            case ixion::element_type_boolean:
+            case ixion::celltype_t::boolean:
             {
-                bool v = row_pos->get<ixion::boolean_element_block>();
-                obj = create_cell_object_boolean(v);
+                obj = create_cell_object_boolean(cell.value.boolean);
                 break;
             }
-            case ixion::element_type_string:
+            case ixion::celltype_t::numeric:
             {
-                ixion::string_id_t sid = row_pos->get<ixion::string_element_block>();
-                const std::string* ps = data->m_sheet_range.get_string(sid);
+                obj = create_cell_object_numeric(cell.value.numeric);
+                break;
+            }
+            case ixion::celltype_t::string:
+            {
+                ixion::string_id_t sid = cell.value.string;
+                const ixion::model_context& cxt = data->m_doc->get_model_context();
+                const std::string* ps = cxt.get_string(sid);
                 obj = create_cell_object_string(ps);
                 break;
             }
-            case ixion::element_type_numeric:
+            case ixion::celltype_t::formula:
             {
-                double v = row_pos->get<ixion::numeric_element_block>();
-                obj = create_cell_object_numeric(v);
-                break;
-            }
-            case ixion::element_type_formula:
-            {
-                const ixion::formula_cell* fc = row_pos->get<ixion::formula_element_block>();
-                ixion::abs_address_t pos(data->m_sheet->get_index(), row_pos->position, col_pos);
+                const ixion::formula_cell* fc = cell.value.formula;
+                ixion::abs_address_t pos(data->m_sheet->get_index(), cell.row, cell.col);
                 obj = create_cell_object_formula(*data->m_doc, pos, fc);
                 break;
             }
-            default:
-                ;
+            case ixion::celltype_t::unknown:
+                break;
         }
 
         if (!obj)
             return nullptr;
 
-        PyTuple_SetItem(pyobj_row, col_pos, obj);
+        PyTuple_SetItem(pyobj_row, cell.col, obj);
     }
 
     return pyobj_row;
@@ -185,13 +202,6 @@ void store_sheet_rows_data(PyObject* self, const spreadsheet::document* orcus_do
     data->m_doc = orcus_doc;
     data->m_sheet = orcus_sheet;
     data->m_range = orcus_sheet->get_data_range();
-
-    const ixion::abs_range_t& range = data->m_range;
-    if (range.valid())
-    {
-        data->m_sheet_range = orcus_sheet->get_sheet_range(
-            0, 0, range.last.row, range.last.column);
-    }
 }
 
 }}
