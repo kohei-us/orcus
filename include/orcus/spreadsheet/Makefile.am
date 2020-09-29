@@ -18,7 +18,6 @@ liborcus_HEADERS += \
 	pivot.hpp \
 	shared_strings.hpp \
 	sheet.hpp \
-	sheet_range.hpp \
 	styles.hpp \
 	view.hpp
 

@@ -24,7 +24,6 @@ struct date_time_t;
 namespace spreadsheet {
 
 class document;
-class sheet_range;
 struct sheet_impl;
 struct auto_filter_t;
 
@@ -98,20 +97,6 @@ public:
      * @return smallest range that contains all non-empty cells.
      */
     ixion::abs_range_t get_data_range() const;
-
-    /**
-     * Return a sheet range object that represents a sub-range within the
-     * sheet.
-     *
-     * @param row_start start row position (0-based).
-     * @param col_start start column position (0-based).
-     * @param row_end end row position (0-based).
-     * @param col_end end column position (0-based).
-     *
-     * @return sheet range object.
-     */
-    sheet_range get_sheet_range(
-        row_t row_start, col_t col_start, row_t row_end, col_t col_end) const;
 
     sheet_t get_index() const;
 

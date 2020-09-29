@@ -43,7 +43,6 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	shared_formula.cpp \
 	shared_strings.cpp \
 	sheet.cpp \
-	sheet_range.cpp \
 	styles.cpp \
 	view.cpp \
 	global_settings.hpp \

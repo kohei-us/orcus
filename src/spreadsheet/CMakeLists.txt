@@ -20,7 +20,6 @@ add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
 	shared_formula.cpp
 	shared_strings.cpp
 	sheet.cpp
-	sheet_range.cpp
 	styles.cpp
 	view.cpp
 )

@@ -186,7 +186,6 @@
                     <F N="../include/orcus/spreadsheet/pivot.hpp"/>
                     <F N="../include/orcus/spreadsheet/shared_strings.hpp"/>
                     <F N="../include/orcus/spreadsheet/sheet.hpp"/>
-                    <F N="../include/orcus/spreadsheet/sheet_range.hpp"/>
                     <F N="../include/orcus/spreadsheet/styles.hpp"/>
                     <F N="../include/orcus/spreadsheet/types.hpp"/>
                     <F N="../include/orcus/spreadsheet/view.hpp"/>
@@ -567,7 +566,6 @@
                 <F N="../src/spreadsheet/shared_formula.hpp"/>
                 <F N="../src/spreadsheet/shared_strings.cpp"/>
                 <F N="../src/spreadsheet/sheet.cpp"/>
-                <F N="../src/spreadsheet/sheet_range.cpp"/>
                 <F N="../src/spreadsheet/styles.cpp"/>
                 <F N="../src/spreadsheet/view.cpp"/>
             </Folder>

@@ -8,8 +8,6 @@
 #ifndef INCLUDED_ORCUS_PYTHON_SHEET_ROWS_HPP
 #define INCLUDED_ORCUS_PYTHON_SHEET_ROWS_HPP
 
-#include "orcus/spreadsheet/sheet_range.hpp"
-
 #include <Python.h>
 #include <ixion/address.hpp>
 #include <ixion/model_iterator.hpp>

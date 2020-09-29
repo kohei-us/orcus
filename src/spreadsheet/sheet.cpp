@@ -9,7 +9,6 @@
 
 #include "orcus/spreadsheet/styles.hpp"
 #include "orcus/spreadsheet/shared_strings.hpp"
-#include "orcus/spreadsheet/sheet_range.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/auto_filter.hpp"
 
@@ -485,27 +484,6 @@ void sheet::set_auto_filter_data(auto_filter_t* p)
 ixion::abs_range_t sheet::get_data_range() const
 {
     return mp_impl->get_data_range();
-}
-
-sheet_range sheet::get_sheet_range(
-    row_t row_start, col_t col_start, row_t row_end, col_t col_end) const
-{
-    if (row_end < row_start || col_end < col_start)
-    {
-        std::ostringstream os;
-        os << "sheet::get_sheet_range: invalid range (rows: "
-            << row_start << "->" << row_end << "; columns: "
-            << col_start << "->" << col_end << ")";
-        throw orcus::general_error(os.str());
-    }
-
-    const ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
-    const ixion::column_stores_t* stores = cxt.get_columns(mp_impl->m_sheet);
-    if (!stores)
-        throw orcus::general_error(
-            "sheet::get_sheet_range: failed to get column stores from the model.");
-
-    return sheet_range(cxt, *stores, row_start, col_start, row_end, col_end);
 }
 
 sheet_t sheet::get_index() const
