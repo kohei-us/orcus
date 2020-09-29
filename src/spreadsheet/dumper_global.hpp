@@ -9,21 +9,18 @@
 #define INCLUDED_ORCUS_SPREADSHEET_DUMPER_GLOBAL_HPP
 
 #include <ixion/model_context.hpp>
-#include <mdds/multi_type_vector/collection.hpp>
+#include <ixion/model_iterator.hpp>
 
 #include <ostream>
 #include <functional>
 
 namespace orcus { namespace spreadsheet { namespace detail {
 
-using columns_type = mdds::mtv::collection<ixion::column_store_t>;
-
 using func_str_handler = std::function<void(std::ostream&, const std::string&)>;
 using func_empty_handler = std::function<void(std::ostream&)>;
 
 void dump_cell_value(
-    std::ostream& os, const ixion::model_context& cxt,
-    const columns_type::const_iterator::value_type& node,
+    std::ostream& os, const ixion::model_context& cxt, const ixion::model_iterator::cell& cell,
     func_str_handler str_handler,
     func_empty_handler empty_handler);
 

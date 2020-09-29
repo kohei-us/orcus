@@ -67,31 +67,27 @@ void csv_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     if (!data_range.valid())
         return;
 
-    const ixion::column_stores_t* p = cxt.get_columns(sheet_id);
-    if (!p)
-        return;
+    ixion::abs_rc_range_t iter_range;
+    iter_range.first.column = 0;
+    iter_range.first.row = 0;
+    iter_range.last.column = data_range.last.column;
+    iter_range.last.row = data_range.last.row;
 
-    columns_type columns(p->begin(), p->end());
+    auto iter = cxt.get_model_iterator(
+        sheet_id, ixion::rc_direction_t::horizontal, iter_range);
 
-    // Only iterate through the data range.
-    columns.set_collection_range(0, data_range.last.column+1);
-    columns.set_element_range(0, data_range.last.row+1);
+    for (; iter.has(); iter.next())
+    {
+        const auto& cell = iter.get();
 
-    std::for_each(columns.begin(), columns.end(),
-        [&](const columns_type::const_iterator::value_type& node)
-        {
-            size_t row = node.position;
-            size_t col = node.index;
+        if (cell.col == 0 && cell.row > 0)
+            os << std::endl;
 
-            if (col == 0 && row > 0)
-                os << std::endl;
+        if (cell.col > 0)
+            os << m_sep;
 
-            if (col > 0)
-                os << m_sep;
-
-            dump_cell_value(os, cxt, node, dump_string, dump_empty);
-        }
-    );
+        dump_cell_value(os, cxt, cell, dump_string, dump_empty);
+    }
 }
 
 }}}

@@ -25,18 +25,18 @@ json_dumper::json_dumper(const document& doc) : m_doc(doc) {}
 void json_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 {
     const ixion::model_context& cxt = m_doc.get_model_context();
-
     ixion::abs_range_t data_range = cxt.get_data_range(sheet_id);
-
-    const ixion::column_stores_t* p = cxt.get_columns(sheet_id);
-    if (!p)
+    if (!data_range.valid())
         return;
 
-    columns_type columns(p->begin(), p->end());
+    ixion::abs_rc_range_t iter_range;
+    iter_range.first.column = 0;
+    iter_range.first.row = 0;
+    iter_range.last.column = data_range.last.column;
+    iter_range.last.row = data_range.last.row;
 
-    // Only iterate through the data range.
-    columns.set_collection_range(0, data_range.last.column+1);
-    columns.set_element_range(0, data_range.last.row+1);
+    auto iter = cxt.get_model_iterator(
+        sheet_id, ixion::rc_direction_t::horizontal, iter_range);
 
     std::vector<std::string> column_labels;
     column_labels.reserve(data_range.last.column+1);
@@ -46,12 +46,12 @@ void json_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     for (ixion::col_t i = 0; i <= data_range.last.column; ++i)
         column_labels.emplace_back(resolver->get_column_name(i));
 
-    columns_type::const_iterator it = columns.begin();
-
     os << "[" << std::endl;
 
-    size_t row = it->position;
-    size_t col = it->index;
+    ixion::row_t row = iter.get().row;
+    ixion::col_t col = iter.get().col;
+    assert(row == 0);
+    assert(col == 0);
 
     os << "    {";
     os << "\"" << column_labels[col] << "\": ";
@@ -63,33 +63,29 @@ void json_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 
     func_empty_handler empty_handler = [](std::ostream& _os) { _os << "null"; };
 
-    dump_cell_value(os, cxt, *it, str_handler, empty_handler);
+    dump_cell_value(os, cxt, iter.get(), str_handler, empty_handler);
 
-    size_t last_col = col;
-    size_t last_row = row;
+    ixion::row_t last_row = row;
 
-    std::for_each(++it, columns.end(),
-        [&](const columns_type::const_iterator::value_type& node)
-        {
-            size_t this_row = node.position;
-            size_t this_col = node.index;
+    for (iter.next(); iter.has(); iter.next())
+    {
+        const auto& cell = iter.get();
+        ixion::row_t this_row = cell.row;
+        ixion::col_t this_col = cell.col;
 
-            if (this_row > last_row)
-                os << "}," << std::endl;
+        if (this_row > last_row)
+            os << "}," << std::endl;
 
-            if (this_col == 0)
-                os << "    {";
-            else
-                os << ", ";
+        if (this_col == 0)
+            os << "    {";
+        else
+            os << ", ";
 
-            os << "\"" << column_labels[this_col] << "\": ";
+        os << "\"" << column_labels.at(this_col) << "\": ";
 
-            dump_cell_value(os, cxt, node, str_handler, empty_handler);
-
-            last_col = node.index;
-            last_row = node.position;
-        }
-    );
+        dump_cell_value(os, cxt, cell, str_handler, empty_handler);
+        last_row = this_row;
+    }
 
     os << "}" << std::endl << "]" << std::endl;
 }
