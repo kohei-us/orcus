@@ -10,6 +10,7 @@
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_result.hpp>
+#include <ixion/cell.hpp>
 
 namespace orcus { namespace spreadsheet { namespace detail {
 

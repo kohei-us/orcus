@@ -16,6 +16,7 @@
 #include <ixion/named_expressions_iterator.hpp>
 #include <structmember.h>
 #include <object.h>
+#include <sstream>
 
 using namespace std;
 namespace ss = orcus::spreadsheet;

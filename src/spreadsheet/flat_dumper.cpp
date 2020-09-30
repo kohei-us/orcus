@@ -14,6 +14,7 @@
 #include <ixion/model_iterator.hpp>
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_result.hpp>
+#include <ixion/cell.hpp>
 
 #include <iostream>
 #include <sstream>

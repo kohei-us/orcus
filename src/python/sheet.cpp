@@ -20,6 +20,7 @@
 #include <structmember.h>
 #include <bytesobject.h>
 #include <iostream>
+#include <sstream>
 #include <cstring>
 
 namespace ss = orcus::spreadsheet;

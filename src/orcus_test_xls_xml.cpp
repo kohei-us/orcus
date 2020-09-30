@@ -22,6 +22,7 @@
 
 #include <ixion/model_context.hpp>
 #include <ixion/address.hpp>
+#include <ixion/cell.hpp>
 
 #include <string>
 #include <sstream>

@@ -19,6 +19,7 @@
 #include <ixion/model_context.hpp>
 #include <ixion/formula.hpp>
 #include <ixion/formula_result.hpp>
+#include <ixion/cell.hpp>
 
 #include <sstream>
 
