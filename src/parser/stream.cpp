@@ -174,16 +174,16 @@ struct file_content::impl
 };
 
 file_content::file_content() :
-    mp_impl(orcus::make_unique<impl>()) {}
+    mp_impl(std::make_unique<impl>()) {}
 
 file_content::file_content(file_content&& other) :
     mp_impl(std::move(other.mp_impl))
 {
-    other.mp_impl = orcus::make_unique<impl>();
+    other.mp_impl = std::make_unique<impl>();
 }
 
 file_content::file_content(const char* filepath) :
-    mp_impl(orcus::make_unique<impl>(filepath)) {}
+    mp_impl(std::make_unique<impl>(filepath)) {}
 
 file_content::~file_content() {}
 
@@ -248,15 +248,15 @@ struct memory_content::impl
     impl(const char* p, size_t n) : content(p), content_size(n) {}
 };
 
-memory_content::memory_content() : mp_impl(orcus::make_unique<impl>()) {}
+memory_content::memory_content() : mp_impl(std::make_unique<impl>()) {}
 
 memory_content::memory_content(const char* p, size_t n) :
-    mp_impl(orcus::make_unique<impl>(p, n)) {}
+    mp_impl(std::make_unique<impl>(p, n)) {}
 
 memory_content::memory_content(memory_content&& other) :
     mp_impl(std::move(other.mp_impl))
 {
-    other.mp_impl = orcus::make_unique<impl>();
+    other.mp_impl = std::make_unique<impl>();
 }
 
 memory_content::~memory_content() {}

@@ -55,12 +55,6 @@ struct map_object_deleter : public ::std::unary_function<typename T::value_type,
     }
 };
 
-template<typename T, typename ...Args>
-std::unique_ptr<T> make_unique(Args&& ...args)
-{
-    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
-
 }
 
 #endif

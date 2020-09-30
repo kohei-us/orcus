@@ -386,7 +386,7 @@ void write_range_reference_group(
     scopes_type scopes;
     for (spreadsheet::row_t current_row = 0; current_row < ref.row_position; ++current_row)
     {
-        scopes.push_back(orcus::make_unique<scope>(root)); // root element
+        scopes.push_back(std::make_unique<scope>(root)); // root element
 
         while (!scopes.empty())
         {
@@ -421,7 +421,7 @@ void write_range_reference_group(
                     // This is a non-leaf element.  Push a new scope with this
                     // element and re-start the loop.
                     ++cur_scope.current_child_pos;
-                    scopes.push_back(orcus::make_unique<scope>(child_elem));
+                    scopes.push_back(std::make_unique<scope>(child_elem));
                     new_scope = true;
                     break;
                 }
@@ -487,7 +487,7 @@ struct less_by_opening_elem_pos : std::binary_function<xml_map_tree::element*, x
 } // anonymous namespace
 
 orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact, spreadsheet::iface::export_factory* ex_fact) :
-    mp_impl(orcus::make_unique<impl>(ns_repo))
+    mp_impl(std::make_unique<impl>(ns_repo))
 {
     mp_impl->im_factory = im_fact;
     mp_impl->ex_factory = ex_fact;

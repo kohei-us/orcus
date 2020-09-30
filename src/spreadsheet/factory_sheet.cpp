@@ -396,7 +396,7 @@ import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_fill_missing_formula_results(false)
 {
     if (view)
-        m_sheet_view = orcus::make_unique<import_sheet_view>(*view, sh.get_index());
+        m_sheet_view = std::make_unique<import_sheet_view>(*view, sh.get_index());
 }
 
 import_sheet::~import_sheet() {}

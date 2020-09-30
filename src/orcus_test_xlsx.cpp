@@ -43,7 +43,7 @@ config test_config(format_t::xlsx);
 std::unique_ptr<spreadsheet::document> load_doc(const pstring& path)
 {
     spreadsheet::range_size_t ss{1048576, 16384};
-    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>(ss);
+    std::unique_ptr<spreadsheet::document> doc = std::make_unique<spreadsheet::document>(ss);
     spreadsheet::import_factory factory(*doc);
     orcus_xlsx app(&factory);
     app.read_file(path.str());

@@ -425,7 +425,7 @@ sheet* document::append_sheet(const pstring& sheet_name)
     sheet_t sheet_index = static_cast<sheet_t>(mp_impl->m_sheets.size());
 
     mp_impl->m_sheets.push_back(
-        orcus::make_unique<sheet_item>(*this, sheet_name_safe, sheet_index));
+        std::make_unique<sheet_item>(*this, sheet_name_safe, sheet_index));
 
     mp_impl->m_context.append_sheet(sheet_name_safe.get(), sheet_name_safe.size());
 
@@ -499,7 +499,7 @@ void document::dump(dump_format_t format, const std::string& output) const
             }
 
             // Output to stdout when output path is not given.
-            fs = orcus::make_unique<std::ofstream>(output.data());
+            fs = std::make_unique<std::ofstream>(output.data());
             ostrm = fs.get();
         }
 

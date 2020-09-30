@@ -232,7 +232,7 @@ void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t co
         cell_format_type::iterator itr = mp_impl->m_cell_formats.find(col);
         if (itr == mp_impl->m_cell_formats.end())
         {
-            auto p = orcus::make_unique<segment_row_index_type>(0, mp_impl->m_doc.get_sheet_size().rows+1, 0);
+            auto p = std::make_unique<segment_row_index_type>(0, mp_impl->m_doc.get_sheet_size().rows+1, 0);
 
             pair<cell_format_type::iterator, bool> r =
                 mp_impl->m_cell_formats.insert(cell_format_type::value_type(col, std::move(p)));
@@ -411,7 +411,7 @@ void sheet::set_merge_cell_range(const range_t& range)
     detail::col_merge_size_type::iterator it_col = mp_impl->m_merge_ranges.find(range.first.column);
     if (it_col == mp_impl->m_merge_ranges.end())
     {
-        auto p = orcus::make_unique<detail::merge_size_type>();
+        auto p = std::make_unique<detail::merge_size_type>();
         pair<detail::col_merge_size_type::iterator, bool> r =
             mp_impl->m_merge_ranges.insert(
                 detail::col_merge_size_type::value_type(range.first.column, std::move(p)));

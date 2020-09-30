@@ -593,7 +593,7 @@ json_map_tree::path_stack_type json_map_tree::get_or_create_destination_node(con
             }
             else
             {
-                m_root = orcus::make_unique<node>();
+                m_root = std::make_unique<node>();
                 m_root->type = map_node_type::array;
                 m_root->value.children = m_node_children_pool.construct();
             }
@@ -618,7 +618,7 @@ json_map_tree::path_stack_type json_map_tree::get_or_create_destination_node(con
             }
             else
             {
-                m_root = orcus::make_unique<node>();
+                m_root = std::make_unique<node>();
                 m_root->type = map_node_type::object;
                 m_root->value.children = m_node_children_pool.construct();
             }
@@ -633,7 +633,7 @@ json_map_tree::path_stack_type json_map_tree::get_or_create_destination_node(con
         {
             if (!m_root)
             {
-                m_root = orcus::make_unique<node>();
+                m_root = std::make_unique<node>();
                 m_root->type = map_node_type::unknown;
             }
 

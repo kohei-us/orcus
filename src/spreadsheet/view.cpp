@@ -24,7 +24,7 @@ struct view::impl
     impl(document& doc) : m_doc(doc), m_active_sheet(0) {}
 };
 
-view::view(document& doc) : mp_impl(orcus::make_unique<impl>(doc)) {}
+view::view(document& doc) : mp_impl(std::make_unique<impl>(doc)) {}
 view::~view() {}
 
 sheet_view* view::get_or_create_sheet_view(sheet_t sheet)
@@ -42,7 +42,7 @@ sheet_view* view::get_or_create_sheet_view(sheet_t sheet)
         mp_impl->m_sheet_views.resize(sheet+1);
 
     if (!mp_impl->m_sheet_views[sheet])
-        mp_impl->m_sheet_views[sheet] = orcus::make_unique<sheet_view>(*this);
+        mp_impl->m_sheet_views[sheet] = std::make_unique<sheet_view>(*this);
 
     return mp_impl->m_sheet_views[sheet].get();
 }
@@ -142,7 +142,7 @@ struct sheet_view::impl
     }
 };
 
-sheet_view::sheet_view(view& doc_view) : mp_impl(orcus::make_unique<impl>(doc_view)) {}
+sheet_view::sheet_view(view& doc_view) : mp_impl(std::make_unique<impl>(doc_view)) {}
 sheet_view::~sheet_view() {}
 
 const range_t& sheet_view::get_selection(sheet_pane_t pos) const

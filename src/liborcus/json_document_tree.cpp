@@ -638,9 +638,9 @@ struct const_node::impl
     impl(const impl& other) : m_doc(other.m_doc), m_node(other.m_node) {}
 };
 
-const_node::const_node(const document_tree* doc, json_value* jv) : mp_impl(orcus::make_unique<impl>(doc, jv)) {}
+const_node::const_node(const document_tree* doc, json_value* jv) : mp_impl(std::make_unique<impl>(doc, jv)) {}
 const_node::const_node(std::unique_ptr<impl>&& p) : mp_impl(std::move(p)) {}
-const_node::const_node(const const_node& other) : mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
+const_node::const_node(const const_node& other) : mp_impl(std::make_unique<impl>(*other.mp_impl)) {}
 const_node::const_node(const_node&& rhs) : mp_impl(std::move(rhs.mp_impl)) {}
 const_node::~const_node() {}
 
@@ -955,13 +955,13 @@ struct const_node_iterator::impl
 };
 
 const_node_iterator::const_node_iterator() :
-    mp_impl(orcus::make_unique<impl>()) {}
+    mp_impl(std::make_unique<impl>()) {}
 
 const_node_iterator::const_node_iterator(const const_node_iterator& other) :
-    mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
+    mp_impl(std::make_unique<impl>(*other.mp_impl)) {}
 
 const_node_iterator::const_node_iterator(const document_tree* doc, const const_node& v, bool begin) :
-    mp_impl(orcus::make_unique<impl>(doc, v, begin)) {}
+    mp_impl(std::make_unique<impl>(doc, v, begin)) {}
 
 const_node_iterator::~const_node_iterator() {}
 
@@ -1211,15 +1211,15 @@ struct node::impl
         m_type(detail::node_t::object) {}
 };
 
-node::node(double v) : mp_impl(orcus::make_unique<impl>(v)) {}
-node::node(int v) : mp_impl(orcus::make_unique<impl>(v)) {}
-node::node(bool b) : mp_impl(orcus::make_unique<impl>(b)) {}
-node::node(std::nullptr_t) : mp_impl(orcus::make_unique<impl>(nullptr)) {}
-node::node(const char* p) : mp_impl(orcus::make_unique<impl>(p)) {}
-node::node(const std::string& s) : mp_impl(orcus::make_unique<impl>(s)) {}
-node::node(std::initializer_list<detail::init::node> vs) : mp_impl(orcus::make_unique<impl>(std::move(vs))) {}
-node::node(json::array array) : mp_impl(orcus::make_unique<impl>(std::move(array))) {}
-node::node(json::object obj) : mp_impl(orcus::make_unique<impl>(std::move(obj))) {}
+node::node(double v) : mp_impl(std::make_unique<impl>(v)) {}
+node::node(int v) : mp_impl(std::make_unique<impl>(v)) {}
+node::node(bool b) : mp_impl(std::make_unique<impl>(b)) {}
+node::node(std::nullptr_t) : mp_impl(std::make_unique<impl>(nullptr)) {}
+node::node(const char* p) : mp_impl(std::make_unique<impl>(p)) {}
+node::node(const std::string& s) : mp_impl(std::make_unique<impl>(s)) {}
+node::node(std::initializer_list<detail::init::node> vs) : mp_impl(std::make_unique<impl>(std::move(vs))) {}
+node::node(json::array array) : mp_impl(std::make_unique<impl>(std::move(array))) {}
+node::node(json::object obj) : mp_impl(std::make_unique<impl>(std::move(obj))) {}
 
 node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
 node::~node() {}
@@ -1411,7 +1411,7 @@ struct document_tree::impl
     std::unique_ptr<document_resource> m_own_res;
     document_resource& m_res;
 
-    impl() : m_root(nullptr), m_own_res(orcus::make_unique<document_resource>()), m_res(*m_own_res) {}
+    impl() : m_root(nullptr), m_own_res(std::make_unique<document_resource>()), m_res(*m_own_res) {}
     impl(document_resource& res) : m_root(nullptr), m_res(res) {}
 };
 
@@ -1420,12 +1420,12 @@ const document_resource& document_tree::get_resource() const
     return mp_impl->m_res;
 }
 
-document_tree::document_tree() : mp_impl(orcus::make_unique<impl>()) {}
+document_tree::document_tree() : mp_impl(std::make_unique<impl>()) {}
 document_tree::document_tree(document_tree&& other) : mp_impl(std::move(other.mp_impl)) {}
-document_tree::document_tree(document_resource& res) : mp_impl(orcus::make_unique<impl>(res)) {}
+document_tree::document_tree(document_resource& res) : mp_impl(std::make_unique<impl>(res)) {}
 
 document_tree::document_tree(std::initializer_list<detail::init::node> vs) :
-    mp_impl(orcus::make_unique<impl>())
+    mp_impl(std::make_unique<impl>())
 {
     std::vector<json_value*> nodes;
     bool object = true;
@@ -1440,7 +1440,7 @@ document_tree::document_tree(std::initializer_list<detail::init::node> vs) :
     mp_impl->m_root = aggregate_nodes(mp_impl->m_res, std::move(nodes), object);
 }
 
-document_tree::document_tree(array vs) : mp_impl(orcus::make_unique<impl>())
+document_tree::document_tree(array vs) : mp_impl(std::make_unique<impl>())
 {
     json_value_array* jva = mp_impl->m_res.obj_pool_jva.construct();
     mp_impl->m_root = mp_impl->m_res.obj_pool.construct(detail::node_t::array);
@@ -1453,7 +1453,7 @@ document_tree::document_tree(array vs) : mp_impl(orcus::make_unique<impl>())
     }
 }
 
-document_tree::document_tree(object obj) : mp_impl(orcus::make_unique<impl>())
+document_tree::document_tree(object obj) : mp_impl(std::make_unique<impl>())
 {
     mp_impl->m_root = mp_impl->m_res.obj_pool.construct(detail::node_t::object);
     mp_impl->m_root->value.object = mp_impl->m_res.obj_pool_jvo.construct();

@@ -228,8 +228,8 @@ struct const_node::impl
 };
 
 const_node::const_node(std::unique_ptr<impl>&& _impl) : mp_impl(std::move(_impl)) {}
-const_node::const_node() : mp_impl(orcus::make_unique<impl>()) {}
-const_node::const_node(const const_node& other) : mp_impl(orcus::make_unique<impl>(*other.mp_impl)) {}
+const_node::const_node() : mp_impl(std::make_unique<impl>()) {}
+const_node::const_node(const const_node& other) : mp_impl(std::make_unique<impl>(*other.mp_impl)) {}
 const_node::const_node(const_node&& other) : mp_impl(std::move(other.mp_impl)) {}
 const_node::~const_node() {}
 
@@ -268,7 +268,7 @@ const_node const_node::child(size_t index) const
             const dom::node* child_node = p->child_nodes[elem_pos].get();
             assert(child_node->type == node_type::element);
 
-            auto v = orcus::make_unique<impl>(static_cast<const dom::element*>(child_node));
+            auto v = std::make_unique<impl>(static_cast<const dom::element*>(child_node));
             return const_node(std::move(v));
         }
         default:
@@ -366,7 +366,7 @@ const_node const_node::parent() const
     if (!p)
         return const_node();
 
-    auto v = orcus::make_unique<impl>(p);
+    auto v = std::make_unique<impl>(p);
     return const_node(std::move(v));
 }
 
@@ -491,7 +491,7 @@ void document_tree::impl::start_element(const sax_ns_parser_element& elem)
     if (!m_root)
     {
         // This must be the root element!
-        m_root = orcus::make_unique<dom::element>(ns, name_safe);
+        m_root = std::make_unique<dom::element>(ns, name_safe);
         m_elem_stack.push_back(m_root.get());
         p = m_elem_stack.back();
         p->attrs.swap(m_cur_attrs);
@@ -505,7 +505,7 @@ void document_tree::impl::start_element(const sax_ns_parser_element& elem)
     size_t elem_pos = p->child_nodes.size();
     p->child_elem_positions.push_back(elem_pos);
 
-    p->child_nodes.push_back(orcus::make_unique<dom::element>(ns, name_safe));
+    p->child_nodes.push_back(std::make_unique<dom::element>(ns, name_safe));
     const dom::element* parent = p;
     p = static_cast<dom::element*>(p->child_nodes.back().get());
     p->parent = parent;
@@ -539,7 +539,7 @@ void document_tree::impl::characters(const pstring& val, bool transient)
 
     dom::element* p = m_elem_stack.back();
     val2 = m_pool.intern(val2).first; // Make sure the string is persistent.
-    auto child = orcus::make_unique<dom::content>(val2);
+    auto child = std::make_unique<dom::content>(val2);
     child->parent = p;
     p->child_nodes.push_back(std::move(child));
 }
@@ -557,7 +557,7 @@ void document_tree::impl::set_attribute(xmlns_id_t ns, const pstring& name, cons
 
 void document_tree::impl::doctype(const sax::doctype_declaration& dtd)
 {
-    m_doctype = orcus::make_unique<sax::doctype_declaration>(dtd);  // make a copy.
+    m_doctype = std::make_unique<sax::doctype_declaration>(dtd);  // make a copy.
 
     sax::doctype_declaration& this_dtd = *m_doctype;
     string_pool& pool = m_pool;
@@ -569,12 +569,12 @@ void document_tree::impl::doctype(const sax::doctype_declaration& dtd)
 }
 
 document_tree::document_tree(xmlns_context& cxt) :
-    mp_impl(orcus::make_unique<impl>(cxt)) {}
+    mp_impl(std::make_unique<impl>(cxt)) {}
 
 document_tree::document_tree(document_tree&& other) :
     mp_impl(std::move(other.mp_impl))
 {
-    other.mp_impl = orcus::make_unique<impl>(mp_impl->m_ns_cxt);
+    other.mp_impl = std::make_unique<impl>(mp_impl->m_ns_cxt);
 }
 
 document_tree::~document_tree() {}
@@ -596,7 +596,7 @@ void document_tree::load(const char* p_strm, size_t n_strm)
 dom::const_node document_tree::root() const
 {
     const dom::element* p = mp_impl->m_root.get();
-    auto v = orcus::make_unique<const_node::impl>(p);
+    auto v = std::make_unique<const_node::impl>(p);
     return dom::const_node(std::move(v));
 }
 
@@ -607,7 +607,7 @@ dom::const_node document_tree::declaration(const pstring& name) const
         return dom::const_node();
 
     const dom::declaration* decl = &it->second;
-    auto v = orcus::make_unique<dom::const_node::impl>(decl);
+    auto v = std::make_unique<dom::const_node::impl>(decl);
     return dom::const_node(std::move(v));
 }
 

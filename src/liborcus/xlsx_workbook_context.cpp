@@ -114,7 +114,7 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
 
                 m_workbook_info.data.insert(
                     opc_rel_extras_t::map_type::value_type(
-                        rid, orcus::make_unique<xlsx_rel_sheet_info>(sheet)));
+                        rid, std::make_unique<xlsx_rel_sheet_info>(sheet)));
 
                 break;
             }
@@ -193,7 +193,7 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
 
                 m_workbook_info.data.insert(
                     opc_rel_extras_t::map_type::value_type(
-                        rid, orcus::make_unique<xlsx_rel_pivot_cache_info>(cache_id)));
+                        rid, std::make_unique<xlsx_rel_pivot_cache_info>(cache_id)));
 
                 break;
             }

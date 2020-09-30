@@ -301,7 +301,7 @@ pivot_cache_field_t::pivot_cache_field_t(const pivot_cache_field_t& other) :
     max_value(other.max_value),
     min_date(other.min_date),
     max_date(other.max_date),
-    group_data(orcus::make_unique<pivot_cache_group_data_t>(*other.group_data)) {}
+    group_data(std::make_unique<pivot_cache_group_data_t>(*other.group_data)) {}
 
 pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
     name(other.name),
@@ -332,7 +332,7 @@ struct pivot_cache::impl
 };
 
 pivot_cache::pivot_cache(pivot_cache_id_t cache_id, string_pool& sp) :
-    mp_impl(orcus::make_unique<impl>(cache_id, sp)) {}
+    mp_impl(std::make_unique<impl>(cache_id, sp)) {}
 
 pivot_cache::~pivot_cache() {}
 
@@ -433,7 +433,7 @@ struct pivot_collection::impl
     }
 };
 
-pivot_collection::pivot_collection(document& doc) : mp_impl(orcus::make_unique<impl>(doc)) {}
+pivot_collection::pivot_collection(document& doc) : mp_impl(std::make_unique<impl>(doc)) {}
 
 pivot_collection::~pivot_collection() {}
 

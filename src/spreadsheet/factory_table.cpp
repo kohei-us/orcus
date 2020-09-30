@@ -96,7 +96,7 @@ struct import_table::impl
         m_doc(doc), m_sheet(sh), m_auto_filter(doc, sh) {}
 };
 
-import_table::import_table(document& doc, sheet& sh) : mp_impl(orcus::make_unique<impl>(doc, sh)) {}
+import_table::import_table(document& doc, sheet& sh) : mp_impl(std::make_unique<impl>(doc, sh)) {}
 
 import_table::~import_table() {}
 

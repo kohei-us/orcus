@@ -642,7 +642,7 @@ void html_dumper::build_overlapped_ranges()
                 detail::overlapped_cells_type::iterator it_cont = m_overlapped_ranges.find(row);
                 if (it_cont == m_overlapped_ranges.end())
                 {
-                    auto p = orcus::make_unique<detail::overlapped_col_index_type>(0, sheet_size.columns, false);
+                    auto p = std::make_unique<detail::overlapped_col_index_type>(0, sheet_size.columns, false);
                     std::pair<detail::overlapped_cells_type::iterator, bool> r =
                         m_overlapped_ranges.insert(detail::overlapped_cells_type::value_type(row, std::move(p)));
 

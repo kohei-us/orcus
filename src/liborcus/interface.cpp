@@ -18,7 +18,7 @@ struct import_filter::impl
     impl(format_t input) : m_config(input) {}
 };
 
-import_filter::import_filter(format_t input) : mp_impl(orcus::make_unique<impl>(input)) {}
+import_filter::import_filter(format_t input) : mp_impl(std::make_unique<impl>(input)) {}
 
 import_filter::~import_filter() {}
 

@@ -63,7 +63,7 @@ struct xmlns_repository::impl
     impl() : m_predefined_ns_size(0) {}
 };
 
-xmlns_repository::xmlns_repository() : mp_impl(orcus::make_unique<impl>()) {}
+xmlns_repository::xmlns_repository() : mp_impl(std::make_unique<impl>()) {}
 xmlns_repository::~xmlns_repository() {}
 
 xmlns_id_t xmlns_repository::intern(const pstring& uri)
@@ -187,8 +187,8 @@ struct xmlns_context::impl
         m_repo(r.m_repo), m_all_ns(r.m_all_ns), m_default(r.m_default), m_map(r.m_map), m_trim_all_ns(r.m_trim_all_ns) {}
 };
 
-xmlns_context::xmlns_context(xmlns_repository& repo) : mp_impl(orcus::make_unique<impl>(repo)) {}
-xmlns_context::xmlns_context(const xmlns_context& r) : mp_impl(orcus::make_unique<impl>(*r.mp_impl)) {}
+xmlns_context::xmlns_context(xmlns_repository& repo) : mp_impl(std::make_unique<impl>(repo)) {}
+xmlns_context::xmlns_context(const xmlns_context& r) : mp_impl(std::make_unique<impl>(*r.mp_impl)) {}
 xmlns_context::~xmlns_context() {}
 
 xmlns_id_t xmlns_context::push(const pstring& key, const pstring& uri)

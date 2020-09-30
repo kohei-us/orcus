@@ -472,7 +472,7 @@ void xls_xml_data_context::store_array_formula_parent_cell(const pstring& formul
     store.push_back(
         std::make_pair(
             range,
-            orcus::make_unique<xls_xml_context::array_formula_type>(range, formula)));
+            std::make_unique<xls_xml_context::array_formula_type>(range, formula)));
 
     xls_xml_context::array_formula_type& af = *store.back().second;
 
@@ -885,7 +885,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                     }
                 }
 
-                m_current_style = orcus::make_unique<style_type>();
+                m_current_style = std::make_unique<style_type>();
                 m_current_style->id = style_id;
                 m_current_style->name = style_name;
 

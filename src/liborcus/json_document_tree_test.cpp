@@ -224,7 +224,7 @@ std::unique_ptr<json::document_tree> get_doc_tree(const char* filepath)
     cout << "--- original" << endl;
     cout << content.str() << endl;
 
-    auto doc = orcus::make_unique<json::document_tree>();
+    auto doc = std::make_unique<json::document_tree>();
     doc->load(content.data(), content.size(), test_config);
 
     return doc;

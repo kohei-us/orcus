@@ -77,7 +77,7 @@ std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
         return nullptr;
     }
 
-    std::unique_ptr<yaml_config> config = orcus::make_unique<yaml_config>();
+    std::unique_ptr<yaml_config> config = std::make_unique<yaml_config>();
 
     if (vm.count("input"))
         config->input_path = vm["input"].as<string>();
@@ -142,7 +142,7 @@ std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
 
 std::unique_ptr<yaml::document_tree> load_doc(const char* p, size_t n)
 {
-    std::unique_ptr<yaml::document_tree> doc(orcus::make_unique<yaml::document_tree>());
+    std::unique_ptr<yaml::document_tree> doc(std::make_unique<yaml::document_tree>());
     try
     {
         doc->load(p, n);

@@ -317,7 +317,7 @@ struct orcus_json::impl
 };
 
 orcus_json::orcus_json(spreadsheet::iface::import_factory* im_fact) :
-    mp_impl(orcus::make_unique<impl>(im_fact)) {}
+    mp_impl(std::make_unique<impl>(im_fact)) {}
 
 orcus_json::~orcus_json() {}
 

@@ -194,7 +194,7 @@ struct styles::impl
     string_pool m_string_pool;
 };
 
-styles::styles() : mp_impl(orcus::make_unique<impl>()) {}
+styles::styles() : mp_impl(std::make_unique<impl>()) {}
 styles::~styles() {}
 
 void styles::reserve_font_store(size_t n)

@@ -37,7 +37,7 @@ struct orcus_ods::impl
 
 orcus_ods::orcus_ods(spreadsheet::iface::import_factory* factory) :
     iface::import_filter(format_t::ods),
-    mp_impl(orcus::make_unique<impl>(factory))
+    mp_impl(std::make_unique<impl>(factory))
 {
     mp_impl->m_ns_repo.add_predefined_values(NS_odf_all);
 }

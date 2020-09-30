@@ -304,11 +304,11 @@ std::ostream& operator<< (std::ostream& os, const parse_tokens_t& tokens)
 }
 
 parser_thread::parser_thread(const char* p, size_t n, size_t min_token_size) :
-    mp_impl(orcus::make_unique<parser_thread::impl>(
+    mp_impl(std::make_unique<parser_thread::impl>(
         p, n, min_token_size, std::numeric_limits<size_t>::max()/2)) {}
 
 parser_thread::parser_thread(const char* p, size_t n, size_t min_token_size, size_t max_token_size) :
-    mp_impl(orcus::make_unique<parser_thread::impl>(
+    mp_impl(std::make_unique<parser_thread::impl>(
         p, n, min_token_size, max_token_size)) {}
 
 parser_thread::~parser_thread() {}

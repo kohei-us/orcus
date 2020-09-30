@@ -42,7 +42,7 @@ output_stream::output_stream(const boost::program_options::variables_map& vm) :
     }
 
     // Output to stdout when output path is not given.
-    m_ofs = orcus::make_unique<std::ofstream>(output_path.data());
+    m_ofs = std::make_unique<std::ofstream>(output_path.data());
     m_os = m_ofs.get();
 }
 

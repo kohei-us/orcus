@@ -33,7 +33,7 @@ void import_xlsx::read_table(
         return;
 
     session_context cxt;
-    auto handler = orcus::make_unique<xlsx_table_xml_handler>(cxt, ooxml_tokens, table, resolver);
+    auto handler = std::make_unique<xlsx_table_xml_handler>(cxt, ooxml_tokens, table, resolver);
 
     xmlns_repository ns_repo;
     ns_repo.add_predefined_values(NS_ooxml_all);

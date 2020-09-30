@@ -31,7 +31,7 @@ void import_ods::read_styles(const char* p, size_t n, spreadsheet::iface::import
 
     session_context cxt;
     odf_styles_map_type styles_map;
-    auto context = orcus::make_unique<styles_context>(cxt, odf_tokens, styles_map, styles);
+    auto context = std::make_unique<styles_context>(cxt, odf_tokens, styles_map, styles);
 
     xml_stream_handler stream_handler(context.release());
 

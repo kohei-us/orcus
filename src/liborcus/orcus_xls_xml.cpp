@@ -52,7 +52,7 @@ struct orcus_xls_xml::impl
 
         xml_stream_parser parser(cnf, m_ns_repo, xls_xml_tokens, content, len);
 
-        auto handler = orcus::make_unique<xls_xml_handler>(m_cxt, xls_xml_tokens, mp_factory);
+        auto handler = std::make_unique<xls_xml_handler>(m_cxt, xls_xml_tokens, mp_factory);
 
         parser.set_handler(handler.get());
         try
@@ -72,7 +72,7 @@ struct orcus_xls_xml::impl
 
 orcus_xls_xml::orcus_xls_xml(spreadsheet::iface::import_factory* factory) :
     iface::import_filter(format_t::xls_xml),
-    mp_impl(orcus::make_unique<impl>(factory))
+    mp_impl(std::make_unique<impl>(factory))
 {
     mp_impl->m_ns_repo.add_predefined_values(NS_xls_xml_all);
 }

@@ -354,12 +354,12 @@ xml_structure_tree::element::element(const entity_name& _name, bool _repeat, boo
     name(_name), repeat(_repeat), has_content(_has_content) {}
 
 xml_structure_tree::walker::walker(const xml_structure_tree::impl& parent_impl) :
-    mp_impl(orcus::make_unique<walker_impl>(parent_impl))
+    mp_impl(std::make_unique<walker_impl>(parent_impl))
 {
 }
 
 xml_structure_tree::walker::walker(const walker& r) :
-    mp_impl(orcus::make_unique<walker_impl>(*r.mp_impl))
+    mp_impl(std::make_unique<walker_impl>(*r.mp_impl))
 {
 }
 
@@ -517,12 +517,12 @@ xml_structure_tree::element xml_structure_tree::walker::move_to(const std::strin
 }
 
 xml_structure_tree::xml_structure_tree(xmlns_context& xmlns_cxt) :
-    mp_impl(orcus::make_unique<impl>(xmlns_cxt)) {}
+    mp_impl(std::make_unique<impl>(xmlns_cxt)) {}
 
 xml_structure_tree::xml_structure_tree(xml_structure_tree&& other) :
     mp_impl(std::move(other.mp_impl))
 {
-    other.mp_impl = orcus::make_unique<impl>(mp_impl->m_xmlns_cxt);
+    other.mp_impl = std::make_unique<impl>(mp_impl->m_xmlns_cxt);
 }
 
 xml_structure_tree::~xml_structure_tree() {}
@@ -547,7 +547,7 @@ void xml_structure_tree::dump_compact(std::ostream& os) const
     cxt.dump(os);
 
     element_ref ref(mp_impl->mp_root->name, &mp_impl->mp_root->prop);
-    scopes.push_back(orcus::make_unique<scope>(entity_name(), false, ref));
+    scopes.push_back(std::make_unique<scope>(entity_name(), false, ref));
     while (!scopes.empty())
     {
         bool new_scope = false;
@@ -596,7 +596,7 @@ void xml_structure_tree::dump_compact(std::ostream& os) const
 
             // Push a new scope, and restart the loop with the new scope.
             ++cur_scope.current_pos;
-            scopes.push_back(orcus::make_unique<scope>(this_elem.name, this_elem.prop->repeat));
+            scopes.push_back(std::make_unique<scope>(this_elem.name, this_elem.prop->repeat));
             scope& child_scope = *scopes.back();
             child_scope.elements.swap(elems);
             child_scope.current_pos = child_scope.elements.begin();

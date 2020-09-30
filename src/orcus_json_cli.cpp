@@ -224,7 +224,7 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         }
     }
 
-    params.config = orcus::make_unique<json_config>();
+    params.config = std::make_unique<json_config>();
 
     if (vm.count("input"))
         params.config->input_path = vm["input"].as<string>();
@@ -253,10 +253,10 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         case detail::mode_t::map_gen:
         case detail::mode_t::structure:
             // Structure and map-gen modes only need input and output parameters.
-            params.os = orcus::make_unique<output_stream>(vm);
+            params.os = std::make_unique<output_stream>(vm);
             break;
         case detail::mode_t::convert:
-            params.os = orcus::make_unique<output_stream>(vm);
+            params.os = std::make_unique<output_stream>(vm);
             parse_args_for_convert(params, desc, vm);
             break;
         case detail::mode_t::map:
@@ -271,7 +271,7 @@ detail::cmd_params parse_json_args(int argc, char** argv)
 
 std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content, const json_config& config)
 {
-    std::unique_ptr<json::document_tree> doc(orcus::make_unique<json::document_tree>());
+    std::unique_ptr<json::document_tree> doc(std::make_unique<json::document_tree>());
     doc->load(content.data(), content.size(), config);
     return doc;
 }

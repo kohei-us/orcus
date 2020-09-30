@@ -43,7 +43,7 @@ public:
     import_pc_field_group(document& doc, pivot_cache_field_t& parent, size_t base_index) :
         m_doc(doc),
         m_parent_field(parent),
-        m_data(orcus::make_unique<pivot_cache_group_data_t>(base_index)) {}
+        m_data(std::make_unique<pivot_cache_group_data_t>(base_index)) {}
 
     ~import_pc_field_group() override {}
 
@@ -130,7 +130,7 @@ import_pivot_cache_def::~import_pivot_cache_def() {}
 void import_pivot_cache_def::create_cache(pivot_cache_id_t cache_id)
 {
     m_src_type = unknown;
-    m_cache = orcus::make_unique<pivot_cache>(cache_id, m_doc.get_string_pool());
+    m_cache = std::make_unique<pivot_cache>(cache_id, m_doc.get_string_pool());
 }
 
 void import_pivot_cache_def::set_worksheet_source(
@@ -177,7 +177,7 @@ void import_pivot_cache_def::set_field_name(const char* p, size_t n)
 iface::import_pivot_cache_field_group* import_pivot_cache_def::create_field_group(size_t base_index)
 {
     m_current_field_group =
-        orcus::make_unique<import_pc_field_group>(m_doc, m_current_field, base_index);
+        std::make_unique<import_pc_field_group>(m_doc, m_current_field, base_index);
 
     return m_current_field_group.get();
 }

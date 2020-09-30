@@ -37,11 +37,11 @@ struct string_pool::impl
     impl()
     {
         // first element is the active store used for the current instance.
-        m_stores.push_back(orcus::make_unique<string_store_type>(256, 0));
+        m_stores.push_back(std::make_unique<string_store_type>(256, 0));
     }
 };
 
-string_pool::string_pool() : mp_impl(orcus::make_unique<impl>()) {}
+string_pool::string_pool() : mp_impl(std::make_unique<impl>()) {}
 
 string_pool::~string_pool()
 {

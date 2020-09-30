@@ -74,7 +74,7 @@ PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
     try
     {
         spreadsheet::range_size_t ss{1048576, 16384};
-        std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>(ss);
+        std::unique_ptr<spreadsheet::document> doc = std::make_unique<spreadsheet::document>(ss);
         spreadsheet::import_factory fact(*doc);
         orcus_csv app(&fact);
 

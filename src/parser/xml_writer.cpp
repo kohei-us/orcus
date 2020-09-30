@@ -106,7 +106,7 @@ struct xml_writer::scope::impl
 };
 
 xml_writer::scope::scope(xml_writer* parent, const xml_name_t& elem) :
-    mp_impl(orcus::make_unique<impl>(parent, elem))
+    mp_impl(std::make_unique<impl>(parent, elem))
 {
 }
 
@@ -167,7 +167,7 @@ struct xml_writer::impl
 };
 
 xml_writer::xml_writer(xmlns_repository& ns_repo, std::ostream& os) :
-    mp_impl(orcus::make_unique<impl>(ns_repo, os))
+    mp_impl(std::make_unique<impl>(ns_repo, os))
 {
     os << "<?xml version=\"1.0\"?>";
 }
@@ -175,7 +175,7 @@ xml_writer::xml_writer(xmlns_repository& ns_repo, std::ostream& os) :
 xml_writer::xml_writer(xml_writer&& other) :
     mp_impl(std::move(other.mp_impl))
 {
-    other.mp_impl = orcus::make_unique<impl>(mp_impl->ns_repo, mp_impl->os);
+    other.mp_impl = std::make_unique<impl>(mp_impl->ns_repo, mp_impl->os);
 }
 
 xml_writer& xml_writer::operator= (xml_writer&& other)

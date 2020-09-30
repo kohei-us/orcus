@@ -199,10 +199,10 @@ struct import_factory::impl
 };
 
 import_factory::import_factory(document& doc) :
-    mp_impl(orcus::make_unique<impl>(*this, doc)) {}
+    mp_impl(std::make_unique<impl>(*this, doc)) {}
 
 import_factory::import_factory(document& doc, view& view) :
-    mp_impl(orcus::make_unique<impl>(*this, doc))
+    mp_impl(std::make_unique<impl>(*this, doc))
 {
     // Store the optional view store.
     mp_impl->m_view = &view;
@@ -270,7 +270,7 @@ iface::import_sheet* import_factory::append_sheet(
         sv = mp_impl->m_view->get_or_create_sheet_view(sheet_index);
 
     mp_impl->m_sheets.push_back(
-        orcus::make_unique<import_sheet>(mp_impl->m_doc, *sh, sv));
+        std::make_unique<import_sheet>(mp_impl->m_doc, *sh, sv));
 
     import_sheet* p = mp_impl->m_sheets.back().get();
     p->set_character_set(mp_impl->m_charset);
@@ -366,7 +366,7 @@ struct export_factory::impl
             return nullptr;
 
         sheet_t sheet_pos = m_sheets.size();
-        m_sheets.emplace_back(orcus::make_unique<export_sheet>(m_doc, *sh));
+        m_sheets.emplace_back(std::make_unique<export_sheet>(m_doc, *sh));
 
         m_sheet_index_map.insert(
             std::make_pair(name, sheet_pos));
@@ -376,7 +376,7 @@ struct export_factory::impl
 };
 
 export_factory::export_factory(const document& doc) :
-    mp_impl(orcus::make_unique<impl>(doc)) {}
+    mp_impl(std::make_unique<impl>(doc)) {}
 
 export_factory::~export_factory() {}
 

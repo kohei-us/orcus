@@ -22,7 +22,7 @@ struct import_global_settings::impl
 };
 
 import_global_settings::import_global_settings(import_factory& factory, document& doc) :
-    mp_impl(orcus::make_unique<impl>(factory, doc)) {}
+    mp_impl(std::make_unique<impl>(factory, doc)) {}
 
 import_global_settings::~import_global_settings() {}
 

@@ -132,7 +132,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
 
                 m_pcache_info.data.insert(
                     opc_rel_extras_t::map_type::value_type(
-                        rid, orcus::make_unique<xlsx_rel_pivot_cache_record_info>(m_pcache_id)));
+                        rid, std::make_unique<xlsx_rel_pivot_cache_record_info>(m_pcache_id)));
             }
 
             break;

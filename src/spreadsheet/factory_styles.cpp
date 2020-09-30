@@ -31,7 +31,7 @@ struct import_styles::impl
 };
 
 import_styles::import_styles(styles& styles, string_pool& sp) :
-    mp_impl(orcus::make_unique<impl>(styles, sp)) {}
+    mp_impl(std::make_unique<impl>(styles, sp)) {}
 
 import_styles::~import_styles() {}
 

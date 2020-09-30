@@ -67,7 +67,7 @@ void test_basic()
 void test_merge()
 {
     string_pool pool1;
-    std::unique_ptr<string_pool> pool2(orcus::make_unique<string_pool>());
+    std::unique_ptr<string_pool> pool2(std::make_unique<string_pool>());
 
     pool1.intern("A");
     pool1.intern("B");

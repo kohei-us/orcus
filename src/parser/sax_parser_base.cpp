@@ -114,12 +114,12 @@ struct parser_base::impl
 
 parser_base::parser_base(const char* content, size_t size, bool transient_stream) :
     ::orcus::parser_base(content, size, transient_stream),
-    mp_impl(orcus::make_unique<impl>()),
+    mp_impl(std::make_unique<impl>()),
     m_nest_level(0),
     m_buffer_pos(0),
     m_root_elem_open(true)
 {
-    mp_impl->m_cell_buffers.push_back(orcus::make_unique<cell_buffer>());
+    mp_impl->m_cell_buffers.push_back(std::make_unique<cell_buffer>());
 }
 
 parser_base::~parser_base() {}
@@ -128,7 +128,7 @@ void parser_base::inc_buffer_pos()
 {
     ++m_buffer_pos;
     if (m_buffer_pos == mp_impl->m_cell_buffers.size())
-        mp_impl->m_cell_buffers.push_back(orcus::make_unique<cell_buffer>());
+        mp_impl->m_cell_buffers.push_back(std::make_unique<cell_buffer>());
 }
 
 cell_buffer& parser_base::get_cell_buffer()

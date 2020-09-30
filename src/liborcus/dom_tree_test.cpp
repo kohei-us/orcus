@@ -23,7 +23,7 @@ struct doctree
 
 std::unique_ptr<doctree> load_document_tree(const orcus::pstring& content)
 {
-    std::unique_ptr<doctree> ret = orcus::make_unique<doctree>(content);
+    std::unique_ptr<doctree> ret = std::make_unique<doctree>(content);
     return ret;
 }
 

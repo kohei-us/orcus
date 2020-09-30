@@ -66,7 +66,7 @@ std::unique_ptr<spreadsheet::document> load_doc_from_filepath(
     ss::formula_error_policy_t error_policy=ss::formula_error_policy_t::fail)
 {
     spreadsheet::range_size_t ss{1048576, 16384};
-    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>(ss);
+    std::unique_ptr<spreadsheet::document> doc = std::make_unique<spreadsheet::document>(ss);
     spreadsheet::import_factory factory(*doc);
     factory.set_recalc_formula_cells(recalc);
     factory.set_formula_error_policy(error_policy);
@@ -80,7 +80,7 @@ std::unique_ptr<spreadsheet::document> load_doc_from_filepath(
 std::unique_ptr<spreadsheet::document> load_doc_from_stream(const string& path)
 {
     spreadsheet::range_size_t ss{1048576, 16384};
-    std::unique_ptr<spreadsheet::document> doc = orcus::make_unique<spreadsheet::document>(ss);
+    std::unique_ptr<spreadsheet::document> doc = std::make_unique<spreadsheet::document>(ss);
     spreadsheet::import_factory factory(*doc);
     orcus_xls_xml app(&factory);
 

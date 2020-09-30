@@ -134,7 +134,7 @@ struct parser_thread::impl
 
     void start_element(const orcus::xml_token_element_t& elem)
     {
-        m_element_store.emplace_back(orcus::make_unique<orcus::xml_token_element_t>(elem));
+        m_element_store.emplace_back(std::make_unique<orcus::xml_token_element_t>(elem));
         orcus::xml_token_element_t& this_elem = *m_element_store.back();
 
         // Go through all attributes and intern transient strings.
@@ -157,7 +157,7 @@ struct parser_thread::impl
     {
         assert(elem.attrs.empty());
 
-        m_element_store.emplace_back(orcus::make_unique<orcus::xml_token_element_t>(elem));
+        m_element_store.emplace_back(std::make_unique<orcus::xml_token_element_t>(elem));
         m_parser_tokens.emplace_back(parse_token_t::end_element, m_element_store.back().get());
         check_and_notify();
     }
@@ -210,12 +210,12 @@ struct parser_thread::impl
 
 parser_thread::parser_thread(
     const char* p, size_t n, const orcus::tokens& tks, xmlns_context& ns_cxt, size_t min_token_size) :
-    mp_impl(orcus::make_unique<parser_thread::impl>(
+    mp_impl(std::make_unique<parser_thread::impl>(
         p, n, tks, ns_cxt, min_token_size, std::numeric_limits<size_t>::max()/2)) {}
 
 parser_thread::parser_thread(
     const char* p, size_t n, const orcus::tokens& tks, xmlns_context& ns_cxt, size_t min_token_size, size_t max_token_size) :
-    mp_impl(orcus::make_unique<parser_thread::impl>(
+    mp_impl(std::make_unique<parser_thread::impl>(
         p, n, tks, ns_cxt, min_token_size, max_token_size)) {}
 
 parser_thread::~parser_thread()
