@@ -29,7 +29,7 @@ class TestCase(unittest.TestCase):
             test_dir = self.basedir / test_dir
             common.run_test_dir(self, test_dir, common.DocLoader(ods))
 
-    def test_formula_tokens(self):
+    def test_formula_tokens_1(self):
         filepath = self.basedir / "formula-1" / "input.ods"
         with open(filepath, "rb") as f:
             doc = ods.read(f, recalc=False)
@@ -76,6 +76,85 @@ class TestCase(unittest.TestCase):
             c = row[0]
             iter = c.get_formula_tokens()
             for token, expected_token in zip(iter, expected_formula_tokens):
+                self.assertEqual(str(token), expected_token[0])
+                self.assertEqual(token.type, expected_token[1])
+                self.assertEqual(token.op, expected_token[2])
+
+    def test_formula_tokens_2(self):
+        filepath = self.basedir / "formula-2" / "input.ods"
+        with open(filepath, "rb") as f:
+            doc = ods.read(f, recalc=False)
+
+        self.assertEqual(len(doc.sheets), 1)
+
+        expected = (
+            (
+                ("CONCATENATE", FormulaTokenType.FUNCTION, FormulaTokenOp.FUNCTION),
+                ("(", FormulaTokenType.OPERATOR, FormulaTokenOp.OPEN),
+                ("A2", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ('" "', FormulaTokenType.VALUE, FormulaTokenOp.STRING),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ("B2", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (")", FormulaTokenType.OPERATOR, FormulaTokenOp.CLOSE),
+            ),
+            (
+                ("CONCATENATE", FormulaTokenType.FUNCTION, FormulaTokenOp.FUNCTION),
+                ("(", FormulaTokenType.OPERATOR, FormulaTokenOp.OPEN),
+                ("A3", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ('" "', FormulaTokenType.VALUE, FormulaTokenOp.STRING),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ("B3", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (")", FormulaTokenType.OPERATOR, FormulaTokenOp.CLOSE),
+            ),
+            (
+                ("CONCATENATE", FormulaTokenType.FUNCTION, FormulaTokenOp.FUNCTION),
+                ("(", FormulaTokenType.OPERATOR, FormulaTokenOp.OPEN),
+                ("A4", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ('" "', FormulaTokenType.VALUE, FormulaTokenOp.STRING),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ("B4", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (")", FormulaTokenType.OPERATOR, FormulaTokenOp.CLOSE),
+            ),
+            (
+                ("CONCATENATE", FormulaTokenType.FUNCTION, FormulaTokenOp.FUNCTION),
+                ("(", FormulaTokenType.OPERATOR, FormulaTokenOp.OPEN),
+                ("A5", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ('" "', FormulaTokenType.VALUE, FormulaTokenOp.STRING),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ("B5", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (")", FormulaTokenType.OPERATOR, FormulaTokenOp.CLOSE),
+            ),
+            (
+                ("CONCATENATE", FormulaTokenType.FUNCTION, FormulaTokenOp.FUNCTION),
+                ("(", FormulaTokenType.OPERATOR, FormulaTokenOp.OPEN),
+                ("A6", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ('" "', FormulaTokenType.VALUE, FormulaTokenOp.STRING),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ("B6", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (")", FormulaTokenType.OPERATOR, FormulaTokenOp.CLOSE),
+            ),
+            (
+                ("CONCATENATE", FormulaTokenType.FUNCTION, FormulaTokenOp.FUNCTION),
+                ("(", FormulaTokenType.OPERATOR, FormulaTokenOp.OPEN),
+                ("A7", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ('" "', FormulaTokenType.VALUE, FormulaTokenOp.STRING),
+                (",", FormulaTokenType.OPERATOR, FormulaTokenOp.SEP),
+                ("B7", FormulaTokenType.REFERENCE, FormulaTokenOp.SINGLE_REF),
+                (")", FormulaTokenType.OPERATOR, FormulaTokenOp.CLOSE),
+            ),
+        )
+
+        # Check cells in column C.
+        rows = [row for row in doc.sheets[0].get_rows()]
+        for row, expected_tokens in zip(rows[1:], expected):  # skip the header row
+            tokens = row[2].get_formula_tokens()
+            for token, expected_token in zip(tokens, expected_tokens):
                 self.assertEqual(str(token), expected_token[0])
                 self.assertEqual(token.type, expected_token[1])
                 self.assertEqual(token.op, expected_token[2])
