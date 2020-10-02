@@ -12,7 +12,7 @@ import os
 import os.path
 import mmap
 
-from orcus import ods, FormulaTokenType
+from orcus import ods, FormulaTokenType, FormulaTokenOp
 
 import file_load_common as common
 
@@ -50,10 +50,28 @@ class TestCase(unittest.TestCase):
             self.assertEqual(c.formula, expected_formula)
 
         expected = (
-            (("1", FormulaTokenType.VALUE), ("*", FormulaTokenType.OPERATOR), ("2", FormulaTokenType.VALUE)),
-            (("12", FormulaTokenType.VALUE), ("/", FormulaTokenType.OPERATOR), ("3", FormulaTokenType.VALUE)),
-            (("AVERAGE", FormulaTokenType.FUNCTION), ("(", FormulaTokenType.OPERATOR), ("$A1:A$2", FormulaTokenType.REFERENCE), (")", FormulaTokenType.OPERATOR)),
-            (("SUM", FormulaTokenType.FUNCTION), ("(", FormulaTokenType.OPERATOR), ("$A$1:$A$3", FormulaTokenType.REFERENCE), (")", FormulaTokenType.OPERATOR)),
+            (
+                ("1", FormulaTokenType.VALUE, FormulaTokenOp.VALUE),
+                ("*", FormulaTokenType.OPERATOR, FormulaTokenOp.MULTIPLY),
+                ("2", FormulaTokenType.VALUE, FormulaTokenOp.VALUE)
+            ),
+            (
+                ("12", FormulaTokenType.VALUE, FormulaTokenOp.VALUE),
+                ("/", FormulaTokenType.OPERATOR, FormulaTokenOp.DIVIDE),
+                ("3", FormulaTokenType.VALUE, FormulaTokenOp.VALUE)
+            ),
+            (
+                ("AVERAGE", FormulaTokenType.FUNCTION, FormulaTokenOp.FUNCTION),
+                ("(", FormulaTokenType.OPERATOR, FormulaTokenOp.OPEN),
+                ("$A1:A$2", FormulaTokenType.REFERENCE, FormulaTokenOp.RANGE_REF),
+                (")", FormulaTokenType.OPERATOR, FormulaTokenOp.CLOSE)
+            ),
+            (
+                ("SUM", FormulaTokenType.FUNCTION, FormulaTokenOp.FUNCTION),
+                ("(", FormulaTokenType.OPERATOR, FormulaTokenOp.OPEN),
+                ("$A$1:$A$3", FormulaTokenType.REFERENCE, FormulaTokenOp.RANGE_REF),
+                (")", FormulaTokenType.OPERATOR, FormulaTokenOp.CLOSE)
+            ),
         )
 
         for row, expected_formula_tokens in zip(sheet.get_rows(), expected):
@@ -62,6 +80,7 @@ class TestCase(unittest.TestCase):
             for token, expected_token in zip(iter, expected_formula_tokens):
                 self.assertEqual(str(token), expected_token[0])
                 self.assertEqual(token.type, expected_token[1])
+                self.assertEqual(token.op, expected_token[2])
 
 
 if __name__ == '__main__':

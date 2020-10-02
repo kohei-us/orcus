@@ -56,6 +56,35 @@ class FormulaTokenType(Enum):
     ERROR     = 6
 
 
+class FormulaTokenOp(Enum):
+    """Collection of formula token operators."""
+
+    UNKNOWN          = 0
+    SINGLE_REF       = 1
+    RANGE_REF        = 2
+    TABLE_REF        = 3
+    NAMED_EXPRESSION = 4
+    STRING           = 5
+    VALUE            = 6
+    FUNCTION         = 7
+    PLUS             = 8
+    MINUS            = 9
+    DIVIDE           = 10
+    MULTIPLY         = 11
+    EXPONENT         = 12
+    CONCAT           = 13
+    EQUAL            = 14
+    NOT_EQUAL        = 15
+    LESS             = 16
+    GREATER          = 17
+    LESS_EQUAL       = 18
+    GREATER_EQUAL    = 19
+    OPEN             = 20
+    CLOSE            = 21
+    SEP              = 22
+    ERROR            = 23
+
+
 def get_document_loader_module(format_type):
     """Obtain a document loader module for the specified format type.
 

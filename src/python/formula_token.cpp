@@ -8,6 +8,7 @@
 #include "formula_token.hpp"
 #include "global.hpp"
 #include "orcus/spreadsheet/document.hpp"
+#include "orcus/global.hpp"
 
 #include <ixion/formula.hpp>
 #include <ixion/formula_name_resolver.hpp>
@@ -34,6 +35,7 @@ struct pyobj_formula_token
     PyObject_HEAD
 
     PyObject* type;
+    PyObject* op;
 
     data_formula_token* data;
 };
@@ -79,10 +81,45 @@ const char* to_formula_token_type(ixion::fopcode_t op)
     return "UNKNOWN";
 }
 
+const char* to_formula_token_op(ixion::fopcode_t op)
+{
+    const char* names[] = {
+        "UNKNOWN",
+        "SINGLE_REF",
+        "RANGE_REF",
+        "TABLE_REF",
+        "NAMED_EXPRESSION",
+        "STRING",
+        "VALUE",
+        "FUNCTION",
+        "PLUS",
+        "MINUS",
+        "DIVIDE",
+        "MULTIPLY",
+        "EXPONENT",
+        "CONCAT",
+        "EQUAL",
+        "NOT_EQUAL",
+        "LESS",
+        "GREATER",
+        "LESS_EQUAL",
+        "GREATER_EQUAL",
+        "OPEN",
+        "CLOSE",
+        "SEP",
+        "ERROR",
+    };
+
+    const int n_names = ORCUS_N_ELEMENTS(names);
+    return op < n_names ? names[op] : names[0];
+}
+
 void init_members(pyobj_formula_token* self)
 {
     Py_INCREF(Py_None);
     self->type = Py_None;
+    Py_INCREF(Py_None);
+    self->op = Py_None;
 }
 
 PyObject* create_and_init_formula_token_object(ixion::fopcode_t op, std::string repr)
@@ -104,6 +141,7 @@ PyObject* create_and_init_formula_token_object(ixion::fopcode_t op, std::string 
     pyobj_formula_token* self = reinterpret_cast<pyobj_formula_token*>(obj);
     init_members(self);
     self->type = get_python_enum_value("FormulaTokenType", to_formula_token_type(op));
+    self->op = get_python_enum_value("FormulaTokenOp", to_formula_token_op(op));
     self->data->repr = std::move(repr);
 
     return obj;
@@ -114,6 +152,7 @@ void tp_dealloc(pyobj_formula_token* self)
     delete self->data;
     self->data = nullptr;
 
+    Py_CLEAR(self->op);
     Py_CLEAR(self->type);
 
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
@@ -140,6 +179,7 @@ PyObject* tp_repr(pyobj_formula_token* self)
 PyMemberDef tp_members[] =
 {
     { (char*)"type", T_OBJECT_EX, offsetof(pyobj_formula_token, type), READONLY, (char*)"formula token type" },
+    { (char*)"op", T_OBJECT_EX, offsetof(pyobj_formula_token, op), READONLY, (char*)"formula token operator" },
     { nullptr }
 };
 
