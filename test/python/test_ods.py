@@ -8,9 +8,7 @@
 ########################################################################
 
 import unittest
-import os
-import os.path
-import mmap
+from pathlib import Path
 
 from orcus import ods, FormulaTokenType, FormulaTokenOp
 
@@ -22,17 +20,17 @@ class TestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # base directory for ods test files.
-        basedir = os.path.join(os.path.dirname(__file__), "..", "ods")
-        cls.basedir = os.path.normpath(basedir)
+        basedir = Path(__file__).parent / ".." / "ods"
+        cls.basedir = basedir.resolve()
 
     def test_import(self):
         test_dirs = ("raw-values-1", "formula-1", "formula-2")
         for test_dir in test_dirs:
-            test_dir = os.path.join(self.basedir, test_dir)
+            test_dir = self.basedir / test_dir
             common.run_test_dir(self, test_dir, common.DocLoader(ods))
 
     def test_formula_tokens(self):
-        filepath = os.path.join(self.basedir, "formula-1", "input.ods")
+        filepath = self.basedir / "formula-1" / "input.ods"
         with open(filepath, "rb") as f:
             doc = ods.read(f, recalc=False)
 
