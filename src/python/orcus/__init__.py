@@ -57,7 +57,7 @@ class FormulaTokenType(Enum):
 
 
 class FormulaTokenOp(Enum):
-    """Collection of formula token operators."""
+    """Collection of formula token opcodes."""
 
     UNKNOWN          = 0
     SINGLE_REF       = 1

@@ -26,6 +26,7 @@ orcus
    document.rst
    format_type.rst
    formula_token.rst
+   formula_token_op.rst
    formula_token_type.rst
    formula_tokens.rst
    named_expressions.rst
