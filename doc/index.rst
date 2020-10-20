@@ -20,6 +20,7 @@ Contents:
    cpp/index.rst
    python/index.rst
    cli/index.rst
+   notes/index.rst
 
 
 Indices and tables

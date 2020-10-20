@@ -1,6 +1,6 @@
 
-Command Line Tools
-==================
+CLI
+===
 
 .. toctree::
    :maxdepth: 1
