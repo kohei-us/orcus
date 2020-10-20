@@ -36,4 +36,35 @@ First, let's examine the general structure of this XML document:
 
 
 It starts with the ``<dataset>`` element as its root element, which contains
-recurring ``<record>`` elements each of which contains multiple fields.
+recurring ``<record>`` elements each of which contains multiple fields.  By
+looking at each ``<record>`` element structure, you can easily infer how the
+record content is structured.  You can also run ``orcus-xml`` in the structure
+mode in order to detect the structure of its content.
+
+Running the following command
+
+.. code-block::
+
+    orcus-xml --mode structure example.xml
+
+should generate the following output:
+
+.. code-block::
+
+    /dataset
+    /dataset/record[*]
+    /dataset/record[*]/@id
+    /dataset/record[*]/name
+    /dataset/record[*]/name/first
+    /dataset/record[*]/name/last
+    /dataset/record[*]/active
+    /dataset/record[*]/gender
+    /dataset/record[*]/language
+
+This output lists the paths of all encountered "leaf node" items one item per
+line, in order of occurrence.  Each path is expressed in a XPath-like format,
+except for recurring "anchor" elements which are suffixed with the ``[*]``
+symbols.  An anchor element in this context is defined as a recurring non-leaf
+element that contains either an attribute or a leaf element.  You can think of
+anchor elements as elements that define the individual record boundaries.
+
