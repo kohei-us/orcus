@@ -219,9 +219,17 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    std::string map_path;
+    fs::path map_path;
     if (vm.count("map"))
+    {
         map_path = vm["map"].as<std::string>();
+
+        if (!fs::is_regular_file(map_path))
+        {
+            cerr << map_path << " is not a valid map file." << endl;
+            return EXIT_FAILURE;
+        }
+    }
 
     std::string output;
     if (vm.count("output"))
@@ -268,7 +276,7 @@ int main(int argc, char** argv)
             app.detect_map_definition(content.data(), content.size());
         else
         {
-            file_content map_content(map_path.data());
+            file_content map_content(map_path.string().data());
             app.read_map_definition(map_content.data(), map_content.size());
         }
 
