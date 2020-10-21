@@ -211,7 +211,13 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    std::string input_path = vm["input"].as<std::string>();
+    fs::path input_path = vm["input"].as<std::string>();
+
+    if (!fs::is_regular_file(input_path))
+    {
+        cerr << input_path << " is not a valid file." << endl;
+        return EXIT_FAILURE;
+    }
 
     std::string map_path;
     if (vm.count("map"))
@@ -221,7 +227,7 @@ int main(int argc, char** argv)
     if (vm.count("output"))
         output = vm["output"].as<std::string>();
 
-    file_content content(input_path.data());
+    file_content content(input_path.string().data());
 
     try
     {
