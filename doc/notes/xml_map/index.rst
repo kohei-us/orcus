@@ -134,11 +134,57 @@ will create an output file named ``out/range-0.txt`` which contains the followin
     | 20 [v] | Minor     | Worland     | true   | Male   | Dutch          |
     +--------+-----------+-------------+--------+--------+----------------+
 
+We are using the ``flat`` format type which writes the data range of a sheet
+in a human-readable grid output.
+
 The mapped sheet content is the result of the automatic mapping of the original
 XML document.  In automatic mapping, all attributes and element contents that
 can be mapped as field values will be mapped, and the sheet name will be automatically
 generated.
 
-Although not applicable to this particular example, when the source XML document
+Although not applicable to this particular example, if the source XML document
 contains multiple mappable ranges, they will get mapped to multiple sheets, one
 sheet per range.
+
+Custom-mapping using map file
+-----------------------------
+
+Automatic-mapping should work reasonably well in many cases, but sometime you
+may need to customize how you map your data, and this section will go over how
+you could do just that.
+
+The short answer is that you will need to create a map definition file and pass
+it to the ``orcus-xml`` command via ``-m`` or ``--map`` option.  The easiest
+way to go about it is to have one generated for you.
+
+Running the following command:
+
+.. code-block::
+
+    orcus-xml --mode map-gen -o map.xml example.xml
+
+will generate a map file ``map.xml`` which contains the mapping definition based
+on the auto-detected structure.  The content of ``map.xml`` generated from the
+example XML document should look like this:
+
+.. code-block:: XML
+
+    <?xml version="1.0"?>
+    <map xmlns="https://gitlab.com/orcus/orcus/xml-map-definition">
+      <sheet name="range-0"/>
+      <range sheet="range-0" row="0" column="0">
+        <field path="/dataset/record/@id"/>
+        <field path="/dataset/record/name/first"/>
+        <field path="/dataset/record/name/last"/>
+        <field path="/dataset/record/active"/>
+        <field path="/dataset/record/gender"/>
+        <field path="/dataset/record/language"/>
+        <row-group path="/dataset/record"/>
+      </range>
+    </map>
+
+Note that since the original map file content does not include any line breaks,
+you may want to run it through an XML reformatting tool such as
+`xmllint <http://xmlsoft.org/xmllint.html>`_ to "prettify" its content before
+viewing.
+
