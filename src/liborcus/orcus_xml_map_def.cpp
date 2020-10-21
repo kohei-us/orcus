@@ -236,7 +236,7 @@ void orcus_xml::write_map_definition(const char* p, size_t n, std::ostream& out)
     tree.parse(p, n);
 
     xml_writer writer(mp_impl->ns_repo, out);
-    xmlns_id_t default_ns = writer.add_namespace("", "https://gitlab.com/orcus/orcus");
+    xmlns_id_t default_ns = writer.add_namespace("", "https://gitlab.com/orcus/orcus/xml-map-definition");
     auto map_scope = writer.push_element_scope({default_ns, "map"});
 
     for (const xmlns_id_t& ns : cxt.get_all_namespaces())
