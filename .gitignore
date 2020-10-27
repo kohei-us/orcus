@@ -51,3 +51,5 @@ doc_example/spreadsheet-doc-2-sheets-with-formula
 doc_example/spreadsheet-doc-2-sheets-with-string-pool
 doc_example/xml-mapping-1
 src/parser/*-parser-test
+src/parser/xml-writer-test
+test/python/env.json
