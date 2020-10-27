@@ -1,4 +1,6 @@
 
+.. _mapping-xml-to-ss:
+
 Mapping XML to spreadsheet
 ==========================
 
