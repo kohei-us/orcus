@@ -510,7 +510,6 @@ void orcus_json::detect_map_definition(const char* p, size_t n)
 
     json::structure_tree structure;
     structure.parse(p, n);
-    structure.dump_compact(std::cout);
     structure.process_ranges(rh);
 }
 
