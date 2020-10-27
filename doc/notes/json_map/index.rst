@@ -16,7 +16,7 @@ Examining the structure of the input JSON document
 
 Let's first take a look at the sample JSON document:
 
-.. code-block::
+.. code-block:: javascript
 
     [
         {
@@ -150,3 +150,177 @@ This will create file named ``out/range-0.txt`` which contains the following:
 Again, this is very similar to what we saw in the XML-mapping example.  Note
 that cell values with ``[v]`` and ``[b]`` indicate numeric and boolean values,
 respectively.  Cells with no suffixes are string cells.
+
+Custom-mapping using map file
+-----------------------------
+
+This process is also very similar to the process we followed for XML mapping.
+We first auto-generate a map file, modify it, and use it to do the mapping again.
+Since there isn't much difference between XML mapping and JSON mapping, let's
+just go through this very quick.
+
+First step is to generate a map file for the auto-detected range by running:
+
+.. code-block::
+
+    orcus-json --mode map-gen -o map.json example.json
+
+which will write the mapping rules to ``map.json`` file.  When you open the generated
+map file, you will see something like the following:
+
+.. code-block:: javascript
+
+    {
+        "sheets": [
+            "range-0"
+        ],
+        "ranges": [
+            {
+                "sheet": "range-0",
+                "row": 0,
+                "column": 0,
+                "row-header": true,
+                "fields": [
+                    {
+                        "path": "$[]['id']"
+                    },
+                    {
+                        "path": "$[]['name'][0]"
+                    },
+                    {
+                        "path": "$[]['name'][1]"
+                    },
+                    {
+                        "path": "$[]['active']"
+                    },
+                    {
+                        "path": "$[]['gender']"
+                    },
+                    {
+                        "path": "$[]['language']"
+                    }
+                ],
+                "row-groups": [
+                    {
+                        "path": "$"
+                    }
+                ]
+            }
+        ]
+    }
+
+The structure and content of the map file should look similar to the XML counterpart,
+except that it is now in JSON format, and the paths are expressed in slightly
+modified JSONPath bracket notation, where ``[]`` represents an array node with
+no position specified.
+
+Now that we have a map file, let's modify this and use it to do the mapping once
+again.  Just like the XML mapping example, we are going to:
+
+* insert two blank rows above,
+* drop the ``id`` and ``active`` fields,
+* specify labels for the fields, and
+* change the sheet name from ``range-0`` to ``My Data``.
+
+This is what we've come up with:
+
+.. code-block:: javascript
+
+    {
+        "sheets": [
+            "My Data"
+        ],
+        "ranges": [
+            {
+                "sheet": "My Data",
+                "row": 2,
+                "column": 0,
+                "row-header": true,
+                "fields": [
+                    {
+                        "path": "$[]['name'][0]", "label": "First Name"
+                    },
+                    {
+                        "path": "$[]['name'][1]", "label": "Last Name"
+                    },
+                    {
+                        "path": "$[]['gender']", "label": "Gender"
+                    },
+                    {
+                        "path": "$[]['language']", "label": "Language"
+                    }
+                ],
+                "row-groups": [
+                    {
+                        "path": "$"
+                    }
+                ]
+            }
+        ]
+    }
+
+We'll save this file as ``map-modified.json``, and pass it to the ``orcus-json``
+command via ``--map`` or ``-m`` option:
+
+.. code-block::
+
+    orcus-json --mode map -o out -f flat -m map-modified.json example.json
+
+Let's check the output in ``out/My Data.txt`` and see what it contains:
+
+.. code-block::
+
+    ---
+    Sheet name: My Data
+    rows: 23  cols: 4
+    +------------+-------------+--------+----------------+
+    |            |             |        |                |
+    +------------+-------------+--------+----------------+
+    |            |             |        |                |
+    +------------+-------------+--------+----------------+
+    | First Name | Last Name   | Gender | Language       |
+    +------------+-------------+--------+----------------+
+    | Tab        | Limpenny    | Male   | Kazakh         |
+    +------------+-------------+--------+----------------+
+    | Manda      | Hadgraft    | Female | Bislama        |
+    +------------+-------------+--------+----------------+
+    | Mickie     | Boreham     | Male   | Swahili        |
+    +------------+-------------+--------+----------------+
+    | Celinka    | Brookfield  | Female | Gagauz         |
+    +------------+-------------+--------+----------------+
+    | Muffin     | Bleas       | Female | Hiri Motu      |
+    +------------+-------------+--------+----------------+
+    | Jackelyn   | Crumb       | Female | Northern Sotho |
+    +------------+-------------+--------+----------------+
+    | Tessie     | Hollingsbee | Female | Fijian         |
+    +------------+-------------+--------+----------------+
+    | Yank       | Wernham     | Male   | Tok Pisin      |
+    +------------+-------------+--------+----------------+
+    | Brendan    | Lello       | Male   | Fijian         |
+    +------------+-------------+--------+----------------+
+    | Arabel     | Rigg        | Female | Kyrgyz         |
+    +------------+-------------+--------+----------------+
+    | Carolann   | McElory     | Female | Pashto         |
+    +------------+-------------+--------+----------------+
+    | Gasparo    | Flack       | Male   | Telugu         |
+    +------------+-------------+--------+----------------+
+    | Eolanda    | Polendine   | Female | Kashmiri       |
+    +------------+-------------+--------+----------------+
+    | Brock      | McCaw       | Male   | Tsonga         |
+    +------------+-------------+--------+----------------+
+    | Wenda      | Espinas     | Female | Bulgarian      |
+    +------------+-------------+--------+----------------+
+    | Zachary    | Banane      | Male   | Persian        |
+    +------------+-------------+--------+----------------+
+    | Sallyanne  | Mengue      | Female | Latvian        |
+    +------------+-------------+--------+----------------+
+    | Elizabet   | Hoofe       | Female | Tswana         |
+    +------------+-------------+--------+----------------+
+    | Alastair   | Hutchence   | Male   | Ndebele        |
+    +------------+-------------+--------+----------------+
+    | Minor      | Worland     | Male   | Dutch          |
+    +------------+-------------+--------+----------------+
+
+The ``id`` and ``active`` fields are gone, the remaining fields have custom
+labels we specified, and there are two blank rows above.  It appears that all
+the changes we have intended have been properly applied.
