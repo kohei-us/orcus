@@ -344,6 +344,7 @@ void parse_and_write_map_file(const orcus::file_content& content, detail::cmd_pa
             {"sheet", sheet},
             {"row", 0},
             {"column", 0},
+            {"row-header", true},
             {"fields", json::array()},
             {"row-groups", json::array()},
         });
