@@ -476,28 +476,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             }
             case XML_c:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_row);
-                cell_attr_parser func;
-                func = for_each(attrs.begin(), attrs.end(), func);
-
-                if (func.contains_address())
-                {
-                    if (m_cur_row != func.get_row())
-                    {
-                        std::ostringstream os;
-                        os << "row numbers differ! (current=" << m_cur_row << ")";
-                        throw xml_structure_error(os.str());
-                    }
-
-                    m_cur_col = func.get_col();
-                }
-                else
-                {
-                    ++m_cur_col;
-                }
-
-                m_cur_cell_type = func.get_cell_type();
-                m_cur_cell_xf = func.get_xf();
+                start_element_cell(parent, attrs);
                 break;
             }
             case XML_f:
@@ -760,6 +739,32 @@ void xlsx_sheet_context::start_element_pane(
         default:
             ;
     }
+}
+
+void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_ooxml_xlsx, XML_row);
+    cell_attr_parser func;
+    func = for_each(attrs.begin(), attrs.end(), func);
+
+    if (func.contains_address())
+    {
+        if (m_cur_row != func.get_row())
+        {
+            std::ostringstream os;
+            os << "row numbers differ! (current=" << m_cur_row << ")";
+            throw xml_structure_error(os.str());
+        }
+
+        m_cur_col = func.get_col();
+    }
+    else
+    {
+        ++m_cur_col;
+    }
+
+    m_cur_cell_type = func.get_cell_type();
+    m_cur_cell_xf = func.get_xf();
 }
 
 void xlsx_sheet_context::end_element_cell()
