@@ -130,94 +130,6 @@ public:
     bool is_hidden() const { return m_hidden; }
 };
 
-class cell_attr_parser : public std::unary_function<xml_token_attr_t, void>
-{
-    struct address
-    {
-        spreadsheet::row_t row;
-        spreadsheet::col_t col;
-        address(spreadsheet::row_t _row, spreadsheet::col_t _col) : row(_row), col(_col) {}
-    };
-
-    xlsx_cell_t m_type;
-    address m_address;
-    size_t m_xf;
-    bool m_contains_address;
-
-public:
-    cell_attr_parser() :
-        m_type(xlsx_ct_numeric),
-        m_address(0,0),
-        m_xf(0),
-        m_contains_address(false) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_r:
-                // cell address in A1 notation.
-                m_address = to_cell_address(attr.value);
-                m_contains_address = true;
-            break;
-            case XML_t:
-                // cell type
-                m_type = to_xlsx_cell_type(attr.value);
-            break;
-            case XML_s:
-                // cell style
-                m_xf = to_long(attr.value);
-            break;
-        }
-    }
-
-    xlsx_cell_t get_cell_type() const { return m_type; }
-
-    spreadsheet::row_t get_row() const { return m_address.row; }
-    spreadsheet::col_t get_col() const { return m_address.col; }
-    size_t get_xf() const { return m_xf; }
-    bool contains_address() const { return m_contains_address; }
-
-private:
-
-    address to_cell_address(const pstring& s) const
-    {
-        spreadsheet::row_t row = 0;
-        spreadsheet::col_t col = 0;
-        const char* p = s.get();
-        size_t n = s.size();
-        for (size_t i = 0; i < n; ++i, ++p)
-        {
-            char c = *p;
-            if ('A' <= c && c <= 'Z')
-            {
-                col *= 26;
-                col += static_cast<spreadsheet::col_t>(c - 'A' + 1);
-            }
-            else if ('0' <= c && c <= '9')
-            {
-                row *= 10;
-                row += static_cast<spreadsheet::row_t>(c - '0');
-            }
-            else
-            {
-                std::ostringstream os;
-                os << "invalid cell address: " << s;
-                throw xml_structure_error(os.str());
-            }
-        }
-
-        if (!row || !col)
-        {
-            std::ostringstream os;
-            os << "invalid cell address: " << s;
-            throw xml_structure_error(os.str());
-        }
-
-        return address(row-1, col-1); // switch from 1-based to 0-based.
-    }
-};
-
 namespace sheet_pane {
 
 typedef mdds::sorted_string_map<spreadsheet::sheet_pane_t> map_type;
@@ -255,7 +167,7 @@ const map_type& get()
     return mt;
 }
 
-}
+} // namespace pane_state
 
 namespace formula_type {
 
@@ -275,9 +187,55 @@ const map_type& get()
     return mt;
 }
 
+} // namespace formula_type
+
+
+struct address
+{
+    spreadsheet::row_t row;
+    spreadsheet::col_t col;
+
+    address(spreadsheet::row_t _row, spreadsheet::col_t _col) : row(_row), col(_col) {}
+};
+
+address to_cell_address(const pstring& s)
+{
+    spreadsheet::row_t row = 0;
+    spreadsheet::col_t col = 0;
+    const char* p = s.get();
+    size_t n = s.size();
+    for (size_t i = 0; i < n; ++i, ++p)
+    {
+        char c = *p;
+        if ('A' <= c && c <= 'Z')
+        {
+            col *= 26;
+            col += static_cast<spreadsheet::col_t>(c - 'A' + 1);
+        }
+        else if ('0' <= c && c <= '9')
+        {
+            row *= 10;
+            row += static_cast<spreadsheet::row_t>(c - '0');
+        }
+        else
+        {
+            std::ostringstream os;
+            os << "invalid cell address: " << s;
+            throw xml_structure_error(os.str());
+        }
+    }
+
+    if (!row || !col)
+    {
+        std::ostringstream os;
+        os << "invalid cell address: " << s;
+        throw xml_structure_error(os.str());
+    }
+
+    return address(row - 1, col - 1); // switch from 1-based to 0-based.
 }
 
-}
+} // anonymous namespace
 
 xlsx_sheet_context::formula::formula() :
     type(spreadsheet::formula_t::unknown),
@@ -743,28 +701,51 @@ void xlsx_sheet_context::start_element_pane(
 
 void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_ooxml_xlsx, XML_row);
-    cell_attr_parser func;
-    func = for_each(attrs.begin(), attrs.end(), func);
+    xlsx_cell_t cell_type = xlsx_ct_numeric;
+    address address(0, 0);
+    size_t xf = 0;
+    bool contains_address = false;
 
-    if (func.contains_address())
+    xml_element_expected(parent, NS_ooxml_xlsx, XML_row);
+
+    for (const xml_token_attr_t& attr : attrs)
     {
-        if (m_cur_row != func.get_row())
+        switch (attr.name)
+        {
+            case XML_r:
+                // cell address in A1 notation.
+                address = to_cell_address(attr.value);
+                contains_address = true;
+                break;
+            case XML_t:
+                // cell type
+                cell_type = to_xlsx_cell_type(attr.value);
+                break;
+            case XML_s:
+                // cell style
+                xf = to_long(attr.value);
+                break;
+        }
+    }
+
+    if (contains_address)
+    {
+        if (m_cur_row != address.row)
         {
             std::ostringstream os;
             os << "row numbers differ! (current=" << m_cur_row << ")";
             throw xml_structure_error(os.str());
         }
 
-        m_cur_col = func.get_col();
+        m_cur_col = address.col;
     }
     else
     {
         ++m_cur_col;
     }
 
-    m_cur_cell_type = func.get_cell_type();
-    m_cur_cell_xf = func.get_xf();
+    m_cur_cell_type = cell_type;
+    m_cur_cell_xf = xf;
 }
 
 void xlsx_sheet_context::end_element_cell()
