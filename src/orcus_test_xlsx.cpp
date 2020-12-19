@@ -31,16 +31,20 @@
 #include <ixion/address.hpp>
 #include <ixion/formula_name_resolver.hpp>
 
+#include <boost/filesystem.hpp>
+
 using namespace orcus;
 using namespace orcus::spreadsheet;
 namespace ss = orcus::spreadsheet;
+namespace fs = boost::filesystem;
+
 using namespace std;
 
 namespace {
 
 config test_config(format_t::xlsx);
 
-std::unique_ptr<spreadsheet::document> load_doc(const pstring& path)
+std::unique_ptr<spreadsheet::document> load_doc(const pstring& path, bool recalc = true)
 {
     spreadsheet::range_size_t ss{1048576, 16384};
     std::unique_ptr<spreadsheet::document> doc = std::make_unique<spreadsheet::document>(ss);
@@ -48,7 +52,8 @@ std::unique_ptr<spreadsheet::document> load_doc(const pstring& path)
     orcus_xlsx app(&factory);
     app.read_file(path.str());
     app.set_config(test_config);
-    doc->recalc_formula_cells();
+    if (recalc)
+        doc->recalc_formula_cells();
 
     return doc;
 }
@@ -79,15 +84,19 @@ const pivot_cache* get_pivot_cache(
     return pc.get_cache(sheet_name, range);
 }
 
-vector<const char*> dirs = {
-    SRCDIR"/test/xlsx/raw-values-1/",
-    SRCDIR"/test/xlsx/boolean-values/",
-    SRCDIR"/test/xlsx/empty-shared-strings/",
-    SRCDIR"/test/xlsx/formula-array-1/",
-    SRCDIR"/test/xlsx/formula-cells/",
-    SRCDIR"/test/xlsx/formula-shared/",
-    SRCDIR"/test/xlsx/named-expression/",
-    SRCDIR"/test/xlsx/named-expression-sheet-local/",
+std::vector<fs::path> dirs_recalc = {
+    SRCDIR"/test/xlsx/raw-values-1",
+    SRCDIR"/test/xlsx/boolean-values",
+    SRCDIR"/test/xlsx/empty-shared-strings",
+    SRCDIR"/test/xlsx/formula-array-1",
+    SRCDIR"/test/xlsx/formula-cells",
+    SRCDIR"/test/xlsx/formula-shared",
+    SRCDIR"/test/xlsx/named-expression",
+    SRCDIR"/test/xlsx/named-expression-sheet-local",
+};
+
+std::vector<fs::path> dirs_non_recalc = {
+    SRCDIR"/test/xlsx/formula-cells",
 };
 
 /**
@@ -97,13 +106,11 @@ vector<const char*> dirs = {
  */
 void test_xlsx_import()
 {
-    for (const char* dir : dirs)
+    auto run_check = [](const fs::path& dir, bool recalc)
     {
-        string path(dir);
-
         // Read the input.xlsx document.
-        path.append("input.xlsx");
-        auto doc = load_doc(path);
+        fs::path filepath = dir / "input.xlsx";
+        auto doc = load_doc(filepath.string(), recalc);
 
         // Dump the content of the model.
         ostringstream os;
@@ -111,9 +118,8 @@ void test_xlsx_import()
         string check = os.str();
 
         // Check that against known control.
-        path = dir;
-        path.append("check.txt");
-        file_content control(path.data());
+        filepath = dir / "check.txt";
+        file_content control(filepath.string().data());
 
         assert(!check.empty());
         assert(!control.empty());
@@ -121,6 +127,16 @@ void test_xlsx_import()
         pstring s1(&check[0], check.size());
         pstring s2 = control.str();
         assert(s1.trim() == s2.trim());
+    };
+
+    for (const fs::path& dir : dirs_recalc)
+    {
+        run_check(dir, true);
+    }
+
+    for (const fs::path& dir : dirs_non_recalc)
+    {
+        run_check(dir, false);
     }
 }
 

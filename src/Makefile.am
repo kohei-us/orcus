@@ -456,11 +456,17 @@ EXTRA_PROGRAMS += \
 orcus_test_xlsx_SOURCES = \
 	orcus_test_xlsx.cpp
 
+orcus_test_xlsx_LDFLAGS = \
+	$(BOOST_FILESYSTEM_LDFLAGS) \
+	$(BOOST_SYSTEM_LDFLAGS)
+
 orcus_test_xlsx_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
-	@LIBIXION_LIBS@
+	@LIBIXION_LIBS@ \
+	$(BOOST_FILESYSTEM_LIBS) \
+	$(BOOST_SYSTEM_LIBS)
 
 orcus_test_xlsx_CPPFLAGS = \
 	@LIBIXION_CFLAGS@  $(AM_CPPFLAGS) \
