@@ -189,52 +189,6 @@ const map_type& get()
 
 } // namespace formula_type
 
-
-struct address
-{
-    spreadsheet::row_t row;
-    spreadsheet::col_t col;
-
-    address(spreadsheet::row_t _row, spreadsheet::col_t _col) : row(_row), col(_col) {}
-};
-
-address to_cell_address(const pstring& s)
-{
-    spreadsheet::row_t row = 0;
-    spreadsheet::col_t col = 0;
-    const char* p = s.get();
-    size_t n = s.size();
-    for (size_t i = 0; i < n; ++i, ++p)
-    {
-        char c = *p;
-        if ('A' <= c && c <= 'Z')
-        {
-            col *= 26;
-            col += static_cast<spreadsheet::col_t>(c - 'A' + 1);
-        }
-        else if ('0' <= c && c <= '9')
-        {
-            row *= 10;
-            row += static_cast<spreadsheet::row_t>(c - '0');
-        }
-        else
-        {
-            std::ostringstream os;
-            os << "invalid cell address: " << s;
-            throw xml_structure_error(os.str());
-        }
-    }
-
-    if (!row || !col)
-    {
-        std::ostringstream os;
-        os << "invalid cell address: " << s;
-        throw xml_structure_error(os.str());
-    }
-
-    return address(row - 1, col - 1); // switch from 1-based to 0-based.
-}
-
 } // anonymous namespace
 
 xlsx_sheet_context::formula::formula() :
@@ -702,7 +656,9 @@ void xlsx_sheet_context::start_element_pane(
 void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
 {
     xlsx_cell_t cell_type = xlsx_ct_numeric;
-    address address(0, 0);
+    spreadsheet::address_t address;
+    address.column = 0;
+    address.row = 0;
     size_t xf = 0;
     bool contains_address = false;
 
@@ -714,7 +670,10 @@ void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, cons
         {
             case XML_r:
                 // cell address in A1 notation.
-                address = to_cell_address(attr.value);
+                address = to_rc_address(
+                    m_resolver.resolve_address(
+                        attr.value.data(), attr.value.size()));
+
                 contains_address = true;
                 break;
             case XML_t:
@@ -737,7 +696,7 @@ void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, cons
             throw xml_structure_error(os.str());
         }
 
-        m_cur_col = address.col;
+        m_cur_col = address.column;
     }
     else
     {
