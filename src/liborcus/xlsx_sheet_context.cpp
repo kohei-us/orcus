@@ -745,6 +745,18 @@ void xlsx_sheet_context::end_element_cell()
             session_data.m_formulas.push_back(
                 std::make_unique<xlsx_session_data::formula>(
                     m_sheet_id, m_cur_row, m_cur_col, m_cur_formula.str.str()));
+
+            xlsx_session_data::formula& f = *session_data.m_formulas.back();
+
+            switch (m_cur_cell_type)
+            {
+                case xlsx_ct_numeric:
+                    f.result.type = formula_result::result_type::numeric;
+                    f.result.value_numeric = to_double(m_cur_value);
+                    break;
+                default:
+                    warn("unhandled result for non-shared formula expression");
+            }
         }
     }
     else if (m_cur_formula.type == spreadsheet::formula_t::shared && m_cur_formula.shared_id >= 0)

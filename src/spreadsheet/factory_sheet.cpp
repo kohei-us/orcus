@@ -321,7 +321,11 @@ void import_formula::set_shared_formula_index(size_t index)
     m_shared_index = index;
 }
 
-void import_formula::set_result_value(double value) {}
+void import_formula::set_result_value(double value)
+{
+    m_result.reset(ixion::formula_result(value));
+}
+
 void import_formula::set_result_string(size_t sindex) {}
 void import_formula::set_result_empty() {}
 void import_formula::set_result_bool(bool value) {}

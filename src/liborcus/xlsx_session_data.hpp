@@ -32,6 +32,8 @@ struct xlsx_session_data : public session_context::custom_data
         spreadsheet::address_t ref;
         std::string exp;
 
+        formula_result result;
+
         formula(
             spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
             const std::string& _exp);

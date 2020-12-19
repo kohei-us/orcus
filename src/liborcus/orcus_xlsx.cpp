@@ -267,6 +267,23 @@ void orcus_xlsx::set_formulas_to_doc()
 
         formula->set_position(f.ref.row, f.ref.column);
         formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx, f.exp.data(), f.exp.size());
+
+        switch (f.result.type)
+        {
+            case formula_result::result_type::numeric:
+                formula->set_result_value(f.result.value_numeric);
+                break;
+            default:
+            {
+                if (get_config().debug)
+                {
+                    std::cerr
+                        << "warning: unhandled formula result for non-shared formula (orcus_xlsx::set_formulas_to_doc)"
+                        << std::endl;
+                }
+            }
+        }
+
         formula->commit();
     }
 
