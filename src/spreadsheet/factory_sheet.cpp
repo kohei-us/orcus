@@ -18,7 +18,6 @@
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/model_context.hpp>
 #include <ixion/formula.hpp>
-#include <ixion/matrix.hpp>
 
 namespace orcus { namespace spreadsheet {
 
@@ -140,7 +139,7 @@ void import_auto_filter::commit()
 }
 
 import_array_formula::import_array_formula(document& doc, sheet& sheet) :
-    m_doc(doc), m_sheet(sheet), m_error_policy(formula_error_policy_t::fail)
+    m_doc(doc), m_sheet(sheet), m_missing_formula_result(), m_error_policy(formula_error_policy_t::fail)
 {
     m_range.first.column = -1;
     m_range.first.row = -1;
@@ -154,6 +153,45 @@ import_array_formula::~import_array_formula()
 void import_array_formula::set_range(const range_t& range)
 {
     m_range = range;
+
+    // Initialize the result matrix with the missing result value.
+    switch (m_missing_formula_result.get_type())
+    {
+        case ixion::formula_result::result_type::value:
+        {
+            ixion::matrix _mtx(
+                m_range.last.row - m_range.first.row + 1,
+                m_range.last.column - m_range.first.column + 1,
+                m_missing_formula_result.get_value());
+            m_result_mtx.swap(_mtx);
+            break;
+        }
+        case ixion::formula_result::result_type::error:
+        {
+            ixion::matrix _mtx(
+                m_range.last.row - m_range.first.row + 1,
+                m_range.last.column - m_range.first.column + 1,
+                m_missing_formula_result.get_error());
+            m_result_mtx.swap(_mtx);
+            break;
+        }
+        case ixion::formula_result::result_type::string:
+        {
+            ixion::matrix _mtx(
+                m_range.last.row - m_range.first.row + 1,
+                m_range.last.column - m_range.first.column + 1,
+                m_missing_formula_result.get_string());
+            m_result_mtx.swap(_mtx);
+            break;
+        }
+        default:
+        {
+            ixion::matrix _mtx(
+                m_range.last.row - m_range.first.row + 1,
+                m_range.last.column - m_range.first.column + 1);
+            m_result_mtx.swap(_mtx);
+        }
+    }
 }
 
 void import_array_formula::set_formula(formula_grammar_t grammar, const char* p, size_t n)
@@ -184,69 +222,33 @@ void import_array_formula::set_formula(formula_grammar_t grammar, const char* p,
 
 void import_array_formula::set_result_value(row_t row, col_t col, double value)
 {
+    m_result_mtx.set(row, col, value);
 }
 
 void import_array_formula::set_result_string(row_t row, col_t col, size_t sindex)
 {
+    // TODO : handle this
 }
 
 void import_array_formula::set_result_empty(row_t row, col_t col)
 {
+    // TODO : handle this
 }
 
 void import_array_formula::set_result_bool(row_t row, col_t col, bool value)
 {
+    m_result_mtx.set(row, col, value);
 }
 
 void import_array_formula::commit()
 {
-    if (m_result)
-    {
-        ixion::matrix mtx;
-
-        switch (m_result->get_type())
-        {
-            case ixion::formula_result::result_type::value:
-            {
-                ixion::matrix _mtx(
-                    m_range.last.row - m_range.first.row + 1,
-                    m_range.last.column - m_range.first.column + 1,
-                    m_result->get_value());
-                mtx.swap(_mtx);
-                break;
-            }
-            case ixion::formula_result::result_type::error:
-            {
-                ixion::matrix _mtx(
-                    m_range.last.row - m_range.first.row + 1,
-                    m_range.last.column - m_range.first.column + 1,
-                    m_result->get_error());
-                mtx.swap(_mtx);
-                break;
-            }
-            case ixion::formula_result::result_type::string:
-            {
-                ixion::matrix _mtx(
-                    m_range.last.row - m_range.first.row + 1,
-                    m_range.last.column - m_range.first.column + 1,
-                    m_result->get_string());
-                mtx.swap(_mtx);
-                break;
-            }
-            case ixion::formula_result::result_type::matrix:
-                throw std::runtime_error("TODO: not implemented yet.");
-        }
-
-        ixion::formula_result cached_results(std::move(mtx));
-        m_sheet.set_grouped_formula(m_range, std::move(m_tokens), std::move(cached_results));
-    }
-    else
-        m_sheet.set_grouped_formula(m_range, std::move(m_tokens));
+    ixion::formula_result cached_results(std::move(m_result_mtx));
+    m_sheet.set_grouped_formula(m_range, std::move(m_tokens), std::move(cached_results));
 }
 
 void import_array_formula::set_missing_formula_result(ixion::formula_result result)
 {
-    m_result.reset(std::move(result));
+    m_missing_formula_result = std::move(result);
 }
 
 void import_array_formula::set_formula_error_policy(formula_error_policy_t policy)
@@ -257,7 +259,7 @@ void import_array_formula::set_formula_error_policy(formula_error_policy_t polic
 void import_array_formula::reset()
 {
     m_tokens.clear();
-    m_result.reset();
+    m_result_mtx = ixion::matrix();
     m_range.first.row = -1;
     m_range.first.column = -1;
     m_range.last.row = -1;

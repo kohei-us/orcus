@@ -20,6 +20,7 @@
 #include <memory>
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_result.hpp>
+#include <ixion/matrix.hpp>
 #include <boost/optional.hpp>
 
 namespace orcus {
@@ -123,7 +124,8 @@ class import_array_formula : public iface::import_array_formula
 
     range_t m_range;
     ixion::formula_tokens_t m_tokens;
-    boost::optional<ixion::formula_result> m_result;
+    ixion::formula_result m_missing_formula_result;
+    ixion::matrix m_result_mtx;
     formula_error_policy_t m_error_policy;
 
 public:
