@@ -250,6 +250,25 @@ void orcus_xlsx::set_formulas_to_doc()
         if (sf.master)
             formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx, sf.formula.data(), sf.formula.size());
         formula->set_shared_formula_index(sf.identifier);
+
+        switch (sf.result.type)
+        {
+            case formula_result::result_type::numeric:
+                formula->set_result_value(sf.result.value_numeric);
+                break;
+            case formula_result::result_type::empty:
+                break;
+            default:
+            {
+                if (get_config().debug)
+                {
+                    std::cerr
+                        << "warning: unhandled formula result for shared formula (orcus_xlsx::set_formulas_to_doc)"
+                        << std::endl;
+                }
+            }
+        }
+
         formula->commit();
     }
 
@@ -272,6 +291,8 @@ void orcus_xlsx::set_formulas_to_doc()
         {
             case formula_result::result_type::numeric:
                 formula->set_result_value(f.result.value_numeric);
+                break;
+            case formula_result::result_type::empty:
                 break;
             default:
             {

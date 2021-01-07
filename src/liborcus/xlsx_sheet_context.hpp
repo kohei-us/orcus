@@ -21,6 +21,7 @@
 namespace orcus {
 
 struct session_context;
+struct formula_result;
 class range_formula_results;
 
 namespace spreadsheet { namespace iface {
@@ -82,7 +83,8 @@ private:
     void start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void end_element_cell();
     void push_raw_cell_value();
-    void push_raw_cell_result(range_formula_results& res, size_t row_offset, size_t col_offset);
+    void push_raw_cell_result(range_formula_results& res, size_t row_offset, size_t col_offset) const;
+    void push_raw_cell_result(formula_result& res) const;
 
     /**
      * See if the current cell is a part of an array formula, and if so, store

@@ -61,6 +61,8 @@ struct xlsx_session_data : public session_context::custom_data
         std::string formula;
         bool master;
 
+        formula_result result;
+
         shared_formula(
             spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
             size_t _identifier);
