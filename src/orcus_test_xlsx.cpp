@@ -97,6 +97,7 @@ std::vector<fs::path> dirs_recalc = {
 
 std::vector<fs::path> dirs_non_recalc = {
     SRCDIR"/test/xlsx/formula-cells",
+    SRCDIR"/test/xlsx/formula-shared",
 };
 
 /**
