@@ -14,6 +14,10 @@ independently of the spreadsheet-related features if so desired.  In addition,
 the library also provides support for some hierarchical documents, such as JSON
 and YAML, which were a later addition to the library.
 
+You can use this library either through its C++ API, Python API, or CLI.  However,
+not all three methods equally expose all features of the library, and the C++ API
+is more complete than the other two.
+
 The library is physically split into four parts:
 
     1. the parser part that provides the aforementioned low-level parsers,
