@@ -32,6 +32,7 @@ Options
 - ``-f [ --output-format ] arg``
 
   Specify the format of output file. Supported format types are:
+  
     - XML (xml)
     - JSON (json)
     - flat tree dump (check)

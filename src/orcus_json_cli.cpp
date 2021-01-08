@@ -76,6 +76,7 @@ const char* help_json_output =
 
 const char* help_json_output_format =
 "Specify the format of output file.  Supported format types are:\n"
+"\n"
 "  * XML (xml)\n"
 "  * JSON (json)\n"
 "  * flat tree dump (check)\n"
