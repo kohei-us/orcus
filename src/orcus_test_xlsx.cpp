@@ -91,6 +91,7 @@ std::vector<fs::path> dirs_recalc = {
     SRCDIR"/test/xlsx/formula-array-1",
     SRCDIR"/test/xlsx/formula-cells",
     SRCDIR"/test/xlsx/formula-shared",
+    SRCDIR"/test/xlsx/formula-with-string-results",
     SRCDIR"/test/xlsx/named-expression",
     SRCDIR"/test/xlsx/named-expression-sheet-local",
 };
@@ -99,6 +100,7 @@ std::vector<fs::path> dirs_non_recalc = {
     SRCDIR"/test/xlsx/formula-array-1",
     SRCDIR"/test/xlsx/formula-cells",
     SRCDIR"/test/xlsx/formula-shared",
+    SRCDIR"/test/xlsx/formula-with-string-results",
 };
 
 /**
