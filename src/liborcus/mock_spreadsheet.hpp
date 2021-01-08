@@ -138,7 +138,7 @@ public:
 
     virtual void set_result_value(row_t row, col_t col, double value) override;
 
-    virtual void set_result_string(row_t row, col_t col, size_t sindex) override;
+    virtual void set_result_string(row_t row, col_t col, const char* p, size_t n)override;
 
     virtual void set_result_empty(row_t row, col_t col) override;
 
@@ -155,7 +155,7 @@ public:
     virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override;
     virtual void set_shared_formula_index(size_t index) override;
     virtual void set_result_value(double value) override;
-    virtual void set_result_string(size_t sindex) override;
+    virtual void set_result_string(const char* p, size_t n) override;
     virtual void set_result_bool(bool value) override;
     virtual void set_result_empty() override;
     virtual void commit() override;

@@ -14,6 +14,11 @@
 
 namespace orcus {
 
+/**
+ * Stores cached formula result. Note that when the result is of string
+ * type, it only stores a pointer to the string buffer but the instance of
+ * this class does not own the buffer.
+ */
 struct formula_result
 {
     enum class result_type { empty, numeric, string, boolean };
@@ -23,14 +28,14 @@ struct formula_result
     union
     {
         double value_numeric;
-        size_t value_string;
         bool value_boolean;
+        struct { const char* p; size_t n; } value_string;
     };
 
     formula_result();
     formula_result(const formula_result& r);
     formula_result(double v);
-    formula_result(size_t sid);
+    formula_result(const char* p, size_t n);
     formula_result(bool b);
 };
 

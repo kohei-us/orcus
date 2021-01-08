@@ -618,9 +618,10 @@ public:
     /**
      * Set cached result of string type.
      *
-     * @param sindex index of the string value into the shared string pool.
+     * @param p pointer to the buffer where the string result is stored.
+     * @param n size of the buffer where the string result is stored.
      */
-    virtual void set_result_string(size_t sindex) = 0;
+    virtual void set_result_string(const char* p, size_t n) = 0;
 
     /**
      * Set cached result of numeric type.
@@ -656,7 +657,7 @@ public:
 
     virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) = 0;
 
-    virtual void set_result_string(row_t row, col_t col, size_t sindex) = 0;
+    virtual void set_result_string(row_t row, col_t col, const char* p, size_t n) = 0;
 
     virtual void set_result_value(row_t row, col_t col, double value) = 0;
 

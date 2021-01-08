@@ -6,6 +6,7 @@
  */
 
 #include "formula_result.hpp"
+#include "orcus/pstring.hpp"
 
 #include <ostream>
 
@@ -24,7 +25,8 @@ formula_result::formula_result(const formula_result& r) :
             value_boolean = r.value_boolean;
             break;
         case result_type::string:
-            value_string = r.value_string;
+            value_string.p = r.value_string.p;
+            value_string.n = r.value_string.n;
             break;
         case result_type::empty:
         default:
@@ -33,7 +35,13 @@ formula_result::formula_result(const formula_result& r) :
 }
 
 formula_result::formula_result(double v) : type(result_type::numeric), value_numeric(v) {}
-formula_result::formula_result(size_t sid) : type(result_type::string), value_string(sid) {}
+formula_result::formula_result(const char* p, size_t n) :
+    type(result_type::string)
+{
+    value_string.p = p;
+    value_string.n = n;
+}
+
 formula_result::formula_result(bool b) : type(result_type::boolean), value_boolean(b) {}
 
 size_t range_formula_results::to_array_pos(size_t row, size_t col) const
@@ -77,7 +85,7 @@ std::ostream& operator<< (std::ostream& os, const formula_result& v)
             os << v.value_boolean;
             break;
         case formula_result::result_type::string:
-            os << "s" << v.value_string;
+            os << pstring(v.value_string.p, v.value_string.n);
             break;
         case formula_result::result_type::empty:
             break;

@@ -80,6 +80,7 @@ struct xlsx_session_data : public session_context::custom_data
     formulas_type m_formulas;
     array_formulas_type m_array_formulas;
     shared_formulas_type m_shared_formulas;
+    string_pool m_formula_result_strings;
 
     virtual ~xlsx_session_data();
 };

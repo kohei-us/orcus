@@ -712,7 +712,7 @@ void xlsx_sheet_context::end_element_cell()
     session_context& cxt = get_session_context();
     xlsx_session_data& session_data = static_cast<xlsx_session_data&>(*cxt.mp_data);
 
-    bool array_formula_result = handle_array_formula_result();
+    bool array_formula_result = handle_array_formula_result(session_data);
 
     if (array_formula_result)
     {
@@ -729,7 +729,7 @@ void xlsx_sheet_context::end_element_cell()
                     m_cur_formula.str.str()));
 
             xlsx_session_data::shared_formula& f = *session_data.m_shared_formulas.back();
-            push_raw_cell_result(f.result);
+            push_raw_cell_result(f.result, session_data);
         }
         else if (m_cur_formula.type == spreadsheet::formula_t::array)
         {
@@ -739,7 +739,7 @@ void xlsx_sheet_context::end_element_cell()
                     m_sheet_id, m_cur_formula.ref, m_cur_formula.str.str()));
 
             xlsx_session_data::array_formula& af = *session_data.m_array_formulas.back();
-            push_raw_cell_result(*af.results, 0, 0);
+            push_raw_cell_result(*af.results, 0, 0, session_data);
             m_array_formula_results.push_back(std::make_pair(m_cur_formula.ref, af.results));
         }
         else
@@ -750,7 +750,7 @@ void xlsx_sheet_context::end_element_cell()
                     m_sheet_id, m_cur_row, m_cur_col, m_cur_formula.str.str()));
 
             xlsx_session_data::formula& f = *session_data.m_formulas.back();
-            push_raw_cell_result(f.result);
+            push_raw_cell_result(f.result, session_data);
         }
     }
     else if (m_cur_formula.type == spreadsheet::formula_t::shared && m_cur_formula.shared_id >= 0)
@@ -761,7 +761,7 @@ void xlsx_sheet_context::end_element_cell()
                 m_sheet_id, m_cur_row, m_cur_col, m_cur_formula.shared_id));
 
         xlsx_session_data::shared_formula& f = *session_data.m_shared_formulas.back();
-        push_raw_cell_result(f.result);
+        push_raw_cell_result(f.result, session_data);
     }
     else if (m_cur_formula.type == spreadsheet::formula_t::data_table)
     {
@@ -850,20 +850,13 @@ void xlsx_sheet_context::push_raw_cell_value()
 }
 
 void xlsx_sheet_context::push_raw_cell_result(
-    range_formula_results& res, size_t row_offset, size_t col_offset) const
+    range_formula_results& res, size_t row_offset, size_t col_offset, xlsx_session_data& session_data) const
 {
     if (m_cur_value.empty())
         return;
 
     switch (m_cur_cell_type)
     {
-        case xlsx_ct_shared_string:
-        {
-            // string cell
-            size_t str_id = to_long(m_cur_value);
-            res.set(row_offset, col_offset, str_id);
-            break;
-        }
         case xlsx_ct_numeric:
         {
             // value cell
@@ -883,7 +876,7 @@ void xlsx_sheet_context::push_raw_cell_result(
     }
 }
 
-void xlsx_sheet_context::push_raw_cell_result(formula_result& res) const
+void xlsx_sheet_context::push_raw_cell_result(formula_result& res, xlsx_session_data& session_data) const
 {
     switch (m_cur_cell_type)
     {
@@ -891,12 +884,24 @@ void xlsx_sheet_context::push_raw_cell_result(formula_result& res) const
             res.type = formula_result::result_type::numeric;
             res.value_numeric = to_double(m_cur_value);
             break;
+        case xlsx_ct_formula_string:
+        {
+            pstring interned = session_data.m_formula_result_strings.intern(m_cur_value).first;
+            res.type = formula_result::result_type::string;
+            res.value_string.p = interned.data();
+            res.value_string.n = interned.size();
+            break;
+        }
         default:
-            warn("unhandled cached formula result");
+        {
+            std::ostringstream os;
+            os << "unhandled cached formula result (type=" << m_cur_cell_type << ")";
+            warn(os.str().data());
+        }
     }
 }
 
-bool xlsx_sheet_context::handle_array_formula_result()
+bool xlsx_sheet_context::handle_array_formula_result(xlsx_session_data& session_data)
 {
     // See if the current cell is within an array formula range.
     auto it = m_array_formula_results.begin(), ite = m_array_formula_results.end();
@@ -925,7 +930,7 @@ bool xlsx_sheet_context::handle_array_formula_result()
         size_t row_offset = m_cur_row - ref.first.row;
         size_t col_offset = m_cur_col - ref.first.column;
         range_formula_results& res = *it->second;
-        push_raw_cell_result(res, row_offset, col_offset);
+        push_raw_cell_result(res, row_offset, col_offset, session_data);
 
         return true;
     }

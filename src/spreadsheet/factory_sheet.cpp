@@ -225,7 +225,7 @@ void import_array_formula::set_result_value(row_t row, col_t col, double value)
     m_result_mtx.set(row, col, value);
 }
 
-void import_array_formula::set_result_string(row_t row, col_t col, size_t sindex)
+void import_array_formula::set_result_string(row_t row, col_t col, const char* p, size_t n)
 {
     // TODO : handle this
 }
@@ -328,7 +328,11 @@ void import_formula::set_result_value(double value)
     m_result.reset(ixion::formula_result(value));
 }
 
-void import_formula::set_result_string(size_t sindex) {}
+void import_formula::set_result_string(const char* p, size_t n)
+{
+    m_result.reset(ixion::formula_result(std::string(p, n)));
+}
+
 void import_formula::set_result_empty() {}
 void import_formula::set_result_bool(bool value) {}
 

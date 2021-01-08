@@ -187,7 +187,7 @@ void import_array_formula::set_result_value(row_t, col_t, double)
     assert(false);
 }
 
-void import_array_formula::set_result_string(row_t, col_t, size_t)
+void import_array_formula::set_result_string(row_t, col_t, const char*, size_t)
 {
     assert(false);
 }
@@ -231,7 +231,7 @@ void import_formula::set_result_value(double value)
     assert(false);
 }
 
-void import_formula::set_result_string(size_t sindex)
+void import_formula::set_result_string(const char* p, size_t n)
 {
     assert(false);
 }

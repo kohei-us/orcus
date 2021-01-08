@@ -32,7 +32,7 @@ void push_array_formula(
                     xformula->set_result_value(row, col, v.value_numeric);
                     break;
                 case formula_result::result_type::string:
-                    xformula->set_result_string(row, col, v.value_string);
+                    xformula->set_result_string(row, col, v.value_string.p, v.value_string.n);
                     break;
                 case formula_result::result_type::boolean:
                     xformula->set_result_bool(row, col, v.value_boolean);

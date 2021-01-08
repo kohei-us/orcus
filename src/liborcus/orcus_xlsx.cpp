@@ -232,6 +232,26 @@ const char* orcus_xlsx::get_name() const
 
 void orcus_xlsx::set_formulas_to_doc()
 {
+    auto push_formula_result = [this](spreadsheet::iface::import_formula* formula, const formula_result& res)
+    {
+        switch (res.type)
+        {
+            case formula_result::result_type::numeric:
+                formula->set_result_value(res.value_numeric);
+                break;
+            case formula_result::result_type::string:
+                formula->set_result_string(res.value_string.p, res.value_string.n);
+                break;
+            case formula_result::result_type::empty:
+                break;
+            default:
+            {
+                if (get_config().debug)
+                    std::cerr << "warning: unhandled formula result (orcus_xlsx::set_formulas_to_doc)" << std::endl;
+            }
+        }
+    };
+
     xlsx_session_data& sdata = static_cast<xlsx_session_data&>(*mp_impl->m_cxt.mp_data);
 
     // Insert shared formulas first.
@@ -251,24 +271,7 @@ void orcus_xlsx::set_formulas_to_doc()
             formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx, sf.formula.data(), sf.formula.size());
         formula->set_shared_formula_index(sf.identifier);
 
-        switch (sf.result.type)
-        {
-            case formula_result::result_type::numeric:
-                formula->set_result_value(sf.result.value_numeric);
-                break;
-            case formula_result::result_type::empty:
-                break;
-            default:
-            {
-                if (get_config().debug)
-                {
-                    std::cerr
-                        << "warning: unhandled formula result for shared formula (orcus_xlsx::set_formulas_to_doc)"
-                        << std::endl;
-                }
-            }
-        }
-
+        push_formula_result(formula, sf.result);
         formula->commit();
     }
 
@@ -287,24 +290,7 @@ void orcus_xlsx::set_formulas_to_doc()
         formula->set_position(f.ref.row, f.ref.column);
         formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx, f.exp.data(), f.exp.size());
 
-        switch (f.result.type)
-        {
-            case formula_result::result_type::numeric:
-                formula->set_result_value(f.result.value_numeric);
-                break;
-            case formula_result::result_type::empty:
-                break;
-            default:
-            {
-                if (get_config().debug)
-                {
-                    std::cerr
-                        << "warning: unhandled formula result for non-shared formula (orcus_xlsx::set_formulas_to_doc)"
-                        << std::endl;
-                }
-            }
-        }
-
+        push_formula_result(formula, f.result);
         formula->commit();
     }
 
