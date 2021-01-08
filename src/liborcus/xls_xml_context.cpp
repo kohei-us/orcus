@@ -16,6 +16,7 @@
 #include <mdds/sorted_string_map.hpp>
 
 #include <iostream>
+#include <limits>
 
 using namespace std;
 namespace ss = orcus::spreadsheet;
