@@ -1,31 +1,43 @@
-
 orcus-json
 ==========
 
 Usage
 -----
 
-**orcus-json [options] FILE**
+.. code-block::
 
-The FILE must specify a path to an existing file.
+   orcus-json [options] FILE
 
-Allowed Options
----------------
+The FILE must specify the path to an existing file.
 
-**-h [ --help ]**
-   Print this help.
+Options
+-------
 
-**--resolve-refs**
-   Resolve JSON references to external files.
+- ``-h [ --help ]``
 
-**-o [ --output ] arg**
-   Output file path.
+  Print this help.
 
-**-f [ --output-format ] arg**
-   Specify the format of output file.  Supported format types are:
+- ``--mode arg``
 
-   - XML (xml)
-   - JSON (json)
-   - flat tree dump (check)
-   - no output (none).
+  Mode of operation. Select one of the following options: convert, map, map-gen, or structure.
+
+- ``--resolve-refs``
+
+  Resolve JSON references to external files.
+
+- ``-o [ --output ] arg``
+
+  Output file path.
+
+- ``-f [ --output-format ] arg``
+
+  Specify the format of output file. Supported format types are:
+    - XML (xml)
+    - JSON (json)
+    - flat tree dump (check)
+    - no output (none)
+
+- ``-m [ --map ] arg``
+
+  Path to a map file. This parameter is only used for map mode, and it is required for map mode.
 

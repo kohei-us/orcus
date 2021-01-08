@@ -1,26 +1,27 @@
-
 orcus-yaml
 ==========
 
 Usage
 -----
 
-**orcus-yaml [options] FILE**
+.. code-block::
+
+   orcus-yaml [options] FILE
 
 The FILE must specify a path to an existing file.
 
-Allowed options
----------------
+Options
+-------
 
-**-h [ --help ]**
-   Print this help.
+- ``-h [ --help ]``
 
-**-o [ --output ] arg**
-   Output file path.
+  Print this help.
 
-**-f [ --output-format ] arg**
-   Specify the format of output file.  Supported format types are:
+- ``-o [ --output ] arg``
 
-   - yaml
-   - json
+  Output file path.
+
+- ``-f [ --output-format ] arg``
+
+  Specify the format of output file. Supported format types are: 1) yaml 2) json
 

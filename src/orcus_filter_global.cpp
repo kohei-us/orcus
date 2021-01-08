@@ -117,7 +117,7 @@ bool parse_import_filter_args(
     bool debug = false;
     bool recalc_formula_cells = false;
 
-    po::options_description desc("Allowed options");
+    po::options_description desc("Options");
     desc.add_options()
         ("help,h", "Print this help.")
         ("debug,d", po::bool_switch(&debug), help_debug)

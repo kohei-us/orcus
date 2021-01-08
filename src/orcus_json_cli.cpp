@@ -172,7 +172,7 @@ detail::cmd_params parse_json_args(int argc, char** argv)
 {
     detail::cmd_params params;
 
-    po::options_description desc("Allowed options");
+    po::options_description desc("Options");
     desc.add_options()
         ("help,h", "Print this help.")
         ("mode", po::value<std::string>(), build_mode_help_text().data())

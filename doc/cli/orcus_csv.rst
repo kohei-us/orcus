@@ -1,46 +1,63 @@
-
 orcus-csv
 =========
 
 Usage
 -----
 
-**orcus-csv [options] FILE**
+.. code-block::
+
+   orcus-csv [options] FILE
 
 The FILE must specify a path to an existing file.
 
-Allowed options
----------------
+Options
+-------
 
-**-h [ --help ]**
-   Print this help.
+- ``-h [ --help ]``
 
-**-d [ --debug ]**
-   Turn on a debug mode to generate run-time debug output.
+  Print this help.
 
-**--dump-check**
-   Dump the content to stdout in a special format used for content verification
-   in automated tests.
+- ``-d [ --debug ]``
 
-**-o [ --output ] arg**
-   Output directory path, or output file when --dump-check option is used.
+  Turn on a debug mode and optionally specify a debug level in order to generate run-time debug outputs.
 
-**-f [ --output-format ] arg**
-   Specify the format of output file.  Supported format types are:
+- ``-r [ --recalc ]``
 
-   - csv - CSV format
-   - flat - flat text format
-   - html - HTML format
-   - json - JSON format
-   - none - no output
+  Re-calculate all formula cells after the documetn is loaded.
 
-**--row-size arg**
-   Specify the number of maximum rows in each sheet.
+- ``-e [ --error-policy ] arg (=fail)``
 
-**--row-header arg**
-   Specify the number of header rows to repeat if the source content gets split
-   into multiple sheets.
-**--split**
-   Specify whether or not to split the data into multiple sheets in case it
-   won't fit in a single sheet.
+  Specify whether to abort immediately when the loader fails to parse the first formula cell ('fail'), or skip the offending cells and continue ('skip').
+
+- ``--dump-check``
+
+  Dump the content to stdout in a special format used for content verification in automated tests.
+
+- ``-o [ --output ] arg``
+
+  Output directory path, or output file when --dump-check option is used.
+
+- ``-f [ --output-format ] arg``
+
+  Specify the output format. Supported format types are:
+  
+    - check - Flat format that fully encodes document content. Suitable for automated testing.
+    - csv - CSV format.
+    - flat - Flat text format that displays document content in grid.
+    - html - HTML format.
+    - json - JSON format.
+    - none - No output to be generated. Maybe useful during development.
+    - xml - This format is currently unsupported.
+
+- ``--row-size arg``
+
+  Specify the number of maximum rows in each sheet.
+
+- ``--row-header arg``
+
+  Specify the number of header rows to repeat if the source content gets split into multiple sheets.
+
+- ``--split``
+
+  Specify whether or not to split the data into multiple sheets in case it won't fit in a single sheet.
 

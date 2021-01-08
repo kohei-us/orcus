@@ -40,7 +40,7 @@ void print_yaml_usage(std::ostream& os, const po::options_description& desc)
 
 std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
 {
-    po::options_description desc("Allowed options");
+    po::options_description desc("Options");
     desc.add_options()
         ("help,h", "Print this help.")
         ("output,o", po::value<string>(), help_yaml_output)
