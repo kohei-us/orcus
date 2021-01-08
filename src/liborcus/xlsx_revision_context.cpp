@@ -16,6 +16,7 @@
 #include "orcus/global.hpp"
 
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
