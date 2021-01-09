@@ -553,90 +553,78 @@ void document::dump_flat(const string& outdir) const
 
     cout << "number of sheets: " << mp_impl->m_sheets.size() << endl;
 
-    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(),
-        [&outdir](const std::unique_ptr<sheet_item>& item)
+    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->m_sheets)
+    {
+        string this_file = outdir + '/' + sheet->name.str() + ".txt";
+
+        ofstream file(this_file.c_str());
+        if (!file)
         {
-            string this_file = outdir + '/' + item->name.str() + ".txt";
-
-            ofstream file(this_file.c_str());
-            if (!file)
-            {
-                cerr << "failed to create file: " << this_file << endl;
-                return;
-            }
-
-            file << "---" << endl;
-            file << "Sheet name: " << item->name << endl;
-            item->data.dump_flat(file);
+            cerr << "failed to create file: " << this_file << endl;
+            return;
         }
-    );
+
+        file << "---" << endl;
+        file << "Sheet name: " << sheet->name << endl;
+        sheet->data.dump_flat(file);
+    }
 }
 
 void document::dump_check(ostream& os) const
 {
-    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(),
-        [&os](const std::unique_ptr<sheet_item>& item)
-        {
-            item->data.dump_check(os, item->name);
-        }
-    );
+    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->m_sheets)
+        sheet->data.dump_check(os, sheet->name);
 }
 
 void document::dump_html(const string& outdir) const
 {
-    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(),
-        [&outdir](const std::unique_ptr<sheet_item>& item)
+    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->m_sheets)
+    {
+        string this_file = outdir + '/' + sheet->name.str() + ".html";
+
+        ofstream file(this_file.c_str());
+        if (!file)
         {
-            string this_file = outdir + '/' + item->name.str() + ".html";
-
-            ofstream file(this_file.c_str());
-            if (!file)
-            {
-                cerr << "failed to create file: " << this_file << endl;
-                return;
-            }
-
-            item->data.dump_html(file);
+            cerr << "failed to create file: " << this_file << endl;
+            return;
         }
-    );
+
+        sheet->data.dump_html(file);
+    }
 }
 
 void document::dump_json(const string& outdir) const
 {
-    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(),
-        [&outdir](const std::unique_ptr<sheet_item>& item)
+    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->m_sheets)
+    {
+        string this_file = outdir + '/' + sheet->name.str() + ".json";
+
+        ofstream file(this_file.c_str());
+        if (!file)
         {
-            string this_file = outdir + '/' + item->name.str() + ".json";
-
-            ofstream file(this_file.c_str());
-            if (!file)
-            {
-                cerr << "failed to create file: " << this_file << endl;
-                return;
-            }
-
-            item->data.dump_json(file);
+            cerr << "failed to create file: " << this_file << endl;
+            return;
         }
-    );
+
+        sheet->data.dump_json(file);
+    }
 }
 
 void document::dump_csv(const std::string& outdir) const
 {
-    for_each(mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(),
-        [&outdir](const std::unique_ptr<sheet_item>& item)
+    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->m_sheets)
+    {
+        string this_file = outdir + '/' + sheet->name.str() + ".csv";
+
+        ofstream file(this_file.c_str());
+        if (!file)
         {
-            string this_file = outdir + '/' + item->name.str() + ".csv";
-
-            ofstream file(this_file.c_str());
-            if (!file)
-            {
-                cerr << "failed to create file: " << this_file << endl;
-                return;
-            }
-
-            item->data.dump_csv(file);
+            cerr << "failed to create file: " << this_file << endl;
+            return;
         }
-    );
+
+        sheet->data.dump_csv(file);
+    }
 }
 
 sheet_t document::get_sheet_index(const pstring& name) const
