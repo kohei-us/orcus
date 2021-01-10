@@ -53,6 +53,12 @@ check_dumper::check_dumper(const sheet_impl& sheet, const pstring& sheet_name) :
 
 void check_dumper::dump(std::ostream& os) const
 {
+    dump_cell_values(os);
+    dump_merged_cell_info(os);
+}
+
+void check_dumper::dump_cell_values(std::ostream& os) const
+{
     ixion::abs_range_t range = m_sheet.get_data_range();
     if (!range.valid())
         // Sheet is empty.  Nothing to print.
@@ -145,6 +151,55 @@ void check_dumper::dump(std::ostream& os) const
                     ;
             }
         }
+    }
+}
+
+void check_dumper::dump_merged_cell_info(std::ostream& os) const
+{
+    // Sort by rows first then by columns.
+
+    struct _entry
+    {
+        row_t row;
+        col_t col;
+        const merge_size* ms;
+
+        _entry(row_t _row, col_t _col, const merge_size* _ms) :
+            row(_row), col(_col), ms(_ms) {}
+    };
+
+    std::vector<_entry> entries;
+
+    for (const auto& col_entry : m_sheet.m_merge_ranges)
+    {
+        col_t col = col_entry.first;
+
+        for (const auto& row_entry : *col_entry.second)
+        {
+            row_t row = row_entry.first;
+            const merge_size& ms = row_entry.second;
+
+            entries.emplace_back(row, col, &ms);
+        }
+    }
+
+    std::sort(entries.begin(), entries.end(),
+        [](const _entry& left, const _entry& right) -> bool
+        {
+            if (left.row != right.row)
+                return left.row < right.row;
+
+            if (left.col != right.col)
+                return left.col < right.col;
+
+            return left.ms < right.ms;
+        }
+    );
+
+    for (const _entry e : entries)
+    {
+        os << m_sheet_name << '/' << e.row << '/' << e.col << ":merge-width:" << e.ms->width << std::endl;
+        os << m_sheet_name << '/' << e.row << '/' << e.col << ":merge-height:" << e.ms->height << std::endl;
     }
 }
 

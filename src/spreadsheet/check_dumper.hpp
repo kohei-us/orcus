@@ -26,6 +26,10 @@ class check_dumper
 public:
     check_dumper(const sheet_impl& sheet, const pstring& sheet_name);
     void dump(std::ostream& os) const;
+
+private:
+    void dump_cell_values(std::ostream& os) const;
+    void dump_merged_cell_info(std::ostream& os) const;
 };
 
 }}}
