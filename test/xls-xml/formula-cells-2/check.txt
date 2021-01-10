@@ -29,3 +29,13 @@
 Лист1/10/1:string:"Всього"
 Лист1/10/4:formula:SUM(R[-1]C:R[-1]C):333.33
 Лист1/14/2:string:"Підпис"
+Лист1/0/1:merge-width:4
+Лист1/0/1:merge-height:1
+Лист1/0/5:merge-width:3
+Лист1/0/5:merge-height:1
+Лист1/2/1:merge-width:10
+Лист1/2/1:merge-height:1
+Лист1/10/1:merge-width:3
+Лист1/10/1:merge-height:1
+Лист1/14/2:merge-width:4
+Лист1/14/2:merge-height:1

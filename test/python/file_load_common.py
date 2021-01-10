@@ -136,6 +136,9 @@ class ExpectedDocument(object):
             raise RuntimeError(
                 "line is expected to contain 3 parts, but not all parts are identified.")
 
+        if parts[1] in ("merge-width", "merge-height"):
+            return
+
         pos, cell_type, cell_value = parts[0], parts[1], parts[2]
         result = None
         if cell_type == "formula":

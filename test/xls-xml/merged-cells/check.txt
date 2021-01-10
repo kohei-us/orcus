@@ -4,4 +4,13 @@ Sheet1/0/3:numeric:3
 Sheet1/1/0:numeric:2
 Sheet1/2/2:string:"merged cell"
 Sheet1/3/0:numeric:3
-
+Sheet1/0/1:merge-width:2
+Sheet1/0/1:merge-height:1
+Sheet1/0/3:merge-width:3
+Sheet1/0/3:merge-height:1
+Sheet1/1/0:merge-width:1
+Sheet1/1/0:merge-height:2
+Sheet1/2/2:merge-width:4
+Sheet1/2/2:merge-height:4
+Sheet1/3/0:merge-width:1
+Sheet1/3/0:merge-height:3
