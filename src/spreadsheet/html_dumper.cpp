@@ -70,7 +70,7 @@ const char* css_style_global =
 "}\n"
 
 "td { "
-    "width : 1in; "
+    "width : 1in; border: 1px solid lightgray; "
 "}\n"
 
 "td.empty { "
