@@ -6,42 +6,24 @@
  */
 
 #include "orcus/spreadsheet/sheet.hpp"
-
-#include "orcus/spreadsheet/styles.hpp"
-#include "orcus/spreadsheet/shared_strings.hpp"
 #include "orcus/spreadsheet/document.hpp"
-#include "orcus/spreadsheet/auto_filter.hpp"
-
-#include "orcus/global.hpp"
 #include "orcus/exception.hpp"
-#include "orcus/measurement.hpp"
-#include "orcus/string_pool.hpp"
 
-#include "formula_global.hpp"
 #include "json_dumper.hpp"
+#include "check_dumper.hpp"
 #include "csv_dumper.hpp"
 #include "flat_dumper.hpp"
 #include "html_dumper.hpp"
-#include "impl_types.hpp"
-#include "number_format.hpp"
+#include "sheet_impl.hpp"
 
 #include <iostream>
-#include <fstream>
 #include <algorithm>
-#include <sstream>
 #include <vector>
 #include <cassert>
 #include <cstdlib>
 
-#include <mdds/flat_segment_tree.hpp>
-
-#include <ixion/cell.hpp>
 #include <ixion/formula.hpp>
-#include <ixion/formula_name_resolver.hpp>
-#include <ixion/formula_result.hpp>
-#include <ixion/formula_tokens.hpp>
 #include <ixion/model_context.hpp>
-#include <ixion/address.hpp>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/gregorian/greg_date.hpp>
@@ -54,17 +36,6 @@ using namespace boost;
 namespace orcus { namespace spreadsheet {
 
 namespace {
-
-typedef mdds::flat_segment_tree<row_t, size_t>  segment_row_index_type;
-typedef std::unordered_map<col_t, std::unique_ptr<segment_row_index_type>> cell_format_type;
-
-// Widths and heights are stored in twips.
-typedef mdds::flat_segment_tree<col_t, col_width_t> col_widths_store_type;
-typedef mdds::flat_segment_tree<row_t, row_height_t> row_heights_store_type;
-
-// hidden information
-typedef mdds::flat_segment_tree<col_t, bool> col_hidden_store_type;
-typedef mdds::flat_segment_tree<row_t, bool> row_hidden_store_type;
 
 ixion::abs_range_t to_ixion_range(sheet_t sheet, const range_t& range)
 {
@@ -81,66 +52,6 @@ ixion::abs_range_t to_ixion_range(sheet_t sheet, const range_t& range)
 }
 
 }
-
-struct sheet_impl
-{
-    document& m_doc;
-
-    mutable col_widths_store_type m_col_widths;
-    mutable row_heights_store_type m_row_heights;
-    col_widths_store_type::const_iterator m_col_width_pos;
-    row_heights_store_type::const_iterator m_row_height_pos;
-
-    mutable col_hidden_store_type m_col_hidden;
-    mutable row_hidden_store_type m_row_hidden;
-    col_hidden_store_type::const_iterator m_col_hidden_pos;
-    row_hidden_store_type::const_iterator m_row_hidden_pos;
-
-    detail::col_merge_size_type m_merge_ranges; /// 2-dimensional merged cell ranges.
-
-    std::unique_ptr<auto_filter_t> mp_auto_filter_data;
-
-    cell_format_type m_cell_formats;
-    const sheet_t m_sheet; /// sheet ID
-
-    sheet_impl() = delete;
-    sheet_impl(const sheet_impl&) = delete;
-    sheet_impl& operator=(const sheet_impl&) = delete;
-
-    sheet_impl(document& doc, sheet& sh, sheet_t sheet_index) :
-        m_doc(doc),
-        m_col_widths(0, m_doc.get_sheet_size().columns, get_default_column_width()),
-        m_row_heights(0, m_doc.get_sheet_size().rows, get_default_row_height()),
-        m_col_width_pos(m_col_widths.begin()),
-        m_row_height_pos(m_row_heights.begin()),
-        m_col_hidden(0, m_doc.get_sheet_size().columns, false),
-        m_row_hidden(0, m_doc.get_sheet_size().rows, false),
-        m_col_hidden_pos(m_col_hidden.begin()),
-        m_row_hidden_pos(m_row_hidden.begin()),
-        m_sheet(sheet_index) {}
-
-    ~sheet_impl() {}
-
-    const detail::merge_size* get_merge_size(row_t row, col_t col) const
-    {
-        detail::col_merge_size_type::const_iterator it_col = m_merge_ranges.find(col);
-        if (it_col == m_merge_ranges.end())
-            return nullptr;
-
-        detail::merge_size_type& col_merge_sizes = *it_col->second;
-        detail::merge_size_type::const_iterator it_row = col_merge_sizes.find(row);
-        if (it_row == col_merge_sizes.end())
-            return nullptr;
-
-        return &it_row->second;
-    }
-
-    ixion::abs_range_t get_data_range() const
-    {
-        const ixion::model_context& cxt = m_doc.get_model_context();
-        return cxt.get_data_range(m_sheet);
-    }
-};
 
 const row_t sheet::max_row_limit = 1048575;
 const col_t sheet::max_col_limit = 1023;
@@ -554,127 +465,10 @@ void sheet::dump_flat(std::ostream& os) const
     dumper.dump(os, mp_impl->m_sheet);
 }
 
-namespace {
-
-void write_cell_position(ostream& os, const pstring& sheet_name, row_t row, col_t col)
-{
-    os << sheet_name << '/' << row << '/' << col << ':';
-}
-
-string escape_chars(const string& str)
-{
-    if (str.empty())
-        return str;
-
-    string ret;
-    const char* p = &str[0];
-    const char* p_end = p + str.size();
-    for (; p != p_end; ++p)
-    {
-        if (*p == '"')
-            ret.push_back('\\');
-        ret.push_back(*p);
-    }
-    return ret;
-}
-
-}
-
 void sheet::dump_check(ostream& os, const pstring& sheet_name) const
 {
-    ixion::abs_range_t range = mp_impl->get_data_range();
-    if (!range.valid())
-        // Sheet is empty.  Nothing to print.
-        return;
-
-    const ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
-    const ixion::formula_name_resolver* resolver =
-        mp_impl->m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
-
-    size_t row_count = range.last.row + 1;
-    size_t col_count = range.last.column + 1;
-
-    for (size_t row = 0; row < row_count; ++row)
-    {
-        for (size_t col = 0; col < col_count; ++col)
-        {
-            ixion::abs_address_t pos(mp_impl->m_sheet, row, col);
-            switch (cxt.get_celltype(pos))
-            {
-                case ixion::celltype_t::string:
-                {
-                    write_cell_position(os, sheet_name, row, col);
-                    size_t sindex = cxt.get_string_identifier(pos);
-                    const string* p = cxt.get_string(sindex);
-                    assert(p);
-                    os << "string:\"" << escape_chars(*p) << '"' << endl;
-                    break;
-                }
-                case ixion::celltype_t::numeric:
-                {
-                    write_cell_position(os, sheet_name, row, col);
-                    os << "numeric:";
-                    detail::format_to_file_output(os, cxt.get_numeric_value(pos));
-                    os << endl;
-                    break;
-                }
-                case ixion::celltype_t::boolean:
-                {
-                    write_cell_position(os, sheet_name, row, col);
-                    os << "boolean:" << (cxt.get_boolean_value(pos) ? "true" : "false") << endl;
-                    break;
-                }
-                case ixion::celltype_t::formula:
-                {
-                    write_cell_position(os, sheet_name, row, col);
-                    os << "formula";
-
-                    // print the formula and the formula result.
-                    const ixion::formula_cell* cell = cxt.get_formula_cell(pos);
-                    assert(cell);
-                    const ixion::formula_tokens_store_ptr_t& ts = cell->get_tokens();
-                    if (ts)
-                    {
-                        const ixion::formula_tokens_t& tokens = ts->get();
-                        string formula;
-                        if (resolver)
-                        {
-                            pos = cell->get_parent_position(pos);
-                            formula = ixion::print_formula_tokens(
-                                mp_impl->m_doc.get_model_context(), pos, *resolver, tokens);
-                        }
-                        else
-                            formula = "???";
-
-                        os << ':';
-
-                        ixion::formula_group_t fg = cell->get_group_properties();
-
-                        if (fg.grouped)
-                            os << '{' << formula << '}';
-                        else
-                            os << formula;
-
-                        try
-                        {
-                            ixion::formula_result res = cell->get_result_cache(
-                                ixion::formula_result_wait_policy_t::throw_exception);
-                            os << ':' << res.str(mp_impl->m_doc.get_model_context());
-                        }
-                        catch (const std::exception&)
-                        {
-                            os << ":#RES!";
-                        }
-                    }
-
-                    os << endl;
-                    break;
-                }
-                default:
-                    ;
-            }
-        }
-    }
+    detail::check_dumper dumper(*mp_impl, sheet_name);
+    dumper.dump(os);
 }
 
 void sheet::dump_html(std::ostream& os) const

@@ -1,6 +1,7 @@
 
 add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     auto_filter.cpp
+    check_dumper.cpp
 	config.cpp
 	csv_dumper.cpp
 	document.cpp
@@ -20,6 +21,7 @@ add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
 	shared_formula.cpp
 	shared_strings.cpp
 	sheet.cpp
+	sheet_impl.cpp
 	styles.cpp
 	view.cpp
 )

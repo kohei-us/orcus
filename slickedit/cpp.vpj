@@ -534,6 +534,8 @@
             </Folder>
             <Folder Name="spreadsheet">
                 <F N="../src/spreadsheet/auto_filter.cpp"/>
+                <F N="../src/spreadsheet/check_dumper.cpp"/>
+                <F N="../src/spreadsheet/check_dumper.hpp"/>
                 <F N="../src/spreadsheet/config.cpp"/>
                 <F N="../src/spreadsheet/csv_dumper.cpp"/>
                 <F N="../src/spreadsheet/csv_dumper.hpp"/>
@@ -566,6 +568,8 @@
                 <F N="../src/spreadsheet/shared_formula.hpp"/>
                 <F N="../src/spreadsheet/shared_strings.cpp"/>
                 <F N="../src/spreadsheet/sheet.cpp"/>
+                <F N="../src/spreadsheet/sheet_impl.cpp"/>
+                <F N="../src/spreadsheet/sheet_impl.hpp"/>
                 <F N="../src/spreadsheet/styles.cpp"/>
                 <F N="../src/spreadsheet/view.cpp"/>
             </Folder>
