@@ -30,7 +30,7 @@ typedef std::unordered_map<row_t, detail::merge_size> merge_size_type;
 typedef std::unordered_map<col_t, std::unique_ptr<merge_size_type>> col_merge_size_type;
 
 // Overlapped cells per row, used when rendering sheet content.
-typedef mdds::flat_segment_tree<col_t, bool> overlapped_col_index_type;
+typedef mdds::flat_segment_tree<col_t, col_t> overlapped_col_index_type;
 typedef std::unordered_map<row_t, std::unique_ptr<overlapped_col_index_type>> overlapped_cells_type;
 
 }}}

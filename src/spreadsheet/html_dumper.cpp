@@ -474,9 +474,9 @@ void html_dumper::dump(std::ostream& os) const
                 if (!p_merge_size && p_overlapped)
                 {
                     // Check if this cell is overlapped by a merged cell.
-                    bool overlapped = false;
-                    col_t last_col;
-                    if (p_overlapped->search_tree(col, overlapped, nullptr, &last_col).second && overlapped)
+                    col_t overlapped_origin = -1;
+                    col_t last_col = -1;
+                    if (p_overlapped->search_tree(col, overlapped_origin, nullptr, &last_col).second && overlapped_origin >= 0)
                     {
                         // Skip all overlapped cells on this row.
                         col = last_col - 1;
@@ -642,7 +642,7 @@ void html_dumper::build_overlapped_ranges()
                 detail::overlapped_cells_type::iterator it_cont = m_overlapped_ranges.find(row);
                 if (it_cont == m_overlapped_ranges.end())
                 {
-                    auto p = std::make_unique<detail::overlapped_col_index_type>(0, sheet_size.columns, false);
+                    auto p = std::make_unique<detail::overlapped_col_index_type>(0, sheet_size.columns, -1);
                     std::pair<detail::overlapped_cells_type::iterator, bool> r =
                         m_overlapped_ranges.insert(detail::overlapped_cells_type::value_type(row, std::move(p)));
 
@@ -656,7 +656,7 @@ void html_dumper::build_overlapped_ranges()
                 }
 
                 detail::overlapped_col_index_type& cont = *it_cont->second;
-                cont.insert_back(col, col+item.width, true);
+                cont.insert_back(col, col+item.width, col);
             }
         }
     }
