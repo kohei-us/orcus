@@ -34,7 +34,7 @@ const xmlns_id_t NS_mso_all[] = {
     nullptr
 };
 
-class char_printer : unary_function<char, void>
+class char_printer
 {
     ostream& m_os;
 public:
@@ -60,7 +60,7 @@ void print_base64(const char* caption, const pstring& base64)
     cout << endl;
 }
 
-class key_data_attr_handler : unary_function<sax_ns_parser_attribute, void>
+class key_data_attr_handler
 {
 public:
     void operator() (const sax_ns_parser_attribute& attr)
@@ -88,7 +88,7 @@ public:
     }
 };
 
-class data_integrity_attr_handler : unary_function<sax_ns_parser_attribute, void>
+class data_integrity_attr_handler
 {
 public:
     void operator() (const sax_ns_parser_attribute& attr)
@@ -104,7 +104,7 @@ public:
     }
 };
 
-class password_encrypted_key_attr_handler : unary_function<sax_ns_parser_attribute, void>
+class password_encrypted_key_attr_handler
 {
 public:
     void operator() (const sax_ns_parser_attribute& attr)

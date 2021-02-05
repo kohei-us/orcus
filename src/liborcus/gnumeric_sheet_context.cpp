@@ -18,7 +18,7 @@ namespace orcus {
 
 namespace {
 
-class gnumeric_style_region_attr_parser : public std::unary_function<xml_token_attr_t, void>
+class gnumeric_style_region_attr_parser
 {
 public:
     gnumeric_style_region_attr_parser(gnumeric_style_region& style_region_data):
@@ -61,7 +61,7 @@ private:
     gnumeric_style_region& m_style_region_data;
 };
 
-class gnumeric_font_attr_parser : public std::unary_function<xml_token_attr_t, void>
+class gnumeric_font_attr_parser
 {
 public:
     gnumeric_font_attr_parser(spreadsheet::iface::import_styles& styles) :
@@ -115,7 +115,7 @@ private:
     spreadsheet::iface::import_styles& m_styles;
 };
 
-class gnumeric_style_attr_parser : public std::unary_function<xml_token_attr_t, void>
+class gnumeric_style_attr_parser
 {
 public:
     gnumeric_style_attr_parser(spreadsheet::iface::import_styles& styles, gnumeric_color& front_color) :
@@ -290,7 +290,7 @@ spreadsheet::condition_operator_t get_condition_operator(int val)
     return orcus::spreadsheet::condition_operator_t::unknown;
 }
 
-class gnumeric_condition_attr_parser : public std::unary_function<xml_token_attr_t, void>
+class gnumeric_condition_attr_parser
 {
 public:
     gnumeric_condition_attr_parser(spreadsheet::iface::import_conditional_format* cond_format):
@@ -316,7 +316,7 @@ private:
     spreadsheet::iface::import_conditional_format* m_cond_format;
 };
 
-class gnumeric_col_row_info : public std::unary_function<xml_token_attr_t, void>
+class gnumeric_col_row_info
 {
 public:
     gnumeric_col_row_info() :
@@ -402,7 +402,7 @@ enum gnumeric_filter_field_type_t
     filter_type_invalid
 };
 
-class gnumeric_autofilter_field_attr_parser : public std::unary_function<xml_token_attr_t, void>
+class gnumeric_autofilter_field_attr_parser
 {
 public:
     gnumeric_autofilter_field_attr_parser(spreadsheet::iface::import_auto_filter& auto_filter):

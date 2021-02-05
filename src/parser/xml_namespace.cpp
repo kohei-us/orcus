@@ -316,7 +316,7 @@ pstring xmlns_context::get_alias(xmlns_id_t ns_id) const
 namespace {
 
 #if ORCUS_DEBUG_XML_NAMESPACE
-struct print_ns : std::unary_function<xmlns_id_t, void>
+struct print_ns
 {
     void operator() (xmlns_id_t ns_id) const
     {
@@ -334,7 +334,7 @@ struct ns_item
     ns_item(size_t _index, xmlns_id_t _ns) : index(_index), ns(_ns) {}
 };
 
-struct less_ns_by_index : binary_function<ns_item, ns_item, bool>
+struct less_ns_by_index
 {
     bool operator() (const ns_item& left, const ns_item& right) const
     {
@@ -342,7 +342,7 @@ struct less_ns_by_index : binary_function<ns_item, ns_item, bool>
     }
 };
 
-class push_back_ns_to_item : unary_function<xmlns_id_t, void>
+class push_back_ns_to_item
 {
     vector<ns_item>& m_store;
     const xmlns_context& m_cxt;
@@ -356,7 +356,7 @@ public:
     }
 };
 
-class push_back_item_to_ns : unary_function<ns_item, void>
+class push_back_item_to_ns
 {
     std::vector<xmlns_id_t>& m_store;
 public:

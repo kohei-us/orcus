@@ -17,6 +17,7 @@
 #include <ixion/formula_result.hpp>
 
 #include <string>
+#include <algorithm>
 
 namespace orcus { namespace spreadsheet { namespace detail {
 

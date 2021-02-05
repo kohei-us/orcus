@@ -170,7 +170,7 @@ bool parse_boolean_flag(const xml_token_attr_t& attr, bool default_value)
     return default_value;
 }
 
-struct cfRule_attr_parser : public std::unary_function<xml_token_attr_t, void>
+struct cfRule_attr_parser
 {
 
     cfRule_attr_parser(spreadsheet::iface::import_conditional_format& cond_format):
@@ -443,7 +443,7 @@ private:
     pstring m_rank;
 };
 
-struct conditional_formatting_attr_parser : public std::unary_function<xml_token_attr_t, void>
+struct conditional_formatting_attr_parser
 {
     conditional_formatting_attr_parser(spreadsheet::iface::import_conditional_format& cond_format):
         m_cond_format(cond_format)
@@ -506,7 +506,7 @@ struct cfvo_values
 
 namespace {
 
-struct cfvo_attr_parser : public std::unary_function<xml_token_attr_t, void>
+struct cfvo_attr_parser
 {
     cfvo_attr_parser(string_pool& pool):
         m_string_pool(pool)
@@ -551,7 +551,7 @@ private:
     string_pool& m_string_pool;
 };
 
-struct data_bar_attr_parser : public std::unary_function<xml_token_attr_t, void>
+struct data_bar_attr_parser
 {
     data_bar_attr_parser():
         m_show_value(true),
@@ -591,7 +591,7 @@ private:
     size_t m_max_length;
 };
 
-struct icon_set_attr_parser : public std::unary_function<xml_token_attr_t, void>
+struct icon_set_attr_parser
 {
     icon_set_attr_parser():
         m_reverse(false),

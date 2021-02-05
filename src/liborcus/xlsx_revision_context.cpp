@@ -24,7 +24,7 @@ namespace orcus {
 
 namespace {
 
-class headers_attr_parser : public unary_function<xml_token_attr_t, void>
+class headers_attr_parser
 {
     pstring m_guid;
     long m_highest_revid;
@@ -67,7 +67,7 @@ public:
     }
 };
 
-class header_attr_parser : public unary_function<xml_token_attr_t, void>
+class header_attr_parser
 {
     string_pool* m_pool;
 
@@ -243,7 +243,7 @@ void xlsx_revheaders_context::characters(const pstring& /*str*/, bool /*transien
 
 namespace {
 
-class rcc_attr_parser : public unary_function<xml_token_attr_t, void>
+class rcc_attr_parser
 {
     long m_revision_id;
     long m_sheet_id;
@@ -275,7 +275,7 @@ public:
     }
 };
 
-class rrc_attr_parser : public unary_function<xml_token_attr_t, void>
+class rrc_attr_parser
 {
     long m_revision_id;
     long m_sheet_id;
@@ -326,7 +326,7 @@ public:
     }
 };
 
-class cell_data_attr_parser : public unary_function<xml_token_attr_t, void>
+class cell_data_attr_parser
 {
     pstring m_ref;
     xlsx_cell_t m_type;

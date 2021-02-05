@@ -58,7 +58,7 @@ odf_style_family to_style_family(const pstring& val)
     return map.find(val.get(), val.size());
 }
 
-class style_attr_parser : public std::unary_function<xml_token_attr_t, void>
+class style_attr_parser
 {
     pstring m_name;
     odf_style_family m_family;
@@ -91,7 +91,7 @@ public:
     const pstring& get_parent() const { return m_parent_name; }
 };
 
-class col_prop_attr_parser : public std::unary_function<xml_token_attr_t, void>
+class col_prop_attr_parser
 {
     length_t m_width;
 public:
@@ -125,7 +125,7 @@ strikethrough_style_map::entry strikethrough_style_entries[] =
     { MDDS_ASCII("wave"), spreadsheet::strikethrough_style_t::wave },
 };
 
-class text_prop_attr_parser : std::unary_function<xml_token_attr_t, void>
+class text_prop_attr_parser
 {
     pstring m_font_name;
     length_t m_font_size;
@@ -310,7 +310,7 @@ public:
     spreadsheet::strikethrough_text_t get_strikethrough_text() const { return m_strikethrough_text;}
 };
 
-class cell_prop_attr_parser : std::unary_function<xml_token_attr_t, void>
+class cell_prop_attr_parser
 {
 public:
     typedef std::map<spreadsheet::border_direction_t, odf_helper::odf_border_details> border_map_type;
@@ -480,7 +480,7 @@ public:
 
 };
 
-class paragraph_prop_attr_parser : std::unary_function<xml_token_attr_t, void>
+class paragraph_prop_attr_parser
 {
     spreadsheet::hor_alignment_t m_hor_alignment;
     bool m_has_hor_alignment;

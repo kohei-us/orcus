@@ -306,7 +306,7 @@ css_selector_t intern(string_pool& sp, const css_selector_t& sel)
     return interned;
 }
 
-class intern_inserter : std::unary_function<css_property_value_t, void>
+class intern_inserter
 {
     string_pool& m_sp;
     std::vector<css_property_value_t>& m_dest;

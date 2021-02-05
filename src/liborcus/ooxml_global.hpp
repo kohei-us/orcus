@@ -23,7 +23,7 @@ class xml_context_base;
 /**
  * Function object to print relationship information.
  */
-struct print_opc_rel : ::std::unary_function<opc_rel_t, void>
+struct print_opc_rel
 {
     void operator() (const opc_rel_t& v) const;
 };

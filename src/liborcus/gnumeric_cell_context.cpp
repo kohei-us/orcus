@@ -47,7 +47,7 @@ struct gnumeric_cell_data
 
 namespace {
 
-class cell_attr_parser : public unary_function<xml_token_attr_t, void>
+class cell_attr_parser
 {
 public:
     cell_attr_parser()

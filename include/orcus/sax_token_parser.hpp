@@ -23,7 +23,7 @@ namespace sax {
 
 #if ORCUS_DEBUG_SAX_PARSER
 template<typename _Attr, typename _Tokens>
-class attr_printer : public ::std::unary_function<_Attr, void>
+class attr_printer
 {
 public:
     attr_printer(const _Tokens& tokens, const ::std::string& indent) :

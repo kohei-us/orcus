@@ -25,7 +25,7 @@ namespace orcus {
 
 namespace {
 
-class part_ext_attr_parser : public unary_function<void, xml_token_attr_t>
+class part_ext_attr_parser
 {
 public:
     part_ext_attr_parser(
@@ -171,7 +171,7 @@ void opc_content_types_context::pop_ext_defaults(vector<xml_part_t>& ext_default
 
 namespace {
 
-class rel_attr_parser : public unary_function<void, xml_token_attr_t>
+class rel_attr_parser
 {
 public:
     rel_attr_parser(session_context* cxt, const opc_relations_context::schema_cache_type* cache, const config* conf) :
@@ -223,7 +223,7 @@ private:
 /**
  * Compare relations by the rId.
  */
-struct compare_rels : binary_function<bool, opc_rel_t, opc_rel_t>
+struct compare_rels
 {
     bool operator() (const opc_rel_t& r1, const opc_rel_t& r2) const
     {

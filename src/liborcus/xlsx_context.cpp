@@ -65,7 +65,7 @@ private:
     size_t m_unique_count;
 };
 
-class color_attr_parser : unary_function<xml_token_attr_t, void>
+class color_attr_parser
 {
     pstring m_rgb;
 public:
@@ -352,7 +352,7 @@ const map_type& get()
 
 }
 
-class border_attr_parser : public unary_function<xml_token_attr_t, void>
+class border_attr_parser
 {
     spreadsheet::border_direction_t m_dir;
     spreadsheet::iface::import_styles& m_styles;
@@ -374,7 +374,7 @@ public:
     }
 };
 
-class cell_style_attr_parser : public unary_function<xml_token_attr_t, void>
+class cell_style_attr_parser
 {
     spreadsheet::iface::import_styles& m_styles;
 public:
@@ -404,7 +404,7 @@ public:
     }
 };
 
-class xf_attr_parser : public unary_function<xml_token_attr_t, void>
+class xf_attr_parser
 {
     spreadsheet::iface::import_styles& m_styles;
 public:
@@ -463,7 +463,7 @@ public:
     }
 };
 
-class fill_color_attr_parser : public unary_function<xml_token_attr_t, void>
+class fill_color_attr_parser
 {
     spreadsheet::iface::import_styles& m_styles;
     const tokens& m_tokens;
@@ -502,7 +502,7 @@ public:
     }
 };
 
-class cell_protection_attr_parser : public unary_function<xml_token_attr_t, void>
+class cell_protection_attr_parser
 {
     spreadsheet::iface::import_styles& m_styles;
 public:
@@ -530,7 +530,7 @@ public:
     }
 };
 
-class cell_alignment_attr_parser : public unary_function<xml_token_attr_t, void>
+class cell_alignment_attr_parser
 {
     spreadsheet::hor_alignment_t m_hor_align;
     spreadsheet::ver_alignment_t m_ver_align;

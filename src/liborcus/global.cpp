@@ -18,7 +18,7 @@ namespace orcus {
 
 namespace {
 
-struct attr_printer : unary_function<void, xml_token_attr_t>
+struct attr_printer
 {
 public:
     attr_printer(const tokens& tokens) :

@@ -68,7 +68,7 @@ typedef std::map<pstring, std::unique_ptr<table_t>> table_store_type;
 sheet_item::sheet_item(document& doc, const pstring& _name, sheet_t sheet_index) :
     name(_name), data(doc, sheet_index) {}
 
-class find_sheet_by_name : std::unary_function<std::unique_ptr<sheet_item> , bool>
+class find_sheet_by_name
 {
     const pstring& m_name;
 public:
@@ -79,7 +79,7 @@ public:
     }
 };
 
-class find_column_by_name : std::unary_function<table_column_t, bool>
+class find_column_by_name
 {
     const pstring& m_name;
 public:

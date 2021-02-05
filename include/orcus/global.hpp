@@ -47,7 +47,7 @@ ORCUS_DLLPUBLIC date_time_t to_date_time(const pstring& str);
  * pointers.
  */
 template<typename T>
-struct map_object_deleter : public ::std::unary_function<typename T::value_type, void>
+struct map_object_deleter
 {
     void operator() (typename T::value_type& v)
     {

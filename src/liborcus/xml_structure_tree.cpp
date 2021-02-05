@@ -226,7 +226,7 @@ public:
     }
 };
 
-struct sort_by_appearance : std::binary_function<element_ref, element_ref, bool>
+struct sort_by_appearance
 {
     bool operator() (const element_ref& left, const element_ref& right) const
     {

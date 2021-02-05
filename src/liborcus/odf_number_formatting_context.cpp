@@ -23,7 +23,7 @@ namespace orcus {
 
 namespace {
 
-class number_style_attr_parser : std::unary_function<xml_token_attr_t, void>
+class number_style_attr_parser
 {
     pstring m_country_code;
     pstring m_style_name;
@@ -74,7 +74,7 @@ public:
     pstring get_language() const { return m_language;}
 };
 
-class number_attr_parser : std::unary_function<xml_token_attr_t, void>
+class number_attr_parser
 {
     size_t m_decimal_places;
     size_t m_min_int_digits;
@@ -117,7 +117,7 @@ public:
     bool has_decimal_places() const { return m_decimal_places > 0;}
 };
 
-class scientific_number_attr_parser : std::unary_function<xml_token_attr_t, void>
+class scientific_number_attr_parser
 {
     size_t m_decimal_places;
     bool m_grouping;
@@ -163,7 +163,7 @@ public:
     size_t get_min_int_digits() const { return m_min_int_digits;}
 };
 
-class generic_style_attr_parser : std::unary_function<xml_token_attr_t, void>
+class generic_style_attr_parser
 {
     pstring m_style_name;
     bool m_volatile;
@@ -201,7 +201,7 @@ public:
     bool has_long() const { return m_long;}
 };
 
-class month_attr_parser : std::unary_function<xml_token_attr_t, void>
+class month_attr_parser
 {
     bool m_style_name;
     bool m_textual;
@@ -227,7 +227,7 @@ public:
     bool is_textual() const { return m_textual;}
 };
 
-class seconds_attr_parser : std::unary_function<xml_token_attr_t, void>
+class seconds_attr_parser
 {
     size_t m_decimal_places;
     bool m_style_name;
@@ -256,7 +256,7 @@ public:
     bool has_decimal_places() const { return m_decimal_places > 0;}
 };
 
-class fraction_attr_parser : std::unary_function<xml_token_attr_t, void>
+class fraction_attr_parser
 {
     size_t m_min_int_digits;
     size_t m_min_deno_digits;
@@ -307,7 +307,7 @@ public:
     bool has_predefined_deno() const { return m_predefined_deno;}
 };
 
-class text_properties_attr_parser : std::unary_function<xml_token_attr_t, void>
+class text_properties_attr_parser
 {
     pstring m_color;
     bool color_absent;
@@ -352,7 +352,7 @@ public:
     bool has_color() const { return !color_absent;}
 };
 
-class map_attr_parser : std::unary_function<xml_token_attr_t, void>
+class map_attr_parser
 {
     string m_value;
     string m_sign;

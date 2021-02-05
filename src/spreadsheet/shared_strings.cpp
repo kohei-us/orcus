@@ -164,7 +164,7 @@ size_t import_shared_strings::commit_segments()
 
 namespace {
 
-struct print_string : public unary_function<void, pstring>
+struct print_string
 {
     size_t m_count;
 public:

@@ -476,7 +476,7 @@ void write_range_reference(ostream& os, const xml_map_tree::element& elem_top, c
        os, **elem_top.child_elements->begin(), *elem_top.range_parent, factory);
 }
 
-struct less_by_opening_elem_pos : std::binary_function<xml_map_tree::element*, xml_map_tree::element*, bool>
+struct less_by_opening_elem_pos
 {
     bool operator() (const xml_map_tree::element* left, const xml_map_tree::element* right) const
     {

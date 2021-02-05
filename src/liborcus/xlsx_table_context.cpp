@@ -23,7 +23,7 @@ namespace orcus {
 
 namespace {
 
-class table_attr_parser : public unary_function<xml_token_attr_t, void>
+class table_attr_parser
 {
     string_pool* m_pool;
 
@@ -77,7 +77,7 @@ public:
     pstring get_ref() const { return m_ref; }
 };
 
-class table_column_attr_parser : public unary_function<xml_token_attr_t, void>
+class table_column_attr_parser
 {
     string_pool* m_pool;
 
@@ -126,7 +126,7 @@ public:
     spreadsheet::totals_row_function_t get_totals_row_function() const { return m_totals_row_func; }
 };
 
-class table_style_info_attr_parser : public unary_function<xml_token_attr_t, void>
+class table_style_info_attr_parser
 {
     spreadsheet::iface::import_table* mp_table;
     bool m_debug;

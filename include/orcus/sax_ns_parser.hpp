@@ -74,7 +74,7 @@ struct elem_scope
 
 typedef std::vector<std::unique_ptr<elem_scope>> elem_scopes_type;
 
-class pop_ns_by_key : std::unary_function<pstring, void>
+class pop_ns_by_key
 {
     xmlns_context& m_cxt;
 public:

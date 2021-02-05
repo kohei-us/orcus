@@ -48,7 +48,7 @@ const cell_value_map_type& get_cell_value_map()
     return cv_map;
 }
 
-class null_date_attr_parser : public unary_function<xml_token_attr_t, void>
+class null_date_attr_parser
 {
 public:
     null_date_attr_parser() {}
@@ -68,7 +68,7 @@ private:
     pstring m_date_value;
 };
 
-class table_attr_parser : public unary_function<xml_token_attr_t, void>
+class table_attr_parser
 {
 public:
     table_attr_parser() {}

@@ -22,7 +22,7 @@ namespace orcus {
 
 namespace {
 
-class print_xml_content_types : unary_function<void, xml_part_t>
+class print_xml_content_types
 {
 public:
     print_xml_content_types(const char* prefix) :
