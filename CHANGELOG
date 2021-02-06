@@ -1,3 +1,10 @@
+orcus <next version>
+
+* orcus-json
+
+  * fixed segmentation fault when using --mode structure with the Windows
+    build.
+
 orcus 0.16.1
 
 * fixed a build issue on 32-bit linux platforms, which was indirectly caused
