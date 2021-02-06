@@ -36,6 +36,7 @@ cmd_params::cmd_params() {}
 
 cmd_params::cmd_params(cmd_params&& other) :
     config(std::move(other.config)),
+    os(std::move(other.os)),
     mode(other.mode),
     map_file(std::move(other.map_file))
 {

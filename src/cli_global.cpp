@@ -46,6 +46,16 @@ output_stream::output_stream(const boost::program_options::variables_map& vm) :
     m_os = m_ofs.get();
 }
 
+output_stream::output_stream(output_stream&& other) :
+    m_ofs(std::move(other.m_ofs)),
+    m_os(other.m_os)
+{
+    if (m_ofs)
+        m_os = m_ofs.get();
+
+    other.m_os = nullptr;
+}
+
 std::ostream& output_stream::get()
 {
     return *m_os;

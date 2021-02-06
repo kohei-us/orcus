@@ -25,6 +25,9 @@ class output_stream
 
 public:
     output_stream(const boost::program_options::variables_map& vm);
+    output_stream(output_stream&& other);
+    output_stream(const output_stream&) = delete;
+    output_stream& operator=(const output_stream&) = delete;
 
     std::ostream& get();
 };
