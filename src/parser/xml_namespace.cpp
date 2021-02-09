@@ -175,30 +175,40 @@ typedef std::unordered_map<pstring, xmlns_list_type, pstring::hash> alias_map_ty
 
 struct xmlns_context::impl
 {
-    xmlns_repository& m_repo;
+    xmlns_repository* repo = nullptr;
     xmlns_list_type m_all_ns; /// all namespaces ever used in this context.
     xmlns_list_type m_default;
     alias_map_type m_map;
 
-    bool m_trim_all_ns;
+    bool m_trim_all_ns = true;
 
-    impl(xmlns_repository& repo) : m_repo(repo), m_trim_all_ns(true) {}
+    impl() {}
+    impl(xmlns_repository& repo) : repo(&repo) {}
     impl(const impl& r) :
-        m_repo(r.m_repo), m_all_ns(r.m_all_ns), m_default(r.m_default), m_map(r.m_map), m_trim_all_ns(r.m_trim_all_ns) {}
+        repo(r.repo), m_all_ns(r.m_all_ns), m_default(r.m_default), m_map(r.m_map), m_trim_all_ns(r.m_trim_all_ns) {}
 };
 
+xmlns_context::xmlns_context() : mp_impl(std::make_unique<impl>()) {}
 xmlns_context::xmlns_context(xmlns_repository& repo) : mp_impl(std::make_unique<impl>(repo)) {}
 xmlns_context::xmlns_context(const xmlns_context& r) : mp_impl(std::make_unique<impl>(*r.mp_impl)) {}
+xmlns_context::xmlns_context(xmlns_context&& r) : mp_impl(std::move(r.mp_impl))
+{
+    r.mp_impl = std::make_unique<impl>();
+}
+
 xmlns_context::~xmlns_context() {}
 
 xmlns_id_t xmlns_context::push(const pstring& key, const pstring& uri)
 {
+    if (!mp_impl->repo)
+        throw general_error("this context is not associated with any repo.");
+
 #if ORCUS_DEBUG_XML_NAMESPACE
     cout << "xmlns_context::push: key='" << key << "', uri='" << uri << "'" << endl;
 #endif
     mp_impl->m_trim_all_ns = true;
 
-    pstring uri_interned = mp_impl->m_repo.intern(uri);
+    pstring uri_interned = mp_impl->repo->intern(uri);
 
     if (key.empty())
     {
@@ -289,12 +299,18 @@ xmlns_id_t xmlns_context::get(const pstring& key) const
 
 size_t xmlns_context::get_index(xmlns_id_t ns_id) const
 {
-    return mp_impl->m_repo.get_index(ns_id);
+    if (!mp_impl->repo)
+        throw general_error("this context is not associated with any repo.");
+
+    return mp_impl->repo->get_index(ns_id);
 }
 
 string xmlns_context::get_short_name(xmlns_id_t ns_id) const
 {
-    return mp_impl->m_repo.get_short_name(ns_id);
+    if (!mp_impl->repo)
+        throw general_error("this context is not associated with any repo.");
+
+    return mp_impl->repo->get_short_name(ns_id);
 }
 
 pstring xmlns_context::get_alias(xmlns_id_t ns_id) const
