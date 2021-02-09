@@ -77,7 +77,7 @@ std::string xml_name_t::to_string(const xmlns_repository& repo) const
 
     if (ns)
     {
-        pstring ns_str = repo.get_short_name(ns);
+        std::string ns_str = repo.get_short_name(ns);
         if (!ns_str.empty())
             os << ns_str << ':';
     }
