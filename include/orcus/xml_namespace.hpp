@@ -86,9 +86,10 @@ class ORCUS_PSR_DLLPUBLIC xmlns_context
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
-    xmlns_context(); // disabled
     xmlns_context(xmlns_repository& repo);
 public:
+    xmlns_context() = delete;
+    xmlns_context(xmlns_context&&) = delete;
     xmlns_context(const xmlns_context& r);
     ~xmlns_context();
 
