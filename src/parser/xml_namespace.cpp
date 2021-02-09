@@ -183,7 +183,7 @@ struct xmlns_context::impl
     bool m_trim_all_ns = true;
 
     impl() {}
-    impl(xmlns_repository& repo) : repo(&repo) {}
+    impl(xmlns_repository& _repo) : repo(&_repo) {}
     impl(const impl& r) :
         repo(r.repo), m_all_ns(r.m_all_ns), m_default(r.m_default), m_map(r.m_map), m_trim_all_ns(r.m_trim_all_ns) {}
 };
