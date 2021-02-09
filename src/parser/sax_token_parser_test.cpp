@@ -162,13 +162,13 @@ void test_unicode_string()
     tokens token_map(token_names, token_count);
     xmlns_repository ns_repo;
     xmlns_context ns_cxt = ns_repo.create_context();
-    handler hdl("\u0021");
+    handler hdl(u8"\u0021");
     sax_token_parser<handler> parser1(content1, strlen(content1), token_map, ns_cxt, hdl);
     parser1.parse();
-    hdl = handler("\u00B6");
+    hdl = handler(u8"\u00B6");
     sax_token_parser<handler> parser2(content2, strlen(content2), token_map, ns_cxt, hdl);
     parser2.parse();
-    hdl = handler("\u20B9");
+    hdl = handler(u8"\u20B9");
     sax_token_parser<handler> parser3(content3, strlen(content3), token_map, ns_cxt, hdl);
     parser3.parse();
 }
