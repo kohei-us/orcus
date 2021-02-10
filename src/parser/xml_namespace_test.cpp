@@ -85,6 +85,13 @@ xmlns_id_t NS_test_all[] = {
     nullptr
 };
 
+xmlns_id_t NS_test_all_reverse[] = {
+    NS_test_name3,
+    NS_test_name2,
+    NS_test_name1,
+    nullptr
+};
+
 void test_predefined_ns()
 {
     xmlns_repository ns_repo;
@@ -118,6 +125,74 @@ void test_xml_name_t()
     assert(name1 != name3);
 }
 
+void test_ns_context()
+{
+    xmlns_repository repo;
+    repo.add_predefined_values(NS_test_all);
+
+    xmlns_repository repo2;
+    repo2.add_predefined_values(NS_test_all_reverse);
+
+    xmlns_context cxt;
+    cxt = repo.create_context(); // copy assignment
+    size_t id1 = cxt.get_index(NS_test_name3);
+    xmlns_context cxt2 = cxt; // copy ctor
+    size_t id2 = cxt2.get_index(NS_test_name3);
+
+    assert(id1 == id2);
+
+    xmlns_context cxt3 = repo2.create_context();
+    id2 = cxt3.get_index(NS_test_name3);
+
+    assert(id1 != id2);
+
+    cxt3 = std::move(cxt2); // move assignment
+    id2 = cxt3.get_index(NS_test_name3);
+
+    assert(id1 == id2);
+
+    try
+    {
+        id1 = cxt2.get_index(NS_test_name2);
+        assert(!"exception was supposed to be thrown due to no associated repos.");
+    }
+    catch (const std::exception&)
+    {
+        // expected
+    }
+
+    xmlns_context cxt4(std::move(cxt3)); // move ctor
+    id1 = cxt4.get_index(NS_test_name3);
+
+    xmlns_context cxt5 = repo.create_context();
+    id2 = cxt5.get_index(NS_test_name3);
+
+    assert(id1 == id2);
+
+    try
+    {
+        id1 = cxt3.get_index(NS_test_name2);
+        assert(!"exception was supposed to be thrown due to no associated repos.");
+    }
+    catch (const std::exception&)
+    {
+        // expected
+    }
+
+    cxt4 = repo.create_context();
+    cxt5 = repo2.create_context();
+    id1 = cxt4.get_index(NS_test_name1);
+    id2 = cxt5.get_index(NS_test_name1);
+
+    assert(id1 != id2);
+
+    cxt3 = repo.create_context();
+    cxt5.swap(cxt3);
+    id2 = cxt5.get_index(NS_test_name1);
+
+    assert(id1 == id2);
+}
+
 } // anonymous namespace
 
 int main()
@@ -126,6 +201,7 @@ int main()
     test_all_namespaces();
     test_predefined_ns();
     test_xml_name_t();
+    test_ns_context();
 
     return EXIT_SUCCESS;
 }

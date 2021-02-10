@@ -93,6 +93,9 @@ public:
     xmlns_context(const xmlns_context& r);
     ~xmlns_context();
 
+    xmlns_context& operator= (const xmlns_context& r);
+    xmlns_context& operator= (xmlns_context&& r);
+
     xmlns_id_t push(const pstring& key, const pstring& uri);
     void pop(const pstring& key);
 
@@ -144,6 +147,8 @@ public:
     std::vector<xmlns_id_t> get_all_namespaces() const;
 
     void dump(std::ostream& os) const;
+
+    void swap(xmlns_context& other) noexcept;
 };
 
 }

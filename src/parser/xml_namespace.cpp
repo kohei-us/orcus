@@ -198,6 +198,20 @@ xmlns_context::xmlns_context(xmlns_context&& r) : mp_impl(std::move(r.mp_impl))
 
 xmlns_context::~xmlns_context() {}
 
+xmlns_context& xmlns_context::operator= (const xmlns_context& r)
+{
+    xmlns_context tmp(r);
+    tmp.swap(*this);
+    return *this;
+}
+
+xmlns_context& xmlns_context::operator= (xmlns_context&& r)
+{
+    xmlns_context tmp(std::move(r));
+    tmp.swap(*this);
+    return *this;
+}
+
 xmlns_id_t xmlns_context::push(const pstring& key, const pstring& uri)
 {
     if (!mp_impl->repo)
@@ -434,6 +448,11 @@ void xmlns_context::dump(std::ostream& os) const
 
         os << "ns" << num_id << "=\"" << ns_id << '"' << endl;
     }
+}
+
+void xmlns_context::swap(xmlns_context& other) noexcept
+{
+    mp_impl.swap(other.mp_impl);
 }
 
 }
