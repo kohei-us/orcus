@@ -218,6 +218,9 @@ protected:
     void element_name(parser_element& elem, std::ptrdiff_t begin_pos);
     void attribute_name(pstring& attr_ns, pstring& attr_name);
     void characters_with_encoded_char(cell_buffer& buf);
+
+    int is_name_char();
+    int is_name_start_char();
 };
 
 }}
