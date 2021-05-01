@@ -139,7 +139,7 @@ void test_sax_token_parser_1()
         {
             assert(e.offset() == 28u);
         }
-        catch (const std::exception)
+        catch (const std::exception&)
         {
             assert(!"Wrong exception was thrown!");
         }
