@@ -29,6 +29,7 @@
 #include "opc_context.hpp"
 #include "ooxml_global.hpp"
 #include "spreadsheet_iface_util.hpp"
+#include "ooxml_content_types.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -194,7 +195,7 @@ bool orcus_xlsx::detect(const unsigned char* blob, size_t size)
         return false;
 
     // See if we can find the workbook stream.
-    xml_part_t workbook_part("/xl/workbook.xml", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
+    xml_part_t workbook_part("/xl/workbook.xml", CT_ooxml_xlsx_sheet_main);
     return std::find(parts.begin(), parts.end(), workbook_part) != parts.end();
 }
 
