@@ -52,18 +52,7 @@ bool pstring::operator== (const pstring& r) const
 
 bool pstring::operator< (const pstring& r) const
 {
-    size_t n = std::min(m_size, r.m_size);
-    const char* p1 = m_pos;
-    const char* p2 = r.m_pos;
-    for (size_t i = 0; i < n; ++i, ++p1, ++p2)
-    {
-        if (*p1 == *p2)
-            continue;
-
-        return *p1 < *p2;
-    }
-
-    return m_size < r.m_size;
+    return std::lexicographical_compare(m_pos, m_pos + m_size, r.m_pos, r.m_pos + r.m_size);
 }
 
 bool pstring::operator== (const char* _str) const
