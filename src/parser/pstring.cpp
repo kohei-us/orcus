@@ -107,11 +107,7 @@ void pstring::resize(size_t new_size)
 std::string operator+ (const std::string& left, const pstring& right)
 {
     std::string ret = left;
-    if (!right.empty())
-    {
-        ret.append(right.get(), right.size());
-    }
-    return ret;
+    return ret += right;
 }
 
 std::string& operator+= (std::string& left, const pstring& right)
