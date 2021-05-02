@@ -13,6 +13,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <iterator>
 
 using namespace std;
 
@@ -73,13 +74,9 @@ pstring pstring::trim() const
 {
     const char* p = m_pos;
     const char* p_end = p + m_size;
+
     // Find the first non-space character.
-    for ( ;p != p_end; ++p)
-    {
-        if (is_blank(*p))
-            continue;
-        break;
-    }
+    p = std::find_if_not(p, p_end, is_blank);
 
     if (p == p_end)
     {
@@ -88,15 +85,9 @@ pstring pstring::trim() const
     }
 
     // Find the last non-space character.
-    for (--p_end; p_end != p; --p_end)
-    {
-        if (is_blank(*p_end))
-            continue;
-        break;
-    }
+    auto last = std::find_if_not(std::reverse_iterator(p_end), std::reverse_iterator(p), is_blank);
 
-    ++p_end;
-    return pstring(p, p_end-p);
+    return pstring(p, last.base() - p);
 }
 
 void pstring::resize(size_t new_size)
