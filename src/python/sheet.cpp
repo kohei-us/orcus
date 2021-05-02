@@ -113,29 +113,29 @@ format_t to_format_type_enum(PyObject* format)
     static const char* err_not_format_type = "An enum value of 'orcus.FormatType' was expected.";
     static const char* err_format_not_supported = "Unsupported format type.";
 
-    PyObject* format_s = PyObject_Str(format); // new reference
+    // Check the type name.
+
+    PyTypeObject* type = Py_TYPE(format);
+    if (!type || strncmp(type->tp_name, "FormatType", 10u) != 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, err_not_format_type);
+        return format_t::unknown;
+    }
+
+    // Now check the member name.
+
+    PyObject* format_s = PyObject_GetAttrString(format, "name"); // new reference
     if (!format_s)
     {
         PyErr_SetString(PyExc_RuntimeError, err_not_format_type);
         return format_t::unknown;
     }
 
-    const char* p = PyUnicode_AsUTF8(format_s);
-
-    // Make sure that the string starts with 'FormatType.'.
-    if (!p || strnlen(p, 11u) < 11u || strncmp(p, "FormatType.", 11u))
-    {
-        PyErr_SetString(PyExc_RuntimeError, err_not_format_type);
-        Py_DECREF(format_s);
-        return format_t::unknown;
-    }
-
-    p += 11; // Move it to the char past the '.'.
-
     // TODO : currently we only support csv format.  Change this code when we
     // add more format type(s) to support.
 
-    if (strncmp(p, "CSV", 3u))
+    const char* p = PyUnicode_AsUTF8(format_s);
+    if (!p || strncmp(p, "CSV", 3u) != 0)
     {
         PyErr_SetString(PyExc_RuntimeError, err_format_not_supported);
         Py_DECREF(format_s);
