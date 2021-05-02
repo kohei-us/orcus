@@ -47,13 +47,7 @@ bool pstring::operator== (const pstring& r) const
         // lengths differ.
         return false;
 
-    const char* pos1 = m_pos;
-    const char* pos2 = r.m_pos;
-    for (size_t i = 0; i < m_size; ++i, ++pos1, ++pos2)
-        if (*pos1 != *pos2)
-            return false;
-
-    return true;
+    return std::equal(m_pos, m_pos + m_size, r.m_pos);
 }
 
 bool pstring::operator< (const pstring& r) const
