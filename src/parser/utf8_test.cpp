@@ -49,11 +49,11 @@ bool check_c2_ranges(parse_func_t parse, std::vector<c2_range_t> ranges)
     {
         for (uint16_t v = range.first; v <= range.second; ++v)
         {
-            std::vector<char> buf(2, '\0');
+            char buf[2];
             buf[0] = 0x00FF & (v >> 8);
             buf[1] = 0x00FF & v;
 
-            const char* p = buf.data();
+            const char* p = buf;
             const char* p_end = p + 2;
             const char* ret = parse(p, p_end);
 
