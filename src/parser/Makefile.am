@@ -28,6 +28,8 @@ liborcus_parser_@ORCUS_API_VERSION@_la_SOURCES = \
 	string_pool.cpp \
 	tokens.cpp \
 	types.cpp \
+	utf8.hpp \
+	utf8.cpp \
 	xml_namespace.cpp \
 	xml_writer.cpp \
 	yaml_parser_base.cpp \
@@ -64,6 +66,7 @@ EXTRA_PROGRAMS = \
 	parser-test-global \
 	parser-test-json-validation \
 	parser-test-numeric \
+	utf8-test \
 	xml-writer-test
 
 # parser-test-string-pool
@@ -206,6 +209,15 @@ parser_test_json_validation_SOURCES = \
 parser_test_json_validation_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 parser_test_json_validation_CPPFLAGS = $(AM_CPPFLAGS)
 
+# utf8-test
+
+utf8_test_SOURCES = \
+	utf8.cpp \
+	utf8_test.cpp
+
+utf8_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+utf8_test_CPPFLAGS = $(AM_CPPFLAGS)
+
 # xml-writer-test
 
 xml_writer_test_SOURCES = xml_writer_test.cpp
@@ -240,6 +252,7 @@ TESTS = \
 	parser-test-global \
 	parser-test-json-validation \
 	parser-test-numeric \
+	utf8-test \
 	xml-writer-test
 
 distclean-local:

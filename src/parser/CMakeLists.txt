@@ -1,29 +1,30 @@
 
 add_library(orcus-parser-${ORCUS_API_VERSION} SHARED
     base64.cpp
-	cell_buffer.cpp
-	css_parser_base.cpp
-	css_types.cpp
-	csv_parser_base.cpp
-	exception.cpp
-	json_global.cpp
-	json_parser_base.cpp
-	json_parser_thread.cpp
-	parser_base.cpp
-	parser_global.cpp
-	pstring.cpp
-	sax_parser_base.cpp
-	sax_token_parser.cpp
-	sax_token_parser_thread.cpp
-	stream.cpp
-	string_pool.cpp
-	tokens.cpp
-	types.cpp
-	xml_namespace.cpp
+    cell_buffer.cpp
+    css_parser_base.cpp
+    css_types.cpp
+    csv_parser_base.cpp
+    exception.cpp
+    json_global.cpp
+    json_parser_base.cpp
+    json_parser_thread.cpp
+    parser_base.cpp
+    parser_global.cpp
+    pstring.cpp
+    sax_parser_base.cpp
+    sax_token_parser.cpp
+    sax_token_parser_thread.cpp
+    stream.cpp
+    string_pool.cpp
+    tokens.cpp
+    types.cpp
+    utf8.cpp
+    xml_namespace.cpp
     xml_writer.cpp
-	yaml_parser_base.cpp
-	zip_archive.cpp
-	zip_archive_stream.cpp
+    yaml_parser_base.cpp
+    zip_archive.cpp
+    zip_archive_stream.cpp
 )
 
 target_compile_definitions(orcus-parser-${ORCUS_API_VERSION} PRIVATE __ORCUS_PSR_BUILDING_DLL)
@@ -45,6 +46,7 @@ set(_TESTS
     string-pool-test
     threaded-json-parser-test
     threaded-sax-token-parser-test
+    utf8-test
     xml-namespace-test
     xml-writer-test
     yaml-parser-test
