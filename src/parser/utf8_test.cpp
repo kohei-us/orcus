@@ -13,17 +13,18 @@
 #include <string>
 #include <cassert>
 #include <functional>
-
+#include <iomanip>
 
 using namespace orcus;
 using std::cout;
 using std::endl;
 
 using parse_func_t = std::function<const char*(const char*, const char*)>;
+using c2_range_t = std::pair<uint16_t, uint16_t>;
 
-bool check_ascii_ranges(parse_func_t parse, std::vector<std::string> ascii_ranges)
+bool check_c1_ranges(parse_func_t parse, std::vector<std::string> ranges)
 {
-    for (const std::string& range : ascii_ranges)
+    for (const std::string& range : ranges)
     {
         for (char c = range[0]; c <= range[1]; ++c)
         {
@@ -42,11 +43,49 @@ bool check_ascii_ranges(parse_func_t parse, std::vector<std::string> ascii_range
     return true;
 }
 
+bool check_c2_ranges(parse_func_t parse, std::vector<c2_range_t> ranges)
+{
+    for (const c2_range_t& range : ranges)
+    {
+        for (uint16_t v = range.first; v <= range.second; ++v)
+        {
+            std::vector<char> buf(2, '\0');
+            buf[0] = 0x00FF & (v >> 8);
+            buf[1] = 0x00FF & v;
+
+            const char* p = buf.data();
+            const char* p_end = p + 2;
+            const char* ret = parse(p, p_end);
+
+            if (ret != p_end)
+            {
+                cout << "failed to parse 0x" << std::hex << std::setw(2)
+                     << short(buf[0]) << ' ' << short(buf[1]) << endl;
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 void test_xml_name_start_char()
 {
-    bool res = check_ascii_ranges(
+    bool res = check_c1_ranges(
         parse_utf8_xml_name_start_char,
         { "az", "AZ", "__" }
+    );
+    assert(res);
+
+    res = check_c2_ranges(
+        parse_utf8_xml_name_start_char,
+        {
+            { 0xC380, 0xC396 },
+            { 0xC398, 0xC3B6 },
+            { 0xC3B8, 0xCBBF },
+            { 0xCDB0, 0xCDBD },
+            { 0xCDBF, 0xDFBF },
+        }
     );
     assert(res);
 
@@ -55,9 +94,23 @@ void test_xml_name_start_char()
 
 void test_xml_name_char()
 {
-    bool res = check_ascii_ranges(
+    bool res = check_c1_ranges(
         parse_utf8_xml_name_char,
         { "az", "AZ", "09", "__", "--", ".." }
+    );
+    assert(res);
+
+    res = check_c2_ranges(
+        parse_utf8_xml_name_char,
+        {
+            { 0xC2B7, 0xC2B7 },
+            { 0xC380, 0xC396 },
+            { 0xC398, 0xC3B6 },
+            { 0xC3B8, 0xCBBF },
+            { 0xCC80, 0xCDAF },
+            { 0xCDB0, 0xCDBD },
+            { 0xCDBF, 0xDFBF },
+        }
     );
     assert(res);
 
