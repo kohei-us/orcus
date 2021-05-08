@@ -5,59 +5,61 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
+#include "utf8.hpp"
+
 #include <iostream>
 #include <vector>
 #include <string>
 #include <cassert>
+#include <functional>
 
-#include "utf8.hpp"
 
 using namespace orcus;
 using std::cout;
 using std::endl;
 
-void test_xml_name_start_char()
-{
-    std::vector<std::string> ascii_ranges = { "az", "AZ", "__" };
+using parse_func_t = std::function<const char*(const char*, const char*)>;
 
+bool check_ascii_ranges(parse_func_t parse, std::vector<std::string> ascii_ranges)
+{
     for (const std::string& range : ascii_ranges)
     {
         for (char c = range[0]; c <= range[1]; ++c)
         {
             const char* p = &c;
             const char* p_end = p + 1;
-            const char* ret = parse_utf8_xml_name_start_char(p, p_end);
+            const char* ret = parse(p, p_end);
 
             if (ret != p_end)
             {
                 cout << "failed to parse '" << c << "'" << endl;
-                assert(false);
+                return false;
             }
         }
     }
+
+    return true;
+}
+
+void test_xml_name_start_char()
+{
+    bool res = check_ascii_ranges(
+        parse_utf8_xml_name_start_char,
+        { "az", "AZ", "__" }
+    );
+    assert(res);
 
     // TODO : implement the rest.
 }
 
 void test_xml_name_char()
 {
-    std::vector<std::string> ascii_ranges = { "az", "AZ", "09", "__", "--", ".." };
-
-    for (const std::string& range : ascii_ranges)
-    {
-        for (char c = range[0]; c <= range[1]; ++c)
-        {
-            const char* p = &c;
-            const char* p_end = p + 1;
-            const char* ret = parse_utf8_xml_name_char(p, p_end);
-
-            if (ret != p_end)
-            {
-                cout << "failed to parse '" << c << "'" << endl;
-                assert(false);
-            }
-        }
-    }
+    bool res = check_ascii_ranges(
+        parse_utf8_xml_name_char,
+        { "az", "AZ", "09", "__", "--", ".." }
+    );
+    assert(res);
 
     // TODO : implement the rest.
 }
