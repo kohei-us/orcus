@@ -21,6 +21,7 @@ using std::endl;
 
 using parse_func_t = std::function<const char*(const char*, const char*)>;
 using c2_range_t = std::pair<uint16_t, uint16_t>;
+using c3_range_t = std::pair<uint32_t, uint32_t>;
 
 bool check_c1_ranges(parse_func_t parse, std::vector<std::string> ranges)
 {
@@ -59,8 +60,38 @@ bool check_c2_ranges(parse_func_t parse, std::vector<c2_range_t> ranges)
 
             if (ret != p_end)
             {
-                cout << "failed to parse 0x" << std::hex << std::setw(2)
-                     << short(buf[0]) << ' ' << short(buf[1]) << endl;
+                cout << "failed to parse " << std::hex << std::uppercase << std::setfill('0')
+                     << std::setw(2) << short(0xFF & buf[0]) << ' '
+                     << std::setw(2) << short(0xFF & buf[1]) << endl;
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool check_c3_ranges(parse_func_t parse, std::vector<c3_range_t> ranges)
+{
+    for (const c3_range_t& range : ranges)
+    {
+        for (uint32_t v = range.first; v <= range.second; ++v)
+        {
+            char buf[3];
+            buf[0] = 0x00FF & (v >> 16);
+            buf[1] = 0x00FF & (v >>  8);
+            buf[2] = 0x00FF & v;
+
+            const char* p = buf;
+            const char* p_end = p + 3;
+            const char* ret = parse(p, p_end);
+
+            if (ret != p_end)
+            {
+                cout << "failed to parse " << std::hex << std::uppercase << std::setfill('0')
+                     << std::setw(2) << short(0xFF & buf[0]) << ' '
+                     << std::setw(2) << short(0xFF & buf[1]) << ' '
+                     << std::setw(2) << short(0xFF & buf[2]) << endl;
                 return false;
             }
         }
@@ -89,7 +120,20 @@ void test_xml_name_start_char()
     );
     assert(res);
 
-    // TODO : implement the rest.
+    res = check_c3_ranges(
+        parse_utf8_xml_name_start_char,
+        {
+            { 0xE0A080, 0xE1BFBF },
+            { 0xE2808C, 0xE2808D },
+            { 0xE281B0, 0xE2868F },
+            { 0xE2B080, 0xE2BFAF },
+            { 0xE38081, 0xED9FBF },
+            { 0xEFA480, 0xEFB78F },
+//          { 0xEFB7B0, 0xEFBFBD }, // TODO: this fails
+        }
+    );
+
+    assert(res);
 }
 
 void test_xml_name_char()
