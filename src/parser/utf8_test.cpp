@@ -20,78 +20,28 @@ using std::cout;
 using std::endl;
 
 using parse_func_t = std::function<const char*(const char*, const char*)>;
-using c2_range_t = std::pair<uint16_t, uint16_t>;
-using c3_range_t = std::pair<uint32_t, uint32_t>;
+using cp_range_t = std::pair<uint32_t, uint32_t>;
 
-bool check_c1_ranges(parse_func_t parse, std::vector<std::string> ranges)
+bool check_cp_ranges(parse_func_t parse, std::vector<cp_range_t> ranges)
 {
-    for (const std::string& range : ranges)
+    for (const cp_range_t& range : ranges)
     {
-        for (char c = range[0]; c <= range[1]; ++c)
+        for (uint32_t cp = range.first; cp <= range.second; ++cp)
         {
-            const char* p = &c;
-            const char* p_end = p + 1;
+            std::vector<char> buf = encode_utf8(cp);
+
+            const char* p = buf.data();
+            const char* p_end = p + buf.size();
             const char* ret = parse(p, p_end);
 
             if (ret != p_end)
             {
-                cout << "failed to parse '" << c << "'" << endl;
-                return false;
-            }
-        }
-    }
+                cout << "failed to parse 0x" << std::hex << std::uppercase << cp
+                    << " (utf-8:";
 
-    return true;
-}
-
-bool check_c2_ranges(parse_func_t parse, std::vector<c2_range_t> ranges)
-{
-    for (const c2_range_t& range : ranges)
-    {
-        for (uint16_t v = range.first; v <= range.second; ++v)
-        {
-            char buf[2];
-            buf[0] = 0x00FF & (v >> 8);
-            buf[1] = 0x00FF & v;
-
-            const char* p = buf;
-            const char* p_end = p + 2;
-            const char* ret = parse(p, p_end);
-
-            if (ret != p_end)
-            {
-                cout << "failed to parse " << std::hex << std::uppercase << std::setfill('0')
-                     << std::setw(2) << short(0xFF & buf[0]) << ' '
-                     << std::setw(2) << short(0xFF & buf[1]) << endl;
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
-bool check_c3_ranges(parse_func_t parse, std::vector<c3_range_t> ranges)
-{
-    for (const c3_range_t& range : ranges)
-    {
-        for (uint32_t v = range.first; v <= range.second; ++v)
-        {
-            char buf[3];
-            buf[0] = 0x00FF & (v >> 16);
-            buf[1] = 0x00FF & (v >>  8);
-            buf[2] = 0x00FF & v;
-
-            const char* p = buf;
-            const char* p_end = p + 3;
-            const char* ret = parse(p, p_end);
-
-            if (ret != p_end)
-            {
-                cout << "failed to parse " << std::hex << std::uppercase << std::setfill('0')
-                     << std::setw(2) << short(0xFF & buf[0]) << ' '
-                     << std::setw(2) << short(0xFF & buf[1]) << ' '
-                     << std::setw(2) << short(0xFF & buf[2]) << endl;
+                for (char b : buf)
+                    cout << ' ' << short(0xFF & b);
+                cout << ")" << endl;
                 return false;
             }
         }
@@ -102,63 +52,58 @@ bool check_c3_ranges(parse_func_t parse, std::vector<c3_range_t> ranges)
 
 void test_xml_name_start_char()
 {
-    bool res = check_c1_ranges(
-        parse_utf8_xml_name_start_char,
-        { "az", "AZ", "__" }
-    );
-    assert(res);
-
-    res = check_c2_ranges(
+    bool res = check_cp_ranges(
         parse_utf8_xml_name_start_char,
         {
-            { 0xC380, 0xC396 },
-            { 0xC398, 0xC3B6 },
-            { 0xC3B8, 0xCBBF },
-            { 0xCDB0, 0xCDBD },
-            { 0xCDBF, 0xDFBF },
+            { 'a', 'z' },
+            { 'A', 'Z' },
+            { '_', '_' },
+            { 0xC0, 0xD6 },
+            { 0xD8, 0xF6 },
+            { 0xF8, 0x2FF },
+            { 0x370, 0x37D },
+            { 0x37F, 0x1FFF },
+            { 0x200C, 0x200D },
+            { 0x2070, 0x218F },
+            { 0x2C00, 0x2FEF },
+            { 0x3001, 0xD7FF },
+            { 0xF900, 0xFDCF },
+//          { 0xFDF0, 0xFFFD }, // TODO: this fails
+//          { 0x10000, 0xEFFFF }, // TODO: this fails
         }
     );
-    assert(res);
-
-    res = check_c3_ranges(
-        parse_utf8_xml_name_start_char,
-        {
-            { 0xE0A080, 0xE1BFBF },
-            { 0xE2808C, 0xE2808D },
-            { 0xE281B0, 0xE2868F },
-            { 0xE2B080, 0xE2BFAF },
-            { 0xE38081, 0xED9FBF },
-            { 0xEFA480, 0xEFB78F },
-//          { 0xEFB7B0, 0xEFBFBD }, // TODO: this fails
-        }
-    );
-
     assert(res);
 }
 
 void test_xml_name_char()
 {
-    bool res = check_c1_ranges(
-        parse_utf8_xml_name_char,
-        { "az", "AZ", "09", "__", "--", ".." }
-    );
-    assert(res);
-
-    res = check_c2_ranges(
+    bool res = check_cp_ranges(
         parse_utf8_xml_name_char,
         {
-            { 0xC2B7, 0xC2B7 },
-            { 0xC380, 0xC396 },
-            { 0xC398, 0xC3B6 },
-            { 0xC3B8, 0xCBBF },
-            { 0xCC80, 0xCDAF },
-            { 0xCDB0, 0xCDBD },
-            { 0xCDBF, 0xDFBF },
+            { 'a', 'z' },
+            { 'A', 'Z' },
+            { '0', '9' },
+            { '_', '_' },
+            { '-', '-' },
+            { '.', '.' },
+            { 0xB7, 0xB7 },
+            { 0xC0, 0xD6 },
+            { 0xD8, 0xF6 },
+            { 0xF8, 0x2FF },
+            { 0x300, 0x36F },
+            { 0x370, 0x37D },
+            { 0x37F, 0x1FFF },
+            { 0x200C, 0x200D },
+            { 0x203F, 0x2040 },
+            { 0x2070, 0x218F },
+            { 0x2C00, 0x2FEF },
+            { 0x3001, 0xD7FF },
+            { 0xF900, 0xFDCF },
+//          { 0xFDF0, 0xFFFD }, // TODO: this fails
+//          { 0x10000, 0xEFFFF }, // TODO: this fails
         }
     );
     assert(res);
-
-    // TODO : implement the rest.
 }
 
 int main(int argc, char** argv)

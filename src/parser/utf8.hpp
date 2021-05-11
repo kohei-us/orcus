@@ -8,11 +8,16 @@
 #ifndef INCLUDED_ORCUS_PARSER_UTF8_HPP
 #define INCLUDED_ORCUS_PARSER_UTF8_HPP
 
+#include <vector>
+#include <cstdint>
+
 namespace orcus {
 
 const char* parse_utf8_xml_name_start_char(const char* p, const char* p_end);
 
 const char* parse_utf8_xml_name_char(const char* p, const char* p_end);
+
+std::vector<char> encode_utf8(uint32_t cp);
 
 }
 

@@ -8,6 +8,7 @@
 #include "utf8.hpp"
 
 #include <cassert>
+#include <stdexcept>
 
 namespace orcus {
 
@@ -172,6 +173,128 @@ const char* parse_utf8_xml_name_char(const char* p, const char* p_end)
 {
     int skip = is_name_char_helper<false>(p, p_end);
     return p + skip;
+}
+
+namespace {
+
+uint8_t calc_encoded_length(uint32_t cp)
+{
+    if (cp < 0x7F)
+        return 1;
+
+    if (0x80 <= cp && cp <= 0x7FF)
+        return 2;
+
+    if (0x800 <= cp && cp <= 0xFFFF)
+        return 3;
+
+    if (0x10000 <= cp && cp <= 0x10FFFF)
+        return 4;
+
+    throw std::runtime_error("invalid utf-8 range.");
+}
+
+// input must be less than or equal to 0x7FF
+//
+// b1: 0b110xxxxx (5)
+// b2: 0b10xxxxxx (6)
+std::vector<char> encode_2b(uint32_t cp)
+{
+    assert(cp <= 0x7FF);
+
+    // Get the lowest 6 bits
+    char low = (cp & 0x3F);
+    low |= 0x80;
+
+    // Get the next 5 bits
+    cp = cp >> 6;
+    char high = (cp & 0x1F);
+    high |= 0xC0;
+
+    std::vector<char> ret = { high, low };
+    return ret;
+}
+
+// input must be less than or equal to 0xFFFF
+//
+// b1: 0b1110xxxx (4)
+// b2: 0b10xxxxxx (6)
+// b3: 0b10xxxxxx (6)
+std::vector<char> encode_3b(uint32_t cp)
+{
+    assert(cp <= 0xFFFF);
+
+    // Get the lowest 6 bits
+    char low = (cp & 0x3F);
+    low |= 0x80;
+    cp = cp >> 6;
+
+    // Get the middle 6 bits
+    char mid = (cp & 0x3F);
+    mid |= 0x80;
+    cp = cp >> 6;
+
+    // Get the next 4 bits
+    char high = (cp & 0x0F);
+    high |= 0xE0;
+
+    std::vector<char> ret = { high, mid, low };
+    return ret;
+}
+
+// input must be less than or equal to 0x10FFFF
+//
+// b1: 0b11110xxx (3)
+// b2: 0b10xxxxxx (6)
+// b3: 0b10xxxxxx (6)
+// b4: 0b10xxxxxx (6)
+std::vector<char> encode_4b(uint32_t cp)
+{
+    assert(cp <= 0x10FFFF);
+
+    // Get the lowest 6 bits
+    char low = (cp & 0x3F);
+    low |= 0x80;
+    cp = cp >> 6;
+
+    // Get the next 6 bits
+    char mid1 = (cp & 0x3F);
+    mid1 |= 0x80;
+    cp = cp >> 6;
+
+    // Get the next 6 bits
+    char mid2 = (cp & 0x3F);
+    mid2 |= 0x80;
+    cp = cp >> 6;
+
+    // Get the next 3 bits
+    char high = (cp & 0x07);
+    high |= 0xF0;
+
+    std::vector<char> ret = { high, mid2, mid1, low };
+    return ret;
+}
+
+}
+
+std::vector<char> encode_utf8(uint32_t cp)
+{
+    uint8_t n_encoded = calc_encoded_length(cp);
+
+    switch (n_encoded)
+    {
+        case 1:
+            // no conversion
+            return std::vector<char>(1, cp);
+        case 2:
+            return encode_2b(cp);
+        case 3:
+            return encode_3b(cp);
+        case 4:
+            return encode_4b(cp);
+    }
+
+    throw std::logic_error("this should never be reached.");
 }
 
 }
