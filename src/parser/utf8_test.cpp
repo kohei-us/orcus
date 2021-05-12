@@ -68,8 +68,8 @@ void test_xml_name_start_char()
             { 0x2C00, 0x2FEF },
             { 0x3001, 0xD7FF },
             { 0xF900, 0xFDCF },
-//          { 0xFDF0, 0xFFFD }, // TODO: this fails
-//          { 0x10000, 0xEFFFF }, // TODO: this fails
+            { 0xFDF0, 0xFFFD },
+            { 0x10000, 0xEFFFF },
         }
     );
     assert(res);
@@ -99,8 +99,8 @@ void test_xml_name_char()
             { 0x2C00, 0x2FEF },
             { 0x3001, 0xD7FF },
             { 0xF900, 0xFDCF },
-//          { 0xFDF0, 0xFFFD }, // TODO: this fails
-//          { 0x10000, 0xEFFFF }, // TODO: this fails
+            { 0xFDF0, 0xFFFD },
+            { 0x10000, 0xEFFFF },
         }
     );
     assert(res);
