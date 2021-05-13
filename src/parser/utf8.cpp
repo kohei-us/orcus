@@ -79,9 +79,6 @@ bool parse_1b_second_char(uint8_t c1)
 //
 bool parse_2b_start_char(uint8_t c1, uint8_t c2)
 {
-    // b1: 0b110xxxxx (5) : 0b11000000 (0xC0) -> 0b11011111 (0xDF)
-    // b2: 0b10xxxxxx (6) : 0b10000000 (0x80) -> 0b10111111 (0xBF)
-
     if (c1 == 0xC3)
     {
         if (0x80 <= c2 && c2 <= 0x96)
