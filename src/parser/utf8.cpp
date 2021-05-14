@@ -272,7 +272,7 @@ bool parse_4b_char(uint8_t c1, uint8_t c2, uint8_t c3, uint8_t c4)
 
 uint8_t calc_encoded_length(uint32_t cp)
 {
-    if (cp < 0x7F)
+    if (cp <= 0x7F)
         return 1;
 
     if (0x80 <= cp && cp <= 0x7FF)
