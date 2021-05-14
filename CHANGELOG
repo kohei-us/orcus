@@ -1,5 +1,9 @@
 orcus <next version>
 
+* sax parser
+
+  * utf-8 names are now allowed as element names.
+
 * orcus-json
 
   * fixed segmentation fault when using --mode structure with the Windows
