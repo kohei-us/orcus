@@ -1,0 +1,131 @@
+<!DOCTYPE Project SYSTEM "http://www.slickedit.com/dtd/vse/10.0/vpj.dtd">
+<Project
+    Version="10.0"
+    VendorName="SlickEdit"
+    TemplateName="(Other)"
+    WorkingDir=".">
+    <Config
+        Name="Release"
+        OutputFile=""
+        CompilerConfigName="">
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                CaptureOutputWith="ProcessBuffer"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine='"doc.exe"'/>
+            </Target>
+        </Menu>
+    </Config>
+    <Files>
+        <Folder
+            Name="Source Files"
+            Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.scala;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go;*.groovy;*.gsh"
+            GUID="{68BE7230-826B-4DB0-BA1E-88414412F173}"/>
+        <Folder
+            Name="Header Files"
+            Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
+            GUID="{A72B7A0D-11D9-44BA-A3E6-B814DD8957AE}"/>
+        <Folder
+            Name="Resource Files"
+            Filters="*.ico;*.cur;*.dlg"
+            GUID="{EE4C9BB3-126C-4E0C-9DE5-3D1D9A440B1E}"/>
+        <Folder
+            Name="Bitmaps"
+            Filters="*.bmp"
+            GUID="{C028E24C-195E-4D79-B82E-A9904D8D4640}"/>
+        <Folder
+            Name="Other Files"
+            Filters=""
+            GUID="{58BF30C7-CBF2-4454-ABD3-F8D694316022}">
+            <F N="../doc/python/orcus/tools/bugzilla.rst"/>
+            <F N="../doc/python/orcus/cell.rst"/>
+            <F N="../doc/python/orcus/cell_type.rst"/>
+            <F N="../doc/cpp/parser/css.rst"/>
+            <F N="../doc/cpp/parser/csv.rst"/>
+            <F N="../doc/overview/doc-orcus.rst"/>
+            <F N="../doc/overview/doc-user.rst"/>
+            <F N="../doc/python/orcus/document.rst"/>
+            <F N="../doc/python/orcus/tools/file_processor.rst"/>
+            <F N="../doc/python/orcus/format_type.rst"/>
+            <F N="../doc/python/orcus/formula_token.rst"/>
+            <F N="../doc/python/orcus/formula_token_op.rst"/>
+            <F N="../doc/python/orcus/formula_token_type.rst"/>
+            <F N="../doc/python/orcus/formula_tokens.rst"/>
+            <F N="../doc/index.rst"/>
+            <F N="../doc/cli/index.rst"/>
+            <F N="../doc/cpp/index.rst"/>
+            <F N="../doc/cpp/filter/index.rst"/>
+            <F N="../doc/cpp/model/index.rst"/>
+            <F N="../doc/cpp/parser/index.rst"/>
+            <F N="../doc/notes/index.rst"/>
+            <F N="../doc/notes/json_map/index.rst"/>
+            <F N="../doc/notes/xml_map/index.rst"/>
+            <F N="../doc/overview/index.rst"/>
+            <F N="../doc/python/index.rst"/>
+            <F N="../doc/python/orcus/index.rst"/>
+            <F N="../doc/python/orcus/csv/index.rst"/>
+            <F N="../doc/python/orcus/gnumeric/index.rst"/>
+            <F N="../doc/python/orcus/ods/index.rst"/>
+            <F N="../doc/python/orcus/tools/index.rst"/>
+            <F N="../doc/python/orcus/xls_xml/index.rst"/>
+            <F N="../doc/python/orcus/xlsx/index.rst"/>
+            <F N="../doc/cpp/filter/interface.rst"/>
+            <F N="../doc/cpp/model/json.rst"/>
+            <F N="../doc/cpp/parser/json.rst"/>
+            <F N="../doc/overview/json.rst"/>
+            <F N="../doc/python/orcus/named_expressions.rst"/>
+            <F N="../doc/cli/orcus_csv.rst"/>
+            <F N="../doc/cli/orcus_gnumeric.rst"/>
+            <F N="../doc/cli/orcus_json.rst"/>
+            <F N="../doc/cli/orcus_ods.rst"/>
+            <F N="../doc/cli/orcus_xls_xml.rst"/>
+            <F N="../doc/cli/orcus_xlsx.rst"/>
+            <F N="../doc/cli/orcus_xml.rst"/>
+            <F N="../doc/cli/orcus_yaml.rst"/>
+            <F N="../doc/python/orcus/sheet.rst"/>
+            <F N="../doc/python/orcus/sheet_rows.rst"/>
+            <F N="../doc/cpp/model/spreadsheet.rst"/>
+            <F N="../doc/cpp/parser/util.rst"/>
+            <F N="../doc/cpp/parser/xml.rst"/>
+            <F N="../doc/cpp/parser/xml_writer.rst"/>
+            <F N="../doc/cpp/model/yaml.rst"/>
+            <F N="../doc/cpp/parser/yaml.rst"/>
+            <F N="../doc/overview/yaml.rst"/>
+        </Folder>
+    </Files>
+    <List Name="RTE">
+    </List>
+</Project>

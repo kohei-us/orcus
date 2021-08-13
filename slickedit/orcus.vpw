@@ -3,6 +3,7 @@
     <Projects>
         <Project File="cmake.vpj"/>
         <Project File="cpp.vpj"/>
+        <Project File="doc.vpj"/>
         <Project File="python.vpj"/>
         <Project File="sh.vpj"/>
         <Project File="token-gen.vpj"/>

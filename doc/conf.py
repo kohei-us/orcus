@@ -21,7 +21,7 @@ import subprocess
 rtd_build = os.environ.get('READTHEDOCS', None) == 'True'
 
 if rtd_build:
-    subprocess.call("cd doc; doxygen doxygen.conf", shell=True)
+    subprocess.call("doxygen --version; doxygen doxygen.conf", shell=True)
 
 # Set paths for python modules (for autodoc). The paths must be absolute.
 py_root_path = Path(".") / ".." / "src" / "python"
@@ -58,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Orcus'
-copyright = '2020, Kohei Yoshida'
+copyright = '2021, Kohei Yoshida'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
