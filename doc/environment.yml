@@ -6,3 +6,4 @@ dependencies:
   - python=3.8
   - doxygen>=1.9.1
   - breathe
+  - sphinx-argparse
