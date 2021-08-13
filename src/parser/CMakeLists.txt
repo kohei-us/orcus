@@ -46,7 +46,6 @@ set(_TESTS
     string-pool-test
     threaded-json-parser-test
     threaded-sax-token-parser-test
-    utf8-test
     xml-namespace-test
     xml-writer-test
     yaml-parser-test
@@ -62,6 +61,13 @@ foreach(_TEST ${_TESTS})
 endforeach()
 
 add_dependencies(check ${_TESTS})
+
+# utf8-test
+
+add_executable(utf8-test utf8.cpp utf8_test.cpp)
+target_link_libraries(utf8-test orcus-parser-${ORCUS_API_VERSION})
+add_test(utf8-test utf8-test)
+add_dependencies(check utf8-test)
 
 install(
     TARGETS
