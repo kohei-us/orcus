@@ -33,15 +33,38 @@ public:
     file_content(const char* filepath);
     ~file_content();
 
+    /**
+     * Obtain the memory address to the first character in the content buffer.
+     *
+     * @return pointer to the first character in the buffer.
+     */
     const char* data() const;
+
+    /**
+     * Return the size of the content i.e. the number of characters in the
+     * content buffer.
+     *
+     * @return size of the content.
+     */
     size_t size() const;
+
+    /**
+     * Query whether or not the content is empty.
+     *
+     * @return true if the content is empty, otherwise false.
+     */
     bool empty() const;
 
+    /**
+     * Swap content with another instance.
+     *
+     * @param other another instance to swap content with.
+     */
     void swap(file_content& other);
 
     /**
-     * Load from a new file.  This will invalidate the pointer returned from
-     * the {@link file_content#data()} method prior to the call.
+     * Load from a new file.  This will invalidate the pointer returned from the
+     * data() method prior to the call.
      *
      * @param filepath path of the file to load from.
      */
@@ -61,8 +84,7 @@ public:
  * Represents the content of an in-memory buffer.  Note that this class will
  * NOT own the content of the source buffer but simply will reference it,
  * except when the original buffer is a non-utf-8 stream and the caller
- * chooses to convert it to utf-8 by calling its {@link
- * memory_content#convert_to_utf8()} method.
+ * chooses to convert it to utf-8 by calling its convert_to_utf8() method.
  */
 class ORCUS_PSR_DLLPUBLIC memory_content
 {

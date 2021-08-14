@@ -70,7 +70,7 @@ public:
      * Called when a string value is encountered.
      *
      * @param p pointer to the first character of the string value.
-     * @param len length of the string value.
+     * @param n length of the string value.
      */
     void string(const char* p, size_t n)
     {

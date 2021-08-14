@@ -100,12 +100,14 @@ public:
         element root();
 
         /**
-         * Descend into specified child element.
+         * Descend into a specified child element.
          *
-         * @param ns namespace of child element
-         * @param name name of child element
+         * @param name name of a child element.
          *
          * @return child element
+         *
+         * @throw general_error if no child elements exist for the specified
+         *        name.
          */
         element descend(const entity_name& name);
 

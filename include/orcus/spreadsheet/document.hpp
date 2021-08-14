@@ -84,20 +84,31 @@ public:
     virtual void dump(dump_format_t format, const std::string& output) const override;
 
     /**
-     * Dump document content to specified output directory.
+     * Dump document content to specified output directory in flat format.
+     *
+     * @param outdir path to the output directory.
      */
     void dump_flat(const std::string& outdir) const;
 
     /**
-     * File name should not contain an extension.  The final name will be
-     * [filename] + _ + [sheet name] + .html.
+     * Dump document content to specified output directory in html format.
      *
-     * @param filename base file name
+     * @param outdir path to the output directory.
      */
     void dump_html(const ::std::string& outdir) const;
 
+    /**
+     * Dump document content to specified output directory in json format.
+     *
+     * @param outdir path to the output directory.
+     */
     void dump_json(const ::std::string& outdir) const;
 
+    /**
+     * Dump document content to specified output directory in csv format.
+     *
+     * @param outdir path to the output directory.
+     */
     void dump_csv(const std::string& outdir) const;
 
     /**

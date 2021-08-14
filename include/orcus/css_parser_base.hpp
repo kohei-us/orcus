@@ -48,6 +48,7 @@ protected:
      * @param p pointer to the first character of the skipped character array.
      * @param len length of the skipped character array.
      * @param chars one or more characters that can end the skipping.
+     * @param n_chars number of characters that can end the skipping.
      */
     void skip_to_or_blank(const char*& p, size_t& len, const char* chars, size_t n_chars);
     void skip_blanks();

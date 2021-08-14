@@ -779,6 +779,13 @@ public:
      *
      * @param row row ID
      * @param col column ID
+     * @param year 1-based value representing year
+     * @param month 1-based value representing month, varying from 1 through
+     *              12.
+     * @param day 1-based value representing day, varying from 1 through 31.
+     * @param hour the hour of a day, ranging from 0 through 23.
+     * @param minute the minute of an hour, ranging from 0 through 59.
+     * @param second the second of a minute, ranging from 0 through 59.
      */
     virtual void set_date_time(
         row_t row, col_t col,
@@ -790,7 +797,7 @@ public:
      *
      * @param row row ID
      * @param col column ID
-     * @param index 0-based xf (cell format) index
+     * @param xf_index 0-based xf (cell format) index
      */
     virtual void set_format(row_t row, col_t col, size_t xf_index) = 0;
 
@@ -802,7 +809,7 @@ public:
      * @param col_start start column ID
      * @param row_end end row ID
      * @param col_end end column ID
-     * @param index 0-based xf (cell format) index
+     * @param xf_index 0-based xf (cell format) index
      */
     virtual void set_format(row_t row_start, col_t col_start,
         row_t row_end, col_t col_end, size_t xf_index) = 0;
