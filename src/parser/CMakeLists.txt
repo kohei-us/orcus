@@ -27,7 +27,10 @@ add_library(orcus-parser-${ORCUS_API_VERSION} SHARED
     zip_archive_stream.cpp
 )
 
-target_compile_definitions(orcus-parser-${ORCUS_API_VERSION} PRIVATE __ORCUS_PSR_BUILDING_DLL)
+target_compile_definitions(orcus-parser-${ORCUS_API_VERSION} PRIVATE
+    __ORCUS_PSR_BUILDING_DLL
+    _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+)
 target_link_libraries(orcus-parser-${ORCUS_API_VERSION} ${ZLIB_LIBRARIES})
 
 # test programs
