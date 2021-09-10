@@ -24,6 +24,7 @@ typedef int32_t sheet_t;
 typedef uint8_t color_elem_t;
 typedef uint16_t col_width_t;
 typedef uint16_t row_height_t;
+typedef uint32_t string_id_t;
 
 typedef uint32_t pivot_cache_id_t;
 

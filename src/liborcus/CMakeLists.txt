@@ -136,16 +136,16 @@ foreach(_TEST ${_TESTS})
     add_executable(${_TEST} EXCLUDE_FROM_ALL ${_TEST_FILE})
     target_link_libraries(${_TEST} orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
     target_compile_definitions(${_TEST} PRIVATE
-    SRCDIR="${PROJECT_SOURCE_DIR}"
+        SRCDIR="${PROJECT_SOURCE_DIR}"
     )
     add_test(${_TEST} ${_TEST})
 
     # Make sure the orcus-parser library file is present in the same directory
     # as the test program.
     add_custom_command(TARGET ${_TEST} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    $<TARGET_FILE:orcus-parser-${ORCUS_API_VERSION}>
-    $<TARGET_FILE_DIR:${_TEST}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:orcus-parser-${ORCUS_API_VERSION}>
+        $<TARGET_FILE_DIR:${_TEST}>
     )
 
 endforeach()

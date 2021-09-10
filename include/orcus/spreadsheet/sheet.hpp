@@ -43,7 +43,7 @@ public:
     virtual ~sheet();
 
     void set_auto(row_t row, col_t col, const char* p, size_t n);
-    void set_string(row_t row, col_t col, size_t sindex);
+    void set_string(row_t row, col_t col, string_id_t sindex);
     void set_value(row_t row, col_t col, double value);
     void set_bool(row_t row, col_t col, bool value);
     void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second);

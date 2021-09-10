@@ -121,7 +121,7 @@ public:
         assert(val == true);
     }
 
-    virtual void set_string(row_t row, col_t col, size_t id)
+    virtual void set_string(row_t row, col_t col, string_id_t id)
     {
         assert(row == 10);
         assert(col == 321);

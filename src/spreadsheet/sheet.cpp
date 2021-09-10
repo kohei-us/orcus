@@ -83,7 +83,7 @@ void sheet::set_auto(row_t row, col_t col, const char* p, size_t n)
         cxt.set_string_cell(ixion::abs_address_t(mp_impl->m_sheet,row,col), p, n);
 }
 
-void sheet::set_string(row_t row, col_t col, size_t sindex)
+void sheet::set_string(row_t row, col_t col, string_id_t sindex)
 {
     ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
     cxt.set_string_cell(ixion::abs_address_t(mp_impl->m_sheet,row,col), sindex);

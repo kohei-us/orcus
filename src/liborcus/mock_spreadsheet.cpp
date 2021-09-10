@@ -277,7 +277,7 @@ void import_sheet::set_date_time(row_t, col_t, int, int, int, int, int, double)
     assert(false);
 }
 
-void import_sheet::set_string(row_t, col_t, size_t)
+void import_sheet::set_string(row_t, col_t, string_id_t)
 {
     assert(false);
 }

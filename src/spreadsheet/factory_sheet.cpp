@@ -500,7 +500,7 @@ void import_sheet::set_format(
     m_sheet.set_format(row_start, col_start, row_end, col_end, xf_index);
 }
 
-void import_sheet::set_string(row_t row, col_t col, size_t sindex)
+void import_sheet::set_string(row_t row, col_t col, string_id_t sindex)
 {
     m_sheet.set_string(row, col, sindex);
 }

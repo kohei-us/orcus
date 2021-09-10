@@ -754,7 +754,7 @@ public:
      * @param col column ID
      * @param sindex 0-based string index in the shared string table.
      */
-    virtual void set_string(row_t row, col_t col, size_t sindex) = 0;
+    virtual void set_string(row_t row, col_t col, string_id_t sindex) = 0;
 
     /**
      * Set numerical value to a cell.

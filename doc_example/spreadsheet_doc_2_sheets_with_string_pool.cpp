@@ -46,7 +46,7 @@ public:
         m_sheet_size.columns = 100;
     }
 
-    virtual void set_string(row_t row, col_t col, size_t sindex) override
+    virtual void set_string(row_t row, col_t col, string_id_t sindex) override
     {
         cout << "(sheet: " << m_sheet_index << "; row: " << row << "; col: " << col << "): string index = " << sindex << " (" << m_string_pool[sindex] << ")" << endl;
 
