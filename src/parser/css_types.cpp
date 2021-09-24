@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/css_types.hpp"
-#include "orcus/global.hpp"
+#include <orcus/css_types.hpp>
+#include <orcus/global.hpp>
 #include <mdds/sorted_string_map.hpp>
 #include <mdds/global.hpp>
 
@@ -37,14 +37,14 @@ pe_map_type::entry pseudo_elem_type_entries[] = {
 
 }
 
-pseudo_element_t to_pseudo_element(const char* p, size_t n)
+pseudo_element_t to_pseudo_element(std::string_view s)
 {
     static pe_map_type elem_map(
         pseudo_elem_type_entries,
         ORCUS_N_ELEMENTS(pseudo_elem_type_entries),
         0);
 
-    return elem_map.find(p, n);
+    return elem_map.find(s.data(), s.size());
 }
 
 const pseudo_class_t pseudo_class_active            = 0x0000000000000001;
@@ -136,14 +136,14 @@ pc_map_type::entry pseudo_class_type_entries[] = {
 
 }
 
-pseudo_class_t to_pseudo_class(const char* p, size_t n)
+pseudo_class_t to_pseudo_class(std::string_view s)
 {
     static pc_map_type class_map(
         pseudo_class_type_entries,
         ORCUS_N_ELEMENTS(pseudo_class_type_entries),
         0);
 
-    return class_map.find(p, n);
+    return class_map.find(s.data(), s.size());
 }
 
 std::string pseudo_class_to_string(pseudo_class_t val)

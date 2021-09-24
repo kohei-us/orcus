@@ -10,9 +10,9 @@
 
 #define ORCUS_DEBUG_CSS 0
 
-#include "orcus/parser_global.hpp"
-#include "orcus/css_parser_base.hpp"
-#include "orcus/global.hpp"
+#include "parser_global.hpp"
+#include "css_parser_base.hpp"
+#include "global.hpp"
 
 #include <cassert>
 
@@ -381,7 +381,7 @@ void css_parser<_Handler>::simple_selector_name()
                     // pseudo element.
                     next();
                     identifier(p, n);
-                    css::pseudo_element_t elem = css::to_pseudo_element(p, n);
+                    css::pseudo_element_t elem = css::to_pseudo_element({p, n});
                     if (!elem)
                         css::parse_error::throw_with(
                             "selector_name: unknown pseudo element '", p, n, "'");
@@ -392,7 +392,7 @@ void css_parser<_Handler>::simple_selector_name()
                 {
                     // pseudo class (or pseudo element in the older version of CSS).
                     identifier(p, n);
-                    css::pseudo_class_t pc = css::to_pseudo_class(p, n);
+                    css::pseudo_class_t pc = css::to_pseudo_class({p, n});
                     if (!pc)
                         css::parse_error::throw_with(
                             "selector_name: unknown pseudo class '", p, n, "'");

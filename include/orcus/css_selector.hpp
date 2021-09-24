@@ -8,9 +8,9 @@
 #ifndef INCLUDED_ORCUS_CSS_SELECTOR_HPP
 #define INCLUDED_ORCUS_CSS_SELECTOR_HPP
 
-#include "orcus/env.hpp"
-#include "orcus/pstring.hpp"
-#include "orcus/css_types.hpp"
+#include "env.hpp"
+#include "pstring.hpp"
+#include "css_types.hpp"
 
 #include <ostream>
 #include <vector>
