@@ -75,12 +75,12 @@ const pivot_cache* get_pivot_cache(
     ixion::abs_address_t origin(0,0,0);
 
     ixion::formula_name_t fn =
-        resolver->resolve(range_name.get(), range_name.size(), origin);
+        resolver->resolve({range_name.get(), range_name.size()}, origin);
 
     if (fn.type != ixion::formula_name_t::range_reference)
         return nullptr;
 
-    ixion::abs_range_t range = ixion::to_range(fn.range).to_abs(origin);
+    ixion::abs_range_t range = std::get<ixion::range_t>(fn.value).to_abs(origin);
     return pc.get_cache(sheet_name, range);
 }
 

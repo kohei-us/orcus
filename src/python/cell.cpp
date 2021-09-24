@@ -317,9 +317,9 @@ PyObject* create_cell_object_formula(
         case ixion::formula_result::result_type::error:
         {
             ixion::formula_error_t fe = res.get_error();
-            const char* fename = ixion::get_formula_error_name(fe);
-            if (fename)
-                obj_data->value = PyUnicode_FromString(fename);
+            std::string_view fename = ixion::get_formula_error_name(fe);
+            if (!fename.empty())
+                obj_data->value = PyUnicode_FromStringAndSize(fename.data(), fename.size());
             else
             {
                 // This should not be hit, but just in case...

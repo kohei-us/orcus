@@ -145,7 +145,7 @@ void import_pivot_cache_def::set_worksheet_source(
     m_src_type = worksheet;
     m_src_sheet_name = intern(sheet_name, n_sheet_name);
 
-    ixion::formula_name_t fn = resolver->resolve(ref, n_ref, ixion::abs_address_t(0,0,0));
+    ixion::formula_name_t fn = resolver->resolve({ref, n_ref}, ixion::abs_address_t(0,0,0));
 
     if (fn.type != ixion::formula_name_t::range_reference)
     {
@@ -154,7 +154,7 @@ void import_pivot_cache_def::set_worksheet_source(
         throw xml_structure_error(os.str());
     }
 
-    m_src_range = ixion::to_range(fn.range).to_abs(ixion::abs_address_t(0,0,0));
+    m_src_range = std::get<ixion::range_t>(fn.value).to_abs(ixion::abs_address_t(0,0,0));
 }
 
 void import_pivot_cache_def::set_worksheet_source(const char* table_name, size_t n_table_name)

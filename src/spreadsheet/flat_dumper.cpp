@@ -79,7 +79,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
         {
             case ixion::celltype_t::string:
             {
-                size_t sindex = c.value.string;
+                ixion::string_id_t sindex = std::get<ixion::string_id_t>(c.value);
                 const std::string* p = cxt.get_string(sindex);
                 assert(p);
                 mx[to_pos(c.row, c.col)] = std::move(*p);
@@ -89,7 +89,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
             case ixion::celltype_t::numeric:
             {
                 std::ostringstream os2;
-                format_to_file_output(os2, c.value.numeric);
+                format_to_file_output(os2, std::get<double>(c.value));
                 os2 << " [v]";
                 std::string s = os2.str();
                 cell_str_width = s.size();
@@ -99,7 +99,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
             case ixion::celltype_t::boolean:
             {
                 std::ostringstream os2;
-                os2 << (c.value.boolean ? "true" : "false") << " [b]";
+                os2 << (std::get<bool>(c.value) ? "true" : "false") << " [b]";
                 std::string s = os2.str();
                 cell_str_width = s.size();
                 mx[to_pos(c.row, c.col)] = std::move(s);
@@ -108,7 +108,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
             case ixion::celltype_t::formula:
             {
                 // print the formula and the formula result.
-                const ixion::formula_cell* cell = c.value.formula;
+                const ixion::formula_cell* cell = std::get<const ixion::formula_cell*>(c.value);
                 assert(cell);
                 const ixion::formula_tokens_store_ptr_t& ts = cell->get_tokens();
                 if (ts)

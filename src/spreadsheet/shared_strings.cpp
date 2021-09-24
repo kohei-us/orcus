@@ -70,12 +70,12 @@ import_shared_strings::~import_shared_strings()
 
 size_t import_shared_strings::append(const char* s, size_t n)
 {
-    return m_cxt.append_string(s, n);
+    return m_cxt.append_string({s, n});
 }
 
 size_t import_shared_strings::add(const char* s, size_t n)
 {
-    return m_cxt.add_string(s, n);
+    return m_cxt.add_string({s, n});
 }
 
 const format_runs_t* import_shared_strings::get_format_runs(size_t index) const
@@ -155,7 +155,7 @@ void import_shared_strings::append_segment(const char* s, size_t n)
 
 size_t import_shared_strings::commit_segments()
 {
-    size_t sindex = m_cxt.append_string(m_cur_segment_string.data(), m_cur_segment_string.size());
+    ixion::string_id_t sindex = m_cxt.append_string(m_cur_segment_string);
     m_cur_segment_string.clear();
     m_formats.insert(format_runs_map_type::value_type(sindex, mp_cur_format_runs));
     mp_cur_format_runs = nullptr;

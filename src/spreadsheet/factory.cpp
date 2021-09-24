@@ -50,7 +50,7 @@ public:
         if (!m_resolver)
             throw std::runtime_error("import_ref_resolver::resolve_address: formula resolver is null!");
 
-        ixion::formula_name_t name = m_resolver->resolve(p, n, ixion::abs_address_t());
+        ixion::formula_name_t name = m_resolver->resolve({p, n}, ixion::abs_address_t());
 
         if (name.type != ixion::formula_name_t::cell_reference)
         {
@@ -59,10 +59,11 @@ public:
             throw orcus::invalid_arg_error(os.str());
         }
 
+        auto addr = std::get<ixion::address_t>(name.value);
         src_address_t ret;
-        ret.sheet = name.address.sheet;
-        ret.column = name.address.col;
-        ret.row = name.address.row;
+        ret.sheet = addr.sheet;
+        ret.column = addr.column;
+        ret.row = addr.row;
         return ret;
     }
 
@@ -71,28 +72,30 @@ public:
         if (!m_resolver)
             throw std::runtime_error("import_ref_resolver::resolve_range: formula resolver is null!");
 
-        ixion::formula_name_t name = m_resolver->resolve(p, n, ixion::abs_address_t());
+        ixion::formula_name_t name = m_resolver->resolve({p, n}, ixion::abs_address_t());
 
         switch (name.type)
         {
             case ixion::formula_name_t::range_reference:
             {
+                auto range = std::get<ixion::range_t>(name.value);
                 src_range_t ret;
-                ret.first.sheet = name.range.first.sheet;
-                ret.first.column = name.range.first.col;
-                ret.first.row = name.range.first.row;
-                ret.last.sheet = name.range.last.sheet;
-                ret.last.column = name.range.last.col;
-                ret.last.row = name.range.last.row;
+                ret.first.sheet = range.first.sheet;
+                ret.first.column = range.first.column;
+                ret.first.row = range.first.row;
+                ret.last.sheet = range.last.sheet;
+                ret.last.column = range.last.column;
+                ret.last.row = range.last.row;
                 return ret;
             }
             case ixion::formula_name_t::cell_reference:
             {
                 // Single cell address is still considered a valid "range".
+                auto addr = std::get<ixion::address_t>(name.value);
                 src_address_t cell;
-                cell.sheet = name.address.sheet;
-                cell.column = name.address.col;
-                cell.row = name.address.row;
+                cell.sheet = addr.sheet;
+                cell.column = addr.column;
+                cell.row = addr.row;
 
                 src_range_t ret;
                 ret.first = cell;
@@ -125,7 +128,7 @@ class import_global_named_exp : public iface::import_named_expression
         assert(resolver);
 
         ixion::model_context& cxt = m_doc.get_model_context();
-        m_tokens = ixion::parse_formula_string(cxt, m_base, *resolver, p_exp, n_exp);
+        m_tokens = ixion::parse_formula_string(cxt, m_base, *resolver, {p_exp, n_exp});
     }
 public:
     import_global_named_exp(document& doc) : m_doc(doc), m_base(0, 0, 0) {}
@@ -151,7 +154,7 @@ public:
     virtual void commit() override
     {
         ixion::model_context& cxt = m_doc.get_model_context();
-        cxt.set_named_expression(m_name.data(), m_name.size(), m_base, std::move(m_tokens));
+        cxt.set_named_expression({m_name.data(), m_name.size()}, m_base, std::move(m_tokens));
 
         m_name.clear();
         m_base.sheet = 0;

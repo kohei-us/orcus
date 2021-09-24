@@ -40,16 +40,6 @@ namespace orcus { namespace spreadsheet {
 
 namespace {
 
-void init_once()
-{
-    static bool initialized = false;
-    if (initialized)
-        return;
-
-    ixion::init();
-    initialized = true;
-}
-
 /**
  * Single sheet entry which consists of a sheet name and a sheet data.
  */
@@ -321,7 +311,6 @@ struct document_impl
         m_grammar(formula_grammar_t::xlsx),
         m_table_handler(m_context, m_tables)
     {
-        init_once();
         m_context.set_table_handler(&m_table_handler);
     }
 
@@ -427,7 +416,7 @@ sheet* document::append_sheet(const pstring& sheet_name)
     mp_impl->m_sheets.push_back(
         std::make_unique<sheet_item>(*this, sheet_name_safe, sheet_index));
 
-    mp_impl->m_context.append_sheet(sheet_name_safe.get(), sheet_name_safe.size());
+    mp_impl->m_context.append_sheet(sheet_name_safe.str());
 
     return &mp_impl->m_sheets.back()->data;
 }

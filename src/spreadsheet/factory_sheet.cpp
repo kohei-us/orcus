@@ -35,7 +35,7 @@ void import_sheet_named_exp::define(const char* p_name, size_t n_name, const cha
     assert(resolver);
 
     ixion::model_context& cxt = m_doc.get_model_context();
-    m_tokens = ixion::parse_formula_string(cxt, m_base, *resolver, p_exp, n_exp);
+    m_tokens = ixion::parse_formula_string(cxt, m_base, *resolver, {p_exp, n_exp});
 }
 
 void import_sheet_named_exp::set_base_position(const src_address_t& pos)
@@ -60,7 +60,7 @@ void import_sheet_named_exp::set_named_range(
 void import_sheet_named_exp::commit()
 {
     ixion::model_context& cxt = m_doc.get_model_context();
-    cxt.set_named_expression(m_sheet_index, m_name.data(), m_name.size(), m_base, std::move(m_tokens));
+    cxt.set_named_expression(m_sheet_index, m_name.str(), m_base, std::move(m_tokens));
 
     m_name.clear();
     m_base.sheet = 0;
@@ -207,7 +207,7 @@ void import_array_formula::set_formula(formula_grammar_t grammar, const char* p,
 
     try
     {
-        m_tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
+        m_tokens = ixion::parse_formula_string(cxt, pos, *resolver, {p, n});
     }
     catch (const std::exception& e)
     {
@@ -216,7 +216,7 @@ void import_array_formula::set_formula(formula_grammar_t grammar, const char* p,
 
         const char* p_error = e.what();
         size_t n_error = strlen(p_error);
-        m_tokens = ixion::create_formula_error_tokens(cxt, p, n, p_error, n_error);
+        m_tokens = ixion::create_formula_error_tokens(cxt, {p, n}, {p_error, n_error});
     }
 }
 
@@ -301,7 +301,7 @@ void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_
     ixion::formula_tokens_t tokens;
     try
     {
-        tokens = ixion::parse_formula_string(cxt, pos, *resolver, p, n);
+        tokens = ixion::parse_formula_string(cxt, pos, *resolver, {p, n});
     }
     catch (const std::exception& e)
     {
@@ -310,7 +310,7 @@ void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_
 
         const char* p_error = e.what();
         size_t n_error = strlen(p_error);
-        tokens = ixion::create_formula_error_tokens(cxt, p, n, p_error, n_error);
+        tokens = ixion::create_formula_error_tokens(cxt, {p, n}, {p_error, n_error});
     }
 
     m_tokens_store = ixion::formula_tokens_store::create();

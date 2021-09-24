@@ -26,29 +26,30 @@ void dump_cell_value(
             break;
         case ixion::celltype_t::boolean:
         {
-            os << (cell.value.boolean ? "true" : "false");
+            os << (std::get<bool>(cell.value) ? "true" : "false");
             break;
         }
         case ixion::celltype_t::numeric:
         {
-            format_to_file_output(os, cell.value.numeric);
+            format_to_file_output(os, std::get<double>(cell.value));
             break;
         }
         case ixion::celltype_t::string:
         {
-            const std::string* p = cxt.get_string(cell.value.string);
+            const std::string* p = cxt.get_string(std::get<ixion::string_id_t>(cell.value));
             assert(p);
             str_handler(os, *p);
             break;
         }
         case ixion::celltype_t::formula:
         {
-            assert(cell.value.formula);
+            const ixion::formula_cell* fc = std::get<const ixion::formula_cell*>(cell.value);
+            assert(fc);
             ixion::formula_result res;
 
             try
             {
-                res = cell.value.formula->get_result_cache(
+                res = fc->get_result_cache(
                     ixion::formula_result_wait_policy_t::throw_exception);
             }
             catch (const std::exception&)
