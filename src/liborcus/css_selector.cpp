@@ -14,8 +14,8 @@ css_simple_selector_t::css_simple_selector_t() :
 
 void css_simple_selector_t::clear()
 {
-    name.clear();
-    id.clear();
+    name = std::string_view{};
+    id = std::string_view{};
     classes.clear();
     pseudo_classes = 0;
 }
@@ -46,13 +46,13 @@ bool css_simple_selector_t::operator!= (const css_simple_selector_t& r) const
 
 size_t css_simple_selector_t::hash::operator() (const css_simple_selector_t& ss) const
 {
-    static pstring::hash hasher;
+    std::hash<std::string_view> h;
 
-    size_t val = hasher(ss.name);
-    val += hasher(ss.id);
-    classes_type::const_iterator it = ss.classes.begin(), ite = ss.classes.end();
-    for (; it != ite; ++it)
-        val += hasher(*it);
+    size_t val = h(ss.name);
+    val += h(ss.id);
+
+    for (std::string_view s : ss.classes)
+        val += h(s);
 
     val += ss.pseudo_classes;
 
@@ -128,8 +128,8 @@ css_property_value_t::css_property_value_t(const css_property_value_t& r) :
     assign_value(*this, r);
 }
 
-css_property_value_t::css_property_value_t(const pstring& _str) :
-    type(css::property_value_t::string), str(_str.get()), length(_str.size()) {}
+css_property_value_t::css_property_value_t(std::string_view _str) :
+    type(css::property_value_t::string), str(_str.data()), length(_str.size()) {}
 
 css_property_value_t& css_property_value_t::operator= (const css_property_value_t& r)
 {
@@ -226,10 +226,10 @@ std::ostream& operator<< (std::ostream& os, const css_property_value_t& v)
                << ")";
         break;
         case css::property_value_t::string:
-            os << pstring(v.str, v.length);
+            os << std::string_view(v.str, v.length);
         break;
         case css::property_value_t::url:
-            os << "url(" << pstring(v.str, v.length) << ")";
+            os << "url(" << std::string_view(v.str, v.length) << ")";
         break;
         case css::property_value_t::none:
         default:

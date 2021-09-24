@@ -9,7 +9,6 @@
 #define INCLUDED_ORCUS_CSS_SELECTOR_HPP
 
 #include "env.hpp"
-#include "pstring.hpp"
 #include "css_types.hpp"
 
 #include <ostream>
@@ -21,10 +20,10 @@ namespace orcus {
 
 struct ORCUS_DLLPUBLIC css_simple_selector_t
 {
-    typedef std::unordered_set<pstring, pstring::hash> classes_type;
+    typedef std::unordered_set<std::string_view> classes_type;
 
-    pstring name;
-    pstring id;
+    std::string_view name;
+    std::string_view id;
     classes_type classes;
     css::pseudo_class_t pseudo_classes;
 
@@ -118,17 +117,17 @@ struct ORCUS_DLLPUBLIC css_property_value_t
      *
      * @param _str string value to store. This value should point to a string
      *            buffer that's already been interned. The caller is
-     *            responsible for managing the life cycle of the string buffer
-     *            that the pstring object points to.
+     *            responsible for managing the life cycle of the source string
+     *            buffer.
      */
-    css_property_value_t(const pstring& _str);
+    css_property_value_t(std::string_view _str);
 
     css_property_value_t& operator= (const css_property_value_t& r);
 
     void swap(css_property_value_t& r);
 };
 
-typedef std::unordered_map<pstring, std::vector<css_property_value_t>, pstring::hash> css_properties_t;
+typedef std::unordered_map<std::string_view, std::vector<css_property_value_t>> css_properties_t;
 typedef std::unordered_map<css::pseudo_element_t, css_properties_t> css_pseudo_element_properties_t;
 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const css_simple_selector_t& v);

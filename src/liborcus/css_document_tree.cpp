@@ -78,7 +78,7 @@ public:
 
     void simple_selector_id(const char* p, size_t n)
     {
-        m_cur_simple_selector.id = pstring(p, n);
+        m_cur_simple_selector.id = std::string_view(p, n);
     }
 
     void end_simple_selector()
@@ -124,8 +124,8 @@ public:
 
     void value(const char* p, size_t n)
     {
-        pstring pv(p, n);
-        m_cur_prop_values.push_back(pv);
+        std::string_view s(p, n);
+        m_cur_prop_values.push_back(s);
 #if ORCUS_DEBUG_CSS_DOCTREE
         cout << " '" << string(p, n).c_str() << "'";
 #endif

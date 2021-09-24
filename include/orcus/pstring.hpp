@@ -34,6 +34,7 @@ public:
     pstring(const char* _pos);
     pstring(const char* _pos, size_t _size) : m_pos(_pos), m_size(_size) {}
     pstring(const std::string& s) : m_pos(s.data()), m_size(s.size()) {}
+    pstring(std::string_view s) : m_pos(s.data()), m_size(s.size()) {}
 
     ::std::string str() const { return ::std::string(m_pos, m_size); }
 
@@ -78,6 +79,11 @@ public:
     }
 
     void resize(size_t new_size);
+
+    operator std::string_view() const
+    {
+        return std::string_view(m_pos, m_size);
+    }
 
     struct ORCUS_PSR_DLLPUBLIC hash
     {
