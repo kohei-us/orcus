@@ -221,13 +221,14 @@ bool xlsx_workbook_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void xlsx_workbook_context::characters(const pstring& str, bool transient)
 {
+    std::string_view sv(str);
     const xml_token_pair_t& cur = get_current_element();
     string_pool& sp = get_session_context().m_string_pool;
 
     if (cur.first == NS_ooxml_xlsx)
     {
         if (cur.second == XML_definedName)
-            m_defined_name_exp = transient ? sp.intern(str).first : str;
+            m_defined_name_exp = transient ? sp.intern(sv).first : sv;
     }
 }
 

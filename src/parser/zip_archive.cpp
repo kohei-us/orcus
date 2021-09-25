@@ -420,7 +420,7 @@ void zip_archive_impl::dump_file_entry(std::string_view entry_name) const
 std::string_view zip_archive_impl::get_file_entry_name(std::size_t pos) const
 {
     if (pos >= m_file_params.size())
-        return nullptr;
+        return std::string_view{};
 
     return m_file_params[pos].filename;
 }
