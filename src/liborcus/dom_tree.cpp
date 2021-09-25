@@ -32,7 +32,7 @@ namespace {
 /**
  * Escape certain characters with backslash (\).
  */
-void escape(ostream& os, const pstring& val)
+void escape(ostream& os, std::string_view val)
 {
     if (val.empty())
         return;
@@ -53,9 +53,9 @@ void escape(ostream& os, const pstring& val)
 struct attr
 {
     dom::entity_name name;
-    pstring value;
+    std::string_view value;
 
-    attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value);
+    attr(xmlns_id_t _ns, std::string_view _name, std::string_view _value);
 };
 
 struct entity_name_hash
@@ -101,7 +101,7 @@ struct element : public node
     std::vector<size_t> child_elem_positions;
 
     element() = delete;
-    element(xmlns_id_t _ns, const pstring& _name);
+    element(xmlns_id_t _ns, std::string_view _name);
     virtual void print(std::ostream& os, const xmlns_context& cxt) const;
     virtual ~element();
 };
@@ -134,12 +134,12 @@ void print(std::ostream& os, const attr& at, const xmlns_context& cxt)
     os << '"';
 }
 
-attr::attr(xmlns_id_t _ns, const pstring& _name, const pstring& _value) :
+attr::attr(xmlns_id_t _ns, std::string_view _name, std::string_view _value) :
     name(_ns, _name), value(_value) {}
 
 node::~node() {}
 
-element::element(xmlns_id_t _ns, const pstring& _name) :
+element::element(xmlns_id_t _ns, std::string_view _name) :
     node(node_type::element), name(_ns, _name) {}
 
 void element::print(ostream& os, const xmlns_context& cxt) const
@@ -164,10 +164,10 @@ content::~content() {}
 
 entity_name::entity_name() : ns(XMLNS_UNKNOWN_ID) {}
 
-entity_name::entity_name(const pstring& _name) :
+entity_name::entity_name(std::string_view _name) :
     ns(XMLNS_UNKNOWN_ID), name(_name) {}
 
-entity_name::entity_name(xmlns_id_t _ns, const pstring& _name) :
+entity_name::entity_name(xmlns_id_t _ns, std::string_view _name) :
     ns(_ns), name(_name) {}
 
 bool entity_name::operator== (const entity_name& other) const
@@ -293,7 +293,7 @@ entity_name const_node::name() const
     return entity_name();
 }
 
-pstring const_node::attribute(const entity_name& name) const
+std::string_view const_node::attribute(const entity_name& name) const
 {
     switch (mp_impl->type)
     {
@@ -315,7 +315,7 @@ pstring const_node::attribute(const entity_name& name) const
     return pstring();
 }
 
-pstring const_node::attribute(const pstring& name) const
+std::string_view const_node::attribute(std::string_view name) const
 {
     switch (mp_impl->type)
     {
@@ -413,7 +413,7 @@ bool const_node::operator!= (const const_node& other) const
 struct document_tree::impl
 {
     typedef std::vector<dom::element*> element_stack_type;
-    typedef std::unordered_map<pstring, dom::declaration, pstring::hash> declarations_type;
+    typedef std::unordered_map<std::string_view, dom::declaration> declarations_type;
 
     xmlns_context& m_ns_cxt;
     string_pool m_pool;
@@ -579,17 +579,10 @@ document_tree::document_tree(document_tree&& other) :
 
 document_tree::~document_tree() {}
 
-void document_tree::load(const std::string& strm)
+void document_tree::load(std::string_view strm)
 {
     sax_ns_parser<impl> parser(
-        strm.c_str(), strm.size(), mp_impl->m_ns_cxt, *mp_impl);
-    parser.parse();
-}
-
-void document_tree::load(const char* p_strm, size_t n_strm)
-{
-    sax_ns_parser<impl> parser(
-        p_strm, n_strm, false, mp_impl->m_ns_cxt, *mp_impl);
+        strm.data(), strm.size(), mp_impl->m_ns_cxt, *mp_impl);
     parser.parse();
 }
 
@@ -600,7 +593,7 @@ dom::const_node document_tree::root() const
     return dom::const_node(std::move(v));
 }
 
-dom::const_node document_tree::declaration(const pstring& name) const
+dom::const_node document_tree::declaration(std::string_view name) const
 {
     impl::declarations_type::const_iterator it = mp_impl->m_decls.find(name);
     if (it == mp_impl->m_decls.end())

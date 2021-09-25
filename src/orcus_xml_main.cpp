@@ -138,7 +138,7 @@ void dump_document_structure(const file_content& content, output_stream& os)
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
     dom::document_tree tree(cxt);
-    tree.load(content.data(), content.size());
+    tree.load(content.str());
 
     tree.dump_compact(os.get());
 }

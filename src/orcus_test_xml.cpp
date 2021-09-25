@@ -90,7 +90,7 @@ void parse_file(dom::document_tree& tree, const char* filepath, string& strm)
     file_content content(filepath);
     assert(!content.empty());
 
-    tree.load(content.data(), content.size());
+    tree.load(content.str());
 }
 
 void test_xml_sax_parser()

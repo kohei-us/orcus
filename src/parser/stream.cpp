@@ -224,9 +224,9 @@ void file_content::convert_to_utf8()
     }
 }
 
-pstring file_content::str() const
+std::string_view file_content::str() const
 {
-    return pstring(mp_impl->content, mp_impl->content_size);
+    return std::string_view(mp_impl->content, mp_impl->content_size);
 }
 
 struct memory_content::impl

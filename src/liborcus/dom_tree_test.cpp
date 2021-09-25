@@ -17,7 +17,7 @@ struct doctree
 
     doctree(const orcus::pstring& content) : repo(), cxt(repo.create_context()), tree(cxt)
     {
-        tree.load(content.data(), content.size());
+        tree.load(content);
     }
 };
 

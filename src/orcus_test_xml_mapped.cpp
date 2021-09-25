@@ -70,7 +70,7 @@ void test_mapped_xml_import()
     {
         file_content content(filepath);
         dom::document_tree tree(cxt);
-        tree.load(content.data(), content.size());
+        tree.load(content.str());
         ostringstream os;
         tree.dump_compact(os);
         dump_content = os.str();
@@ -78,7 +78,7 @@ void test_mapped_xml_import()
 
     const char* temp_output_xml = "out.xml";
 
-    string strm;
+    std::string strm;
 
     for (const test_case& tc : tests)
     {
@@ -90,7 +90,7 @@ void test_mapped_xml_import()
         // Load the data file content.
         cout << "reading " << data_file.string() << endl;
         file_content content(data_file.string().data());
-        string data_strm = content.str().str();
+        std::string data_strm{content.str()};
 
         spreadsheet::range_size_t ss{1048576, 16384};
         spreadsheet::document doc{ss};
@@ -117,7 +117,7 @@ void test_mapped_xml_import()
         doc.dump_check(os);
         string loaded = os.str();
         content.load(check_file.string().data());
-        strm = content.str().str();
+        strm = content.str();
 
         assert(!loaded.empty());
         assert(!strm.empty());
@@ -136,7 +136,7 @@ void test_mapped_xml_import()
             {
                 // Create a duplicate source XML stream.
                 content.load(data_file.string().data());
-                string data_strm_dup = content.str().str();
+                std::string data_strm_dup{content.str()};
                 std::ofstream file(out_file);
                 assert(file);
                 app.write(data_strm_dup.data(), data_strm_dup.size(), file);

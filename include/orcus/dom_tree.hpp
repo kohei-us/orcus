@@ -8,7 +8,6 @@
 #ifndef INCLUDED_ORCUS_DOM_TREE_HPP
 #define INCLUDED_ORCUS_DOM_TREE_HPP
 
-#include "pstring.hpp"
 #include "types.hpp"
 
 #include <vector>
@@ -39,11 +38,11 @@ enum class node_t : uint8_t
 struct ORCUS_DLLPUBLIC entity_name
 {
     xmlns_id_t ns;
-    pstring name;
+    std::string_view name;
 
     entity_name();
-    entity_name(const pstring& _name);
-    entity_name(xmlns_id_t _ns, const pstring& _name);
+    entity_name(std::string_view _name);
+    entity_name(xmlns_id_t _ns, std::string_view _name);
 
     bool operator== (const entity_name& other) const;
     bool operator!= (const entity_name& other) const;
@@ -72,8 +71,8 @@ public:
 
     entity_name name() const;
 
-    pstring attribute(const entity_name& name) const;
-    pstring attribute(const pstring& name) const;
+    std::string_view attribute(const entity_name& name) const;
+    std::string_view attribute(std::string_view name) const;
 
     size_t attribute_count() const;
 
@@ -108,13 +107,11 @@ public:
      *
      * @param strm XML stream.
      */
-    void load(const std::string& strm);
-
-    void load(const char* p_strm, size_t n_strm);
+    void load(std::string_view strm);
 
     dom::const_node root() const;
 
-    dom::const_node declaration(const pstring& name) const;
+    dom::const_node declaration(std::string_view name) const;
 
     /**
      * Swap the content with another dom_tree instance.

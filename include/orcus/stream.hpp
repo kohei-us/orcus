@@ -77,7 +77,7 @@ public:
      */
     void convert_to_utf8();
 
-    pstring str() const;
+    std::string_view str() const;
 };
 
 /**
