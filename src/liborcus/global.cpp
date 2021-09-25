@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/global.hpp"
-#include "orcus/tokens.hpp"
-#include "orcus/exception.hpp"
+#include <orcus/global.hpp>
+#include <orcus/tokens.hpp>
+#include <orcus/exception.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -74,12 +74,12 @@ void flush_int(int& store, const char*& digit, size_t& digit_len)
 
 }
 
-date_time_t to_date_time(const pstring& str)
+date_time_t to_date_time(std::string_view str)
 {
     date_time_t ret;
     int dash_count = 0, t_count = 0, colon_count = 0;
 
-    const char* p = str.get();
+    const char* p = str.data();
     const char* p_end = p + str.size();
     const char* digit = p;
     size_t digit_len = 0;

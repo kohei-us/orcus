@@ -40,7 +40,7 @@ ORCUS_DLLPUBLIC void print_attrs(const tokens& tokens, const xml_attrs_t& attrs)
  * @param str string representation of a date-time value.
  * @return converted date-time value consisting of a set of numeric values.
  */
-ORCUS_DLLPUBLIC date_time_t to_date_time(const pstring& str);
+ORCUS_DLLPUBLIC date_time_t to_date_time(std::string_view str);
 
 /**
  * Function object for deleting objects that are stored in map container as
