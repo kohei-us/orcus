@@ -22,7 +22,7 @@ option(WITH_AVX2 "whether or not to enable use of AVX2.")
 find_package(Boost COMPONENTS program_options filesystem)
 find_package(Threads)
 find_package(Python3)
-find_package(Zlib)
+find_package(ZLIB)
 
 include(GNUInstallDirs)
 
