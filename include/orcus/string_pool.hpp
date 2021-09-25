@@ -31,17 +31,6 @@ public:
     /**
      * Intern a string.
      *
-     * @param str string to intern.  It must be null-terminated.
-     *
-     * @return pair whose first value is the interned string, and the second
-     *         value specifies whether it is a newly created instance (true)
-     *         or a reuse of an existing instance (false).
-     */
-    std::pair<std::string_view, bool> intern(const char* str);
-
-    /**
-     * Intern a string.
-     *
      *
      * @param str string to intern.  It doesn't need to be null-terminated.
      * @param n length of the string.

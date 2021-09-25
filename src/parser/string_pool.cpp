@@ -47,22 +47,22 @@ string_pool::~string_pool()
     clear();
 }
 
-std::pair<std::string_view, bool> string_pool::intern(const char* str)
-{
-    return intern(str, strlen(str));
-}
-
 std::pair<std::string_view, bool> string_pool::intern(const char* str, size_t n)
 {
-    if (!n)
+    return intern({str, n});
+}
+
+std::pair<std::string_view, bool> string_pool::intern(std::string_view str)
+{
+    if (str.empty())
         return std::pair<std::string_view, bool>(std::string_view(), false);
 
-    string_set_type::const_iterator itr = mp_impl->m_set.find(std::string_view(str, n));
+    string_set_type::const_iterator itr = mp_impl->m_set.find(str);
     if (itr == mp_impl->m_set.end())
     {
         // This string has not been interned.  Intern it.
         string_store_type& store = *mp_impl->m_stores[0];
-        std::string* p = store.construct(str, n);
+        std::string* p = store.construct(str);
         if (!p)
             throw general_error("failed to intern a new string instance.");
 
@@ -82,11 +82,6 @@ std::pair<std::string_view, bool> string_pool::intern(const char* str, size_t n)
     std::string_view stored_str = *itr;
     assert(stored_str.size() == n);
     return std::pair<std::string_view, bool>(stored_str, false);
-}
-
-std::pair<std::string_view, bool> string_pool::intern(std::string_view str)
-{
-    return intern(str.data(), str.size());
 }
 
 std::vector<std::string_view> string_pool::get_interned_strings() const
