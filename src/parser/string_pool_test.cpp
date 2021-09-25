@@ -6,9 +6,9 @@
  */
 
 #include "test_global.hpp"
-#include "orcus/string_pool.hpp"
-#include "orcus/pstring.hpp"
-#include "orcus/global.hpp"
+#include <orcus/string_pool.hpp>
+#include <orcus/pstring.hpp>
+#include <orcus/global.hpp>
 
 using namespace std;
 using namespace orcus;
