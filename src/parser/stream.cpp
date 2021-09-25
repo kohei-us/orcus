@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/stream.hpp"
-#include "orcus/exception.hpp"
-#include "orcus/pstring.hpp"
-#include "orcus/global.hpp"
+#include <orcus/stream.hpp>
+#include <orcus/exception.hpp>
+#include <orcus/global.hpp>
 
 #include <sstream>
 #include <fstream>
@@ -91,10 +90,9 @@ std::string convert_utf16_to_utf8(const char* p, size_t n, unicode_t ut)
     return conversion.to_bytes(buf);
 }
 
-std::tuple<pstring, size_t, size_t> find_line_with_offset(
-    const pstring& strm, std::ptrdiff_t offset)
+std::tuple<std::string_view, size_t, size_t> find_line_with_offset(std::string_view strm, std::ptrdiff_t offset)
 {
-    const char* p0 = strm.get();
+    const char* p0 = strm.data();
     const char* p_end = p0 + strm.size();
     const char* p_offset = p0 + offset;
 
@@ -134,8 +132,8 @@ std::tuple<pstring, size_t, size_t> find_line_with_offset(
     }
 
     assert(p_line_start <= p_offset);
-    size_t offset_on_line = std::distance(p_line_start, p_offset);
-    pstring line(p_line_start, p_line_end - p_line_start);
+    std::size_t offset_on_line = std::distance(p_line_start, p_offset);
+    std::string_view line(p_line_start, p_line_end - p_line_start);
 
     return std::make_tuple(line, line_num, offset_on_line);
 }
@@ -292,9 +290,9 @@ void memory_content::convert_to_utf8()
     }
 }
 
-pstring memory_content::str() const
+std::string_view memory_content::str() const
 {
-    return pstring(mp_impl->content, mp_impl->content_size);
+    return {mp_impl->content, mp_impl->content_size};
 }
 
 line_with_offset::line_with_offset(std::string _line, size_t _line_number, size_t _offset_on_line) :
@@ -317,7 +315,7 @@ line_with_offset::line_with_offset(line_with_offset&& other) :
 
 line_with_offset::~line_with_offset() {}
 
-std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset)
+std::string create_parse_error_output(std::string_view strm, std::ptrdiff_t offset)
 {
     if (offset < 0)
         return std::string();
@@ -325,7 +323,7 @@ std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset
     const size_t max_line_length = 60;
 
     auto line_info = find_line_with_offset(strm, offset);
-    pstring line = std::get<0>(line_info);
+    std::string_view line = std::get<0>(line_info);
     size_t line_num = std::get<1>(line_info);
     size_t offset_on_line = std::get<2>(line_info);
 
@@ -337,7 +335,7 @@ std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset
 
         // Truncate line if it's too long.
         if (line.size() > max_line_length)
-            line.resize(max_line_length);
+            line = std::string_view(line.data(), max_line_length);
 
         os << line << std::endl;
 
@@ -359,7 +357,7 @@ std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset
 
     size_t line_length = line_end - line_start;
 
-    line = pstring(line.get()+line_start, line_length);
+    line = std::string_view(line.data()+line_start, line_length);
 
     std::ostringstream os;
     os << line_num << ":" << (line_start+1) << ": ";
@@ -374,17 +372,17 @@ std::string create_parse_error_output(const pstring& strm, std::ptrdiff_t offset
     return os.str();
 }
 
-line_with_offset locate_line_with_offset(const pstring& strm, std::ptrdiff_t offset)
+line_with_offset locate_line_with_offset(std::string_view strm, std::ptrdiff_t offset)
 {
     auto line_info = find_line_with_offset(strm, offset);
-    pstring line = std::get<0>(line_info);
+    std::string_view line = std::get<0>(line_info);
     size_t line_num = std::get<1>(line_info);
     size_t offset_on_line = std::get<2>(line_info);
 
-    return line_with_offset(line.str(), line_num, offset_on_line);
+    return line_with_offset(std::string{line}, line_num, offset_on_line);
 }
 
-size_t locate_first_different_char(const pstring& left, const pstring& right)
+size_t locate_first_different_char(std::string_view left, std::string_view right)
 {
     if (left.empty() || right.empty())
         // If one of them is empty, then the first characters are considered

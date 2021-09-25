@@ -9,9 +9,9 @@
 #define INCLUDED_ORCUS_STREAM_HPP
 
 #include "env.hpp"
-#include "orcus/pstring.hpp"
 
 #include <memory>
+#include <string>
 
 namespace orcus {
 
@@ -112,7 +112,7 @@ public:
      */
     void convert_to_utf8();
 
-    pstring str() const;
+    std::string_view str() const;
 };
 
 struct ORCUS_PSR_DLLPUBLIC line_with_offset
@@ -136,8 +136,7 @@ struct ORCUS_PSR_DLLPUBLIC line_with_offset
  *
  * @return string formatted to be usable as an error message for stdout.
  */
-ORCUS_PSR_DLLPUBLIC std::string create_parse_error_output(
-    const pstring& strm, std::ptrdiff_t offset);
+ORCUS_PSR_DLLPUBLIC std::string create_parse_error_output(std::string_view strm, std::ptrdiff_t offset);
 
 /**
  * Given a string consisting of multiple lines i.e. multiple line breaks,
@@ -149,7 +148,7 @@ ORCUS_PSR_DLLPUBLIC std::string create_parse_error_output(
  * @return structure containing information about the line containing the
  *         offset position.
  */
-ORCUS_PSR_DLLPUBLIC line_with_offset locate_line_with_offset(const pstring& strm, std::ptrdiff_t offset);
+ORCUS_PSR_DLLPUBLIC line_with_offset locate_line_with_offset(std::string_view strm, std::ptrdiff_t offset);
 
 /**
  * Given two strings, locate the position of the first character that is
@@ -162,8 +161,7 @@ ORCUS_PSR_DLLPUBLIC line_with_offset locate_line_with_offset(const pstring& strm
  * @return position of the first character that is different between the two
  *         compared strings.
  */
-ORCUS_PSR_DLLPUBLIC size_t locate_first_different_char(
-    const pstring& left, const pstring& right);
+ORCUS_PSR_DLLPUBLIC size_t locate_first_different_char(std::string_view left, std::string_view right);
 
 } // namespace orcus
 
