@@ -97,7 +97,7 @@ void test_merge()
     // the merged store in pool1 (thus valid).
     assert(v1 == v2);
 
-    std::vector<pstring> entries = pool1.get_interned_strings();
+    std::vector<std::string_view> entries = pool1.get_interned_strings();
     assert(entries.size() == pool1.size());
 }
 

@@ -16,13 +16,11 @@
 
 namespace orcus {
 
-class pstring;
-
 ORCUS_DLLPUBLIC double to_double(const char* p, const char* p_end, const char** p_parse_ended = nullptr);
-ORCUS_DLLPUBLIC double to_double(const pstring& s);
+ORCUS_DLLPUBLIC double to_double(std::string_view s);
 ORCUS_DLLPUBLIC long to_long(const char* p, const char* p_end, const char** p_parse_ended = nullptr);
-ORCUS_DLLPUBLIC long to_long(const pstring& s);
-ORCUS_DLLPUBLIC bool to_bool(const pstring& s);
+ORCUS_DLLPUBLIC long to_long(std::string_view s);
+ORCUS_DLLPUBLIC bool to_bool(std::string_view s);
 
 /**
  * Parse a string value containing a part representing a numerical value
@@ -35,7 +33,7 @@ ORCUS_DLLPUBLIC bool to_bool(const pstring& s);
  * @return structure containing a numerical value and a unit of measurement
  *         that the original string value represents.
  */
-ORCUS_DLLPUBLIC length_t to_length(const pstring& str);
+ORCUS_DLLPUBLIC length_t to_length(std::string_view str);
 
 ORCUS_DLLPUBLIC double convert(double value, length_unit_t unit_from, length_unit_t unit_to);
 

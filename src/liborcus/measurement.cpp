@@ -5,18 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/measurement.hpp"
-#include "orcus/pstring.hpp"
-#include "orcus/exception.hpp"
-#include "orcus/parser_global.hpp"
+#include <orcus/measurement.hpp>
+#include <orcus/exception.hpp>
+#include <orcus/parser_global.hpp>
 
 #include <mdds/sorted_string_map.hpp>
 #include <mdds/global.hpp>
 #include <orcus/global.hpp>
 
 #include <sstream>
-
-using namespace std;
 
 namespace orcus {
 
@@ -29,9 +26,9 @@ double to_double(const char* p, const char* p_end, const char** p_parse_ended)
     return val;
 }
 
-double to_double(const pstring& s)
+double to_double(std::string_view s)
 {
-    const char* p = s.get();
+    const char* p = s.data();
     const char* p_end = p + s.size();
     return to_double(p, p_end, nullptr);
 }
@@ -46,31 +43,21 @@ long to_long(const char* p, const char* p_end, const char** p_parse_ended)
     return val;
 }
 
-long to_long(const pstring& s)
+long to_long(std::string_view s)
 {
-    const char* p = s.get();
+    const char* p = s.data();
     const char* p_end = p + s.size();
     return to_long(p, p_end, nullptr);
 }
 
-bool to_bool(const pstring& s)
+bool to_bool(std::string_view s)
 {
     size_t n = s.size();
     if (n == 1)
         // Any single char other than '0' is true.
-        return *s.get() != '0';
+        return s[0] != '0';
 
-    if (n == 4)
-    {
-        // Check against 'true'.
-        const char* p = s.get();
-        if (*p++ != 't' || *p++ != 'r' || *p++ != 'u' || *p != 'e')
-            return false;
-
-        return true;
-    }
-
-    return false;
+    return s == "true";
 }
 
 namespace {
@@ -88,20 +75,20 @@ length_map::entry length_map_entries[] =
 
 }
 
-length_t to_length(const pstring& str)
+length_t to_length(std::string_view str)
 {
     length_t ret;
     if (str.empty())
         return ret;
 
-    const char* p = str.get();
+    const char* p = str.data();
     const char* p_start = p;
     const char* p_end = p_start + str.size();
     ret.value = parse_numeric(p, p_end-p);
 
     static const length_map units(length_map_entries, ORCUS_N_ELEMENTS(length_map_entries), length_unit_t::unknown);
-    pstring tail(p, p_end-p);
-    ret.unit = units.find(tail.get(), tail.size());
+    std::string_view tail(p, p_end-p);
+    ret.unit = units.find(tail.data(), tail.size());
 
     return ret;
 }
