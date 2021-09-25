@@ -9,7 +9,6 @@
 #define INCLUDED_ORCUS_STRING_POOL_HPP
 
 #include "env.hpp"
-#include "pstring.hpp"
 
 #include <string>
 #include <memory>
@@ -38,7 +37,7 @@ public:
      *         value specifies whether it is a newly created instance (true)
      *         or a reuse of an existing instance (false).
      */
-    std::pair<pstring, bool> intern(const char* str);
+    std::pair<std::string_view, bool> intern(const char* str);
 
     /**
      * Intern a string.
@@ -49,7 +48,7 @@ public:
      *
      * @return see above.
      */
-    std::pair<pstring, bool> intern(const char* str, size_t n);
+    std::pair<std::string_view, bool> intern(const char* str, size_t n);
 
     /**
      * Intern a string.
@@ -58,14 +57,14 @@ public:
      *
      * @return see above.
      */
-    std::pair<pstring, bool> intern(const pstring& str);
+    std::pair<std::string_view, bool> intern(std::string_view str);
 
     /**
      * Return all interned strings.
      *
      * @return sequence of all interned strings.  The sequence will be sorted.
      */
-    std::vector<pstring> get_interned_strings() const;
+    std::vector<std::string_view> get_interned_strings() const;
 
     void dump() const;
 

@@ -406,8 +406,7 @@ void zip_archive_impl::dump_file_entry(size_t pos) const
 
 void zip_archive_impl::dump_file_entry(std::string_view entry_name) const
 {
-    pstring name(entry_name);
-    filename_map_type::const_iterator it = m_filenames.find(name);
+    filename_map_type::const_iterator it = m_filenames.find(entry_name);
     if (it == m_filenames.end())
     {
         // entry name not found.

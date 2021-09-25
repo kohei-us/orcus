@@ -323,7 +323,7 @@ public:
             {
                 // String value needs interning.
                 css_property_value_t interned = v;
-                interned.str = m_sp.intern(v.str, v.length).first.get();
+                interned.str = m_sp.intern(v.str, v.length).first.data();
                 m_dest.push_back(interned);
             }
             break;
