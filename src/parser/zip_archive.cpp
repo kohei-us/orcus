@@ -5,19 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/zip_archive.hpp"
-#include "orcus/zip_archive_stream.hpp"
-#include "orcus/string_pool.hpp"
+#include <orcus/zip_archive.hpp>
+#include <orcus/zip_archive_stream.hpp>
+#include <orcus/string_pool.hpp>
 
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <unordered_map>
-#ifdef _WIN32
-#include "win_stdint.h"
-#else
-#include <stdint.h>
-#endif
+#include <cstdint>
 #include <cstdio>
 #include <sstream>
 
@@ -26,14 +22,12 @@
 
 #define ORCUS_DEBUG_ZIP_ARCHIVE 0
 
-using namespace std;
-
 namespace orcus {
 
 zip_error::zip_error() {}
-zip_error::zip_error(const string& msg) : m_msg()
+zip_error::zip_error(const std::string& msg) : m_msg()
 {
-    ostringstream os;
+    std::ostringstream os;
     os << "zip error: " << msg;
     m_msg = os.str();
 }
@@ -51,12 +45,12 @@ struct zip_file_param
 {
     enum compress_method_type { stored = 0, deflated = 8 };
 
-    pstring filename;
+    std::string_view filename;
     compress_method_type compress_method;
-    size_t offset_file_header;
-    size_t offset_data_stream;
-    size_t size_compressed;
-    size_t size_uncompressed;
+    std::size_t offset_file_header;
+    std::size_t offset_data_stream;
+    std::size_t size_compressed;
+    std::size_t size_uncompressed;
 
     uint16_t version_made_by;
     uint16_t minimum_version_needed;
@@ -81,7 +75,7 @@ class zip_inflater
 
     zip_inflater(); // disabled
 public:
-    zip_inflater(vector<unsigned char>& raw_buf, vector<unsigned char>& dest_buf, const zip_file_param& param)
+    zip_inflater(std::vector<unsigned char>& raw_buf, std::vector<unsigned char>& dest_buf, const zip_file_param& param)
     {
         m_zlib_cxt.total_out = 0;
         m_zlib_cxt.zalloc = 0;
@@ -125,7 +119,7 @@ class zip_stream_parser
     size_t m_pos;
     size_t m_pos_internal;
 
-    void read_string_to_buffer(size_t n, vector<unsigned char>& buf)
+    void read_string_to_buffer(size_t n, std::vector<unsigned char>& buf)
     {
         if (!n)
             throw zip_error("attempt to read string of zero size.");
@@ -139,16 +133,16 @@ public:
     zip_stream_parser() : m_stream(nullptr), m_pos(0), m_pos_internal(0) {}
     zip_stream_parser(zip_archive_stream* stream, size_t pos) : m_stream(stream), m_pos(pos), m_pos_internal(0) {}
 
-    string read_string(size_t n)
+    std::string read_string(size_t n)
     {
-        vector<unsigned char> buf(n+1, '\0');
+        std::vector<unsigned char> buf(n+1, '\0');
         read_string_to_buffer(n, buf);
-        return string(reinterpret_cast<const char*>(&buf[0]));
+        return std::string(reinterpret_cast<const char*>(&buf[0]));
     }
 
-    pstring read_string(size_t n, string_pool& pool)
+    std::string_view read_string(size_t n, string_pool& pool)
     {
-        vector<unsigned char> buf(n+1, '\0');
+        std::vector<unsigned char> buf(n+1, '\0');
         read_string_to_buffer(n, buf);
         return pool.intern(reinterpret_cast<const char*>(&buf[0]), n).first;
     }
@@ -212,7 +206,7 @@ struct central_dir_end
 class zip_archive_impl
 {
     typedef std::vector<zip_file_param> file_params_type;
-    typedef std::unordered_map<pstring, size_t, pstring::hash> filename_map_type;
+    typedef std::unordered_map<std::string_view, std::size_t> filename_map_type;
 
     string_pool m_pool;
     zip_archive_stream* m_stream;
@@ -230,15 +224,15 @@ public:
 
     void load();
     void dump_file_entry(size_t pos) const;
-    void dump_file_entry(const char* entry_name) const;
-    pstring get_file_entry_name(size_t pos) const;
+    void dump_file_entry(std::string_view entry_name) const;
+    std::string_view get_file_entry_name(size_t pos) const;
 
     size_t get_file_entry_count() const
     {
         return m_file_params.size();
     }
 
-    bool read_file_entry(const pstring& entry_name, vector<unsigned char>& buf) const;
+    bool read_file_entry(std::string_view entry_name, std::vector<unsigned char>& buf) const;
 
 private:
 
@@ -327,29 +321,29 @@ void zip_archive_impl::read_file_entries()
         m_filenames.insert(filename_map_type::value_type(param.filename, m_file_params.size()-1));
 
 #if ORCUS_DEBUG_ZIP_ARCHIVE
-        cout << "-- file entries" << endl;
+        std::cout << "-- file entries" << std::endl;
         printf( "  magic number: 0x%8.8x\n", magic_num);
-        cout << "  version made by: " << param.version_made_by << endl;
-        cout << "  minimum version needed to extract: " << param.minimum_version_needed << endl;
+        std::cout << "  version made by: " << param.version_made_by << std::endl;
+        std::cout << "  minimum version needed to extract: " << param.minimum_version_needed << std::endl;
         printf( "  general purpose bit flag: 0x%4.4x\n", param.flags);
-        cout << "  compression method: " << param.compress_method << " (0=stored, 8=deflated)" << endl;
-        cout << "  file last modified time: " << param.last_modified_time << endl;
-        cout << "  file last modified date: " << param.last_modified_date << endl;
+        std::cout << "  compression method: " << param.compress_method << " (0=stored, 8=deflated)" << std::endl;
+        std::cout << "  file last modified time: " << param.last_modified_time << std::endl;
+        std::cout << "  file last modified date: " << param.last_modified_date << std::endl;
         printf( "  crc32: 0x%8.8x\n", param.crc32);
-        cout << "  compressed size: " << param.size_compressed << endl;
-        cout << "  uncompressed size: " << param.size_uncompressed << endl;
-        cout << "  file name length: " << param.filename_length << endl;
-        cout << "  extra field length: " << param.extra_field_length << endl;
-        cout << "  file comment length: " << param.comment_length << endl;
-        cout << "  disk number where file starts: " << param.disk_id_where_file_starts << endl;
+        std::cout << "  compressed size: " << param.size_compressed << std::endl;
+        std::cout << "  uncompressed size: " << param.size_uncompressed << std::endl;
+        std::cout << "  file name length: " << param.filename_length << std::endl;
+        std::cout << "  extra field length: " << param.extra_field_length << std::endl;
+        std::cout << "  file comment length: " << param.comment_length << std::endl;
+        std::cout << "  disk number where file starts: " << param.disk_id_where_file_starts << std::endl;
         printf( "  internal file attributes: 0x%4.4x\n", param.file_attributes_internal);
         printf( "  external file attributes: 0x%8.8x\n", param.file_attributes_external);
-        cout << "  relative offset of local file header: " << param.offset_file_header << endl;
+        std::cout << "  relative offset of local file header: " << param.offset_file_header << std::endl;
 
         if (param.filename_length)
-            cout << "  filename: '" << param.filename << "'" << endl;
+            std::cout << "  filename: '" << param.filename << "'" << std::endl;
 
-        cout << "--" << endl;
+        std::cout << "--" << std::endl;
 #endif
     }
 }
@@ -360,35 +354,35 @@ void zip_archive_impl::dump_file_entry(size_t pos) const
         throw zip_error("invalid file entry index.");
 
     const zip_file_param& param = m_file_params[pos];
-    cout << "-- filename: " << param.filename << endl;
+    std::cout << "-- filename: " << param.filename << std::endl;
 
     zip_stream_parser file_header(m_stream, param.offset_file_header);
     uint32_t v32 = file_header.read_4bytes();
     printf("  header signature: 0x%8.8x\n", v32);
     uint16_t v16 = file_header.read_2bytes();
-    cout << "  version needed to extract: " << v16 << endl;
+    std::cout << "  version needed to extract: " << v16 << std::endl;
     v16 = file_header.read_2bytes();
     printf("  general purpose bit flag: 0x%4.4x\n", v16);
     v16 = file_header.read_2bytes();
-    cout << "  compression method: " << v16 << endl;
+    std::cout << "  compression method: " << v16 << std::endl;
     v16 = file_header.read_2bytes();
-    cout << "  file last modified time: " << v16 << endl;
+    std::cout << "  file last modified time: " << v16 << std::endl;
     v16 = file_header.read_2bytes();
-    cout << "  file last modified date: " << v16 << endl;
+    std::cout << "  file last modified date: " << v16 << std::endl;
     v32 = file_header.read_4bytes();
     printf("  crc32: 0x%8.8x\n", v32);
     v32 = file_header.read_4bytes();
-    cout << "  compressed size: " << v32 << endl;
+    std::cout << "  compressed size: " << v32 << std::endl;
     v32 = file_header.read_4bytes();
-    cout << "  uncompressed size: " << v32 << endl;
+    std::cout << "  uncompressed size: " << v32 << std::endl;
     size_t filename_len = file_header.read_2bytes();
-    cout << "  filename length: " << filename_len << endl;
+    std::cout << "  filename length: " << filename_len << std::endl;
     uint16_t extra_field_len = file_header.read_2bytes();
-    cout << "  extra field length: " << extra_field_len << endl;
+    std::cout << "  extra field length: " << extra_field_len << std::endl;
     if (filename_len)
     {
-        string filename = file_header.read_string(filename_len);
-        cout << "  filename: '" << filename << "'" << endl;
+        std::string filename = file_header.read_string(filename_len);
+        std::cout << "  filename: '" << filename << "'" << std::endl;
     }
 
     if (extra_field_len)
@@ -401,30 +395,30 @@ void zip_archive_impl::dump_file_entry(size_t pos) const
 
     m_stream->seek(file_header.tell());
 
-    vector<unsigned char> buf;
+    std::vector<unsigned char> buf;
     if (read_file_entry(param.filename, buf))
     {
-        cout << "-- data section" << endl;
-        cout << &buf[0] << endl;
-        cout << "--" << endl;
+        std::cout << "-- data section" << std::endl;
+        std::cout << &buf[0] << std::endl;
+        std::cout << "--" << std::endl;
     }
 }
 
-void zip_archive_impl::dump_file_entry(const char* entry_name) const
+void zip_archive_impl::dump_file_entry(std::string_view entry_name) const
 {
     pstring name(entry_name);
     filename_map_type::const_iterator it = m_filenames.find(name);
     if (it == m_filenames.end())
     {
         // entry name not found.
-        cout << "file entry '" << entry_name << "' not found." << endl;
+        std::cout << "file entry '" << entry_name << "' not found." << std::endl;
         return;
     }
 
     dump_file_entry(it->second);
 }
 
-pstring zip_archive_impl::get_file_entry_name(size_t pos) const
+std::string_view zip_archive_impl::get_file_entry_name(std::size_t pos) const
 {
     if (pos >= m_file_params.size())
         return nullptr;
@@ -432,10 +426,9 @@ pstring zip_archive_impl::get_file_entry_name(size_t pos) const
     return m_file_params[pos].filename;
 }
 
-bool zip_archive_impl::read_file_entry(const pstring& entry_name, vector<unsigned char>& buf) const
+bool zip_archive_impl::read_file_entry(std::string_view entry_name, std::vector<unsigned char>& buf) const
 {
-    pstring name(entry_name);
-    filename_map_type::const_iterator it = m_filenames.find(name);
+    filename_map_type::const_iterator it = m_filenames.find(entry_name);
     if (it == m_filenames.end())
         // entry name not found.
         return false;
@@ -466,7 +459,7 @@ bool zip_archive_impl::read_file_entry(const pstring& entry_name, vector<unsigne
     // Data section is immediately followed by the header section.
     m_stream->seek(file_header.tell());
 
-    vector<unsigned char> raw_buf(param.size_compressed+1, 0);
+    std::vector<unsigned char> raw_buf(param.size_compressed+1, 0);
     m_stream->read(&raw_buf[0], param.size_compressed);
 
     switch (param.compress_method)
@@ -478,7 +471,7 @@ bool zip_archive_impl::read_file_entry(const pstring& entry_name, vector<unsigne
         case zip_file_param::deflated:
         {
             // deflate compression
-            vector<unsigned char> zip_buf(param.size_uncompressed+1, 0); // null-terminated
+            std::vector<unsigned char> zip_buf(param.size_uncompressed+1, 0); // null-terminated
             zip_inflater inflater(raw_buf, zip_buf, param);
             if (!inflater.init())
                 break;
@@ -508,7 +501,7 @@ size_t zip_archive_impl::seek_central_dir()
     off_t max_comment_size = 0xffff;
 
     size_t buf_size = 22 + max_comment_size; // central directory size is 22 + n (n maxing at 0xffff).
-    vector<unsigned char> buf(buf_size);
+    std::vector<unsigned char> buf(buf_size);
 
     // Read stream backward and try to find the magic number.
 
@@ -524,7 +517,7 @@ size_t zip_archive_impl::seek_central_dir()
         m_stream->read(&buf[0], buf.size());
 
         // Search this byte segment for the magic number.
-        vector<unsigned char>::reverse_iterator i = buf.rbegin(), ie = buf.rend();
+        std::vector<unsigned char>::reverse_iterator i = buf.rbegin(), ie = buf.rend();
         size_t magic_pos = 0;
         for (; i != ie; ++i)
         {
@@ -565,16 +558,16 @@ void zip_archive_impl::read_central_dir_end()
     content.comment_length = m_central_dir_end.read_2bytes();
 
 #if ORCUS_DEBUG_ZIP_ARCHIVE
-    cout << "-- central directory content" << endl;
+    std::cout << "-- central directory content" << std::endl;
     printf("  magic number: 0x%8.8x\n", content.magic_number);
-    cout << "  number of this disk: " << content.this_disk_id << endl;
-    cout << "  disk where central directory starts: " << content.central_dir_disk_id << endl;
-    cout << "  number of central directory records on this disk: " << content.num_central_dir_records_local << endl;
-    cout << "  total number of central directory records: " << content.num_celtral_dir_records_total << endl;
-    cout << "  size of central directory: " << content.size_central_dir << endl;
-    cout << "  offset of start of central directory, relative to start of archive: " << content.central_dir_pos << endl;
-    cout << "  comment length: " << content.comment_length << endl;
-    cout << "--" << endl;
+    std::cout << "  number of this disk: " << content.this_disk_id << std::endl;
+    std::cout << "  disk where central directory starts: " << content.central_dir_disk_id << std::endl;
+    std::cout << "  number of central directory records on this disk: " << content.num_central_dir_records_local << std::endl;
+    std::cout << "  total number of central directory records: " << content.num_celtral_dir_records_total << std::endl;
+    std::cout << "  size of central directory: " << content.size_central_dir << std::endl;
+    std::cout << "  offset of start of central directory, relative to start of archive: " << content.central_dir_pos << std::endl;
+    std::cout << "  comment length: " << content.comment_length << std::endl;
+    std::cout << "--" << std::endl;
 #endif
 }
 
@@ -598,12 +591,12 @@ void zip_archive::dump_file_entry(size_t index) const
     mp_impl->dump_file_entry(index);
 }
 
-pstring zip_archive::get_file_entry_name(size_t index) const
+std::string_view zip_archive::get_file_entry_name(std::size_t index) const
 {
     return mp_impl->get_file_entry_name(index);
 }
 
-void zip_archive::dump_file_entry(const char* entry_name) const
+void zip_archive::dump_file_entry(std::string_view entry_name) const
 {
     mp_impl->dump_file_entry(entry_name);
 }
@@ -613,7 +606,7 @@ size_t zip_archive::get_file_entry_count() const
     return mp_impl->get_file_entry_count();
 }
 
-bool zip_archive::read_file_entry(const pstring& entry_name, vector<unsigned char>& buf) const
+bool zip_archive::read_file_entry(std::string_view entry_name, std::vector<unsigned char>& buf) const
 {
     return mp_impl->read_file_entry(entry_name, buf);
 }

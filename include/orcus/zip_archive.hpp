@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_ZIP_ARCHIVE_HPP
 
 #include "env.hpp"
+
 #include <cstdlib>
 #include <exception>
 #include <string>
@@ -18,7 +19,6 @@ namespace orcus {
 
 class zip_archive_stream;
 class zip_archive_impl;
-class pstring;
 
 class ORCUS_PSR_DLLPUBLIC zip_error : public std::exception
 {
@@ -63,7 +63,7 @@ public:
      *
      * @param entry_name file entry name.
      */
-    void dump_file_entry(const char* entry_name) const;
+    void dump_file_entry(std::string_view entry_name) const;
 
     /**
      * Get file entry name from its index.
@@ -72,7 +72,7 @@ public:
      *
      * @return file entry name
      */
-    pstring get_file_entry_name(size_t index) const;
+    std::string_view get_file_entry_name(std::size_t index) const;
 
     /**
      * Return the number of file entries stored in this zip archive.  Note
@@ -94,7 +94,7 @@ public:
      *
      * @return true if successful, false otherwise.
      */
-    bool read_file_entry(const pstring& entry_name, std::vector<unsigned char>& buf) const;
+    bool read_file_entry(std::string_view entry_name, std::vector<unsigned char>& buf) const;
 };
 
 }
