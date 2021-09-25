@@ -99,8 +99,8 @@ public:
     {
         if (transient)
         {
-            pstring s = m_pool.intern(p, len).first;
-            p = s.get();
+            std::string_view s = m_pool.intern(p, len).first;
+            p = s.data();
             len = s.size();
         }
 
@@ -136,8 +136,8 @@ public:
     {
         if (transient)
         {
-            pstring s = m_pool.intern(p, len).first;
-            p = s.get();
+            std::string_view s = m_pool.intern(p, len).first;
+            p = s.data();
             len = s.size();
         }
 
