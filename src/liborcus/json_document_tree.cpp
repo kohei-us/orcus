@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/json_document_tree.hpp"
-#include "orcus/json_parser.hpp"
-#include "orcus/pstring.hpp"
-#include "orcus/global.hpp"
-#include "orcus/config.hpp"
-#include "orcus/stream.hpp"
-#include "orcus/string_pool.hpp"
+#include <orcus/json_document_tree.hpp>
+#include <orcus/json_parser.hpp>
+#include <orcus/global.hpp>
+#include <orcus/config.hpp>
+#include <orcus/stream.hpp>
+#include <orcus/string_pool.hpp>
 
 #include "json_util.hpp"
 
@@ -164,9 +163,9 @@ struct json_value_array
 
 struct json_value_object
 {
-    using object_type = std::unordered_map<pstring, json_value*, pstring::hash>;
+    using object_type = std::unordered_map<std::string_view, json_value*>;
 
-    std::vector<pstring> key_order;
+    std::vector<std::string_view> key_order;
     object_type value_object;
 
     bool has_ref;
@@ -187,10 +186,10 @@ void dump_repeat(std::ostringstream& os, const char* s, int repeat)
 }
 
 void dump_item(
-    std::ostringstream& os, const pstring* key, const json_value* val,
+    std::ostringstream& os, const std::string_view* key, const json_value* val,
     int level, bool sep);
 
-void dump_value(std::ostringstream& os, const json_value* v, int level, const pstring* key = nullptr)
+void dump_value(std::ostringstream& os, const json_value* v, int level, const std::string_view* key = nullptr)
 {
     dump_repeat(os, tab, level);
 
@@ -226,7 +225,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
         break;
         case detail::node_t::object:
         {
-            const std::vector<pstring>& key_order = v->value.object->key_order;
+            const std::vector<std::string_view>& key_order = v->value.object->key_order;
             auto& vals = v->value.object->value_object;
             os << "{" << std::endl;
             size_t n = vals.size();
@@ -237,7 +236,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
                 size_t pos = 0;
                 for (auto it = vals.begin(), ite = vals.end(); it != ite; ++it, ++pos)
                 {
-                    const pstring& this_key = it->first;
+                    std::string_view this_key = it->first;
                     auto& this_val = it->second;
 
                     dump_item(os, &this_key, this_val, level, pos < (n-1));
@@ -249,7 +248,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
                 size_t pos = 0;
                 for (auto it = key_order.begin(), ite = key_order.end(); it != ite; ++it, ++pos)
                 {
-                    const pstring& this_key = *it;
+                    std::string_view this_key = *it;
                     auto val_pos = vals.find(this_key);
                     assert(val_pos != vals.end());
 
@@ -273,7 +272,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const ps
 }
 
 void dump_item(
-    std::ostringstream& os, const pstring* key, const json_value* val,
+    std::ostringstream& os, const std::string_view* key, const json_value* val,
     int level, bool sep)
 {
     dump_value(os, val, level+1, key);
@@ -292,9 +291,9 @@ std::string dump_json_tree(const json_value* root)
     return os.str();
 }
 
-void dump_string_xml(std::ostringstream& os, const pstring& s)
+void dump_string_xml(std::ostringstream& os, std::string_view s)
 {
-    const char* p = s.get();
+    const char* p = s.data();
     const char* p_end = p + s.size();
     for (; p != p_end; ++p)
     {
@@ -323,7 +322,7 @@ void dump_string_xml(std::ostringstream& os, const pstring& s)
 }
 
 void dump_object_item_xml(
-    std::ostringstream& os, const pstring& key, const json_value* val, int level);
+    std::ostringstream& os, std::string_view key, const json_value* val, int level);
 
 void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
 {
@@ -401,7 +400,7 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
         break;
         case detail::node_t::string:
             os << "<string value=\"";
-            dump_string_xml(os, pstring(v->value.str.p, v->value.str.n));
+            dump_string_xml(os, std::string_view(v->value.str.p, v->value.str.n));
             os << "\"/>";
         break;
         case detail::node_t::unset:
@@ -411,7 +410,7 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
 }
 
 void dump_object_item_xml(
-    std::ostringstream& os, const pstring& key, const json_value* val, int level)
+    std::ostringstream& os, std::string_view key, const json_value* val, int level)
 {
     os << "<item name=\"";
     dump_string_xml(os, key);
@@ -434,7 +433,7 @@ std::string dump_xml_tree(const json_value* root)
 
 struct parser_stack
 {
-    pstring key;
+    std::string_view key;
     json_value* node;
 
     parser_stack(json_value* _node) : node(_node) {}
@@ -442,10 +441,10 @@ struct parser_stack
 
 struct external_ref
 {
-    pstring path;
+    std::string_view path;
     json_value_object* dest;
 
-    external_ref(const pstring& _path, json_value_object* _dest) :
+    external_ref(std::string_view _path, json_value_object* _dest) :
         path(_path), dest(_dest) {}
 };
 
@@ -475,14 +474,14 @@ class parser_handler
             }
             case detail::node_t::object:
             {
-                const pstring& key = cur.key;
+                std::string_view key = cur.key;
                 json_value_object* jvo = cur.node->value.object;
                 value->parent = cur.node;
 
                 if (m_config.resolve_references &&
                     key == "$ref" && value->type == detail::node_t::string)
                 {
-                    pstring sv(value->value.str.p, value->value.str.n);
+                    std::string_view sv(value->value.str.p, value->value.str.n);
                     if (!jvo->has_ref && !sv.empty() && sv[0] != '#')
                     {
                         // Store the external reference path and the destination
@@ -569,7 +568,7 @@ public:
     void object_key(const char* p, size_t len, bool transient)
     {
         parser_stack& cur = m_stack.back();
-        cur.key = pstring(p, len);
+        cur.key = std::string_view(p, len);
         if (m_config.persistent_string_values || transient)
             // The tree manages the life cycle of this string value.
             cur.key = m_res.str_pool.intern(cur.key).first;
@@ -598,7 +597,7 @@ public:
 
     void string(const char* p, size_t len, bool transient)
     {
-        pstring s(p, len);
+        std::string_view s(p, len);
         if (m_config.persistent_string_values || transient)
             // The tree manages the life cycle of this string value.
             s = m_res.str_pool.intern(s).first;
@@ -701,7 +700,7 @@ size_t const_node::child_count() const
     return 0;
 }
 
-std::vector<pstring> const_node::keys() const
+std::vector<std::string_view> const_node::keys() const
 {
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::keys: this node is not of object type.");
@@ -711,19 +710,15 @@ std::vector<pstring> const_node::keys() const
         // Prefer to use key_order when it's populated.
         return jvo->key_order;
 
-    std::vector<pstring> keys;
+    std::vector<std::string_view> keys;
 
-    std::for_each(jvo->value_object.begin(), jvo->value_object.end(),
-        [&](const json_value_object::object_type::value_type& n)
-        {
-            keys.push_back(n.first);
-        }
-    );
+    for (const auto& n : jvo->value_object)
+        keys.push_back(n.first);
 
     return keys;
 }
 
-pstring const_node::key(size_t index) const
+std::string_view const_node::key(size_t index) const
 {
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::key: this node is not of object type.");
@@ -735,7 +730,7 @@ pstring const_node::key(size_t index) const
     return jvo->key_order[index];
 }
 
-bool const_node::has_key(const pstring& key) const
+bool const_node::has_key(std::string_view key) const
 {
     if (mp_impl->m_node->type != detail::node_t::object)
         return false;
@@ -757,7 +752,7 @@ const_node const_node::child(size_t index) const
             if (index >= jvo->key_order.size())
                 throw std::out_of_range("node::child: index is out-of-range");
 
-            const pstring& key = jvo->key_order[index];
+            std::string_view key = jvo->key_order[index];
             auto it = jvo->value_object.find(key);
             assert(it != jvo->value_object.end());
             return const_node(mp_impl->m_doc, it->second);
@@ -783,7 +778,7 @@ const_node const_node::child(size_t index) const
     }
 }
 
-const_node const_node::child(const pstring& key) const
+const_node const_node::child(std::string_view key) const
 {
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::child: this node is not of object type.");
@@ -820,12 +815,12 @@ const_node const_node::back() const
     return const_node(mp_impl->m_doc, jva->value_array.back());
 }
 
-pstring const_node::string_value() const
+std::string_view const_node::string_value() const
 {
     if (mp_impl->m_node->type != detail::node_t::string)
         throw document_error("node::key: current node is not of string type.");
 
-    return pstring(mp_impl->m_node->value.str.p, mp_impl->m_node->value.str.n);
+    return std::string_view(mp_impl->m_node->value.str.p, mp_impl->m_node->value.str.n);
 }
 
 double const_node::numeric_value() const
@@ -862,7 +857,7 @@ node& node::operator=(const detail::init::node& v)
     return *this;
 }
 
-node node::operator[](const pstring& key)
+node node::operator[](std::string_view key)
 {
     if (mp_impl->m_node->type != detail::node_t::object)
         throw document_error("node::operator[]: the node must be of object type.");
@@ -890,7 +885,7 @@ node node::child(size_t index)
     return node(std::move(cn));
 }
 
-node node::child(const pstring& key)
+node node::child(std::string_view key)
 {
     const_node cn = const_node::child(key);
     return node(std::move(cn));
@@ -1063,7 +1058,7 @@ json_value* aggregate_nodes(document_resource& res, std::vector<json_value*> nod
 
             kvp.value->parent = jv;
             auto r = jvo->value_object.insert(
-                std::make_pair(pstring(kvp.key, kvp.n_key), kvp.value));
+                std::make_pair(std::string_view(kvp.key, kvp.n_key), kvp.value));
 
             if (!r.second)
                 throw document_error("adding the same key twice");
@@ -1108,7 +1103,7 @@ void aggregate_nodes_to_object(
 
         kvp.value->parent = parent;
         auto r = jvo->value_object.insert(
-            std::make_pair(pstring(kvp.key, kvp.n_key), kvp.value));
+            std::make_pair(std::string_view(kvp.key, kvp.n_key), kvp.value));
 
         if (!r.second)
             throw document_error("adding the same key twice");
@@ -1241,7 +1236,7 @@ json_value* node::to_json_value(document_resource& res) const
             auto it = mp_impl->m_value_array.begin();
             const detail::init::node& key_node = *it;
             assert(key_node.mp_impl->m_type == detail::node_t::string);
-            pstring key = res.str_pool.intern(key_node.mp_impl->m_value_string).first;
+            std::string_view key = res.str_pool.intern(key_node.mp_impl->m_value_string).first;
             ++it;
             json_value* value = it->to_json_value(res);
             if (value->type == detail::node_t::key_value)
@@ -1299,7 +1294,7 @@ json_value* node::to_json_value(document_resource& res) const
         }
         case detail::node_t::string:
         {
-            pstring s = res.str_pool.intern(mp_impl->m_value_string).first;
+            std::string_view s = res.str_pool.intern(mp_impl->m_value_string).first;
             jv = res.obj_pool.construct(mp_impl->m_type);
             jv->value.str.p = s.data();
             jv->value.str.n = s.size();
@@ -1336,7 +1331,7 @@ void node::store_to_node(document_resource& res, json_value* parent) const
             throw document_error("node type is unset.");
         case detail::node_t::string:
         {
-            pstring s = res.str_pool.intern(mp_impl->m_value_string).first;
+            std::string_view s = res.str_pool.intern(mp_impl->m_value_string).first;
             parent->value.str.p = s.data();
             parent->value.str.n = s.size();
             break;
@@ -1504,7 +1499,7 @@ void document_tree::load(const char* p, size_t n, const json_config& config)
     parent_dir = parent_dir.parent_path();
     for (auto it = external_refs.begin(), ite = external_refs.end(); it != ite; ++it)
     {
-        fs::path extfile = it->path.str();
+        fs::path extfile = std::string{it->path};
         fs::path extpath = parent_dir;
         extpath /= extfile;
 
