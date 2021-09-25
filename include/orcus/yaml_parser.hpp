@@ -312,11 +312,11 @@ void yaml_parser<_Handler>::parse()
         }
 
         // Parse the rest of the line.
-        pstring line = parse_to_end_of_line();
-        line = line.trim();
+        std::string_view line = parse_to_end_of_line();
+        line = trim(line);
 
         assert(!line.empty());
-        parse_line(line.get(), line.size());
+        parse_line(line.data(), line.size());
     }
 
     // End all remaining scopes.
@@ -353,8 +353,8 @@ size_t yaml_parser<_Handler>::end_scope()
         }
         case yaml::detail::scope_t::multi_line_string:
         {
-            pstring merged = merge_line_buffer();
-            handler_string(merged.get(), merged.size());
+            std::string_view merged = merge_line_buffer();
+            handler_string(merged.data(), merged.size());
             break;
         }
         default:
@@ -362,8 +362,8 @@ size_t yaml_parser<_Handler>::end_scope()
             if (has_line_buffer())
             {
                 assert(get_line_buffer_count() == 1);
-                pstring line = pop_line_front();
-                parse_value(line.get(), line.size());
+                std::string_view line = pop_line_front();
+                parse_value(line.data(), line.size());
             }
         }
     }
@@ -569,11 +569,11 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
     {
         case '"':
         {
-            pstring quoted_str = parse_double_quoted_string_value(p, len);
+            std::string_view quoted_str = parse_double_quoted_string_value(p, len);
 
             if (p == p_end)
             {
-                handler_string(quoted_str.get(), quoted_str.size());
+                handler_string(quoted_str.data(), quoted_str.size());
                 return;
             }
 
@@ -586,7 +586,7 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
 
             check_or_begin_map();
             handler_begin_map_key();
-            handler_string(quoted_str.get(), quoted_str.size());
+            handler_string(quoted_str.data(), quoted_str.size());
             handler_end_map_key();
 
             ++p;  // skip the ':'.
@@ -599,11 +599,11 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
         break;
         case '\'':
         {
-            pstring quoted_str = parse_single_quoted_string_value(p, len);
+            std::string_view quoted_str = parse_single_quoted_string_value(p, len);
 
             if (p == p_end)
             {
-                handler_string(quoted_str.get(), quoted_str.size());
+                handler_string(quoted_str.data(), quoted_str.size());
                 return;
             }
 
@@ -616,7 +616,7 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
 
             check_or_begin_map();
             handler_begin_map_key();
-            handler_string(quoted_str.get(), quoted_str.size());
+            handler_string(quoted_str.data(), quoted_str.size());
             handler_end_map_key();
 
             ++p;  // skip the ':'.
@@ -645,13 +645,13 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
 
             check_or_begin_map();
             handler_begin_map_key();
-            parse_value(kv.key.get(), kv.key.size());
+            parse_value(kv.key.data(), kv.key.size());
             handler_end_map_key();
 
             if (kv.value.empty())
                 return;
 
-            p = kv.value.get();
+            p = kv.value.data();
         }
     }
 

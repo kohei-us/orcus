@@ -139,6 +139,8 @@ ORCUS_PSR_DLLPUBLIC string_escape_char_t get_string_escape_char_type(char c);
  */
 ORCUS_PSR_DLLPUBLIC double clip(double input, double low, double high);
 
+ORCUS_PSR_DLLPUBLIC std::string_view trim(std::string_view str);
+
 }
 
 #endif

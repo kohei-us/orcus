@@ -8,16 +8,14 @@
 #ifndef INCLUDED_ORCUS_YAML_DOCUMENT_TREE_HPP
 #define INCLUDED_ORCUS_YAML_DOCUMENT_TREE_HPP
 
-#include "orcus/env.hpp"
-#include "orcus/exception.hpp"
+#include "env.hpp"
+#include "exception.hpp"
 
 #include <string>
 #include <memory>
 #include <vector>
 
 namespace orcus {
-
-class pstring;
 
 namespace yaml {
 
@@ -74,7 +72,7 @@ public:
 
     const_node parent() const;
 
-    pstring string_value() const;
+    std::string_view string_value() const;
     double numeric_value() const;
 
     const_node& operator=(const const_node& other);

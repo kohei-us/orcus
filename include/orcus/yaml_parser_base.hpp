@@ -9,7 +9,6 @@
 #define INCLUDED_ORCUS_YAML_PARSER_BASE_HPP
 
 #include "orcus/parser_base.hpp"
-#include "orcus/pstring.hpp"
 
 #include <memory>
 #include <cassert>
@@ -89,8 +88,8 @@ protected:
 
     struct key_value
     {
-        pstring key;
-        pstring value;
+        std::string_view key;
+        std::string_view value;
     };
 
     parser_base() = delete;
@@ -125,7 +124,7 @@ protected:
      * Once a non-whitespace character is reached, parse until the end of the
      * line.
      */
-    pstring parse_to_end_of_line();
+    std::string_view parse_to_end_of_line();
 
     /**
      * Upon encountering a '#', skip until either the line-feed or the
@@ -154,13 +153,13 @@ protected:
 
     void push_line_back(const char* p, size_t n);
 
-    pstring pop_line_front();
+    std::string_view pop_line_front();
 
     bool has_line_buffer() const;
 
     size_t get_line_buffer_count() const;
 
-    pstring merge_line_buffer();
+    std::string_view merge_line_buffer();
 
     /**
      * Get the hash value of current document, or nullptr if a document has
@@ -183,9 +182,9 @@ protected:
 
     key_value parse_key_value(const char* p, size_t len);
 
-    pstring parse_single_quoted_string_value(const char*& p, size_t max_length);
+    std::string_view parse_single_quoted_string_value(const char*& p, size_t max_length);
 
-    pstring parse_double_quoted_string_value(const char*& p, size_t max_length);
+    std::string_view parse_double_quoted_string_value(const char*& p, size_t max_length);
 
     void skip_blanks(const char*& p, size_t len);
 

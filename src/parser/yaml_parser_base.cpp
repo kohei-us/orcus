@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/yaml_parser_base.hpp"
-#include "orcus/global.hpp"
-#include "orcus/cell_buffer.hpp"
-#include "orcus/parser_global.hpp"
+#include <orcus/yaml_parser_base.hpp>
+#include <orcus/global.hpp>
+#include <orcus/cell_buffer.hpp>
+#include <orcus/parser_global.hpp>
 
 #include <mdds/sorted_string_map.hpp>
 
@@ -46,7 +46,7 @@ struct parser_base::impl
 {
     cell_buffer m_buffer;
     std::vector<scope> m_scopes;
-    std::deque<pstring> m_line_buffer;
+    std::deque<std::string_view> m_line_buffer;
     const char* m_document;
 
     size_t m_comment_length;
@@ -131,7 +131,7 @@ size_t parser_base::parse_indent()
     return parse_indent_end_of_stream;
 }
 
-pstring parser_base::parse_to_end_of_line()
+std::string_view parser_base::parse_to_end_of_line()
 {
     const char* p = mp_char;
     size_t len = 0;
@@ -191,7 +191,7 @@ pstring parser_base::parse_to_end_of_line()
         break;
     }
 
-    pstring ret(p, len);
+    std::string_view ret(p, len);
     mp_impl->m_parsed_to_end_of_line = true;
     return ret;
 }
@@ -259,11 +259,11 @@ void parser_base::push_line_back(const char* p, size_t n)
     mp_impl->m_line_buffer.emplace_back(p, n);
 }
 
-pstring parser_base::pop_line_front()
+std::string_view parser_base::pop_line_front()
 {
     assert(!mp_impl->m_line_buffer.empty());
 
-    pstring ret = mp_impl->m_line_buffer.front();
+    std::string_view ret = mp_impl->m_line_buffer.front();
     mp_impl->m_line_buffer.pop_front();
     return ret;
 }
@@ -278,7 +278,7 @@ size_t parser_base::get_line_buffer_count() const
     return mp_impl->m_line_buffer.size();
 }
 
-pstring parser_base::merge_line_buffer()
+std::string_view parser_base::merge_line_buffer()
 {
     assert(!mp_impl->m_line_buffer.empty());
 
@@ -288,21 +288,21 @@ pstring parser_base::merge_line_buffer()
     buf.reset();
 
     auto it = mp_impl->m_line_buffer.begin();
-    buf.append(it->get(), it->size());
+    buf.append(it->data(), it->size());
     ++it;
 
     std::for_each(it, mp_impl->m_line_buffer.end(),
-        [&](const pstring& line)
+        [&](std::string_view line)
         {
             buf.append(&sep, 1);
-            buf.append(line.get(), line.size());
+            buf.append(line.data(), line.size());
         }
     );
 
     mp_impl->m_line_buffer.clear();
     mp_impl->m_in_literal_block = false;
 
-    return pstring(buf.get(), buf.size());
+    return std::string_view(buf.get(), buf.size());
 }
 
 const char* parser_base::get_doc_hash() const
@@ -400,7 +400,8 @@ parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
                 if (last == ':')
                 {
                     // Key found.
-                    kv.key = pstring(p_head, p-p_head-1).trim();
+                    std::size_t n = p - p_head - 1;
+                    kv.key = trim({p_head, n});
                     key_found = true;
                     p_head = nullptr;
                 }
@@ -420,12 +421,13 @@ parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
     if (key_found)
     {
         // Key has already been found and the value comes after the ':'.
-        kv.value = pstring(p_head, p-p_head);
+        kv.value = std::string_view(p_head, p-p_head);
     }
     else if (last == ':')
     {
         // Line only contains a key and ends with ':'.
-        kv.key = pstring(p_head, p-p_head-1).trim();
+        std::size_t n = p - p_head - 1;
+        kv.key = trim({p_head, n});
     }
     else
     {
@@ -438,7 +440,7 @@ parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
     return kv;
 }
 
-pstring parser_base::parse_single_quoted_string_value(const char*& p, size_t max_length)
+std::string_view parser_base::parse_single_quoted_string_value(const char*& p, size_t max_length)
 {
     parse_quoted_string_state ret =
         parse_single_quoted_string(p, max_length, mp_impl->m_buffer);
@@ -446,10 +448,10 @@ pstring parser_base::parse_single_quoted_string_value(const char*& p, size_t max
     if (!ret.str)
         throw_quoted_string_parse_error("parse_single_quoted_string_value", ret, offset());
 
-    return pstring(ret.str, ret.length);
+    return std::string_view(ret.str, ret.length);
 }
 
-pstring parser_base::parse_double_quoted_string_value(const char*& p, size_t max_length)
+std::string_view parser_base::parse_double_quoted_string_value(const char*& p, size_t max_length)
 {
     parse_quoted_string_state ret =
         parse_double_quoted_string(p, max_length, mp_impl->m_buffer);
@@ -457,7 +459,7 @@ pstring parser_base::parse_double_quoted_string_value(const char*& p, size_t max
     if (!ret.str)
         throw_quoted_string_parse_error("parse_double_quoted_string_value", ret, offset());
 
-    return pstring(ret.str, ret.length);
+    return std::string_view(ret.str, ret.length);
 }
 
 void parser_base::skip_blanks(const char*& p, size_t len)
@@ -499,8 +501,8 @@ void parser_base::handle_line_in_literal(size_t indent)
         prev(leading_indent);
     }
 
-    pstring line = parse_to_end_of_line();
-    push_line_back(line.get(), line.size());
+    std::string_view line = parse_to_end_of_line();
+    push_line_back(line.data(), line.size());
 }
 
 void parser_base::handle_line_in_multi_line_string()
@@ -508,10 +510,10 @@ void parser_base::handle_line_in_multi_line_string()
     if (get_scope_type() != yaml::detail::scope_t::multi_line_string)
         set_scope_type(yaml::detail::scope_t::multi_line_string);
 
-    pstring line = parse_to_end_of_line();
-    line = line.trim();
+    std::string_view line = parse_to_end_of_line();
+    line = trim(line);
     assert(!line.empty());
-    push_line_back(line.get(), line.size());
+    push_line_back(line.data(), line.size());
 }
 
 }}

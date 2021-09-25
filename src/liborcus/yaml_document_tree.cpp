@@ -515,14 +515,13 @@ const_node const_node::parent() const
     return const_node(mp_impl->m_node->parent);
 }
 
-pstring const_node::string_value() const
+std::string_view const_node::string_value() const
 {
     if (mp_impl->m_node->type != node_t::string)
         throw document_error("node::key: current node is not of string type.");
 
     const yaml_value_string* yvs = static_cast<const yaml_value_string*>(mp_impl->m_node);
-    const std::string& str = yvs->value_string;
-    return pstring(str.data(), str.size());
+    return yvs->value_string;
 }
 
 double const_node::numeric_value() const

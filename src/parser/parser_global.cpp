@@ -16,6 +16,7 @@
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <algorithm>
 
 namespace orcus {
 
@@ -512,6 +513,27 @@ double clip(double input, double low, double high)
     if (input > high)
         input = high;
     return input;
+}
+
+std::string_view trim(std::string_view str)
+{
+    const char* p = str.data();
+    const char* p_end = p + str.size();
+
+    // Find the first non-space character.
+    p = std::find_if_not(p, p_end, is_blank);
+
+    if (p == p_end)
+    {
+        // This string is empty.
+        return std::string_view{};
+    }
+
+    // Find the last non-space character.
+    auto last = std::find_if_not(std::reverse_iterator(p_end), std::reverse_iterator(p), is_blank);
+    std::size_t n = std::distance(p, last.base());
+
+    return std::string_view{p, n};
 }
 
 }
