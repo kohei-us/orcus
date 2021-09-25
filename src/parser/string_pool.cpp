@@ -72,7 +72,7 @@ std::pair<std::string_view, bool> string_pool::intern(std::string_view str)
             throw general_error("failed to intern a new string instance.");
 
         std::string_view ps = *r.first;
-        assert(ps.size() == n);
+        assert(ps == str);
 
         return std::pair<std::string_view, bool>(ps, true);
     }
@@ -80,7 +80,7 @@ std::pair<std::string_view, bool> string_pool::intern(std::string_view str)
     // This string has already been interned.
 
     std::string_view stored_str = *itr;
-    assert(stored_str.size() == n);
+    assert(stored_str == str);
     return std::pair<std::string_view, bool>(stored_str, false);
 }
 
