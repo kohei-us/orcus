@@ -465,7 +465,7 @@ void sheet::dump_flat(std::ostream& os) const
     dumper.dump(os, mp_impl->m_sheet);
 }
 
-void sheet::dump_check(ostream& os, const pstring& sheet_name) const
+void sheet::dump_check(ostream& os, std::string_view sheet_name) const
 {
     detail::check_dumper dumper(*mp_impl, sheet_name);
     dumper.dump(os);

@@ -8,8 +8,8 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_ODSTABLE_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_ODSTABLE_HPP
 
-#include "orcus/env.hpp"
-#include "orcus/spreadsheet/types.hpp"
+#include "../env.hpp"
+#include "types.hpp"
 
 #include <ostream>
 #include <ixion/address.hpp>
@@ -18,7 +18,6 @@
 
 namespace orcus {
 
-class pstring;
 struct date_time_t;
 
 namespace spreadsheet {
@@ -105,7 +104,7 @@ public:
     void finalize();
 
     void dump_flat(std::ostream& os) const;
-    void dump_check(std::ostream& os, const pstring& sheet_name) const;
+    void dump_check(std::ostream& os, std::string_view sheet_name) const;
     void dump_html(std::ostream& os) const;
     void dump_json(std::ostream& os) const;
     void dump_csv(std::ostream& os) const;

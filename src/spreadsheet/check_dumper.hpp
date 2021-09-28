@@ -9,8 +9,7 @@
 #define INCLUDED_ORCUS_SPREADSHEET_CHECK_DUMPER_HPP
 
 #include <ostream>
-
-#include "orcus/pstring.hpp"
+#include <string_view>
 
 namespace orcus { namespace spreadsheet {
 
@@ -21,10 +20,10 @@ namespace detail {
 class check_dumper
 {
     const sheet_impl& m_sheet;
-    pstring m_sheet_name;
+    std::string_view m_sheet_name;
 
 public:
-    check_dumper(const sheet_impl& sheet, const pstring& sheet_name);
+    check_dumper(const sheet_impl& sheet, std::string_view sheet_name);
     void dump(std::ostream& os) const;
 
 private:
