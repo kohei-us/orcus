@@ -21,7 +21,7 @@ void run_xmlns_example()
     // empty alias is for default namespace.  You can either use nullptr or an
     // empty string.
     xmlns_id_t ns_default = ns_cxt.push(
-        nullptr, "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+        std::string_view{}, "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 
     xmlns_id_t ns_a = ns_cxt.push(
         "a", "http://schemas.openxmlformats.org/drawingml/2006/main");
@@ -32,7 +32,7 @@ void run_xmlns_example()
     // You can retrieve the data associated with alias ID's.
     for (const xmlns_id_t nsid : {ns_default, ns_a, ns_r})
     {
-        pstring alias = ns_cxt.get_alias(nsid);
+        std::string_view alias = ns_cxt.get_alias(nsid);
         cout << "Namespace alias '" << alias << "' has an index of " << ns_cxt.get_index(nsid)
             << " and a short name of '" << ns_cxt.get_short_name(nsid) << "'." << endl;
         cout << "The value of the alias '" << alias << "' is '" << ns_cxt.get(alias) << "'." << endl;
@@ -49,18 +49,18 @@ void run_xmlns_stacked()
     xmlns_context ns_cxt = ns_repo.create_context();
 
     // Push a first default namespace.
-    xmlns_id_t ns_default_1 = ns_cxt.push(nullptr, "http://original");
+    xmlns_id_t ns_default_1 = ns_cxt.push(std::string_view{}, "http://original");
 
     // Push a nested deffault namespace.  This overwrites the original.
-    xmlns_id_t current_default_ns = ns_cxt.push(nullptr, "http://nested");
+    xmlns_id_t current_default_ns = ns_cxt.push(std::string_view{}, "http://nested");
     cout << "same as original: " << (current_default_ns == ns_default_1) << endl;
 
     // Pop the current default namespace.  After this the original namespace
     // becomes the default namespace again.
-    ns_cxt.pop(nullptr);
+    ns_cxt.pop(std::string_view{});
 
     // Get the current default namespace identifier.
-    current_default_ns = ns_cxt.get(nullptr);
+    current_default_ns = ns_cxt.get(std::string_view{});
     cout << "same as original: " << (current_default_ns == ns_default_1) << endl;
 }
 

@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
+#include <cstring>
 
 using namespace std;
 using namespace orcus;
@@ -96,10 +97,10 @@ string dump_check_content(const json::document_tree& doc)
 
 bool compare_check_contents(const file_content& expected, const std::string& actual)
 {
-    pstring _expected(expected.data(), expected.size());
-    pstring _actual(actual.data(), actual.size());
-    _expected = _expected.trim();
-    _actual = _actual.trim();
+    std::string_view _expected(expected.data(), expected.size());
+    std::string_view _actual(actual.data(), actual.size());
+    _expected = trim(_expected);
+    _actual = trim(_actual);
 
     if (_expected != _actual)
     {
@@ -168,7 +169,7 @@ void test_json_parse_empty()
     for (size_t i = 0; i < ORCUS_N_ELEMENTS(tests); ++i)
     {
         const char* test = tests[i];
-        cout << "JSON stream: '" << test << "' (" << strlen(test) << ")" << endl;
+        cout << "JSON stream: '" << test << "' (" << std::strlen(test) << ")" << endl;
         json::document_tree doc;
         try
         {
@@ -328,7 +329,7 @@ void test_json_traverse_basic4()
         assert(keys.size() == 3);
         for (auto it = keys.begin(), ite = keys.end(); it != ite; ++it)
         {
-            const pstring& key = *it;
+            std::string_view key = *it;
             json::const_node child = node.child(key);
             if (key == "int")
                 assert(number_expected(child, 12.0));

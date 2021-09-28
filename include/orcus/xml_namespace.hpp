@@ -9,7 +9,6 @@
 #define INCLUDED_ORCUS_XML_NAMESPACE_MANAGER_HPP
 
 #include "types.hpp"
-#include "pstring.hpp"
 
 #include <ostream>
 #include <memory>
@@ -17,7 +16,6 @@
 namespace orcus {
 
 class xmlns_context;
-class pstring;
 struct xmlns_repository_impl;
 struct xmlns_context_impl;
 
@@ -97,8 +95,8 @@ public:
     xmlns_context& operator= (const xmlns_context& r);
     xmlns_context& operator= (xmlns_context&& r);
 
-    xmlns_id_t push(const pstring& key, const pstring& uri);
-    void pop(const pstring& key);
+    xmlns_id_t push(std::string_view key, std::string_view uri);
+    void pop(std::string_view key);
 
     /**
      * Get the currnet namespace identifier for a specified namespace alias.
@@ -107,7 +105,7 @@ public:
      *
      * @return current namespace identifier associated with the alias.
      */
-    xmlns_id_t get(const pstring& key) const;
+    xmlns_id_t get(std::string_view key) const;
 
     /**
      * Get a unique index value associated with a specified identifier.  An

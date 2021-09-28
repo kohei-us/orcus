@@ -9,7 +9,6 @@
 #include <orcus/exception.hpp>
 #include <orcus/string_pool.hpp>
 #include <orcus/global.hpp>
-#include <orcus/pstring.hpp>
 
 #include <unordered_map>
 #include <vector>
@@ -214,7 +213,7 @@ xmlns_context& xmlns_context::operator= (xmlns_context&& r)
     return *this;
 }
 
-xmlns_id_t xmlns_context::push(const pstring& key, const pstring& uri)
+xmlns_id_t xmlns_context::push(std::string_view key, std::string_view uri)
 {
     if (!mp_impl->repo)
         throw general_error("this context is not associated with any repo.");
@@ -259,7 +258,7 @@ xmlns_id_t xmlns_context::push(const pstring& key, const pstring& uri)
     return nslist.back();
 }
 
-void xmlns_context::pop(const pstring& key)
+void xmlns_context::pop(std::string_view key)
 {
 #if ORCUS_DEBUG_XML_NAMESPACE
     cout << "xmlns_context::pop: key='" << key << "'" << endl;
@@ -286,7 +285,7 @@ void xmlns_context::pop(const pstring& key)
     nslist.pop_back();
 }
 
-xmlns_id_t xmlns_context::get(const pstring& key) const
+xmlns_id_t xmlns_context::get(std::string_view key) const
 {
 #if ORCUS_DEBUG_XML_NAMESPACE
     cout << "xmlns_context::get: alias='" << key << "', default ns stack size="
