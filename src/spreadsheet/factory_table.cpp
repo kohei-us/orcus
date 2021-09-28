@@ -58,7 +58,7 @@ public:
     virtual void append_column_match_value(const char* p, size_t n)
     {
         // The string pool belongs to the document.
-        pstring s = m_pool.intern(p, n).first;
+        std::string_view s = m_pool.intern(p, n).first;
         m_cur_col_data.match_values.insert(s);
     };
 

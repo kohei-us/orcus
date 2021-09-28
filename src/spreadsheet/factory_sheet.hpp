@@ -8,11 +8,11 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_FACTORY_SHEET_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_FACTORY_SHEET_HPP
 
-#include "orcus/spreadsheet/import_interface.hpp"
-#include "orcus/spreadsheet/import_interface_view.hpp"
-#include "orcus/spreadsheet/auto_filter.hpp"
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_view.hpp>
+#include <orcus/spreadsheet/auto_filter.hpp>
 
-#include "orcus/spreadsheet/export_interface.hpp"
+#include <orcus/spreadsheet/export_interface.hpp>
 
 #include "factory_table.hpp"
 #include "shared_formula.hpp"
@@ -38,7 +38,7 @@ class import_sheet_named_exp : public iface::import_named_expression
 {
     document& m_doc;
     sheet_t m_sheet_index;
-    pstring m_name;
+    std::string_view m_name;
     ixion::abs_address_t m_base;
     ixion::formula_tokens_t m_tokens;
 

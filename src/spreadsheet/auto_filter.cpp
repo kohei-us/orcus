@@ -55,8 +55,8 @@ table_column_t::table_column_t() : identifier(0), totals_row_function(totals_row
 void table_column_t::reset()
 {
     identifier = 0;
-    name.clear();
-    totals_row_label.clear();
+    name = std::string_view{};
+    totals_row_label = std::string_view{};
     totals_row_function = totals_row_function_t::none;
 }
 
@@ -68,7 +68,7 @@ table_style_t::table_style_t() :
 
 void table_style_t::reset()
 {
-    name.clear();
+    name = std::string_view{};
     show_first_column = false;
     show_last_column = false;
     show_row_stripes = false;
@@ -80,8 +80,8 @@ table_t::table_t() : identifier(0), range(ixion::abs_range_t::invalid), totals_r
 void table_t::reset()
 {
     identifier = 0;
-    name.clear();
-    display_name.clear();
+    name = std::string_view{};
+    display_name = std::string_view{};
     range = ixion::abs_range_t(ixion::abs_range_t::invalid);
     totals_row_count = 0;
     filter.reset();

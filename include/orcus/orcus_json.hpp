@@ -12,6 +12,7 @@
 #include "./spreadsheet/types.hpp"
 
 #include <memory>
+#include <string_view>
 
 namespace orcus {
 

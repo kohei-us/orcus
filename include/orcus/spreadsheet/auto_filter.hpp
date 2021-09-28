@@ -9,7 +9,6 @@
 #define INCLUDED_ORCUS_SPREADSHEET_AUTO_FILTER_HPP
 
 #include "types.hpp"
-#include "orcus/pstring.hpp"
 #include "../env.hpp"
 
 #include <map>
@@ -24,7 +23,7 @@ namespace orcus { namespace spreadsheet {
  */
 struct ORCUS_SPM_DLLPUBLIC auto_filter_column_t
 {
-    typedef std::unordered_set<pstring, pstring::hash> match_values_type;
+    using match_values_type = std::unordered_set<std::string_view>;
     match_values_type match_values;
 
     void reset();
@@ -65,8 +64,8 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
 struct ORCUS_SPM_DLLPUBLIC table_column_t
 {
     size_t identifier;
-    pstring name;
-    pstring totals_row_label;
+    std::string_view name;
+    std::string_view totals_row_label;
     totals_row_function_t totals_row_function;
 
     table_column_t();
@@ -79,7 +78,7 @@ struct ORCUS_SPM_DLLPUBLIC table_column_t
  */
 struct ORCUS_SPM_DLLPUBLIC table_style_t
 {
-    pstring name;
+    std::string_view name;
 
     bool show_first_column:1;
     bool show_last_column:1;
@@ -101,8 +100,8 @@ struct ORCUS_SPM_DLLPUBLIC table_t
 
     size_t identifier;
 
-    pstring name;
-    pstring display_name;
+    std::string_view name;
+    std::string_view display_name;
 
     ixion::abs_range_t range;
 

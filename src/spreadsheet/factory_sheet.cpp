@@ -60,9 +60,9 @@ void import_sheet_named_exp::set_named_range(
 void import_sheet_named_exp::commit()
 {
     ixion::model_context& cxt = m_doc.get_model_context();
-    cxt.set_named_expression(m_sheet_index, m_name.str(), m_base, std::move(m_tokens));
+    cxt.set_named_expression(m_sheet_index, std::string{m_name}, m_base, std::move(m_tokens));
 
-    m_name.clear();
+    m_name = std::string_view{};
     m_base.sheet = 0;
     m_base.row = 0;
     m_base.column = 0;
@@ -120,7 +120,7 @@ void import_auto_filter::set_column(col_t col)
 void import_auto_filter::append_column_match_value(const char* p, size_t n)
 {
     // The string pool belongs to the document.
-    pstring s = m_string_pool.intern(p, n).first;
+    std::string_view s = m_string_pool.intern(p, n).first;
     m_cur_col_data.match_values.insert(s);
 }
 
@@ -214,9 +214,8 @@ void import_array_formula::set_formula(formula_grammar_t grammar, const char* p,
         if (m_error_policy == formula_error_policy_t::fail)
             throw;
 
-        const char* p_error = e.what();
-        size_t n_error = strlen(p_error);
-        m_tokens = ixion::create_formula_error_tokens(cxt, {p, n}, {p_error, n_error});
+        std::string_view error_s = e.what();
+        m_tokens = ixion::create_formula_error_tokens(cxt, {p, n}, error_s);
     }
 }
 
@@ -308,9 +307,8 @@ void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_
         if (m_error_policy == formula_error_policy_t::fail)
             throw;
 
-        const char* p_error = e.what();
-        size_t n_error = strlen(p_error);
-        tokens = ixion::create_formula_error_tokens(cxt, {p, n}, {p_error, n_error});
+        std::string_view error_s = e.what();
+        tokens = ixion::create_formula_error_tokens(cxt, {p, n}, error_s);
     }
 
     m_tokens_store = ixion::formula_tokens_store::create();
