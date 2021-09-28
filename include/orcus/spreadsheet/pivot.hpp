@@ -8,10 +8,9 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_PIVOT_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_PIVOT_HPP
 
-#include "orcus/env.hpp"
-#include "orcus/pstring.hpp"
-#include "orcus/types.hpp"
-#include "orcus/spreadsheet/types.hpp"
+#include "../env.hpp"
+#include "../types.hpp"
+#include "types.hpp"
 
 #include <memory>
 #include <vector>
@@ -206,7 +205,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
      * Field name. It must be interned with the string pool belonging to the
      * document.
      */
-    pstring name;
+    std::string_view name;
 
     pivot_cache_items_t items;
 
@@ -219,7 +218,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
     std::unique_ptr<pivot_cache_group_data_t> group_data;
 
     pivot_cache_field_t();
-    pivot_cache_field_t(const pstring& _name);
+    pivot_cache_field_t(std::string_view _name);
     pivot_cache_field_t(const pivot_cache_field_t& other);
     pivot_cache_field_t(pivot_cache_field_t&& other);
 };
@@ -281,7 +280,7 @@ public:
      * @param cache pivot cache instance to store.
      */
     void insert_worksheet_cache(
-        const pstring& sheet_name, const ixion::abs_range_t& range, std::unique_ptr<pivot_cache>&& cache);
+        std::string_view sheet_name, const ixion::abs_range_t& range, std::unique_ptr<pivot_cache>&& cache);
 
     /**
      * Insert a new pivot cache associated with a table name.
@@ -289,7 +288,7 @@ public:
      * @param table_name source table name.
      * @param cache pivot cache instance to store.
      */
-    void insert_worksheet_cache(const pstring& table_name, std::unique_ptr<pivot_cache>&& cache);
+    void insert_worksheet_cache(std::string_view table_name, std::unique_ptr<pivot_cache>&& cache);
 
     /**
      * Count the number of pivot caches currently stored.
@@ -299,7 +298,7 @@ public:
     size_t get_cache_count() const;
 
     const pivot_cache* get_cache(
-        const pstring& sheet_name, const ixion::abs_range_t& range) const;
+        std::string_view sheet_name, const ixion::abs_range_t& range) const;
 
     pivot_cache* get_cache(pivot_cache_id_t cache_id);
 

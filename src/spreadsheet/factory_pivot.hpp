@@ -30,9 +30,9 @@ class import_pivot_cache_def : public iface::import_pivot_cache_definition
     pivot_cache_id_t m_cache_id = 0;
 
     source_type m_src_type = unknown;
-    pstring m_src_sheet_name;
+    std::string_view m_src_sheet_name;
     ixion::abs_range_t m_src_range;
-    pstring m_src_table_name;
+    std::string_view m_src_table_name;
 
     std::unique_ptr<pivot_cache> m_cache;
     pivot_cache::fields_type m_current_fields;
@@ -42,7 +42,7 @@ class import_pivot_cache_def : public iface::import_pivot_cache_definition
     std::unique_ptr<import_pc_field_group> m_current_field_group;
 
 private:
-    pstring intern(const char* p, size_t n);
+    std::string_view intern(const char* p, size_t n);
 
 public:
     import_pivot_cache_def(document& doc);

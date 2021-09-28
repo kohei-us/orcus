@@ -26,7 +26,7 @@ class import_pc_field_group : public iface::import_pivot_cache_field_group
     pivot_cache_item_t m_current_field_item;
 
 private:
-    pstring intern(const char* p, size_t n)
+    std::string_view intern(const char* p, size_t n)
     {
         return m_doc.get_string_pool().intern(p, n).first;
     }
@@ -56,8 +56,8 @@ public:
     void set_field_item_string(const char* p, size_t n) override
     {
         m_current_field_item.type = pivot_cache_item_t::item_type::character;
-        pstring s = intern(p, n);
-        m_current_field_item.value.character.p = s.get();
+        std::string_view s = intern(p, n);
+        m_current_field_item.value.character.p = s.data();
         m_current_field_item.value.character.n = s.size();
     }
 
@@ -118,7 +118,7 @@ public:
     }
 };
 
-pstring import_pivot_cache_def::intern(const char* p, size_t n)
+std::string_view import_pivot_cache_def::intern(const char* p, size_t n)
 {
     return m_doc.get_string_pool().intern(p, n).first;
 }
@@ -150,7 +150,7 @@ void import_pivot_cache_def::set_worksheet_source(
     if (fn.type != ixion::formula_name_t::range_reference)
     {
         std::ostringstream os;
-        os << pstring(ref, n_ref) << " is not a valid range.";
+        os << std::string_view(ref, n_ref) << " is not a valid range.";
         throw xml_structure_error(os.str());
     }
 
@@ -210,8 +210,8 @@ void import_pivot_cache_def::commit_field()
 void import_pivot_cache_def::set_field_item_string(const char* p, size_t n)
 {
     m_current_field_item.type = pivot_cache_item_t::item_type::character;
-    pstring s = intern(p, n);
-    m_current_field_item.value.character.p = s.get();
+    std::string_view s = intern(p, n);
+    m_current_field_item.value.character.p = s.data();
     m_current_field_item.value.character.n = s.size();
 }
 

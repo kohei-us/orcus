@@ -56,7 +56,7 @@ bool pivot_cache_record_value_t::operator== (const pivot_cache_record_value_t& o
                 value.date_time.minute == other.value.date_time.minute &&
                 value.date_time.second == other.value.date_time.second;
         case value_type::character:
-            return pstring(value.character.p, value.character.n) == pstring(other.value.character.p, other.value.character.n);
+            return std::string_view(value.character.p, value.character.n) == std::string_view(other.value.character.p, other.value.character.n);
         case value_type::numeric:
             return value.numeric == other.value.numeric;
         case value_type::blank:
@@ -200,7 +200,7 @@ bool pivot_cache_item_t::operator< (const pivot_cache_item_t& other) const
         case item_type::numeric:
             return value.numeric < other.value.numeric;
         case item_type::character:
-            return pstring(value.character.p, value.character.n) < pstring(other.value.character.p, other.value.character.n);
+            return std::string_view(value.character.p, value.character.n) < std::string_view(other.value.character.p, other.value.character.n);
         case item_type::date_time:
             if (value.date_time.year != other.value.date_time.year)
                 return value.date_time.year < other.value.date_time.year;
@@ -242,7 +242,7 @@ bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
         case item_type::numeric:
             return value.numeric == other.value.numeric;
         case item_type::character:
-            return pstring(value.character.p, value.character.n) == pstring(other.value.character.p, other.value.character.n);
+            return std::string_view(value.character.p, value.character.n) == std::string_view(other.value.character.p, other.value.character.n);
         case item_type::date_time:
             return value.date_time.year == other.value.date_time.year &&
                 value.date_time.month == other.value.date_time.month &&
@@ -292,7 +292,7 @@ pivot_cache_group_data_t::pivot_cache_group_data_t(pivot_cache_group_data_t&& ot
 
 pivot_cache_field_t::pivot_cache_field_t() {}
 
-pivot_cache_field_t::pivot_cache_field_t(const pstring& _name) : name(_name) {}
+pivot_cache_field_t::pivot_cache_field_t(std::string_view _name) : name(_name) {}
 
 pivot_cache_field_t::pivot_cache_field_t(const pivot_cache_field_t& other) :
     name(other.name),
@@ -312,7 +312,7 @@ pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
     max_date(std::move(other.max_date)),
     group_data(std::move(other.group_data))
 {
-    other.name.clear();
+    other.name = std::string_view{};
 }
 
 struct pivot_cache::impl
@@ -321,7 +321,7 @@ struct pivot_cache::impl
 
     string_pool& m_string_pool;
 
-    pstring m_src_sheet_name;
+    std::string_view m_src_sheet_name;
 
     pivot_cache::fields_type m_fields;
 
@@ -372,10 +372,10 @@ constexpr const ixion::sheet_t ignored_sheet = -1;
 
 struct worksheet_range
 {
-    pstring sheet; /// it must be an interned string with the document.
+    std::string_view sheet; /// it must be an interned string with the document.
     ixion::abs_range_t range; /// sheet indices are ignored.
 
-    worksheet_range(pstring _sheet, ixion::abs_range_t _range) :
+    worksheet_range(std::string_view _sheet, ixion::abs_range_t _range) :
         sheet(std::move(_sheet)), range(std::move(_range))
     {
         range.first.sheet = ignored_sheet;
@@ -389,7 +389,7 @@ struct worksheet_range
 
     struct hash
     {
-        pstring::hash ps_hasher;
+        std::hash<std::string_view> ps_hasher;
         ixion::abs_range_t::hash range_hasher;
 
         size_t operator() (const worksheet_range& v) const
@@ -405,7 +405,7 @@ struct worksheet_range
 };
 
 using range_map_type = std::unordered_map<worksheet_range, std::unordered_set<pivot_cache_id_t>, worksheet_range::hash>;
-using name_map_type = std::unordered_map<pstring, std::unordered_set<pivot_cache_id_t>, pstring::hash>;
+using name_map_type = std::unordered_map<std::string_view, std::unordered_set<pivot_cache_id_t>>;
 
 using caches_type = std::unordered_map<pivot_cache_id_t, std::unique_ptr<pivot_cache>>;
 
@@ -438,7 +438,7 @@ pivot_collection::pivot_collection(document& doc) : mp_impl(std::make_unique<imp
 pivot_collection::~pivot_collection() {}
 
 void pivot_collection::insert_worksheet_cache(
-    const pstring& sheet_name, const ixion::abs_range_t& range,
+    std::string_view sheet_name, const ixion::abs_range_t& range,
     std::unique_ptr<pivot_cache>&& cache)
 {
     // First, ensure that no caches exist for the cache ID.
@@ -467,7 +467,7 @@ void pivot_collection::insert_worksheet_cache(
 }
 
 void pivot_collection::insert_worksheet_cache(
-    const pstring& table_name, std::unique_ptr<pivot_cache>&& cache)
+    std::string_view table_name, std::unique_ptr<pivot_cache>&& cache)
 {
     // First, ensure that no caches exist for the cache ID.
     pivot_cache_id_t cache_id = cache->get_id();
@@ -481,7 +481,8 @@ void pivot_collection::insert_worksheet_cache(
     if (it == name_map.end())
     {
         // First cache to be associated with this name.
-        pstring table_name_interned = mp_impl->m_doc.get_string_pool().intern(table_name).first;
+        std::string_view table_name_interned =
+            mp_impl->m_doc.get_string_pool().intern(table_name).first;
         name_map.insert(name_map_type::value_type(table_name_interned, {cache_id}));
         return;
     }
@@ -496,7 +497,7 @@ size_t pivot_collection::get_cache_count() const
 }
 
 const pivot_cache* pivot_collection::get_cache(
-    const pstring& sheet_name, const ixion::abs_range_t& range) const
+    std::string_view sheet_name, const ixion::abs_range_t& range) const
 {
     worksheet_range wr(sheet_name, range);
 
