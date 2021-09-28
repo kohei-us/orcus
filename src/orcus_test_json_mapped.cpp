@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/orcus_json.hpp"
-#include "orcus/stream.hpp"
-#include "orcus/spreadsheet/document.hpp"
-#include "orcus/spreadsheet/factory.hpp"
-#include "orcus/exception.hpp"
-#include "orcus/global.hpp"
+#include <orcus/orcus_json.hpp>
+#include <orcus/stream.hpp>
+#include <orcus/spreadsheet/document.hpp>
+#include <orcus/spreadsheet/factory.hpp>
+#include <orcus/exception.hpp>
+#include <orcus/global.hpp>
+#include <orcus/parser_global.hpp>
 
 #include <iostream>
 #include <vector>
@@ -61,10 +62,10 @@ void test_mapped_json_import()
         doc.dump_check(os);
 
         std::string actual_strm = os.str();
-        pstring actual(actual_strm);
-        pstring expected = check_content.str();
-        actual = actual.trim();
-        expected = expected.trim();
+        std::string_view actual(actual_strm);
+        std::string_view expected = check_content.str();
+        actual = trim(actual);
+        expected = trim(expected);
         assert(actual == expected);
     }
 }

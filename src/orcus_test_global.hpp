@@ -60,7 +60,7 @@ std::string get_content_as_csv(const spreadsheet::document& doc, spreadsheet::sh
  * @param actual string representative of the actual content.
  */
 void verify_content(
-    const char* filename, size_t line_no, const pstring& expected, const std::string& actual);
+    const char* filename, size_t line_no, std::string_view expected, const std::string& actual);
 
 void verify_content(
     const char* filename, size_t line_no, const spreadsheet::document& doc, const pstring& expected);

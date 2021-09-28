@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_XML_NAMESPACE_MANAGER_HPP
 
 #include "types.hpp"
+#include "pstring.hpp"
 
 #include <ostream>
 #include <memory>
@@ -31,7 +32,7 @@ class ORCUS_PSR_DLLPUBLIC xmlns_repository
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
-    xmlns_id_t intern(const pstring& uri);
+    xmlns_id_t intern(std::string_view uri);
 
     xmlns_repository(const xmlns_repository&); // disabled
     xmlns_repository& operator= (const xmlns_repository&); // disabled
@@ -142,7 +143,7 @@ public:
      *         identifier, or an empty string if the given namespace is
      *         currently not associated with any aliases.
      */
-    pstring get_alias(xmlns_id_t ns_id) const;
+    std::string_view get_alias(xmlns_id_t ns_id) const;
 
     std::vector<xmlns_id_t> get_all_namespaces() const;
 

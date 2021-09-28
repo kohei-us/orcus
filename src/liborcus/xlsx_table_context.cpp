@@ -113,7 +113,7 @@ public:
             case XML_totalsRowFunction:
                 m_totals_row_func =
                     spreadsheet::to_totals_row_function_enum(
-                        attr.value.get(), attr.value.size());
+                        attr.value.data(), attr.value.size());
             break;
             default:
                 ;
@@ -145,7 +145,7 @@ public:
         switch (attr.name)
         {
             case XML_name:
-                mp_table->set_style_name(attr.value.get(), attr.value.size());
+                mp_table->set_style_name(attr.value.data(), attr.value.size());
                 if (m_debug)
                     cout << "  * table style info (name=" << attr.value << ")" << endl;
             break;

@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/css_document_tree.hpp"
-#include "orcus/css_parser.hpp"
-#include "orcus/string_pool.hpp"
+#include <orcus/css_document_tree.hpp>
+#include <orcus/css_parser.hpp>
+#include <orcus/string_pool.hpp>
+#include <orcus/pstring.hpp>
 
 #define ORCUS_DEBUG_CSS_DOCTREE 0
 

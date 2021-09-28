@@ -5,15 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <orcus/global.hpp>
+#include <orcus/measurement.hpp>
+#include <orcus/spreadsheet/types.hpp>
+#include <orcus/pstring.hpp>
+
 #include <cstdlib>
 #include <cassert>
 #include <iostream>
 #include <sstream>
 #include <cmath>
-
-#include "orcus/global.hpp"
-#include "orcus/measurement.hpp"
-#include "orcus/spreadsheet/types.hpp"
 
 using namespace std;
 using namespace orcus;

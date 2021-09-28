@@ -30,25 +30,25 @@ public:
         {
             case XML_startCol:
             {
-                size_t n = atoi(attr.value.get());
+                size_t n = atoi(attr.value.data());
                 m_style_region_data.start_col = n;
             }
             break;
             case XML_startRow:
             {
-                size_t n = atoi(attr.value.get());
+                size_t n = atoi(attr.value.data());
                 m_style_region_data.start_row = n;
             }
             break;
             case XML_endCol:
             {
-                size_t n = atoi(attr.value.get());
+                size_t n = atoi(attr.value.data());
                 m_style_region_data.end_col = n;
             }
             break;
             case XML_endRow:
             {
-                size_t n = atoi(attr.value.get());
+                size_t n = atoi(attr.value.data());
                 m_style_region_data.end_row = n;
             }
             break;
@@ -73,25 +73,25 @@ public:
         {
             case XML_Unit:
             {
-                double n = atoi(attr.value.get());
+                double n = atoi(attr.value.data());
                 m_styles.set_font_size(n);
             }
             break;
             case XML_Bold:
             {
-                bool b = atoi(attr.value.get()) != 0;
+                bool b = atoi(attr.value.data()) != 0;
                 m_styles.set_font_bold(b);
             }
             break;
             case XML_Italic:
             {
-                bool b = atoi(attr.value.get()) != 0;
+                bool b = atoi(attr.value.data()) != 0;
                 m_styles.set_font_italic(b);
             }
             break;
             case XML_Underline:
             {
-                int n = atoi(attr.value.get());
+                int n = atoi(attr.value.data());
                 switch (n)
                 {
                     case 0:
@@ -152,7 +152,7 @@ public:
             break;
             case XML_Hidden:
             {
-                bool b = atoi(attr.value.get());
+                bool b = atoi(attr.value.data());
                 m_styles.set_cell_hidden(b);
 
                 m_protection = true;
@@ -160,7 +160,7 @@ public:
             break;
             case XML_Locked:
             {
-                bool b = atoi(attr.value.get());
+                bool b = atoi(attr.value.data());
                 m_styles.set_cell_locked(b);
 
                 m_protection = true;
@@ -170,7 +170,7 @@ public:
             {
                 if (attr.value != "General")
                 {
-                    m_styles.set_number_format_code(attr.value.get(), attr.value.size());
+                    m_styles.set_number_format_code(attr.value.data(), attr.value.size());
                     size_t index = m_styles.commit_number_format();
                     m_styles.set_xf_number_format(index);
                 }
@@ -302,7 +302,7 @@ public:
         {
             case XML_Operator:
             {
-                int val = atoi(attr.value.get());
+                int val = atoi(attr.value.data());
                 spreadsheet::condition_operator_t op = get_condition_operator(val);
                 m_cond_format->set_operator(op);
             }
@@ -331,25 +331,25 @@ public:
         {
             case XML_No:
             {
-                size_t i = atoi(attr.value.get());
+                size_t i = atoi(attr.value.data());
                 m_position = i;
             }
             break;
             case XML_Unit:
             {
-                double n = atof(attr.value.get());
+                double n = atof(attr.value.data());
                 m_size = n;
             }
             break;
             case XML_Count:
             {
-                size_t i = atoi(attr.value.get());
+                size_t i = atoi(attr.value.data());
                 m_num_repeated = i;
             }
             break;
             case XML_Hidden:
             {
-                bool b = atoi(attr.value.get()) != 0;
+                bool b = atoi(attr.value.data()) != 0;
                 m_hidden = b;
             }
         }
@@ -416,7 +416,7 @@ public:
         {
             case XML_Index:
             {
-                spreadsheet::col_t col = atoi(attr.value.get());                
+                spreadsheet::col_t col = atoi(attr.value.data());
                 m_auto_filter.set_column(col);
             }
             break;

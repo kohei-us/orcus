@@ -221,7 +221,7 @@ public:
                 case XML_text_line_through_style:
                 {
                     strikethrough_style_map style_map(strikethrough_style_entries, sizeof(strikethrough_style_entries)/sizeof(strikethrough_style_entries[0]), spreadsheet::strikethrough_style_t::none);
-                    m_strikethrough_style = style_map.find(attr.value.get(), attr.value.size());
+                    m_strikethrough_style = style_map.find(attr.value.data(), attr.value.size());
                 }
                 break;
                 case XML_text_line_through_type:

@@ -8,8 +8,9 @@
 #ifndef INCLUDED_ORCUS_SESSION_CONTEXT_HPP
 #define INCLUDED_ORCUS_SESSION_CONTEXT_HPP
 
-#include "orcus/string_pool.hpp"
-#include "orcus/types.hpp"
+#include <orcus/string_pool.hpp>
+#include <orcus/types.hpp>
+#include <orcus/pstring.hpp>
 
 #include <memory>
 

@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/spreadsheet/types.hpp"
-#include "orcus/global.hpp"
-#include "orcus/exception.hpp"
+#include <orcus/spreadsheet/types.hpp>
+#include <orcus/global.hpp>
+#include <orcus/exception.hpp>
+#include <orcus/pstring.hpp>
 
 #include <limits>
 #include <sstream>

@@ -153,7 +153,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     {
                         case XML_type:
                             m_source_type =
-                                get_pc_source_map().find(attr.value.get(), attr.value.size());
+                                get_pc_source_map().find(attr.value.data(), attr.value.size());
 
                             source_type_s = attr.value;
                             break;
@@ -383,7 +383,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                             break;
                         case XML_groupBy:
                             group_by = spreadsheet::to_pivot_cache_group_by_enum(
-                                attr.value.get(), attr.value.size());
+                                attr.value.data(), attr.value.size());
                             break;
                         default:
                             ;
@@ -831,7 +831,7 @@ void xlsx_pivot_cache_def_context::start_element_e(
                     switch (attr.name)
                     {
                         case XML_v:
-                            ev = spreadsheet::to_error_value_enum(attr.value.get(), attr.value.size());
+                            ev = spreadsheet::to_error_value_enum(attr.value.data(), attr.value.size());
                         break;
                         case XML_u:
                             // flag for unused item.

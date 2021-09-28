@@ -10,6 +10,7 @@
 
 #include "env.hpp"
 #include "types.hpp"
+#include "pstring.hpp"
 
 #include <ostream>
 #include <memory>

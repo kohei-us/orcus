@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/json_parser_thread.hpp"
-#include "orcus/global.hpp"
-#include "orcus/json_parser.hpp"
-#include "orcus/string_pool.hpp"
-#include "orcus/detail/parser_token_buffer.hpp"
+#include <orcus/json_parser_thread.hpp>
+#include <orcus/global.hpp>
+#include <orcus/json_parser.hpp>
+#include <orcus/string_pool.hpp>
+#include <orcus/detail/parser_token_buffer.hpp>
+#include <orcus/pstring.hpp>
 
 #include <sstream>
 #include <algorithm>

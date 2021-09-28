@@ -367,7 +367,7 @@ public:
             case XML_style:
             {
                 m_styles.set_border_style(m_dir,
-                    border_style::get().find(attr.value.get(), attr.value.size()));
+                    border_style::get().find(attr.value.data(), attr.value.size()));
             }
             break;
         }
@@ -386,7 +386,7 @@ public:
         switch (attr.name)
         {
             case XML_name:
-                m_styles.set_cell_style_name(attr.value.get(), attr.value.size());
+                m_styles.set_cell_style_name(attr.value.data(), attr.value.size());
             break;
             case XML_xfId:
             {

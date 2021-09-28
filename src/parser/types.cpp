@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/types.hpp"
-#include "orcus/global.hpp"
-#include "orcus/xml_namespace.hpp"
+#include <orcus/types.hpp>
+#include <orcus/global.hpp>
+#include <orcus/xml_namespace.hpp>
 
 #include <limits>
 #include <sstream>
@@ -26,7 +26,7 @@ size_t xml_token_pair_hash::operator()(const xml_token_pair_t& v) const
 const size_t index_not_found = std::numeric_limits<size_t>::max();
 
 xml_name_t::xml_name_t() : ns(XMLNS_UNKNOWN_ID), name() {}
-xml_name_t::xml_name_t(xmlns_id_t _ns, const pstring& _name) : ns(_ns), name(_name) {}
+xml_name_t::xml_name_t(xmlns_id_t _ns, std::string_view _name) : ns(_ns), name(_name) {}
 xml_name_t::xml_name_t(const xml_name_t& r) : ns(r.ns), name(r.name) {}
 
 xml_name_t& xml_name_t::operator= (const xml_name_t& other)
@@ -52,7 +52,7 @@ std::string xml_name_t::to_string(const xmlns_context& cxt, to_string_type type)
 
     if (ns)
     {
-        pstring ns_str;
+        std::string_view ns_str;
         switch (type)
         {
             case use_alias:
@@ -90,17 +90,17 @@ xml_token_attr_t::xml_token_attr_t() :
     ns(XMLNS_UNKNOWN_ID), name(XML_UNKNOWN_TOKEN), transient(false) {}
 
 xml_token_attr_t::xml_token_attr_t(
-    xmlns_id_t _ns, xml_token_t _name, const pstring& _value, bool _transient) :
+    xmlns_id_t _ns, xml_token_t _name, std::string_view _value, bool _transient) :
     ns(_ns), name(_name), value(_value), transient(_transient) {}
 
 xml_token_attr_t::xml_token_attr_t(
-    xmlns_id_t _ns, xml_token_t _name, const pstring& _raw_name, const pstring& _value, bool _transient) :
+    xmlns_id_t _ns, xml_token_t _name, std::string_view _raw_name, std::string_view _value, bool _transient) :
     ns(_ns), name(_name), raw_name(_raw_name), value(_value), transient(_transient) {}
 
 xml_token_element_t::xml_token_element_t() : ns(nullptr), name(XML_UNKNOWN_TOKEN) {}
 
 xml_token_element_t::xml_token_element_t(
-    xmlns_id_t _ns, xml_token_t _name, const pstring& _raw_name, std::vector<xml_token_attr_t>&& _attrs)  :
+    xmlns_id_t _ns, xml_token_t _name, std::string_view _raw_name, std::vector<xml_token_attr_t>&& _attrs)  :
     ns(_ns), name(_name), raw_name(_raw_name), attrs(std::move(_attrs)) {}
 
 xml_token_element_t::xml_token_element_t(const xml_token_element_t& other) :
@@ -261,11 +261,11 @@ dump_format_t to_dump_format_enum(const char* p, size_t n)
     return dump_format::get().find(p, n);
 }
 
-std::vector<std::pair<pstring, dump_format_t>> get_dump_format_entries()
+std::vector<std::pair<std::string_view, dump_format_t>> get_dump_format_entries()
 {
-    std::vector<std::pair<pstring, dump_format_t>> ret;
+    std::vector<std::pair<std::string_view, dump_format_t>> ret;
     for (const auto& e : dump_format::entries)
-        ret.emplace_back(pstring(e.key, e.keylen), e.value);
+        ret.emplace_back(std::string_view{e.key, e.keylen}, e.value);
 
     return ret;
 }

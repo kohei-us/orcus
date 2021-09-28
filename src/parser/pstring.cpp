@@ -39,6 +39,18 @@ pstring::pstring(const char* _pos) :
 {
 }
 
+bool pstring::operator== (std::string_view r) const
+{
+    if (m_pos == r.data())
+        return m_size == r.size();
+
+    if (m_size != r.size())
+        // lengths differ.
+        return false;
+
+    return std::equal(m_pos, m_pos + m_size, r.data());
+}
+
 bool pstring::operator== (const pstring& r) const
 {
     if (m_pos == r.m_pos)

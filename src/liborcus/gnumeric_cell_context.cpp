@@ -63,14 +63,14 @@ public:
         switch (attr.name)
         {
             case XML_Row:
-                cell_data.row = atoi(attr.value.get());
+                cell_data.row = atoi(attr.value.data());
                 break;
             case XML_Col:
-                cell_data.col = atoi(attr.value.get());
+                cell_data.col = atoi(attr.value.data());
                 break;
             case XML_ValueType:
             {
-                int value_type = atoi(attr.value.get());
+                int value_type = atoi(attr.value.data());
                 switch (value_type)
                 {
                     case 20:
@@ -86,15 +86,15 @@ public:
             }
             break;
             case XML_ExprID:
-                cell_data.shared_formula_id = atoi(attr.value.get());
+                cell_data.shared_formula_id = atoi(attr.value.data());
                 cell_data.cell_type = cell_type_shared_formula;
                 break;
             case XML_Rows:
-                cell_data.array_rows = atoi(attr.value.get());
+                cell_data.array_rows = atoi(attr.value.data());
                 cell_data.cell_type = cell_type_array;
                 break;
             case XML_Cols:
-                cell_data.array_cols = atoi(attr.value.get());
+                cell_data.array_cols = atoi(attr.value.data());
                 cell_data.cell_type = cell_type_array;
                 break;
         }

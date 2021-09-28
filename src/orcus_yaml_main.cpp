@@ -149,7 +149,7 @@ std::unique_ptr<yaml::document_tree> load_doc(const char* p, size_t n)
     }
     catch (const yaml::parse_error& e)
     {
-        cerr << create_parse_error_output(pstring(p, n), e.offset()) << endl;
+        cerr << create_parse_error_output(std::string_view(p, n), e.offset()) << endl;
         throw;
     }
     return doc;

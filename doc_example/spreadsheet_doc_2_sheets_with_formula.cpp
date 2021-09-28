@@ -10,12 +10,11 @@
 using namespace std;
 using namespace orcus::spreadsheet;
 using orcus::orcus_ods;
-using orcus::pstring;
 
 enum class cell_value_type { empty, numeric, string, formula }; // adding a formula type here
 
 using ss_type = std::deque<std::string>;
-using ss_hash_type = std::unordered_map<pstring, size_t, pstring::hash>;
+using ss_hash_type = std::unordered_map<std::string_view, std::size_t>;
 
 struct cell_value
 {
@@ -169,7 +168,7 @@ public:
 
     virtual size_t add(const char* s, size_t n) override
     {
-        pstring input(s, n);
+        std::string_view input(s, n);
 
         auto it = m_ss_hash.find(input);
         if (it != m_ss_hash.end())
@@ -184,7 +183,7 @@ public:
     {
         size_t string_index = m_ss.size();
         m_ss.emplace_back(s, n);
-        m_ss_hash.emplace(pstring(s, n), string_index);
+        m_ss_hash.emplace(std::string_view(s, n), string_index);
 
         return string_index;
     }
@@ -208,7 +207,7 @@ public:
         m_ss.push_back(std::move(m_current_string));
 
         const std::string& s = m_ss.back();
-        orcus::pstring sv(s.data(), s.size());
+        std::string_view sv(s.data(), s.size());
         m_ss_hash.emplace(sv, string_index);
 
         return string_index;

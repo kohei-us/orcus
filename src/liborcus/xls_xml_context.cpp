@@ -1369,7 +1369,7 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
             case XML_Formula:
                 if (attr.value[0] == '=' && attr.value.size() > 1)
                 {
-                    pstring s(attr.value.get()+1, attr.value.size()-1);
+                    pstring s(attr.value.data()+1, attr.value.size()-1);
                     formula = s;
                     if (attr.transient)
                         formula = intern(s);

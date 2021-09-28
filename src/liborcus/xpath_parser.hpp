@@ -8,11 +8,10 @@
 #ifndef INCLUDED_ORCUS_XPATH_PARSER_HPP
 #define INCLUDED_ORCUS_XPATH_PARSER_HPP
 
-#include "orcus/types.hpp"
+#include <orcus/types.hpp>
 
 namespace orcus {
 
-class pstring;
 class xmlns_context;
 
 class xpath_parser
@@ -30,10 +29,10 @@ public:
     struct token
     {
         xmlns_id_t ns;
-        pstring name;
+        std::string_view name;
         bool attribute;
 
-        token(xmlns_id_t _ns, const pstring& _name, bool _attribute);
+        token(xmlns_id_t _ns, std::string_view _name, bool _attribute);
         token();
         token(const token& r);
     };

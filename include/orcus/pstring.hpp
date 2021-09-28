@@ -52,6 +52,13 @@ public:
 
     const char* data() const { return m_pos; }
 
+    bool operator== (std::string_view r) const;
+
+    bool operator!= (std::string_view r) const
+    {
+        return !operator==(r);
+    }
+
     bool operator== (const pstring& r) const;
 
     bool operator!= (const pstring& r) const

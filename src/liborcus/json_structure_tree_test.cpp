@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/json_structure_tree.hpp"
-#include "orcus/stream.hpp"
+#include <orcus/json_structure_tree.hpp>
+#include <orcus/stream.hpp>
+#include <orcus/pstring.hpp>
 
 #include <vector>
 #include <sstream>

@@ -6,10 +6,12 @@
  */
 
 #include "orcus_test_global.hpp"
-#include "orcus/spreadsheet/document.hpp"
-#include "orcus/spreadsheet/sheet.hpp"
-#include "orcus/pstring.hpp"
-#include "orcus/stream.hpp"
+
+#include <orcus/spreadsheet/document.hpp>
+#include <orcus/spreadsheet/sheet.hpp>
+#include <orcus/pstring.hpp>
+#include <orcus/stream.hpp>
+#include <orcus/parser_global.hpp>
 
 #include <sstream>
 #include <cmath>
@@ -68,12 +70,12 @@ std::string get_content_as_csv(const spreadsheet::document& doc, spreadsheet::sh
 }
 
 void verify_content(
-    const char* filename, size_t line_no, const pstring& expected, const std::string& actual)
+    const char* filename, size_t line_no, std::string_view expected, const std::string& actual)
 {
-    pstring s1 = expected;
-    pstring s2(actual.data(), actual.size());
-    s1 = s1.trim();
-    s2 = s2.trim();
+    std::string_view s1 = expected;
+    std::string_view s2(actual.data(), actual.size());
+    s1 = trim(s1);
+    s2 = trim(s2);
 
     if (s1 != s2)
     {

@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/css_document_tree.hpp"
-#include "orcus/css_types.hpp"
-#include "orcus/css_parser_base.hpp"
-#include "orcus/stream.hpp"
-#include "orcus/global.hpp"
+#include <orcus/css_document_tree.hpp>
+#include <orcus/css_types.hpp>
+#include <orcus/css_parser_base.hpp>
+#include <orcus/stream.hpp>
+#include <orcus/global.hpp>
+#include <orcus/pstring.hpp>
 
 #include <cstdlib>
 #include <cassert>

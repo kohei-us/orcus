@@ -50,7 +50,7 @@ public:
         if (attr.value.empty())
             return;
 
-        const char* p = attr.value.get();
+        const char* p = attr.value.data();
         const char* p_end = p + attr.value.size();
 
         switch (attr.name)

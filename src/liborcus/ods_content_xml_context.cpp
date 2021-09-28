@@ -195,9 +195,9 @@ private:
         {
             case XML_value:
             {
-                const char* end = attr.value.get() + attr.value.size();
+                const char* end = attr.value.data() + attr.value.size();
                 char* endptr;
-                double val = strtod(attr.value.get(), &endptr);
+                double val = strtod(attr.value.data(), &endptr);
                 if (endptr == end)
                     m_attr.value = val;
             }
@@ -205,7 +205,7 @@ private:
             case XML_value_type:
             {
                 const cell_value_map_type& cv_map = get_cell_value_map();
-                m_attr.type = cv_map.find(attr.value.get(), attr.value.size());
+                m_attr.type = cv_map.find(attr.value.data(), attr.value.size());
             }
             break;
             case XML_date_value:

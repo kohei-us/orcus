@@ -13,7 +13,7 @@
 
 namespace orcus {
 
-xpath_parser::token::token(xmlns_id_t _ns, const pstring& _name, bool _attribute) :
+xpath_parser::token::token(xmlns_id_t _ns, std::string_view _name, bool _attribute) :
     ns(_ns), name(_name), attribute(_attribute)
 {
 #if ORCUS_DEBUG_XPATH_PARSER
@@ -65,13 +65,13 @@ xpath_parser::token xpath_parser::next()
             case '/':
             {
                 ++mp_char; // skip the '/'.
-                return token(ns, pstring(p0, len), attribute);
+                return token(ns, std::string_view(p0, len), attribute);
             }
             case ':':
             {
                 // What comes before ':' is a namespace. Reset the name and
                 // convert the namespace to a proper ID.
-                pstring ns_name(p0, len);
+                std::string_view ns_name(p0, len);
                 ns = m_cxt.get(ns_name);
                 p0 = nullptr; // reset the name.
                 break;
@@ -82,7 +82,7 @@ xpath_parser::token xpath_parser::next()
     }
 
     // '/' has never been encountered.  It must be the last name in the path.
-    return token(ns, pstring(p0, len), attribute);
+    return token(ns, std::string_view(p0, len), attribute);
 }
 
 }
