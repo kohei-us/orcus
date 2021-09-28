@@ -8,10 +8,12 @@
 #include <orcus/sax_ns_parser.hpp>
 #include <orcus/xml_namespace.hpp>
 
+#include <cstring>
+
 void test_handler()
 {
     const char* test_code = "<?xml version=\"1.0\"?><root/>";
-    size_t len = strlen(test_code);
+    size_t len = std::strlen(test_code);
     orcus::sax_ns_handler hdl;
     orcus::xmlns_repository repo;
     orcus::xmlns_context cxt = repo.create_context();
@@ -39,7 +41,7 @@ void test_default_attr_ns()
             assert(elem.ns == default_ns_expected);
         }
 
-        void attribute(const orcus::pstring& /*name*/, const orcus::pstring& /*val*/) {}
+        void attribute(std::string_view /*name*/, std::string_view /*val*/) {}
 
         void attribute(const orcus::sax_ns_parser_attribute& attr)
         {

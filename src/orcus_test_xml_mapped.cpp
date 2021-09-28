@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/orcus_xml.hpp"
-#include "orcus/global.hpp"
-#include "orcus/sax_ns_parser.hpp"
-#include "orcus/xml_namespace.hpp"
-#include "orcus/stream.hpp"
-#include "orcus/dom_tree.hpp"
+#include <orcus/orcus_xml.hpp>
+#include <orcus/global.hpp>
+#include <orcus/sax_ns_parser.hpp>
+#include <orcus/xml_namespace.hpp>
+#include <orcus/stream.hpp>
+#include <orcus/dom_tree.hpp>
 
-#include "orcus/spreadsheet/factory.hpp"
-#include "orcus/spreadsheet/document.hpp"
+#include <orcus/spreadsheet/factory.hpp>
+#include <orcus/spreadsheet/document.hpp>
 
 #include "orcus_test_global.hpp"
 
@@ -122,10 +122,10 @@ void test_mapped_xml_import()
         assert(!loaded.empty());
         assert(!strm.empty());
 
-        pstring p1(loaded.data(), loaded.size()), p2(strm.data(), strm.size());
+        std::string_view p1(loaded.data(), loaded.size()), p2(strm.data(), strm.size());
 
-        p1 = p1.trim();
-        p2 = p2.trim();
+        p1 = trim(p1);
+        p2 = trim(p2);
         assert(p1 == p2);
 
         if (tc.output_equals_input)

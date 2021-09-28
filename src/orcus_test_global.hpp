@@ -63,12 +63,12 @@ void verify_content(
     const char* filename, size_t line_no, std::string_view expected, const std::string& actual);
 
 void verify_content(
-    const char* filename, size_t line_no, const spreadsheet::document& doc, const pstring& expected);
+    const char* filename, size_t line_no, const spreadsheet::document& doc, std::string_view expected);
 
 void verify_value_to_decimals(
     const char* filename, size_t line_no, double expected, double actual, int decimals);
 
-std::string prefix_multiline_string(const pstring& str, const pstring& prefix);
+std::string prefix_multiline_string(std::string_view str, std::string_view prefix);
 
 }}
 

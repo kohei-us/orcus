@@ -8,12 +8,13 @@
 #ifndef INCLUDED_ORCUS_SAX_TOKEN_PARSER_HPP
 #define INCLUDED_ORCUS_SAX_TOKEN_PARSER_HPP
 
+#include "sax_ns_parser.hpp"
+#include "types.hpp"
+#include "pstring.hpp"
+
 #include <vector>
 #include <algorithm>
 #include <functional>
-
-#include "types.hpp"
-#include "sax_ns_parser.hpp"
 
 namespace orcus {
 

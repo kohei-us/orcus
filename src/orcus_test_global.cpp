@@ -97,7 +97,7 @@ void verify_content(
 }
 
 void verify_content(
-    const char* filename, size_t line_no, const spreadsheet::document& doc, const pstring& expected)
+    const char* filename, size_t line_no, const spreadsheet::document& doc, std::string_view expected)
 {
     std::string actual = get_content_check(doc);
     verify_content(filename, line_no, expected, actual);
@@ -132,7 +132,7 @@ void verify_value_to_decimals(
     throw assert_error(filename, line_no, os.str().data());
 }
 
-std::string prefix_multiline_string(const pstring& str, const pstring& prefix)
+std::string prefix_multiline_string(std::string_view str, std::string_view prefix)
 {
     std::ostringstream os;
 
@@ -147,13 +147,13 @@ std::string prefix_multiline_string(const pstring& str, const pstring& prefix)
 
         if (*p == '\n')
         {
-            os << prefix << pstring(p0, std::distance(p0, p)) << '\n';
+            os << prefix << std::string_view(p0, std::distance(p0, p)) << '\n';
             p0 = nullptr;
         }
     }
 
     if (p0)
-        os << prefix << pstring(p0, std::distance(p0, p));
+        os << prefix << std::string_view(p0, std::distance(p0, p));
 
     return os.str();
 }

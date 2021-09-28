@@ -50,11 +50,11 @@ public:
     }
 };
 
-void print_base64(const char* caption, const pstring& base64)
+void print_base64(const char* caption, std::string_view base64)
 {
     cout << caption << " (base64): " << base64 << endl;
     vector<char> value;
-    orcus::decode_from_base64(base64.get(), base64.size(), value);
+    orcus::decode_from_base64(base64.data(), base64.size(), value);
     cout << caption << " (binary): ";
     for_each(value.begin(), value.end(), char_printer(cout));
     cout << endl;
@@ -148,16 +148,16 @@ class sax_handler
 public:
     sax_handler(xmlns_context& /*ns_cxt*/) {}
     void doctype(const sax::doctype_declaration&) {}
-    void start_declaration(const pstring&) {}
-    void end_declaration(const pstring&) {}
-    void attribute(const pstring&, const pstring&) {}
+    void start_declaration(std::string_view) {}
+    void end_declaration(std::string_view) {}
+    void attribute(std::string_view, std::string_view) {}
 
     void attribute(const sax_ns_parser_attribute& attr)
     {
         m_attrs.push_back(attr);
     }
 
-    void characters(const pstring&, bool) {}
+    void characters(std::string_view, bool) {}
 
     void start_element(const sax_ns_parser_element& elem)
     {

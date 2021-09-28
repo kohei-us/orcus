@@ -26,9 +26,9 @@ class sax_handler_encoded_attrs
 public:
     void doctype(const sax::doctype_declaration&) {}
 
-    void start_declaration(const pstring&) {}
+    void start_declaration(std::string_view) {}
 
-    void end_declaration(const pstring&)
+    void end_declaration(std::string_view)
     {
         m_attrs.clear();
     }
@@ -37,7 +37,7 @@ public:
 
     void end_element(const sax::parser_element&) {}
 
-    void characters(const pstring&, bool) {}
+    void characters(std::string_view, bool) {}
 
     void attribute(const sax::parser_attribute& attr)
     {
@@ -118,11 +118,11 @@ void test_xml_sax_parser()
         file = dir_path;
         file.append("check.txt");
         file_content check(file.data());
-        pstring psource(content.c_str(), content.size());
-        pstring pcheck = check.str();
+        std::string_view psource(content);
+        std::string_view pcheck = check.str();
 
         // They must be equal, minus preceding or trailing spaces (if any).
-        assert(psource.trim() == pcheck.trim());
+        assert(trim(psource) == trim(pcheck));
     }
 }
 

@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/dom_tree.hpp"
-#include "orcus/exception.hpp"
-#include "orcus/xml_namespace.hpp"
-#include "orcus/global.hpp"
-#include "orcus/sax_ns_parser.hpp"
-
-#include "orcus/string_pool.hpp"
+#include <orcus/dom_tree.hpp>
+#include <orcus/exception.hpp>
+#include <orcus/xml_namespace.hpp>
+#include <orcus/global.hpp>
+#include <orcus/sax_ns_parser.hpp>
+#include <orcus/string_pool.hpp>
+#include <orcus/pstring.hpp>
 
 #include <iostream>
 #include <sstream>

@@ -11,7 +11,6 @@
 #include "sax_parser.hpp"
 #include "xml_namespace.hpp"
 #include "global.hpp"
-#include "pstring.hpp"
 
 #include <unordered_set>
 #include <vector>
@@ -23,8 +22,8 @@ namespace orcus {
 struct sax_ns_parser_element
 {
     xmlns_id_t ns;         // element namespace
-    pstring ns_alias;      // element namespace alias
-    pstring name;          // element name
+    std::string_view ns_alias;      // element namespace alias
+    std::string_view name;          // element name
     std::ptrdiff_t begin_pos; // position of the opening brace '<'.
     std::ptrdiff_t end_pos;   // position of the char after the closing brace '>'.
 };
@@ -32,9 +31,9 @@ struct sax_ns_parser_element
 struct sax_ns_parser_attribute
 {
     xmlns_id_t ns;    // attribute namespace
-    pstring ns_alias; // attribute namespace alias
-    pstring name;     // attribute name
-    pstring value;    // attribute value
+    std::string_view ns_alias; // attribute namespace alias
+    std::string_view name;     // attribute name
+    std::string_view value;    // attribute value
     bool transient;   // whether or not the attribute value is transient.
 };
 
@@ -42,10 +41,10 @@ namespace __sax {
 
 struct entity_name
 {
-    pstring ns;
-    pstring name;
+    std::string_view ns;
+    std::string_view name;
 
-    entity_name(const pstring& _ns, const pstring& _name) :
+    entity_name(std::string_view _ns, std::string_view _name) :
         ns(_ns), name(_name) {}
 
     bool operator== (const entity_name& other) const
@@ -57,19 +56,19 @@ struct entity_name
     {
         size_t operator() (const entity_name& v) const
         {
-            static pstring::hash hasher;
+            std::hash<std::string_view> hasher;
             return hasher(v.ns) + hasher(v.name);
         }
     };
 };
 
-typedef std::unordered_set<pstring, pstring::hash>          ns_keys_type;
-typedef std::unordered_set<entity_name, entity_name::hash>  entity_names_type;
+typedef std::unordered_set<std::string_view> ns_keys_type;
+typedef std::unordered_set<entity_name, entity_name::hash> entity_names_type;
 
 struct elem_scope
 {
     xmlns_id_t ns;
-    pstring name;
+    std::string_view name;
     ns_keys_type ns_keys;
 };
 
@@ -80,7 +79,7 @@ class pop_ns_by_key
     xmlns_context& m_cxt;
 public:
     pop_ns_by_key(xmlns_context& cxt) : m_cxt(cxt) {}
-    void operator() (const pstring& key)
+    void operator() (std::string_view key)
     {
         m_cxt.pop(key);
     }
@@ -93,17 +92,17 @@ class sax_ns_handler
 public:
     void doctype(const orcus::sax::doctype_declaration& /*dtd*/) {}
 
-    void start_declaration(const orcus::pstring& /*decl*/) {}
+    void start_declaration(std::string_view /*decl*/) {}
 
-    void end_declaration(const orcus::pstring& /*decl*/) {}
+    void end_declaration(std::string_view /*decl*/) {}
 
     void start_element(const orcus::sax_ns_parser_element& /*elem*/) {}
 
     void end_element(const orcus::sax_ns_parser_element& /*elem*/) {}
 
-    void characters(const orcus::pstring& /*val*/, bool /*transient*/) {}
+    void characters(std::string_view /*val*/, bool /*transient*/) {}
 
-    void attribute(const orcus::pstring& /*name*/, const orcus::pstring& /*val*/) {}
+    void attribute(std::string_view /*name*/, std::string_view /*val*/) {}
 
     void attribute(const orcus::sax_ns_parser_attribute& /*attr*/) {}
 };
@@ -151,13 +150,13 @@ private:
             m_handler.doctype(dtd);
         }
 
-        void start_declaration(const pstring& name)
+        void start_declaration(std::string_view name)
         {
             m_declaration = true;
             m_handler.start_declaration(name);
         }
 
-        void end_declaration(const pstring& name)
+        void end_declaration(std::string_view name)
         {
             m_declaration = false;
             m_handler.end_declaration(name);
@@ -200,7 +199,7 @@ private:
             m_scopes.pop_back();
         }
 
-        void characters(const pstring& val, bool transient)
+        void characters(std::string_view val, bool transient)
         {
             m_handler.characters(val, transient);
         }
@@ -223,8 +222,8 @@ private:
             if (attr.ns.empty() && attr.name == "xmlns")
             {
                 // Default namespace
-                m_ns_cxt.push(pstring(), attr.value);
-                m_ns_keys.insert(pstring());
+                m_ns_cxt.push(std::string_view{}, attr.value);
+                m_ns_keys.insert(std::string_view{});
                 return;
             }
 

@@ -151,7 +151,7 @@ public:
 
                 // This attribute is linked. Import its value.
 
-                pstring val_trimmed = p->value.trim();
+                std::string_view val_trimmed = trim(p->value);
                 switch (linked_attr.ref_type)
                 {
                     case xml_map_tree::reference_cell:
