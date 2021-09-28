@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/xml_structure_tree.hpp"
-#include "orcus/sax_ns_parser.hpp"
-#include "orcus/xml_namespace.hpp"
-#include "orcus/global.hpp"
-#include "orcus/exception.hpp"
+#include <orcus/xml_structure_tree.hpp>
+#include <orcus/sax_ns_parser.hpp>
+#include <orcus/xml_namespace.hpp>
+#include <orcus/global.hpp>
+#include <orcus/exception.hpp>
+#include <orcus/string_pool.hpp>
 
-#include "orcus/string_pool.hpp"
 #include "string_helper.hpp"
 #include "xml_structure_mapper.hpp"
 
@@ -323,7 +323,7 @@ struct xml_structure_tree::walker_impl
 xml_structure_tree::entity_name::entity_name() :
     ns(XMLNS_UNKNOWN_ID) {}
 
-xml_structure_tree::entity_name::entity_name(xmlns_id_t _ns, const pstring& _name) :
+xml_structure_tree::entity_name::entity_name(xmlns_id_t _ns, std::string_view _name) :
     ns(_ns), name(_name) {}
 
 bool xml_structure_tree::entity_name::operator< (const entity_name& r) const

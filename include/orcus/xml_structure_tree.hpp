@@ -10,7 +10,6 @@
 
 #include "env.hpp"
 #include "types.hpp"
-#include "pstring.hpp"
 
 #include <ostream>
 #include <memory>
@@ -48,10 +47,10 @@ public:
     struct ORCUS_DLLPUBLIC entity_name
     {
         xmlns_id_t ns;
-        pstring name;
+        std::string_view name;
 
         entity_name();
-        entity_name(xmlns_id_t _ns, const pstring& _name);
+        entity_name(xmlns_id_t _ns, std::string_view _name);
 
         bool operator< (const entity_name& r) const;
         bool operator== (const entity_name& r) const;
