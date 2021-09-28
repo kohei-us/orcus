@@ -8,8 +8,9 @@
 #ifndef ORCUS_XML_STREAM_HANDLER_HPP
 #define ORCUS_XML_STREAM_HANDLER_HPP
 
-#include "orcus/sax_token_parser.hpp"
-#include "orcus/config.hpp"
+#include <orcus/sax_token_parser.hpp>
+#include <orcus/config.hpp>
+#include <orcus/pstring.hpp>
 
 #include <cstdlib>
 #include <string>

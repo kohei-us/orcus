@@ -104,7 +104,7 @@ void test_sax_token_parser_1()
             ++mp_check;
         }
 
-        void characters(const orcus::pstring& /*val*/, bool /*transient*/) {}
+        void characters(std::string_view /*val*/, bool /*transient*/) {}
 
         size_t get_token_count() const
         {
@@ -130,9 +130,9 @@ void test_unicode_string()
 
     class handler
     {
-        orcus::pstring str;
+        std::string_view str;
     public:
-        handler(orcus::pstring _str):
+        handler(std::string_view _str):
             str(_str)
             {}
 
@@ -146,7 +146,7 @@ void test_unicode_string()
         {
         }
 
-        void characters(const orcus::pstring& val, bool transient)
+        void characters(std::string_view val, bool transient)
         {
             std::cout << "charachters:" << std::endl;
             std::cout << val << std::endl;
@@ -188,7 +188,7 @@ void test_declaration()
 
         void start_element(const xml_token_element_t&) {}
         void end_element(const xml_token_element_t&) {}
-        void characters(const pstring&, bool) {}
+        void characters(std::string_view, bool) {}
     };
 
     std::vector<const char*> token_names = {};

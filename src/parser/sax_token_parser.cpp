@@ -314,7 +314,7 @@ const map_type& get()
 sax_token_handler_wrapper_base::sax_token_handler_wrapper_base(const tokens& _tokens) :
     m_tokens(_tokens) {}
 
-xml_token_t sax_token_handler_wrapper_base::tokenize(const pstring& name) const
+xml_token_t sax_token_handler_wrapper_base::tokenize(std::string_view name) const
 {
     xml_token_t token = XML_UNKNOWN_TOKEN;
     if (!name.empty())
@@ -329,7 +329,7 @@ void sax_token_handler_wrapper_base::set_element(const sax_ns_parser_element& el
     m_elem.raw_name = elem.name;
 }
 
-void sax_token_handler_wrapper_base::attribute(const pstring& name, const pstring& val)
+void sax_token_handler_wrapper_base::attribute(std::string_view name, std::string_view val)
 {
     decl_attr_type dat = decl_attr::get().find(name.data(), name.size());
 
@@ -360,7 +360,7 @@ void sax_token_handler_wrapper_base::attribute(const pstring& name, const pstrin
         case decl_attr_type::encoding:
         {
             // Convert the source encoding string to all lower-case first.
-            std::string val_lower = val.str();
+            std::string val_lower{val};
             std::transform(val_lower.begin(), val_lower.end(), val_lower.begin(),
                 [](unsigned char c)
                 {

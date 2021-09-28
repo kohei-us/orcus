@@ -14,7 +14,6 @@
 #include "sax_parser_base.hpp"
 #include "exception.hpp"
 #include "detail/thread.hpp"
-#include "pstring.hpp"
 
 #include <thread>
 
@@ -138,7 +137,7 @@ void threaded_sax_token_parser<_Handler>::process_tokens(sax::parse_tokens_t& tk
                     m_handler.end_element(*t.element);
                     break;
                 case sax::parse_token_t::characters:
-                    m_handler.characters(pstring(t.characters.p, t.characters.n), false);
+                    m_handler.characters(std::string_view(t.characters.p, t.characters.n), false);
                     break;
                 case sax::parse_token_t::parse_error:
                     throw sax::malformed_xml_error(std::string(t.error_value.p, t.error_value.len), t.error_value.offset);

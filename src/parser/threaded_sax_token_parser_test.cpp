@@ -96,7 +96,7 @@ void test_sax_token_parser_1()
                 ++mp_check;
             }
 
-            void characters(const orcus::pstring& /*val*/, bool /*transient*/) {}
+            void characters(std::string_view /*val*/, bool /*transient*/) {}
 
             size_t get_token_count() const
             {
@@ -125,7 +125,7 @@ void test_sax_token_parser_1()
 
             void end_element(const orcus::xml_token_element_t& /*elem*/) {}
 
-            void characters(const orcus::pstring& /*val*/, bool /*transient*/) {}
+            void characters(std::string_view /*val*/, bool /*transient*/) {}
         };
 
         try
@@ -164,7 +164,7 @@ void test_sax_token_parser_1()
                 throw mock_exception();
             }
 
-            void characters(const orcus::pstring& /*val*/, bool /*transient*/) {}
+            void characters(std::string_view /*val*/, bool /*transient*/) {}
         };
 
         handler hdl;

@@ -20,10 +20,10 @@ namespace orcus { namespace sax {
 
 parse_token::parse_token() : type(parse_token_t::unknown) {}
 
-parse_token::parse_token(const pstring& _characters) :
+parse_token::parse_token(std::string_view _characters) :
     type(parse_token_t::characters)
 {
-    characters.p = _characters.get();
+    characters.p = _characters.data();
     characters.n = _characters.size();
 }
 
@@ -162,7 +162,7 @@ struct parser_thread::impl
         check_and_notify();
     }
 
-    void characters(const orcus::pstring& val, bool transient)
+    void characters(std::string_view val, bool transient)
     {
         if (transient)
             m_parser_tokens.emplace_back(m_pool.intern(val).first);
@@ -183,8 +183,9 @@ struct parser_thread::impl
             }
             catch (const malformed_xml_error& e)
             {
-                pstring s = m_pool.intern(e.what()).first;
-                m_parser_tokens.emplace_back(parse_token_t::parse_error, s.get(), s.size(), e.offset());
+                std::string_view s = m_pool.intern(e.what()).first;
+                m_parser_tokens.emplace_back(
+                    parse_token_t::parse_error, s.data(), s.size(), e.offset());
             }
 
             // TODO : add more exceptions that need to be tokenized and processed by the client thread.
