@@ -8,21 +8,17 @@
 #ifndef INCLUDED_ORCUS_TOKENS_HPP
 #define INCLUDED_ORCUS_TOKENS_HPP
 
-#include "orcus/types.hpp"
-#include "orcus/pstring.hpp"
+#include "types.hpp"
 
 #include <algorithm>
 #include <unordered_map>
 
 namespace orcus {
 
-class pstring;
-
 class ORCUS_PSR_DLLPUBLIC tokens
 {
-    tokens() = delete;
 public:
-
+    tokens() = delete;
     tokens(const char** token_names, size_t token_name_count);
 
     /**
@@ -39,7 +35,7 @@ public:
      *
      * @return token value representing the given textural token.
      */
-    xml_token_t get_token(const pstring& name) const;
+    xml_token_t get_token(std::string_view name) const;
 
     /**
      * Get textural token name from a token value.
@@ -49,12 +45,12 @@ public:
      * @return textural token name, or empty string in case the given token is
      *         not valid.
      */
-    const char* get_token_name(xml_token_t token) const;
+    std::string_view get_token_name(xml_token_t token) const;
 
 private:
-    typedef std::unordered_map<pstring, xml_token_t, pstring::hash> token_map_type;
+    using token_map_type = std::unordered_map<std::string_view, xml_token_t>;
 
-    token_map_type   m_tokens;
+    token_map_type m_tokens;
     const char** m_token_names;
     size_t m_token_name_count;
 };
