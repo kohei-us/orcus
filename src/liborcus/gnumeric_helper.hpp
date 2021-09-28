@@ -9,7 +9,7 @@
 #define __ORCUS_GNUMERIC_HELPER__
 
 #include "orcus/spreadsheet/types.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 
 namespace orcus {
 

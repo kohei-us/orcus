@@ -12,7 +12,7 @@
 #include <orcus/spreadsheet/export_interface.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/string_pool.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 #include "orcus_xml_impl.hpp"
 

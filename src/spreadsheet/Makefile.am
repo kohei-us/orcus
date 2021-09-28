@@ -1,6 +1,9 @@
 if BUILD_SPREADSHEET_MODEL
 
-AM_CPPFLAGS = -I$(top_srcdir)/include -D__ORCUS_SPM_BUILDING_DLL
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/src/include \
+	-D__ORCUS_SPM_BUILDING_DLL
 
 AM_CPPFLAGS += $(BOOST_CPPFLAGS) $(LIBIXION_CFLAGS)
 

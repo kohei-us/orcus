@@ -7,7 +7,7 @@
 
 #include "orcus/yaml_document_tree.hpp"
 #include "orcus/stream.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/global.hpp"
 #include "orcus/yaml_parser_base.hpp"
 

@@ -8,7 +8,7 @@
 #ifndef INCLUDED_ORCUS_XML_MAP_TREE_HPP
 #define INCLUDED_ORCUS_XML_MAP_TREE_HPP
 
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/exception.hpp"
 #include "orcus/types.hpp"

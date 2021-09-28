@@ -8,7 +8,7 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_IMPL_TYPES_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_IMPL_TYPES_HPP
 
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/spreadsheet/types.hpp"
 
 #include <iosfwd>

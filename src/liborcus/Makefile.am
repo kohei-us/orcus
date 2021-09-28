@@ -1,5 +1,8 @@
 
-AM_CPPFLAGS = -I$(top_srcdir)/include -I./include $(BOOST_CPPFLAGS)
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/src/include \
+	-I./include $(BOOST_CPPFLAGS)
 
 EXTRA_PROGRAMS = \
 	css-document-tree-test \

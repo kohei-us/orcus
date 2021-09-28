@@ -11,7 +11,7 @@
 #include "xml_context_base.hpp"
 #include "odf_styles.hpp"
 
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/string_pool.hpp"
 
 #include <vector>

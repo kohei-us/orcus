@@ -8,7 +8,7 @@
 #ifndef INCLUDED_ORCUS_ODF_STYLES_HPP
 #define INCLUDED_ORCUS_ODF_STYLES_HPP
 
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/measurement.hpp"
 
 #include <map>

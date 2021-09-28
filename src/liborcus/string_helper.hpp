@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 namespace orcus {
 

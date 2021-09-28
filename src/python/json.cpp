@@ -9,7 +9,7 @@
 #include "orcus/json_parser.hpp"
 #include "orcus/json_document_tree.hpp"
 #include "orcus/config.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 
 #include <algorithm>
 #include <sstream>

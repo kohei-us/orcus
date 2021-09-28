@@ -8,7 +8,7 @@
 #include <orcus/css_document_tree.hpp>
 #include <orcus/css_parser.hpp>
 #include <orcus/string_pool.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 #define ORCUS_DEBUG_CSS_DOCTREE 0
 

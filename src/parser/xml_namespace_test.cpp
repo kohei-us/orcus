@@ -7,7 +7,7 @@
 
 #include "test_global.hpp"
 #include "orcus/xml_namespace.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 
 #include <cstdlib>
 #include <vector>

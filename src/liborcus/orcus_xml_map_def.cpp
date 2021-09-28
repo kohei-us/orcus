@@ -6,7 +6,7 @@
  */
 
 #include "orcus/orcus_xml.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/sax_parser_base.hpp"
 #include "orcus/sax_parser.hpp"
 #include "orcus/stream.hpp"

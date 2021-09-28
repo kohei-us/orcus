@@ -8,7 +8,7 @@
 #include <orcus/global.hpp>
 #include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/types.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 #include <cstdlib>
 #include <cassert>

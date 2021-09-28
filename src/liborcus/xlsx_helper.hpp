@@ -6,7 +6,7 @@
  */
 
 #include <orcus/spreadsheet/types.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 namespace orcus {
 

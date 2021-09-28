@@ -10,7 +10,7 @@
 #include <orcus/css_parser_base.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/global.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 #include <cstdlib>
 #include <cassert>

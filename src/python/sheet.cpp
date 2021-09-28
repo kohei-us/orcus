@@ -13,7 +13,7 @@
 #include <orcus/spreadsheet/types.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
 #include <orcus/spreadsheet/document.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 #include <ixion/model_context.hpp>
 #include <ixion/named_expressions_iterator.hpp>

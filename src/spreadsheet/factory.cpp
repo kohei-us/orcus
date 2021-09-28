@@ -15,7 +15,7 @@
 #include <orcus/exception.hpp>
 #include <orcus/global.hpp>
 #include <orcus/string_pool.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 #include "factory_pivot.hpp"
 #include "factory_sheet.hpp"

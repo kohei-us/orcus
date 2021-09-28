@@ -10,7 +10,7 @@
 
 #include <orcus/sax_token_parser.hpp>
 #include <orcus/config.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 #include <cstdlib>
 #include <string>

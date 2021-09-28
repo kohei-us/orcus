@@ -6,7 +6,7 @@
  */
 
 #include "orcus/orcus_ods.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/global.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/spreadsheet/factory.hpp"

@@ -9,7 +9,7 @@
 #include <orcus/global.hpp>
 #include <orcus/xml_namespace.hpp>
 #include <orcus/string_pool.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 #include <vector>
 

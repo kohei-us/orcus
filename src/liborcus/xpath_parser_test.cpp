@@ -7,7 +7,7 @@
 
 #include "xpath_parser.hpp"
 #include "orcus/xml_namespace.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 
 #include <iostream>
 #include <cassert>

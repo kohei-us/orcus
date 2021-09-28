@@ -7,7 +7,7 @@
 
 #include <orcus/json_structure_tree.hpp>
 #include <orcus/stream.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 #include <vector>
 #include <sstream>

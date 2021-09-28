@@ -14,7 +14,7 @@
 #include "orcus/spreadsheet/pivot.hpp"
 #include "orcus/spreadsheet/config.hpp"
 
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/types.hpp"
 #include "orcus/string_pool.hpp"
 #include "orcus/global.hpp"

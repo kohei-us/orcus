@@ -7,7 +7,7 @@
 
 #include "test_global.hpp"
 #include <orcus/string_pool.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 #include <orcus/global.hpp>
 
 using namespace std;

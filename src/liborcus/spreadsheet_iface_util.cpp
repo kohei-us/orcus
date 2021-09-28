@@ -8,7 +8,7 @@
 #include "spreadsheet_iface_util.hpp"
 #include "formula_result.hpp"
 
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 
 namespace orcus {

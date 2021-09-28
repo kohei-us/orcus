@@ -8,7 +8,7 @@
 #include "orcus_test_global.hpp"
 #include "orcus/orcus_csv.hpp"
 #include "orcus/config.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/global.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/spreadsheet/factory.hpp"

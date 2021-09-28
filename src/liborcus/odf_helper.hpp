@@ -8,7 +8,7 @@
 #ifndef INCLUDED_ORCUS_ODF_HELPER_HPP
 #define INCLUDED_ORCUS_ODF_HELPER_HPP
 
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 #include <orcus/spreadsheet/types.hpp>
 #include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/styles.hpp>

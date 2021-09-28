@@ -10,7 +10,7 @@
 #include "global.hpp"
 #include "named_expression.hpp"
 #include "named_expressions.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 
 #include <ixion/model_context.hpp>
 #include <ixion/named_expressions_iterator.hpp>

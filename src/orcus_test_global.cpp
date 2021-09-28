@@ -9,7 +9,7 @@
 
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 #include <orcus/stream.hpp>
 #include <orcus/parser_global.hpp>
 

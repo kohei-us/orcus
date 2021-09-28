@@ -6,7 +6,7 @@
  */
 
 #include "orcus_filter_global.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 #include "orcus/config.hpp"
 #include "orcus/interface.hpp"
 #include "orcus/global.hpp"

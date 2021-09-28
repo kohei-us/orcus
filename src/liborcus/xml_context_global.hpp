@@ -9,7 +9,7 @@
 #define ORCUS_XML_CONTEXT_GLOBAL_HPP
 
 #include "orcus/types.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 
 #include <functional>
 

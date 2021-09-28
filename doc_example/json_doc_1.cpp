@@ -1,7 +1,6 @@
 
 #include <orcus/json_document_tree.hpp>
 #include <orcus/config.hpp>
-#include <orcus/pstring.hpp>
 
 #include <cstdlib>
 #include <iostream>
@@ -26,7 +25,7 @@ int main()
     // Root is an object containing three key-value pairs.
     node root = doc.get_document_root();
 
-    for (const orcus::pstring& key : root.keys())
+    for (std::string_view key : root.keys())
     {
         node value = root.child(key);
         switch (value.type())
@@ -34,7 +33,7 @@ int main()
             case orcus::json::node_t::string:
                 // string value
                 cout << key << ": " << value.string_value() << endl;
-            break;
+                break;
             case orcus::json::node_t::array:
             {
                 // array value
@@ -45,8 +44,8 @@ int main()
                     node array_element = value.child(i);
                     cout << "  - " << array_element.numeric_value() << endl;
                 }
+                break;
             }
-            break;
             default:
                 ;
         }

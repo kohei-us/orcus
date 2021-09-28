@@ -31,7 +31,6 @@ liborcus_HEADERS = \
 	orcus_xml.hpp \
 	parser_base.hpp \
 	parser_global.hpp \
-	pstring.hpp \
 	sax_parser.hpp \
 	sax_parser_base.hpp \
 	sax_ns_parser.hpp \

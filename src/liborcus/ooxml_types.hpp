@@ -8,7 +8,7 @@
 #ifndef INCLUDED_ORCUS_OOXML_TYPES_HPP
 #define INCLUDED_ORCUS_OOXML_TYPES_HPP
 
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 
 #include <iostream>
 #include <memory>

@@ -11,7 +11,7 @@
 #include <orcus/global.hpp>
 #include <orcus/sax_ns_parser.hpp>
 #include <orcus/string_pool.hpp>
-#include <orcus/pstring.hpp>
+#include "pstring.hpp"
 
 #include <iostream>
 #include <sstream>

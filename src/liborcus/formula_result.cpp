@@ -6,7 +6,7 @@
  */
 
 #include "formula_result.hpp"
-#include "orcus/pstring.hpp"
+#include "pstring.hpp"
 
 #include <ostream>
 
