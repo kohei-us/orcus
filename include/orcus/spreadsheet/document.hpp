@@ -25,7 +25,6 @@ struct abs_address_t;
 
 namespace orcus {
 
-class pstring;
 class string_pool;
 struct date_time_t;
 
@@ -64,9 +63,9 @@ public:
     pivot_collection& get_pivot_collection();
     const pivot_collection& get_pivot_collection() const;
 
-    sheet* append_sheet(const pstring& sheet_name);
-    sheet* get_sheet(const pstring& sheet_name);
-    const sheet* get_sheet(const pstring& sheet_name) const;
+    sheet* append_sheet(std::string_view sheet_name);
+    sheet* get_sheet(std::string_view sheet_name);
+    const sheet* get_sheet(std::string_view sheet_name) const;
     sheet* get_sheet(sheet_t sheet_pos);
     const sheet* get_sheet(sheet_t sheet_pos) const;
 
@@ -117,8 +116,8 @@ public:
      */
     virtual void dump_check(std::ostream& os) const override;
 
-    sheet_t get_sheet_index(const pstring& name) const;
-    pstring get_sheet_name(sheet_t sheet_pos) const;
+    sheet_t get_sheet_index(std::string_view name) const;
+    std::string_view get_sheet_name(sheet_t sheet_pos) const;
 
     range_size_t get_sheet_size() const;
     void set_sheet_size(const range_size_t& sheet_size);
@@ -150,7 +149,7 @@ public:
      */
     void insert_table(table_t* p);
 
-    const table_t* get_table(const pstring& name) const;
+    const table_t* get_table(std::string_view name) const;
 
     void finalize();
 

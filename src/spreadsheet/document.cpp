@@ -50,19 +50,19 @@ struct sheet_item
 
     pstring name;
     sheet   data;
-    sheet_item(document& doc, const pstring& _name, sheet_t sheet_index);
+    sheet_item(document& doc, std::string_view _name, sheet_t sheet_index);
 };
 
 typedef std::map<pstring, std::unique_ptr<table_t>> table_store_type;
 
-sheet_item::sheet_item(document& doc, const pstring& _name, sheet_t sheet_index) :
+sheet_item::sheet_item(document& doc, std::string_view _name, sheet_t sheet_index) :
     name(_name), data(doc, sheet_index) {}
 
 class find_sheet_by_name
 {
-    const pstring& m_name;
+    std::string_view m_name;
 public:
-    find_sheet_by_name(const pstring& name) : m_name(name) {}
+    find_sheet_by_name(std::string_view name) : m_name(name) {}
     bool operator() (const std::unique_ptr<sheet_item>& v) const
     {
         return v->name == m_name;
@@ -71,9 +71,9 @@ public:
 
 class find_column_by_name
 {
-    const pstring& m_name;
+    std::string_view m_name;
 public:
-    find_column_by_name(const pstring& name) : m_name(name) {}
+    find_column_by_name(std::string_view name) : m_name(name) {}
 
     bool operator() (const table_column_t& col) const
     {
@@ -177,7 +177,7 @@ class table_handler : public ixion::iface::table_handler
         return pstring(&(*p)[0], p->size());
     }
 
-    col_t find_column(const table_t& tab, const pstring& name, size_t offset) const
+    col_t find_column(const table_t& tab, std::string_view name, size_t offset) const
     {
         if (offset >= tab.columns.size())
             return -1;
@@ -392,7 +392,7 @@ void document::insert_table(table_t* p)
         table_store_type::value_type(name, std::unique_ptr<table_t>(p)));
 }
 
-const table_t* document::get_table(const pstring& name) const
+const table_t* document::get_table(std::string_view name) const
 {
     auto it = mp_impl->m_tables.find(name);
     return it == mp_impl->m_tables.end() ? nullptr : it->second.get();
@@ -408,7 +408,7 @@ void document::finalize()
     );
 }
 
-sheet* document::append_sheet(const pstring& sheet_name)
+sheet* document::append_sheet(std::string_view sheet_name)
 {
     pstring sheet_name_safe = mp_impl->m_string_pool.intern(sheet_name).first;
     sheet_t sheet_index = static_cast<sheet_t>(mp_impl->m_sheets.size());
@@ -421,13 +421,13 @@ sheet* document::append_sheet(const pstring& sheet_name)
     return &mp_impl->m_sheets.back()->data;
 }
 
-sheet* document::get_sheet(const pstring& sheet_name)
+sheet* document::get_sheet(std::string_view sheet_name)
 {
     const sheet* sh = const_cast<const document*>(this)->get_sheet(sheet_name);
     return const_cast<sheet*>(sh);
 }
 
-const sheet* document::get_sheet(const pstring& sheet_name) const
+const sheet* document::get_sheet(std::string_view sheet_name) const
 {
     auto it = std::find_if(
         mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(), find_sheet_by_name(sheet_name));
@@ -616,7 +616,7 @@ void document::dump_csv(const std::string& outdir) const
     }
 }
 
-sheet_t document::get_sheet_index(const pstring& name) const
+sheet_t document::get_sheet_index(std::string_view name) const
 {
     auto it = std::find_if(
         mp_impl->m_sheets.begin(), mp_impl->m_sheets.end(), find_sheet_by_name(name));
@@ -629,14 +629,14 @@ sheet_t document::get_sheet_index(const pstring& name) const
     return static_cast<sheet_t>(pos);
 }
 
-pstring document::get_sheet_name(sheet_t sheet_pos) const
+std::string_view document::get_sheet_name(sheet_t sheet_pos) const
 {
     if (sheet_pos < 0)
-        return pstring();
+        return std::string_view{};
 
     size_t pos = static_cast<size_t>(sheet_pos);
     if (pos >= mp_impl->m_sheets.size())
-        return pstring();
+        return std::string_view{};
 
     return mp_impl->m_sheets[pos]->name;
 }
