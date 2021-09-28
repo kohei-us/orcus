@@ -8,12 +8,13 @@
 #ifndef INCLUDED_ORCUS_THREADED_SAX_TOKEN_PARSER_HPP
 #define INCLUDED_ORCUS_THREADED_SAX_TOKEN_PARSER_HPP
 
-#include "orcus/tokens.hpp"
-#include "orcus/xml_namespace.hpp"
-#include "orcus/sax_token_parser_thread.hpp"
-#include "orcus/sax_parser_base.hpp"
-#include "orcus/exception.hpp"
-#include "orcus/detail/thread.hpp"
+#include "tokens.hpp"
+#include "xml_namespace.hpp"
+#include "sax_token_parser_thread.hpp"
+#include "sax_parser_base.hpp"
+#include "exception.hpp"
+#include "detail/thread.hpp"
+#include "pstring.hpp"
 
 #include <thread>
 

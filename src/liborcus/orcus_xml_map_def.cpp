@@ -102,9 +102,9 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
             else if (attr.name == "sheet")
                 sheet = attr.value;
             else if (attr.name == "row")
-                row = strtol(attr.value.get(), nullptr, 10);
+                row = strtol(attr.value.data(), nullptr, 10);
             else if (attr.name == "column")
-                col = strtol(attr.value.get(), nullptr, 10);
+                col = strtol(attr.value.data(), nullptr, 10);
         }
 
         m_app.set_cell_link(xpath, sheet, row, col);
@@ -116,9 +116,9 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
             if (attr.name == "sheet")
                 sheet = attr.value;
             else if (attr.name == "row")
-                row = strtol(attr.value.get(), nullptr, 10);
+                row = strtol(attr.value.data(), nullptr, 10);
             else if (attr.name == "column")
-                col = strtol(attr.value.get(), nullptr, 10);
+                col = strtol(attr.value.data(), nullptr, 10);
         }
 
         m_app.start_range(sheet, row, col);

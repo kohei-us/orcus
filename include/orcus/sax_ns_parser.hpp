@@ -11,6 +11,7 @@
 #include "sax_parser.hpp"
 #include "xml_namespace.hpp"
 #include "global.hpp"
+#include "pstring.hpp"
 
 #include <unordered_set>
 #include <vector>

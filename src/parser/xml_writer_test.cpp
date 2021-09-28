@@ -28,7 +28,7 @@ void test_encoded_content()
     {
         std::ostringstream os_content;
 
-        void characters(const orcus::pstring& val, bool transient)
+        void characters(std::string_view val, bool transient)
         {
             os_content << val;
         }

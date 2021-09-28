@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_SAX_PARSER_HPP
-#define ORCUS_SAX_PARSER_HPP
+#ifndef INCLUDED_ORCUS_SAX_PARSER_HPP
+#define INCLUDED_ORCUS_SAX_PARSER_HPP
 
 #include "sax_parser_base.hpp"
 
@@ -42,7 +42,7 @@ public:
      *
      * @param decl name of the identifier.
      */
-    void start_declaration(const orcus::pstring& decl)
+    void start_declaration(std::string_view decl)
     {
         (void)decl;
     }
@@ -52,7 +52,7 @@ public:
      *
      * @param decl name of the identifier.
      */
-    void end_declaration(const orcus::pstring& decl)
+    void end_declaration(std::string_view decl)
     {
         (void)decl;
     }
@@ -91,7 +91,7 @@ public:
      *                  a non-text value or be interned within the scope of
      *                  the callback</em>.
      */
-    void characters(const orcus::pstring& val, bool transient)
+    void characters(std::string_view val, bool transient)
     {
         (void)val; (void)transient;
     }
@@ -369,7 +369,7 @@ void sax_parser<_Handler,_Config>::declaration(const char* name_check)
     next_check();
 
     // Get the declaration name first.
-    pstring decl_name;
+    std::string_view decl_name;
     name(decl_name);
 #if ORCUS_DEBUG_SAX_PARSER
     cout << "sax_parser::declaration: start name='" << decl_name << "'" << endl;
@@ -429,7 +429,7 @@ void sax_parser<_Handler,_Config>::cdata()
         {
             // Found ']]>'.
             size_t cdata_len = i - 2;
-            m_handler.characters(pstring(p0, cdata_len), transient_stream());
+            m_handler.characters(std::string_view(p0, cdata_len), transient_stream());
             next();
             return;
         }
@@ -523,16 +523,16 @@ void sax_parser<_Handler,_Config>::characters()
             buf.append(p0, mp_char-p0);
             characters_with_encoded_char(buf);
             if (buf.empty())
-                m_handler.characters(pstring(), transient_stream());
+                m_handler.characters(std::string_view{}, transient_stream());
             else
-                m_handler.characters(pstring(buf.get(), buf.size()), true);
+                m_handler.characters(std::string_view(buf.get(), buf.size()), true);
             return;
         }
     }
 
     if (mp_char > p0)
     {
-        pstring val(p0, mp_char-p0);
+        std::string_view val(p0, mp_char-p0);
         m_handler.characters(val, transient_stream());
     }
 }
@@ -541,7 +541,7 @@ template<typename _Handler, typename _Config>
 void sax_parser<_Handler,_Config>::attribute()
 {
     sax::parser_attribute attr;
-    pstring attr_ns_name, attr_name, attr_value;
+    std::string_view attr_ns_name, attr_name, attr_value;
     attribute_name(attr.ns, attr.name);
 
 #if ORCUS_DEBUG_SAX_PARSER

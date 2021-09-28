@@ -262,7 +262,7 @@ void parser_base::parse_encoded_char(cell_buffer& buf)
         "error parsing encoded character: terminating character is not found.", offset());
 }
 
-void parser_base::value_with_encoded_char(cell_buffer& buf, pstring& str, char quote_char)
+void parser_base::value_with_encoded_char(cell_buffer& buf, std::string_view& str, char quote_char)
 {
     assert(cur_char() == '&');
     parse_encoded_char(buf);
@@ -291,14 +291,14 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, pstring& str, char q
         buf.append(p0, mp_char-p0);
 
     if (!buf.empty())
-        str = pstring(buf.get(), buf.size());
+        str = std::string_view(buf.get(), buf.size());
 
     // Skip the closing quote.
     assert(!has_char() || cur_char() == quote_char);
     next();
 }
 
-bool parser_base::value(pstring& str, bool decode)
+bool parser_base::value(std::string_view& str, bool decode)
 {
     char c = cur_char();
     if (c != '"' && c != '\'')
@@ -322,7 +322,7 @@ bool parser_base::value(pstring& str, bool decode)
         }
     }
 
-    str = pstring(p0, mp_char-p0);
+    str = std::string_view(p0, mp_char-p0);
 
     // Skip the closing quote.
     next();
@@ -330,7 +330,7 @@ bool parser_base::value(pstring& str, bool decode)
     return transient_stream();
 }
 
-void parser_base::name(pstring& str)
+void parser_base::name(std::string_view& str)
 {
     const char* p0 = mp_char;
     mp_char = parse_utf8_xml_name_start_char(mp_char, mp_end);
@@ -388,7 +388,7 @@ void parser_base::name(pstring& str)
     }
 #endif
 
-    str = pstring(p0, mp_char-p0);
+    str = std::string_view(p0, mp_char-p0);
 }
 
 void parser_base::element_name(parser_element& elem, std::ptrdiff_t begin_pos)
@@ -403,7 +403,7 @@ void parser_base::element_name(parser_element& elem, std::ptrdiff_t begin_pos)
     }
 }
 
-void parser_base::attribute_name(pstring& attr_ns, pstring& attr_name)
+void parser_base::attribute_name(std::string_view& attr_ns, std::string_view& attr_name)
 {
     name(attr_name);
     if (cur_char() == ':')

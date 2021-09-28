@@ -9,7 +9,6 @@
 #define INCLUDED_ORCUS_SAX_PARSER_BASE_HPP
 
 #include "env.hpp"
-#include "pstring.hpp"
 #include "cell_buffer.hpp"
 #include "parser_global.hpp"
 #include "parser_base.hpp"
@@ -47,9 +46,9 @@ struct doctype_declaration
     enum class keyword_type { dtd_public, dtd_private };
 
     keyword_type keyword;
-    pstring root_element;
-    pstring fpi;
-    pstring uri;
+    std::string_view root_element;
+    std::string_view fpi;
+    std::string_view uri;
 };
 
 /**
@@ -84,8 +83,8 @@ ORCUS_PSR_DLLPUBLIC std::string decode_xml_unicode_char(const char* p, size_t n)
  */
 struct parser_element
 {
-    pstring ns;            // element namespace (optional)
-    pstring name;          // element name
+    std::string_view ns;            // element namespace (optional)
+    std::string_view name;          // element name
     std::ptrdiff_t begin_pos; // position of the opening brace '<'.
     std::ptrdiff_t end_pos;   // position of the char after the closing brace '>'.
 };
@@ -99,9 +98,9 @@ struct parser_element
  */
 struct parser_attribute
 {
-    pstring ns;      // attribute namespace (optional)
-    pstring name;    // attribute name
-    pstring value;   // attribute value
+    std::string_view ns;      // attribute namespace (optional)
+    std::string_view name;    // attribute name
+    std::string_view value;   // attribute value
     bool transient;  // whether or not the attribute value is on a temporary buffer.
 };
 
@@ -202,7 +201,7 @@ protected:
     void expects_next(const char* p, size_t n);
 
     void parse_encoded_char(cell_buffer& buf);
-    void value_with_encoded_char(cell_buffer& buf, pstring& str, char quote_char);
+    void value_with_encoded_char(cell_buffer& buf, std::string_view& str, char quote_char);
 
     /**
      * Parse quoted value.  Note that the retrieved string may be stored in
@@ -212,11 +211,11 @@ protected:
      * @return true if the value is stored in temporary buffer, false
      *         otherwise.
      */
-    bool value(pstring& str, bool decode);
+    bool value(std::string_view& str, bool decode);
 
-    void name(pstring& str);
+    void name(std::string_view& str);
     void element_name(parser_element& elem, std::ptrdiff_t begin_pos);
-    void attribute_name(pstring& attr_ns, pstring& attr_name);
+    void attribute_name(std::string_view& attr_ns, std::string_view& attr_name);
     void characters_with_encoded_char(cell_buffer& buf);
 };
 

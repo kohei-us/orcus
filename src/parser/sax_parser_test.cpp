@@ -6,14 +6,15 @@
  */
 
 #include "test_global.hpp"
-#include "orcus/sax_parser.hpp"
+#include <orcus/sax_parser.hpp>
+#include <cstring>
 
 using namespace std;
 
 void test_handler()
 {
     const char* test_code = "<?xml version=\"1.0\"?><root/>";
-    size_t len = strlen(test_code);
+    size_t len = std::strlen(test_code);
 
     orcus::sax_handler hdl;
     orcus::sax_parser<orcus::sax_handler> parser(test_code, len, hdl);
@@ -24,7 +25,7 @@ void test_transient_stream()
 {
     struct _handler : public orcus::sax_handler
     {
-        void characters(const orcus::pstring& val, bool transient)
+        void characters(std::string_view val, bool transient)
         {
             cout << "characters: '" << val << "' (transient=" << transient << ")" << endl;
 
