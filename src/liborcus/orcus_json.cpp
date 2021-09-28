@@ -5,14 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/orcus_json.hpp"
-#include "orcus/json_document_tree.hpp"
-#include "orcus/json_structure_tree.hpp"
-#include "orcus/config.hpp"
-#include "orcus/spreadsheet/import_interface.hpp"
-#include "orcus/global.hpp"
-#include "orcus/json_parser.hpp"
-#include "orcus/stream.hpp"
+#include <orcus/orcus_json.hpp>
+#include <orcus/json_document_tree.hpp>
+#include <orcus/json_structure_tree.hpp>
+#include <orcus/config.hpp>
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/global.hpp>
+#include <orcus/json_parser.hpp>
+#include <orcus/stream.hpp>
+
 #include "json_map_tree.hpp"
 #include "json_structure_mapper.hpp"
 
@@ -321,22 +322,22 @@ orcus_json::orcus_json(spreadsheet::iface::import_factory* im_fact) :
 
 orcus_json::~orcus_json() {}
 
-void orcus_json::set_cell_link(const pstring& path, const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col)
+void orcus_json::set_cell_link(std::string_view path, std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col)
 {
     mp_impl->map_tree.set_cell_link(path, cell_position_t(sheet, row, col));
 }
 
-void orcus_json::start_range(const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col, bool row_header)
+void orcus_json::start_range(std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col, bool row_header)
 {
     mp_impl->map_tree.start_range(cell_position_t(sheet, row, col), row_header);
 }
 
-void orcus_json::append_field_link(const pstring& path, const pstring& label)
+void orcus_json::append_field_link(std::string_view path, std::string_view label)
 {
     mp_impl->map_tree.append_field_link(path, label);
 }
 
-void orcus_json::set_range_row_group(const pstring& path)
+void orcus_json::set_range_row_group(std::string_view path)
 {
     mp_impl->map_tree.set_range_row_group(path);
 }
@@ -346,7 +347,7 @@ void orcus_json::commit_range()
     mp_impl->map_tree.commit_range();
 }
 
-void orcus_json::append_sheet(const pstring& name)
+void orcus_json::append_sheet(std::string_view name)
 {
     if (name.empty())
         return;

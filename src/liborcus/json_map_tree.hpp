@@ -140,13 +140,13 @@ public:
 
     walker get_tree_walker() const;
 
-    void set_cell_link(const pstring& path, const cell_position_t& pos);
+    void set_cell_link(std::string_view path, const cell_position_t& pos);
 
-    const node* get_link(const pstring& path) const;
+    const node* get_link(std::string_view path) const;
 
     void start_range(const cell_position_t& pos, bool row_header);
-    void append_field_link(const pstring& path, const pstring& label);
-    void set_range_row_group(const pstring& path);
+    void append_field_link(std::string_view path, std::string_view label);
+    void set_range_row_group(std::string_view path);
     void commit_range();
 
     range_ref_store_type& get_range_references();

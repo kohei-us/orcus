@@ -375,7 +375,7 @@ json_map_tree::walker json_map_tree::get_tree_walker() const
     return walker(*this);
 }
 
-void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& pos)
+void json_map_tree::set_cell_link(std::string_view path, const cell_position_t& pos)
 {
     path_stack_type stack = get_or_create_destination_node(path);
     if (stack.node_stack.empty())
@@ -396,7 +396,7 @@ void json_map_tree::set_cell_link(const pstring& path, const cell_position_t& po
     p->value.cell_ref->pos.sheet = m_str_pool.intern(p->value.cell_ref->pos.sheet).first;
 }
 
-const json_map_tree::node* json_map_tree::get_link(const pstring& path) const
+const json_map_tree::node* json_map_tree::get_link(std::string_view path) const
 {
     return get_destination_node(path);
 }
@@ -409,12 +409,12 @@ void json_map_tree::start_range(const cell_position_t& pos, bool row_header)
     m_current_range.row_header = row_header;
 }
 
-void json_map_tree::append_field_link(const pstring& path, const pstring& label)
+void json_map_tree::append_field_link(std::string_view path, std::string_view label)
 {
     m_current_range.fields.emplace_back(path, label);
 }
 
-void json_map_tree::set_range_row_group(const pstring& path)
+void json_map_tree::set_range_row_group(std::string_view path)
 {
     m_current_range.row_groups.push_back(path);
 }

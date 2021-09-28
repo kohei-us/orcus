@@ -16,7 +16,6 @@
 
 namespace orcus {
 
-class pstring;
 class xmlns_repository;
 
 namespace spreadsheet { namespace iface {
@@ -29,7 +28,7 @@ class ORCUS_DLLPUBLIC orcus_xml
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
-    void read_impl(const pstring& strm);
+    void read_impl(std::string_view strm);
 
 public:
     orcus_xml(const orcus_xml&) = delete;
@@ -49,7 +48,7 @@ public:
      *                   and attributes used in the paths without explicit
      *                   namespace values.
      */
-    void set_namespace_alias(const pstring& alias, const pstring& uri, bool default_ns=false);
+    void set_namespace_alias(std::string_view alias, std::string_view uri, bool default_ns=false);
 
     /**
      * Define a mapping of a single element or attribute to a single cell
@@ -60,7 +59,7 @@ public:
      * @param row row index (0-based) of the linked cell location.
      * @param col column index (0-based) of the linked cell location.
      */
-    void set_cell_link(const pstring& xpath, const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col);
+    void set_cell_link(std::string_view xpath, std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col);
 
     /**
      * Initiate the mapping definition of a linked range.  The definition will
@@ -70,7 +69,7 @@ public:
      * @param row row index (0-based) of the linked cell location.
      * @param col column index (0-based) of the linked cell location.
      */
-    void start_range(const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col);
+    void start_range(std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col);
 
     /**
      * Append a field that is mapped to a specified path in the XML document
@@ -80,7 +79,7 @@ public:
      * @param label custom header label to use in lieu of the name of the
      *              linked entity.
      */
-    void append_field_link(const pstring& xpath, const pstring& label);
+    void append_field_link(std::string_view xpath, std::string_view label);
 
     /**
      * Set the element located in the specified path as a row group in the
@@ -91,7 +90,7 @@ public:
      *
      * @param xpath path to the element to use as a row group element.
      */
-    void set_range_row_group(const pstring& xpath);
+    void set_range_row_group(std::string_view xpath);
 
     /**
      * Commit the mapping definition of the current range.
@@ -103,7 +102,7 @@ public:
      *
      * @param name name of the sheet.
      */
-    void append_sheet(const pstring& name);
+    void append_sheet(std::string_view name);
 
     /**
      * Read the stream containing the source XML document.

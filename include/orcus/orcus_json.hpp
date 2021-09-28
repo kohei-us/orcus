@@ -8,14 +8,12 @@
 #ifndef INCLUDED_ORCUS_ORCUS_JSON_HPP
 #define INCLUDED_ORCUS_ORCUS_JSON_HPP
 
-#include "orcus/env.hpp"
-#include "orcus/spreadsheet/types.hpp"
+#include "env.hpp"
+#include "./spreadsheet/types.hpp"
 
 #include <memory>
 
 namespace orcus {
-
-class pstring;
 
 namespace spreadsheet { namespace iface {
 
@@ -36,16 +34,16 @@ public:
     orcus_json(spreadsheet::iface::import_factory* im_fact);
     ~orcus_json();
 
-    void set_cell_link(const pstring& path, const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col);
+    void set_cell_link(std::string_view path, std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col);
 
     void start_range(
-        const pstring& sheet, spreadsheet::row_t row, spreadsheet::col_t col, bool row_header);
+        std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col, bool row_header);
 
-    void append_field_link(const pstring& path, const pstring& label);
-    void set_range_row_group(const pstring& path);
+    void append_field_link(std::string_view path, std::string_view label);
+    void set_range_row_group(std::string_view path);
     void commit_range();
 
-    void append_sheet(const pstring& name);
+    void append_sheet(std::string_view name);
 
     void read_stream(const char* p, size_t n);
 
