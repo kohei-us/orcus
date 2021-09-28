@@ -10,7 +10,6 @@
 
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/spreadsheet/styles.hpp"
-#include "orcus/pstring.hpp"
 #include "orcus/env.hpp"
 
 #include <cstdlib>
@@ -31,7 +30,7 @@ struct ORCUS_SPM_DLLPUBLIC format_run
 {
     size_t pos;
     size_t size;
-    pstring font;
+    std::string_view font;
     double font_size;
     color_t color;
     bool bold:1;
@@ -50,13 +49,12 @@ typedef std::vector<format_run> format_runs_t;
  */
 class ORCUS_SPM_DLLPUBLIC import_shared_strings : public iface::import_shared_strings
 {
-    typedef std::unordered_map<pstring, size_t, pstring::hash> str_index_map_type;
+    using str_index_map_type = std::unordered_map<std::string_view, std::size_t>;
 
+public:
     import_shared_strings() = delete;
     import_shared_strings(const import_shared_strings&) = delete;
     import_shared_strings& operator=(const import_shared_strings&) = delete;
-
-public:
 
     // format runs for all shared strings, mapped by string IDs.
     typedef std::unordered_map<size_t, format_runs_t*> format_runs_map_type;

@@ -159,7 +159,11 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
             style += "font-style: normal;";
 
         if (!run.font.empty())
-            style += "font-family: " + run.font.str() + ";";
+        {
+            style += "font-family: ";
+            style += run.font;
+            style += ";";
+        }
 
         if (run.font_size)
         {

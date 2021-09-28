@@ -7,14 +7,15 @@
 
 #include "orcus/spreadsheet/factory.hpp"
 
-#include "orcus/spreadsheet/shared_strings.hpp"
-#include "orcus/spreadsheet/styles.hpp"
-#include "orcus/spreadsheet/sheet.hpp"
-#include "orcus/spreadsheet/document.hpp"
-#include "orcus/spreadsheet/view.hpp"
-#include "orcus/exception.hpp"
-#include "orcus/global.hpp"
-#include "orcus/string_pool.hpp"
+#include <orcus/spreadsheet/shared_strings.hpp>
+#include <orcus/spreadsheet/styles.hpp>
+#include <orcus/spreadsheet/sheet.hpp>
+#include <orcus/spreadsheet/document.hpp>
+#include <orcus/spreadsheet/view.hpp>
+#include <orcus/exception.hpp>
+#include <orcus/global.hpp>
+#include <orcus/string_pool.hpp>
+#include <orcus/pstring.hpp>
 
 #include "factory_pivot.hpp"
 #include "factory_sheet.hpp"
@@ -55,7 +56,7 @@ public:
         if (name.type != ixion::formula_name_t::cell_reference)
         {
             std::ostringstream os;
-            os << pstring(p, n) << " is not a valid cell address.";
+            os << std::string_view(p, n) << " is not a valid cell address.";
             throw orcus::invalid_arg_error(os.str());
         }
 
@@ -107,7 +108,7 @@ public:
         }
 
         std::ostringstream os;
-        os << pstring(p, n) << " is not a valid range address.";
+        os << std::string_view(p, n) << " is not a valid range address.";
         throw orcus::invalid_arg_error(os.str());
     }
 };
@@ -115,7 +116,7 @@ public:
 class import_global_named_exp : public iface::import_named_expression
 {
     document& m_doc;
-    pstring m_name;
+    std::string_view m_name;
     ixion::abs_address_t m_base;
     ixion::formula_tokens_t m_tokens;
 
@@ -156,7 +157,7 @@ public:
         ixion::model_context& cxt = m_doc.get_model_context();
         cxt.set_named_expression({m_name.data(), m_name.size()}, m_base, std::move(m_tokens));
 
-        m_name.clear();
+        m_name = std::string_view{};
         m_base.sheet = 0;
         m_base.row = 0;
         m_base.column = 0;
@@ -263,7 +264,7 @@ iface::import_sheet* import_factory::append_sheet(
 {
     assert(sheet_index == static_cast<sheet_t>(mp_impl->m_doc.get_sheet_count()));
 
-    sheet* sh = mp_impl->m_doc.append_sheet(pstring(sheet_name, sheet_name_length));
+    sheet* sh = mp_impl->m_doc.append_sheet({sheet_name, sheet_name_length});
 
     if (!sh)
         return nullptr;
@@ -284,7 +285,7 @@ iface::import_sheet* import_factory::append_sheet(
 
 iface::import_sheet* import_factory::get_sheet(const char* sheet_name, size_t sheet_name_length)
 {
-    sheet_t si = mp_impl->m_doc.get_sheet_index(pstring(sheet_name, sheet_name_length));
+    sheet_t si = mp_impl->m_doc.get_sheet_index(std::string_view(sheet_name, sheet_name_length));
     if (si == ixion::invalid_sheet)
         return nullptr;
 
@@ -349,11 +350,11 @@ struct export_factory::impl
     const document& m_doc;
 
     std::vector<std::unique_ptr<export_sheet>> m_sheets;
-    std::unordered_map<pstring, sheet_t, pstring::hash> m_sheet_index_map;
+    std::unordered_map<std::string_view, sheet_t> m_sheet_index_map;
 
     impl(const document& doc) : m_doc(doc) {}
 
-    export_sheet* get_sheet(const pstring& name)
+    export_sheet* get_sheet(std::string_view name)
     {
         auto it = m_sheet_index_map.find(name);
         if (it != m_sheet_index_map.end())
@@ -386,7 +387,7 @@ export_factory::~export_factory() {}
 const iface::export_sheet* export_factory::get_sheet(
     const char* sheet_name, size_t sheet_name_length) const
 {
-    pstring name(sheet_name, sheet_name_length);
+    std::string_view name(sheet_name, sheet_name_length);
     return mp_impl->get_sheet(name);
 }
 

@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/spreadsheet/shared_strings.hpp"
-#include "orcus/spreadsheet/styles.hpp"
+#include <orcus/spreadsheet/shared_strings.hpp>
+#include <orcus/spreadsheet/styles.hpp>
 
-#include "orcus/pstring.hpp"
-#include "orcus/global.hpp"
-#include "orcus/string_pool.hpp"
+#include <orcus/global.hpp>
+#include <orcus/string_pool.hpp>
 
 #include <ixion/model_context.hpp>
 
@@ -31,7 +30,7 @@ void format_run::reset()
 {
     pos = 0;
     size = 0;
-    font.clear();
+    font = std::string_view{};
     font_size = 0;
     bold = false;
     italic = false;
@@ -169,7 +168,7 @@ struct print_string
     size_t m_count;
 public:
     print_string() : m_count(1) {}
-    void operator() (const pstring& ps)
+    void operator() (std::string_view ps)
     {
         cout << m_count++ << ": '" << ps << "'" << endl;
     }
