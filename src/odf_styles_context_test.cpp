@@ -11,7 +11,7 @@
 #include <orcus/spreadsheet/factory.hpp>
 
 #include <orcus/string_pool.hpp>
-#include "orcus/stream.hpp"
+#include <orcus/stream.hpp>
 
 #include <cassert>
 #include <iostream>
@@ -20,7 +20,7 @@
 
 namespace {
 
-const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(const orcus::pstring& name, orcus::spreadsheet::styles* styles)
+const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(std::string_view name, orcus::spreadsheet::styles* styles)
 {
     size_t n = styles->get_cell_styles_count();
     for (size_t i = 0; i < n; ++i)
@@ -203,7 +203,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
 
     size_t number_format = cell_format->number_format;
     const orcus::spreadsheet::number_format_t* cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string.str() == "#.000000");
+    assert(cell_number_format->format_string == "#.000000");
 
     style = find_cell_style_by_name("Name11", &styles);
     xf = style->xf;
@@ -212,7 +212,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
 
     number_format = cell_format->number_format;
     cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string.str() == "[$₹]#,##0.00;[RED]-[$₹]#,##0.00");
+    assert(cell_number_format->format_string == "[$₹]#,##0.00;[RED]-[$₹]#,##0.00");
 
     style = find_cell_style_by_name("Name12", &styles);
     xf = style->xf;
@@ -221,7 +221,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
 
     number_format = cell_format->number_format;
     cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string.str() == "0.00%");
+    assert(cell_number_format->format_string == "0.00%");
 
     style = find_cell_style_by_name("Name13", &styles);
     xf = style->xf;
@@ -230,7 +230,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
 
     number_format = cell_format->number_format;
     cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string.str() == "#.00E+00");
+    assert(cell_number_format->format_string == "#.00E+00");
 
     style = find_cell_style_by_name("Name15", &styles);
     xf = style->xf;
@@ -239,7 +239,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
 
     number_format = cell_format->number_format;
     cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string.str() == "BOOLEAN");
+    assert(cell_number_format->format_string == "BOOLEAN");
 
     style = find_cell_style_by_name("Name16", &styles);
     xf = style->xf;
@@ -248,7 +248,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
 
     number_format = cell_format->number_format;
     cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string.str() == "#### ?/11");
+    assert(cell_number_format->format_string == "#### ?/11");
 
     style = find_cell_style_by_name("Name17", &styles);
     xf = style->xf;
@@ -257,7 +257,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
 
     number_format = cell_format->number_format;
     cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string.str() == "MM/DD/YY");
+    assert(cell_number_format->format_string == "MM/DD/YY");
 
     style = find_cell_style_by_name("Name18", &styles);
     xf = style->xf;
@@ -266,8 +266,8 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
 
     number_format = cell_format->number_format;
     cell_number_format = styles.get_number_format(number_format);
-    std::cerr<<cell_number_format->format_string.str();
-    assert(cell_number_format->format_string.str() == "HH:MM:SS AM/PM");
+    std::cerr << cell_number_format->format_string;
+    assert(cell_number_format->format_string == "HH:MM:SS AM/PM");
 
     style = find_cell_style_by_name("Name19", &styles);
     xf = style->xf;
@@ -276,8 +276,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
 
     number_format = cell_format->number_format;
     cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string.str() == "[>=0]0.00;[RED]-0.00");
-
+    assert(cell_number_format->format_string == "[>=0]0.00;[RED]-0.00");
 }
 
 void test_odf_text_strikethrough(orcus::spreadsheet::styles& styles)

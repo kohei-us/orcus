@@ -8,12 +8,12 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_STYLES_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_STYLES_HPP
 
-#include "orcus/pstring.hpp"
-#include "orcus/env.hpp"
-#include "orcus/measurement.hpp"
-#include "orcus/spreadsheet/types.hpp"
+#include "../env.hpp"
+#include "../measurement.hpp"
+#include "types.hpp"
 
 #include <memory>
+#include <string_view>
 
 namespace orcus { namespace spreadsheet {
 
@@ -35,7 +35,7 @@ struct ORCUS_SPM_DLLPUBLIC color_t
 
 struct ORCUS_SPM_DLLPUBLIC font_t
 {
-    pstring name;
+    std::string_view name;
     double size;
     bool bold:1;
     bool italic:1;
@@ -102,7 +102,7 @@ struct ORCUS_SPM_DLLPUBLIC protection_t
 struct ORCUS_SPM_DLLPUBLIC number_format_t
 {
     size_t identifier;
-    pstring format_string;
+    std::string_view format_string;
 
     number_format_t();
     void reset();
@@ -135,10 +135,10 @@ struct ORCUS_SPM_DLLPUBLIC cell_format_t
 
 struct ORCUS_SPM_DLLPUBLIC cell_style_t
 {
-    pstring name;
+    std::string_view name;
     size_t xf;
     size_t builtin;
-    pstring parent_name;
+    std::string_view parent_name;
 
     cell_style_t();
     void reset();

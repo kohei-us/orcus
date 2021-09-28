@@ -257,7 +257,7 @@ void import_styles::set_number_format_identifier(size_t id)
 
 void import_styles::set_number_format_code(const char* s, size_t n)
 {
-    mp_impl->m_cur_number_format.format_string = pstring(s, n);
+    mp_impl->m_cur_number_format.format_string = std::string_view{s, n};
 }
 
 size_t import_styles::commit_number_format()
