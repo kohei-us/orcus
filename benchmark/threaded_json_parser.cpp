@@ -97,14 +97,11 @@ public:
 
     void object_key(const char* p, size_t len, bool transient)
     {
+        std::string_view s{p, len};
         if (transient)
-        {
-            std::string_view s = m_pool.intern(p, len).first;
-            p = s.data();
-            len = s.size();
-        }
+            s = m_pool.intern(p, len).first;
 
-        m_tokens.emplace_back(json::parse_token_t::object_key, p, len);
+        m_tokens.emplace_back(json::parse_token_t::object_key, s);
         do_work();
     }
 
@@ -134,14 +131,11 @@ public:
 
     void string(const char* p, size_t len, bool transient)
     {
+        std::string_view s{p, len};
         if (transient)
-        {
-            std::string_view s = m_pool.intern(p, len).first;
-            p = s.data();
-            len = s.size();
-        }
+            s = m_pool.intern(p, len).first;
 
-        m_tokens.emplace_back(json::parse_token_t::string, p, len);
+        m_tokens.emplace_back(json::parse_token_t::string, s);
         do_work();
     }
 
