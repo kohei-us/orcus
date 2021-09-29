@@ -13,6 +13,7 @@
 #include <memory>
 #include <vector>
 #include <ostream>
+#include <variant>
 
 namespace orcus {
 
@@ -45,32 +46,26 @@ enum class parse_token_t
 
 struct ORCUS_PSR_DLLPUBLIC parse_token
 {
-    parse_token_t type;
-
-    union
+    struct ORCUS_PSR_DLLPUBLIC error_value
     {
-        struct
-        {
-            const char* p;
-            size_t len;
+        std::string_view str;
+        std::ptrdiff_t offset;
 
-        } string_value;
+        error_value(std::string_view _str, std::ptrdiff_t _offset);
 
-        struct
-        {
-            const char* p;
-            size_t len;
-            std::ptrdiff_t offset;
-
-        } error_value;
-
-        double numeric_value;
+        bool operator==(const error_value& other) const;
+        bool operator!=(const error_value& other) const;
     };
+
+    using value_type = std::variant<std::string_view, error_value, double>;
+
+    parse_token_t type;
+    value_type value;
 
     parse_token();
     parse_token(parse_token_t _type);
-    parse_token(parse_token_t _type, const char* p, size_t len);
-    parse_token(parse_token_t _type, const char* p, size_t len, std::ptrdiff_t offset);
+    parse_token(parse_token_t _type, std::string_view s);
+    parse_token(std::string_view s, std::ptrdiff_t offset);
     parse_token(double value);
 
     parse_token(const parse_token& other);

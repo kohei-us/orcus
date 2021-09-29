@@ -47,7 +47,7 @@ public:
     void object_key(const char* p, size_t len, bool transient)
     {
         assert(!transient); // transient is never true with the threaded parser.
-        m_tokens.emplace_back(json::parse_token_t::object_key, p, len);
+        m_tokens.emplace_back(json::parse_token_t::object_key, std::string_view{p, len});
     }
 
     void end_object()
@@ -73,7 +73,7 @@ public:
     void string(const char* p, size_t len, bool transient)
     {
         assert(!transient); // transient is never true with the threaded parser.
-        m_tokens.emplace_back(json::parse_token_t::string, p, len);
+        m_tokens.emplace_back(json::parse_token_t::string, std::string_view{p, len});
     }
 
     void number(double val)
@@ -132,7 +132,7 @@ void test_threaded_json_parser_basic()
             {
                 { json::parse_token_t::begin_parse },
                 { json::parse_token_t::begin_object },
-                { json::parse_token_t::object_key, ORCUS_ASCII("foo") },
+                { json::parse_token_t::object_key, std::string_view{"foo"} },
                 { json::parse_token_t::begin_array },
                 { json::parse_token_t::boolean_true },
                 { json::parse_token_t::boolean_false },

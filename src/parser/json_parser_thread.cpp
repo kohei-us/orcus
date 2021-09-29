@@ -18,73 +18,49 @@
 
 namespace orcus { namespace json {
 
-parse_token::parse_token() : type(parse_token_t::unknown) {}
-
-parse_token::parse_token(parse_token_t _type) : type(_type) {}
-
-parse_token::parse_token(parse_token_t _type, const char* p, size_t len) :
-    type(_type)
+parse_token::error_value::error_value(std::string_view _str, std::ptrdiff_t _offset) :
+    str(_str), offset(_offset)
 {
-    string_value.p = p;
-    string_value.len = len;
 }
 
-parse_token::parse_token(parse_token_t _type, const char* p, size_t len, std::ptrdiff_t offset) :
-    type(_type)
+bool parse_token::error_value::operator==(const error_value& other) const
 {
-    error_value.p = p;
-    error_value.len = len;
-    error_value.offset = offset;
+    return str == other.str && offset == other.offset;
 }
 
-parse_token::parse_token(double value) :
-    type(parse_token_t::number), numeric_value(value) {}
+bool parse_token::error_value::operator!=(const error_value& other) const
+{
+    return !operator==(other);
+}
+
+parse_token::parse_token() : type(parse_token_t::unknown), value(0.0) {}
+
+parse_token::parse_token(parse_token_t _type) : type(_type), value(0.0) {}
+
+parse_token::parse_token(parse_token_t _type, std::string_view s) :
+    type(_type), value(s)
+{
+}
+
+parse_token::parse_token(std::string_view s, std::ptrdiff_t offset) :
+    type(parse_token_t::parse_error), value(error_value{s, offset})
+{
+    assert(type == parse_token_t::parse_error);
+}
+
+parse_token::parse_token(double v) :
+    type(parse_token_t::number), value(v)
+{
+}
 
 parse_token::parse_token(const parse_token& other) :
-    type(other.type)
+    type(other.type), value(other.value)
 {
-    switch (type)
-    {
-        case parse_token_t::object_key:
-        case parse_token_t::string:
-            string_value.p = other.string_value.p;
-            string_value.len = other.string_value.len;
-            break;
-        case parse_token_t::number:
-            numeric_value = other.numeric_value;
-            break;
-        case parse_token_t::parse_error:
-            error_value.p = other.error_value.p;
-            error_value.len = other.error_value.len;
-            error_value.offset = other.error_value.offset;
-            break;
-        default:
-            ;
-    }
 }
 
 bool parse_token::operator== (const parse_token& other) const
 {
-    if (type != other.type)
-        return false;
-
-    switch (type)
-    {
-        case parse_token_t::object_key:
-        case parse_token_t::string:
-            return pstring(string_value.p, string_value.len) == pstring(other.string_value.p, other.string_value.len);
-        case parse_token_t::number:
-            return numeric_value == other.numeric_value;
-        case parse_token_t::parse_error:
-            if (pstring(error_value.p, error_value.len) != pstring(other.error_value.p, other.error_value.len))
-                return false;
-            if (error_value.offset != other.error_value.offset)
-                return false;
-            break;
-        default:
-            ;
-    }
-    return true;
+    return type == other.type && value == other.value;
 }
 
 bool parse_token::operator!= (const parse_token& other) const
@@ -121,8 +97,8 @@ struct parser_thread::impl
         }
         catch (const parse_error& e)
         {
-            pstring s = m_pool.intern(e.what()).first;
-            m_parser_tokens.emplace_back(parse_token_t::parse_error, s.get(), s.size(), e.offset());
+            std::string_view s = m_pool.intern(e.what()).first;
+            m_parser_tokens.emplace_back(s, e.offset());
         }
 
         notify_and_finish();
@@ -160,14 +136,11 @@ struct parser_thread::impl
 
     void object_key(const char* p, size_t len, bool transient)
     {
+        std::string_view s{p, len};
         if (transient)
-        {
-            pstring s = m_pool.intern(p, len).first;
-            p = s.get();
-            len = s.size();
-        }
+            s = m_pool.intern(p, len).first;
 
-        m_parser_tokens.emplace_back(parse_token_t::object_key, p, len);
+        m_parser_tokens.emplace_back(parse_token_t::object_key, s);
         check_and_notify();
     }
 
@@ -197,14 +170,11 @@ struct parser_thread::impl
 
     void string(const char* p, size_t len, bool transient)
     {
+        std::string_view s{p, len};
         if (transient)
-        {
-            pstring s = m_pool.intern(p, len).first;
-            p = s.get();
-            len = s.size();
-        }
+            s = m_pool.intern(p, len).first;
 
-        m_parser_tokens.emplace_back(parse_token_t::string, p, len);
+        m_parser_tokens.emplace_back(parse_token_t::string, s);
         check_and_notify();
     }
 
@@ -281,16 +251,19 @@ std::ostream& operator<< (std::ostream& os, const parse_tokens_t& tokens)
                     os << "- null" << endl;
                     break;
                 case parse_token_t::number:
-                    os << "- number (v=" << t.numeric_value << ")" << endl;
+                    os << "- number (v=" << std::get<double>(t.value) << ")" << endl;
                     break;
                 case parse_token_t::object_key:
-                    os << "- object_key (v=" << pstring(t.string_value.p, t.string_value.len) << ")" << endl;
+                    os << "- object_key (v=" << std::get<std::string_view>(t.value) << ")" << endl;
                     break;
                 case parse_token_t::parse_error:
-                    os << "- parse_error (v=" << pstring(t.error_value.p, t.error_value.len) << ", offset=" << t.error_value.offset << ")" << endl;
+                {
+                    auto v = std::get<parse_token::error_value>(t.value);
+                    os << "- parse_error (v=" << v.str << ", offset=" << v.offset << ")" << endl;
                     break;
+                }
                 case parse_token_t::string:
-                    os << "- string (" << pstring(t.string_value.p, t.string_value.len) << ")" << endl;
+                    os << "- string (" << std::get<std::string_view>(t.value) << ")" << endl;
                     break;
                 case parse_token_t::unknown:
                     os << "- unknown" << endl;

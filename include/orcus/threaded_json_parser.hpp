@@ -151,16 +151,25 @@ void threaded_json_parser<_Handler>::process_tokens(json::parse_tokens_t& tokens
                     m_handler.null();
                     break;
                 case json::parse_token_t::number:
-                    m_handler.number(t.numeric_value);
+                    m_handler.number(std::get<double>(t.value));
                     break;
                 case json::parse_token_t::object_key:
-                    m_handler.object_key(t.string_value.p, t.string_value.len, false);
+                {
+                    auto s = std::get<std::string_view>(t.value);
+                    m_handler.object_key(s.data(), s.size(), false);
                     break;
+                }
                 case json::parse_token_t::string:
-                    m_handler.string(t.string_value.p, t.string_value.len, false);
+                {
+                    auto s = std::get<std::string_view>(t.value);
+                    m_handler.string(s.data(), s.size(), false);
                     break;
+                }
                 case json::parse_token_t::parse_error:
-                    throw json::parse_error(std::string(t.error_value.p, t.error_value.len), t.error_value.offset);
+                {
+                    auto v = std::get<json::parse_token::error_value>(t.value);
+                    throw json::parse_error(std::string{v.str}, v.offset);
+                }
                 case json::parse_token_t::unknown:
                 default:
                     throw general_error("unknown token type encountered.");
