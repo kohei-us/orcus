@@ -15,6 +15,7 @@
 #include <memory>
 #include <vector>
 #include <limits>
+#include <variant>
 
 #include <boost/optional.hpp>
 
@@ -36,7 +37,9 @@ using pivot_cache_indices_t = std::vector<size_t>;
 
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_record_value_t
 {
-    enum class value_type
+    using value_type = std::variant<bool, double, std::size_t, std::string_view, date_time_t>;
+
+    enum class record_type
     {
         unknown = 0,
         boolean,
@@ -48,43 +51,11 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_record_value_t
         shared_item_index
     };
 
-    value_type type;
-
-    union
-    {
-        bool boolean;
-
-        struct
-        {
-            // This must point to an interned string instance. May not be
-            // null-terminated.
-            const char* p;
-
-            size_t n; // Length of the string value.
-
-        } character;
-
-        struct
-        {
-            int year;
-            int month;
-            int day;
-            int hour;
-            int minute;
-            double second;
-
-        } date_time;
-
-        double numeric;
-
-        size_t shared_item_index;
-
-        // TODO : add error value.
-
-    } value;
+    record_type type;
+    value_type value;
 
     pivot_cache_record_value_t();
-    pivot_cache_record_value_t(const char* cp, size_t cn);
+    pivot_cache_record_value_t(std::string_view s);
     pivot_cache_record_value_t(double v);
     pivot_cache_record_value_t(size_t index);
 
@@ -96,46 +67,18 @@ using pivot_cache_record_t = std::vector<pivot_cache_record_value_t>;
 
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
 {
+    using value_type = std::variant<bool, double, std::string_view, date_time_t, error_value_t>;
+
     enum class item_type
     {
         unknown = 0, boolean, date_time, character, numeric, blank, error
     };
 
     item_type type;
-
-    union
-    {
-        struct
-        {
-            // This must point to an interned string instance. May not be
-            // null-terminated.
-            const char* p;
-
-            size_t n; // Length of the string value.
-
-        } character;
-
-        struct
-        {
-            int year;
-            int month;
-            int day;
-            int hour;
-            int minute;
-            double second;
-
-        } date_time;
-
-        double numeric;
-
-        error_value_t error;
-
-        bool boolean;
-
-    } value;
+    value_type value;
 
     pivot_cache_item_t();
-    pivot_cache_item_t(const char* cp, size_t cn);
+    pivot_cache_item_t(std::string_view s);
     pivot_cache_item_t(double numeric);
     pivot_cache_item_t(bool boolean);
     pivot_cache_item_t(const date_time_t& date_time);

@@ -221,6 +221,26 @@ bool date_time_t::operator!= (const date_time_t& other) const
     return !operator== (other);
 }
 
+bool date_time_t::operator< (const date_time_t& other) const
+{
+    if (year != other.year)
+        return year < other.year;
+
+    if (month != other.month)
+        return month < other.month;
+
+    if (day != other.day)
+        return day < other.day;
+
+    if (hour != other.hour)
+        return hour < other.hour;
+
+    if (minute != other.minute)
+        return minute < other.minute;
+
+    return second < other.second;
+}
+
 std::string date_time_t::to_string() const
 {
     std::ostringstream os;

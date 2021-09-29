@@ -459,6 +459,7 @@ struct ORCUS_PSR_DLLPUBLIC date_time_t
 
     bool operator== (const date_time_t& other) const;
     bool operator!= (const date_time_t& other) const;
+    bool operator< (const date_time_t& other) const;
 
     std::string to_string() const;
 

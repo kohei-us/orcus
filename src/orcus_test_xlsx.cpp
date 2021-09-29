@@ -819,10 +819,10 @@ void test_xlsx_pivot_two_pivot_caches()
         // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
         std::set<pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(ORCUS_ASCII("A")),
-            pivot_cache_item_t(ORCUS_ASCII("B")),
-            pivot_cache_item_t(ORCUS_ASCII("C")),
-            pivot_cache_item_t(ORCUS_ASCII("D")),
+            pivot_cache_item_t(std::string_view{"A"}),
+            pivot_cache_item_t(std::string_view{"B"}),
+            pivot_cache_item_t(std::string_view{"C"}),
+            pivot_cache_item_t(std::string_view{"D"}),
         };
 
         std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
@@ -865,10 +865,10 @@ void test_xlsx_pivot_two_pivot_caches()
     {
         std::set<pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(ORCUS_ASCII("W")),
-            pivot_cache_item_t(ORCUS_ASCII("X")),
-            pivot_cache_item_t(ORCUS_ASCII("Y")),
-            pivot_cache_item_t(ORCUS_ASCII("Z")),
+            pivot_cache_item_t(std::string_view{"W"}),
+            pivot_cache_item_t(std::string_view{"X"}),
+            pivot_cache_item_t(std::string_view{"Y"}),
+            pivot_cache_item_t(std::string_view{"Z"}),
         };
 
         std::set<pivot_cache_item_t> actual;
@@ -930,9 +930,9 @@ void test_xlsx_pivot_mixed_type_field()
         // items 1 and 2.
         std::set<pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(ORCUS_ASCII("A")),
-            pivot_cache_item_t(ORCUS_ASCII("B")),
-            pivot_cache_item_t(ORCUS_ASCII("C")),
+            pivot_cache_item_t(std::string_view{"A"}),
+            pivot_cache_item_t(std::string_view{"B"}),
+            pivot_cache_item_t(std::string_view{"C"}),
             pivot_cache_item_t(1.0),
             pivot_cache_item_t(2.0),
         };
@@ -983,9 +983,9 @@ void test_xlsx_pivot_mixed_type_field()
         // items 1, 2, 3.5 and 5.
         std::set<pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(ORCUS_ASCII("A")),
-            pivot_cache_item_t(ORCUS_ASCII("B")),
-            pivot_cache_item_t(ORCUS_ASCII("C")),
+            pivot_cache_item_t(std::string_view{"A"}),
+            pivot_cache_item_t(std::string_view{"B"}),
+            pivot_cache_item_t(std::string_view{"C"}),
             pivot_cache_item_t(1.0),
             pivot_cache_item_t(2.0),
             pivot_cache_item_t(3.5),
@@ -1053,10 +1053,10 @@ void test_xlsx_pivot_group_field()
         // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
         std::set<pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(ORCUS_ASCII("A")),
-            pivot_cache_item_t(ORCUS_ASCII("B")),
-            pivot_cache_item_t(ORCUS_ASCII("C")),
-            pivot_cache_item_t(ORCUS_ASCII("D")),
+            pivot_cache_item_t(std::string_view{"A"}),
+            pivot_cache_item_t(std::string_view{"B"}),
+            pivot_cache_item_t(std::string_view{"C"}),
+            pivot_cache_item_t(std::string_view{"D"}),
         };
 
         std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
@@ -1089,8 +1089,8 @@ void test_xlsx_pivot_group_field()
         // It should have two items - Group1 and Group2.
         std::set<pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(ORCUS_ASCII("Group1")),
-            pivot_cache_item_t(ORCUS_ASCII("Group2")),
+            pivot_cache_item_t(std::string_view{"Group1"}),
+            pivot_cache_item_t(std::string_view{"Group2"}),
         };
 
         std::set<pivot_cache_item_t> actual;
@@ -1154,8 +1154,8 @@ void test_xlsx_pivot_group_by_numbers()
     for (const pivot_cache_item_t& item : fld->items)
     {
         assert(item.type == pivot_cache_item_t::item_type::numeric);
-        assert(*fld->min_value <= item.value.numeric);
-        assert(item.value.numeric <= *fld->max_value);
+        assert(*fld->min_value <= std::get<double>(item.value));
+        assert(std::get<double>(item.value) <= *fld->max_value);
     }
 
     // This field is also gruop field with 7 numeric intervals of width 2.
@@ -1165,13 +1165,13 @@ void test_xlsx_pivot_group_by_numbers()
 
     pivot_cache_items_t expected =
     {
-        pivot_cache_item_t(ORCUS_ASCII("<0")),
-        pivot_cache_item_t(ORCUS_ASCII("0-2")),
-        pivot_cache_item_t(ORCUS_ASCII("2-4")),
-        pivot_cache_item_t(ORCUS_ASCII("4-6")),
-        pivot_cache_item_t(ORCUS_ASCII("6-8")),
-        pivot_cache_item_t(ORCUS_ASCII("8-10")),
-        pivot_cache_item_t(ORCUS_ASCII(">10")),
+        pivot_cache_item_t(std::string_view{"<0"}),
+        pivot_cache_item_t(std::string_view{"0-2"}),
+        pivot_cache_item_t(std::string_view{"2-4"}),
+        pivot_cache_item_t(std::string_view{"4-6"}),
+        pivot_cache_item_t(std::string_view{"6-8"}),
+        pivot_cache_item_t(std::string_view{"8-10"}),
+        pivot_cache_item_t(std::string_view{">10"}),
     };
 
     assert(grp.items == expected);
@@ -1253,20 +1253,20 @@ void test_xlsx_pivot_group_by_dates()
 
     expected =
     {
-        pivot_cache_item_t(ORCUS_ASCII("<1/1/2014")),
-        pivot_cache_item_t(ORCUS_ASCII("Jan")),
-        pivot_cache_item_t(ORCUS_ASCII("Feb")),
-        pivot_cache_item_t(ORCUS_ASCII("Mar")),
-        pivot_cache_item_t(ORCUS_ASCII("Apr")),
-        pivot_cache_item_t(ORCUS_ASCII("May")),
-        pivot_cache_item_t(ORCUS_ASCII("Jun")),
-        pivot_cache_item_t(ORCUS_ASCII("Jul")),
-        pivot_cache_item_t(ORCUS_ASCII("Aug")),
-        pivot_cache_item_t(ORCUS_ASCII("Sep")),
-        pivot_cache_item_t(ORCUS_ASCII("Oct")),
-        pivot_cache_item_t(ORCUS_ASCII("Nov")),
-        pivot_cache_item_t(ORCUS_ASCII("Dec")),
-        pivot_cache_item_t(ORCUS_ASCII(">12/2/2014")),
+        pivot_cache_item_t(std::string_view{"<1/1/2014"}),
+        pivot_cache_item_t(std::string_view{"Jan"}),
+        pivot_cache_item_t(std::string_view{"Feb"}),
+        pivot_cache_item_t(std::string_view{"Mar"}),
+        pivot_cache_item_t(std::string_view{"Apr"}),
+        pivot_cache_item_t(std::string_view{"May"}),
+        pivot_cache_item_t(std::string_view{"Jun"}),
+        pivot_cache_item_t(std::string_view{"Jul"}),
+        pivot_cache_item_t(std::string_view{"Aug"}),
+        pivot_cache_item_t(std::string_view{"Sep"}),
+        pivot_cache_item_t(std::string_view{"Oct"}),
+        pivot_cache_item_t(std::string_view{"Nov"}),
+        pivot_cache_item_t(std::string_view{"Dec"}),
+        pivot_cache_item_t(std::string_view{">12/2/2014"}),
     };
 
     assert(gd.items == expected);
@@ -1299,12 +1299,12 @@ void test_xlsx_pivot_group_by_dates()
 
     expected =
     {
-        pivot_cache_item_t(ORCUS_ASCII("<1/1/2014")),
-        pivot_cache_item_t(ORCUS_ASCII("Qtr1")),
-        pivot_cache_item_t(ORCUS_ASCII("Qtr2")),
-        pivot_cache_item_t(ORCUS_ASCII("Qtr3")),
-        pivot_cache_item_t(ORCUS_ASCII("Qtr4")),
-        pivot_cache_item_t(ORCUS_ASCII(">12/2/2014")),
+        pivot_cache_item_t(std::string_view{"<1/1/2014"}),
+        pivot_cache_item_t(std::string_view{"Qtr1"}),
+        pivot_cache_item_t(std::string_view{"Qtr2"}),
+        pivot_cache_item_t(std::string_view{"Qtr3"}),
+        pivot_cache_item_t(std::string_view{"Qtr4"}),
+        pivot_cache_item_t(std::string_view{">12/2/2014"}),
     };
 
     assert(gd_qtrs.items == expected);
@@ -1335,10 +1335,10 @@ void test_xlsx_pivot_error_values()
     // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
     std::set<pivot_cache_item_t> expected =
     {
-        pivot_cache_item_t(ORCUS_ASCII("A")),
-        pivot_cache_item_t(ORCUS_ASCII("B")),
-        pivot_cache_item_t(ORCUS_ASCII("C")),
-        pivot_cache_item_t(ORCUS_ASCII("D")),
+        pivot_cache_item_t(std::string_view{"A"}),
+        pivot_cache_item_t(std::string_view{"B"}),
+        pivot_cache_item_t(std::string_view{"C"}),
+        pivot_cache_item_t(std::string_view{"D"}),
     };
 
     std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());

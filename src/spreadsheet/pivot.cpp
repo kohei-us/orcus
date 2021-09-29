@@ -18,59 +18,27 @@
 
 namespace orcus { namespace spreadsheet {
 
-pivot_cache_record_value_t::pivot_cache_record_value_t() : type(value_type::unknown) {}
+pivot_cache_record_value_t::pivot_cache_record_value_t() :
+    type(record_type::unknown), value(false) {}
 
-pivot_cache_record_value_t::pivot_cache_record_value_t(const char* cp, size_t cn) :
-    type(value_type::character)
+pivot_cache_record_value_t::pivot_cache_record_value_t(std::string_view s) :
+    type(record_type::character), value(s)
 {
-    value.character.p = cp;
-    value.character.n = cn;
 }
 
 pivot_cache_record_value_t::pivot_cache_record_value_t(double v) :
-    type(value_type::numeric)
+    type(record_type::numeric), value(v)
 {
-    value.numeric = v;
 }
 
 pivot_cache_record_value_t::pivot_cache_record_value_t(size_t index) :
-    type(value_type::shared_item_index)
+    type(record_type::shared_item_index), value(index)
 {
-    value.shared_item_index = index;
 }
 
 bool pivot_cache_record_value_t::operator== (const pivot_cache_record_value_t& other) const
 {
-    if (type != other.type)
-        return false;
-
-    switch (type)
-    {
-        case value_type::boolean:
-            return value.boolean == other.value.boolean;
-        case value_type::date_time:
-            return value.date_time.year == other.value.date_time.year &&
-                value.date_time.month == other.value.date_time.month &&
-                value.date_time.day == other.value.date_time.day &&
-                value.date_time.hour == other.value.date_time.hour &&
-                value.date_time.minute == other.value.date_time.minute &&
-                value.date_time.second == other.value.date_time.second;
-        case value_type::character:
-            return std::string_view(value.character.p, value.character.n) == std::string_view(other.value.character.p, other.value.character.n);
-        case value_type::numeric:
-            return value.numeric == other.value.numeric;
-        case value_type::blank:
-        case value_type::unknown:
-            return true;
-        case value_type::shared_item_index:
-            return value.shared_item_index == other.value.shared_item_index;
-        case value_type::error:
-            // TODO : handle error value.
-        default:
-            ;
-    }
-
-    return false;
+    return type == other.type && value == other.value;
 }
 
 bool pivot_cache_record_value_t::operator!= (const pivot_cache_record_value_t& other) const
@@ -80,112 +48,41 @@ bool pivot_cache_record_value_t::operator!= (const pivot_cache_record_value_t& o
 
 pivot_cache_item_t::pivot_cache_item_t() : type(item_type::unknown) {}
 
-pivot_cache_item_t::pivot_cache_item_t(const char* cp, size_t cn) :
-    type(item_type::character)
+pivot_cache_item_t::pivot_cache_item_t(std::string_view s) :
+    type(item_type::character), value(s)
 {
-    value.character.p = cp;
-    value.character.n = cn;
 }
 
 pivot_cache_item_t::pivot_cache_item_t(double numeric) :
-    type(item_type::numeric)
+    type(item_type::numeric), value(numeric)
 {
-    value.numeric = numeric;
 }
 
 pivot_cache_item_t::pivot_cache_item_t(bool boolean) :
-    type(item_type::boolean)
+    type(item_type::boolean), value(boolean)
 {
-    value.boolean = boolean;
 }
 
 pivot_cache_item_t::pivot_cache_item_t(const date_time_t& date_time) :
-    type(item_type::date_time)
+    type(item_type::date_time), value(date_time)
 {
-    value.date_time.year   = date_time.year;
-    value.date_time.month  = date_time.month;
-    value.date_time.day    = date_time.day;
-    value.date_time.hour   = date_time.hour;
-    value.date_time.minute = date_time.minute;
-    value.date_time.second = date_time.second;
 }
 
 pivot_cache_item_t::pivot_cache_item_t(error_value_t error) :
-    type(item_type::error)
+    type(item_type::error), value(error)
 {
-    value.error = error;
 }
 
 pivot_cache_item_t::pivot_cache_item_t(const pivot_cache_item_t& other) :
-    type(other.type)
+    type(other.type), value(other.value)
 {
-    switch (type)
-    {
-        case item_type::blank:
-            break;
-        case item_type::boolean:
-            value.boolean = other.value.boolean;
-            break;
-        case item_type::date_time:
-            value.date_time.year   = other.value.date_time.year;
-            value.date_time.month  = other.value.date_time.month;
-            value.date_time.day    = other.value.date_time.day;
-            value.date_time.hour   = other.value.date_time.hour;
-            value.date_time.minute = other.value.date_time.minute;
-            value.date_time.second = other.value.date_time.second;
-            break;
-        case item_type::error:
-            value.error = other.value.error;
-            break;
-        case item_type::numeric:
-            value.numeric = other.value.numeric;
-            break;
-        case item_type::character:
-            value.character.p = other.value.character.p;
-            value.character.n = other.value.character.n;
-            break;
-        case item_type::unknown:
-            break;
-        default:
-            ;
-    }
 }
 
 pivot_cache_item_t::pivot_cache_item_t(pivot_cache_item_t&& other) :
-    type(other.type)
+    type(other.type), value(std::move(other.value))
 {
     other.type = item_type::unknown;
-
-    switch (type)
-    {
-        case item_type::blank:
-            break;
-        case item_type::boolean:
-            value.boolean = other.value.boolean;
-            break;
-        case item_type::date_time:
-            value.date_time.year   = other.value.date_time.year;
-            value.date_time.month  = other.value.date_time.month;
-            value.date_time.day    = other.value.date_time.day;
-            value.date_time.hour   = other.value.date_time.hour;
-            value.date_time.minute = other.value.date_time.minute;
-            value.date_time.second = other.value.date_time.second;
-            break;
-        case item_type::error:
-            value.error = other.value.error;
-            break;
-        case item_type::numeric:
-            value.numeric = other.value.numeric;
-            break;
-        case item_type::character:
-            value.character.p = other.value.character.p;
-            value.character.n = other.value.character.n;
-            break;
-        case item_type::unknown:
-            break;
-        default:
-            ;
-    }
+    other.value = false;
 }
 
 bool pivot_cache_item_t::operator< (const pivot_cache_item_t& other) const
@@ -193,73 +90,12 @@ bool pivot_cache_item_t::operator< (const pivot_cache_item_t& other) const
     if (type != other.type)
         return type < other.type;
 
-    switch (type)
-    {
-        case item_type::boolean:
-            return value.boolean < other.value.boolean;
-        case item_type::numeric:
-            return value.numeric < other.value.numeric;
-        case item_type::character:
-            return std::string_view(value.character.p, value.character.n) < std::string_view(other.value.character.p, other.value.character.n);
-        case item_type::date_time:
-            if (value.date_time.year != other.value.date_time.year)
-                return value.date_time.year < other.value.date_time.year;
-
-            if (value.date_time.month != other.value.date_time.month)
-                return value.date_time.month < other.value.date_time.month;
-
-            if (value.date_time.day != other.value.date_time.day)
-                return value.date_time.day < other.value.date_time.day;
-
-            if (value.date_time.hour != other.value.date_time.hour)
-                return value.date_time.hour < other.value.date_time.hour;
-
-            if (value.date_time.minute != other.value.date_time.minute)
-                return value.date_time.minute < other.value.date_time.minute;
-
-            return value.date_time.second < other.value.date_time.second;
-
-        case item_type::error:
-            return value.error < other.value.error;
-        case item_type::blank:
-        case item_type::unknown:
-        default:
-            ;
-    }
-
-    return false;
+    return value < other.value;
 }
 
 bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
 {
-    if (type != other.type)
-        return false;
-
-    switch (type)
-    {
-        case item_type::boolean:
-            return value.boolean == other.value.boolean;
-        case item_type::numeric:
-            return value.numeric == other.value.numeric;
-        case item_type::character:
-            return std::string_view(value.character.p, value.character.n) == std::string_view(other.value.character.p, other.value.character.n);
-        case item_type::date_time:
-            return value.date_time.year == other.value.date_time.year &&
-                value.date_time.month == other.value.date_time.month &&
-                value.date_time.day == other.value.date_time.day &&
-                value.date_time.hour == other.value.date_time.hour &&
-                value.date_time.minute == other.value.date_time.minute &&
-                value.date_time.second == other.value.date_time.second;
-        case item_type::error:
-            return value.error == other.value.error;
-        case item_type::blank:
-        case item_type::unknown:
-            return true;
-        default:
-            ;
-    }
-
-    return false;
+    return type == other.type && value == other.value;
 }
 
 pivot_cache_item_t& pivot_cache_item_t::operator= (pivot_cache_item_t other)
@@ -271,8 +107,7 @@ pivot_cache_item_t& pivot_cache_item_t::operator= (pivot_cache_item_t other)
 void pivot_cache_item_t::swap(pivot_cache_item_t& other)
 {
     std::swap(type, other.type);
-    // Swap values by the largest union member.
-    std::swap(value.date_time, other.value.date_time);
+    std::swap(value, other.value);
 }
 
 pivot_cache_group_data_t::pivot_cache_group_data_t(size_t _base_field) :

@@ -56,15 +56,13 @@ public:
     void set_field_item_string(const char* p, size_t n) override
     {
         m_current_field_item.type = pivot_cache_item_t::item_type::character;
-        std::string_view s = intern(p, n);
-        m_current_field_item.value.character.p = s.data();
-        m_current_field_item.value.character.n = s.size();
+        m_current_field_item.value = intern(p, n);
     }
 
     void set_field_item_numeric(double v) override
     {
         m_current_field_item.type = pivot_cache_item_t::item_type::numeric;
-        m_current_field_item.value.numeric = v;
+        m_current_field_item.value = v;
     }
 
     void commit_field_item() override
@@ -210,32 +208,25 @@ void import_pivot_cache_def::commit_field()
 void import_pivot_cache_def::set_field_item_string(const char* p, size_t n)
 {
     m_current_field_item.type = pivot_cache_item_t::item_type::character;
-    std::string_view s = intern(p, n);
-    m_current_field_item.value.character.p = s.data();
-    m_current_field_item.value.character.n = s.size();
+    m_current_field_item.value = intern(p, n);
 }
 
 void import_pivot_cache_def::set_field_item_numeric(double v)
 {
     m_current_field_item.type = pivot_cache_item_t::item_type::numeric;
-    m_current_field_item.value.numeric = v;
+    m_current_field_item.value = v;
 }
 
 void import_pivot_cache_def::set_field_item_date_time(const date_time_t& dt)
 {
     m_current_field_item.type = pivot_cache_item_t::item_type::date_time;
-    m_current_field_item.value.date_time.year = dt.year;
-    m_current_field_item.value.date_time.month = dt.month;
-    m_current_field_item.value.date_time.day = dt.day;
-    m_current_field_item.value.date_time.hour = dt.hour;
-    m_current_field_item.value.date_time.minute = dt.minute;
-    m_current_field_item.value.date_time.second = dt.second;
+    m_current_field_item.value = dt;
 }
 
 void import_pivot_cache_def::set_field_item_error(error_value_t ev)
 {
     m_current_field_item.type = pivot_cache_item_t::item_type::error;
-    m_current_field_item.value.error = ev;
+    m_current_field_item.value = ev;
 }
 
 void import_pivot_cache_def::commit_field_item()
@@ -281,7 +272,7 @@ void import_pivot_cache_records::append_record_value_numeric(double v)
 
 void import_pivot_cache_records::append_record_value_character(const char* p, size_t n)
 {
-    m_current_record.emplace_back(p, n);
+    m_current_record.emplace_back(std::string_view{p, n});
 }
 
 void import_pivot_cache_records::append_record_value_shared_item(size_t index)
