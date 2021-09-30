@@ -19,9 +19,13 @@ config::config(format_t input) :
     switch (input_format)
     {
         case format_t::csv:
+        {
+            csv_config csv;
             csv.header_row_size = 0;
             csv.split_to_multiple_sheets = false;
+            data = csv;
             break;
+        }
         case format_t::gnumeric:
         case format_t::ods:
         case format_t::xls_xml:

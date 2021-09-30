@@ -12,6 +12,7 @@
 #include "orcus/types.hpp"
 
 #include <string>
+#include <variant>
 
 namespace orcus {
 
@@ -35,6 +36,9 @@ struct ORCUS_DLLPUBLIC config
         bool split_to_multiple_sheets;
     };
 
+    // TODO: add config for other formats as needed.
+    using data_type = std::variant<csv_config>;
+
     /**
      * Enable or disable runtime debug output to stdout or stderr.
      */
@@ -47,12 +51,7 @@ struct ORCUS_DLLPUBLIC config
      */
     bool structure_check;
 
-    union
-    {
-        csv_config csv;
-
-        // TODO : add config for other formats as needed.
-    };
+    data_type data;
 
     config(format_t input_format);
 };

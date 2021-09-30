@@ -45,10 +45,14 @@ public:
 
     virtual void map_to_config(config& opt, const po::variables_map& vm) override
     {
-        if (vm.count("row-header"))
-            opt.csv.header_row_size = vm["row-header"].as<size_t>();
+        auto csv = std::get<config::csv_config>(opt.data);
 
-        opt.csv.split_to_multiple_sheets = vm.count("split") > 0;
+        if (vm.count("row-header"))
+            csv.header_row_size = vm["row-header"].as<size_t>();
+
+        csv.split_to_multiple_sheets = vm.count("split") > 0;
+
+        opt.data = csv;
     }
 };
 

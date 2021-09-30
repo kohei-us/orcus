@@ -63,7 +63,9 @@ public:
         // 0.
         if (m_row >= mp_sheet->get_sheet_size().rows)
         {
-            if (!m_app_config.csv.split_to_multiple_sheets)
+            auto csv = std::get<config::csv_config>(m_app_config.data);
+
+            if (!csv.split_to_multiple_sheets)
                 throw max_row_size_reached();
 
             // The next row will be outside the boundary of the current sheet.
@@ -78,7 +80,7 @@ public:
                 for (const header_cell& c : m_header_cells)
                     mp_sheet->set_auto(c.row, c.col, c.value.data(), c.value.size());
 
-                m_row += m_app_config.csv.header_row_size;
+                m_row += csv.header_row_size;
             }
         }
     }
@@ -91,7 +93,9 @@ public:
 
     void cell(const char* p, size_t n, bool transient)
     {
-        if (m_sheet == 0 && size_t(m_row) < m_app_config.csv.header_row_size)
+        auto csv = std::get<config::csv_config>(m_app_config.data);
+
+        if (m_sheet == 0 && size_t(m_row) < csv.header_row_size)
         {
             pstring v(p, n);
             if (transient)

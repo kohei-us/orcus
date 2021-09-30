@@ -95,8 +95,8 @@ void test_csv_import_split_sheet()
     std::cout << "checking " << path << "..." << std::endl;
 
     config conf(format_t::csv);
-    conf.csv.header_row_size = 0;
-    conf.csv.split_to_multiple_sheets = true;
+    std::get<config::csv_config>(conf.data).header_row_size = 0;
+    std::get<config::csv_config>(conf.data).split_to_multiple_sheets = true;
 
     // Set the row size to 11 to make sure the split occurs.
     spreadsheet::range_size_t ss{11, 4};
@@ -126,7 +126,7 @@ void test_csv_import_split_sheet()
     path = dir;
     path.append("input.csv");
     doc.clear();
-    conf.csv.header_row_size = 1;
+    std::get<config::csv_config>(conf.data).header_row_size = 1;
     {
         spreadsheet::import_factory factory(doc);
         orcus_csv app(&factory);
@@ -149,7 +149,7 @@ void test_csv_import_split_sheet()
 
     // Re-import it again, but this time disable the splitting.  The data should
     // get trucated on the first sheet.
-    conf.csv.split_to_multiple_sheets = false;
+    std::get<config::csv_config>(conf.data).split_to_multiple_sheets = false;
 
     path = dir;
     path.append("input.csv");
