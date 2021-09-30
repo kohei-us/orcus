@@ -68,7 +68,7 @@ public:
 private:
     void thread_parse();
 
-    void process_tokens(sax::parse_tokens_t& tokens);
+    void process_tokens(const sax::parse_tokens_t& tokens);
 
 private:
     sax::parser_thread m_parser_thread;
@@ -123,7 +123,7 @@ void threaded_sax_token_parser<_Handler>::thread_parse()
 }
 
 template<typename _Handler>
-void threaded_sax_token_parser<_Handler>::process_tokens(sax::parse_tokens_t& tks)
+void threaded_sax_token_parser<_Handler>::process_tokens(const sax::parse_tokens_t& tks)
 {
     for (const sax::parse_token& t : tks)
     {
