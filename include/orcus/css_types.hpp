@@ -50,6 +50,22 @@ enum class property_value_t
     url
 };
 
+struct rgba_color_t
+{
+    uint8_t red;   /// 0 to 255
+    uint8_t green; /// 0 to 255
+    uint8_t blue;  /// 0 to 255
+    double alpha;
+};
+
+struct hsla_color_t
+{
+    uint8_t hue;        /// 0 to 255
+    uint8_t saturation; /// 0 to 255
+    uint8_t lightness;  /// 0 to 255
+    double alpha;
+};
+
 using pseudo_element_t = uint16_t;
 using pseudo_class_t = uint64_t;
 

@@ -139,9 +139,7 @@ public:
 #endif
         css_property_value_t val;
         val.type = css::property_value_t::rgb;
-        val.red = red;
-        val.green = green;
-        val.blue = blue;
+        val.value = css::rgba_color_t{red, green, blue, 0.0};
         m_cur_prop_values.push_back(val);
     }
 
@@ -152,10 +150,7 @@ public:
 #endif
         css_property_value_t val;
         val.type = css::property_value_t::rgba;
-        val.red = red;
-        val.green = green;
-        val.blue = blue;
-        val.alpha = alpha;
+        val.value = css::rgba_color_t{red, green, blue, alpha};
         m_cur_prop_values.push_back(val);
     }
 
@@ -166,9 +161,7 @@ public:
 #endif
         css_property_value_t val;
         val.type = css::property_value_t::hsl;
-        val.hue = hue;
-        val.saturation = sat;
-        val.lightness = light;
+        val.value = css::hsla_color_t{hue, sat, light, 0.0};
         m_cur_prop_values.push_back(val);
     }
 
@@ -179,10 +172,7 @@ public:
 #endif
         css_property_value_t val;
         val.type = css::property_value_t::hsla;
-        val.hue = hue;
-        val.saturation = sat;
-        val.lightness = light;
-        val.alpha = alpha;
+        val.value = css::hsla_color_t{hue, sat, light, alpha};
         m_cur_prop_values.push_back(val);
     }
 
@@ -193,8 +183,7 @@ public:
 #endif
         css_property_value_t val;
         val.type = orcus::css::property_value_t::url;
-        val.str = p;
-        val.length = n;
+        val.value = std::string_view(p, n);
         m_cur_prop_values.push_back(val);
     }
 
@@ -324,10 +313,11 @@ public:
             {
                 // String value needs interning.
                 css_property_value_t interned = v;
-                interned.str = m_sp.intern(v.str, v.length).first.data();
+                auto s = std::get<std::string_view>(v.value);
+                interned.value = m_sp.intern(s).first;
                 m_dest.push_back(interned);
+                break;
             }
-            break;
             default:
                 m_dest.push_back(v);
         }

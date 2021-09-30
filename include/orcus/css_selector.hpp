@@ -12,6 +12,7 @@
 #include "css_types.hpp"
 
 #include <ostream>
+#include <variant>
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
@@ -72,42 +73,10 @@ struct ORCUS_DLLPUBLIC css_selector_t
  */
 struct ORCUS_DLLPUBLIC css_property_value_t
 {
+    using value_type = std::variant<std::string_view, css::rgba_color_t, css::hsla_color_t>;
+
     css::property_value_t type;
-
-    union
-    {
-        struct
-        {
-            /**
-             * Pointer to a string value. The actual string value must be stored
-             * in the string pool associated with the document tree storage.
-             */
-            const char* str;
-            uint32_t length;
-        };
-
-        struct
-        {
-            union
-            {
-                struct
-                {
-                    uint8_t red;   /// 0 to 255
-                    uint8_t green; /// 0 to 255
-                    uint8_t blue;  /// 0 to 255
-                };
-
-                struct
-                {
-                    uint16_t hue;        /// 0 to 360 where 0-red, 120-green, and 240-blue
-                    uint8_t  saturation; /// percentage
-                    uint8_t  lightness;  /// percentage
-                };
-            };
-
-            double  alpha; /// 0 to 1.0
-        };
-    };
+    value_type value;
 
     css_property_value_t();
     css_property_value_t(const css_property_value_t& r);

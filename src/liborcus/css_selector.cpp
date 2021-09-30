@@ -86,69 +86,27 @@ bool css_selector_t::operator== (const css_selector_t& r) const
 }
 
 css_property_value_t::css_property_value_t() :
-    type(css::property_value_t::none), str(nullptr) {}
-
-namespace
-{
-
-void assign_value(css_property_value_t& v, const css_property_value_t& r)
-{
-    switch (r.type)
-    {
-        case css::property_value_t::rgb:
-        case css::property_value_t::rgba:
-            v.red = r.red;
-            v.green = r.green;
-            v.blue = r.blue;
-            v.alpha = r.alpha;
-        break;
-        case css::property_value_t::hsl:
-        case css::property_value_t::hsla:
-            v.hue = r.hue;
-            v.saturation = r.saturation;
-            v.lightness = r.lightness;
-            v.alpha = r.alpha;
-        break;
-        case css::property_value_t::string:
-        case css::property_value_t::url:
-            v.str = r.str;
-            v.length = r.length;
-        break;
-        case css::property_value_t::none:
-        default:
-            ;
-    }
-}
-
-}
+    type(css::property_value_t::none), value{std::string_view{}} {}
 
 css_property_value_t::css_property_value_t(const css_property_value_t& r) :
-    type(r.type)
+    type(r.type), value(r.value)
 {
-    assign_value(*this, r);
 }
 
 css_property_value_t::css_property_value_t(std::string_view _str) :
-    type(css::property_value_t::string), str(_str.data()), length(_str.size()) {}
+    type(css::property_value_t::string), value(_str) {}
 
 css_property_value_t& css_property_value_t::operator= (const css_property_value_t& r)
 {
-    if (&r != this)
-    {
-        type = r.type;
-        assign_value(*this, r);
-    }
+    type = r.type;
+    value = r.value;
     return *this;
 }
 
 void css_property_value_t::swap(css_property_value_t& r)
 {
-    if (&r != this)
-    {
-        css_property_value_t tmp(*this);
-        *this = r;
-        r = tmp;
-    }
+    std::swap(type, r.type);
+    std::swap(value, r.value);
 }
 
 std::ostream& operator<< (std::ostream& os, const css_simple_selector_t& v)
@@ -196,41 +154,53 @@ std::ostream& operator<< (std::ostream& os, const css_property_value_t& v)
     switch (v.type)
     {
         case css::property_value_t::hsl:
+        {
+            auto c = std::get<css::hsla_color_t>(v.value);
             os << "hsl("
-               << (int)v.hue << sep
-               << (int)v.saturation << sep
-               << (int)v.lightness
-               << ")";
-        break;
+                << (int)c.hue << sep
+                << (int)c.saturation << sep
+                << (int)c.lightness
+                << ")";
+            break;
+        }
         case css::property_value_t::hsla:
+        {
+            auto c = std::get<css::hsla_color_t>(v.value);
             os << "hsla("
-               << (int)v.hue << sep
-               << (int)v.saturation << sep
-               << (int)v.lightness << sep
-               << v.alpha
-               << ")";
-        break;
+                << (int)c.hue << sep
+                << (int)c.saturation << sep
+                << (int)c.lightness << sep
+                << c.alpha
+                << ")";
+            break;
+        }
         case css::property_value_t::rgb:
+        {
+            auto c = std::get<css::rgba_color_t>(v.value);
             os << "rgb("
-               << (int)v.red << sep
-               << (int)v.green << sep
-               << (int)v.blue
-               << ")";
-        break;
+                << (int)c.red << sep
+                << (int)c.green << sep
+                << (int)c.blue
+                << ")";
+            break;
+        }
         case css::property_value_t::rgba:
+        {
+            auto c = std::get<css::rgba_color_t>(v.value);
             os << "rgba("
-               << (int)v.red << sep
-               << (int)v.green << sep
-               << (int)v.blue << sep
-               << v.alpha
-               << ")";
-        break;
+                << (int)c.red << sep
+                << (int)c.green << sep
+                << (int)c.blue << sep
+                << c.alpha
+                << ")";
+            break;
+        }
         case css::property_value_t::string:
-            os << std::string_view(v.str, v.length);
-        break;
+            os << std::get<std::string_view>(v.value);
+            break;
         case css::property_value_t::url:
-            os << "url(" << std::string_view(v.str, v.length) << ")";
-        break;
+            os << "url(" << std::get<std::string_view>(v.value) << ")";
+            break;
         case css::property_value_t::none:
         default:
             ;
