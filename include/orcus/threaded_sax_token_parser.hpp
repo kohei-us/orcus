@@ -125,39 +125,37 @@ void threaded_sax_token_parser<_Handler>::thread_parse()
 template<typename _Handler>
 void threaded_sax_token_parser<_Handler>::process_tokens(sax::parse_tokens_t& tks)
 {
-    std::for_each(tks.begin(), tks.end(),
-        [this](const sax::parse_token& t)
+    for (const sax::parse_token& t : tks)
+    {
+        switch (t.type)
         {
-            switch (t.type)
+            case sax::parse_token_t::start_element:
             {
-                case sax::parse_token_t::start_element:
-                {
-                    const auto* elem = std::get<const xml_token_element_t*>(t.value);
-                    m_handler.start_element(*elem);
-                    break;
-                }
-                case sax::parse_token_t::end_element:
-                {
-                    const auto* elem = std::get<const xml_token_element_t*>(t.value);
-                    m_handler.end_element(*elem);
-                    break;
-                }
-                case sax::parse_token_t::characters:
-                {
-                    auto s = std::get<std::string_view>(t.value);
-                    m_handler.characters(s, false);
-                    break;
-                }
-                case sax::parse_token_t::parse_error:
-                {
-                    auto v = std::get<parse_error_value_t>(t.value);
-                    throw sax::malformed_xml_error(std::string{v.str}, v.offset);
-                }
-                default:
-                    throw general_error("unknown token type encountered.");
+                const auto* elem = std::get<const xml_token_element_t*>(t.value);
+                m_handler.start_element(*elem);
+                break;
             }
+            case sax::parse_token_t::end_element:
+            {
+                const auto* elem = std::get<const xml_token_element_t*>(t.value);
+                m_handler.end_element(*elem);
+                break;
+            }
+            case sax::parse_token_t::characters:
+            {
+                auto s = std::get<std::string_view>(t.value);
+                m_handler.characters(s, false);
+                break;
+            }
+            case sax::parse_token_t::parse_error:
+            {
+                auto v = std::get<parse_error_value_t>(t.value);
+                throw sax::malformed_xml_error(std::string{v.str}, v.offset);
+            }
+            default:
+                throw general_error("unknown token type encountered.");
         }
-    );
+    }
 }
 
 }
