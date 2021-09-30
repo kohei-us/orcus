@@ -8,7 +8,8 @@
 #ifndef INCLUDED_ORCUS_JSON_PARSER_THREAD_HPP
 #define INCLUDED_ORCUS_JSON_PARSER_THREAD_HPP
 
-#include "orcus/env.hpp"
+#include "env.hpp"
+#include "types.hpp"
 
 #include <memory>
 #include <vector>
@@ -46,18 +47,7 @@ enum class parse_token_t
 
 struct ORCUS_PSR_DLLPUBLIC parse_token
 {
-    struct ORCUS_PSR_DLLPUBLIC error_value
-    {
-        std::string_view str;
-        std::ptrdiff_t offset;
-
-        error_value(std::string_view _str, std::ptrdiff_t _offset);
-
-        bool operator==(const error_value& other) const;
-        bool operator!=(const error_value& other) const;
-    };
-
-    using value_type = std::variant<std::string_view, error_value, double>;
+    using value_type = std::variant<std::string_view, parse_error_value_t, double>;
 
     parse_token_t type;
     value_type value;

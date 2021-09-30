@@ -18,21 +18,6 @@
 
 namespace orcus { namespace json {
 
-parse_token::error_value::error_value(std::string_view _str, std::ptrdiff_t _offset) :
-    str(_str), offset(_offset)
-{
-}
-
-bool parse_token::error_value::operator==(const error_value& other) const
-{
-    return str == other.str && offset == other.offset;
-}
-
-bool parse_token::error_value::operator!=(const error_value& other) const
-{
-    return !operator==(other);
-}
-
 parse_token::parse_token() : type(parse_token_t::unknown), value(0.0) {}
 
 parse_token::parse_token(parse_token_t _type) : type(_type), value(0.0) {}
@@ -43,7 +28,7 @@ parse_token::parse_token(parse_token_t _type, std::string_view s) :
 }
 
 parse_token::parse_token(std::string_view s, std::ptrdiff_t offset) :
-    type(parse_token_t::parse_error), value(error_value{s, offset})
+    type(parse_token_t::parse_error), value(parse_error_value_t{s, offset})
 {
     assert(type == parse_token_t::parse_error);
 }
@@ -258,7 +243,7 @@ std::ostream& operator<< (std::ostream& os, const parse_tokens_t& tokens)
                     break;
                 case parse_token_t::parse_error:
                 {
-                    auto v = std::get<parse_token::error_value>(t.value);
+                    auto v = std::get<parse_error_value_t>(t.value);
                     os << "- parse_error (v=" << v.str << ", offset=" << v.offset << ")" << endl;
                     break;
                 }

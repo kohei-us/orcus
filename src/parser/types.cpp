@@ -25,6 +25,26 @@ size_t xml_token_pair_hash::operator()(const xml_token_pair_t& v) const
 
 const size_t index_not_found = std::numeric_limits<size_t>::max();
 
+parse_error_value_t::parse_error_value_t() :
+    offset(0)
+{
+}
+
+parse_error_value_t::parse_error_value_t(std::string_view _str, std::ptrdiff_t _offset) :
+    str(_str), offset(_offset)
+{
+}
+
+bool parse_error_value_t::operator==(const parse_error_value_t& other) const
+{
+    return str == other.str && offset == other.offset;
+}
+
+bool parse_error_value_t::operator!=(const parse_error_value_t& other) const
+{
+    return !operator==(other);
+}
+
 xml_name_t::xml_name_t() : ns(XMLNS_UNKNOWN_ID), name() {}
 xml_name_t::xml_name_t(xmlns_id_t _ns, std::string_view _name) : ns(_ns), name(_name) {}
 xml_name_t::xml_name_t(const xml_name_t& r) : ns(r.ns), name(r.name) {}

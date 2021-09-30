@@ -43,6 +43,18 @@ using xml_elem_set_t = std::unordered_set<xml_token_pair_t, xml_token_pair_hash>
 ORCUS_PSR_DLLPUBLIC extern const xmlns_id_t XMLNS_UNKNOWN_ID;
 ORCUS_PSR_DLLPUBLIC extern const xml_token_t XML_UNKNOWN_TOKEN;
 
+struct ORCUS_PSR_DLLPUBLIC parse_error_value_t
+{
+    std::string_view str;
+    std::ptrdiff_t offset;
+
+    parse_error_value_t();
+    parse_error_value_t(std::string_view _str, std::ptrdiff_t _offset);
+
+    bool operator==(const parse_error_value_t& other) const;
+    bool operator!=(const parse_error_value_t& other) const;
+};
+
 struct ORCUS_PSR_DLLPUBLIC xml_name_t
 {
     enum to_string_type { use_alias, use_short_name };

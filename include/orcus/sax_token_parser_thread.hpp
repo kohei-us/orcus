@@ -8,9 +8,11 @@
 #ifndef INCLUDED_ORCUS_SAX_TOKEN_PARSER_THREAD_HPP
 #define INCLUDED_ORCUS_SAX_TOKEN_PARSER_THREAD_HPP
 
-#include "orcus/env.hpp"
+#include "env.hpp"
+#include "types.hpp"
 
 #include <memory>
+#include <variant>
 #include <vector>
 #include <ostream>
 
@@ -34,32 +36,15 @@ enum class parse_token_t
 
 struct ORCUS_PSR_DLLPUBLIC parse_token
 {
+    using value_type = std::variant<std::string_view, parse_error_value_t, const xml_token_element_t*>;
+
     parse_token_t type;
-
-    union
-    {
-        struct
-        {
-            const char* p;
-            size_t n;
-
-        } characters;
-
-        struct
-        {
-            const char* p;
-            size_t len;
-            std::ptrdiff_t offset;
-
-        } error_value;
-
-        const xml_token_element_t* element;
-    };
+    value_type value;
 
     parse_token();
     parse_token(std::string_view _characters);
     parse_token(parse_token_t _type, const xml_token_element_t* _element);
-    parse_token(parse_token_t _type, const char* p, size_t len, std::ptrdiff_t offset);
+    parse_token(std::string_view msg, std::ptrdiff_t offset);
 
     parse_token(const parse_token& other);
 

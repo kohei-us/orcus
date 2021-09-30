@@ -21,72 +21,30 @@ namespace orcus { namespace sax {
 parse_token::parse_token() : type(parse_token_t::unknown) {}
 
 parse_token::parse_token(std::string_view _characters) :
-    type(parse_token_t::characters)
+    type(parse_token_t::characters),
+    value(_characters)
 {
-    characters.p = _characters.data();
-    characters.n = _characters.size();
 }
 
 parse_token::parse_token(parse_token_t _type, const xml_token_element_t* _element) :
-    type(_type), element(_element)
+    type(_type), value(_element)
 {
 }
 
-parse_token::parse_token(parse_token_t _type, const char* p, size_t len, std::ptrdiff_t offset) :
-    type(_type)
+parse_token::parse_token(std::string_view msg, std::ptrdiff_t offset) :
+    type(parse_token_t::parse_error),
+    value(parse_error_value_t{msg, offset})
 {
-    error_value.p = p;
-    error_value.len = len;
-    error_value.offset = offset;
 }
 
 parse_token::parse_token(const parse_token& other) :
-    type(other.type)
+    type(other.type), value(other.value)
 {
-    switch (type)
-    {
-        case parse_token_t::start_element:
-        case parse_token_t::end_element:
-            element = other.element;
-            break;
-        case parse_token_t::characters:
-            characters.p = other.characters.p;
-            characters.n = other.characters.n;
-            break;
-        case parse_token_t::parse_error:
-            error_value.p = other.error_value.p;
-            error_value.len = other.error_value.len;
-            error_value.offset = other.error_value.offset;
-            break;
-        case parse_token_t::unknown:
-        default:
-            ;
-    }
 }
 
 bool parse_token::operator== (const parse_token& other) const
 {
-    if (type != other.type)
-        return false;
-
-    switch (type)
-    {
-        case parse_token_t::start_element:
-        case parse_token_t::end_element:
-            return element == other.element;
-        case parse_token_t::characters:
-            return characters.p == other.characters.p &&
-                characters.n == other.characters.n;
-        case parse_token_t::parse_error:
-            return error_value.p == other.error_value.p &&
-                error_value.len == other.error_value.len &&
-                error_value.offset == other.error_value.offset;
-        case parse_token_t::unknown:
-        default:
-            ;
-    }
-
-    return true;
+    return type == other.type && value == other.value;
 }
 
 bool parse_token::operator!= (const parse_token& other) const
@@ -184,8 +142,7 @@ struct parser_thread::impl
             catch (const malformed_xml_error& e)
             {
                 std::string_view s = m_pool.intern(e.what()).first;
-                m_parser_tokens.emplace_back(
-                    parse_token_t::parse_error, s.data(), s.size(), e.offset());
+                m_parser_tokens.emplace_back(s, e.offset());
             }
 
             // TODO : add more exceptions that need to be tokenized and processed by the client thread.

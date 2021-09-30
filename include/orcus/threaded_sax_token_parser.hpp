@@ -131,16 +131,28 @@ void threaded_sax_token_parser<_Handler>::process_tokens(sax::parse_tokens_t& tk
             switch (t.type)
             {
                 case sax::parse_token_t::start_element:
-                    m_handler.start_element(*t.element);
+                {
+                    const auto* elem = std::get<const xml_token_element_t*>(t.value);
+                    m_handler.start_element(*elem);
                     break;
+                }
                 case sax::parse_token_t::end_element:
-                    m_handler.end_element(*t.element);
+                {
+                    const auto* elem = std::get<const xml_token_element_t*>(t.value);
+                    m_handler.end_element(*elem);
                     break;
+                }
                 case sax::parse_token_t::characters:
-                    m_handler.characters(std::string_view(t.characters.p, t.characters.n), false);
+                {
+                    auto s = std::get<std::string_view>(t.value);
+                    m_handler.characters(s, false);
                     break;
+                }
                 case sax::parse_token_t::parse_error:
-                    throw sax::malformed_xml_error(std::string(t.error_value.p, t.error_value.len), t.error_value.offset);
+                {
+                    auto v = std::get<parse_error_value_t>(t.value);
+                    throw sax::malformed_xml_error(std::string{v.str}, v.offset);
+                }
                 default:
                     throw general_error("unknown token type encountered.");
             }

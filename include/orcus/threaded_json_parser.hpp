@@ -8,9 +8,9 @@
 #ifndef INCLUDED_ORCUS_THREADED_JSON_PARSER_HPP
 #define INCLUDED_ORCUS_THREADED_JSON_PARSER_HPP
 
-#include "orcus/json_parser_thread.hpp"
-#include "orcus/json_parser_base.hpp"
-#include "orcus/detail/thread.hpp"
+#include "json_parser_thread.hpp"
+#include "json_parser_base.hpp"
+#include "detail/thread.hpp"
 
 #include <algorithm>
 
@@ -167,7 +167,7 @@ void threaded_json_parser<_Handler>::process_tokens(json::parse_tokens_t& tokens
                 }
                 case json::parse_token_t::parse_error:
                 {
-                    auto v = std::get<json::parse_token::error_value>(t.value);
+                    auto v = std::get<parse_error_value_t>(t.value);
                     throw json::parse_error(std::string{v.str}, v.offset);
                 }
                 case json::parse_token_t::unknown:
