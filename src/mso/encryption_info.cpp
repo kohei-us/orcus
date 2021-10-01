@@ -53,8 +53,7 @@ public:
 void print_base64(const char* caption, std::string_view base64)
 {
     cout << caption << " (base64): " << base64 << endl;
-    vector<char> value;
-    orcus::decode_from_base64(base64.data(), base64.size(), value);
+    vector<uint8_t> value = orcus::decode_from_base64(base64);
     cout << caption << " (binary): ";
     for_each(value.begin(), value.end(), char_printer(cout));
     cout << endl;

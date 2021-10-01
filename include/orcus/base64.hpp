@@ -17,21 +17,18 @@ namespace orcus {
 /**
  * Decode a based64-encoded character sequence into a sequence of bytes.
  *
- * @param p_base64 pointer to the first character of encoded character
- *                 sequence.
- * @param len_base64 length of encoded character sequence.
- * @param decoded decoded byte sequence will be put into this parameter.
+ * @param base64 encoded character sequence.
+ * @return decoded byte sequence.
  */
-ORCUS_PSR_DLLPUBLIC void decode_from_base64(const char* p_base64, size_t len_base64, std::vector<char>& decoded);
+ORCUS_PSR_DLLPUBLIC std::vector<uint8_t> decode_from_base64(std::string_view base64);
 
 /**
  * Encode a sequence of bytes into base64-encoded characters.
  *
  * @param input sequence of bytes to encode.
- * @param encoded base64-encoded character sequence representing the input
- *                bytes.
+ * @return base64-encoded character sequence representing the input bytes.
  */
-ORCUS_PSR_DLLPUBLIC void encode_to_base64(const std::vector<char>& input, std::string& encoded);
+ORCUS_PSR_DLLPUBLIC std::string encode_to_base64(const std::vector<uint8_t>& input);
 
 }
 
