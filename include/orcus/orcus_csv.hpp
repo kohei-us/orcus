@@ -25,7 +25,7 @@ public:
     orcus_csv(spreadsheet::iface::import_factory* factory);
 
     virtual void read_file(const std::string& filepath);
-    virtual void read_stream(const char* content, size_t len);
+    virtual void read_stream(std::string_view stream);
 
     virtual const char* get_name() const;
 

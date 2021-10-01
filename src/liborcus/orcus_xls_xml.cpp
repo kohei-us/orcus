@@ -112,9 +112,9 @@ void orcus_xls_xml::read_file(const string& filepath)
     mp_impl->read_stream(content.data(), content.size(), get_config());
 }
 
-void orcus_xls_xml::read_stream(const char* content, size_t len)
+void orcus_xls_xml::read_stream(std::string_view stream)
 {
-    memory_content mem_content(content, len);
+    memory_content mem_content(stream.data(), stream.size());
     if (mem_content.empty())
         return;
 

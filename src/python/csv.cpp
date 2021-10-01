@@ -80,7 +80,7 @@ PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 
         Py_ssize_t n = 0;
         const char* p = PyUnicode_AsUTF8AndSize(str.get(), &n);
-        app.read_stream(p, n);
+        app.read_stream({p, n});
 
         return create_document(std::move(doc));
     }

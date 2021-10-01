@@ -146,13 +146,12 @@ void orcus_csv::read_file(const string& filepath)
     mp_factory->finalize();
 }
 
-void orcus_csv::read_stream(const char* content, size_t len)
+void orcus_csv::read_stream(std::string_view stream)
 {
-    if (!content)
+    if (stream.empty())
         return;
 
-    parse(content, len);
-
+    parse(stream.data(), stream.size());
     mp_factory->finalize();
 }
 

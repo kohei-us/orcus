@@ -33,7 +33,7 @@ public:
     virtual void read_file(const std::string& filepath) = 0;
 
     /// expects the whole content of the file
-    virtual void read_stream(const char* content, size_t len) = 0;
+    virtual void read_stream(std::string_view stream) = 0;
 
     virtual const char* get_name() const = 0;
 

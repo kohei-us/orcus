@@ -71,7 +71,7 @@ void zip_archive_stream_fd::seek(size_t pos)
 }
 
 
-zip_archive_stream_blob::zip_archive_stream_blob(const unsigned char* blob, size_t size) :
+zip_archive_stream_blob::zip_archive_stream_blob(const uint8_t* blob, std::size_t size) :
     m_blob(blob), m_cur(blob), m_size(size) {}
 
 zip_archive_stream_blob::~zip_archive_stream_blob() {}

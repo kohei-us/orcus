@@ -87,10 +87,10 @@ std::unique_ptr<spreadsheet::document> load_doc_from_stream(const string& path)
     std::ifstream ifs(path, std::ios::binary | std::ios::ate);
     std::streamsize n = ifs.tellg();
     ifs.seekg(0);
-    std::vector<char> content(n, '\0');
+    std::string content(n, '\0');
     if (ifs.read(content.data(), n))
     {
-        app.read_stream(content.data(), content.size());
+        app.read_stream(content);
         doc->recalc_formula_cells();
     }
 

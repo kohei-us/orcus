@@ -126,11 +126,11 @@ void orcus_ods::read_file(const std::string& filepath)
     read_file_impl(&stream);
 }
 
-void orcus_ods::read_stream(const char* content, size_t len)
+void orcus_ods::read_stream(std::string_view stream)
 {
-    zip_archive_stream_blob stream(
-            reinterpret_cast<const unsigned char*>(content), len);
-    read_file_impl(&stream);
+    zip_archive_stream_blob blob(
+        reinterpret_cast<const uint8_t*>(stream.data()), stream.size());
+    read_file_impl(&blob);
 }
 
 void orcus_ods::read_file_impl(zip_archive_stream* stream)

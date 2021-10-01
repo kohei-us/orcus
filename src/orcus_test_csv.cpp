@@ -73,7 +73,7 @@ void test_csv_import()
         {
             spreadsheet::import_factory factory(doc);
             orcus_csv app(&factory);
-            app.read_stream(stream.data(), stream.size());
+            app.read_stream(stream);
         }
 
         // Dump the content of the re-imported model, and make sure it's still

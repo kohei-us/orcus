@@ -11,6 +11,7 @@
 #include "env.hpp"
 #include <cstdlib>
 #include <cstdio>
+#include <cstdint>
 
 namespace orcus {
 
@@ -49,13 +50,13 @@ public:
  */
 class ORCUS_PSR_DLLPUBLIC zip_archive_stream_blob : public zip_archive_stream
 {
-    const unsigned char* m_blob;
-    const unsigned char* m_cur;
-    size_t m_size;
+    const uint8_t* m_blob;
+    const uint8_t* m_cur;
+    std::size_t m_size;
 
 public:
     zip_archive_stream_blob() = delete;
-    zip_archive_stream_blob(const unsigned char* blob, size_t size);
+    zip_archive_stream_blob(const uint8_t* blob, std::size_t size);
     virtual ~zip_archive_stream_blob();
 
     virtual size_t size() const;

@@ -133,16 +133,16 @@ void orcus_gnumeric::read_file(const string& filepath)
     if (content.empty())
         return;
 
-    read_stream(content.data(), content.size());
+    read_stream(content.str());
 }
 
-void orcus_gnumeric::read_stream(const char* content, size_t len)
+void orcus_gnumeric::read_stream(std::string_view stream)
 {
-    if (!content || !len)
+    if (stream.empty())
         return;
 
-    string file_content;
-    if (!decompress_gzip(content, len, file_content))
+    std::string file_content;
+    if (!decompress_gzip(stream.data(), stream.size(), file_content))
         return;
 
     read_content_xml(file_content.c_str(), file_content.length());
