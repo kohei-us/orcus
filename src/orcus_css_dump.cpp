@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     {
         orcus::file_content content(filepath);
         orcus::css_document_tree doc;
-        doc.load(content.data(), content.size());
+        doc.load(content.str());
         doc.dump();
     }
     catch (const std::exception& e)

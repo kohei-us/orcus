@@ -535,13 +535,13 @@ css_document_tree::~css_document_tree()
     delete mp_impl;
 }
 
-void css_document_tree::load(const char* p, size_t n)
+void css_document_tree::load(std::string_view stream)
 {
-    if (!n)
+    if (stream.empty())
         return;
 
     parser_handler handler(*this);
-    css_parser<parser_handler> parser(p, n, handler);
+    css_parser<parser_handler> parser(stream.data(), stream.size(), handler);
     parser.parse();
 }
 

@@ -82,7 +82,7 @@ void test_css_invalids()
 
         try
         {
-            doc.load(content.data(), content.size());
+            doc.load(content.str());
             assert(!"css::parse_error was not thrown, but expected to be.");
         }
         catch (const css::parse_error&)
@@ -123,7 +123,7 @@ void test_css_empty()
 
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 }
 
 void test_css_parse_basic1()
@@ -132,7 +132,7 @@ void test_css_parse_basic1()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.name = "table";
@@ -162,7 +162,7 @@ void test_css_parse_basic2()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.name = "div";
@@ -189,7 +189,7 @@ void test_css_parse_basic3()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.name = "html";
@@ -228,7 +228,7 @@ void test_css_parse_basic4()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.name = "h1";
@@ -269,7 +269,7 @@ void test_css_parse_basic5()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.classes.insert("info");
@@ -286,7 +286,7 @@ void test_css_parse_basic6()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.name = "h1";
@@ -317,7 +317,7 @@ void test_css_parse_basic7()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.classes.insert("one");
@@ -370,7 +370,7 @@ void test_css_parse_basic8()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.classes.insert("ribbon");
@@ -432,7 +432,7 @@ void test_css_parse_basic9()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.name = "a";
@@ -468,7 +468,7 @@ void test_css_parse_basic10()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.classes.insert("foo");
@@ -486,7 +486,7 @@ void test_css_parse_basic11()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.classes.insert("callout");
@@ -507,7 +507,7 @@ void test_css_parse_basic12()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.name = "div";
@@ -546,7 +546,7 @@ void test_css_parse_basic13()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.id = "p1";
@@ -581,7 +581,7 @@ void test_css_parse_basic14()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.id = "p1";
@@ -616,7 +616,7 @@ void test_css_parse_chained1()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     css_selector_t selector;
     selector.first.name = "div";
@@ -651,7 +651,7 @@ void test_css_parse_chained2()
     cout << path << endl;
     file_content content(path);
     css_document_tree doc;
-    doc.load(content.data(), content.size());
+    doc.load(content.str());
 
     // Build selector '#id1 table.data td'.
     css_selector_t selector;
