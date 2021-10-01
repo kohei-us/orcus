@@ -130,7 +130,7 @@ ORCUS_PSR_DLLPUBLIC pseudo_class_t to_pseudo_class(std::string_view s);
 
 ORCUS_PSR_DLLPUBLIC std::string pseudo_class_to_string(pseudo_class_t val);
 
-ORCUS_PSR_DLLPUBLIC property_function_t to_property_function(const char* p, size_t n);
+ORCUS_PSR_DLLPUBLIC property_function_t to_property_function(std::string_view s);
 
 }}
 

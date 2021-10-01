@@ -176,14 +176,14 @@ propfunc_map_type::entry propfunc_type_entries[] = {
 
 }
 
-property_function_t to_property_function(const char* p, size_t n)
+property_function_t to_property_function(std::string_view s)
 {
     static propfunc_map_type propfunc_map(
         propfunc_type_entries,
         ORCUS_N_ELEMENTS(propfunc_type_entries),
         property_function_t::unknown);
 
-    return propfunc_map.find(p, n);
+    return propfunc_map.find(s.data(), s.size());
 }
 
 }}

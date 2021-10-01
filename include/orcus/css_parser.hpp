@@ -532,7 +532,7 @@ template<typename _Handler>
 void css_parser<_Handler>::function_value(const char* p, size_t len)
 {
     assert(cur_char() == '(');
-    css::property_function_t func = css::to_property_function(p, len);
+    css::property_function_t func = css::to_property_function({p, len});
     if (func == css::property_function_t::unknown)
         css::parse_error::throw_with("function_value: unknown function '", p, len, "'");
 
