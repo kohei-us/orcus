@@ -76,7 +76,7 @@ bool xls_xml_data_context::format_type::formatted() const
     return false;
 }
 
-xls_xml_data_context::string_segment_type::string_segment_type(const pstring& _str) :
+xls_xml_data_context::string_segment_type::string_segment_type(std::string_view _str) :
     str(_str) {}
 
 xls_xml_data_context::xls_xml_data_context(
@@ -328,8 +328,8 @@ void xls_xml_data_context::end_element_data()
             if (m_cell_string.size() == 1 && !m_cell_string[0].formatted)
             {
                 // Unformatted string.
-                const pstring& s = m_cell_string.back().str;
-                sheet->set_string(pos.row, pos.column, ss->append(s.data(), s.size()));
+                std::string_view s = m_cell_string.back().str;
+                sheet->set_string(pos.row, pos.column, ss->append(s));
             }
             else
             {
@@ -347,7 +347,7 @@ void xls_xml_data_context::end_element_data()
                             sstr.format.color.blue);
                     }
 
-                    ss->append_segment(sstr.str.data(), sstr.str.size());
+                    ss->append_segment(sstr.str);
                 }
 
                 size_t si = ss->commit_segments();

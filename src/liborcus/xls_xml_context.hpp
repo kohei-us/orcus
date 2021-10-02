@@ -52,11 +52,11 @@ class xls_xml_data_context : public xml_context_base
 
     struct string_segment_type
     {
-        pstring str;
+        std::string_view str;
         format_type format;
         bool formatted = false;
 
-        string_segment_type(const pstring& _str);
+        string_segment_type(std::string_view _str);
     };
 
     enum cell_type { ct_unknown = 0, ct_string, ct_number, ct_datetime };

@@ -10,9 +10,9 @@
 
 #include <cstdlib>
 
-#include "orcus/spreadsheet/types.hpp"
-#include "orcus/types.hpp"
-#include "orcus/env.hpp"
+#include "types.hpp"
+#include "../types.hpp"
+#include "../env.hpp"
 
 // NB: This header must not depend on ixion, as it needs to be usable for
 // those clients that provide their own formula engine.  Other headers in
@@ -38,26 +38,22 @@ public:
      * Note that this method assumes that the caller knows the string being
      * appended is not yet in the pool.
      *
-     * @param s pointer to the first character of the string array.  The
-     *          string array doesn't necessary have to be null-terminated.
-     * @param n length of the string.
+     * @param s string to append to the pool.
      *
      * @return ID of the string just inserted.
      */
-    virtual size_t append(const char* s, size_t n) = 0;
+    virtual size_t append(std::string_view s) = 0;
 
     /**
      * Similar to the append method, it adds new string to the string pool;
      * however, this method checks if the string being added is already in the
      * pool before each insertion, to avoid duplicated strings.
      *
-     * @param s pointer to the first character of the string array.  The
-     *          string array doesn't necessary have to be null-terminated.
-     * @param n length of the string.
+     * @param s string to add to the pool.
      *
      * @return ID of the string just inserted.
      */
-    virtual size_t add(const char* s, size_t n) = 0;
+    virtual size_t add(std::string_view s) = 0;
 
     /**
      * Set the index of a font to apply to the current format attributes.
@@ -85,11 +81,9 @@ public:
     /**
      * Set the name of a font to the current format attributes.
      *
-     * @param s pointer to the first character of a char array that stores the
-     *          font name.
-     * @param n size of the char array that stores the font name.
+     * @param s font name.
      */
-    virtual void set_segment_font_name(const char* s, size_t n) = 0;
+    virtual void set_segment_font_name(std::string_view s) = 0;
 
     /**
      * Set a font size to the current format attributes.
@@ -112,11 +106,9 @@ public:
      * Append a string segment with the current format attributes to the
      * formatted string buffer.
      *
-     * @param s pointer to the first character of the string array.  The
-     *          string array doesn't necessary have to be null-terminated.
-     * @param n length of the string.
+     * @param s string segment value.
      */
-    virtual void append_segment(const char* s, size_t n) = 0;
+    virtual void append_segment(std::string_view s) = 0;
 
     /**
      * Store the formatted string in the current buffer to the shared strings

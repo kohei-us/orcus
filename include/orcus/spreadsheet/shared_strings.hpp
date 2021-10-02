@@ -60,19 +60,19 @@ public:
     typedef std::unordered_map<size_t, format_runs_t*> format_runs_map_type;
 
     import_shared_strings(orcus::string_pool& sp, ixion::model_context& cxt, styles& styles);
-    virtual ~import_shared_strings();
+    virtual ~import_shared_strings() override;
 
-    virtual size_t append(const char* s, size_t n);
-    virtual size_t add(const char* s, size_t n);
+    virtual size_t append(std::string_view s) override;
+    virtual size_t add(std::string_view s) override;
 
-    virtual void set_segment_font(size_t font_index);
-    virtual void set_segment_bold(bool b);
-    virtual void set_segment_italic(bool b);
-    virtual void set_segment_font_name(const char* s, size_t n);
-    virtual void set_segment_font_size(double point);
-    virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue);
-    virtual void append_segment(const char* s, size_t n);
-    virtual size_t commit_segments();
+    virtual void set_segment_font(size_t font_index) override;
+    virtual void set_segment_bold(bool b) override;
+    virtual void set_segment_italic(bool b) override;
+    virtual void set_segment_font_name(std::string_view s) override;
+    virtual void set_segment_font_size(double point) override;
+    virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual void append_segment(std::string_view s) override;
+    virtual size_t commit_segments() override;
 
     const format_runs_t* get_format_runs(size_t index) const;
 

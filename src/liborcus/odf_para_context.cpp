@@ -163,12 +163,8 @@ void text_para_context::flush_segment()
             mp_sstrings->set_segment_font(data->font);
         }
 
-        vector<pstring>::const_iterator it = m_contents.begin(), it_end = m_contents.end();
-        for (; it != it_end; ++it)
-        {
-            const pstring& ps = *it;
-            mp_sstrings->append_segment(ps.get(), ps.size());
-        }
+        for (pstring ps : m_contents)
+            mp_sstrings->append_segment(ps);
     }
 
     m_contents.clear();

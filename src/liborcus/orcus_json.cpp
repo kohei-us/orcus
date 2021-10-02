@@ -74,7 +74,7 @@ struct json_value
                 if (!ss)
                     break;
 
-                size_t sid = ss->add(value.str.p, value.str.n);
+                size_t sid = ss->add({value.str.p, value.str.n});
                 sheet->set_string(pos.row, pos.col, sid);
                 break;
             }
@@ -384,7 +384,7 @@ void orcus_json::read_stream(const char* p, size_t n)
         {
             cell_position_t pos = origin;
             pos.col += field->column_pos;
-            size_t sid = ss->add(field->label.data(), field->label.size());
+            size_t sid = ss->add(field->label);
             sheet->set_string(pos.row, pos.col, sid);
         }
     }

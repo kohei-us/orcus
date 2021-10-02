@@ -63,13 +63,13 @@ import_shared_strings::~import_shared_strings()
 {
 }
 
-size_t import_shared_strings::append(const char*, size_t)
+size_t import_shared_strings::append(std::string_view)
 {
     assert(false);
     return 0;
 }
 
-size_t import_shared_strings::add(const char*, size_t)
+size_t import_shared_strings::add(std::string_view)
 {
     assert(false);
     return 0;
@@ -90,7 +90,7 @@ void import_shared_strings::set_segment_italic(bool)
     assert(false);
 }
 
-void import_shared_strings::set_segment_font_name(const char*, size_t)
+void import_shared_strings::set_segment_font_name(std::string_view)
 {
     assert(false);
 }
@@ -105,7 +105,7 @@ void import_shared_strings::set_segment_font_color(color_elem_t, color_elem_t, c
     assert(false);
 }
 
-void import_shared_strings::append_segment(const char*, size_t)
+void import_shared_strings::append_segment(std::string_view)
 {
     assert(false);
 }

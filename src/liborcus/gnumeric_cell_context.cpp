@@ -210,7 +210,7 @@ void gnumeric_cell_context::end_cell()
             if (!shared_strings)
                 break;
 
-            size_t id = shared_strings->add(chars.get(), chars.size());
+            size_t id = shared_strings->add(chars);
             mp_sheet->set_string(row, col, id);
         }
         break;

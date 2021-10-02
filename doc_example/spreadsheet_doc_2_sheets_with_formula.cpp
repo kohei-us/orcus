@@ -166,24 +166,22 @@ class my_shared_strings : public iface::import_shared_strings
 public:
     my_shared_strings(ss_type& ss) : m_ss(ss) {}
 
-    virtual size_t add(const char* s, size_t n) override
+    virtual size_t add(std::string_view s) override
     {
-        std::string_view input(s, n);
-
-        auto it = m_ss_hash.find(input);
+        auto it = m_ss_hash.find(s);
         if (it != m_ss_hash.end())
             // This string already exists in the pool.
             return it->second;
 
         // This is a brand-new string.
-        return append(s, n);
+        return append(s);
     }
 
-    virtual size_t append(const char* s, size_t n) override
+    virtual size_t append(std::string_view s) override
     {
         size_t string_index = m_ss.size();
-        m_ss.emplace_back(s, n);
-        m_ss_hash.emplace(std::string_view(s, n), string_index);
+        m_ss.emplace_back(s);
+        m_ss_hash.emplace(s, string_index);
 
         return string_index;
     }
@@ -192,13 +190,13 @@ public:
     virtual void set_segment_bold(bool b) override {}
     virtual void set_segment_font(size_t font_index) override {}
     virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override {}
-    virtual void set_segment_font_name(const char* s, size_t n) override {}
+    virtual void set_segment_font_name(std::string_view s) override {}
     virtual void set_segment_font_size(double point) override {}
     virtual void set_segment_italic(bool b) override {}
 
-    virtual void append_segment(const char* s, size_t n) override
+    virtual void append_segment(std::string_view s) override
     {
-        m_current_string += std::string(s, n);
+        m_current_string += s;
     }
 
     virtual size_t commit_segments() override

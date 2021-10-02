@@ -11,7 +11,7 @@
 #include "gnumeric_token_constants.hpp"
 #include "mock_spreadsheet.hpp"
 #include "session_context.hpp"
-#include "orcus/types.hpp"
+#include <orcus/types.hpp>
 
 #include <iostream>
 #include <string>
@@ -107,33 +107,33 @@ class mock_sheet : public import_sheet
     mock_formula m_formula;
     mock_array_formula m_array_formula;
 public:
-    virtual void set_value(row_t row, col_t col, double val)
+    virtual void set_value(row_t row, col_t col, double val) override
     {
         assert(row == 1);
         assert(col == 2);
         assert(val == 5.0);
     }
 
-    virtual void set_bool(row_t row, col_t col, bool val)
+    virtual void set_bool(row_t row, col_t col, bool val) override
     {
         assert(row == 31);
         assert(col == 32);
         assert(val == true);
     }
 
-    virtual void set_string(row_t row, col_t col, string_id_t id)
+    virtual void set_string(row_t row, col_t col, string_id_t id) override
     {
         assert(row == 10);
         assert(col == 321);
         assert(id == 2);
     }
 
-    virtual iface::import_array_formula* get_array_formula()
+    virtual iface::import_array_formula* get_array_formula() override
     {
         return &m_array_formula;
     }
 
-    virtual iface::import_formula* get_formula()
+    virtual iface::import_formula* get_formula() override
     {
         return &m_formula;
     }
@@ -142,13 +142,12 @@ public:
 class mock_shared_strings : public import_shared_strings
 {
 public:
-    virtual size_t add(const char* s, size_t n)
+    virtual size_t add(std::string_view s) override
     {
-        assert(n == 14);
-        assert(string(s, n) == "14 char string");
+        assert(s.size() == 14);
+        assert(s == "14 char string");
         return 2;
     }
-
 };
 
 class mock_factory : public import_factory

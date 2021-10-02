@@ -177,8 +177,8 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
         {
             // font
             xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-            pstring font = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
-            mp_strings->set_segment_font_name(font.get(), font.size());
+            std::string_view font = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
+            mp_strings->set_segment_font_name(font);
         }
         break;
         case XML_family:
@@ -218,7 +218,7 @@ bool xlsx_shared_strings_context::end_element(xmlns_id_t ns, xml_token_t name)
             mp_strings->set_segment_italic(true);
         break;
         case XML_r:
-            mp_strings->append_segment(m_cur_str.get(), m_cur_str.size());
+            mp_strings->append_segment(m_cur_str);
         break;
         case XML_si:
         {
@@ -228,7 +228,7 @@ bool xlsx_shared_strings_context::end_element(xmlns_id_t ns, xml_token_t name)
             else
             {
                 // unformatted text should only have one text segment.
-                mp_strings->append(m_cur_str.get(), m_cur_str.size());
+                mp_strings->append(m_cur_str);
             }
         }
         break;

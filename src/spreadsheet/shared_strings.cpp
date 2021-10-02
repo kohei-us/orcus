@@ -67,14 +67,14 @@ import_shared_strings::~import_shared_strings()
     delete mp_cur_format_runs;
 }
 
-size_t import_shared_strings::append(const char* s, size_t n)
+size_t import_shared_strings::append(std::string_view s)
 {
-    return m_cxt.append_string({s, n});
+    return m_cxt.append_string(s);
 }
 
-size_t import_shared_strings::add(const char* s, size_t n)
+size_t import_shared_strings::add(std::string_view s)
 {
-    return m_cxt.add_string({s, n});
+    return m_cxt.add_string(s);
 }
 
 const format_runs_t* import_shared_strings::get_format_runs(size_t index) const
@@ -113,9 +113,9 @@ void import_shared_strings::set_segment_italic(bool b)
     m_cur_format.italic = b;
 }
 
-void import_shared_strings::set_segment_font_name(const char* s, size_t n)
+void import_shared_strings::set_segment_font_name(std::string_view s)
 {
-    m_cur_format.font = m_string_pool.intern({s, n}).first;
+    m_cur_format.font = m_string_pool.intern(s).first;
 }
 
 void import_shared_strings::set_segment_font_size(double point)
@@ -129,20 +129,20 @@ void import_shared_strings::set_segment_font_color(
     m_cur_format.color = color_t(alpha, red, green, blue);
 }
 
-void import_shared_strings::append_segment(const char* s, size_t n)
+void import_shared_strings::append_segment(std::string_view s)
 {
-    if (!n)
+    if (s.empty())
         return;
 
     size_t start_pos = m_cur_segment_string.size();
-    m_cur_segment_string += string(s, n);
+    m_cur_segment_string += s;
 
     if (m_cur_format.formatted())
     {
         // This segment is formatted.
         // Record the position and size of the format run.
         m_cur_format.pos = start_pos;
-        m_cur_format.size = n;
+        m_cur_format.size = s.size();
 
         if (!mp_cur_format_runs)
             mp_cur_format_runs = new format_runs_t;
