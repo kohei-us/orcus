@@ -382,8 +382,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                             end_date = to_date_time(attr.value);
                             break;
                         case XML_groupBy:
-                            group_by = spreadsheet::to_pivot_cache_group_by_enum(
-                                attr.value.data(), attr.value.size());
+                            group_by = spreadsheet::to_pivot_cache_group_by_enum(attr.value);
                             break;
                         default:
                             ;
@@ -831,7 +830,7 @@ void xlsx_pivot_cache_def_context::start_element_e(
                     switch (attr.name)
                     {
                         case XML_v:
-                            ev = spreadsheet::to_error_value_enum(attr.value.data(), attr.value.size());
+                            ev = spreadsheet::to_error_value_enum(attr.value);
                         break;
                         case XML_u:
                             // flag for unused item.

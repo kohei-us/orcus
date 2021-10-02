@@ -25,10 +25,10 @@ namespace orcus {
 
 namespace {
 
-spreadsheet::color_rgb_t to_rgb(const pstring& s)
+spreadsheet::color_rgb_t to_rgb(std::string_view s)
 {
     if (!s.empty() && s[0] == '#')
-        return spreadsheet::to_color_rgb(s.data(), s.size());
+        return spreadsheet::to_color_rgb(s);
     else
     {
         // This may be a color name.  Lower-case it before sending it to the
@@ -44,7 +44,7 @@ spreadsheet::color_rgb_t to_rgb(const pstring& s)
             }
         );
 
-        return spreadsheet::to_color_rgb_from_name(s_lower.data(), s_lower.size());
+        return spreadsheet::to_color_rgb_from_name(s_lower);
     }
 }
 

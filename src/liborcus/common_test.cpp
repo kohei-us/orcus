@@ -263,7 +263,7 @@ void test_spreadsheet_types()
         std::ostringstream os;
         os << ev;
         std::string s = os.str();
-        auto converted = spreadsheet::to_error_value_enum(s.data(), s.size());
+        auto converted = spreadsheet::to_error_value_enum(s);
         assert(converted == ev);
     }
 }

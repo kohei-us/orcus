@@ -593,7 +593,7 @@ void test_xls_xml_named_colors()
             size_t sid = model.get_string_identifier(ixion::abs_address_t(sh->get_index(), row, 1));
             const string* s = model.get_string(sid);
             assert(s);
-            spreadsheet::color_rgb_t expected = spreadsheet::to_color_rgb(s->data(), s->size());
+            spreadsheet::color_rgb_t expected = spreadsheet::to_color_rgb(*s);
 
             size_t xf = sh->get_cell_format(row, 0);
             const spreadsheet::fill_t* fill_data = styles.get_fill(xf);

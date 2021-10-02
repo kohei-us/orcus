@@ -183,7 +183,7 @@ bool parse_import_filter_args(
 
     std::string error_policy_s = vm["error-policy"].as<std::string>();
     spreadsheet::formula_error_policy_t error_policy =
-        spreadsheet::to_formula_error_policy(error_policy_s.data(), error_policy_s.size());
+        spreadsheet::to_formula_error_policy(error_policy_s);
 
     if (error_policy == spreadsheet::formula_error_policy_t::unknown)
     {

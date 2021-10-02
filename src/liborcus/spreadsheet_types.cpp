@@ -439,23 +439,26 @@ row_height_t get_default_row_height()
     return std::numeric_limits<row_height_t>::max();
 }
 
-totals_row_function_t to_totals_row_function_enum(const char* p, size_t n)
+totals_row_function_t to_totals_row_function_enum(std::string_view s)
 {
-    return get_trf_map().find(p, n);
+    return get_trf_map().find(s.data(), s.size());
 }
 
-pivot_cache_group_by_t to_pivot_cache_group_by_enum(const char* p, size_t n)
+pivot_cache_group_by_t to_pivot_cache_group_by_enum(std::string_view s)
 {
-    return get_pc_group_by_map().find(p, n);
+    return get_pc_group_by_map().find(s.data(), s.size());
 }
 
-error_value_t to_error_value_enum(const char* p, size_t n)
+error_value_t to_error_value_enum(std::string_view s)
 {
-    return get_error_value_map().find(p, n);
+    return get_error_value_map().find(s.data(), s.size());
 }
 
-color_rgb_t to_color_rgb(const char* p, size_t n)
+color_rgb_t to_color_rgb(std::string_view s)
 {
+    const char* p = s.data();
+    std::size_t n = s.size();
+
     // RGB string is a 6-character string representing 24-bit hexadecimal
     // number e.g. '004A12' (red - green - blue)
 
@@ -473,7 +476,7 @@ color_rgb_t to_color_rgb(const char* p, size_t n)
     if (n != 6)
     {
         std::ostringstream os;
-        os << "'" << pstring(p0, n0) << "' is not a valid RGB color string.";
+        os << "'" << std::string_view(p0, n0) << "' is not a valid RGB color string.";
         throw value_error(os.str());
     }
 
@@ -497,7 +500,7 @@ color_rgb_t to_color_rgb(const char* p, size_t n)
         else
         {
             std::ostringstream os;
-            os << "'" << pstring(p0, n0) << "' is not a valid RGB color string.";
+            os << "'" << std::string_view(p0, n0) << "' is not a valid RGB color string.";
             throw value_error(os.str());
         }
 
@@ -513,14 +516,14 @@ color_rgb_t to_color_rgb(const char* p, size_t n)
     return ret;
 }
 
-color_rgb_t to_color_rgb_from_name(const char* p, size_t n)
+color_rgb_t to_color_rgb_from_name(std::string_view s)
 {
-    return named_colors::get().find(p, n);
+    return named_colors::get().find(s.data(), s.size());
 }
 
-formula_error_policy_t to_formula_error_policy(const char* p, size_t n)
+formula_error_policy_t to_formula_error_policy(std::string_view s)
 {
-    return formula_error_policy::get().find(p, n);
+    return formula_error_policy::get().find(s.data(), s.size());
 }
 
 std::ostream& operator<< (std::ostream& os, error_value_t ev)

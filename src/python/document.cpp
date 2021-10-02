@@ -251,8 +251,7 @@ stream_with_formulas read_stream_and_formula_params_from_args(PyObject* args, Py
 
     if (error_policy_s)
     {
-        size_t n = strlen(error_policy_s);
-        ss::formula_error_policy_t error_policy = ss::to_formula_error_policy(error_policy_s, n);
+        ss::formula_error_policy_t error_policy = ss::to_formula_error_policy(error_policy_s);
         if (error_policy == ss::formula_error_policy_t::unknown)
         {
             std::ostringstream os;

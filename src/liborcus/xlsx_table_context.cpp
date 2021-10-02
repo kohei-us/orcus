@@ -99,22 +99,20 @@ public:
         {
             case XML_id:
                 m_id = to_long(attr.value);
-            break;
+                break;
             case XML_name:
                 m_name = attr.value;
                 if (attr.transient)
                     m_name = m_pool->intern(m_name).first;
-            break;
+                break;
             case XML_totalsRowLabel:
                 m_totals_row_label = attr.value;
                 if (attr.transient)
                     m_totals_row_label = m_pool->intern(m_totals_row_label).first;
-            break;
+                break;
             case XML_totalsRowFunction:
-                m_totals_row_func =
-                    spreadsheet::to_totals_row_function_enum(
-                        attr.value.data(), attr.value.size());
-            break;
+                m_totals_row_func = spreadsheet::to_totals_row_function_enum(attr.value);
+                break;
             default:
                 ;
         }

@@ -8,11 +8,13 @@
 #ifndef ORCUS_SPREADSHEET_TYPES_HPP
 #define ORCUS_SPREADSHEET_TYPES_HPP
 
-#include "orcus/env.hpp"
+#include "../env.hpp"
+
 #include <cstdlib>
 #include <cstdint>
 #include <iosfwd>
 #include <initializer_list>
+#include <string_view>
 
 // NB: This header should only use primitive data types and enums.
 
@@ -471,69 +473,62 @@ struct ORCUS_DLLPUBLIC color_rgb_t
  * Convert a string representation of a totals row function name to its
  * equivalent enum value.
  *
- * @param p pointer to the string buffer.
- * @param n size of the string buffer.
+ * @param s string value for totals row function name.
  *
  * @return enum value representing the totals row function.
  */
-ORCUS_DLLPUBLIC totals_row_function_t to_totals_row_function_enum(const char* p, size_t n);
+ORCUS_DLLPUBLIC totals_row_function_t to_totals_row_function_enum(std::string_view s);
 
 /**
  * Convert a string representation of a pivot cache group-by type to its
  * equivalent enum value.
  *
- * @param p pointer to the string buffer.
- * @param n size of the string buffer.
+ * @param s string value for pivot cache group-by type.
  *
  * @return enum value representing the pivot cache group-by type.
  */
-ORCUS_DLLPUBLIC pivot_cache_group_by_t to_pivot_cache_group_by_enum(const char* p, size_t n);
+ORCUS_DLLPUBLIC pivot_cache_group_by_t to_pivot_cache_group_by_enum(std::string_view s);
 
 /**
  * Convert a string representation of a error value to its equivalent enum
  * value.
  *
- * @param p pointer to the string buffer.
- * @param n size of the string buffer.
+ * @param s error value string.
  *
  * @return enum value representing the error value.
  */
-ORCUS_DLLPUBLIC error_value_t to_error_value_enum(const char* p, size_t n);
+ORCUS_DLLPUBLIC error_value_t to_error_value_enum(std::string_view s);
 
 /**
  * Convert a string representation of a RGB value to an equivalent struct
  * value.  The string representation is expected to be a 6 digit hexadecimal
  * value string that may or may not be prefixed with a '#'.
  *
- * @param p pointer to the string buffer that stores the string
- *          representation of the RGB value.
- * @param n length of the buffer.
+ * @param s string representation of the RGB value.
  *
  * @return struct value representing an RGB value.
  */
-ORCUS_DLLPUBLIC color_rgb_t to_color_rgb(const char* p, size_t n);
+ORCUS_DLLPUBLIC color_rgb_t to_color_rgb(std::string_view s);
 
 /**
  * Convert a color name to an RGB value.  It supports SVG 1.0 color keyword
  * names minus those gray colors with 'grey' spelling variants.  Note that
  * the name must be all in lowercase.
  *
- * @param p pointer to the string buffer that stores the color name.
- * @param n length of the buffer.
+ * @param s color name.
  *
  * @return struct value representing an RGB value.
  */
-ORCUS_DLLPUBLIC color_rgb_t to_color_rgb_from_name(const char* p, size_t n);
+ORCUS_DLLPUBLIC color_rgb_t to_color_rgb_from_name(std::string_view s);
 
 /**
  * Convert a formula error policy name to its enum value equivalent.
  *
- * @param p pointer to the string buffer that stores the policy name.
- * @param n length of the buffer.
+ * @param s policy name.
  *
  * @return enum value equivalent for the original error policy name.
  */
-ORCUS_DLLPUBLIC formula_error_policy_t to_formula_error_policy(const char* p, size_t n);
+ORCUS_DLLPUBLIC formula_error_policy_t to_formula_error_policy(std::string_view s);
 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, error_value_t ev);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar);
