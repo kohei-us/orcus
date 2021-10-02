@@ -28,7 +28,7 @@ class export_factory
 public:
     ORCUS_DLLPUBLIC virtual ~export_factory() = 0;
 
-    virtual const export_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) const = 0;
+    virtual const export_sheet* get_sheet(std::string_view sheet_name) const = 0;
 };
 
 }}}

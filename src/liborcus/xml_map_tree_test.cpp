@@ -20,7 +20,7 @@ void test_path_insertion()
     xmlns_repository repo;
     xml_map_tree tree(repo);
     xml_map_tree::cell_position ref;
-    ref.sheet = pstring("test");
+    ref.sheet = std::string_view{"test"};
     ref.row = 2;
     ref.col = 1;
 
@@ -51,7 +51,7 @@ void test_path_insertion()
     p0 = tree.get_link("/data/elem1");
     assert(p0 == elem1);
 
-    ref.sheet = pstring("test2");
+    ref.sheet = std::string_view{"test2"};
     ref.row = 10;
     ref.col = 5;
     tree.set_cell_link("/data/meta/title", ref);
@@ -66,7 +66,7 @@ void test_path_insertion()
     // Range field links
     ref.row = 5;
     ref.col = 0;
-    ref.sheet = pstring("test3");
+    ref.sheet = std::string_view{"test3"};
     tree.start_range(ref);
     tree.append_range_field_link("/data/entries/entry/id", pstring());
     tree.append_range_field_link("/data/entries/entry/name", pstring());
@@ -105,7 +105,7 @@ void test_attr_path_insertion()
     xmlns_repository repo;
     xml_map_tree tree(repo);
     xml_map_tree::cell_position ref;
-    ref.sheet = pstring("test");
+    ref.sheet = std::string_view{"test"};
     ref.row = 2;
     ref.col = 3;
 
@@ -120,7 +120,7 @@ void test_attr_path_insertion()
     assert(attr->cell_ref->pos.col == 3);
 
     // Insert another attribute in the same element.
-    ref.sheet = pstring("test2");
+    ref.sheet = std::string_view{"test2"};
     ref.row = 11;
     ref.col = 4;
     tree.set_cell_link("/root/elem/@attr2", ref);
@@ -137,7 +137,7 @@ void test_attr_path_insertion()
     assert(!p);
 
     // Now, link /root/elem.
-    ref.sheet = pstring("test3");
+    ref.sheet = std::string_view{"test3"};
     ref.row = 4;
     ref.col = 6;
     tree.set_cell_link("/root/elem", ref);
@@ -156,7 +156,7 @@ void test_tree_walk()
     xmlns_repository repo;
     xml_map_tree tree(repo);
     xml_map_tree::cell_position ref;
-    ref.sheet = pstring("test");
+    ref.sheet = std::string_view{"test"};
     ref.row = 2;
     ref.col = 1;
 
@@ -199,7 +199,7 @@ void test_tree_walk_namespace()
     xmlns_repository repo;
     xml_map_tree tree(repo);
     xml_map_tree::cell_position ref;
-    ref.sheet = pstring("data");
+    ref.sheet = std::string_view{"data"};
     ref.row = 1;
     ref.col = 2;
 

@@ -589,7 +589,7 @@ xml_map_tree::range_reference* xml_map_tree::get_range_reference(const cell_posi
 
         // Make sure the sheet name string is persistent.
         cell_position pos_safe = pos;
-        pos_safe.sheet = m_names.intern(pos.sheet.get(), pos.sheet.size()).first;
+        pos_safe.sheet = m_names.intern(pos.sheet).first;
 
         it = m_field_refs.insert(
             it, range_ref_map_type::value_type(

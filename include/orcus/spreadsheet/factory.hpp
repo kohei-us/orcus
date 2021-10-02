@@ -148,7 +148,7 @@ public:
     export_factory(const document& doc);
     virtual ~export_factory();
 
-    virtual const iface::export_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) const;
+    virtual const iface::export_sheet* get_sheet(std::string_view sheet_name) const override;
 };
 
 }}

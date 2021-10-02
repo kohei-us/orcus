@@ -384,11 +384,9 @@ export_factory::export_factory(const document& doc) :
 
 export_factory::~export_factory() {}
 
-const iface::export_sheet* export_factory::get_sheet(
-    const char* sheet_name, size_t sheet_name_length) const
+const iface::export_sheet* export_factory::get_sheet(std::string_view sheet_name) const
 {
-    std::string_view name(sheet_name, sheet_name_length);
-    return mp_impl->get_sheet(name);
+    return mp_impl->get_sheet(sheet_name);
 }
 
 }}

@@ -17,7 +17,7 @@ namespace orcus { namespace spreadsheet { namespace detail {
 
 struct cell_position_t
 {
-    pstring sheet;
+    std::string_view sheet;
     spreadsheet::row_t row;
     spreadsheet::col_t col;
 
