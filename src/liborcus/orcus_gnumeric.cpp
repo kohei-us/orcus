@@ -150,10 +150,9 @@ void orcus_gnumeric::read_stream(std::string_view stream)
     mp_impl->mp_factory->finalize();
 }
 
-const char* orcus_gnumeric::get_name() const
+std::string_view orcus_gnumeric::get_name() const
 {
-    static const char* name = "gnumeric";
-    return name;
+    return "gnumeric";
 }
 
 }

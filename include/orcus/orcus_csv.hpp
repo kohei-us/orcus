@@ -24,10 +24,10 @@ class ORCUS_DLLPUBLIC orcus_csv : public iface::import_filter
 public:
     orcus_csv(spreadsheet::iface::import_factory* factory);
 
-    virtual void read_file(const std::string& filepath);
-    virtual void read_stream(std::string_view stream);
+    virtual void read_file(const std::string& filepath) override;
+    virtual void read_stream(std::string_view stream) override;
 
-    virtual const char* get_name() const;
+    virtual std::string_view get_name() const override;
 
 private:
     void parse(const char* content, size_t len);

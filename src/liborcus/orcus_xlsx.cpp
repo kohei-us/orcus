@@ -227,10 +227,9 @@ void orcus_xlsx::read_stream(std::string_view stream)
     mp_impl->mp_factory->finalize();
 }
 
-const char* orcus_xlsx::get_name() const
+std::string_view orcus_xlsx::get_name() const
 {
-    static const char* name = "xlsx";
-    return name;
+    return "xlsx";
 }
 
 void orcus_xlsx::set_formulas_to_doc()

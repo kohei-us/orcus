@@ -158,10 +158,9 @@ void orcus_ods::read_file_impl(zip_archive_stream* stream)
         gs->set_default_formula_grammar(old_grammar);
 }
 
-const char* orcus_ods::get_name() const
+std::string_view orcus_ods::get_name() const
 {
-    static const char* name = "ods";
-    return name;
+    return "ods";
 }
 
 }

@@ -33,11 +33,11 @@ public:
 
     static bool detect(const unsigned char* blob, size_t size);
 
-    virtual void read_file(const std::string& filepath);
+    virtual void read_file(const std::string& filepath) override;
 
-    virtual void read_stream(std::string_view stream);
+    virtual void read_stream(std::string_view stream) override;
 
-    virtual const char* get_name() const;
+    virtual std::string_view get_name() const override;
 
 private:
     static void list_content(const zip_archive& archive);

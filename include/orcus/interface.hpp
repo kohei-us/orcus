@@ -35,7 +35,7 @@ public:
     /// expects the whole content of the file
     virtual void read_stream(std::string_view stream) = 0;
 
-    virtual const char* get_name() const = 0;
+    virtual std::string_view get_name() const = 0;
 
     void set_config(const orcus::config& v);
     const orcus::config& get_config() const;

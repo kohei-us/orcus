@@ -122,10 +122,9 @@ void orcus_xls_xml::read_stream(std::string_view stream)
     mp_impl->read_stream(mem_content.data(), mem_content.size(), get_config());
 }
 
-const char* orcus_xls_xml::get_name() const
+std::string_view orcus_xls_xml::get_name() const
 {
-    static const char* name = "xls-xml";
-    return name;
+    return "xls-xml";
 }
 
 }

@@ -155,10 +155,9 @@ void orcus_csv::read_stream(std::string_view stream)
     mp_factory->finalize();
 }
 
-const char* orcus_csv::get_name() const
+std::string_view orcus_csv::get_name() const
 {
-    static const char* name = "csv";
-    return name;
+    return "csv";
 }
 
 void orcus_csv::parse(const char* content, size_t len)
