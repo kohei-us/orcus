@@ -122,7 +122,7 @@ void parse_args_for_convert(
     if (vm.count("output-format"))
     {
         std::string s = vm["output-format"].as<string>();
-        params.config->output_format = to_dump_format_enum(s.data(), s.size());
+        params.config->output_format = to_dump_format_enum(s);
 
         if (params.config->output_format == dump_format_t::unknown)
         {

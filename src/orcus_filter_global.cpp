@@ -175,7 +175,7 @@ bool parse_import_filter_args(
     if (vm.count("output-format"))
     {
         std::string outformat_s = vm["output-format"].as<string>();
-        outformat = to_dump_format_enum(outformat_s.data(), outformat_s.size());
+        outformat = to_dump_format_enum(outformat_s);
     }
 
     if (vm.count("row-size"))

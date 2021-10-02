@@ -478,7 +478,7 @@ struct ORCUS_PSR_DLLPUBLIC date_time_t
     void swap(date_time_t& other);
 };
 
-ORCUS_PSR_DLLPUBLIC dump_format_t to_dump_format_enum(const char* p, size_t n);
+ORCUS_PSR_DLLPUBLIC dump_format_t to_dump_format_enum(std::string_view s);
 
 ORCUS_PSR_DLLPUBLIC std::vector<std::pair<std::string_view, dump_format_t>> get_dump_format_entries();
 

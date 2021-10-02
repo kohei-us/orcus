@@ -296,9 +296,9 @@ const map_type& get()
 
 } // anonymous namespace
 
-dump_format_t to_dump_format_enum(const char* p, size_t n)
+dump_format_t to_dump_format_enum(std::string_view s)
 {
-    return dump_format::get().find(p, n);
+    return dump_format::get().find(s.data(), s.size());
 }
 
 std::vector<std::pair<std::string_view, dump_format_t>> get_dump_format_entries()

@@ -292,7 +292,7 @@ int main(int argc, char** argv)
                 if (vm.count("output-format"))
                 {
                     s = vm["output-format"].as<std::string>();
-                    format = to_dump_format_enum(s.data(), s.size());
+                    format = to_dump_format_enum(s);
                 }
                 else
                 {
