@@ -99,7 +99,7 @@ public:
     {
         std::string_view s{p, len};
         if (transient)
-            s = m_pool.intern(p, len).first;
+            s = m_pool.intern(s).first;
 
         m_tokens.emplace_back(json::parse_token_t::object_key, s);
         do_work();
@@ -133,7 +133,7 @@ public:
     {
         std::string_view s{p, len};
         if (transient)
-            s = m_pool.intern(p, len).first;
+            s = m_pool.intern(s).first;
 
         m_tokens.emplace_back(json::parse_token_t::string, s);
         do_work();

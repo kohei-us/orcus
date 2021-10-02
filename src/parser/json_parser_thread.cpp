@@ -123,7 +123,7 @@ struct parser_thread::impl
     {
         std::string_view s{p, len};
         if (transient)
-            s = m_pool.intern(p, len).first;
+            s = m_pool.intern(s).first;
 
         m_parser_tokens.emplace_back(parse_token_t::object_key, s);
         check_and_notify();
@@ -157,7 +157,7 @@ struct parser_thread::impl
     {
         std::string_view s{p, len};
         if (transient)
-            s = m_pool.intern(p, len).first;
+            s = m_pool.intern(s).first;
 
         m_parser_tokens.emplace_back(parse_token_t::string, s);
         check_and_notify();

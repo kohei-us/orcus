@@ -28,7 +28,7 @@ class import_pc_field_group : public iface::import_pivot_cache_field_group
 private:
     std::string_view intern(const char* p, size_t n)
     {
-        return m_doc.get_string_pool().intern(p, n).first;
+        return m_doc.get_string_pool().intern({p, n}).first;
     }
 
     range_grouping_type& get_range_grouping()
@@ -118,7 +118,7 @@ public:
 
 std::string_view import_pivot_cache_def::intern(const char* p, size_t n)
 {
-    return m_doc.get_string_pool().intern(p, n).first;
+    return m_doc.get_string_pool().intern({p, n}).first;
 }
 
 import_pivot_cache_def::import_pivot_cache_def(document& doc) : m_doc(doc) {}

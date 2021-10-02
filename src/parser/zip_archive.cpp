@@ -144,7 +144,7 @@ public:
     {
         std::vector<unsigned char> buf(n+1, '\0');
         read_string_to_buffer(n, buf);
-        return pool.intern(reinterpret_cast<const char*>(&buf[0]), n).first;
+        return pool.intern({reinterpret_cast<const char*>(buf.data()), n}).first;
     }
 
     void skip_bytes(size_t n)

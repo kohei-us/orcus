@@ -363,7 +363,7 @@ void json_map_tree::walker::set_object_key(const char* p, size_t n)
     if (cur_scope.p->type != map_node_type::object)
         return;
 
-    pstring pooled = m_parent.m_str_pool.intern(p, n).first;
+    pstring pooled = m_parent.m_str_pool.intern({p, n}).first;
     cur_scope.array_position = reinterpret_cast<child_position_type>(pooled.data());
 }
 
@@ -716,7 +716,7 @@ json_map_tree::path_stack_type json_map_tree::get_or_create_destination_node(con
 
 json_map_tree::child_position_type json_map_tree::to_key_position(const char* p, size_t n) const
 {
-    pstring pooled_key = m_str_pool.intern(p, n).first;
+    pstring pooled_key = m_str_pool.intern({p, n}).first;
     child_position_type pos = reinterpret_cast<child_position_type>(pooled_key.data());
     return pos;
 }

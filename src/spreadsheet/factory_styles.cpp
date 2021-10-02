@@ -52,7 +52,7 @@ void import_styles::set_font_italic(bool b)
 
 void import_styles::set_font_name(const char* s, size_t n)
 {
-    mp_impl->m_cur_font.name = mp_impl->m_string_pool.intern(s, n).first;
+    mp_impl->m_cur_font.name = mp_impl->m_string_pool.intern({s, n}).first;
 }
 
 void import_styles::set_font_size(double point)
@@ -360,7 +360,7 @@ void import_styles::set_cell_style_count(size_t n)
 void import_styles::set_cell_style_name(const char* s, size_t n)
 {
     mp_impl->m_cur_cell_style.name =
-        mp_impl->m_string_pool.intern(s, n).first;
+        mp_impl->m_string_pool.intern({s, n}).first;
 }
 
 void import_styles::set_cell_style_xf(size_t index)
@@ -376,7 +376,7 @@ void import_styles::set_cell_style_builtin(size_t index)
 void import_styles::set_cell_style_parent_name(const char* s, size_t n)
 {
     mp_impl->m_cur_cell_style.parent_name =
-        mp_impl->m_string_pool.intern(s, n).first;
+        mp_impl->m_string_pool.intern({s, n}).first;
 }
 
 size_t import_styles::commit_cell_style()

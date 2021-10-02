@@ -123,7 +123,7 @@ class import_global_named_exp : public iface::import_named_expression
     void define(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp, formula_ref_context_t ref_cxt)
     {
         string_pool& sp = m_doc.get_string_pool();
-        m_name = sp.intern(p_name, n_name).first;
+        m_name = sp.intern({p_name, n_name}).first;
 
         const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver(ref_cxt);
         assert(resolver);

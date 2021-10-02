@@ -115,7 +115,7 @@ void import_shared_strings::set_segment_italic(bool b)
 
 void import_shared_strings::set_segment_font_name(const char* s, size_t n)
 {
-    m_cur_format.font = m_string_pool.intern(s, n).first;
+    m_cur_format.font = m_string_pool.intern({s, n}).first;
 }
 
 void import_shared_strings::set_segment_font_size(double point)

@@ -29,7 +29,7 @@ import_sheet_named_exp::~import_sheet_named_exp() {}
 void import_sheet_named_exp::define(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp, formula_ref_context_t ref_cxt)
 {
     string_pool& sp = m_doc.get_string_pool();
-    m_name = sp.intern(p_name, n_name).first;
+    m_name = sp.intern({p_name, n_name}).first;
 
     const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver(ref_cxt);
     assert(resolver);
@@ -120,7 +120,7 @@ void import_auto_filter::set_column(col_t col)
 void import_auto_filter::append_column_match_value(const char* p, size_t n)
 {
     // The string pool belongs to the document.
-    std::string_view s = m_string_pool.intern(p, n).first;
+    std::string_view s = m_string_pool.intern({p, n}).first;
     m_cur_col_data.match_values.insert(s);
 }
 

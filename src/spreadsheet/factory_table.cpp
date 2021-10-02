@@ -58,7 +58,7 @@ public:
     virtual void append_column_match_value(const char* p, size_t n)
     {
         // The string pool belongs to the document.
-        std::string_view s = m_pool.intern(p, n).first;
+        std::string_view s = m_pool.intern({p, n}).first;
         m_cur_col_data.match_values.insert(s);
     };
 
@@ -127,13 +127,13 @@ void import_table::set_identifier(size_t id)
 void import_table::set_name(const char* p, size_t n)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
-    mp_impl->mp_data->name = sp.intern(p, n).first;
+    mp_impl->mp_data->name = sp.intern({p, n}).first;
 }
 
 void import_table::set_display_name(const char* p, size_t n)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
-    mp_impl->mp_data->display_name = sp.intern(p, n).first;
+    mp_impl->mp_data->display_name = sp.intern({p, n}).first;
 }
 
 void import_table::set_totals_row_count(size_t row_count)
@@ -154,13 +154,13 @@ void import_table::set_column_identifier(size_t id)
 void import_table::set_column_name(const char* p, size_t n)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
-    mp_impl->m_column.name = sp.intern(p, n).first;
+    mp_impl->m_column.name = sp.intern({p, n}).first;
 }
 
 void import_table::set_column_totals_row_label(const char* p, size_t n)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
-    mp_impl->m_column.totals_row_label = sp.intern(p, n).first;
+    mp_impl->m_column.totals_row_label = sp.intern({p, n}).first;
 }
 
 void import_table::set_column_totals_row_function(orcus::spreadsheet::totals_row_function_t func)
@@ -178,7 +178,7 @@ void import_table::set_style_name(const char* p, size_t n)
 {
     table_style_t& style = mp_impl->mp_data->style;
     string_pool& sp = mp_impl->m_doc.get_string_pool();
-    style.name = sp.intern(p, n).first;
+    style.name = sp.intern({p, n}).first;
 }
 
 void import_table::set_style_show_first_column(bool b)

@@ -46,11 +46,6 @@ string_pool::~string_pool()
     clear();
 }
 
-std::pair<std::string_view, bool> string_pool::intern(const char* str, size_t n)
-{
-    return intern({str, n});
-}
-
 std::pair<std::string_view, bool> string_pool::intern(std::string_view str)
 {
     if (str.empty())

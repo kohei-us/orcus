@@ -270,9 +270,7 @@ void xlsx_shared_strings_context::characters(const pstring& str, bool transient)
                 // Append the tail end.
                 m_cell_buffer.append(p0, std::distance(p0, p));
 
-            m_cur_str = m_pool.intern(
-                m_cell_buffer.get(), m_cell_buffer.size()).first;
-
+            m_cur_str = m_pool.intern({m_cell_buffer.get(), m_cell_buffer.size()}).first;
             transient = false;
         }
 
