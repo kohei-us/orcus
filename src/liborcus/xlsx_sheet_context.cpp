@@ -774,10 +774,10 @@ void xlsx_sheet_context::end_element_cell()
                 dt->set_type(spreadsheet::data_table_type_t::both);
                 dt->set_range(m_cur_formula.ref);
                 dt->set_first_reference(
-                    m_cur_formula.data_table_ref1.get(), m_cur_formula.data_table_ref1.size(),
+                    m_cur_formula.data_table_ref1,
                     m_cur_formula.data_table_ref1_deleted);
                 dt->set_second_reference(
-                    m_cur_formula.data_table_ref2.get(), m_cur_formula.data_table_ref2.size(),
+                    m_cur_formula.data_table_ref2,
                     m_cur_formula.data_table_ref2_deleted);
             }
             else if (m_cur_formula.data_table_row_based)
@@ -785,7 +785,7 @@ void xlsx_sheet_context::end_element_cell()
                 dt->set_type(spreadsheet::data_table_type_t::row);
                 dt->set_range(m_cur_formula.ref);
                 dt->set_first_reference(
-                    m_cur_formula.data_table_ref1.get(), m_cur_formula.data_table_ref1.size(),
+                    m_cur_formula.data_table_ref1,
                     m_cur_formula.data_table_ref1_deleted);
             }
             else
@@ -793,7 +793,7 @@ void xlsx_sheet_context::end_element_cell()
                 dt->set_type(spreadsheet::data_table_type_t::column);
                 dt->set_range(m_cur_formula.ref);
                 dt->set_first_reference(
-                    m_cur_formula.data_table_ref1.get(), m_cur_formula.data_table_ref1.size(),
+                    m_cur_formula.data_table_ref1,
                     m_cur_formula.data_table_ref1_deleted);
             }
             dt->commit();

@@ -86,9 +86,9 @@ public:
 
     virtual void set_range(const range_t& range) override;
 
-    virtual void set_first_reference(const char* p_ref, size_t n_ref, bool deleted) override;
+    virtual void set_first_reference(std::string_view ref, bool deleted) override;
 
-    virtual void set_second_reference(const char* p_ref, size_t n_ref, bool deleted) override;
+    virtual void set_second_reference(std::string_view ref, bool deleted) override;
 
     virtual void commit() override;
 };

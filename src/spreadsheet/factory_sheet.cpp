@@ -82,11 +82,11 @@ void import_data_table::set_range(const range_t& range)
 {
 }
 
-void import_data_table::set_first_reference(const char* p_ref, size_t n_ref, bool deleted)
+void import_data_table::set_first_reference(std::string_view ref, bool deleted)
 {
 }
 
-void import_data_table::set_second_reference(const char* p_ref, size_t n_ref, bool deleted)
+void import_data_table::set_second_reference(std::string_view ref, bool deleted)
 {
 }
 
