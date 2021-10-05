@@ -111,7 +111,7 @@ public:
     structure_tree();
     ~structure_tree();
 
-    void parse(const char* p, size_t n);
+    void parse(std::string_view stream);
 
     /**
      * For now, normalizing a tree just means sorting child nodes.  We may add

@@ -665,9 +665,9 @@ std::string structure_tree::walker::build_row_group_path() const
 structure_tree::structure_tree() : mp_impl(std::make_unique<impl>()) {}
 structure_tree::~structure_tree() {}
 
-void structure_tree::parse(const char* p, size_t n)
+void structure_tree::parse(std::string_view stream)
 {
-    json_parser<impl> parser(p, n, *mp_impl);
+    json_parser<impl> parser(stream.data(), stream.size(), *mp_impl);
     parser.parse();
 }
 

@@ -46,26 +46,24 @@ public:
 
     void append_sheet(std::string_view name);
 
-    void read_stream(const char* p, size_t n);
+    void read_stream(std::string_view stream);
 
     /**
      * Read a JSON string that contains an entire set of mapping rules.
      *
      * This method also inserts all necessary sheets into the document model.
      *
-     * @param p pointer to the in-memory buffer that contains the JSON string.
-     * @param n size of the buffer.
+     * @param stream JSON string.
      */
-    void read_map_definition(const char* p, size_t n);
+    void read_map_definition(std::string_view stream);
 
     /**
      * Read a JSON string, and detect and define mapping rules for one or more
      * ranges.
      *
-     * @param p pointer to the in-memory buffer that contains the JSON string.
-     * @param n size of the buffer.
+     * @param stream JSON string.
      */
-    void detect_map_definition(const char* p, size_t n);
+    void detect_map_definition(std::string_view stream);
 };
 
 }

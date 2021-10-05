@@ -49,7 +49,7 @@ void test_no_value_nodes()
 
         file_content strm(p.string().data());
         json::structure_tree tree;
-        tree.parse(strm.data(), strm.size());
+        tree.parse(strm.str());
         tree.normalize_tree();
         std::ostringstream os;
         tree.dump_compact(os);
@@ -68,7 +68,7 @@ void test_basic()
         file_content strm(filepath.data());
         assert(!strm.empty());
         json::structure_tree tree;
-        tree.parse(strm.data(), strm.size());
+        tree.parse(strm.str());
         tree.normalize_tree();
         std::ostringstream os;
         tree.dump_compact(os);
@@ -161,7 +161,7 @@ void test_automatic_range_detection()
         file_content strm(c.filepath.string().data());
         assert(!strm.empty());
         json::structure_tree tree;
-        tree.parse(strm.data(), strm.size());
+        tree.parse(strm.str());
 
         detected_groups_type observed_groups;
 

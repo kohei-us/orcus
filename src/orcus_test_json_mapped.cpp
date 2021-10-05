@@ -55,8 +55,8 @@ void test_mapped_json_import()
         spreadsheet::import_factory import_fact(doc);
 
         orcus_json app(&import_fact);
-        app.read_map_definition(map_content.data(), map_content.size());
-        app.read_stream(content.data(), content.size());
+        app.read_map_definition(map_content.str());
+        app.read_stream(content.str());
 
         std::ostringstream os;
         doc.dump_check(os);
@@ -79,7 +79,7 @@ void test_invalid_map_definition()
     orcus_json app(&import_fact);
     try
     {
-        app.read_map_definition(ORCUS_ASCII("asdfdasf"));
+        app.read_map_definition("asdfdasf");
         assert(false); // We were expecting an exception, but didn't get one.
     }
     catch (const invalid_map_error&)

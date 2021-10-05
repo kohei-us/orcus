@@ -446,20 +446,10 @@ public:
      * Load raw string stream containing a JSON structure to populate the
      * document tree.
      *
-     * @param strm stream containing a JSON structure.
+     * @param stream stream containing a JSON structure.
      * @param config configuration object.
      */
-    void load(const std::string& strm, const json_config& config);
-
-    /**
-     * Load raw string stream containing a JSON structure to populate the
-     * document tree.
-     *
-     * @param p pointer to the stream containing a JSON structure.
-     * @param n size of the stream.
-     * @param config configuration object.
-     */
-    void load(const char* p, size_t n, const json_config& config);
+    void load(std::string_view stream, const json_config& config);
 
     /**
      * Get the root node of the document.

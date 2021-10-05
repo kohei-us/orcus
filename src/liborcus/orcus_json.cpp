@@ -355,7 +355,7 @@ void orcus_json::append_sheet(std::string_view name)
     mp_impl->im_factory->append_sheet(mp_impl->sheet_count++, name.data(), name.size());
 }
 
-void orcus_json::read_stream(const char* p, size_t n)
+void orcus_json::read_stream(std::string_view stream)
 {
     if (!mp_impl->im_factory)
         return;
@@ -390,13 +390,13 @@ void orcus_json::read_stream(const char* p, size_t n)
     }
 
     json_content_handler hdl(mp_impl->map_tree, *mp_impl->im_factory);
-    json_parser<json_content_handler> parser(p, n, hdl);
+    json_parser<json_content_handler> parser(stream.data(), stream.size(), hdl);
     parser.parse();
 
     mp_impl->im_factory->finalize();
 }
 
-void orcus_json::read_map_definition(const char* p, size_t n)
+void orcus_json::read_map_definition(std::string_view stream)
 {
     try
     {
@@ -408,7 +408,7 @@ void orcus_json::read_map_definition(const char* p, size_t n)
         jc.persistent_string_values = false;
         jc.resolve_references = false;
 
-        map_doc.load(p, n, jc);
+        map_doc.load(stream, jc);
         json::const_node root = map_doc.get_document_root();
 
         // Create sheets first.
@@ -475,14 +475,14 @@ void orcus_json::read_map_definition(const char* p, size_t n)
         std::ostringstream os;
         os << "Error parsing the map definition file:" << std::endl
             << std::endl
-            << create_parse_error_output(pstring(p, n), e.offset()) << std::endl
+            << create_parse_error_output(stream, e.offset()) << std::endl
             << e.what();
 
         throw invalid_map_error(os.str());
     }
 }
 
-void orcus_json::detect_map_definition(const char* p, size_t n)
+void orcus_json::detect_map_definition(std::string_view stream)
 {
     size_t range_count = 0;
     std::string sheet_name_prefix = "range-";
@@ -510,7 +510,7 @@ void orcus_json::detect_map_definition(const char* p, size_t n)
     };
 
     json::structure_tree structure;
-    structure.parse(p, n);
+    structure.parse(stream);
     structure.process_ranges(rh);
 }
 

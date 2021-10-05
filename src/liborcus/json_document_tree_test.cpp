@@ -122,7 +122,7 @@ void verify_input(json_config& test_config, const char* basedir)
 
     file_content content(json_file.data());
     json::document_tree doc;
-    doc.load(content.data(), content.size(), test_config);
+    doc.load(content.str(), test_config);
 
     string check_file(basedir);
     check_file += "check.txt";
@@ -173,7 +173,7 @@ void test_json_parse_empty()
         json::document_tree doc;
         try
         {
-            doc.load(test, strlen(test), test_config);
+            doc.load(test, test_config);
         }
         catch (const json::parse_error& e)
         {
@@ -203,7 +203,7 @@ void test_json_parse_invalid()
         json::document_tree doc;
         try
         {
-            doc.load(string(invalid_json, strlen(invalid_json)), test_config);
+            doc.load(invalid_json, test_config);
             cerr << "Invalid JSON expression is parsed as valid: '" << invalid_json << "'" << endl;
             assert(false);
         }
@@ -226,7 +226,7 @@ std::unique_ptr<json::document_tree> get_doc_tree(const char* filepath)
     cout << content.str() << endl;
 
     auto doc = std::make_unique<json::document_tree>();
-    doc->load(content.data(), content.size(), test_config);
+    doc->load(content.str(), test_config);
 
     return doc;
 }

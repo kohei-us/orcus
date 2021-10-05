@@ -274,7 +274,7 @@ detail::cmd_params parse_json_args(int argc, char** argv)
 std::unique_ptr<json::document_tree> load_doc(const orcus::file_content& content, const json_config& config)
 {
     std::unique_ptr<json::document_tree> doc(std::make_unique<json::document_tree>());
-    doc->load(content.data(), content.size(), config);
+    doc->load(content.str(), config);
     return doc;
 }
 
@@ -321,7 +321,7 @@ void parse_and_write_map_file(const orcus::file_content& content, detail::cmd_pa
     };
 
     json::structure_tree tree;
-    tree.parse(content.data(), content.size());
+    tree.parse(content.str());
 
     tree.process_ranges(rh);
 
@@ -395,7 +395,7 @@ int main(int argc, char** argv)
             case detail::mode_t::structure:
             {
                 json::structure_tree tree;
-                tree.parse(content.data(), content.size());
+                tree.parse(content.str());
                 tree.normalize_tree();
                 tree.dump_compact(params.os->get());
                 break;

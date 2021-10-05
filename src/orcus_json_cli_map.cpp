@@ -34,11 +34,11 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
 
     if (params.map_file.empty())
         // Automatic mapping of JSON to table.
-        app.detect_map_definition(content.data(), content.size());
+        app.detect_map_definition(content.str());
     else
-        app.read_map_definition(params.map_file.data(), params.map_file.size());
+        app.read_map_definition(params.map_file.str());
 
-    app.read_stream(content.data(), content.size());
+    app.read_stream(content.str());
     doc.dump(params.config->output_format, params.config->output_path);
 }
 

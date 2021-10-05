@@ -1477,15 +1477,10 @@ document_tree& document_tree::operator= (object obj)
     return *this;
 }
 
-void document_tree::load(const std::string& strm, const json_config& config)
-{
-    load(strm.data(), strm.size(), config);
-}
-
-void document_tree::load(const char* p, size_t n, const json_config& config)
+void document_tree::load(std::string_view stream, const json_config& config)
 {
     json::parser_handler hdl(config, mp_impl->m_res);
-    json_parser<json::parser_handler> parser(p, n, hdl);
+    json_parser<json::parser_handler> parser(stream.data(), stream.size(), hdl);
     parser.parse();
     mp_impl->m_root = hdl.get_root();
 
@@ -1510,7 +1505,7 @@ void document_tree::load(const char* p, size_t n, const json_config& config)
         document_tree doc(mp_impl->m_res);
         try
         {
-            doc.load(ext_content.data(), ext_content.size(), ext_config);
+            doc.load(ext_content.str(), ext_config);
         }
         catch (const json::parse_error& e)
         {
