@@ -384,7 +384,7 @@ public:
         switch (attr.name)
         {
             case XML_name:
-                m_styles.set_cell_style_name(attr.value.data(), attr.value.size());
+                m_styles.set_cell_style_name(attr.value);
             break;
             case XML_xfId:
             {
@@ -716,8 +716,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_name:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
-                pstring ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
-                mp_styles->set_font_name(ps.get(), ps.size());
+                std::string_view ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
+                mp_styles->set_font_name(ps);
             }
             break;
             case XML_family:
@@ -1005,7 +1005,7 @@ void xlsx_styles_context::start_element_number_format(const xml_token_pair_t& pa
                 }
                 case XML_formatCode:
                 {
-                    mp_styles->set_number_format_code(attr.value.data(), attr.value.size());
+                    mp_styles->set_number_format_code(attr.value);
                     break;
                 }
             }

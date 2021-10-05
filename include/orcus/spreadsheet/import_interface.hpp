@@ -144,7 +144,7 @@ public:
     virtual void set_font_count(size_t n) = 0;
     virtual void set_font_bold(bool b) = 0;
     virtual void set_font_italic(bool b) = 0;
-    virtual void set_font_name(const char* s, size_t n) = 0;
+    virtual void set_font_name(std::string_view s) = 0;
     virtual void set_font_size(double point) = 0;
     virtual void set_font_underline(underline_t e) = 0;
     virtual void set_font_underline_width(underline_width_t e) = 0;
@@ -227,7 +227,7 @@ public:
     // number format
     virtual void set_number_format_count(size_t n) = 0;
     virtual void set_number_format_identifier(size_t id) = 0;
-    virtual void set_number_format_code(const char* s, size_t n) = 0;
+    virtual void set_number_format_code(std::string_view s) = 0;
     virtual size_t commit_number_format() = 0;
 
     // cell format and cell style format (xf == cell format)
@@ -253,10 +253,10 @@ public:
     // cell style entry
 
     virtual void set_cell_style_count(size_t n) = 0;
-    virtual void set_cell_style_name(const char* s, size_t n) = 0;
+    virtual void set_cell_style_name(std::string_view s) = 0;
     virtual void set_cell_style_xf(size_t index) = 0;
     virtual void set_cell_style_builtin(size_t index) = 0;
-    virtual void set_cell_style_parent_name(const char* s, size_t n) = 0;
+    virtual void set_cell_style_parent_name(std::string_view s) = 0;
     virtual size_t commit_cell_style() = 0;
 };
 

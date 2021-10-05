@@ -1839,7 +1839,7 @@ void xls_xml_context::commit_default_style()
     {
         const pstring& name = m_default_style->name;
         if (!name.empty())
-            styles->set_cell_style_name(name.data(), name.size());
+            styles->set_cell_style_name(name);
     }
 
     styles->commit_cell_style();
@@ -1906,7 +1906,7 @@ void xls_xml_context::commit_styles()
 
         if (!style->number_format.empty())
         {
-            styles->set_number_format_code(style->number_format.data(), style->number_format.size());
+            styles->set_number_format_code(style->number_format);
             size_t number_format_id = styles->commit_number_format();
             styles->set_xf_number_format(number_format_id);
         }

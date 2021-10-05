@@ -170,7 +170,7 @@ public:
             {
                 if (attr.value != "General")
                 {
-                    m_styles.set_number_format_code(attr.value.data(), attr.value.size());
+                    m_styles.set_number_format_code(attr.value);
                     size_t index = m_styles.commit_number_format();
                     m_styles.set_xf_number_format(index);
                 }
@@ -774,7 +774,7 @@ void gnumeric_sheet_context::end_font()
 {
     spreadsheet::iface::import_styles& styles = *mp_factory->get_styles();
     styles.set_font_color(0, front_color.red, front_color.green, front_color.blue);
-    styles.set_font_name(chars.get(), chars.size());
+    styles.set_font_name(chars);
     size_t font_id = styles.commit_font();
     styles.set_xf_font(font_id);
 }

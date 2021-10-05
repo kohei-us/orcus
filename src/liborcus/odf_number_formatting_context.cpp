@@ -719,11 +719,10 @@ bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
             }
             else
             {
-                mp_styles->set_number_format_code(m_current_style.number_formatting_code.c_str(),
-                        m_current_style.number_formatting_code.size());
+                mp_styles->set_number_format_code(m_current_style.number_formatting_code);
                 mp_styles->set_xf_number_format(mp_styles->commit_number_format());
 
-                mp_styles->set_cell_style_name( m_current_style.name.get(), m_current_style.name.size());
+                mp_styles->set_cell_style_name(m_current_style.name);
                 mp_styles->set_cell_style_xf(mp_styles->commit_cell_style_xf());
                 mp_styles->commit_cell_style();
                 return true;

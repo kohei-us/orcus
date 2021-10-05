@@ -41,7 +41,7 @@ public:
     virtual void set_font_count(size_t n) override;
     virtual void set_font_bold(bool b) override;
     virtual void set_font_italic(bool b) override;
-    virtual void set_font_name(const char* s, size_t n) override;
+    virtual void set_font_name(std::string_view s) override;
     virtual void set_font_size(double point) override;
     virtual void set_font_underline(orcus::spreadsheet::underline_t e) override;
     virtual size_t commit_font() override;
@@ -95,7 +95,7 @@ public:
     // cell style entry
 
     virtual void set_cell_style_count(size_t n) override;
-    virtual void set_cell_style_name(const char* s, size_t n) override;
+    virtual void set_cell_style_name(std::string_view s) override;
     virtual void set_cell_style_xf(size_t index) override;
     virtual void set_cell_style_builtin(size_t index) override;
     virtual size_t commit_cell_style() override;

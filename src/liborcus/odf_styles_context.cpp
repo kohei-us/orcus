@@ -720,11 +720,9 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
                         else
                         {
                             size_t style_xf_id = mp_styles->commit_cell_style_xf();
-                            mp_styles->set_cell_style_name(
-                                    m_current_style->name.get(), m_current_style->name.size());
+                            mp_styles->set_cell_style_name(m_current_style->name);
                             mp_styles->set_cell_style_xf(style_xf_id);
-                            mp_styles->set_cell_style_parent_name(
-                                    m_current_style->parent_name.get(), m_current_style->parent_name.size());
+                            mp_styles->set_cell_style_parent_name(m_current_style->parent_name);
 
                             xf_id = mp_styles->commit_cell_style();
                         }
@@ -769,9 +767,9 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     func = std::for_each(attrs.begin(), attrs.end(), func);
 
     // Commit the font data.
-    pstring font_name = func.get_font_name();
+    std::string_view font_name = func.get_font_name();
     if (!font_name.empty())
-        mp_styles->set_font_name(font_name.get(), font_name.size());
+        mp_styles->set_font_name(font_name);
 
     length_t font_size = func.get_font_size();
     if (font_size.unit == length_unit_t::point)
