@@ -64,23 +64,23 @@ sheet::~sheet()
     delete mp_impl;
 }
 
-void sheet::set_auto(row_t row, col_t col, const char* p, size_t n)
+void sheet::set_auto(row_t row, col_t col, std::string_view s)
 {
-    if (!p || !n)
+    if (s.empty())
         return;
 
     ixion::model_context& cxt = mp_impl->m_doc.get_model_context();
 
     // First, see if this can be parsed as a number.
     char* endptr = nullptr;
-    double val = strtod(p, &endptr);
-    const char* endptr_check = p + n;
+    double val = strtod(s.data(), &endptr);
+    const char* endptr_check = s.data() + s.size();
     if (endptr == endptr_check)
         // Treat this as a numeric value.
         cxt.set_numeric_cell(ixion::abs_address_t(mp_impl->m_sheet,row,col), val);
     else
         // Treat this as a string value.
-        cxt.set_string_cell(ixion::abs_address_t(mp_impl->m_sheet,row,col), {p, n});
+        cxt.set_string_cell(ixion::abs_address_t(mp_impl->m_sheet,row,col), s);
 }
 
 void sheet::set_string(row_t row, col_t col, string_id_t sindex)

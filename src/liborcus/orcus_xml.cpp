@@ -78,7 +78,7 @@ private:
     {
         spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(ref.pos.sheet.data(), ref.pos.sheet.size());
         if (sheet)
-            sheet->set_auto(ref.pos.row, ref.pos.col, val.data(), val.size());
+            sheet->set_auto(ref.pos.row, ref.pos.col, val);
     }
 
     void set_field_link_cell(xml_map_tree::field_in_range& field, std::string_view val)
@@ -92,7 +92,7 @@ private:
             sheet->set_auto(
                pos.row + field.ref->row_position,
                pos.col + field.column_pos,
-               val.data(), val.size());
+               val);
     }
 
 public:
@@ -573,10 +573,10 @@ void orcus_xml::read_impl(std::string_view strm)
                 // No custom header label. Create a label from the name of the linkable.
                 std::string s = e->name.to_string(mp_impl->ns_repo);
                 if (!s.empty())
-                    sheet->set_auto(row, col, s.data(), s.size());
+                    sheet->set_auto(row, col, s);
             }
             else
-                sheet->set_auto(row, col, e->label.data(), e->label.size());
+                sheet->set_auto(row, col, e->label);
 
             ++col;
         }

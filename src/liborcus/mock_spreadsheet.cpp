@@ -257,7 +257,7 @@ import_sheet::~import_sheet()
 {
 }
 
-void import_sheet::set_auto(row_t, col_t, const char*, size_t)
+void import_sheet::set_auto(row_t, col_t, std::string_view s)
 {
     assert(false);
 }

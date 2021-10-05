@@ -67,7 +67,7 @@ public:
     }
 
     // We don't implement these methods for now.
-    virtual void set_auto(row_t row, col_t col, const char* p, size_t n) override {}
+    virtual void set_auto(row_t row, col_t col, std::string_view s) override {}
     virtual void set_bool(row_t row, col_t col, bool value) override {}
     virtual void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override {}
     virtual void set_format(row_t row, col_t col, size_t xf_index) override {}

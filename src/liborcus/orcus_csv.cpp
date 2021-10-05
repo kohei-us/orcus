@@ -78,7 +78,7 @@ public:
             {
                 // Duplicate the header rows from the first sheet.
                 for (const header_cell& c : m_header_cells)
-                    mp_sheet->set_auto(c.row, c.col, c.value.data(), c.value.size());
+                    mp_sheet->set_auto(c.row, c.col, c.value);
 
                 m_row += csv.header_row_size;
             }
@@ -104,7 +104,7 @@ public:
             m_header_cells.emplace_back(m_row, m_col, v);
         }
 
-        mp_sheet->set_auto(m_row, m_col, p, n);
+        mp_sheet->set_auto(m_row, m_col, {p, n});
         ++m_col;
     }
 

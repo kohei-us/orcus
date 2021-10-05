@@ -169,7 +169,7 @@ class import_sheet : public orcus::spreadsheet::iface::import_sheet
 public:
     virtual ~import_sheet() override;
 
-    virtual void set_auto(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, const char* p, size_t n) override;
+    virtual void set_auto(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, std::string_view s) override;
 
     virtual void set_string(orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col, orcus::spreadsheet::string_id_t sindex) override;
 

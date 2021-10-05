@@ -734,10 +734,9 @@ public:
      *
      * @param row row ID
      * @param col column ID
-     * @param p pointer to the first character of the raw string value.
-     * @param n size of the raw string value.
+     * @param s raw string value.
      */
-    virtual void set_auto(row_t row, col_t col, const char* p, size_t n) = 0;
+    virtual void set_auto(row_t row, col_t col, std::string_view s) = 0;
 
     /**
      * Set string value to a cell.

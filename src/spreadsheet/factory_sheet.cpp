@@ -472,9 +472,9 @@ iface::import_array_formula* import_sheet::get_array_formula()
     return &m_array_formula;
 }
 
-void import_sheet::set_auto(row_t row, col_t col, const char* p, size_t n)
+void import_sheet::set_auto(row_t row, col_t col, std::string_view s)
 {
-    m_sheet.set_auto(row, col, p, n);
+    m_sheet.set_auto(row, col, s);
 }
 
 void import_sheet::set_bool(row_t row, col_t col, bool value)

@@ -41,7 +41,7 @@ public:
     sheet(document& doc, sheet_t sheet_index);
     virtual ~sheet();
 
-    void set_auto(row_t row, col_t col, const char* p, size_t n);
+    void set_auto(row_t row, col_t col, std::string_view s);
     void set_string(row_t row, col_t col, string_id_t sindex);
     void set_value(row_t row, col_t col, double value);
     void set_bool(row_t row, col_t col, bool value);
