@@ -316,31 +316,19 @@ public:
     /**
      * Define a new named expression or overwrite an existing one.
      *
-     * @param p_name pointer to the buffer that stores the name of the
-     *               expression to be defined.
-     * @param n_name size of the buffer that stores the name of the expression
-     *               to be defined.
-     * @param p_exp pointer to the buffer that stores the expression to be
-     *              associated with the name.
-     * @param n_exp size of the buffer that stores the expression to be
-     *              associated with the name.
+     * @param name name of the expression to be defined.
+     * @param expression expression to be associated with the name.
      */
-    virtual void set_named_expression(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) = 0;
+    virtual void set_named_expression(std::string_view name, std::string_view expression) = 0;
 
     /**
      * Define a new named range or overwrite an existin gone.  Note that you
      * can only define one named range or expression per single commit.
      *
-     * @param p_name pointer to the buffer that stores the name of the
-     *               expression to be defined.
-     * @param n_name size of the buffer that stores the name of the expression
-     *               to be defined.
-     * @param p_range pointer to the buffer that stores the range to be
-     *                associated with the name.
-     * @param n_range size of the buffer that stores the range to be
-     *                associated with the name.
+     * @param name name of the expression to be defined.
+     * @param range range to be associated with the name.
      */
-    virtual void set_named_range(const char* p_name, size_t n_name, const char* p_range, size_t n_range) = 0;
+    virtual void set_named_range(std::string_view name, std::string_view range) = 0;
 
     virtual void commit() = 0;
 };

@@ -26,16 +26,17 @@ import_sheet_named_exp::import_sheet_named_exp(document& doc, sheet_t sheet_inde
 
 import_sheet_named_exp::~import_sheet_named_exp() {}
 
-void import_sheet_named_exp::define(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp, formula_ref_context_t ref_cxt)
+void import_sheet_named_exp::define(
+    std::string_view name, std::string_view expression, formula_ref_context_t ref_cxt)
 {
     string_pool& sp = m_doc.get_string_pool();
-    m_name = sp.intern({p_name, n_name}).first;
+    m_name = sp.intern(name).first;
 
     const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver(ref_cxt);
     assert(resolver);
 
     ixion::model_context& cxt = m_doc.get_model_context();
-    m_tokens = ixion::parse_formula_string(cxt, m_base, *resolver, {p_exp, n_exp});
+    m_tokens = ixion::parse_formula_string(cxt, m_base, *resolver, expression);
 }
 
 void import_sheet_named_exp::set_base_position(const src_address_t& pos)
@@ -45,16 +46,14 @@ void import_sheet_named_exp::set_base_position(const src_address_t& pos)
     m_base.column = pos.column;
 }
 
-void import_sheet_named_exp::set_named_expression(
-    const char* p_name, size_t n_name, const char* p_exp, size_t n_exp)
+void import_sheet_named_exp::set_named_expression(std::string_view name, std::string_view expression)
 {
-    define(p_name, n_name, p_exp, n_exp, formula_ref_context_t::global);
+    define(name, expression, formula_ref_context_t::global);
 }
 
-void import_sheet_named_exp::set_named_range(
-    const char* p_name, size_t n_name, const char* p_range, size_t n_range)
+void import_sheet_named_exp::set_named_range(std::string_view name, std::string_view range)
 {
-    define(p_name, n_name, p_range, n_range, formula_ref_context_t::named_range);
+    define(name, range, formula_ref_context_t::named_range);
 }
 
 void import_sheet_named_exp::commit()

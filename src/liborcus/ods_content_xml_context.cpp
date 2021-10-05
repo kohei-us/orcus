@@ -850,12 +850,10 @@ void ods_content_xml_context::end_spreadsheet()
                 switch (data.type)
                 {
                     case ods_session_data::ne_range:
-                        named_exp->set_named_range(
-                            data.name.data(), data.name.size(), data.expression.data(), data.expression.size());
+                        named_exp->set_named_range(data.name, data.expression);
                         break;
                     case ods_session_data::ne_expression:
-                        named_exp->set_named_expression(
-                            data.name.data(), data.name.size(), data.expression.data(), data.expression.size());
+                        named_exp->set_named_expression(data.name, data.expression);
                         break;
                     default:
                         ;

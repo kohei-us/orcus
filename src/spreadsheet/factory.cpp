@@ -120,16 +120,16 @@ class import_global_named_exp : public iface::import_named_expression
     ixion::abs_address_t m_base;
     ixion::formula_tokens_t m_tokens;
 
-    void define(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp, formula_ref_context_t ref_cxt)
+    void define(std::string_view name, std::string_view expression, formula_ref_context_t ref_cxt)
     {
         string_pool& sp = m_doc.get_string_pool();
-        m_name = sp.intern({p_name, n_name}).first;
+        m_name = sp.intern(name).first;
 
         const ixion::formula_name_resolver* resolver = m_doc.get_formula_name_resolver(ref_cxt);
         assert(resolver);
 
         ixion::model_context& cxt = m_doc.get_model_context();
-        m_tokens = ixion::parse_formula_string(cxt, m_base, *resolver, {p_exp, n_exp});
+        m_tokens = ixion::parse_formula_string(cxt, m_base, *resolver, expression);
     }
 public:
     import_global_named_exp(document& doc) : m_doc(doc), m_base(0, 0, 0) {}
@@ -142,20 +142,20 @@ public:
         m_base.column = pos.column;
     }
 
-    virtual void set_named_expression(const char* p_name, size_t n_name, const char* p_exp, size_t n_exp) override
+    virtual void set_named_expression(std::string_view name, std::string_view expression) override
     {
-        define(p_name, n_name, p_exp, n_exp, formula_ref_context_t::global);
+        define(name, expression, formula_ref_context_t::global);
     }
 
-    virtual void set_named_range(const char* p_name, size_t n_name, const char* p_range, size_t n_range) override
+    virtual void set_named_range(std::string_view name, std::string_view range) override
     {
-        define(p_name, n_name, p_range, n_range, formula_ref_context_t::named_range);
+        define(name, range, formula_ref_context_t::named_range);
     }
 
     virtual void commit() override
     {
         ixion::model_context& cxt = m_doc.get_model_context();
-        cxt.set_named_expression({m_name.data(), m_name.size()}, m_base, std::move(m_tokens));
+        cxt.set_named_expression(std::string{m_name}, m_base, std::move(m_tokens));
 
         m_name = std::string_view{};
         m_base.sheet = 0;

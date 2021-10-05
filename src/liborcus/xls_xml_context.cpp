@@ -1670,8 +1670,7 @@ void xls_xml_context::end_element_workbook()
 
         for (const named_exp& ne : m_named_exps_global)
         {
-            ne_global->set_named_expression(
-                ne.name.data(), ne.name.size(), ne.expression.data(), ne.expression.size());
+            ne_global->set_named_expression(ne.name, ne.expression);
             ne_global->commit();
         }
     }
@@ -1686,8 +1685,7 @@ void xls_xml_context::end_element_workbook()
 
         if (p)
         {
-            p->set_named_expression(
-                ne.name.data(), ne.name.size(), ne.expression.data(), ne.expression.size());
+            p->set_named_expression(ne.name, ne.expression);
             p->commit();
         }
     }
