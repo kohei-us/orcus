@@ -58,10 +58,10 @@ public:
         assert(range.last.column == 1);
     }
 
-    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+    virtual void set_formula(formula_grammar_t grammar, std::string_view formula) override
     {
         assert(grammar == formula_grammar_t::xlsx);
-        assert(string(p, n) == "A1:A2");
+        assert(formula == "A1:A2");
     }
 
     virtual void set_result_bool(row_t row, col_t col, bool value) override
@@ -72,7 +72,7 @@ public:
     {
     }
 
-    virtual void set_result_string(row_t row, col_t col, const char* p, size_t n) override
+    virtual void set_result_string(row_t row, col_t col, std::string_view) override
     {
     }
 

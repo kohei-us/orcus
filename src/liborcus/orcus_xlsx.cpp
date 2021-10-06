@@ -242,7 +242,7 @@ void orcus_xlsx::set_formulas_to_doc()
                 formula->set_result_value(res.value_numeric);
                 break;
             case formula_result::result_type::string:
-                formula->set_result_string(res.value_string.p, res.value_string.n);
+                formula->set_result_string({res.value_string.p, res.value_string.n});
                 break;
             case formula_result::result_type::empty:
                 break;
@@ -270,7 +270,7 @@ void orcus_xlsx::set_formulas_to_doc()
 
         formula->set_position(sf.row, sf.column);
         if (sf.master)
-            formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx, sf.formula.data(), sf.formula.size());
+            formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx, sf.formula);
         formula->set_shared_formula_index(sf.identifier);
 
         push_formula_result(formula, sf.result);
@@ -290,7 +290,7 @@ void orcus_xlsx::set_formulas_to_doc()
             continue;
 
         formula->set_position(f.ref.row, f.ref.column);
-        formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx, f.exp.data(), f.exp.size());
+        formula->set_formula(orcus::spreadsheet::formula_grammar_t::xlsx, f.exp);
 
         push_formula_result(formula, f.result);
         formula->commit();

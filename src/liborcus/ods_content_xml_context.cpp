@@ -879,7 +879,7 @@ void ods_content_xml_context::end_spreadsheet()
             if (formula)
             {
                 formula->set_position(data.row, data.column);
-                formula->set_formula(data.grammar, data.exp.data(), data.exp.size());
+                formula->set_formula(data.grammar, data.exp);
 
                 switch (data.result.type)
                 {

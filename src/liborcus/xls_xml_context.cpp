@@ -1705,7 +1705,7 @@ void xls_xml_context::end_element_workbook()
         for (const cell_formula_type& cf : store)
         {
             xformula->set_position(cf.pos.row, cf.pos.column);
-            xformula->set_formula(ss::formula_grammar_t::xls_xml, cf.formula.data(), cf.formula.size());
+            xformula->set_formula(ss::formula_grammar_t::xls_xml, cf.formula);
 
             switch (cf.result.type)
             {

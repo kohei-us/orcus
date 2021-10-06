@@ -177,7 +177,7 @@ void import_array_formula::set_range(const range_t&)
     assert(false);
 }
 
-void import_array_formula::set_formula(formula_grammar_t, const char*, size_t)
+void import_array_formula::set_formula(formula_grammar_t, std::string_view)
 {
     assert(false);
 }
@@ -187,7 +187,7 @@ void import_array_formula::set_result_value(row_t, col_t, double)
     assert(false);
 }
 
-void import_array_formula::set_result_string(row_t, col_t, const char*, size_t)
+void import_array_formula::set_result_string(row_t, col_t, std::string_view)
 {
     assert(false);
 }
@@ -216,7 +216,7 @@ void import_formula::set_position(row_t row, col_t col)
     assert(false);
 }
 
-void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_t n)
+void import_formula::set_formula(formula_grammar_t grammar, std::string_view)
 {
     assert(false);
 }
@@ -231,7 +231,7 @@ void import_formula::set_result_value(double value)
     assert(false);
 }
 
-void import_formula::set_result_string(const char* p, size_t n)
+void import_formula::set_result_string(std::string_view)
 {
     assert(false);
 }

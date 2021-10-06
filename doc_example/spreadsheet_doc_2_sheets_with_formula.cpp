@@ -75,15 +75,15 @@ public:
         m_col = col;
     }
 
-    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+    virtual void set_formula(formula_grammar_t grammar, std::string_view formula) override
     {
-        m_formula.expression = std::string(p, n);
+        m_formula.expression = formula;
         m_formula.grammar = grammar;
     }
 
     virtual void set_shared_formula_index(size_t index) override {}
 
-    virtual void set_result_string(const char* p, size_t n) override {}
+    virtual void set_result_string(std::string_view value) override {}
     virtual void set_result_value(double value) override {}
     virtual void set_result_empty() override {}
     virtual void set_result_bool(bool value) override {}

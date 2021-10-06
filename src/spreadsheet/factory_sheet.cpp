@@ -193,7 +193,7 @@ void import_array_formula::set_range(const range_t& range)
     }
 }
 
-void import_array_formula::set_formula(formula_grammar_t grammar, const char* p, size_t n)
+void import_array_formula::set_formula(formula_grammar_t grammar, std::string_view formula)
 {
     const ixion::formula_name_resolver* resolver =
         m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
@@ -206,7 +206,7 @@ void import_array_formula::set_formula(formula_grammar_t grammar, const char* p,
 
     try
     {
-        m_tokens = ixion::parse_formula_string(cxt, pos, *resolver, {p, n});
+        m_tokens = ixion::parse_formula_string(cxt, pos, *resolver, formula);
     }
     catch (const std::exception& e)
     {
@@ -214,7 +214,7 @@ void import_array_formula::set_formula(formula_grammar_t grammar, const char* p,
             throw;
 
         std::string_view error_s = e.what();
-        m_tokens = ixion::create_formula_error_tokens(cxt, {p, n}, error_s);
+        m_tokens = ixion::create_formula_error_tokens(cxt, formula, error_s);
     }
 }
 
@@ -223,7 +223,7 @@ void import_array_formula::set_result_value(row_t row, col_t col, double value)
     m_result_mtx.set(row, col, value);
 }
 
-void import_array_formula::set_result_string(row_t row, col_t col, const char* p, size_t n)
+void import_array_formula::set_result_string(row_t row, col_t col, std::string_view value)
 {
     // TODO : handle this
 }
@@ -282,7 +282,7 @@ void import_formula::set_position(row_t row, col_t col)
     m_col = col;
 }
 
-void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_t n)
+void import_formula::set_formula(formula_grammar_t grammar, std::string_view formula)
 {
     if (m_row < 0 || m_col < 0)
         return;
@@ -299,7 +299,7 @@ void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_
     ixion::formula_tokens_t tokens;
     try
     {
-        tokens = ixion::parse_formula_string(cxt, pos, *resolver, {p, n});
+        tokens = ixion::parse_formula_string(cxt, pos, *resolver, formula);
     }
     catch (const std::exception& e)
     {
@@ -307,7 +307,7 @@ void import_formula::set_formula(formula_grammar_t grammar, const char* p, size_
             throw;
 
         std::string_view error_s = e.what();
-        tokens = ixion::create_formula_error_tokens(cxt, {p, n}, error_s);
+        tokens = ixion::create_formula_error_tokens(cxt, formula, error_s);
     }
 
     m_tokens_store = ixion::formula_tokens_store::create();
@@ -325,9 +325,9 @@ void import_formula::set_result_value(double value)
     m_result.reset(ixion::formula_result(value));
 }
 
-void import_formula::set_result_string(const char* p, size_t n)
+void import_formula::set_result_string(std::string_view value)
 {
-    m_result.reset(ixion::formula_result(std::string(p, n)));
+    m_result.reset(ixion::formula_result(std::string{value}));
 }
 
 void import_formula::set_result_empty() {}

@@ -35,10 +35,10 @@ public:
         assert(range.last.column == 113);
     }
 
-    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+    virtual void set_formula(formula_grammar_t grammar, std::string_view formula) override
     {
         assert(grammar == formula_grammar_t::gnumeric);
-        assert(string(p, n) == "=arrayFormula");
+        assert(formula == "=arrayFormula");
     }
 
     virtual void set_result_bool(row_t row, col_t col, bool value) override
@@ -49,7 +49,7 @@ public:
     {
     }
 
-    virtual void set_result_string(row_t row, col_t col, const char* p, size_t n) override
+    virtual void set_result_string(row_t row, col_t col, std::string_view) override
     {
     }
 
@@ -71,10 +71,10 @@ public:
         assert(col == 11);
     }
 
-    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+    virtual void set_formula(formula_grammar_t grammar, std::string_view formula) override
     {
         assert(grammar == formula_grammar_t::gnumeric);
-        assert(string(p, n) == "=formula");
+        assert(formula == "=formula");
     }
 
     virtual void set_shared_formula_index(size_t index) override
@@ -89,7 +89,7 @@ public:
     {
     }
 
-    virtual void set_result_string(const char* p, size_t n) override
+    virtual void set_result_string(std::string_view) override
     {
     }
 
@@ -230,10 +230,10 @@ void test_shared_formula_with_string()
             assert(col == 15);
         }
 
-        void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
+        void set_formula(formula_grammar_t grammar, std::string_view formula) override
         {
             assert(grammar == formula_grammar_t::gnumeric);
-            assert(string(p, n) == "=basicFormulaString");
+            assert(formula == "=basicFormulaString");
         }
 
         void set_shared_formula_index(size_t index) override

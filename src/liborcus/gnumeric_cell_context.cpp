@@ -221,7 +221,7 @@ void gnumeric_cell_context::end_cell()
                 break;
 
             xformula->set_position(row, col);
-            xformula->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars.data(), chars.size());
+            xformula->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars);
             xformula->commit();
             break;
         }
@@ -234,7 +234,7 @@ void gnumeric_cell_context::end_cell()
             xformula->set_position(row, col);
 
             if (!chars.empty())
-                xformula->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars.data(), chars.size());
+                xformula->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars);
 
             xformula->set_shared_formula_index(mp_cell_data->shared_formula_id);
             xformula->commit();
@@ -252,7 +252,7 @@ void gnumeric_cell_context::end_cell()
             if (af)
             {
                 af->set_range(range);
-                af->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars.get(), chars.size());
+                af->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars);
                 af->commit();
             }
         }

@@ -582,10 +582,9 @@ public:
      *
      * @param grammar grammar to use to compile the formula string into
      *                tokens.
-     * @param p pointer to the buffer where the formula string is stored.
-     * @param n size of the buffer where the formula string is stored.
+     * @param formula formula expression to store.
      */
-    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) = 0;
+    virtual void set_formula(formula_grammar_t grammar, std::string_view formula) = 0;
 
     /**
      * Register the formula as a shared string, to be shared with other cells.
@@ -597,10 +596,9 @@ public:
     /**
      * Set cached result of string type.
      *
-     * @param p pointer to the buffer where the string result is stored.
-     * @param n size of the buffer where the string result is stored.
+     * @param value string result value.
      */
-    virtual void set_result_string(const char* p, size_t n) = 0;
+    virtual void set_result_string(std::string_view value) = 0;
 
     /**
      * Set cached result of numeric type.
@@ -634,9 +632,9 @@ public:
 
     virtual void set_range(const range_t& range) = 0;
 
-    virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) = 0;
+    virtual void set_formula(formula_grammar_t grammar, std::string_view formula) = 0;
 
-    virtual void set_result_string(row_t row, col_t col, const char* p, size_t n) = 0;
+    virtual void set_result_string(row_t row, col_t col, std::string_view value) = 0;
 
     virtual void set_result_value(row_t row, col_t col, double value) = 0;
 

@@ -27,7 +27,7 @@ class import_array_formula;
 
 void push_array_formula(
     spreadsheet::iface::import_array_formula* xformula,
-    const spreadsheet::range_t& range, const pstring& formula,
+    const spreadsheet::range_t& range, std::string_view formula,
     spreadsheet::formula_grammar_t grammar, const range_formula_results& results);
 
 } // namespace orcus

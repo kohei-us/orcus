@@ -15,11 +15,11 @@ namespace orcus {
 
 void push_array_formula(
     spreadsheet::iface::import_array_formula* xformula,
-    const spreadsheet::range_t& range, const pstring& formula,
+    const spreadsheet::range_t& range, std::string_view formula,
     spreadsheet::formula_grammar_t grammar, const range_formula_results& results)
 {
     xformula->set_range(range);
-    xformula->set_formula(grammar, formula.data(), formula.size());
+    xformula->set_formula(grammar, formula);
 
     for (size_t row = 0; row < results.row_size(); ++row)
     {
@@ -32,7 +32,7 @@ void push_array_formula(
                     xformula->set_result_value(row, col, v.value_numeric);
                     break;
                 case formula_result::result_type::string:
-                    xformula->set_result_string(row, col, v.value_string.p, v.value_string.n);
+                    xformula->set_result_string(row, col, {v.value_string.p, v.value_string.n});
                     break;
                 case formula_result::result_type::boolean:
                     xformula->set_result_bool(row, col, v.value_boolean);
