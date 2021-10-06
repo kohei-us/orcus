@@ -110,7 +110,7 @@ public:
 
     virtual void set_column(col_t col) override;
 
-    virtual void append_column_match_value(const char* p, size_t n) override;
+    virtual void append_column_match_value(std::string_view value) override;
 
     virtual void commit_column() override;
 

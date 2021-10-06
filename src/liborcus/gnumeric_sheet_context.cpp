@@ -488,7 +488,7 @@ private:
                 m_filter_value_type == "40" ||
                 m_filter_value_type == "60" )
         {
-            m_auto_filter.append_column_match_value(m_filter_value.get(), m_filter_value.size());
+            m_auto_filter.append_column_match_value(m_filter_value);
         }
     }
 

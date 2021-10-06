@@ -116,11 +116,11 @@ void import_auto_filter::set_column(col_t col)
     m_cur_col = col;
 }
 
-void import_auto_filter::append_column_match_value(const char* p, size_t n)
+void import_auto_filter::append_column_match_value(std::string_view value)
 {
     // The string pool belongs to the document.
-    std::string_view s = m_string_pool.intern({p, n}).first;
-    m_cur_col_data.match_values.insert(s);
+    value = m_string_pool.intern(value).first;
+    m_cur_col_data.match_values.insert(value);
 }
 
 void import_auto_filter::commit_column()

@@ -118,19 +118,14 @@ void xlsx_autofilter_context::push_to_model(spreadsheet::iface::import_auto_filt
     spreadsheet::src_range_t range = m_resolver.resolve_range(m_ref_range.data(), m_ref_range.size());
     af.set_range(to_rc_range(range));
 
-    column_filters_type::const_iterator it = m_column_filters.begin(), it_end = m_column_filters.end();
-    for (; it != it_end; ++it)
+    for (const auto& v : m_column_filters)
     {
-        spreadsheet::col_t col = it->first;
-        const xlsx_autofilter_context::match_values_type& mv = it->second;
+        spreadsheet::col_t col = v.first;
+        const match_values_type& match_values = v.second;
 
         af.set_column(col);
-        xlsx_autofilter_context::match_values_type::const_iterator itmv = mv.begin(), itmv_end = mv.end();
-        for (; itmv != itmv_end; ++itmv)
-        {
-            const pstring& v = *itmv;
-            af.append_column_match_value(v.get(), v.size());
-        }
+        for (std::string_view value : match_values)
+            af.append_column_match_value(value);
         af.commit_column();
     }
     af.commit();

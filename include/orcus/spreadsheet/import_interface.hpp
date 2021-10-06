@@ -377,10 +377,9 @@ public:
     /**
      * Add a match value to the current column filter.
      *
-     * @param p pointer to the first character of match value.
-     * @param n length of match value.
+     * @param value match value.
      */
-    virtual void append_column_match_value(const char* p, size_t n) = 0;
+    virtual void append_column_match_value(std::string_view value) = 0;
 
     /**
      * Commit current column filter to the current auto filter.

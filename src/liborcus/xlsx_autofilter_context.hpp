@@ -27,7 +27,7 @@ class import_reference_resolver;
 class xlsx_autofilter_context : public xml_context_base
 {
 public:
-    typedef std::vector<pstring> match_values_type;
+    typedef std::vector<std::string_view> match_values_type;
     typedef std::map<spreadsheet::col_t, match_values_type> column_filters_type;
 
     xlsx_autofilter_context(
