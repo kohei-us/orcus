@@ -106,7 +106,7 @@ iface::import_auto_filter* import_table::get_auto_filter()
     return &mp_impl->m_auto_filter;
 }
 
-void import_table::set_range(const char* p_ref, size_t n_ref)
+void import_table::set_range(std::string_view ref)
 {
     const ixion::formula_name_resolver* resolver =
         mp_impl->m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
@@ -114,7 +114,7 @@ void import_table::set_range(const char* p_ref, size_t n_ref)
         return;
 
     ixion::abs_range_t& range = mp_impl->mp_data->range;
-    range = to_abs_range(*resolver, p_ref, n_ref);
+    range = to_abs_range(*resolver, ref.data(), ref.size());
     if (range.valid())
         range.first.sheet = range.last.sheet = mp_impl->m_sheet.get_index();
 }
@@ -124,16 +124,16 @@ void import_table::set_identifier(size_t id)
     mp_impl->mp_data->identifier = id;
 }
 
-void import_table::set_name(const char* p, size_t n)
+void import_table::set_name(std::string_view name)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
-    mp_impl->mp_data->name = sp.intern({p, n}).first;
+    mp_impl->mp_data->name = sp.intern(name).first;
 }
 
-void import_table::set_display_name(const char* p, size_t n)
+void import_table::set_display_name(std::string_view name)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
-    mp_impl->mp_data->display_name = sp.intern({p, n}).first;
+    mp_impl->mp_data->display_name = sp.intern(name).first;
 }
 
 void import_table::set_totals_row_count(size_t row_count)
@@ -151,16 +151,16 @@ void import_table::set_column_identifier(size_t id)
     mp_impl->m_column.identifier = id;
 }
 
-void import_table::set_column_name(const char* p, size_t n)
+void import_table::set_column_name(std::string_view name)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
-    mp_impl->m_column.name = sp.intern({p, n}).first;
+    mp_impl->m_column.name = sp.intern(name).first;
 }
 
-void import_table::set_column_totals_row_label(const char* p, size_t n)
+void import_table::set_column_totals_row_label(std::string_view label)
 {
     string_pool& sp = mp_impl->m_doc.get_string_pool();
-    mp_impl->m_column.totals_row_label = sp.intern({p, n}).first;
+    mp_impl->m_column.totals_row_label = sp.intern(label).first;
 }
 
 void import_table::set_column_totals_row_function(orcus::spreadsheet::totals_row_function_t func)
@@ -174,11 +174,11 @@ void import_table::commit_column()
     mp_impl->m_column.reset();
 }
 
-void import_table::set_style_name(const char* p, size_t n)
+void import_table::set_style_name(std::string_view name)
 {
     table_style_t& style = mp_impl->mp_data->style;
     string_pool& sp = mp_impl->m_doc.get_string_pool();
-    style.name = sp.intern({p, n}).first;
+    style.name = sp.intern(name).first;
 }
 
 void import_table::set_style_show_first_column(bool b)

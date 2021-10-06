@@ -539,23 +539,23 @@ public:
 
     virtual void set_identifier(size_t id) = 0;
 
-    virtual void set_range(const char* p_ref, size_t n_ref) = 0;
+    virtual void set_range(std::string_view ref) = 0;
 
     virtual void set_totals_row_count(size_t row_count) = 0;
 
-    virtual void set_name(const char* p, size_t n) = 0;
+    virtual void set_name(std::string_view name) = 0;
 
-    virtual void set_display_name(const char* p, size_t n) = 0;
+    virtual void set_display_name(std::string_view name) = 0;
 
     virtual void set_column_count(size_t n) = 0;
 
     virtual void set_column_identifier(size_t id) = 0;
-    virtual void set_column_name(const char* p, size_t n) = 0;
-    virtual void set_column_totals_row_label(const char* p, size_t n) = 0;
+    virtual void set_column_name(std::string_view name) = 0;
+    virtual void set_column_totals_row_label(std::string_view label) = 0;
     virtual void set_column_totals_row_function(totals_row_function_t func) = 0;
     virtual void commit_column() = 0;
 
-    virtual void set_style_name(const char* p, size_t n) = 0;
+    virtual void set_style_name(std::string_view name) = 0;
     virtual void set_style_show_first_column(bool b) = 0;
     virtual void set_style_show_last_column(bool b) = 0;
     virtual void set_style_show_row_stripes(bool b) = 0;

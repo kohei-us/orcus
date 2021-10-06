@@ -143,7 +143,7 @@ public:
         switch (attr.name)
         {
             case XML_name:
-                mp_table->set_style_name(attr.value.data(), attr.value.size());
+                mp_table->set_style_name(attr.value);
                 if (m_debug)
                     cout << "  * table style info (name=" << attr.value << ")" << endl;
             break;
@@ -245,11 +245,11 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
 
             m_table.set_identifier(func.get_id());
             str = func.get_ref();
-            m_table.set_range(str.get(), str.size());
+            m_table.set_range(str);
             str = func.get_name();
-            m_table.set_name(str.get(), str.size());
+            m_table.set_name(str);
             str = func.get_display_name();
-            m_table.set_display_name(str.get(), str.size());
+            m_table.set_display_name(str);
             m_table.set_totals_row_count(func.get_totals_row_count());
         }
         break;
@@ -278,9 +278,9 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
 
             m_table.set_column_identifier(func.get_id());
             str = func.get_name();
-            m_table.set_column_name(str.get(), str.size());
+            m_table.set_column_name(str);
             str = func.get_totals_row_label();
-            m_table.set_column_totals_row_label(str.get(), str.size());
+            m_table.set_column_totals_row_label(str);
             m_table.set_column_totals_row_function(func.get_totals_row_function());
         }
         break;
