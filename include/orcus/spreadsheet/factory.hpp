@@ -42,8 +42,8 @@ public:
         orcus::spreadsheet::pivot_cache_id_t cache_id) override;
     virtual iface::import_pivot_cache_records* create_pivot_cache_records(
         orcus::spreadsheet::pivot_cache_id_t cache_id) override;
-    virtual iface::import_sheet* append_sheet(sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override;
-    virtual iface::import_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) override;
+    virtual iface::import_sheet* append_sheet(sheet_t sheet_index, std::string_view name) override;
+    virtual iface::import_sheet* get_sheet(std::string_view name) override;
     virtual iface::import_sheet* get_sheet(sheet_t sheet_index) override;
     virtual void finalize() override;
 

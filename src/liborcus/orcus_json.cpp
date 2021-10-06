@@ -60,8 +60,7 @@ struct json_value
 
     void commit(spreadsheet::iface::import_factory& im_factory, const cell_position_t& pos) const
     {
-        spreadsheet::iface::import_sheet* sheet =
-            im_factory.get_sheet(pos.sheet.data(), pos.sheet.size());
+        spreadsheet::iface::import_sheet* sheet = im_factory.get_sheet(pos.sheet);
 
         if (!sheet)
             return;
@@ -252,8 +251,7 @@ private:
             {
                 // Perform fill-downs for all anchored fields.
                 const cell_position_t& pos = fill_down_ref->pos;
-                spreadsheet::iface::import_sheet* sheet =
-                    m_im_factory.get_sheet(pos.sheet.data(), pos.sheet.size());
+                spreadsheet::iface::import_sheet* sheet = m_im_factory.get_sheet(pos.sheet);
 
                 if (sheet)
                 {
@@ -352,7 +350,7 @@ void orcus_json::append_sheet(std::string_view name)
     if (name.empty())
         return;
 
-    mp_impl->im_factory->append_sheet(mp_impl->sheet_count++, name.data(), name.size());
+    mp_impl->im_factory->append_sheet(mp_impl->sheet_count++, name);
 }
 
 void orcus_json::read_stream(std::string_view stream)
@@ -374,8 +372,7 @@ void orcus_json::read_stream(std::string_view stream)
 
         const cell_position_t& origin = ref.pos;
 
-        spreadsheet::iface::import_sheet* sheet =
-            mp_impl->im_factory->get_sheet(origin.sheet.data(), origin.sheet.size());
+        spreadsheet::iface::import_sheet* sheet = mp_impl->im_factory->get_sheet(origin.sheet);
 
         if (!sheet)
             continue;

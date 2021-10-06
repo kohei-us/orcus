@@ -70,7 +70,7 @@ private:
 class mock_factory : public import_factory
 {
 public:
-    virtual iface::import_sheet* append_sheet(sheet_t, const char*, size_t)
+    virtual iface::import_sheet* append_sheet(sheet_t, std::string_view) override
     {
         return &m_mock_sheet;
     }

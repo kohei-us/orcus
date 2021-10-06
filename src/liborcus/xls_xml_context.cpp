@@ -1572,7 +1572,7 @@ void xls_xml_context::start_element_worksheet(const xml_token_pair_t& parent, co
         }
     }
 
-    mp_cur_sheet = mp_factory->append_sheet(m_cur_sheet, sheet_name.data(), sheet_name.size());
+    mp_cur_sheet = mp_factory->append_sheet(m_cur_sheet, sheet_name);
     spreadsheet::iface::import_named_expression* sheet_named_exp = nullptr;
     if (mp_cur_sheet)
     {

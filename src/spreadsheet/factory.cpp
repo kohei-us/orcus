@@ -259,12 +259,11 @@ iface::import_pivot_cache_records* import_factory::create_pivot_cache_records(
     return &mp_impl->m_pc_records;
 }
 
-iface::import_sheet* import_factory::append_sheet(
-    sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length)
+iface::import_sheet* import_factory::append_sheet(sheet_t sheet_index, std::string_view name)
 {
     assert(sheet_index == static_cast<sheet_t>(mp_impl->m_doc.get_sheet_count()));
 
-    sheet* sh = mp_impl->m_doc.append_sheet({sheet_name, sheet_name_length});
+    sheet* sh = mp_impl->m_doc.append_sheet(name);
 
     if (!sh)
         return nullptr;
@@ -283,9 +282,9 @@ iface::import_sheet* import_factory::append_sheet(
     return p;
 }
 
-iface::import_sheet* import_factory::get_sheet(const char* sheet_name, size_t sheet_name_length)
+iface::import_sheet* import_factory::get_sheet(std::string_view name)
 {
-    sheet_t si = mp_impl->m_doc.get_sheet_index(std::string_view(sheet_name, sheet_name_length));
+    sheet_t si = mp_impl->m_doc.get_sheet_index(name);
     if (si == ixion::invalid_sheet)
         return nullptr;
 

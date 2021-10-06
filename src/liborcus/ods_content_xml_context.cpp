@@ -572,7 +572,7 @@ void ods_content_xml_context::start_table(const xml_token_pair_t& parent, const 
     {
         table_attr_parser parser = for_each(attrs.begin(), attrs.end(), table_attr_parser());
         const pstring& name = parser.get_name();
-        m_tables.push_back(mp_factory->append_sheet(m_tables.size(), name.get(), name.size()));
+        m_tables.push_back(mp_factory->append_sheet(m_tables.size(), name));
         m_cur_sheet.sheet = m_tables.back();
         m_cur_sheet.index = m_tables.size() - 1;
 

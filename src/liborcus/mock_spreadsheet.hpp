@@ -194,22 +194,22 @@ public:
 class import_factory : public orcus::spreadsheet::iface::import_factory
 {
 public:
-    virtual ~import_factory();
+    virtual ~import_factory() override;
 
-    virtual orcus::spreadsheet::iface::import_global_settings* get_global_settings();
+    virtual orcus::spreadsheet::iface::import_global_settings* get_global_settings() override;
 
-    virtual orcus::spreadsheet::iface::import_shared_strings* get_shared_strings();
+    virtual orcus::spreadsheet::iface::import_shared_strings* get_shared_strings() override;
 
-    virtual orcus::spreadsheet::iface::import_styles* get_styles();
+    virtual orcus::spreadsheet::iface::import_styles* get_styles() override;
 
     virtual orcus::spreadsheet::iface::import_sheet* append_sheet(
-        orcus::spreadsheet::sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length);
+        orcus::spreadsheet::sheet_t sheet_index, std::string_view name) override;
 
-    virtual orcus::spreadsheet::iface::import_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length);
+    virtual orcus::spreadsheet::iface::import_sheet* get_sheet(std::string_view name) override;
 
-    virtual orcus::spreadsheet::iface::import_sheet* get_sheet(orcus::spreadsheet::sheet_t sheet_index);
+    virtual orcus::spreadsheet::iface::import_sheet* get_sheet(orcus::spreadsheet::sheet_t sheet_index) override;
 
-    virtual void finalize();
+    virtual void finalize() override;
 };
 
 }}}

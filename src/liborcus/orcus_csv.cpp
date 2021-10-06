@@ -52,7 +52,7 @@ public:
     void begin_parse()
     {
         std::string sheet_name = get_sheet_name();
-        mp_sheet = m_factory.append_sheet(m_sheet, sheet_name.data(), sheet_name.size());
+        mp_sheet = m_factory.append_sheet(m_sheet, sheet_name);
     }
 
     void end_parse() {}
@@ -71,7 +71,7 @@ public:
             // The next row will be outside the boundary of the current sheet.
             ++m_sheet;
             std::string sheet_name = get_sheet_name();
-            mp_sheet = m_factory.append_sheet(m_sheet, sheet_name.data(), sheet_name.size());
+            mp_sheet = m_factory.append_sheet(m_sheet, sheet_name);
             m_row = 0;
 
             if (!m_header_cells.empty())

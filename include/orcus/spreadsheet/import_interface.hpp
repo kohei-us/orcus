@@ -949,22 +949,23 @@ public:
      * @param sheet_index position index of the sheet to be appended.  It is
      *                    0-based i.e. the first sheet to be appended will
      *                    have an index value of 0.
-     * @param sheet_name pointer to the first character in the buffer where
-     *                   the sheet name is stored.
-     * @param sheet_name_length length of the sheet name.
+     * @param name sheet name.
      *
      * @return pointer to the sheet instance. It may return nullptr if the
      *         client app fails to append a new sheet.
      */
-    virtual import_sheet* append_sheet(
-        sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) = 0;
+    virtual import_sheet* append_sheet(sheet_t sheet_index, std::string_view name) = 0;
 
     /**
+     * Get a sheet instance by name.
+     *
+     * @param name sheet name.
+     *
      * @return pointer to the sheet instance whose name matches the name
      *         passed to this method. It returns nullptr if no sheet instance
      *         exists by the specified name.
      */
-    virtual import_sheet* get_sheet(const char* sheet_name, size_t sheet_name_length) = 0;
+    virtual import_sheet* get_sheet(std::string_view name) = 0;
 
     /**
      * Retrieve sheet instance by specified numerical sheet index.

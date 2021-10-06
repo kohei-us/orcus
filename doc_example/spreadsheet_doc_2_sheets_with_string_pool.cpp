@@ -145,16 +145,14 @@ public:
         return &m_shared_strings;
     }
 
-    virtual iface::import_sheet* append_sheet(
-        sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override
+    virtual iface::import_sheet* append_sheet(sheet_t sheet_index, std::string_view name) override
     {
         // Pass the string pool to each sheet instance.
         m_sheets.push_back(std::make_unique<my_sheet>(m_sheets.size(), m_string_pool));
         return m_sheets.back().get();
     }
 
-    virtual iface::import_sheet* get_sheet(
-        const char* sheet_name, size_t sheet_name_length) override
+    virtual iface::import_sheet* get_sheet(std::string_view name) override
     {
         // TODO : implement this.
         return nullptr;

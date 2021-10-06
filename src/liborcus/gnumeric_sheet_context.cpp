@@ -766,7 +766,7 @@ void gnumeric_sheet_context::start_condition(const xml_attrs_t& attrs)
 
 void gnumeric_sheet_context::end_table()
 {
-    mp_sheet = mp_factory->append_sheet(m_sheet_index, chars.get(), chars.size());
+    mp_sheet = mp_factory->append_sheet(m_sheet_index, chars);
 }
 
 void gnumeric_sheet_context::end_font()

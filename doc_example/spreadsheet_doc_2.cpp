@@ -11,20 +11,15 @@ using orcus::orcus_ods;
 class my_empty_import_factory : public iface::import_factory
 {
 public:
-    virtual iface::import_sheet* append_sheet(
-        sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override
+    virtual iface::import_sheet* append_sheet(sheet_t sheet_index, std::string_view name) override
     {
-        cout << "append_sheet: sheet index: " << sheet_index
-             << "; sheet name: " << string(sheet_name, sheet_name_length)
-             << endl;
+        cout << "append_sheet: sheet index: " << sheet_index << "; sheet name: " << name << endl;
         return nullptr;
     }
 
-    virtual iface::import_sheet* get_sheet(
-        const char* sheet_name, size_t sheet_name_length) override
+    virtual iface::import_sheet* get_sheet(std::string_view name) override
     {
-        cout << "get_sheet: sheet name: "
-             << string(sheet_name, sheet_name_length) << endl;
+        cout << "get_sheet: sheet name: " << name << endl;
         return nullptr;
     }
 

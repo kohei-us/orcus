@@ -73,15 +73,13 @@ class my_import_factory : public iface::import_factory
     std::vector<std::unique_ptr<my_sheet>> m_sheets;
 
 public:
-    virtual iface::import_sheet* append_sheet(
-        sheet_t sheet_index, const char* sheet_name, size_t sheet_name_length) override
+    virtual iface::import_sheet* append_sheet(sheet_t sheet_index, std::string_view name) override
     {
         m_sheets.push_back(std::make_unique<my_sheet>(m_sheets.size()));
         return m_sheets.back().get();
     }
 
-    virtual iface::import_sheet* get_sheet(
-        const char* sheet_name, size_t sheet_name_length) override
+    virtual iface::import_sheet* get_sheet(std::string_view name) override
     {
         // TODO : implement this.
         return nullptr;

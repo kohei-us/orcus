@@ -76,7 +76,7 @@ private:
 
     void set_single_link_cell(const xml_map_tree::cell_reference& ref, std::string_view val)
     {
-        spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(ref.pos.sheet.data(), ref.pos.sheet.size());
+        spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(ref.pos.sheet);
         if (sheet)
             sheet->set_auto(ref.pos.row, ref.pos.col, val);
     }
@@ -87,7 +87,7 @@ private:
         assert(!field.ref->pos.sheet.empty());
 
         const xml_map_tree::cell_position& pos = field.ref->pos;
-        spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(pos.sheet.data(), pos.sheet.size());
+        spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(pos.sheet);
         if (sheet)
             sheet->set_auto(
                pos.row + field.ref->row_position,
@@ -209,8 +209,7 @@ public:
                     // cell values.
                     const xml_map_tree::range_reference& ref = *mp_current_elem->row_group;
 
-                    spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(
-                        ref.pos.sheet.data(), ref.pos.sheet.size());
+                    spreadsheet::iface::import_sheet* sheet = m_factory.get_sheet(ref.pos.sheet);
 
                     if (sheet)
                     {
@@ -534,7 +533,7 @@ void orcus_xml::append_sheet(std::string_view name)
     if (name.empty())
         return;
 
-    mp_impl->im_factory->append_sheet(mp_impl->sheet_count++, name.data(), name.size());
+    mp_impl->im_factory->append_sheet(mp_impl->sheet_count++, name);
 }
 
 void orcus_xml::read_stream(const char* p, size_t n)
@@ -557,8 +556,7 @@ void orcus_xml::read_impl(std::string_view strm)
         xml_map_tree::range_reference& range_ref = *ref_pair.second;
         range_ref.row_position = 1; // Reset the row offset.
 
-        spreadsheet::iface::import_sheet* sheet =
-            mp_impl->im_factory->get_sheet(ref.sheet.data(), ref.sheet.size());
+        spreadsheet::iface::import_sheet* sheet = mp_impl->im_factory->get_sheet(ref.sheet);
 
         if (!sheet)
             continue;

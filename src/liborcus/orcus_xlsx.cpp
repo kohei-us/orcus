@@ -447,7 +447,7 @@ void orcus_xlsx::read_sheet(const string& dir_path, const string& file_name, xls
         cout << "  sheet name: " << data->name << "  sheet ID: " << data->id << endl;
     }
 
-    spreadsheet::iface::import_sheet* sheet = mp_impl->mp_factory->get_sheet(data->name.get(), data->name.size());
+    spreadsheet::iface::import_sheet* sheet = mp_impl->mp_factory->get_sheet(data->name);
     if (!sheet)
     {
         std::ostringstream os;
