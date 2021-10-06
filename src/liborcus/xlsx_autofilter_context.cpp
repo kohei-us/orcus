@@ -115,7 +115,7 @@ void xlsx_autofilter_context::characters(const pstring& /*str*/, bool /*transien
 
 void xlsx_autofilter_context::push_to_model(spreadsheet::iface::import_auto_filter& af) const
 {
-    spreadsheet::src_range_t range = m_resolver.resolve_range(m_ref_range.data(), m_ref_range.size());
+    spreadsheet::src_range_t range = m_resolver.resolve_range(m_ref_range);
     af.set_range(to_rc_range(range));
 
     for (const auto& v : m_column_filters)

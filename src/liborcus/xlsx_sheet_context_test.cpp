@@ -23,7 +23,7 @@ namespace {
 
 class mock_ref_resolver : public import_reference_resolver
 {
-    virtual src_address_t resolve_address(const char* p, size_t n) override
+    virtual src_address_t resolve_address(std::string_view) override
     {
         src_address_t ret;
         ret.sheet = 0;
@@ -33,7 +33,7 @@ class mock_ref_resolver : public import_reference_resolver
         return ret;
     }
 
-    virtual src_range_t resolve_range(const char* p, size_t n) override
+    virtual src_range_t resolve_range(std::string_view) override
     {
         src_range_t ret;
         ret.first.sheet = 0;

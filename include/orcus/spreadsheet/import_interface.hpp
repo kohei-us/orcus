@@ -859,9 +859,7 @@ public:
     /**
      * Resolve a textural representation of a single cell address.
      *
-     * @param p pointer to the first character of the single cell address
-     *          string.
-     * @param n size of the single cell address string.
+     * @param address single cell address string.
      *
      * @return structure containing the column and row positions of the
      *         address.
@@ -869,22 +867,21 @@ public:
      * @exception orcus::invalid_arg_error the string is not a valid
      *        single cell addreess.
      */
-    virtual src_address_t resolve_address(const char* p, size_t n) = 0;
+    virtual src_address_t resolve_address(std::string_view address) = 0;
 
     /**
      * Resolve a textural representation of a range address.  Note that a
      * string representing a valid single cell address should be considered a
      * valid range address.
      *
-     * @param p pointer to the first character of the range address string.
-     * @param n size of the range address string.
+     * @param range range address string.
      *
      * @return structure containing the start and end positions of the range
      *         address.
      *
      * @exception invalid_arg_error the string is not a valid range addreess.
      */
-    virtual src_range_t resolve_range(const char* p, size_t n) = 0;
+    virtual src_range_t resolve_range(std::string_view range) = 0;
 };
 
 /**

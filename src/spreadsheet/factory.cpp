@@ -46,17 +46,17 @@ public:
         m_resolver = m_doc.get_formula_name_resolver(cxt);
     }
 
-    virtual src_address_t resolve_address(const char* p, size_t n) override
+    virtual src_address_t resolve_address(std::string_view address) override
     {
         if (!m_resolver)
             throw std::runtime_error("import_ref_resolver::resolve_address: formula resolver is null!");
 
-        ixion::formula_name_t name = m_resolver->resolve({p, n}, ixion::abs_address_t());
+        ixion::formula_name_t name = m_resolver->resolve(address, ixion::abs_address_t());
 
         if (name.type != ixion::formula_name_t::cell_reference)
         {
             std::ostringstream os;
-            os << std::string_view(p, n) << " is not a valid cell address.";
+            os << address << " is not a valid cell address.";
             throw orcus::invalid_arg_error(os.str());
         }
 
@@ -68,25 +68,25 @@ public:
         return ret;
     }
 
-    virtual src_range_t resolve_range(const char* p, size_t n) override
+    virtual src_range_t resolve_range(std::string_view range) override
     {
         if (!m_resolver)
             throw std::runtime_error("import_ref_resolver::resolve_range: formula resolver is null!");
 
-        ixion::formula_name_t name = m_resolver->resolve({p, n}, ixion::abs_address_t());
+        ixion::formula_name_t name = m_resolver->resolve(range, ixion::abs_address_t());
 
         switch (name.type)
         {
             case ixion::formula_name_t::range_reference:
             {
-                auto range = std::get<ixion::range_t>(name.value);
+                auto v = std::get<ixion::range_t>(name.value);
                 src_range_t ret;
-                ret.first.sheet = range.first.sheet;
-                ret.first.column = range.first.column;
-                ret.first.row = range.first.row;
-                ret.last.sheet = range.last.sheet;
-                ret.last.column = range.last.column;
-                ret.last.row = range.last.row;
+                ret.first.sheet = v.first.sheet;
+                ret.first.column = v.first.column;
+                ret.first.row = v.first.row;
+                ret.last.sheet = v.last.sheet;
+                ret.last.column = v.last.column;
+                ret.last.row = v.last.row;
                 return ret;
             }
             case ixion::formula_name_t::cell_reference:
@@ -108,7 +108,7 @@ public:
         }
 
         std::ostringstream os;
-        os << std::string_view(p, n) << " is not a valid range address.";
+        os << "'" << range << "' is not a valid range address.";
         throw orcus::invalid_arg_error(os.str());
     }
 };

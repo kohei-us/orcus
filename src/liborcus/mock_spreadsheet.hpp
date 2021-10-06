@@ -122,9 +122,9 @@ class import_reference_resolver : public orcus::spreadsheet::iface::import_refer
 public:
     virtual ~import_reference_resolver() override;
 
-    virtual src_address_t resolve_address(const char* p, size_t n) override;
+    virtual src_address_t resolve_address(std::string_view address) override;
 
-    virtual src_range_t resolve_range(const char* p, size_t n) override;
+    virtual src_range_t resolve_range(std::string_view range) override;
 };
 
 class import_array_formula : public orcus::spreadsheet::iface::import_array_formula

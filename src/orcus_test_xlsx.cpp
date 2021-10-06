@@ -1384,7 +1384,7 @@ void test_xlsx_view_cursor_per_sheet()
     assert(resolver);
 
     // On Sheet1, the cursor should be set to C4.
-    spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(ORCUS_ASCII("C4")));
+    spreadsheet::range_t expected = to_rc_range(resolver->resolve_range("C4"));
     spreadsheet::range_t actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
     assert(expected == actual);
 
@@ -1392,7 +1392,7 @@ void test_xlsx_view_cursor_per_sheet()
     assert(sv);
 
     // On Sheet2, the cursor should be set to D8.
-    expected = to_rc_range(resolver->resolve_range(ORCUS_ASCII("D8")));
+    expected = to_rc_range(resolver->resolve_range("D8"));
     actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
     assert(expected == actual);
 
@@ -1400,7 +1400,7 @@ void test_xlsx_view_cursor_per_sheet()
     assert(sv);
 
     // On Sheet3, the cursor should be set to D2.
-    expected = to_rc_range(resolver->resolve_range(ORCUS_ASCII("D2")));
+    expected = to_rc_range(resolver->resolve_range("D2"));
     actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
     assert(expected == actual);
 
@@ -1408,7 +1408,7 @@ void test_xlsx_view_cursor_per_sheet()
     assert(sv);
 
     // On Sheet4, the cursor should be set to C5:E8.
-    expected = to_rc_range(resolver->resolve_range(ORCUS_ASCII("C5:E8")));
+    expected = to_rc_range(resolver->resolve_range("C5:E8"));
     actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
     assert(expected == actual);
 }
@@ -1448,7 +1448,7 @@ void test_xlsx_view_cursor_split_pane()
     assert(sv->get_split_pane().ver_split == 1800.0);
 
     {
-        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address(ORCUS_ASCII("F6")));
+        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address("F6"));
         spreadsheet::address_t actual = sv->get_split_pane().top_left_cell;
         assert(expected == actual);
     }
@@ -1464,7 +1464,7 @@ void test_xlsx_view_cursor_split_pane()
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel, es.sel_n));
+        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range({es.sel, es.sel_n}));
         spreadsheet::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
@@ -1478,7 +1478,7 @@ void test_xlsx_view_cursor_split_pane()
     assert(sv->get_split_pane().ver_split == 2400.0);
 
     {
-        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address(ORCUS_ASCII("F8")));
+        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address("F8"));
         spreadsheet::address_t actual = sv->get_split_pane().top_left_cell;
         assert(expected == actual);
     }
@@ -1494,7 +1494,7 @@ void test_xlsx_view_cursor_split_pane()
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel, es.sel_n));
+        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range({es.sel, es.sel_n}));
         spreadsheet::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
@@ -1508,7 +1508,7 @@ void test_xlsx_view_cursor_split_pane()
     assert(sv->get_split_pane().ver_split == 1500.0);
 
     {
-        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address(ORCUS_ASCII("A5")));
+        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address("A5"));
         spreadsheet::address_t actual = sv->get_split_pane().top_left_cell;
         assert(expected == actual);
     }
@@ -1522,7 +1522,7 @@ void test_xlsx_view_cursor_split_pane()
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel, es.sel_n));
+        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range({es.sel, es.sel_n}));
         spreadsheet::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
@@ -1536,7 +1536,7 @@ void test_xlsx_view_cursor_split_pane()
     assert(sv->get_split_pane().ver_split == 0.0);
 
     {
-        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address(ORCUS_ASCII("E1")));
+        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address("E1"));
         spreadsheet::address_t actual = sv->get_split_pane().top_left_cell;
         assert(expected == actual);
     }
@@ -1550,7 +1550,7 @@ void test_xlsx_view_cursor_split_pane()
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel, es.sel_n));
+        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range({es.sel, es.sel_n}));
         spreadsheet::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
@@ -1581,7 +1581,7 @@ void test_xlsx_view_frozen_pane()
     {
         // Sheet1 is vertically frozen between columns A and B.
         const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
-        assert(fp.top_left_cell == to_rc_address(resolver->resolve_address(ORCUS_ASCII("B1"))));
+        assert(fp.top_left_cell == to_rc_address(resolver->resolve_address("B1")));
         assert(fp.visible_columns == 1);
         assert(fp.visible_rows == 0);
         assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::top_right);
@@ -1593,7 +1593,7 @@ void test_xlsx_view_frozen_pane()
     {
         // Sheet2 is horizontally frozen between rows 1 and 2.
         const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
-        assert(fp.top_left_cell == to_rc_address(resolver->resolve_address(ORCUS_ASCII("A2"))));
+        assert(fp.top_left_cell == to_rc_address(resolver->resolve_address("A2")));
         assert(fp.visible_columns == 0);
         assert(fp.visible_rows == 1);
         assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_left);
@@ -1605,7 +1605,7 @@ void test_xlsx_view_frozen_pane()
     {
         // Sheet3 is frozen both horizontally and vertically.
         const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
-        assert(fp.top_left_cell == to_rc_address(resolver->resolve_address(ORCUS_ASCII("E9"))));
+        assert(fp.top_left_cell == to_rc_address(resolver->resolve_address("E9")));
         assert(fp.visible_columns == 4);
         assert(fp.visible_rows == 8);
         assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_right);

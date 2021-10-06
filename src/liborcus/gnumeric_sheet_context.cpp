@@ -583,8 +583,7 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
                             case XML_Area:
                             {
                                 spreadsheet::range_t range = to_rc_range(
-                                    resolver->resolve_range(
-                                        attr.value.data(), attr.value.size()));
+                                    resolver->resolve_range(attr.value));
                                 mp_auto_filter->set_range(range);
                             }
                             break;

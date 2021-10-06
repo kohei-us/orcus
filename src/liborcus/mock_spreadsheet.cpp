@@ -151,7 +151,7 @@ import_reference_resolver::~import_reference_resolver()
 {
 }
 
-spreadsheet::src_address_t import_reference_resolver::resolve_address(const char*, size_t)
+spreadsheet::src_address_t import_reference_resolver::resolve_address(std::string_view)
 {
     spreadsheet::src_address_t ret;
     ret.column = ret.row = ret.sheet = 0;
@@ -159,7 +159,7 @@ spreadsheet::src_address_t import_reference_resolver::resolve_address(const char
     return ret;
 }
 
-spreadsheet::src_range_t import_reference_resolver::resolve_range(const char*, size_t)
+spreadsheet::src_range_t import_reference_resolver::resolve_range(std::string_view)
 {
     spreadsheet::src_range_t ret;
     ret.first.column = ret.first.row = ret.last.column = ret.last.row = 0;

@@ -828,7 +828,7 @@ void ods_content_xml_context::end_spreadsheet()
                      << endl;
             }
 
-            ss::src_address_t base = resolver->resolve_address(data.base.data(), data.base.size());
+            ss::src_address_t base = resolver->resolve_address(data.base);
 
             ss::iface::import_named_expression* named_exp = nullptr;
 

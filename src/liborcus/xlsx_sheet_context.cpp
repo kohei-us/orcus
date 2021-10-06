@@ -331,7 +331,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
                     pstring ref = for_each(
                         attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_ref)).get_value();
 
-                    spreadsheet::src_range_t range = m_resolver.resolve_range(ref.get(), ref.size());
+                    spreadsheet::src_range_t range = m_resolver.resolve_range(ref);
                     sheet_props->set_merge_cell_range(to_rc_range(range));
                 }
                 break;
@@ -473,8 +473,7 @@ void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, c
                 m_cur_formula.type = formula_type::get().find(attr.value.data(), attr.value.size());
                 break;
             case XML_ref:
-                m_cur_formula.ref = to_rc_range(
-                    m_resolver.resolve_range(attr.value.data(), attr.value.size()));
+                m_cur_formula.ref = to_rc_range(m_resolver.resolve_range(attr.value));
                 break;
             case XML_si:
                 m_cur_formula.shared_id = to_long(attr.value);
@@ -569,7 +568,7 @@ void xlsx_sheet_context::start_element_selection(
                 {
                     // Single cell address for a non-range cursor, or range
                     // address if a range selection is present.
-                    range = to_rc_range(m_resolver.resolve_range(attr.value.data(), attr.value.size()));
+                    range = to_rc_range(m_resolver.resolve_range(attr.value));
                     break;
                 }
                 default:
@@ -617,7 +616,7 @@ void xlsx_sheet_context::start_element_pane(
                 ysplit = to_double(attr.value);
                 break;
             case XML_topLeftCell:
-                top_left_cell = to_rc_address(m_resolver.resolve_address(attr.value.data(), attr.value.size()));
+                top_left_cell = to_rc_address(m_resolver.resolve_address(attr.value));
                 break;
             case XML_activePane:
                 active_pane = sheet_pane::get().find(attr.value.data(), attr.value.size());
@@ -671,8 +670,7 @@ void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, cons
             case XML_r:
                 // cell address in A1 notation.
                 address = to_rc_address(
-                    m_resolver.resolve_address(
-                        attr.value.data(), attr.value.size()));
+                    m_resolver.resolve_address(attr.value));
 
                 contains_address = true;
                 break;
