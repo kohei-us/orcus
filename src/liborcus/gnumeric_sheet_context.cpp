@@ -833,7 +833,7 @@ void gnumeric_sheet_context::end_expression()
         mp_sheet->get_conditional_format();
     if (cond_format)
     {
-        cond_format->set_formula(chars.get(), chars.size());
+        cond_format->set_formula(chars);
         cond_format->commit_condition();
     }
 }

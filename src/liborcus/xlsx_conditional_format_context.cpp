@@ -317,7 +317,7 @@ struct cfRule_attr_parser
                 {
                     m_cond_format.set_operator(spreadsheet::condition_operator_t::top_n);
                 }
-                m_cond_format.set_formula(m_rank.get(), m_rank.size());
+                m_cond_format.set_formula(m_rank);
             break;
             case uniqueValues:
                 m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
@@ -330,22 +330,22 @@ struct cfRule_attr_parser
             case containsText:
                 m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
                 m_cond_format.set_operator(spreadsheet::condition_operator_t::contains);
-                m_cond_format.set_formula(m_text.get(), m_text.size());
+                m_cond_format.set_formula(m_text);
             break;
             case notContainsText:
                 m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
                 m_cond_format.set_operator(spreadsheet::condition_operator_t::not_contains);
-                m_cond_format.set_formula(m_text.get(), m_text.size());
+                m_cond_format.set_formula(m_text);
             break;
             case beginsWith:
                 m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
                 m_cond_format.set_operator(spreadsheet::condition_operator_t::begins_with);
-                m_cond_format.set_formula(m_text.get(), m_text.size());
+                m_cond_format.set_formula(m_text);
             break;
             case endsWith:
                 m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
                 m_cond_format.set_operator(spreadsheet::condition_operator_t::ends_with);
-                m_cond_format.set_formula(m_text.get(), m_text.size());
+                m_cond_format.set_formula(m_text);
             break;
             case containsBlanks:
                 m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
@@ -399,7 +399,7 @@ struct cfRule_attr_parser
                 if (!m_std_dev.empty())
                 {
                     // TODO: we need a way to mark that as std dev in the interfaces
-                    m_cond_format.set_formula(m_std_dev.get(), m_std_dev.size());
+                    m_cond_format.set_formula(m_std_dev);
                 }
                 if (m_above_average)
                 {
@@ -455,7 +455,7 @@ struct conditional_formatting_attr_parser
         switch (attr.name)
         {
             case XML_sqref:
-                m_cond_format.set_range(attr.value.data(), attr.value.size());
+                m_cond_format.set_range(attr.value);
             break;
             default:
             break;
@@ -626,7 +626,7 @@ struct icon_set_attr_parser
     {
         cond_format.set_show_value(m_show_value);
         cond_format.set_iconset_reverse(m_reverse);
-        cond_format.set_icon_name(icon_name.get(), icon_name.size());
+        cond_format.set_icon_name(icon_name);
     }
 
 private:
@@ -736,7 +736,7 @@ namespace {
 void import_cfvo(const cfvo_values& values, spreadsheet::iface::import_conditional_format& cond_format)
 {
     if (!values.m_value.empty())
-        cond_format.set_formula(values.m_value.get(),values.m_value.size());
+        cond_format.set_formula(values.m_value);
     switch (values.m_type)
     {
         case cfvo_num:
@@ -786,7 +786,7 @@ bool xlsx_conditional_format_context::end_element(xmlns_id_t ns, xml_token_t nam
         break;
         case XML_formula:
         {
-            m_cond_format.set_formula(m_cur_str.get(), m_cur_str.size());
+            m_cond_format.set_formula(m_cur_str);
             m_cond_format.commit_condition();
         }
         break;

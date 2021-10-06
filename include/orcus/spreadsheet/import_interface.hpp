@@ -429,7 +429,7 @@ public:
     /**
      * Sets the formula, value or string of the current condition.
      */
-    virtual void set_formula(const char* p, size_t n) = 0;
+    virtual void set_formula(std::string_view formula) = 0;
 
     /**
      * Sets the type for the formula, value or string of the current condition.
@@ -451,7 +451,7 @@ public:
      * Name of the icons to use in the current entry.
      * only valid for type = iconset
      */
-    virtual void set_icon_name(const char* p, size_t n) = 0;
+    virtual void set_icon_name(std::string_view name) = 0;
 
     /**
      * Use a gradient for the current entry.
@@ -518,7 +518,7 @@ public:
 
     virtual void commit_entry() = 0;
 
-    virtual void set_range(const char* p, size_t n) = 0;
+    virtual void set_range(std::string_view range) = 0;
 
     virtual void set_range(row_t row_start, col_t col_start,
             row_t row_end, col_t col_end) = 0;
