@@ -28,8 +28,6 @@ class ORCUS_DLLPUBLIC orcus_xml
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
-    void read_impl(std::string_view strm);
-
 public:
     orcus_xml(const orcus_xml&) = delete;
     orcus_xml& operator= (const orcus_xml&) = delete;
@@ -107,40 +105,36 @@ public:
     /**
      * Read the stream containing the source XML document.
      *
-     * @param p pointer to the buffer containing the source XML document.
-     * @param n size of the buffer.
+     * @param stream stream containing the content of the source XML document.
      */
-    void read_stream(const char* p, size_t n);
+    void read_stream(std::string_view stream);
 
     /**
      * Read an XML stream that contains an entire set of mapping rules.
      *
      * This method also inserts all necessary sheets into the document model.
      *
-     * @param p pointer to the buffer that contains the XML string.
-     * @param n size of the buffer.
+     * @param stream stream containing the XML string.
      */
-    void read_map_definition(const char* p, size_t n);
+    void read_map_definition(std::string_view stream);
 
     /**
      * Read a stream containing the source XML document, automatically detect
      * all linkable ranges and import them one range per sheet.
      *
-     * @param p pointer to the buffer that contains the source XML document.
-     * @param n size of the buffer.
+     * @param stream stream containing the source XML document.
      */
-    void detect_map_definition(const char* p, size_t n);
+    void detect_map_definition(std::string_view stream);
 
     /**
      * Read a stream containing the source XML document, automatically detect
      * all linkable ranges, and write a map definition file depicting the
      * detected ranges.
      *
-     * @param p pointer to the buffer that contains the source XML document.
-     * @param n size of the buffer.
+     * @param stream stream containing the source XML document.
      * @param out output stream to write the map definition file to.
      */
-    void write_map_definition(const char* p, size_t n, std::ostream& out) const;
+    void write_map_definition(std::string_view stream, std::ostream& out) const;
 
     /**
      * Write the linked cells and ranges in the spreadsheet document as an XML
@@ -149,12 +143,10 @@ public:
      * Note that this requires the source XML document stream, as it re-uses
      * parts of the source stream.
      *
-     * @param p_in pointer to the buffer that contains the source XML
-     *             document.
-     * @param n_in size of the buffer containing the source XML document.
+     * @param stream stream containing the source XML document.
      * @param out output stream to write the XML document to.
      */
-    void write(const char* p_in, size_t n_in, std::ostream& out) const;
+    void write(std::string_view stream, std::ostream& out) const;
 };
 
 }

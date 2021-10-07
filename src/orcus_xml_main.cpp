@@ -257,7 +257,7 @@ int main(int argc, char** argv)
                 output_stream os(vm);
                 xmlns_repository repo;
                 orcus_xml app(repo, nullptr, nullptr);
-                app.write_map_definition(content.data(), content.size(), os.get());
+                app.write_map_definition(content.str(), os.get());
                 return EXIT_SUCCESS;
             }
             default:
@@ -273,14 +273,14 @@ int main(int argc, char** argv)
         orcus_xml app(repo, &import_fact, &export_fact);
 
         if (map_path.empty())
-            app.detect_map_definition(content.data(), content.size());
+            app.detect_map_definition(content.str());
         else
         {
             file_content map_content(map_path.string().data());
-            app.read_map_definition(map_content.data(), map_content.size());
+            app.read_map_definition(map_content.str());
         }
 
-        app.read_stream(content.data(), content.size());
+        app.read_stream(content.str());
 
         switch (mode)
         {
@@ -327,7 +327,7 @@ int main(int argc, char** argv)
                 }
 
                 // Write transformed xml content to file.
-                app.write(content.data(), content.size(), file);
+                app.write(content.str(), file);
                 break;
             }
             default:

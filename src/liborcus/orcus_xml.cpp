@@ -536,15 +536,9 @@ void orcus_xml::append_sheet(std::string_view name)
     mp_impl->im_factory->append_sheet(mp_impl->sheet_count++, name);
 }
 
-void orcus_xml::read_stream(const char* p, size_t n)
+void orcus_xml::read_stream(std::string_view stream)
 {
-    pstring strm(p, n);
-    read_impl(strm);
-}
-
-void orcus_xml::read_impl(std::string_view strm)
-{
-    if (strm.empty())
+    if (stream.empty())
         return;
 
     // Insert the range headers and reset the row size counters.
@@ -585,7 +579,7 @@ void orcus_xml::read_impl(std::string_view strm)
     xml_data_sax_handler handler(
        *mp_impl->im_factory, mp_impl->link_positions, mp_impl->map_tree);
 
-    sax_ns_parser<xml_data_sax_handler> parser(strm.data(), strm.size(), ns_cxt, handler);
+    sax_ns_parser<xml_data_sax_handler> parser(stream.data(), stream.size(), ns_cxt, handler);
     parser.parse();
 }
 
@@ -602,13 +596,13 @@ void dump_links(const xml_map_tree::const_element_list_type& links)
 
 #endif
 
-void orcus_xml::write(const char* p_in, size_t n_in, std::ostream& out) const
+void orcus_xml::write(std::string_view stream, std::ostream& out) const
 {
     if (!mp_impl->ex_factory)
         // We can't export data witout export factory.
         return;
 
-    if (!n_in)
+    if (stream.empty())
         // Source input stream is empty.
         return;
 
@@ -627,9 +621,7 @@ void orcus_xml::write(const char* p_in, size_t n_in, std::ostream& out) const
     dump_links(links);
 #endif
 
-    pstring strm(p_in, n_in);
-
-    const char* p0 = p_in;
+    const char* p0 = stream.data();
     std::ptrdiff_t begin_pos = 0;
 
     for (; it != it_end; ++it)
@@ -653,7 +645,7 @@ void orcus_xml::write(const char* p_in, size_t n_in, std::ostream& out) const
 
             write_opening_element(out, elem, fact, false);
             sheet->write_string(out, pos.row, pos.col);
-            out << pstring(p0+close_begin, close_end-close_begin); // closing element.
+            out << std::string_view(p0+close_begin, close_end-close_begin); // closing element.
             begin_pos = close_end;
         }
         else if (elem.range_parent)
@@ -671,11 +663,11 @@ void orcus_xml::write(const char* p_in, size_t n_in, std::ostream& out) const
             std::ptrdiff_t close_end   = elem.stream_pos.close_end;
 
             assert(open_begin > begin_pos);
-            out << pstring(p0+begin_pos, open_begin-begin_pos); // stream since last linked element.
+            out << std::string_view(p0+begin_pos, open_begin-begin_pos); // stream since last linked element.
 
             write_opening_element(out, elem, fact, false);
             write_range_reference(out, elem, fact);
-            out << pstring(p0+close_begin, close_end-close_begin); // closing element.
+            out << std::string_view(p0+close_begin, close_end-close_begin); // closing element.
             begin_pos = close_end;
         }
         else if (elem.unlinked_attribute_anchor())
@@ -689,7 +681,7 @@ void orcus_xml::write(const char* p_in, size_t n_in, std::ostream& out) const
             bool self_close = elem.stream_pos.open_begin == elem.stream_pos.close_begin;
 
             assert(open_begin > begin_pos);
-            out << pstring(p0+begin_pos, open_begin-begin_pos); // stream since last linked element.
+            out << std::string_view(p0+begin_pos, open_begin-begin_pos); // stream since last linked element.
 
             write_opening_element(out, elem, fact, self_close);
             begin_pos = open_end;
@@ -699,7 +691,7 @@ void orcus_xml::write(const char* p_in, size_t n_in, std::ostream& out) const
     }
 
     // Flush the remaining stream.
-    out << pstring(p0+begin_pos, strm.size()-begin_pos);
+    out << std::string_view(p0+begin_pos, stream.size()-begin_pos);
 }
 
 }

@@ -103,8 +103,8 @@ void test_mapped_xml_import()
         // Parse the map file to define map rules, and parse the data file.
         orcus_xml app(repo, &import_fact, &export_fact);
         file_content map_content(map_file.string().data());
-        app.read_map_definition(map_content.data(), map_content.size());
-        app.read_stream(data_strm.data(), data_strm.size());
+        app.read_map_definition(map_content.str());
+        app.read_stream(data_strm);
 
         // Zero the source data stream to make sure it's completely erased off
         // memory.
@@ -139,7 +139,7 @@ void test_mapped_xml_import()
                 std::string data_strm_dup{content.str()};
                 std::ofstream file(out_file);
                 assert(file);
-                app.write(data_strm_dup.data(), data_strm_dup.size(), file);
+                app.write(data_strm_dup, file);
             }
 
             // Compare the logical xml content of the output xml with the
@@ -202,8 +202,8 @@ void test_mapped_xml_import_no_map_definition()
 
             orcus_xml app(repo, &import_fact, nullptr);
 
-            app.detect_map_definition(content.data(), content.size());
-            app.read_stream(content.data(), content.size());
+            app.detect_map_definition(content.str());
+            app.read_stream(content.str());
 
             test::verify_content(__FILE__, __LINE__, doc, expected.str());
         }
@@ -217,10 +217,10 @@ void test_mapped_xml_import_no_map_definition()
             orcus_xml app(repo, &import_fact, nullptr);
 
             std::ostringstream os;
-            app.write_map_definition(content.data(), content.size(), os);
+            app.write_map_definition(content.str(), os);
             std::string map_def = os.str();
-            app.read_map_definition(map_def.data(), map_def.size());
-            app.read_stream(content.data(), content.size());
+            app.read_map_definition(map_def);
+            app.read_stream(content.str());
 
             test::verify_content(__FILE__, __LINE__, doc, expected.str());
         }
@@ -253,7 +253,7 @@ void test_invalid_map_definition()
 
         try
         {
-            app.read_map_definition(content.data(), content.size());
+            app.read_map_definition(content.str());
             assert(!"We were expecting an exception, but didn't get one.");
         }
         catch (const invalid_map_error& e)
