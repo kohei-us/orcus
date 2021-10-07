@@ -208,10 +208,9 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             }
 
             if (!table_name.empty())
-                m_pcache.set_worksheet_source(table_name.data(), table_name.size());
+                m_pcache.set_worksheet_source(table_name);
             else
-                m_pcache.set_worksheet_source(
-                    ref.get(), ref.size(), sheet_name.get(), sheet_name.size());
+                m_pcache.set_worksheet_source(ref, sheet_name);
             break;
         }
         case XML_cacheFields:
@@ -257,7 +256,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             );
 
             // TODO : Handle number format ID here.
-            m_pcache.set_field_name(field_name.get(), field_name.size());
+            m_pcache.set_field_name(field_name);
 
             if (get_config().debug)
             {
@@ -609,7 +608,7 @@ void xlsx_pivot_cache_def_context::start_element_s(
                 cout << "    * field member: " << value << endl;
 
             m_field_item_used = true;
-            m_pcache.set_field_item_string(value.get(), value.size());
+            m_pcache.set_field_item_string(value);
             break;
         }
         case XML_groupItems:
@@ -621,7 +620,7 @@ void xlsx_pivot_cache_def_context::start_element_s(
 
             m_field_item_used = true;
             if (m_pcache_field_group)
-                m_pcache_field_group->set_field_item_string(value.get(), value.size());
+                m_pcache_field_group->set_field_item_string(value);
             break;
         }
         default:

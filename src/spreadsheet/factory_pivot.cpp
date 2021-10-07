@@ -26,9 +26,9 @@ class import_pc_field_group : public iface::import_pivot_cache_field_group
     pivot_cache_item_t m_current_field_item;
 
 private:
-    std::string_view intern(const char* p, size_t n)
+    std::string_view intern(std::string_view s)
     {
-        return m_doc.get_string_pool().intern({p, n}).first;
+        return m_doc.get_string_pool().intern(s).first;
     }
 
     range_grouping_type& get_range_grouping()
@@ -53,10 +53,10 @@ public:
         b2g.push_back(group_item_index);
     }
 
-    void set_field_item_string(const char* p, size_t n) override
+    void set_field_item_string(std::string_view value) override
     {
         m_current_field_item.type = pivot_cache_item_t::item_type::character;
-        m_current_field_item.value = intern(p, n);
+        m_current_field_item.value = intern(value);
     }
 
     void set_field_item_numeric(double v) override
@@ -116,9 +116,9 @@ public:
     }
 };
 
-std::string_view import_pivot_cache_def::intern(const char* p, size_t n)
+std::string_view import_pivot_cache_def::intern(std::string_view s)
 {
-    return m_doc.get_string_pool().intern({p, n}).first;
+    return m_doc.get_string_pool().intern(s).first;
 }
 
 import_pivot_cache_def::import_pivot_cache_def(document& doc) : m_doc(doc) {}
@@ -131,8 +131,7 @@ void import_pivot_cache_def::create_cache(pivot_cache_id_t cache_id)
     m_cache = std::make_unique<pivot_cache>(cache_id, m_doc.get_string_pool());
 }
 
-void import_pivot_cache_def::set_worksheet_source(
-    const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name)
+void import_pivot_cache_def::set_worksheet_source(std::string_view ref, std::string_view sheet_name)
 {
     assert(m_cache);
 
@@ -141,25 +140,25 @@ void import_pivot_cache_def::set_worksheet_source(
     assert(resolver);
 
     m_src_type = worksheet;
-    m_src_sheet_name = intern(sheet_name, n_sheet_name);
+    m_src_sheet_name = intern(sheet_name);
 
-    ixion::formula_name_t fn = resolver->resolve({ref, n_ref}, ixion::abs_address_t(0,0,0));
+    ixion::formula_name_t fn = resolver->resolve(ref, ixion::abs_address_t(0,0,0));
 
     if (fn.type != ixion::formula_name_t::range_reference)
     {
         std::ostringstream os;
-        os << std::string_view(ref, n_ref) << " is not a valid range.";
+        os << "'" << ref << "' is not a valid range.";
         throw xml_structure_error(os.str());
     }
 
     m_src_range = std::get<ixion::range_t>(fn.value).to_abs(ixion::abs_address_t(0,0,0));
 }
 
-void import_pivot_cache_def::set_worksheet_source(const char* table_name, size_t n_table_name)
+void import_pivot_cache_def::set_worksheet_source(std::string_view table_name)
 {
     assert(m_cache);
 
-    m_src_table_name = intern(table_name, n_table_name);
+    m_src_table_name = intern(table_name);
 }
 
 void import_pivot_cache_def::set_field_count(size_t n)
@@ -167,9 +166,9 @@ void import_pivot_cache_def::set_field_count(size_t n)
     m_current_fields.reserve(n);
 }
 
-void import_pivot_cache_def::set_field_name(const char* p, size_t n)
+void import_pivot_cache_def::set_field_name(std::string_view name)
 {
-    m_current_field.name = intern(p, n);
+    m_current_field.name = intern(name);
 }
 
 iface::import_pivot_cache_field_group* import_pivot_cache_def::create_field_group(size_t base_index)
@@ -205,10 +204,10 @@ void import_pivot_cache_def::commit_field()
     m_current_fields.push_back(std::move(m_current_field));
 }
 
-void import_pivot_cache_def::set_field_item_string(const char* p, size_t n)
+void import_pivot_cache_def::set_field_item_string(std::string_view value)
 {
     m_current_field_item.type = pivot_cache_item_t::item_type::character;
-    m_current_field_item.value = intern(p, n);
+    m_current_field_item.value = intern(value);
 }
 
 void import_pivot_cache_def::set_field_item_numeric(double v)

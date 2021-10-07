@@ -34,26 +34,18 @@ public:
      * Specify that the source data of this pivot cache is located on a local
      * worksheet.
      *
-     * @param ref pointer to the char array that contains the range string
-     *            specifying the source range.
-     *
-     * @param n_ref size of the aforementioned char array.
-     * @param sheet_name pointer to the char array that contains the name of
-     *                   the worksheet where the source data is located.
-     * @param n_sheet_name size of the aforementioned char array.
+     * @param ref range string specifying the source range.
+     * @param sheet_name name of the worksheet where the source data is located.
      */
-    virtual void set_worksheet_source(
-        const char* ref, size_t n_ref, const char* sheet_name, size_t n_sheet_name) = 0;
+    virtual void set_worksheet_source(std::string_view ref, std::string_view sheet_name) = 0;
 
     /**
      * Specify that the source data of this pivot cache is associated with a
      * table.
      *
-     * @param table_name pointer to the char array that contains the name of
-     *                   the table.
-     * @param n_table_name size of the aforementioned char array.
+     * @param table_name name of the table.
      */
-    virtual void set_worksheet_source(const char* table_name, size_t n_table_name) = 0;
+    virtual void set_worksheet_source(std::string_view table_name) = 0;
 
     /**
      * Set the total number of fields present in this pivot cache.
@@ -65,10 +57,9 @@ public:
     /**
      * Set the name of the field in the current field buffer.
      *
-     * @param p pointer to the char array that contains the field name.
-     * @param n size of the aforementioned char array.
+     * @param name field name.
      */
-    virtual void set_field_name(const char* p, size_t n) = 0;
+    virtual void set_field_name(std::string_view name) = 0;
 
     /**
      * Set the lowest value of the field in the current field buffer.
@@ -118,10 +109,9 @@ public:
     /**
      * Set a string value to the current field item buffer.
      *
-     * @param p pointer to the char array that contains the string value.
-     * @param n size of the aforementioned char array.
+     * @param value string value.
      */
-    virtual void set_field_item_string(const char* p, size_t n) = 0;
+    virtual void set_field_item_string(std::string_view value) = 0;
 
     /**
      * Set a numeric value to the current field item buffer.
@@ -185,10 +175,9 @@ public:
      * This method can be called either for a range group field or a non-range
      * one.
      *
-     * @param p pointer to a char array.
-     * @param n size of the array.
+     * @param value field item value.
      */
-    virtual void set_field_item_string(const char* p, size_t n) = 0;
+    virtual void set_field_item_string(std::string_view value) = 0;
 
     /**
      * Set an individual field item value that is of numeric type to the
