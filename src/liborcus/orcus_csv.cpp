@@ -135,15 +135,49 @@ private:
 
 }
 
+struct orcus_csv::impl
+{
+    spreadsheet::iface::import_factory* factory;
+
+    impl(spreadsheet::iface::import_factory* _factory) : factory(_factory) {}
+
+    void parse(std::string_view stream, const config& conf)
+    {
+        if (stream.empty())
+            return;
+
+        orcus_csv_handler handler(*factory, conf);
+        csv::parser_config config;
+        config.delimiters.push_back(',');
+        config.text_qualifier = '"';
+        csv_parser<orcus_csv_handler> parser(stream.data(), stream.size(), handler, config);
+        try
+        {
+            parser.parse();
+        }
+        catch (const max_row_size_reached&)
+        {
+            // The parser has decided to end the import due to the destination
+            // sheet being full.
+        }
+        catch (const csv::parse_error& e)
+        {
+            cout << "parse failed: " << e.what() << endl;
+        }
+    }
+};
+
 orcus_csv::orcus_csv(spreadsheet::iface::import_factory* factory) :
-    iface::import_filter(format_t::csv), mp_factory(factory) {}
+    iface::import_filter(format_t::csv),
+    mp_impl(std::make_unique<impl>(factory)) {}
+
+orcus_csv::~orcus_csv() {}
 
 void orcus_csv::read_file(const string& filepath)
 {
     file_content fc(filepath.data());
-    parse(fc.data(), fc.size());
-
-    mp_factory->finalize();
+    mp_impl->parse(fc.str(), get_config());
+    mp_impl->factory->finalize();
 }
 
 void orcus_csv::read_stream(std::string_view stream)
@@ -151,38 +185,13 @@ void orcus_csv::read_stream(std::string_view stream)
     if (stream.empty())
         return;
 
-    parse(stream.data(), stream.size());
-    mp_factory->finalize();
+    mp_impl->parse(stream, get_config());
+    mp_impl->factory->finalize();
 }
 
 std::string_view orcus_csv::get_name() const
 {
     return "csv";
-}
-
-void orcus_csv::parse(const char* content, size_t len)
-{
-    if (!len)
-        return;
-
-    orcus_csv_handler handler(*mp_factory, get_config());
-    csv::parser_config config;
-    config.delimiters.push_back(',');
-    config.text_qualifier = '"';
-    csv_parser<orcus_csv_handler> parser(content, len, handler, config);
-    try
-    {
-        parser.parse();
-    }
-    catch (const max_row_size_reached&)
-    {
-        // The parser has decided to end the import due to the destination
-        // sheet being full.
-    }
-    catch (const csv::parse_error& e)
-    {
-        cout << "parse failed: " << e.what() << endl;
-    }
 }
 
 }

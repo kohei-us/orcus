@@ -18,22 +18,21 @@ namespace spreadsheet { namespace iface {
 
 class ORCUS_DLLPUBLIC orcus_csv : public iface::import_filter
 {
-    orcus_csv(const orcus_csv&); // disabled
-    orcus_csv& operator=(const orcus_csv&); // disabled
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
 public:
+    orcus_csv() = delete;
+    orcus_csv(const orcus_csv&) = delete;
+    orcus_csv& operator=(const orcus_csv&) = delete;
+
     orcus_csv(spreadsheet::iface::import_factory* factory);
+    ~orcus_csv();
 
     virtual void read_file(const std::string& filepath) override;
     virtual void read_stream(std::string_view stream) override;
 
     virtual std::string_view get_name() const override;
-
-private:
-    void parse(const char* content, size_t len);
-
-private:
-    spreadsheet::iface::import_factory* mp_factory;
 };
 
 }
