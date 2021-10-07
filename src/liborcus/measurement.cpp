@@ -17,37 +17,24 @@
 
 namespace orcus {
 
-double to_double(const char* p, const char* p_end, const char** p_parse_ended)
+double to_double(std::string_view s, const char** p_parse_ended)
 {
-    double val = parse_numeric(p, p_end-p);
+    const char* p = s.data();
+    double val = parse_numeric(p, s.size());
     if (p_parse_ended)
         *p_parse_ended = p;
 
     return val;
 }
 
-double to_double(std::string_view s)
+long to_long(std::string_view s, const char** p_parse_ended)
 {
     const char* p = s.data();
-    const char* p_end = p + s.size();
-    return to_double(p, p_end, nullptr);
-}
-
-long to_long(const char* p, const char* p_end, const char** p_parse_ended)
-{
-    size_t n = p_end - p;
-    long val = parse_integer(p, n);
+    long val = parse_integer(p, s.size());
     if (p_parse_ended)
         *p_parse_ended = p;
 
     return val;
-}
-
-long to_long(std::string_view s)
-{
-    const char* p = s.data();
-    const char* p_end = p + s.size();
-    return to_long(p, p_end, nullptr);
 }
 
 bool to_bool(std::string_view s)

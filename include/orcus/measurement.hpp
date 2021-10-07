@@ -16,10 +16,8 @@
 
 namespace orcus {
 
-ORCUS_DLLPUBLIC double to_double(const char* p, const char* p_end, const char** p_parse_ended = nullptr);
-ORCUS_DLLPUBLIC double to_double(std::string_view s);
-ORCUS_DLLPUBLIC long to_long(const char* p, const char* p_end, const char** p_parse_ended = nullptr);
-ORCUS_DLLPUBLIC long to_long(std::string_view s);
+ORCUS_DLLPUBLIC double to_double(std::string_view s, const char** p_parse_ended = nullptr);
+ORCUS_DLLPUBLIC long to_long(std::string_view s, const char** p_parse_ended = nullptr);
 ORCUS_DLLPUBLIC bool to_bool(std::string_view s);
 
 /**

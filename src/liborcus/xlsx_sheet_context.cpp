@@ -50,26 +50,23 @@ public:
         if (attr.value.empty())
             return;
 
-        const char* p = attr.value.data();
-        const char* p_end = p + attr.value.size();
-
         switch (attr.name)
         {
             case XML_min:
-                m_min = to_long(p, p_end);
+                m_min = to_long(attr.value);
             break;
             case XML_max:
-                m_max = to_long(p, p_end);
+                m_max = to_long(attr.value);
             break;
             case XML_width:
-                m_width = to_double(p, p_end);
+                m_width = to_double(attr.value);
                 m_contains_width = true;
             break;
             case XML_customWidth:
-                m_custom_width = to_long(p, p_end);
+                m_custom_width = to_long(attr.value);
             break;
             case XML_hidden:
-                m_hidden = to_long(p, p_end);
+                m_hidden = to_long(attr.value);
             break;
             default:
                 ;

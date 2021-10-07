@@ -150,7 +150,8 @@ public:
             }
 
             const char* p_parse_ended = nullptr;
-            long pos = to_long(p_head, mp_cur, &p_parse_ended);
+            std::size_t n = mp_cur - p_head;
+            long pos = to_long({p_head, n}, &p_parse_ended);
 
             if (p_parse_ended != mp_cur)
                 // Parsing failed.

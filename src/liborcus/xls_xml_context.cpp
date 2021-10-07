@@ -193,8 +193,7 @@ void xls_xml_data_context::characters(const pstring& str, bool transient)
         }
         case ct_number:
         {
-            const char* p = str.get();
-            m_cell_value = to_double(p, p + str.size());
+            m_cell_value = to_double(str);
             break;
         }
         case ct_datetime:

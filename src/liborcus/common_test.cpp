@@ -158,9 +158,8 @@ void test_string2number_conversion()
     for (size_t i = 0, n = sizeof(tests)/sizeof(tests[0]); i < n; ++i)
     {
         const char* p = tests[i].str;
-        const char* p_end = p + strlen(p);
         const char* p_parse_ended = nullptr;
-        double converted = to_double(p, p_end, &p_parse_ended);
+        double converted = to_double(p, &p_parse_ended);
         cout << "original: '" << tests[i].str << "', converted: " << converted
             << ", expected: " << tests[i].expected << endl;
 
@@ -196,9 +195,8 @@ void test_string2long_conversion()
     for (size_t i = 0, n = sizeof(tests)/sizeof(tests[0]); i < n; ++i)
     {
         const char* p = tests[i].str;
-        const char* p_end = p + strlen(p);
         const char* p_parse_ended = nullptr;
-        long converted = to_long(p, p_end, &p_parse_ended);
+        long converted = to_long(p, &p_parse_ended);
         cout << "original: '" << tests[i].str << "', converted: " << converted
             << ", expected: " << tests[i].expected << endl;
 
