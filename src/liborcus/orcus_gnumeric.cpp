@@ -57,37 +57,36 @@ bool decompress_gzip(const char* buffer, size_t size, string& decompressed)
 
 }
 
-struct orcus_gnumeric_impl
+struct orcus_gnumeric::impl
 {
     xmlns_repository m_ns_repo;
     session_context m_cxt;
     spreadsheet::iface::import_factory* mp_factory;
 
-    orcus_gnumeric_impl(spreadsheet::iface::import_factory* im_factory) :
+    impl(spreadsheet::iface::import_factory* im_factory) :
         mp_factory(im_factory) {}
+
+    void read_content_xml(std::string_view s, const config& conf)
+    {
+        xml_stream_parser parser(conf, m_ns_repo, gnumeric_tokens, s.data(), s.size());
+
+        auto handler = std::make_unique<gnumeric_content_xml_handler>(
+            m_cxt, gnumeric_tokens, mp_factory);
+
+        parser.set_handler(handler.get());
+        parser.parse();
+    }
 };
 
 orcus_gnumeric::orcus_gnumeric(spreadsheet::iface::import_factory* factory) :
     iface::import_filter(format_t::gnumeric),
-    mp_impl(new orcus_gnumeric_impl(factory))
+    mp_impl(std::make_unique<impl>(factory))
 {
     mp_impl->m_ns_repo.add_predefined_values(NS_gnumeric_all);
 }
 
 orcus_gnumeric::~orcus_gnumeric()
 {
-    delete mp_impl;
-}
-
-void orcus_gnumeric::read_content_xml(const char* p, size_t size)
-{
-    xml_stream_parser parser(get_config(), mp_impl->m_ns_repo, gnumeric_tokens, p, size);
-
-    auto handler = std::make_unique<gnumeric_content_xml_handler>(
-        mp_impl->m_cxt, gnumeric_tokens, mp_impl->mp_factory);
-
-    parser.set_handler(handler.get());
-    parser.parse();
 }
 
 bool orcus_gnumeric::detect(const unsigned char* buffer, size_t size)
@@ -145,8 +144,7 @@ void orcus_gnumeric::read_stream(std::string_view stream)
     if (!decompress_gzip(stream.data(), stream.size(), file_content))
         return;
 
-    read_content_xml(file_content.c_str(), file_content.length());
-
+    mp_impl->read_content_xml(file_content, get_config());
     mp_impl->mp_factory->finalize();
 }
 

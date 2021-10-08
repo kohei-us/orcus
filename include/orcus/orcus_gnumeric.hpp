@@ -10,16 +10,21 @@
 
 #include "interface.hpp"
 
+#include <memory>
+
 namespace orcus {
 
 namespace spreadsheet { namespace iface { class import_factory; }}
 
-struct orcus_gnumeric_impl;
-
 class ORCUS_DLLPUBLIC orcus_gnumeric : public iface::import_filter
 {
-    orcus_gnumeric(const orcus_gnumeric&); // disabled
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 public:
+    orcus_gnumeric() = delete;
+    orcus_gnumeric(const orcus_gnumeric&) = delete;
+    orcus_gnumeric& operator=(const orcus_gnumeric&) = delete;
+
     orcus_gnumeric(spreadsheet::iface::import_factory* factory);
     ~orcus_gnumeric();
 
@@ -30,12 +35,6 @@ public:
     virtual void read_stream(std::string_view stream) override;
 
     virtual std::string_view get_name() const override;
-
-private:
-    void read_content_xml(const char* p, size_t size);
-
-private:
-    orcus_gnumeric_impl* mp_impl;
 };
 
 }
