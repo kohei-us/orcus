@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/mso/encryption_info.hpp"
-#include "orcus/sax_ns_parser.hpp"
-#include "orcus/xml_namespace.hpp"
-#include "orcus/base64.hpp"
+#include <orcus/sax_ns_parser.hpp>
+#include <orcus/xml_namespace.hpp>
+#include <orcus/base64.hpp>
+
+#include "mso/encryption_info.hpp"
 
 #define ORCUS_DEBUG_MSO_ENCRYPTION_INFO 1
 

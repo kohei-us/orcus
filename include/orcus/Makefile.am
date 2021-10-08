@@ -1,4 +1,4 @@
-SUBDIRS = detail mso spreadsheet
+SUBDIRS = detail spreadsheet
 
 liborcusdir = $(includedir)/liborcus-@ORCUS_API_VERSION@/orcus
 liborcus_HEADERS = \

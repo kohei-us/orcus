@@ -335,10 +335,10 @@ AC_CONFIG_FILES([Makefile
         include/Makefile
         include/orcus/Makefile
         include/orcus/detail/Makefile
-        include/orcus/mso/Makefile
         include/orcus/spreadsheet/Makefile
         src/Makefile
         src/include/Makefile
+        src/include/mso/Makefile
         src/liborcus/Makefile
         src/liborcus/constants.inl
         src/mso/Makefile

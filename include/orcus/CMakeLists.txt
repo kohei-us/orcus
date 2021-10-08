@@ -1,5 +1,4 @@
 add_subdirectory(detail)
-add_subdirectory(mso)
 add_subdirectory(spreadsheet)
 
 file(GLOB _HEADERS *.hpp)

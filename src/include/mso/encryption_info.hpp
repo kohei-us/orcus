@@ -8,7 +8,8 @@
 #ifndef __ORCUS_MSO_ENCRYPTION_INFO_HPP__
 #define __ORCUS_MSO_ENCRYPTION_INFO_HPP__
 
-#include "../env.hpp"
+#include <orcus/env.hpp>
+
 #include <cstdlib>
 
 namespace orcus { namespace mso {

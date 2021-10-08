@@ -144,6 +144,8 @@
             Name="Other Files"
             Filters=""></Folder>
     </CustomFolders>
+    <List Name="RTE">
+    </List>
     <Files AutoFolders="DirectoryView">
         <Folder Name="../benchmark">
             <F N="../benchmark/json_parser.cpp"/>
@@ -170,9 +172,6 @@
                 <Folder Name="detail">
                     <F N="../include/orcus/detail/parser_token_buffer.hpp"/>
                     <F N="../include/orcus/detail/thread.hpp"/>
-                </Folder>
-                <Folder Name="mso">
-                    <F N="../include/orcus/mso/encryption_info.hpp"/>
                 </Folder>
                 <Folder Name="spreadsheet">
                     <F N="../include/orcus/spreadsheet/auto_filter.hpp"/>
@@ -250,6 +249,9 @@
         </Folder>
         <Folder Name="../src">
             <Folder Name="include">
+                <Folder Name="mso">
+                    <F N="../src/include/mso/encryption_info.hpp"/>
+                </Folder>
                 <F N="../src/include/cpu_features.hpp"/>
                 <F N="../src/include/numeric_parser.hpp"/>
                 <F N="../src/include/test_global.hpp"/>

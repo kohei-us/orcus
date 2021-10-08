@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/mso/encryption_info.hpp"
-#include "orcus/stream.hpp"
+#include <orcus/stream.hpp>
+
+#include "mso/encryption_info.hpp"
 
 using namespace orcus;
 using namespace std;
