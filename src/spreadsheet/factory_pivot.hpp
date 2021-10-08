@@ -104,7 +104,7 @@ public:
 
     virtual void append_record_value_numeric(double v) override;
 
-    virtual void append_record_value_character(const char* p, size_t n) override;
+    virtual void append_record_value_character(std::string_view s) override;
 
     virtual void append_record_value_shared_item(size_t index) override;
 

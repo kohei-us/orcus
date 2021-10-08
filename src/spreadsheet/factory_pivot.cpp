@@ -269,9 +269,9 @@ void import_pivot_cache_records::append_record_value_numeric(double v)
     m_current_record.emplace_back(v);
 }
 
-void import_pivot_cache_records::append_record_value_character(const char* p, size_t n)
+void import_pivot_cache_records::append_record_value_character(std::string_view s)
 {
-    m_current_record.emplace_back(std::string_view{p, n});
+    m_current_record.emplace_back(s);
 }
 
 void import_pivot_cache_records::append_record_value_shared_item(size_t index)

@@ -1046,12 +1046,12 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
 
-            pstring cv = single_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
+            std::string_view cv = single_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
 
             if (get_config().debug)
                 cout << "  * s = '" << cv << "'" << endl;
 
-            m_pc_records.append_record_value_character(cv.get(), cv.size());
+            m_pc_records.append_record_value_character(cv);
             break;
         }
         case XML_x: // shared item index
