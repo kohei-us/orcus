@@ -113,7 +113,7 @@ bool parse_and_dump_structure(const file_content& content, const std::string& ou
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
     xml_structure_tree tree(cxt);
-    tree.parse(content.data(), content.size());
+    tree.parse(content.str());
 
     if (output.empty())
     {

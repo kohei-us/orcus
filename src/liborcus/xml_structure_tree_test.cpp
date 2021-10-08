@@ -52,7 +52,7 @@ std::unique_ptr<loaded_tree> load_tree(xmlns_repository& repo, fs::path& filepat
     ret->strm.load(filepath.string().data());
     assert(!ret->strm.empty());
     xml_structure_tree tree(ret->cxt);
-    tree.parse(ret->strm.data(), ret->strm.size());
+    tree.parse(ret->strm.str());
     ret->tree.swap(tree);
 
     return ret;

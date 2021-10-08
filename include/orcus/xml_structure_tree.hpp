@@ -177,7 +177,7 @@ public:
     xml_structure_tree(xml_structure_tree&& other);
     ~xml_structure_tree();
 
-    void parse(const char* p, size_t n);
+    void parse(std::string_view s);
 
     void dump_compact(std::ostream& os) const;
 

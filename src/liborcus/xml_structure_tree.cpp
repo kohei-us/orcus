@@ -527,10 +527,10 @@ xml_structure_tree::xml_structure_tree(xml_structure_tree&& other) :
 
 xml_structure_tree::~xml_structure_tree() {}
 
-void xml_structure_tree::parse(const char* p, size_t n)
+void xml_structure_tree::parse(std::string_view s)
 {
     xml_sax_handler hdl(mp_impl->m_pool);
-    sax_ns_parser<xml_sax_handler> parser(p, n, mp_impl->m_xmlns_cxt, hdl);
+    sax_ns_parser<xml_sax_handler> parser(s.data(), s.size(), mp_impl->m_xmlns_cxt, hdl);
     parser.parse();
     mp_impl->mp_root = hdl.release_root_element();
 }

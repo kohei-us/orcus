@@ -220,7 +220,7 @@ void orcus_xml::detect_map_definition(std::string_view stream)
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
     xml_structure_tree structure(cxt);
-    structure.parse(stream.data(), stream.size());
+    structure.parse(stream);
 
     // Register all namespace aliases first.
     for (const xmlns_id_t& ns : cxt.get_all_namespaces())
@@ -233,7 +233,7 @@ void orcus_xml::write_map_definition(std::string_view stream, std::ostream& out)
 {
     xmlns_context cxt = mp_impl->ns_repo.create_context();
     xml_structure_tree tree(cxt);
-    tree.parse(stream.data(), stream.size());
+    tree.parse(stream);
 
     xml_writer writer(mp_impl->ns_repo, out);
     xmlns_id_t default_ns = writer.add_namespace("", "https://gitlab.com/orcus/orcus/xml-map-definition");
