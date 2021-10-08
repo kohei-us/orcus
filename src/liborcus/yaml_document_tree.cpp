@@ -541,15 +541,10 @@ document_tree::document_tree(document_tree&& other) :
 
 document_tree::~document_tree() {}
 
-void document_tree::load(const std::string& strm)
-{
-    load(strm.data(), strm.size());
-}
-
-void document_tree::load(const char* p, size_t n)
+void document_tree::load(std::string_view s)
 {
     handler hdl;
-    yaml_parser<handler> parser(p, n, hdl);
+    yaml_parser<handler> parser(s.data(), s.size(), hdl);
     parser.parse();
     hdl.swap(mp_impl->m_docs);
 }

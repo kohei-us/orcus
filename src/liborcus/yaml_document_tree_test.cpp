@@ -65,7 +65,7 @@ yaml::document_tree load_doc(const char* filepath)
     file_content strm(filepath);
     cout << strm.str() << endl;
     yaml::document_tree doc;
-    doc.load(strm.data(), strm.size());
+    doc.load(strm.str());
 
     return doc;
 }
@@ -94,7 +94,7 @@ void test_yaml_invalids()
 
         try
         {
-            doc.load(strm.data(), strm.size());
+            doc.load(strm.str());
             assert(!"yaml::parse_error was not thrown, but expected to be.");
         }
         catch (const yaml::parse_error&)

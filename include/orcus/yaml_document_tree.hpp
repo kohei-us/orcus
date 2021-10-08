@@ -91,10 +91,7 @@ public:
     document_tree(document_tree&& other);
     ~document_tree();
 
-
-    void load(const std::string& strm);
-
-    void load(const char* p, size_t n);
+    void load(std::string_view s);
 
     size_t get_document_count() const;
 

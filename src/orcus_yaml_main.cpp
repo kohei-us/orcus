@@ -145,7 +145,7 @@ std::unique_ptr<yaml::document_tree> load_doc(const char* p, size_t n)
     std::unique_ptr<yaml::document_tree> doc(std::make_unique<yaml::document_tree>());
     try
     {
-        doc->load(p, n);
+        doc->load({p, n});
     }
     catch (const yaml::parse_error& e)
     {

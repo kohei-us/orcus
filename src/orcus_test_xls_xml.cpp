@@ -129,7 +129,7 @@ void update_config(spreadsheet::document& doc, const string& path)
 
         yaml::document_tree config;
         file_content content(path.data());
-        config.load(content.data(), content.size());
+        config.load(content.str());
         yaml::const_node root = config.get_document_root(0);
         std::vector<yaml::const_node> keys = root.keys();
         for (size_t i = 0; i < keys.size(); ++i)
