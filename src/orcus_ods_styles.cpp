@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     try
     {
         file_content content(argv[1]);
-        import_ods::read_styles(content.data(), content.size(), &istyles);
+        import_ods::read_styles(content.str(), &istyles);
     }
     catch(std::exception& ex)
     {

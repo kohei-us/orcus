@@ -18,13 +18,12 @@ namespace spreadsheet { namespace iface {
 
 class ORCUS_DLLPUBLIC import_ods
 {
-private:
-    import_ods(); // deleted
-    import_ods(const import_ods&); // deleted
-    import_ods& operator=(const import_ods&); // deleted
-
 public:
-    static void read_styles(const char* p, size_t n, spreadsheet::iface::import_styles* data);
+    import_ods() = delete;
+    import_ods(const import_ods&) = delete;
+    import_ods& operator=(const import_ods&) = delete;
+
+    static void read_styles(std::string_view s, spreadsheet::iface::import_styles* data);
 };
 
 }

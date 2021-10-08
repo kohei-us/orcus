@@ -21,12 +21,12 @@
 
 namespace orcus {
 
-void import_ods::read_styles(const char* p, size_t n, spreadsheet::iface::import_styles* styles)
+void import_ods::read_styles(std::string_view s, spreadsheet::iface::import_styles* styles)
 {
     if(!styles)
         return;
 
-    if (!p || !n)
+    if (s.empty())
         return;
 
     session_context cxt;
@@ -41,7 +41,7 @@ void import_ods::read_styles(const char* p, size_t n, spreadsheet::iface::import
     orcus::config config(format_t::ods);
     xml_stream_parser parser(
         config, ns_repo, odf_tokens,
-        p, n);
+        s.data(), s.size());
     parser.set_handler(&stream_handler);
     parser.parse();
 }
