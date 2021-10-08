@@ -17,12 +17,12 @@
 #include <locale>
 #include <codecvt>
 #include <iostream>
+#include <filesystem>
 
-#include <boost/filesystem.hpp>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 namespace bip = boost::interprocess;
 
 namespace orcus {
@@ -152,9 +152,9 @@ struct file_content::impl
 
     impl() : content_size(0), content(nullptr) {}
 
-    impl(const char* filepath) :
+    impl(std::string_view filepath) :
         content_size(fs::file_size(filepath)),
-        mapped_file(filepath, bip::read_only),
+        mapped_file(std::string{filepath}.c_str(), bip::read_only),
         mapped_region(mapped_file, bip::read_only, 0, content_size),
         content(nullptr)
     {
@@ -171,7 +171,7 @@ file_content::file_content(file_content&& other) :
     other.mp_impl = std::make_unique<impl>();
 }
 
-file_content::file_content(const char* filepath) :
+file_content::file_content(std::string_view filepath) :
     mp_impl(std::make_unique<impl>(filepath)) {}
 
 file_content::~file_content() {}
@@ -196,7 +196,7 @@ void file_content::swap(file_content& other)
     std::swap(mp_impl, other.mp_impl);
 }
 
-void file_content::load(const char* filepath)
+void file_content::load(std::string_view filepath)
 {
     file_content tmp(filepath);
     swap(tmp);

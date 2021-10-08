@@ -30,7 +30,7 @@ public:
 
     file_content();
     file_content(file_content&& other);
-    file_content(const char* filepath);
+    file_content(std::string_view filepath);
     ~file_content();
 
     /**
@@ -68,7 +68,7 @@ public:
      *
      * @param filepath path of the file to load from.
      */
-    void load(const char* filepath);
+    void load(std::string_view filepath);
 
     /**
      * Convert a non-utf-8 stream to a utf-8 one if the source stream contains
