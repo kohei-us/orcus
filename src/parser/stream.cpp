@@ -229,18 +229,17 @@ std::string_view file_content::str() const
 
 struct memory_content::impl
 {
-    const char* content;
-    size_t content_size;
+    std::string_view content;
     std::string buffer; // its own buffer in case of stream conversion.
 
-    impl() : content(nullptr), content_size(0) {}
-    impl(const char* p, size_t n) : content(p), content_size(n) {}
+    impl() {}
+    impl(std::string_view s) : content(s) {}
 };
 
 memory_content::memory_content() : mp_impl(std::make_unique<impl>()) {}
 
-memory_content::memory_content(const char* p, size_t n) :
-    mp_impl(std::make_unique<impl>(p, n)) {}
+memory_content::memory_content(std::string_view s) :
+    mp_impl(std::make_unique<impl>(s)) {}
 
 memory_content::memory_content(memory_content&& other) :
     mp_impl(std::move(other.mp_impl))
@@ -252,17 +251,17 @@ memory_content::~memory_content() {}
 
 const char* memory_content::data() const
 {
-    return mp_impl->content;
+    return mp_impl->content.data();
 }
 
 size_t memory_content::size() const
 {
-    return mp_impl->content_size;
+    return mp_impl->content.size();
 }
 
 bool memory_content::empty() const
 {
-    return mp_impl->content_size == 0;
+    return mp_impl->content.empty();
 }
 
 void memory_content::swap(memory_content& other)
@@ -272,7 +271,7 @@ void memory_content::swap(memory_content& other)
 
 void memory_content::convert_to_utf8()
 {
-    unicode_t ut = check_unicode_type(mp_impl->content, mp_impl->content_size);
+    unicode_t ut = check_unicode_type(mp_impl->content.data(), mp_impl->content.size());
 
     switch (ut)
     {
@@ -280,9 +279,8 @@ void memory_content::convert_to_utf8()
         case unicode_t::utf16_le:
         {
             // Convert to utf-8 stream, and reset the content pointer and size.
-            mp_impl->buffer = convert_utf16_to_utf8(mp_impl->content, mp_impl->content_size, ut);
-            mp_impl->content = mp_impl->buffer.data();
-            mp_impl->content_size = mp_impl->buffer.size();
+            mp_impl->buffer = convert_utf16_to_utf8(mp_impl->content.data(), mp_impl->content.size(), ut);
+            mp_impl->content = mp_impl->buffer;
             break;
         }
         default:
@@ -292,7 +290,7 @@ void memory_content::convert_to_utf8()
 
 std::string_view memory_content::str() const
 {
-    return {mp_impl->content, mp_impl->content_size};
+    return mp_impl->content;
 }
 
 line_with_offset::line_with_offset(std::string _line, size_t _line_number, size_t _offset_on_line) :

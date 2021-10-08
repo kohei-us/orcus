@@ -95,7 +95,7 @@ public:
     memory_content& operator= (const file_content&) = delete;
 
     memory_content();
-    memory_content(const char* p, size_t n);
+    memory_content(std::string_view s);
     memory_content(memory_content&& other);
     ~memory_content();
 
