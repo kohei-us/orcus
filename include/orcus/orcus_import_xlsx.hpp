@@ -19,14 +19,13 @@ namespace spreadsheet { namespace iface {
 
 class ORCUS_DLLPUBLIC import_xlsx
 {
-private:
-    import_xlsx(); // deleted
-    import_xlsx(const import_xlsx&); // deleted
-    import_xlsx& operator=(const import_xlsx&); // deleted
-
 public:
+    import_xlsx() = delete;
+    import_xlsx(const import_xlsx&) = delete;
+    import_xlsx& operator=(const import_xlsx&) = delete;
+
     static void read_table(
-        const char* p, size_t n,
+        std::string_view s,
         spreadsheet::iface::import_table& table,
         spreadsheet::iface::import_reference_resolver& resolver);
 };
