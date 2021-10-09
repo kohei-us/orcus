@@ -27,8 +27,8 @@ ORCUS_PSR_DLLPUBLIC extern const size_t index_not_found;
 
 // XML specific types
 
-typedef size_t xml_token_t;
-typedef const char* xmlns_id_t;
+using xml_token_t = size_t;
+using xmlns_id_t = const char*;
 
 using xml_token_pair_t = std::pair<xmlns_id_t, xml_token_t>;
 

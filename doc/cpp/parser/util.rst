@@ -3,9 +3,6 @@
 Utilities
 =========
 
-.. doxygenclass:: orcus::pstring
-   :members:
-
 .. doxygenclass:: orcus::string_pool
    :members:
 
