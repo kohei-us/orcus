@@ -4,12 +4,17 @@
 #include <orcus/orcus_ods.hpp>
 
 #include <ixion/model_context.hpp>
+
 #include <iostream>
+#include <cstdlib>
+#include <filesystem>
 
 using namespace orcus;
 
 int main()
 {
+    std::filesystem::path input_dir = std::getenv("INPUTDIR");
+
     // Instantiate a document, and wrap it with a factory.
     spreadsheet::range_size_t ss{1048576, 16384};
     spreadsheet::document doc{ss};
@@ -18,7 +23,7 @@ int main()
     // Pass the factory to the document loader, and read the content from a file
     // to populate the document.
     orcus_ods loader(&factory);
-    loader.read_file(SRCDIR"/doc_example/files/document.ods");
+    loader.read_file(input_dir / "document.ods");
 
     // Now that the document is fully populated, access its content.
     const ixion::model_context& model = doc.get_model_context();

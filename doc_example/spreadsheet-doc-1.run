@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+export INPUTDIR=$PWD/files
+./spreadsheet-doc-1

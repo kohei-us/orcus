@@ -5,60 +5,19 @@ Use orcus's spreadsheet document class
 ======================================
 
 If you want to use orcus' :cpp:class:`~orcus::spreadsheet::document` as your
-document store instead, then you can use the
-:cpp:class:`~orcus::spreadsheet::import_factory` class that orcus provides
-which already implements all necessary interfaces.  The example code shown
-below illustrates how to do this::
+document store, you can use the :cpp:class:`~orcus::spreadsheet::import_factory`
+class that orcus provides which already implements all necessary interfaces.
+The example code shown below illustrates how to do this:
 
-    #include <orcus/spreadsheet/document.hpp>
-    #include <orcus/spreadsheet/factory.hpp>
-    #include <orcus/orcus_ods.hpp>
+.. literalinclude:: ../../doc_example/spreadsheet_doc_1.cpp
+   :language: C++
 
-    #include <ixion/model_context.hpp>
-    #include <iostream>
+This example code loads a file saved in the Open Document Spreadsheet format
+stored in a directory whose path is to be defined in the environment variable
+named ``INPUTDIR``.  In this example, we don't check for the validity of ``INPUTDIR``
+for bravity's sake.
 
-    using namespace orcus;
-
-    int main()
-    {
-        // Instantiate a document, and wrap it with a factory.
-        spreadsheet::document doc;
-        spreadsheet::import_factory factory(doc);
-
-        // Pass the factory to the document loader, and read the content from a file
-        // to populate the document.
-        orcus_ods loader(&factory);
-        loader.read_file("/path/to/document.ods");
-
-        // Now that the document is fully populated, access its content.
-        const ixion::model_context& model = doc.get_model_context();
-
-        // Read the header row and print its content.
-
-        ixion::abs_address_t pos(0, 0, 0); // Set the cell position to A1.
-        ixion::string_id_t str_id = model.get_string_identifier(pos);
-
-        const std::string* s = model.get_string(str_id);
-        assert(s);
-        std::cout << "A1: " << *s << std::endl;
-
-        pos.column = 1; // Move to B1
-        str_id = model.get_string_identifier(pos);
-        s = model.get_string(str_id);
-        assert(s);
-        std::cout << "B1: " << *s << std::endl;
-
-        pos.column = 2; // Move to C1
-        str_id = model.get_string_identifier(pos);
-        s = model.get_string(str_id);
-        assert(s);
-        std::cout << "C1: " << *s << std::endl;
-
-        return EXIT_SUCCESS;
-    }
-
-This example code loads a file saved in the Open Document Spreadsheet format.
-It consists of the following content on its first sheet.
+The input file consists of the following content on its first sheet.
 
 .. figure:: /_static/images/overview/doc-content.png
 
