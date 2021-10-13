@@ -65,10 +65,12 @@ sheet.  First, let's define the cell value structure:
    :end-before: //!code-end: cell_value
 
 As we will be handling only three cell types i.e. empty, numeric, or string
-cell type, this structure will work just fine.  Next, we'll define a sheet
-class called ``my_sheet`` that stores the cell values in a 2-dimensional
-array, and implements all required interfaces as a child class of
-:cpp:class:`~orcus::spreadsheet::iface::import_sheet`.
+cell type, this structure will work just fine.  We will also define a namespace
+alias called ``ss`` for convenience.  This will be used in later code.
+
+Next, we'll define a sheet class called ``my_sheet`` that stores the cell values
+in a 2-dimensional array, and implements all required interfaces as a child class
+of :cpp:class:`~orcus::spreadsheet::iface::import_sheet`.
 
 At a minimum, the sheet accessor class must implement the following virtual
 methods to satisfy the interface requirements of
