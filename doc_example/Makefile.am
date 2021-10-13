@@ -21,7 +21,10 @@ EXTRA_PROGRAMS = \
 EXTRA_DIST = \
 	spreadsheet-doc-1.run \
 	spreadsheet-doc-1-num-and-formula.run \
-	spreadsheet-doc-2.run
+	spreadsheet-doc-2.run \
+	spreadsheet-doc-2-sheets-no-string-pool.run \
+	spreadsheet-doc-2-sheets-with-string-pool.run \
+	spreadsheet-doc-2-sheets-with-formula.run
 
 json_doc_1_SOURCES = \
 	json_doc_1.cpp
@@ -99,11 +102,17 @@ spreadsheet_doc_2_sheets_with_formula_LDADD = \
 spreadsheet-doc-1.run: spreadsheet-doc-1
 spreadsheet-doc-1-num-and-formula.run: spreadsheet-doc-1-num-and-formula
 spreadsheet-doc-2.run: spreadsheet-doc-2
+spreadsheet-doc-2-sheets-no-string-pool.run: spreadsheet-doc-2-sheets-no-string-pool
+spreadsheet-doc-2-sheets-with-string-pool.run: spreadsheet-doc-2-sheets-with-string-pool
+spreadsheet-doc-2-sheets-with-formula.run: spreadsheet-doc-2-sheets-with-formula
 
 .PHONY: \
 	spreadsheet-doc-1.run \
 	spreadsheet-doc-1-num-and-formula.run \
-	spreadsheet-doc-2.run
+	spreadsheet-doc-2.run \
+	spreadsheet-doc-2-sheets-no-string-pool.run \
+	spreadsheet-doc-2-sheets-with-string-pool.run \
+	spreadsheet-doc-2-sheets-with-formula.run
 
 TESTS = \
 	json-doc-1 \
@@ -113,9 +122,9 @@ TESTS = \
 	spreadsheet-doc-1.run \
 	spreadsheet-doc-1-num-and-formula.run \
 	spreadsheet-doc-2.run \
-	spreadsheet-doc-2-sheets-no-string-pool \
-	spreadsheet-doc-2-sheets-with-string-pool \
-	spreadsheet-doc-2-sheets-with-formula
+	spreadsheet-doc-2-sheets-no-string-pool.run \
+	spreadsheet-doc-2-sheets-with-string-pool.run \
+	spreadsheet-doc-2-sheets-with-formula.run
 
 distclean-local:
 	rm -rf $(TESTS)
