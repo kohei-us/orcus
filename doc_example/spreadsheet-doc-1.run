@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 
 export INPUTDIR=$PWD/files
-./spreadsheet-doc-1
+EXEC=$(echo $0 | sed -e "s/\.run$//g")
+./$EXEC
