@@ -6,6 +6,7 @@
 #include <memory>
 #include <filesystem>
 
+//!code-start: cell_value
 namespace ss = orcus::spreadsheet;
 
 enum class cell_value_type { empty, numeric, string };
@@ -22,7 +23,9 @@ struct cell_value
 
     cell_value() : type(cell_value_type::empty) {}
 };
+//!code-end: cell_value
 
+//!code-start: my_sheet
 class my_sheet : public ss::iface::import_sheet
 {
     cell_value m_cells[100][1000];
@@ -78,7 +81,9 @@ public:
     virtual void fill_down_cells(
         ss::row_t src_row, ss::col_t src_col, ss::row_t range_size) override {}
 };
+//!code-end: my_sheet
 
+//!code-start: my_import_factory
 class my_import_factory : public ss::iface::import_factory
 {
     std::vector<std::unique_ptr<my_sheet>> m_sheets;
@@ -105,6 +110,7 @@ public:
 
     virtual void finalize() override {}
 };
+//!code-end: my_import_factory
 
 int main()
 {
