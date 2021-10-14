@@ -10,7 +10,9 @@
 
 namespace ss = orcus::spreadsheet;
 
+//!code-start: cell_value_type
 enum class cell_value_type { empty, numeric, string, formula }; // adding a formula type here
+//!code-end: cell_value_type
 
 using ss_type = std::deque<std::string>;
 using ss_hash_type = std::unordered_map<std::string_view, std::size_t>;
@@ -28,6 +30,7 @@ struct cell_value
     cell_value() : type(cell_value_type::empty) {}
 };
 
+//!code-start: cell_grid
 class cell_grid
 {
     cell_value m_cells[100][1000];
@@ -38,7 +41,9 @@ public:
         return m_cells[col][row];
     }
 };
+//!code-end: cell_grid
 
+//!code-start: formula
 struct formula
 {
     std::string expression;
@@ -49,7 +54,9 @@ struct formula
         expression(std::move(_expression)),
         grammar(_grammar) {}
 };
+//!code-end: formula
 
+//!code-start: my_formula
 class my_formula : public ss::iface::import_formula
 {
     ss::sheet_t m_sheet_index;
@@ -101,7 +108,9 @@ public:
         m_formula_store.push_back(std::move(m_formula));
     }
 };
+//!code-end: my_formula
 
+//!code-start: my_sheet
 class my_sheet : public ss::iface::import_sheet
 {
     cell_grid m_cells;
@@ -167,6 +176,7 @@ public:
         return &m_formula_iface;
     }
 };
+//!code-end: my_sheet
 
 class my_shared_strings : public ss::iface::import_shared_strings
 {

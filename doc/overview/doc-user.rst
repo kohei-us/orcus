@@ -420,9 +420,12 @@ Implement formula interface
 In this section we will extend the code from the previous section in order to
 receive and process formula cell values from the sheet.  We will need to make
 quite a few changes.  Let's go over this one thing at a time.  First, we are
-adding a new cell value type ``formula``::
+adding a new cell value type ``formula``:
 
-    enum class cell_value_type { empty, numeric, string, formula }; // adding a formula type here
+.. literalinclude:: ../../doc_example/spreadsheet_doc_2_sheets_with_formula.cpp
+   :language: C++
+   :start-after: //!code-start: cell_value_type
+   :end-before: //!code-end: cell_value_type
 
 which should not come as a surprise.
 
@@ -432,19 +435,13 @@ stores a formula, the index will refer to its actual formula data which will
 be stored in a separate data store, much like how strings are stored
 externally and referenced by their indices in the ``cell_value`` instances.
 
-We are also adding a branch-new class called ``cell_grid``, to add an extra
-layer over the raw cell value array::
+We are also adding a brand-new class called ``cell_grid``, to add an extra
+layer over the raw cell value array:
 
-    class cell_grid
-    {
-        cell_value m_cells[100][1000];
-    public:
-
-        cell_value& operator()(row_t row, col_t col)
-        {
-            return m_cells[col][row];
-        }
-    };
+.. literalinclude:: ../../doc_example/spreadsheet_doc_2_sheets_with_formula.cpp
+   :language: C++
+   :start-after: //!code-start: cell_grid
+   :end-before: //!code-end: cell_grid
 
 Each sheet instance will own one instance of ``cell_grid``, and the formula
 interface class instance will hold a reference to it and use it to insert
@@ -491,56 +488,20 @@ called at the very end to let the implementation commit the formula cell data
 to the backend document store.
 
 Without further ado, here is the formula interface implementation that we will
-use::
+use:
 
-    class my_formula : public iface::import_formula
-    {
-        sheet_t m_sheet_index;
-        cell_grid& m_cells;
-        std::vector<formula>& m_formula_store;
+.. literalinclude:: ../../doc_example/spreadsheet_doc_2_sheets_with_formula.cpp
+   :language: C++
+   :start-after: //!code-start: my_formula
+   :end-before: //!code-end: my_formula
 
-        row_t m_row;
-        col_t m_col;
-        formula m_formula;
+and here is the defintion of the ``formula`` struct that stores a formula expression
+string as well as its grammer type:
 
-    public:
-        my_formula(sheet_t sheet, cell_grid& cells, std::vector<formula>& formulas) :
-            m_sheet_index(sheet),
-            m_cells(cells),
-            m_formula_store(formulas),
-            m_row(0),
-            m_col(0) {}
-
-        virtual void set_position(row_t row, col_t col) override
-        {
-            m_row = row;
-            m_col = col;
-        }
-
-        virtual void set_formula(formula_grammar_t grammar, const char* p, size_t n) override
-        {
-            m_formula.expression = std::string(p, n);
-            m_formula.grammar = grammar;
-        }
-
-        virtual void set_shared_formula_index(size_t index) override {}
-
-        virtual void set_result_string(size_t sindex) override {}
-        virtual void set_result_value(double value) override {}
-        virtual void set_result_empty() override {}
-        virtual void set_result_bool(bool value) override {}
-
-        virtual void commit() override
-        {
-            cout << "(sheet: " << m_sheet_index << "; row: " << m_row << "; col: " << m_col << "): formula = "
-                 << m_formula.expression << " (" << m_formula.grammar << ")" << endl;
-
-            size_t index = m_formula_store.size();
-            m_cells(m_row, m_col).type = cell_value_type::formula;
-            m_cells(m_row, m_col).index = index;
-            m_formula_store.push_back(std::move(m_formula));
-        }
-    };
+.. literalinclude:: ../../doc_example/spreadsheet_doc_2_sheets_with_formula.cpp
+   :language: C++
+   :start-after: //!code-start: formula
+   :end-before: //!code-end: formula
 
 Note that since we are loading a OpenDocument Spereadsheet file (.ods) which
 does not support shared formulas, we do not need to handle the
@@ -652,8 +613,8 @@ section:
 Looks like we are getting the formula cell values this time around.
 
 One thing to note is that the formula expression strings you see here follow
-the syntax rules of OpenFormula specification, which is the formula syntax
-referenced by the OpenDocument Spreadsheet format.
+the syntax defined in the OpenFormula specifications, which is the formula syntax
+used in the OpenDocument Spreadsheet format.
 
 
 Implement more interfaces
