@@ -8,35 +8,42 @@
 
 void example_root_list()
 {
+    //!code-start: root list
     orcus::json::document_tree doc = {
         1.0, 2.0, "string value", false, nullptr
     };
 
     std::cout << doc.dump() << std::endl;
+    //!code-end: root list
 }
 
 void example_list_nested()
 {
+    //!code-start: list nested
     orcus::json::document_tree doc = {
         { true, false, nullptr },
         { 1.1, 2.2, "text" }
     };
 
     std::cout << doc.dump() << std::endl;
+    //!code-end: list nested
 }
 
 void example_list_object()
 {
+    //!code-start: list object
     orcus::json::document_tree doc = {
         { "key1", 1.2 },
         { "key2", "some text" },
     };
 
     std::cout << doc.dump() << std::endl;
+    //!code-end: list object
 }
 
 void example_list_object_2()
 {
+    //!code-start: list object 2
     orcus::json::document_tree doc = {
         { "parent1", {
                 { "child1", true  },
@@ -48,17 +55,21 @@ void example_list_object_2()
     };
 
     std::cout << doc.dump() << std::endl;
+    //!code-end: list object 2
 }
 
 void example_array_ambiguous()
 {
+    //!code-start: array ambiguous
     orcus::json::document_tree doc = {
         { "array", { "one", 987.0 } }
     };
+    //!code-end: array ambiguous
 }
 
 void example_array_explicit()
 {
+    //!code-start: array explicit
     using namespace orcus;
 
     json::document_tree doc = {
@@ -66,14 +77,18 @@ void example_array_explicit()
     };
 
     std::cout << doc.dump() << std::endl;
+    //!code-end: array explicit
 }
 
 void example_object_ambiguous()
 {
+    //!code-start: object ambiguous a
     using namespace orcus;
 
     json::document_tree doc = {};
+    //!code-end: object ambiguous a
 
+    //!code-start: object ambiguous b
     try
     {
         auto root = doc.get_document_root();
@@ -82,19 +97,23 @@ void example_object_ambiguous()
     {
         std::cout << e.what() << std::endl;
     }
+    //!code-end: object ambiguous b
 }
 
 void example_object_explicit_1()
 {
+    //!code-start: object explicit 1
     using namespace orcus;
 
     json::document_tree doc = json::object();
 
     std::cout << doc.dump() << std::endl;
+    //!code-end: object explicit 1
 }
 
 void example_object_explicit_2()
 {
+    //!code-start: object explicit 2
     using namespace orcus;
 
     json::document_tree doc = {
@@ -104,10 +123,12 @@ void example_object_explicit_2()
     };
 
     std::cout << doc.dump() << std::endl;
+    //!code-end: object explicit 2
 }
 
 void example_root_object_add_child()
 {
+    //!code-start: root object add child
     using namespace orcus;
 
     // Initialize the tree with an empty object.
@@ -128,10 +149,12 @@ void example_root_object_add_child()
     root["child array"] = json::array({ 1.1, 1.2, true }); // explicit array
 
     std::cout << doc.dump() << std::endl;
+    //!code-end: root object add child
 }
 
 void example_root_array_add_child()
 {
+    //!code-start: root array add child
     using namespace orcus;
 
     // Initialize the tree with an empty array root.
@@ -150,6 +173,7 @@ void example_root_array_add_child()
     root.push_back({{"key1", 1.1}, {"key2", 1.2}});
 
     std::cout << doc.dump() << std::endl;
+    //!code-end: root array add child
 }
 
 int main()
