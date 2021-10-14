@@ -12,8 +12,10 @@ namespace ss = orcus::spreadsheet;
 
 enum class cell_value_type { empty, numeric, string };
 
+//!code-start: types
 using ss_type = std::deque<std::string>;
 using ss_hash_type = std::unordered_map<std::string_view, std::size_t>;
+//!code-end: types
 
 struct cell_value
 {
@@ -86,6 +88,7 @@ public:
         ss::row_t src_row, ss::col_t src_col, ss::row_t range_size) override {}
 };
 
+//!code-start: my_shared_strings
 class my_shared_strings : public ss::iface::import_shared_strings
 {
     ss_hash_type m_ss_hash;
@@ -149,7 +152,9 @@ public:
         return string_index;
     }
 };
+//!code-end: my_shared_strings
 
+//!code-start: my_import_factory
 class my_import_factory : public ss::iface::import_factory
 {
     ss_type m_string_pool; // string pool to be shared everywhere.
@@ -186,6 +191,7 @@ public:
 
     virtual void finalize() override {}
 };
+//!code-end: my_import_factory
 
 int main()
 {
