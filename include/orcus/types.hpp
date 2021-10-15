@@ -439,7 +439,8 @@ enum class dump_format_t
     flat,
     html,
     json,
-    xml
+    xml,
+    yaml
 };
 
 struct ORCUS_PSR_DLLPUBLIC length_t

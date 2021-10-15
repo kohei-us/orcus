@@ -284,6 +284,7 @@ const std::vector<map_type::entry> entries =
     { ORCUS_ASCII("json"),  dump_format_t::json  },
     { ORCUS_ASCII("none"),  dump_format_t::none  },
     { ORCUS_ASCII("xml"),   dump_format_t::xml   },
+    { ORCUS_ASCII("yaml"),  dump_format_t::yaml  },
 };
 
 const map_type& get()

@@ -295,6 +295,11 @@ void build_doc_and_dump(const orcus::file_content& content, detail::cmd_params& 
             os << doc->dump();
             break;
         }
+        case dump_format_t::yaml:
+        {
+            os << doc->dump_yaml();
+            break;
+        }
         case dump_format_t::check:
         {
             string xml_strm = doc->dump_xml();

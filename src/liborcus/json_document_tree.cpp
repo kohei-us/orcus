@@ -409,6 +409,74 @@ void dump_value_xml(std::ostringstream& os, const json_value* v, int level)
     }
 }
 
+void dump_value_yaml(std::ostringstream& os, const json_value* v)
+{
+    switch (v->type)
+    {
+        case detail::node_t::array:
+        {
+            for (const json_value* cv : v->value.array->value_array)
+            {
+                os << "- ";
+                dump_value_yaml(os, cv);
+                os << std::endl;
+            }
+            break;
+        }
+        case detail::node_t::boolean_false:
+            os << "false";
+            break;
+        case detail::node_t::boolean_true:
+            os << "true";
+            break;
+        case detail::node_t::null:
+            os << "null";
+            break;
+        case detail::node_t::number:
+        {
+            os << v->value.numeric;
+            break;
+        }
+        case detail::node_t::object:
+        {
+            const json_value_object& jvo = *v->value.object;
+            const std::vector<std::string_view>& key_order = jvo.key_order;
+            const json_value_object::object_type& vals = jvo.value_object;
+
+            if (key_order.empty())
+            {
+                // Dump object's children unordered.
+                for (const auto& val : vals)
+                {
+
+                }
+            }
+            else
+            {
+                // Dump them based on key's original ordering.
+                for (std::string_view key : key_order)
+                {
+                    os << key << ": ";
+                    auto val_pos = vals.find(key);
+                    assert(val_pos != vals.end());
+                    const json_value* val = val_pos->second;
+                    dump_value_yaml(os, val);
+                    os << std::endl;
+                }
+            }
+            break;
+        }
+        case detail::node_t::string:
+        {
+            os << std::string_view{v->value.str.p, v->value.str.n};
+            break;
+        }
+        case detail::node_t::unset:
+        default:
+            ;
+    }
+}
+
 void dump_object_item_xml(
     std::ostringstream& os, std::string_view key, const json_value* val, int level)
 {
@@ -428,6 +496,17 @@ std::string dump_xml_tree(const json_value* root)
     os << "<?xml version=\"1.0\"?>" << std::endl;
     dump_value_xml(os, root, 0);
     os << std::endl;
+    return os.str();
+}
+
+std::string dump_yaml_tree(const json_value* root)
+{
+    if (root->type == detail::node_t::unset)
+        return std::string();
+
+    std::ostringstream os;
+    os << "---" << std::endl;
+    dump_value_yaml(os, root);
     return os.str();
 }
 
@@ -1567,6 +1646,14 @@ std::string document_tree::dump_xml() const
         return std::string();
 
     return json::dump_xml_tree(mp_impl->m_root);
+}
+
+std::string document_tree::dump_yaml() const
+{
+    if (!mp_impl->m_root)
+        return std::string();
+
+    return json::dump_yaml_tree(mp_impl->m_root);
 }
 
 void document_tree::swap(document_tree& other)

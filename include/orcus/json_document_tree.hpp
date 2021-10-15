@@ -481,6 +481,14 @@ public:
     std::string dump_xml() const;
 
     /**
+     * Dump the JSON document tree as YAML output.
+     *
+     * @return string containing a YAML output representing the JSON document
+     *         tree structure.
+     */
+    std::string dump_yaml() const;
+
+    /**
      * Swap the content of the document with another document instance.
      *
      * @param other document instance to swap the content with.
