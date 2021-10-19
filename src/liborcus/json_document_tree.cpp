@@ -422,6 +422,17 @@ class yaml_dumper
         m_last_write = write_type::unspecified;
     }
 
+    static bool needs_quote(std::string_view s)
+    {
+        for (char c : s)
+        {
+            if (c == '#')
+                return true;
+        }
+
+        return false;
+    }
+
 public:
     std::string dump(const json_value* root)
     {
@@ -535,7 +546,17 @@ private:
             }
             case detail::node_t::string:
             {
-                os << std::string_view{v->value.str.p, v->value.str.n};
+                std::string_view s{v->value.str.p, v->value.str.n};
+                bool quote_value = needs_quote(s);
+
+                if (quote_value)
+                    os << '"';
+
+                os << s;
+
+                if (quote_value)
+                    os << '"';
+
                 break;
             }
             case detail::node_t::unset:
