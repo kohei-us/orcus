@@ -20,6 +20,7 @@
 #include <sstream>
 #include <limits>
 #include <iostream>
+#include <deque>
 
 #include <boost/current_function.hpp>
 #include <boost/filesystem.hpp>
@@ -506,7 +507,7 @@ private:
                 const std::vector<std::string_view>& key_order = jvo.key_order;
                 const json_value_object::object_type& vals = jvo.value_object;
 
-                std::vector<std::tuple<std::string_view, const json_value*>> key_values;
+                std::deque<std::tuple<std::string_view, const json_value*>> key_values;
 
                 if (key_order.empty())
                 {
@@ -528,18 +529,29 @@ private:
                 if (key_values.empty())
                     break;
 
-                write_linebreak(os);
-
-                for (auto& [key, value] : key_values)
+                auto write_key_value = [this, &os](std::string_view key, const json_value* value)
                 {
-                    write_indent(os);
-
                     std::size_t indent_add = 2;
                     os << key << ": ";
                     m_indent_length += indent_add;
                     write_value(os, value);
                     m_indent_length -= indent_add;
                     write_linebreak(os);
+                };
+
+                if (v->parent && v->parent->type == detail::node_t::array)
+                {
+                    // Parent is an array. Continue on the "bullet" line.
+                    write_key_value(std::get<0>(key_values[0]), std::get<1>(key_values[0]));
+                    key_values.pop_front();
+                }
+                else
+                    write_linebreak(os);
+
+                for (auto& [key, value] : key_values)
+                {
+                    write_indent(os);
+                    write_key_value(key, value);
                 }
 
                 break;
