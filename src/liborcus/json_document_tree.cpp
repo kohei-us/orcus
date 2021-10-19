@@ -469,12 +469,14 @@ private:
     void write_value(std::ostringstream& os, const json_value* v)
     {
         m_last_write = write_type::value;
+        detail::node_t parent_type = v->parent ? v->parent->type : detail::node_t::unset;
 
         switch (v->type)
         {
             case detail::node_t::array:
             {
-                write_linebreak(os);
+                if (parent_type != detail::node_t::unset)
+                    write_linebreak(os);
 
                 for (const json_value* cv : v->value.array->value_array)
                 {
@@ -539,13 +541,13 @@ private:
                     write_linebreak(os);
                 };
 
-                if (v->parent && v->parent->type == detail::node_t::array)
+                if (parent_type == detail::node_t::array)
                 {
                     // Parent is an array. Continue on the "bullet" line.
                     write_key_value(std::get<0>(key_values[0]), std::get<1>(key_values[0]));
                     key_values.pop_front();
                 }
-                else
+                else if (parent_type != detail::node_t::unset)
                     write_linebreak(os);
 
                 for (auto& [key, value] : key_values)
