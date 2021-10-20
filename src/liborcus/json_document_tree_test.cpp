@@ -19,7 +19,6 @@
 #include <cmath>
 #include <cstring>
 
-using namespace std;
 using namespace orcus;
 
 const char* json_test_dirs[] = {
@@ -47,7 +46,7 @@ bool string_expected(const json::const_node& node, const char* expected)
     if (node.string_value() == expected)
         return true;
 
-    cerr << "expected='" << expected << "', actual='" << node.string_value() << "'" << endl;
+    std::cerr << "expected='" << expected << "', actual='" << node.string_value() << "'" << std::endl;
     return false;
 }
 
@@ -76,13 +75,13 @@ bool number_expected(
     if (actual == expected)
         return true;
 
-    cerr << "expected=" << expected << ", actual=" << actual << endl;
+    std::cerr << "expected=" << expected << ", actual=" << actual << std::endl;
     return false;
 }
 
-string dump_check_content(const json::document_tree& doc)
+std::string dump_check_content(const json::document_tree& doc)
 {
-    string xml_strm = doc.dump_xml();
+    std::string xml_strm = doc.dump_xml();
     assert(!xml_strm.empty());
 
     xmlns_repository repo;
@@ -90,7 +89,7 @@ string dump_check_content(const json::document_tree& doc)
     dom::document_tree dom(cxt);
     dom.load(xml_strm);
 
-    ostringstream os;
+    std::ostringstream os;
     dom.dump_compact(os);
     return os.str();
 }
@@ -104,9 +103,9 @@ bool compare_check_contents(const file_content& expected, const std::string& act
 
     if (_expected != _actual)
     {
-        size_t pos = locate_first_different_char(_expected, _actual);
-        cout << create_parse_error_output(_expected, pos) << endl;
-        cout << create_parse_error_output(_actual, pos) << endl;
+        std::size_t pos = locate_first_different_char(_expected, _actual);
+        std::cout << create_parse_error_output(_expected, pos) << std::endl;
+        std::cout << create_parse_error_output(_actual, pos) << std::endl;
     }
 
     return _expected == _actual;
@@ -114,20 +113,20 @@ bool compare_check_contents(const file_content& expected, const std::string& act
 
 void verify_input(json_config& test_config, const char* basedir)
 {
-    string json_file(basedir);
+    std::string json_file(basedir);
     json_file += "input.json";
     test_config.input_path = json_file;
 
-    cout << "Testing " << json_file << endl;
+    std::cout << "Testing " << json_file << std::endl;
 
     file_content content(json_file.data());
     json::document_tree doc;
     doc.load(content.str(), test_config);
 
-    string check_file(basedir);
+    std::string check_file(basedir);
     check_file += "check.txt";
     file_content check_master(check_file.data());
-    string check_doc = dump_check_content(doc);
+    std::string check_doc = dump_check_content(doc);
 
     bool result = compare_check_contents(check_master, check_doc);
     assert(result);
@@ -137,7 +136,7 @@ void test_json_parse()
 {
     json_config test_config;
 
-    for (size_t i = 0; i < ORCUS_N_ELEMENTS(json_test_dirs); ++i)
+    for (std::size_t i = 0; i < ORCUS_N_ELEMENTS(json_test_dirs); ++i)
     {
         const char* basedir = json_test_dirs[i];
         verify_input(test_config, basedir);
@@ -169,7 +168,7 @@ void test_json_parse_empty()
     for (size_t i = 0; i < ORCUS_N_ELEMENTS(tests); ++i)
     {
         const char* test = tests[i];
-        cout << "JSON stream: '" << test << "' (" << std::strlen(test) << ")" << endl;
+        std::cout << "JSON stream: '" << test << "' (" << std::strlen(test) << ")" << std::endl;
         json::document_tree doc;
         try
         {
@@ -177,8 +176,8 @@ void test_json_parse_empty()
         }
         catch (const json::parse_error& e)
         {
-            cout << create_parse_error_output(test, e.offset()) << endl;
-            cout << e.what() << endl;
+            std::cout << create_parse_error_output(test, e.offset()) << std::endl;
+            std::cout << e.what() << std::endl;
             assert(false);
         }
     }
@@ -197,21 +196,21 @@ void test_json_parse_invalid()
         "\"key\": {\"inner\": 12}"
     };
 
-    for (size_t i = 0; i < ORCUS_N_ELEMENTS(invalids); ++i)
+    for (std::size_t i = 0; i < ORCUS_N_ELEMENTS(invalids); ++i)
     {
         const char* invalid_json = invalids[i];
         json::document_tree doc;
         try
         {
             doc.load(invalid_json, test_config);
-            cerr << "Invalid JSON expression is parsed as valid: '" << invalid_json << "'" << endl;
+            std::cerr << "Invalid JSON expression is parsed as valid: '" << invalid_json << "'" << std::endl;
             assert(false);
         }
         catch (const json::parse_error& e)
         {
             // works as expected.
-            cout << "invalid expression tested: " << invalid_json << endl;
-            cout << "error message received: " << e.what() << endl;
+            std::cout << "invalid expression tested: " << invalid_json << std::endl;
+            std::cout << "error message received: " << e.what() << std::endl;
         }
     }
 }
@@ -220,10 +219,10 @@ std::unique_ptr<json::document_tree> get_doc_tree(const char* filepath)
 {
     json_config test_config;
 
-    cout << filepath << endl;
+    std::cout << filepath << std::endl;
     file_content content(filepath);
-    cout << "--- original" << endl;
-    cout << content.str() << endl;
+    std::cout << "--- original" << std::endl;
+    std::cout << content.str() << std::endl;
 
     auto doc = std::make_unique<json::document_tree>();
     doc->load(content.str(), test_config);
@@ -236,8 +235,8 @@ void dump_and_load(
 {
     json::document_tree doc2;
     std::string dumped = doc.dump();
-    cout << "--- dumped" << endl;
-    cout << dumped << endl;
+    std::cout << "--- dumped" << std::endl;
+    std::cout << dumped << std::endl;
     doc2.load(dumped, json_config());
     json::const_node node = doc2.get_document_root();
     test_func(node);
@@ -840,7 +839,7 @@ int main()
     }
     catch (const orcus::general_error& e)
     {
-        cerr << e.what() << endl;
+        std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 
