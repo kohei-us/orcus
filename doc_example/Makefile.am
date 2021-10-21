@@ -114,6 +114,18 @@ spreadsheet-doc-2-sheets-with-formula.run: spreadsheet-doc-2-sheets-with-formula
 	spreadsheet-doc-2-sheets-with-string-pool.run \
 	spreadsheet-doc-2-sheets-with-formula.run
 
+TEST_BINS = \
+	json-doc-1 \
+	json-doc-2 \
+	json-parser-1 \
+	xml-mapping-1 \
+	spreadsheet-doc-1 \
+	spreadsheet-doc-1-num-and-formula \
+	spreadsheet-doc-2 \
+	spreadsheet-doc-2-sheets-no-string-pool \
+	spreadsheet-doc-2-sheets-with-string-pool \
+	spreadsheet-doc-2-sheets-with-formula
+
 TESTS = \
 	json-doc-1 \
 	json-doc-2 \
@@ -127,4 +139,4 @@ TESTS = \
 	spreadsheet-doc-2-sheets-with-formula.run
 
 distclean-local:
-	rm -rf $(TESTS)
+	rm -rf $(TEST_BINS)
