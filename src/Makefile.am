@@ -1,4 +1,4 @@
-SUBDIRS = include parser mso liborcus spreadsheet python
+SUBDIRS = include test parser mso liborcus spreadsheet python
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
@@ -353,12 +353,12 @@ EXTRA_PROGRAMS += \
 orcus_test_csv_SOURCES = \
 	orcus_test_csv.cpp \
 	orcus_test_global.hpp \
-	orcus_test_global.cpp \
-	test_global.cpp
+	orcus_test_global.cpp
 
 orcus_test_csv_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	./test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
 
 orcus_test_csv_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS) -DSRCDIR=\""$(top_srcdir)"\"
@@ -368,8 +368,7 @@ orcus_test_csv_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLA
 orcus_test_xml_mapped_SOURCES = \
 	orcus_test_xml_mapped.cpp \
 	orcus_test_global.hpp \
-	orcus_test_global.cpp \
-	test_global.cpp
+	orcus_test_global.cpp
 
 orcus_test_xml_mapped_LDFLAGS = \
 	$(BOOST_FILESYSTEM_LDFLAGS) \
@@ -378,6 +377,7 @@ orcus_test_xml_mapped_LDFLAGS = \
 orcus_test_xml_mapped_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	./test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	$(BOOST_FILESYSTEM_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
@@ -487,12 +487,12 @@ EXTRA_PROGRAMS += orcus-test-xls-xml
 
 orcus_test_xls_xml_SOURCES = \
 	orcus_test_xls_xml.cpp \
-	orcus_test_global.cpp \
-	test_global.cpp
+	orcus_test_global.cpp
 
 orcus_test_xls_xml_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	./test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	@LIBIXION_LIBS@
 
@@ -511,12 +511,12 @@ EXTRA_PROGRAMS += orcus-test-gnumeric
 
 orcus_test_gnumeric_SOURCES = \
 	orcus_test_gnumeric.cpp \
-	orcus_test_global.cpp \
-	test_global.cpp
+	orcus_test_global.cpp
 
 orcus_test_gnumeric_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	./test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
 
 orcus_test_gnumeric_CPPFLAGS = \

@@ -376,12 +376,12 @@ css_document_tree_test_LDADD = \
 json_document_tree_test_SOURCES = \
 	json_document_tree.cpp \
 	json_util.cpp \
-	json_document_tree_test.cpp \
-	../test_global.cpp
+	json_document_tree_test.cpp
 
 json_document_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a \
 	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
 
 json_document_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
