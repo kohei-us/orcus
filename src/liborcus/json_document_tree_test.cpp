@@ -5,13 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/stream.hpp"
-#include "orcus/json_document_tree.hpp"
-#include "orcus/json_parser_base.hpp"
-#include "orcus/global.hpp"
-#include "orcus/config.hpp"
-#include "orcus/xml_namespace.hpp"
-#include "orcus/dom_tree.hpp"
+#include <orcus/stream.hpp>
+#include <orcus/json_document_tree.hpp>
+#include <orcus/json_parser_base.hpp>
+#include <orcus/global.hpp>
+#include <orcus/config.hpp>
+#include <orcus/xml_namespace.hpp>
+#include <orcus/dom_tree.hpp>
+
+#include <boost/filesystem.hpp>
 
 #include <cassert>
 #include <cstdlib>
@@ -19,23 +21,25 @@
 #include <cmath>
 #include <cstring>
 
+namespace fs = boost::filesystem;
+
 using namespace orcus;
 
-const char* json_test_dirs[] = {
-    SRCDIR"/test/json/basic1/",
-    SRCDIR"/test/json/basic2/",
-    SRCDIR"/test/json/basic3/",
-    SRCDIR"/test/json/basic4/",
-    SRCDIR"/test/json/empty-array-1/",
-    SRCDIR"/test/json/empty-array-2/",
-    SRCDIR"/test/json/empty-array-3/",
-    SRCDIR"/test/json/nested1/",
-    SRCDIR"/test/json/nested2/",
-    SRCDIR"/test/json/swagger/"
+fs::path json_test_dirs[] = {
+    SRCDIR"/test/json/basic1",
+    SRCDIR"/test/json/basic2",
+    SRCDIR"/test/json/basic3",
+    SRCDIR"/test/json/basic4",
+    SRCDIR"/test/json/empty-array-1",
+    SRCDIR"/test/json/empty-array-2",
+    SRCDIR"/test/json/empty-array-3",
+    SRCDIR"/test/json/nested1",
+    SRCDIR"/test/json/nested2",
+    SRCDIR"/test/json/swagger"
 };
 
-const char* json_test_refs_dirs[] = {
-    SRCDIR"/test/json/refs1/",
+fs::path json_test_refs_dirs[] = {
+    SRCDIR"/test/json/refs1",
 };
 
 bool string_expected(const json::const_node& node, const char* expected)
@@ -111,21 +115,19 @@ bool compare_check_contents(const file_content& expected, const std::string& act
     return _expected == _actual;
 }
 
-void verify_input(json_config& test_config, const char* basedir)
+void verify_input(json_config& test_config, const fs::path& basedir)
 {
-    std::string json_file(basedir);
-    json_file += "input.json";
-    test_config.input_path = json_file;
+    fs::path json_file = basedir / "input.json";
+    test_config.input_path = json_file.string();
 
     std::cout << "Testing " << json_file << std::endl;
 
-    file_content content(json_file.data());
+    file_content content(json_file.string());
     json::document_tree doc;
     doc.load(content.str(), test_config);
 
-    std::string check_file(basedir);
-    check_file += "check.txt";
-    file_content check_master(check_file.data());
+    fs::path check_file = basedir / "check.txt";
+    file_content check_master(check_file.string());
     std::string check_doc = dump_check_content(doc);
 
     bool result = compare_check_contents(check_master, check_doc);
@@ -138,7 +140,7 @@ void test_json_parse()
 
     for (std::size_t i = 0; i < ORCUS_N_ELEMENTS(json_test_dirs); ++i)
     {
-        const char* basedir = json_test_dirs[i];
+        fs::path basedir = json_test_dirs[i];
         verify_input(test_config, basedir);
     }
 }
@@ -150,7 +152,7 @@ void test_json_resolve_refs()
 
     for (size_t i = 0; i < ORCUS_N_ELEMENTS(json_test_refs_dirs); ++i)
     {
-        const char* basedir = json_test_refs_dirs[i];
+        fs::path basedir = json_test_refs_dirs[i];
         verify_input(test_config, basedir);
     }
 }
