@@ -92,4 +92,6 @@
             Filters=""
             GUID="{9E10DE22-363A-4DC3-9212-A71DA6800CDB}"/>
     </Files>
+    <List Name="RTE">
+    </List>
 </Project>

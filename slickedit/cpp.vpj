@@ -163,10 +163,6 @@
             <F N="../doc_example/spreadsheet_doc_2_sheets_with_string_pool.cpp"/>
             <F N="../doc_example/xml_mapping_1.cpp"/>
         </Folder>
-        <Folder Name="../example">
-            <F N="../example/json.cpp"/>
-            <F N="../example/json_parser.cpp"/>
-        </Folder>
         <Folder Name="../include">
             <Folder Name="orcus">
                 <Folder Name="detail">
@@ -225,7 +221,6 @@
                 <F N="../include/orcus/orcus_xml.hpp"/>
                 <F N="../include/orcus/parser_base.hpp"/>
                 <F N="../include/orcus/parser_global.hpp"/>
-                <F N="../include/orcus/pstring.hpp"/>
                 <F N="../include/orcus/sax_ns_parser.hpp"/>
                 <F N="../include/orcus/sax_parser.hpp"/>
                 <F N="../include/orcus/sax_parser_base.hpp"/>
@@ -254,6 +249,7 @@
                 </Folder>
                 <F N="../src/include/cpu_features.hpp"/>
                 <F N="../src/include/numeric_parser.hpp"/>
+                <F N="../src/include/pstring.hpp"/>
                 <F N="../src/include/test_global.hpp"/>
             </Folder>
             <Folder Name="liborcus">
@@ -498,10 +494,6 @@
                 <F N="../src/parser/zip_archive_test.cpp"/>
             </Folder>
             <Folder Name="python">
-                <Folder Name="orcus">
-                    <F N="../src/python/orcus/ods.py"/>
-                    <F N="../src/python/orcus/xlsx.py"/>
-                </Folder>
                 <F N="../src/python/cell.cpp"/>
                 <F N="../src/python/cell.hpp"/>
                 <F N="../src/python/csv.cpp"/>
@@ -578,6 +570,9 @@
                 <F N="../src/spreadsheet/styles.cpp"/>
                 <F N="../src/spreadsheet/view.cpp"/>
             </Folder>
+            <Folder Name="test">
+                <F N="../src/test/test_global.cpp"/>
+            </Folder>
             <F N="../src/cli_global.cpp"/>
             <F N="../src/cli_global.hpp"/>
             <F N="../src/odf_styles_context_test.cpp"/>
@@ -610,15 +605,6 @@
             <F N="../src/orcus_yaml_main.cpp"/>
             <F N="../src/orcus_zip_dump.cpp"/>
             <F N="../src/test_global.cpp"/>
-        </Folder>
-        <Folder Name="../test">
-            <Folder Name="python">
-                <F N="../test/python/csv_export.py"/>
-                <F N="../test/python/file_load_common.py"/>
-                <F N="../test/python/ods.py"/>
-                <F N="../test/python/xls_xml.py"/>
-                <F N="../test/python/xlsx.py"/>
-            </Folder>
         </Folder>
     </Files>
 </Project>
