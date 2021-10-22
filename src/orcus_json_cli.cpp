@@ -80,6 +80,7 @@ const char* help_json_output_format =
 "\n"
 "  * XML (xml)\n"
 "  * JSON (json)\n"
+"  * YAML (yaml)\n"
 "  * flat tree dump (check)\n"
 "  * no output (none)";
 
