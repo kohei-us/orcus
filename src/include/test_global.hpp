@@ -19,6 +19,37 @@
 #endif
 
 #include <iostream>
+#include <chrono>
+
+namespace orcus { namespace test {
+
+class stack_printer
+{
+public:
+    explicit stack_printer(const char* msg);
+    ~stack_printer();
+
+private:
+    double get_time() const;
+
+    std::string m_msg;
+    double m_start_time;
+};
+
+class assert_error : public std::exception
+{
+    std::string m_msg;
+
+public:
+    assert_error(const char* filename, size_t line_no, const char* msg);
+
+    virtual const char* what() const noexcept override;
+};
+
+void verify_content(
+    const char* filename, size_t line_no, std::string_view expected, const std::string& actual);
+
+}} // namespace orcus::test
 
 #endif
 

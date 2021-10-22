@@ -353,7 +353,8 @@ EXTRA_PROGRAMS += \
 orcus_test_csv_SOURCES = \
 	orcus_test_csv.cpp \
 	orcus_test_global.hpp \
-	orcus_test_global.cpp
+	orcus_test_global.cpp \
+	test_global.cpp
 
 orcus_test_csv_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
@@ -367,7 +368,8 @@ orcus_test_csv_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLA
 orcus_test_xml_mapped_SOURCES = \
 	orcus_test_xml_mapped.cpp \
 	orcus_test_global.hpp \
-	orcus_test_global.cpp
+	orcus_test_global.cpp \
+	test_global.cpp
 
 orcus_test_xml_mapped_LDFLAGS = \
 	$(BOOST_FILESYSTEM_LDFLAGS) \
@@ -485,7 +487,8 @@ EXTRA_PROGRAMS += orcus-test-xls-xml
 
 orcus_test_xls_xml_SOURCES = \
 	orcus_test_xls_xml.cpp \
-	orcus_test_global.cpp
+	orcus_test_global.cpp \
+	test_global.cpp
 
 orcus_test_xls_xml_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
@@ -508,7 +511,8 @@ EXTRA_PROGRAMS += orcus-test-gnumeric
 
 orcus_test_gnumeric_SOURCES = \
 	orcus_test_gnumeric.cpp \
-	orcus_test_global.cpp
+	orcus_test_global.cpp \
+	test_global.cpp
 
 orcus_test_gnumeric_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \

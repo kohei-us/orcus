@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
+
 #include <orcus/stream.hpp>
 #include <orcus/json_document_tree.hpp>
 #include <orcus/json_parser_base.hpp>
@@ -120,7 +122,7 @@ void verify_input(json_config& test_config, const fs::path& basedir)
     fs::path json_file = basedir / "input.json";
     test_config.input_path = json_file.string();
 
-    std::cout << "Testing " << json_file << std::endl;
+    std::cout << "* verify input: " << json_file << std::endl;
 
     file_content content(json_file.string());
     json::document_tree doc;
@@ -132,6 +134,17 @@ void verify_input(json_config& test_config, const fs::path& basedir)
 
     bool result = compare_check_contents(check_master, check_doc);
     assert(result);
+
+    if (fs::path outpath = basedir / "output.yaml"; fs::is_regular_file(outpath))
+    {
+        // Test the yaml output.
+        std::cout << "  * yaml output: " << outpath << std::endl;
+
+        file_content expected(outpath.string());
+        std::string actual = doc.dump_yaml();
+
+        test::verify_content(__FILE__, __LINE__, expected.str(), actual);
+    }
 }
 
 void test_json_parse()
