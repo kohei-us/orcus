@@ -1,0 +1,8 @@
+
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/src/include
+
+noinst_LIBRARIES = liborcus-test.a
+
+liborcus_test_a_SOURCES = test_global.cpp
