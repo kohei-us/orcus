@@ -35,6 +35,7 @@ Options
   
     - XML (xml)
     - JSON (json)
+    - YAML (yaml)
     - flat tree dump (check)
     - no output (none)
 
