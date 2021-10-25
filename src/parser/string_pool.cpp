@@ -15,6 +15,7 @@
 #include <memory>
 #include <cassert>
 #include <algorithm>
+#include <string_view>
 
 #include <boost/pool/object_pool.hpp>
 

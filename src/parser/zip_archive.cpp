@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <sstream>
+#include <string_view>
 
 #include <zlib.h>
 #include <zconf.h>

@@ -10,6 +10,8 @@
 
 #include "sax_parser_base.hpp"
 
+#include <string_view>
+
 namespace orcus {
 
 struct sax_parser_default_config

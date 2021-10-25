@@ -11,6 +11,7 @@
 
 #include <limits>
 #include <sstream>
+#include <string_view>
 #include <mdds/sorted_string_map.hpp>
 
 namespace orcus {
