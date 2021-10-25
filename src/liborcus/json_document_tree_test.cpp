@@ -37,7 +37,8 @@ fs::path json_test_dirs[] = {
     SRCDIR"/test/json/empty-array-3",
     SRCDIR"/test/json/nested1",
     SRCDIR"/test/json/nested2",
-    SRCDIR"/test/json/swagger"
+    SRCDIR"/test/json/swagger",
+    SRCDIR"/test/json/to-yaml-1",
 };
 
 fs::path json_test_refs_dirs[] = {

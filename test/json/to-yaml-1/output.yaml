@@ -1,0 +1,4 @@
+---
+A:B:C: 123
+"#text": my value
+"A: B: C: ": 456

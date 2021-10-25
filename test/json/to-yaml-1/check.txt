@@ -1,0 +1,14 @@
+ns0="http://schemas.kohei.us/orcus/2015/json"
+/ns0:object
+/ns0:object/ns0:item
+/ns0:object/ns0:item@name="A:B:C"
+/ns0:object/ns0:item/ns0:number
+/ns0:object/ns0:item/ns0:number@value="123"
+/ns0:object/ns0:item
+/ns0:object/ns0:item@name="#text"
+/ns0:object/ns0:item/ns0:string
+/ns0:object/ns0:item/ns0:string@value="my value"
+/ns0:object/ns0:item
+/ns0:object/ns0:item@name="A: B: C: "
+/ns0:object/ns0:item/ns0:number
+/ns0:object/ns0:item/ns0:number@value="456"

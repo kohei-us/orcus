@@ -426,10 +426,20 @@ class yaml_dumper
 
     static bool needs_quote(std::string_view s)
     {
+        char c_prev = 0;
+
         for (char c : s)
         {
-            if (c == '#')
-                return true;
+            switch (c)
+            {
+                case '#':
+                    return true;
+                case ' ':
+                    if (c_prev == ':')
+                        return true;
+            }
+
+            c_prev = c;
         }
 
         return false;
@@ -465,6 +475,19 @@ private:
 
         m_last_write = write_type::linebreak;
         os << std::endl;
+    }
+
+    void write_string(std::ostringstream& os, std::string_view s)
+    {
+        bool quote_value = needs_quote(s);
+
+        if (quote_value)
+            os << '"';
+
+        os << s;
+
+        if (quote_value)
+            os << '"';
     }
 
     void write_value(std::ostringstream& os, const json_value* v)
@@ -535,7 +558,8 @@ private:
                 auto write_key_value = [this, &os](std::string_view key, const json_value* value)
                 {
                     std::size_t indent_add = 2;
-                    os << key << ": ";
+                    write_string(os, key);
+                    os << ": ";
                     m_indent_length += indent_add;
                     write_value(os, value);
                     m_indent_length -= indent_add;
@@ -561,17 +585,7 @@ private:
             }
             case detail::node_t::string:
             {
-                std::string_view s{v->value.str.p, v->value.str.n};
-                bool quote_value = needs_quote(s);
-
-                if (quote_value)
-                    os << '"';
-
-                os << s;
-
-                if (quote_value)
-                    os << '"';
-
+                write_string(os, {v->value.str.p, v->value.str.n});
                 break;
             }
             case detail::node_t::unset:
