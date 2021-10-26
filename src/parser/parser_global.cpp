@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/parser_global.hpp"
-#include "orcus/cell_buffer.hpp"
-#include "orcus/global.hpp"
-#include "orcus/exception.hpp"
+#include <orcus/parser_global.hpp>
+#include <orcus/cell_buffer.hpp>
+#include <orcus/global.hpp>
+#include <orcus/exception.hpp>
 
 #include "numeric_parser.hpp"
 
