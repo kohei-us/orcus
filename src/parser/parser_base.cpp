@@ -72,7 +72,7 @@ std::string parse_error::build_message(
     if (msg_before)
         os << msg_before;
 
-    write_to(os, p, n);
+    os << std::string_view(p, n);
 
     if (msg_after)
         os << msg_after;

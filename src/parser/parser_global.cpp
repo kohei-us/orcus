@@ -57,16 +57,6 @@ bool is_in(char c, std::string_view allowed)
     return std::any_of(allowed.begin(), allowed.end(), f);
 }
 
-void write_to(std::ostringstream& os, const char* p, size_t n)
-{
-    if (!p)
-        return;
-
-    const char* pend = p + n;
-    for (; p != pend; ++p)
-        os << *p;
-}
-
 double parse_numeric(const char*& p, size_t max_length)
 {
     using numeric_parser_type = detail::numeric_parser<detail::generic_parser_trait>;

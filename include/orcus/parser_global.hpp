@@ -73,8 +73,6 @@ ORCUS_PSR_DLLPUBLIC bool is_numeric(char c);
  */
 ORCUS_PSR_DLLPUBLIC bool is_in(char c, std::string_view allowed);
 
-ORCUS_PSR_DLLPUBLIC void write_to(std::ostringstream& os, const char* p, size_t n);
-
 ORCUS_PSR_DLLPUBLIC double parse_numeric(const char*& p, size_t max_length);
 
 ORCUS_PSR_DLLPUBLIC long parse_integer(const char*& p, size_t max_length);
