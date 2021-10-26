@@ -34,7 +34,7 @@ public:
 
 protected:
 
-    void identifier(const char*& p, size_t& len, const char* extra = nullptr, size_t n_extra = 0);
+    void identifier(const char*& p, size_t& len, std::string_view extra = std::string_view{});
     uint8_t parse_uint8();
     double parse_percent();
     double parse_double_or_throw();

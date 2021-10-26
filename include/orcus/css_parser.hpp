@@ -511,7 +511,7 @@ void css_parser<_Handler>::value()
 
     const char* p = nullptr;
     size_t len = 0;
-    identifier(p, len, ORCUS_ASCII(".%"));
+    identifier(p, len, ".%");
     if (cur_char() == '(')
     {
         function_value(p, len);

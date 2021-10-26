@@ -37,7 +37,7 @@ parser_base::parser_base(const char* p, size_t n) :
     m_simple_selector_count(0),
     m_combinator(combinator_t::descendant) {}
 
-void parser_base::identifier(const char*& p, size_t& len, const char* extra, size_t n_extra)
+void parser_base::identifier(const char*& p, size_t& len, std::string_view extra)
 {
     p = mp_char;
     len = 1;
@@ -47,10 +47,10 @@ void parser_base::identifier(const char*& p, size_t& len, const char* extra, siz
         if (is_alpha(c) || is_name_char(c) || is_numeric(c))
             continue;
 
-        if (extra)
+        if (!extra.empty())
         {
             // See if the character is one of the extra allowed characters.
-            if (is_in(c, {extra, n_extra}))
+            if (is_in(c, extra))
                 continue;
         }
         return;
