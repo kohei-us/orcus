@@ -130,7 +130,7 @@ void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
 #else
     for (; has_char(); next())
     {
-        if (!is_in(*mp_char, chars_to_skip, n_chars_to_skip))
+        if (!is_in(*mp_char, {chars_to_skip, n_chars_to_skip}))
             break;
     }
 #endif

@@ -34,7 +34,7 @@ parser_base::parser_base(
 
 bool parser_base::is_blank(char c) const
 {
-    return is_in(c, ORCUS_ASCII(" \t"));
+    return is_in(c, " \t");
 }
 
 bool parser_base::is_delim(char c) const

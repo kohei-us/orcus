@@ -66,13 +66,12 @@ ORCUS_PSR_DLLPUBLIC bool is_numeric(char c);
  * only specify up to 16 allowed characters.
  *
  * @param c character to check.
- * @param allowed character array containing all allowed characters.
- * @param n_allowed length of the character array.
+ * @param allowed string containing all allowed characters.
  *
  * @return true if the character is one of the allowed characters, false
  *         otherwise.
  */
-ORCUS_PSR_DLLPUBLIC bool is_in(char c, const char* allowed, size_t n_allowed);
+ORCUS_PSR_DLLPUBLIC bool is_in(char c, std::string_view allowed);
 
 ORCUS_PSR_DLLPUBLIC void write_to(std::ostringstream& os, const char* p, size_t n);
 

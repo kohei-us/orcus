@@ -50,7 +50,7 @@ void parser_base::identifier(const char*& p, size_t& len, const char* extra, siz
         if (extra)
         {
             // See if the character is one of the extra allowed characters.
-            if (is_in(c, extra, n_extra))
+            if (is_in(c, {extra, n_extra}))
                 continue;
         }
         return;
@@ -131,7 +131,7 @@ void parser_base::skip_to_or_blank(
     len = 0;
     for (; has_char(); next(), ++len)
     {
-        if (is_blank(*mp_char) || is_in(*mp_char, chars, n_chars))
+        if (is_blank(*mp_char) || is_in(*mp_char, {chars, n_chars}))
             return;
     }
 }

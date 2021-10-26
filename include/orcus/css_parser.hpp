@@ -506,7 +506,7 @@ void css_parser<_Handler>::value()
         return;
     }
 
-    if (!is_alpha(c) && !is_numeric(c) && !is_in(c, ORCUS_ASCII("-+.#")))
+    if (!is_alpha(c) && !is_numeric(c) && !is_in(c, "-+.#"))
         css::parse_error::throw_with("value:: illegal first character of a value '", c, "'");
 
     const char* p = nullptr;

@@ -579,7 +579,7 @@ bool needs_quoting(const std::string& s)
 {
     // See if it contains certain characters...
     for (auto it = s.begin(), ite = s.end(); it != ite; ++it)
-        if (is_in(*it, ORCUS_ASCII("#'")))
+        if (is_in(*it, "#'"))
             return true;
 
     // See if the whole string is parsed as a number.

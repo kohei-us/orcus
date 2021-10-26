@@ -25,7 +25,7 @@ const size_t parse_quoted_string_state::error_illegal_escape_char = 2;
 
 bool is_blank(char c)
 {
-    return is_in(c, ORCUS_ASCII(" \t\n\r"));
+    return is_in(c, " \t\n\r");
 }
 
 bool is_alpha(char c)
@@ -39,7 +39,7 @@ bool is_alpha(char c)
 
 bool is_name_char(char c)
 {
-    return is_in(c, ORCUS_ASCII("-_"));
+    return is_in(c, "-_");
 }
 
 bool is_numeric(char c)
@@ -47,21 +47,14 @@ bool is_numeric(char c)
     return ('0' <= c && c <= '9');
 }
 
-bool is_in(char c, const char* allowed, size_t n_allowed)
+bool is_in(char c, std::string_view allowed)
 {
 #ifdef __ORCUS_DEBUG_UTILS
-    if (allowed && !n_allowed)
-        throw std::invalid_argument("'allowed' pointer is non-null but the value of 'n_allowed' is 0.");
+    if (allowed.empty())
+        throw std::invalid_argument("'allowed' string should not be empty.");
 #endif
-
-    const char* p_end = allowed + n_allowed;
-
-    for (; allowed != p_end; ++allowed)
-    {
-        if (c == *allowed)
-            return true;
-    }
-    return false;
+    auto f = [c](char c_allowed) { return c == c_allowed; };
+    return std::any_of(allowed.begin(), allowed.end(), f);
 }
 
 void write_to(std::ostringstream& os, const char* p, size_t n)
