@@ -77,7 +77,7 @@ const char* sax_parser_test_dirs[] = {
     SRCDIR"/test/xml/no-decl-1/",
     SRCDIR"/test/xml/underscore-identifier/",
     SRCDIR"/test/xml/self-closing-root/",
-    SRCDIR"/test/xml/non-ascii/",
+    SRCDIR"/test/xml/utf8-1/",
 };
 
 const char* sax_parser_parse_only_test_dirs[] = {
