@@ -17,6 +17,7 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
+#include <cctype>
 
 namespace orcus {
 
@@ -30,11 +31,7 @@ bool is_blank(char c)
 
 bool is_alpha(char c)
 {
-    if ('a' <= c && c <= 'z')
-        return true;
-    if ('A' <= c && c <= 'Z')
-        return true;
-    return false;
+    return std::isalpha(static_cast<unsigned char>(c));
 }
 
 bool is_name_char(char c)
