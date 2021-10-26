@@ -234,25 +234,21 @@ void sax_parser<_Handler,_Config>::element()
     {
         case '/':
             element_close(pos);
-        break;
+            return;
         case '!':
             special_tag();
-        break;
+            return;
         case '?':
             declaration(nullptr);
-        break;
-        default:
-            if (!is_alpha(c) && c != '_')
-                throw sax::malformed_xml_error("expected an alphabet.", offset());
-            element_open(pos);
+            return;
     }
+
+    element_open(pos);
 }
 
 template<typename _Handler, typename _Config>
 void sax_parser<_Handler,_Config>::element_open(std::ptrdiff_t begin_pos)
 {
-    assert(is_alpha(cur_char()) || cur_char() == '_');
-
     sax::parser_element elem;
     element_name(elem, begin_pos);
 
