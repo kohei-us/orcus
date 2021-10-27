@@ -54,6 +54,16 @@ bool check_prop(const css_properties_t& props, std::string_view key, std::string
     return true;
 }
 
+css_document_tree load_document(const fs::path& path)
+{
+    std::cout << path << std::endl;
+    file_content content(path.string());
+    css_document_tree doc;
+    doc.load(content.str());
+
+    return doc;
+}
+
 void test_css_invalids()
 {
     // Get all yaml files in this directory.
@@ -126,11 +136,7 @@ void test_css_empty()
 
 void test_css_parse_basic1()
 {
-    fs::path path = SRCDIR"/test/css/basic1.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic1.css");
 
     css_selector_t selector;
     selector.first.name = "table";
@@ -156,11 +162,7 @@ void test_css_parse_basic1()
 
 void test_css_parse_basic2()
 {
-    fs::path path = SRCDIR"/test/css/basic2.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic2.css");
 
     css_selector_t selector;
     selector.first.name = "div";
@@ -183,11 +185,7 @@ void test_css_parse_basic2()
 
 void test_css_parse_basic3()
 {
-    fs::path path = SRCDIR"/test/css/basic3.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic3.css");
 
     css_selector_t selector;
     selector.first.name = "html";
@@ -222,11 +220,7 @@ void test_css_parse_basic3()
 
 void test_css_parse_basic4()
 {
-    fs::path path = SRCDIR"/test/css/basic4.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic4.css");
 
     css_selector_t selector;
     selector.first.name = "h1";
@@ -263,11 +257,7 @@ void test_css_parse_basic4()
 
 void test_css_parse_basic5()
 {
-    fs::path path = SRCDIR"/test/css/basic5.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic5.css");
 
     css_selector_t selector;
     selector.first.classes.insert("info");
@@ -280,11 +270,7 @@ void test_css_parse_basic5()
 
 void test_css_parse_basic6()
 {
-    fs::path path = SRCDIR"/test/css/basic6.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic6.css");
 
     css_selector_t selector;
     selector.first.name = "h1";
@@ -311,11 +297,7 @@ void test_css_parse_basic6()
 
 void test_css_parse_basic7()
 {
-    fs::path path = SRCDIR"/test/css/basic7.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic7.css");
 
     css_selector_t selector;
     selector.first.classes.insert("one");
@@ -364,11 +346,7 @@ void test_css_parse_basic7()
 
 void test_css_parse_basic8()
 {
-    fs::path path = SRCDIR"/test/css/basic8.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic8.css");
 
     css_selector_t selector;
     selector.first.classes.insert("ribbon");
@@ -426,11 +404,7 @@ void test_css_parse_basic8()
 
 void test_css_parse_basic9()
 {
-    fs::path path = SRCDIR"/test/css/basic9.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic9.css");
 
     css_selector_t selector;
     selector.first.name = "a";
@@ -462,11 +436,7 @@ void test_css_parse_basic9()
 
 void test_css_parse_basic10()
 {
-    fs::path path = SRCDIR"/test/css/basic10.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic10.css");
 
     css_selector_t selector;
     selector.first.classes.insert("foo");
@@ -669,6 +639,11 @@ void test_css_parse_chained2()
     assert(props->size() == 2);
     assert(check_prop(*props, "background-color", "aquamarine"));
     assert(check_prop(*props, "border", "solid 2px"));
+}
+
+void test_css_parse_utf8_1()
+{
+
 }
 
 int main()

@@ -527,13 +527,18 @@ struct css_document_tree::impl
     simple_selectors_type m_root;
 };
 
-css_document_tree::css_document_tree() : mp_impl(new impl)
+css_document_tree::css_document_tree() : mp_impl(std::make_unique<impl>())
 {
+}
+
+css_document_tree::css_document_tree(css_document_tree&& other) :
+    mp_impl(std::move(other.mp_impl))
+{
+    other.mp_impl = std::make_unique<impl>();
 }
 
 css_document_tree::~css_document_tree()
 {
-    delete mp_impl;
 }
 
 void css_document_tree::load(std::string_view stream)

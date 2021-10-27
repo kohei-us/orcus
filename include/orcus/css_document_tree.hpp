@@ -12,6 +12,7 @@
 #include "orcus/exception.hpp"
 
 #include <string>
+#include <memory>
 
 namespace orcus {
 
@@ -21,7 +22,7 @@ namespace orcus {
 class ORCUS_DLLPUBLIC css_document_tree
 {
     struct impl;
-    impl* mp_impl;
+    std::unique_ptr<impl> mp_impl;
 
 public:
 
@@ -31,7 +32,10 @@ public:
         insertion_error(const std::string& msg);
     };
 
+    css_document_tree(const css_document_tree&) = delete;
+
     css_document_tree();
+    css_document_tree(css_document_tree&& other);
     ~css_document_tree();
 
     /**
