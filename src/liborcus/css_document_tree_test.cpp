@@ -116,19 +116,19 @@ void test_css_simple_selector_equality()
 
 void test_css_empty()
 {
-    const char* path = SRCDIR"/test/css/empty.css";
+    fs::path path = SRCDIR"/test/css/empty.css";
     std::cout << path << std::endl;
 
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 }
 
 void test_css_parse_basic1()
 {
-    const char* path = SRCDIR"/test/css/basic1.css";
+    fs::path path = SRCDIR"/test/css/basic1.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -156,9 +156,9 @@ void test_css_parse_basic1()
 
 void test_css_parse_basic2()
 {
-    const char* path = SRCDIR"/test/css/basic2.css";
+    fs::path path = SRCDIR"/test/css/basic2.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -183,9 +183,9 @@ void test_css_parse_basic2()
 
 void test_css_parse_basic3()
 {
-    const char* path = SRCDIR"/test/css/basic3.css";
+    fs::path path = SRCDIR"/test/css/basic3.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -222,9 +222,9 @@ void test_css_parse_basic3()
 
 void test_css_parse_basic4()
 {
-    const char* path = SRCDIR"/test/css/basic4.css";
+    fs::path path = SRCDIR"/test/css/basic4.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -263,9 +263,9 @@ void test_css_parse_basic4()
 
 void test_css_parse_basic5()
 {
-    const char* path = SRCDIR"/test/css/basic5.css";
+    fs::path path = SRCDIR"/test/css/basic5.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -280,9 +280,9 @@ void test_css_parse_basic5()
 
 void test_css_parse_basic6()
 {
-    const char* path = SRCDIR"/test/css/basic6.css";
+    fs::path path = SRCDIR"/test/css/basic6.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -311,9 +311,9 @@ void test_css_parse_basic6()
 
 void test_css_parse_basic7()
 {
-    const char* path = SRCDIR"/test/css/basic7.css";
+    fs::path path = SRCDIR"/test/css/basic7.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -364,9 +364,9 @@ void test_css_parse_basic7()
 
 void test_css_parse_basic8()
 {
-    const char* path = SRCDIR"/test/css/basic8.css";
+    fs::path path = SRCDIR"/test/css/basic8.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -426,9 +426,9 @@ void test_css_parse_basic8()
 
 void test_css_parse_basic9()
 {
-    const char* path = SRCDIR"/test/css/basic9.css";
+    fs::path path = SRCDIR"/test/css/basic9.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -462,9 +462,9 @@ void test_css_parse_basic9()
 
 void test_css_parse_basic10()
 {
-    const char* path = SRCDIR"/test/css/basic10.css";
+    fs::path path = SRCDIR"/test/css/basic10.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -480,9 +480,9 @@ void test_css_parse_basic10()
 
 void test_css_parse_basic11()
 {
-    const char* path = SRCDIR"/test/css/basic11.css";
+    fs::path path = SRCDIR"/test/css/basic11.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -501,9 +501,9 @@ void test_css_parse_basic11()
 
 void test_css_parse_basic12()
 {
-    const char* path = SRCDIR"/test/css/basic12.css";
+    fs::path path = SRCDIR"/test/css/basic12.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -540,9 +540,9 @@ void test_css_parse_basic12()
 
 void test_css_parse_basic13()
 {
-    const char* path = SRCDIR"/test/css/basic13.css";
+    fs::path path = SRCDIR"/test/css/basic13.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -575,9 +575,9 @@ void test_css_parse_basic13()
 
 void test_css_parse_basic14()
 {
-    const char* path = SRCDIR"/test/css/basic14.css";
+    fs::path path = SRCDIR"/test/css/basic14.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -610,9 +610,9 @@ void test_css_parse_basic14()
 
 void test_css_parse_chained1()
 {
-    const char* path = SRCDIR"/test/css/chained1.css";
+    fs::path path = SRCDIR"/test/css/chained1.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
@@ -645,9 +645,9 @@ void test_css_parse_chained1()
 
 void test_css_parse_chained2()
 {
-    const char* path = SRCDIR"/test/css/chained2.css";
+    fs::path path = SRCDIR"/test/css/chained2.css";
     std::cout << path << std::endl;
-    file_content content(path);
+    file_content content(path.string());
     css_document_tree doc;
     doc.load(content.str());
 
