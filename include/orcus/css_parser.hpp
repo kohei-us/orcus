@@ -15,6 +15,7 @@
 #include "global.hpp"
 
 #include <cassert>
+#include <algorithm>
 
 #if ORCUS_DEBUG_CSS
 #include <iostream>
@@ -605,7 +606,7 @@ void css_parser<_Handler>::function_rgb(bool alpha)
 
         double alpha_val = parse_double_or_throw();
 
-        alpha_val = clip(alpha_val, 0.0, 1.0);
+        alpha_val = std::clamp(alpha_val, 0.0, 1.0);
         m_handler.rgba(vals[0], vals[1], vals[2], alpha_val);
     }
     else
@@ -630,7 +631,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
     // hsl(num, percent, percent)  hsla(num, percent, percent, float)
 
     double hue = parse_double_or_throw(); // casted to uint8_t eventually.
-    hue = clip(hue, 0.0, 360.0);
+    hue = std::clamp(hue, 0.0, 360.0);
     skip_comments_and_blanks();
 
     char c = cur_char();
@@ -641,7 +642,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
     skip_comments_and_blanks();
 
     double sat = parse_percent();
-    sat = clip(sat, 0.0, 100.0);
+    sat = std::clamp(sat, 0.0, 100.0);
     skip_comments_and_blanks();
 
     c = cur_char();
@@ -652,7 +653,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
     skip_comments_and_blanks();
 
     double light = parse_percent();
-    light = clip(light, 0.0, 100.0);
+    light = std::clamp(light, 0.0, 100.0);
     skip_comments_and_blanks();
 
     if (!alpha)
@@ -669,7 +670,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
     skip_comments_and_blanks();
 
     double alpha_val = parse_double_or_throw();
-    alpha_val = clip(alpha_val, 0.0, 1.0);
+    alpha_val = std::clamp(alpha_val, 0.0, 1.0);
     skip_comments_and_blanks();
     m_handler.hsla(hue, sat, light, alpha_val);
 }

@@ -481,15 +481,6 @@ const char* parse_to_closing_double_quote(const char* p, size_t max_length)
     return nullptr;
 }
 
-double clip(double input, double low, double high)
-{
-    if (input < low)
-        input = low;
-    if (input > high)
-        input = high;
-    return input;
-}
-
 std::string_view trim(std::string_view str)
 {
     const char* p = str.data();

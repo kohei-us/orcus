@@ -124,17 +124,6 @@ ORCUS_PSR_DLLPUBLIC const char* parse_to_closing_double_quote(
  */
 ORCUS_PSR_DLLPUBLIC string_escape_char_t get_string_escape_char_type(char c);
 
-/**
- * Clip input value to specified range in case it falls outside the range.
- *
- * @param input original input value.
- * @param low lower bound.
- * @param high upper bound.
- *
- * @return clipped value.
- */
-ORCUS_PSR_DLLPUBLIC double clip(double input, double low, double high);
-
 ORCUS_PSR_DLLPUBLIC std::string_view trim(std::string_view str);
 
 }
