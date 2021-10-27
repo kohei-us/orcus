@@ -36,7 +36,7 @@ bool is_alpha(char c)
 
 bool is_numeric(char c)
 {
-    return ('0' <= c && c <= '9');
+    return std::isdigit(static_cast<unsigned char>(c));
 }
 
 bool is_in(char c, std::string_view allowed)
