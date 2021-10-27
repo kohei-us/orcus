@@ -34,11 +34,6 @@ bool is_alpha(char c)
     return std::isalpha(static_cast<unsigned char>(c));
 }
 
-bool is_name_char(char c)
-{
-    return is_in(c, "-_");
-}
-
 bool is_numeric(char c)
 {
     return ('0' <= c && c <= '9');

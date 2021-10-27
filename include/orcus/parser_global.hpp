@@ -58,7 +58,6 @@ struct parse_quoted_string_state
 
 ORCUS_PSR_DLLPUBLIC bool is_blank(char c);
 ORCUS_PSR_DLLPUBLIC bool is_alpha(char c);
-ORCUS_PSR_DLLPUBLIC bool is_name_char(char c);
 ORCUS_PSR_DLLPUBLIC bool is_numeric(char c);
 
 /**

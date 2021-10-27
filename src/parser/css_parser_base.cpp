@@ -51,7 +51,7 @@ void parser_base::identifier(const char*& p, size_t& len, std::string_view extra
     for (next(); has_char(); next(), ++len)
     {
         char c = cur_char();
-        if (is_alpha(c) || is_name_char(c) || is_numeric(c))
+        if (is_alpha(c) || is_numeric(c) || is_in(c, "-_"))
             continue;
 
         if (!extra.empty())
