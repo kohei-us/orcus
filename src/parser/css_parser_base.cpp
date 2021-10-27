@@ -92,10 +92,6 @@ uint8_t parser_base::parse_uint8()
 
 std::string_view parser_base::parse_value()
 {
-    std::size_t max_size = available_size();
-    if (!max_size)
-        return {};
-
     auto throw_invalid = [](uint8_t n_bytes)
     {
         std::ostringstream os;
@@ -112,6 +108,10 @@ std::string_view parser_base::parse_value()
             throw css::parse_error(os.str());
         }
     };
+
+    std::size_t max_size = available_size();
+    if (!max_size)
+        return {};
 
     const char* p0 = mp_char;
     std::size_t len = 0;
