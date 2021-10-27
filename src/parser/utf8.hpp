@@ -19,6 +19,8 @@ const char* parse_utf8_xml_name_char(const char* p, const char* p_end);
 
 std::vector<char> encode_utf8(uint32_t cp);
 
+uint8_t calc_utf8_byte_length(uint8_t c1);
+
 }
 
 #endif

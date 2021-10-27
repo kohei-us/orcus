@@ -209,7 +209,7 @@ private:
     void property();
     void quoted_value(char c);
     void value();
-    void function_value(const char* p, size_t len);
+    void function_value(std::string_view v);
     void function_rgb(bool alpha);
     void function_hsl(bool alpha);
     void function_url();
@@ -506,35 +506,32 @@ void css_parser<_Handler>::value()
         return;
     }
 
-    if (!is_alpha(c) && !is_numeric(c) && !is_in(c, "-+.#"))
-        css::parse_error::throw_with("value:: illegal first character of a value '", c, "'");
+    std::string_view v = parse_value();
+    if (v.empty())
+        return;
 
-    const char* p = nullptr;
-    size_t len = 0;
-    identifier(p, len, ".%");
     if (cur_char() == '(')
     {
-        function_value(p, len);
+        function_value(v);
         return;
     }
 
-    m_handler.value(p, len);
+    m_handler.value(v.data(), v.size());
 
     skip_comments_and_blanks();
 
 #if ORCUS_DEBUG_CSS
-    std::string foo(p, len);
-    std::cout << "value: " << foo.c_str() << std::endl;
+    std::cout << "value: " << v << std::endl;
 #endif
 }
 
 template<typename _Handler>
-void css_parser<_Handler>::function_value(const char* p, size_t len)
+void css_parser<_Handler>::function_value(std::string_view v)
 {
     assert(cur_char() == '(');
-    css::property_function_t func = css::to_property_function({p, len});
+    css::property_function_t func = css::to_property_function(v);
     if (func == css::property_function_t::unknown)
-        css::parse_error::throw_with("function_value: unknown function '", p, len, "'");
+        css::parse_error::throw_with("function_value: unknown function '", v, "'");
 
     // Move to the first character of the first argument.
     next();
@@ -558,7 +555,7 @@ void css_parser<_Handler>::function_value(const char* p, size_t len)
             function_url();
         break;
         default:
-            css::parse_error::throw_with("function_value: unhandled function '", p, len, "'");
+            css::parse_error::throw_with("function_value: unhandled function '", v, "'");
     }
 
     char c = cur_char();

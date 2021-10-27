@@ -25,6 +25,7 @@ public:
 
     static void throw_with(const char* msg_before, char c, const char* msg_after);
     static void throw_with(const char* msg_before, const char* p, size_t n, const char* msg_after);
+    static void throw_with(const char* msg_before, std::string_view s, const char* msg_after);
 };
 
 class ORCUS_PSR_DLLPUBLIC parser_base : public ::orcus::parser_base
@@ -36,6 +37,14 @@ protected:
 
     void identifier(const char*& p, size_t& len, std::string_view extra = std::string_view{});
     uint8_t parse_uint8();
+
+    /**
+     * Parse an unquoted property value until one of non-value characters is
+     * reached.
+     *
+     * @return parsed value segment.
+     */
+    std::string_view parse_value();
     double parse_percent();
     double parse_double_or_throw();
 

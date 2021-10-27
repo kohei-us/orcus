@@ -18,27 +18,6 @@ namespace orcus {
 
 namespace {
 
-uint8_t calc_byte_length(uint8_t c1)
-{
-    if ((c1 & 0x80) == 0x00)
-        // highest bit is not set.
-        return 1;
-
-    if ((c1 & 0xE0) == 0xC0)
-        // highest 3 bits are 110.
-        return 2;
-
-    if ((c1 & 0xF0) == 0xE0)
-        // highest 4 bits are 1110.
-        return 3;
-
-    if ((c1 & 0xFC) == 0xF0)
-        // highest 5 bits are 11110.
-        return 4;
-
-    return std::numeric_limits<uint8_t>::max();
-}
-
 bool valid_second_byte(uint8_t b)
 {
     return (b & 0xC0) == 0x80;
@@ -376,7 +355,7 @@ const char* parse_utf8_xml_name_start_char(const char* p, const char* p_end)
     if (!n_remaining)
         return p;
 
-    uint8_t n_bytes = calc_byte_length(*p);
+    uint8_t n_bytes = calc_utf8_byte_length(*p);
 
     switch (n_bytes)
     {
@@ -435,7 +414,7 @@ const char* parse_utf8_xml_name_char(const char* p, const char* p_end)
     if (!n_remaining)
         return p;
 
-    uint8_t n_bytes = calc_byte_length(*p);
+    uint8_t n_bytes = calc_utf8_byte_length(*p);
 
     switch (n_bytes)
     {
@@ -517,6 +496,27 @@ std::vector<char> encode_utf8(uint32_t cp)
     }
 
     throw std::logic_error("this should never be reached.");
+}
+
+uint8_t calc_utf8_byte_length(uint8_t c1)
+{
+    if ((c1 & 0x80) == 0x00)
+        // highest bit is not set.
+        return 1;
+
+    if ((c1 & 0xE0) == 0xC0)
+        // highest 3 bits are 110.
+        return 2;
+
+    if ((c1 & 0xF0) == 0xE0)
+        // highest 4 bits are 1110.
+        return 3;
+
+    if ((c1 & 0xFC) == 0xF0)
+        // highest 5 bits are 11110.
+        return 4;
+
+    return std::numeric_limits<uint8_t>::max();
 }
 
 }
