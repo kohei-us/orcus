@@ -16,7 +16,7 @@
 #include "orcus/spreadsheet/import_interface_pivot.hpp"
 
 #include <iostream>
-#include <boost/optional.hpp>
+#include <optional>
 #include <mdds/sorted_string_map.hpp>
 
 using namespace std;
@@ -344,8 +344,8 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             double end = 0.0;
             double interval = 1.0;
 
-            boost::optional<date_time_t> start_date;
-            boost::optional<date_time_t> end_date;
+            std::optional<date_time_t> start_date;
+            std::optional<date_time_t> end_date;
 
             // Default group-by type appears to be 'range'.
             spreadsheet::pivot_cache_group_by_t group_by =
@@ -899,10 +899,10 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
     bool has_long_text = false;
 
     long count = -1;
-    boost::optional<double> min_value;
-    boost::optional<double> max_value;
-    boost::optional<date_time_t> min_date;
-    boost::optional<date_time_t> max_date;
+    std::optional<double> min_value;
+    std::optional<double> max_value;
+    std::optional<date_time_t> min_date;
+    std::optional<date_time_t> max_date;
 
     for_each(attrs.begin(), attrs.end(),
         [&](const xml_token_attr_t& attr)
