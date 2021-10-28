@@ -1,4 +1,5 @@
 
+add_subdirectory(test)
 add_subdirectory(parser)
 add_subdirectory(liborcus)
 add_subdirectory(spreadsheet)
@@ -123,7 +124,12 @@ set(_TESTS
 )
 
 foreach(_TEST ${_TESTS})
-    target_link_libraries(${_TEST} orcus-parser-${ORCUS_API_VERSION} orcus-spreadsheet-model-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
+    target_link_libraries(${_TEST}
+        orcus-parser-${ORCUS_API_VERSION}
+        orcus-spreadsheet-model-${ORCUS_API_VERSION}
+        orcus-${ORCUS_API_VERSION}
+        orcus-test
+    )
 
     target_compile_definitions(${_TEST} PRIVATE
         SRCDIR="${PROJECT_SOURCE_DIR}"
