@@ -13,6 +13,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <cassert>
 
 namespace orcus { namespace spreadsheet {
 

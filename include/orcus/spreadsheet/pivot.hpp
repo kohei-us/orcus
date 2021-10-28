@@ -16,8 +16,7 @@
 #include <vector>
 #include <limits>
 #include <variant>
-
-#include <boost/optional.hpp>
+#include <optional>
 
 namespace ixion {
 
@@ -125,7 +124,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_data_t
      */
     pivot_cache_indices_t base_to_group_indices;
 
-    boost::optional<range_grouping_type> range_grouping;
+    std::optional<range_grouping_type> range_grouping;
 
     /**
      * Individual items comprising the group.
@@ -152,11 +151,11 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
 
     pivot_cache_items_t items;
 
-    boost::optional<double> min_value;
-    boost::optional<double> max_value;
+    std::optional<double> min_value;
+    std::optional<double> max_value;
 
-    boost::optional<date_time_t> min_date;
-    boost::optional<date_time_t> max_date;
+    std::optional<date_time_t> min_date;
+    std::optional<date_time_t> max_date;
 
     std::unique_ptr<pivot_cache_group_data_t> group_data;
 

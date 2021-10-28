@@ -18,10 +18,10 @@
 #include "shared_formula.hpp"
 
 #include <memory>
+#include <optional>
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_result.hpp>
 #include <ixion/matrix.hpp>
-#include <boost/optional.hpp>
 
 namespace orcus {
 
@@ -165,7 +165,7 @@ class import_formula : public iface::import_formula
     bool m_shared;
 
     ixion::formula_tokens_store_ptr_t m_tokens_store;
-    boost::optional<ixion::formula_result> m_result;
+    std::optional<ixion::formula_result> m_result;
     formula_error_policy_t m_error_policy;
 
 public:

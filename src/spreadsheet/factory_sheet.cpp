@@ -322,12 +322,12 @@ void import_formula::set_shared_formula_index(size_t index)
 
 void import_formula::set_result_value(double value)
 {
-    m_result.reset(ixion::formula_result(value));
+    m_result = ixion::formula_result(value);
 }
 
 void import_formula::set_result_string(std::string_view value)
 {
-    m_result.reset(ixion::formula_result(std::string{value}));
+    m_result = ixion::formula_result(std::string{value});
 }
 
 void import_formula::set_result_empty() {}
@@ -371,7 +371,7 @@ void import_formula::commit()
 
 void import_formula::set_missing_formula_result(ixion::formula_result result)
 {
-    m_result.reset(std::move(result));
+    m_result = std::move(result);
 }
 
 void import_formula::set_formula_error_policy(formula_error_policy_t policy)
