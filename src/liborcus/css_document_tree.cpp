@@ -541,6 +541,14 @@ css_document_tree::~css_document_tree()
 {
 }
 
+css_document_tree& css_document_tree::operator=(css_document_tree&& other)
+{
+    css_document_tree tmp(std::move(other));
+    swap(tmp);
+
+    return *this;
+}
+
 void css_document_tree::load(std::string_view stream)
 {
     if (stream.empty())
@@ -631,6 +639,11 @@ void css_document_tree::dump() const
         for (; it_comb != ite_comb; ++it_comb)
             dump_chained_recursive(selector, it_comb->first, it_comb->second);
     }
+}
+
+void css_document_tree::swap(css_document_tree& other) noexcept
+{
+    mp_impl.swap(other.mp_impl);
 }
 
 }

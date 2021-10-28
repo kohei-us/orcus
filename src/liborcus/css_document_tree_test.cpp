@@ -54,6 +54,22 @@ bool check_prop(const css_properties_t& props, std::string_view key, std::string
     return true;
 }
 
+using check_properties_type = std::vector<std::pair<std::string, std::string>>;
+
+bool check_props(const css_properties_t& props, check_properties_type expected)
+{
+    bool pass = true;
+
+    for (const auto& [key, value] : expected)
+    {
+        bool res = check_prop(props, key, value);
+        if (!res)
+            pass = false;
+    }
+
+    return pass;
+}
+
 css_document_tree load_document(const fs::path& path)
 {
     std::cout << path << std::endl;
@@ -450,11 +466,7 @@ void test_css_parse_basic10()
 
 void test_css_parse_basic11()
 {
-    fs::path path = SRCDIR"/test/css/basic11.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic11.css");
 
     css_selector_t selector;
     selector.first.classes.insert("callout");
@@ -471,11 +483,7 @@ void test_css_parse_basic11()
 
 void test_css_parse_basic12()
 {
-    fs::path path = SRCDIR"/test/css/basic12.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic12.css");
 
     css_selector_t selector;
     selector.first.name = "div";
@@ -510,11 +518,7 @@ void test_css_parse_basic12()
 
 void test_css_parse_basic13()
 {
-    fs::path path = SRCDIR"/test/css/basic13.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic13.css");
 
     css_selector_t selector;
     selector.first.id = "p1";
@@ -545,11 +549,7 @@ void test_css_parse_basic13()
 
 void test_css_parse_basic14()
 {
-    fs::path path = SRCDIR"/test/css/basic14.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/basic14.css");
 
     css_selector_t selector;
     selector.first.id = "p1";
@@ -580,11 +580,7 @@ void test_css_parse_basic14()
 
 void test_css_parse_chained1()
 {
-    fs::path path = SRCDIR"/test/css/chained1.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/chained1.css");
 
     css_selector_t selector;
     selector.first.name = "div";
@@ -615,11 +611,7 @@ void test_css_parse_chained1()
 
 void test_css_parse_chained2()
 {
-    fs::path path = SRCDIR"/test/css/chained2.css";
-    std::cout << path << std::endl;
-    file_content content(path.string());
-    css_document_tree doc;
-    doc.load(content.str());
+    css_document_tree doc = load_document(SRCDIR"/test/css/chained2.css");
 
     // Build selector '#id1 table.data td'.
     css_selector_t selector;
@@ -643,7 +635,33 @@ void test_css_parse_chained2()
 
 void test_css_parse_utf8_1()
 {
+    css_document_tree doc = load_document(SRCDIR"/test/css/utf8-1.css");
 
+    css_document_tree doc2;
+    doc2 = std::move(doc);  // test the move assignment operator.
+
+    css_selector_t selector;
+    selector.first.classes.insert("style17");
+
+    const css_properties_t* props = doc2.get_properties(selector, 0);
+    assert(props);
+    assert(props->size() == 11);
+
+    check_properties_type expected = {
+        { "mso-pattern", "auto none" },
+        { "background", "#EDEDED" },
+        { "mso-style-name", "20% - 强调文字颜色 3" },
+        { "color", "#000000" },
+        { "font-size", "11.0pt" },
+        { "font-weight", "400" },
+        { "font-style", "normal" },
+        { "font-family", "宋体" },
+        { "text-decoration", "none" },
+        { "mso-generic-font-family", "auto" },
+        { "mso-font-charset", "0" },
+    };
+
+    assert(check_props(*props, expected));
 }
 
 int main()
@@ -667,6 +685,7 @@ int main()
     test_css_parse_basic14();
     test_css_parse_chained1();
     test_css_parse_chained2();
+    test_css_parse_utf8_1();
 
     return EXIT_SUCCESS;
 }

@@ -38,6 +38,8 @@ public:
     css_document_tree(css_document_tree&& other);
     ~css_document_tree();
 
+    css_document_tree& operator=(css_document_tree&& other);
+
     /**
      * Load raw string stream containing CSS rules to populate the document
      * tree.
@@ -87,6 +89,8 @@ public:
         get_all_properties(const css_selector_t& selector) const;
 
     void dump() const;
+
+    void swap(css_document_tree& other) noexcept;
 };
 
 }
