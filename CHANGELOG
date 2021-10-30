@@ -1,13 +1,54 @@
-orcus <next version>
+orcus 0.17.0
+
+* general
+
+  * set the baseline C++ version to 17.
+
+  * cleaned up the public API to replace pstring with std::string_view, union
+    with std::variant, and boost::optional with std::optional.  With this
+    change, the public API no longer has dependency on boost.
+
+* spreadsheet document
+
+  * switched to using ixion::model_iterator for horizontal iteration of cells
+    instead of using mdds::mtv::collection.
+
+  * fixed a bug where exporting a spreadsheet document containing adjacent
+    merged cells regions to html incorrectly exported the merged cell areas.
+
+* xlsx
+
+  * cached cell values are now correctly loaded from the file.
 
 * sax parser
 
-  * utf-8 names are now allowed as element names.
+  * utf-8 names are now allowed as element and attribute names.
+
+* css parser
+
+  * unquoted utf-8 property values are now allowed.
 
 * orcus-json
 
   * fixed segmentation fault when using --mode structure with the Windows
     build.
+
+  * added yaml output option.
+
+* xml-map
+
+  * fixed a bug where mapping of an XML document with namespace aliases
+    sometimes corrupts the alias values.
+
+* python
+
+  * added orcus.FormulaTokenOp enum type which describes type formula token
+    operator types in a more finer grained manner.
+
+* documentation
+
+  * added notes to how to use orcus-xml and orcus-json to map XML and JSON
+    documents to spreadsheet documents.
 
 orcus 0.16.1
 
