@@ -177,7 +177,7 @@ public:
         }
     }
 
-    void object_key(const char* p, size_t len, bool transient)
+    void object_key(const char* p, size_t len, bool /*transient*/)
     {
         parser_stack& cur = m_stack.back();
         cur.key = PyUnicode_FromStringAndSize(p, len);
@@ -213,7 +213,7 @@ public:
         push_value(Py_None);
     }
 
-    void string(const char* p, size_t len, bool transient)
+    void string(const char* p, size_t len, bool /*transient*/)
     {
         push_value(PyUnicode_FromStringAndSize(p, len));
     }

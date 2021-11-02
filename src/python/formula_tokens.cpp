@@ -56,7 +56,7 @@ void tp_dealloc(pyobj_formula_tokens* self)
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
 
-int tp_init(pyobj_formula_tokens* self, PyObject* /*args*/, PyObject* /*kwargs*/)
+int tp_init(pyobj_formula_tokens* /*self*/, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     return 0;
 }

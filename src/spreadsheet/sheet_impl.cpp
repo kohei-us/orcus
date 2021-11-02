@@ -12,7 +12,7 @@
 
 namespace orcus { namespace spreadsheet {
 
-sheet_impl::sheet_impl(document& doc, sheet& sh, sheet_t sheet_index) :
+sheet_impl::sheet_impl(document& doc, sheet& /*sh*/, sheet_t sheet_index) :
     m_doc(doc),
     m_col_widths(0, m_doc.get_sheet_size().columns, get_default_column_width()),
     m_row_heights(0, m_doc.get_sheet_size().rows, get_default_row_height()),

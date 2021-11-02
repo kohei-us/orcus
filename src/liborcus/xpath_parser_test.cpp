@@ -64,7 +64,7 @@ void test_attributes()
     assert(token.attribute);
 }
 
-int main(int argc, char** argv)
+int main()
 {
     test_elements();
     test_attributes();

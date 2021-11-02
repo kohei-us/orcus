@@ -159,7 +159,7 @@ void test_xml_name_char()
     assert(res);
 }
 
-int main(int argc, char** argv)
+int main()
 {
     test_xml_name_start_char();
     test_xml_name_char();

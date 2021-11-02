@@ -85,7 +85,7 @@ const char* sax_parser_parse_only_test_dirs[] = {
     SRCDIR"/test/xml/parse-only/rss/"
 };
 
-void parse_file(dom::document_tree& tree, const char* filepath, string& strm)
+void parse_file(dom::document_tree& tree, const char* filepath, std::string& /*strm*/)
 {
     cout << "testing " << filepath << endl;
     file_content content(filepath);

@@ -1217,7 +1217,7 @@ array::array(std::initializer_list<detail::init::node> vs)
 array::~array() {}
 
 object::object() {}
-object::object(object&& other) {}
+object::object(object&& /*other*/) {}
 object::~object() {}
 
 namespace {
@@ -1388,7 +1388,7 @@ struct node::impl
         m_value_array(std::move(array.m_vs))
     {}
 
-    impl(json::object obj) :
+    impl(json::object /*obj*/) :
         m_type(detail::node_t::object) {}
 };
 
@@ -1634,7 +1634,7 @@ document_tree::document_tree(array vs) : mp_impl(std::make_unique<impl>())
     }
 }
 
-document_tree::document_tree(object obj) : mp_impl(std::make_unique<impl>())
+document_tree::document_tree(object /*obj*/) : mp_impl(std::make_unique<impl>())
 {
     mp_impl->m_root = mp_impl->m_res.obj_pool.construct(detail::node_t::object);
     mp_impl->m_root->value.object = mp_impl->m_res.obj_pool_jvo.construct();

@@ -66,7 +66,7 @@ void test_mapped_xml_import()
         { SRCDIR"/test/xml-mapped/nested-repeats-4", false },
     };
 
-    auto dump_xml_structure = [](string& dump_content, string& strm, const char* filepath, xmlns_context& cxt)
+    auto dump_xml_structure = [](std::string& dump_content, std::string& /*strm*/, const char* filepath, xmlns_context& cxt)
     {
         file_content content(filepath);
         dom::document_tree tree(cxt);

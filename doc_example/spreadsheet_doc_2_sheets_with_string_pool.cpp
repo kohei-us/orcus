@@ -70,22 +70,17 @@ public:
     }
 
     // We don't implement these methods for now.
-    virtual void set_auto(ss::row_t row, ss::col_t col, std::string_view s) override {}
+    virtual void set_auto(ss::row_t, ss::col_t, std::string_view) override {}
 
-    virtual void set_bool(ss::row_t row, ss::col_t col, bool value) override {}
+    virtual void set_bool(ss::row_t, ss::col_t, bool) override {}
 
-    virtual void set_date_time(
-        ss::row_t row, ss::col_t col,
-        int year, int month, int day, int hour, int minute, double second) override {}
+    virtual void set_date_time(ss::row_t, ss::col_t, int, int, int, int, int, double) override {}
 
-    virtual void set_format(ss::row_t row, ss::col_t col, std::size_t xf_index) override {}
+    virtual void set_format(ss::row_t, ss::col_t, std::size_t) override {}
 
-    virtual void set_format(
-        ss::row_t row_start, ss::col_t col_start, ss::row_t row_end, ss::col_t col_end,
-        std::size_t xf_index) override {}
+    virtual void set_format(ss::row_t, ss::col_t, ss::row_t, ss::col_t, std::size_t) override {}
 
-    virtual void fill_down_cells(
-        ss::row_t src_row, ss::col_t src_col, ss::row_t range_size) override {}
+    virtual void fill_down_cells(ss::row_t, ss::col_t, ss::row_t) override {}
 };
 
 //!code-start: my_shared_strings
@@ -119,21 +114,21 @@ public:
     }
 
     // The following methods are for formatted text segments, which we ignore for now.
-    virtual void set_segment_bold(bool b) override {}
+    virtual void set_segment_bold(bool) override {}
 
-    virtual void set_segment_font(std::size_t font_index) override {}
+    virtual void set_segment_font(std::size_t) override {}
 
     virtual void set_segment_font_color(
-        ss::color_elem_t alpha,
-        ss::color_elem_t red,
-        ss::color_elem_t green,
-        ss::color_elem_t blue) override {}
+        ss::color_elem_t,
+        ss::color_elem_t,
+        ss::color_elem_t,
+        ss::color_elem_t) override {}
 
-    virtual void set_segment_font_name(std::string_view s) override {}
+    virtual void set_segment_font_name(std::string_view) override {}
 
-    virtual void set_segment_font_size(double point) override {}
+    virtual void set_segment_font_size(double) override {}
 
-    virtual void set_segment_italic(bool b) override {}
+    virtual void set_segment_italic(bool) override {}
 
     virtual void append_segment(std::string_view s) override
     {
@@ -169,15 +164,14 @@ public:
         return &m_shared_strings;
     }
 
-    virtual ss::iface::import_sheet* append_sheet(
-        ss::sheet_t sheet_index, std::string_view name) override
+    virtual ss::iface::import_sheet* append_sheet(ss::sheet_t, std::string_view) override
     {
         // Pass the string pool to each sheet instance.
         m_sheets.push_back(std::make_unique<my_sheet>(m_sheets.size(), m_string_pool));
         return m_sheets.back().get();
     }
 
-    virtual ss::iface::import_sheet* get_sheet(std::string_view name) override
+    virtual ss::iface::import_sheet* get_sheet(std::string_view) override
     {
         // TODO : implement this.
         return nullptr;

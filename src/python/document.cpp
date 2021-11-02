@@ -69,12 +69,12 @@ PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
     return reinterpret_cast<PyObject*>(self);
 }
 
-int tp_init(pyobj_document* self, PyObject* /*args*/, PyObject* /*kwargs*/)
+int tp_init(pyobj_document* /*self*/, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     return 0;
 }
 
-PyObject* doc_get_named_expressions(PyObject* self, PyObject* args, PyObject* kwargs)
+PyObject* doc_get_named_expressions(PyObject* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     const ss::document& doc = *t(self)->data->m_doc;
     const ixion::model_context& cxt = doc.get_model_context();

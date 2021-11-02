@@ -16,7 +16,7 @@ void set_python_exception(PyObject* type, const std::exception& e)
 {
     std::ostringstream os;
     os << "C++ exception caught: " << e.what();
-    PyErr_SetString(PyExc_RuntimeError, os.str().data());
+    PyErr_SetString(type, os.str().data());
 }
 
 PyObject* get_python_enum_value(const char* enum_class_name, const char* value_name)

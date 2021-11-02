@@ -124,13 +124,13 @@ import_reference_resolver* import_factory::get_reference_resolver(formula_ref_co
 }
 
 import_pivot_cache_definition* import_factory::create_pivot_cache_definition(
-        orcus::spreadsheet::pivot_cache_id_t cache_id)
+        orcus::spreadsheet::pivot_cache_id_t /*cache_id*/)
 {
     return nullptr;
 }
 
 import_pivot_cache_records* import_factory::create_pivot_cache_records(
-        orcus::spreadsheet::pivot_cache_id_t cache_id)
+        orcus::spreadsheet::pivot_cache_id_t /*cache_id*/)
 {
     return nullptr;
 }

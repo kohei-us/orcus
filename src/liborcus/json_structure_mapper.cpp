@@ -40,7 +40,7 @@ void structure_mapper::push_range()
     m_current_range.row_groups.clear();
 }
 
-void structure_mapper::traverse(size_t pos)
+void structure_mapper::traverse(size_t /*pos*/)
 {
     json::structure_tree::node_properties node = m_walker.get_node();
 

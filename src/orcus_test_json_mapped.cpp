@@ -88,7 +88,7 @@ void test_invalid_map_definition()
     }
 }
 
-int main(int argc, char** argv)
+int main()
 {
     test_mapped_json_import();
     test_invalid_map_definition();

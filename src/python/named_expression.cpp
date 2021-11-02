@@ -81,7 +81,7 @@ PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
     return reinterpret_cast<PyObject*>(self);
 }
 
-PyObject* ne_get_formula_tokens(PyObject* self, PyObject* args, PyObject* kwargs)
+PyObject* ne_get_formula_tokens(PyObject* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     named_exp_data& data = *t(self)->data;
     if (!data.tokens)

@@ -85,12 +85,12 @@ PyObject* tp_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwargs*/)
     return reinterpret_cast<PyObject*>(self);
 }
 
-int tp_init(pyobj_sheet* self, PyObject* /*args*/, PyObject* /*kwargs*/)
+int tp_init(pyobj_sheet* /*self*/, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     return 0;
 }
 
-PyObject* sheet_get_rows(PyObject* self, PyObject* args, PyObject* kwargs)
+PyObject* sheet_get_rows(PyObject* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     PyTypeObject* sr_type = get_sheet_rows_type();
 
@@ -210,7 +210,7 @@ PyObject* sheet_write(PyObject* self, PyObject* args, PyObject* kwargs)
     return Py_None;
 }
 
-PyObject* sheet_get_named_expressions(PyObject* self, PyObject* args, PyObject* kwargs)
+PyObject* sheet_get_named_expressions(PyObject* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     const ss::document& doc = *t(self)->data->m_doc;
     ss::sheet_t si = t(self)->data->m_sheet->get_index();

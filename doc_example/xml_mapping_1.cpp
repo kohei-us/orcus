@@ -118,7 +118,7 @@ void run_xmlns_different_ns_same_alias()
     cout << (alias_1 == alias_2 ? "same" : "different") << endl;
 }
 
-int main(int argc, char** argv)
+int main()
 {
     run_xmlns_example();
     run_xmlns_stacked();

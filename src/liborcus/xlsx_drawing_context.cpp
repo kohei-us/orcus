@@ -41,7 +41,7 @@ void xlsx_drawing_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*na
 {
 }
 
-void xlsx_drawing_context::start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs)
+void xlsx_drawing_context::start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& /*attrs*/)
 {
     xml_token_pair_t parent = push_stack(ns, name);
 

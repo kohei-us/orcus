@@ -235,12 +235,12 @@ struct structure_tree::impl
         push_value();
     }
 
-    void string(const char* p, size_t len, bool transient)
+    void string(const char* /*p*/, size_t /*len*/, bool /*transient*/)
     {
         push_value();
     }
 
-    void number(double val)
+    void number(double /*val*/)
     {
         push_value();
     }

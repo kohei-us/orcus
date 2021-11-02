@@ -90,17 +90,17 @@ xls_xml_data_context::xls_xml_data_context(
 
 xls_xml_data_context::~xls_xml_data_context() {}
 
-bool xls_xml_data_context::can_handle_element(xmlns_id_t ns, xml_token_t name) const
+bool xls_xml_data_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
 {
     return true;
 }
 
-xml_context_base* xls_xml_data_context::create_child_context(xmlns_id_t ns, xml_token_t name)
+xml_context_base* xls_xml_data_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
 }
 
-void xls_xml_data_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child)
+void xls_xml_data_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
 {
 }
 
@@ -254,7 +254,7 @@ void xls_xml_data_context::reset()
 }
 
 void xls_xml_data_context::start_element_data(
-    const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+    const xml_token_pair_t& /*parent*/, const xml_attrs_t& attrs)
 {
     m_cell_type = ct_unknown;
     m_cell_string.clear();
@@ -776,7 +776,7 @@ xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token
     return nullptr;
 }
 
-void xls_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child)
+void xls_xml_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
 {
 }
 
@@ -1217,7 +1217,7 @@ void xls_xml_context::characters(const pstring& str, bool /*transient*/)
     }
 }
 
-void xls_xml_context::start_element_borders(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xls_xml_context::start_element_borders(const xml_token_pair_t& parent, const xml_attrs_t& /*attrs*/)
 {
     xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
     m_current_style->borders.clear();

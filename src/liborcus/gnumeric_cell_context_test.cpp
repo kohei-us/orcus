@@ -41,19 +41,19 @@ public:
         assert(formula == "=arrayFormula");
     }
 
-    virtual void set_result_bool(row_t row, col_t col, bool value) override
+    virtual void set_result_bool(row_t, col_t, bool) override
     {
     }
 
-    virtual void set_result_empty(row_t row, col_t col) override
+    virtual void set_result_empty(row_t, col_t) override
     {
     }
 
-    virtual void set_result_string(row_t row, col_t col, std::string_view) override
+    virtual void set_result_string(row_t, col_t, std::string_view) override
     {
     }
 
-    virtual void set_result_value(row_t row, col_t col, double value) override
+    virtual void set_result_value(row_t, col_t, double) override
     {
     }
 
@@ -77,11 +77,11 @@ public:
         assert(formula == "=formula");
     }
 
-    virtual void set_shared_formula_index(size_t index) override
+    virtual void set_shared_formula_index(size_t) override
     {
     }
 
-    virtual void set_result_bool(bool value) override
+    virtual void set_result_bool(bool) override
     {
     }
 
@@ -93,7 +93,7 @@ public:
     {
     }
 
-    virtual void set_result_value(double value) override
+    virtual void set_result_value(double) override
     {
     }
 

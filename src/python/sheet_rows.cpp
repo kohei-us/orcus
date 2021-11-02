@@ -49,7 +49,7 @@ PyObject* sheet_rows_new(PyTypeObject* type, PyObject* /*args*/, PyObject* /*kwa
     return reinterpret_cast<PyObject*>(self);
 }
 
-int sheet_rows_init(pyobj_sheet_rows* self, PyObject* /*args*/, PyObject* /*kwargs*/)
+int sheet_rows_init(pyobj_sheet_rows* /*self*/, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     return 0;
 }

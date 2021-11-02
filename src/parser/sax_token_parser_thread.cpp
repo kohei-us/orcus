@@ -86,7 +86,7 @@ struct parser_thread::impl
         m_token_buffer.abort();
     }
 
-    void declaration(const orcus::xml_declaration_t& decl)
+    void declaration(const orcus::xml_declaration_t& /*decl*/)
     {
     }
 

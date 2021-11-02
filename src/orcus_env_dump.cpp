@@ -13,7 +13,7 @@
 using std::cout;
 using std::endl;
 
-int main(int argc, char** argv)
+int main()
 {
     cout << "CPU flags:" << endl;
     cout << "  SSE 4.2: " << orcus::detail::cpu::has_sse42() << endl;

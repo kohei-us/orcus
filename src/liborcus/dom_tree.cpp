@@ -527,7 +527,7 @@ void document_tree::impl::end_element(const sax_ns_parser_element& elem)
     m_elem_stack.pop_back();
 }
 
-void document_tree::impl::characters(const pstring& val, bool transient)
+void document_tree::impl::characters(const pstring& val, bool /*transient*/)
 {
     if (m_elem_stack.empty())
         // No root element has been encountered.  Ignore this.

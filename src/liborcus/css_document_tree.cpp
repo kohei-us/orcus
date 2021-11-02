@@ -54,6 +54,9 @@ public:
     {
 #if ORCUS_DEBUG_CSS_DOCTREE
         cout << "@" << string(p, n).c_str();
+#else
+        (void)p;
+        (void)n;
 #endif
     }
 

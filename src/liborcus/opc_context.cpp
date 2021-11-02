@@ -90,17 +90,17 @@ opc_content_types_context::~opc_content_types_context()
 {
 }
 
-bool opc_content_types_context::can_handle_element(xmlns_id_t ns, xml_token_t name) const
+bool opc_content_types_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
 {
     return true;
 }
 
-xml_context_base* opc_content_types_context::create_child_context(xmlns_id_t ns, xml_token_t name)
+xml_context_base* opc_content_types_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
 }
 
-void opc_content_types_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base *child)
+void opc_content_types_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
 {
 }
 
@@ -153,7 +153,7 @@ bool opc_content_types_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void opc_content_types_context::characters(const pstring &str, bool transient)
+void opc_content_types_context::characters(const pstring& /*str*/, bool /*transient*/)
 {
 }
 
@@ -256,17 +256,17 @@ opc_relations_context::~opc_relations_context()
 {
 }
 
-bool opc_relations_context::can_handle_element(xmlns_id_t ns, xml_token_t name) const
+bool opc_relations_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
 {
     return true;
 }
 
-xml_context_base* opc_relations_context::create_child_context(xmlns_id_t ns, xml_token_t name)
+xml_context_base* opc_relations_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
 }
 
-void opc_relations_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base *child)
+void opc_relations_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
 {
 }
 
@@ -302,7 +302,7 @@ bool opc_relations_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void opc_relations_context::characters(const pstring &str, bool transient)
+void opc_relations_context::characters(const pstring& /*str*/, bool /*transient*/)
 {
 }
 

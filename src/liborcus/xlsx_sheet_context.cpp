@@ -845,7 +845,7 @@ void xlsx_sheet_context::push_raw_cell_value()
 }
 
 void xlsx_sheet_context::push_raw_cell_result(
-    range_formula_results& res, size_t row_offset, size_t col_offset, xlsx_session_data& session_data) const
+    range_formula_results& res, size_t row_offset, size_t col_offset, xlsx_session_data& /*session_data*/) const
 {
     if (m_cur_value.empty())
         return;

@@ -115,7 +115,7 @@ int tp_init(pyobj_cell* self, PyObject* args, PyObject* kwargs)
     return 0;
 }
 
-PyObject* cell_get_formula_tokens(PyObject* self, PyObject* args, PyObject* kwargs)
+PyObject* cell_get_formula_tokens(PyObject* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     pyobj_cell* obj = reinterpret_cast<pyobj_cell*>(self);
     cell_data& data = *obj->data;

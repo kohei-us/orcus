@@ -36,7 +36,7 @@ public:
         return nullptr;
     }
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs)
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& /*attrs*/)
     {
         xml_token_pair_t parent = push_stack(ns, name);
         if (ns == NS_xls_xml_ss)

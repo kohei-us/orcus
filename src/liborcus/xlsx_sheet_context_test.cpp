@@ -64,19 +64,19 @@ public:
         assert(formula == "A1:A2");
     }
 
-    virtual void set_result_bool(row_t row, col_t col, bool value) override
+    virtual void set_result_bool(row_t, col_t, bool) override
     {
     }
 
-    virtual void set_result_empty(row_t row, col_t col) override
+    virtual void set_result_empty(row_t, col_t) override
     {
     }
 
-    virtual void set_result_string(row_t row, col_t col, std::string_view) override
+    virtual void set_result_string(row_t, col_t, std::string_view) override
     {
     }
 
-    virtual void set_result_value(row_t row, col_t col, double value) override
+    virtual void set_result_value(row_t, col_t, double) override
     {
     }
 

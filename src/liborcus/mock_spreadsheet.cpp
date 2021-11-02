@@ -211,22 +211,22 @@ import_formula::~import_formula()
 {
 }
 
-void import_formula::set_position(row_t row, col_t col)
+void import_formula::set_position(row_t, col_t)
 {
     assert(false);
 }
 
-void import_formula::set_formula(formula_grammar_t grammar, std::string_view)
+void import_formula::set_formula(formula_grammar_t, std::string_view)
 {
     assert(false);
 }
 
-void import_formula::set_shared_formula_index(size_t index)
+void import_formula::set_shared_formula_index(size_t)
 {
     assert(false);
 }
 
-void import_formula::set_result_value(double value)
+void import_formula::set_result_value(double)
 {
     assert(false);
 }
@@ -236,7 +236,7 @@ void import_formula::set_result_string(std::string_view)
     assert(false);
 }
 
-void import_formula::set_result_bool(bool value)
+void import_formula::set_result_bool(bool)
 {
     assert(false);
 }
@@ -257,7 +257,7 @@ import_sheet::~import_sheet()
 {
 }
 
-void import_sheet::set_auto(row_t, col_t, std::string_view s)
+void import_sheet::set_auto(row_t, col_t, std::string_view)
 {
     assert(false);
 }
@@ -292,7 +292,7 @@ void import_sheet::set_format(row_t, col_t, row_t, col_t, size_t)
     assert(false);
 }
 
-void import_sheet::fill_down_cells(row_t src_row, col_t src_col, row_t range_size)
+void import_sheet::fill_down_cells(row_t, col_t, row_t)
 {
     assert(false);
 }

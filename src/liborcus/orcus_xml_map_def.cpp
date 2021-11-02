@@ -43,9 +43,9 @@ public:
     xml_map_sax_handler(orcus_xml& app) : m_app(app) {}
 
     void doctype(const sax::doctype_declaration&) {}
-    void start_declaration(const pstring& name) {}
+    void start_declaration(const pstring& /*name*/) {}
 
-    void end_declaration(const pstring& name)
+    void end_declaration(const pstring& /*name*/)
     {
         m_attrs.clear();
     }

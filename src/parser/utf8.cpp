@@ -231,7 +231,7 @@ bool parse_3b_second_char(uint8_t c1, uint8_t c2, uint8_t c3)
 }
 
 // [#x10000-#xEFFFF]:  F0 90 80 80 -> F3 AF BF BF
-bool parse_4b_char(uint8_t c1, uint8_t c2, uint8_t c3, uint8_t c4)
+bool parse_4b_char(uint8_t c1, uint8_t c2, uint8_t /*c3*/, uint8_t /*c4*/)
 {
     // F0 90 80 80 -> F3 AF BF BF
     //  - F0 90 xx xx -> F0 xx xx xx

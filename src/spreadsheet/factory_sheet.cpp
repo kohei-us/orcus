@@ -74,19 +74,19 @@ void import_data_table::reset()
 {
 }
 
-void import_data_table::set_type(data_table_type_t type)
+void import_data_table::set_type(data_table_type_t /*type*/)
 {
 }
 
-void import_data_table::set_range(const range_t& range)
+void import_data_table::set_range(const range_t& /*range*/)
 {
 }
 
-void import_data_table::set_first_reference(std::string_view ref, bool deleted)
+void import_data_table::set_first_reference(std::string_view /*ref*/, bool /*deleted*/)
 {
 }
 
-void import_data_table::set_second_reference(std::string_view ref, bool deleted)
+void import_data_table::set_second_reference(std::string_view /*ref*/, bool /*deleted*/)
 {
 }
 
@@ -193,7 +193,7 @@ void import_array_formula::set_range(const range_t& range)
     }
 }
 
-void import_array_formula::set_formula(formula_grammar_t grammar, std::string_view formula)
+void import_array_formula::set_formula(formula_grammar_t /*grammar*/, std::string_view formula)
 {
     const ixion::formula_name_resolver* resolver =
         m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
@@ -223,12 +223,12 @@ void import_array_formula::set_result_value(row_t row, col_t col, double value)
     m_result_mtx.set(row, col, value);
 }
 
-void import_array_formula::set_result_string(row_t row, col_t col, std::string_view value)
+void import_array_formula::set_result_string(row_t /*row*/, col_t /*col*/, std::string_view /*value*/)
 {
     // TODO : handle this
 }
 
-void import_array_formula::set_result_empty(row_t row, col_t col)
+void import_array_formula::set_result_empty(row_t /*row*/, col_t /*col*/)
 {
     // TODO : handle this
 }
@@ -282,7 +282,7 @@ void import_formula::set_position(row_t row, col_t col)
     m_col = col;
 }
 
-void import_formula::set_formula(formula_grammar_t grammar, std::string_view formula)
+void import_formula::set_formula(formula_grammar_t /*grammar*/, std::string_view formula)
 {
     if (m_row < 0 || m_col < 0)
         return;
@@ -331,7 +331,7 @@ void import_formula::set_result_string(std::string_view value)
 }
 
 void import_formula::set_result_empty() {}
-void import_formula::set_result_bool(bool value) {}
+void import_formula::set_result_bool(bool /*value*/) {}
 
 void import_formula::commit()
 {

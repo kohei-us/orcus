@@ -146,7 +146,7 @@ void test_unicode_string()
         {
         }
 
-        void characters(std::string_view val, bool transient)
+        void characters(std::string_view val, bool /*transient*/)
         {
             std::cout << "charachters:" << std::endl;
             std::cout << val << std::endl;

@@ -137,7 +137,7 @@ public:
         push_node(json_map_tree::input_node_type::object);
     }
 
-    void object_key(const char* p, size_t len, bool transient)
+    void object_key(const char* p, size_t len, bool /*transient*/)
     {
         m_walker.set_object_key(p, len);
     }
@@ -168,7 +168,7 @@ public:
         pop_node(json_map_tree::input_node_type::value);
     }
 
-    void string(const char* p, size_t len, bool transient)
+    void string(const char* p, size_t len, bool /*transient*/)
     {
         push_node(json_map_tree::input_node_type::value);
         commit_value(json_value(p, len));

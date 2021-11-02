@@ -44,7 +44,7 @@ inline pyobj_named_exps* t(PyObject* self)
     return reinterpret_cast<pyobj_named_exps*>(self);
 }
 
-PyObject* named_exps_names(PyObject* self, PyObject* args, PyObject* kwargs)
+PyObject* named_exps_names(PyObject* self, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     named_exps_data& data = *t(self)->data;
     PyObject* s = PySet_New(nullptr);
@@ -64,7 +64,7 @@ void tp_dealloc(pyobj_named_exps* self)
     Py_TYPE(self)->tp_free(reinterpret_cast<PyObject*>(self));
 }
 
-int tp_init(pyobj_named_exps* self, PyObject* /*args*/, PyObject* /*kwargs*/)
+int tp_init(pyobj_named_exps* /*self*/, PyObject* /*args*/, PyObject* /*kwargs*/)
 {
     return 0;
 }

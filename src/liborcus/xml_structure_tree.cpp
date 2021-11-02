@@ -125,11 +125,11 @@ public:
 
     void doctype(const sax::doctype_declaration&) {}
 
-    void start_declaration(const pstring& name)
+    void start_declaration(const pstring& /*name*/)
     {
     }
 
-    void end_declaration(const pstring& name)
+    void end_declaration(const pstring& /*name*/)
     {
         m_attrs.clear();
     }
@@ -185,7 +185,7 @@ public:
         m_stack.push_back(ref);
     }
 
-    void end_element(const sax_ns_parser_element& elem)
+    void end_element(const sax_ns_parser_element& /*elem*/)
     {
         if (m_stack.empty())
             throw general_error("Element stack is empty.");
