@@ -539,7 +539,6 @@ template<typename _Handler, typename _Config>
 void sax_parser<_Handler,_Config>::attribute()
 {
     sax::parser_attribute attr;
-    std::string_view attr_ns_name, attr_name, attr_value;
     attribute_name(attr.ns, attr.name);
 
 #if ORCUS_DEBUG_SAX_PARSER
