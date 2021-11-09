@@ -545,6 +545,9 @@ void xlsx_sheet_context::start_element_selection(
 
     spreadsheet::sheet_pane_t pane = spreadsheet::sheet_pane_t::unspecified;
     spreadsheet::range_t range;
+    range.first.column = -1;
+    range.first.row = -1;
+    range.last = range.first;
 
     for (const xml_token_attr_t& attr : attrs)
     {
