@@ -49,7 +49,6 @@ struct zip_file_param
     std::string_view filename;
     compress_method_type compress_method;
     std::size_t offset_file_header;
-    std::size_t offset_data_stream;
     std::size_t size_compressed;
     std::size_t size_uncompressed;
 
