@@ -12,7 +12,8 @@ namespace orcus { namespace detail {
 xml_structure_mapper::xml_structure_mapper(
     xml_structure_tree::range_handler_type rh, const xml_structure_tree::walker& walker) :
         m_range_handler(std::move(rh)),
-        m_walker(walker)
+        m_walker(walker),
+        m_repeat_count(0)
 {
 }
 
