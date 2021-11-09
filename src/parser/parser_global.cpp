@@ -211,6 +211,7 @@ parse_quoted_string_state parse_single_quoted_string_buffered(
 
     parse_quoted_string_state ret;
     ret.transient = true;
+    ret.has_control_character = false;
 
     for (; p != p_end; ++p)
     {
@@ -275,6 +276,7 @@ parse_quoted_string_state parse_single_quoted_string(
     ret.str = p;
     ret.length = 0;
     ret.transient = false;
+    ret.has_control_character = false;
 
     if (p == p_end)
     {
