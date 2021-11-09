@@ -251,6 +251,7 @@ public:
     double numeric_value() const;
 
     const_node& operator=(const const_node& other);
+    const_node& operator=(const_node&& other);
 
     /**
      * Return an indentifier of the JSON value object that the node

@@ -839,6 +839,15 @@ const_node& const_node::operator=(const const_node& other)
     return *this;
 }
 
+const_node& const_node::operator=(const_node&& other)
+{
+    if (this == &other)
+        return *this;
+
+    mp_impl = std::move(other.mp_impl);
+    return *this;
+}
+
 uintptr_t const_node::identity() const
 {
     return reinterpret_cast<uintptr_t>(mp_impl->m_node);
