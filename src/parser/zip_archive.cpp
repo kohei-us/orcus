@@ -11,10 +11,9 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <unordered_map>
-#include <cstdint>
-#include <cstdio>
 #include <sstream>
 #include <string_view>
 
@@ -77,10 +76,7 @@ class zip_inflater
 public:
     zip_inflater(std::vector<unsigned char>& raw_buf, std::vector<unsigned char>& dest_buf, const zip_file_param& param)
     {
-        m_zlib_cxt.total_out = 0;
-        m_zlib_cxt.zalloc = 0;
-        m_zlib_cxt.zfree = 0;
-        m_zlib_cxt.opaque = 0;
+        memset(&m_zlib_cxt, 0, sizeof(m_zlib_cxt));
         m_zlib_cxt.next_in = static_cast<Bytef*>(&raw_buf[0]);
         m_zlib_cxt.avail_in = param.size_compressed;
 
