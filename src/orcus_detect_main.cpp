@@ -58,7 +58,7 @@ int main(int argc, char** argv) try
 
     return EXIT_SUCCESS;
 }
-catch (const general_error& e)
+catch (const std::exception& e)
 {
     cerr << e.what() << endl;
     return EXIT_FAILURE;
