@@ -165,8 +165,6 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 xlsx_sheet_context_test_SOURCES = \
 	formula_result.cpp \
 	global.cpp \
-	mock_spreadsheet.hpp \
-	mock_spreadsheet.cpp \
 	ooxml_global.cpp \
 	ooxml_namespace_types.cpp \
 	ooxml_schemas.cpp \
@@ -186,7 +184,8 @@ xlsx_sheet_context_test_SOURCES = \
 
 xlsx_sheet_context_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a
 
 xlsx_sheet_context_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -306,13 +305,12 @@ gnumeric_cell_context_test_SOURCES = \
 	gnumeric_namespace_types.cpp \
 	gnumeric_tokens.cpp \
 	odf_namespace_types.cpp \
-	spreadsheet_interface.cpp \
-	mock_spreadsheet.hpp \
-	mock_spreadsheet.cpp
+	spreadsheet_interface.cpp
 
 gnumeric_cell_context_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a
 
 orcus_gnumeric_cell_context_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -331,13 +329,12 @@ gnumeric_sheet_context_test_SOURCES = \
 	gnumeric_tokens.cpp \
 	odf_namespace_types.cpp \
 	spreadsheet_interface.cpp \
-	mock_spreadsheet.hpp \
-	mock_spreadsheet.cpp \
 	string_helper.cpp
 
 gnumeric_sheet_context_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a
 
 gnumeric_sheet_context_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 

@@ -5,4 +5,6 @@ AM_CPPFLAGS = \
 
 noinst_LIBRARIES = liborcus-test.a
 
-liborcus_test_a_SOURCES = test_global.cpp
+liborcus_test_a_SOURCES = \
+	test_global.cpp \
+	mock_spreadsheet.cpp
