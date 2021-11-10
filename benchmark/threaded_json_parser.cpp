@@ -156,7 +156,7 @@ public:
     }
 };
 
-int main(int argc, char** argv)
+int main(int argc, char** argv) try
 {
     if (argc < 2)
         return EXIT_FAILURE;
@@ -201,4 +201,9 @@ int main(int argc, char** argv)
 #endif
 
     return EXIT_SUCCESS;
+}
+catch (const std::exception& e)
+{
+    cerr << e.what() << endl;
+    return EXIT_FAILURE;
 }
