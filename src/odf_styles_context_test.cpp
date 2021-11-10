@@ -20,12 +20,13 @@
 
 namespace {
 
-const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(std::string_view name, orcus::spreadsheet::styles* styles)
+const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(
+    std::string_view name, const orcus::spreadsheet::styles& styles)
 {
-    size_t n = styles->get_cell_styles_count();
+    size_t n = styles.get_cell_styles_count();
     for (size_t i = 0; i < n; ++i)
     {
-        const orcus::spreadsheet::cell_style_t* cur_style = styles->get_cell_style(i);
+        const orcus::spreadsheet::cell_style_t* cur_style = styles.get_cell_style(i);
         if (cur_style->name == name)
             return cur_style;
     }
@@ -36,9 +37,9 @@ const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(std::string_view
 
 }
 
-void test_odf_fill(orcus::spreadsheet::styles &styles)
+void test_odf_fill(const orcus::spreadsheet::styles& styles)
 {
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name1", &styles);
+    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name1", styles);
     assert(style->parent_name == "Text");
     size_t xf = style->xf;
     std::cerr << std::hex << (int)xf;
@@ -56,12 +57,12 @@ void test_odf_fill(orcus::spreadsheet::styles &styles)
     assert(cell_fill->pattern_type == orcus::spreadsheet::fill_pattern_t::solid);
 }
 
-void test_odf_border(orcus::spreadsheet::styles &styles)
+void test_odf_border(const orcus::spreadsheet::styles &styles)
 {
     assert(styles.get_border_count() == 9);
 
     /* Test that border style applies to all the sides when not specified */
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name1", &styles);
+    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name1", styles);
     size_t xf = style->xf;
     const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     size_t border = cell_format->border;
@@ -79,7 +80,7 @@ void test_odf_border(orcus::spreadsheet::styles &styles)
     assert(cell_border->top.border_width.value == 0.06);
 
     /*Test that border applies to only specified sides*/
-    style = find_cell_style_by_name("Name2", &styles);
+    style = find_cell_style_by_name("Name2", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     border = cell_format->border;
@@ -97,7 +98,7 @@ void test_odf_border(orcus::spreadsheet::styles &styles)
     assert(cell_border->bottom.border_width.value == 1.74);
 
     /*Test that border applies to the diagonal*/
-    style = find_cell_style_by_name("Name3", &styles);
+    style = find_cell_style_by_name("Name3", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     border = cell_format->border;
@@ -111,10 +112,10 @@ void test_odf_border(orcus::spreadsheet::styles &styles)
     assert(cell_border->diagonal_tl_br.border_width.value == 0.74);
 }
 
-void test_odf_cell_protection(orcus::spreadsheet::styles& styles)
+void test_odf_cell_protection(const orcus::spreadsheet::styles& styles)
 {
     /* Test that Cell is only protected and not hidden , Print Content is true */
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name5", &styles);
+    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name5", styles);
     size_t  xf = style->xf;
     const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     size_t protection = cell_format->protection;
@@ -127,7 +128,7 @@ void test_odf_cell_protection(orcus::spreadsheet::styles& styles)
     assert(cell_protection->formula_hidden == false);
 
     /* Test that Cell is  protected and formula is hidden , Print Content is false */
-    style = find_cell_style_by_name("Name6", &styles);
+    style = find_cell_style_by_name("Name6", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     protection = cell_format->protection;
@@ -140,7 +141,7 @@ void test_odf_cell_protection(orcus::spreadsheet::styles& styles)
     assert(cell_protection->formula_hidden == true);
 
     /* Test that Cell is not protected by any way, Print Content is false */
-    style = find_cell_style_by_name("Name7", &styles);
+    style = find_cell_style_by_name("Name7", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     protection = cell_format->protection;
@@ -153,9 +154,9 @@ void test_odf_cell_protection(orcus::spreadsheet::styles& styles)
     assert(cell_protection->formula_hidden == false);
 }
 
-void test_odf_font(orcus::spreadsheet::styles& styles)
+void test_odf_font(const orcus::spreadsheet::styles& styles)
 {
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name8", &styles);
+    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name8", styles);
     size_t xf = style->xf;
     const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     size_t font = cell_format->font;
@@ -174,7 +175,7 @@ void test_odf_font(orcus::spreadsheet::styles& styles)
     assert(cell_font->underline_color.green == (int)0x80);
     assert(cell_font->underline_color.blue == (int)0x80);
 
-    style = find_cell_style_by_name("Name9", &styles);
+    style = find_cell_style_by_name("Name9", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     font = cell_format->font;
@@ -194,9 +195,9 @@ void test_odf_font(orcus::spreadsheet::styles& styles)
     assert(cell_font->underline_color.blue == (int)0xff);
 }
 
-void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
+void test_odf_number_formatting(const orcus::spreadsheet::styles& styles)
 {
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name10", &styles);
+    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name10", styles);
     size_t xf = style->xf;
     const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
@@ -205,7 +206,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
     const orcus::spreadsheet::number_format_t* cell_number_format = styles.get_number_format(number_format);
     assert(cell_number_format->format_string == "#.000000");
 
-    style = find_cell_style_by_name("Name11", &styles);
+    style = find_cell_style_by_name("Name11", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
@@ -214,7 +215,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
     cell_number_format = styles.get_number_format(number_format);
     assert(cell_number_format->format_string == "[$₹]#,##0.00;[RED]-[$₹]#,##0.00");
 
-    style = find_cell_style_by_name("Name12", &styles);
+    style = find_cell_style_by_name("Name12", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
@@ -223,7 +224,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
     cell_number_format = styles.get_number_format(number_format);
     assert(cell_number_format->format_string == "0.00%");
 
-    style = find_cell_style_by_name("Name13", &styles);
+    style = find_cell_style_by_name("Name13", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
@@ -232,7 +233,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
     cell_number_format = styles.get_number_format(number_format);
     assert(cell_number_format->format_string == "#.00E+00");
 
-    style = find_cell_style_by_name("Name15", &styles);
+    style = find_cell_style_by_name("Name15", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
@@ -241,7 +242,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
     cell_number_format = styles.get_number_format(number_format);
     assert(cell_number_format->format_string == "BOOLEAN");
 
-    style = find_cell_style_by_name("Name16", &styles);
+    style = find_cell_style_by_name("Name16", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
@@ -250,7 +251,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
     cell_number_format = styles.get_number_format(number_format);
     assert(cell_number_format->format_string == "#### ?/11");
 
-    style = find_cell_style_by_name("Name17", &styles);
+    style = find_cell_style_by_name("Name17", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
@@ -259,7 +260,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
     cell_number_format = styles.get_number_format(number_format);
     assert(cell_number_format->format_string == "MM/DD/YY");
 
-    style = find_cell_style_by_name("Name18", &styles);
+    style = find_cell_style_by_name("Name18", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
@@ -269,7 +270,7 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
     std::cerr << cell_number_format->format_string;
     assert(cell_number_format->format_string == "HH:MM:SS AM/PM");
 
-    style = find_cell_style_by_name("Name19", &styles);
+    style = find_cell_style_by_name("Name19", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
@@ -279,9 +280,9 @@ void test_odf_number_formatting(orcus::spreadsheet::styles& styles)
     assert(cell_number_format->format_string == "[>=0]0.00;[RED]-0.00");
 }
 
-void test_odf_text_strikethrough(orcus::spreadsheet::styles& styles)
+void test_odf_text_strikethrough(const orcus::spreadsheet::styles& styles)
 {
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name20", &styles);
+    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name20", styles);
     size_t xf = style->xf;
     const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     size_t font = cell_format->font;
@@ -293,7 +294,7 @@ void test_odf_text_strikethrough(orcus::spreadsheet::styles& styles)
     assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single);
     assert(cell_font->strikethrough_text == orcus::spreadsheet::strikethrough_text_t::unknown);
 
-    style = find_cell_style_by_name("Name21", &styles);
+    style = find_cell_style_by_name("Name21", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     font = cell_format->font;
@@ -305,7 +306,7 @@ void test_odf_text_strikethrough(orcus::spreadsheet::styles& styles)
     assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single);
     assert(cell_font->strikethrough_text == orcus::spreadsheet::strikethrough_text_t::unknown);
 
-    style = find_cell_style_by_name("Name22", &styles);
+    style = find_cell_style_by_name("Name22", styles);
     xf = style->xf;
     cell_format = styles.get_cell_style_format(xf);
     font = cell_format->font;
@@ -318,16 +319,15 @@ void test_odf_text_strikethrough(orcus::spreadsheet::styles& styles)
     assert(cell_font->strikethrough_text == orcus::spreadsheet::strikethrough_text_t::slash);
 }
 
-void test_odf_text_alignment(orcus::spreadsheet::styles& styles)
+void test_odf_text_alignment(const orcus::spreadsheet::styles& styles)
 {
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name23", &styles);
+    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name23", styles);
     size_t xf = style->xf;
     const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
 
     assert(cell_format->hor_align == orcus::spreadsheet::hor_alignment_t::right);
     assert(cell_format->ver_align == orcus::spreadsheet::ver_alignment_t::middle);
-
 }
 
 int main()
