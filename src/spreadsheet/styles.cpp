@@ -410,6 +410,11 @@ size_t styles::get_cell_styles_count() const
     return mp_impl->m_cell_styles.size();
 }
 
+void styles::clear()
+{
+    mp_impl = std::make_unique<impl>();
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

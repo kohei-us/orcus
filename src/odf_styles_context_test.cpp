@@ -20,6 +20,23 @@
 
 namespace {
 
+struct test_model
+{
+    orcus::string_pool pool;
+    orcus::file_content content;
+    orcus::spreadsheet::styles styles;
+    orcus::spreadsheet::import_styles istyles;
+
+    test_model() : istyles(styles, pool) {}
+
+    void load(const char* path)
+    {
+        styles.clear();
+        content.load(path);
+        orcus::import_ods::read_styles(content.str(), &istyles);
+    }
+};
+
 const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(
     std::string_view name, const orcus::spreadsheet::styles& styles)
 {
@@ -332,28 +349,18 @@ void test_odf_text_alignment(const orcus::spreadsheet::styles& styles)
 
 int main()
 {
-    orcus::string_pool string_pool;
-    const char* path = SRCDIR"/test/ods/styles/cell-styles.xml";
-    orcus::file_content content(path);
-    orcus::spreadsheet::styles styles;
-    orcus::spreadsheet::import_styles istyles(styles, string_pool);
-    orcus::import_ods::read_styles(content.str(), &istyles);
+    test_model model;
 
-    test_odf_fill(styles);
-    test_odf_border(styles);
-    test_odf_cell_protection(styles);
-    test_odf_font(styles);
-    test_odf_text_strikethrough(styles);
-    test_odf_text_alignment(styles);
+    model.load(SRCDIR"/test/ods/styles/cell-styles.xml");
+    test_odf_fill(model.styles);
+    test_odf_border(model.styles);
+    test_odf_cell_protection(model.styles);
+    test_odf_font(model.styles);
+    test_odf_text_strikethrough(model.styles);
+    test_odf_text_alignment(model.styles);
 
-    orcus::string_pool string_pool2;
-    path = SRCDIR"/test/ods/styles/number-format.xml";
-    orcus::file_content content2(path);
-    orcus::spreadsheet::styles styles2;
-    orcus::spreadsheet::import_styles istyles2(styles2, string_pool2);
-    orcus::import_ods::read_styles(content2.str(), &istyles2);
-
-    test_odf_number_formatting(styles2);
+    model.load(SRCDIR"/test/ods/styles/number-format.xml");
+    test_odf_number_formatting(model.styles);
 
     return 0;
 }

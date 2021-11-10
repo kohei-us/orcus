@@ -200,6 +200,8 @@ public:
     size_t get_cell_style_formats_count() const;
     size_t get_dxf_count() const;
     size_t get_cell_styles_count() const;
+
+    void clear();
 };
 
 }}
