@@ -427,24 +427,24 @@ orcus_test_ods_CPPFLAGS = $(AM_CPPFLAGS) \
 
 TESTS += orcus-test-ods
 
-# orcus-odf-styles-context-test
+# orcus-test-import-ods
 
 EXTRA_PROGRAMS += \
-	orcus-odf-styles-context-test
+	orcus-test-import-ods
 
-orcus_odf_styles_context_test_SOURCES = \
-	odf_styles_context_test.cpp
+orcus_test_import_ods_SOURCES = \
+	orcus_test_import_ods.cpp
 
-orcus_odf_styles_context_test_LDADD = \
+orcus_test_import_ods_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
 
-orcus_odf_styles_context_test_CPPFLAGS = $(AM_CPPFLAGS) \
+orcus_test_import_ods_CPPFLAGS = $(AM_CPPFLAGS) \
 	-I$(top_builddir)/lib/liborcus/liborcus.la -DSRCDIR=\""$(top_srcdir)"\"
 
 TESTS += \
-	 orcus-odf-styles-context-test
+	orcus-test-import-ods
 
 endif # WITH_ODS_FILTER
 

@@ -575,7 +575,6 @@
             </Folder>
             <F N="../src/cli_global.cpp"/>
             <F N="../src/cli_global.hpp"/>
-            <F N="../src/odf_styles_context_test.cpp"/>
             <F N="../src/orcus_css_dump.cpp"/>
             <F N="../src/orcus_csv_main.cpp"/>
             <F N="../src/orcus_detect_main.cpp"/>
@@ -593,6 +592,7 @@
             <F N="../src/orcus_test_global.cpp"/>
             <F N="../src/orcus_test_global.hpp"/>
             <F N="../src/orcus_test_gnumeric.cpp"/>
+            <F N="../src/orcus_test_import_ods.cpp"/>
             <F N="../src/orcus_test_json_mapped.cpp"/>
             <F N="../src/orcus_test_ods.cpp"/>
             <F N="../src/orcus_test_xls_xml.cpp"/>
