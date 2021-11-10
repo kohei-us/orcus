@@ -52,8 +52,6 @@ const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(
     return nullptr;
 }
 
-}
-
 void test_odf_fill(const orcus::spreadsheet::styles& styles)
 {
     const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name1", styles);
@@ -346,6 +344,8 @@ void test_odf_text_alignment(const orcus::spreadsheet::styles& styles)
     assert(cell_format->hor_align == orcus::spreadsheet::hor_alignment_t::right);
     assert(cell_format->ver_align == orcus::spreadsheet::ver_alignment_t::middle);
 }
+
+} // anonymous namespace
 
 int main()
 {
