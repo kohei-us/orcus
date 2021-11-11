@@ -12,11 +12,12 @@
 #include "orcus_filter_global.hpp"
 
 #include <cstdlib>
+#include <iostream>
 
 using namespace std;
 using namespace orcus;
 
-int main(int argc, char** argv)
+int main(int argc, char** argv) try
 {
     spreadsheet::range_size_t ss{1048576, 16384};
     spreadsheet::document doc{ss};
@@ -28,4 +29,10 @@ int main(int argc, char** argv)
 
     return EXIT_SUCCESS;
 }
+catch (const std::exception& e)
+{
+    cerr << e.what() << endl;
+    return EXIT_FAILURE;
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
