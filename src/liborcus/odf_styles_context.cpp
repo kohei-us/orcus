@@ -125,191 +125,6 @@ strikethrough_style_map::entry strikethrough_style_entries[] =
     { MDDS_ASCII("wave"), spreadsheet::strikethrough_style_t::wave },
 };
 
-class text_prop_attr_parser
-{
-    pstring m_font_name;
-    length_t m_font_size;
-    bool m_bold;
-    bool m_italic;
-    bool m_color;
-
-    spreadsheet::color_elem_t m_red;
-    spreadsheet::color_elem_t m_green;
-    spreadsheet::color_elem_t m_blue;
-
-    bool m_underline_is_text_color;
-    bool m_underline;
-
-    spreadsheet::color_elem_t m_underline_red;
-    spreadsheet::color_elem_t m_underline_green;
-    spreadsheet::color_elem_t m_underline_blue;
-
-    spreadsheet::underline_mode_t m_underline_mode;
-    spreadsheet::underline_width_t m_underline_width;
-    spreadsheet::underline_t m_underline_style;
-    spreadsheet::underline_type_t m_underline_type;
-
-    spreadsheet::strikethrough_style_t m_strikethrough_style;
-    spreadsheet::strikethrough_type_t m_strikethrough_type;
-    spreadsheet::strikethrough_width_t m_strikethrough_width;
-    spreadsheet::strikethrough_text_t m_strikethrough_text;
-
-public:
-    text_prop_attr_parser() : m_bold(false), m_italic(false), m_color(false),
-                            m_red(0), m_green(0), m_blue(0),
-                            m_underline_is_text_color(true), m_underline(false),
-                            m_underline_red(0), m_underline_green(0), m_underline_blue(0),
-                            m_underline_mode(spreadsheet::underline_mode_t::continuos),
-                            m_underline_width(spreadsheet::underline_width_t::none),
-                            m_underline_style(spreadsheet::underline_t::none),
-                            m_underline_type(spreadsheet::underline_type_t::none),
-                            m_strikethrough_style(spreadsheet::strikethrough_style_t::none),
-                            m_strikethrough_type(spreadsheet::strikethrough_type_t::unknown),
-                            m_strikethrough_width(spreadsheet::strikethrough_width_t::unknown),
-                            m_strikethrough_text(spreadsheet::strikethrough_text_t::unknown) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_odf_style)
-        {
-            switch (attr.name)
-            {
-                case XML_font_name:
-                    m_font_name = attr.value;
-                break;
-                case XML_text_underline_color:
-                    if (!odf_helper::convert_fo_color(attr.value, m_underline_red, m_underline_green, m_underline_blue))
-                    {
-                        m_underline = true;
-                        m_underline_is_text_color = true;
-                    }
-                    else
-                    {
-                        m_underline_is_text_color = false;
-                    }
-                break;
-                case XML_text_underline_mode:
-                    m_underline = true;
-                    if (attr.value == "skip-white-space")
-                        m_underline_mode = spreadsheet::underline_mode_t::skip_white_space;
-                    else
-                        m_underline_mode = spreadsheet::underline_mode_t::continuos;
-                break;
-                case XML_text_underline_width:
-                {
-                    m_underline = true;
-                    m_underline_width = odf_helper::extract_underline_width(attr.value);
-                }
-                break;
-                case XML_text_underline_style:
-                {
-                    m_underline = true;
-                    m_underline_style = odf_helper::extract_underline_style(attr.value);
-                }
-                break;
-                case XML_text_underline_type:
-                {
-                    m_underline = true;
-                    if (attr.value == "none")
-                        m_underline_type = spreadsheet::underline_type_t::none;
-                    if (attr.value == "single")
-                        m_underline_type = spreadsheet::underline_type_t::single;
-                    if (attr.value == "double")
-                        m_underline_type = spreadsheet::underline_type_t::double_type;
-                }
-                break;
-                case XML_text_line_through_style:
-                {
-                    strikethrough_style_map style_map(strikethrough_style_entries, sizeof(strikethrough_style_entries)/sizeof(strikethrough_style_entries[0]), spreadsheet::strikethrough_style_t::none);
-                    m_strikethrough_style = style_map.find(attr.value.data(), attr.value.size());
-                }
-                break;
-                case XML_text_line_through_type:
-                {
-                    if (attr.value == "single")
-                        m_strikethrough_type = spreadsheet::strikethrough_type_t::single;
-                    else if (attr.value == "double")
-                        m_strikethrough_type = spreadsheet::strikethrough_type_t::double_type;
-                    else
-                        m_strikethrough_type = spreadsheet::strikethrough_type_t::unknown;
-                }
-                break;
-                case XML_text_line_through_width:
-                {
-                    if (attr.value == "bold")
-                        m_strikethrough_width = spreadsheet::strikethrough_width_t::bold;
-                    else
-                        m_strikethrough_width = spreadsheet::strikethrough_width_t::unknown;
-                }
-                break;
-                case XML_text_line_through_text:
-                {
-                    if (attr.value == "/")
-                        m_strikethrough_text = spreadsheet::strikethrough_text_t::slash;
-                    else if (attr.value == "X")
-                        m_strikethrough_text = spreadsheet::strikethrough_text_t::cross;
-                    else
-                        m_strikethrough_text = spreadsheet::strikethrough_text_t::unknown;
-                }
-                default:
-                    ;
-            }
-        }
-        else if (attr.ns == NS_odf_fo)
-        {
-            switch (attr.name)
-            {
-                case XML_font_size:
-                    m_font_size = to_length(attr.value);
-                break;
-                case XML_font_style:
-                    m_italic = attr.value == "italic";
-                break;
-                case XML_font_weight:
-                    m_bold = attr.value == "bold";
-                break;
-                case XML_color:
-                    m_color = odf_helper::convert_fo_color(attr.value,
-                            m_red, m_green, m_blue);
-                break;
-                default:
-                    ;
-            }
-        }
-    }
-
-    pstring get_font_name() const { return m_font_name; }
-    length_t get_font_size() const { return m_font_size; }
-    bool is_bold() const { return m_bold; }
-    bool is_italic() const { return m_italic; }
-    bool has_color() const { return m_color; }
-    void get_color(spreadsheet::color_elem_t& red, spreadsheet::color_elem_t& green,
-            spreadsheet::color_elem_t& blue)
-    {
-        red = m_red;
-        green = m_green;
-        blue = m_blue;
-    }
-    bool has_underline() const { return m_underline; }
-    bool underline_is_text_color() const { return m_underline_is_text_color; }
-    spreadsheet::underline_width_t get_underline_width() const { return m_underline_width; }
-    spreadsheet::underline_mode_t get_underline_mode() const { return m_underline_mode; }
-    spreadsheet::underline_type_t get_underline_type() const { return m_underline_type; }
-    spreadsheet::underline_t get_underline_style() const { return m_underline_style; }
-    void get_underline_color(spreadsheet::color_elem_t& red, spreadsheet::color_elem_t& green,
-            spreadsheet::color_elem_t& blue)
-    {
-        red = m_underline_red;
-        green = m_underline_green;
-        blue = m_underline_blue;
-    }
-    bool has_strikethrough() const { return m_strikethrough_style != spreadsheet::strikethrough_style_t::none;}
-    spreadsheet::strikethrough_style_t get_strikethrough_style() const { return m_strikethrough_style;}
-    spreadsheet::strikethrough_width_t get_strikethrough_width() const { return m_strikethrough_width;}
-    spreadsheet::strikethrough_type_t get_strikethrough_type() const { return m_strikethrough_type;}
-    spreadsheet::strikethrough_text_t get_strikethrough_text() const { return m_strikethrough_text;}
-};
-
 class cell_prop_attr_parser
 {
 public:
@@ -763,70 +578,178 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
         // TODO : handle this properly in the future.
         return;
 
-    text_prop_attr_parser func;
-    func = std::for_each(attrs.begin(), attrs.end(), func);
+    std::string_view font_name;
+    length_t font_size;
+    bool bold = false;
+    bool italic = false;
+    bool has_color = false;
+
+    spreadsheet::color_elem_t red = 0;
+    spreadsheet::color_elem_t green = 0;
+    spreadsheet::color_elem_t blue = 0;
+
+    bool underline_is_text_color = true;
+    bool has_underline = false;
+
+    spreadsheet::color_elem_t underline_red = 0;
+    spreadsheet::color_elem_t underline_green = 0;
+    spreadsheet::color_elem_t underline_blue = 0;
+
+    spreadsheet::underline_mode_t underline_mode = spreadsheet::underline_mode_t::continuos;
+    spreadsheet::underline_width_t underline_width = spreadsheet::underline_width_t::none;
+    spreadsheet::underline_t underline_style = spreadsheet::underline_t::none;
+    spreadsheet::underline_type_t underline_type = spreadsheet::underline_type_t::none;
+
+    spreadsheet::strikethrough_style_t strikethrough_style = spreadsheet::strikethrough_style_t::none;
+    spreadsheet::strikethrough_type_t strikethrough_type = spreadsheet::strikethrough_type_t::unknown;
+    spreadsheet::strikethrough_width_t strikethrough_width = spreadsheet::strikethrough_width_t::unknown;
+    spreadsheet::strikethrough_text_t strikethrough_text = spreadsheet::strikethrough_text_t::unknown;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns == NS_odf_style)
+        {
+            switch (attr.name)
+            {
+                case XML_font_name:
+                    font_name = attr.value;
+                    break;
+                case XML_text_underline_color:
+                    if (!odf_helper::convert_fo_color(attr.value, underline_red, underline_green, underline_blue))
+                    {
+                        has_underline = true;
+                        underline_is_text_color = true;
+                    }
+                    else
+                    {
+                        underline_is_text_color = false;
+                    }
+                    break;
+                case XML_text_underline_mode:
+                    has_underline = true;
+                    if (attr.value == "skip-white-space")
+                        underline_mode = spreadsheet::underline_mode_t::skip_white_space;
+                    else
+                        underline_mode = spreadsheet::underline_mode_t::continuos;
+                    break;
+                case XML_text_underline_width:
+                {
+                    has_underline = true;
+                    underline_width = odf_helper::extract_underline_width(attr.value);
+                    break;
+                }
+                case XML_text_underline_style:
+                {
+                    has_underline = true;
+                    underline_style = odf_helper::extract_underline_style(attr.value);
+                    break;
+                }
+                case XML_text_underline_type:
+                {
+                    has_underline = true;
+                    if (attr.value == "none")
+                        underline_type = spreadsheet::underline_type_t::none;
+                    if (attr.value == "single")
+                        underline_type = spreadsheet::underline_type_t::single;
+                    if (attr.value == "double")
+                        underline_type = spreadsheet::underline_type_t::double_type;
+                    break;
+                }
+                case XML_text_line_through_style:
+                {
+                    strikethrough_style_map style_map(strikethrough_style_entries, sizeof(strikethrough_style_entries)/sizeof(strikethrough_style_entries[0]), spreadsheet::strikethrough_style_t::none);
+                    strikethrough_style = style_map.find(attr.value.data(), attr.value.size());
+                    break;
+                }
+                case XML_text_line_through_type:
+                {
+                    if (attr.value == "single")
+                        strikethrough_type = spreadsheet::strikethrough_type_t::single;
+                    else if (attr.value == "double")
+                        strikethrough_type = spreadsheet::strikethrough_type_t::double_type;
+                    else
+                        strikethrough_type = spreadsheet::strikethrough_type_t::unknown;
+                    break;
+                }
+                case XML_text_line_through_width:
+                {
+                    if (attr.value == "bold")
+                        strikethrough_width = spreadsheet::strikethrough_width_t::bold;
+                    else
+                        strikethrough_width = spreadsheet::strikethrough_width_t::unknown;
+                    break;
+                }
+                case XML_text_line_through_text:
+                {
+                    if (attr.value == "/")
+                        strikethrough_text = spreadsheet::strikethrough_text_t::slash;
+                    else if (attr.value == "X")
+                        strikethrough_text = spreadsheet::strikethrough_text_t::cross;
+                    else
+                        strikethrough_text = spreadsheet::strikethrough_text_t::unknown;
+                    break;
+                }
+                default:
+                    ;
+            }
+        }
+        else if (attr.ns == NS_odf_fo)
+        {
+            switch (attr.name)
+            {
+                case XML_font_size:
+                    font_size = to_length(attr.value);
+                    break;
+                case XML_font_style:
+                    italic = attr.value == "italic";
+                    break;
+                case XML_font_weight:
+                    bold = attr.value == "bold";
+                    break;
+                case XML_color:
+                    has_color = odf_helper::convert_fo_color(attr.value, red, green, blue);
+                    break;
+                default:
+                    ;
+            }
+        }
+    }
 
     // Commit the font data.
-    std::string_view font_name = func.get_font_name();
     if (!font_name.empty())
         mp_styles->set_font_name(font_name);
 
-    length_t font_size = func.get_font_size();
     if (font_size.unit == length_unit_t::point)
         mp_styles->set_font_size(font_size.value);
 
-    if (func.is_bold())
+    if (bold)
         mp_styles->set_font_bold(true);
 
-    if (func.is_italic())
+    if (italic)
         mp_styles->set_font_italic(true);
 
-    if (func.has_color())
-    {
-        spreadsheet::color_elem_t red, green, blue;
-        func.get_color(red, green, blue);
+    if (has_color)
         mp_styles->set_font_color(0, red, green, blue);
-    }
 
-    if (func.has_underline())
+    if (has_underline)
     {
-        if (func.underline_is_text_color() && func.has_color())
-        {
-            spreadsheet::color_elem_t red, green, blue;
-            func.get_color(red, green, blue);
+        if (underline_is_text_color && has_color)
             mp_styles->set_font_underline_color(0, red, green, blue);
-        }
         else
-        {
-            spreadsheet::color_elem_t red, green, blue;
-            func.get_underline_color(red, green, blue);
-            mp_styles->set_font_underline_color(0, red, green, blue);
-        }
-        spreadsheet::underline_width_t width = func.get_underline_width();
-        mp_styles->set_font_underline_width(width);
+            mp_styles->set_font_underline_color(0, underline_red, underline_green, underline_blue);
 
-        spreadsheet::underline_t style = func.get_underline_style();
-        mp_styles->set_font_underline(style);
-
-        spreadsheet::underline_type_t type = func.get_underline_type();
-        mp_styles->set_font_underline_type(type);
-
-        spreadsheet::underline_mode_t mode = func.get_underline_mode();
-        mp_styles->set_font_underline_mode(mode);
+        mp_styles->set_font_underline_width(underline_width);
+        mp_styles->set_font_underline(underline_style);
+        mp_styles->set_font_underline_type(underline_type);
+        mp_styles->set_font_underline_mode(underline_mode);
     }
-    if (func.has_strikethrough())
+
+    if (strikethrough_style != spreadsheet::strikethrough_style_t::none)
     {
-        spreadsheet::strikethrough_style_t style = func.get_strikethrough_style();
-        mp_styles->set_strikethrough_style(style);
-
-        spreadsheet::strikethrough_width_t width = func.get_strikethrough_width();
-        mp_styles->set_strikethrough_width(width);
-
-        spreadsheet::strikethrough_type_t type = func.get_strikethrough_type();
-        mp_styles->set_strikethrough_type(type);
-
-        spreadsheet::strikethrough_text_t text = func.get_strikethrough_text();
-        mp_styles->set_strikethrough_text(text);
+        mp_styles->set_strikethrough_style(strikethrough_style);
+        mp_styles->set_strikethrough_width(strikethrough_width);
+        mp_styles->set_strikethrough_type(strikethrough_type);
+        mp_styles->set_strikethrough_text(strikethrough_text);
     }
 
     size_t font_id = mp_styles->commit_font();

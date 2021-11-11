@@ -36,8 +36,11 @@ public:
             {}
     };
 
-    static bool convert_fo_color(const orcus::pstring& value, orcus::spreadsheet::color_elem_t& red,
-            orcus::spreadsheet::color_elem_t& green, orcus::spreadsheet::color_elem_t& blue);
+    static bool convert_fo_color(
+        std::string_view value,
+        spreadsheet::color_elem_t& red,
+        spreadsheet::color_elem_t& green,
+        spreadsheet::color_elem_t& blue);
 
     /**
      * extracts border style, width and colors out of the pstring provided to it

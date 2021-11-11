@@ -232,14 +232,14 @@ enum class underline_width_t
 
 enum class underline_mode_t
 {
-    continuos = 0,
+    continuos = 0, // TODO: fix this typo
     skip_white_space
 };
 
 enum class underline_type_t
 {
     none = 0,
-    single,
+    single,  // TODO: standardize these values
     double_type            //necessary to not call it "double", since it is a reserved word
 };
 

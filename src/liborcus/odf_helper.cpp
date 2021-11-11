@@ -119,8 +119,11 @@ bool convert_color_digits(const pstring& value, orcus::spreadsheet::color_elem_t
 
 }
 
-bool odf_helper::convert_fo_color(const pstring& value, orcus::spreadsheet::color_elem_t& red,
-        orcus::spreadsheet::color_elem_t& green, orcus::spreadsheet::color_elem_t& blue)
+bool odf_helper::convert_fo_color(
+    std::string_view value,
+    spreadsheet::color_elem_t& red,
+    spreadsheet::color_elem_t& green,
+    spreadsheet::color_elem_t& blue)
 {
     // first character needs to be '#'
     if (value.size() != 7)
