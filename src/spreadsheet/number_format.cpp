@@ -15,7 +15,9 @@ namespace orcus { namespace spreadsheet { namespace detail {
 
 void format_to_file_output(std::ostream& os, double v)
 {
+    std::ios_base::fmtflags origflags = os.flags();
     os << std::setprecision(std::numeric_limits<double>::digits10 + 1) << v;
+    os.setf(origflags);
 }
 
 }}}
