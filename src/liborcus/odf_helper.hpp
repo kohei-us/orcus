@@ -42,6 +42,8 @@ public:
         spreadsheet::color_elem_t& green,
         spreadsheet::color_elem_t& blue);
 
+    static std::optional<spreadsheet::color_rgb_t> convert_fo_color(std::string_view value);
+
     /**
      * extracts border style, width and colors out of the pstring provided to it
     **/

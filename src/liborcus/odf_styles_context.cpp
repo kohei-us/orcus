@@ -596,11 +596,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     std::optional<length_t> font_size;
     std::optional<bool> bold;
     std::optional<bool> italic;
-    bool has_color = false;
-
-    ss::color_elem_t red = 0;
-    ss::color_elem_t green = 0;
-    ss::color_elem_t blue = 0;
+    std::optional<ss::color_rgb_t> color;
 
     bool underline_is_text_color = true;
     bool has_underline = false;
@@ -720,7 +716,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     bold = attr.value == "bold";
                     break;
                 case XML_color:
-                    has_color = odf_helper::convert_fo_color(attr.value, red, green, blue);
+                    color = odf_helper::convert_fo_color(attr.value);
                     break;
                 default:
                     ;
@@ -742,13 +738,13 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     if (italic)
         mp_styles->set_font_italic(*italic);
 
-    if (has_color)
-        mp_styles->set_font_color(0, red, green, blue);
+    if (color)
+        mp_styles->set_font_color(0, color->red, color->green, color->blue);
 
     if (has_underline)
     {
-        if (underline_is_text_color && has_color)
-            mp_styles->set_font_underline_color(0, red, green, blue);
+        if (underline_is_text_color && color)
+            mp_styles->set_font_underline_color(0, color->red, color->green, color->blue);
         else
             mp_styles->set_font_underline_color(0, underline_red, underline_green, underline_blue);
 

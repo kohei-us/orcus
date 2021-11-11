@@ -125,20 +125,38 @@ bool odf_helper::convert_fo_color(
     spreadsheet::color_elem_t& green,
     spreadsheet::color_elem_t& blue)
 {
+    auto color = convert_fo_color(value);
+    if (!color)
+        return false;
+
+    red = color->red;
+    green = color->green;
+    blue = color->blue;
+    return true;
+}
+
+std::optional<spreadsheet::color_rgb_t> odf_helper::convert_fo_color(std::string_view value)
+{
+    std::optional<spreadsheet::color_rgb_t> ret;
+
     // first character needs to be '#'
     if (value.size() != 7)
-        return false;
+        return ret;
 
     if (value[0] != '#')
-        return false;
+        return ret;
 
-    if (!convert_color_digits(value, red, 1))
-        return false;
+    spreadsheet::color_rgb_t color;
+    if (!convert_color_digits(value, color.red, 1))
+        return ret;
 
-    if (!convert_color_digits(value, green, 3))
-        return false;
+    if (!convert_color_digits(value, color.green, 3))
+        return ret;
 
-    return convert_color_digits(value, blue, 5);
+    if (!convert_color_digits(value, color.blue, 5))
+        return ret;
+
+    return color;
 }
 
 orcus::odf_helper::odf_border_details odf_helper::extract_border_details(const orcus::pstring &value)
