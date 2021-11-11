@@ -600,10 +600,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
 
     bool underline_is_text_color = true;
     bool has_underline = false;
-
-    ss::color_elem_t underline_red = 0;
-    ss::color_elem_t underline_green = 0;
-    ss::color_elem_t underline_blue = 0;
+    std::optional<ss::color_rgb_t> underline_color;
 
     ss::underline_mode_t underline_mode = ss::underline_mode_t::continuos;
     ss::underline_width_t underline_width = ss::underline_width_t::none;
@@ -625,14 +622,15 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     font_name = attr.value;
                     break;
                 case XML_text_underline_color:
-                    if (!odf_helper::convert_fo_color(attr.value, underline_red, underline_green, underline_blue))
+                    underline_color = odf_helper::convert_fo_color(attr.value);
+                    if (underline_color)
                     {
-                        has_underline = true;
-                        underline_is_text_color = true;
+                        underline_is_text_color = false;
                     }
                     else
                     {
-                        underline_is_text_color = false;
+                        has_underline = true;
+                        underline_is_text_color = true;
                     }
                     break;
                 case XML_text_underline_mode:
@@ -745,8 +743,8 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     {
         if (underline_is_text_color && color)
             mp_styles->set_font_underline_color(0, color->red, color->green, color->blue);
-        else
-            mp_styles->set_font_underline_color(0, underline_red, underline_green, underline_blue);
+        else if (underline_color)
+            mp_styles->set_font_underline_color(0, underline_color->red, underline_color->green, underline_color->blue);
 
         mp_styles->set_font_underline_width(underline_width);
         mp_styles->set_font_underline(underline_style);
