@@ -438,7 +438,13 @@ orcus_test_import_ods_SOURCES = \
 orcus_test_import_ods_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	$(BOOST_FILESYSTEM_LIBS) \
+	$(BOOST_SYSTEM_LIBS)
+
+orcus_test_importy_ods_LDFLAGS = \
+	$(BOOST_FILESYSTEM_LDFLAGS) \
+	$(BOOST_SYSTEM_LDFLAGS)
 
 orcus_test_import_ods_CPPFLAGS = $(AM_CPPFLAGS) \
 	-I$(top_builddir)/lib/liborcus/liborcus.la -DSRCDIR=\""$(top_srcdir)"\"

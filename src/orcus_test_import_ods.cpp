@@ -7,16 +7,19 @@
 
 #include <orcus/orcus_import_ods.hpp>
 
-#include <orcus/spreadsheet/styles.hpp>
+#include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/factory.hpp>
-
-#include <orcus/string_pool.hpp>
+#include <orcus/spreadsheet/styles.hpp>
+#include <orcus/spreadsheet/types.hpp>
 #include <orcus/stream.hpp>
+#include <orcus/string_pool.hpp>
 
 #include <cassert>
 #include <iostream>
-#include <orcus/spreadsheet/types.hpp>
-#include <orcus/measurement.hpp>
+
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 namespace {
 
@@ -29,10 +32,10 @@ struct test_model
 
     test_model() : istyles(styles, pool) {}
 
-    void load(const char* path)
+    void load(const fs::path& input_path)
     {
         styles.clear();
-        content.load(path);
+        content.load(input_path.string());
         orcus::import_ods::read_styles(content.str(), &istyles);
     }
 };
