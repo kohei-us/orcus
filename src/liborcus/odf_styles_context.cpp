@@ -598,7 +598,6 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     std::optional<bool> italic;
     std::optional<ss::color_rgb_t> color;
 
-    bool underline_is_text_color = true;
     bool has_underline = false;
     std::optional<ss::color_rgb_t> underline_color;
 
@@ -622,16 +621,8 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     font_name = attr.value;
                     break;
                 case XML_text_underline_color:
+                    has_underline = true;
                     underline_color = odf_helper::convert_fo_color(attr.value);
-                    if (underline_color)
-                    {
-                        underline_is_text_color = false;
-                    }
-                    else
-                    {
-                        has_underline = true;
-                        underline_is_text_color = true;
-                    }
                     break;
                 case XML_text_underline_mode:
                     has_underline = true;
@@ -741,10 +732,12 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
 
     if (has_underline)
     {
-        if (underline_is_text_color && color)
-            mp_styles->set_font_underline_color(0, color->red, color->green, color->blue);
-        else if (underline_color)
+        if (underline_color)
+            // Separate underline color is specified.
             mp_styles->set_font_underline_color(0, underline_color->red, underline_color->green, underline_color->blue);
+        else if (color)
+            // Use the text color for underline.
+            mp_styles->set_font_underline_color(0, color->red, color->green, color->blue);
 
         mp_styles->set_font_underline_width(underline_width);
         mp_styles->set_font_underline(underline_style);
