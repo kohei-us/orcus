@@ -9,15 +9,15 @@
 #include "odf_namespace_types.hpp"
 #include "odf_token_constants.hpp"
 #include "odf_helper.hpp"
-#include "orcus/measurement.hpp"
-#include "orcus/spreadsheet/import_interface.hpp"
 #include "odf_number_formatting_context.hpp"
-#include <iostream>
+
+#include <orcus/measurement.hpp>
+#include <orcus/spreadsheet/import_interface.hpp>
 
 #include <mdds/sorted_string_map.hpp>
 #include <mdds/global.hpp>
 
-using namespace std;
+#include <iostream>
 
 namespace orcus {
 
