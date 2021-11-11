@@ -56,6 +56,28 @@ void font_t::reset()
     *this = font_t();
 }
 
+void font_active_t::set()
+{
+    size = true;
+    bold = true;
+    italic = true;
+    underline_style = true;
+    underline_width = true;
+    underline_mode = true;
+    underline_type = true;
+    underline_color = true;
+    color = true;
+    strikethrough_style = true;
+    strikethrough_width = true;
+    strikethrough_type = true;
+    strikethrough_text = true;
+}
+
+void font_active_t::reset()
+{
+    *this = font_active_t();
+}
+
 color_t::color_t() :
     alpha(0), red(0), green(0), blue(0)
 {
@@ -181,7 +203,7 @@ std::ostream& operator<< (std::ostream& os, const color_t& c)
 
 struct styles::impl
 {
-    std::vector<font_t> fonts;
+    std::vector<std::pair<font_t, font_active_t>> fonts;
     std::vector<fill_t> fills;
     std::vector<border_t> borders;
     std::vector<protection_t> protections;
@@ -204,7 +226,16 @@ void styles::reserve_font_store(size_t n)
 
 size_t styles::append_font(const font_t& font)
 {
-    mp_impl->fonts.push_back(font);
+    // Preserve current behavior until next API version.
+    font_active_t active;
+    active.set();
+    mp_impl->fonts.emplace_back(font, active);
+    return mp_impl->fonts.size() - 1;
+}
+
+size_t styles::append_font(const font_t& value, const font_active_t& active)
+{
+    mp_impl->fonts.emplace_back(value, active);
     return mp_impl->fonts.size() - 1;
 }
 
@@ -294,6 +325,14 @@ size_t styles::append_cell_style(const cell_style_t& cs)
 }
 
 const font_t* styles::get_font(size_t index) const
+{
+    if (index >= mp_impl->fonts.size())
+        return nullptr;
+
+    return &mp_impl->fonts[index].first;
+}
+
+const std::pair<font_t, font_active_t>* styles::get_font_state(size_t index) const
 {
     if (index >= mp_impl->fonts.size())
         return nullptr;

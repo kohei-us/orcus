@@ -18,6 +18,8 @@ struct import_styles::impl
     string_pool& str_pool;
 
     font_t cur_font;
+    font_active_t cur_font_active;
+
     fill_t cur_fill;
     border_t cur_border;
     protection_t cur_protection;
@@ -43,11 +45,13 @@ void import_styles::set_font_count(size_t n)
 void import_styles::set_font_bold(bool b)
 {
     mp_impl->cur_font.bold = b;
+    mp_impl->cur_font_active.bold = true;
 }
 
 void import_styles::set_font_italic(bool b)
 {
     mp_impl->cur_font.italic = b;
+    mp_impl->cur_font_active.italic = true;
 }
 
 void import_styles::set_font_name(std::string_view s)
@@ -58,62 +62,74 @@ void import_styles::set_font_name(std::string_view s)
 void import_styles::set_font_size(double point)
 {
     mp_impl->cur_font.size = point;
+    mp_impl->cur_font_active.size = true;
 }
 
 void import_styles::set_font_underline(underline_t e)
 {
     mp_impl->cur_font.underline_style = e;
+    mp_impl->cur_font_active.underline_style = true;
 }
 
 void import_styles::set_font_underline_width(underline_width_t e)
 {
     mp_impl->cur_font.underline_width = e;
+    mp_impl->cur_font_active.underline_width = true;
 }
 
 void import_styles::set_font_underline_mode(underline_mode_t e)
 {
     mp_impl->cur_font.underline_mode = e;
+    mp_impl->cur_font_active.underline_mode = true;
 }
 
 void import_styles::set_font_underline_type(underline_type_t e)
 {
     mp_impl->cur_font.underline_type = e;
+    mp_impl->cur_font_active.underline_type = true;
 }
 
 void import_styles::set_font_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
     mp_impl->cur_font.underline_color = color_t(alpha, red, green, blue);
+    mp_impl->cur_font_active.underline_color = true;
 }
 
 void import_styles::set_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
     mp_impl->cur_font.color = color_t(alpha, red, green, blue);
+    mp_impl->cur_font_active.color = true;
 }
 
 void import_styles::set_strikethrough_style(strikethrough_style_t s)
 {
     mp_impl->cur_font.strikethrough_style = s;
+    mp_impl->cur_font_active.strikethrough_style = true;
 }
 
 void import_styles::set_strikethrough_width(strikethrough_width_t s)
 {
     mp_impl->cur_font.strikethrough_width = s;
+    mp_impl->cur_font_active.strikethrough_width = true;
 }
 
 void import_styles::set_strikethrough_type(strikethrough_type_t s)
 {
     mp_impl->cur_font.strikethrough_type = s;
+    mp_impl->cur_font_active.strikethrough_type = true;
 }
 
 void import_styles::set_strikethrough_text(strikethrough_text_t s)
 {
     mp_impl->cur_font.strikethrough_text = s;
+    mp_impl->cur_font_active.strikethrough_text = true;
 }
 
 size_t import_styles::commit_font()
 {
-    size_t font_id = mp_impl->styles_model.append_font(mp_impl->cur_font);
+    size_t font_id = mp_impl->styles_model.append_font(mp_impl->cur_font, mp_impl->cur_font_active);
     mp_impl->cur_font.reset();
+    mp_impl->cur_font_active.reset();
     return font_id;
 }
 

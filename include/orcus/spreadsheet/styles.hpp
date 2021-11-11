@@ -54,6 +54,29 @@ struct ORCUS_SPM_DLLPUBLIC font_t
     void reset();
 };
 
+/**
+ * Specifies whether each attribute of font_t is active or not.
+ */
+struct ORCUS_SPM_DLLPUBLIC font_active_t
+{
+    bool size = false;
+    bool bold = false;
+    bool italic = false;
+    bool underline_style = false;
+    bool underline_width = false;
+    bool underline_mode = false;
+    bool underline_type = false;
+    bool underline_color = false;
+    bool color = false;
+    bool strikethrough_style = false;
+    bool strikethrough_width = false;
+    bool strikethrough_type = false;
+    bool strikethrough_text = false;
+
+    void set();
+    void reset();
+};
+
 struct ORCUS_SPM_DLLPUBLIC fill_t
 {
     fill_pattern_t pattern_type;
@@ -157,6 +180,7 @@ public:
 
     void reserve_font_store(size_t n);
     size_t append_font(const font_t& font);
+    size_t append_font(const font_t& value, const font_active_t& active);
 
     void reserve_fill_store(size_t n);
     size_t append_fill(const fill_t& fill);
@@ -182,6 +206,8 @@ public:
     size_t append_cell_style(const cell_style_t& cs);
 
     const font_t* get_font(size_t index) const;
+    const std::pair<font_t, font_active_t>* get_font_state(size_t index) const;
+
     const fill_t* get_fill(size_t index) const;
     const border_t* get_border(size_t index) const;
     const protection_t* get_protection(size_t index) const;

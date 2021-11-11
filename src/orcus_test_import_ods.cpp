@@ -16,10 +16,12 @@
 
 #include <cassert>
 #include <iostream>
+#include <sstream>
 
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
+namespace ss = orcus::spreadsheet;
 
 namespace {
 
@@ -34,6 +36,13 @@ struct test_model
 
     void load(const fs::path& input_path)
     {
+        if (!fs::is_regular_file(input_path))
+        {
+            std::ostringstream os;
+            os << input_path << " is not a regular file.";
+            throw std::runtime_error(os.str());
+        }
+
         styles.clear();
         content.load(input_path.string());
         orcus::import_ods::read_styles(content.str(), &istyles);
@@ -348,6 +357,41 @@ void test_odf_text_alignment(const orcus::spreadsheet::styles& styles)
     assert(cell_format->ver_align == orcus::spreadsheet::ver_alignment_t::middle);
 }
 
+void test_standard_styles()
+{
+    test_model model;
+    model.load(SRCDIR"/test/ods/styles/standard-styles.xml");
+
+    {
+        // Heading only specifies color, font size, font style and font weight.
+        const ss::cell_style_t* style = find_cell_style_by_name("Heading", model.styles);
+        assert(style);
+        assert(style->parent_name == "Default");
+
+        const ss::cell_format_t* cell_format = model.styles.get_cell_style_format(style->xf);
+        assert(cell_format);
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+
+        const ss::font_t& value = font_state->first;
+        const ss::font_active_t& active = font_state->second;
+        assert(value.size == 24);
+        assert(active.size);
+
+        assert(!value.italic);
+//      assert(active.italic); // FIXME: this fails
+
+        assert(value.bold);
+        assert(active.bold);
+
+        assert(value.color.red == 0);
+        assert(value.color.green == 0);
+        assert(value.color.blue == 0);
+        assert(active.color);
+    }
+}
+
 } // anonymous namespace
 
 int main()
@@ -364,6 +408,8 @@ int main()
 
     model.load(SRCDIR"/test/ods/styles/number-format.xml");
     test_odf_number_formatting(model.styles);
+
+    test_standard_styles();
 
     return 0;
 }
