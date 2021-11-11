@@ -525,6 +525,7 @@ void document::dump(dump_format_t format, const std::string& output) const
         case dump_format_t::json:
             dump_json(output);
             break;
+        // coverity[dead_error_line] - following conditions exist to avoid compiler warning
         case dump_format_t::none:
         case dump_format_t::unknown:
             break;
