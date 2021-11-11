@@ -145,7 +145,7 @@ void dump_document_structure(const file_content& content, output_stream& os)
 
 } // anonymous namespace
 
-int main(int argc, char** argv)
+int main(int argc, char** argv) try
 {
     po::options_description desc("Options");
     desc.add_options()
@@ -340,13 +340,13 @@ int main(int argc, char** argv)
         cerr << e.what() << endl;
         return EXIT_FAILURE;
     }
-    catch (const std::exception& e)
-    {
-        cerr << e.what() << endl;
-        return EXIT_FAILURE;
-    }
 
     return EXIT_SUCCESS;
+}
+catch (const std::exception& e)
+{
+    cerr << e.what() << endl;
+    return EXIT_FAILURE;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
