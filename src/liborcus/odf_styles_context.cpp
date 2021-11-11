@@ -18,6 +18,7 @@
 #include <mdds/global.hpp>
 
 #include <iostream>
+#include <optional>
 
 namespace ss = orcus::spreadsheet;
 
@@ -591,10 +592,10 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
         // TODO : handle this properly in the future.
         return;
 
-    std::string_view font_name;
-    length_t font_size;
-    bool bold = false;
-    bool italic = false;
+    std::optional<std::string_view> font_name;
+    std::optional<length_t> font_size;
+    std::optional<bool> bold;
+    std::optional<bool> italic;
     bool has_color = false;
 
     ss::color_elem_t red = 0;
@@ -728,17 +729,18 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     }
 
     // Commit the font data.
-    if (!font_name.empty())
-        mp_styles->set_font_name(font_name);
 
-    if (font_size.unit == length_unit_t::point)
-        mp_styles->set_font_size(font_size.value);
+    if (font_name)
+        mp_styles->set_font_name(*font_name);
+
+    if (font_size && font_size->unit == length_unit_t::point)
+        mp_styles->set_font_size(font_size->value);
 
     if (bold)
-        mp_styles->set_font_bold(true);
+        mp_styles->set_font_bold(*bold);
 
     if (italic)
-        mp_styles->set_font_italic(true);
+        mp_styles->set_font_italic(*italic);
 
     if (has_color)
         mp_styles->set_font_color(0, red, green, blue);

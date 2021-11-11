@@ -380,7 +380,7 @@ void test_standard_styles()
         assert(active.size);
 
         assert(!value.italic);
-//      assert(active.italic); // FIXME: this fails
+        assert(active.italic);
 
         assert(value.bold);
         assert(active.bold);
