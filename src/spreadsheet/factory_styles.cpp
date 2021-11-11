@@ -14,139 +14,139 @@ namespace orcus { namespace spreadsheet {
 
 struct import_styles::impl
 {
-    styles& m_styles;
-    string_pool& m_string_pool;
+    styles& styles_model;
+    string_pool& str_pool;
 
-    font_t m_cur_font;
-    fill_t m_cur_fill;
-    border_t m_cur_border;
-    protection_t m_cur_protection;
-    number_format_t m_cur_number_format;
-    cell_format_t m_cur_cell_format;
-    cell_style_t m_cur_cell_style;
+    font_t cur_font;
+    fill_t cur_fill;
+    border_t cur_border;
+    protection_t cur_protection;
+    number_format_t cur_number_format;
+    cell_format_t cur_cell_format;
+    cell_style_t cur_cell_style;
 
-    impl(styles& styles, string_pool& sp) :
-        m_styles(styles),
-        m_string_pool(sp) {}
+    impl(styles& _styles_model, string_pool& sp) :
+        styles_model(_styles_model),
+        str_pool(sp) {}
 };
 
-import_styles::import_styles(styles& styles, string_pool& sp) :
-    mp_impl(std::make_unique<impl>(styles, sp)) {}
+import_styles::import_styles(styles& styles_model, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(styles_model, sp)) {}
 
 import_styles::~import_styles() {}
 
 void import_styles::set_font_count(size_t n)
 {
-    mp_impl->m_styles.reserve_font_store(n);
+    mp_impl->styles_model.reserve_font_store(n);
 }
 
 void import_styles::set_font_bold(bool b)
 {
-    mp_impl->m_cur_font.bold = b;
+    mp_impl->cur_font.bold = b;
 }
 
 void import_styles::set_font_italic(bool b)
 {
-    mp_impl->m_cur_font.italic = b;
+    mp_impl->cur_font.italic = b;
 }
 
 void import_styles::set_font_name(std::string_view s)
 {
-    mp_impl->m_cur_font.name = mp_impl->m_string_pool.intern(s).first;
+    mp_impl->cur_font.name = mp_impl->str_pool.intern(s).first;
 }
 
 void import_styles::set_font_size(double point)
 {
-    mp_impl->m_cur_font.size = point;
+    mp_impl->cur_font.size = point;
 }
 
 void import_styles::set_font_underline(underline_t e)
 {
-    mp_impl->m_cur_font.underline_style = e;
+    mp_impl->cur_font.underline_style = e;
 }
 
 void import_styles::set_font_underline_width(underline_width_t e)
 {
-    mp_impl->m_cur_font.underline_width = e;
+    mp_impl->cur_font.underline_width = e;
 }
 
 void import_styles::set_font_underline_mode(underline_mode_t e)
 {
-    mp_impl->m_cur_font.underline_mode = e;
+    mp_impl->cur_font.underline_mode = e;
 }
 
 void import_styles::set_font_underline_type(underline_type_t e)
 {
-    mp_impl->m_cur_font.underline_type = e;
+    mp_impl->cur_font.underline_type = e;
 }
 
 void import_styles::set_font_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
-    mp_impl->m_cur_font.underline_color = color_t(alpha, red, green, blue);
+    mp_impl->cur_font.underline_color = color_t(alpha, red, green, blue);
 }
 
 void import_styles::set_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
-    mp_impl->m_cur_font.color = color_t(alpha, red, green, blue);
+    mp_impl->cur_font.color = color_t(alpha, red, green, blue);
 }
 
 void import_styles::set_strikethrough_style(strikethrough_style_t s)
 {
-    mp_impl->m_cur_font.strikethrough_style = s;
+    mp_impl->cur_font.strikethrough_style = s;
 }
 
 void import_styles::set_strikethrough_width(strikethrough_width_t s)
 {
-    mp_impl->m_cur_font.strikethrough_width = s;
+    mp_impl->cur_font.strikethrough_width = s;
 }
 
 void import_styles::set_strikethrough_type(strikethrough_type_t s)
 {
-    mp_impl->m_cur_font.strikethrough_type = s;
+    mp_impl->cur_font.strikethrough_type = s;
 }
 
 void import_styles::set_strikethrough_text(strikethrough_text_t s)
 {
-    mp_impl->m_cur_font.strikethrough_text = s;
+    mp_impl->cur_font.strikethrough_text = s;
 }
 
 size_t import_styles::commit_font()
 {
-    size_t font_id = mp_impl->m_styles.append_font(mp_impl->m_cur_font);
-    mp_impl->m_cur_font.reset();
+    size_t font_id = mp_impl->styles_model.append_font(mp_impl->cur_font);
+    mp_impl->cur_font.reset();
     return font_id;
 }
 
 void import_styles::set_fill_count(size_t n)
 {
-    mp_impl->m_styles.reserve_fill_store(n);
+    mp_impl->styles_model.reserve_fill_store(n);
 }
 
 void import_styles::set_fill_pattern_type(fill_pattern_t fp)
 {
-    mp_impl->m_cur_fill.pattern_type = fp;
+    mp_impl->cur_fill.pattern_type = fp;
 }
 
 void import_styles::set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
-    mp_impl->m_cur_fill.fg_color = color_t(alpha, red, green, blue);
+    mp_impl->cur_fill.fg_color = color_t(alpha, red, green, blue);
 }
 
 void import_styles::set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
-    mp_impl->m_cur_fill.bg_color = color_t(alpha, red, green, blue);
+    mp_impl->cur_fill.bg_color = color_t(alpha, red, green, blue);
 }
 
 size_t import_styles::commit_fill()
 {
-    size_t fill_id = mp_impl->m_styles.append_fill(mp_impl->m_cur_fill);
-    mp_impl->m_cur_fill.reset();
+    size_t fill_id = mp_impl->styles_model.append_fill(mp_impl->cur_fill);
+    mp_impl->cur_fill.reset();
     return fill_id;
 }
 
 void import_styles::set_border_count(size_t n)
 {
-    mp_impl->m_styles.reserve_border_store(n);
+    mp_impl->styles_model.reserve_border_store(n);
 }
 
 namespace {
@@ -188,7 +188,7 @@ border_attrs_t* get_border_attrs(border_t& cur_border, border_direction_t dir)
 
 void import_styles::set_border_style(border_direction_t dir, border_style_t style)
 {
-    border_attrs_t* p = get_border_attrs(mp_impl->m_cur_border, dir);
+    border_attrs_t* p = get_border_attrs(mp_impl->cur_border, dir);
     if (p)
         p->style = style;
 }
@@ -196,14 +196,14 @@ void import_styles::set_border_style(border_direction_t dir, border_style_t styl
 void import_styles::set_border_color(
     border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
-    border_attrs_t* p = get_border_attrs(mp_impl->m_cur_border, dir);
+    border_attrs_t* p = get_border_attrs(mp_impl->cur_border, dir);
     if (p)
         p->border_color = color_t(alpha, red, green, blue);
 }
 
 void import_styles::set_border_width(border_direction_t dir, double width, orcus::length_unit_t unit)
 {
-    border_attrs_t* p = get_border_attrs(mp_impl->m_cur_border, dir);
+    border_attrs_t* p = get_border_attrs(mp_impl->cur_border, dir);
     if (p)
     {
         p->border_width.value = width;
@@ -213,174 +213,174 @@ void import_styles::set_border_width(border_direction_t dir, double width, orcus
 
 size_t import_styles::commit_border()
 {
-    size_t border_id = mp_impl->m_styles.append_border(mp_impl->m_cur_border);
-    mp_impl->m_cur_border.reset();
+    size_t border_id = mp_impl->styles_model.append_border(mp_impl->cur_border);
+    mp_impl->cur_border.reset();
     return border_id;
 }
 
 void import_styles::set_cell_hidden(bool b)
 {
-    mp_impl->m_cur_protection.hidden = b;
+    mp_impl->cur_protection.hidden = b;
 }
 
 void import_styles::set_cell_locked(bool b)
 {
-    mp_impl->m_cur_protection.locked = b;
+    mp_impl->cur_protection.locked = b;
 }
 
 void import_styles::set_cell_print_content(bool b)
 {
-    mp_impl->m_cur_protection.print_content = b;
+    mp_impl->cur_protection.print_content = b;
 }
 
 void import_styles::set_cell_formula_hidden(bool b)
 {
-    mp_impl->m_cur_protection.formula_hidden = b;
+    mp_impl->cur_protection.formula_hidden = b;
 }
 
 size_t import_styles::commit_cell_protection()
 {
-    size_t cp_id = mp_impl->m_styles.append_protection(mp_impl->m_cur_protection);
-    mp_impl->m_cur_protection.reset();
+    size_t cp_id = mp_impl->styles_model.append_protection(mp_impl->cur_protection);
+    mp_impl->cur_protection.reset();
     return cp_id;
 }
 
 void import_styles::set_number_format_count(size_t n)
 {
-    mp_impl->m_styles.reserve_number_format_store(n);
+    mp_impl->styles_model.reserve_number_format_store(n);
 }
 
 void import_styles::set_number_format_identifier(size_t id)
 {
-    mp_impl->m_cur_number_format.identifier = id;
+    mp_impl->cur_number_format.identifier = id;
 }
 
 void import_styles::set_number_format_code(std::string_view s)
 {
-    mp_impl->m_cur_number_format.format_string = s;
+    mp_impl->cur_number_format.format_string = s;
 }
 
 size_t import_styles::commit_number_format()
 {
-    size_t nf_id = mp_impl->m_styles.append_number_format(mp_impl->m_cur_number_format);
-    mp_impl->m_cur_number_format.reset();
+    size_t nf_id = mp_impl->styles_model.append_number_format(mp_impl->cur_number_format);
+    mp_impl->cur_number_format.reset();
     return nf_id;
 }
 
 void import_styles::set_cell_xf_count(size_t n)
 {
-    mp_impl->m_styles.reserve_cell_format_store(n);
+    mp_impl->styles_model.reserve_cell_format_store(n);
 }
 
 void import_styles::set_cell_style_xf_count(size_t n)
 {
-    mp_impl->m_styles.reserve_cell_style_format_store(n);
+    mp_impl->styles_model.reserve_cell_style_format_store(n);
 }
 
 void import_styles::set_dxf_count(size_t n)
 {
-    mp_impl->m_styles.reserve_diff_cell_format_store(n);
+    mp_impl->styles_model.reserve_diff_cell_format_store(n);
 }
 
 void import_styles::set_xf_font(size_t index)
 {
-    mp_impl->m_cur_cell_format.font = index;
+    mp_impl->cur_cell_format.font = index;
 }
 
 void import_styles::set_xf_fill(size_t index)
 {
-    mp_impl->m_cur_cell_format.fill = index;
+    mp_impl->cur_cell_format.fill = index;
 }
 
 void import_styles::set_xf_border(size_t index)
 {
-    mp_impl->m_cur_cell_format.border = index;
+    mp_impl->cur_cell_format.border = index;
 
     // TODO : we need to decide whether to have interface methods for these
     // apply_foo attributes.  For now there is only one, for alignment.
-    mp_impl->m_cur_cell_format.apply_border = index > 0;
+    mp_impl->cur_cell_format.apply_border = index > 0;
 }
 
 void import_styles::set_xf_protection(size_t index)
 {
-    mp_impl->m_cur_cell_format.protection = index;
+    mp_impl->cur_cell_format.protection = index;
 }
 
 void import_styles::set_xf_number_format(size_t index)
 {
-    mp_impl->m_cur_cell_format.number_format = index;
+    mp_impl->cur_cell_format.number_format = index;
 }
 
 void import_styles::set_xf_style_xf(size_t index)
 {
-    mp_impl->m_cur_cell_format.style_xf = index;
+    mp_impl->cur_cell_format.style_xf = index;
 }
 
 void import_styles::set_xf_apply_alignment(bool b)
 {
-    mp_impl->m_cur_cell_format.apply_alignment = b;
+    mp_impl->cur_cell_format.apply_alignment = b;
 }
 
 void import_styles::set_xf_horizontal_alignment(orcus::spreadsheet::hor_alignment_t align)
 {
-    mp_impl->m_cur_cell_format.hor_align = align;
+    mp_impl->cur_cell_format.hor_align = align;
 }
 
 void import_styles::set_xf_vertical_alignment(orcus::spreadsheet::ver_alignment_t align)
 {
-    mp_impl->m_cur_cell_format.ver_align = align;
+    mp_impl->cur_cell_format.ver_align = align;
 }
 
 size_t import_styles::commit_cell_xf()
 {
-    size_t n = mp_impl->m_styles.append_cell_format(mp_impl->m_cur_cell_format);
-    mp_impl->m_cur_cell_format.reset();
+    size_t n = mp_impl->styles_model.append_cell_format(mp_impl->cur_cell_format);
+    mp_impl->cur_cell_format.reset();
     return n;
 }
 
 size_t import_styles::commit_cell_style_xf()
 {
-    size_t n = mp_impl->m_styles.append_cell_style_format(mp_impl->m_cur_cell_format);
-    mp_impl->m_cur_cell_format.reset();
+    size_t n = mp_impl->styles_model.append_cell_style_format(mp_impl->cur_cell_format);
+    mp_impl->cur_cell_format.reset();
     return n;
 }
 
 size_t import_styles::commit_dxf()
 {
-    size_t n = mp_impl->m_styles.append_diff_cell_format(mp_impl->m_cur_cell_format);
-    mp_impl->m_cur_cell_format.reset();
+    size_t n = mp_impl->styles_model.append_diff_cell_format(mp_impl->cur_cell_format);
+    mp_impl->cur_cell_format.reset();
     return n;
 }
 
 void import_styles::set_cell_style_count(size_t n)
 {
-    mp_impl->m_styles.reserve_cell_style_store(n);
+    mp_impl->styles_model.reserve_cell_style_store(n);
 }
 
 void import_styles::set_cell_style_name(std::string_view s)
 {
-    mp_impl->m_cur_cell_style.name = mp_impl->m_string_pool.intern(s).first;
+    mp_impl->cur_cell_style.name = mp_impl->str_pool.intern(s).first;
 }
 
 void import_styles::set_cell_style_xf(size_t index)
 {
-    mp_impl->m_cur_cell_style.xf = index;
+    mp_impl->cur_cell_style.xf = index;
 }
 
 void import_styles::set_cell_style_builtin(size_t index)
 {
-    mp_impl->m_cur_cell_style.builtin = index;
+    mp_impl->cur_cell_style.builtin = index;
 }
 
 void import_styles::set_cell_style_parent_name(std::string_view s)
 {
-    mp_impl->m_cur_cell_style.parent_name = mp_impl->m_string_pool.intern(s).first;
+    mp_impl->cur_cell_style.parent_name = mp_impl->str_pool.intern(s).first;
 }
 
 size_t import_styles::commit_cell_style()
 {
-    size_t n = mp_impl->m_styles.append_cell_style(mp_impl->m_cur_cell_style);
-    mp_impl->m_cur_cell_style.reset();
+    size_t n = mp_impl->styles_model.append_cell_style(mp_impl->cur_cell_style);
+    mp_impl->cur_cell_style.reset();
     return n;
 }
 
