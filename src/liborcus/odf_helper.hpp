@@ -13,6 +13,8 @@
 #include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/styles.hpp>
 
+#include <optional>
+
 namespace orcus {
 
 class odf_helper
