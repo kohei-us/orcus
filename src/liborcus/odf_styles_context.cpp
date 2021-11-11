@@ -113,19 +113,30 @@ public:
     const length_t& get_width() const { return m_width; }
 };
 
-typedef mdds::sorted_string_map<spreadsheet::strikethrough_style_t> strikethrough_style_map;
+namespace st_style {
 
-strikethrough_style_map::entry strikethrough_style_entries[] =
+typedef mdds::sorted_string_map<ss::strikethrough_style_t> map_type;
+
+// Keys must be sorted.
+const std::vector<map_type::entry> entries =
 {
-    { MDDS_ASCII("dash"), spreadsheet::strikethrough_style_t::dash },
-    { MDDS_ASCII("dot-dash"), spreadsheet::strikethrough_style_t::dot_dash },
-    { MDDS_ASCII("dot-dot-dash"), spreadsheet::strikethrough_style_t::dot_dot_dash },
-    { MDDS_ASCII("dotted"), spreadsheet::strikethrough_style_t::dotted },
-    { MDDS_ASCII("long-dash"), spreadsheet::strikethrough_style_t::long_dash},
-    { MDDS_ASCII("none"), spreadsheet::strikethrough_style_t::none },
-    { MDDS_ASCII("solid"), spreadsheet::strikethrough_style_t::solid },
-    { MDDS_ASCII("wave"), spreadsheet::strikethrough_style_t::wave },
+    { MDDS_ASCII("dash"), ss::strikethrough_style_t::dash },
+    { MDDS_ASCII("dot-dash"), ss::strikethrough_style_t::dot_dash },
+    { MDDS_ASCII("dot-dot-dash"), ss::strikethrough_style_t::dot_dot_dash },
+    { MDDS_ASCII("dotted"), ss::strikethrough_style_t::dotted },
+    { MDDS_ASCII("long-dash"), ss::strikethrough_style_t::long_dash},
+    { MDDS_ASCII("none"), ss::strikethrough_style_t::none },
+    { MDDS_ASCII("solid"), ss::strikethrough_style_t::solid },
+    { MDDS_ASCII("wave"), ss::strikethrough_style_t::wave },
 };
+
+const map_type& get()
+{
+    static map_type mt(entries.data(), entries.size(), ss::strikethrough_style_t::none);
+    return mt;
+}
+
+} // namespace st_style
 
 class cell_prop_attr_parser
 {
@@ -659,8 +670,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                 }
                 case XML_text_line_through_style:
                 {
-                    strikethrough_style_map style_map(strikethrough_style_entries, sizeof(strikethrough_style_entries)/sizeof(strikethrough_style_entries[0]), ss::strikethrough_style_t::none);
-                    strikethrough_style = style_map.find(attr.value.data(), attr.value.size());
+                    strikethrough_style = st_style::get().find(attr.value.data(), attr.value.size());
                     break;
                 }
                 case XML_text_line_through_type:
