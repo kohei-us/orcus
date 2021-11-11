@@ -19,6 +19,8 @@
 
 #include <iostream>
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus {
 
 namespace {
@@ -584,26 +586,26 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     bool italic = false;
     bool has_color = false;
 
-    spreadsheet::color_elem_t red = 0;
-    spreadsheet::color_elem_t green = 0;
-    spreadsheet::color_elem_t blue = 0;
+    ss::color_elem_t red = 0;
+    ss::color_elem_t green = 0;
+    ss::color_elem_t blue = 0;
 
     bool underline_is_text_color = true;
     bool has_underline = false;
 
-    spreadsheet::color_elem_t underline_red = 0;
-    spreadsheet::color_elem_t underline_green = 0;
-    spreadsheet::color_elem_t underline_blue = 0;
+    ss::color_elem_t underline_red = 0;
+    ss::color_elem_t underline_green = 0;
+    ss::color_elem_t underline_blue = 0;
 
-    spreadsheet::underline_mode_t underline_mode = spreadsheet::underline_mode_t::continuos;
-    spreadsheet::underline_width_t underline_width = spreadsheet::underline_width_t::none;
-    spreadsheet::underline_t underline_style = spreadsheet::underline_t::none;
-    spreadsheet::underline_type_t underline_type = spreadsheet::underline_type_t::none;
+    ss::underline_mode_t underline_mode = ss::underline_mode_t::continuos;
+    ss::underline_width_t underline_width = ss::underline_width_t::none;
+    ss::underline_t underline_style = ss::underline_t::none;
+    ss::underline_type_t underline_type = ss::underline_type_t::none;
 
-    spreadsheet::strikethrough_style_t strikethrough_style = spreadsheet::strikethrough_style_t::none;
-    spreadsheet::strikethrough_type_t strikethrough_type = spreadsheet::strikethrough_type_t::unknown;
-    spreadsheet::strikethrough_width_t strikethrough_width = spreadsheet::strikethrough_width_t::unknown;
-    spreadsheet::strikethrough_text_t strikethrough_text = spreadsheet::strikethrough_text_t::unknown;
+    ss::strikethrough_style_t strikethrough_style = ss::strikethrough_style_t::none;
+    ss::strikethrough_type_t strikethrough_type = ss::strikethrough_type_t::unknown;
+    ss::strikethrough_width_t strikethrough_width = ss::strikethrough_width_t::unknown;
+    ss::strikethrough_text_t strikethrough_text = ss::strikethrough_text_t::unknown;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -628,9 +630,9 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                 case XML_text_underline_mode:
                     has_underline = true;
                     if (attr.value == "skip-white-space")
-                        underline_mode = spreadsheet::underline_mode_t::skip_white_space;
+                        underline_mode = ss::underline_mode_t::skip_white_space;
                     else
-                        underline_mode = spreadsheet::underline_mode_t::continuos;
+                        underline_mode = ss::underline_mode_t::continuos;
                     break;
                 case XML_text_underline_width:
                 {
@@ -648,45 +650,45 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                 {
                     has_underline = true;
                     if (attr.value == "none")
-                        underline_type = spreadsheet::underline_type_t::none;
+                        underline_type = ss::underline_type_t::none;
                     if (attr.value == "single")
-                        underline_type = spreadsheet::underline_type_t::single;
+                        underline_type = ss::underline_type_t::single;
                     if (attr.value == "double")
-                        underline_type = spreadsheet::underline_type_t::double_type;
+                        underline_type = ss::underline_type_t::double_type;
                     break;
                 }
                 case XML_text_line_through_style:
                 {
-                    strikethrough_style_map style_map(strikethrough_style_entries, sizeof(strikethrough_style_entries)/sizeof(strikethrough_style_entries[0]), spreadsheet::strikethrough_style_t::none);
+                    strikethrough_style_map style_map(strikethrough_style_entries, sizeof(strikethrough_style_entries)/sizeof(strikethrough_style_entries[0]), ss::strikethrough_style_t::none);
                     strikethrough_style = style_map.find(attr.value.data(), attr.value.size());
                     break;
                 }
                 case XML_text_line_through_type:
                 {
                     if (attr.value == "single")
-                        strikethrough_type = spreadsheet::strikethrough_type_t::single;
+                        strikethrough_type = ss::strikethrough_type_t::single;
                     else if (attr.value == "double")
-                        strikethrough_type = spreadsheet::strikethrough_type_t::double_type;
+                        strikethrough_type = ss::strikethrough_type_t::double_type;
                     else
-                        strikethrough_type = spreadsheet::strikethrough_type_t::unknown;
+                        strikethrough_type = ss::strikethrough_type_t::unknown;
                     break;
                 }
                 case XML_text_line_through_width:
                 {
                     if (attr.value == "bold")
-                        strikethrough_width = spreadsheet::strikethrough_width_t::bold;
+                        strikethrough_width = ss::strikethrough_width_t::bold;
                     else
-                        strikethrough_width = spreadsheet::strikethrough_width_t::unknown;
+                        strikethrough_width = ss::strikethrough_width_t::unknown;
                     break;
                 }
                 case XML_text_line_through_text:
                 {
                     if (attr.value == "/")
-                        strikethrough_text = spreadsheet::strikethrough_text_t::slash;
+                        strikethrough_text = ss::strikethrough_text_t::slash;
                     else if (attr.value == "X")
-                        strikethrough_text = spreadsheet::strikethrough_text_t::cross;
+                        strikethrough_text = ss::strikethrough_text_t::cross;
                     else
-                        strikethrough_text = spreadsheet::strikethrough_text_t::unknown;
+                        strikethrough_text = ss::strikethrough_text_t::unknown;
                     break;
                 }
                 default:
@@ -744,7 +746,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
         mp_styles->set_font_underline_mode(underline_mode);
     }
 
-    if (strikethrough_style != spreadsheet::strikethrough_style_t::none)
+    if (strikethrough_style != ss::strikethrough_style_t::none)
     {
         mp_styles->set_strikethrough_style(strikethrough_style);
         mp_styles->set_strikethrough_width(strikethrough_width);
