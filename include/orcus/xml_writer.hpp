@@ -26,6 +26,7 @@ class ORCUS_PSR_DLLPUBLIC xml_writer
     std::unique_ptr<impl> mp_impl;
 
     void close_current_element();
+    void pop_elements();
 
 public:
     class ORCUS_PSR_DLLPUBLIC scope

@@ -13,6 +13,32 @@
 
 #include <vector>
 
+/** To markup code that coverity warns might throw exceptions
+    which won't throw in practice, or where std::terminate is
+    an acceptable response if they do
+*/
+#if defined(__COVERITY__)
+#define suppress_fun_call_w_exception(expr)                            \
+    do                                                                 \
+    {                                                                  \
+        try                                                            \
+        {                                                              \
+            expr;                                                      \
+        }                                                              \
+        catch (const std::exception& e)                                \
+        {                                                              \
+            std::cerr << "Fatal exception: " << e.what() << std::endl; \
+            std::terminate();                                          \
+        }                                                              \
+    } while (false)
+#else
+#define suppress_fun_call_w_exception(expr)                            \
+    do                                                                 \
+    {                                                                  \
+        expr;                                                          \
+    } while (false)
+#endif
+
 namespace orcus {
 
 namespace {
@@ -102,7 +128,7 @@ struct xml_writer::scope::impl
 
     ~impl()
     {
-        parent->pop_element();
+        suppress_fun_call_w_exception(parent->pop_element());
     }
 };
 
@@ -186,11 +212,16 @@ xml_writer& xml_writer::operator= (xml_writer&& other)
     return *this;
 }
 
-xml_writer::~xml_writer()
+void xml_writer::pop_elements()
 {
     // Pop all the elements currently on the stack.
     while (!mp_impl->elem_stack.empty())
         pop_element();
+}
+
+xml_writer::~xml_writer()
+{
+    suppress_fun_call_w_exception(pop_elements());
 }
 
 void xml_writer::close_current_element()
