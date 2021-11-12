@@ -601,10 +601,10 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     bool has_underline = false;
     std::optional<ss::color_rgb_t> underline_color;
 
-    ss::underline_mode_t underline_mode = ss::underline_mode_t::continuos;
-    ss::underline_width_t underline_width = ss::underline_width_t::none;
-    ss::underline_t underline_style = ss::underline_t::none;
-    ss::underline_type_t underline_type = ss::underline_type_t::none;
+    std::optional<ss::underline_mode_t> underline_mode;
+    std::optional<ss::underline_width_t> underline_width;
+    std::optional<ss::underline_t> underline_style;
+    std::optional<ss::underline_type_t> underline_type;
 
     ss::strikethrough_style_t strikethrough_style = ss::strikethrough_style_t::none;
     ss::strikethrough_type_t strikethrough_type = ss::strikethrough_type_t::unknown;
@@ -648,9 +648,9 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     has_underline = true;
                     if (attr.value == "none")
                         underline_type = ss::underline_type_t::none;
-                    if (attr.value == "single")
+                    else if (attr.value == "single")
                         underline_type = ss::underline_type_t::single;
-                    if (attr.value == "double")
+                    else if (attr.value == "double")
                         underline_type = ss::underline_type_t::double_type;
                     break;
                 }
@@ -739,10 +739,17 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
             // Use the text color for underline.
             mp_styles->set_font_underline_color(0, color->red, color->green, color->blue);
 
-        mp_styles->set_font_underline_width(underline_width);
-        mp_styles->set_font_underline(underline_style);
-        mp_styles->set_font_underline_type(underline_type);
-        mp_styles->set_font_underline_mode(underline_mode);
+        if (underline_width)
+            mp_styles->set_font_underline_width(*underline_width);
+
+        if (underline_style)
+            mp_styles->set_font_underline(*underline_style);
+
+        if (underline_type)
+            mp_styles->set_font_underline_type(*underline_type);
+
+        if (underline_mode)
+            mp_styles->set_font_underline_mode(*underline_mode);
     }
 
     if (strikethrough_style != ss::strikethrough_style_t::none)
