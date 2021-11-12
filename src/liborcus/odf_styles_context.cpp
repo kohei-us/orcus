@@ -599,15 +599,15 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     std::optional<ss::color_rgb_t> color;
 
     std::optional<ss::color_rgb_t> underline_color;
-    std::optional<ss::underline_mode_t> underline_mode;
-    std::optional<ss::underline_width_t> underline_width;
     std::optional<ss::underline_t> underline_style;
     std::optional<ss::underline_type_t> underline_type;
+    std::optional<ss::underline_width_t> underline_width;
+    std::optional<ss::underline_mode_t> underline_mode;
 
-    ss::strikethrough_style_t strikethrough_style = ss::strikethrough_style_t::none;
-    ss::strikethrough_type_t strikethrough_type = ss::strikethrough_type_t::unknown;
-    ss::strikethrough_width_t strikethrough_width = ss::strikethrough_width_t::unknown;
-    ss::strikethrough_text_t strikethrough_text = ss::strikethrough_text_t::unknown;
+    std::optional<ss::strikethrough_style_t> strikethrough_style;
+    std::optional<ss::strikethrough_type_t> strikethrough_type;
+    std::optional<ss::strikethrough_width_t> strikethrough_width;
+    std::optional<ss::strikethrough_text_t> strikethrough_text;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -742,13 +742,17 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     if (underline_mode)
         mp_styles->set_font_underline_mode(*underline_mode);
 
-    if (strikethrough_style != ss::strikethrough_style_t::none)
-    {
-        mp_styles->set_strikethrough_style(strikethrough_style);
-        mp_styles->set_strikethrough_width(strikethrough_width);
-        mp_styles->set_strikethrough_type(strikethrough_type);
-        mp_styles->set_strikethrough_text(strikethrough_text);
-    }
+    if (strikethrough_style)
+        mp_styles->set_strikethrough_style(*strikethrough_style);
+
+    if (strikethrough_type)
+        mp_styles->set_strikethrough_type(*strikethrough_type);
+
+    if (strikethrough_width)
+        mp_styles->set_strikethrough_width(*strikethrough_width);
+
+    if (strikethrough_text)
+        mp_styles->set_strikethrough_text(*strikethrough_text);
 
     size_t font_id = mp_styles->commit_font();
 
