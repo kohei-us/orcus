@@ -142,7 +142,7 @@ const map_type& get()
 class cell_prop_attr_parser
 {
 public:
-    typedef std::map<spreadsheet::border_direction_t, odf_helper::odf_border_details> border_map_type;
+    typedef std::map<spreadsheet::border_direction_t, odf::border_details> border_map_type;
 
     cell_prop_attr_parser():
         m_background_red(0),
@@ -185,13 +185,13 @@ public:
             switch (attr.name)
             {
                 case XML_background_color:
-                    m_background_color = odf_helper::convert_fo_color(attr.value, m_background_red,
+                    m_background_color = odf::convert_fo_color(attr.value, m_background_red,
                             m_background_green, m_background_blue);
                 break;
 
                 case XML_border:
                 {
-                    odf_helper::odf_border_details border_details = odf_helper::extract_border_details(attr.value);
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
                     m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::top, border_details));
                     m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::bottom, border_details));
                     m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::left, border_details));
@@ -201,40 +201,40 @@ public:
 
                 case XML_border_top:
                 {
-                    odf_helper::odf_border_details border_details = odf_helper::extract_border_details(attr.value);
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
                     m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::top, border_details));
                 }
                 break;
 
                 case XML_border_bottom:
                 {
-                    odf_helper::odf_border_details border_details = odf_helper::extract_border_details(attr.value);
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
                     m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::bottom, border_details));
                 }
                 break;
 
                 case XML_border_left:
                 {
-                    odf_helper::odf_border_details border_details = odf_helper::extract_border_details(attr.value);
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
                     m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::left, border_details));
                 }
                 break;
 
                 case XML_border_right:
                 {
-                    odf_helper::odf_border_details border_details = odf_helper::extract_border_details(attr.value);
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
                     m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::right, border_details));
                 }
                 break;
                 case XML_diagonal_bl_tr:
                 {
-                    odf_helper::odf_border_details border_details = odf_helper::extract_border_details(attr.value);
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
                     m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::diagonal_bl_tr, border_details));
                 }
                 break;
                 case XML_diagonal_tl_br:
                 {
-                    odf_helper::odf_border_details border_details = odf_helper::extract_border_details(attr.value);
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
                     m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::diagonal_tl_br, border_details));
                 }
                 break;
@@ -274,7 +274,7 @@ public:
                 }
                 break;
                 case XML_vertical_align:
-                    m_has_ver_alignment = odf_helper::extract_ver_alignment_style(attr.value, m_ver_alignment);
+                    m_has_ver_alignment = odf::extract_ver_alignment_style(attr.value, m_ver_alignment);
                 break;
                 default:
                     ;
@@ -327,7 +327,7 @@ public:
             switch (attr.name)
             {
                 case XML_text_align:
-                    m_has_hor_alignment = odf_helper::extract_hor_alignment_style(attr.value, m_hor_alignment);
+                    m_has_hor_alignment = odf::extract_hor_alignment_style(attr.value, m_hor_alignment);
                 break;
                 default:
                     ;
@@ -622,7 +622,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     font_name = attr.value;
                     break;
                 case XML_text_underline_color:
-                    underline_color = odf_helper::convert_fo_color(attr.value);
+                    underline_color = odf::convert_fo_color(attr.value);
                     break;
                 case XML_text_underline_mode:
                     if (attr.value == "skip-white-space")
@@ -632,12 +632,12 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     break;
                 case XML_text_underline_width:
                 {
-                    underline_width = odf_helper::extract_underline_width(attr.value);
+                    underline_width = odf::extract_underline_width(attr.value);
                     break;
                 }
                 case XML_text_underline_style:
                 {
-                    underline_style = odf_helper::extract_underline_style(attr.value);
+                    underline_style = odf::extract_underline_style(attr.value);
                     break;
                 }
                 case XML_text_underline_type:
@@ -701,7 +701,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     bold = attr.value == "bold";
                     break;
                 case XML_color:
-                    color = odf_helper::convert_fo_color(attr.value);
+                    color = odf::convert_fo_color(attr.value);
                     break;
                 default:
                     ;

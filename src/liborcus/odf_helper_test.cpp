@@ -12,8 +12,7 @@ void test_color_conversion(const char* input, bool valid,
         color_elem_t red_expected, color_elem_t green_expected, color_elem_t blue_expected)
 {
     color_elem_t red, green, blue;
-    bool valid_result = orcus::odf_helper::convert_fo_color(orcus::pstring(input),
-            red, green, blue);
+    bool valid_result = orcus::odf::convert_fo_color(input, red, green, blue);
 
     assert(valid == valid_result);
     if (valid)

@@ -8,62 +8,48 @@
 #ifndef INCLUDED_ORCUS_ODF_HELPER_HPP
 #define INCLUDED_ORCUS_ODF_HELPER_HPP
 
-#include "pstring.hpp"
 #include <orcus/spreadsheet/types.hpp>
 #include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/styles.hpp>
 
 #include <optional>
 
-namespace orcus {
+namespace orcus { namespace odf {
 
-class odf_helper
+struct border_details
 {
-public:
-    struct odf_border_details
-    {
-        orcus::spreadsheet::border_style_t border_style;
+    spreadsheet::border_style_t border_style = spreadsheet::border_style_t::unknown;
 
-        spreadsheet::color_elem_t red;
-        spreadsheet::color_elem_t green;
-        spreadsheet::color_elem_t blue;
+    spreadsheet::color_elem_t red = 0;
+    spreadsheet::color_elem_t green = 0;
+    spreadsheet::color_elem_t blue = 0;
 
-        length_t border_width;
-
-        odf_border_details():
-            border_style(orcus::spreadsheet::border_style_t::unknown),
-            red(0),
-            green(0),
-            blue(0)
-            {}
-    };
-
-    static bool convert_fo_color(
-        std::string_view value,
-        spreadsheet::color_elem_t& red,
-        spreadsheet::color_elem_t& green,
-        spreadsheet::color_elem_t& blue);
-
-    static std::optional<spreadsheet::color_rgb_t> convert_fo_color(std::string_view value);
-
-    /**
-     * extracts border style, width and colors out of the pstring provided to it
-    **/
-    static orcus::odf_helper::odf_border_details extract_border_details(const orcus::pstring& value);
-
-    static orcus::spreadsheet::underline_width_t extract_underline_width(const orcus::pstring& value);
-
-    static orcus::spreadsheet::underline_t extract_underline_style(const orcus::pstring& value);
-
-    static bool extract_hor_alignment_style(const orcus::pstring& value,
-            spreadsheet::hor_alignment_t& alignment);
-
-    static bool extract_ver_alignment_style(const orcus::pstring& value,
-            spreadsheet::ver_alignment_t& alignment);
-
+    length_t border_width;
 };
 
-}
+bool convert_fo_color(
+    std::string_view value,
+    spreadsheet::color_elem_t& red,
+    spreadsheet::color_elem_t& green,
+    spreadsheet::color_elem_t& blue);
+
+std::optional<spreadsheet::color_rgb_t> convert_fo_color(std::string_view value);
+
+/**
+ * extracts border style, width and colors from a string value.
+ */
+border_details extract_border_details(std::string_view value);
+
+spreadsheet::underline_width_t extract_underline_width(std::string_view value);
+
+spreadsheet::underline_t extract_underline_style(std::string_view value);
+
+bool extract_hor_alignment_style(std::string_view value, spreadsheet::hor_alignment_t& alignment);
+
+bool extract_ver_alignment_style(std::string_view value, spreadsheet::ver_alignment_t& alignment);
+
+}}
 
 #endif
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

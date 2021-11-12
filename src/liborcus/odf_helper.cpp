@@ -119,7 +119,7 @@ bool convert_color_digits(const pstring& value, orcus::spreadsheet::color_elem_t
 
 }
 
-bool odf_helper::convert_fo_color(
+bool odf::convert_fo_color(
     std::string_view value,
     spreadsheet::color_elem_t& red,
     spreadsheet::color_elem_t& green,
@@ -135,7 +135,7 @@ bool odf_helper::convert_fo_color(
     return true;
 }
 
-std::optional<spreadsheet::color_rgb_t> odf_helper::convert_fo_color(std::string_view value)
+std::optional<spreadsheet::color_rgb_t> odf::convert_fo_color(std::string_view value)
 {
     std::optional<spreadsheet::color_rgb_t> ret;
 
@@ -159,9 +159,9 @@ std::optional<spreadsheet::color_rgb_t> odf_helper::convert_fo_color(std::string
     return color;
 }
 
-orcus::odf_helper::odf_border_details odf_helper::extract_border_details(const orcus::pstring &value)
+orcus::odf::border_details odf::extract_border_details(std::string_view value)
 {
-    orcus::odf_helper::odf_border_details border_details;
+    border_details border_details;
 
     std::vector<pstring> detail = orcus::string_helper::split_string(value,' ');
 
@@ -181,33 +181,33 @@ orcus::odf_helper::odf_border_details odf_helper::extract_border_details(const o
     return border_details;
 }
 
-orcus::spreadsheet::underline_width_t odf_helper::extract_underline_width(const orcus::pstring& value)
+orcus::spreadsheet::underline_width_t odf::extract_underline_width(std::string_view value)
 {
     orcus::spreadsheet::underline_width_t underline_width;
 
     odf_underline_width_map underline_width_map(odf_underline_width_entries, ORCUS_N_ELEMENTS(odf_underline_width_entries), spreadsheet::underline_width_t::none);
-    underline_width = underline_width_map.find(value.get(), value.size());
+    underline_width = underline_width_map.find(value.data(), value.size());
 
     return underline_width;
 }
 
-orcus::spreadsheet::underline_t odf_helper::extract_underline_style(const orcus::pstring& value)
+orcus::spreadsheet::underline_t odf::extract_underline_style(std::string_view value)
 {
     spreadsheet::underline_t underline_style;
 
     odf_underline_style_map underline_style_map(odf_underline_style_entries, ORCUS_N_ELEMENTS(odf_underline_style_entries), spreadsheet::underline_t::none);
-    underline_style = underline_style_map.find(value.get(), value.size());
+    underline_style = underline_style_map.find(value.data(), value.size());
 
     return underline_style;
 }
 
-bool odf_helper::extract_hor_alignment_style(const orcus::pstring& value, spreadsheet::hor_alignment_t& alignment)
+bool odf::extract_hor_alignment_style(std::string_view value, spreadsheet::hor_alignment_t& alignment)
 {
     odf_horizontal_alignment_map horizontal_alignment_map(odf_horizontal_alignment_entries,
             ORCUS_N_ELEMENTS(odf_horizontal_alignment_entries),
             spreadsheet::hor_alignment_t::unknown);
 
-    alignment = horizontal_alignment_map.find(value.get(), value.size());
+    alignment = horizontal_alignment_map.find(value.data(), value.size());
 
     if (alignment == spreadsheet::hor_alignment_t::unknown)
         return false;
@@ -215,12 +215,12 @@ bool odf_helper::extract_hor_alignment_style(const orcus::pstring& value, spread
     return true;
 }
 
-bool odf_helper::extract_ver_alignment_style(const orcus::pstring& value, spreadsheet::ver_alignment_t& alignment)
+bool odf::extract_ver_alignment_style(std::string_view value, spreadsheet::ver_alignment_t& alignment)
 {
     odf_vertical_alignment_map vertical_alignment_map(odf_vertical_alignment_entries,
             ORCUS_N_ELEMENTS(odf_vertical_alignment_entries),
             spreadsheet::ver_alignment_t::unknown);
-    alignment = vertical_alignment_map.find(value.get(), value.size());
+    alignment = vertical_alignment_map.find(value.data(), value.size());
 
     if (alignment == spreadsheet::ver_alignment_t::unknown)
         return false;
