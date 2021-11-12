@@ -73,8 +73,11 @@ struct ORCUS_SPM_DLLPUBLIC font_active_t
     bool strikethrough_type = false;
     bool strikethrough_text = false;
 
-    void set();
+    void set() noexcept;
     void reset();
+
+    bool operator== (const font_active_t& other) const noexcept;
+    bool operator!= (const font_active_t& other) const noexcept;
 };
 
 struct ORCUS_SPM_DLLPUBLIC fill_t

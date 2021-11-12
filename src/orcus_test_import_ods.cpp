@@ -198,9 +198,9 @@ void test_odf_font(const orcus::spreadsheet::styles& styles)
     assert(cell_font->underline_width == orcus::spreadsheet::underline_width_t::thick);
     assert(cell_font->underline_mode == orcus::spreadsheet::underline_mode_t::continuos);
     assert(cell_font->underline_type == orcus::spreadsheet::underline_type_t::none);
-    assert(cell_font->underline_color.red == (int)0x80);
-    assert(cell_font->underline_color.green == (int)0x80);
-    assert(cell_font->underline_color.blue == (int)0x80);
+    assert(cell_font->color.red == (int)0x80);
+    assert(cell_font->color.green == (int)0x80);
+    assert(cell_font->color.blue == (int)0x80);
 
     style = find_cell_style_by_name("Name9", styles);
     xf = style->xf;
@@ -376,19 +376,24 @@ void test_standard_styles()
 
         const ss::font_t& value = font_state->first;
         const ss::font_active_t& active = font_state->second;
+
+        // Make sure only, size, bold, italic and color are active.
+
+        ss::font_active_t expected;
+        expected.size = true;
+        expected.bold = true;
+        expected.italic = true;
+        expected.color = true;
+
+        assert(active == expected);
+
         assert(value.size == 24);
-        assert(active.size);
-
-        assert(!value.italic);
-        assert(active.italic);
-
         assert(value.bold);
-        assert(active.bold);
+        assert(!value.italic);
 
         assert(value.color.red == 0);
         assert(value.color.green == 0);
         assert(value.color.blue == 0);
-        assert(active.color);
     }
 }
 

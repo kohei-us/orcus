@@ -56,7 +56,7 @@ void font_t::reset()
     *this = font_t();
 }
 
-void font_active_t::set()
+void font_active_t::set() noexcept
 {
     size = true;
     bold = true;
@@ -76,6 +76,28 @@ void font_active_t::set()
 void font_active_t::reset()
 {
     *this = font_active_t();
+}
+
+bool font_active_t::operator== (const font_active_t& other) const noexcept
+{
+    return size == other.size &&
+        bold == other.bold &&
+        italic == other.italic &&
+        underline_style == other.underline_style &&
+        underline_width == other.underline_width &&
+        underline_mode == other.underline_mode &&
+        underline_type == other.underline_type &&
+        underline_color == other.underline_color &&
+        color == other.color &&
+        strikethrough_style == other.strikethrough_style &&
+        strikethrough_width == other.strikethrough_width &&
+        strikethrough_type == other.strikethrough_type &&
+        strikethrough_text == other.strikethrough_text;
+}
+
+bool font_active_t::operator!= (const font_active_t& other) const noexcept
+{
+    return !operator== (other);
 }
 
 color_t::color_t() :

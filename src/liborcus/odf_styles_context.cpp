@@ -729,9 +729,6 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     if (underline_color)
         // Separate underline color is specified.
         mp_styles->set_font_underline_color(0, underline_color->red, underline_color->green, underline_color->blue);
-    else if (color)
-        // Use the text color for underline.
-        mp_styles->set_font_underline_color(0, color->red, color->green, color->blue);
 
     if (underline_width)
         mp_styles->set_font_underline_width(*underline_width);
