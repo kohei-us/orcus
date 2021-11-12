@@ -164,6 +164,21 @@ const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(
     return nullptr;
 }
 
+const ss::cell_format_t* find_cell_format(const ss::styles& styles, std::string_view name, std::string_view parent_name)
+{
+    const ss::cell_style_t* style = find_cell_style_by_name(name, styles);
+    if (!style)
+        return nullptr;
+
+    if (style->parent_name != parent_name)
+    {
+        std::cerr << "Parent name is not as expected: expected='" << parent_name << "'; actual='" << style->parent_name << "'" << std::endl;
+        return nullptr;
+    }
+
+    return styles.get_cell_style_format(style->xf);
+}
+
 void test_odf_fill(const orcus::spreadsheet::styles& styles)
 {
     const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name1", styles);
@@ -486,11 +501,7 @@ void test_standard_styles()
 
     {
         // Heading only specifies color, font size, font style and font weight.
-        const ss::cell_style_t* style = find_cell_style_by_name("Heading", model.styles);
-        assert(style);
-        assert(style->parent_name == "Default");
-
-        const ss::cell_format_t* cell_format = model.styles.get_cell_style_format(style->xf);
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Heading", "Default");
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
@@ -511,12 +522,8 @@ void test_standard_styles()
     }
 
     {
-        // Heading1 only overwrites font size.
-        const ss::cell_style_t* style = find_cell_style_by_name("Heading 1", model.styles);
-        assert(style);
-        assert(style->parent_name == "Heading");
-
-        const ss::cell_format_t* cell_format = model.styles.get_cell_style_format(style->xf);
+        // Heading 1 only overwrites font size.
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Heading 1", "Heading");
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
@@ -526,6 +533,129 @@ void test_standard_styles()
         const auto* font_state = model.styles.get_font_state(cell_format->font);
         assert(font_state);
         assert(verify_active_font_attrs(expected, *font_state));
+    }
+
+    {
+        // Heading 2 also only overwrites font size but with a different size.
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Heading 2", "Heading");
+        assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.size = 12;
+        expected.second.size = true;
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
+    }
+
+    {
+        // Text simply inherits from Default.
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Text", "Default");
+        assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected; // nothing is active
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Note", "Text");
+        assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.color.red = 0x33;
+        expected.first.color.green = 0x33;
+        expected.first.color.blue = 0x33;
+        expected.second.color = true;
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Footnote", "Text");
+        assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.color.red = 0x80;
+        expected.first.color.green = 0x80;
+        expected.first.color.blue = 0x80;
+        expected.first.italic = true;
+        expected.second.color = true;
+        expected.second.italic = true;
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Hyperlink", "Text");
+        assert(cell_format);
+
+        // TODO : Take care of this later.
+
+        // text-underline-color and text-underline-width require some special
+        // treatment.
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Status", "Default");
+        assert(cell_format);
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Good", "Status");
+        assert(cell_format);
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Neutral", "Status");
+        assert(cell_format);
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Bad", "Status");
+        assert(cell_format);
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Warning", "Status");
+        assert(cell_format);
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Error", "Status");
+        assert(cell_format);
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent", "Default");
+        assert(cell_format);
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent 1", "Accent");
+        assert(cell_format);
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent 2", "Accent");
+        assert(cell_format);
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent 3", "Accent");
+        assert(cell_format);
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Result", "Default");
+        assert(cell_format);
     }
 }
 
