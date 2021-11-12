@@ -598,9 +598,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     std::optional<bool> italic;
     std::optional<ss::color_rgb_t> color;
 
-    bool has_underline = false;
     std::optional<ss::color_rgb_t> underline_color;
-
     std::optional<ss::underline_mode_t> underline_mode;
     std::optional<ss::underline_width_t> underline_width;
     std::optional<ss::underline_t> underline_style;
@@ -621,11 +619,9 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     font_name = attr.value;
                     break;
                 case XML_text_underline_color:
-                    has_underline = true;
                     underline_color = odf_helper::convert_fo_color(attr.value);
                     break;
                 case XML_text_underline_mode:
-                    has_underline = true;
                     if (attr.value == "skip-white-space")
                         underline_mode = ss::underline_mode_t::skip_white_space;
                     else
@@ -633,19 +629,16 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     break;
                 case XML_text_underline_width:
                 {
-                    has_underline = true;
                     underline_width = odf_helper::extract_underline_width(attr.value);
                     break;
                 }
                 case XML_text_underline_style:
                 {
-                    has_underline = true;
                     underline_style = odf_helper::extract_underline_style(attr.value);
                     break;
                 }
                 case XML_text_underline_type:
                 {
-                    has_underline = true;
                     if (attr.value == "none")
                         underline_type = ss::underline_type_t::none;
                     else if (attr.value == "single")
@@ -730,27 +723,24 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     if (color)
         mp_styles->set_font_color(0, color->red, color->green, color->blue);
 
-    if (has_underline)
-    {
-        if (underline_color)
-            // Separate underline color is specified.
-            mp_styles->set_font_underline_color(0, underline_color->red, underline_color->green, underline_color->blue);
-        else if (color)
-            // Use the text color for underline.
-            mp_styles->set_font_underline_color(0, color->red, color->green, color->blue);
+    if (underline_color)
+        // Separate underline color is specified.
+        mp_styles->set_font_underline_color(0, underline_color->red, underline_color->green, underline_color->blue);
+    else if (color)
+        // Use the text color for underline.
+        mp_styles->set_font_underline_color(0, color->red, color->green, color->blue);
 
-        if (underline_width)
-            mp_styles->set_font_underline_width(*underline_width);
+    if (underline_width)
+        mp_styles->set_font_underline_width(*underline_width);
 
-        if (underline_style)
-            mp_styles->set_font_underline(*underline_style);
+    if (underline_style)
+        mp_styles->set_font_underline(*underline_style);
 
-        if (underline_type)
-            mp_styles->set_font_underline_type(*underline_type);
+    if (underline_type)
+        mp_styles->set_font_underline_type(*underline_type);
 
-        if (underline_mode)
-            mp_styles->set_font_underline_mode(*underline_mode);
-    }
+    if (underline_mode)
+        mp_styles->set_font_underline_mode(*underline_mode);
 
     if (strikethrough_style != ss::strikethrough_style_t::none)
     {
