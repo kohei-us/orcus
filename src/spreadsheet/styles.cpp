@@ -58,6 +58,7 @@ void font_t::reset()
 
 void font_active_t::set() noexcept
 {
+    name = true;
     size = true;
     bold = true;
     italic = true;
@@ -80,7 +81,8 @@ void font_active_t::reset()
 
 bool font_active_t::operator== (const font_active_t& other) const noexcept
 {
-    return size == other.size &&
+    return name == other.name &&
+        size == other.size &&
         bold == other.bold &&
         italic == other.italic &&
         underline_style == other.underline_style &&

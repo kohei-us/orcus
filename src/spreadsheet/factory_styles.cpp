@@ -57,6 +57,7 @@ void import_styles::set_font_italic(bool b)
 void import_styles::set_font_name(std::string_view s)
 {
     mp_impl->cur_font.name = mp_impl->str_pool.intern(s).first;
+    mp_impl->cur_font_active.name = true;
 }
 
 void import_styles::set_font_size(double point)

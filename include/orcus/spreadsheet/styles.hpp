@@ -59,6 +59,7 @@ struct ORCUS_SPM_DLLPUBLIC font_t
  */
 struct ORCUS_SPM_DLLPUBLIC font_active_t
 {
+    bool name = false;
     bool size = false;
     bool bold = false;
     bool italic = false;
