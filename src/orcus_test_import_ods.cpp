@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include <orcus/orcus_import_ods.hpp>
 
 #include <orcus/measurement.hpp>
