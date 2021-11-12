@@ -611,41 +611,117 @@ void test_standard_styles()
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Good", "Status");
         assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.color.red = 0x00;
+        expected.first.color.green = 0x66;
+        expected.first.color.blue = 0x00;
+        expected.second.color = true;
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Neutral", "Status");
         assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.color.red = 0x99;
+        expected.first.color.green = 0x66;
+        expected.first.color.blue = 0x00;
+        expected.second.color = true;
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Bad", "Status");
         assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.color.red = 0xcc;
+        expected.first.color.green = 0x00;
+        expected.first.color.blue = 0x00;
+        expected.second.color = true;
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Warning", "Status");
         assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.color.red = 0xcc;
+        expected.first.color.green = 0x00;
+        expected.first.color.blue = 0x00;
+        expected.second.color = true;
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Error", "Status");
         assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.color.red = 0xff;
+        expected.first.color.green = 0xff;
+        expected.first.color.blue = 0xff;
+        expected.first.bold = true;
+        expected.second.color = true;
+        expected.second.bold = true;
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent", "Default");
         assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.bold = true;
+        expected.second.bold = true;
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent 1", "Accent");
         assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.color.red = 0xff;
+        expected.first.color.green = 0xff;
+        expected.first.color.blue = 0xff;
+        expected.second.color = true;
+
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+        assert(verify_active_font_attrs(expected, *font_state));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent 2", "Accent");
         assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.color.red = 0xff;
+        expected.first.color.green = 0xff;
+        expected.first.color.blue = 0xff;
+        expected.second.color = true;
     }
 
     {
@@ -656,6 +732,14 @@ void test_standard_styles()
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Result", "Default");
         assert(cell_format);
+
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.bold = true;
+        expected.first.italic = true;
+        expected.first.underline_style = ss::underline_t::single_line;
+        expected.second.bold = true;
+        expected.second.italic = true;
+        expected.second.underline_style = true;
     }
 }
 
