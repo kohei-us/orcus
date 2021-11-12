@@ -49,6 +49,105 @@ struct test_model
     }
 };
 
+bool verify_active_font_attrs(
+    const std::pair<ss::font_t, ss::font_active_t>& expected,
+    const std::pair<ss::font_t, ss::font_active_t>& actual)
+{
+    if (expected.second != actual.second)
+    {
+        std::cerr << "active masks differ!" << std::endl;
+        return false;
+    }
+
+    const ss::font_active_t& mask = expected.second;
+
+    if (mask.name && expected.first.name != actual.first.name)
+    {
+        std::cerr << "font names differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.size && expected.first.size != actual.first.size)
+    {
+        std::cerr << "font sizes differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.bold && expected.first.bold != actual.first.bold)
+    {
+        std::cerr << "font boldnesses differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.italic && expected.first.italic != actual.first.italic)
+    {
+        std::cerr << "font italic flags differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.underline_style && expected.first.underline_style != actual.first.underline_style)
+    {
+        std::cerr << "underline styles differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.underline_width && expected.first.underline_width != actual.first.underline_width)
+    {
+        std::cerr << "underline widths differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.underline_mode && expected.first.underline_mode != actual.first.underline_mode)
+    {
+        std::cerr << "underline modes differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.underline_type && expected.first.underline_type != actual.first.underline_type)
+    {
+        std::cerr << "underline types differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.underline_color && expected.first.underline_color != actual.first.underline_color)
+    {
+        std::cerr << "underline colors differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.color && expected.first.color != actual.first.color)
+    {
+        std::cerr << "font colors differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.strikethrough_style && expected.first.strikethrough_style != actual.first.strikethrough_style)
+    {
+        std::cerr << "strikethrough styles differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.strikethrough_width && expected.first.strikethrough_width != actual.first.strikethrough_width)
+    {
+        std::cerr << "strikethrough widths differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.strikethrough_type && expected.first.strikethrough_type != actual.first.strikethrough_type)
+    {
+        std::cerr << "strikethrough types differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.strikethrough_text && expected.first.strikethrough_text != actual.first.strikethrough_text)
+    {
+        std::cerr << "strikethrough texts differ!" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(
     std::string_view name, const orcus::spreadsheet::styles& styles)
 {
@@ -371,29 +470,21 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = model.styles.get_cell_style_format(style->xf);
         assert(cell_format);
 
+        std::pair<ss::font_t, ss::font_active_t> expected;
+        expected.first.size = 24;
+        expected.first.bold = true;
+        expected.first.italic = false;
+        expected.first.color.red = 0;
+        expected.first.color.green = 0;
+        expected.first.color.blue = 0;
+        expected.second.size = true;
+        expected.second.bold = true;
+        expected.second.italic = true;
+        expected.second.color = true;
+
         const auto* font_state = model.styles.get_font_state(cell_format->font);
         assert(font_state);
-
-        const ss::font_t& value = font_state->first;
-        const ss::font_active_t& active = font_state->second;
-
-        // Make sure only, size, bold, italic and color are active.
-
-        ss::font_active_t expected;
-        expected.size = true;
-        expected.bold = true;
-        expected.italic = true;
-        expected.color = true;
-
-        assert(active == expected);
-
-        assert(value.size == 24);
-        assert(value.bold);
-        assert(!value.italic);
-
-        assert(value.color.red == 0);
-        assert(value.color.green == 0);
-        assert(value.color.blue == 0);
+        assert(verify_active_font_attrs(expected, *font_state));
     }
 }
 
