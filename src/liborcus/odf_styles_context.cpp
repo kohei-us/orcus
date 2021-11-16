@@ -123,176 +123,6 @@ const map_type& get()
 
 } // namespace st_style
 
-class cell_prop_attr_parser
-{
-public:
-    typedef std::map<spreadsheet::border_direction_t, odf::border_details> border_map_type;
-
-    cell_prop_attr_parser():
-        m_background_red(0),
-        m_background_green(0),
-        m_background_blue(0),
-        m_background_color(false),
-        m_locked(false),
-        m_hidden(false),
-        m_formula_hidden(false),
-        m_print_content(false),
-        m_cell_protection(false),
-        m_ver_alignment(spreadsheet::ver_alignment_t::unknown),
-        m_has_ver_alignment(false)
-    {}
-
-private:
-
-    spreadsheet::color_elem_t m_background_red;
-    spreadsheet::color_elem_t m_background_green;
-    spreadsheet::color_elem_t m_background_blue;
-
-    bool m_background_color;
-    bool m_locked;
-    bool m_hidden;
-    bool m_formula_hidden;
-    bool m_print_content;
-    bool m_cell_protection;
-
-    border_map_type m_border_style_dir_pair;
-
-    spreadsheet::ver_alignment_t m_ver_alignment;
-    bool m_has_ver_alignment;
-
-public:
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_odf_fo)
-        {
-            switch (attr.name)
-            {
-                case XML_background_color:
-                    m_background_color = odf::convert_fo_color(attr.value, m_background_red,
-                            m_background_green, m_background_blue);
-                break;
-
-                case XML_border:
-                {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
-                    m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::top, border_details));
-                    m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::bottom, border_details));
-                    m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::left, border_details));
-                    m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::right, border_details));
-                }
-                break;
-
-                case XML_border_top:
-                {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
-                    m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::top, border_details));
-                }
-                break;
-
-                case XML_border_bottom:
-                {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
-                    m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::bottom, border_details));
-                }
-                break;
-
-                case XML_border_left:
-                {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
-                    m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::left, border_details));
-                }
-                break;
-
-                case XML_border_right:
-                {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
-                    m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::right, border_details));
-                }
-                break;
-                case XML_diagonal_bl_tr:
-                {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
-                    m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::diagonal_bl_tr, border_details));
-                }
-                break;
-                case XML_diagonal_tl_br:
-                {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
-                    m_border_style_dir_pair.insert(std::make_pair(spreadsheet::border_direction_t::diagonal_tl_br, border_details));
-                }
-                break;
-
-                default:
-                    ;
-            }
-        }
-
-        else if(attr.ns == NS_odf_style)
-        {
-            switch(attr.name)
-            {
-                case XML_print_content:
-                {
-                    m_cell_protection = true;
-                    m_print_content = attr.value == "true";
-                }
-                break;
-                case XML_cell_protect:
-                {
-                    m_cell_protection = true;
-                    if (attr.value == "protected")
-                        m_locked = true;
-                    else if (attr.value == "hidden-and-protected")
-                    {
-                        m_locked = true;
-                        m_hidden = true;
-                    }
-                    else if (attr.value == "formula-hidden")
-                        m_formula_hidden = true;
-                    else if (attr.value == "protected formula-hidden" || attr.value == "formula-hidden protected")
-                    {
-                        m_formula_hidden = true;
-                        m_locked = true;
-                    }
-                }
-                break;
-                case XML_vertical_align:
-                    m_has_ver_alignment = odf::extract_ver_alignment_style(attr.value, m_ver_alignment);
-                break;
-                default:
-                    ;
-            }
-        }
-    }
-
-    bool has_background_color() const { return m_background_color; }
-
-    void get_background_color(spreadsheet::color_elem_t& red,
-            spreadsheet::color_elem_t& green, spreadsheet::color_elem_t& blue)
-    {
-        red = m_background_red;
-        green = m_background_green;
-        blue = m_background_blue;
-    }
-
-    bool has_border() const { return !m_border_style_dir_pair.empty(); }
-
-    bool has_protection() const { return m_cell_protection; }
-    bool is_locked() const { return m_locked; }
-    bool is_hidden() const { return m_hidden; }
-    bool is_formula_hidden() const { return m_formula_hidden; }
-    bool is_print_content() const { return m_print_content; }
-
-    const border_map_type& get_border_attrib() const
-    {
-        return m_border_style_dir_pair;
-    }
-    bool has_ver_alignment() const { return m_has_ver_alignment;}
-    const spreadsheet::ver_alignment_t& get_ver_alignment() const { return m_ver_alignment;}
-
-};
-
 class paragraph_prop_attr_parser
 {
     spreadsheet::hor_alignment_t m_hor_alignment;
@@ -717,22 +547,132 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
 
     m_current_style->cell_data->automatic_style = m_automatic_styles;
 
-    cell_prop_attr_parser func;
-    func = std::for_each(attrs.begin(), attrs.end(), func);
-    if (func.has_background_color())
+    using border_map_type = std::map<ss::border_direction_t, odf::border_details>;
+
+    ss::color_elem_t background_red = 0;
+    ss::color_elem_t background_green = 0;
+    ss::color_elem_t background_blue = 0;
+
+    bool background_color = false;
+    bool locked = false;
+    bool hidden = false;
+    bool formula_hidden = false;
+    bool print_content = false;
+    bool cell_protection = false;
+
+    border_map_type border_style_dir_pair;
+
+    ss::ver_alignment_t ver_alignment = ss::ver_alignment_t::unknown;
+    bool has_ver_alignment = false;
+
+    for (const xml_token_attr_t& attr : attrs)
     {
-        spreadsheet::color_elem_t red, green, blue;
-        func.get_background_color(red, green, blue);
-        mp_styles->set_fill_pattern_type(spreadsheet::fill_pattern_t::solid);
-        mp_styles->set_fill_fg_color(255, red, green, blue);
+        if (attr.ns == NS_odf_fo)
+        {
+            switch (attr.name)
+            {
+                case XML_background_color:
+                    background_color = odf::convert_fo_color(attr.value, background_red,
+                            background_green, background_blue);
+                    break;
+                case XML_border:
+                {
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::top, border_details));
+                    border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::bottom, border_details));
+                    border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::left, border_details));
+                    border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::right, border_details));
+                    break;
+                }
+                case XML_border_top:
+                {
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::top, border_details));
+                    break;
+                }
+                case XML_border_bottom:
+                {
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::bottom, border_details));
+                    break;
+                }
+                case XML_border_left:
+                {
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::left, border_details));
+                    break;
+                }
+                case XML_border_right:
+                {
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::right, border_details));
+                    break;
+                }
+                case XML_diagonal_bl_tr:
+                {
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::diagonal_bl_tr, border_details));
+                    break;
+                }
+                case XML_diagonal_tl_br:
+                {
+                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::diagonal_tl_br, border_details));
+                    break;
+                }
+                default:
+                    ;
+            }
+        }
+        else if (attr.ns == NS_odf_style)
+        {
+            switch(attr.name)
+            {
+                case XML_print_content:
+                {
+                    cell_protection = true;
+                    print_content = attr.value == "true";
+                    break;
+                }
+                case XML_cell_protect:
+                {
+                    cell_protection = true;
+                    if (attr.value == "protected")
+                        locked = true;
+                    else if (attr.value == "hidden-and-protected")
+                    {
+                        locked = true;
+                        hidden = true;
+                    }
+                    else if (attr.value == "formula-hidden")
+                        formula_hidden = true;
+                    else if (attr.value == "protected formula-hidden" || attr.value == "formula-hidden protected")
+                    {
+                        formula_hidden = true;
+                        locked = true;
+                    }
+                    break;
+                }
+                case XML_vertical_align:
+                    has_ver_alignment = odf::extract_ver_alignment_style(attr.value, ver_alignment);
+                    break;
+                default:
+                    ;
+            }
+        }
+    }
+
+    if (background_color)
+    {
+        mp_styles->set_fill_pattern_type(ss::fill_pattern_t::solid);
+        mp_styles->set_fill_fg_color(255, background_red, background_green, background_blue);
     }
 
     size_t fill_id = mp_styles->commit_fill();
 
-    if (func.has_border())
+    if (!border_style_dir_pair.empty())
     {
-        const cell_prop_attr_parser::border_map_type& border_map = func.get_border_attrib();
-        for (cell_prop_attr_parser::border_map_type::const_iterator itr = border_map.begin(); itr != border_map.end(); ++itr)
+        for (auto itr = border_style_dir_pair.begin(); itr != border_style_dir_pair.end(); ++itr)
         {
             mp_styles->set_border_color(itr->first, 0, itr->second.red, itr->second.green, itr->second.blue);
             mp_styles->set_border_style(itr->first, itr->second.border_style);
@@ -742,18 +682,19 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
 
     size_t border_id = mp_styles->commit_border();
 
-    if (func.has_protection())
+    if (cell_protection)
     {
-        mp_styles->set_cell_hidden(func.is_hidden());
-        mp_styles->set_cell_locked(func.is_locked());
-        mp_styles->set_cell_print_content(func.is_print_content());
-        mp_styles->set_cell_formula_hidden(func.is_formula_hidden());
+        mp_styles->set_cell_hidden(hidden);
+        mp_styles->set_cell_locked(locked);
+        mp_styles->set_cell_print_content(print_content);
+        mp_styles->set_cell_formula_hidden(formula_hidden);
     }
 
-    if (func.has_ver_alignment())
-        mp_styles->set_xf_vertical_alignment(func.get_ver_alignment());
+    if (has_ver_alignment)
+        mp_styles->set_xf_vertical_alignment(ver_alignment);
 
     size_t cell_protection_id = mp_styles->commit_cell_protection();
+
     switch (m_current_style->family)
     {
         case style_family_table_cell:
