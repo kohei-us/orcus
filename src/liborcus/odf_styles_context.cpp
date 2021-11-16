@@ -712,59 +712,60 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     if (m_current_style->family != style_family_table_cell)
         throw xml_structure_error("expected table_cell family style in cell_properties element");
 
+    if (!mp_styles)
+        return;
+
     m_current_style->cell_data->automatic_style = m_automatic_styles;
-    if (mp_styles)
+
+    cell_prop_attr_parser func;
+    func = std::for_each(attrs.begin(), attrs.end(), func);
+    if (func.has_background_color())
     {
-        cell_prop_attr_parser func;
-        func = std::for_each(attrs.begin(), attrs.end(), func);
-        if (func.has_background_color())
+        spreadsheet::color_elem_t red, green, blue;
+        func.get_background_color(red, green, blue);
+        mp_styles->set_fill_pattern_type(spreadsheet::fill_pattern_t::solid);
+        mp_styles->set_fill_fg_color(255, red, green, blue);
+    }
+
+    size_t fill_id = mp_styles->commit_fill();
+
+    if (func.has_border())
+    {
+        const cell_prop_attr_parser::border_map_type& border_map = func.get_border_attrib();
+        for (cell_prop_attr_parser::border_map_type::const_iterator itr = border_map.begin(); itr != border_map.end(); ++itr)
         {
-            spreadsheet::color_elem_t red, green, blue;
-            func.get_background_color(red, green, blue);
-            mp_styles->set_fill_pattern_type(spreadsheet::fill_pattern_t::solid);
-            mp_styles->set_fill_fg_color(255, red, green, blue);
+            mp_styles->set_border_color(itr->first, 0, itr->second.red, itr->second.green, itr->second.blue);
+            mp_styles->set_border_style(itr->first, itr->second.border_style);
+            mp_styles->set_border_width(itr->first, itr->second.border_width.value, itr->second.border_width.unit);
         }
+    }
 
-        size_t fill_id = mp_styles->commit_fill();
+    size_t border_id = mp_styles->commit_border();
 
-        if (func.has_border())
+    if (func.has_protection())
+    {
+        mp_styles->set_cell_hidden(func.is_hidden());
+        mp_styles->set_cell_locked(func.is_locked());
+        mp_styles->set_cell_print_content(func.is_print_content());
+        mp_styles->set_cell_formula_hidden(func.is_formula_hidden());
+    }
+
+    if (func.has_ver_alignment())
+        mp_styles->set_xf_vertical_alignment(func.get_ver_alignment());
+
+    size_t cell_protection_id = mp_styles->commit_cell_protection();
+    switch (m_current_style->family)
+    {
+        case style_family_table_cell:
         {
-            const cell_prop_attr_parser::border_map_type& border_map = func.get_border_attrib();
-            for (cell_prop_attr_parser::border_map_type::const_iterator itr = border_map.begin(); itr != border_map.end(); ++itr)
-            {
-                mp_styles->set_border_color(itr->first, 0, itr->second.red, itr->second.green, itr->second.blue);
-                mp_styles->set_border_style(itr->first, itr->second.border_style);
-                mp_styles->set_border_width(itr->first, itr->second.border_width.value, itr->second.border_width.unit);
-            }
+            odf_style::cell* data = m_current_style->cell_data;
+            data->fill = fill_id;
+            data->border = border_id;
+            data->protection = cell_protection_id;
+            break;
         }
-
-        size_t border_id = mp_styles->commit_border();
-
-        if (func.has_protection())
-        {
-            mp_styles->set_cell_hidden(func.is_hidden());
-            mp_styles->set_cell_locked(func.is_locked());
-            mp_styles->set_cell_print_content(func.is_print_content());
-            mp_styles->set_cell_formula_hidden(func.is_formula_hidden());
-        }
-
-        if (func.has_ver_alignment())
-            mp_styles->set_xf_vertical_alignment(func.get_ver_alignment());
-
-        size_t cell_protection_id = mp_styles->commit_cell_protection();
-        switch (m_current_style->family)
-        {
-            case style_family_table_cell:
-            {
-                odf_style::cell* data = m_current_style->cell_data;
-                data->fill = fill_id;
-                data->border = border_id;
-                data->protection = cell_protection_id;
-                break;
-            }
-            default:
-                ;
-        }
+        default:
+            ;
     }
 }
 
