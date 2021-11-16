@@ -26,22 +26,6 @@ namespace orcus {
 
 namespace {
 
-class invalid_odf_styles : public std::exception
-{
-    std::string m_msg;
-public:
-    invalid_odf_styles(const std::string& msg):
-        std::exception(),
-        m_msg(msg)
-    {
-    }
-
-    virtual const char* what() const noexcept override
-    {
-        return m_msg.c_str();
-    }
-};
-
 typedef mdds::sorted_string_map<odf_style_family> style_family_map;
 
 style_family_map::entry style_family_entries[] =
@@ -726,7 +710,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     xml_element_expected(parent, NS_odf_style, XML_style);
 
     if (m_current_style->family != style_family_table_cell)
-        throw invalid_odf_styles("expected table_cell family style in cell_properties element");
+        throw xml_structure_error("expected table_cell family style in cell_properties element");
 
     m_current_style->cell_data->automatic_style = m_automatic_styles;
     if (mp_styles)
