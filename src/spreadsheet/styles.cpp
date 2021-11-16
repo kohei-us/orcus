@@ -137,6 +137,28 @@ void fill_t::reset()
     *this = fill_t();
 }
 
+void fill_active_t::set() noexcept
+{
+    pattern_type = true;
+    fg_color = true;
+    bg_color = true;
+}
+
+void fill_active_t::reset()
+{
+    *this = fill_active_t();
+}
+
+bool fill_active_t::operator== (const fill_active_t& other) const noexcept
+{
+    return pattern_type == other.pattern_type && fg_color == other.fg_color && bg_color == other.bg_color;
+}
+
+bool fill_active_t::operator!= (const fill_active_t& other) const noexcept
+{
+    return !operator==(other);
+}
+
 border_attrs_t::border_attrs_t():
     style(orcus::spreadsheet::border_style_t::unknown)
 {
@@ -228,7 +250,7 @@ std::ostream& operator<< (std::ostream& os, const color_t& c)
 struct styles::impl
 {
     std::vector<std::pair<font_t, font_active_t>> fonts;
-    std::vector<fill_t> fills;
+    std::vector<std::pair<fill_t, fill_active_t>> fills;
     std::vector<border_t> borders;
     std::vector<protection_t> protections;
     std::vector<number_format_t> number_formats;
@@ -270,7 +292,16 @@ void styles::reserve_fill_store(size_t n)
 
 size_t styles::append_fill(const fill_t& fill)
 {
-    mp_impl->fills.push_back(fill);
+    // Preserve current behavior until next API version.
+    fill_active_t active;
+    active.set();
+    mp_impl->fills.emplace_back(fill, active);
+    return mp_impl->fills.size() - 1;
+}
+
+size_t styles::append_fill(const fill_t& value, const fill_active_t& active)
+{
+    mp_impl->fills.emplace_back(value, active);
     return mp_impl->fills.size() - 1;
 }
 
@@ -373,6 +404,14 @@ const cell_format_t* styles::get_cell_format(size_t index) const
 }
 
 const fill_t* styles::get_fill(size_t index) const
+{
+    if (index >= mp_impl->fills.size())
+        return nullptr;
+
+    return &mp_impl->fills[index].first;
+}
+
+const std::pair<fill_t, fill_active_t>* styles::get_fill_state(size_t index) const
 {
     if (index >= mp_impl->fills.size())
         return nullptr;

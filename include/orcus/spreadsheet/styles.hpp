@@ -91,6 +91,22 @@ struct ORCUS_SPM_DLLPUBLIC fill_t
     void reset();
 };
 
+/**
+ * Specifies whether each attribute of fill_t is active or not.
+ */
+struct ORCUS_SPM_DLLPUBLIC fill_active_t
+{
+    bool pattern_type = false;
+    bool fg_color = false;
+    bool bg_color = false;
+
+    void set() noexcept;
+    void reset();
+
+    bool operator== (const fill_active_t& other) const noexcept;
+    bool operator!= (const fill_active_t& other) const noexcept;
+};
+
 struct ORCUS_SPM_DLLPUBLIC border_attrs_t
 {
     border_style_t style;
@@ -188,6 +204,7 @@ public:
 
     void reserve_fill_store(size_t n);
     size_t append_fill(const fill_t& fill);
+    size_t append_fill(const fill_t& value, const fill_active_t& active);
 
     void reserve_border_store(size_t n);
     size_t append_border(const border_t& border);
@@ -213,6 +230,8 @@ public:
     const std::pair<font_t, font_active_t>* get_font_state(size_t index) const;
 
     const fill_t* get_fill(size_t index) const;
+    const std::pair<fill_t, fill_active_t>* get_fill_state(size_t index) const;
+
     const border_t* get_border(size_t index) const;
     const protection_t* get_protection(size_t index) const;
     const number_format_t* get_number_format(size_t index) const;
