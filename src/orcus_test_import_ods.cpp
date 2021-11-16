@@ -149,6 +149,39 @@ bool verify_active_font_attrs(
     return true;
 }
 
+bool verify_active_fill_attrs(
+    const std::pair<ss::fill_t, ss::fill_active_t>& expected,
+    const std::pair<ss::fill_t, ss::fill_active_t>& actual)
+{
+    if (expected.second != actual.second)
+    {
+        std::cerr << "active masks differ!" << std::endl;
+        return false;
+    }
+
+    const ss::fill_active_t& mask = expected.second;
+
+    if (mask.pattern_type && expected.first.pattern_type != actual.first.pattern_type)
+    {
+        std::cerr << "pattern types differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.fg_color && expected.first.fg_color != actual.first.fg_color)
+    {
+        std::cerr << "foreground colors differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.bg_color && expected.first.bg_color != actual.first.bg_color)
+    {
+        std::cerr << "background colors differ!" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(
     std::string_view name, const orcus::spreadsheet::styles& styles)
 {
@@ -574,6 +607,16 @@ void test_standard_styles()
         const auto* font_state = model.styles.get_font_state(cell_format->font);
         assert(font_state);
         assert(verify_active_font_attrs(expected, *font_state));
+
+        std::pair<ss::fill_t, ss::fill_active_t> expected_fill;
+        expected_fill.first.pattern_type = ss::fill_pattern_t::solid;
+        expected_fill.first.fg_color = ss::color_t(0xff, 0xff, 0xcc);
+        expected_fill.second.pattern_type = true;
+        expected_fill.second.fg_color = true;
+
+        const auto* fill_state = model.styles.get_fill_state(cell_format->fill);
+        assert(fill_state);
+        assert(verify_active_fill_attrs(expected_fill, *fill_state));
     }
 
     {

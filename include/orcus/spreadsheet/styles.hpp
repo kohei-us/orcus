@@ -25,6 +25,7 @@ struct ORCUS_SPM_DLLPUBLIC color_t
     color_elem_t blue;
 
     color_t();
+    color_t(color_elem_t _red, color_elem_t _green, color_elem_t _blue);
     color_t(color_elem_t _alpha, color_elem_t _red, color_elem_t _green, color_elem_t _blue);
 
     void reset();

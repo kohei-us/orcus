@@ -107,6 +107,11 @@ color_t::color_t() :
 {
 }
 
+color_t::color_t(color_elem_t _red, color_elem_t _green, color_elem_t _blue) :
+    alpha(255), red(_red), green(_green), blue(_blue)
+{
+}
+
 color_t::color_t(color_elem_t _alpha, color_elem_t _red, color_elem_t _green, color_elem_t _blue) :
     alpha(_alpha), red(_red), green(_green), blue(_blue)
 {
