@@ -213,7 +213,7 @@ enum class underline_t
     dash,
     long_dash,
     dot_dash,
-    dot_dot_dot_dash,
+    dot_dot_dot_dash, // TODO:API: -> dot_dot_dash
     wave
 };
 
@@ -232,14 +232,14 @@ enum class underline_width_t
 
 enum class underline_mode_t
 {
-    continuos = 0, // TODO: fix this typo
+    continuos = 0, // TODO:API: fix this typo
     skip_white_space
 };
 
 enum class underline_type_t
 {
     none = 0,
-    single,  // TODO: standardize these values
+    single,  // TODO:API: standardize these values
     double_type            //necessary to not call it "double", since it is a reserved word
 };
 

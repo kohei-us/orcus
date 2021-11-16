@@ -14,6 +14,8 @@
 #include <orcus/global.hpp>
 #include <orcus/spreadsheet/styles.hpp>
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus {
 
 namespace {
@@ -48,19 +50,30 @@ odf_underline_width_map::entry odf_underline_width_entries[] =
     { MDDS_ASCII("thin"), spreadsheet::underline_width_t::thin},
 };
 
-typedef mdds::sorted_string_map<spreadsheet::underline_t> odf_underline_style_map;
+namespace underline_style {
 
-odf_underline_style_map::entry odf_underline_style_entries[] =
+typedef mdds::sorted_string_map<ss::underline_t> map_type;
+
+// Keys must be sorted.
+map_type::entry entries[] =
 {
-    { MDDS_ASCII("dash"), spreadsheet::underline_t::dash},
-    { MDDS_ASCII("dot-dash"), spreadsheet::underline_t::dot_dash},
-    { MDDS_ASCII("dot-dot-dot-dash"), spreadsheet::underline_t::dot_dot_dot_dash},
-    { MDDS_ASCII("dotted"), spreadsheet::underline_t::dotted},
-    { MDDS_ASCII("long-dash"), spreadsheet::underline_t::long_dash},
-    { MDDS_ASCII("none"), spreadsheet::underline_t::none},
-    { MDDS_ASCII("solid"), spreadsheet::underline_t::single_line},
-    { MDDS_ASCII("wave"), spreadsheet::underline_t::wave}
+    { MDDS_ASCII("dash"), ss::underline_t::dash },
+    { MDDS_ASCII("dot-dash"), ss::underline_t::dot_dash },
+    { MDDS_ASCII("dot-dot-dash"), ss::underline_t::dot_dot_dot_dash },
+    { MDDS_ASCII("dotted"), ss::underline_t::dotted },
+    { MDDS_ASCII("long-dash"), ss::underline_t::long_dash },
+    { MDDS_ASCII("none"), ss::underline_t::none },
+    { MDDS_ASCII("solid"), ss::underline_t::single_line },
+    { MDDS_ASCII("wave"), ss::underline_t::wave }
 };
+
+const map_type& get()
+{
+    static map_type mt(entries, std::size(entries), ss::underline_t::none);
+    return mt;
+}
+
+} // namespace underline_style
 
 typedef mdds::sorted_string_map<spreadsheet::hor_alignment_t> odf_horizontal_alignment_map;
 
@@ -193,12 +206,7 @@ orcus::spreadsheet::underline_width_t odf::extract_underline_width(std::string_v
 
 orcus::spreadsheet::underline_t odf::extract_underline_style(std::string_view value)
 {
-    spreadsheet::underline_t underline_style;
-
-    odf_underline_style_map underline_style_map(odf_underline_style_entries, ORCUS_N_ELEMENTS(odf_underline_style_entries), spreadsheet::underline_t::none);
-    underline_style = underline_style_map.find(value.data(), value.size());
-
-    return underline_style;
+    return underline_style::get().find(value.data(), value.size());
 }
 
 bool odf::extract_hor_alignment_style(std::string_view value, spreadsheet::hor_alignment_t& alignment)
