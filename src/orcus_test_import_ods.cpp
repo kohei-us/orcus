@@ -676,6 +676,16 @@ void test_standard_styles()
         const auto* font_state = model.styles.get_font_state(cell_format->font);
         assert(font_state);
         assert(verify_active_font_attrs(expected, *font_state));
+
+        std::pair<ss::fill_t, ss::fill_active_t> expected_fill;
+        expected_fill.first.pattern_type = ss::fill_pattern_t::solid;
+        expected_fill.first.fg_color = ss::color_t(0xcc, 0xff, 0xcc);
+        expected_fill.second.pattern_type = true;
+        expected_fill.second.fg_color = true;
+
+        const auto* fill_state = model.styles.get_fill_state(cell_format->fill);
+        assert(fill_state);
+        assert(verify_active_fill_attrs(expected_fill, *fill_state));
     }
 
     {
@@ -689,6 +699,16 @@ void test_standard_styles()
         const auto* font_state = model.styles.get_font_state(cell_format->font);
         assert(font_state);
         assert(verify_active_font_attrs(expected, *font_state));
+
+        std::pair<ss::fill_t, ss::fill_active_t> expected_fill;
+        expected_fill.first.pattern_type = ss::fill_pattern_t::solid;
+        expected_fill.first.fg_color = ss::color_t(0xff, 0xff, 0xcc);
+        expected_fill.second.pattern_type = true;
+        expected_fill.second.fg_color = true;
+
+        const auto* fill_state = model.styles.get_fill_state(cell_format->fill);
+        assert(fill_state);
+        assert(verify_active_fill_attrs(expected_fill, *fill_state));
     }
 
     {
@@ -702,6 +722,16 @@ void test_standard_styles()
         const auto* font_state = model.styles.get_font_state(cell_format->font);
         assert(font_state);
         assert(verify_active_font_attrs(expected, *font_state));
+
+        std::pair<ss::fill_t, ss::fill_active_t> expected_fill;
+        expected_fill.first.pattern_type = ss::fill_pattern_t::solid;
+        expected_fill.first.fg_color = ss::color_t(0xff, 0xcc, 0xcc);
+        expected_fill.second.pattern_type = true;
+        expected_fill.second.fg_color = true;
+
+        const auto* fill_state = model.styles.get_fill_state(cell_format->fill);
+        assert(fill_state);
+        assert(verify_active_fill_attrs(expected_fill, *fill_state));
     }
 
     {
@@ -730,6 +760,16 @@ void test_standard_styles()
         const auto* font_state = model.styles.get_font_state(cell_format->font);
         assert(font_state);
         assert(verify_active_font_attrs(expected, *font_state));
+
+        std::pair<ss::fill_t, ss::fill_active_t> expected_fill;
+        expected_fill.first.pattern_type = ss::fill_pattern_t::solid;
+        expected_fill.first.fg_color = ss::color_t(0xcc, 0x00, 0x00);
+        expected_fill.second.pattern_type = true;
+        expected_fill.second.fg_color = true;
+
+        const auto* fill_state = model.styles.get_fill_state(cell_format->fill);
+        assert(fill_state);
+        assert(verify_active_fill_attrs(expected_fill, *fill_state));
     }
 
     {
@@ -756,6 +796,16 @@ void test_standard_styles()
         const auto* font_state = model.styles.get_font_state(cell_format->font);
         assert(font_state);
         assert(verify_active_font_attrs(expected, *font_state));
+
+        std::pair<ss::fill_t, ss::fill_active_t> expected_fill;
+        expected_fill.first.pattern_type = ss::fill_pattern_t::solid;
+        expected_fill.first.fg_color = ss::color_t(0x00, 0x00, 0x00);
+        expected_fill.second.pattern_type = true;
+        expected_fill.second.fg_color = true;
+
+        const auto* fill_state = model.styles.get_fill_state(cell_format->fill);
+        assert(fill_state);
+        assert(verify_active_fill_attrs(expected_fill, *fill_state));
     }
 
     {
@@ -765,11 +815,31 @@ void test_standard_styles()
         std::pair<ss::font_t, ss::font_active_t> expected;
         expected.first.color = ss::color_t(0xff, 0xff, 0xff);
         expected.second.color = true;
+
+        std::pair<ss::fill_t, ss::fill_active_t> expected_fill;
+        expected_fill.first.pattern_type = ss::fill_pattern_t::solid;
+        expected_fill.first.fg_color = ss::color_t(0x80, 0x80, 0x80);
+        expected_fill.second.pattern_type = true;
+        expected_fill.second.fg_color = true;
+
+        const auto* fill_state = model.styles.get_fill_state(cell_format->fill);
+        assert(fill_state);
+        assert(verify_active_fill_attrs(expected_fill, *fill_state));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent 3", "Accent");
         assert(cell_format);
+
+        std::pair<ss::fill_t, ss::fill_active_t> expected_fill;
+        expected_fill.first.pattern_type = ss::fill_pattern_t::solid;
+        expected_fill.first.fg_color = ss::color_t(0xdd, 0xdd, 0xdd);
+        expected_fill.second.pattern_type = true;
+        expected_fill.second.fg_color = true;
+
+        const auto* fill_state = model.styles.get_fill_state(cell_format->fill);
+        assert(fill_state);
+        assert(verify_active_fill_attrs(expected_fill, *fill_state));
     }
 
     {
