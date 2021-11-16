@@ -549,11 +549,8 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
 
     using border_map_type = std::map<ss::border_direction_t, odf::border_details_t>;
 
-    ss::color_elem_t background_red = 0;
-    ss::color_elem_t background_green = 0;
-    ss::color_elem_t background_blue = 0;
+    std::optional<spreadsheet::color_rgb_t> bg_color;
 
-    bool background_color = false;
     bool locked = false;
     bool hidden = false;
     bool formula_hidden = false;
@@ -572,8 +569,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
             switch (attr.name)
             {
                 case XML_background_color:
-                    background_color = odf::convert_fo_color(attr.value, background_red,
-                            background_green, background_blue);
+                    bg_color = odf::convert_fo_color(attr.value);
                     break;
                 case XML_border:
                 {
@@ -662,10 +658,10 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
         }
     }
 
-    if (background_color)
+    if (bg_color)
     {
         mp_styles->set_fill_pattern_type(ss::fill_pattern_t::solid);
-        mp_styles->set_fill_fg_color(255, background_red, background_green, background_blue);
+        mp_styles->set_fill_fg_color(255, bg_color->red, bg_color->green, bg_color->blue);
     }
 
     size_t fill_id = mp_styles->commit_fill();
