@@ -597,10 +597,34 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Hyperlink", "Text");
         assert(cell_format);
 
-        // TODO : Take care of this later.
+        // TODO: Since we currently handle text-underline-width and
+        // text-underline-color incorrectly, we cannot perform exhaustive check.
+        // We can only check the attributes individually.
 
-        // text-underline-color and text-underline-width require some special
-        // treatment.
+        const auto* font_state = model.styles.get_font_state(cell_format->font);
+        assert(font_state);
+
+        const ss::font_t& values = font_state->first;
+        const ss::font_active_t& active = font_state->second;
+
+        // fo:color="#0000ee"
+        assert(values.color.red == 0x00);
+        assert(values.color.green == 0x00);
+        assert(values.color.blue == 0xee);
+        assert(active.color);
+
+        // style:text-underline-style="solid"
+        assert(values.underline_style == ss::underline_t::single_line); // solid
+        assert(active.underline_style);
+
+        // style:text-underline-width="auto"
+        // TODO: we cannot handle this until 0.18.
+
+        // style:text-underline-color="font-color" (use the same color as the font)
+        assert(values.underline_color.red == 0x00);
+        assert(values.underline_color.green == 0x00);
+        assert(values.underline_color.blue == 0xee);
+        assert(active.underline_color);
     }
 
     {
