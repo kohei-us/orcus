@@ -481,14 +481,14 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
         mp_styles->set_font_italic(*italic);
 
     if (color)
-        mp_styles->set_font_color(0, color->red, color->green, color->blue);
+        mp_styles->set_font_color(255, color->red, color->green, color->blue);
 
     if (underline_color)
         // Separate underline color is specified.
-        mp_styles->set_font_underline_color(0, underline_color->red, underline_color->green, underline_color->blue);
+        mp_styles->set_font_underline_color(255, underline_color->red, underline_color->green, underline_color->blue);
     else if (color && underline_use_font_color)
         // Use the same color as the font.
-        mp_styles->set_font_underline_color(0, color->red, color->green, color->blue);
+        mp_styles->set_font_underline_color(255, color->red, color->green, color->blue);
 
     if (underline_width)
         mp_styles->set_font_underline_width(*underline_width);
@@ -670,7 +670,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     {
         for (auto itr = border_style_dir_pair.begin(); itr != border_style_dir_pair.end(); ++itr)
         {
-            mp_styles->set_border_color(itr->first, 0, itr->second.red, itr->second.green, itr->second.blue);
+            mp_styles->set_border_color(itr->first, 255, itr->second.red, itr->second.green, itr->second.blue);
             mp_styles->set_border_style(itr->first, itr->second.border_style);
             mp_styles->set_border_width(itr->first, itr->second.border_width.value, itr->second.border_width.unit);
         }

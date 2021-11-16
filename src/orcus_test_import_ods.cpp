@@ -541,9 +541,7 @@ void test_standard_styles()
         expected.first.size = 24;
         expected.first.bold = true;
         expected.first.italic = false;
-        expected.first.color.red = 0;
-        expected.first.color.green = 0;
-        expected.first.color.blue = 0;
+        expected.first.color = ss::color_t(0, 0, 0);
         expected.second.size = true;
         expected.second.bold = true;
         expected.second.italic = true;
@@ -599,9 +597,7 @@ void test_standard_styles()
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color.red = 0x33;
-        expected.first.color.green = 0x33;
-        expected.first.color.blue = 0x33;
+        expected.first.color = ss::color_t(0x33, 0x33, 0x33);
         expected.second.color = true;
 
         const auto* font_state = model.styles.get_font_state(cell_format->font);
@@ -624,9 +620,7 @@ void test_standard_styles()
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color.red = 0x80;
-        expected.first.color.green = 0x80;
-        expected.first.color.blue = 0x80;
+        expected.first.color = ss::color_t(0x80, 0x80, 0x80);
         expected.first.italic = true;
         expected.second.color = true;
         expected.second.italic = true;
@@ -651,9 +645,7 @@ void test_standard_styles()
         const ss::font_active_t& active = font_state->second;
 
         // fo:color="#0000ee"
-        assert(values.color.red == 0x00);
-        assert(values.color.green == 0x00);
-        assert(values.color.blue == 0xee);
+        assert(values.color == ss::color_t(0x00, 0x00, 0xee));
         assert(active.color);
 
         // style:text-underline-style="solid"
@@ -664,9 +656,7 @@ void test_standard_styles()
         // TODO: we cannot handle this until 0.18.
 
         // style:text-underline-color="font-color" (use the same color as the font)
-        assert(values.underline_color.red == 0x00);
-        assert(values.underline_color.green == 0x00);
-        assert(values.underline_color.blue == 0xee);
+        assert(values.underline_color == ss::color_t(0x00, 0x00, 0xee));
         assert(active.underline_color);
     }
 
@@ -680,9 +670,7 @@ void test_standard_styles()
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color.red = 0x00;
-        expected.first.color.green = 0x66;
-        expected.first.color.blue = 0x00;
+        expected.first.color = ss::color_t(0x00, 0x66, 0x00);
         expected.second.color = true;
 
         const auto* font_state = model.styles.get_font_state(cell_format->font);
@@ -695,9 +683,7 @@ void test_standard_styles()
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color.red = 0x99;
-        expected.first.color.green = 0x66;
-        expected.first.color.blue = 0x00;
+        expected.first.color = ss::color_t(0x99, 0x66, 0x00);
         expected.second.color = true;
 
         const auto* font_state = model.styles.get_font_state(cell_format->font);
@@ -710,9 +696,7 @@ void test_standard_styles()
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color.red = 0xcc;
-        expected.first.color.green = 0x00;
-        expected.first.color.blue = 0x00;
+        expected.first.color = ss::color_t(0xcc, 0x00, 0x00);
         expected.second.color = true;
 
         const auto* font_state = model.styles.get_font_state(cell_format->font);
@@ -725,9 +709,7 @@ void test_standard_styles()
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color.red = 0xcc;
-        expected.first.color.green = 0x00;
-        expected.first.color.blue = 0x00;
+        expected.first.color = ss::color_t(0xcc, 0x00, 0x00);
         expected.second.color = true;
 
         const auto* font_state = model.styles.get_font_state(cell_format->font);
@@ -740,9 +722,7 @@ void test_standard_styles()
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color.red = 0xff;
-        expected.first.color.green = 0xff;
-        expected.first.color.blue = 0xff;
+        expected.first.color = ss::color_t(0xff, 0xff, 0xff);
         expected.first.bold = true;
         expected.second.color = true;
         expected.second.bold = true;
@@ -770,9 +750,7 @@ void test_standard_styles()
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color.red = 0xff;
-        expected.first.color.green = 0xff;
-        expected.first.color.blue = 0xff;
+        expected.first.color = ss::color_t(0xff, 0xff, 0xff);
         expected.second.color = true;
 
         const auto* font_state = model.styles.get_font_state(cell_format->font);
@@ -785,9 +763,7 @@ void test_standard_styles()
         assert(cell_format);
 
         std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color.red = 0xff;
-        expected.first.color.green = 0xff;
-        expected.first.color.blue = 0xff;
+        expected.first.color = ss::color_t(0xff, 0xff, 0xff);
         expected.second.color = true;
     }
 
