@@ -172,9 +172,9 @@ std::optional<spreadsheet::color_rgb_t> odf::convert_fo_color(std::string_view v
     return color;
 }
 
-orcus::odf::border_details odf::extract_border_details(std::string_view value)
+orcus::odf::border_details_t odf::extract_border_details(std::string_view value)
 {
-    border_details border_details;
+    border_details_t border_details;
 
     std::vector<pstring> detail = orcus::string_helper::split_string(value,' ');
 

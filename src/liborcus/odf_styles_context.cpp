@@ -547,7 +547,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
 
     m_current_style->cell_data->automatic_style = m_automatic_styles;
 
-    using border_map_type = std::map<ss::border_direction_t, odf::border_details>;
+    using border_map_type = std::map<ss::border_direction_t, odf::border_details_t>;
 
     ss::color_elem_t background_red = 0;
     ss::color_elem_t background_green = 0;
@@ -577,7 +577,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
                     break;
                 case XML_border:
                 {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    odf::border_details_t border_details = odf::extract_border_details(attr.value);
                     border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::top, border_details));
                     border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::bottom, border_details));
                     border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::left, border_details));
@@ -586,37 +586,37 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
                 }
                 case XML_border_top:
                 {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    odf::border_details_t border_details = odf::extract_border_details(attr.value);
                     border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::top, border_details));
                     break;
                 }
                 case XML_border_bottom:
                 {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    odf::border_details_t border_details = odf::extract_border_details(attr.value);
                     border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::bottom, border_details));
                     break;
                 }
                 case XML_border_left:
                 {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    odf::border_details_t border_details = odf::extract_border_details(attr.value);
                     border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::left, border_details));
                     break;
                 }
                 case XML_border_right:
                 {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    odf::border_details_t border_details = odf::extract_border_details(attr.value);
                     border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::right, border_details));
                     break;
                 }
                 case XML_diagonal_bl_tr:
                 {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    odf::border_details_t border_details = odf::extract_border_details(attr.value);
                     border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::diagonal_bl_tr, border_details));
                     break;
                 }
                 case XML_diagonal_tl_br:
                 {
-                    odf::border_details border_details = odf::extract_border_details(attr.value);
+                    odf::border_details_t border_details = odf::extract_border_details(attr.value);
                     border_style_dir_pair.insert(std::make_pair(ss::border_direction_t::diagonal_tl_br, border_details));
                     break;
                 }

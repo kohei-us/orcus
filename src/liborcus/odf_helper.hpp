@@ -16,7 +16,7 @@
 
 namespace orcus { namespace odf {
 
-struct border_details
+struct border_details_t
 {
     spreadsheet::border_style_t border_style = spreadsheet::border_style_t::unknown;
 
@@ -38,7 +38,7 @@ std::optional<spreadsheet::color_rgb_t> convert_fo_color(std::string_view value)
 /**
  * extracts border style, width and colors from a string value.
  */
-border_details extract_border_details(std::string_view value);
+border_details_t extract_border_details(std::string_view value);
 
 spreadsheet::underline_width_t extract_underline_width(std::string_view value);
 
