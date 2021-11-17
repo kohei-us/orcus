@@ -118,6 +118,19 @@ struct ORCUS_SPM_DLLPUBLIC border_attrs_t
     void reset();
 };
 
+struct ORCUS_SPM_DLLPUBLIC border_attrs_active_t
+{
+    bool style = false;
+    bool border_color = false;
+    bool border_width = false;
+
+    void set() noexcept;
+    void reset();
+
+    bool operator== (const border_attrs_active_t& other) const noexcept;
+    bool operator!= (const border_attrs_active_t& other) const noexcept;
+};
+
 struct ORCUS_SPM_DLLPUBLIC border_t
 {
     border_attrs_t top;
@@ -129,6 +142,20 @@ struct ORCUS_SPM_DLLPUBLIC border_t
     border_attrs_t diagonal_tl_br;
 
     border_t();
+    void reset();
+};
+
+struct ORCUS_SPM_DLLPUBLIC border_active_t
+{
+    border_attrs_active_t top;
+    border_attrs_active_t bottom;
+    border_attrs_active_t left;
+    border_attrs_active_t right;
+    border_attrs_active_t diagonal;
+    border_attrs_active_t diagonal_bl_tr;
+    border_attrs_active_t diagonal_tl_br;
+
+    void set() noexcept;
     void reset();
 };
 
@@ -209,6 +236,7 @@ public:
 
     void reserve_border_store(size_t n);
     size_t append_border(const border_t& border);
+    size_t append_border(const border_t& value, const border_active_t& active);
 
     size_t append_protection(const protection_t& protection);
 
@@ -234,6 +262,8 @@ public:
     const std::pair<fill_t, fill_active_t>* get_fill_state(size_t index) const;
 
     const border_t* get_border(size_t index) const;
+    const std::pair<border_t, border_active_t>* get_border_state(size_t index) const;
+
     const protection_t* get_protection(size_t index) const;
     const number_format_t* get_number_format(size_t index) const;
     const cell_format_t* get_cell_format(size_t index) const;

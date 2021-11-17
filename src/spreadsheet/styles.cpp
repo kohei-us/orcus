@@ -174,6 +174,28 @@ void border_attrs_t::reset()
     *this = border_attrs_t();
 }
 
+void border_attrs_active_t::set() noexcept
+{
+    style = true;
+    border_color = true;
+    border_width = true;
+}
+
+void border_attrs_active_t::reset()
+{
+    *this = border_attrs_active_t();
+}
+
+bool border_attrs_active_t::operator== (const border_attrs_active_t& other) const noexcept
+{
+    return style == other.style && border_color == other.border_color && border_width == other.border_width;
+}
+
+bool border_attrs_active_t::operator!= (const border_attrs_active_t& other) const noexcept
+{
+    return !operator==(other);
+}
+
 border_t::border_t()
 {
 }
@@ -181,6 +203,28 @@ border_t::border_t()
 void border_t::reset()
 {
     *this = border_t();
+}
+
+void border_active_t::set() noexcept
+{
+    top.set();
+    bottom.set();
+    left.set();
+    right.set();
+    diagonal.set();
+    diagonal_bl_tr.set();
+    diagonal_tl_br.set();
+}
+
+void border_active_t::reset()
+{
+    top.reset();
+    bottom.reset();
+    left.reset();
+    right.reset();
+    diagonal.reset();
+    diagonal_bl_tr.reset();
+    diagonal_tl_br.reset();
 }
 
 protection_t::protection_t() :
@@ -256,7 +300,7 @@ struct styles::impl
 {
     std::vector<std::pair<font_t, font_active_t>> fonts;
     std::vector<std::pair<fill_t, fill_active_t>> fills;
-    std::vector<border_t> borders;
+    std::vector<std::pair<border_t, border_active_t>> borders;
     std::vector<protection_t> protections;
     std::vector<number_format_t> number_formats;
     std::vector<cell_format_t> cell_style_formats;
@@ -317,7 +361,16 @@ void styles::reserve_border_store(size_t n)
 
 size_t styles::append_border(const border_t& border)
 {
-    mp_impl->borders.push_back(border);
+    // Preserve current behavior until next API version.
+    border_active_t active;
+    active.set();
+    mp_impl->borders.emplace_back(border, active);
+    return mp_impl->borders.size() - 1;
+}
+
+size_t styles::append_border(const border_t& value, const border_active_t& active)
+{
+    mp_impl->borders.emplace_back(value, active);
     return mp_impl->borders.size() - 1;
 }
 
@@ -425,6 +478,14 @@ const std::pair<fill_t, fill_active_t>* styles::get_fill_state(size_t index) con
 }
 
 const border_t* styles::get_border(size_t index) const
+{
+    if (index >= mp_impl->borders.size())
+        return nullptr;
+
+    return &mp_impl->borders[index].first;
+}
+
+const std::pair<border_t, border_active_t>* styles::get_border_state(size_t index) const
 {
     if (index >= mp_impl->borders.size())
         return nullptr;
