@@ -235,8 +235,6 @@ void test_odf_fill(const orcus::spreadsheet::styles& styles)
 
 void test_odf_border(const orcus::spreadsheet::styles &styles)
 {
-    assert(styles.get_border_count() == 9);
-
     /* Test that border style applies to all the sides when not specified */
     const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name1", styles);
     assert(style);

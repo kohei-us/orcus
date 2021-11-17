@@ -547,8 +547,6 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
 
     m_current_style->cell_data->automatic_style = m_automatic_styles;
 
-    using border_map_type = std::map<ss::border_direction_t, odf::border_details_t>;
-
     std::optional<spreadsheet::color_rgb_t> bg_color;
 
     bool locked = false;
@@ -557,6 +555,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     bool print_content = false;
     bool cell_protection = false;
 
+    using border_map_type = std::map<ss::border_direction_t, odf::border_details_t>;
     border_map_type border_style_dir_pair;
 
     ss::ver_alignment_t ver_alignment = ss::ver_alignment_t::unknown;
@@ -658,13 +657,16 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
         }
     }
 
+    std::size_t fill_id = 0;
+    std::size_t border_id = 0;
+    std::size_t cell_protection_id = 0;
+
     if (bg_color)
     {
         mp_styles->set_fill_pattern_type(ss::fill_pattern_t::solid);
         mp_styles->set_fill_fg_color(255, bg_color->red, bg_color->green, bg_color->blue);
+        fill_id = mp_styles->commit_fill();
     }
-
-    size_t fill_id = mp_styles->commit_fill();
 
     if (!border_style_dir_pair.empty())
     {
@@ -674,9 +676,10 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
             mp_styles->set_border_style(itr->first, itr->second.border_style);
             mp_styles->set_border_width(itr->first, itr->second.border_width.value, itr->second.border_width.unit);
         }
+
+        border_id = mp_styles->commit_border();
     }
 
-    size_t border_id = mp_styles->commit_border();
 
     if (cell_protection)
     {
@@ -684,12 +687,12 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
         mp_styles->set_cell_locked(locked);
         mp_styles->set_cell_print_content(print_content);
         mp_styles->set_cell_formula_hidden(formula_hidden);
+
+        cell_protection_id = mp_styles->commit_cell_protection();
     }
 
     if (has_ver_alignment)
         mp_styles->set_xf_vertical_alignment(ver_alignment);
-
-    size_t cell_protection_id = mp_styles->commit_cell_protection();
 
     switch (m_current_style->family)
     {
