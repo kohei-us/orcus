@@ -451,6 +451,9 @@ struct ORCUS_PSR_DLLPUBLIC length_t
     length_t();
 
     std::string to_string() const;
+
+    bool operator== (const length_t& other) const noexcept;
+    bool operator!= (const length_t& other) const noexcept;
 };
 
 struct ORCUS_PSR_DLLPUBLIC date_time_t

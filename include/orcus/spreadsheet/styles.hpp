@@ -157,6 +157,9 @@ struct ORCUS_SPM_DLLPUBLIC border_active_t
 
     void set() noexcept;
     void reset();
+
+    bool operator== (const border_active_t& other) const noexcept;
+    bool operator!= (const border_active_t& other) const noexcept;
 };
 
 struct ORCUS_SPM_DLLPUBLIC protection_t

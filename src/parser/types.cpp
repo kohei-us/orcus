@@ -196,6 +196,16 @@ std::string length_t::to_string() const
     return os.str();
 }
 
+bool length_t::operator== (const length_t& other) const noexcept
+{
+    return value == other.value && unit == other.unit;
+}
+
+bool length_t::operator!= (const length_t& other) const noexcept
+{
+    return !operator== (other);
+}
+
 date_time_t::date_time_t() :
     year(0), month(0), day(0), hour(0), minute(0), second(0.0) {}
 

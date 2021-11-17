@@ -227,6 +227,18 @@ void border_active_t::reset()
     diagonal_tl_br.reset();
 }
 
+bool border_active_t::operator== (const border_active_t& other) const noexcept
+{
+    return top == other.top && bottom == other.bottom &&
+        left == other.left && right == other.right && diagonal == other.diagonal &&
+        diagonal_bl_tr == other.diagonal_bl_tr && diagonal_tl_br == other.diagonal_tl_br;
+}
+
+bool border_active_t::operator!= (const border_active_t& other) const noexcept
+{
+    return !operator== (other);
+}
+
 protection_t::protection_t() :
     locked(false), hidden(false), print_content(false), formula_hidden(false)
 {

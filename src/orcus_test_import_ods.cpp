@@ -182,6 +182,66 @@ bool verify_active_fill_attrs(
     return true;
 }
 
+bool verify_active_border_attrs(
+    const std::pair<ss::border_t, ss::border_active_t>& expected,
+    const std::pair<ss::border_t, ss::border_active_t>& actual)
+{
+    if (expected.second != actual.second)
+    {
+        std::cerr << "active masks differ!" << std::endl;
+        return false;
+    }
+
+    const ss::border_active_t& mask = expected.second;
+
+    auto verify_single = [](std::string_view name, const ss::border_attrs_active_t& _mask,
+        const ss::border_attrs_t& _expected, const ss::border_attrs_t& _actual)
+    {
+        if (_mask.style && _expected.style != _actual.style)
+        {
+            std::cerr << name << " border styles differ!" << std::endl;
+            return false;
+        }
+
+        if (_mask.border_color && _expected.border_color != _actual.border_color)
+        {
+            std::cerr << name << " border colors differ!" << std::endl;
+            return false;
+        }
+
+        if (_mask.border_width && _expected.border_width != _actual.border_width)
+        {
+            std::cerr << name << " border widths differ!" << std::endl;
+            return false;
+        }
+
+        return true;
+    };
+
+    if (!verify_single("top", mask.top, expected.first.top, actual.first.top))
+        return false;
+
+    if (!verify_single("bottom", mask.bottom, expected.first.bottom, actual.first.bottom))
+        return false;
+
+    if (!verify_single("left", mask.left, expected.first.left, actual.first.left))
+        return false;
+
+    if (!verify_single("right", mask.right, expected.first.right, actual.first.right))
+        return false;
+
+    if (!verify_single("diagonal", mask.diagonal, expected.first.diagonal, actual.first.diagonal))
+        return false;
+
+    if (!verify_single("diagonal_bl_tr", mask.diagonal_bl_tr, expected.first.diagonal_bl_tr, actual.first.diagonal_bl_tr))
+        return false;
+
+    if (!verify_single("diagonal_tl_br", mask.diagonal_tl_br, expected.first.diagonal_tl_br, actual.first.diagonal_tl_br))
+        return false;
+
+    return true;
+}
+
 const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(
     std::string_view name, const orcus::spreadsheet::styles& styles)
 {
@@ -611,6 +671,29 @@ void test_standard_styles()
         const auto* fill_state = model.styles.get_fill_state(cell_format->fill);
         assert(fill_state);
         assert(verify_active_fill_attrs(expected_fill, *fill_state));
+
+        // fo:border="0.75pt solid #808080" -> same border attributes applied to top, bottom, left and right borders.
+        std::pair<ss::border_t, ss::border_active_t> expected_border;
+        expected_border.first.top.style = ss::border_style_t::solid;
+        expected_border.first.top.border_width.value = 0.75;
+        expected_border.first.top.border_width.unit = orcus::length_unit_t::point;
+        expected_border.first.top.border_color = ss::color_t(0x80, 0x80, 0x80);
+
+        expected_border.first.bottom = expected_border.first.top;
+        expected_border.first.left = expected_border.first.top;
+        expected_border.first.right = expected_border.first.top;
+
+        expected_border.second.top.style = true;
+        expected_border.second.top.border_width = true;
+        expected_border.second.top.border_color = true;
+
+        expected_border.second.bottom = expected_border.second.top;
+        expected_border.second.left = expected_border.second.top;
+        expected_border.second.right = expected_border.second.top;
+
+        const auto* border_state = model.styles.get_border_state(cell_format->border);
+        assert(border_state);
+        assert(verify_active_border_attrs(expected_border, *border_state));
     }
 
     {
