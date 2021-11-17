@@ -556,7 +556,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     bool cell_protection = false;
 
     using border_map_type = std::map<ss::border_direction_t, odf::border_details_t>;
-    border_map_type border_style_dir_pair;
+    border_map_type border_styles;
 
     ss::ver_alignment_t ver_alignment = ss::ver_alignment_t::unknown;
     bool has_ver_alignment = false;
@@ -583,49 +583,49 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
                     };
 
                     for (const auto dir : dirs)
-                        border_style_dir_pair.insert(border_map_type::value_type(dir, border_details));
+                        border_styles.insert(border_map_type::value_type(dir, border_details));
 
                     break;
                 }
                 case XML_border_top:
                 {
                     odf::border_details_t border_details = odf::extract_border_details(attr.value);
-                    border_style_dir_pair.insert(
+                    border_styles.insert(
                         border_map_type::value_type(ss::border_direction_t::top, border_details));
                     break;
                 }
                 case XML_border_bottom:
                 {
                     odf::border_details_t border_details = odf::extract_border_details(attr.value);
-                    border_style_dir_pair.insert(
+                    border_styles.insert(
                         border_map_type::value_type(ss::border_direction_t::bottom, border_details));
                     break;
                 }
                 case XML_border_left:
                 {
                     odf::border_details_t border_details = odf::extract_border_details(attr.value);
-                    border_style_dir_pair.insert(
+                    border_styles.insert(
                         border_map_type::value_type(ss::border_direction_t::left, border_details));
                     break;
                 }
                 case XML_border_right:
                 {
                     odf::border_details_t border_details = odf::extract_border_details(attr.value);
-                    border_style_dir_pair.insert(
+                    border_styles.insert(
                         border_map_type::value_type(ss::border_direction_t::right, border_details));
                     break;
                 }
                 case XML_diagonal_bl_tr:
                 {
                     odf::border_details_t border_details = odf::extract_border_details(attr.value);
-                    border_style_dir_pair.insert(
+                    border_styles.insert(
                         border_map_type::value_type(ss::border_direction_t::diagonal_bl_tr, border_details));
                     break;
                 }
                 case XML_diagonal_tl_br:
                 {
                     odf::border_details_t border_details = odf::extract_border_details(attr.value);
-                    border_style_dir_pair.insert(
+                    border_styles.insert(
                         border_map_type::value_type(ss::border_direction_t::diagonal_tl_br, border_details));
                     break;
                 }
@@ -682,18 +682,17 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
         fill_id = mp_styles->commit_fill();
     }
 
-    if (!border_style_dir_pair.empty())
+    if (!border_styles.empty())
     {
-        for (auto itr = border_style_dir_pair.begin(); itr != border_style_dir_pair.end(); ++itr)
+        for (const auto& [dir, details] : border_styles)
         {
-            mp_styles->set_border_color(itr->first, 255, itr->second.red, itr->second.green, itr->second.blue);
-            mp_styles->set_border_style(itr->first, itr->second.border_style);
-            mp_styles->set_border_width(itr->first, itr->second.border_width.value, itr->second.border_width.unit);
+            mp_styles->set_border_color(dir, 255, details.red, details.green, details.blue);
+            mp_styles->set_border_style(dir, details.border_style);
+            mp_styles->set_border_width(dir, details.border_width.value, details.border_width.unit);
         }
 
         border_id = mp_styles->commit_border();
     }
-
 
     if (cell_protection)
     {
