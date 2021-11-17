@@ -223,7 +223,8 @@ xmlns_id_t xmlns_context::push(std::string_view key, std::string_view uri)
 #endif
     mp_impl->m_trim_all_ns = true;
 
-    std::string_view uri_interned = mp_impl->repo->intern(uri);
+    xmlns_id_t id = mp_impl->repo->intern(uri);
+    std::string_view uri_interned = id ? std::string_view(id) : std::string_view();
 
     if (key.empty())
     {
