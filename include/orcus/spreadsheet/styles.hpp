@@ -118,6 +118,9 @@ struct ORCUS_SPM_DLLPUBLIC border_attrs_t
     void reset();
 };
 
+/**
+ * Specifies whether each attribute of border_attrs_t is active or not.
+ */
 struct ORCUS_SPM_DLLPUBLIC border_attrs_active_t
 {
     bool style = false;
@@ -145,6 +148,9 @@ struct ORCUS_SPM_DLLPUBLIC border_t
     void reset();
 };
 
+/**
+ * Active attribute flags associated with border_t.
+ */
 struct ORCUS_SPM_DLLPUBLIC border_active_t
 {
     border_attrs_active_t top;
