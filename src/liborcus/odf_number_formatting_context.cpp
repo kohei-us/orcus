@@ -445,7 +445,7 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                     }
                     else
                     {
-                        std:: string temporary_code;
+                        std::string temporary_code;
                         for(size_t i = 0; i < func.get_min_int_digits(); i++)
                         {
                             if (i % 3 == 0 && i != 0)
@@ -721,8 +721,15 @@ bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
             }
             else
             {
-                mp_styles->set_number_format_code(m_current_style.number_formatting_code);
-                mp_styles->set_xf_number_format(mp_styles->commit_number_format());
+                size_t id_number_format = 0;
+
+                if (!m_current_style.number_formatting_code.empty())
+                {
+                    mp_styles->set_number_format_code(m_current_style.number_formatting_code);
+                    id_number_format = mp_styles->commit_number_format();
+                }
+
+                mp_styles->set_xf_number_format(id_number_format);
 
                 mp_styles->set_cell_style_name(m_current_style.name);
                 mp_styles->set_cell_style_xf(mp_styles->commit_cell_style_xf());
