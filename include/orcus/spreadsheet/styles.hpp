@@ -179,6 +179,20 @@ struct ORCUS_SPM_DLLPUBLIC protection_t
     void reset();
 };
 
+struct ORCUS_SPM_DLLPUBLIC protection_active_t
+{
+    bool locked = false;
+    bool hidden = false;
+    bool print_content = false;
+    bool formula_hidden = false;
+
+    void set() noexcept;
+    void reset();
+
+    bool operator== (const protection_active_t& other) const noexcept;
+    bool operator!= (const protection_active_t& other) const noexcept;
+};
+
 struct ORCUS_SPM_DLLPUBLIC number_format_t
 {
     size_t identifier;
@@ -248,6 +262,7 @@ public:
     size_t append_border(const border_t& value, const border_active_t& active);
 
     size_t append_protection(const protection_t& protection);
+    size_t append_protection(const protection_t& value, const protection_active_t& active);
 
     void reserve_number_format_store(size_t n);
     size_t append_number_format(const number_format_t& nf);
@@ -274,6 +289,8 @@ public:
     const std::pair<border_t, border_active_t>* get_border_state(size_t index) const;
 
     const protection_t* get_protection(size_t index) const;
+    const std::pair<protection_t, protection_active_t>* get_protection_state(size_t index) const;
+
     const number_format_t* get_number_format(size_t index) const;
     const cell_format_t* get_cell_format(size_t index) const;
     const cell_format_t* get_cell_style_format(size_t index) const;

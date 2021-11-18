@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<office:styles xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0">
+  <style:style style:name="Default" style:family="table-cell"/>
+  <style:style style:name="Protected" style:family="table-cell" style:parent-style-name="Default"/>
+  <style:style style:name="Hide_20_Formula" style:display-name="Hide Formula" style:family="table-cell" style:parent-style-name="Protected">
+    <style:table-cell-properties style:cell-protect="protected formula-hidden" style:print-content="true"/>
+  </style:style>
+  <style:style style:name="Hide_20_When_20_Printing" style:display-name="Hide When Printing" style:family="table-cell" style:parent-style-name="Protected">
+    <style:table-cell-properties style:cell-protect="protected" style:print-content="false"/>
+  </style:style>
+  <style:style style:name="Hide_20_All" style:display-name="Hide All" style:family="table-cell" style:parent-style-name="Protected">
+    <style:table-cell-properties style:cell-protect="hidden-and-protected" style:print-content="true"/>
+  </style:style>
+  <style:style style:name="Not_20_Protected" style:display-name="Not Protected" style:family="table-cell" style:parent-style-name="Default">
+    <style:table-cell-properties style:cell-protect="none" style:print-content="true"/>
+  </style:style>
+</office:styles>

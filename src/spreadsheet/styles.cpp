@@ -249,6 +249,31 @@ void protection_t::reset()
     *this = protection_t();
 }
 
+void protection_active_t::set() noexcept
+{
+    locked = true;
+    hidden = true;
+    print_content = true;
+    formula_hidden = true;
+}
+
+void protection_active_t::reset()
+{
+    *this = protection_active_t();
+}
+
+bool protection_active_t::operator== (const protection_active_t& other) const noexcept
+{
+    return locked == other.locked && hidden == other.hidden &&
+        print_content == other.print_content &&
+        formula_hidden == other.formula_hidden;
+}
+
+bool protection_active_t::operator!= (const protection_active_t& other) const noexcept
+{
+    return !operator== (other);
+}
+
 number_format_t::number_format_t() : identifier(0) {}
 
 void number_format_t::reset()
@@ -313,7 +338,7 @@ struct styles::impl
     std::vector<std::pair<font_t, font_active_t>> fonts;
     std::vector<std::pair<fill_t, fill_active_t>> fills;
     std::vector<std::pair<border_t, border_active_t>> borders;
-    std::vector<protection_t> protections;
+    std::vector<std::pair<protection_t, protection_active_t>> protections;
     std::vector<number_format_t> number_formats;
     std::vector<cell_format_t> cell_style_formats;
     std::vector<cell_format_t> cell_formats;
@@ -388,7 +413,16 @@ size_t styles::append_border(const border_t& value, const border_active_t& activ
 
 size_t styles::append_protection(const protection_t& protection)
 {
-    mp_impl->protections.push_back(protection);
+    // Preserve current behavior until next API version.
+    protection_active_t active;
+    active.set();
+    mp_impl->protections.emplace_back(protection, active);
+    return mp_impl->protections.size() - 1;
+}
+
+size_t styles::append_protection(const protection_t& value, const protection_active_t& active)
+{
+    mp_impl->protections.emplace_back(value, active);
     return mp_impl->protections.size() - 1;
 }
 
@@ -506,6 +540,14 @@ const std::pair<border_t, border_active_t>* styles::get_border_state(size_t inde
 }
 
 const protection_t* styles::get_protection(size_t index) const
+{
+    if (index >= mp_impl->protections.size())
+        return nullptr;
+
+    return &mp_impl->protections[index].first;
+}
+
+const std::pair<protection_t, protection_active_t>* styles::get_protection_state(size_t index) const
 {
     if (index >= mp_impl->protections.size())
         return nullptr;

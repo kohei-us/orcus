@@ -278,15 +278,12 @@ void test_odf_fill(const orcus::spreadsheet::styles& styles)
     assert(style);
     assert(style->parent_name == "Text");
     size_t xf = style->xf;
-    std::cerr << std::hex << (int)xf;
     const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
 
     size_t fill = cell_format->fill;
-    std::cerr << std::hex << (int)fill;
     const orcus::spreadsheet::fill_t* cell_fill = styles.get_fill(fill);
     assert(cell_fill);
-    std::cerr << std::hex << (int)cell_fill->fg_color.red;
     assert(cell_fill->fg_color.red == 0xfe);
     assert(cell_fill->fg_color.green == 0xff);
     assert(cell_fill->fg_color.blue == 0xcc);
@@ -517,7 +514,6 @@ void test_odf_number_formatting(const orcus::spreadsheet::styles& styles)
 
     number_format = cell_format->number_format;
     cell_number_format = styles.get_number_format(number_format);
-    std::cerr << cell_number_format->format_string;
     assert(cell_number_format->format_string == "HH:MM:SS AM/PM");
 
     style = find_cell_style_by_name("Name19", styles);
@@ -937,6 +933,19 @@ void test_standard_styles()
     }
 }
 
+void test_cell_protection_styles()
+{
+    test_model model;
+    model.load(SRCDIR"/test/ods/styles/cell-protection.xml");
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Hide_20_Formula", "Protected");
+        assert(cell_format);
+
+
+    }
+}
+
 } // anonymous namespace
 
 int main()
@@ -955,6 +964,7 @@ int main()
     test_odf_number_formatting(model.styles);
 
     test_standard_styles();
+    test_cell_protection_styles();
 
     return 0;
 }

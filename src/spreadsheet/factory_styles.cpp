@@ -42,6 +42,8 @@ struct import_styles::impl
     border_active_t cur_border_active;
 
     protection_t cur_protection;
+    protection_active_t cur_protection_active;
+
     number_format_t cur_number_format;
     cell_format_t cur_cell_format;
     cell_style_t cur_cell_style;
@@ -273,27 +275,34 @@ size_t import_styles::commit_border()
 void import_styles::set_cell_hidden(bool b)
 {
     mp_impl->cur_protection.hidden = b;
+    mp_impl->cur_protection_active.hidden = true;
 }
 
 void import_styles::set_cell_locked(bool b)
 {
     mp_impl->cur_protection.locked = b;
+    mp_impl->cur_protection_active.locked = true;
 }
 
 void import_styles::set_cell_print_content(bool b)
 {
     mp_impl->cur_protection.print_content = b;
+    mp_impl->cur_protection_active.print_content = true;
 }
 
 void import_styles::set_cell_formula_hidden(bool b)
 {
     mp_impl->cur_protection.formula_hidden = b;
+    mp_impl->cur_protection_active.formula_hidden = true;
 }
 
 size_t import_styles::commit_cell_protection()
 {
-    size_t cp_id = mp_impl->styles_model.append_protection(mp_impl->cur_protection);
+    size_t cp_id = mp_impl->styles_model.append_protection(
+        mp_impl->cur_protection, mp_impl->cur_protection_active);
+
     mp_impl->cur_protection.reset();
+    mp_impl->cur_protection_active.reset();
     return cp_id;
 }
 
