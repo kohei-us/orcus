@@ -281,9 +281,35 @@ void number_format_t::reset()
     *this = number_format_t();
 }
 
-bool number_format_t::operator== (const number_format_t& r) const
+bool number_format_t::operator== (const number_format_t& other) const
 {
-    return format_string == r.format_string;
+    return identifier == other.identifier && format_string == other.format_string;
+}
+
+bool number_format_t::operator!= (const number_format_t& other) const
+{
+    return !operator== (other);
+}
+
+void number_format_active_t::set() noexcept
+{
+    identifier = true;
+    format_string = true;
+}
+
+void number_format_active_t::reset()
+{
+    *this = number_format_active_t();
+}
+
+bool number_format_active_t::operator== (const number_format_active_t& other) const noexcept
+{
+    return identifier == other.identifier && format_string == other.format_string;
+}
+
+bool number_format_active_t::operator!= (const number_format_active_t& other) const noexcept
+{
+    return !operator== (other);
 }
 
 cell_format_t::cell_format_t() :
@@ -339,7 +365,7 @@ struct styles::impl
     std::vector<std::pair<fill_t, fill_active_t>> fills;
     std::vector<std::pair<border_t, border_active_t>> borders;
     std::vector<std::pair<protection_t, protection_active_t>> protections;
-    std::vector<number_format_t> number_formats;
+    std::vector<std::pair<number_format_t, number_format_active_t>> number_formats;
     std::vector<cell_format_t> cell_style_formats;
     std::vector<cell_format_t> cell_formats;
     std::vector<cell_format_t> dxf_formats;
@@ -433,9 +459,12 @@ void styles::reserve_number_format_store(size_t n)
 
 size_t styles::append_number_format(const number_format_t& nf)
 {
+    // Preserve current behavior until next API version.
+    number_format_active_t active;
+    active.set();
     number_format_t copied = nf;
     copied.format_string = mp_impl->str_pool.intern(nf.format_string).first;
-    mp_impl->number_formats.push_back(copied);
+    mp_impl->number_formats.emplace_back(copied, active);
     return mp_impl->number_formats.size() - 1;
 }
 
@@ -556,6 +585,14 @@ const std::pair<protection_t, protection_active_t>* styles::get_protection_state
 }
 
 const number_format_t* styles::get_number_format(size_t index) const
+{
+    if (index >= mp_impl->number_formats.size())
+        return nullptr;
+
+    return &mp_impl->number_formats[index].first;
+}
+
+const std::pair<number_format_t, number_format_active_t>* styles::get_number_format_state(size_t index) const
 {
     if (index >= mp_impl->number_formats.size())
         return nullptr;

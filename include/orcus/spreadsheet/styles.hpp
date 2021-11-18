@@ -203,7 +203,24 @@ struct ORCUS_SPM_DLLPUBLIC number_format_t
 
     number_format_t();
     void reset();
-    bool operator== (const number_format_t& r) const;
+
+    bool operator== (const number_format_t& other) const; // TODO:API: noexcept
+    bool operator!= (const number_format_t& other) const; // TODO:API: noexcept
+};
+
+/**
+ * Active attribute flags associated with number_format_t.
+ */
+struct ORCUS_SPM_DLLPUBLIC number_format_active_t
+{
+    bool identifier = false;
+    bool format_string = false;
+
+    void set() noexcept;
+    void reset();
+
+    bool operator== (const number_format_active_t& other) const noexcept;
+    bool operator!= (const number_format_active_t& other) const noexcept;
 };
 
 /**
@@ -295,6 +312,8 @@ public:
     const std::pair<protection_t, protection_active_t>* get_protection_state(size_t index) const;
 
     const number_format_t* get_number_format(size_t index) const;
+    const std::pair<number_format_t, number_format_active_t>* get_number_format_state(size_t index) const;
+
     const cell_format_t* get_cell_format(size_t index) const;
     const cell_format_t* get_cell_style_format(size_t index) const;
     const cell_format_t* get_dxf_format(size_t index) const;
