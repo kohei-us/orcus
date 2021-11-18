@@ -994,6 +994,54 @@ void test_cell_protection_styles()
 
         assert(verify_active_protection_attrs(expected, *protection_state));
     }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Hide_20_When_20_Printing", "Protected");
+        assert(cell_format);
+
+        const auto* protection_state = model.styles.get_protection_state(cell_format->protection);
+        assert(protection_state);
+
+        std::pair<ss::protection_t, ss::protection_active_t> expected;
+        expected.first.locked = true;
+        expected.first.print_content = false;
+        expected.second.locked = true;
+        expected.second.print_content = true;
+
+        assert(verify_active_protection_attrs(expected, *protection_state));
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Hide_20_All", "Protected");
+        assert(cell_format);
+
+        const auto* protection_state = model.styles.get_protection_state(cell_format->protection);
+        assert(protection_state);
+
+        std::pair<ss::protection_t, ss::protection_active_t> expected;
+        expected.first.locked = true;
+        expected.first.hidden = true;
+        expected.first.print_content = true;
+        expected.second.locked = true;
+        expected.second.hidden = true;
+        expected.second.print_content = true;
+
+        assert(verify_active_protection_attrs(expected, *protection_state));
+    }
+
+    {
+        const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Not_20_Protected", "Default");
+        assert(cell_format);
+
+        const auto* protection_state = model.styles.get_protection_state(cell_format->protection);
+        assert(protection_state);
+
+        std::pair<ss::protection_t, ss::protection_active_t> expected;
+        expected.first.print_content = true;
+        expected.second.print_content = true;
+
+        assert(verify_active_protection_attrs(expected, *protection_state));
+    }
 }
 
 } // anonymous namespace
