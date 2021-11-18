@@ -25,9 +25,9 @@ namespace {
 
 class number_style_attr_parser
 {
-    pstring m_country_code;
-    pstring m_style_name;
-    pstring m_language;
+    std::string_view m_country_code;
+    std::string_view m_style_name;
+    std::string_view m_language;
     bool m_volatile;
 
 public:
@@ -68,10 +68,10 @@ public:
         }
     }
 
-    pstring get_style_name() const { return m_style_name;}
-    pstring get_country_code() const { return m_country_code;}
+    std::string_view get_style_name() const { return m_style_name;}
+    std::string_view get_country_code() const { return m_country_code;}
     bool is_volatile() const { return m_volatile;}
-    pstring get_language() const { return m_language;}
+    std::string_view get_language() const { return m_language;}
 };
 
 class number_attr_parser
@@ -165,7 +165,7 @@ public:
 
 class generic_style_attr_parser
 {
-    pstring m_style_name;
+    std::string_view m_style_name;
     bool m_volatile;
     bool m_long;
 
@@ -196,7 +196,7 @@ public:
                 m_long = attr.value == "long";
     }
 
-    pstring get_style_name() const { return m_style_name;}
+    std::string_view get_style_name() const { return m_style_name;}
     bool is_volatile() const { return m_volatile;}
     bool has_long() const { return m_long;}
 };
@@ -261,7 +261,7 @@ class fraction_attr_parser
     size_t m_min_int_digits;
     size_t m_min_deno_digits;
     size_t m_min_num_digits;
-    pstring m_deno_value;
+    std::string_view m_deno_value;
 
     bool m_predefined_deno;
 
@@ -303,13 +303,13 @@ public:
     size_t get_min_int_digits() const { return m_min_int_digits;}
     size_t get_min_num_digits() const { return m_min_num_digits;}
     size_t get_min_deno_digits() const { return m_min_deno_digits;}
-    pstring get_deno_value() const { return m_deno_value;}
+    std::string_view get_deno_value() const { return m_deno_value;}
     bool has_predefined_deno() const { return m_predefined_deno;}
 };
 
 class text_properties_attr_parser
 {
-    pstring m_color;
+    std::string_view m_color;
     bool color_absent;
 
 public:
@@ -348,7 +348,7 @@ public:
         }
     }
 
-    pstring get_color() const { return m_color;}
+    std::string_view get_color() const { return m_color;}
     bool has_color() const { return !color_absent;}
 };
 
@@ -411,7 +411,8 @@ void number_formatting_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t
 
 void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
 {
-    m_current_style.character_stream.clear();
+    m_current_style.character_stream = std::string_view{};
+
     if (ns == NS_odf_number)
     {
         switch(name)
@@ -706,7 +707,8 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
 
 bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
-    pstring character_content = m_current_style.character_stream;
+    std::string_view character_content = m_current_style.character_stream;
+
     if (ns == NS_odf_number)
     {
         if (name == XML_number_style || name == XML_currency_style || name == XML_percentage_style

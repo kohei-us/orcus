@@ -8,8 +8,7 @@
 #ifndef INCLUDED_ORCUS_ODF_STYLES_HPP
 #define INCLUDED_ORCUS_ODF_STYLES_HPP
 
-#include "pstring.hpp"
-#include "orcus/measurement.hpp"
+#include <orcus/measurement.hpp>
 
 #include <map>
 #include <memory>
@@ -75,9 +74,9 @@ struct odf_style
         size_t font;
     };
 
-    pstring name;
+    std::string_view name;
     odf_style_family family;
-    pstring parent_name;
+    std::string_view parent_name;
 
     union {
         column* column_data;
@@ -93,7 +92,7 @@ struct odf_style
     odf_style& operator=(const odf_style&) = delete;
 
     odf_style();
-    odf_style(const pstring& _name, odf_style_family _family, const pstring& parent);
+    odf_style(std::string_view _name, odf_style_family _family, std::string_view parent);
 
     ~odf_style();
 };
@@ -102,20 +101,20 @@ struct number_formatting_style
 {
     size_t number_formatting;
 
-    pstring name;
+    std::string_view name;
     std::string number_formatting_code;
     bool is_volatile;
-    pstring character_stream;
+    std::string_view character_stream;
 
     number_formatting_style():
         number_formatting(0),
         is_volatile(0)
         {}
 
-    number_formatting_style(const pstring& style_name, const bool volatile_style);
+    number_formatting_style(std::string_view style_name, const bool volatile_style);
 };
 
-typedef std::map<pstring, std::unique_ptr<odf_style>> odf_styles_map_type;
+typedef std::map<std::string_view, std::unique_ptr<odf_style>> odf_styles_map_type;
 
 }
 

@@ -10,10 +10,11 @@
 namespace orcus {
 
 odf_style::odf_style() : family(style_family_unknown), column_data(nullptr) {}
-odf_style::odf_style(const pstring& _name, odf_style_family _family,
-        const pstring& parent) :
-    name(_name), family(_family),
-    parent_name(parent), column_data(nullptr)
+odf_style::odf_style(std::string_view _name, odf_style_family _family, std::string_view parent) :
+    name(_name),
+    family(_family),
+    parent_name(parent),
+    column_data(nullptr)
 {
     switch (family)
     {
@@ -75,7 +76,7 @@ odf_style::~odf_style()
     }
 }
 
-number_formatting_style::number_formatting_style(const pstring& style_name, const bool volatile_style):
+number_formatting_style::number_formatting_style(std::string_view style_name, const bool volatile_style):
     number_formatting(0),
     name(style_name),
     is_volatile(volatile_style)
