@@ -549,10 +549,11 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
 
     std::optional<spreadsheet::color_rgb_t> bg_color;
 
-    bool locked = false;
-    bool hidden = false;
-    bool formula_hidden = false;
-    bool print_content = false;
+    std::optional<bool> locked;
+    std::optional<bool> hidden;
+    std::optional<bool> formula_hidden;
+    std::optional<bool> print_content;
+
     bool cell_protection = false;
 
     using border_map_type = std::map<ss::border_direction_t, odf::border_details_t>;
@@ -645,18 +646,25 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
                 }
                 case XML_cell_protect:
                 {
-                    cell_protection = true;
                     if (attr.value == "protected")
+                    {
+                        cell_protection = true;
                         locked = true;
+                    }
                     else if (attr.value == "hidden-and-protected")
                     {
+                        cell_protection = true;
                         locked = true;
                         hidden = true;
                     }
                     else if (attr.value == "formula-hidden")
+                    {
+                        cell_protection = true;
                         formula_hidden = true;
+                    }
                     else if (attr.value == "protected formula-hidden" || attr.value == "formula-hidden protected")
                     {
+                        cell_protection = true;
                         formula_hidden = true;
                         locked = true;
                     }
@@ -696,10 +704,17 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
 
     if (cell_protection)
     {
-        mp_styles->set_cell_hidden(hidden);
-        mp_styles->set_cell_locked(locked);
-        mp_styles->set_cell_print_content(print_content);
-        mp_styles->set_cell_formula_hidden(formula_hidden);
+        if (hidden)
+            mp_styles->set_cell_hidden(*hidden);
+
+        if (locked)
+            mp_styles->set_cell_locked(*locked);
+
+        if (print_content)
+            mp_styles->set_cell_print_content(*print_content);
+
+        if (formula_hidden)
+            mp_styles->set_cell_formula_hidden(*formula_hidden);
 
         cell_protection_id = mp_styles->commit_cell_protection();
     }

@@ -182,6 +182,45 @@ bool verify_active_fill_attrs(
     return true;
 }
 
+bool verify_active_protection_attrs(
+    const std::pair<ss::protection_t, ss::protection_active_t>& expected,
+    const std::pair<ss::protection_t, ss::protection_active_t>& actual)
+{
+    if (expected.second != actual.second)
+    {
+        std::cerr << "active masks differ!" << std::endl;
+        return false;
+    }
+
+    const ss::protection_active_t& mask = expected.second;
+
+    if (mask.locked && expected.first.locked != actual.first.locked)
+    {
+        std::cerr << "locked states differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.hidden && expected.first.hidden != actual.first.hidden)
+    {
+        std::cerr << "hidden states differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.print_content && expected.first.print_content != actual.first.print_content)
+    {
+        std::cerr << "'print content' states differ!" << std::endl;
+        return false;
+    }
+
+    if (mask.formula_hidden && expected.first.formula_hidden != actual.first.formula_hidden)
+    {
+        std::cerr << "'formula hidden' states differ!" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 bool verify_active_border_attrs(
     const std::pair<ss::border_t, ss::border_active_t>& expected,
     const std::pair<ss::border_t, ss::border_active_t>& actual)
@@ -942,7 +981,18 @@ void test_cell_protection_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Hide_20_Formula", "Protected");
         assert(cell_format);
 
+        const auto* protection_state = model.styles.get_protection_state(cell_format->protection);
+        assert(protection_state);
 
+        std::pair<ss::protection_t, ss::protection_active_t> expected;
+        expected.first.locked = true;
+        expected.first.formula_hidden = true;
+        expected.first.print_content = true;
+        expected.second.locked = true;
+        expected.second.formula_hidden = true;
+        expected.second.print_content = true;
+
+        assert(verify_active_protection_attrs(expected, *protection_state));
     }
 }
 
