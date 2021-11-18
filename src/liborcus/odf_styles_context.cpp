@@ -641,7 +641,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
                 case XML_print_content:
                 {
                     cell_protection = true;
-                    print_content = attr.value == "true";
+                    print_content = to_bool(attr.value);
                     break;
                 }
                 case XML_cell_protect:
