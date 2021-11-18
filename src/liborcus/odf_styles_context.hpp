@@ -22,7 +22,7 @@ namespace spreadsheet { namespace iface {
 }}
 
 /**
- * Context that handles <office:automatic-styles> scope.
+ * Context that handles <office:automatic-styles> or <office:styles> scope.
  */
 class styles_context : public xml_context_base
 {

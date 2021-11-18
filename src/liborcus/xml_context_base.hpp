@@ -133,6 +133,18 @@ protected:
     void xml_element_expected(
         const xml_token_pair_t& elem, const xml_elem_set_t& expected_elems) const;
 
+    void print_namespace(std::ostream& os, xmlns_id_t ns) const;
+
+    void print_current_element_stack(std::ostream& os) const;
+
+    /**
+     * Throw a viewer-friendly XML structure error with the information about an
+     * unknown element encountered.
+     *
+     * @param elem unknown element encountered.
+     */
+    void throw_unknown_element_error(const xml_token_pair_t& elem) const;
+
     pstring intern(const xml_token_attr_t& attr);
     pstring intern(const pstring& s);
 

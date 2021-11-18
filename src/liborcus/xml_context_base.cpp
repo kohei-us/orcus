@@ -185,9 +185,15 @@ void xml_context_base::xml_element_expected(
     }
 
     // Create a generic error message.
-    ostringstream os;
-    os << "element '" << (ns ? ns : "" )<< ":" << m_tokens.get_token_name(name) << "' expected, but '";
-    os << elem.first << ":" << m_tokens.get_token_name(elem.second) << "' encountered.";
+    std::ostringstream os;
+    os << "element <";
+    print_namespace(os, ns);
+    os << ":" << m_tokens.get_token_name(name) << "> expected, but <";
+    print_namespace(os, elem.first);
+    os << ":" << m_tokens.get_token_name(elem.second) << "> encountered." << std::endl;
+    os << std::endl;
+
+    print_current_element_stack(os);
     throw xml_structure_error(os.str());
 }
 
@@ -206,10 +212,7 @@ void xml_context_base::xml_element_expected(
     if (m_always_allowed_elements.count(elem))
         return;
 
-    // Create a generic error message.
-    ostringstream os;
-    os << "unexpected element encountered: " << elem.first << ":" << m_tokens.get_token_name(elem.second);
-    throw xml_structure_error(os.str());
+    throw_unknown_element_error(elem);
 }
 
 void xml_context_base::xml_element_expected(
@@ -224,9 +227,43 @@ void xml_context_base::xml_element_expected(
     if (m_always_allowed_elements.count(elem))
         return;
 
+    throw_unknown_element_error(elem);
+}
+
+void xml_context_base::print_namespace(std::ostream& os, xmlns_id_t ns) const
+{
+    if (mp_ns_cxt)
+    {
+        std::string_view alias = mp_ns_cxt->get_alias(ns);
+        if (!alias.empty())
+            os << alias;
+    }
+    else
+        os << ns;
+}
+
+void xml_context_base::print_current_element_stack(std::ostream& os) const
+{
+    os << "current element stack:" << std::endl << std::endl;
+
+    for (const auto& [ns, elem] : m_stack)
+    {
+        os << "  - <";
+        print_namespace(os, ns);
+        os << ':' << m_tokens.get_token_name(elem) << ">" << std::endl;
+    }
+}
+
+void xml_context_base::throw_unknown_element_error(const xml_token_pair_t& elem) const
+{
     // Create a generic error message.
-    ostringstream os;
-    os << "unexpected element encountered: " << elem.first << ":" << m_tokens.get_token_name(elem.second);
+    std::ostringstream os;
+    os << "unexpected element encountered: ";
+    print_namespace(os, elem.first);
+    os << ":" << m_tokens.get_token_name(elem.second) << std::endl;
+    os << std::endl;
+
+    print_current_element_stack(os);
     throw xml_structure_error(os.str());
 }
 
