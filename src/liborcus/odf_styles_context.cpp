@@ -9,7 +9,6 @@
 #include "odf_namespace_types.hpp"
 #include "odf_token_constants.hpp"
 #include "odf_helper.hpp"
-#include "odf_number_formatting_context.hpp"
 
 #include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/import_interface.hpp>
@@ -160,8 +159,11 @@ styles_context::styles_context(
     xml_context_base(session_cxt, tk),
     mp_styles(iface_styles),
     m_styles(styles),
-    m_automatic_styles(false)
+    m_automatic_styles(false),
+    m_cxt_number_format(session_cxt, tk, m_styles, mp_styles)
 {
+    m_cxt_number_format.transfer_common(*this);
+
     commit_default_styles();
 }
 
@@ -177,9 +179,8 @@ xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_
 {
     if (ns == NS_odf_number)
     {
-        mp_child.reset(new number_formatting_context(get_session_context(), get_tokens(), m_styles, mp_styles));
-        mp_child->transfer_common(*this);
-        return mp_child.get();
+        m_cxt_number_format.reset();
+        return &m_cxt_number_format;
     }
 
     return nullptr;

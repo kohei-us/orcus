@@ -752,6 +752,11 @@ void number_formatting_context::characters(const pstring& str, bool transient)
     }
 }
 
+void number_formatting_context::reset()
+{
+    m_current_style = number_formatting_style{};
+}
+
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

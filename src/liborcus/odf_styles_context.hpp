@@ -10,8 +10,9 @@
 
 #include "xml_context_base.hpp"
 #include "odf_styles.hpp"
+#include "odf_number_formatting_context.hpp"
 
-#include "orcus/global.hpp"
+#include <orcus/global.hpp>
 
 #include <unordered_map>
 
@@ -46,12 +47,13 @@ private:
 private:
     spreadsheet::iface::import_styles* mp_styles;
     odf_styles_map_type& m_styles;
-    std::unique_ptr<xml_context_base> mp_child;
 
     std::unique_ptr<odf_style> m_current_style;
 
     // an automatic style corresponds to a cell format and not a real style
     bool m_automatic_styles;
+
+    number_formatting_context m_cxt_number_format;
 };
 
 }
