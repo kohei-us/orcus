@@ -179,6 +179,9 @@ struct ORCUS_SPM_DLLPUBLIC protection_t
     void reset();
 };
 
+/**
+ * Active attribute flags associated with protection_t.
+ */
 struct ORCUS_SPM_DLLPUBLIC protection_active_t
 {
     bool locked = false;
