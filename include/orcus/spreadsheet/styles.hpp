@@ -286,6 +286,7 @@ public:
 
     void reserve_number_format_store(size_t n);
     size_t append_number_format(const number_format_t& nf);
+    size_t append_number_format(const number_format_t& value, const number_format_active_t& active);
 
     void reserve_cell_style_format_store(size_t n);
     size_t append_cell_style_format(const cell_format_t& cf);

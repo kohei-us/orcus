@@ -468,6 +468,14 @@ size_t styles::append_number_format(const number_format_t& nf)
     return mp_impl->number_formats.size() - 1;
 }
 
+size_t styles::append_number_format(const number_format_t& value, const number_format_active_t& active)
+{
+    number_format_t copied = value;
+    copied.format_string = mp_impl->str_pool.intern(value.format_string).first;
+    mp_impl->number_formats.emplace_back(copied, active);
+    return mp_impl->number_formats.size() - 1;
+}
+
 void styles::reserve_cell_style_format_store(size_t n)
 {
     mp_impl->cell_style_formats.reserve(n);
