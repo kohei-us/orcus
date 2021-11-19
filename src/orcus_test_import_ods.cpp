@@ -473,97 +473,45 @@ void test_odf_font(const orcus::spreadsheet::styles& styles)
     assert(cell_font->underline_color.blue == (int)0xff);
 }
 
-void test_odf_number_formatting(const orcus::spreadsheet::styles& styles)
+void test_number_format_styles()
 {
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name10", styles);
-    assert(style);
-    size_t xf = style->xf;
-    const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
-    assert(cell_format);
+    test_model model;
+    model.load(SRCDIR"/test/ods/styles/number-format.xml");
 
-    size_t number_format = cell_format->number_format;
-    const orcus::spreadsheet::number_format_t* cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string == "#.000000");
+    auto verify_number_format_code = [](const ss::styles& styles, std::string_view style_name, std::string_view expected_code) -> bool
+    {
+        const ss::cell_format_t* xf = find_cell_format(styles, style_name, "");
+        if (!xf)
+        {
+            std::cerr << "No cell format for style named '" << style_name << "' found." << std::endl;
+            return false;
+        }
 
-    style = find_cell_style_by_name("Name11", styles);
-    assert(style);
-    xf = style->xf;
-    cell_format = styles.get_cell_style_format(xf);
-    assert(cell_format);
+        const ss::number_format_t* xnf = styles.get_number_format(xf->number_format);
+        if (!xnf)
+        {
+            std::cerr << "No number format style found for style named '" << style_name << "'." << std::endl;
+            return false;
+        }
 
-    number_format = cell_format->number_format;
-    cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string == "[$₹]#,##0.00;[RED]-[$₹]#,##0.00");
+        if (xnf->format_string != expected_code)
+        {
+            std::cerr << "Expected format code was '" << expected_code << "' but the actual code was '" << xnf->format_string << "'." << std::endl;
+            return false;
+        }
 
-    style = find_cell_style_by_name("Name12", styles);
-    assert(style);
-    xf = style->xf;
-    cell_format = styles.get_cell_style_format(xf);
-    assert(cell_format);
+        return true;
+    };
 
-    number_format = cell_format->number_format;
-    cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string == "0.00%");
-
-    style = find_cell_style_by_name("Name13", styles);
-    assert(style);
-    xf = style->xf;
-    cell_format = styles.get_cell_style_format(xf);
-    assert(cell_format);
-
-    number_format = cell_format->number_format;
-    cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string == "#.00E+00");
-
-    style = find_cell_style_by_name("Name15", styles);
-    assert(style);
-    xf = style->xf;
-    cell_format = styles.get_cell_style_format(xf);
-    assert(cell_format);
-
-    number_format = cell_format->number_format;
-    cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string == "BOOLEAN");
-
-    style = find_cell_style_by_name("Name16", styles);
-    assert(style);
-    xf = style->xf;
-    cell_format = styles.get_cell_style_format(xf);
-    assert(cell_format);
-
-    number_format = cell_format->number_format;
-    cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string == "#### ?/11");
-
-    style = find_cell_style_by_name("Name17", styles);
-    assert(style);
-    xf = style->xf;
-    cell_format = styles.get_cell_style_format(xf);
-    assert(cell_format);
-
-    number_format = cell_format->number_format;
-    cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string == "MM/DD/YY");
-
-    style = find_cell_style_by_name("Name18", styles);
-    assert(style);
-    xf = style->xf;
-    cell_format = styles.get_cell_style_format(xf);
-    assert(cell_format);
-
-    number_format = cell_format->number_format;
-    cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string == "HH:MM:SS AM/PM");
-
-    style = find_cell_style_by_name("Name19", styles);
-    assert(style);
-    xf = style->xf;
-    cell_format = styles.get_cell_style_format(xf);
-    assert(cell_format);
-
-    number_format = cell_format->number_format;
-    cell_number_format = styles.get_number_format(number_format);
-    assert(cell_number_format->format_string == "[>=0]0.00;[RED]-0.00");
+    assert(verify_number_format_code(model.styles, "Name10", "#.000000"));
+    assert(verify_number_format_code(model.styles, "Name11", "[$₹]#,##0.00;[RED]-[$₹]#,##0.00"));
+    assert(verify_number_format_code(model.styles, "Name12", "0.00%"));
+    assert(verify_number_format_code(model.styles, "Name13", "#.00E+00"));
+    assert(verify_number_format_code(model.styles, "Name15", "BOOLEAN"));
+    assert(verify_number_format_code(model.styles, "Name16", "#### ?/11"));
+    assert(verify_number_format_code(model.styles, "Name17", "MM/DD/YY"));
+    assert(verify_number_format_code(model.styles, "Name18", "HH:MM:SS AM/PM"));
+    assert(verify_number_format_code(model.styles, "Name19", "[>=0]0.00;[RED]-0.00"));
 }
 
 void test_odf_text_strikethrough(const orcus::spreadsheet::styles& styles)
@@ -1058,8 +1006,7 @@ int main()
     test_odf_text_strikethrough(model.styles);
     test_odf_text_alignment(model.styles);
 
-    model.load(SRCDIR"/test/ods/styles/number-format.xml");
-    test_odf_number_formatting(model.styles);
+    test_number_format_styles();
 
     test_standard_styles();
     test_cell_protection_styles();
