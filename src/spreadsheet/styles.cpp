@@ -361,11 +361,11 @@ std::ostream& operator<< (std::ostream& os, const color_t& c)
 
 struct styles::impl
 {
-    std::vector<std::pair<font_t, font_active_t>> fonts;
-    std::vector<std::pair<fill_t, fill_active_t>> fills;
-    std::vector<std::pair<border_t, border_active_t>> borders;
-    std::vector<std::pair<protection_t, protection_active_t>> protections;
-    std::vector<std::pair<number_format_t, number_format_active_t>> number_formats;
+    std::vector<style_attrs_t<font_t>> fonts;
+    std::vector<style_attrs_t<fill_t>> fills;
+    std::vector<style_attrs_t<border_t>> borders;
+    std::vector<style_attrs_t<protection_t>> protections;
+    std::vector<style_attrs_t<number_format_t>> number_formats;
     std::vector<cell_format_t> cell_style_formats;
     std::vector<cell_format_t> cell_formats;
     std::vector<cell_format_t> dxf_formats;
@@ -528,7 +528,7 @@ const font_t* styles::get_font(size_t index) const
     return &mp_impl->fonts[index].first;
 }
 
-const std::pair<font_t, font_active_t>* styles::get_font_state(size_t index) const
+const style_attrs_t<font_t>* styles::get_font_state(size_t index) const
 {
     if (index >= mp_impl->fonts.size())
         return nullptr;
@@ -552,7 +552,7 @@ const fill_t* styles::get_fill(size_t index) const
     return &mp_impl->fills[index].first;
 }
 
-const std::pair<fill_t, fill_active_t>* styles::get_fill_state(size_t index) const
+const style_attrs_t<fill_t>* styles::get_fill_state(size_t index) const
 {
     if (index >= mp_impl->fills.size())
         return nullptr;
@@ -568,7 +568,7 @@ const border_t* styles::get_border(size_t index) const
     return &mp_impl->borders[index].first;
 }
 
-const std::pair<border_t, border_active_t>* styles::get_border_state(size_t index) const
+const style_attrs_t<border_t>* styles::get_border_state(size_t index) const
 {
     if (index >= mp_impl->borders.size())
         return nullptr;
@@ -584,7 +584,7 @@ const protection_t* styles::get_protection(size_t index) const
     return &mp_impl->protections[index].first;
 }
 
-const std::pair<protection_t, protection_active_t>* styles::get_protection_state(size_t index) const
+const style_attrs_t<protection_t>* styles::get_protection_state(size_t index) const
 {
     if (index >= mp_impl->protections.size())
         return nullptr;
@@ -600,7 +600,7 @@ const number_format_t* styles::get_number_format(size_t index) const
     return &mp_impl->number_formats[index].first;
 }
 
-const std::pair<number_format_t, number_format_active_t>* styles::get_number_format_state(size_t index) const
+const style_attrs_t<number_format_t>* styles::get_number_format_state(size_t index) const
 {
     if (index >= mp_impl->number_formats.size())
         return nullptr;

@@ -258,6 +258,22 @@ struct ORCUS_SPM_DLLPUBLIC cell_style_t
     void reset();
 };
 
+namespace detail {
+
+template<typename T>
+struct to_active_type;
+
+template<> struct to_active_type<font_t> { using type = font_active_t; };
+template<> struct to_active_type<fill_t> { using type = fill_active_t; };
+template<> struct to_active_type<border_t> { using type = border_active_t; };
+template<> struct to_active_type<protection_t> { using type = protection_active_t; };
+template<> struct to_active_type<number_format_t> { using type = number_format_active_t; };
+
+} // namespace detail
+
+template<typename T>
+using style_attrs_t = std::pair<T, typename detail::to_active_type<T>::type>;
+
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_t& c);
 
 class ORCUS_SPM_DLLPUBLIC styles
@@ -301,19 +317,19 @@ public:
     size_t append_cell_style(const cell_style_t& cs);
 
     const font_t* get_font(size_t index) const;
-    const std::pair<font_t, font_active_t>* get_font_state(size_t index) const;
+    const style_attrs_t<font_t>* get_font_state(size_t index) const;
 
     const fill_t* get_fill(size_t index) const;
-    const std::pair<fill_t, fill_active_t>* get_fill_state(size_t index) const;
+    const style_attrs_t<fill_t>* get_fill_state(size_t index) const;
 
     const border_t* get_border(size_t index) const;
-    const std::pair<border_t, border_active_t>* get_border_state(size_t index) const;
+    const style_attrs_t<border_t>* get_border_state(size_t index) const;
 
     const protection_t* get_protection(size_t index) const;
-    const std::pair<protection_t, protection_active_t>* get_protection_state(size_t index) const;
+    const style_attrs_t<protection_t>* get_protection_state(size_t index) const;
 
     const number_format_t* get_number_format(size_t index) const;
-    const std::pair<number_format_t, number_format_active_t>* get_number_format_state(size_t index) const;
+    const style_attrs_t<number_format_t>* get_number_format_state(size_t index) const;
 
     const cell_format_t* get_cell_format(size_t index) const;
     const cell_format_t* get_cell_style_format(size_t index) const;
