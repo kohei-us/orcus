@@ -579,6 +579,19 @@ void test_odf_text_alignment(const orcus::spreadsheet::styles& styles)
     assert(cell_format->ver_align == orcus::spreadsheet::ver_alignment_t::middle);
 }
 
+void test_cell_styles()
+{
+    test_model model;
+
+    model.load(SRCDIR"/test/ods/styles/cell-styles.xml");
+    test_odf_fill(model.styles);
+    test_odf_border(model.styles);
+    test_odf_cell_protection(model.styles);
+    test_odf_font(model.styles);
+    test_odf_text_strikethrough(model.styles);
+    test_odf_text_alignment(model.styles);
+}
+
 void test_standard_styles()
 {
     test_model model;
@@ -1007,18 +1020,8 @@ void test_cell_protection_styles()
 
 int main()
 {
-    test_model model;
-
-    model.load(SRCDIR"/test/ods/styles/cell-styles.xml");
-    test_odf_fill(model.styles);
-    test_odf_border(model.styles);
-    test_odf_cell_protection(model.styles);
-    test_odf_font(model.styles);
-    test_odf_text_strikethrough(model.styles);
-    test_odf_text_alignment(model.styles);
-
+    test_cell_styles();
     test_number_format_styles();
-
     test_standard_styles();
     test_cell_protection_styles();
 
