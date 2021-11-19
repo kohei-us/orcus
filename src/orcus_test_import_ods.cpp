@@ -487,16 +487,27 @@ void test_number_format_styles()
             return false;
         }
 
-        const ss::number_format_t* xnf = styles.get_number_format(xf->number_format);
+        const auto* xnf = styles.get_number_format_state(xf->number_format);
         if (!xnf)
         {
             std::cerr << "No number format style found for style named '" << style_name << "'." << std::endl;
             return false;
         }
 
-        if (xnf->format_string != expected_code)
+        // Make sure the format_string is the only active attribute.  In ODF,
+        // format identifier is not used, so it should never be active.
+        ss::number_format_active_t active_expected;
+        active_expected.format_string = true;
+
+        if (active_expected != xnf->second)
         {
-            std::cerr << "Expected format code was '" << expected_code << "' but the actual code was '" << xnf->format_string << "'." << std::endl;
+            std::cerr << "Active number format attributes were not as expected." << std::endl;
+            return false;
+        }
+
+        if (xnf->first.format_string != expected_code)
+        {
+            std::cerr << "Expected format code was '" << expected_code << "' but the actual code was '" << xnf->first.format_string << "'." << std::endl;
             return false;
         }
 
