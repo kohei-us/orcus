@@ -171,7 +171,6 @@ add_executable(xlsx-sheet-context-test EXCLUDE_FROM_ALL
     ooxml_tokens.cpp
     ooxml_types.cpp
     session_context.cpp
-    spreadsheet_interface.cpp
     xlsx_autofilter_context.cpp
     xlsx_conditional_format_context.cpp
     xlsx_helper.cpp
@@ -206,7 +205,7 @@ target_compile_definitions(xlsx-sheet-context-test PRIVATE
 )
 
 target_link_libraries(odf-helper-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
-target_link_libraries(xlsx-sheet-context-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
+target_link_libraries(xlsx-sheet-context-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 target_link_libraries(xml-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(json-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(xpath-parser-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
