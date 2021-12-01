@@ -65,7 +65,7 @@ public:
         m_attrs.push_back(attr);
     }
 
-    void characters(const pstring&, bool) {}
+    void characters(std::string_view, bool) {}
 };
 
 void xml_map_sax_handler::start_element(const sax::parser_element& elem)

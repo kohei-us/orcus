@@ -9,8 +9,9 @@
 #include "odf_namespace_types.hpp"
 #include "odf_token_constants.hpp"
 #include "odf_helper.hpp"
-#include "orcus/measurement.hpp"
-#include "orcus/spreadsheet/import_interface.hpp"
+
+#include <orcus/measurement.hpp>
+#include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/styles.hpp>
 
 #include <iostream>
@@ -685,7 +686,11 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                 text_properties_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
                 if (func.has_color())
-                    m_current_style.number_formatting_code = m_current_style.number_formatting_code + "[" + func.get_color() + "]";
+                {
+                    std::ostringstream os;
+                    os << m_current_style.number_formatting_code << '[' << func.get_color() << ']';
+                    m_current_style.number_formatting_code = os.str();
+                }
             }
             break;
             case XML_map:
@@ -694,8 +699,9 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                 func = std::for_each(attrs.begin(), attrs.end(), func);
                 if (func.has_map())
                 {
-                    m_current_style.number_formatting_code = "[" + func.get_sign() + func.get_value() + "]"
-                        + m_current_style.number_formatting_code;
+                    std::ostringstream os;
+                    os << '[' << func.get_sign() << func.get_value() << ']' << m_current_style.number_formatting_code;
+                    m_current_style.number_formatting_code = os.str();
                 }
             }
             break;
@@ -738,9 +744,11 @@ bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
             }
         }
         else if (name == XML_currency_symbol)
-            m_current_style.number_formatting_code = m_current_style.number_formatting_code + "[$"
-                + character_content + "]";
-
+        {
+            std::ostringstream os;
+            os << m_current_style.number_formatting_code << "[$" << character_content << ']';
+            m_current_style.number_formatting_code = os.str();
+        }
         else if (name == XML_text)
         {
             m_current_style.number_formatting_code += character_content;
@@ -750,7 +758,7 @@ bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
 }
 
 
-void number_formatting_context::characters(const pstring& str, bool transient)
+void number_formatting_context::characters(std::string_view str, bool transient)
 {
     if (str != "\n")
     {

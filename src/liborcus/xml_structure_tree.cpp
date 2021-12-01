@@ -201,7 +201,7 @@ public:
         m_stack.pop_back();
     }
 
-    void characters(const pstring&, bool)
+    void characters(std::string_view, bool)
     {
         if (m_stack.empty())
             return;

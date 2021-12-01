@@ -41,7 +41,7 @@ public:
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs);
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(const pstring& str, bool transient);
+    virtual void characters(std::string_view str, bool transient);
 
     void push_to_model(spreadsheet::iface::import_auto_filter& af) const;
 
@@ -50,7 +50,7 @@ private:
 
     string_pool m_pool;
 
-    pstring m_ref_range;
+    std::string_view m_ref_range;
     spreadsheet::col_t m_cur_col;
     match_values_type m_cur_match_values;
     column_filters_type m_column_filters;

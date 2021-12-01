@@ -27,7 +27,7 @@ public:
 
     virtual bool can_handle_element(xmlns_id_t, xml_token_t) const { return true; };
     virtual xml_context_base* create_child_context(xmlns_id_t, xml_token_t) { return nullptr; }
-    virtual void characters(const pstring&, bool) {}
+    virtual void characters(std::string_view, bool) {}
     virtual void end_child_context(xmlns_id_t, xml_token_t, xml_context_base*) {}
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& /*attrs*/)

@@ -37,7 +37,7 @@ public:
 
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
 
-    virtual void characters(const pstring& str, bool transient);
+    virtual void characters(std::string_view str, bool transient);
 
 private:
     void reset();

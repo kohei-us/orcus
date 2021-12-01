@@ -35,7 +35,7 @@ public:
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs);
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(const pstring& str, bool transient);
+    virtual void characters(std::string_view str, bool transient);
 
 private:
     void start_cell(const xml_attrs_t& attrs);
@@ -50,7 +50,7 @@ private:
     /**
     * Used for temporary storage of characters
     */
-    pstring chars;
+    std::string_view chars;
 
     spreadsheet::iface::import_sheet* mp_sheet;
 };

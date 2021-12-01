@@ -272,12 +272,12 @@ const config& xml_context_base::get_config() const
     return m_config;
 }
 
-pstring xml_context_base::intern(const xml_token_attr_t& attr)
+std::string_view xml_context_base::intern(const xml_token_attr_t& attr)
 {
     return m_session_cxt.intern(attr);
 }
 
-pstring xml_context_base::intern(const pstring& s)
+std::string_view xml_context_base::intern(std::string_view s)
 {
     return m_session_cxt.intern(s);
 }

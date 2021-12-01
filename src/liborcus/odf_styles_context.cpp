@@ -38,18 +38,18 @@ style_family_map::entry style_family_entries[] =
     { MDDS_ASCII("text"), style_family_text }
 };
 
-odf_style_family to_style_family(const pstring& val)
+odf_style_family to_style_family(std::string_view val)
 {
     static style_family_map map(style_family_entries, ORCUS_N_ELEMENTS(style_family_entries), style_family_unknown);
-    return map.find(val.get(), val.size());
+    return map.find(val.data(), val.size());
 }
 
 class style_attr_parser
 {
-    pstring m_name;
+    std::string_view m_name;
     odf_style_family m_family;
 
-    pstring m_parent_name;
+    std::string_view m_parent_name;
 public:
     style_attr_parser() :
         m_family(style_family_unknown) {}
@@ -72,9 +72,9 @@ public:
         }
     }
 
-    const pstring& get_name() const { return m_name; }
+    std::string_view get_name() const { return m_name; }
     odf_style_family get_family() const { return m_family; }
-    const pstring& get_parent() const { return m_parent_name; }
+    std::string_view get_parent() const { return m_parent_name; }
 };
 
 class col_prop_attr_parser
@@ -316,8 +316,7 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
                         cell.xf = xf_id;
                     }
 
-                    // ptr_map's first argument must be a non-const reference.
-                    pstring style_name = m_current_style->name;
+                    std::string_view style_name = m_current_style->name;
                     m_styles.insert(
                         odf_styles_map_type::value_type(
                             style_name, std::move(m_current_style)));
@@ -331,7 +330,7 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void styles_context::characters(const pstring& /*str*/, bool /*transient*/)
+void styles_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
 }
 

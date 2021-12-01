@@ -32,7 +32,7 @@ public:
 
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
 
-    virtual void characters(const pstring &str, bool transient) override;
+    virtual void characters(std::string_view str, bool transient) override;
 
     void reset();
 };

@@ -9,7 +9,6 @@
 #define INCLUDED_ORCUS_XML_CONTEXT_BASE_HPP
 
 #include "xml_stream_handler.hpp"
-#include "pstring.hpp"
 
 namespace orcus {
 
@@ -90,7 +89,7 @@ public:
      * @param str content value.
      * @param transient whether or not the value is transient.
      */
-    virtual void characters(const pstring& str, bool transient) = 0;
+    virtual void characters(std::string_view str, bool transient) = 0;
 
     void set_ns_context(const xmlns_context* p);
 
@@ -146,8 +145,8 @@ protected:
      */
     void throw_unknown_element_error(const xml_token_pair_t& elem) const;
 
-    pstring intern(const xml_token_attr_t& attr);
-    pstring intern(const pstring& s);
+    std::string_view intern(const xml_token_attr_t& attr);
+    std::string_view intern(std::string_view s);
 
 private:
     config m_config;

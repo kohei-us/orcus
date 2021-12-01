@@ -237,7 +237,7 @@ bool xlsx_revheaders_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xlsx_revheaders_context::characters(const pstring& /*str*/, bool /*transient*/)
+void xlsx_revheaders_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
 }
 
@@ -560,7 +560,7 @@ bool xlsx_revlog_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xlsx_revlog_context::characters(const pstring& str, bool transient)
+void xlsx_revlog_context::characters(std::string_view str, bool transient)
 {
     const xml_token_pair_t& elem = get_current_element();
     if (elem.first == NS_ooxml_xlsx)

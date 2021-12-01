@@ -173,7 +173,7 @@ bool gnumeric_cell_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void gnumeric_cell_context::characters(const pstring& str, bool transient)
+void gnumeric_cell_context::characters(std::string_view str, bool transient)
 {
     if (transient)
         chars = m_pool.intern(str).first;
@@ -200,7 +200,7 @@ void gnumeric_cell_context::end_cell()
     {
         case cell_type_value:
         {
-            double val = atof(chars.get());
+            double val = atof(chars.data());
             mp_sheet->set_value(row, col, val);
         }
         break;

@@ -14,6 +14,7 @@
 #include "orcus/string_pool.hpp"
 
 #include "formula_result.hpp"
+#include "pstring.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -81,7 +82,7 @@ public:
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs) override;
-    virtual void characters(const pstring& str, bool transient) override;
+    virtual void characters(std::string_view str, bool transient) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
 
     /**
@@ -231,7 +232,7 @@ public:
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
-    virtual void characters(const pstring& str, bool transient) override;
+    virtual void characters(std::string_view str, bool transient) override;
 
 private:
     void start_element_borders(const xml_token_pair_t& parent, const xml_attrs_t& attrs);

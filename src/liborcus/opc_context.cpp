@@ -153,7 +153,7 @@ bool opc_content_types_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void opc_content_types_context::characters(const pstring& /*str*/, bool /*transient*/)
+void opc_content_types_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
 }
 
@@ -302,7 +302,7 @@ bool opc_relations_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void opc_relations_context::characters(const pstring& /*str*/, bool /*transient*/)
+void opc_relations_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
 }
 

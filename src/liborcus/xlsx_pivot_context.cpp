@@ -561,7 +561,7 @@ bool xlsx_pivot_cache_def_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xlsx_pivot_cache_def_context::characters(const pstring& /*str*/, bool /*transient*/)
+void xlsx_pivot_cache_def_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
 }
 
@@ -1111,7 +1111,7 @@ bool xlsx_pivot_cache_rec_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xlsx_pivot_cache_rec_context::characters(const pstring& /*str*/, bool /*transient*/)
+void xlsx_pivot_cache_rec_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
 }
 
@@ -1739,7 +1739,7 @@ bool xlsx_pivot_table_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xlsx_pivot_table_context::characters(const pstring& /*str*/, bool /*transient*/)
+void xlsx_pivot_table_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
 }
 

@@ -165,7 +165,7 @@ void xls_xml_data_context::start_element(xmlns_id_t ns, xml_token_t name, const:
         warn_unhandled();
 }
 
-void xls_xml_data_context::characters(const pstring& str, bool transient)
+void xls_xml_data_context::characters(std::string_view str, bool transient)
 {
     if (str.empty())
         return;
@@ -1162,7 +1162,7 @@ spreadsheet::sheet_pane_t to_sheet_pane(long v)
 
 }
 
-void xls_xml_context::characters(const pstring& str, bool /*transient*/)
+void xls_xml_context::characters(std::string_view str, bool /*transient*/)
 {
     if (str.empty())
         return;
@@ -1327,7 +1327,7 @@ void xls_xml_context::start_element_number_format(const xml_token_pair_t& parent
         {
             case XML_Format:
             {
-                pstring code = num_format::get().find(attr.value.data(), attr.value.size());
+                std::string_view code = num_format::get().find(attr.value.data(), attr.value.size());
                 m_current_style->number_format = code.empty() ? intern(attr) : code;
                 break;
             }

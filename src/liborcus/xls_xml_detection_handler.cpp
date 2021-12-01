@@ -92,7 +92,7 @@ public:
         return pop_stack(ns, name);
     }
 
-    virtual void characters(const pstring&, bool)
+    virtual void characters(std::string_view, bool)
     {
     }
 
