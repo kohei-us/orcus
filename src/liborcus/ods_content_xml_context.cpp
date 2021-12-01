@@ -50,46 +50,6 @@ const map_type& get()
 
 } // namespace cell_value
 
-class null_date_attr_parser
-{
-public:
-    null_date_attr_parser() {}
-    null_date_attr_parser(const null_date_attr_parser& r) :
-        m_date_value(r.m_date_value)
-    {
-    }
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_odf_table && attr.name == XML_date_value)
-            m_date_value = attr.value;
-    }
-
-    const pstring& get_date_value() const { return m_date_value; }
-private:
-    pstring m_date_value;
-};
-
-class table_attr_parser
-{
-public:
-    table_attr_parser() {}
-    table_attr_parser(const table_attr_parser& r) :
-        m_name(r.m_name)
-    {
-    }
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_odf_table && attr.name == XML_name)
-            m_name = attr.value;
-    }
-
-    const pstring& get_name() const { return m_name; }
-private:
-    pstring m_name;
-};
-
 class cell_attr_parser
 {
 public:
@@ -553,7 +513,14 @@ void ods_content_xml_context::start_null_date(const xml_attrs_t& attrs)
         // Global settings not available. No point going further.
         return;
 
-    pstring null_date = for_each(attrs.begin(), attrs.end(), null_date_attr_parser()).get_date_value();
+    std::string_view null_date;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns == NS_odf_table && attr.name == XML_date_value)
+            null_date = attr.value;
+    }
+
     date_time_t val = to_date_time(null_date);
 
     gs->set_origin_date(val.year, val.month, val.day);
@@ -569,8 +536,14 @@ void ods_content_xml_context::start_table(const xml_token_pair_t& parent, const 
 
     if (parent == xml_token_pair_t(NS_odf_office, XML_spreadsheet))
     {
-        table_attr_parser parser = for_each(attrs.begin(), attrs.end(), table_attr_parser());
-        const pstring& name = parser.get_name();
+        std::string_view name;
+
+        for (const xml_token_attr_t& attr : attrs)
+        {
+            if (attr.ns == NS_odf_table && attr.name == XML_name)
+                name = attr.value;
+        }
+
         m_tables.push_back(mp_factory->append_sheet(m_tables.size(), name));
         m_cur_sheet.sheet = m_tables.back();
         m_cur_sheet.index = m_tables.size() - 1;
