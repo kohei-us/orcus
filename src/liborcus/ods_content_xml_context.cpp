@@ -29,24 +29,26 @@ namespace orcus {
 
 namespace {
 
-typedef mdds::sorted_string_map<ods_content_xml_context::cell_value_type> cell_value_map_type;
+namespace cell_value {
+
+typedef mdds::sorted_string_map<ods_content_xml_context::cell_value_type> map_type;
 
 // Keys must be sorted.
-cell_value_map_type::entry cell_value_entries[] = {
+map_type::entry entries[] = {
     { ORCUS_ASCII("date"),   ods_content_xml_context::vt_date },
     { ORCUS_ASCII("float"),  ods_content_xml_context::vt_float },
     { ORCUS_ASCII("string"), ods_content_xml_context::vt_string }
 };
 
-const cell_value_map_type& get_cell_value_map()
+const map_type& get()
 {
-    static cell_value_map_type cv_map(
-        cell_value_entries,
-        sizeof(cell_value_entries)/sizeof(cell_value_entries[0]),
-        ods_content_xml_context::vt_unknown);
+    static map_type cv_map(
+        entries, std::size(entries), ods_content_xml_context::vt_unknown);
 
     return cv_map;
 }
+
+} // namespace cell_value
 
 class null_date_attr_parser
 {
@@ -200,17 +202,14 @@ private:
                 double val = strtod(attr.value.data(), &endptr);
                 if (endptr == end)
                     m_attr.value = val;
+                break;
             }
-            break;
             case XML_value_type:
-            {
-                const cell_value_map_type& cv_map = get_cell_value_map();
-                m_attr.type = cv_map.find(attr.value.data(), attr.value.size());
-            }
-            break;
+                m_attr.type = cell_value::get().find(attr.value.data(), attr.value.size());
+                break;
             case XML_date_value:
                 m_attr.date_value = attr.value;
-            break;
+                break;
             default:
                 ;
         }
@@ -253,7 +252,7 @@ void pick_up_named_range_or_expression(
         ods_data.m_named_exps.emplace_back(name, expression, base, name_type, scope);
 }
 
-}
+} // anonymous namespace
 
 // ============================================================================
 
