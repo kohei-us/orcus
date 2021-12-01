@@ -10,7 +10,7 @@
 
 #include "xml_context_base.hpp"
 
-#include "orcus/string_pool.hpp"
+#include <orcus/string_pool.hpp>
 
 namespace orcus {
 

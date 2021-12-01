@@ -73,7 +73,7 @@ void xml_stream_handler::end_element(const xml_token_element_t& elem)
     }
 }
 
-void xml_stream_handler::characters(const pstring& str, bool transient)
+void xml_stream_handler::characters(std::string_view str, bool transient)
 {
     get_current_context().characters(str, transient);
 }

@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_XML_CONTEXT_BASE_HPP
 
 #include "xml_stream_handler.hpp"
+#include "pstring.hpp"
 
 namespace orcus {
 

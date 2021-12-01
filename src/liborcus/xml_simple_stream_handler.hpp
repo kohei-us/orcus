@@ -25,12 +25,12 @@ public:
 
     xml_context_base& get_context();
 
-    virtual void start_document();
-    virtual void end_document();
+    virtual void start_document() override;
+    virtual void end_document() override;
 
-    virtual void start_element(const xml_token_element_t& elem);
-    virtual void end_element(const xml_token_element_t& elem);
-    virtual void characters(const pstring& str, bool transient);
+    virtual void start_element(const xml_token_element_t& elem) override;
+    virtual void end_element(const xml_token_element_t& elem) override;
+    virtual void characters(std::string_view str, bool transient) override;
 };
 
 }

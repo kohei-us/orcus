@@ -10,7 +10,6 @@
 
 #include <orcus/sax_token_parser.hpp>
 #include <orcus/config.hpp>
-#include "pstring.hpp"
 
 #include <cstdlib>
 #include <string>
@@ -41,7 +40,7 @@ public:
     virtual void declaration(const xml_declaration_t& decl);
     virtual void start_element(const xml_token_element_t& elem);
     virtual void end_element(const xml_token_element_t& elem);
-    virtual void characters(const pstring& str, bool transient);
+    virtual void characters(std::string_view str, bool transient);
 
     void set_ns_context(const xmlns_context* p);
     void set_config(const config& opt);
