@@ -105,7 +105,7 @@ public:
 
 xls_xml_detection_handler::xls_xml_detection_handler(
     session_context& session_cxt, const tokens& tokens) :
-    xml_stream_handler(new xls_xml_detection_context(session_cxt, tokens))
+    xml_stream_handler(std::make_unique<xls_xml_detection_context>(session_cxt, tokens))
 {
 }
 

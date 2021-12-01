@@ -12,10 +12,9 @@
 
 namespace orcus {
 
-xml_simple_stream_handler::xml_simple_stream_handler(xml_context_base* context) :
-    xml_stream_handler(context)
+xml_simple_stream_handler::xml_simple_stream_handler(std::unique_ptr<xml_context_base> context) :
+    xml_stream_handler(std::move(context))
 {
-    assert(context);
 }
 
 xml_simple_stream_handler::~xml_simple_stream_handler()

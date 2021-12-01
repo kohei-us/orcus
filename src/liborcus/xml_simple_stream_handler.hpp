@@ -20,7 +20,7 @@ class xml_context_base;
 class xml_simple_stream_handler : public xml_stream_handler
 {
 public:
-    xml_simple_stream_handler(xml_context_base* context);
+    xml_simple_stream_handler(std::unique_ptr<xml_context_base> context);
     ~xml_simple_stream_handler();
 
     xml_context_base& get_context();

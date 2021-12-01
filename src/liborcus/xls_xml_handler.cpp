@@ -12,7 +12,7 @@ namespace orcus {
 
 xls_xml_handler::xls_xml_handler(
     session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
-    xml_stream_handler(new xls_xml_context(session_cxt, tokens, factory))
+    xml_stream_handler(std::make_unique<xls_xml_context>(session_cxt, tokens, factory))
 {
 }
 

@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace orcus {
 
@@ -25,13 +26,13 @@ class xml_stream_handler
 {
     config m_config;
     const xmlns_context* mp_ns_cxt;
-    xml_context_base* mp_root_context;
+    std::unique_ptr<xml_context_base> mp_root_context;
     typedef std::vector<xml_context_base*> context_stack_type;
     context_stack_type m_context_stack;
 
     xml_stream_handler(); // disabled
 public:
-    xml_stream_handler(xml_context_base* root_context);
+    xml_stream_handler(std::unique_ptr<xml_context_base> root_context);
     virtual ~xml_stream_handler() ;
 
     virtual void start_document();

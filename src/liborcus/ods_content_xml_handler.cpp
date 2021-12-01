@@ -11,7 +11,7 @@
 namespace orcus {
 
 ods_content_xml_handler::ods_content_xml_handler(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
-    xml_stream_handler(new ods_content_xml_context(session_cxt, tokens, factory))
+    xml_stream_handler(std::make_unique<ods_content_xml_context>(session_cxt, tokens, factory))
 {
 }
 

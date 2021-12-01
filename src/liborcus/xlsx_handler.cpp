@@ -23,7 +23,7 @@ xlsx_sheet_xml_handler::xlsx_sheet_xml_handler(
     spreadsheet::sheet_t sheet_id,
     spreadsheet::iface::import_reference_resolver& resolver,
     spreadsheet::iface::import_sheet& sheet) :
-    xml_stream_handler(new xlsx_sheet_context(session_cxt, tokens, sheet_id, resolver, sheet))
+    xml_stream_handler(std::make_unique<xlsx_sheet_context>(session_cxt, tokens, sheet_id, resolver, sheet))
 {
 }
 
@@ -41,7 +41,7 @@ xlsx_table_xml_handler::xlsx_table_xml_handler(
     session_context& session_cxt, const tokens& tokens,
     spreadsheet::iface::import_table& table,
     spreadsheet::iface::import_reference_resolver& resolver) :
-    xml_stream_handler(new xlsx_table_context(session_cxt, tokens, table, resolver))
+    xml_stream_handler(std::make_unique<xlsx_table_context>(session_cxt, tokens, table, resolver))
 {
 }
 
@@ -49,7 +49,7 @@ xlsx_pivot_cache_def_xml_handler::xlsx_pivot_cache_def_xml_handler(
     session_context& cxt, const tokens& tokens,
     spreadsheet::iface::import_pivot_cache_definition& pcache,
     spreadsheet::pivot_cache_id_t pcache_id) :
-    xml_stream_handler(new xlsx_pivot_cache_def_context(cxt, tokens, pcache, pcache_id)) {}
+    xml_stream_handler(std::make_unique<xlsx_pivot_cache_def_context>(cxt, tokens, pcache, pcache_id)) {}
 
 opc_rel_extras_t xlsx_pivot_cache_def_xml_handler::pop_rel_extras()
 {
@@ -62,15 +62,15 @@ opc_rel_extras_t xlsx_pivot_cache_def_xml_handler::pop_rel_extras()
 xlsx_pivot_cache_rec_xml_handler::xlsx_pivot_cache_rec_xml_handler(
     session_context& cxt, const tokens& tokens,
     spreadsheet::iface::import_pivot_cache_records& pc_records) :
-    xml_stream_handler(new xlsx_pivot_cache_rec_context(cxt, tokens, pc_records)) {}
+    xml_stream_handler(std::make_unique<xlsx_pivot_cache_rec_context>(cxt, tokens, pc_records)) {}
 
 xlsx_pivot_table_xml_handler::xlsx_pivot_table_xml_handler(
     session_context& cxt, const tokens& tokens) :
-    xml_stream_handler(new xlsx_pivot_table_context(cxt, tokens)) {}
+    xml_stream_handler(std::make_unique<xlsx_pivot_table_context>(cxt, tokens)) {}
 
 xlsx_drawing_xml_handler::xlsx_drawing_xml_handler(
     session_context& cxt, const tokens& tokens) :
-    xml_stream_handler(new xlsx_drawing_context(cxt, tokens)) {}
+    xml_stream_handler(std::make_unique<xlsx_drawing_context>(cxt, tokens)) {}
 
 }
 

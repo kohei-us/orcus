@@ -12,17 +12,17 @@
 
 namespace orcus {
 
-xml_stream_handler::xml_stream_handler(xml_context_base* root_context) :
+xml_stream_handler::xml_stream_handler(std::unique_ptr<xml_context_base> root_context) :
     m_config(format_t::unknown),
     mp_ns_cxt(nullptr),
-    mp_root_context(root_context)
+    mp_root_context(std::move(root_context))
 {
-    m_context_stack.push_back(root_context);
+    assert(mp_root_context);
+    m_context_stack.push_back(mp_root_context.get());
 }
 
 xml_stream_handler::~xml_stream_handler()
 {
-    delete mp_root_context;
 }
 
 void xml_stream_handler::start_document()
