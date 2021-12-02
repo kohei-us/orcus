@@ -18,7 +18,6 @@ fi
 shift
 
 # convert the file path to absolute path.
-filepath=`pwd`/"$filepath"
 filepath=`realpath "$filepath"`
 
 # remove existing output directory if one exists.

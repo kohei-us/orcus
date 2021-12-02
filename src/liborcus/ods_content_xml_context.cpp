@@ -50,135 +50,6 @@ const map_type& get()
 
 } // namespace cell_value
 
-class cell_attr_parser
-{
-public:
-    cell_attr_parser(session_context& cxt, ods_content_xml_context::cell_attr& attr) :
-        m_cxt(cxt), m_attr(attr) {}
-    cell_attr_parser(const cell_attr_parser& r) :
-        m_cxt(r.m_cxt), m_attr(r.m_attr) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.value.empty())
-            return;
-
-        if (attr.ns == NS_odf_table)
-            process_ns_table(attr);
-
-        if (attr.ns == NS_odf_office)
-            process_ns_office(attr);
-    }
-
-private:
-
-    void process_formula(const pstring& str, bool transient)
-    {
-        if (str.empty())
-            return;
-
-        // Formula is prefixed with formula type, followed by a ':'
-        // then the actual formula content.
-
-        // First, detect prefix if any.  Only try up to the first 5 characters.
-        const char* p0 = str.get();
-        const char* end = p0 + std::min<size_t>(str.size(), 5);
-        size_t prefix_size = 0;
-        for (const char* p = p0; p != end; ++p)
-        {
-            if (*p == ':')
-            {
-                // Prefix separator found.
-                prefix_size = p - p0;
-                break;
-            }
-
-            if (!is_alpha(*p))
-                // Only alphabets are allowed in the prefix space.
-                break;
-        }
-
-        pstring prefix, formula;
-        if (prefix_size)
-        {
-            prefix = pstring(p0, prefix_size);
-            const char* p = p0;
-            p += prefix_size + 1;
-            end = p0 + str.size();
-            formula = pstring(p, end - p);
-        }
-        else
-        {
-            // TODO : Handle cases where a formula doesn't have a prefix.
-        }
-
-        // Formula needs to begin with '='.
-        if (formula.empty() || formula[0] != '=')
-            return;
-
-        // Remove the '='.
-        formula = pstring(formula.get()+1, formula.size()-1);
-
-        if (prefix == "of")
-        {
-            // ODF formula.  No action needed.
-        }
-
-        m_attr.formula = formula;
-        if (transient)
-            m_attr.formula = m_cxt.m_string_pool.intern(m_attr.formula).first;
-    }
-
-    void process_ns_table(const xml_token_attr_t &attr)
-    {
-        switch (attr.name)
-        {
-            case XML_style_name:
-            {
-                m_attr.style_name = attr.value;
-                if (attr.transient)
-                    m_attr.style_name = m_cxt.m_string_pool.intern(m_attr.style_name).first;
-                break;
-            }
-            case XML_number_columns_repeated:
-                m_attr.number_columns_repeated = to_long(attr.value);
-                break;
-            case XML_formula:
-                process_formula(attr.value, attr.transient);
-                break;
-            default:
-                ;
-        }
-    }
-
-    void process_ns_office(const xml_token_attr_t &attr)
-    {
-        switch (attr.name)
-        {
-            case XML_value:
-            {
-                const char* end = attr.value.data() + attr.value.size();
-                char* endptr;
-                double val = strtod(attr.value.data(), &endptr);
-                if (endptr == end)
-                    m_attr.value = val;
-                break;
-            }
-            case XML_value_type:
-                m_attr.type = cell_value::get().find(attr.value.data(), attr.value.size());
-                break;
-            case XML_date_value:
-                m_attr.date_value = attr.value;
-                break;
-            default:
-                ;
-        }
-    }
-
-    session_context& m_cxt;
-    ods_content_xml_context::cell_attr& m_attr;
-};
-
 void pick_up_named_range_or_expression(
     session_context& cxt, const xml_attrs_t& attrs, xmlns_id_t exp_attr_ns, xml_token_t exp_attr_name,
     ods_session_data::named_exp_type name_type, ss::sheet_t scope)
@@ -695,7 +566,115 @@ void ods_content_xml_context::end_row()
 void ods_content_xml_context::start_cell(const xml_attrs_t& attrs)
 {
     m_cell_attr = cell_attr();
-    for_each(attrs.begin(), attrs.end(), cell_attr_parser(get_session_context(), m_cell_attr));
+
+    /**
+     * Process the prefixed raw formula string stored as attribute value.
+     */
+    auto process_formula = [](std::string_view str) -> std::string_view
+    {
+        if (str.empty())
+            return {};
+
+        // Formula is prefixed with formula type, followed by a ':'
+        // then the actual formula content.
+
+        // First, detect prefix if any.  Only try up to the first 5 characters.
+        const char* p0 = str.data();
+        const char* end = p0 + std::min<size_t>(str.size(), 5);
+        size_t prefix_size = 0;
+        for (const char* p = p0; p != end; ++p)
+        {
+            if (*p == ':')
+            {
+                // Prefix separator found.
+                prefix_size = p - p0;
+                break;
+            }
+
+            if (!is_alpha(*p))
+                // Only alphabets are allowed in the prefix space.
+                break;
+        }
+
+        std::string_view prefix, formula;
+        if (prefix_size)
+        {
+            prefix = std::string_view(p0, prefix_size);
+            const char* p = p0;
+            p += prefix_size + 1;
+            end = p0 + str.size();
+            formula = std::string_view(p, end - p);
+        }
+        else
+        {
+            // TODO : Handle cases where a formula doesn't have a prefix.
+        }
+
+        // Formula needs to begin with '='.
+        if (formula.empty() || formula[0] != '=')
+            return {};
+
+        // Remove the '='.
+        formula = std::string_view(formula.data()+1, formula.size()-1);
+
+        if (prefix == "of")
+        {
+            // ODF formula.  No action needed.
+        }
+
+        return formula;
+    };
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.value.empty())
+            continue;
+
+        if (attr.ns == NS_odf_table)
+        {
+            switch (attr.name)
+            {
+                case XML_style_name:
+                {
+                    m_cell_attr.style_name = intern(attr);
+                    break;
+                }
+                case XML_number_columns_repeated:
+                    m_cell_attr.number_columns_repeated = to_long(attr.value);
+                    break;
+                case XML_formula:
+                    m_cell_attr.formula = process_formula(attr.value);
+                    m_cell_attr.formula = intern(m_cell_attr.formula);
+                    break;
+                default:
+                    ;
+            }
+        }
+
+        if (attr.ns == NS_odf_office)
+        {
+            switch (attr.name)
+            {
+                case XML_value:
+                {
+                    const char* end = attr.value.data() + attr.value.size();
+                    char* endptr;
+                    double val = strtod(attr.value.data(), &endptr);
+                    if (endptr == end)
+                        m_cell_attr.value = val;
+                    break;
+                }
+                case XML_value_type:
+                    m_cell_attr.type = cell_value::get().find(attr.value.data(), attr.value.size());
+                    break;
+                case XML_date_value:
+                    m_cell_attr.date_value = attr.value;
+                    break;
+                default:
+                    ;
+            }
+        }
+    }
 }
 
 void ods_content_xml_context::end_cell()
