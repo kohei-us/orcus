@@ -80,6 +80,9 @@ class NSParser:
 
         ns_values = list()
         for k, v in self.ns_values.items():
+            if v == "http://relaxng.org/ns/structure/1.0":
+                # skip the relaxNG namespace since it is only used in the schema document.
+                continue
             ns_values.append((k, v))
 
         self.ns_values = sorted(ns_values, key=lambda x: x[0])
