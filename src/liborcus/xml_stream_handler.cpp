@@ -41,10 +41,9 @@ void xml_stream_handler::declaration(const xml_declaration_t& decl)
 void xml_stream_handler::start_element(const xml_token_element_t& elem)
 {
     xml_context_base& cur = get_current_context();
-    if (!cur.can_handle_element(elem.ns, elem.name))
+    xml_context_base* p = cur.create_child_context(elem.ns, elem.name);
+    if (p)
     {
-        xml_context_base* p = cur.create_child_context(elem.ns, elem.name);
-        assert(p);
         m_context_stack.push_back(p);
         m_context_stack.back()->set_ns_context(mp_ns_cxt);
     }

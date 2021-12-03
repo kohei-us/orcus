@@ -28,32 +28,22 @@ public:
     virtual void declaration(const xml_declaration_t& decl);
 
     /**
-     * Whether or not the current context object can handle the specified
-     * element.  This method is used by the caller to determine whether to use
-     * a child context to handle the specified element and its child elements.
-     * If a child context needs to be used, the caller will call the
-     * create_child_context method to obtain the child context object.
-     *
-     * @param ns namespace value for the element.
-     * @param name name of the element.
-     *
-     * @return true if the current context object can handle this element,
-     *         false if the caller needs to create a child context to handle
-     *         the element.
-     */
-    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const = 0;
-
-    /**
      * This method gets called by the stream handler to fetch a child context
-     * object when the call to can_handle_element() returns false.  The caller
-     * is not responsible for managing the life cycle of the returned context
-     * object; the current context object must manage the life cycle of the
-     * context object it returns.
+     * object if applicable. If the current context can handle the specified
+     * element, it should return nullptr.  If the current context should spawn a
+     * new context to handle the specified element and its sub structure, then
+     * it should return a pointer to a child context.
+     *
+     * @note The caller is not responsible for managing the life cycle of the
+     * returned context object; the current context object must manage the life
+     * cycle of the context object it returns.
      *
      * @param ns namespace value for the element.
      * @param name name of the element.
      *
-     * @return pointer to the context object that should handle the element.
+     * @return pointer to the context object that should handle the specified
+     *         element, or nullptr if the current context can handle the
+     *         element.
      */
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) = 0;
 

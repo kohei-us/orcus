@@ -22,7 +22,7 @@ public:
     ods_dde_links_context(session_context& session_cxt, const tokens& tokens);
     virtual ~ods_dde_links_context();
 
-    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const override;
+    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
 
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
 
