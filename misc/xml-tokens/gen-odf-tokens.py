@@ -55,6 +55,8 @@ class TokenParser:
         p.CharacterDataHandler = self.character
         p.Parse(self.__strm, 1)
 
+        self.tokens = sorted(self.tokens)
+
 
 class NSParser:
 
@@ -80,16 +82,20 @@ class NSParser:
         p.StartElementHandler = self.start_element
         p.Parse(self.__strm, 1)
 
+        ns_values = list()
+        for k, v in self.ns_values.items():
+            ns_values.append((k, v))
+
+        self.ns_values = sorted(ns_values, key=lambda x: x[0])
+
 
 def gen_namespace_tokens(filepath, ns_values):
-
-    keys = sorted(ns_values.keys())
 
     # header (.hpp)
     filepath_hpp = filepath + "_hpp.inl"
     outfile = open(filepath_hpp, 'w')
     outfile.write("namespace orcus {\n\n")
-    for key in keys:
+    for key, _ in ns_values:
         outfile.write("extern const xmlns_id_t NS_odf_")
         outfile.write(key)
         outfile.write(";\n")
@@ -101,19 +107,18 @@ def gen_namespace_tokens(filepath, ns_values):
     filepath_cpp = filepath + "_cpp.inl"
     outfile = open(filepath_cpp, 'w')
     outfile.write("namespace orcus {\n\n")
-    for key in keys:
+    for key, value in ns_values:
         outfile.write("const xmlns_id_t NS_odf_")
         outfile.write(key)
-        val = ns_values[key]
         outfile.write(" = \"")
-        outfile.write(val)
+        outfile.write(value)
         outfile.write("\"")
         outfile.write(";\n")
 
     outfile.write("\n")
     outfile.write("namespace {\n\n")
     outfile.write("const xmlns_id_t odf_ns[] = {\n")
-    for key in keys:
+    for key, _ in ns_values:
         outfile.write("    NS_odf_")
         outfile.write(key)
         outfile.write(",\n")
@@ -131,15 +136,18 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--ns-file-prefix", type=str,
-        help="File name prefix for optioal namespace constant files.")
+        help="file name prefix for optioal namespace constant files")
     parser.add_argument(
-        "odf_schema", metavar="ODF-SCHEMA", type=Path, help="path to RNG ODF schema file.")
+        "--summary-output", type=Path,
+        help="optional output file to write collected token data summary")
     parser.add_argument(
-        "token_constants", metavar="TOKEN-CONSTANTS", type=Path,
-        help="path to C++ output file where token consants are to be written to.")
+        "--token-constants", type=Path,
+        help="path to C++ output file where token consants are to be written to")
     parser.add_argument(
-        "token_names", metavar="TOKEN-NAMES", type=Path,
-        help="path to C++ output file where token names are to be written to.")
+        "--token-names", type=Path,
+        help="path to C++ output file where token names are to be written to")
+    parser.add_argument(
+        "odf_schema", metavar="ODF-SCHEMA", type=Path, help="path to RNG ODF schema file")
     args = parser.parse_args()
 
     if not args.odf_schema.is_file():
@@ -149,18 +157,36 @@ def main():
     schema_content = args.odf_schema.read_text()
     parser = TokenParser(schema_content)
     parser.parse()
-    tokens = sorted(parser.tokens)
+    tokens = parser.tokens
 
-    with open(args.token_constants, "w") as f:
-        token_util.gen_token_constants(f, tokens)
+    parser = NSParser(schema_content)
+    parser.parse()
+    ns_values = parser.ns_values
 
-    with open(args.token_names, "w") as f:
-        token_util.gen_token_names(f, tokens)
+    if args.summary_output:
+        summary_content_buf = list()
+        summary_content_buf.append("list of tokens:")
+
+        for token in tokens:
+            summary_content_buf.append(f"- \"{token}\"")
+
+        summary_content_buf.append("list of namespaces:")
+
+        for ns, value in ns_values:
+            summary_content_buf.append(f"- {ns}: \"{value}\"")
+
+        args.summary_output.write_text("\n".join(summary_content_buf))
+
+    if args.token_constants:
+        with open(args.token_constants, "w") as f:
+            token_util.gen_token_constants(f, tokens)
+
+    if args.token_names:
+        with open(args.token_names, "w") as f:
+            token_util.gen_token_names(f, tokens)
 
     if args.ns_file_prefix is not None:
-        parser = NSParser(schema_content)
-        parser.parse()
-        gen_namespace_tokens(args.ns_file_prefix, parser.ns_values)
+        gen_namespace_tokens(args.ns_file_prefix, ns_values)
 
 
 if __name__ == '__main__':
