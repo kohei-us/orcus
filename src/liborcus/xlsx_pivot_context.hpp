@@ -52,7 +52,6 @@ public:
         spreadsheet::iface::import_pivot_cache_definition& pcache,
         spreadsheet::pivot_cache_id_t pcache_id);
 
-    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs);
@@ -90,7 +89,6 @@ public:
         session_context& cxt, const tokens& tokens,
         spreadsheet::iface::import_pivot_cache_records& pc_records);
 
-    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs);
@@ -107,7 +105,6 @@ class xlsx_pivot_table_context : public xml_context_base
 public:
     xlsx_pivot_table_context(session_context& cxt, const tokens& tokens);
 
-    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs);

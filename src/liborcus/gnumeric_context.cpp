@@ -36,14 +36,6 @@ gnumeric_content_xml_context::~gnumeric_content_xml_context()
 {
 }
 
-bool gnumeric_content_xml_context::can_handle_element(xmlns_id_t ns, xml_token_t name) const
-{
-    if (ns == NS_gnumeric_gnm && name == XML_Sheet)
-        return false;
-
-    return true;
-}
-
 xml_context_base* gnumeric_content_xml_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
     if (ns == NS_gnumeric_gnm && name == XML_Sheet)

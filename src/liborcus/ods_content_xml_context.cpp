@@ -133,20 +133,6 @@ ods_content_xml_context::~ods_content_xml_context()
 {
 }
 
-bool ods_content_xml_context::can_handle_element(xmlns_id_t ns, xml_token_t name) const
-{
-    if (ns == NS_odf_text && name == XML_p)
-        return false;
-
-    if (ns == NS_odf_office && name == XML_automatic_styles)
-        return false;
-
-    if (ns == NS_odf_table && name == XML_dde_links)
-        return false;
-
-    return true;
-}
-
 xml_context_base* ods_content_xml_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
     if (ns == NS_odf_text && name == XML_p)

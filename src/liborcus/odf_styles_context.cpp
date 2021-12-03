@@ -167,14 +167,6 @@ styles_context::styles_context(
     commit_default_styles();
 }
 
-bool styles_context::can_handle_element(xmlns_id_t ns, xml_token_t /*name*/) const
-{
-    if (ns == NS_odf_number)
-        return false;
-
-    return true;
-}
-
 xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_t /*name*/)
 {
     if (ns == NS_odf_number)

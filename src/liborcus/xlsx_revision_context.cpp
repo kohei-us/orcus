@@ -141,11 +141,6 @@ xlsx_revheaders_context::xlsx_revheaders_context(session_context& session_cxt, c
 
 xlsx_revheaders_context::~xlsx_revheaders_context() {}
 
-bool xlsx_revheaders_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
-
 xml_context_base* xlsx_revheaders_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
@@ -366,11 +361,6 @@ xlsx_revlog_context::xlsx_revlog_context(session_context& session_cxt, const tok
 }
 
 xlsx_revlog_context::~xlsx_revlog_context() {}
-
-bool xlsx_revlog_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
 
 xml_context_base* xlsx_revlog_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {

@@ -26,11 +26,6 @@ public:
     xls_xml_detection_context(session_context& session_cxt, const tokens& tokens) :
         xml_context_base(session_cxt, tokens) {}
 
-    virtual bool can_handle_element(xmlns_id_t, xml_token_t) const
-    {
-        return true;
-    }
-
     virtual xml_context_base* create_child_context(xmlns_id_t, xml_token_t)
     {
         return nullptr;

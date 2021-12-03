@@ -90,11 +90,6 @@ opc_content_types_context::~opc_content_types_context()
 {
 }
 
-bool opc_content_types_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
-
 xml_context_base* opc_content_types_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
@@ -254,11 +249,6 @@ opc_relations_context::opc_relations_context(session_context& session_cxt, const
 
 opc_relations_context::~opc_relations_context()
 {
-}
-
-bool opc_relations_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
 }
 
 xml_context_base* opc_relations_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)

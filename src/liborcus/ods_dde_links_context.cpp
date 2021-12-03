@@ -14,11 +14,6 @@ ods_dde_links_context::ods_dde_links_context(session_context& session_cxt, const
 
 ods_dde_links_context::~ods_dde_links_context() {}
 
-bool ods_dde_links_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
-
 xml_context_base* ods_dde_links_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;

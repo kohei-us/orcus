@@ -29,7 +29,6 @@ public:
     opc_content_types_context(session_context& session_cxt, const tokens& _tokens);
     virtual ~opc_content_types_context();
 
-    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base *child);
 
@@ -70,7 +69,6 @@ public:
     opc_relations_context(session_context& session_cxt, const tokens& _tokens);
     virtual ~opc_relations_context();
 
-    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base *child);
 

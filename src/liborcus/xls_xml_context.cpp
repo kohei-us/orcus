@@ -90,11 +90,6 @@ xls_xml_data_context::xls_xml_data_context(
 
 xls_xml_data_context::~xls_xml_data_context() {}
 
-bool xls_xml_data_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
-
 xml_context_base* xls_xml_data_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
@@ -739,21 +734,6 @@ void xls_xml_context::declaration(const xml_declaration_t& decl)
         return;
 
     gs->set_character_set(decl.encoding);
-}
-
-bool xls_xml_context::can_handle_element(xmlns_id_t ns, xml_token_t name) const
-{
-    if (ns == NS_xls_xml_ss)
-    {
-        switch (name)
-        {
-            case XML_Data:
-                return false;
-            default:
-                ;
-        }
-    }
-    return true;
 }
 
 xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token_t name)

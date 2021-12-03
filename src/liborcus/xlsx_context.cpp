@@ -94,11 +94,6 @@ xlsx_shared_strings_context::xlsx_shared_strings_context(session_context& sessio
 
 xlsx_shared_strings_context::~xlsx_shared_strings_context() {}
 
-bool xlsx_shared_strings_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
-
 xml_context_base* xlsx_shared_strings_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
@@ -597,11 +592,6 @@ xlsx_styles_context::xlsx_styles_context(session_context& session_cxt, const tok
     m_cell_style_xf(false) {}
 
 xlsx_styles_context::~xlsx_styles_context() {}
-
-bool xlsx_styles_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
 
 xml_context_base* xlsx_styles_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {

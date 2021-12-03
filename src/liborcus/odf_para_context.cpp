@@ -33,11 +33,6 @@ text_para_context::~text_para_context()
 {
 }
 
-bool text_para_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
-
 xml_context_base* text_para_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;

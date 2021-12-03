@@ -53,11 +53,6 @@ xlsx_pivot_cache_def_context::xlsx_pivot_cache_def_context(
     spreadsheet::pivot_cache_id_t pcache_id) :
     xml_context_base(cxt, tokens), m_pcache(pcache), m_pcache_id(pcache_id) {}
 
-bool xlsx_pivot_cache_def_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
-
 xml_context_base* xlsx_pivot_cache_def_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
@@ -999,11 +994,6 @@ xlsx_pivot_cache_rec_context::xlsx_pivot_cache_rec_context(
     xml_context_base(cxt, tokens),
     m_pc_records(pc_records) {}
 
-bool xlsx_pivot_cache_rec_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
-
 xml_context_base* xlsx_pivot_cache_rec_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
@@ -1117,11 +1107,6 @@ void xlsx_pivot_cache_rec_context::characters(std::string_view /*str*/, bool /*t
 
 xlsx_pivot_table_context::xlsx_pivot_table_context(session_context& cxt, const tokens& tokens) :
     xml_context_base(cxt, tokens) {}
-
-bool xlsx_pivot_table_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
 
 xml_context_base* xlsx_pivot_table_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {

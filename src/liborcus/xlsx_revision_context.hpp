@@ -20,7 +20,6 @@ public:
     xlsx_revheaders_context(session_context& session_cxt, const tokens& tokens);
     virtual ~xlsx_revheaders_context();
 
-    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs);
@@ -40,7 +39,6 @@ public:
     xlsx_revlog_context(session_context& session_cxt, const tokens& tokens);
     virtual ~xlsx_revlog_context();
 
-    virtual bool can_handle_element(xmlns_id_t ns, xml_token_t name) const;
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs);

@@ -229,16 +229,6 @@ xlsx_sheet_context::~xlsx_sheet_context()
 {
 }
 
-bool xlsx_sheet_context::can_handle_element(xmlns_id_t ns, xml_token_t name) const
-{
-    if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
-        return false;
-    else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting && m_sheet.get_conditional_format())
-        return false;
-
-    return true;
-}
-
 xml_context_base* xlsx_sheet_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)

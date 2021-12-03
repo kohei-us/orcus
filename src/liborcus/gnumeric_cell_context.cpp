@@ -124,11 +124,6 @@ gnumeric_cell_context::~gnumeric_cell_context()
 {
 }
 
-bool gnumeric_cell_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
-
 xml_context_base* gnumeric_cell_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;

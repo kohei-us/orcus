@@ -27,11 +27,6 @@ xlsx_drawing_context::xlsx_drawing_context(session_context& cxt, const tokens& t
 
 xlsx_drawing_context::~xlsx_drawing_context() {}
 
-bool xlsx_drawing_context::can_handle_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
-{
-    return true;
-}
-
 xml_context_base* xlsx_drawing_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
