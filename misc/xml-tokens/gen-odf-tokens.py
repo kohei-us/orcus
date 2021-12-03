@@ -30,15 +30,11 @@ class TokenParser:
         if name in {f"{NS_RNG}:element", f"{NS_RNG}:attribute"} and "name" in attrs:
             tokens = attrs['name'].split(':')
             n = len(tokens)
-            if n == 1:
-                # namespace-less token
-                self.tokens.add(tokens[0])
-            elif n == 2:
-                # namespaced token
-                self.tokens.add(tokens[1])
-            else:
+            if n != 2:
                 sys.stderr.write("unrecognized token type: "+attrs['name'])
                 sys.exit(1)
+
+            self.tokens.add(tokens[1])
 
             for token in tokens:
                 self.tokens.add(token)
