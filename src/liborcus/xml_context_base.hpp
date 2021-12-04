@@ -25,6 +25,12 @@ public:
     xml_context_base(session_context& session_cxt, const tokens& tokens);
     virtual ~xml_context_base() = 0;
 
+    /**
+     * This gets called at the end of the initial XML declaration block i.e.
+     * &lt;?xml ... ?&gt;.  Obviously this gets called only on the root context.
+     *
+     * @param decl XML declaration attributes
+     */
     virtual void declaration(const xml_declaration_t& decl);
 
     /**
@@ -59,10 +65,17 @@ public:
      */
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) = 0;
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const ::std::vector<xml_token_attr_t>& attrs) = 0;
+    /**
+     * Called on the opening of each element.
+     *
+     * @param ns namespace token
+     * @param name element name
+     * @param attrs attributes
+     */
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) = 0;
 
     /**
-     * Called on closing element.
+     * Called on the closing of each element.
      *
      * @param ns namespace token
      * @param name element name
