@@ -106,7 +106,7 @@ public:
 
     void set_always_allowed_elements(xml_elem_set_t elems);
 
-    xml_context_base* get_empty_context();
+    xml_context_base* get_invalid_element_context();
 
 protected:
     session_context& get_session_context();
@@ -119,6 +119,8 @@ protected:
     void warn_unhandled() const;
     void warn_unexpected() const;
     void warn(const char* msg) const;
+
+    void warn_invalid_element(const xml_token_pair_t& parent, const xml_token_pair_t& child) const;
 
     /**
      * Check if observed element equals expected element.  If not, it throws an
@@ -146,6 +148,8 @@ protected:
         const xml_token_pair_t& elem, const xml_elem_set_t& expected_elems) const;
 
     void print_namespace(std::ostream& os, xmlns_id_t ns) const;
+
+    void print_element(std::ostream& os, const xml_token_pair_t& elem) const;
 
     void print_current_element_stack(std::ostream& os) const;
 

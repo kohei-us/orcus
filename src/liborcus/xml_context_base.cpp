@@ -87,7 +87,7 @@ void xml_context_base::set_always_allowed_elements(xml_elem_set_t elems)
     m_always_allowed_elements = std::move(elems);
 }
 
-xml_context_base* xml_context_base::get_empty_context()
+xml_context_base* xml_context_base::get_invalid_element_context()
 {
     if (!m_empty_cxt)
     {
@@ -167,6 +167,21 @@ void xml_context_base::warn(const char* msg) const
     cerr << "warning: " << msg << endl;
 }
 
+void xml_context_base::warn_invalid_element(
+    const xml_token_pair_t& parent, const xml_token_pair_t& child) const
+{
+    if (!m_config.debug)
+        return;
+
+    std::ostringstream os;
+    os << "warning: <";
+    print_element(os, child);
+    os << "> cannot be a child element of <";
+    print_element(os, parent);
+    os << ">";
+    std::cerr << os.str() << std::endl;
+}
+
 void xml_context_base::xml_element_expected(
     const xml_token_pair_t& elem, xmlns_id_t ns, xml_token_t name,
     const string* error) const
@@ -189,11 +204,10 @@ void xml_context_base::xml_element_expected(
     // Create a generic error message.
     std::ostringstream os;
     os << "element <";
-    print_namespace(os, ns);
-    os << ":" << m_tokens.get_token_name(name) << "> expected, but <";
-    print_namespace(os, elem.first);
-    os << ":" << m_tokens.get_token_name(elem.second) << "> encountered." << std::endl;
-    os << std::endl;
+    print_element(os, {ns, name});
+    os << "> expected, but <";
+    print_element(os, elem);
+    os << "> encountered." << std::endl << std::endl;
 
     print_current_element_stack(os);
     throw xml_structure_error(os.str());
@@ -275,15 +289,21 @@ void xml_context_base::print_namespace(std::ostream& os, xmlns_id_t ns) const
         os << ns;
 }
 
+void xml_context_base::print_element(std::ostream& os, const xml_token_pair_t& elem) const
+{
+    print_namespace(os, elem.first);
+    os << ':' << m_tokens.get_token_name(elem.second);
+}
+
 void xml_context_base::print_current_element_stack(std::ostream& os) const
 {
     os << "current element stack:" << std::endl << std::endl;
 
-    for (const auto& [ns, elem] : m_stack)
+    for (const auto& [ns, name] : m_stack)
     {
         os << "  - <";
-        print_namespace(os, ns);
-        os << ':' << m_tokens.get_token_name(elem) << ">" << std::endl;
+        print_element(os, {ns, name});
+        os << ">" << std::endl;
     }
 }
 
@@ -292,9 +312,8 @@ void xml_context_base::throw_unknown_element_error(const xml_token_pair_t& elem)
     // Create a generic error message.
     std::ostringstream os;
     os << "unexpected element encountered: ";
-    print_namespace(os, elem.first);
-    os << ":" << m_tokens.get_token_name(elem.second) << std::endl;
-    os << std::endl;
+    print_element(os, elem);
+    os << std::endl << std::endl;
 
     print_current_element_stack(os);
     throw xml_structure_error(os.str());

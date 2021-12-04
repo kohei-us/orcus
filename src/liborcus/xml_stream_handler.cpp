@@ -55,7 +55,7 @@ void xml_stream_handler::start_element(const xml_token_element_t& elem)
     {
         // new child element is not valid for the current element. Ignore the
         // whole sub structure.
-        m_context_stack.push_back(cur.get_empty_context());
+        m_context_stack.push_back(cur.get_invalid_element_context());
         m_context_stack.back()->set_ns_context(mp_ns_cxt);
     }
 
