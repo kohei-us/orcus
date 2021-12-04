@@ -25,6 +25,7 @@ add_library(orcus-${ORCUS_API_VERSION} SHARED
     measurement.cpp
     xml_context_base.cpp
     xml_context_global.cpp
+    xml_empty_context.cpp
     xml_map_tree.cpp
     xml_stream_handler.cpp
     xml_stream_parser.hpp
