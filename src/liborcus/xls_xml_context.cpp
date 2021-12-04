@@ -1147,7 +1147,7 @@ void xls_xml_context::characters(std::string_view str, bool /*transient*/)
     if (str.empty())
         return;
 
-    const xml_token_pair_t& ce = get_current_element();
+    xml_token_pair_t ce = get_current_element();
 
     if (ce.first == NS_xls_xml_x)
     {

@@ -137,7 +137,7 @@ bool xlsx_drawing_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void xlsx_drawing_context::characters(std::string_view str, bool /*transient*/)
 {
-    const xml_token_pair_t& elem = get_current_element();
+    xml_token_pair_t elem = get_current_element();
     if (elem.first == NS_ooxml_xdr)
     {
         switch (elem.second)
