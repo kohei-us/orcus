@@ -19,6 +19,8 @@ namespace orcus {
 class xml_empty_context : public xml_context_base
 {
 public:
+    xml_empty_context(session_context& session_cxt, const tokens& tokens);
+
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
 
     virtual void end_child_context(

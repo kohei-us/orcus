@@ -181,6 +181,7 @@ add_executable(xlsx-sheet-context-test EXCLUDE_FROM_ALL
     xlsx_types.cpp
     xml_context_base.cpp
     xml_context_global.cpp
+    xml_empty_context.cpp
 )
 
 add_executable(xml-map-tree-test EXCLUDE_FROM_ALL

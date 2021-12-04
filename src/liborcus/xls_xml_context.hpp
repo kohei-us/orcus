@@ -228,11 +228,14 @@ public:
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
 
+    virtual bool evaluate_child_element(xmlns_id_t ns, xml_token_t name) const override;
+
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
     virtual void characters(std::string_view str, bool transient) override;
 
 private:
+
     void start_element_borders(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_border(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_number_format(const xml_token_pair_t& parent, const xml_attrs_t& attrs);

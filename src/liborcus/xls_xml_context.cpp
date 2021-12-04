@@ -1197,6 +1197,95 @@ void xls_xml_context::characters(std::string_view str, bool /*transient*/)
     }
 }
 
+bool xls_xml_context::evaluate_child_element(xmlns_id_t ns, xml_token_t name) const
+{
+    xml_token_pair_t parent = get_current_element();
+
+    if (ns == NS_xls_xml_ss)
+    {
+        switch (name)
+        {
+            case XML_Workbook:
+                break;
+            case XML_Worksheet:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Workbook);
+            case XML_Table:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Worksheet);
+            case XML_Row:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Table);
+            case XML_Cell:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Row);
+            case XML_Column:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Table);
+            case XML_Names:
+            {
+                const xml_elem_set_t expected = {
+                    { NS_xls_xml_ss, XML_Workbook },
+                    { NS_xls_xml_ss, XML_Worksheet },
+                };
+
+                return xml_element_valid(parent, expected);
+            }
+            case XML_NamedRange:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Names);
+            case XML_Styles:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Workbook);
+            case XML_Style:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Styles);
+            case XML_Borders:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Style);
+            case XML_Border:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Borders);
+            case XML_NumberFormat:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Style);
+            case XML_Font:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Style);
+            case XML_Interior:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Style);
+            case XML_Alignment:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Style);
+        }
+    }
+    else if (ns == NS_xls_xml_x)
+    {
+        switch (name)
+        {
+            case XML_WorksheetOptions:
+                return xml_element_valid(parent, NS_xls_xml_ss, XML_Worksheet);
+            case XML_FreezePanes:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
+            case XML_FrozenNoSplit:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
+            case XML_ActivePane:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
+            case XML_SplitHorizontal:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
+            case XML_SplitVertical:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
+            case XML_TopRowBottomPane:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
+            case XML_LeftColumnRightPane:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
+            case XML_Panes:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
+            case XML_Pane:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_Panes);
+            case XML_Number:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_Pane);
+            case XML_ActiveCol:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_Pane);
+            case XML_ActiveRow:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_Pane);
+            case XML_RangeSelection:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_Pane);
+            case XML_Selected:
+                return xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
+        }
+    }
+
+    return true;
+}
+
 void xls_xml_context::start_element_borders(const xml_token_pair_t& parent, const xml_attrs_t& /*attrs*/)
 {
     xml_element_expected(parent, NS_xls_xml_ss, XML_Style);

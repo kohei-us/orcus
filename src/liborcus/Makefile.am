@@ -182,7 +182,8 @@ xlsx_sheet_context_test_SOURCES = \
 	xlsx_sheet_context_test.cpp \
 	xlsx_types.cpp \
 	xml_context_base.cpp \
-	xml_context_global.cpp
+	xml_context_global.cpp \
+	xml_empty_context.cpp
 
 xlsx_sheet_context_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
@@ -304,6 +305,7 @@ gnumeric_cell_context_test_SOURCES = \
 	gnumeric_cell_context_test.cpp \
 	gnumeric_cell_context.cpp \
 	xml_context_base.cpp \
+	xml_empty_context.cpp \
 	gnumeric_namespace_types.cpp \
 	gnumeric_tokens.cpp \
 	odf_namespace_types.cpp \
@@ -327,6 +329,7 @@ gnumeric_sheet_context_test_SOURCES = \
 	gnumeric_cell_context.cpp \
 	gnumeric_helper.cpp \
 	xml_context_base.cpp \
+	xml_empty_context.cpp \
 	gnumeric_namespace_types.cpp \
 	gnumeric_tokens.cpp \
 	odf_namespace_types.cpp \

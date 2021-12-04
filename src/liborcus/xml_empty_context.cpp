@@ -9,6 +9,11 @@
 
 namespace orcus {
 
+xml_empty_context::xml_empty_context(session_context& session_cxt, const tokens& tokens) :
+    xml_context_base(session_cxt, tokens)
+{
+}
+
 xml_context_base* xml_empty_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;

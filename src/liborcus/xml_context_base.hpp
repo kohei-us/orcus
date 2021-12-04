@@ -94,6 +94,8 @@ public:
      */
     virtual void characters(std::string_view str, bool transient) = 0;
 
+    virtual bool evaluate_child_element(xmlns_id_t ns, xml_token_t name) const;
+
     void set_ns_context(const xmlns_context* p);
 
     const config& get_config() const;
@@ -103,6 +105,8 @@ public:
     void transfer_common(const xml_context_base& parent);
 
     void set_always_allowed_elements(xml_elem_set_t elems);
+
+    xml_context_base* get_empty_context();
 
 protected:
     session_context& get_session_context();
@@ -135,6 +139,12 @@ protected:
     void xml_element_expected(
         const xml_token_pair_t& elem, const xml_elem_set_t& expected_elems) const;
 
+    bool xml_element_valid(
+        const xml_token_pair_t& elem, xmlns_id_t ns, xml_token_t name) const;
+
+    bool xml_element_valid(
+        const xml_token_pair_t& elem, const xml_elem_set_t& expected_elems) const;
+
     void print_namespace(std::ostream& os, xmlns_id_t ns) const;
 
     void print_current_element_stack(std::ostream& os) const;
@@ -157,6 +167,8 @@ private:
     const tokens& m_tokens;
     xml_elem_stack_t m_stack;
     xml_elem_set_t m_always_allowed_elements;
+
+    std::unique_ptr<xml_context_base> m_empty_cxt;
 };
 
 
