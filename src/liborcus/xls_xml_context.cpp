@@ -1256,22 +1256,19 @@ bool xls_xml_context::evaluate_child_element(xmlns_id_t ns, xml_token_t name) co
         case xml_element_validator::result::invalid:
         {
             std::ostringstream os;
-            os << "<";
             print_element(os, child);
-            os << "> cannot be a child element of <";
+            os << " cannot be a child element of ";
             print_element(os, parent);
-            os << ">";
             warn(os.str());
             break;
         }
         case xml_element_validator::result::unknown:
         {
             std::ostringstream os;
-            os << "<";
             print_element(os, parent);
-            os << "> does not have any rules defined (child: <";
+            os << " does not have any rules defined (child: ";
             print_element(os, child);
-            os << ">)";
+            os << ')';
             warn(os.str());
             break;
         }

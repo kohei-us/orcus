@@ -188,11 +188,11 @@ void xml_context_base::xml_element_expected(
 
     // Create a generic error message.
     std::ostringstream os;
-    os << "element <";
+    os << "element ";
     print_element(os, {ns, name});
-    os << "> expected, but <";
+    os << " expected, but ";
     print_element(os, elem);
-    os << "> encountered." << std::endl << std::endl;
+    os << " encountered." << std::endl << std::endl;
 
     print_current_element_stack(os);
     throw xml_structure_error(os.str());
@@ -250,8 +250,9 @@ void xml_context_base::print_namespace(std::ostream& os, xmlns_id_t ns) const
 
 void xml_context_base::print_element(std::ostream& os, const xml_token_pair_t& elem) const
 {
+    os << '<';
     print_namespace(os, elem.first);
-    os << ':' << m_tokens.get_token_name(elem.second);
+    os << ':' << m_tokens.get_token_name(elem.second) << '>';
 }
 
 void xml_context_base::print_current_element_stack(std::ostream& os) const
@@ -260,9 +261,9 @@ void xml_context_base::print_current_element_stack(std::ostream& os) const
 
     for (const auto& [ns, name] : m_stack)
     {
-        os << "  - <";
+        os << "  - ";
         print_element(os, {ns, name});
-        os << ">" << std::endl;
+        os << std::endl;
     }
 }
 
