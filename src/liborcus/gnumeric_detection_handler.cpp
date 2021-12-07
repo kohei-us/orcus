@@ -71,8 +71,8 @@ public:
 
 }
 
-gnumeric_detection_handler::gnumeric_detection_handler(session_context& session_cxt, const tokens& tokens) :
-    xml_stream_handler(std::make_unique<gnumeric_detection_context>(session_cxt, tokens)) {}
+gnumeric_detection_handler::gnumeric_detection_handler(session_context& session_cxt, const tokens& t) :
+    xml_stream_handler(session_cxt, t, std::make_unique<gnumeric_detection_context>(session_cxt, t)) {}
 
 gnumeric_detection_handler::~gnumeric_detection_handler() {}
 

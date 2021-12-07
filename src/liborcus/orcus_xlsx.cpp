@@ -181,7 +181,9 @@ bool orcus_xlsx::detect(const unsigned char* blob, size_t size)
     xml_stream_parser parser(
         opt, ns_repo, opc_tokens, reinterpret_cast<const char*>(&buf[0]), buf.size());
 
-    xml_simple_stream_handler handler(std::make_unique<opc_content_types_context>(session_cxt, opc_tokens));
+    xml_simple_stream_handler handler(
+        session_cxt, opc_tokens,
+        std::make_unique<opc_content_types_context>(session_cxt, opc_tokens));
     parser.set_handler(&handler);
     parser.parse();
 
@@ -355,6 +357,7 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
         return;
 
     auto handler = std::make_unique<xml_simple_stream_handler>(
+        mp_impl->m_cxt, ooxml_tokens,
         std::make_unique<xlsx_workbook_context>(mp_impl->m_cxt, ooxml_tokens, *mp_impl->mp_factory));
 
     xml_stream_parser parser(
@@ -498,6 +501,7 @@ void orcus_xlsx::read_shared_strings(const string& dir_path, const string& file_
         reinterpret_cast<const char*>(&buffer[0]), buffer.size());
 
     auto handler = std::make_unique<xml_simple_stream_handler>(
+        mp_impl->m_cxt, ooxml_tokens,
         std::make_unique<xlsx_shared_strings_context>(
             mp_impl->m_cxt, ooxml_tokens, mp_impl->mp_factory->get_shared_strings()));
 
@@ -531,6 +535,7 @@ void orcus_xlsx::read_styles(const string& dir_path, const string& file_name)
         reinterpret_cast<const char*>(&buffer[0]), buffer.size());
 
     auto handler = std::make_unique<xml_simple_stream_handler>(
+        mp_impl->m_cxt, ooxml_tokens,
         std::make_unique<xlsx_styles_context>(
             mp_impl->m_cxt, ooxml_tokens, mp_impl->mp_factory->get_styles()));
 
@@ -742,6 +747,7 @@ void orcus_xlsx::read_rev_headers(const std::string& dir_path, const std::string
         reinterpret_cast<const char*>(&buffer[0]), buffer.size());
 
     auto handler = std::make_unique<xml_simple_stream_handler>(
+        mp_impl->m_cxt, ooxml_tokens,
         std::make_unique<xlsx_revheaders_context>(mp_impl->m_cxt, ooxml_tokens));
 
     parser.set_handler(handler.get());
@@ -775,6 +781,7 @@ void orcus_xlsx::read_rev_log(const std::string& dir_path, const std::string& fi
         reinterpret_cast<const char*>(&buffer[0]), buffer.size());
 
     auto handler = std::make_unique<xml_simple_stream_handler>(
+        mp_impl->m_cxt, ooxml_tokens,
         std::make_unique<xlsx_revlog_context>(mp_impl->m_cxt, ooxml_tokens));
 
     parser.set_handler(handler.get());

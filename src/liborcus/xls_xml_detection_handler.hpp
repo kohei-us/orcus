@@ -18,7 +18,7 @@ struct session_context;
 class xls_xml_detection_handler : public xml_stream_handler
 {
 public:
-    xls_xml_detection_handler(session_context& session_cxt, const tokens& tokens);
+    xls_xml_detection_handler(session_context& session_cxt, const tokens& t);
     virtual ~xls_xml_detection_handler();
 
     virtual void start_document();

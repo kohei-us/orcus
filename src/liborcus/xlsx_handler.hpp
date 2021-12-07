@@ -35,7 +35,7 @@ class xlsx_sheet_xml_handler : public xml_stream_handler
 {
 public:
     xlsx_sheet_xml_handler(
-        session_context& cxt, const tokens& tokens,
+        session_context& cxt, const tokens& t,
         spreadsheet::sheet_t sheet_id,
         spreadsheet::iface::import_reference_resolver& resolver,
         spreadsheet::iface::import_sheet& sheet);
@@ -49,7 +49,7 @@ class xlsx_table_xml_handler : public xml_stream_handler
 {
 public:
     xlsx_table_xml_handler(
-        session_context& cxt, const tokens& tokens,
+        session_context& cxt, const tokens& t,
         spreadsheet::iface::import_table& table,
         spreadsheet::iface::import_reference_resolver& resolver);
 };
@@ -58,7 +58,7 @@ class xlsx_pivot_cache_def_xml_handler : public xml_stream_handler
 {
 public:
     xlsx_pivot_cache_def_xml_handler(
-        session_context& cxt, const tokens& tokens,
+        session_context& cxt, const tokens& t,
         spreadsheet::iface::import_pivot_cache_definition& pcache,
         spreadsheet::pivot_cache_id_t pcache_id);
 
@@ -69,20 +69,20 @@ class xlsx_pivot_cache_rec_xml_handler : public xml_stream_handler
 {
 public:
     xlsx_pivot_cache_rec_xml_handler(
-        session_context& cxt, const tokens& tokens,
+        session_context& cxt, const tokens& t,
         spreadsheet::iface::import_pivot_cache_records& pc_records);
 };
 
 class xlsx_pivot_table_xml_handler : public xml_stream_handler
 {
 public:
-    xlsx_pivot_table_xml_handler(session_context& cxt, const tokens& tokens);
+    xlsx_pivot_table_xml_handler(session_context& cxt, const tokens& t);
 };
 
 class xlsx_drawing_xml_handler : public xml_stream_handler
 {
 public:
-    xlsx_drawing_xml_handler(session_context& cxt, const tokens& tokens);
+    xlsx_drawing_xml_handler(session_context& cxt, const tokens& t);
 };
 
 }

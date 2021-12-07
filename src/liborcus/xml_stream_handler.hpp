@@ -20,19 +20,25 @@ namespace orcus {
 
 class xml_context_base;
 class xmlns_context;
+struct session_context;
 
 class xml_stream_handler
 {
+    session_context& m_session_cxt;
+    const tokens& m_tokens;
+
     config m_config;
     const xmlns_context* mp_ns_cxt;
     std::unique_ptr<xml_context_base> mp_root_context;
     typedef std::vector<xml_context_base*> context_stack_type;
     context_stack_type m_context_stack;
 
-    xml_stream_handler(); // disabled
 public:
-    xml_stream_handler(std::unique_ptr<xml_context_base> root_context);
-    virtual ~xml_stream_handler() ;
+    xml_stream_handler() = delete;
+    xml_stream_handler(const xml_stream_handler&) = delete;
+
+    xml_stream_handler(session_context& session_cxt, const tokens& t, std::unique_ptr<xml_context_base> root_context);
+    virtual ~xml_stream_handler();
 
     virtual void start_document();
     virtual void end_document();

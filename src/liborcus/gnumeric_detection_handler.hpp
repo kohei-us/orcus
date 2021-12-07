@@ -18,7 +18,7 @@ class tokens;
 class gnumeric_detection_handler : public xml_stream_handler
 {
 public:
-    gnumeric_detection_handler(session_context& session_cxt, const tokens& tokens);
+    gnumeric_detection_handler(session_context& session_cxt, const tokens& t);
     virtual ~gnumeric_detection_handler();
 
     virtual void start_document();

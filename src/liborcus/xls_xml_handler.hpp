@@ -24,7 +24,7 @@ struct session_context;
 class xls_xml_handler : public xml_stream_handler
 {
 public:
-    xls_xml_handler(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
+    xls_xml_handler(session_context& session_cxt, const tokens& t, spreadsheet::iface::import_factory* factory);
     virtual ~xls_xml_handler() override;
 };
 

@@ -12,7 +12,10 @@
 
 namespace orcus {
 
-xml_stream_handler::xml_stream_handler(std::unique_ptr<xml_context_base> root_context) :
+xml_stream_handler::xml_stream_handler(
+    session_context& session_cxt, const tokens& t, std::unique_ptr<xml_context_base> root_context) :
+    m_session_cxt(session_cxt),
+    m_tokens(t),
     m_config(format_t::unknown),
     mp_ns_cxt(nullptr),
     mp_root_context(std::move(root_context))
