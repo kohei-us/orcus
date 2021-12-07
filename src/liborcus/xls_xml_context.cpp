@@ -1203,6 +1203,7 @@ namespace {
 
 const xml_element_validator::rule element_rules[] = {
     // parent element -> child element
+    { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_xls_xml_ss, XML_Workbook }, // root element
     { NS_xls_xml_ss, XML_Borders, NS_xls_xml_ss, XML_Border },
     { NS_xls_xml_ss, XML_Cell, NS_xls_xml_ss, XML_Data },
     { NS_xls_xml_ss, XML_Names, NS_xls_xml_ss, XML_NamedRange },
@@ -1212,6 +1213,7 @@ const xml_element_validator::rule element_rules[] = {
     { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Font },
     { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Interior },
     { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_NumberFormat },
+    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Protection },
     { NS_xls_xml_ss, XML_Styles, NS_xls_xml_ss, XML_Style },
     { NS_xls_xml_ss, XML_Table, NS_xls_xml_ss, XML_Column },
     { NS_xls_xml_ss, XML_Table, NS_xls_xml_ss, XML_Row },
@@ -1221,6 +1223,7 @@ const xml_element_validator::rule element_rules[] = {
     { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_ss, XML_Names },
     { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_ss, XML_Table },
     { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_x, XML_WorksheetOptions },
+    { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_x, XML_AutoFilter },
     { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_ActiveCol },
     { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_ActiveRow },
     { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_Number },
