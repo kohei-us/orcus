@@ -53,17 +53,13 @@ void xml_stream_handler::start_element(const xml_token_element_t& elem)
         // new child element is valid against parent element.
         xml_context_base* p = cur.create_child_context(elem.ns, elem.name);
         if (p)
-        {
             m_context_stack.push_back(p);
-            m_context_stack.back()->set_ns_context(mp_ns_cxt);
-        }
     }
     else
     {
         // new child element is not valid for the current element. Ignore the
         // whole sub structure.
         m_context_stack.push_back(&get_invalid_context());
-        m_context_stack.back()->set_ns_context(mp_ns_cxt);
 
         if (m_config.debug)
         {
