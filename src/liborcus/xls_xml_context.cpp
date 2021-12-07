@@ -1204,6 +1204,7 @@ namespace {
 const xml_element_validator::rule element_rules[] = {
     // parent element -> child element
     { NS_xls_xml_ss, XML_Borders, NS_xls_xml_ss, XML_Border },
+    { NS_xls_xml_ss, XML_Cell, NS_xls_xml_ss, XML_Data },
     { NS_xls_xml_ss, XML_Names, NS_xls_xml_ss, XML_NamedRange },
     { NS_xls_xml_ss, XML_Row, NS_xls_xml_ss, XML_Cell },
     { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Alignment },
@@ -1265,6 +1266,7 @@ bool xls_xml_context::evaluate_child_element(xmlns_id_t ns, xml_token_t name) co
         case xml_element_validator::result::unknown:
         {
             std::ostringstream os;
+            os << "parent ";
             print_element(os, parent);
             os << " does not have any rules defined (child: ";
             print_element(os, child);
