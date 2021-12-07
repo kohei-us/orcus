@@ -11,6 +11,8 @@
 
 #include "orcus/exception.hpp"
 
+#include <iostream>
+
 namespace orcus {
 
 xml_stream_handler::xml_stream_handler(
@@ -62,6 +64,12 @@ void xml_stream_handler::start_element(const xml_token_element_t& elem)
         // whole sub structure.
         m_context_stack.push_back(&get_invalid_context());
         m_context_stack.back()->set_ns_context(mp_ns_cxt);
+
+        if (m_config.debug)
+        {
+            // TODO: print the top element of the sub structure being ignored.
+            std::cerr << "warning: ignoring the whole sub-structure..." << std::endl;
+        }
     }
 
     get_current_context().start_element(elem.ns, elem.name, elem.attrs);
