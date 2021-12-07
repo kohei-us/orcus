@@ -71,6 +71,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	xml_context_base.cpp \
 	xml_context_global.hpp \
 	xml_context_global.cpp \
+	xml_element_validator.hpp \
+	xml_element_validator.cpp \
 	xml_empty_context.hpp \
 	xml_empty_context.cpp \
 	xml_map_tree.hpp \

@@ -9,9 +9,11 @@
 #include "xls_xml_namespace_types.hpp"
 #include "xls_xml_token_constants.hpp"
 #include "spreadsheet_iface_util.hpp"
-#include "orcus/spreadsheet/import_interface.hpp"
-#include "orcus/spreadsheet/import_interface_view.hpp"
-#include "orcus/measurement.hpp"
+#include "xml_element_validator.hpp"
+
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_view.hpp>
+#include <orcus/measurement.hpp>
 
 #include <mdds/sorted_string_map.hpp>
 
@@ -1197,128 +1199,87 @@ void xls_xml_context::characters(std::string_view str, bool /*transient*/)
     }
 }
 
+namespace {
+
+const xml_element_validator::rule element_rules[] = {
+    // parent element -> child element
+    { NS_xls_xml_ss, XML_Borders, NS_xls_xml_ss, XML_Border },
+    { NS_xls_xml_ss, XML_Names, NS_xls_xml_ss, XML_NamedRange },
+    { NS_xls_xml_ss, XML_Row, NS_xls_xml_ss, XML_Cell },
+    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Alignment },
+    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Borders },
+    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Font },
+    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Interior },
+    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_NumberFormat },
+    { NS_xls_xml_ss, XML_Styles, NS_xls_xml_ss, XML_Style },
+    { NS_xls_xml_ss, XML_Table, NS_xls_xml_ss, XML_Column },
+    { NS_xls_xml_ss, XML_Table, NS_xls_xml_ss, XML_Row },
+    { NS_xls_xml_ss, XML_Workbook, NS_xls_xml_ss, XML_Names },
+    { NS_xls_xml_ss, XML_Workbook, NS_xls_xml_ss, XML_Styles },
+    { NS_xls_xml_ss, XML_Workbook, NS_xls_xml_ss, XML_Worksheet },
+    { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_ss, XML_Names },
+    { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_ss, XML_Table },
+    { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_x, XML_WorksheetOptions },
+    { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_ActiveCol },
+    { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_ActiveRow },
+    { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_Number },
+    { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_RangeSelection },
+    { NS_xls_xml_x, XML_Panes, NS_xls_xml_x, XML_Pane },
+    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_ActivePane },
+    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_FreezePanes },
+    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_FrozenNoSplit },
+    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_LeftColumnRightPane },
+    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_Panes },
+    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_Selected },
+    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_SplitHorizontal },
+    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_SplitVertical },
+    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_TopRowBottomPane },
+};
+
+} // anonymous namespace
+
 bool xls_xml_context::evaluate_child_element(xmlns_id_t ns, xml_token_t name) const
 {
-    xml_token_pair_t parent = get_current_element();
+    static const xml_element_validator validator(element_rules, std::size(element_rules));
 
-    bool valid_child = true;
+    const xml_token_pair_t parent = get_current_element();
 
-    if (ns == NS_xls_xml_ss)
+    if (xml_element_always_allowed(parent))
+        return true;
+
+    const xml_token_pair_t child(ns, name);
+
+    xml_element_validator::result res = validator.validate(parent, child);
+
+    switch (res)
     {
-        switch (name)
+        case xml_element_validator::result::invalid:
         {
-            case XML_Workbook:
-                break;
-            case XML_Worksheet:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Workbook);
-                break;
-            case XML_Table:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Worksheet);
-                break;
-            case XML_Row:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Table);
-                break;
-            case XML_Cell:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Row);
-                break;
-            case XML_Column:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Table);
-                break;
-            case XML_Names:
-            {
-                const xml_elem_set_t expected = {
-                    { NS_xls_xml_ss, XML_Workbook },
-                    { NS_xls_xml_ss, XML_Worksheet },
-                };
-
-                valid_child = xml_element_valid(parent, expected);
-                break;
-            }
-            case XML_NamedRange:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Names);
-                break;
-            case XML_Styles:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Workbook);
-                break;
-            case XML_Style:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Styles);
-                break;
-            case XML_Borders:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Style);
-                break;
-            case XML_Border:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Borders);
-                break;
-            case XML_NumberFormat:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Style);
-                break;
-            case XML_Font:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Style);
-                break;
-            case XML_Interior:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Style);
-                break;
-            case XML_Alignment:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Style);
-                break;
+            std::ostringstream os;
+            os << "<";
+            print_element(os, child);
+            os << "> cannot be a child element of <";
+            print_element(os, parent);
+            os << ">";
+            warn(os.str());
+            break;
         }
-    }
-    else if (ns == NS_xls_xml_x)
-    {
-        switch (name)
+        case xml_element_validator::result::unknown:
         {
-            case XML_WorksheetOptions:
-                valid_child = xml_element_valid(parent, NS_xls_xml_ss, XML_Worksheet);
-                break;
-            case XML_FreezePanes:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
-                break;
-            case XML_FrozenNoSplit:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
-                break;
-            case XML_ActivePane:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
-                break;
-            case XML_SplitHorizontal:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
-                break;
-            case XML_SplitVertical:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
-                break;
-            case XML_TopRowBottomPane:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
-                break;
-            case XML_LeftColumnRightPane:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
-                break;
-            case XML_Panes:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
-                break;
-            case XML_Pane:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_Panes);
-                break;
-            case XML_Number:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_Pane);
-                break;
-            case XML_ActiveCol:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_Pane);
-                break;
-            case XML_ActiveRow:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_Pane);
-                break;
-            case XML_RangeSelection:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_Pane);
-                break;
-            case XML_Selected:
-                valid_child = xml_element_valid(parent, NS_xls_xml_x, XML_WorksheetOptions);
-                break;
+            std::ostringstream os;
+            os << "<";
+            print_element(os, parent);
+            os << "> does not have any rules defined (child: <";
+            print_element(os, child);
+            os << ">)";
+            warn(os.str());
+            break;
         }
+        case xml_element_validator::result::valid:
+            break;
     }
 
-    if (!valid_child)
-        warn_invalid_element(parent, {ns, name});
-
-    return valid_child;
+    return res != xml_element_validator::result::invalid;
 }
 
 void xls_xml_context::start_element_borders(const xml_token_pair_t& parent, const xml_attrs_t& /*attrs*/)

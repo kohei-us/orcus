@@ -118,9 +118,7 @@ protected:
     const xml_token_pair_t& get_parent_element() const;
     void warn_unhandled() const;
     void warn_unexpected() const;
-    void warn(const char* msg) const;
-
-    void warn_invalid_element(const xml_token_pair_t& parent, const xml_token_pair_t& child) const;
+    void warn(std::string_view msg) const;
 
     /**
      * Check if observed element equals expected element.  If not, it throws an
@@ -141,11 +139,7 @@ protected:
     void xml_element_expected(
         const xml_token_pair_t& elem, const xml_elem_set_t& expected_elems) const;
 
-    bool xml_element_valid(
-        const xml_token_pair_t& elem, xmlns_id_t ns, xml_token_t name) const;
-
-    bool xml_element_valid(
-        const xml_token_pair_t& elem, const xml_elem_set_t& expected_elems) const;
+    bool xml_element_always_allowed(const xml_token_pair_t& elem) const;
 
     void print_namespace(std::ostream& os, xmlns_id_t ns) const;
 

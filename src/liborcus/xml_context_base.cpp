@@ -159,27 +159,12 @@ void xml_context_base::warn_unexpected() const
     cerr << endl;
 }
 
-void xml_context_base::warn(const char* msg) const
+void xml_context_base::warn(std::string_view msg) const
 {
     if (!m_config.debug)
         return;
 
     cerr << "warning: " << msg << endl;
-}
-
-void xml_context_base::warn_invalid_element(
-    const xml_token_pair_t& parent, const xml_token_pair_t& child) const
-{
-    if (!m_config.debug)
-        return;
-
-    std::ostringstream os;
-    os << "warning: <";
-    print_element(os, child);
-    os << "> cannot be a child element of <";
-    print_element(os, parent);
-    os << ">";
-    std::cerr << os.str() << std::endl;
 }
 
 void xml_context_base::xml_element_expected(
@@ -246,35 +231,9 @@ void xml_context_base::xml_element_expected(
     throw_unknown_element_error(elem);
 }
 
-bool xml_context_base::xml_element_valid(
-    const xml_token_pair_t& elem, xmlns_id_t ns, xml_token_t name) const
+bool xml_context_base::xml_element_always_allowed(const xml_token_pair_t& elem) const
 {
-    if (!m_config.structure_check)
-        return true;
-
-    if (elem.first == ns && elem.second == name)
-        // This is an expected element.  Good.
-        return true;
-
-    if (m_always_allowed_elements.count(elem))
-        return true;
-
-    return false;
-}
-
-bool xml_context_base::xml_element_valid(
-    const xml_token_pair_t& elem, const xml_elem_set_t& expected_elems) const
-{
-    if (!m_config.structure_check)
-        return true;
-
-    if (expected_elems.count(elem))
-        return true;
-
-    if (m_always_allowed_elements.count(elem))
-        return true;
-
-    return false;
+    return m_always_allowed_elements.count(elem) > 0;
 }
 
 void xml_context_base::print_namespace(std::ostream& os, xmlns_id_t ns) const

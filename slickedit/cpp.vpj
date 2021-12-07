@@ -422,6 +422,8 @@
                 <F N="../src/liborcus/xml_context_base.hpp"/>
                 <F N="../src/liborcus/xml_context_global.cpp"/>
                 <F N="../src/liborcus/xml_context_global.hpp"/>
+                <F N="../src/liborcus/xml_element_validator.cpp"/>
+                <F N="../src/liborcus/xml_element_validator.hpp"/>
                 <F N="../src/liborcus/xml_empty_context.cpp"/>
                 <F N="../src/liborcus/xml_empty_context.hpp"/>
                 <F N="../src/liborcus/xml_map_tree.cpp"/>
