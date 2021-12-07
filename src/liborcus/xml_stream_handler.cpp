@@ -7,6 +7,7 @@
 
 #include "xml_stream_handler.hpp"
 #include "xml_context_base.hpp"
+#include "xml_empty_context.hpp"
 
 #include "orcus/exception.hpp"
 
@@ -18,7 +19,8 @@ xml_stream_handler::xml_stream_handler(
     m_tokens(t),
     m_config(format_t::unknown),
     mp_ns_cxt(nullptr),
-    mp_root_context(std::move(root_context))
+    mp_root_context(std::move(root_context)),
+    mp_invalid_context(std::make_unique<xml_empty_context>(session_cxt, t))
 {
     assert(mp_root_context);
     m_context_stack.push_back(mp_root_context.get());
@@ -58,7 +60,7 @@ void xml_stream_handler::start_element(const xml_token_element_t& elem)
     {
         // new child element is not valid for the current element. Ignore the
         // whole sub structure.
-        m_context_stack.push_back(cur.get_invalid_element_context());
+        m_context_stack.push_back(&get_invalid_context());
         m_context_stack.back()->set_ns_context(mp_ns_cxt);
     }
 
@@ -96,13 +98,17 @@ void xml_stream_handler::set_ns_context(const xmlns_context* p)
     mp_ns_cxt = p;
     if (!m_context_stack.empty())
         m_context_stack.back()->set_ns_context(p);
+
+    mp_invalid_context->set_ns_context(p);
 }
 
 void xml_stream_handler::set_config(const config& opt)
 {
     m_config = opt;
-    if (!m_context_stack.empty())
-        m_context_stack.back()->set_config(m_config);
+    for (auto* context : m_context_stack)
+        context->set_config(m_config);
+
+    mp_invalid_context->set_config(m_config);
 }
 
 xml_context_base& xml_stream_handler::get_current_context()
@@ -116,6 +122,11 @@ xml_context_base& xml_stream_handler::get_current_context()
 xml_context_base& xml_stream_handler::get_root_context()
 {
     return *mp_root_context;
+}
+
+xml_context_base& xml_stream_handler::get_invalid_context()
+{
+    return *mp_invalid_context;
 }
 
 }

@@ -30,6 +30,7 @@ class xml_stream_handler
     config m_config;
     const xmlns_context* mp_ns_cxt;
     std::unique_ptr<xml_context_base> mp_root_context;
+    std::unique_ptr<xml_context_base> mp_invalid_context;
     typedef std::vector<xml_context_base*> context_stack_type;
     context_stack_type m_context_stack;
 
@@ -54,6 +55,7 @@ public:
 protected:
     xml_context_base& get_current_context();
     xml_context_base& get_root_context();
+    xml_context_base& get_invalid_context();
 };
 
 }

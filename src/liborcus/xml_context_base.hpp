@@ -106,8 +106,6 @@ public:
 
     void set_always_allowed_elements(xml_elem_set_t elems);
 
-    xml_context_base* get_invalid_element_context();
-
 protected:
     session_context& get_session_context();
     const tokens& get_tokens() const;
@@ -165,8 +163,6 @@ private:
     const tokens& m_tokens;
     xml_elem_stack_t m_stack;
     xml_elem_set_t m_always_allowed_elements;
-
-    std::unique_ptr<xml_context_base> m_empty_cxt;
 };
 
 

@@ -7,7 +7,6 @@
 
 #include "xml_context_base.hpp"
 #include "session_context.hpp"
-#include "xml_empty_context.hpp"
 
 #include "orcus/exception.hpp"
 #include "orcus/tokens.hpp"
@@ -85,17 +84,6 @@ void xml_context_base::transfer_common(const xml_context_base& parent)
 void xml_context_base::set_always_allowed_elements(xml_elem_set_t elems)
 {
     m_always_allowed_elements = std::move(elems);
-}
-
-xml_context_base* xml_context_base::get_invalid_element_context()
-{
-    if (!m_empty_cxt)
-    {
-        m_empty_cxt = std::make_unique<xml_empty_context>(m_session_cxt, m_tokens);
-        m_empty_cxt->transfer_common(*this);
-    }
-
-    return m_empty_cxt.get();
 }
 
 session_context& xml_context_base::get_session_context()
