@@ -100,8 +100,8 @@ void xml_stream_handler::characters(std::string_view str, bool transient)
 void xml_stream_handler::set_ns_context(const xmlns_context* p)
 {
     mp_ns_cxt = p;
-    if (!m_context_stack.empty())
-        m_context_stack.back()->set_ns_context(p);
+    for (auto* context : m_context_stack)
+        context->set_ns_context(p);
 
     mp_invalid_context->set_ns_context(p);
 }
