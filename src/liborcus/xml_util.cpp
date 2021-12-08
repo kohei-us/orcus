@@ -12,17 +12,17 @@
 
 namespace orcus {
 
-element_printer::element_printer(const tokens& t) :
+xml_element_printer::xml_element_printer(const tokens& t) :
     m_tokens(t)
 {
 }
 
-void element_printer::set_ns_context(const xmlns_context* ns_cxt)
+void xml_element_printer::set_ns_context(const xmlns_context* ns_cxt)
 {
     mp_ns_cxt = ns_cxt;
 }
 
-void element_printer::print_namespace(std::ostream& os, xmlns_id_t ns) const
+void xml_element_printer::print_namespace(std::ostream& os, xmlns_id_t ns) const
 {
     if (mp_ns_cxt)
     {
@@ -34,7 +34,7 @@ void element_printer::print_namespace(std::ostream& os, xmlns_id_t ns) const
         os << ns;
 }
 
-void element_printer::print_element(std::ostream& os, xmlns_id_t ns, xml_token_t name) const
+void xml_element_printer::print_element(std::ostream& os, xmlns_id_t ns, xml_token_t name) const
 {
     os << '<';
     print_namespace(os, ns);

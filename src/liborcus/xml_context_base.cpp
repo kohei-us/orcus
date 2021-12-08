@@ -61,9 +61,44 @@ void xml_context_base::declaration(const xml_declaration_t& /*decl*/)
 {
 }
 
-bool xml_context_base::evaluate_child_element(xmlns_id_t /*ns*/, xml_token_t /*name*/) const
+bool xml_context_base::evaluate_child_element(xmlns_id_t ns, xml_token_t name) const
 {
-    return true;
+    const xml_token_pair_t parent = get_current_element();
+
+    if (xml_element_always_allowed(parent))
+        return true;
+
+    const xml_token_pair_t child(ns, name);
+
+    xml_element_validator::result res = m_elem_validator.validate(parent, child);
+
+    switch (res)
+    {
+        case xml_element_validator::result::child_invalid:
+        {
+            std::ostringstream os;
+            print_element(os, child);
+            os << " cannot be a child element of ";
+            print_element(os, parent);
+            warn(os.str());
+            break;
+        }
+        case xml_element_validator::result::parent_unknown:
+        {
+            std::ostringstream os;
+            os << "parent ";
+            print_element(os, parent);
+            os << " does not have any rules defined (child: ";
+            print_element(os, child);
+            os << ')';
+            warn(os.str());
+            break;
+        }
+        case xml_element_validator::result::child_valid:
+            break;
+    }
+
+    return res != xml_element_validator::result::child_invalid;
 }
 
 void xml_context_base::set_ns_context(const xmlns_context* p)
@@ -86,6 +121,12 @@ void xml_context_base::transfer_common(const xml_context_base& parent)
 void xml_context_base::set_always_allowed_elements(xml_elem_set_t elems)
 {
     m_always_allowed_elements = std::move(elems);
+}
+
+void xml_context_base::init_element_validator(
+    const xml_element_validator::rule* rules, std::size_t n_rules)
+{
+    m_elem_validator.init(rules, n_rules);
 }
 
 session_context& xml_context_base::get_session_context()

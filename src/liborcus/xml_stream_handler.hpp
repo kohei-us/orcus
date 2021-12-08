@@ -30,7 +30,7 @@ class xml_stream_handler
     const tokens& m_tokens;
 
     config m_config;
-    element_printer m_elem_printer;
+    xml_element_printer m_elem_printer;
     std::unique_ptr<xml_context_base> mp_root_context;
     std::unique_ptr<xml_context_base> mp_invalid_context;
     typedef std::vector<xml_context_base*> context_stack_type;

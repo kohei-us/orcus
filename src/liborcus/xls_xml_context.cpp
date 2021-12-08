@@ -9,7 +9,6 @@
 #include "xls_xml_namespace_types.hpp"
 #include "xls_xml_token_constants.hpp"
 #include "spreadsheet_iface_util.hpp"
-#include "xml_element_validator.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_view.hpp>
@@ -720,6 +719,47 @@ xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tok
     m_cur_merge_down(0), m_cur_merge_across(0),
     m_cc_data(session_cxt, tokens, *this)
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_xls_xml_ss, XML_Workbook }, // root element
+        { NS_xls_xml_ss, XML_Borders, NS_xls_xml_ss, XML_Border },
+        { NS_xls_xml_ss, XML_Cell, NS_xls_xml_ss, XML_Data },
+        { NS_xls_xml_ss, XML_Names, NS_xls_xml_ss, XML_NamedRange },
+        { NS_xls_xml_ss, XML_Row, NS_xls_xml_ss, XML_Cell },
+        { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Alignment },
+        { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Borders },
+        { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Font },
+        { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Interior },
+        { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_NumberFormat },
+        { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Protection },
+        { NS_xls_xml_ss, XML_Styles, NS_xls_xml_ss, XML_Style },
+        { NS_xls_xml_ss, XML_Table, NS_xls_xml_ss, XML_Column },
+        { NS_xls_xml_ss, XML_Table, NS_xls_xml_ss, XML_Row },
+        { NS_xls_xml_ss, XML_Workbook, NS_xls_xml_ss, XML_Names },
+        { NS_xls_xml_ss, XML_Workbook, NS_xls_xml_ss, XML_Styles },
+        { NS_xls_xml_ss, XML_Workbook, NS_xls_xml_ss, XML_Worksheet },
+        { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_ss, XML_Names },
+        { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_ss, XML_Table },
+        { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_x, XML_WorksheetOptions },
+        { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_x, XML_AutoFilter },
+        { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_ActiveCol },
+        { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_ActiveRow },
+        { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_Number },
+        { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_RangeSelection },
+        { NS_xls_xml_x, XML_Panes, NS_xls_xml_x, XML_Pane },
+        { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_ActivePane },
+        { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_FreezePanes },
+        { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_FrozenNoSplit },
+        { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_LeftColumnRightPane },
+        { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_Panes },
+        { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_Selected },
+        { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_SplitHorizontal },
+        { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_SplitVertical },
+        { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_TopRowBottomPane },
+    };
+
+    init_element_validator(rules, std::size(rules));
+
     m_cur_array_range.first.column = -1;
     m_cur_array_range.first.row = -1;
     m_cur_array_range.last = m_cur_array_range.first;
@@ -736,91 +776,6 @@ void xls_xml_context::declaration(const xml_declaration_t& decl)
         return;
 
     gs->set_character_set(decl.encoding);
-}
-
-namespace {
-
-const xml_element_validator::rule element_rules[] = {
-    // parent element -> child element
-    { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_xls_xml_ss, XML_Workbook }, // root element
-    { NS_xls_xml_ss, XML_Borders, NS_xls_xml_ss, XML_Border },
-    { NS_xls_xml_ss, XML_Cell, NS_xls_xml_ss, XML_Data },
-    { NS_xls_xml_ss, XML_Names, NS_xls_xml_ss, XML_NamedRange },
-    { NS_xls_xml_ss, XML_Row, NS_xls_xml_ss, XML_Cell },
-    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Alignment },
-    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Borders },
-    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Font },
-    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Interior },
-    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_NumberFormat },
-    { NS_xls_xml_ss, XML_Style, NS_xls_xml_ss, XML_Protection },
-    { NS_xls_xml_ss, XML_Styles, NS_xls_xml_ss, XML_Style },
-    { NS_xls_xml_ss, XML_Table, NS_xls_xml_ss, XML_Column },
-    { NS_xls_xml_ss, XML_Table, NS_xls_xml_ss, XML_Row },
-    { NS_xls_xml_ss, XML_Workbook, NS_xls_xml_ss, XML_Names },
-    { NS_xls_xml_ss, XML_Workbook, NS_xls_xml_ss, XML_Styles },
-    { NS_xls_xml_ss, XML_Workbook, NS_xls_xml_ss, XML_Worksheet },
-    { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_ss, XML_Names },
-    { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_ss, XML_Table },
-    { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_x, XML_WorksheetOptions },
-    { NS_xls_xml_ss, XML_Worksheet, NS_xls_xml_x, XML_AutoFilter },
-    { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_ActiveCol },
-    { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_ActiveRow },
-    { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_Number },
-    { NS_xls_xml_x, XML_Pane, NS_xls_xml_x, XML_RangeSelection },
-    { NS_xls_xml_x, XML_Panes, NS_xls_xml_x, XML_Pane },
-    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_ActivePane },
-    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_FreezePanes },
-    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_FrozenNoSplit },
-    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_LeftColumnRightPane },
-    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_Panes },
-    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_Selected },
-    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_SplitHorizontal },
-    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_SplitVertical },
-    { NS_xls_xml_x, XML_WorksheetOptions, NS_xls_xml_x, XML_TopRowBottomPane },
-};
-
-} // anonymous namespace
-
-bool xls_xml_context::evaluate_child_element(xmlns_id_t ns, xml_token_t name) const
-{
-    static const xml_element_validator validator(element_rules, std::size(element_rules));
-
-    const xml_token_pair_t parent = get_current_element();
-
-    if (xml_element_always_allowed(parent))
-        return true;
-
-    const xml_token_pair_t child(ns, name);
-
-    xml_element_validator::result res = validator.validate(parent, child);
-
-    switch (res)
-    {
-        case xml_element_validator::result::child_invalid:
-        {
-            std::ostringstream os;
-            print_element(os, child);
-            os << " cannot be a child element of ";
-            print_element(os, parent);
-            warn(os.str());
-            break;
-        }
-        case xml_element_validator::result::parent_unknown:
-        {
-            std::ostringstream os;
-            os << "parent ";
-            print_element(os, parent);
-            os << " does not have any rules defined (child: ";
-            print_element(os, child);
-            os << ')';
-            warn(os.str());
-            break;
-        }
-        case xml_element_validator::result::child_valid:
-            break;
-    }
-
-    return res != xml_element_validator::result::child_invalid;
 }
 
 xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token_t name)

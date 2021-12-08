@@ -37,7 +37,10 @@ public:
         child_invalid //< parent does not allow this child
     };
 
+    xml_element_validator();
     xml_element_validator(const rule* rules, std::size_t n_rules);
+
+    void init(const rule* rules, std::size_t n_rules);
 
     result validate(const xml_token_pair_t& parent, const xml_token_pair_t& child) const;
 };

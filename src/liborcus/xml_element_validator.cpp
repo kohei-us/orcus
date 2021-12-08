@@ -9,7 +9,16 @@
 
 namespace orcus {
 
+xml_element_validator::xml_element_validator()
+{
+}
+
 xml_element_validator::xml_element_validator(const rule* rules, std::size_t n_rules)
+{
+    init(rules, n_rules);
+}
+
+void xml_element_validator::init(const rule* rules, std::size_t n_rules)
 {
     const rule* end_rules = rules + n_rules;
 

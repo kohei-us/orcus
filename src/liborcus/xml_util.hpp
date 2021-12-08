@@ -16,13 +16,13 @@ namespace orcus {
 class tokens;
 class xmlns_context;
 
-class element_printer
+class xml_element_printer
 {
     const tokens& m_tokens;
     const xmlns_context* mp_ns_cxt = nullptr;
 
 public:
-    element_printer(const tokens& t);
+    xml_element_printer(const tokens& t);
 
     void set_ns_context(const xmlns_context* ns_cxt);
 

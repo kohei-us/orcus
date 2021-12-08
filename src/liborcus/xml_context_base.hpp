@@ -8,6 +8,7 @@
 #ifndef INCLUDED_ORCUS_XML_CONTEXT_BASE_HPP
 #define INCLUDED_ORCUS_XML_CONTEXT_BASE_HPP
 
+#include "xml_element_validator.hpp"
 #include "xml_stream_handler.hpp"
 #include "xml_util.hpp"
 
@@ -16,6 +17,7 @@ namespace orcus {
 struct session_context;
 class tokens;
 class xmlns_context;
+class xml_element_validator;
 
 class xml_context_base
 {
@@ -33,8 +35,6 @@ public:
      * @param decl XML declaration attributes
      */
     virtual void declaration(const xml_declaration_t& decl);
-
-    virtual bool evaluate_child_element(xmlns_id_t ns, xml_token_t name) const;
 
     /**
      * This method gets called by the stream handler to fetch a child context
@@ -97,6 +97,8 @@ public:
      */
     virtual void characters(std::string_view str, bool transient) = 0;
 
+    bool evaluate_child_element(xmlns_id_t ns, xml_token_t name) const;
+
     void set_ns_context(const xmlns_context* p);
 
     const config& get_config() const;
@@ -108,6 +110,8 @@ public:
     void set_always_allowed_elements(xml_elem_set_t elems);
 
 protected:
+    void init_element_validator(const xml_element_validator::rule* rules, std::size_t n_rules);
+
     session_context& get_session_context();
     const tokens& get_tokens() const;
     xml_token_pair_t push_stack(xmlns_id_t ns, xml_token_t name);
@@ -162,7 +166,8 @@ private:
     const xmlns_context* mp_ns_cxt;
     session_context& m_session_cxt;
     const tokens& m_tokens;
-    element_printer m_elem_printer;
+    xml_element_printer m_elem_printer;
+    xml_element_validator m_elem_validator;
     xml_elem_stack_t m_stack;
     xml_elem_set_t m_always_allowed_elements;
 };
