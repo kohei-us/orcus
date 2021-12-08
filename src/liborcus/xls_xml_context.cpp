@@ -849,7 +849,8 @@ void xls_xml_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/,
 
 void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
+    push_stack(ns, name);
+
     if (ns == NS_xls_xml_ss)
     {
         switch (name)
@@ -859,34 +860,25 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 break;
             case XML_Worksheet:
             {
-                start_element_worksheet(parent, attrs);
+                start_element_worksheet(attrs);
                 break;
             }
             case XML_Table:
-                start_element_table(parent, attrs);
+                start_element_table(attrs);
                 break;
             case XML_Row:
-                start_element_row(parent, attrs);
+                start_element_row(attrs);
                 break;
             case XML_Cell:
-                start_element_cell(parent, attrs);
+                start_element_cell(attrs);
                 break;
             case XML_Column:
-                start_element_column(parent, attrs);
+                start_element_column(attrs);
                 break;
             case XML_Names:
-            {
-                xml_elem_stack_t expected_parents;
-                expected_parents.emplace_back(NS_xls_xml_ss, XML_Workbook);
-                expected_parents.emplace_back(NS_xls_xml_ss, XML_Worksheet);
-
-                xml_element_expected(parent, expected_parents);
                 break;
-            }
             case XML_NamedRange:
             {
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Names);
-
                 pstring name_s, exp;
 
                 for (const xml_token_attr_t& attr : attrs)
@@ -924,14 +916,9 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 break;
             }
             case XML_Styles:
-            {
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
                 break;
-            }
             case XML_Style:
             {
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Styles);
-
                 pstring style_id, style_name;
 
                 for (const xml_token_attr_t& attr : attrs)
@@ -959,18 +946,16 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 break;
             }
             case XML_Borders:
-                start_element_borders(parent, attrs);
+                start_element_borders(attrs);
                 break;
             case XML_Border:
-                start_element_border(parent, attrs);
+                start_element_border(attrs);
                 break;
             case XML_NumberFormat:
-                start_element_number_format(parent, attrs);
+                start_element_number_format(attrs);
                 break;
             case XML_Font:
             {
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
-
                 for (const xml_token_attr_t& attr : attrs)
                 {
                     if (attr.ns != NS_xls_xml_ss)
@@ -1001,8 +986,6 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             }
             case XML_Interior:
             {
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
-
                 for (const xml_token_attr_t& attr : attrs)
                 {
                     if (attr.ns != NS_xls_xml_ss)
@@ -1029,8 +1012,6 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             }
             case XML_Alignment:
             {
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
-
                 for (const xml_token_attr_t& attr : attrs)
                 {
                     if (attr.ns != NS_xls_xml_ss)
@@ -1070,60 +1051,45 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
         switch (name)
         {
             case XML_WorksheetOptions:
-                xml_element_expected(parent, NS_xls_xml_ss, XML_Worksheet);
                 m_split_pane.reset();
                 break;
             case XML_FreezePanes:
-                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
                 // TODO : check if this is correct.
                 m_split_pane.pane_state = spreadsheet::pane_state_t::frozen_split;
                 break;
             case XML_FrozenNoSplit:
-                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
                 m_split_pane.pane_state = spreadsheet::pane_state_t::frozen;
                 break;
             case XML_ActivePane:
-                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
                 m_split_pane.active_pane = spreadsheet::sheet_pane_t::unspecified;
                 break;
             case XML_SplitHorizontal:
-                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
                 m_split_pane.split_horizontal = 0.0;
                 break;
             case XML_SplitVertical:
-                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
                 m_split_pane.split_vertical = 0.0;
                 break;
             case XML_TopRowBottomPane:
-                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
                 m_split_pane.top_row_bottom_pane = 0;
                 break;
             case XML_LeftColumnRightPane:
-                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
                 m_split_pane.left_col_right_pane = 0;
                 break;
             case XML_Panes:
-                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
                 break;
             case XML_Pane:
-                xml_element_expected(parent, NS_xls_xml_x, XML_Panes);
                 m_cursor_selection.reset();
                 break;
             case XML_Number:
-                xml_element_expected(parent, NS_xls_xml_x, XML_Pane);
                 break;
             case XML_ActiveCol:
-                xml_element_expected(parent, NS_xls_xml_x, XML_Pane);
                 break;
             case XML_ActiveRow:
-                xml_element_expected(parent, NS_xls_xml_x, XML_Pane);
                 break;
             case XML_RangeSelection:
-                xml_element_expected(parent, NS_xls_xml_x, XML_Pane);
                 break;
             case XML_Selected:
             {
-                xml_element_expected(parent, NS_xls_xml_x, XML_WorksheetOptions);
                 if (mp_cur_sheet)
                 {
                     spreadsheet::iface::import_sheet_view* sv = mp_cur_sheet->get_sheet_view();
@@ -1284,16 +1250,13 @@ void xls_xml_context::characters(std::string_view str, bool /*transient*/)
     }
 }
 
-void xls_xml_context::start_element_borders(const xml_token_pair_t& parent, const xml_attrs_t& /*attrs*/)
+void xls_xml_context::start_element_borders(const xml_attrs_t& /*attrs*/)
 {
-    xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
     m_current_style->borders.clear();
 }
 
-void xls_xml_context::start_element_border(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xls_xml_context::start_element_border(const xml_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_xls_xml_ss, XML_Borders);
-
     spreadsheet::border_direction_t dir = spreadsheet::border_direction_t::unknown;
     spreadsheet::border_style_t style = spreadsheet::border_style_t::unknown;
     spreadsheet::color_rgb_t color;
@@ -1380,9 +1343,8 @@ void xls_xml_context::start_element_border(const xml_token_pair_t& parent, const
     }
 }
 
-void xls_xml_context::start_element_number_format(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xls_xml_context::start_element_number_format(const xml_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_xls_xml_ss, XML_Style);
     m_current_style->number_format.clear();
 
     for (const xml_token_attr_t& attr : attrs)
@@ -1404,10 +1366,8 @@ void xls_xml_context::start_element_number_format(const xml_token_pair_t& parent
     }
 }
 
-void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xls_xml_context::start_element_cell(const xml_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_xls_xml_ss, XML_Row);
-
     long col_index = 0;
     pstring formula;
     m_cur_cell_style_id.clear();
@@ -1474,10 +1434,8 @@ void xls_xml_context::start_element_cell(const xml_token_pair_t& parent, const x
     }
 }
 
-void xls_xml_context::start_element_column(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xls_xml_context::start_element_column(const xml_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_xls_xml_ss, XML_Table);
-
     if (!mp_sheet_props)
         return;
 
@@ -1525,9 +1483,8 @@ void xls_xml_context::start_element_column(const xml_token_pair_t& parent, const
     m_cur_prop_col = col_index;
 }
 
-void xls_xml_context::start_element_row(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xls_xml_context::start_element_row(const xml_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_xls_xml_ss, XML_Table);
     m_cur_col = m_table_props.pos.column;
     spreadsheet::row_t row_index = -1;
     bool has_height = false;
@@ -1575,10 +1532,8 @@ void xls_xml_context::start_element_row(const xml_token_pair_t& parent, const xm
     }
 }
 
-void xls_xml_context::start_element_table(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xls_xml_context::start_element_table(const xml_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_xls_xml_ss, XML_Worksheet);
-
     spreadsheet::row_t row_index = -1;
     spreadsheet::col_t col_index = -1;
 
@@ -1615,10 +1570,8 @@ void xls_xml_context::start_element_table(const xml_token_pair_t& parent, const 
         m_table_props.pos.column = col_index - 1;
 }
 
-void xls_xml_context::start_element_worksheet(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xls_xml_context::start_element_worksheet(const xml_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_xls_xml_ss, XML_Workbook);
-
     ++m_cur_sheet;
     pstring sheet_name;
     m_cell_formulas.emplace_back();
