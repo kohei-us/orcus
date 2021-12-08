@@ -87,6 +87,17 @@ xls_xml_data_context::xls_xml_data_context(
     m_cell_type(ct_unknown),
     m_cell_value(std::numeric_limits<double>::quiet_NaN())
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_xls_xml_ss, XML_Data }, // root element
+        { NS_xls_xml_html, XML_B, NS_xls_xml_html, XML_Font },
+        { NS_xls_xml_html, XML_I, NS_xls_xml_html, XML_Font },
+        { NS_xls_xml_ss, XML_Data, NS_xls_xml_html, XML_B },
+        { NS_xls_xml_ss, XML_Data, NS_xls_xml_html, XML_Font },
+        { NS_xls_xml_ss, XML_Data, NS_xls_xml_html, XML_I },
+    };
+
+    init_element_validator(rules, std::size(rules));
 }
 
 xls_xml_data_context::~xls_xml_data_context() {}
