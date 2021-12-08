@@ -34,6 +34,8 @@ public:
      */
     virtual void declaration(const xml_declaration_t& decl);
 
+    virtual bool evaluate_child_element(xmlns_id_t ns, xml_token_t name) const;
+
     /**
      * This method gets called by the stream handler to fetch a child context
      * object if applicable. If the current context can handle the specified
@@ -94,8 +96,6 @@ public:
      * @param transient whether or not the value is transient.
      */
     virtual void characters(std::string_view str, bool transient) = 0;
-
-    virtual bool evaluate_child_element(xmlns_id_t ns, xml_token_t name) const;
 
     void set_ns_context(const xmlns_context* p);
 
