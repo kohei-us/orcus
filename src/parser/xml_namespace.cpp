@@ -452,6 +452,28 @@ void xmlns_context::dump(std::ostream& os) const
     }
 }
 
+void xmlns_context::dump_state(std::ostream& os) const
+{
+    os << "namespaces:" << std::endl;
+    for (xmlns_id_t ns_id : get_all_namespaces())
+    {
+        size_t num_id = get_index(ns_id);
+        if (num_id == index_not_found)
+            continue;
+
+        os << "  ns" << num_id << ": \"" << ns_id << '"' << std::endl;
+    }
+
+    os << "aliases:" << std::endl;
+    for (const auto& [alias, ns_list] : mp_impl->m_map)
+    {
+        os << "  " << alias << ":" << std::endl;
+
+        for (const xmlns_id_t ns : ns_list)
+            os << "    - " << ns << std::endl;
+    }
+}
+
 void xmlns_context::swap(xmlns_context& other) noexcept
 {
     mp_impl.swap(other.mp_impl);

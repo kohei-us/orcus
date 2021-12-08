@@ -10,6 +10,8 @@
 #include <orcus/xml_namespace.hpp>
 #include <orcus/tokens.hpp>
 
+#include <sstream>
+
 namespace orcus {
 
 xml_element_printer::xml_element_printer(const tokens& t) :
@@ -37,8 +39,15 @@ void xml_element_printer::print_namespace(std::ostream& os, xmlns_id_t ns) const
 void xml_element_printer::print_element(std::ostream& os, xmlns_id_t ns, xml_token_t name) const
 {
     os << '<';
-    print_namespace(os, ns);
-    os << ':' << m_tokens.get_token_name(name) << '>';
+
+    std::ostringstream os_ns;
+    print_namespace(os_ns, ns);
+    std::string ns_str = os_ns.str();
+
+    if (!ns_str.empty())
+        os << ns_str << ':';
+
+    os << m_tokens.get_token_name(name) << '>';
 }
 
 } // namespace orcus

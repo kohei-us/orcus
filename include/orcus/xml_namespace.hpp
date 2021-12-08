@@ -147,6 +147,11 @@ public:
 
     void dump(std::ostream& os) const;
 
+    /**
+     * Dump the internal state for debugging in YAML format.
+     */
+    void dump_state(std::ostream& os) const;
+
     void swap(xmlns_context& other) noexcept;
 };
 
