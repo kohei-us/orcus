@@ -796,7 +796,7 @@ bool xls_xml_context::evaluate_child_element(xmlns_id_t ns, xml_token_t name) co
 
     switch (res)
     {
-        case xml_element_validator::result::invalid:
+        case xml_element_validator::result::child_invalid:
         {
             std::ostringstream os;
             print_element(os, child);
@@ -805,7 +805,7 @@ bool xls_xml_context::evaluate_child_element(xmlns_id_t ns, xml_token_t name) co
             warn(os.str());
             break;
         }
-        case xml_element_validator::result::unknown:
+        case xml_element_validator::result::parent_unknown:
         {
             std::ostringstream os;
             os << "parent ";
@@ -816,11 +816,11 @@ bool xls_xml_context::evaluate_child_element(xmlns_id_t ns, xml_token_t name) co
             warn(os.str());
             break;
         }
-        case xml_element_validator::result::valid:
+        case xml_element_validator::result::child_valid:
             break;
     }
 
-    return res != xml_element_validator::result::invalid;
+    return res != xml_element_validator::result::child_invalid;
 }
 
 xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token_t name)

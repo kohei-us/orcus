@@ -36,10 +36,10 @@ xml_element_validator::result xml_element_validator::validate(
     auto it = m_rules.find(parent);
     if (it == m_rules.end())
         // No rules for this parent.
-        return result::unknown;
+        return result::parent_unknown;
 
     const xml_elem_set_t& rules = it->second;
-    return rules.count(child) > 0 ? result::valid : result::invalid;
+    return rules.count(child) > 0 ? result::child_valid : result::child_invalid;
 }
 
 }

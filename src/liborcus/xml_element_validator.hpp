@@ -29,7 +29,13 @@ public:
         const xml_token_t name_child;
     };
 
-    enum class result { unknown, valid, invalid };
+    /** validation result */
+    enum class result
+    {
+        parent_unknown, //< no rules defined for this parent
+        child_valid, //< parent allows this child
+        child_invalid //< parent does not allow this child
+    };
 
     xml_element_validator(const rule* rules, std::size_t n_rules);
 
