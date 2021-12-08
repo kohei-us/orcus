@@ -48,7 +48,8 @@ void print_stack(const tokens& tokens, const xml_elem_stack_t& elem_stack, const
 
 xml_context_base::xml_context_base(session_context& session_cxt, const tokens& tokens) :
     m_config(format_t::unknown),
-    mp_ns_cxt(nullptr), m_session_cxt(session_cxt), m_tokens(tokens)
+    mp_ns_cxt(nullptr), m_session_cxt(session_cxt), m_tokens(tokens),
+    m_elem_printer(m_tokens)
 {
 }
 
@@ -68,6 +69,7 @@ bool xml_context_base::evaluate_child_element(xmlns_id_t /*ns*/, xml_token_t /*n
 void xml_context_base::set_ns_context(const xmlns_context* p)
 {
     mp_ns_cxt = p;
+    m_elem_printer.set_ns_context(p);
 }
 
 void xml_context_base::set_config(const config& opt)
@@ -77,8 +79,8 @@ void xml_context_base::set_config(const config& opt)
 
 void xml_context_base::transfer_common(const xml_context_base& parent)
 {
-    m_config = parent.m_config;
-    mp_ns_cxt = parent.mp_ns_cxt;
+    set_config(parent.m_config);
+    set_ns_context(parent.mp_ns_cxt);
 }
 
 void xml_context_base::set_always_allowed_elements(xml_elem_set_t elems)
@@ -226,21 +228,12 @@ bool xml_context_base::xml_element_always_allowed(const xml_token_pair_t& elem) 
 
 void xml_context_base::print_namespace(std::ostream& os, xmlns_id_t ns) const
 {
-    if (mp_ns_cxt)
-    {
-        std::string_view alias = mp_ns_cxt->get_alias(ns);
-        if (!alias.empty())
-            os << alias;
-    }
-    else
-        os << ns;
+    m_elem_printer.print_namespace(os, ns);
 }
 
 void xml_context_base::print_element(std::ostream& os, const xml_token_pair_t& elem) const
 {
-    os << '<';
-    print_namespace(os, elem.first);
-    os << ':' << m_tokens.get_token_name(elem.second) << '>';
+    m_elem_printer.print_element(os, elem.first, elem.second);
 }
 
 void xml_context_base::print_current_element_stack(std::ostream& os) const

@@ -34,6 +34,7 @@ add_library(orcus-${ORCUS_API_VERSION} SHARED
     xml_simple_stream_handler.cpp
     xml_structure_mapper.cpp
     xml_structure_tree.cpp
+    xml_util.cpp
     xpath_parser.cpp
     yaml_document_tree.cpp
     ooxml_namespace_types.cpp
@@ -183,6 +184,7 @@ add_executable(xlsx-sheet-context-test EXCLUDE_FROM_ALL
     xml_context_base.cpp
     xml_context_global.cpp
     xml_empty_context.cpp
+    xml_util.cpp
 )
 
 add_executable(xml-map-tree-test EXCLUDE_FROM_ALL

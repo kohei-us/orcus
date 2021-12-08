@@ -20,7 +20,7 @@ xml_stream_handler::xml_stream_handler(
     m_session_cxt(session_cxt),
     m_tokens(t),
     m_config(format_t::unknown),
-    mp_ns_cxt(nullptr),
+    m_elem_printer(m_tokens),
     mp_root_context(std::move(root_context)),
     mp_invalid_context(std::make_unique<xml_empty_context>(session_cxt, t))
 {
@@ -64,7 +64,9 @@ void xml_stream_handler::start_element(const xml_token_element_t& elem)
         if (m_config.debug)
         {
             // TODO: print the top element of the sub structure being ignored.
-            std::cerr << "warning: ignoring the whole sub-structure..." << std::endl;
+            std::cerr << "warning: ignoring the whole sub-structure below ";
+            m_elem_printer.print_element(std::cerr, elem.ns, elem.name);
+            std::cerr << std::endl;
         }
     }
 
@@ -99,11 +101,11 @@ void xml_stream_handler::characters(std::string_view str, bool transient)
 
 void xml_stream_handler::set_ns_context(const xmlns_context* p)
 {
-    mp_ns_cxt = p;
     for (auto* context : m_context_stack)
         context->set_ns_context(p);
 
     mp_invalid_context->set_ns_context(p);
+    m_elem_printer.set_ns_context(p);
 }
 
 void xml_stream_handler::set_config(const config& opt)

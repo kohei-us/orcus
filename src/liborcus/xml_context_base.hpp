@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_XML_CONTEXT_BASE_HPP
 
 #include "xml_stream_handler.hpp"
+#include "xml_util.hpp"
 
 namespace orcus {
 
@@ -161,6 +162,7 @@ private:
     const xmlns_context* mp_ns_cxt;
     session_context& m_session_cxt;
     const tokens& m_tokens;
+    element_printer m_elem_printer;
     xml_elem_stack_t m_stack;
     xml_elem_set_t m_always_allowed_elements;
 };

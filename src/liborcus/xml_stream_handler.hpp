@@ -11,6 +11,8 @@
 #include <orcus/sax_token_parser.hpp>
 #include <orcus/config.hpp>
 
+#include "xml_util.hpp"
+
 #include <cstdlib>
 #include <string>
 #include <vector>
@@ -28,7 +30,7 @@ class xml_stream_handler
     const tokens& m_tokens;
 
     config m_config;
-    const xmlns_context* mp_ns_cxt;
+    element_printer m_elem_printer;
     std::unique_ptr<xml_context_base> mp_root_context;
     std::unique_ptr<xml_context_base> mp_invalid_context;
     typedef std::vector<xml_context_base*> context_stack_type;
