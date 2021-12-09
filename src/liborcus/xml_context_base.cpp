@@ -72,30 +72,33 @@ bool xml_context_base::evaluate_child_element(xmlns_id_t ns, xml_token_t name) c
 
     xml_element_validator::result res = m_elem_validator.validate(parent, child);
 
-    switch (res)
+    if (get_config().debug)
     {
-        case xml_element_validator::result::child_invalid:
+        switch (res)
         {
-            std::ostringstream os;
-            print_element(os, child);
-            os << " cannot be a child element of ";
-            print_element(os, parent);
-            warn(os.str());
-            break;
+            case xml_element_validator::result::child_invalid:
+            {
+                std::ostringstream os;
+                print_element(os, child);
+                os << " cannot be a child element of ";
+                print_element(os, parent);
+                warn(os.str());
+                break;
+            }
+            case xml_element_validator::result::parent_unknown:
+            {
+                std::ostringstream os;
+                os << "parent ";
+                print_element(os, parent);
+                os << " does not have any rules defined (child: ";
+                print_element(os, child);
+                os << ')';
+                warn(os.str());
+                break;
+            }
+            case xml_element_validator::result::child_valid:
+                break;
         }
-        case xml_element_validator::result::parent_unknown:
-        {
-            std::ostringstream os;
-            os << "parent ";
-            print_element(os, parent);
-            os << " does not have any rules defined (child: ";
-            print_element(os, child);
-            os << ')';
-            warn(os.str());
-            break;
-        }
-        case xml_element_validator::result::child_valid:
-            break;
     }
 
     return res != xml_element_validator::result::child_invalid;

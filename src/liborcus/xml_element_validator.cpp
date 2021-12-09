@@ -42,6 +42,10 @@ void xml_element_validator::init(const rule* rules, std::size_t n_rules)
 xml_element_validator::result xml_element_validator::validate(
     const xml_token_pair_t& parent, const xml_token_pair_t& child) const
 {
+    if (m_rules.empty())
+        // No rules are defined. Allow everything.
+        return result::child_valid;
+
     auto it = m_rules.find(parent);
     if (it == m_rules.end())
         // No rules for this parent.
