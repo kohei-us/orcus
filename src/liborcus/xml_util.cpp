@@ -29,8 +29,10 @@ void xml_element_printer::print_namespace(std::ostream& os, xmlns_id_t ns) const
     if (mp_ns_cxt)
     {
         std::string_view alias = mp_ns_cxt->get_alias(ns);
-        if (!alias.empty())
-            os << alias;
+        if (alias.empty())
+            alias = mp_ns_cxt->get_short_name(ns);
+
+        os << alias;
     }
     else
         os << ns;
