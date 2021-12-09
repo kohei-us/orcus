@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/orcus_ods.hpp"
-#include "orcus/xml_namespace.hpp"
-#include "orcus/zip_archive.hpp"
-#include "orcus/zip_archive_stream.hpp"
+#include <orcus/orcus_ods.hpp>
+#include <orcus/xml_namespace.hpp>
+#include <orcus/zip_archive.hpp>
+#include <orcus/zip_archive_stream.hpp>
+#include <orcus/measurement.hpp>
 
 #include "xml_stream_parser.hpp"
 #include "ods_content_xml_handler.hpp"
@@ -73,16 +74,33 @@ void orcus_ods::read_content(const zip_archive& archive)
 
 void orcus_ods::read_content_xml(const unsigned char* p, size_t size)
 {
-    threaded_xml_stream_parser parser(
-        get_config(), mp_impl->m_ns_repo, odf_tokens,
-        reinterpret_cast<const char*>(p), size);
-    ods_content_xml_handler handler(mp_impl->m_cxt, odf_tokens, mp_impl->mp_factory);
-    parser.set_handler(&handler);
-    parser.parse();
+    bool use_threads = true;
 
-    string_pool this_pool;
-    parser.swap_string_pool(this_pool);
-    mp_impl->m_cxt.m_string_pool.merge(this_pool);
+    if (const char* p_env = std::getenv("ORCUS_ODS_USE_THREADS"); p_env)
+        use_threads = to_bool(p_env);
+
+    if (use_threads)
+    {
+        threaded_xml_stream_parser parser(
+            get_config(), mp_impl->m_ns_repo, odf_tokens,
+            reinterpret_cast<const char*>(p), size);
+        ods_content_xml_handler handler(mp_impl->m_cxt, odf_tokens, mp_impl->mp_factory);
+        parser.set_handler(&handler);
+        parser.parse();
+
+        string_pool this_pool;
+        parser.swap_string_pool(this_pool);
+        mp_impl->m_cxt.m_string_pool.merge(this_pool);
+    }
+    else
+    {
+        xml_stream_parser parser(
+            get_config(), mp_impl->m_ns_repo, odf_tokens,
+            reinterpret_cast<const char*>(p), size);
+        ods_content_xml_handler handler(mp_impl->m_cxt, odf_tokens, mp_impl->mp_factory);
+        parser.set_handler(&handler);
+        parser.parse();
+    }
 }
 
 bool orcus_ods::detect(const unsigned char* blob, size_t size)
