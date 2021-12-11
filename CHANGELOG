@@ -1,3 +1,17 @@
+orcus 0.17.1
+
+* ods
+
+  * re-generated sax parser tokens from ODF v1.3.
+
+  * revised the style import code to only push style attributes that are
+    actually specified in the XML.
+
+* xls-xml
+
+  * revised the XML structure validation strategy to ignore any mis-placed
+    elements and their sub structures rather than aborting the import.
+
 orcus 0.17.0
 
 * general
