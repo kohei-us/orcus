@@ -1,5 +1,11 @@
 orcus 0.17.1
 
+* general
+
+  * addressed a number of coverity issues.
+
+  * removed a variety of compiler warnings.
+
 * ods
 
   * re-generated sax parser tokens from ODF v1.3.
