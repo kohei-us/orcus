@@ -690,61 +690,63 @@ test_data = \
 	test/yaml/invalids/2.yaml \
 	test/yaml/invalids/1.yaml \
 	test/yaml/literal-block-2/input.yaml \
-	test/xls-xml/named-expression/check.txt \
-	test/xls-xml/named-expression/input.xml \
-	test/xls-xml/basic/check.txt \
-	test/xls-xml/basic/input.xml \
-	test/xls-xml/formula-array-1/check.txt \
-	test/xls-xml/formula-array-1/input.xml \
-	test/xls-xml/character-set/input.xml \
-	test/xls-xml/formula-cells-parse-error/input.xml \
-	test/xls-xml/matrix-results/input.xml \
-	test/xls-xml/bold-and-italic/check.txt \
-	test/xls-xml/bold-and-italic/input.xml \
-	test/xls-xml/empty-rows/check.txt \
-	test/xls-xml/empty-rows/input.xml \
-	test/xls-xml/text-alignment/input.xml \
-	test/xls-xml/table-offset/check.txt \
-	test/xls-xml/table-offset/input.xml \
-	test/xls-xml/named-expression-sheet-local/check.txt \
-	test/xls-xml/named-expression-sheet-local/input.xml \
-	test/xls-xml/named-colors/check.txt \
-	test/xls-xml/named-colors/input.xml \
-	test/xls-xml/named-colors/input-upper.xml \
-	test/xls-xml/named-colors/run.py \
-	test/xls-xml/named-colors/saved-by-excel.xml \
-	test/xls-xml/hidden-rows-columns/input.xml \
-	test/xls-xml/formula-cells-2/config.yaml \
-	test/xls-xml/formula-cells-2/check.txt \
-	test/xls-xml/formula-cells-2/input.xml \
-	test/xls-xml/formula-cells-3/check.txt \
-	test/xls-xml/formula-cells-3/input.xml \
-	test/xls-xml/borders/grid-box.xml \
-	test/xls-xml/borders/directions.xml \
-	test/xls-xml/borders/colors.xml \
-	test/xls-xml/borders/single-cells.xml \
-	test/xls-xml/number-format/date-time.xml \
-	test/xls-xml/merged-cells/check.txt \
-	test/xls-xml/merged-cells/input.xml \
-	test/xls-xml/leading-whitespace/check.txt \
-	test/xls-xml/leading-whitespace/input.xml \
-	test/xls-xml/raw-values-1/check.txt \
-	test/xls-xml/raw-values-1/input.xml \
-	test/xls-xml/column-width-row-height/input.xml \
+	test/xls-xml/background-color/standard.xml \
 	test/xls-xml/basic-utf-16-be/check.txt \
 	test/xls-xml/basic-utf-16-be/input.xml \
 	test/xls-xml/basic-utf-16-le/check.txt \
 	test/xls-xml/basic-utf-16-le/input.xml \
+	test/xls-xml/basic/check.txt \
+	test/xls-xml/basic/input.xml \
+	test/xls-xml/bold-and-italic/check.txt \
+	test/xls-xml/bold-and-italic/input.xml \
+	test/xls-xml/borders/colors.xml \
+	test/xls-xml/borders/directions.xml \
+	test/xls-xml/borders/grid-box.xml \
+	test/xls-xml/borders/single-cells.xml \
+	test/xls-xml/character-set/input.xml \
 	test/xls-xml/colored-text/check.txt \
 	test/xls-xml/colored-text/input.xml \
+	test/xls-xml/column-width-row-height/input.xml \
+	test/xls-xml/date-time/input.xml \
+	test/xls-xml/empty-rows/check.txt \
+	test/xls-xml/empty-rows/input.xml \
+	test/xls-xml/formula-array-1/check.txt \
+	test/xls-xml/formula-array-1/input.xml \
 	test/xls-xml/formula-cells-1/check.txt \
 	test/xls-xml/formula-cells-1/input.xml \
-	test/xls-xml/background-color/standard.xml \
+	test/xls-xml/formula-cells-2/check.txt \
+	test/xls-xml/formula-cells-2/config.yaml \
+	test/xls-xml/formula-cells-2/input.xml \
+	test/xls-xml/formula-cells-3/check.txt \
+	test/xls-xml/formula-cells-3/input.xml \
+	test/xls-xml/formula-cells-parse-error/input.xml \
+	test/xls-xml/hidden-rows-columns/input.xml \
+	test/xls-xml/invalid-sub-structure/check.txt \
+	test/xls-xml/invalid-sub-structure/input.xml \
+	test/xls-xml/leading-whitespace/check.txt \
+	test/xls-xml/leading-whitespace/input.xml \
+	test/xls-xml/matrix-results/input.xml \
+	test/xls-xml/merged-cells/check.txt \
+	test/xls-xml/merged-cells/input.xml \
+	test/xls-xml/named-colors/check.txt \
+	test/xls-xml/named-colors/input-upper.xml \
+	test/xls-xml/named-colors/input.xml \
+	test/xls-xml/named-colors/run.py \
+	test/xls-xml/named-colors/saved-by-excel.xml \
+	test/xls-xml/named-expression-sheet-local/check.txt \
+	test/xls-xml/named-expression-sheet-local/input.xml \
+	test/xls-xml/named-expression/check.txt \
+	test/xls-xml/named-expression/input.xml \
+	test/xls-xml/number-format/date-time.xml \
+	test/xls-xml/raw-values-1/check.txt \
+	test/xls-xml/raw-values-1/input.xml \
+	test/xls-xml/table-offset/check.txt \
+	test/xls-xml/table-offset/input.xml \
+	test/xls-xml/table/autofilter.xml \
+	test/xls-xml/text-alignment/input.xml \
 	test/xls-xml/view/cursor-per-sheet.xml \
 	test/xls-xml/view/cursor-split-pane.xml \
 	test/xls-xml/view/frozen-pane.xml \
-	test/xls-xml/table/autofilter.xml \
-	test/xls-xml/date-time/input.xml \
 	test/ods/named-range/input.ods \
 	test/ods/named-range/check.txt \
 	test/ods/date-cell/input.ods \
@@ -762,8 +764,10 @@ test_data = \
 	test/ods/raw-values-1/input.ods \
 	test/ods/raw-values-1/check.txt \
 	test/ods/column-width-row-height/input.ods \
-	test/ods/styles/number-format.xml \
+	test/ods/styles/cell-protection.xml \
 	test/ods/styles/cell-styles.xml \
+	test/ods/styles/number-format.xml \
+	test/ods/styles/standard-styles.xml \
 	test/ods/formula-1/input.ods \
 	test/ods/formula-1/check.txt
 
