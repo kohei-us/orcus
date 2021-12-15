@@ -1,3 +1,13 @@
+orcus <next>
+
+* ods
+
+  * fixed a bug where the state of style:cell-protect="none" was not
+    explicitly pushed, thereby having had the same effect as not having this
+    attribute.  After the fix, style:cell-protect="none" will explicitly push
+    the hidden state to false, locked state to false, and the formula-hidden
+    state to false.
+
 orcus 0.17.1
 
 * general
