@@ -660,6 +660,13 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
                         formula_hidden = true;
                         locked = true;
                     }
+                    else if (attr.value == "none")
+                    {
+                        cell_protection = true;
+                        locked = false;
+                        hidden = false;
+                        formula_hidden = false;
+                    }
                     break;
                 }
                 case XML_vertical_align:

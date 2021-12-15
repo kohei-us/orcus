@@ -1009,8 +1009,14 @@ void test_cell_protection_styles()
         assert(protection_state);
 
         std::pair<ss::protection_t, ss::protection_active_t> expected;
+        expected.first.locked = false;
+        expected.first.hidden = false;
         expected.first.print_content = true;
+        expected.first.formula_hidden = false;
+        expected.second.locked = true;
+        expected.second.hidden = true;
         expected.second.print_content = true;
+        expected.second.formula_hidden = true;
 
         assert(verify_active_protection_attrs(expected, *protection_state));
     }
