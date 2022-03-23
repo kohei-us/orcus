@@ -22,6 +22,7 @@
 #include <cassert>
 #include <cstdlib>
 
+#include <ixion/exceptions.hpp>
 #include <ixion/formula.hpp>
 #include <ixion/model_context.hpp>
 

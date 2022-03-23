@@ -3,6 +3,7 @@
 #include <orcus/spreadsheet/factory.hpp>
 #include <orcus/orcus_ods.hpp>
 
+#include <ixion/address.hpp>
 #include <ixion/model_context.hpp>
 
 #include <iostream>
