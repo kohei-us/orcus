@@ -300,7 +300,7 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, std::string_view& st
 
 bool parser_base::value(std::string_view& str, bool decode)
 {
-    char c = cur_char();
+    char c = cur_char_checked();
     if (c != '"' && c != '\'')
         throw malformed_xml_error("value must be quoted", offset());
 
