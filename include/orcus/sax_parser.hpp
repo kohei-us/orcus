@@ -255,7 +255,7 @@ void sax_parser<_Handler,_Config>::element_open(std::ptrdiff_t begin_pos)
     while (true)
     {
         skip_space_and_control();
-        char c = cur_char();
+        char c = cur_char_checked();
         if (c == '/')
         {
             // Self-closing element: <element/>
