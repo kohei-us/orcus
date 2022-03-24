@@ -329,6 +329,8 @@ AS_IF([test x"$enable_werror" = "xyes"], [
         CXXFLAGS="$CXXFLAGS -Werror"
 ])
 
+AX_VALGRIND_CHECK()
+
 AC_CONFIG_FILES([Makefile
         liborcus-$ORCUS_API_VERSION.pc:liborcus.pc.in
         liborcus-spreadsheet-model-$ORCUS_API_VERSION.pc:liborcus-spreadsheet-model.pc.in
