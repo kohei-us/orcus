@@ -295,7 +295,8 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, std::string_view& st
 
     // Skip the closing quote.
     assert(!has_char() || cur_char() == quote_char);
-    next();
+    if (has_char())
+       next();
 }
 
 bool parser_base::value(std::string_view& str, bool decode)
