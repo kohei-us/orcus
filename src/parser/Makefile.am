@@ -50,6 +50,7 @@ liborcus_parser_@ORCUS_API_VERSION@_la_LIBADD = \
 EXTRA_PROGRAMS = \
 	parser-test-string-pool \
 	parser-test-xml-namespace \
+	parser-test-xml-validation \
 	parser-test-base64 \
 	css-parser-test \
 	csv-parser-test \
@@ -86,6 +87,20 @@ parser_test_xml_namespace_SOURCES = \
 
 parser_test_xml_namespace_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 parser_test_xml_namespace_CPPFLAGS = $(AM_CPPFLAGS)
+
+# parser-test-xml-validation
+
+parser_test_xml_validation_SOURCES = \
+	parser_test_xml_validation.cpp
+
+parser_test_xml_validation_CPPFLAGS = $(AM_CPPFLAGS)
+parser_test_xml_validation_LDFLAGS = \
+	$(BOOST_SYSTEM_LDFLAGS) \
+	$(BOOST_FILESYSTEM_LDFLAGS)
+parser_test_xml_validation_LDADD = \
+	liborcus-parser-@ORCUS_API_VERSION@.la \
+	$(BOOST_SYSTEM_LIBS) \
+	$(BOOST_FILESYSTEM_LIBS)
 
 # parser-test-base64
 
@@ -237,6 +252,7 @@ parser_test_numeric_CPPFLAGS = $(AM_CPPFLAGS)
 TESTS = \
 	parser-test-string-pool \
 	parser-test-xml-namespace \
+	parser-test-xml-validation \
 	parser-test-base64 \
 	css-parser-test \
 	csv-parser-test \
@@ -258,3 +274,4 @@ TESTS = \
 distclean-local:
 	rm -rf $(TESTS)
 
+@VALGRIND_CHECK_RULES@
