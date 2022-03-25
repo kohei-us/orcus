@@ -204,9 +204,12 @@ protected:
     void value_with_encoded_char(cell_buffer& buf, std::string_view& str, char quote_char);
 
     /**
-     * Parse quoted value.  Note that the retrieved string may be stored in
-     * the temporary cell buffer if the decode parameter is true. Use the
-     * string immediately after this call before the buffer becomes invalid.
+     * Parse quoted value.  Note that the retrieved string may be stored in a
+     * temporary cell buffer if the decode parameter is true. Use the string
+     * immediately after this call before the buffer becomes invalid.
+     *
+     * @note This method checks for valid stream; the caller doesn't need to
+     *       check for valid stream before calling this method.
      *
      * @return true if the value is stored in temporary buffer, false
      *         otherwise.

@@ -467,7 +467,6 @@ void sax_parser<_Handler,_Config>::doctype()
 
     next_check();
     skip_space_and_control();
-    has_char_throw("DOCTYPE section too short.");
 
     // Parse FPI.
     value(param.fpi, false);
