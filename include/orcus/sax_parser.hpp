@@ -546,7 +546,7 @@ void sax_parser<_Handler,_Config>::attribute()
 
     skip_space_and_control();
 
-    char c = cur_char();
+    char c = cur_char_checked();
     if (c != '=')
     {
         std::ostringstream os;
