@@ -5,34 +5,38 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/format_detection.hpp"
-#include "orcus/stream.hpp"
+#include <orcus/format_detection.hpp>
+#include <orcus/stream.hpp>
 
 #include <cassert>
 #include <iostream>
 #include <string>
 
-using namespace orcus;
-using namespace std;
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
+
+fs::path base_test_dir = fs::path{SRCDIR} / "test";
 
 void test_detect_formats()
 {
     struct {
-        const char* path; format_t format;
+        fs::path path;
+        orcus::format_t format;
     } tests[] = {
-        { SRCDIR"/test/ods/raw-values-1/input.ods",   format_t::ods },
-        { SRCDIR"/test/xlsx/raw-values-1/input.xlsx", format_t::xlsx },
-        { SRCDIR"/test/xls-xml/basic/input.xml",      format_t::xls_xml },
-        { SRCDIR"/test/gnumeric/test.gnumeric",       format_t::gnumeric }
+        { base_test_dir / "ods" / "raw-values-1" / "input.ods", orcus::format_t::ods },
+        { base_test_dir / "xlsx" / "raw-values-1" / "input.xlsx", orcus::format_t::xlsx },
+        { base_test_dir / "xls-xml" / "basic" / "input.xml", orcus::format_t::xls_xml },
+        { base_test_dir / "gnumeric" / "test.gnumeric", orcus::format_t::gnumeric }
     };
 
-    size_t n = sizeof(tests[0]) / sizeof(tests);
-    for (size_t i = 0; i < n; ++i)
+    for (size_t i = 0; i < std::size(tests); ++i)
     {
-        file_content content(tests[i].path);
+        orcus::file_content content(tests[i].path.string());
         assert(!content.empty());
-        format_t detected = detect(
+        orcus::format_t detected = orcus::detect(
             reinterpret_cast<const unsigned char*>(content.data()), content.size());
+
         assert(detected == tests[i].format);
     }
 }
@@ -40,6 +44,7 @@ void test_detect_formats()
 int main()
 {
     test_detect_formats();
+
     return EXIT_SUCCESS;
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

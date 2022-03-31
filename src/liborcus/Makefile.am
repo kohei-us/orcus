@@ -459,7 +459,8 @@ format_detection_test_SOURCES = \
 
 format_detection_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
 
 # dom-tree-test
 
