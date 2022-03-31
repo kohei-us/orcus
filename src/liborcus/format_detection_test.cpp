@@ -41,9 +41,30 @@ void test_detect_formats()
     }
 }
 
+void test_invalids()
+{
+    fs::path root_dir = base_test_dir / "detect" / "invalids";
+
+    if (!fs::is_directory(root_dir))
+        // Bail out silently.
+        return;
+
+    for (const fs::path& p : fs::directory_iterator(root_dir))
+    {
+        orcus::file_content content(p.string());
+        assert(!content.empty());
+
+        orcus::format_t detected = orcus::detect(
+            reinterpret_cast<const unsigned char*>(content.data()), content.size());
+
+        assert(detected == orcus::format_t::unknown);
+    }
+}
+
 int main()
 {
     test_detect_formats();
+    test_invalids();
 
     return EXIT_SUCCESS;
 }

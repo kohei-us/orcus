@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/format_detection.hpp"
+#include <orcus/format_detection.hpp>
 
 #include <iostream>
 
@@ -46,11 +46,9 @@
 #include "orcus/orcus_xls_xml.hpp"
 #endif
 
-using namespace std;
-
 namespace orcus {
 
-format_t detect(const unsigned char* buffer, size_t length)
+format_t detect(const unsigned char* buffer, size_t length) try
 {
 #if ODS_ENABLED
     if (orcus_ods::detect(buffer, length))
@@ -71,6 +69,15 @@ format_t detect(const unsigned char* buffer, size_t length)
 
     return format_t::unknown;
 }
+catch (const std::exception& e)
+{
+    return format_t::unknown;
+}
+catch (...)
+{
+    return format_t::unknown;
+}
 
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

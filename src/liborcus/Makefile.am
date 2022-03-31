@@ -511,3 +511,4 @@ TESTS += \
 distclean-local:
 	rm -rf $(TESTS)
 
+@VALGRIND_CHECK_RULES@
