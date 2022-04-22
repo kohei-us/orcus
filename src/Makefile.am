@@ -442,7 +442,7 @@ orcus_test_import_ods_LDADD = \
 	$(BOOST_FILESYSTEM_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
 
-orcus_test_importy_ods_LDFLAGS = \
+orcus_test_import_ods_LDFLAGS = \
 	$(BOOST_FILESYSTEM_LDFLAGS) \
 	$(BOOST_SYSTEM_LDFLAGS)
 
