@@ -73,7 +73,7 @@ std::string gen_help_output_format()
     std::ostringstream os;
     os << "Specify the output format.  Supported format types are:" << endl;
 
-    for (const std::pair<pstring, dump_format_t>& entry : get_dump_format_entries())
+    for (std::pair<pstring, dump_format_t> entry : get_dump_format_entries())
     {
         pstring desc;
         auto it_desc = descriptions.find(entry.second);
