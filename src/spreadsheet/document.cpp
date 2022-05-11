@@ -14,7 +14,6 @@
 #include "orcus/spreadsheet/pivot.hpp"
 #include "orcus/spreadsheet/config.hpp"
 
-#include "pstring.hpp"
 #include "orcus/types.hpp"
 #include "orcus/string_pool.hpp"
 #include "orcus/global.hpp"
@@ -48,12 +47,12 @@ struct sheet_item
     sheet_item(const sheet_item&) = delete;
     sheet_item& operator=(const sheet_item&) = delete;
 
-    pstring name;
+    std::string_view name;
     sheet   data;
     sheet_item(document& doc, std::string_view _name, sheet_t sheet_index);
 };
 
-typedef std::map<pstring, std::unique_ptr<table_t>> table_store_type;
+typedef std::map<std::string_view, std::unique_ptr<table_t>> table_store_type;
 
 sheet_item::sheet_item(document& doc, std::string_view _name, sheet_t sheet_index) :
     name(_name), data(doc, sheet_index) {}
@@ -165,16 +164,16 @@ class table_handler : public ixion::iface::table_handler
         return nullptr;
     }
 
-    pstring get_string(ixion::string_id_t sid) const
+    std::string_view get_string(ixion::string_id_t sid) const
     {
         if (sid == ixion::empty_string_id)
-            return pstring();
+            return std::string_view{};
 
         const std::string* p = m_context.get_string(sid);
         if (!p || p->empty())
-            return pstring();
+            return std::string_view{};
 
-        return pstring(&(*p)[0], p->size());
+        return std::string_view(p->data(), p->size());
     }
 
     col_t find_column(const table_t& tab, std::string_view name, size_t offset) const
@@ -203,7 +202,7 @@ class table_handler : public ixion::iface::table_handler
     {
         if (column_first != ixion::empty_string_id)
         {
-            pstring col1_name = get_string(column_first);
+            std::string_view col1_name = get_string(column_first);
             if (col1_name.empty())
                 return ixion::abs_range_t(ixion::abs_range_t::invalid);
 
@@ -213,7 +212,7 @@ class table_handler : public ixion::iface::table_handler
 
             if (column_last != ixion::empty_string_id)
             {
-                pstring col2_name = get_string(column_last);
+                std::string_view col2_name = get_string(column_last);
                 if (!col2_name.empty())
                 {
                     // column range table reference.
@@ -256,7 +255,7 @@ public:
         ixion::string_id_t table, ixion::string_id_t column_first, ixion::string_id_t column_last,
         ixion::table_areas_t areas) const
     {
-        pstring tab_name = get_string(table);
+        std::string_view tab_name = get_string(table);
         if (tab_name.empty())
             // no table name given.
             return ixion::abs_range_t(ixion::abs_range_t::invalid);
@@ -387,7 +386,7 @@ void document::insert_table(table_t* p)
     if (!p)
         return;
 
-    pstring name = p->name;
+    std::string_view name = p->name;
     mp_impl->m_tables.insert(
         table_store_type::value_type(name, std::unique_ptr<table_t>(p)));
 }
@@ -410,13 +409,13 @@ void document::finalize()
 
 sheet* document::append_sheet(std::string_view sheet_name)
 {
-    pstring sheet_name_safe = mp_impl->m_string_pool.intern(sheet_name).first;
+    std::string_view sheet_name_safe = mp_impl->m_string_pool.intern(sheet_name).first;
     sheet_t sheet_index = static_cast<sheet_t>(mp_impl->m_sheets.size());
 
     mp_impl->m_sheets.push_back(
         std::make_unique<sheet_item>(*this, sheet_name_safe, sheet_index));
 
-    mp_impl->m_context.append_sheet(sheet_name_safe.str());
+    mp_impl->m_context.append_sheet(std::string{sheet_name_safe});
 
     return &mp_impl->m_sheets.back()->data;
 }
@@ -545,12 +544,14 @@ void document::dump_flat(const string& outdir) const
 
     for (const std::unique_ptr<sheet_item>& sheet : mp_impl->m_sheets)
     {
-        string this_file = outdir + '/' + sheet->name.str() + ".txt";
+        fs::path outpath{outdir};
+        outpath /= std::string{sheet->name};
+        outpath.replace_extension(".txt");
 
-        ofstream file(this_file.c_str());
+        ofstream file(outpath);
         if (!file)
         {
-            cerr << "failed to create file: " << this_file << endl;
+            cerr << "failed to create file: " << outpath << endl;
             return;
         }
 
@@ -570,12 +571,14 @@ void document::dump_html(const string& outdir) const
 {
     for (const std::unique_ptr<sheet_item>& sheet : mp_impl->m_sheets)
     {
-        string this_file = outdir + '/' + sheet->name.str() + ".html";
+        fs::path outpath{outdir};
+        outpath /= std::string{sheet->name};
+        outpath.replace_extension(".html");
 
-        ofstream file(this_file.c_str());
+        ofstream file(outpath);
         if (!file)
         {
-            cerr << "failed to create file: " << this_file << endl;
+            cerr << "failed to create file: " << outpath << endl;
             return;
         }
 
@@ -587,12 +590,14 @@ void document::dump_json(const string& outdir) const
 {
     for (const std::unique_ptr<sheet_item>& sheet : mp_impl->m_sheets)
     {
-        string this_file = outdir + '/' + sheet->name.str() + ".json";
+        fs::path outpath{outdir};
+        outpath /= std::string{sheet->name};
+        outpath.replace_extension(".json");
 
-        ofstream file(this_file.c_str());
+        ofstream file(outpath);
         if (!file)
         {
-            cerr << "failed to create file: " << this_file << endl;
+            cerr << "failed to create file: " << outpath << endl;
             return;
         }
 
@@ -604,12 +609,14 @@ void document::dump_csv(const std::string& outdir) const
 {
     for (const std::unique_ptr<sheet_item>& sheet : mp_impl->m_sheets)
     {
-        string this_file = outdir + '/' + sheet->name.str() + ".csv";
+        fs::path outpath{outdir};
+        outpath /= std::string{sheet->name};
+        outpath.replace_extension(".csv");
 
-        ofstream file(this_file.c_str());
+        ofstream file(outpath.c_str());
         if (!file)
         {
-            cerr << "failed to create file: " << this_file << endl;
+            cerr << "failed to create file: " << outpath << endl;
             return;
         }
 
