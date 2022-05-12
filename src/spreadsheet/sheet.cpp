@@ -15,6 +15,7 @@
 #include "flat_dumper.hpp"
 #include "html_dumper.hpp"
 #include "sheet_impl.hpp"
+#include "debug_state_dumper.hpp"
 
 #include <iostream>
 #include <algorithm>
@@ -499,11 +500,11 @@ void sheet::dump_csv(std::ostream& os) const
     dumper.dump(os, mp_impl->m_sheet);
 }
 
-void sheet::dump_debug_state(const std::string& output_dir) const
+void sheet::dump_debug_state(const std::string& output_dir, std::string_view sheet_name) const
 {
     fs::path outdir{output_dir};
-
-    // TODO : continue on...
+    detail::debug_state_dumper dumper(*mp_impl, sheet_name);
+    dumper.dump(outdir);
 }
 
 size_t sheet::get_cell_format(row_t row, col_t col) const

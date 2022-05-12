@@ -634,7 +634,7 @@ void document::dump_debug_state(const std::string& outdir) const
         fs::path outpath{outdir};
         outpath /= std::string{sheet->name};
         fs::create_directories(outpath);
-        sheet->data.dump_debug_state(outpath.string());
+        sheet->data.dump_debug_state(outpath.string(), sheet->name);
     }
 }
 
