@@ -29,30 +29,30 @@ typedef mdds::flat_segment_tree<row_t, bool> row_hidden_store_type;
 
 struct sheet_impl
 {
-    document& m_doc;
+    document& doc;
 
-    mutable col_widths_store_type m_col_widths;
-    mutable row_heights_store_type m_row_heights;
-    col_widths_store_type::const_iterator m_col_width_pos;
-    row_heights_store_type::const_iterator m_row_height_pos;
+    mutable col_widths_store_type col_widths;
+    mutable row_heights_store_type row_heights;
+    col_widths_store_type::const_iterator col_width_pos;
+    row_heights_store_type::const_iterator row_height_pos;
 
-    mutable col_hidden_store_type m_col_hidden;
-    mutable row_hidden_store_type m_row_hidden;
-    col_hidden_store_type::const_iterator m_col_hidden_pos;
-    row_hidden_store_type::const_iterator m_row_hidden_pos;
+    mutable col_hidden_store_type col_hidden;
+    mutable row_hidden_store_type row_hidden;
+    col_hidden_store_type::const_iterator col_hidden_pos;
+    row_hidden_store_type::const_iterator row_hidden_pos;
 
-    detail::col_merge_size_type m_merge_ranges; /// 2-dimensional merged cell ranges.
+    detail::col_merge_size_type merge_ranges; /// 2-dimensional merged cell ranges.
 
-    std::unique_ptr<auto_filter_t> mp_auto_filter_data;
+    std::unique_ptr<auto_filter_t> auto_filter_data;
 
-    cell_format_type m_cell_formats;
-    const sheet_t m_sheet; /// sheet ID
+    cell_format_type cell_formats;
+    const sheet_t sheet_id;
 
     sheet_impl() = delete;
     sheet_impl(const sheet_impl&) = delete;
     sheet_impl& operator=(const sheet_impl&) = delete;
 
-    sheet_impl(document& doc, sheet& sh, sheet_t sheet_index);
+    sheet_impl(document& _doc, sheet& sh, sheet_t sheet_index);
     ~sheet_impl();
 
     const detail::merge_size* get_merge_size(row_t row, col_t col) const;

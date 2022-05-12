@@ -65,9 +65,9 @@ void check_dumper::dump_cell_values(std::ostream& os) const
         // Sheet is empty.  Nothing to print.
         return;
 
-    const ixion::model_context& cxt = m_sheet.m_doc.get_model_context();
+    const ixion::model_context& cxt = m_sheet.doc.get_model_context();
     const ixion::formula_name_resolver* resolver =
-        m_sheet.m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
+        m_sheet.doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
 
     size_t row_count = range.last.row + 1;
     size_t col_count = range.last.column + 1;
@@ -76,7 +76,7 @@ void check_dumper::dump_cell_values(std::ostream& os) const
     {
         for (size_t col = 0; col < col_count; ++col)
         {
-            ixion::abs_address_t pos(m_sheet.m_sheet, row, col);
+            ixion::abs_address_t pos(m_sheet.sheet_id, row, col);
             switch (cxt.get_celltype(pos))
             {
                 case ixion::celltype_t::string:
@@ -119,7 +119,7 @@ void check_dumper::dump_cell_values(std::ostream& os) const
                         {
                             pos = cell->get_parent_position(pos);
                             formula = ixion::print_formula_tokens(
-                                m_sheet.m_doc.get_model_context(), pos, *resolver, tokens);
+                                m_sheet.doc.get_model_context(), pos, *resolver, tokens);
                         }
                         else
                             formula = "???";
@@ -137,7 +137,7 @@ void check_dumper::dump_cell_values(std::ostream& os) const
                         {
                             ixion::formula_result res = cell->get_result_cache(
                                 ixion::formula_result_wait_policy_t::throw_exception);
-                            os << ':' << res.str(m_sheet.m_doc.get_model_context());
+                            os << ':' << res.str(m_sheet.doc.get_model_context());
                         }
                         catch (const std::exception&)
                         {
@@ -171,7 +171,7 @@ void check_dumper::dump_merged_cell_info(std::ostream& os) const
 
     std::vector<_entry> entries;
 
-    for (const auto& col_entry : m_sheet.m_merge_ranges)
+    for (const auto& col_entry : m_sheet.merge_ranges)
     {
         col_t col = col_entry.first;
 

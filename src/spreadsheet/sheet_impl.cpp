@@ -12,24 +12,24 @@
 
 namespace orcus { namespace spreadsheet {
 
-sheet_impl::sheet_impl(document& doc, sheet& /*sh*/, sheet_t sheet_index) :
-    m_doc(doc),
-    m_col_widths(0, m_doc.get_sheet_size().columns, get_default_column_width()),
-    m_row_heights(0, m_doc.get_sheet_size().rows, get_default_row_height()),
-    m_col_width_pos(m_col_widths.begin()),
-    m_row_height_pos(m_row_heights.begin()),
-    m_col_hidden(0, m_doc.get_sheet_size().columns, false),
-    m_row_hidden(0, m_doc.get_sheet_size().rows, false),
-    m_col_hidden_pos(m_col_hidden.begin()),
-    m_row_hidden_pos(m_row_hidden.begin()),
-    m_sheet(sheet_index) {}
+sheet_impl::sheet_impl(document& _doc, sheet& /*sh*/, sheet_t sheet_index) :
+    doc(_doc),
+    col_widths(0, doc.get_sheet_size().columns, get_default_column_width()),
+    row_heights(0, doc.get_sheet_size().rows, get_default_row_height()),
+    col_width_pos(col_widths.begin()),
+    row_height_pos(row_heights.begin()),
+    col_hidden(0, doc.get_sheet_size().columns, false),
+    row_hidden(0, doc.get_sheet_size().rows, false),
+    col_hidden_pos(col_hidden.begin()),
+    row_hidden_pos(row_hidden.begin()),
+    sheet_id(sheet_index) {}
 
 sheet_impl::~sheet_impl() {}
 
 const detail::merge_size* sheet_impl::get_merge_size(row_t row, col_t col) const
 {
-    detail::col_merge_size_type::const_iterator it_col = m_merge_ranges.find(col);
-    if (it_col == m_merge_ranges.end())
+    detail::col_merge_size_type::const_iterator it_col = merge_ranges.find(col);
+    if (it_col == merge_ranges.end())
         return nullptr;
 
     detail::merge_size_type& col_merge_sizes = *it_col->second;
@@ -42,8 +42,8 @@ const detail::merge_size* sheet_impl::get_merge_size(row_t row, col_t col) const
 
 ixion::abs_range_t sheet_impl::get_data_range() const
 {
-    const ixion::model_context& cxt = m_doc.get_model_context();
-    return cxt.get_data_range(m_sheet);
+    const ixion::model_context& cxt = doc.get_model_context();
+    return cxt.get_data_range(sheet_id);
 }
 
 }}
