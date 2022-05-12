@@ -22,11 +22,11 @@ include_directories(
 set(PARSER_SRC_DIR ${PROJECT_SOURCE_DIR}/../src/parser)
 
 add_library(liborcus-parser-csv SHARED
-	${PARSER_SRC_DIR}/parser_base.cpp
-	${PARSER_SRC_DIR}/parser_global.cpp
-	${PARSER_SRC_DIR}/csv_parser_base.cpp
-	${PARSER_SRC_DIR}/exception.cpp
-	${PARSER_SRC_DIR}/cell_buffer.cpp
+    ${PARSER_SRC_DIR}/parser_base.cpp
+    ${PARSER_SRC_DIR}/parser_global.cpp
+    ${PARSER_SRC_DIR}/csv_parser_base.cpp
+    ${PARSER_SRC_DIR}/exception.cpp
+    ${PARSER_SRC_DIR}/cell_buffer.cpp
 )
 
 target_compile_definitions(liborcus-parser-csv PRIVATE __ORCUS_PSR_BUILDING_DLL)

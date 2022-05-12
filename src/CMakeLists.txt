@@ -5,25 +5,25 @@ add_subdirectory(liborcus)
 add_subdirectory(spreadsheet)
 
 add_executable(orcus-detect
-	${PROJECT_SOURCE_DIR}/src/orcus_detect_main.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_detect_main.cpp
 )
 
 add_executable(orcus-css-dump
-	${PROJECT_SOURCE_DIR}/src/orcus_css_dump.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_css_dump.cpp
 )
 
 add_executable(orcus-zip-dump
-	${PROJECT_SOURCE_DIR}/src/orcus_zip_dump.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_zip_dump.cpp
 )
 
 add_executable(orcus-json
-	${PROJECT_SOURCE_DIR}/src/cli_global.cpp
-	${PROJECT_SOURCE_DIR}/src/orcus_json_cli.cpp
-	${PROJECT_SOURCE_DIR}/src/orcus_json_cli_map.cpp
+    ${PROJECT_SOURCE_DIR}/src/cli_global.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_json_cli.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_json_cli_map.cpp
 )
 
 add_executable(orcus-yaml
-	${PROJECT_SOURCE_DIR}/src/orcus_yaml_main.cpp
+    ${PROJECT_SOURCE_DIR}/src/orcus_yaml_main.cpp
 )
 
 add_executable(orcus-csv
@@ -100,16 +100,16 @@ add_executable(orcus-test-xml EXCLUDE_FROM_ALL
 )
 
 add_executable(orcus-test-xml-mapped EXCLUDE_FROM_ALL
-	orcus_test_xml_mapped.cpp
+    orcus_test_xml_mapped.cpp
     orcus_test_global.cpp
 )
 
 add_executable(orcus-test-json-mapped EXCLUDE_FROM_ALL
-	orcus_test_json_mapped.cpp
+    orcus_test_json_mapped.cpp
 )
 
 add_executable(orcus-test-import-ods EXCLUDE_FROM_ALL
-	orcus_test_import_ods.cpp
+    orcus_test_import_ods.cpp
 )
 
 set(_TESTS
