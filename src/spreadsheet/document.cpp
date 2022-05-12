@@ -524,6 +524,9 @@ void document::dump(dump_format_t format, const std::string& output) const
         case dump_format_t::json:
             dump_json(output);
             break;
+        case dump_format_t::debug_state:
+            dump_debug_state(output);
+            break;
         // coverity[dead_error_line] - following conditions exist to avoid compiler warning
         case dump_format_t::none:
         case dump_format_t::unknown:
@@ -621,6 +624,17 @@ void document::dump_csv(const std::string& outdir) const
         }
 
         sheet->data.dump_csv(file);
+    }
+}
+
+void document::dump_debug_state(const std::string& outdir) const
+{
+    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->m_sheets)
+    {
+        fs::path outpath{outdir};
+        outpath /= std::string{sheet->name};
+        fs::create_directories(outpath);
+        sheet->data.dump_debug_state(outpath.string());
     }
 }
 

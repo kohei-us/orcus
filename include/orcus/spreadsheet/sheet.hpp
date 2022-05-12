@@ -109,6 +109,8 @@ public:
     void dump_json(std::ostream& os) const;
     void dump_csv(std::ostream& os) const;
 
+    void dump_debug_state(const std::string& output_dir) const;
+
     /**
      * Get the cell format ID of specified cell.
      */

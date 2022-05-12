@@ -111,6 +111,13 @@ public:
     void dump_csv(const std::string& outdir) const;
 
     /**
+     * Dump document content to specified output directory for debugging.
+     *
+     * @param outdir path to the output directory.
+     */
+    void dump_debug_state(const std::string& outdir) const;
+
+    /**
      * Dump document content to stdout in the special format used for content
      * verification during unit test.
      */
