@@ -33,8 +33,9 @@
 #define ORCUS_DEBUG_SHEET 0
 
 using namespace std;
-using namespace boost;
 namespace fs = boost::filesystem;
+namespace gregorian = boost::gregorian;
+namespace posix_time = boost::posix_time;
 
 namespace orcus { namespace spreadsheet {
 
