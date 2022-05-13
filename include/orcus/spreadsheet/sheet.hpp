@@ -12,6 +12,8 @@
 #include "types.hpp"
 
 #include <ostream>
+#include <memory>
+
 #include <ixion/address.hpp>
 #include <ixion/formula_tokens.hpp>
 #include <ixion/formula_result.hpp>
@@ -44,7 +46,7 @@ class ORCUS_SPM_DLLPUBLIC sheet
 
 public:
     sheet(document& doc, sheet_t sheet_index);
-    virtual ~sheet();
+    ~sheet() noexcept;
 
     void set_auto(row_t row, col_t col, std::string_view s);
     void set_string(row_t row, col_t col, string_id_t sindex);
@@ -122,7 +124,7 @@ public:
     size_t get_cell_format(row_t row, col_t col) const;
 
 private:
-    detail::sheet_impl* mp_impl;
+    std::unique_ptr<detail::sheet_impl> mp_impl;
 };
 
 }}

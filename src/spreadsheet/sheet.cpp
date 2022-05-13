@@ -62,11 +62,10 @@ const row_t sheet::max_row_limit = 1048575;
 const col_t sheet::max_col_limit = 1023;
 
 sheet::sheet(document& doc, sheet_t sheet_index) :
-    mp_impl(new detail::sheet_impl(doc, *this, sheet_index)) {}
+    mp_impl(std::make_unique<detail::sheet_impl>(doc, *this, sheet_index)) {}
 
-sheet::~sheet()
+sheet::~sheet() noexcept
 {
-    delete mp_impl;
 }
 
 void sheet::set_auto(row_t row, col_t col, std::string_view s)
