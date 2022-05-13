@@ -17,13 +17,13 @@ class document;
 
 namespace detail {
 
-class debug_state_dumper
+class sheet_debug_state_dumper
 {
     const sheet_impl& m_sheet;
     std::string_view m_sheet_name;
 
 public:
-    debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name);
+    sheet_debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name);
 
     void dump(const boost::filesystem::path& outdir) const;
 

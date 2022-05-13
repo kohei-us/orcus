@@ -503,7 +503,7 @@ void sheet::dump_csv(std::ostream& os) const
 void sheet::dump_debug_state(const std::string& output_dir, std::string_view sheet_name) const
 {
     fs::path outdir{output_dir};
-    detail::debug_state_dumper dumper(*mp_impl, sheet_name);
+    detail::sheet_debug_state_dumper dumper(*mp_impl, sheet_name);
     dumper.dump(outdir);
 }
 
