@@ -22,6 +22,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	debug_state_dumper.hpp \
 	debug_state_dumper.cpp \
 	document.cpp \
+	document_impl.hpp \
+	document_impl.cpp \
 	dumper_global.hpp \
 	dumper_global.cpp \
 	factory.cpp \
