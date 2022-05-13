@@ -15,15 +15,18 @@ namespace orcus { namespace spreadsheet { namespace detail {
 debug_state_dumper::debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name) :
     m_sheet(sheet), m_sheet_name(sheet_name) {}
 
-void debug_state_dumper::dump(const boost::filesystem::path& outdir) const
+void debug_state_dumper::dump(const fs::path& outdir) const
 {
-    {
-        check_dumper dumper{m_sheet, m_sheet_name};
-        fs::path outpath = outdir / "cell-values.txt";
-        std::ofstream of{outpath};
-        if (of)
-            dumper.dump(of);
-    }
+    dump_cell_values(outdir);
+}
+
+void debug_state_dumper::dump_cell_values(const fs::path& outdir) const
+{
+    check_dumper dumper{m_sheet, m_sheet_name};
+    fs::path outpath = outdir / "cell-values.txt";
+    std::ofstream of{outpath};
+    if (of)
+        dumper.dump(of);
 }
 
 }}}

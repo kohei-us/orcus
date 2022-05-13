@@ -26,6 +26,9 @@ public:
     debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name);
 
     void dump(const boost::filesystem::path& outdir) const;
+
+private:
+    void dump_cell_values(const boost::filesystem::path& outdir) const;
 };
 
 }}}
