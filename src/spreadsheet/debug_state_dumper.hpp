@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "document_impl.hpp"
 #include "sheet_impl.hpp"
 
 #include <boost/filesystem.hpp>
@@ -16,6 +17,19 @@ namespace orcus { namespace spreadsheet {
 class document;
 
 namespace detail {
+
+class doc_debug_state_dumper
+{
+    const document_impl& m_doc;
+
+public:
+    doc_debug_state_dumper(const document_impl& doc);
+
+    void dump(const boost::filesystem::path& outdir) const;
+
+private:
+    void dump_styles(const boost::filesystem::path& outdir) const;
+};
 
 class sheet_debug_state_dumper
 {

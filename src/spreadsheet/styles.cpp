@@ -347,13 +347,13 @@ void cell_style_t::reset()
 
 std::ostream& operator<< (std::ostream& os, const color_t& c)
 {
-    ostream_format_switch ifs(os, std::ios::hex | std::ios::uppercase);
+    ostream_format_switch ifs(os, std::ios::uppercase);
 
-    os << "(ARGB: "
-       << std::setfill('0') << std::setw(2) << int(c.alpha)
-       << std::setfill('0') << std::setw(2) << int(c.red)
-       << std::setfill('0') << std::setw(2) << int(c.green)
-       << std::setfill('0') << std::setw(2) << int(c.blue)
+    os << "(ARGB:"
+       << ' ' << std::hex << std::setfill('0') << std::setw(2) << int(c.alpha & 0xFF)
+       << ' ' << std::hex << std::setfill('0') << std::setw(2) << int(c.red & 0xFF)
+       << ' ' << std::hex << std::setfill('0') << std::setw(2) << int(c.green & 0xFF)
+       << ' ' << std::hex << std::setfill('0') << std::setw(2) << int(c.blue & 0xFF)
        << ")";
 
     return os;

@@ -545,6 +545,8 @@
                 <F N="../src/spreadsheet/debug_state_dumper.cpp"/>
                 <F N="../src/spreadsheet/debug_state_dumper.hpp"/>
                 <F N="../src/spreadsheet/document.cpp"/>
+                <F N="../src/spreadsheet/document_impl.cpp"/>
+                <F N="../src/spreadsheet/document_impl.hpp"/>
                 <F N="../src/spreadsheet/dumper_global.cpp"/>
                 <F N="../src/spreadsheet/dumper_global.hpp"/>
                 <F N="../src/spreadsheet/factory.cpp"/>

@@ -6,6 +6,7 @@
  */
 
 #include "document_impl.hpp"
+#include "debug_state_dumper.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -341,9 +342,13 @@ void document::dump_csv(const std::string& outdir) const
 
 void document::dump_debug_state(const std::string& outdir) const
 {
+    detail::doc_debug_state_dumper dumper{*mp_impl};
+    fs::path output_dir{outdir};
+    dumper.dump(output_dir);
+
     for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
     {
-        fs::path outpath{outdir};
+        fs::path outpath = output_dir;
         outpath /= std::string{sheet->name};
         fs::create_directories(outpath);
         sheet->data.dump_debug_state(outpath.string(), sheet->name);

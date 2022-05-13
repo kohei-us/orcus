@@ -7,10 +7,95 @@
 
 #include "debug_state_dumper.hpp"
 #include "check_dumper.hpp"
+#include "document_impl.hpp"
 
 namespace fs = boost::filesystem;
 
 namespace orcus { namespace spreadsheet { namespace detail {
+
+doc_debug_state_dumper::doc_debug_state_dumper(const document_impl& doc) : m_doc(doc)
+{
+}
+
+void doc_debug_state_dumper::dump(const fs::path& outdir) const
+{
+    dump_styles(outdir);
+}
+
+void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
+{
+    fs::path outpath = outdir / "styles.yaml";
+    std::ofstream of{outpath};
+    if (!of)
+        return;
+
+    of << "cell-styles:" << std::endl;
+
+    for (std::size_t i = 0; i < m_doc.styles_store.get_cell_styles_count(); ++i)
+    {
+        const cell_style_t* cs = m_doc.styles_store.get_cell_style(i);
+        assert(cs);
+
+        of << "  - id: " << i << std::endl
+           << "    name: " << cs->name << std::endl
+           << "    parent: " << cs->parent_name << std::endl
+           << "    xf: " << cs->xf << std::endl
+           << "    builtin: " << cs->builtin << std::endl;
+    }
+
+    of << "cell-style-formats:" << std::endl;
+
+    for (std::size_t i = 0; i < m_doc.styles_store.get_cell_style_formats_count(); ++i)
+    {
+        const cell_format_t* xf = m_doc.styles_store.get_cell_style_format(i);
+        assert(xf);
+
+        of << "  - id: " << i << std::endl
+           << "    font: " << xf->font << std::endl
+           << "    fill: " << xf->fill << std::endl
+           << "    border: " << xf->border << std::endl
+           << "    protection: " << xf->protection << std::endl
+           << "    number-format: " << xf->number_format << std::endl
+           << "    style-xf: " << xf->style_xf << std::endl;
+
+        // TODO: dump more
+    }
+
+    of << "fonts:" << std::endl;
+
+    for (std::size_t i = 0; i < m_doc.styles_store.get_font_count(); ++i)
+    {
+        const font_t* font = m_doc.styles_store.get_font(i);
+        assert(font);
+
+        of << "  - id: " << i << std::endl
+           << "    name: " << font->name << std::endl
+           << "    size: " << font->size << std::endl
+           << "    bold: " << font->bold << std::endl
+           << "    italic: " << font->italic << std::endl
+           << "    color: " << font->color << std::endl
+           << "    underline-color: " << font->underline_color << std::endl;
+
+        // TODO: dump more
+    }
+
+    of << "fills:" << std::endl;
+
+    for (std::size_t i = 0; i < m_doc.styles_store.get_fill_count(); ++i)
+    {
+        const fill_t* fill = m_doc.styles_store.get_fill(i);
+        assert(fill);
+
+        of << "  - id: " << i << std::endl
+           << "    pattern: " << int(fill->pattern_type) << std::endl
+           << "    fg-color: " << fill->fg_color << std::endl
+           << "    bg-color: " << fill->bg_color << std::endl;
+
+        // TODO: dump more
+    }
+
+    // TODO: dump more styles.
+}
 
 sheet_debug_state_dumper::sheet_debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name) :
     m_sheet(sheet), m_sheet_name(sheet_name) {}
