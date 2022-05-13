@@ -25,8 +25,8 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
 
     string_pool sp;
-    spreadsheet::styles styles;
-    spreadsheet::import_styles istyles(styles, sp);
+    spreadsheet::styles styles_store;
+    spreadsheet::import_styles istyles(styles_store, sp);
 
     try
     {
