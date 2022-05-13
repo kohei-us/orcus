@@ -62,7 +62,7 @@ const row_t sheet::max_row_limit = 1048575;
 const col_t sheet::max_col_limit = 1023;
 
 sheet::sheet(document& doc, sheet_t sheet_index) :
-    mp_impl(new sheet_impl(doc, *this, sheet_index)) {}
+    mp_impl(new detail::sheet_impl(doc, *this, sheet_index)) {}
 
 sheet::~sheet()
 {
@@ -145,13 +145,11 @@ void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t co
 {
     for (col_t col = col_start; col <= col_end; ++col)
     {
-        cell_format_type::iterator itr = mp_impl->cell_formats.find(col);
+        auto itr = mp_impl->cell_formats.find(col);
         if (itr == mp_impl->cell_formats.end())
         {
-            auto p = std::make_unique<segment_row_index_type>(0, mp_impl->doc.get_sheet_size().rows+1, 0);
-
-            pair<cell_format_type::iterator, bool> r =
-                mp_impl->cell_formats.insert(cell_format_type::value_type(col, std::move(p)));
+            auto p = std::make_unique<detail::segment_row_index_type>(0, mp_impl->doc.get_sheet_size().rows+1, 0);
+            auto r = mp_impl->cell_formats.emplace(col, std::move(p));
 
             if (!r.second)
             {
@@ -162,7 +160,7 @@ void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t co
             itr = r.first;
         }
 
-        segment_row_index_type& con = *itr->second;
+        detail::segment_row_index_type& con = *itr->second;
         con.insert_back(row_start, row_end+1, index);
     }
 }
@@ -254,7 +252,7 @@ void sheet::set_col_width(col_t col, col_width_t width)
 
 col_width_t sheet::get_col_width(col_t col, col_t* col_start, col_t* col_end) const
 {
-    col_widths_store_type& col_widths = mp_impl->col_widths;
+    detail::col_widths_store_type& col_widths = mp_impl->col_widths;
     if (!col_widths.is_tree_valid())
         col_widths.build_tree();
 
@@ -273,7 +271,7 @@ void sheet::set_col_hidden(col_t col, bool hidden)
 
 bool sheet::is_col_hidden(col_t col, col_t* col_start, col_t* col_end) const
 {
-    col_hidden_store_type& col_hidden = mp_impl->col_hidden;
+    detail::col_hidden_store_type& col_hidden = mp_impl->col_hidden;
     if (!col_hidden.is_tree_valid())
         col_hidden.build_tree();
 
@@ -292,7 +290,7 @@ void sheet::set_row_height(row_t row, row_height_t height)
 
 row_height_t sheet::get_row_height(row_t row, row_t* row_start, row_t* row_end) const
 {
-    row_heights_store_type& row_heights = mp_impl->row_heights;
+    detail::row_heights_store_type& row_heights = mp_impl->row_heights;
     if (!row_heights.is_tree_valid())
         row_heights.build_tree();
 
@@ -311,7 +309,7 @@ void sheet::set_row_hidden(row_t row, bool hidden)
 
 bool sheet::is_row_hidden(row_t row, row_t* row_start, row_t* row_end) const
 {
-    row_hidden_store_type& row_hidden = mp_impl->row_hidden;
+    detail::row_hidden_store_type& row_hidden = mp_impl->row_hidden;
     if (!row_hidden.is_tree_valid())
         row_hidden.build_tree();
 
@@ -509,11 +507,11 @@ void sheet::dump_debug_state(const std::string& output_dir, std::string_view she
 
 size_t sheet::get_cell_format(row_t row, col_t col) const
 {
-    cell_format_type::const_iterator itr = mp_impl->cell_formats.find(col);
+    auto itr = mp_impl->cell_formats.find(col);
     if (itr == mp_impl->cell_formats.end())
         return 0;
 
-    segment_row_index_type& con = *itr->second;
+    detail::segment_row_index_type& con = *itr->second;
     if (!con.is_tree_valid())
         con.build_tree();
 

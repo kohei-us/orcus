@@ -23,8 +23,13 @@ struct date_time_t;
 namespace spreadsheet {
 
 class document;
-struct sheet_impl;
 struct auto_filter_t;
+
+namespace detail {
+
+struct sheet_impl;
+
+}
 
 /**
  * This class represents a single sheet instance in the internal document
@@ -32,7 +37,7 @@ struct auto_filter_t;
  */
 class ORCUS_SPM_DLLPUBLIC sheet
 {
-    friend struct sheet_impl;
+    friend struct detail::sheet_impl;
 
     static const row_t max_row_limit;
     static const col_t max_col_limit;
@@ -117,7 +122,7 @@ public:
     size_t get_cell_format(row_t row, col_t col) const;
 
 private:
-    sheet_impl* mp_impl;
+    detail::sheet_impl* mp_impl;
 };
 
 }}

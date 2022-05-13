@@ -47,7 +47,7 @@ std::string escape_chars(const std::string& str)
 
 }
 
-check_dumper::check_dumper(const sheet_impl& sheet, std::string_view sheet_name) :
+check_dumper::check_dumper(const detail::sheet_impl& sheet, std::string_view sheet_name) :
     m_sheet(sheet), m_sheet_name(sheet_name)
 {
 }

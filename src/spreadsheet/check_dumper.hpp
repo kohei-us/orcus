@@ -13,9 +13,9 @@
 
 namespace orcus { namespace spreadsheet {
 
-struct sheet_impl;
-
 namespace detail {
+
+struct sheet_impl;
 
 class check_dumper
 {

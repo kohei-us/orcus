@@ -16,6 +16,8 @@ namespace orcus { namespace spreadsheet {
 class document;
 class sheet;
 
+namespace detail {
+
 typedef mdds::flat_segment_tree<row_t, size_t>  segment_row_index_type;
 typedef std::unordered_map<col_t, std::unique_ptr<segment_row_index_type>> cell_format_type;
 
@@ -60,7 +62,7 @@ struct sheet_impl
     ixion::abs_range_t get_data_range() const;
 };
 
-}}
+}}}
 
 #endif
 

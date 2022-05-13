@@ -10,7 +10,7 @@
 
 #include <ixion/model_context.hpp>
 
-namespace orcus { namespace spreadsheet {
+namespace orcus { namespace spreadsheet { namespace detail {
 
 sheet_impl::sheet_impl(document& _doc, sheet& /*sh*/, sheet_t sheet_index) :
     doc(_doc),
@@ -46,6 +46,6 @@ ixion::abs_range_t sheet_impl::get_data_range() const
     return cxt.get_data_range(sheet_id);
 }
 
-}}
+}}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
