@@ -287,7 +287,7 @@ struct document_impl
     date_time_t m_origin_date;
     sheet_items_type m_sheets;
     styles m_styles;
-    import_shared_strings* mp_strings;
+    std::unique_ptr<import_shared_strings> mp_strings;
     ixion::abs_range_set_t m_dirty_cells;
 
     pivot_collection m_pivots;
@@ -304,18 +304,13 @@ struct document_impl
         m_doc(doc),
         m_context({sheet_size.rows, sheet_size.columns}),
         m_styles(),
-        mp_strings(new import_shared_strings(m_string_pool, m_context, m_styles)),
+        mp_strings(std::make_unique<import_shared_strings>(m_string_pool, m_context, m_styles)),
         m_pivots(doc),
         mp_name_resolver_global(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &m_context)),
         m_grammar(formula_grammar_t::xlsx),
         m_table_handler(m_context, m_tables)
     {
         m_context.set_table_handler(&m_table_handler);
-    }
-
-    ~document_impl()
-    {
-        delete mp_strings;
     }
 };
 
@@ -325,12 +320,12 @@ document::~document() {}
 
 import_shared_strings* document::get_shared_strings()
 {
-    return mp_impl->mp_strings;
+    return mp_impl->mp_strings.get();
 }
 
 const import_shared_strings* document::get_shared_strings() const
 {
-    return mp_impl->mp_strings;
+    return mp_impl->mp_strings.get();
 }
 
 styles& document::get_styles()
