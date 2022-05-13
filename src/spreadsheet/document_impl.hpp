@@ -27,7 +27,7 @@
 #include <ixion/matrix.hpp>
 #include <ixion/model_context.hpp>
 
-namespace orcus { namespace spreadsheet {
+namespace orcus { namespace spreadsheet { namespace detail {
 
 /**
  * Single sheet entry which consists of a sheet name and a sheet data.
@@ -38,24 +38,12 @@ struct sheet_item
     sheet_item& operator=(const sheet_item&) = delete;
 
     std::string_view name;
-    sheet   data;
+    sheet data;
     sheet_item(document& doc, std::string_view _name, sheet_t sheet_index);
 };
 
 typedef std::map<std::string_view, std::unique_ptr<table_t>> table_store_type;
 typedef std::vector<std::unique_ptr<sheet_item>> sheet_items_type;
-
-class find_column_by_name
-{
-    std::string_view m_name;
-public:
-    find_column_by_name(std::string_view name) : m_name(name) {}
-
-    bool operator() (const table_column_t& col) const
-    {
-        return col.name == m_name;
-    }
-};
 
 class ixion_table_handler : public ixion::iface::table_handler
 {
@@ -113,6 +101,6 @@ struct document_impl
     document_impl(document& _doc, const range_size_t& sheet_size);
 };
 
-}}
+}}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

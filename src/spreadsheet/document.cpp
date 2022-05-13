@@ -24,7 +24,7 @@ class find_sheet_by_name
     std::string_view m_name;
 public:
     find_sheet_by_name(std::string_view name) : m_name(name) {}
-    bool operator() (const std::unique_ptr<sheet_item>& v) const
+    bool operator() (const std::unique_ptr<detail::sheet_item>& v) const
     {
         return v->name == m_name;
     }
@@ -32,7 +32,7 @@ public:
 
 }
 
-document::document(const range_size_t& sheet_size) : mp_impl(new document_impl(*this, sheet_size)) {}
+document::document(const range_size_t& sheet_size) : mp_impl(std::make_unique<detail::document_impl>(*this, sheet_size)) {}
 
 document::~document() {}
 
@@ -100,8 +100,7 @@ void document::insert_table(table_t* p)
         return;
 
     std::string_view name = p->name;
-    mp_impl->tables.insert(
-        table_store_type::value_type(name, std::unique_ptr<table_t>(p)));
+    mp_impl->tables.emplace(name, std::unique_ptr<table_t>(p));
 }
 
 const table_t* document::get_table(std::string_view name) const
@@ -113,7 +112,7 @@ const table_t* document::get_table(std::string_view name) const
 void document::finalize()
 {
     std::for_each(mp_impl->sheets.begin(), mp_impl->sheets.end(),
-        [](std::unique_ptr<sheet_item>& sh)
+        [](std::unique_ptr<detail::sheet_item>& sh)
         {
             sh->data.finalize();
         }
@@ -126,7 +125,7 @@ sheet* document::append_sheet(std::string_view sheet_name)
     sheet_t sheet_index = static_cast<sheet_t>(mp_impl->sheets.size());
 
     mp_impl->sheets.push_back(
-        std::make_unique<sheet_item>(*this, sheet_name_safe, sheet_index));
+        std::make_unique<detail::sheet_item>(*this, sheet_name_safe, sheet_index));
 
     mp_impl->context.append_sheet(std::string{sheet_name_safe});
 
@@ -176,7 +175,7 @@ void document::recalc_formula_cells()
 
 void document::clear()
 {
-    mp_impl.reset(new document_impl(*this, get_sheet_size()));
+    mp_impl = std::make_unique<detail::document_impl>(*this, get_sheet_size());
 }
 
 void document::dump(dump_format_t format, const std::string& output) const
@@ -258,7 +257,7 @@ void document::dump_flat(const string& outdir) const
 
     cout << "number of sheets: " << mp_impl->sheets.size() << endl;
 
-    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->sheets)
+    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
     {
         fs::path outpath{outdir};
         outpath /= std::string{sheet->name};
@@ -279,13 +278,13 @@ void document::dump_flat(const string& outdir) const
 
 void document::dump_check(ostream& os) const
 {
-    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->sheets)
+    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
         sheet->data.dump_check(os, sheet->name);
 }
 
 void document::dump_html(const string& outdir) const
 {
-    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->sheets)
+    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
     {
         fs::path outpath{outdir};
         outpath /= std::string{sheet->name};
@@ -304,7 +303,7 @@ void document::dump_html(const string& outdir) const
 
 void document::dump_json(const string& outdir) const
 {
-    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->sheets)
+    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
     {
         fs::path outpath{outdir};
         outpath /= std::string{sheet->name};
@@ -323,7 +322,7 @@ void document::dump_json(const string& outdir) const
 
 void document::dump_csv(const std::string& outdir) const
 {
-    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->sheets)
+    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
     {
         fs::path outpath{outdir};
         outpath /= std::string{sheet->name};
@@ -342,7 +341,7 @@ void document::dump_csv(const std::string& outdir) const
 
 void document::dump_debug_state(const std::string& outdir) const
 {
-    for (const std::unique_ptr<sheet_item>& sheet : mp_impl->sheets)
+    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
     {
         fs::path outpath{outdir};
         outpath /= std::string{sheet->name};

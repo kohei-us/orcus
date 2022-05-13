@@ -37,7 +37,12 @@ class sheet;
 
 struct document_config;
 struct table_t;
+
+namespace detail {
+
 struct document_impl;
+
+}
 
 /**
  * Internal document representation used only for testing the filters.  It
@@ -164,7 +169,7 @@ private:
     void insert_dirty_cell(const ixion::abs_address_t& pos);
 
 private:
-    std::unique_ptr<document_impl> mp_impl;
+    std::unique_ptr<detail::document_impl> mp_impl;
 };
 
 }}

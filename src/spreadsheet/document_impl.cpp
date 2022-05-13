@@ -7,9 +7,21 @@
 
 #include "document_impl.hpp"
 
-namespace orcus { namespace spreadsheet {
+namespace orcus { namespace spreadsheet { namespace detail {
 
 namespace {
+
+class find_column_by_name
+{
+    std::string_view m_name;
+public:
+    find_column_by_name(std::string_view name) : m_name(name) {}
+
+    bool operator() (const table_column_t& col) const
+    {
+        return col.name == m_name;
+    }
+};
 
 void adjust_row_range(ixion::abs_range_t& range, const table_t& tab, ixion::table_areas_t areas)
 {
@@ -213,6 +225,6 @@ document_impl::document_impl(document& _doc, const range_size_t& sheet_size) :
     context.set_table_handler(&table_handler);
 }
 
-}}
+}}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
