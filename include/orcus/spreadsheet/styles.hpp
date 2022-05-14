@@ -271,6 +271,10 @@ template<> struct to_active_type<number_format_t> { using type = number_format_a
 
 } // namespace detail
 
+/**
+ * Template to pair the source style type with its active flags.  The active
+ * flags store whether each style attribute is applied or not.
+ */
 template<typename T>
 using style_attrs_t = std::pair<T, typename detail::to_active_type<T>::type>;
 
