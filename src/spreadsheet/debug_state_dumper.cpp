@@ -73,8 +73,8 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
            << "    size: " << font->size << std::endl
            << "    bold: " << font->bold << std::endl
            << "    italic: " << font->italic << std::endl
-           << "    color: " << font->color << std::endl
-           << "    underline-color: " << font->underline_color << std::endl;
+           << "    color: \"" << font->color << '"' << std::endl
+           << "    underline-color: \"" << font->underline_color << '"' << std::endl;
 
         // TODO: dump more
     }
@@ -88,8 +88,8 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
         of << "  - id: " << i << std::endl
            << "    pattern: " << int(fill->pattern_type) << std::endl
-           << "    fg-color: " << fill->fg_color << std::endl
-           << "    bg-color: " << fill->bg_color << std::endl;
+           << "    fg-color: \"" << fill->fg_color << '"' << std::endl
+           << "    bg-color: \"" << fill->bg_color << '"' << std::endl;
 
         // TODO: dump more
     }
