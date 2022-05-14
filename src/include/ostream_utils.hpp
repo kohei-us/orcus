@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ostream>
+#include <string_view>
 
 namespace orcus { namespace detail {
 

@@ -560,7 +560,7 @@ std::ostream& operator<< (std::ostream& os, error_value_t ev)
 
 std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar)
 {
-    static const std::vector<const char*> entries = {
+    static constexpr std::string_view names[] = {
         "unknown",
         "xls_xml",
         "xlsx",
@@ -568,11 +568,12 @@ std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar)
         "gnumeric"
     };
 
-    size_t n = static_cast<size_t>(grammar);
-    if (n >= entries.size())
-        n = 0; // unknown
+    auto pos = static_cast<std::size_t>(grammar);
+    if (pos < std::size(names))
+        os << names[pos];
+    else
+        os << "???";
 
-    os << entries[n];
     return os;
 }
 
