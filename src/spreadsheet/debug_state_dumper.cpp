@@ -24,10 +24,23 @@ void doc_debug_state_dumper::dump(const fs::path& outdir) const
 
 void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 {
-    fs::path outpath = outdir / "styles.yaml";
+    const fs::path outpath = outdir / "styles.yaml";
     std::ofstream of{outpath};
     if (!of)
         return;
+
+    auto dump_xf = [&of](std::size_t i, const cell_format_t& xf)
+    {
+        of << "  - id: " << i << std::endl
+           << "    font: " << xf.font << std::endl
+           << "    fill: " << xf.fill << std::endl
+           << "    border: " << xf.border << std::endl
+           << "    protection: " << xf.protection << std::endl
+           << "    number-format: " << xf.number_format << std::endl
+           << "    style-xf: " << xf.style_xf << std::endl;
+
+        // TODO: dump more
+    };
 
     of << "cell-styles:" << std::endl;
 
@@ -49,16 +62,7 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
     {
         const cell_format_t* xf = m_doc.styles_store.get_cell_style_format(i);
         assert(xf);
-
-        of << "  - id: " << i << std::endl
-           << "    font: " << xf->font << std::endl
-           << "    fill: " << xf->fill << std::endl
-           << "    border: " << xf->border << std::endl
-           << "    protection: " << xf->protection << std::endl
-           << "    number-format: " << xf->number_format << std::endl
-           << "    style-xf: " << xf->style_xf << std::endl;
-
-        // TODO: dump more
+        dump_xf(i, *xf);
     }
 
     of << "cell-formats:" << std::endl;
@@ -67,16 +71,7 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
     {
         const cell_format_t* xf = m_doc.styles_store.get_cell_format(i);
         assert(xf);
-
-        of << "  - id: " << i << std::endl
-           << "    font: " << xf->font << std::endl
-           << "    fill: " << xf->fill << std::endl
-           << "    border: " << xf->border << std::endl
-           << "    protection: " << xf->protection << std::endl
-           << "    number-format: " << xf->number_format << std::endl
-           << "    style-xf: " << xf->style_xf << std::endl;
-
-        // TODO: dump more
+        dump_xf(i, *xf);
     }
 
     of << "fonts:" << std::endl;
