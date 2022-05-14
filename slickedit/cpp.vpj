@@ -249,6 +249,7 @@
                 </Folder>
                 <F N="../src/include/cpu_features.hpp"/>
                 <F N="../src/include/numeric_parser.hpp"/>
+                <F N="../src/include/ostream_utils.hpp"/>
                 <F N="../src/include/pstring.hpp"/>
                 <F N="../src/include/test_global.hpp"/>
             </Folder>

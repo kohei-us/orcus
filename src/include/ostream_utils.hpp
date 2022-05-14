@@ -5,21 +5,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "number_format.hpp"
-#include "ostream_utils.hpp"
+#pragma once
 
 #include <ostream>
-#include <iomanip>
-#include <limits>
 
-namespace orcus { namespace spreadsheet { namespace detail {
+namespace orcus { namespace detail {
 
-void format_to_file_output(std::ostream& os, double v)
+class ostream_format_guard
 {
-    ::orcus::detail::ostream_format_guard guard(os);
-    os << std::setprecision(std::numeric_limits<double>::digits10 + 1) << v;
-}
+    std::ostream& m_os;
+    std::ios_base::fmtflags m_flags;
+public:
+    ostream_format_guard(std::ostream& os) :
+        m_os(os)
+    {
+        m_flags = m_os.flags();
+    }
 
-}}}
+    ~ostream_format_guard()
+    {
+        m_os.setf(m_flags);
+    }
+};
+
+}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -9,33 +9,14 @@
 #include "orcus/global.hpp"
 #include "orcus/string_pool.hpp"
 
+#include "ostream_utils.hpp"
+
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
 #include <vector>
 
 namespace orcus { namespace spreadsheet {
-
-namespace {
-
-class ostream_format_switch
-{
-    std::ostream& m_os;
-    std::ios_base::fmtflags m_flags;
-public:
-    ostream_format_switch(std::ostream& os) :
-        m_os(os)
-    {
-        m_flags = m_os.flags();
-    }
-
-    ~ostream_format_switch()
-    {
-        m_os.setf(m_flags);
-    }
-};
-
-}
 
 font_t::font_t() :
     size(0.0), bold(false),
@@ -347,7 +328,7 @@ void cell_style_t::reset()
 
 std::ostream& operator<< (std::ostream& os, const color_t& c)
 {
-    ostream_format_switch ifs(os);
+    ::orcus::detail::ostream_format_guard ifs(os);
 
     os << std::uppercase;
 
