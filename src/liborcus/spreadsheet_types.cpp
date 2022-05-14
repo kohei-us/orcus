@@ -582,6 +582,39 @@ std::ostream& operator<< (std::ostream& os, const color_rgb_t& color)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, const fill_pattern_t& fill)
+{
+    static constexpr std::string_view names[] = {
+        "none",
+        "solid",
+        "dark_down",
+        "dark_gray",
+        "dark_grid",
+        "dark_horizontal",
+        "dark_trellis",
+        "dark_up",
+        "dark_vertical",
+        "gray_0625",
+        "gray_125",
+        "light_down",
+        "light_gray",
+        "light_grid",
+        "light_horizontal",
+        "light_trellis",
+        "light_up",
+        "light_vertical",
+        "medium_gray",
+    };
+
+    std::size_t v = static_cast<std::size_t>(fill);
+    if (v >= std::size(names))
+        os << "???";
+
+    os << names[v];
+
+    return os;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

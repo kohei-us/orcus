@@ -21,17 +21,17 @@ namespace {
 class ostream_format_switch
 {
     std::ostream& m_os;
-    std::ios_base::fmtflags m_mask;
+    std::ios_base::fmtflags m_flags;
 public:
-    ostream_format_switch(std::ostream& os, std::ios_base::fmtflags mask) :
-        m_os(os), m_mask(mask)
+    ostream_format_switch(std::ostream& os) :
+        m_os(os)
     {
-        m_os << std::setiosflags(m_mask);
+        m_flags = m_os.flags();
     }
 
     ~ostream_format_switch()
     {
-        m_os << std::resetiosflags(m_mask);
+        m_os.setf(m_flags);
     }
 };
 
@@ -347,7 +347,9 @@ void cell_style_t::reset()
 
 std::ostream& operator<< (std::ostream& os, const color_t& c)
 {
-    ostream_format_switch ifs(os, std::ios::uppercase);
+    ostream_format_switch ifs(os);
+
+    os << std::uppercase;
 
     os << "(ARGB:"
        << ' ' << std::hex << std::setfill('0') << std::setw(2) << int(c.alpha & 0xFF)

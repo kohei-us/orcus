@@ -105,7 +105,7 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         assert(fill);
 
         of << "  - id: " << i << std::endl
-           << "    pattern: " << int(fill->pattern_type) << std::endl
+           << "    pattern: " << fill->pattern_type << std::endl
            << "    fg-color: \"" << fill->fg_color << '"' << std::endl
            << "    bg-color: \"" << fill->bg_color << '"' << std::endl;
 
@@ -159,7 +159,8 @@ void sheet_debug_state_dumper::dump_cell_formats(const fs::path& outdir) const
 
         for (; it_seg != it_seg_end; ++it_seg)
         {
-            of << "  - rows: " << it_seg->start << '-' << it_seg->end << std::endl;
+            // NB: end position is not inclusive.
+            of << "  - rows: " << it_seg->start << '-' << (it_seg->end - 1) << std::endl;
             of << "    xf: " << it_seg->value << std::endl;
         }
     }
