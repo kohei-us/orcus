@@ -61,6 +61,24 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         // TODO: dump more
     }
 
+    of << "cell-formats:" << std::endl;
+
+    for (std::size_t i = 0; i < m_doc.styles_store.get_cell_formats_count(); ++i)
+    {
+        const cell_format_t* xf = m_doc.styles_store.get_cell_format(i);
+        assert(xf);
+
+        of << "  - id: " << i << std::endl
+           << "    font: " << xf->font << std::endl
+           << "    fill: " << xf->fill << std::endl
+           << "    border: " << xf->border << std::endl
+           << "    protection: " << xf->protection << std::endl
+           << "    number-format: " << xf->number_format << std::endl
+           << "    style-xf: " << xf->style_xf << std::endl;
+
+        // TODO: dump more
+    }
+
     of << "fonts:" << std::endl;
 
     for (std::size_t i = 0; i < m_doc.styles_store.get_font_count(); ++i)
@@ -103,6 +121,7 @@ sheet_debug_state_dumper::sheet_debug_state_dumper(const sheet_impl& sheet, std:
 void sheet_debug_state_dumper::dump(const fs::path& outdir) const
 {
     dump_cell_values(outdir);
+    dump_cell_formats(outdir);
 }
 
 void sheet_debug_state_dumper::dump_cell_values(const fs::path& outdir) const
@@ -112,6 +131,38 @@ void sheet_debug_state_dumper::dump_cell_values(const fs::path& outdir) const
     std::ofstream of{outpath};
     if (of)
         dumper.dump(of);
+}
+
+void sheet_debug_state_dumper::dump_cell_formats(const fs::path& outdir) const
+{
+    fs::path outpath = outdir / "cell-formats.yaml";
+    std::ofstream of{outpath};
+    if (!of)
+        return;
+
+    std::vector<col_t> columns;
+    for (const auto& node : m_sheet.cell_formats)
+        columns.push_back(node.first);
+
+    std::sort(columns.begin(), columns.end());
+
+    for (const col_t col : columns)
+    {
+        of << "column: " << col << std::endl;
+
+        auto it = m_sheet.cell_formats.find(col);
+        assert(it != m_sheet.cell_formats.end());
+        const segment_row_index_type& rows = *it->second;
+
+        auto it_seg = rows.begin_segment();
+        auto it_seg_end = rows.end_segment();
+
+        for (; it_seg != it_seg_end; ++it_seg)
+        {
+            of << "  - rows: " << it_seg->start << '-' << it_seg->end << std::endl;
+            of << "    xf: " << it_seg->value << std::endl;
+        }
+    }
 }
 
 }}}
