@@ -81,18 +81,39 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
     of << "fonts:" << std::endl;
 
+    auto active_value = [&of](std::string_view name, const auto& v, bool active, bool quote=false)
+    {
+        constexpr char q = '"';
+
+        of << "    " << name << ": ";
+
+        if (active)
+        {
+            if (quote)
+                of << q << v << q;
+            else
+                of << v;
+        }
+        else
+            of << "(unset)";
+
+        of << std::endl;
+    };
+
     for (std::size_t i = 0; i < m_doc.styles_store.get_font_count(); ++i)
     {
-        const font_t* font = m_doc.styles_store.get_font(i);
-        assert(font);
+        const auto* state = m_doc.styles_store.get_font_state(i);
+        assert(state);
+        const font_t& font = state->first;
+        const font_active_t& active = state->second;
 
-        of << "  - id: " << i << std::endl
-           << "    name: " << font->name << std::endl
-           << "    size: " << font->size << std::endl
-           << "    bold: " << font->bold << std::endl
-           << "    italic: " << font->italic << std::endl
-           << "    color: \"" << font->color << '"' << std::endl
-           << "    underline-color: \"" << font->underline_color << '"' << std::endl;
+        of << "  - id: " << i << std::endl;
+        active_value("name", font.name, active.name, true);
+        active_value("size", font.size, active.size);
+        active_value("bold", font.bold, active.bold);
+        active_value("italic", font.italic, active.italic);
+        active_value("color", font.color, active.color, true);
+        active_value("underline-color", font.underline_color, active.underline_color, true);
 
         // TODO: dump more
     }
@@ -101,13 +122,15 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
     for (std::size_t i = 0; i < m_doc.styles_store.get_fill_count(); ++i)
     {
-        const fill_t* fill = m_doc.styles_store.get_fill(i);
-        assert(fill);
+        const auto* state = m_doc.styles_store.get_fill_state(i);
+        assert(state);
+        const fill_t& fill = state->first;
+        const fill_active_t& active = state->second;
 
-        of << "  - id: " << i << std::endl
-           << "    pattern: " << fill->pattern_type << std::endl
-           << "    fg-color: \"" << fill->fg_color << '"' << std::endl
-           << "    bg-color: \"" << fill->bg_color << '"' << std::endl;
+        of << "  - id: " << i << std::endl;
+        active_value("pattern", fill.pattern_type, active.pattern_type);
+        active_value("fg-color", fill.fg_color, active.fg_color, true);
+        active_value("bg-color", fill.bg_color, active.bg_color, true);
 
         // TODO: dump more
     }
