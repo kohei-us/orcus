@@ -532,6 +532,8 @@ ORCUS_DLLPUBLIC formula_error_policy_t to_formula_error_policy(std::string_view 
 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, error_value_t ev);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, hor_alignment_t halign);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, ver_alignment_t valign);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_rgb_t& color);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const fill_pattern_t& fill);
 

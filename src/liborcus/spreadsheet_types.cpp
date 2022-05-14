@@ -576,6 +576,47 @@ std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, hor_alignment_t halign)
+{
+    static constexpr std::string_view names[] = {
+        "unknown",
+        "left",
+        "center",
+        "right",
+        "justified",
+        "distributed",
+        "filled",
+    };
+
+    auto pos = static_cast<std::size_t>(halign);
+    if (pos < std::size(names))
+        os << names[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
+std::ostream& operator<< (std::ostream& os, ver_alignment_t valign)
+{
+    static constexpr std::string_view names[] = {
+        "unknown",
+        "top",
+        "middle",
+        "bottom",
+        "justified",
+        "distributed",
+    };
+
+    auto pos = static_cast<std::size_t>(valign);
+    if (pos < std::size(names))
+        os << names[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
 std::ostream& operator<< (std::ostream& os, const color_rgb_t& color)
 {
     os << "(r=" << (int)color.red << ",g=" << (int)color.green << ",b=" << (int)color.blue << ")";
@@ -606,11 +647,11 @@ std::ostream& operator<< (std::ostream& os, const fill_pattern_t& fill)
         "medium_gray",
     };
 
-    std::size_t v = static_cast<std::size_t>(fill);
-    if (v >= std::size(names))
+    auto v = static_cast<std::size_t>(fill);
+    if (v < std::size(names))
+        os << names[v];
+    else
         os << "???";
-
-    os << names[v];
 
     return os;
 }

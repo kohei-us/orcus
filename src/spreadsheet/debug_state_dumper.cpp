@@ -37,7 +37,9 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
            << "    border: " << xf.border << std::endl
            << "    protection: " << xf.protection << std::endl
            << "    number-format: " << xf.number_format << std::endl
-           << "    style-xf: " << xf.style_xf << std::endl;
+           << "    style-xf: " << xf.style_xf << std::endl
+           << "    horizontal alignment: " << xf.hor_align << std::endl
+           << "    vertical alignment: " << xf.ver_align << std::endl;
 
         // TODO: dump more
     };
