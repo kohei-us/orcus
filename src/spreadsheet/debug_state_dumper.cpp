@@ -8,6 +8,7 @@
 #include "debug_state_dumper.hpp"
 #include "check_dumper.hpp"
 #include "document_impl.hpp"
+#include "ostream_utils.hpp"
 
 namespace fs = boost::filesystem;
 
@@ -29,6 +30,10 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
     if (!of)
         return;
 
+    ::orcus::detail::ostream_format_guard guard{of};
+
+    of << std::boolalpha;
+
     auto dump_xf = [&of](std::size_t i, const cell_format_t& xf)
     {
         of << "  - id: " << i << std::endl
@@ -38,10 +43,14 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
            << "    protection: " << xf.protection << std::endl
            << "    number-format: " << xf.number_format << std::endl
            << "    style-xf: " << xf.style_xf << std::endl
-           << "    horizontal alignment: " << xf.hor_align << std::endl
-           << "    vertical alignment: " << xf.ver_align << std::endl;
-
-        // TODO: dump more
+           << "    horizontal-alignment: " << xf.hor_align << std::endl
+           << "    vertical-alignment: " << xf.ver_align << std::endl
+           << "    apply-number-format: " << xf.apply_num_format << std::endl
+           << "    apply-font: " << xf.apply_font << std::endl
+           << "    apply-fill: " << xf.apply_fill << std::endl
+           << "    apply-border: " << xf.apply_border << std::endl
+           << "    apply-alignment: " << xf.apply_alignment << std::endl
+           << "    apply-protection: " << xf.apply_protection << std::endl;
     };
 
     of << "cell-styles:" << std::endl;
