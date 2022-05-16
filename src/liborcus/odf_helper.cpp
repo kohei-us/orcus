@@ -59,7 +59,7 @@ map_type::entry entries[] =
 {
     { MDDS_ASCII("dash"), ss::underline_t::dash },
     { MDDS_ASCII("dot-dash"), ss::underline_t::dot_dash },
-    { MDDS_ASCII("dot-dot-dash"), ss::underline_t::dot_dot_dot_dash },
+    { MDDS_ASCII("dot-dot-dash"), ss::underline_t::dot_dot_dash },
     { MDDS_ASCII("dotted"), ss::underline_t::dotted },
     { MDDS_ASCII("long-dash"), ss::underline_t::long_dash },
     { MDDS_ASCII("none"), ss::underline_t::none },

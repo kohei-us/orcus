@@ -213,7 +213,7 @@ enum class underline_t
     dash,
     long_dash,
     dot_dash,
-    dot_dot_dot_dash, // TODO:API: -> dot_dot_dash
+    dot_dot_dash,
     wave
 };
 
