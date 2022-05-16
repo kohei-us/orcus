@@ -634,6 +634,62 @@ std::ostream& operator<< (std::ostream& os, underline_t uline)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, underline_width_t ulwidth)
+{
+    static constexpr std::string_view names[] = {
+        "none",
+        "normal",
+        "bold",
+        "thin",
+        "medium",
+        "thick",
+        "positive_integer",
+        "percent",
+        "positive_length",
+    };
+
+    auto pos = static_cast<std::size_t>(ulwidth);
+    if (pos < std::size(names))
+        os << names[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
+std::ostream& operator<< (std::ostream& os, underline_mode_t ulmode)
+{
+    static constexpr std::string_view names[] = {
+        "continuous",
+        "skip_white_space",
+    };
+
+    auto pos = static_cast<std::size_t>(ulmode);
+    if (pos < std::size(names))
+        os << names[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
+std::ostream& operator<< (std::ostream& os, underline_type_t ultype)
+{
+    static constexpr std::string_view names[] = {
+        "none",
+        "single_type",
+        "double_type",
+    };
+
+    auto pos = static_cast<std::size_t>(ultype);
+    if (pos < std::size(names))
+        os << names[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
 std::ostream& operator<< (std::ostream& os, hor_alignment_t halign)
 {
     static constexpr std::string_view names[] = {

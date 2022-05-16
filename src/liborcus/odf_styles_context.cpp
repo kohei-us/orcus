@@ -394,7 +394,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     if (attr.value == "none")
                         underline_type = ss::underline_type_t::none;
                     else if (attr.value == "single")
-                        underline_type = ss::underline_type_t::single;
+                        underline_type = ss::underline_type_t::single_type;
                     else if (attr.value == "double")
                         underline_type = ss::underline_type_t::double_type;
                     break;

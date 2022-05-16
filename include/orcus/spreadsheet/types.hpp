@@ -239,8 +239,8 @@ enum class underline_mode_t
 enum class underline_type_t
 {
     none = 0,
-    single,  // TODO:API: standardize these values
-    double_type            //necessary to not call it "double", since it is a reserved word
+    single_type,
+    double_type
 };
 
 struct underline_attrs_t
@@ -534,6 +534,9 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, error_value_t ev);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, border_style_t border);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_t uline);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_width_t ulwidth);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_mode_t ulmode);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_type_t ultype);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, hor_alignment_t halign);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, ver_alignment_t valign);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_rgb_t& color);

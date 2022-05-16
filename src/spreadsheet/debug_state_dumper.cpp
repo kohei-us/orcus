@@ -130,6 +130,9 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         active_value("bold", font.bold, active.bold);
         active_value("italic", font.italic, active.italic);
         active_value("underline-style", font.underline_style, active.underline_style, 2);
+        active_value("underline-width", font.underline_width, active.underline_width, 2);
+        active_value("underline-mode", font.underline_mode, active.underline_mode, 2);
+        active_value("underline-type", font.underline_type, active.underline_type, 2);
         active_value("color", font.color, active.color, 2, true);
         active_value("underline-color", font.underline_color, active.underline_color, 2, true);
 
