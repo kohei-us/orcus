@@ -609,6 +609,31 @@ std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, underline_t uline)
+{
+    static constexpr std::string_view names[] = {
+        "none",
+        "single_line",
+        "single_accounting",
+        "double_line",
+        "double_accounting",
+        "dotted",
+        "dash",
+        "long_dash",
+        "dot_dash",
+        "dot_dot_dash",
+        "wave",
+    };
+
+    auto pos = static_cast<std::size_t>(uline);
+    if (pos < std::size(names))
+        os << names[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
 std::ostream& operator<< (std::ostream& os, hor_alignment_t halign)
 {
     static constexpr std::string_view names[] = {
