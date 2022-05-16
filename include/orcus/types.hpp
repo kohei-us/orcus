@@ -487,6 +487,7 @@ ORCUS_PSR_DLLPUBLIC dump_format_t to_dump_format_enum(std::string_view s);
 
 ORCUS_PSR_DLLPUBLIC std::vector<std::pair<std::string_view, dump_format_t>> get_dump_format_entries();
 
+ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const length_t& v);
 ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const date_time_t& v);
 ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, format_t v);
 

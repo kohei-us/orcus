@@ -323,6 +323,12 @@ std::vector<std::pair<std::string_view, dump_format_t>> get_dump_format_entries(
     return ret;
 }
 
+std::ostream& operator<< (std::ostream& os, const length_t& v)
+{
+    os << v.to_string();
+    return os;
+}
+
 std::ostream& operator<< (std::ostream& os, const date_time_t& v)
 {
     os << v.to_string();

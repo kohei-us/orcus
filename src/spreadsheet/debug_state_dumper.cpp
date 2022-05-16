@@ -53,6 +53,36 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
            << "    apply-protection: " << xf.apply_protection << std::endl;
     };
 
+    auto active_value = [&of](std::string_view name, const auto& v, bool active, int level=2, bool quote=false)
+    {
+        constexpr char q = '"';
+        constexpr const char* indent_unit_s = "  ";
+        std::string indent = indent_unit_s;
+        for (int i = 0; i < level - 1; ++i)
+            indent += indent_unit_s;
+
+        of << indent << name << ": ";
+
+        if (active)
+        {
+            if (quote)
+                of << q << v << q;
+            else
+                of << v;
+        }
+        else
+            of << "(unset)";
+
+        of << std::endl;
+    };
+
+    auto dump_border = [&active_value](const border_attrs_t& _attrs, const border_attrs_active_t& _active)
+    {
+        active_value("style", _attrs.style, _active.style, 3);
+        active_value("color", _attrs.border_color, _active.border_color, 3);
+        active_value("width", _attrs.border_width, _active.border_width, 3);
+    };
+
     of << "cell-styles:" << std::endl;
 
     for (std::size_t i = 0; i < m_doc.styles_store.get_cell_styles_count(); ++i)
@@ -87,25 +117,6 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
     of << "fonts:" << std::endl;
 
-    auto active_value = [&of](std::string_view name, const auto& v, bool active, bool quote=false)
-    {
-        constexpr char q = '"';
-
-        of << "    " << name << ": ";
-
-        if (active)
-        {
-            if (quote)
-                of << q << v << q;
-            else
-                of << v;
-        }
-        else
-            of << "(unset)";
-
-        of << std::endl;
-    };
-
     for (std::size_t i = 0; i < m_doc.styles_store.get_font_count(); ++i)
     {
         const auto* state = m_doc.styles_store.get_font_state(i);
@@ -114,12 +125,12 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         const font_active_t& active = state->second;
 
         of << "  - id: " << i << std::endl;
-        active_value("name", font.name, active.name, true);
+        active_value("name", font.name, active.name, 2, true);
         active_value("size", font.size, active.size);
         active_value("bold", font.bold, active.bold);
         active_value("italic", font.italic, active.italic);
-        active_value("color", font.color, active.color, true);
-        active_value("underline-color", font.underline_color, active.underline_color, true);
+        active_value("color", font.color, active.color, 2, true);
+        active_value("underline-color", font.underline_color, active.underline_color, 2, true);
 
         // TODO: dump more
     }
@@ -135,13 +146,40 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
         of << "  - id: " << i << std::endl;
         active_value("pattern", fill.pattern_type, active.pattern_type);
-        active_value("fg-color", fill.fg_color, active.fg_color, true);
-        active_value("bg-color", fill.bg_color, active.bg_color, true);
-
-        // TODO: dump more
+        active_value("fg-color", fill.fg_color, active.fg_color, 2, true);
+        active_value("bg-color", fill.bg_color, active.bg_color, 2, true);
     }
 
-    // TODO: dump more styles.
+    of << "borders:" << std::endl;
+
+    for (std::size_t i = 0; i < m_doc.styles_store.get_border_count(); ++i)
+    {
+        const auto* state = m_doc.styles_store.get_border_state(i);
+        assert(state);
+
+        of << "  - id: " << i << std::endl;
+
+        const border_t& border = state->first;
+        const border_active_t& active = state->second;
+
+        of << "    top:" << std::endl;
+        dump_border(border.top, active.top);
+        of << "    bottom:" << std::endl;
+        dump_border(border.bottom, active.bottom);
+        of << "    left:" << std::endl;
+        dump_border(border.left, active.left);
+        of << "    right:" << std::endl;
+        dump_border(border.right, active.right);
+        of << "    diagonal:" << std::endl;
+        dump_border(border.diagonal, active.diagonal);
+        of << "    diagonal-bl-tr:" << std::endl;
+        dump_border(border.diagonal_bl_tr, active.diagonal_bl_tr);
+        of << "    diagonal-tl-br:" << std::endl;
+        dump_border(border.diagonal_tl_br, active.diagonal_tl_br);
+    }
+
+    // TODO: protection
+    // TODO: number-format
 }
 
 sheet_debug_state_dumper::sheet_debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name) :

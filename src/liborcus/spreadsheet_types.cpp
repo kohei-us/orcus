@@ -558,6 +558,38 @@ std::ostream& operator<< (std::ostream& os, error_value_t ev)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, border_style_t border)
+{
+    static constexpr std::string_view names[] = {
+        "unknown",
+        "none",
+        "solid",
+        "dash_dot",
+        "dash_dot_dot",
+        "dashed",
+        "dotted",
+        "double_border",
+        "hair",
+        "medium",
+        "medium_dash_dot",
+        "medium_dash_dot_dot",
+        "medium_dashed",
+        "slant_dash_dot",
+        "thick",
+        "thin",
+        "double_thin",
+        "fine_dashed",
+    };
+
+    auto pos = static_cast<std::size_t>(border);
+    if (pos < std::size(names))
+        os << names[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
 std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar)
 {
     static constexpr std::string_view names[] = {
