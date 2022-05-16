@@ -22,7 +22,7 @@ font_t::font_t() :
     size(0.0), bold(false),
     italic(false), underline_style(underline_t::none),
     underline_width(underline_width_t::none),
-    underline_mode(underline_mode_t::continuos),
+    underline_mode(underline_mode_t::continuous),
     underline_type(underline_type_t::none),
     color(),
     strikethrough_style(strikethrough_style_t::none),

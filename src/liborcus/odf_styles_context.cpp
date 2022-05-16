@@ -377,7 +377,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                     if (attr.value == "skip-white-space")
                         underline_mode = ss::underline_mode_t::skip_white_space;
                     else
-                        underline_mode = ss::underline_mode_t::continuos;
+                        underline_mode = ss::underline_mode_t::continuous;
                     break;
                 case XML_text_underline_width:
                 {

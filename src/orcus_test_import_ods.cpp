@@ -446,7 +446,7 @@ void test_odf_font(const orcus::spreadsheet::styles& styles)
     assert(cell_font->italic == true);
     assert(cell_font->underline_style == orcus::spreadsheet::underline_t::single_line);
     assert(cell_font->underline_width == orcus::spreadsheet::underline_width_t::thick);
-    assert(cell_font->underline_mode == orcus::spreadsheet::underline_mode_t::continuos);
+    assert(cell_font->underline_mode == orcus::spreadsheet::underline_mode_t::continuous);
     assert(cell_font->underline_type == orcus::spreadsheet::underline_type_t::none);
     assert(cell_font->color.red == (int)0x80);
     assert(cell_font->color.green == (int)0x80);
@@ -466,7 +466,7 @@ void test_odf_font(const orcus::spreadsheet::styles& styles)
     assert(cell_font->italic == false);
     assert(cell_font->underline_style == orcus::spreadsheet::underline_t::dash);
     assert(cell_font->underline_width == orcus::spreadsheet::underline_width_t::bold);
-    assert(cell_font->underline_mode == orcus::spreadsheet::underline_mode_t::continuos);
+    assert(cell_font->underline_mode == orcus::spreadsheet::underline_mode_t::continuous);
     assert(cell_font->underline_type == orcus::spreadsheet::underline_type_t::none);
     assert(cell_font->underline_color.red == (int)0x18);
     assert(cell_font->underline_color.green == (int)0x56);

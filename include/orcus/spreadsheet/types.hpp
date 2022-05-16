@@ -232,7 +232,7 @@ enum class underline_width_t
 
 enum class underline_mode_t
 {
-    continuos = 0, // TODO:API: fix this typo
+    continuous = 0,
     skip_white_space
 };
 
