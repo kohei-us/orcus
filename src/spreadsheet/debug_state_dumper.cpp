@@ -133,10 +133,12 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         active_value("underline-width", font.underline_width, active.underline_width, 2);
         active_value("underline-mode", font.underline_mode, active.underline_mode, 2);
         active_value("underline-type", font.underline_type, active.underline_type, 2);
-        active_value("color", font.color, active.color, 2, true);
         active_value("underline-color", font.underline_color, active.underline_color, 2, true);
-
-        // TODO: dump more
+        active_value("color", font.color, active.color, 2, true);
+        active_value("strikethrough-style", font.strikethrough_style, active.strikethrough_style, 2);
+        active_value("strikethrough-width", font.strikethrough_width, active.strikethrough_width, 2);
+        active_value("strikethrough-type", font.strikethrough_type, active.strikethrough_type, 2);
+        active_value("strikethrough-text", font.strikethrough_text, active.strikethrough_text, 2);
     }
 
     of << "fills:" << std::endl;

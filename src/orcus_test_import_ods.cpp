@@ -537,7 +537,7 @@ void test_odf_text_strikethrough(const orcus::spreadsheet::styles& styles)
     const orcus::spreadsheet::font_t* cell_font = styles.get_font(font);
     assert(cell_font->strikethrough_style == orcus::spreadsheet::strikethrough_style_t::solid);
     assert(cell_font->strikethrough_width == orcus::spreadsheet::strikethrough_width_t::unknown);
-    assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single);
+    assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single_type);
     assert(cell_font->strikethrough_text == orcus::spreadsheet::strikethrough_text_t::unknown);
 
     style = find_cell_style_by_name("Name21", styles);
@@ -550,7 +550,7 @@ void test_odf_text_strikethrough(const orcus::spreadsheet::styles& styles)
     cell_font = styles.get_font(font);
     assert(cell_font->strikethrough_style == orcus::spreadsheet::strikethrough_style_t::solid);
     assert(cell_font->strikethrough_width == orcus::spreadsheet::strikethrough_width_t::bold);
-    assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single);
+    assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single_type);
     assert(cell_font->strikethrough_text == orcus::spreadsheet::strikethrough_text_t::unknown);
 
     style = find_cell_style_by_name("Name22", styles);
@@ -563,7 +563,7 @@ void test_odf_text_strikethrough(const orcus::spreadsheet::styles& styles)
     cell_font = styles.get_font(font);
     assert(cell_font->strikethrough_style == orcus::spreadsheet::strikethrough_style_t::solid);
     assert(cell_font->strikethrough_width == orcus::spreadsheet::strikethrough_width_t::unknown);
-    assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single);
+    assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single_type);
     assert(cell_font->strikethrough_text == orcus::spreadsheet::strikethrough_text_t::slash);
 }
 

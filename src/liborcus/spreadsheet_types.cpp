@@ -770,6 +770,83 @@ std::ostream& operator<< (std::ostream& os, const fill_pattern_t& fill)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, const strikethrough_style_t& ss)
+{
+    static constexpr std::string_view names[] = {
+        "none",
+        "solid",
+        "dash",
+        "dot_dash",
+        "dot_dot_dash",
+        "dotted",
+        "long_dash",
+        "wave",
+    };
+
+    auto v = static_cast<std::size_t>(ss);
+    if (v < std::size(names))
+        os << names[v];
+    else
+        os << "???";
+
+    return os;
+}
+
+std::ostream& operator<< (std::ostream& os, const strikethrough_type_t& st)
+{
+    static constexpr std::string_view names[] = {
+        "unknown",
+        "none",
+        "single_type",
+        "double_type",
+    };
+
+    auto v = static_cast<std::size_t>(st);
+    if (v < std::size(names))
+        os << names[v];
+    else
+        os << "???";
+
+    return os;
+}
+
+std::ostream& operator<< (std::ostream& os, const strikethrough_width_t& sw)
+{
+    static constexpr std::string_view names[] = {
+        "unknown",
+        "width_auto",
+        "thin",
+        "medium",
+        "thick",
+        "bold",
+    };
+
+    auto v = static_cast<std::size_t>(sw);
+    if (v < std::size(names))
+        os << names[v];
+    else
+        os << "???";
+
+    return os;
+}
+
+std::ostream& operator<< (std::ostream& os, const strikethrough_text_t& st)
+{
+    static constexpr std::string_view names[] = {
+        "unknown",
+        "slash",
+        "cross",
+    };
+
+    auto v = static_cast<std::size_t>(st);
+    if (v < std::size(names))
+        os << names[v];
+    else
+        os << "???";
+
+    return os;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

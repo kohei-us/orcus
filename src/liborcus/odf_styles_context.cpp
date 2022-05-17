@@ -407,7 +407,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
                 case XML_text_line_through_type:
                 {
                     if (attr.value == "single")
-                        strikethrough_type = ss::strikethrough_type_t::single;
+                        strikethrough_type = ss::strikethrough_type_t::single_type;
                     else if (attr.value == "double")
                         strikethrough_type = ss::strikethrough_type_t::double_type;
                     else
