@@ -8,6 +8,7 @@
 #include "debug_state_dumper.hpp"
 #include "check_dumper.hpp"
 #include "document_impl.hpp"
+#include "sheet_impl.hpp"
 #include "ostream_utils.hpp"
 
 namespace fs = boost::filesystem;
