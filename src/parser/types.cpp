@@ -12,7 +12,10 @@
 #include <limits>
 #include <sstream>
 #include <string_view>
+#include <iomanip>
 #include <mdds/sorted_string_map.hpp>
+
+#include "ostream_utils.hpp"
 
 namespace orcus {
 
@@ -275,7 +278,18 @@ bool date_time_t::operator< (const date_time_t& other) const
 std::string date_time_t::to_string() const
 {
     std::ostringstream os;
-    os << year << "-" << month << "-" << day << "T" << hour << ":" << minute << ":" << second;
+
+    // NB: setfill is sticky for the entire run whereas setw gets reset for each
+    // value.
+    os << std::setfill('0');
+
+    os << std::setw(4) << year
+       << "-" << std::setw(2) << month
+       << "-" << std::setw(2) << day
+       << "T" << std::setw(2) << hour
+       << ":" << std::setw(2) << minute
+       << ":" << std::setw(2) << second;
+
     return os.str();
 }
 

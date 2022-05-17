@@ -20,7 +20,22 @@ doc_debug_state_dumper::doc_debug_state_dumper(const document_impl& doc) : m_doc
 
 void doc_debug_state_dumper::dump(const fs::path& outdir) const
 {
+    dump_properties(outdir);
     dump_styles(outdir);
+}
+
+void doc_debug_state_dumper::dump_properties(const fs::path& outdir) const
+{
+    const fs::path outpath = outdir / "properties.yaml";
+    std::ofstream of{outpath};
+    if (!of)
+        return;
+
+    ::orcus::detail::ostream_format_guard guard{of};
+
+    of << "formula-grammar: " << m_doc.grammar << std::endl;
+    of << "origin-date: " << m_doc.origin_date << std::endl;
+    of << "output-precision: " << short(m_doc.doc_config.output_precision) << std::endl;
 }
 
 void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const

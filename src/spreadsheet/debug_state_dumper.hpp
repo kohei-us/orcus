@@ -28,6 +28,7 @@ public:
     void dump(const boost::filesystem::path& outdir) const;
 
 private:
+    void dump_properties(const boost::filesystem::path& outdir) const;
     void dump_styles(const boost::filesystem::path& outdir) const;
 };
 
