@@ -206,7 +206,20 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         active_value("formula-hidden", prot.formula_hidden, active.formula_hidden, 2);
     }
 
-    // TODO: number-format
+    of << "number-formats:" << std::endl;
+
+    for (std::size_t i = 0; i < m_doc.styles_store.get_number_format_count(); ++i)
+    {
+        const auto* state = m_doc.styles_store.get_number_format_state(i);
+        assert(state);
+
+        of << "  - id: " << i << std::endl;
+        const number_format_t& numfmt = state->first;
+        const number_format_active_t& active = state->second;
+
+        active_value("identifier", numfmt.identifier, active.identifier, 2);
+        active_value("format-string", numfmt.format_string, active.format_string, 2);
+    }
 }
 
 sheet_debug_state_dumper::sheet_debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name) :
