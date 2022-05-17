@@ -31,8 +31,6 @@ void doc_debug_state_dumper::dump_properties(const fs::path& outdir) const
     if (!of)
         return;
 
-    ::orcus::detail::ostream_format_guard guard{of};
-
     of << "formula-grammar: " << m_doc.grammar << std::endl;
     of << "origin-date: " << m_doc.origin_date << std::endl;
     of << "output-precision: " << short(m_doc.doc_config.output_precision) << std::endl;
@@ -44,8 +42,6 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
     std::ofstream of{outpath};
     if (!of)
         return;
-
-    ::orcus::detail::ostream_format_guard guard{of};
 
     of << std::boolalpha;
 
