@@ -69,7 +69,7 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
             std::ostringstream os;
             os << v;
             std::string s = os.str();
-            bool quote = s.find_first_of("#:") != s.npos;
+            bool quote = s.find_first_of("#:-") != s.npos;
             if (quote)
                 of << q << s << q;
             else
