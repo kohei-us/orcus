@@ -189,7 +189,23 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         dump_border(border.diagonal_tl_br, active.diagonal_tl_br);
     }
 
-    // TODO: protection
+    of << "protections:" << std::endl;
+
+    for (std::size_t i = 0; i < m_doc.styles_store.get_protection_count(); ++i)
+    {
+        const auto* state = m_doc.styles_store.get_protection_state(i);
+        assert(state);
+
+        of << "  - id: " << i << std::endl;
+        const protection_t& prot = state->first;
+        const protection_active_t& active = state->second;
+
+        active_value("locked", prot.locked, active.locked, 2);
+        active_value("hidden", prot.hidden, active.hidden, 2);
+        active_value("print-content", prot.print_content, active.print_content, 2);
+        active_value("formula-hidden", prot.formula_hidden, active.formula_hidden, 2);
+    }
+
     // TODO: number-format
 }
 
