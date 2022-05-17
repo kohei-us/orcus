@@ -265,8 +265,25 @@ const map_type& get()
 
 }
 
-std::ostream& do_write_name_for_pos(
-    std::ostream& os, const std::string_view* names, std::size_t n_names, std::size_t pos)
+class to_size_t
+{
+    std::size_t m_value;
+
+public:
+    template<typename T>
+    to_size_t(T v) : m_value(static_cast<std::size_t>(v))
+    {
+        static_assert(std::is_enum_v<T>, "source value type must be enum!");
+    }
+
+    operator std::size_t() const
+    {
+        return m_value;
+    }
+};
+
+std::ostream& write_name_for_pos(
+    std::ostream& os, const std::string_view* names, std::size_t n_names, to_size_t pos)
 {
     if (pos < n_names)
         os << names[pos];
@@ -274,13 +291,6 @@ std::ostream& do_write_name_for_pos(
         os << "???";
 
     return os;
-}
-
-template<typename T>
-std::ostream& write_name_for_pos(
-    std::ostream& os, const std::string_view* names, std::size_t n_names, T pos)
-{
-    return do_write_name_for_pos(os, names, n_names, static_cast<std::size_t>(pos));
 }
 
 } // anonymous namespace
