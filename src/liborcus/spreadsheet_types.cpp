@@ -265,6 +265,24 @@ const map_type& get()
 
 }
 
+std::ostream& do_write_name_for_pos(
+    std::ostream& os, const std::string_view* names, std::size_t n_names, std::size_t pos)
+{
+    if (pos < n_names)
+        os << names[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
+template<typename T>
+std::ostream& write_name_for_pos(
+    std::ostream& os, const std::string_view* names, std::size_t n_names, T pos)
+{
+    return do_write_name_for_pos(os, names, n_names, static_cast<std::size_t>(pos));
+}
+
 } // anonymous namespace
 
 color_rgb_t::color_rgb_t() : red(0), green(0), blue(0) {}
@@ -581,13 +599,7 @@ std::ostream& operator<< (std::ostream& os, border_style_t border)
         "fine_dashed",
     };
 
-    auto pos = static_cast<std::size_t>(border);
-    if (pos < std::size(names))
-        os << names[pos];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), border);
 }
 
 std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar)
@@ -600,13 +612,7 @@ std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar)
         "gnumeric"
     };
 
-    auto pos = static_cast<std::size_t>(grammar);
-    if (pos < std::size(names))
-        os << names[pos];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), grammar);
 }
 
 std::ostream& operator<< (std::ostream& os, underline_t uline)
@@ -625,13 +631,7 @@ std::ostream& operator<< (std::ostream& os, underline_t uline)
         "wave",
     };
 
-    auto pos = static_cast<std::size_t>(uline);
-    if (pos < std::size(names))
-        os << names[pos];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), uline);
 }
 
 std::ostream& operator<< (std::ostream& os, underline_width_t ulwidth)
@@ -648,13 +648,7 @@ std::ostream& operator<< (std::ostream& os, underline_width_t ulwidth)
         "positive_length",
     };
 
-    auto pos = static_cast<std::size_t>(ulwidth);
-    if (pos < std::size(names))
-        os << names[pos];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), ulwidth);
 }
 
 std::ostream& operator<< (std::ostream& os, underline_mode_t ulmode)
@@ -664,13 +658,7 @@ std::ostream& operator<< (std::ostream& os, underline_mode_t ulmode)
         "skip_white_space",
     };
 
-    auto pos = static_cast<std::size_t>(ulmode);
-    if (pos < std::size(names))
-        os << names[pos];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), ulmode);
 }
 
 std::ostream& operator<< (std::ostream& os, underline_type_t ultype)
@@ -681,13 +669,7 @@ std::ostream& operator<< (std::ostream& os, underline_type_t ultype)
         "double_type",
     };
 
-    auto pos = static_cast<std::size_t>(ultype);
-    if (pos < std::size(names))
-        os << names[pos];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), ultype);
 }
 
 std::ostream& operator<< (std::ostream& os, hor_alignment_t halign)
@@ -702,13 +684,7 @@ std::ostream& operator<< (std::ostream& os, hor_alignment_t halign)
         "filled",
     };
 
-    auto pos = static_cast<std::size_t>(halign);
-    if (pos < std::size(names))
-        os << names[pos];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), halign);
 }
 
 std::ostream& operator<< (std::ostream& os, ver_alignment_t valign)
@@ -722,13 +698,7 @@ std::ostream& operator<< (std::ostream& os, ver_alignment_t valign)
         "distributed",
     };
 
-    auto pos = static_cast<std::size_t>(valign);
-    if (pos < std::size(names))
-        os << names[pos];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), valign);
 }
 
 std::ostream& operator<< (std::ostream& os, const color_rgb_t& color)
@@ -761,13 +731,7 @@ std::ostream& operator<< (std::ostream& os, const fill_pattern_t& fill)
         "medium_gray",
     };
 
-    auto v = static_cast<std::size_t>(fill);
-    if (v < std::size(names))
-        os << names[v];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), fill);
 }
 
 std::ostream& operator<< (std::ostream& os, const strikethrough_style_t& ss)
@@ -783,13 +747,7 @@ std::ostream& operator<< (std::ostream& os, const strikethrough_style_t& ss)
         "wave",
     };
 
-    auto v = static_cast<std::size_t>(ss);
-    if (v < std::size(names))
-        os << names[v];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), ss);
 }
 
 std::ostream& operator<< (std::ostream& os, const strikethrough_type_t& st)
@@ -801,13 +759,7 @@ std::ostream& operator<< (std::ostream& os, const strikethrough_type_t& st)
         "double_type",
     };
 
-    auto v = static_cast<std::size_t>(st);
-    if (v < std::size(names))
-        os << names[v];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), st);
 }
 
 std::ostream& operator<< (std::ostream& os, const strikethrough_width_t& sw)
@@ -821,13 +773,7 @@ std::ostream& operator<< (std::ostream& os, const strikethrough_width_t& sw)
         "bold",
     };
 
-    auto v = static_cast<std::size_t>(sw);
-    if (v < std::size(names))
-        os << names[v];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), sw);
 }
 
 std::ostream& operator<< (std::ostream& os, const strikethrough_text_t& st)
@@ -838,13 +784,7 @@ std::ostream& operator<< (std::ostream& os, const strikethrough_text_t& st)
         "cross",
     };
 
-    auto v = static_cast<std::size_t>(st);
-    if (v < std::size(names))
-        os << names[v];
-    else
-        os << "???";
-
-    return os;
+    return write_name_for_pos(os, names, std::size(names), st);
 }
 
 }}
