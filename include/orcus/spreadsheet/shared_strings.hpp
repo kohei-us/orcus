@@ -48,20 +48,20 @@ typedef std::vector<format_run> format_runs_t;
 /**
  * This class handles global pool of string instances.
  */
-class ORCUS_SPM_DLLPUBLIC import_shared_strings : public iface::import_shared_strings
+class ORCUS_SPM_DLLPUBLIC shared_strings : public iface::import_shared_strings
 {
     using str_index_map_type = std::unordered_map<std::string_view, std::size_t>;
 
 public:
-    import_shared_strings() = delete;
-    import_shared_strings(const import_shared_strings&) = delete;
-    import_shared_strings& operator=(const import_shared_strings&) = delete;
+    shared_strings() = delete;
+    shared_strings(const shared_strings&) = delete;
+    shared_strings& operator=(const shared_strings&) = delete;
 
     // format runs for all shared strings, mapped by string IDs.
     typedef std::unordered_map<size_t, std::unique_ptr<format_runs_t>> format_runs_map_type;
 
-    import_shared_strings(orcus::string_pool& sp, ixion::model_context& cxt, styles& styles);
-    virtual ~import_shared_strings() override;
+    shared_strings(orcus::string_pool& sp, ixion::model_context& cxt, styles& styles);
+    virtual ~shared_strings() override;
 
     virtual size_t append(std::string_view s) override;
     virtual size_t add(std::string_view s) override;

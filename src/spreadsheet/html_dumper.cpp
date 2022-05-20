@@ -441,7 +441,7 @@ void html_dumper::dump(std::ostream& os) const
         const ixion::model_context& cxt = m_doc.get_model_context();
         const ixion::formula_name_resolver* resolver =
             m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
-        const import_shared_strings* sstrings = m_doc.get_shared_strings();
+        const shared_strings& sstrings = m_doc.get_shared_strings();
 
         elem table(os, p_table);
 
@@ -536,7 +536,7 @@ void html_dumper::dump(std::ostream& os) const
                         size_t sindex = cxt.get_string_identifier(pos);
                         const std::string* p = cxt.get_string(sindex);
                         assert(p);
-                        const format_runs_t* pformat = sstrings->get_format_runs(sindex);
+                        const format_runs_t* pformat = sstrings.get_format_runs(sindex);
                         if (pformat)
                             print_formatted_text(os, *p, *pformat);
                         else

@@ -13,8 +13,7 @@
 namespace orcus { namespace spreadsheet { namespace detail {
 
 import_shared_strings::import_shared_strings(
-    string_pool& sp, ixion::model_context& cxt, styles& st,
-    orcus::spreadsheet::import_shared_strings& ss_store) :
+    string_pool& sp, ixion::model_context& cxt, styles& st, shared_strings& ss_store) :
     m_string_pool(sp),
     m_cxt(cxt),
     m_styles(st),

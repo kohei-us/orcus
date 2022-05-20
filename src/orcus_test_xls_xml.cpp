@@ -286,20 +286,19 @@ void test_xls_xml_bold_and_italic()
     const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
     assert(sheet1);
 
-    const spreadsheet::import_shared_strings* ss = doc->get_shared_strings();
-    assert(ss);
+    const spreadsheet::shared_strings& ss = doc->get_shared_strings();
 
     const spreadsheet::styles& styles = doc->get_styles();
 
     // A1 contains unformatted text.
     size_t si = sheet1->get_string_identifier(0, 0);
-    const string* sp = ss->get_string(si);
+    const string* sp = ss.get_string(si);
     assert(sp);
     assert(*sp == "Normal Text");
 
     // A2 contains bold text.
     si = sheet1->get_string_identifier(1, 0);
-    sp = ss->get_string(si);
+    sp = ss.get_string(si);
     assert(sp);
     assert(*sp == "Bold Text");
 
@@ -313,7 +312,7 @@ void test_xls_xml_bold_and_italic()
 
     // A3 contains italic text.
     si = sheet1->get_string_identifier(2, 0);
-    sp = ss->get_string(si);
+    sp = ss.get_string(si);
     assert(sp);
     assert(*sp == "Italic Text");
 
@@ -327,7 +326,7 @@ void test_xls_xml_bold_and_italic()
 
     // A4 contains bold and italic text.
     si = sheet1->get_string_identifier(3, 0);
-    sp = ss->get_string(si);
+    sp = ss.get_string(si);
     assert(sp);
     assert(*sp == "Bold and Italic Text");
 
@@ -341,12 +340,12 @@ void test_xls_xml_bold_and_italic()
 
     // A5 contains a mixed format text.
     si = sheet1->get_string_identifier(4, 0);
-    sp = ss->get_string(si);
+    sp = ss.get_string(si);
     assert(sp);
     assert(*sp == "Bold and Italic mixed");
 
     // The string contains 2 formatted segments.
-    const spreadsheet::format_runs_t* fmt_runs = ss->get_format_runs(si);
+    const spreadsheet::format_runs_t* fmt_runs = ss.get_format_runs(si);
     assert(fmt_runs);
     assert(fmt_runs->size() == 2);
 
@@ -373,8 +372,7 @@ void test_xls_xml_colored_text()
     const spreadsheet::sheet* sheet1 = doc->get_sheet("ColoredText");
     assert(sheet1);
 
-    const spreadsheet::import_shared_strings* ss = doc->get_shared_strings();
-    assert(ss);
+    const spreadsheet::shared_strings& ss = doc->get_shared_strings();
 
     const spreadsheet::styles& styles = doc->get_styles();
 
@@ -416,17 +414,17 @@ void test_xls_xml_colored_text()
         assert(font->color.blue == c.blue);
 
         size_t si = sheet1->get_string_identifier(c.row, 0);
-        const string* s = ss->get_string(si);
+        const string* s = ss.get_string(si);
         assert(s);
         assert(*s == c.text);
     }
 
     // Cell B2 contains mix-colored text.
     size_t si = sheet1->get_string_identifier(1, 1);
-    const string* s = ss->get_string(si);
+    const string* s = ss.get_string(si);
     assert(s);
     assert(*s == "Red and Blue");
-    const spreadsheet::format_runs_t* fmt_runs = ss->get_format_runs(si);
+    const spreadsheet::format_runs_t* fmt_runs = ss.get_format_runs(si);
     assert(fmt_runs);
 
     // There should be 2 segments that are color-formatted.

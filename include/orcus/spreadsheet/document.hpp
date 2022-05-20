@@ -30,7 +30,7 @@ struct date_time_t;
 
 namespace spreadsheet {
 
-class import_shared_strings;
+class shared_strings;
 class styles;
 class pivot_collection;
 class sheet;
@@ -59,10 +59,8 @@ public:
     document(const range_size_t& sheet_size);
     ~document();
 
-    import_shared_strings* get_shared_strings();
-    const import_shared_strings* get_shared_strings() const;
-
-    import_shared_strings& get_shared_strings2();
+    shared_strings& get_shared_strings();
+    const shared_strings& get_shared_strings() const;
 
     styles& get_styles();
     const styles& get_styles() const;

@@ -33,7 +33,7 @@ class import_shared_strings : public iface::import_shared_strings
     orcus::string_pool& m_string_pool;
     ixion::model_context& m_cxt;
     styles& m_styles;
-    orcus::spreadsheet::import_shared_strings& m_ss_store;
+    shared_strings& m_ss_store;
 
     std::string m_cur_segment_string;
     format_run m_cur_format;
@@ -42,7 +42,7 @@ class import_shared_strings : public iface::import_shared_strings
 public:
     import_shared_strings(
         string_pool& sp, ixion::model_context& cxt, styles& st,
-        orcus::spreadsheet::import_shared_strings& ss_store);
+        orcus::spreadsheet::shared_strings& ss_store);
     virtual ~import_shared_strings() override;
 
     virtual size_t append(std::string_view s) override;

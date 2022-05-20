@@ -37,19 +37,14 @@ document::document(const range_size_t& sheet_size) : mp_impl(std::make_unique<de
 
 document::~document() {}
 
-import_shared_strings* document::get_shared_strings()
+shared_strings& document::get_shared_strings()
 {
-    return mp_impl->shared_strings.get();
+    return mp_impl->ss_store;
 }
 
-const import_shared_strings* document::get_shared_strings() const
+const shared_strings& document::get_shared_strings() const
 {
-    return mp_impl->shared_strings.get();
-}
-
-import_shared_strings& document::get_shared_strings2()
-{
-    return *mp_impl->shared_strings;
+    return mp_impl->ss_store;
 }
 
 styles& document::get_styles()
@@ -259,7 +254,7 @@ void document::dump_flat(const string& outdir) const
     cout << "----------------------------------------------------------------------" << endl;
     cout << "  Document content summary" << endl;
     cout << "----------------------------------------------------------------------" << endl;
-    mp_impl->shared_strings->dump();
+    mp_impl->ss_store.dump();
 
     cout << "number of sheets: " << mp_impl->sheets.size() << endl;
 

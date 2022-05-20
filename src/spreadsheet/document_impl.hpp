@@ -85,7 +85,7 @@ struct document_impl
     date_time_t origin_date;
     sheet_items_type sheets;
     styles styles_store;
-    std::unique_ptr<import_shared_strings> shared_strings;
+    shared_strings ss_store;
     ixion::abs_range_set_t dirty_cells;
 
     pivot_collection pivots;

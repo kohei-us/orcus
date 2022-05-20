@@ -120,65 +120,64 @@ void test_ods_import_formatted_text()
     spreadsheet::sheet* sh = doc.get_sheet(0);
     assert(sh);
 
-    const import_shared_strings* ss = doc.get_shared_strings();
-    assert(ss);
+    const shared_strings& ss = doc.get_shared_strings();
 
     const styles& styles = doc.get_styles();
 
     // A1 is unformatted
     size_t str_id = sh->get_string_identifier(0,0);
-    const string* str = ss->get_string(str_id);
+    const string* str = ss.get_string(str_id);
     assert(str && *str == "Normal Text");
     size_t xfid = sh->get_cell_format(0,0);
     assert(xfid == 0); // ID of 0 represents default format.
-    const format_runs_t* fmt = ss->get_format_runs(str_id);
+    const format_runs_t* fmt = ss.get_format_runs(str_id);
     assert(!fmt); // The string should be unformatted.
 
     // A2 is all bold via cell format.
     str_id = sh->get_string_identifier(1,0);
-    str = ss->get_string(str_id);
+    str = ss.get_string(str_id);
     assert(str && *str == "Bold Text");
     xfid = sh->get_cell_format(1,0);
     const cell_format_t* xf = styles.get_cell_format(xfid);
     assert(xf);
     const font_t* font_data = styles.get_font(xf->font);
     assert(font_data && font_data->bold && !font_data->italic);
-    fmt = ss->get_format_runs(str_id);
+    fmt = ss.get_format_runs(str_id);
     assert(!fmt); // This string should be unformatted.
 
     // A3 is all italic.
     str_id = sh->get_string_identifier(2,0);
-    str = ss->get_string(str_id);
+    str = ss.get_string(str_id);
     assert(str && *str == "Italic Text");
     xfid = sh->get_cell_format(2,0);
     xf = styles.get_cell_format(xfid);
     assert(xf);
     font_data = styles.get_font(xf->font);
     assert(font_data && !font_data->bold && font_data->italic);
-    fmt = ss->get_format_runs(str_id);
+    fmt = ss.get_format_runs(str_id);
     assert(!fmt); // This string should be unformatted.
 
     // A4 is all bolid and italic.
     str_id = sh->get_string_identifier(3,0);
-    str = ss->get_string(str_id);
+    str = ss.get_string(str_id);
     assert(str && *str == "Bold and Italic Text");
     xfid = sh->get_cell_format(3,0);
     xf = styles.get_cell_format(xfid);
     assert(xf);
     font_data = styles.get_font(xf->font);
     assert(font_data && font_data->bold && font_data->italic);
-    fmt = ss->get_format_runs(str_id);
+    fmt = ss.get_format_runs(str_id);
     assert(!fmt); // This string should be unformatted.
 
     // A5 has mixed format runs.
     str_id = sh->get_string_identifier(4,0);
-    str = ss->get_string(str_id);
+    str = ss.get_string(str_id);
     assert(str && *str == "Bold and Italic mixed");
     xfid = sh->get_cell_format(4,0);
     xf = styles.get_cell_format(xfid);
     assert(xf);
     font_data = styles.get_font(xf->font);
-    fmt = ss->get_format_runs(str_id);
+    fmt = ss.get_format_runs(str_id);
     assert(fmt); // This string should be formatted.
 
     {

@@ -54,32 +54,32 @@ bool format_run::formatted() const
     return false;
 }
 
-import_shared_strings::import_shared_strings(orcus::string_pool& sp, ixion::model_context& cxt, styles& styles) :
+shared_strings::shared_strings(orcus::string_pool& sp, ixion::model_context& cxt, styles& styles) :
     m_string_pool(sp), m_cxt(cxt), m_styles(styles), mp_cur_format_runs(nullptr) {}
 
-import_shared_strings::~import_shared_strings()
+shared_strings::~shared_strings()
 {
     // This pointer should be nullptr.
     assert(!mp_cur_format_runs);
     delete mp_cur_format_runs;
 }
 
-size_t import_shared_strings::append(std::string_view s)
+size_t shared_strings::append(std::string_view s)
 {
     return m_cxt.append_string(s);
 }
 
-size_t import_shared_strings::add(std::string_view s)
+size_t shared_strings::add(std::string_view s)
 {
     return m_cxt.add_string(s);
 }
 
-void import_shared_strings::set_format_runs(std::size_t sindex, std::unique_ptr<format_runs_t> runs)
+void shared_strings::set_format_runs(std::size_t sindex, std::unique_ptr<format_runs_t> runs)
 {
     m_formats.insert_or_assign(sindex, std::move(runs));
 }
 
-const format_runs_t* import_shared_strings::get_format_runs(size_t index) const
+const format_runs_t* shared_strings::get_format_runs(size_t index) const
 {
     format_runs_map_type::const_iterator itr = m_formats.find(index);
     if (itr != m_formats.end())
@@ -87,12 +87,12 @@ const format_runs_t* import_shared_strings::get_format_runs(size_t index) const
     return nullptr;
 }
 
-const string* import_shared_strings::get_string(size_t index) const
+const string* shared_strings::get_string(size_t index) const
 {
     return m_cxt.get_string(index);
 }
 
-void import_shared_strings::set_segment_font(size_t font_index)
+void shared_strings::set_segment_font(size_t font_index)
 {
     const font_t* font_data = m_styles.get_font(font_index);
     if (!font_data)
@@ -105,33 +105,33 @@ void import_shared_strings::set_segment_font(size_t font_index)
     m_cur_format.color = font_data->color;
 }
 
-void import_shared_strings::set_segment_bold(bool b)
+void shared_strings::set_segment_bold(bool b)
 {
     m_cur_format.bold = b;
 }
 
-void import_shared_strings::set_segment_italic(bool b)
+void shared_strings::set_segment_italic(bool b)
 {
     m_cur_format.italic = b;
 }
 
-void import_shared_strings::set_segment_font_name(std::string_view s)
+void shared_strings::set_segment_font_name(std::string_view s)
 {
     m_cur_format.font = m_string_pool.intern(s).first;
 }
 
-void import_shared_strings::set_segment_font_size(double point)
+void shared_strings::set_segment_font_size(double point)
 {
     m_cur_format.font_size = point;
 }
 
-void import_shared_strings::set_segment_font_color(
+void shared_strings::set_segment_font_color(
     color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
     m_cur_format.color = color_t(alpha, red, green, blue);
 }
 
-void import_shared_strings::append_segment(std::string_view s)
+void shared_strings::append_segment(std::string_view s)
 {
     if (s.empty())
         return;
@@ -154,7 +154,7 @@ void import_shared_strings::append_segment(std::string_view s)
     }
 }
 
-size_t import_shared_strings::commit_segments()
+size_t shared_strings::commit_segments()
 {
     ixion::string_id_t sindex = m_cxt.append_string(m_cur_segment_string);
     m_cur_segment_string.clear();
@@ -178,7 +178,7 @@ public:
 
 }
 
-void import_shared_strings::dump() const
+void shared_strings::dump() const
 {
     cout << "number of shared strings: " << m_cxt.get_string_count() << endl;
 }

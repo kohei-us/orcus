@@ -200,7 +200,7 @@ struct import_factory::impl
         m_ref_resolver(doc),
         m_global_named_exp(doc),
         m_styles(doc.get_styles(), doc.get_string_pool()),
-        shared_strings(doc.get_string_pool(), doc.get_model_context(), doc.get_styles(), doc.get_shared_strings2()),
+        shared_strings(doc.get_string_pool(), doc.get_model_context(), doc.get_styles(), doc.get_shared_strings()),
         m_recalc_formula_cells(false),
         m_error_policy(formula_error_policy_t::fail)
     {
