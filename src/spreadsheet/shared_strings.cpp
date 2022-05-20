@@ -20,15 +20,15 @@ using format_runs_map_type = std::unordered_map<size_t, std::unique_ptr<format_r
 
 struct shared_strings::impl
 {
-    ixion::model_context& m_cxt;
+    ixion::model_context& context;
 
     /**
      * Container for all format runs of all formatted strings.  Format runs
      * are mapped with the string IDs.
      */
-    format_runs_map_type m_formats;
+    format_runs_map_type formats;
 
-    impl(ixion::model_context& cxt) : m_cxt(cxt) {}
+    impl(ixion::model_context& cxt) : context(cxt) {}
 };
 
 shared_strings::shared_strings(ixion::model_context& cxt) : mp_impl(std::make_unique<impl>(cxt)) {}
@@ -37,25 +37,25 @@ shared_strings::~shared_strings() {}
 
 void shared_strings::set_format_runs(std::size_t sindex, std::unique_ptr<format_runs_t> runs)
 {
-    mp_impl->m_formats.insert_or_assign(sindex, std::move(runs));
+    mp_impl->formats.insert_or_assign(sindex, std::move(runs));
 }
 
 const format_runs_t* shared_strings::get_format_runs(size_t index) const
 {
-    auto it = mp_impl->m_formats.find(index);
-    if (it != mp_impl->m_formats.end())
+    auto it = mp_impl->formats.find(index);
+    if (it != mp_impl->formats.end())
         return it->second.get();
     return nullptr;
 }
 
 const std::string* shared_strings::get_string(size_t index) const
 {
-    return mp_impl->m_cxt.get_string(index);
+    return mp_impl->context.get_string(index);
 }
 
 void shared_strings::dump() const
 {
-    std::cout << "number of shared strings: " << mp_impl->m_cxt.get_string_count() << std::endl;
+    std::cout << "number of shared strings: " << mp_impl->context.get_string_count() << std::endl;
 }
 
 }}
