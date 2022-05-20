@@ -7,6 +7,9 @@
 
 #include "factory_shared_strings.hpp"
 
+#include <orcus/spreadsheet/types.hpp>
+#include <orcus/spreadsheet/shared_strings.hpp>
+#include <orcus/spreadsheet/styles.hpp>
 #include <orcus/string_pool.hpp>
 #include <ixion/model_context.hpp>
 

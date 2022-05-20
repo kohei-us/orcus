@@ -15,8 +15,9 @@
 #include <iosfwd>
 #include <initializer_list>
 #include <string_view>
+#include <vector>
 
-// NB: This header should only use primitive data types and enums.
+// NB: This header should only define primitive data types, enums and structs.
 
 namespace orcus { namespace spreadsheet {
 
@@ -455,6 +456,23 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const address_t& v);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const src_address_t& v);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const range_t& v);
 
+struct ORCUS_SPM_DLLPUBLIC color_t
+{
+    color_elem_t alpha;
+    color_elem_t red;
+    color_elem_t green;
+    color_elem_t blue;
+
+    color_t();
+    color_t(color_elem_t _red, color_elem_t _green, color_elem_t _blue);
+    color_t(color_elem_t _alpha, color_elem_t _red, color_elem_t _green, color_elem_t _blue);
+
+    void reset();
+
+    bool operator==(const color_t& other) const;
+    bool operator!=(const color_t& other) const;
+};
+
 struct ORCUS_DLLPUBLIC color_rgb_t
 {
     color_elem_t red;
@@ -468,6 +486,24 @@ struct ORCUS_DLLPUBLIC color_rgb_t
 
     color_rgb_t& operator= (const color_rgb_t& other);
 };
+
+struct ORCUS_SPM_DLLPUBLIC format_run
+{
+    size_t pos;
+    size_t size;
+    std::string_view font;
+    double font_size;
+    color_t color;
+    bool bold:1;
+    bool italic:1;
+
+    format_run();
+
+    void reset();
+    bool formatted() const;
+};
+
+using format_runs_t = std::vector<format_run>;
 
 /**
  * Convert a string representation of a totals row function name to its

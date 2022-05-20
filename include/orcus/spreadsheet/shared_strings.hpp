@@ -8,8 +8,7 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_SHARED_STRINGS_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_SHARED_STRINGS_HPP
 
-#include <orcus/spreadsheet/styles.hpp>
-#include <orcus/env.hpp>
+#include "types.hpp"
 
 #include <vector>
 #include <memory>
@@ -20,24 +19,6 @@ namespace ixion { class model_context; }
 namespace orcus {
 
 namespace spreadsheet {
-
-struct ORCUS_SPM_DLLPUBLIC format_run
-{
-    size_t pos;
-    size_t size;
-    std::string_view font;
-    double font_size;
-    color_t color;
-    bool bold:1;
-    bool italic:1;
-
-    format_run();
-
-    void reset();
-    bool formatted() const;
-};
-
-typedef std::vector<format_run> format_runs_t;
 
 /**
  * This class handles global pool of string instances.

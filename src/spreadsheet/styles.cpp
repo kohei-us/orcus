@@ -83,36 +83,6 @@ bool font_active_t::operator!= (const font_active_t& other) const noexcept
     return !operator== (other);
 }
 
-color_t::color_t() :
-    alpha(0), red(0), green(0), blue(0)
-{
-}
-
-color_t::color_t(color_elem_t _red, color_elem_t _green, color_elem_t _blue) :
-    alpha(255), red(_red), green(_green), blue(_blue)
-{
-}
-
-color_t::color_t(color_elem_t _alpha, color_elem_t _red, color_elem_t _green, color_elem_t _blue) :
-    alpha(_alpha), red(_red), green(_green), blue(_blue)
-{
-}
-
-void color_t::reset()
-{
-    *this = color_t();
-}
-
-bool color_t::operator==(const color_t& other) const
-{
-    return alpha == other.alpha && red == other.red && green == other.green && blue == other.blue;
-}
-
-bool color_t::operator!=(const color_t& other) const
-{
-    return !operator==(other);
-}
-
 fill_t::fill_t() :
     pattern_type(fill_pattern_t::none)
 {

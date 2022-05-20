@@ -8,7 +8,6 @@
 #pragma once
 
 #include <orcus/spreadsheet/import_interface.hpp>
-#include <orcus/spreadsheet/shared_strings.hpp>
 
 #include <memory>
 
@@ -25,6 +24,7 @@ class string_pool;
 namespace spreadsheet {
 
 class styles;
+class shared_strings;
 
 namespace detail {
 

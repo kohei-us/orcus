@@ -17,39 +17,6 @@ using namespace std;
 
 namespace orcus { namespace spreadsheet {
 
-format_run::format_run() :
-    pos(0), size(0),
-    font_size(0),
-    bold(false), italic(false) {}
-
-void format_run::reset()
-{
-    pos = 0;
-    size = 0;
-    font = std::string_view{};
-    font_size = 0;
-    bold = false;
-    italic = false;
-    color = color_t();
-}
-
-bool format_run::formatted() const
-{
-    if (bold || italic)
-        return true;
-
-    if (font_size)
-        return true;
-
-    if (!font.empty())
-        return true;
-
-    if (color.alpha || color.red || color.green || color.blue)
-        return true;
-
-    return false;
-}
-
 // format runs for all shared strings, mapped by string IDs.
 using format_runs_map_type = std::unordered_map<size_t, std::unique_ptr<format_runs_t>>;
 
