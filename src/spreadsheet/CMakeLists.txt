@@ -10,6 +10,7 @@ add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     dumper_global.cpp
     factory.cpp
     factory_pivot.cpp
+    factory_shared_strings.cpp
     factory_sheet.cpp
     factory_styles.cpp
     factory_table.cpp

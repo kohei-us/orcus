@@ -29,6 +29,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	factory.cpp \
 	factory_pivot.hpp \
 	factory_pivot.cpp \
+	factory_shared_strings.hpp \
+	factory_shared_strings.cpp \
 	factory_sheet.hpp \
 	factory_sheet.cpp \
 	factory_styles.cpp \

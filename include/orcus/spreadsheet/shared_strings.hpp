@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <vector>
 #include <unordered_map>
+#include <memory>
 
 namespace ixion { class model_context; }
 
@@ -57,7 +58,7 @@ public:
     import_shared_strings& operator=(const import_shared_strings&) = delete;
 
     // format runs for all shared strings, mapped by string IDs.
-    typedef std::unordered_map<size_t, format_runs_t*> format_runs_map_type;
+    typedef std::unordered_map<size_t, std::unique_ptr<format_runs_t>> format_runs_map_type;
 
     import_shared_strings(orcus::string_pool& sp, ixion::model_context& cxt, styles& styles);
     virtual ~import_shared_strings() override;
@@ -73,6 +74,14 @@ public:
     virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
     virtual void append_segment(std::string_view s) override;
     virtual size_t commit_segments() override;
+
+    /**
+     * Set the entire format runs for a string.
+     *
+     * @param sindex index of the string to associated the format runs with.
+     * @param runs format runs.
+     */
+    void set_format_runs(std::size_t sindex, std::unique_ptr<format_runs_t> runs);
 
     const format_runs_t* get_format_runs(size_t index) const;
 

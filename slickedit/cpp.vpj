@@ -553,6 +553,8 @@
                 <F N="../src/spreadsheet/factory.cpp"/>
                 <F N="../src/spreadsheet/factory_pivot.cpp"/>
                 <F N="../src/spreadsheet/factory_pivot.hpp"/>
+                <F N="../src/spreadsheet/factory_shared_strings.cpp"/>
+                <F N="../src/spreadsheet/factory_shared_strings.hpp"/>
                 <F N="../src/spreadsheet/factory_sheet.cpp"/>
                 <F N="../src/spreadsheet/factory_sheet.hpp"/>
                 <F N="../src/spreadsheet/factory_styles.cpp"/>

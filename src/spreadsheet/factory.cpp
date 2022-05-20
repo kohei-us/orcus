@@ -18,6 +18,7 @@
 #include "pstring.hpp"
 
 #include "factory_pivot.hpp"
+#include "factory_shared_strings.hpp"
 #include "factory_sheet.hpp"
 #include "global_settings.hpp"
 
@@ -181,6 +182,7 @@ struct import_factory::impl
     import_ref_resolver m_ref_resolver;
     import_global_named_exp m_global_named_exp;
     import_styles m_styles;
+    detail::import_shared_strings shared_strings;
 
     sheet_ifaces_type m_sheets;
 
@@ -198,8 +200,11 @@ struct import_factory::impl
         m_ref_resolver(doc),
         m_global_named_exp(doc),
         m_styles(doc.get_styles(), doc.get_string_pool()),
+        shared_strings(doc.get_string_pool(), doc.get_model_context(), doc.get_styles(), doc.get_shared_strings2()),
         m_recalc_formula_cells(false),
-        m_error_policy(formula_error_policy_t::fail) {}
+        m_error_policy(formula_error_policy_t::fail)
+    {
+    }
 };
 
 import_factory::import_factory(document& doc) :
@@ -221,7 +226,7 @@ iface::import_global_settings* import_factory::get_global_settings()
 
 iface::import_shared_strings* import_factory::get_shared_strings()
 {
-    return mp_impl->m_doc.get_shared_strings();
+    return &mp_impl->shared_strings;
 }
 
 iface::import_styles* import_factory::get_styles()

@@ -5,64 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <orcus/spreadsheet/shared_strings.hpp>
-#include <orcus/spreadsheet/styles.hpp>
+#include "factory_shared_strings.hpp"
 
-#include <orcus/global.hpp>
 #include <orcus/string_pool.hpp>
-
 #include <ixion/model_context.hpp>
 
-#include <iostream>
-#include <algorithm>
-#include <cassert>
+namespace orcus { namespace spreadsheet { namespace detail {
 
-using namespace std;
-
-namespace orcus { namespace spreadsheet {
-
-format_run::format_run() :
-    pos(0), size(0),
-    font_size(0),
-    bold(false), italic(false) {}
-
-void format_run::reset()
+import_shared_strings::import_shared_strings(
+    string_pool& sp, ixion::model_context& cxt, styles& st,
+    orcus::spreadsheet::import_shared_strings& ss_store) :
+    m_string_pool(sp),
+    m_cxt(cxt),
+    m_styles(st),
+    m_ss_store(ss_store)
 {
-    pos = 0;
-    size = 0;
-    font = std::string_view{};
-    font_size = 0;
-    bold = false;
-    italic = false;
-    color = color_t();
 }
 
-bool format_run::formatted() const
-{
-    if (bold || italic)
-        return true;
-
-    if (font_size)
-        return true;
-
-    if (!font.empty())
-        return true;
-
-    if (color.alpha || color.red || color.green || color.blue)
-        return true;
-
-    return false;
-}
-
-import_shared_strings::import_shared_strings(orcus::string_pool& sp, ixion::model_context& cxt, styles& styles) :
-    m_string_pool(sp), m_cxt(cxt), m_styles(styles), mp_cur_format_runs(nullptr) {}
-
-import_shared_strings::~import_shared_strings()
-{
-    // This pointer should be nullptr.
-    assert(!mp_cur_format_runs);
-    delete mp_cur_format_runs;
-}
+import_shared_strings::~import_shared_strings() {}
 
 size_t import_shared_strings::append(std::string_view s)
 {
@@ -72,24 +32,6 @@ size_t import_shared_strings::append(std::string_view s)
 size_t import_shared_strings::add(std::string_view s)
 {
     return m_cxt.add_string(s);
-}
-
-void import_shared_strings::set_format_runs(std::size_t sindex, std::unique_ptr<format_runs_t> runs)
-{
-    m_formats.insert_or_assign(sindex, std::move(runs));
-}
-
-const format_runs_t* import_shared_strings::get_format_runs(size_t index) const
-{
-    format_runs_map_type::const_iterator itr = m_formats.find(index);
-    if (itr != m_formats.end())
-        return itr->second.get();
-    return nullptr;
-}
-
-const string* import_shared_strings::get_string(size_t index) const
-{
-    return m_cxt.get_string(index);
 }
 
 void import_shared_strings::set_segment_font(size_t font_index)
@@ -147,7 +89,7 @@ void import_shared_strings::append_segment(std::string_view s)
         m_cur_format.size = s.size();
 
         if (!mp_cur_format_runs)
-            mp_cur_format_runs = new format_runs_t;
+            mp_cur_format_runs = std::make_unique<format_runs_t>();
 
         mp_cur_format_runs->push_back(m_cur_format);
         m_cur_format.reset();
@@ -158,30 +100,12 @@ size_t import_shared_strings::commit_segments()
 {
     ixion::string_id_t sindex = m_cxt.append_string(m_cur_segment_string);
     m_cur_segment_string.clear();
-    m_formats.insert_or_assign(sindex, std::unique_ptr<format_runs_t>(mp_cur_format_runs));
-    mp_cur_format_runs = nullptr;
+    m_ss_store.set_format_runs(sindex, std::move(mp_cur_format_runs));
+    mp_cur_format_runs.reset();
+
     return sindex;
 }
 
-namespace {
+}}} // namespace orcus::spreadsheet::detail
 
-struct print_string
-{
-    size_t m_count;
-public:
-    print_string() : m_count(1) {}
-    void operator() (std::string_view ps)
-    {
-        cout << m_count++ << ": '" << ps << "'" << endl;
-    }
-};
-
-}
-
-void import_shared_strings::dump() const
-{
-    cout << "number of shared strings: " << m_cxt.get_string_count() << endl;
-}
-
-}}
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

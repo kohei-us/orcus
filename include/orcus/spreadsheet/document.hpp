@@ -62,6 +62,8 @@ public:
     import_shared_strings* get_shared_strings();
     const import_shared_strings* get_shared_strings() const;
 
+    import_shared_strings& get_shared_strings2();
+
     styles& get_styles();
     const styles& get_styles() const;
 

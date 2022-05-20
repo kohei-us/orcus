@@ -47,6 +47,11 @@ const import_shared_strings* document::get_shared_strings() const
     return mp_impl->shared_strings.get();
 }
 
+import_shared_strings& document::get_shared_strings2()
+{
+    return *mp_impl->shared_strings;
+}
+
 styles& document::get_styles()
 {
     return mp_impl->styles_store;
