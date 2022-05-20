@@ -13,8 +13,6 @@
 #include <algorithm>
 #include <unordered_map>
 
-using namespace std;
-
 namespace orcus { namespace spreadsheet {
 
 // format runs for all shared strings, mapped by string IDs.
@@ -50,29 +48,14 @@ const format_runs_t* shared_strings::get_format_runs(size_t index) const
     return nullptr;
 }
 
-const string* shared_strings::get_string(size_t index) const
+const std::string* shared_strings::get_string(size_t index) const
 {
     return mp_impl->m_cxt.get_string(index);
 }
 
-namespace {
-
-struct print_string
-{
-    size_t m_count;
-public:
-    print_string() : m_count(1) {}
-    void operator() (std::string_view ps)
-    {
-        cout << m_count++ << ": '" << ps << "'" << endl;
-    }
-};
-
-}
-
 void shared_strings::dump() const
 {
-    cout << "number of shared strings: " << mp_impl->m_cxt.get_string_count() << endl;
+    std::cout << "number of shared strings: " << mp_impl->m_cxt.get_string_count() << std::endl;
 }
 
 }}
