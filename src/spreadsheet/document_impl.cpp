@@ -216,7 +216,7 @@ document_impl::document_impl(document& _doc, const range_size_t& sheet_size) :
     doc(_doc),
     context({sheet_size.rows, sheet_size.columns}),
     styles_store(),
-    ss_store(string_pool_store, context, styles_store),
+    ss_store(context),
     pivots(doc),
     name_resolver_global(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &context)),
     grammar(formula_grammar_t::xlsx),
