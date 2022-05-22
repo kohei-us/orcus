@@ -124,15 +124,16 @@ public:
 
 /**
  * Interface for styles. Note that because the default style must have an
- * index of 0 in each style category, the caller must set the default styles
- * first before importing and setting real styles. ID's of styles are
- * assigned sequentially starting with 0 and upward in each style category.
+ * index of 0 in each style category, the caller must commit the default
+ * styles first before importing and setting other, non-default styles. The
+ * indices of the styles are assigned sequentially starting with 0 and upward
+ * in each style category.  Font, fill, border, cell protection etc are
+ * considered categories in this context.
  *
- * In contrast to xf formatting, dxf (differential formats) formatting only
- * stores the format information that is explicitly set. It does not store
- * formatting from the default style. Applying a dxf format to an object
- * only applies those explicitly set formats from the dxf entry, while all
- * the other formats are retained.
+ * The term 'xf' here stands for cell format.
+ *
+ * In contrast to xf formatting, dxf (differential formats) format only stores
+ * the format information that is different from the base format data.
  */
 class import_styles
 {
@@ -230,7 +231,11 @@ public:
     virtual void set_number_format_code(std::string_view s) = 0;
     virtual size_t commit_number_format() = 0;
 
-    // cell format and cell style format (xf == cell format)
+    // Cell format and cell style format, and differential cell format records.
+    // All of these records share the same data structure for their entries. A
+    // cell in a worksheet references an entry in the cell format record
+    // directly by the index, and the entry in the cell format record references
+    // a cell style format in the cell style format record by the index.
 
     virtual void set_cell_xf_count(size_t n) = 0;
     virtual void set_cell_style_xf_count(size_t n) = 0;
@@ -241,6 +246,13 @@ public:
     virtual void set_xf_border(size_t index) = 0;
     virtual void set_xf_protection(size_t index) = 0;
     virtual void set_xf_number_format(size_t index) = 0;
+
+    /**
+     * Set the index into the cell style record to specify a named cell style it
+     * uses as its basis.
+     *
+     * @param index index into the cell style record it uses as its basis.
+     */
     virtual void set_xf_style_xf(size_t index) = 0;
     virtual void set_xf_apply_alignment(bool b) = 0;
     virtual void set_xf_horizontal_alignment(hor_alignment_t align) = 0;
@@ -250,12 +262,37 @@ public:
     virtual size_t commit_cell_style_xf() = 0;
     virtual size_t commit_dxf() = 0;
 
-    // cell style entry
+    // named cell style. It references the actual cell format data via xf index
+    // into the cell style format record.
 
     virtual void set_cell_style_count(size_t n) = 0;
     virtual void set_cell_style_name(std::string_view s) = 0;
+
+    /**
+     * Set the index into the cell style record.  The named cell style uses the
+     * entry specified by this index as its format.
+     *
+     * @param index index into the cell style record.
+     */
     virtual void set_cell_style_xf(size_t index) = 0;
+
+    /**
+     * Set the index into the built-in style record.
+     *
+     * @note This is Excel-specific, and unclear whether it's useful outside of
+     * Excel's implementation.  Built-in styles are not stored in file.
+     *
+     * @param index index into the built-in cell style record.
+     */
     virtual void set_cell_style_builtin(size_t index) = 0;
+
+    /**
+     * Set the name of the parent cell style it uses as its basis.
+     *
+     * @note ODF uses this but Excel does not use this value.
+     *
+     * @param s name of the parent cell style.
+     */
     virtual void set_cell_style_parent_name(std::string_view s) = 0;
     virtual size_t commit_cell_style() = 0;
 };
