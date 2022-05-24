@@ -8,9 +8,10 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_IMPORT_FACTORY_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_IMPORT_FACTORY_HPP
 
-#include "orcus/spreadsheet/import_interface.hpp"
-#include "orcus/spreadsheet/export_interface.hpp"
-#include "orcus/env.hpp"
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <orcus/spreadsheet/export_interface.hpp>
+#include <orcus/env.hpp>
 
 #include <memory>
 

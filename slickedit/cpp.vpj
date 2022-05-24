@@ -177,6 +177,7 @@
                     <F N="../include/orcus/spreadsheet/factory.hpp"/>
                     <F N="../include/orcus/spreadsheet/import_interface.hpp"/>
                     <F N="../include/orcus/spreadsheet/import_interface_pivot.hpp"/>
+                    <F N="../include/orcus/spreadsheet/import_interface_styles.hpp"/>
                     <F N="../include/orcus/spreadsheet/import_interface_view.hpp"/>
                     <F N="../include/orcus/spreadsheet/pivot.hpp"/>
                     <F N="../include/orcus/spreadsheet/shared_strings.hpp"/>
@@ -248,6 +249,7 @@
                     <F N="../src/include/mso/encryption_info.hpp"/>
                 </Folder>
                 <F N="../src/include/cpu_features.hpp"/>
+                <F N="../src/include/mock_spreadsheet.hpp"/>
                 <F N="../src/include/numeric_parser.hpp"/>
                 <F N="../src/include/ostream_utils.hpp"/>
                 <F N="../src/include/pstring.hpp"/>
@@ -306,7 +308,6 @@
                 <F N="../src/liborcus/json_util.hpp"/>
                 <F N="../src/liborcus/measurement.cpp"/>
                 <F N="../src/liborcus/mock_spreadsheet.cpp"/>
-                <F N="../src/liborcus/mock_spreadsheet.hpp"/>
                 <F N="../src/liborcus/odf_helper.cpp"/>
                 <F N="../src/liborcus/odf_helper.hpp"/>
                 <F N="../src/liborcus/odf_helper_test.cpp"/>

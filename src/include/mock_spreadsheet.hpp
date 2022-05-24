@@ -9,6 +9,7 @@
 #define __ORCUS_SPREADSHEET_MOCK_IMPORT_INTERFACE_HPP__
 
 #include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_styles.hpp>
 
 namespace orcus { namespace spreadsheet { namespace mock {
 

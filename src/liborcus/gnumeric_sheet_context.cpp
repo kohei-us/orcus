@@ -10,9 +10,10 @@
 #include "gnumeric_token_constants.hpp"
 #include "gnumeric_namespace_types.hpp"
 #include "gnumeric_helper.hpp"
-#include "orcus/global.hpp"
-#include "orcus/spreadsheet/import_interface.hpp"
-#include "gnumeric_helper.hpp"
+
+#include <orcus/global.hpp>
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_styles.hpp>
 
 namespace orcus {
 

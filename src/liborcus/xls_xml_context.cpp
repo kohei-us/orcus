@@ -11,6 +11,7 @@
 #include "spreadsheet_iface_util.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_styles.hpp>
 #include <orcus/spreadsheet/import_interface_view.hpp>
 #include <orcus/measurement.hpp>
 

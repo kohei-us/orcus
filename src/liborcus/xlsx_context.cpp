@@ -14,10 +14,11 @@
 #include "xlsx_helper.hpp"
 #include "xml_context_global.hpp"
 
-#include "orcus/global.hpp"
-#include "orcus/tokens.hpp"
-#include "orcus/spreadsheet/import_interface.hpp"
-#include "orcus/measurement.hpp"
+#include <orcus/global.hpp>
+#include <orcus/tokens.hpp>
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <orcus/measurement.hpp>
 
 #include <mdds/sorted_string_map.hpp>
 #include <mdds/global.hpp>
