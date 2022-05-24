@@ -27,10 +27,10 @@ class import_sheet_view;
 /**
  * Interface class designed to be derived by the implementor.
  */
-class import_shared_strings
+class ORCUS_DLLPUBLIC import_shared_strings
 {
 public:
-    ORCUS_DLLPUBLIC virtual ~import_shared_strings() = 0;
+    virtual ~import_shared_strings();
 
     /**
      * Append new string to the string list.  Order of insertion is important
@@ -135,10 +135,10 @@ public:
  * In contrast to xf formatting, dxf (differential formats) format only stores
  * the format information that is different from the base format data.
  */
-class import_styles
+class ORCUS_DLLPUBLIC import_styles
 {
 public:
-    ORCUS_DLLPUBLIC virtual ~import_styles() = 0;
+    virtual ~import_styles();
 
     // font
 
@@ -302,10 +302,10 @@ public:
  * that are used for decorative purposes but are not necessarily a part of
  * the sheet cell values.
  */
-class import_sheet_properties
+class ORCUS_DLLPUBLIC import_sheet_properties
 {
 public:
-    ORCUS_DLLPUBLIC virtual ~import_sheet_properties() = 0;
+    virtual ~import_sheet_properties();
 
     virtual void set_column_width(col_t col, double width, orcus::length_unit_t unit) = 0;
 
@@ -373,10 +373,10 @@ public:
 /**
  * Interface for importing data tables.
  */
-class import_data_table
+class ORCUS_DLLPUBLIC import_data_table
 {
 public:
-    ORCUS_DLLPUBLIC virtual ~import_data_table() = 0;
+    virtual ~import_data_table();
 
     virtual void set_type(data_table_type_t type) = 0;
 
@@ -389,10 +389,10 @@ public:
     virtual void commit() = 0;
 };
 
-class import_auto_filter
+class ORCUS_DLLPUBLIC import_auto_filter
 {
 public:
-    ORCUS_DLLPUBLIC virtual ~import_auto_filter() = 0;
+    virtual ~import_auto_filter();
 
     /**
      * Specify the range where the auto filter is applied.
@@ -451,10 +451,10 @@ public:
  *   <li>a color (optional)</li>
  * </ul>
  */
-class import_conditional_format
+class ORCUS_DLLPUBLIC import_conditional_format
 {
 public:
-    ORCUS_DLLPUBLIC virtual ~import_conditional_format() = 0;
+    virtual ~import_conditional_format();
 
     /**
      * Sets the color of the current condition.
@@ -570,7 +570,7 @@ public:
 class ORCUS_DLLPUBLIC import_table
 {
 public:
-    virtual ~import_table() = 0;
+    virtual ~import_table();
 
     virtual import_auto_filter* get_auto_filter();
 
@@ -688,7 +688,7 @@ public:
 class ORCUS_DLLPUBLIC import_sheet
 {
 public:
-    virtual ~import_sheet() = 0;
+    virtual ~import_sheet();
 
     virtual import_sheet_view* get_sheet_view();
 
@@ -847,10 +847,10 @@ public:
     virtual range_size_t get_sheet_size() const = 0;
 };
 
-class import_global_settings
+class ORCUS_DLLPUBLIC import_global_settings
 {
 public:
-    ORCUS_DLLPUBLIC virtual ~import_global_settings() = 0;
+    virtual ~import_global_settings();
 
     /**
      * Set the date that is to be represented by a value of 0.  All date
@@ -934,7 +934,7 @@ public:
 class ORCUS_DLLPUBLIC import_factory
 {
 public:
-    virtual ~import_factory() = 0;
+    virtual ~import_factory();
 
     virtual import_global_settings* get_global_settings();
 
