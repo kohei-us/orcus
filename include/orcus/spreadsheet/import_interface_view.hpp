@@ -10,9 +10,9 @@
 
 #include <cstdlib>
 
-#include "orcus/spreadsheet/view_types.hpp"
-#include "orcus/types.hpp"
-#include "orcus/env.hpp"
+#include "view_types.hpp"
+#include "../types.hpp"
+#include "../env.hpp"
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
