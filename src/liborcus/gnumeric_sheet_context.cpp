@@ -62,60 +62,6 @@ private:
     gnumeric_style_region& m_style_region_data;
 };
 
-class gnumeric_font_attr_parser
-{
-public:
-    gnumeric_font_attr_parser(spreadsheet::iface::import_styles& styles) :
-        m_styles(styles) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch(attr.name)
-        {
-            case XML_Unit:
-            {
-                double n = atoi(attr.value.data());
-                m_styles.set_font_size(n);
-            }
-            break;
-            case XML_Bold:
-            {
-                bool b = atoi(attr.value.data()) != 0;
-                m_styles.set_font_bold(b);
-            }
-            break;
-            case XML_Italic:
-            {
-                bool b = atoi(attr.value.data()) != 0;
-                m_styles.set_font_italic(b);
-            }
-            break;
-            case XML_Underline:
-            {
-                int n = atoi(attr.value.data());
-                switch (n)
-                {
-                    case 0:
-                        m_styles.set_font_underline(spreadsheet::underline_t::none);
-                    break;
-                    case 1:
-                        m_styles.set_font_underline(spreadsheet::underline_t::single_line);
-                    break;
-                    case 2:
-                        m_styles.set_font_underline(spreadsheet::underline_t::double_line);
-                    break;
-                    default:
-                        ;
-                }
-            }
-            break;
-        }
-    }
-
-private:
-    spreadsheet::iface::import_styles& m_styles;
-};
-
 class gnumeric_style_attr_parser
 {
 public:
@@ -692,7 +638,55 @@ void gnumeric_sheet_context::characters(std::string_view str, bool transient)
 
 void gnumeric_sheet_context::start_font(const xml_attrs_t& attrs)
 {
-    for_each(attrs.begin(), attrs.end(), gnumeric_font_attr_parser(*mp_factory->get_styles()));
+    auto* styles = mp_factory->get_styles();
+    if (!styles)
+        return;
+
+    auto* font_style = styles->get_font_style();
+    if (!font_style)
+        throw interface_error("implementer must provide a concrete instance of import_font_style.");
+
+    for (const auto& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_Unit:
+            {
+                double n = atoi(attr.value.data());
+                font_style->set_size(n);
+                break;
+            }
+            case XML_Bold:
+            {
+                bool b = atoi(attr.value.data()) != 0;
+                font_style->set_bold(b);
+                break;
+            }
+            case XML_Italic:
+            {
+                bool b = atoi(attr.value.data()) != 0;
+                font_style->set_italic(b);
+                break;
+            }
+            case XML_Underline:
+            {
+                int n = atoi(attr.value.data());
+                switch (n)
+                {
+                    case 0:
+                        font_style->set_underline(spreadsheet::underline_t::none);
+                        break;
+                    case 1:
+                        font_style->set_underline(spreadsheet::underline_t::single_line);
+                        break;
+                    case 2:
+                        font_style->set_underline(spreadsheet::underline_t::double_line);
+                        break;
+                }
+                break;
+            }
+        }
+    }
 }
 
 void gnumeric_sheet_context::start_col(const xml_attrs_t& attrs)
