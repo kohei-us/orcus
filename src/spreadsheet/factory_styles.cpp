@@ -567,7 +567,10 @@ void import_font_style::set_strikethrough_text(strikethrough_text_t s)
 
 size_t import_font_style::commit()
 {
-    return mp_impl->styles_model.append_font(mp_impl->cur_font, mp_impl->cur_font_active);
+    size_t font_id = mp_impl->styles_model.append_font(mp_impl->cur_font, mp_impl->cur_font_active);
+    mp_impl->cur_font.reset();
+    mp_impl->cur_font_active.reset();
+    return font_id;
 }
 
 void import_font_style::reset()

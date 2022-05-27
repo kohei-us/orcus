@@ -25,11 +25,11 @@ general_error::general_error(const std::string& cls, const std::string& msg)
     m_msg = os.str();
 }
 
-general_error::~general_error() throw()
+general_error::~general_error() noexcept
 {
 }
 
-const char* general_error::what() const throw()
+const char* general_error::what() const noexcept
 {
     return m_msg.c_str();
 }
@@ -42,31 +42,35 @@ void general_error::append_msg(const std::string& s)
 invalid_arg_error::invalid_arg_error(const std::string& msg) :
     std::invalid_argument(msg) {}
 
-invalid_arg_error::~invalid_arg_error() throw() {}
+invalid_arg_error::~invalid_arg_error() noexcept {}
 
 xml_structure_error::xml_structure_error(const string& msg) :
     general_error(msg) {}
 
-xml_structure_error::~xml_structure_error() throw() {}
+xml_structure_error::~xml_structure_error() noexcept {}
 
 json_structure_error::json_structure_error(const string& msg) :
     general_error(msg) {}
 
-json_structure_error::~json_structure_error() throw() {}
+json_structure_error::~json_structure_error() noexcept {}
 
 invalid_map_error::invalid_map_error(const string& msg) :
     general_error(msg) {}
 
-invalid_map_error::~invalid_map_error() throw() {}
+invalid_map_error::~invalid_map_error() noexcept {}
 
 value_error::value_error(const string& msg) :
     general_error(msg) {}
 
-value_error::~value_error() throw() {}
+value_error::~value_error() noexcept {}
 
 xpath_error::xpath_error(const string& msg) : general_error(msg) {}
 
-xpath_error::~xpath_error() throw() {}
+xpath_error::~xpath_error() noexcept {}
+
+interface_error::interface_error(const std::string& msg) : general_error(msg) {}
+
+interface_error::~interface_error() noexcept {}
 
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

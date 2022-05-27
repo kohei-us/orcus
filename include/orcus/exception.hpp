@@ -20,8 +20,8 @@ class ORCUS_PSR_DLLPUBLIC general_error : public std::exception
 public:
     explicit general_error(const std::string& msg);
     explicit general_error(const std::string& cls, const std::string& msg);
-    virtual ~general_error() throw();
-    virtual const char* what() const throw();
+    virtual ~general_error() noexcept;
+    virtual const char* what() const noexcept;
 
 protected:
     void append_msg(const std::string& s);
@@ -34,35 +34,35 @@ class ORCUS_PSR_DLLPUBLIC invalid_arg_error : public std::invalid_argument
 {
 public:
     explicit invalid_arg_error(const std::string& msg);
-    virtual ~invalid_arg_error() throw();
+    virtual ~invalid_arg_error() noexcept;
 };
 
 class ORCUS_PSR_DLLPUBLIC xml_structure_error : public general_error
 {
 public:
     explicit xml_structure_error(const ::std::string& msg);
-    virtual ~xml_structure_error() throw();
+    virtual ~xml_structure_error() noexcept;
 };
 
 class ORCUS_PSR_DLLPUBLIC json_structure_error : public general_error
 {
 public:
     explicit json_structure_error(const ::std::string& msg);
-    virtual ~json_structure_error() throw();
+    virtual ~json_structure_error() noexcept;
 };
 
 class ORCUS_PSR_DLLPUBLIC invalid_map_error : public general_error
 {
 public:
     explicit invalid_map_error(const ::std::string& msg);
-    virtual ~invalid_map_error() throw();
+    virtual ~invalid_map_error() noexcept;
 };
 
 class ORCUS_PSR_DLLPUBLIC value_error : public general_error
 {
 public:
     explicit value_error(const std::string& msg);
-    virtual ~value_error() throw();
+    virtual ~value_error() noexcept;
 };
 
 /**
@@ -72,7 +72,14 @@ class ORCUS_PSR_DLLPUBLIC xpath_error : public general_error
 {
 public:
     xpath_error(const std::string& msg);
-    virtual ~xpath_error() throw();
+    virtual ~xpath_error() noexcept;
+};
+
+class ORCUS_PSR_DLLPUBLIC interface_error : public general_error
+{
+public:
+    interface_error(const std::string& msg);
+    virtual ~interface_error() noexcept;
 };
 
 namespace detail {

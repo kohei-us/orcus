@@ -39,6 +39,14 @@ class ORCUS_DLLPUBLIC import_styles
 public:
     virtual ~import_styles();
 
+    /**
+     * Return a pointer to the interface instance for importing font style
+     * attributes. Note that the implementer <i>must</i> return a non-null
+     * pointer if it also provides import_styles implementation.
+     *
+     * @return pointer to the interface instance for importing font style
+     *         attributes.
+     */
     virtual import_font_style* get_font_style() = 0;
 
     // font

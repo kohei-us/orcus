@@ -635,6 +635,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
                 xml_element_expected(parent, expected_elements);
                 mp_font = mp_styles->get_font_style();
+                if (!mp_font)
+                    throw interface_error("implementer must provide a concrete instance of import_font_style.");
                 break;
             }
             case XML_b:

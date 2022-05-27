@@ -1835,22 +1835,29 @@ void xls_xml_context::commit_split_pane()
 
 void xls_xml_context::commit_default_style()
 {
-    spreadsheet::iface::import_styles* styles = mp_factory->get_styles();
+    ss::iface::import_styles* styles = mp_factory->get_styles();
     if (!styles)
         return;
 
-    if (m_default_style)
-    {
-        styles->set_font_bold(m_default_style->font.bold);
-        styles->set_font_italic(m_default_style->font.italic);
-        styles->set_font_color(
-            0,
-            m_default_style->font.color.red,
-            m_default_style->font.color.green,
-            m_default_style->font.color.blue);
-    }
+    ss::iface::import_font_style* font_style = styles->get_font_style();
+    if (!font_style)
+        throw interface_error("implementer must provide a concrete instance of import_font_style.");
 
-    styles->commit_font();
+    if (font_style)
+    {
+        if (m_default_style)
+        {
+            font_style->set_bold(m_default_style->font.bold);
+            font_style->set_italic(m_default_style->font.italic);
+            font_style->set_color(
+                0,
+                m_default_style->font.color.red,
+                m_default_style->font.color.green,
+                m_default_style->font.color.blue);
+        }
+
+        font_style->commit();
+    }
 
     styles->commit_fill();
     styles->commit_border();
@@ -1875,7 +1882,7 @@ void xls_xml_context::commit_styles()
     if (m_styles.empty())
         return;
 
-    spreadsheet::iface::import_styles* styles = mp_factory->get_styles();
+    ss::iface::import_styles* styles = mp_factory->get_styles();
     if (!styles)
         return;
 
@@ -1883,14 +1890,18 @@ void xls_xml_context::commit_styles()
 
     for (const std::unique_ptr<style_type>& style : m_styles)
     {
-        styles->set_font_bold(style->font.bold);
-        styles->set_font_italic(style->font.italic);
-        styles->set_font_color(255,
+        auto* font_style = styles->get_font_style();
+        if (!font_style)
+            throw interface_error("implementer must provide a concrete instance of import_font_style.");
+
+        font_style->set_bold(style->font.bold);
+        font_style->set_italic(style->font.italic);
+        font_style->set_color(255,
             style->font.color.red,
             style->font.color.green,
             style->font.color.blue);
 
-        size_t font_id = styles->commit_font();
+        size_t font_id = font_style->commit();
 
         styles->set_xf_font(font_id);
 
