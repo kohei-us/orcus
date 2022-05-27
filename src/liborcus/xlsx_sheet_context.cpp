@@ -315,7 +315,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
                 if (sheet_props)
                 {
                     // ref contains merged range in A1 reference style.
-                    pstring ref = for_each(
+                    std::string_view ref = for_each(
                         attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_ref)).get_value();
 
                     spreadsheet::src_range_t range = m_resolver.resolve_range(ref);
@@ -394,7 +394,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
                 // The rid string must be pooled to the session context's string
                 // pool as it is used long after thet sheet context is deleted.
                 single_attr_getter func(get_session_context().m_string_pool, NS_ooxml_r, XML_id);
-                pstring rid = for_each(attrs.begin(), attrs.end(), func).get_value();
+                std::string_view rid = for_each(attrs.begin(), attrs.end(), func).get_value();
 
                 unique_ptr<xlsx_rel_table_info> p(new xlsx_rel_table_info);
                 p->sheet_interface = &m_sheet;

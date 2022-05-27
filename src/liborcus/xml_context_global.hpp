@@ -8,8 +8,7 @@
 #ifndef ORCUS_XML_CONTEXT_GLOBAL_HPP
 #define ORCUS_XML_CONTEXT_GLOBAL_HPP
 
-#include "orcus/types.hpp"
-#include "pstring.hpp"
+#include <orcus/types.hpp>
 
 #include <functional>
 
@@ -23,7 +22,7 @@ class string_pool;
 class single_attr_getter
 {
     string_pool* m_pool;
-    pstring m_value;
+    std::string_view m_value;
     xmlns_id_t m_ns;
     xml_token_t m_name;
 
@@ -32,10 +31,10 @@ public:
     single_attr_getter(string_pool& pool, xmlns_id_t ns, xml_token_t name);
 
     void operator() (const xml_token_attr_t& attr);
-    pstring get_value() const;
+    std::string_view get_value() const;
 
-    static pstring get(const std::vector<xml_token_attr_t>& attrs, xmlns_id_t ns, xml_token_t name);
-    static pstring get(const std::vector<xml_token_attr_t>& attrs, string_pool& pool, xmlns_id_t ns, xml_token_t name);
+    static std::string_view get(const std::vector<xml_token_attr_t>& attrs, xmlns_id_t ns, xml_token_t name);
+    static std::string_view get(const std::vector<xml_token_attr_t>& attrs, string_pool& pool, xmlns_id_t ns, xml_token_t name);
 };
 
 class single_long_attr_getter

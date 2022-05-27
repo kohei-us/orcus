@@ -59,7 +59,7 @@ void text_para_context::start_element(xmlns_id_t ns, xml_token_t name, const xml
                 // text span.
                 xml_element_expected(parent, NS_odf_text, XML_p);
                 flush_segment();
-                pstring style_name =
+                std::string_view style_name =
                     for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_odf_text, XML_style_name)).get_value();
                 m_span_stack.push_back(style_name);
 

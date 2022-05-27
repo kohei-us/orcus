@@ -68,7 +68,7 @@ void xlsx_autofilter_context::start_element(xmlns_id_t ns, xml_token_t name, con
         case XML_filter:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_filters);
-            pstring val = for_each(
+            std::string_view val = for_each(
                 attrs.begin(), attrs.end(),
                 single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
             if (!val.empty())
