@@ -460,54 +460,57 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     }
 
     // Commit the font data.
+    auto* font_style = mp_styles->get_font_style();
+    if (!font_style)
+        throw interface_error("implementer must provide a concrete instance of import_font_style.");
 
     if (font_name)
-        mp_styles->set_font_name(*font_name);
+        font_style->set_name(*font_name);
 
     if (font_size && font_size->unit == length_unit_t::point)
-        mp_styles->set_font_size(font_size->value);
+        font_style->set_size(font_size->value);
 
     if (bold)
-        mp_styles->set_font_bold(*bold);
+        font_style->set_bold(*bold);
 
     if (italic)
-        mp_styles->set_font_italic(*italic);
+        font_style->set_italic(*italic);
 
     if (color)
-        mp_styles->set_font_color(255, color->red, color->green, color->blue);
+        font_style->set_color(255, color->red, color->green, color->blue);
 
     if (underline_color)
         // Separate underline color is specified.
-        mp_styles->set_font_underline_color(255, underline_color->red, underline_color->green, underline_color->blue);
+        font_style->set_underline_color(255, underline_color->red, underline_color->green, underline_color->blue);
     else if (color && underline_use_font_color)
         // Use the same color as the font.
-        mp_styles->set_font_underline_color(255, color->red, color->green, color->blue);
+        font_style->set_underline_color(255, color->red, color->green, color->blue);
 
     if (underline_width)
-        mp_styles->set_font_underline_width(*underline_width);
+        font_style->set_underline_width(*underline_width);
 
     if (underline_style)
-        mp_styles->set_font_underline(*underline_style);
+        font_style->set_underline(*underline_style);
 
     if (underline_type)
-        mp_styles->set_font_underline_type(*underline_type);
+        font_style->set_underline_type(*underline_type);
 
     if (underline_mode)
-        mp_styles->set_font_underline_mode(*underline_mode);
+        font_style->set_underline_mode(*underline_mode);
 
     if (strikethrough_style)
-        mp_styles->set_strikethrough_style(*strikethrough_style);
+        font_style->set_strikethrough_style(*strikethrough_style);
 
     if (strikethrough_type)
-        mp_styles->set_strikethrough_type(*strikethrough_type);
+        font_style->set_strikethrough_type(*strikethrough_type);
 
     if (strikethrough_width)
-        mp_styles->set_strikethrough_width(*strikethrough_width);
+        font_style->set_strikethrough_width(*strikethrough_width);
 
     if (strikethrough_text)
-        mp_styles->set_strikethrough_text(*strikethrough_text);
+        font_style->set_strikethrough_text(*strikethrough_text);
 
-    size_t font_id = mp_styles->commit_font();
+    size_t font_id = font_style->commit();
 
     switch (m_current_style->family)
     {
