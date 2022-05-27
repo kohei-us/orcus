@@ -49,13 +49,19 @@ public:
      */
     virtual import_font_style* get_font_style() = 0;
 
+    /**
+     * Set the total number of font styles. This may be called before importing
+     * any of the font styles. This will give the implementer a chance to
+     * allocate storage.  Note that it may not always be called.
+     *
+     * @param n number of font styles.
+     */
     virtual void set_font_count(size_t n) = 0;
 
-    // fill
-
     /**
-     * Set the total number of fill styles.  This call is not strictly
-     * required but may slightly improve performance.
+     * Set the total number of fill styles. This may be called before importing
+     * any of the fill styles. This will give the implementer a chance to
+     * allocate storage.  Note that it may not always be called.
      *
      * @param n number of fill styles.
      */
@@ -100,8 +106,13 @@ public:
      */
     virtual size_t commit_fill() = 0;
 
-    // border
-
+    /**
+     * Set the total number of border styles. This may be called before
+     * importing any of the border styles. This will give the implementer a
+     * chance to allocate storage.  Note that it may not always be called.
+     *
+     * @param n number of border styles.
+     */
     virtual void set_border_count(size_t n) = 0;
 
     virtual void set_border_style(border_direction_t dir, border_style_t style) = 0;
@@ -117,7 +128,13 @@ public:
     virtual void set_cell_formula_hidden(bool b) = 0;
     virtual size_t commit_cell_protection() = 0;
 
-    // number format
+    /**
+     * Set the total number of number format styles. This may be called before
+     * importing any of the number format styles. This will give the implementer
+     * a chance to allocate storage.  Note that it may not always be called.
+     *
+     * @param n number of number format styles.
+     */
     virtual void set_number_format_count(size_t n) = 0;
     virtual void set_number_format_identifier(size_t id) = 0;
     virtual void set_number_format_code(std::string_view s) = 0;
