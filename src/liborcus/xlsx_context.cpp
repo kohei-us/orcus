@@ -617,16 +617,16 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
                 if (get_config().debug)
                     print_attrs(get_tokens(), attrs);
+                break;
             }
-            break;
             case XML_fonts:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 pstring ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 size_t font_count = to_long(ps);
                 mp_styles->set_font_count(font_count);
+                break;
             }
-            break;
             case XML_font:
             {
                 xml_elem_stack_t expected_elements;
@@ -634,18 +634,18 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
                 xml_element_expected(parent, expected_elements);
                 mp_font = mp_styles->get_font_style();
+                break;
             }
-            break;
             case XML_b:
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 assert(mp_font);
                 mp_font->set_bold(true);
-            break;
+                break;
             case XML_i:
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 assert(mp_font);
                 mp_font->set_italic(true);
-            break;
+                break;
             case XML_u:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
@@ -660,8 +660,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     mp_font->set_underline(spreadsheet::underline_t::single_accounting);
                 else if (ps == "doubleAccounting")
                     mp_font->set_underline(spreadsheet::underline_t::double_accounting);
+                break;
             }
-            break;
             case XML_sz:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
@@ -669,8 +669,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 pstring ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
                 double font_size = to_double(ps);
                 mp_font->set_size(font_size);
+                break;
             }
-            break;
             case XML_color:
             {
                 // The color element can occur under various parent elements.
@@ -708,29 +708,29 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                             ;
                     }
                 }
+                break;
             }
-            break;
             case XML_name:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 std::string_view ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
                 mp_font->set_name(ps);
+                break;
             }
-            break;
             case XML_family:
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
-            break;
+                break;
             case XML_scheme:
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
-            break;
+                break;
             case XML_fills:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 pstring ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 size_t fill_count = to_long(ps);
                 mp_styles->set_fill_count(fill_count);
+                break;
             }
-            break;
             case XML_fill:
             {
                 xml_elem_stack_t expected = {
@@ -739,15 +739,15 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 };
 
                 xml_element_expected(parent, expected);
+                break;
             }
-            break;
             case XML_patternFill:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_fill);
                 pstring ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_patternType)).get_value();
                 mp_styles->set_fill_pattern_type(fill_pattern::get().find(ps.data(), ps.size()));
+                break;
             }
-            break;
             case XML_fgColor:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_patternFill);
@@ -755,8 +755,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     attrs.begin(), attrs.end(),
                     fill_color_attr_parser(
                         *mp_styles, get_tokens(), true, get_config().debug));
+                break;
             }
-            break;
             case XML_bgColor:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_patternFill);
@@ -764,16 +764,16 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     attrs.begin(), attrs.end(),
                     fill_color_attr_parser(
                         *mp_styles, get_tokens(), false, get_config().debug));
+                break;
             }
-            break;
             case XML_borders:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 pstring ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 size_t border_count = to_long(ps);
                 mp_styles->set_border_count(border_count);
+                break;
             }
-            break;
             case XML_border:
             {
                 start_element_border(parent, attrs);
@@ -785,32 +785,32 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 m_cur_border_dir = spreadsheet::border_direction_t::top;
                 border_attr_parser func(spreadsheet::border_direction_t::top, *mp_styles);
                 for_each(attrs.begin(), attrs.end(), func);
+                break;
             }
-            break;
             case XML_bottom:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::bottom;
                 border_attr_parser func(spreadsheet::border_direction_t::bottom, *mp_styles);
                 for_each(attrs.begin(), attrs.end(), func);
+                break;
             }
-            break;
             case XML_left:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::left;
                 border_attr_parser func(spreadsheet::border_direction_t::left, *mp_styles);
                 for_each(attrs.begin(), attrs.end(), func);
+                break;
             }
-            break;
             case XML_right:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::right;
                 border_attr_parser func(spreadsheet::border_direction_t::right, *mp_styles);
                 for_each(attrs.begin(), attrs.end(), func);
+                break;
             }
-            break;
             case XML_diagonal:
             {
                 start_element_diagonal(parent, attrs);
@@ -827,8 +827,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     mp_styles->set_cell_style_xf_count(n);
                 }
                 m_cell_style_xf = true;
+                break;
             }
-            break;
             case XML_cellXfs:
             {
                 // Collection of un-named cell formats used in the document.
@@ -841,8 +841,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     mp_styles->set_cell_xf_count(n);
                 }
                 m_cell_style_xf = false;
+                break;
             }
-            break;
             case XML_dxfs:
             {
                 // Collection of differential formats used in the document.
@@ -854,8 +854,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     size_t n = strtoul(ps.data(), nullptr, 10);
                     mp_styles->set_dxf_count(n);
                 }
+                break;
             }
-            break;
             case XML_cellStyles:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
@@ -866,15 +866,15 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     size_t n = strtoul(ps.data(), nullptr, 10);
                     mp_styles->set_cell_style_count(n);
                 }
+                break;
             }
-            break;
             case XML_cellStyle:
             {
                 // named cell style, some of which are built-in such as 'Normal'.
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_cellStyles);
                 for_each(attrs.begin(), attrs.end(), cell_style_attr_parser(*mp_styles));
+                break;
             }
-            break;
             case XML_xf:
             {
                 // Actual cell format attributes (for some reason) abbreviated to
@@ -885,10 +885,10 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 xml_element_expected(parent, allowed);
 
                 for_each(attrs.begin(), attrs.end(), xf_attr_parser(*mp_styles));
+                break;
             }
-            break;
             case XML_dxf:
-            break;
+                break;
             case XML_protection:
             {
                 xml_elem_stack_t expected_elements;
@@ -896,8 +896,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
                 xml_element_expected(parent, expected_elements);
                 for_each(attrs.begin(), attrs.end(), cell_protection_attr_parser(*mp_styles));
+                break;
             }
-            break;
             case XML_alignment:
             {
                 xml_elem_stack_t expected_elements;
@@ -908,8 +908,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 func = for_each(attrs.begin(), attrs.end(), func);
                 mp_styles->set_xf_horizontal_alignment(func.get_hor_align());
                 mp_styles->set_xf_vertical_alignment(func.get_ver_align());
+                break;
             }
-            break;
             case XML_numFmts:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
@@ -922,8 +922,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     size_t n = to_long(val);
                     mp_styles->set_number_format_count(n);
                 }
+                break;
             }
-            break;
             case XML_numFmt:
                 start_element_number_format(parent, attrs);
                 break;
@@ -948,22 +948,22 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
         }
         case XML_fill:
             mp_styles->commit_fill();
-        break;
+            break;
         case XML_border:
             mp_styles->commit_border();
-        break;
+            break;
         case XML_cellStyle:
             mp_styles->commit_cell_style();
-        break;
+            break;
         case XML_xf:
             if (m_cell_style_xf)
                 mp_styles->commit_cell_style_xf();
             else
                 mp_styles->commit_cell_xf();
-        break;
+            break;
         case XML_dxf:
             mp_styles->commit_dxf();
-        break;
+            break;
         case XML_protection:
         {
             size_t id = mp_styles->commit_cell_protection();
