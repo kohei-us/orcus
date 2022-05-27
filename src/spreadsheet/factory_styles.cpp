@@ -32,6 +32,7 @@ struct import_styles::impl
     styles& styles_model;
     string_pool& str_pool;
 
+    import_font_style font_style;
     font_t cur_font;
     font_active_t cur_font_active;
 
@@ -52,7 +53,8 @@ struct import_styles::impl
 
     impl(styles& _styles_model, string_pool& sp) :
         styles_model(_styles_model),
-        str_pool(sp) {}
+        str_pool(sp),
+        font_style(_styles_model, sp) {}
 
     border_attr_access_t get_border_attrs(border_direction_t dir)
     {
@@ -196,6 +198,12 @@ size_t import_styles::commit_font()
     mp_impl->cur_font.reset();
     mp_impl->cur_font_active.reset();
     return font_id;
+}
+
+iface::import_font_style* import_styles::get_font_style()
+{
+    mp_impl->font_style.reset();
+    return &mp_impl->font_style;
 }
 
 void import_styles::set_fill_count(size_t n)
@@ -450,6 +458,122 @@ size_t import_styles::commit_cell_style()
     size_t n = mp_impl->styles_model.append_cell_style(mp_impl->cur_cell_style);
     mp_impl->cur_cell_style.reset();
     return n;
+}
+
+struct import_font_style::impl
+{
+    styles& styles_model;
+    string_pool& str_pool;
+
+    font_t cur_font;
+    font_active_t cur_font_active;
+
+    impl(styles& _styles_model, string_pool& sp) :
+        styles_model(_styles_model), str_pool(sp) {}
+};
+
+import_font_style::import_font_style(styles& _styles_model, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(_styles_model, sp))
+{
+}
+
+import_font_style::~import_font_style()
+{
+}
+
+void import_font_style::set_bold(bool b)
+{
+    mp_impl->cur_font.bold = b;
+    mp_impl->cur_font_active.bold = true;
+}
+
+void import_font_style::set_italic(bool b)
+{
+    mp_impl->cur_font.italic = b;
+    mp_impl->cur_font_active.italic = true;
+}
+
+void import_font_style::set_name(std::string_view s)
+{
+    mp_impl->cur_font.name = mp_impl->str_pool.intern(s).first;
+    mp_impl->cur_font_active.name = true;
+}
+
+void import_font_style::set_size(double point)
+{
+    mp_impl->cur_font.size = point;
+    mp_impl->cur_font_active.size = true;
+}
+
+void import_font_style::set_underline(underline_t e)
+{
+    mp_impl->cur_font.underline_style = e;
+    mp_impl->cur_font_active.underline_style = true;
+}
+
+void import_font_style::set_underline_width(underline_width_t e)
+{
+    mp_impl->cur_font.underline_width = e;
+    mp_impl->cur_font_active.underline_width = true;
+}
+
+void import_font_style::set_underline_mode(underline_mode_t e)
+{
+    mp_impl->cur_font.underline_mode = e;
+    mp_impl->cur_font_active.underline_mode = true;
+}
+
+void import_font_style::set_underline_type(underline_type_t e)
+{
+    mp_impl->cur_font.underline_type = e;
+    mp_impl->cur_font_active.underline_type = true;
+}
+
+void import_font_style::set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
+{
+    mp_impl->cur_font.underline_color = color_t(alpha, red, green, blue);
+    mp_impl->cur_font_active.underline_color = true;
+}
+
+void import_font_style::set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
+{
+    mp_impl->cur_font.color = color_t(alpha, red, green, blue);
+    mp_impl->cur_font_active.color = true;
+}
+
+void import_font_style::set_strikethrough_style(strikethrough_style_t s)
+{
+    mp_impl->cur_font.strikethrough_style = s;
+    mp_impl->cur_font_active.strikethrough_style = true;
+}
+
+void import_font_style::set_strikethrough_type(strikethrough_type_t s)
+{
+    mp_impl->cur_font.strikethrough_type = s;
+    mp_impl->cur_font_active.strikethrough_type = true;
+}
+
+void import_font_style::set_strikethrough_width(strikethrough_width_t s)
+{
+    mp_impl->cur_font.strikethrough_width = s;
+    mp_impl->cur_font_active.strikethrough_width = true;
+}
+
+void import_font_style::set_strikethrough_text(strikethrough_text_t s)
+{
+    mp_impl->cur_font.strikethrough_text = s;
+    mp_impl->cur_font_active.strikethrough_text = true;
+}
+
+size_t import_font_style::commit()
+{
+    return mp_impl->styles_model.append_font(mp_impl->cur_font, mp_impl->cur_font_active);
+}
+
+void import_font_style::reset()
+{
+    mp_impl->cur_font.reset();
+    mp_impl->cur_font_active.reset();
 }
 
 }}

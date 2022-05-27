@@ -19,6 +19,8 @@
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
+class import_font_style;
+
 /**
  * Interface for styles. Note that because the default style must have an
  * index of 0 in each style category, the caller must commit the default
@@ -36,6 +38,8 @@ class ORCUS_DLLPUBLIC import_styles
 {
 public:
     virtual ~import_styles();
+
+    virtual import_font_style* get_font_style() = 0;
 
     // font
 
@@ -192,6 +196,28 @@ public:
      */
     virtual void set_cell_style_parent_name(std::string_view s) = 0;
     virtual size_t commit_cell_style() = 0;
+};
+
+class ORCUS_DLLPUBLIC import_font_style
+{
+public:
+    virtual ~import_font_style();
+
+    virtual void set_bold(bool b) = 0;
+    virtual void set_italic(bool b) = 0;
+    virtual void set_name(std::string_view s) = 0;
+    virtual void set_size(double point) = 0;
+    virtual void set_underline(underline_t e) = 0;
+    virtual void set_underline_width(underline_width_t e) = 0;
+    virtual void set_underline_mode(underline_mode_t e) = 0;
+    virtual void set_underline_type(underline_type_t e) = 0;
+    virtual void set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+    virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+    virtual void set_strikethrough_style(strikethrough_style_t s) = 0;
+    virtual void set_strikethrough_type(strikethrough_type_t s) = 0;
+    virtual void set_strikethrough_width(strikethrough_width_t s) = 0;
+    virtual void set_strikethrough_text(strikethrough_text_t s) = 0;
+    virtual size_t commit() = 0;
 };
 
 }}}

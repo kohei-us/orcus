@@ -91,6 +91,8 @@ public:
     virtual void set_strikethrough_text(strikethrough_text_t s) override;
     virtual size_t commit_font() override;
 
+    virtual iface::import_font_style* get_font_style() override;
+
     virtual void set_fill_count(size_t n) override;
     virtual void set_fill_pattern_type(fill_pattern_t fp) override;
     virtual void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
@@ -139,6 +141,35 @@ public:
     virtual void set_cell_style_builtin(size_t index) override;
     virtual void set_cell_style_parent_name(std::string_view s) override;
     virtual size_t commit_cell_style() override;
+};
+
+class ORCUS_SPM_DLLPUBLIC import_font_style : public iface::import_font_style
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    import_font_style() = delete;
+    import_font_style(styles& _styles_model, string_pool& sp);
+    virtual ~import_font_style();
+
+    virtual void set_bold(bool b) override;
+    virtual void set_italic(bool b) override;
+    virtual void set_name(std::string_view s) override;
+    virtual void set_size(double point) override;
+    virtual void set_underline(underline_t e) override;
+    virtual void set_underline_width(underline_width_t e) override;
+    virtual void set_underline_mode(underline_mode_t e) override;
+    virtual void set_underline_type(underline_type_t e) override;
+    virtual void set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual void set_strikethrough_style(strikethrough_style_t s) override;
+    virtual void set_strikethrough_type(strikethrough_type_t s) override;
+    virtual void set_strikethrough_width(strikethrough_width_t s) override;
+    virtual void set_strikethrough_text(strikethrough_text_t s) override;
+    virtual size_t commit() override;
+
+    void reset();
 };
 
 class ORCUS_SPM_DLLPUBLIC export_factory : public iface::export_factory

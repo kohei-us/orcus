@@ -633,36 +633,42 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_fonts));
                 expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
                 xml_element_expected(parent, expected_elements);
+                mp_font = mp_styles->get_font_style();
             }
             break;
             case XML_b:
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
-                mp_styles->set_font_bold(true);
+                assert(mp_font);
+                mp_font->set_bold(true);
             break;
             case XML_i:
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
-                mp_styles->set_font_italic(true);
+                assert(mp_font);
+                mp_font->set_italic(true);
             break;
             case XML_u:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
+                assert(mp_font);
                 pstring ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
+
                 if (ps == "double")
-                    mp_styles->set_font_underline(spreadsheet::underline_t::double_line);
+                    mp_font->set_underline(spreadsheet::underline_t::double_line);
                 else if (ps == "single")
-                    mp_styles->set_font_underline(spreadsheet::underline_t::single_line);
+                    mp_font->set_underline(spreadsheet::underline_t::single_line);
                 else if (ps == "singleAccounting")
-                    mp_styles->set_font_underline(spreadsheet::underline_t::single_accounting);
+                    mp_font->set_underline(spreadsheet::underline_t::single_accounting);
                 else if (ps == "doubleAccounting")
-                    mp_styles->set_font_underline(spreadsheet::underline_t::double_accounting);
+                    mp_font->set_underline(spreadsheet::underline_t::double_accounting);
             }
             break;
             case XML_sz:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
+                assert(mp_font);
                 pstring ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
                 double font_size = to_double(ps);
-                mp_styles->set_font_size(font_size);
+                mp_font->set_size(font_size);
             }
             break;
             case XML_color:
@@ -708,7 +714,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 std::string_view ps = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
-                mp_styles->set_font_name(ps);
+                mp_font->set_name(ps);
             }
             break;
             case XML_family:
@@ -934,8 +940,12 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
     switch (name)
     {
         case XML_font:
-            mp_styles->commit_font();
-        break;
+        {
+            assert(mp_font);
+            mp_font->commit();
+            mp_font = nullptr;
+            break;
+        }
         case XML_fill:
             mp_styles->commit_fill();
         break;
@@ -1081,6 +1091,8 @@ void xlsx_styles_context::start_border_color(const xml_attrs_t& attrs)
 
 void xlsx_styles_context::start_font_color(const xml_attrs_t& attrs)
 {
+    assert(mp_font);
+
     color_attr_parser func;
     func = for_each(attrs.begin(), attrs.end(), func);
 
@@ -1089,7 +1101,7 @@ void xlsx_styles_context::start_font_color(const xml_attrs_t& attrs)
     spreadsheet::color_elem_t green;
     spreadsheet::color_elem_t blue;
     if (to_rgb(func.get_rgb(), alpha, red, green, blue))
-        mp_styles->set_font_color(alpha, red, green, blue);
+        mp_font->set_color(alpha, red, green, blue);
 }
 
 void xlsx_styles_context::end_element_number_format()

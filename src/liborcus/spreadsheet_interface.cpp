@@ -25,6 +25,8 @@ import_shared_strings::~import_shared_strings() {}
 
 import_styles::~import_styles() {}
 
+import_font_style::~import_font_style() {}
+
 import_sheet_properties::~import_sheet_properties() {}
 
 import_named_expression::~import_named_expression() {}

@@ -21,6 +21,7 @@ namespace spreadsheet { namespace iface {
     class import_sheet;
     class import_shared_strings;
     class import_styles;
+    class import_font_style;
 }}
 
 /**
@@ -75,7 +76,9 @@ private:
     void end_element_number_format();
 
 private:
-    spreadsheet::iface::import_styles* mp_styles;
+    spreadsheet::iface::import_styles* mp_styles = nullptr;
+    spreadsheet::iface::import_font_style* mp_font = nullptr;
+
     string_pool m_pool;
     bool m_diagonal_up;
     bool m_diagonal_down;
