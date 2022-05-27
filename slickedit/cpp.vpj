@@ -307,7 +307,6 @@
                 <F N="../src/liborcus/json_util.cpp"/>
                 <F N="../src/liborcus/json_util.hpp"/>
                 <F N="../src/liborcus/measurement.cpp"/>
-                <F N="../src/liborcus/mock_spreadsheet.cpp"/>
                 <F N="../src/liborcus/odf_helper.cpp"/>
                 <F N="../src/liborcus/odf_helper.hpp"/>
                 <F N="../src/liborcus/odf_helper_test.cpp"/>
@@ -585,6 +584,7 @@
                 <F N="../src/spreadsheet/view.cpp"/>
             </Folder>
             <Folder Name="test">
+                <F N="../src/test/mock_spreadsheet.cpp"/>
                 <F N="../src/test/test_global.cpp"/>
             </Folder>
             <F N="../src/cli_global.cpp"/>

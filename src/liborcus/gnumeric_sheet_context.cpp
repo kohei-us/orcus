@@ -758,11 +758,18 @@ void gnumeric_sheet_context::end_table()
 
 void gnumeric_sheet_context::end_font()
 {
-    spreadsheet::iface::import_styles& styles = *mp_factory->get_styles();
-    styles.set_font_color(0, front_color.red, front_color.green, front_color.blue);
-    styles.set_font_name(chars);
-    size_t font_id = styles.commit_font();
-    styles.set_xf_font(font_id);
+    spreadsheet::iface::import_styles* styles = mp_factory->get_styles();
+    if (!styles)
+        return;
+
+    auto* font_style = styles->get_font_style();
+    if (!font_style)
+        throw interface_error("implementer must provide a concrete instance of import_font_style.");
+
+    font_style->set_color(0, front_color.red, front_color.green, front_color.blue);
+    font_style->set_name(chars);
+    size_t font_id = font_style->commit();
+    styles->set_xf_font(font_id);
 }
 
 void gnumeric_sheet_context::end_style(bool conditional_format)

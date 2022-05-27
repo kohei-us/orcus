@@ -41,32 +41,15 @@ public:
 
     /**
      * Return a pointer to the interface instance for importing font style
-     * attributes. Note that the implementer <i>must</i> return a non-null
-     * pointer if it also provides import_styles implementation.
+     * attributes. Note that the import_styles implementer <i>must</i> return a
+     * non-null pointer.
      *
      * @return pointer to the interface instance for importing font style
      *         attributes.
      */
     virtual import_font_style* get_font_style() = 0;
 
-    // font
-
     virtual void set_font_count(size_t n) = 0;
-    virtual void set_font_bold(bool b) = 0;
-    virtual void set_font_italic(bool b) = 0;
-    virtual void set_font_name(std::string_view s) = 0;
-    virtual void set_font_size(double point) = 0;
-    virtual void set_font_underline(underline_t e) = 0;
-    virtual void set_font_underline_width(underline_width_t e) = 0;
-    virtual void set_font_underline_mode(underline_mode_t e) = 0;
-    virtual void set_font_underline_type(underline_type_t e) = 0;
-    virtual void set_font_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
-    virtual void set_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
-    virtual void set_strikethrough_style(strikethrough_style_t s) = 0;
-    virtual void set_strikethrough_type(strikethrough_type_t s) = 0;
-    virtual void set_strikethrough_width(strikethrough_width_t s) = 0;
-    virtual void set_strikethrough_text(strikethrough_text_t s) = 0;
-    virtual size_t commit_font() = 0;
 
     // fill
 

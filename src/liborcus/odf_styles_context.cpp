@@ -745,9 +745,13 @@ void styles_context::commit_default_styles()
     if (!mp_styles)
         return;
 
+    auto* font_style = mp_styles->get_font_style();
+    if (!font_style)
+        throw interface_error("implementer must provide a concrete instance of import_font_style.");
+
     // Set default styles. Default styles must be associated with an index of 0.
     // Set empty styles for all style types before importing real styles.
-    mp_styles->commit_font();
+    font_style->commit();
     mp_styles->commit_fill();
     mp_styles->commit_border();
     mp_styles->commit_cell_protection();

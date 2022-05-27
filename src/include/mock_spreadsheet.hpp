@@ -40,12 +40,7 @@ public:
     // font
 
     virtual void set_font_count(size_t n) override;
-    virtual void set_font_bold(bool b) override;
-    virtual void set_font_italic(bool b) override;
-    virtual void set_font_name(std::string_view s) override;
-    virtual void set_font_size(double point) override;
-    virtual void set_font_underline(orcus::spreadsheet::underline_t e) override;
-    virtual size_t commit_font() override;
+    virtual iface::import_font_style* get_font_style() override;
 
     // fill
 
