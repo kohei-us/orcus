@@ -349,11 +349,11 @@ const map_type& get()
 
 class border_attr_parser
 {
-    spreadsheet::border_direction_t m_dir;
-    spreadsheet::iface::import_styles& m_styles;
+    ss::border_direction_t m_dir;
+    ss::iface::import_border_style& m_border_style;
 public:
-    border_attr_parser(spreadsheet::border_direction_t dir, spreadsheet::iface::import_styles& styles) :
-        m_dir(dir), m_styles(styles) {}
+    border_attr_parser(ss::border_direction_t dir, ss::iface::import_border_style& style) :
+        m_dir(dir), m_border_style(style) {}
 
     void operator() (const xml_token_attr_t& attr)
     {
@@ -361,10 +361,10 @@ public:
         {
             case XML_style:
             {
-                m_styles.set_border_style(m_dir,
+                m_border_style.set_style(m_dir,
                     border_style::get().find(attr.value.data(), attr.value.size()));
+                break;
             }
-            break;
         }
     }
 };
@@ -799,37 +799,46 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_border:
             {
                 start_element_border(parent, attrs);
+
+                mp_border = mp_styles->get_border_style();
+                if (!mp_border)
+                    throw interface_error("implementer must provide a concrete instance of import_border_style.");
+
                 break;
             }
             case XML_top:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
+                assert(mp_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::top;
-                border_attr_parser func(spreadsheet::border_direction_t::top, *mp_styles);
+                border_attr_parser func(spreadsheet::border_direction_t::top, *mp_border);
                 for_each(attrs.begin(), attrs.end(), func);
                 break;
             }
             case XML_bottom:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
+                assert(mp_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::bottom;
-                border_attr_parser func(spreadsheet::border_direction_t::bottom, *mp_styles);
+                border_attr_parser func(spreadsheet::border_direction_t::bottom, *mp_border);
                 for_each(attrs.begin(), attrs.end(), func);
                 break;
             }
             case XML_left:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
+                assert(mp_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::left;
-                border_attr_parser func(spreadsheet::border_direction_t::left, *mp_styles);
+                border_attr_parser func(spreadsheet::border_direction_t::left, *mp_border);
                 for_each(attrs.begin(), attrs.end(), func);
                 break;
             }
             case XML_right:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
+                assert(mp_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::right;
-                border_attr_parser func(spreadsheet::border_direction_t::right, *mp_styles);
+                border_attr_parser func(spreadsheet::border_direction_t::right, *mp_border);
                 for_each(attrs.begin(), attrs.end(), func);
                 break;
             }
@@ -976,7 +985,9 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
             break;
         }
         case XML_border:
-            mp_styles->commit_border();
+            assert(mp_border);
+            mp_border->commit();
+            mp_border = nullptr;
             break;
         case XML_cellStyle:
             mp_styles->commit_cell_style();
@@ -1079,6 +1090,7 @@ void xlsx_styles_context::start_element_border(const xml_token_pair_t& parent, c
 void xlsx_styles_context::start_element_diagonal(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
 {
     xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
+    assert(mp_border);
 
     m_cur_border_dir = spreadsheet::border_direction_t::unknown;
 
@@ -1098,12 +1110,14 @@ void xlsx_styles_context::start_element_diagonal(const xml_token_pair_t& parent,
     if (m_cur_border_dir == spreadsheet::border_direction_t::unknown)
         return;
 
-    border_attr_parser func(m_cur_border_dir, *mp_styles);
+    border_attr_parser func(m_cur_border_dir, *mp_border);
     for_each(attrs.begin(), attrs.end(), func);
 }
 
 void xlsx_styles_context::start_border_color(const xml_attrs_t& attrs)
 {
+    assert(mp_border);
+
     color_attr_parser func;
     func = for_each(attrs.begin(), attrs.end(), func);
 
@@ -1112,7 +1126,7 @@ void xlsx_styles_context::start_border_color(const xml_attrs_t& attrs)
     spreadsheet::color_elem_t green;
     spreadsheet::color_elem_t blue;
     if (to_rgb(func.get_rgb(), alpha, red, green, blue))
-        mp_styles->set_border_color(m_cur_border_dir, alpha, red, green, blue);
+        mp_border->set_color(m_cur_border_dir, alpha, red, green, blue);
 }
 
 void xlsx_styles_context::start_font_color(const xml_attrs_t& attrs)

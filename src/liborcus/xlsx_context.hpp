@@ -23,6 +23,7 @@ namespace spreadsheet { namespace iface {
     class import_styles;
     class import_font_style;
     class import_fill_style;
+    class import_border_style;
 }}
 
 /**
@@ -80,6 +81,7 @@ private:
     spreadsheet::iface::import_styles* mp_styles = nullptr;
     spreadsheet::iface::import_font_style* mp_font = nullptr;
     spreadsheet::iface::import_fill_style* mp_fill = nullptr;
+    spreadsheet::iface::import_border_style* mp_border = nullptr;
 
     string_pool m_pool;
     bool m_diagonal_up;
