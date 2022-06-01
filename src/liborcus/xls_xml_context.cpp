@@ -1865,7 +1865,12 @@ void xls_xml_context::commit_default_style()
 
     fill_style->commit();
 
-    styles->commit_border();
+    auto* border_style = styles->get_border_style();
+    if (!border_style)
+        throw interface_error("implementer must provide a concrete instance of import_border_style.");
+
+    border_style->commit();
+
     styles->commit_cell_protection();
     styles->commit_number_format();
 
@@ -1931,13 +1936,17 @@ void xls_xml_context::commit_styles()
         {
             styles->set_border_count(style->borders.size());
 
+            auto* border_style = styles->get_border_style();
+            if (!border_style)
+                throw interface_error("implementer must provide a concrete instance of import_border_style.");
+
             for (const border_style_type& b : style->borders)
             {
-                styles->set_border_style(b.dir, b.style);
-                styles->set_border_color(b.dir, 255, b.color.red, b.color.green, b.color.blue);
+                border_style->set_style(b.dir, b.style);
+                border_style->set_color(b.dir, 255, b.color.red, b.color.green, b.color.blue);
             }
 
-            size_t border_id = styles->commit_border();
+            size_t border_id = border_style->commit();
             styles->set_xf_border(border_id);
         }
 

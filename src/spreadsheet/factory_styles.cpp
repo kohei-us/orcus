@@ -34,6 +34,7 @@ struct import_styles::impl
 
     import_font_style font_style;
     import_fill_style fill_style;
+    import_border_style border_style;
 
     fill_t cur_fill;
     fill_active_t cur_fill_active;
@@ -54,7 +55,9 @@ struct import_styles::impl
         styles_model(_styles_model),
         str_pool(sp),
         font_style(_styles_model, sp),
-        fill_style(_styles_model, sp) {}
+        fill_style(_styles_model, sp),
+        border_style(_styles_model, sp)
+    {}
 
     border_attr_access_t get_border_attrs(border_direction_t dir)
     {
@@ -113,6 +116,12 @@ iface::import_fill_style* import_styles::get_fill_style()
 {
     mp_impl->fill_style.reset();
     return &mp_impl->fill_style;
+}
+
+iface::import_border_style* import_styles::get_border_style()
+{
+    mp_impl->border_style.reset();
+    return &mp_impl->border_style;
 }
 
 void import_styles::set_font_count(size_t n)
@@ -526,6 +535,113 @@ void import_fill_style::reset()
     mp_impl->cur_fill_active.reset();
 }
 
+struct import_border_style::impl
+{
+    styles& styles_model;
+    string_pool& str_pool;
+
+    border_t cur_border;
+    border_active_t cur_border_active;
+
+    impl(styles& _styles_model, string_pool& sp) :
+        styles_model(_styles_model), str_pool(sp) {}
+
+    border_attr_access_t get_border_attrs(border_direction_t dir)
+    {
+        border_attr_access_t ret;
+
+        switch (dir)
+        {
+            case border_direction_t::top:
+                ret.values = &cur_border.top;
+                ret.active = &cur_border_active.top;
+                break;
+            case border_direction_t::bottom:
+                ret.values = &cur_border.bottom;
+                ret.active = &cur_border_active.bottom;
+                break;
+            case border_direction_t::left:
+                ret.values = &cur_border.left;
+                ret.active = &cur_border_active.left;
+                break;
+            case border_direction_t::right:
+                ret.values = &cur_border.right;
+                ret.active = &cur_border_active.right;
+                break;
+            case border_direction_t::diagonal:
+                ret.values = &cur_border.diagonal;
+                ret.active = &cur_border_active.diagonal;
+                break;
+            case border_direction_t::diagonal_bl_tr:
+                ret.values = &cur_border.diagonal_bl_tr;
+                ret.active = &cur_border_active.diagonal_bl_tr;
+                break;
+            case border_direction_t::diagonal_tl_br:
+                ret.values = &cur_border.diagonal_tl_br;
+                ret.active = &cur_border_active.diagonal_tl_br;
+                break;
+            default:
+                ;
+        }
+
+        return ret;
+    }
+};
+
+import_border_style::import_border_style(styles& _styles_model, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(_styles_model, sp))
+{
+}
+
+import_border_style::~import_border_style()
+{
+}
+
+void import_border_style::set_style(border_direction_t dir, border_style_t style)
+{
+    auto v = mp_impl->get_border_attrs(dir);
+    if (!v)
+        return;
+
+    v.values->style = style;
+    v.active->style = true;
+}
+
+void import_border_style::set_color(
+    border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
+{
+    auto v = mp_impl->get_border_attrs(dir);
+    if (!v)
+        return;
+
+    v.values->border_color = color_t(alpha, red, green, blue);
+    v.active->border_color = true;
+}
+
+void import_border_style::set_width(border_direction_t dir, double width, orcus::length_unit_t unit)
+{
+    auto v = mp_impl->get_border_attrs(dir);
+    if (!v)
+        return;
+
+    v.values->border_width.value = width;
+    v.values->border_width.unit = unit;
+    v.active->border_width = true;
+}
+
+size_t import_border_style::commit()
+{
+    size_t border_id = mp_impl->styles_model.append_border(mp_impl->cur_border, mp_impl->cur_border_active);
+    mp_impl->cur_border.reset();
+    mp_impl->cur_border_active.reset();
+    return border_id;
+}
+
+void import_border_style::reset()
+{
+    mp_impl->cur_border.reset();
+    mp_impl->cur_border_active.reset();
+}
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

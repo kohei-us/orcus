@@ -76,6 +76,7 @@ public:
 
     virtual iface::import_font_style* get_font_style() override;
     virtual iface::import_fill_style* get_fill_style() override;
+    virtual iface::import_border_style* get_border_style() override;
 
     virtual void set_font_count(size_t n) override;
     virtual void set_fill_count(size_t n) override;
@@ -166,6 +167,25 @@ public:
     virtual void set_pattern_type(fill_pattern_t fp) override;
     virtual void set_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
     virtual void set_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual size_t commit() override;
+
+    void reset();
+};
+
+class ORCUS_SPM_DLLPUBLIC import_border_style : public iface::import_border_style
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    import_border_style() = delete;
+    import_border_style(styles& _styles_model, string_pool& sp);
+    virtual ~import_border_style() override;
+
+    virtual void set_style(border_direction_t dir, border_style_t style) override;
+    virtual void set_color(
+        border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual void set_width(border_direction_t dir, double width, orcus::length_unit_t unit) override;
     virtual size_t commit() override;
 
     void reset();
