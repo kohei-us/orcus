@@ -79,45 +79,6 @@ public:
     virtual void set_fill_count(size_t n) = 0;
 
     /**
-     * Set the type of fill pattern.
-     *
-     * @param fp fill pattern type.
-     */
-    virtual void set_fill_pattern_type(fill_pattern_t fp) = 0;
-
-    /**
-     * Set the foreground color of a fill.  <i>Note that for a solid fill
-     * type, the foreground color will be used.</i>
-     *
-     * @param alpha alpha component ranging from 0 (fully transparent) to 255
-     *              (fully opaque).
-     * @param red red component ranging from 0 to 255.
-     * @param green green component ranging from 0 to 255.
-     * @param blue blue component ranging from 0 to 255.
-     */
-    virtual void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
-
-    /**
-     * Set the background color of a fill.  <i>Note that this color will
-     * be ignored for a solid fill type.</i>
-     *
-     * @param alpha alpha component ranging from 0 (fully transparent) to 255
-     *              (fully opaque).
-     * @param red red component ranging from 0 to 255.
-     * @param green green component ranging from 0 to 255.
-     * @param blue blue component ranging from 0 to 255.
-     */
-    virtual void set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
-
-    /**
-     * Commit the fill style currently in the buffer.
-     *
-     * @return the ID of the committed fill style, to be passed on to the
-     *         set_xf_fill() method as its argument.
-     */
-    virtual size_t commit_fill() = 0;
-
-    /**
      * Set the total number of border styles. This may be called before
      * importing any of the border styles. This will give the implementer a
      * chance to allocate storage.  Note that it may not always be called.

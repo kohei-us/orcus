@@ -79,10 +79,6 @@ public:
 
     virtual void set_font_count(size_t n) override;
     virtual void set_fill_count(size_t n) override;
-    virtual void set_fill_pattern_type(fill_pattern_t fp) override;
-    virtual void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
-    virtual void set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
-    virtual size_t commit_fill() override;
 
     virtual void set_border_count(size_t n) override;
     virtual void set_border_style(border_direction_t dir, border_style_t style) override;

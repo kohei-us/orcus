@@ -125,32 +125,6 @@ void import_styles::set_fill_count(size_t n)
     mp_impl->styles_model.reserve_fill_store(n);
 }
 
-void import_styles::set_fill_pattern_type(fill_pattern_t fp)
-{
-    mp_impl->cur_fill.pattern_type = fp;
-    mp_impl->cur_fill_active.pattern_type = true;
-}
-
-void import_styles::set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
-{
-    mp_impl->cur_fill.fg_color = color_t(alpha, red, green, blue);
-    mp_impl->cur_fill_active.fg_color = true;
-}
-
-void import_styles::set_fill_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
-{
-    mp_impl->cur_fill.bg_color = color_t(alpha, red, green, blue);
-    mp_impl->cur_fill_active.bg_color = true;
-}
-
-size_t import_styles::commit_fill()
-{
-    size_t fill_id = mp_impl->styles_model.append_fill(mp_impl->cur_fill, mp_impl->cur_fill_active);
-    mp_impl->cur_fill.reset();
-    mp_impl->cur_fill_active.reset();
-    return fill_id;
-}
-
 void import_styles::set_border_count(size_t n)
 {
     mp_impl->styles_model.reserve_border_store(n);
