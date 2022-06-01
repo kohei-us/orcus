@@ -50,9 +50,7 @@ public:
     // border
 
     virtual void set_border_count(size_t n) override;
-    virtual void set_border_color(orcus::spreadsheet::border_direction_t dir,
-            color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
-    virtual size_t commit_border() override;
+    virtual iface::import_border_style* get_border_style() override;
 
     // cell protection
     virtual void set_cell_hidden(bool b) override;

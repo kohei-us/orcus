@@ -39,9 +39,6 @@ struct import_styles::impl
     fill_t cur_fill;
     fill_active_t cur_fill_active;
 
-    border_t cur_border;
-    border_active_t cur_border_active;
-
     protection_t cur_protection;
     protection_active_t cur_protection_active;
 
@@ -58,47 +55,6 @@ struct import_styles::impl
         fill_style(_styles_model, sp),
         border_style(_styles_model, sp)
     {}
-
-    border_attr_access_t get_border_attrs(border_direction_t dir)
-    {
-        border_attr_access_t ret;
-
-        switch (dir)
-        {
-            case border_direction_t::top:
-                ret.values = &cur_border.top;
-                ret.active = &cur_border_active.top;
-                break;
-            case border_direction_t::bottom:
-                ret.values = &cur_border.bottom;
-                ret.active = &cur_border_active.bottom;
-                break;
-            case border_direction_t::left:
-                ret.values = &cur_border.left;
-                ret.active = &cur_border_active.left;
-                break;
-            case border_direction_t::right:
-                ret.values = &cur_border.right;
-                ret.active = &cur_border_active.right;
-                break;
-            case border_direction_t::diagonal:
-                ret.values = &cur_border.diagonal;
-                ret.active = &cur_border_active.diagonal;
-                break;
-            case border_direction_t::diagonal_bl_tr:
-                ret.values = &cur_border.diagonal_bl_tr;
-                ret.active = &cur_border_active.diagonal_bl_tr;
-                break;
-            case border_direction_t::diagonal_tl_br:
-                ret.values = &cur_border.diagonal_tl_br;
-                ret.active = &cur_border_active.diagonal_tl_br;
-                break;
-            default:
-                ;
-        }
-
-        return ret;
-    }
 };
 
 import_styles::import_styles(styles& styles_model, string_pool& sp) :
@@ -137,46 +93,6 @@ void import_styles::set_fill_count(size_t n)
 void import_styles::set_border_count(size_t n)
 {
     mp_impl->styles_model.reserve_border_store(n);
-}
-
-void import_styles::set_border_style(border_direction_t dir, border_style_t style)
-{
-    auto v = mp_impl->get_border_attrs(dir);
-    if (!v)
-        return;
-
-    v.values->style = style;
-    v.active->style = true;
-}
-
-void import_styles::set_border_color(
-    border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
-{
-    auto v = mp_impl->get_border_attrs(dir);
-    if (!v)
-        return;
-
-    v.values->border_color = color_t(alpha, red, green, blue);
-    v.active->border_color = true;
-}
-
-void import_styles::set_border_width(border_direction_t dir, double width, orcus::length_unit_t unit)
-{
-    auto v = mp_impl->get_border_attrs(dir);
-    if (!v)
-        return;
-
-    v.values->border_width.value = width;
-    v.values->border_width.unit = unit;
-    v.active->border_width = true;
-}
-
-size_t import_styles::commit_border()
-{
-    size_t border_id = mp_impl->styles_model.append_border(mp_impl->cur_border, mp_impl->cur_border_active);
-    mp_impl->cur_border.reset();
-    mp_impl->cur_border_active.reset();
-    return border_id;
 }
 
 void import_styles::set_cell_hidden(bool b)
