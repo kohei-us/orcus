@@ -688,9 +688,13 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
 
     if (bg_color)
     {
-        mp_styles->set_fill_pattern_type(ss::fill_pattern_t::solid);
-        mp_styles->set_fill_fg_color(255, bg_color->red, bg_color->green, bg_color->blue);
-        fill_id = mp_styles->commit_fill();
+        auto* fill_style = mp_styles->get_fill_style();
+        if (!fill_style)
+            throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+
+        fill_style->set_pattern_type(ss::fill_pattern_t::solid);
+        fill_style->set_fg_color(255, bg_color->red, bg_color->green, bg_color->blue);
+        fill_id = fill_style->commit();
     }
 
     if (!border_styles.empty())
@@ -749,10 +753,14 @@ void styles_context::commit_default_styles()
     if (!font_style)
         throw interface_error("implementer must provide a concrete instance of import_font_style.");
 
+    auto* fill_style = mp_styles->get_fill_style();
+    if (!fill_style)
+        throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+
     // Set default styles. Default styles must be associated with an index of 0.
     // Set empty styles for all style types before importing real styles.
     font_style->commit();
-    mp_styles->commit_fill();
+    fill_style->commit();
     mp_styles->commit_border();
     mp_styles->commit_cell_protection();
     mp_styles->commit_number_format();
