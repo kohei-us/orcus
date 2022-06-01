@@ -699,14 +699,18 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
 
     if (!border_styles.empty())
     {
+        auto* border_style = mp_styles->get_border_style();
+        if (!border_style)
+            throw interface_error("implementer must provide a concrete instance of import_border_style.");
+
         for (const auto& [dir, details] : border_styles)
         {
-            mp_styles->set_border_color(dir, 255, details.red, details.green, details.blue);
-            mp_styles->set_border_style(dir, details.border_style);
-            mp_styles->set_border_width(dir, details.border_width.value, details.border_width.unit);
+            border_style->set_color(dir, 255, details.red, details.green, details.blue);
+            border_style->set_style(dir, details.border_style);
+            border_style->set_width(dir, details.border_width.value, details.border_width.unit);
         }
 
-        border_id = mp_styles->commit_border();
+        border_id = border_style->commit();
     }
 
     if (cell_protection)
@@ -757,11 +761,15 @@ void styles_context::commit_default_styles()
     if (!fill_style)
         throw interface_error("implementer must provide a concrete instance of import_fill_style.");
 
+    auto* border_style = mp_styles->get_border_style();
+    if (!border_style)
+        throw interface_error("implementer must provide a concrete instance of import_border_style.");
+
     // Set default styles. Default styles must be associated with an index of 0.
     // Set empty styles for all style types before importing real styles.
     font_style->commit();
     fill_style->commit();
-    mp_styles->commit_border();
+    border_style->commit();
     mp_styles->commit_cell_protection();
     mp_styles->commit_number_format();
     mp_styles->commit_cell_style_xf();
