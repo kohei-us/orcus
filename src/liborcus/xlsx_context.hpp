@@ -22,6 +22,7 @@ namespace spreadsheet { namespace iface {
     class import_shared_strings;
     class import_styles;
     class import_font_style;
+    class import_fill_style;
 }}
 
 /**
@@ -78,6 +79,7 @@ private:
 private:
     spreadsheet::iface::import_styles* mp_styles = nullptr;
     spreadsheet::iface::import_font_style* mp_font = nullptr;
+    spreadsheet::iface::import_fill_style* mp_fill = nullptr;
 
     string_pool m_pool;
     bool m_diagonal_up;

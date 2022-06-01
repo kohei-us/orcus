@@ -29,6 +29,7 @@
 #include <sstream>
 
 using namespace std;
+namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
@@ -457,45 +458,6 @@ public:
     }
 };
 
-class fill_color_attr_parser
-{
-    spreadsheet::iface::import_styles& m_styles;
-    const tokens& m_tokens;
-    bool m_foreground;
-    bool m_debug;
-public:
-    fill_color_attr_parser(spreadsheet::iface::import_styles& styles, const tokens& _tokens, bool fg, bool debug) :
-        m_styles(styles), m_tokens(_tokens), m_foreground(fg), m_debug(debug) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_rgb:
-            {
-                spreadsheet::color_elem_t alpha;
-                spreadsheet::color_elem_t red;
-                spreadsheet::color_elem_t green;
-                spreadsheet::color_elem_t blue;
-                if (!to_rgb(attr.value, alpha, red, green, blue))
-                    // invalid RGB color format.
-                    return;
-
-                if (m_foreground)
-                    m_styles.set_fill_fg_color(alpha, red, green, blue);
-                else
-                    m_styles.set_fill_bg_color(alpha, red, green, blue);
-            }
-            break;
-            case XML_indexed:
-            break;
-            default:
-                if (m_debug)
-                    cerr << "warning: unknown attribute [ " << m_tokens.get_token_name(attr.name) << " ]" << endl;
-        }
-    }
-};
-
 class cell_protection_attr_parser
 {
     spreadsheet::iface::import_styles& m_styles;
@@ -740,12 +702,17 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_fill:
             {
-                xml_elem_stack_t expected = {
+                xml_elem_set_t expected = {
                     xml_token_pair_t(NS_ooxml_xlsx, XML_fills),
                     xml_token_pair_t(NS_ooxml_xlsx, XML_dxf)
                 };
 
                 xml_element_expected(parent, expected);
+
+                mp_fill = mp_styles->get_fill_style();
+                if (!mp_fill)
+                    throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+
                 break;
             }
             case XML_patternFill:
@@ -753,25 +720,71 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_fill);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_patternType)).get_value();
-                mp_styles->set_fill_pattern_type(fill_pattern::get().find(ps.data(), ps.size()));
+                assert(mp_fill);
+                mp_fill->set_pattern_type(fill_pattern::get().find(ps.data(), ps.size()));
                 break;
             }
             case XML_fgColor:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_patternFill);
-                for_each(
-                    attrs.begin(), attrs.end(),
-                    fill_color_attr_parser(
-                        *mp_styles, get_tokens(), true, get_config().debug));
+                assert(mp_fill);
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    switch (attr.name)
+                    {
+                        case XML_rgb:
+                        {
+                            ss::color_elem_t alpha;
+                            ss::color_elem_t red;
+                            ss::color_elem_t green;
+                            ss::color_elem_t blue;
+                            if (!to_rgb(attr.value, alpha, red, green, blue))
+                                // invalid RGB color format.
+                                continue;
+
+                            mp_fill->set_fg_color(alpha, red, green, blue);
+                            break;
+                        }
+                        case XML_indexed:
+                            break;
+                        default:
+                            if (get_config().debug)
+                                std::cerr << "warning: unknown attribute [ " << get_tokens().get_token_name(attr.name) << " ]" << std::endl;
+                    }
+                }
+
                 break;
             }
             case XML_bgColor:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_patternFill);
-                for_each(
-                    attrs.begin(), attrs.end(),
-                    fill_color_attr_parser(
-                        *mp_styles, get_tokens(), false, get_config().debug));
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    switch (attr.name)
+                    {
+                        case XML_rgb:
+                        {
+                            ss::color_elem_t alpha;
+                            ss::color_elem_t red;
+                            ss::color_elem_t green;
+                            ss::color_elem_t blue;
+                            if (!to_rgb(attr.value, alpha, red, green, blue))
+                                // invalid RGB color format.
+                                continue;
+
+                            mp_fill->set_bg_color(alpha, red, green, blue);
+                            break;
+                        }
+                        case XML_indexed:
+                            break;
+                        default:
+                            if (get_config().debug)
+                                std::cerr << "warning: unknown attribute [ " << get_tokens().get_token_name(attr.name) << " ]" << std::endl;
+                    }
+                }
+
                 break;
             }
             case XML_borders:
@@ -956,8 +969,12 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
             break;
         }
         case XML_fill:
-            mp_styles->commit_fill();
+        {
+            assert(mp_fill);
+            mp_fill->commit();
+            mp_fill = nullptr;
             break;
+        }
         case XML_border:
             mp_styles->commit_border();
             break;
