@@ -15,6 +15,8 @@
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus {
 
 namespace {
@@ -65,8 +67,9 @@ private:
 class gnumeric_style_attr_parser
 {
 public:
-    gnumeric_style_attr_parser(spreadsheet::iface::import_styles& styles, gnumeric_color& front_color) :
+    gnumeric_style_attr_parser(ss::iface::import_styles& styles, ss::iface::import_fill_style& fill_style, gnumeric_color& front_color) :
         m_styles(styles),
+        m_fill_style(fill_style),
         m_fill(false),
         m_protection(false),
         m_front_color(front_color) {}
@@ -79,7 +82,7 @@ public:
             {
                 spreadsheet::color_elem_t red, green, blue;
                 gnumeric_helper::parse_RGB_color_attribute(red, green, blue, attr.value);
-                m_styles.set_fill_fg_color(255, red, green, blue);
+                m_fill_style.set_fg_color(255, red, green, blue);
 
                 m_fill = true;
 
@@ -92,7 +95,7 @@ public:
             {
                 spreadsheet::color_elem_t red, green, blue;
                 gnumeric_helper::parse_RGB_color_attribute(red, green, blue, attr.value);
-                m_styles.set_fill_bg_color(255, red, green, blue);
+                m_fill_style.set_bg_color(255, red, green, blue);
 
                 m_fill = true;
             }
@@ -177,7 +180,8 @@ public:
     }
 
 private:
-    spreadsheet::iface::import_styles& m_styles;
+    ss::iface::import_styles& m_styles;
+    ss::iface::import_fill_style& m_fill_style;
 
     bool m_fill;
     bool m_protection;
@@ -721,17 +725,26 @@ void gnumeric_sheet_context::start_row(const xml_attrs_t& attrs)
 
 void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
 {
-    const gnumeric_style_attr_parser& attr_parser = for_each(attrs.begin(), attrs.end(), gnumeric_style_attr_parser(*mp_factory->get_styles(), front_color));
-    spreadsheet::iface::import_styles& styles = *mp_factory->get_styles();
+    auto* styles = mp_factory->get_styles();
+    if (!styles)
+        return;
+
+    auto* fill_style = styles->get_fill_style();
+    if (!fill_style)
+        throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+
+    const gnumeric_style_attr_parser& attr_parser = std::for_each(
+        attrs.begin(), attrs.end(), gnumeric_style_attr_parser(*styles, *fill_style, front_color));
+
     if (attr_parser.is_fill_set())
     {
-        size_t fill_id = styles.commit_fill();
-        styles.set_xf_fill(fill_id);
+        size_t fill_id = fill_style->commit();
+        styles->set_xf_fill(fill_id);
     }
     if (attr_parser.is_protection_set())
     {
-        size_t protection_id = styles.commit_cell_protection();
-        styles.set_xf_protection(protection_id);
+        size_t protection_id = styles->commit_cell_protection();
+        styles->set_xf_protection(protection_id);
     }
 }
 
