@@ -1859,7 +1859,12 @@ void xls_xml_context::commit_default_style()
         font_style->commit();
     }
 
-    styles->commit_fill();
+    ss::iface::import_fill_style* fill_style = styles->get_fill_style();
+    if (!fill_style)
+        throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+
+    fill_style->commit();
+
     styles->commit_border();
     styles->commit_cell_protection();
     styles->commit_number_format();
@@ -1905,16 +1910,20 @@ void xls_xml_context::commit_styles()
 
         styles->set_xf_font(font_id);
 
+        auto* fill_style = styles->get_fill_style();
+        if (!font_style)
+            throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+
         if (style->fill.solid)
         {
             // TODO : add support for fill types other than 'solid'.
-            styles->set_fill_pattern_type(spreadsheet::fill_pattern_t::solid);
-            styles->set_fill_fg_color(255,
+            fill_style->set_pattern_type(spreadsheet::fill_pattern_t::solid);
+            fill_style->set_fg_color(255,
                 style->fill.color.red,
                 style->fill.color.green,
                 style->fill.color.blue);
 
-            size_t fill_id = styles->commit_fill();
+            size_t fill_id = fill_style->commit();
             styles->set_xf_fill(fill_id);
         }
 

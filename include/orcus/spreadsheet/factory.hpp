@@ -74,9 +74,10 @@ public:
     import_styles(styles& styles, string_pool& sp);
     virtual ~import_styles() override;
 
-    virtual void set_font_count(size_t n) override;
     virtual iface::import_font_style* get_font_style() override;
+    virtual iface::import_fill_style* get_fill_style() override;
 
+    virtual void set_font_count(size_t n) override;
     virtual void set_fill_count(size_t n) override;
     virtual void set_fill_pattern_type(fill_pattern_t fp) override;
     virtual void set_fill_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
@@ -135,7 +136,7 @@ class ORCUS_SPM_DLLPUBLIC import_font_style : public iface::import_font_style
 public:
     import_font_style() = delete;
     import_font_style(styles& _styles_model, string_pool& sp);
-    virtual ~import_font_style();
+    virtual ~import_font_style() override;
 
     virtual void set_bold(bool b) override;
     virtual void set_italic(bool b) override;
@@ -151,6 +152,24 @@ public:
     virtual void set_strikethrough_type(strikethrough_type_t s) override;
     virtual void set_strikethrough_width(strikethrough_width_t s) override;
     virtual void set_strikethrough_text(strikethrough_text_t s) override;
+    virtual size_t commit() override;
+
+    void reset();
+};
+
+class ORCUS_SPM_DLLPUBLIC import_fill_style : public iface::import_fill_style
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    import_fill_style() = delete;
+    import_fill_style(styles& _styles_model, string_pool& sp);
+    virtual ~import_fill_style() override;
+
+    virtual void set_pattern_type(fill_pattern_t fp) override;
+    virtual void set_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual void set_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
     virtual size_t commit() override;
 
     void reset();

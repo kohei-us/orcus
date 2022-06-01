@@ -20,6 +20,7 @@
 namespace orcus { namespace spreadsheet { namespace iface {
 
 class import_font_style;
+class import_fill_style;
 
 /**
  * Interface for styles. Note that because the default style must have an
@@ -48,6 +49,16 @@ public:
      *         attributes.
      */
     virtual import_font_style* get_font_style() = 0;
+
+    /**
+     * Return a pointer to the interface instance for importing fill style
+     * attributes. Note that the import_styles implementer <i>must</i> return a
+     * non-null pointer.
+     *
+     * @return pointer to the interface instance for importing fill style
+     *         attributes.
+     */
+    virtual import_fill_style* get_fill_style() = 0;
 
     /**
      * Set the total number of font styles. This may be called before importing
@@ -225,6 +236,51 @@ public:
     virtual void set_strikethrough_type(strikethrough_type_t s) = 0;
     virtual void set_strikethrough_width(strikethrough_width_t s) = 0;
     virtual void set_strikethrough_text(strikethrough_text_t s) = 0;
+    virtual size_t commit() = 0;
+};
+
+class ORCUS_DLLPUBLIC import_fill_style
+{
+public:
+    virtual ~import_fill_style();
+
+    /**
+     * Set the type of fill pattern.
+     *
+     * @param fp fill pattern type.
+     */
+    virtual void set_pattern_type(fill_pattern_t fp) = 0;
+
+    /**
+     * Set the foreground color of a fill.  <i>Note that for a solid fill
+     * type, the foreground color will be used.</i>
+     *
+     * @param alpha alpha component ranging from 0 (fully transparent) to 255
+     *              (fully opaque).
+     * @param red red component ranging from 0 to 255.
+     * @param green green component ranging from 0 to 255.
+     * @param blue blue component ranging from 0 to 255.
+     */
+    virtual void set_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+
+    /**
+     * Set the background color of a fill.  <i>Note that this color will
+     * be ignored for a solid fill type.</i>
+     *
+     * @param alpha alpha component ranging from 0 (fully transparent) to 255
+     *              (fully opaque).
+     * @param red red component ranging from 0 to 255.
+     * @param green green component ranging from 0 to 255.
+     * @param blue blue component ranging from 0 to 255.
+     */
+    virtual void set_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+
+    /**
+     * Commit the fill style currently in the buffer.
+     *
+     * @return the ID of the committed fill style, to be passed on to the
+     *         set_xf_fill() method as its argument.
+     */
     virtual size_t commit() = 0;
 };
 

@@ -33,6 +33,7 @@ struct import_styles::impl
     string_pool& str_pool;
 
     import_font_style font_style;
+    import_fill_style fill_style;
 
     fill_t cur_fill;
     fill_active_t cur_fill_active;
@@ -52,7 +53,8 @@ struct import_styles::impl
     impl(styles& _styles_model, string_pool& sp) :
         styles_model(_styles_model),
         str_pool(sp),
-        font_style(_styles_model, sp) {}
+        font_style(_styles_model, sp),
+        fill_style(_styles_model, sp) {}
 
     border_attr_access_t get_border_attrs(border_direction_t dir)
     {
@@ -101,15 +103,21 @@ import_styles::import_styles(styles& styles_model, string_pool& sp) :
 
 import_styles::~import_styles() {}
 
-void import_styles::set_font_count(size_t n)
-{
-    mp_impl->styles_model.reserve_font_store(n);
-}
-
 iface::import_font_style* import_styles::get_font_style()
 {
     mp_impl->font_style.reset();
     return &mp_impl->font_style;
+}
+
+iface::import_fill_style* import_styles::get_fill_style()
+{
+    mp_impl->fill_style.reset();
+    return &mp_impl->fill_style;
+}
+
+void import_styles::set_font_count(size_t n)
+{
+    mp_impl->styles_model.reserve_font_store(n);
 }
 
 void import_styles::set_fill_count(size_t n)
@@ -483,6 +491,65 @@ void import_font_style::reset()
 {
     mp_impl->cur_font.reset();
     mp_impl->cur_font_active.reset();
+}
+
+struct import_fill_style::impl
+{
+    styles& styles_model;
+    string_pool& str_pool;
+
+    fill_t cur_fill;
+    fill_active_t cur_fill_active;
+
+    impl(styles& _styles_model, string_pool& sp) :
+        styles_model(_styles_model), str_pool(sp) {}
+};
+
+import_fill_style::import_fill_style(styles& _styles_model, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(_styles_model, sp))
+{
+}
+
+import_fill_style::~import_fill_style()
+{
+}
+
+void import_fill_style::set_pattern_type(fill_pattern_t fp)
+{
+    mp_impl->cur_fill.pattern_type = fp;
+    mp_impl->cur_fill_active.pattern_type = true;
+}
+
+void import_fill_style::set_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
+{
+    mp_impl->cur_fill.fg_color.alpha = alpha;
+    mp_impl->cur_fill.fg_color.red = red;
+    mp_impl->cur_fill.fg_color.green = green;
+    mp_impl->cur_fill.fg_color.blue = blue;
+    mp_impl->cur_fill_active.fg_color = true;
+}
+
+void import_fill_style::set_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
+{
+    mp_impl->cur_fill.bg_color.alpha = alpha;
+    mp_impl->cur_fill.bg_color.red = red;
+    mp_impl->cur_fill.bg_color.green = green;
+    mp_impl->cur_fill.bg_color.blue = blue;
+    mp_impl->cur_fill_active.bg_color = true;
+}
+
+size_t import_fill_style::commit()
+{
+    size_t fill_id = mp_impl->styles_model.append_fill(mp_impl->cur_fill, mp_impl->cur_fill_active);
+    mp_impl->cur_fill.reset();
+    mp_impl->cur_fill_active.reset();
+    return fill_id;
+}
+
+void import_fill_style::reset()
+{
+    mp_impl->cur_fill.reset();
+    mp_impl->cur_fill_active.reset();
 }
 
 }}
