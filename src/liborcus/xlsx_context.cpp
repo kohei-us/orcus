@@ -458,34 +458,6 @@ public:
     }
 };
 
-class cell_protection_attr_parser
-{
-    spreadsheet::iface::import_styles& m_styles;
-public:
-
-    cell_protection_attr_parser(spreadsheet::iface::import_styles& styles) :
-        m_styles(styles) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_hidden:
-            {
-                bool b = to_long(attr.value) != 0;
-                m_styles.set_cell_hidden(b);
-            }
-            break;
-            case XML_locked:
-            {
-                bool b = to_long(attr.value) != 0;
-                m_styles.set_cell_locked(b);
-            }
-            break;
-        }
-    }
-};
-
 class cell_alignment_attr_parser
 {
     spreadsheet::hor_alignment_t m_hor_align;
@@ -922,11 +894,32 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 break;
             case XML_protection:
             {
-                xml_elem_stack_t expected_elements;
-                expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_xf));
-                expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
+                const xml_elem_set_t expected_elements = {
+                    { NS_ooxml_xlsx, XML_xf },
+                    { NS_ooxml_xlsx, XML_dxf },
+                };
+
                 xml_element_expected(parent, expected_elements);
-                for_each(attrs.begin(), attrs.end(), cell_protection_attr_parser(*mp_styles));
+
+                for (const auto& attr : attrs)
+                {
+                    switch (attr.name)
+                    {
+                        case XML_hidden:
+                        {
+                            bool b = to_long(attr.value) != 0;
+                            mp_styles->set_cell_hidden(b);
+                            break;
+                        }
+                        case XML_locked:
+                        {
+                            bool b = to_long(attr.value) != 0;
+                            mp_styles->set_cell_locked(b);
+                            break;
+                        }
+                    }
+                }
+
                 break;
             }
             case XML_alignment:
