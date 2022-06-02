@@ -77,6 +77,7 @@ public:
     virtual iface::import_font_style* get_font_style() override;
     virtual iface::import_fill_style* get_fill_style() override;
     virtual iface::import_border_style* get_border_style() override;
+    virtual iface::import_cell_protection* get_cell_protection() override;
 
     virtual void set_font_count(size_t n) override;
     virtual void set_fill_count(size_t n) override;
@@ -180,6 +181,25 @@ public:
     virtual void set_color(
         border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
     virtual void set_width(border_direction_t dir, double width, orcus::length_unit_t unit) override;
+    virtual size_t commit() override;
+
+    void reset();
+};
+
+class ORCUS_SPM_DLLPUBLIC import_cell_protection : public iface::import_cell_protection
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    import_cell_protection() = delete;
+    import_cell_protection(styles& _styles_model, string_pool& sp);
+    virtual ~import_cell_protection() override;
+
+    virtual void set_hidden(bool b) override;
+    virtual void set_locked(bool b) override;
+    virtual void set_print_content(bool b) override;
+    virtual void set_formula_hidden(bool b) override;
     virtual size_t commit() override;
 
     void reset();

@@ -35,6 +35,7 @@ struct import_styles::impl
     import_font_style font_style;
     import_fill_style fill_style;
     import_border_style border_style;
+    import_cell_protection cell_protection;
 
     fill_t cur_fill;
     fill_active_t cur_fill_active;
@@ -53,7 +54,8 @@ struct import_styles::impl
         str_pool(sp),
         font_style(_styles_model, sp),
         fill_style(_styles_model, sp),
-        border_style(_styles_model, sp)
+        border_style(_styles_model, sp),
+        cell_protection(_styles_model, sp)
     {}
 };
 
@@ -78,6 +80,12 @@ iface::import_border_style* import_styles::get_border_style()
 {
     mp_impl->border_style.reset();
     return &mp_impl->border_style;
+}
+
+iface::import_cell_protection* import_styles::get_cell_protection()
+{
+    mp_impl->cell_protection.reset();
+    return &mp_impl->cell_protection;
 }
 
 void import_styles::set_font_count(size_t n)
@@ -558,6 +566,69 @@ void import_border_style::reset()
     mp_impl->cur_border.reset();
     mp_impl->cur_border_active.reset();
 }
+
+struct import_cell_protection::impl
+{
+    styles& styles_model;
+    string_pool& str_pool;
+
+    protection_t cur_protection;
+    protection_active_t cur_protection_active;
+
+    impl(styles& _styles_model, string_pool& sp) :
+        styles_model(_styles_model), str_pool(sp) {}
+};
+
+import_cell_protection::import_cell_protection(styles& _styles_model, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(_styles_model, sp))
+{
+}
+
+import_cell_protection::~import_cell_protection()
+{
+}
+
+void import_cell_protection::set_hidden(bool b)
+{
+    mp_impl->cur_protection.hidden = b;
+    mp_impl->cur_protection_active.hidden = true;
+}
+
+void import_cell_protection::set_locked(bool b)
+{
+    mp_impl->cur_protection.locked = b;
+    mp_impl->cur_protection_active.locked = true;
+}
+
+void import_cell_protection::set_print_content(bool b)
+{
+    mp_impl->cur_protection.print_content = b;
+    mp_impl->cur_protection_active.print_content = true;
+}
+
+void import_cell_protection::set_formula_hidden(bool b)
+{
+    mp_impl->cur_protection.formula_hidden = b;
+    mp_impl->cur_protection_active.formula_hidden = true;
+}
+
+size_t import_cell_protection::commit()
+{
+    size_t cp_id = mp_impl->styles_model.append_protection(
+        mp_impl->cur_protection, mp_impl->cur_protection_active);
+
+    mp_impl->cur_protection.reset();
+    mp_impl->cur_protection_active.reset();
+
+    return cp_id;
+}
+
+void import_cell_protection::reset()
+{
+    mp_impl->cur_protection.reset();
+    mp_impl->cur_protection_active.reset();
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

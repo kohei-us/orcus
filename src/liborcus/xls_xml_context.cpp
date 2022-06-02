@@ -1871,7 +1871,12 @@ void xls_xml_context::commit_default_style()
 
     border_style->commit();
 
-    styles->commit_cell_protection();
+    auto* cell_protection = styles->get_cell_protection();
+    if (!cell_protection)
+        throw interface_error("implementer must provide a concrete instance of import_cell_protection.");
+
+    cell_protection->commit();
+
     styles->commit_number_format();
 
     styles->commit_cell_style_xf();

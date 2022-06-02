@@ -22,6 +22,7 @@ namespace orcus { namespace spreadsheet { namespace iface {
 class import_font_style;
 class import_fill_style;
 class import_border_style;
+class import_cell_protection;
 
 /**
  * Interface for styles. Note that because the default style must have an
@@ -70,6 +71,16 @@ public:
      *         attributes.
      */
     virtual import_border_style* get_border_style() = 0;
+
+    /**
+     * Return a pointer to the interface instance for importing cell protection
+     * attributes. Note that the import_styles implementer <i>must</i> return a
+     * non-null pointer.
+     *
+     * @return pointer to the interface instance for importing cell protection
+     *         attributes.
+     */
+    virtual import_cell_protection* get_cell_protection() = 0;
 
     /**
      * Set the total number of font styles. This may be called before importing
@@ -259,6 +270,18 @@ public:
     virtual void set_color(
         border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
     virtual void set_width(border_direction_t dir, double width, orcus::length_unit_t unit) = 0;
+    virtual size_t commit() = 0;
+};
+
+class ORCUS_DLLPUBLIC import_cell_protection
+{
+public:
+    virtual ~import_cell_protection();
+
+    virtual void set_hidden(bool b) = 0;
+    virtual void set_locked(bool b) = 0;
+    virtual void set_print_content(bool b) = 0;
+    virtual void set_formula_hidden(bool b) = 0;
     virtual size_t commit() = 0;
 };
 
