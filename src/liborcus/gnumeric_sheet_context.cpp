@@ -610,6 +610,9 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
     auto* cell_protection = styles->get_cell_protection();
     ENSURE_INTERFACE(cell_protection, import_cell_protection);
 
+    auto* number_format = styles->get_number_format();
+    ENSURE_INTERFACE(number_format, import_number_format);
+
     bool fill_set = false;
     bool protection_set = false;
 
@@ -659,8 +662,8 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
             {
                 if (attr.value != "General")
                 {
-                    styles->set_number_format_code(attr.value);
-                    size_t index = styles->commit_number_format();
+                    number_format->set_code(attr.value);
+                    std::size_t index = number_format->commit();
                     styles->set_xf_number_format(index);
                 }
                 break;
