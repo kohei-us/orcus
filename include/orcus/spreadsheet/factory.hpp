@@ -83,12 +83,6 @@ public:
     virtual void set_fill_count(size_t n) override;
     virtual void set_border_count(size_t n) override;
 
-    virtual void set_cell_hidden(bool b) override;
-    virtual void set_cell_locked(bool b) override;
-    virtual void set_cell_print_content(bool b) override;
-    virtual void set_cell_formula_hidden(bool b) override;
-    virtual size_t commit_cell_protection() override;
-
     virtual void set_number_format_count(size_t n) override;
     virtual void set_number_format_identifier(size_t id) override;
     virtual void set_number_format_code(std::string_view s) override;

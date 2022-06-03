@@ -109,13 +109,6 @@ public:
      */
     virtual void set_border_count(size_t n) = 0;
 
-    // cell protection
-    virtual void set_cell_hidden(bool b) = 0;
-    virtual void set_cell_locked(bool b) = 0;
-    virtual void set_cell_print_content(bool b) = 0;
-    virtual void set_cell_formula_hidden(bool b) = 0;
-    virtual size_t commit_cell_protection() = 0;
-
     /**
      * Set the total number of number format styles. This may be called before
      * importing any of the number format styles. This will give the implementer

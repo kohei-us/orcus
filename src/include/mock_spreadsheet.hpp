@@ -52,11 +52,6 @@ public:
     virtual void set_border_count(size_t n) override;
     virtual iface::import_border_style* get_border_style() override;
 
-    // cell protection
-    virtual void set_cell_hidden(bool b) override;
-    virtual void set_cell_locked(bool b) override;
-    virtual size_t commit_cell_protection() override;
-
     // cell style xf
 
     virtual void set_cell_style_xf_count(size_t n) override;
