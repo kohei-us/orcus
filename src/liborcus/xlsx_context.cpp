@@ -1016,31 +1016,36 @@ void xlsx_styles_context::characters(std::string_view /*str*/, bool /*transient*
 
 void xlsx_styles_context::start_element_number_format(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
 {
-    xml_elem_stack_t expected_elements;
-    expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_numFmts));
-    expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
+    const xml_elem_set_t expected_elements = {
+        { NS_ooxml_xlsx, XML_numFmts },
+        { NS_ooxml_xlsx, XML_dxf },
+    };
+
     xml_element_expected(parent, expected_elements);
 
-    if (mp_styles)
-    {
-        for (const xml_token_attr_t& attr : attrs)
-        {
-            if (attr.ns && attr.ns != NS_ooxml_xlsx)
-                continue;
+    if (!mp_styles)
+        return;
 
-            switch (attr.name)
+    mp_numfmt = mp_styles->get_number_format();
+    ENSURE_INTERFACE(mp_numfmt, import_number_format);
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns && attr.ns != NS_ooxml_xlsx)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_numFmtId:
             {
-                case XML_numFmtId:
-                {
-                    long id = to_long(attr.value);
-                    mp_styles->set_number_format_identifier(id);
-                    break;
-                }
-                case XML_formatCode:
-                {
-                    mp_styles->set_number_format_code(attr.value);
-                    break;
-                }
+                long id = to_long(attr.value);
+                mp_numfmt->set_identifier(id);
+                break;
+            }
+            case XML_formatCode:
+            {
+                mp_numfmt->set_code(attr.value);
+                break;
             }
         }
     }
@@ -1144,7 +1149,8 @@ void xlsx_styles_context::end_element_number_format()
     if (!mp_styles)
         return;
 
-    mp_styles->commit_number_format();
+    assert(mp_numfmt);
+    mp_numfmt->commit();
 }
 
 }
