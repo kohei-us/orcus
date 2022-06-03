@@ -608,6 +608,10 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
     if (!fill_style)
         throw interface_error("implementer must provide a concrete instance of import_fill_style.");
 
+    auto* cell_protection = styles->get_cell_protection();
+    if (!cell_protection)
+        throw interface_error("implementer must provide a concrete instance of import_cell_protection.");
+
     bool fill_set = false;
     bool protection_set = false;
 
@@ -640,7 +644,7 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
             case XML_Hidden:
             {
                 bool b = atoi(attr.value.data());
-                styles->set_cell_hidden(b);
+                cell_protection->set_hidden(b);
 
                 protection_set = true;
                 break;
@@ -648,7 +652,7 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
             case XML_Locked:
             {
                 bool b = atoi(attr.value.data());
-                styles->set_cell_locked(b);
+                cell_protection->set_locked(b);
 
                 protection_set = true;
                 break;
@@ -713,7 +717,7 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
     }
     if (protection_set)
     {
-        size_t protection_id = styles->commit_cell_protection();
+        size_t protection_id = cell_protection->commit();
         styles->set_xf_protection(protection_id);
     }
 }
