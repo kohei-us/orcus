@@ -9,6 +9,7 @@
 #include "odf_namespace_types.hpp"
 #include "odf_token_constants.hpp"
 #include "odf_helper.hpp"
+#include "impl_utils.hpp"
 
 #include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/import_interface.hpp>
@@ -461,8 +462,7 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
 
     // Commit the font data.
     auto* font_style = mp_styles->get_font_style();
-    if (!font_style)
-        throw interface_error("implementer must provide a concrete instance of import_font_style.");
+    ENSURE_INTERFACE(font_style, import_font_style);
 
     if (font_name)
         font_style->set_name(*font_name);
@@ -689,8 +689,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     if (bg_color)
     {
         auto* fill_style = mp_styles->get_fill_style();
-        if (!fill_style)
-            throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+        ENSURE_INTERFACE(fill_style, import_fill_style);
 
         fill_style->set_pattern_type(ss::fill_pattern_t::solid);
         fill_style->set_fg_color(255, bg_color->red, bg_color->green, bg_color->blue);
@@ -700,8 +699,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     if (!border_styles.empty())
     {
         auto* border_style = mp_styles->get_border_style();
-        if (!border_style)
-            throw interface_error("implementer must provide a concrete instance of import_border_style.");
+        ENSURE_INTERFACE(border_style, import_border_style);
 
         for (const auto& [dir, details] : border_styles)
         {
@@ -716,8 +714,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     if (cell_protection_set)
     {
         auto* cell_protection = mp_styles->get_cell_protection();
-        if (!cell_protection)
-            throw interface_error("implementer must provide a concrete instance of import_cell_protection.");
+        ENSURE_INTERFACE(cell_protection, import_cell_protection);
 
         if (hidden)
             cell_protection->set_hidden(*hidden);
@@ -758,20 +755,16 @@ void styles_context::commit_default_styles()
         return;
 
     auto* font_style = mp_styles->get_font_style();
-    if (!font_style)
-        throw interface_error("implementer must provide a concrete instance of import_font_style.");
+    ENSURE_INTERFACE(font_style, import_font_style);
 
     auto* fill_style = mp_styles->get_fill_style();
-    if (!fill_style)
-        throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+    ENSURE_INTERFACE(fill_style, import_fill_style);
 
     auto* border_style = mp_styles->get_border_style();
-    if (!border_style)
-        throw interface_error("implementer must provide a concrete instance of import_border_style.");
+    ENSURE_INTERFACE(border_style, import_border_style);
 
     auto* cell_protection = mp_styles->get_cell_protection();
-    if (!cell_protection)
-        throw interface_error("implementer must provide a concrete instance of import_cell_protection.");
+    ENSURE_INTERFACE(cell_protection, import_cell_protection);
 
     // Set default styles. Default styles must be associated with an index of 0.
     // Set empty styles for all style types before importing real styles.

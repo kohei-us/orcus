@@ -10,6 +10,7 @@
 #include "gnumeric_token_constants.hpp"
 #include "gnumeric_namespace_types.hpp"
 #include "gnumeric_helper.hpp"
+#include "impl_utils.hpp"
 
 #include <orcus/global.hpp>
 #include <orcus/spreadsheet/import_interface.hpp>
@@ -522,8 +523,7 @@ void gnumeric_sheet_context::start_font(const xml_attrs_t& attrs)
         return;
 
     auto* font_style = styles->get_font_style();
-    if (!font_style)
-        throw interface_error("implementer must provide a concrete instance of import_font_style.");
+    ENSURE_INTERFACE(font_style, import_font_style);
 
     for (const auto& attr : attrs)
     {
@@ -605,12 +605,10 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
         return;
 
     auto* fill_style = styles->get_fill_style();
-    if (!fill_style)
-        throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+    ENSURE_INTERFACE(fill_style, import_fill_style);
 
     auto* cell_protection = styles->get_cell_protection();
-    if (!cell_protection)
-        throw interface_error("implementer must provide a concrete instance of import_cell_protection.");
+    ENSURE_INTERFACE(cell_protection, import_cell_protection);
 
     bool fill_set = false;
     bool protection_set = false;
@@ -750,8 +748,7 @@ void gnumeric_sheet_context::end_font()
         return;
 
     auto* font_style = styles->get_font_style();
-    if (!font_style)
-        throw interface_error("implementer must provide a concrete instance of import_font_style.");
+    ENSURE_INTERFACE(font_style, import_font_style);
 
     font_style->set_color(0, front_color.red, front_color.green, front_color.blue);
     font_style->set_name(chars);

@@ -293,6 +293,7 @@
                 <F N="../src/liborcus/gnumeric_tokens.cpp"/>
                 <F N="../src/liborcus/gnumeric_tokens.hpp"/>
                 <F N="../src/liborcus/gnumeric_tokens.inl"/>
+                <F N="../src/liborcus/impl_utils.hpp"/>
                 <F N="../src/liborcus/info.cpp"/>
                 <F N="../src/liborcus/interface.cpp"/>
                 <F N="../src/liborcus/json_document_tree.cpp"/>

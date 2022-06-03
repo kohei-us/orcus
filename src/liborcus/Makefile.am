@@ -49,6 +49,7 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	formula_result.hpp \
 	formula_result.cpp \
 	global.cpp \
+	impl_utils.hpp \
 	info.cpp \
 	interface.cpp \
 	json_document_tree.cpp \

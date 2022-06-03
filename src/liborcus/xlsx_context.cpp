@@ -13,6 +13,7 @@
 #include "ooxml_schemas.hpp"
 #include "xlsx_helper.hpp"
 #include "xml_context_global.hpp"
+#include "impl_utils.hpp"
 
 #include <orcus/global.hpp>
 #include <orcus/tokens.hpp>
@@ -569,8 +570,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
                 xml_element_expected(parent, expected_elements);
                 mp_font = mp_styles->get_font_style();
-                if (!mp_font)
-                    throw interface_error("implementer must provide a concrete instance of import_font_style.");
+                ENSURE_INTERFACE(mp_font, import_font_style);
                 break;
             }
             case XML_b:
@@ -682,8 +682,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 xml_element_expected(parent, expected);
 
                 mp_fill = mp_styles->get_fill_style();
-                if (!mp_fill)
-                    throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+                ENSURE_INTERFACE(mp_fill, import_fill_style);
 
                 break;
             }
@@ -773,8 +772,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 start_element_border(parent, attrs);
 
                 mp_border = mp_styles->get_border_style();
-                if (!mp_border)
-                    throw interface_error("implementer must provide a concrete instance of import_border_style.");
+                ENSURE_INTERFACE(mp_border, import_border_style);
 
                 break;
             }
@@ -902,8 +900,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 xml_element_expected(parent, expected_elements);
 
                 mp_protection = mp_styles->get_cell_protection();
-                if (!mp_protection)
-                    throw interface_error("implementer must provide a concrete instance of import_cell_protection.");
+                ENSURE_INTERFACE(mp_protection, import_cell_protection);
 
                 for (const auto& attr : attrs)
                 {

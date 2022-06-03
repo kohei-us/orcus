@@ -75,6 +75,10 @@ public:
     virtual ~xpath_error() noexcept;
 };
 
+/**
+ * This gets thrown when a public interface method is expected to return a
+ * non-null pointer to another interface but actually returns a null pointer.
+ */
 class ORCUS_PSR_DLLPUBLIC interface_error : public general_error
 {
 public:

@@ -9,6 +9,7 @@
 #include "xls_xml_namespace_types.hpp"
 #include "xls_xml_token_constants.hpp"
 #include "spreadsheet_iface_util.hpp"
+#include "impl_utils.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
@@ -1840,8 +1841,7 @@ void xls_xml_context::commit_default_style()
         return;
 
     ss::iface::import_font_style* font_style = styles->get_font_style();
-    if (!font_style)
-        throw interface_error("implementer must provide a concrete instance of import_font_style.");
+    ENSURE_INTERFACE(font_style, import_font_style);
 
     if (font_style)
     {
@@ -1860,21 +1860,15 @@ void xls_xml_context::commit_default_style()
     }
 
     ss::iface::import_fill_style* fill_style = styles->get_fill_style();
-    if (!fill_style)
-        throw interface_error("implementer must provide a concrete instance of import_fill_style.");
-
+    ENSURE_INTERFACE(fill_style, import_fill_style);
     fill_style->commit();
 
     auto* border_style = styles->get_border_style();
-    if (!border_style)
-        throw interface_error("implementer must provide a concrete instance of import_border_style.");
-
+    ENSURE_INTERFACE(border_style, import_border_style);
     border_style->commit();
 
     auto* cell_protection = styles->get_cell_protection();
-    if (!cell_protection)
-        throw interface_error("implementer must provide a concrete instance of import_cell_protection.");
-
+    ENSURE_INTERFACE(cell_protection, import_cell_protection);
     cell_protection->commit();
 
     styles->commit_number_format();
@@ -1906,8 +1900,7 @@ void xls_xml_context::commit_styles()
     for (const std::unique_ptr<style_type>& style : m_styles)
     {
         auto* font_style = styles->get_font_style();
-        if (!font_style)
-            throw interface_error("implementer must provide a concrete instance of import_font_style.");
+        ENSURE_INTERFACE(font_style, import_font_style);
 
         font_style->set_bold(style->font.bold);
         font_style->set_italic(style->font.italic);
@@ -1921,8 +1914,7 @@ void xls_xml_context::commit_styles()
         styles->set_xf_font(font_id);
 
         auto* fill_style = styles->get_fill_style();
-        if (!font_style)
-            throw interface_error("implementer must provide a concrete instance of import_fill_style.");
+        ENSURE_INTERFACE(fill_style, import_fill_style);
 
         if (style->fill.solid)
         {
@@ -1942,8 +1934,7 @@ void xls_xml_context::commit_styles()
             styles->set_border_count(style->borders.size());
 
             auto* border_style = styles->get_border_style();
-            if (!border_style)
-                throw interface_error("implementer must provide a concrete instance of import_border_style.");
+            ENSURE_INTERFACE(border_style, import_border_style);
 
             for (const border_style_type& b : style->borders)
             {
