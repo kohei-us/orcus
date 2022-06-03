@@ -78,6 +78,7 @@ public:
     virtual iface::import_fill_style* get_fill_style() override;
     virtual iface::import_border_style* get_border_style() override;
     virtual iface::import_cell_protection* get_cell_protection() override;
+    virtual iface::import_number_format* get_number_format() override;
 
     virtual void set_font_count(size_t n) override;
     virtual void set_fill_count(size_t n) override;
@@ -194,6 +195,23 @@ public:
     virtual void set_locked(bool b) override;
     virtual void set_print_content(bool b) override;
     virtual void set_formula_hidden(bool b) override;
+    virtual size_t commit() override;
+
+    void reset();
+};
+
+class ORCUS_SPM_DLLPUBLIC import_number_format : public iface::import_number_format
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    import_number_format() = delete;
+    import_number_format(styles& _styles_model, string_pool& sp);
+    virtual ~import_number_format() override;
+
+    virtual void set_identifier(std::size_t id) override;
+    virtual void set_code(std::string_view s) override;
     virtual size_t commit() override;
 
     void reset();

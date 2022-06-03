@@ -36,6 +36,7 @@ struct import_styles::impl
     import_fill_style fill_style;
     import_border_style border_style;
     import_cell_protection cell_protection;
+    import_number_format number_format;
 
     fill_t cur_fill;
     fill_active_t cur_fill_active;
@@ -52,7 +53,8 @@ struct import_styles::impl
         font_style(_styles_model, sp),
         fill_style(_styles_model, sp),
         border_style(_styles_model, sp),
-        cell_protection(_styles_model, sp)
+        cell_protection(_styles_model, sp),
+        number_format(_styles_model, sp)
     {}
 };
 
@@ -83,6 +85,12 @@ iface::import_cell_protection* import_styles::get_cell_protection()
 {
     mp_impl->cell_protection.reset();
     return &mp_impl->cell_protection;
+}
+
+iface::import_number_format* import_styles::get_number_format()
+{
+    mp_impl->number_format.reset();
+    return &mp_impl->number_format;
 }
 
 void import_styles::set_font_count(size_t n)
@@ -590,6 +598,56 @@ void import_cell_protection::reset()
 {
     mp_impl->cur_protection.reset();
     mp_impl->cur_protection_active.reset();
+}
+
+struct import_number_format::impl
+{
+    styles& styles_model;
+    string_pool& str_pool;
+
+    number_format_t cur_numfmt;
+    number_format_active_t cur_numfmt_active;
+
+    impl(styles& _styles_model, string_pool& sp) :
+        styles_model(_styles_model), str_pool(sp) {}
+};
+
+import_number_format::import_number_format(styles& _styles_model, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(_styles_model, sp))
+{
+}
+
+import_number_format::~import_number_format()
+{
+}
+
+void import_number_format::set_identifier(std::size_t id)
+{
+    mp_impl->cur_numfmt.identifier = id;
+    mp_impl->cur_numfmt_active.identifier = true;
+}
+
+void import_number_format::set_code(std::string_view s)
+{
+    mp_impl->cur_numfmt.format_string = s;
+    mp_impl->cur_numfmt_active.format_string = true;
+}
+
+size_t import_number_format::commit()
+{
+    std::size_t fmt_id = mp_impl->styles_model.append_number_format(
+        mp_impl->cur_numfmt, mp_impl->cur_numfmt_active);
+
+    mp_impl->cur_numfmt.reset();
+    mp_impl->cur_numfmt_active.reset();
+
+    return fmt_id;
+}
+
+void import_number_format::reset()
+{
+    mp_impl->cur_numfmt.reset();
+    mp_impl->cur_numfmt_active.reset();
 }
 
 }}

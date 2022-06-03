@@ -1871,7 +1871,9 @@ void xls_xml_context::commit_default_style()
     ENSURE_INTERFACE(cell_protection, import_cell_protection);
     cell_protection->commit();
 
-    styles->commit_number_format();
+    auto* number_format = styles->get_number_format();
+    ENSURE_INTERFACE(number_format, import_number_format);
+    number_format->commit();
 
     styles->commit_cell_style_xf();
     styles->commit_cell_xf();
@@ -1956,8 +1958,10 @@ void xls_xml_context::commit_styles()
 
         if (!style->number_format.empty())
         {
-            styles->set_number_format_code(style->number_format);
-            size_t number_format_id = styles->commit_number_format();
+            auto* number_format = styles->get_number_format();
+            ENSURE_INTERFACE(number_format, import_number_format);
+            number_format->set_code(style->number_format);
+            size_t number_format_id = number_format->commit();
             styles->set_xf_number_format(number_format_id);
         }
 

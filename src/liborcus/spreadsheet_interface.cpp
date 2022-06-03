@@ -33,6 +33,8 @@ import_border_style::~import_border_style() {}
 
 import_cell_protection::~import_cell_protection() {}
 
+import_number_format::~import_number_format() {}
+
 import_sheet_properties::~import_sheet_properties() {}
 
 import_named_expression::~import_named_expression() {}

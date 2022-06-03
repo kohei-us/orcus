@@ -23,6 +23,7 @@ class import_font_style;
 class import_fill_style;
 class import_border_style;
 class import_cell_protection;
+class import_number_format;
 
 /**
  * Interface for styles. Note that because the default style must have an
@@ -81,6 +82,16 @@ public:
      *         attributes.
      */
     virtual import_cell_protection* get_cell_protection() = 0;
+
+    /**
+     * Return a pointer to the interface instance for importing number format
+     * attributes. Note that the import_styles implementer <i>must</i> return a
+     * non-null pointer.
+     *
+     * @return pointer to the interface instance for importing number format
+     *         attributes.
+     */
+    virtual import_number_format* get_number_format() = 0;
 
     /**
      * Set the total number of font styles. This may be called before importing
@@ -275,6 +286,16 @@ public:
     virtual void set_locked(bool b) = 0;
     virtual void set_print_content(bool b) = 0;
     virtual void set_formula_hidden(bool b) = 0;
+    virtual size_t commit() = 0;
+};
+
+class ORCUS_DLLPUBLIC import_number_format
+{
+public:
+    virtual ~import_number_format();
+
+    virtual void set_identifier(std::size_t id) = 0;
+    virtual void set_code(std::string_view s) = 0;
     virtual size_t commit() = 0;
 };
 
