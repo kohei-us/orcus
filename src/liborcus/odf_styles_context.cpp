@@ -550,7 +550,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     std::optional<bool> formula_hidden;
     std::optional<bool> print_content;
 
-    bool cell_protection = false;
+    bool cell_protection_set = false;
 
     using border_map_type = std::map<ss::border_direction_t, odf::border_details_t>;
     border_map_type border_styles;
@@ -636,7 +636,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
             {
                 case XML_print_content:
                 {
-                    cell_protection = true;
+                    cell_protection_set = true;
                     print_content = to_bool(attr.value);
                     break;
                 }
@@ -644,29 +644,29 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
                 {
                     if (attr.value == "protected")
                     {
-                        cell_protection = true;
+                        cell_protection_set = true;
                         locked = true;
                     }
                     else if (attr.value == "hidden-and-protected")
                     {
-                        cell_protection = true;
+                        cell_protection_set = true;
                         locked = true;
                         hidden = true;
                     }
                     else if (attr.value == "formula-hidden")
                     {
-                        cell_protection = true;
+                        cell_protection_set = true;
                         formula_hidden = true;
                     }
                     else if (attr.value == "protected formula-hidden" || attr.value == "formula-hidden protected")
                     {
-                        cell_protection = true;
+                        cell_protection_set = true;
                         formula_hidden = true;
                         locked = true;
                     }
                     else if (attr.value == "none")
                     {
-                        cell_protection = true;
+                        cell_protection_set = true;
                         locked = false;
                         hidden = false;
                         formula_hidden = false;
@@ -713,21 +713,25 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
         border_id = border_style->commit();
     }
 
-    if (cell_protection)
+    if (cell_protection_set)
     {
+        auto* cell_protection = mp_styles->get_cell_protection();
+        if (!cell_protection)
+            throw interface_error("implementer must provide a concrete instance of import_cell_protection.");
+
         if (hidden)
-            mp_styles->set_cell_hidden(*hidden);
+            cell_protection->set_hidden(*hidden);
 
         if (locked)
-            mp_styles->set_cell_locked(*locked);
+            cell_protection->set_locked(*locked);
 
         if (print_content)
-            mp_styles->set_cell_print_content(*print_content);
+            cell_protection->set_print_content(*print_content);
 
         if (formula_hidden)
-            mp_styles->set_cell_formula_hidden(*formula_hidden);
+            cell_protection->set_formula_hidden(*formula_hidden);
 
-        cell_protection_id = mp_styles->commit_cell_protection();
+        cell_protection_id = cell_protection->commit();
     }
 
     if (has_ver_alignment)
@@ -765,12 +769,16 @@ void styles_context::commit_default_styles()
     if (!border_style)
         throw interface_error("implementer must provide a concrete instance of import_border_style.");
 
+    auto* cell_protection = mp_styles->get_cell_protection();
+    if (!cell_protection)
+        throw interface_error("implementer must provide a concrete instance of import_cell_protection.");
+
     // Set default styles. Default styles must be associated with an index of 0.
     // Set empty styles for all style types before importing real styles.
     font_style->commit();
     fill_style->commit();
     border_style->commit();
-    mp_styles->commit_cell_protection();
+    cell_protection->commit();
     mp_styles->commit_number_format();
     mp_styles->commit_cell_style_xf();
     mp_styles->commit_cell_xf();
