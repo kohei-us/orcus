@@ -64,131 +64,6 @@ private:
     gnumeric_style_region& m_style_region_data;
 };
 
-class gnumeric_style_attr_parser
-{
-public:
-    gnumeric_style_attr_parser(ss::iface::import_styles& styles, ss::iface::import_fill_style& fill_style, gnumeric_color& front_color) :
-        m_styles(styles),
-        m_fill_style(fill_style),
-        m_fill(false),
-        m_protection(false),
-        m_front_color(front_color) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch(attr.name)
-        {
-            case XML_Fore:
-            {
-                spreadsheet::color_elem_t red, green, blue;
-                gnumeric_helper::parse_RGB_color_attribute(red, green, blue, attr.value);
-                m_fill_style.set_fg_color(255, red, green, blue);
-
-                m_fill = true;
-
-                m_front_color.red = red;
-                m_front_color.blue = blue;
-                m_front_color.green = green;
-            }
-            break;
-            case XML_Back:
-            {
-                spreadsheet::color_elem_t red, green, blue;
-                gnumeric_helper::parse_RGB_color_attribute(red, green, blue, attr.value);
-                m_fill_style.set_bg_color(255, red, green, blue);
-
-                m_fill = true;
-            }
-            break;
-            case XML_Hidden:
-            {
-                bool b = atoi(attr.value.data());
-                m_styles.set_cell_hidden(b);
-
-                m_protection = true;
-            }
-            break;
-            case XML_Locked:
-            {
-                bool b = atoi(attr.value.data());
-                m_styles.set_cell_locked(b);
-
-                m_protection = true;
-            }
-            break;
-            case XML_Format:
-            {
-                if (attr.value != "General")
-                {
-                    m_styles.set_number_format_code(attr.value);
-                    size_t index = m_styles.commit_number_format();
-                    m_styles.set_xf_number_format(index);
-                }
-            }
-            break;
-            case XML_HAlign:
-            {
-                orcus::spreadsheet::hor_alignment_t hor_alignment = orcus::spreadsheet::hor_alignment_t::unknown;
-                if (attr.value == "GNM_HALIGN_CENTER")
-                    hor_alignment = orcus::spreadsheet::hor_alignment_t::center;
-                else if (attr.value == "GNM_HALIGN_RIGHT")
-                    hor_alignment = orcus::spreadsheet::hor_alignment_t::right;
-                else if (attr.value == "GNM_HALIGN_LEFT")
-                    hor_alignment = orcus::spreadsheet::hor_alignment_t::left;
-                else if (attr.value == "GNM_HALIGN_JUSTIFY")
-                    hor_alignment = orcus::spreadsheet::hor_alignment_t::justified;
-                else if (attr.value == "GNM_HALIGN_DISTRIBUTED")
-                    hor_alignment = orcus::spreadsheet::hor_alignment_t::distributed;
-                else if (attr.value == "GNM_HALIGN_FILL")
-                    hor_alignment = orcus::spreadsheet::hor_alignment_t::filled;
-
-                if (hor_alignment != orcus::spreadsheet::hor_alignment_t::unknown)
-                    m_styles.set_xf_apply_alignment(true);
-                m_styles.set_xf_horizontal_alignment(hor_alignment);
-            }
-            break;
-            case XML_VAlign:
-            {
-                orcus::spreadsheet::ver_alignment_t ver_alignment = orcus::spreadsheet::ver_alignment_t::unknown;
-                if (attr.value == "GNM_VALIGN_BOTTOM")
-                    ver_alignment = orcus::spreadsheet::ver_alignment_t::bottom;
-                else if (attr.value == "GNM_VALIGN_TOP")
-                    ver_alignment = orcus::spreadsheet::ver_alignment_t::top;
-                else if (attr.value == "GNM_VALIGN_CENTER")
-                    ver_alignment = orcus::spreadsheet::ver_alignment_t::middle;
-                else if (attr.value == "GNM_VALIGN_JUSTIFY")
-                    ver_alignment = orcus::spreadsheet::ver_alignment_t::justified;
-                else if (attr.value == "GNM_VALIGN_DISTRIBUTED")
-                    ver_alignment = orcus::spreadsheet::ver_alignment_t::distributed;
-
-                if (ver_alignment != orcus::spreadsheet::ver_alignment_t::unknown)
-                    m_styles.set_xf_apply_alignment(true);
-                m_styles.set_xf_vertical_alignment(ver_alignment);
-            }
-            break;
-        }
-    }
-
-    bool is_protection_set() const
-    {
-        return m_protection;
-    }
-
-    bool is_fill_set() const
-    {
-        return m_fill;
-    }
-
-private:
-    ss::iface::import_styles& m_styles;
-    ss::iface::import_fill_style& m_fill_style;
-
-    bool m_fill;
-    bool m_protection;
-
-    gnumeric_color& m_front_color;
-};
-
 spreadsheet::condition_operator_t get_condition_operator(int val)
 {
     switch(val)
@@ -733,15 +608,110 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
     if (!fill_style)
         throw interface_error("implementer must provide a concrete instance of import_fill_style.");
 
-    const gnumeric_style_attr_parser& attr_parser = std::for_each(
-        attrs.begin(), attrs.end(), gnumeric_style_attr_parser(*styles, *fill_style, front_color));
+    bool fill_set = false;
+    bool protection_set = false;
 
-    if (attr_parser.is_fill_set())
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_Fore:
+            {
+                ss::color_elem_t red, green, blue;
+                gnumeric_helper::parse_RGB_color_attribute(red, green, blue, attr.value);
+                fill_style->set_fg_color(255, red, green, blue);
+
+                fill_set = true;
+
+                front_color.red = red;
+                front_color.blue = blue;
+                front_color.green = green;
+                break;
+            }
+            case XML_Back:
+            {
+                ss::color_elem_t red, green, blue;
+                gnumeric_helper::parse_RGB_color_attribute(red, green, blue, attr.value);
+                fill_style->set_bg_color(255, red, green, blue);
+
+                fill_set = true;
+                break;
+            }
+            case XML_Hidden:
+            {
+                bool b = atoi(attr.value.data());
+                styles->set_cell_hidden(b);
+
+                protection_set = true;
+                break;
+            }
+            case XML_Locked:
+            {
+                bool b = atoi(attr.value.data());
+                styles->set_cell_locked(b);
+
+                protection_set = true;
+                break;
+            }
+            case XML_Format:
+            {
+                if (attr.value != "General")
+                {
+                    styles->set_number_format_code(attr.value);
+                    size_t index = styles->commit_number_format();
+                    styles->set_xf_number_format(index);
+                }
+                break;
+            }
+            case XML_HAlign:
+            {
+                ss::hor_alignment_t hor_alignment = ss::hor_alignment_t::unknown;
+                if (attr.value == "GNM_HALIGN_CENTER")
+                    hor_alignment = ss::hor_alignment_t::center;
+                else if (attr.value == "GNM_HALIGN_RIGHT")
+                    hor_alignment = ss::hor_alignment_t::right;
+                else if (attr.value == "GNM_HALIGN_LEFT")
+                    hor_alignment = ss::hor_alignment_t::left;
+                else if (attr.value == "GNM_HALIGN_JUSTIFY")
+                    hor_alignment = ss::hor_alignment_t::justified;
+                else if (attr.value == "GNM_HALIGN_DISTRIBUTED")
+                    hor_alignment = ss::hor_alignment_t::distributed;
+                else if (attr.value == "GNM_HALIGN_FILL")
+                    hor_alignment = ss::hor_alignment_t::filled;
+
+                if (hor_alignment != ss::hor_alignment_t::unknown)
+                    styles->set_xf_apply_alignment(true);
+                styles->set_xf_horizontal_alignment(hor_alignment);
+                break;
+            }
+            case XML_VAlign:
+            {
+                ss::ver_alignment_t ver_alignment = ss::ver_alignment_t::unknown;
+                if (attr.value == "GNM_VALIGN_BOTTOM")
+                    ver_alignment = ss::ver_alignment_t::bottom;
+                else if (attr.value == "GNM_VALIGN_TOP")
+                    ver_alignment = ss::ver_alignment_t::top;
+                else if (attr.value == "GNM_VALIGN_CENTER")
+                    ver_alignment = ss::ver_alignment_t::middle;
+                else if (attr.value == "GNM_VALIGN_JUSTIFY")
+                    ver_alignment = ss::ver_alignment_t::justified;
+                else if (attr.value == "GNM_VALIGN_DISTRIBUTED")
+                    ver_alignment = ss::ver_alignment_t::distributed;
+
+                if (ver_alignment != ss::ver_alignment_t::unknown)
+                    styles->set_xf_apply_alignment(true);
+                styles->set_xf_vertical_alignment(ver_alignment);
+                break;
+            }
+        }
+    }
+
+    if (fill_set)
     {
         size_t fill_id = fill_style->commit();
         styles->set_xf_fill(fill_id);
     }
-    if (attr_parser.is_protection_set())
+    if (protection_set)
     {
         size_t protection_id = styles->commit_cell_protection();
         styles->set_xf_protection(protection_id);
