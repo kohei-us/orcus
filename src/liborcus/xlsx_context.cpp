@@ -901,6 +901,10 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
 
                 xml_element_expected(parent, expected_elements);
 
+                mp_protection = mp_styles->get_cell_protection();
+                if (!mp_protection)
+                    throw interface_error("implementer must provide a concrete instance of import_cell_protection.");
+
                 for (const auto& attr : attrs)
                 {
                     switch (attr.name)
@@ -908,13 +912,13 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                         case XML_hidden:
                         {
                             bool b = to_long(attr.value) != 0;
-                            mp_styles->set_cell_hidden(b);
+                            mp_protection->set_hidden(b);
                             break;
                         }
                         case XML_locked:
                         {
                             bool b = to_long(attr.value) != 0;
-                            mp_styles->set_cell_locked(b);
+                            mp_protection->set_locked(b);
                             break;
                         }
                     }
@@ -996,7 +1000,8 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
             break;
         case XML_protection:
         {
-            size_t id = mp_styles->commit_cell_protection();
+            assert(mp_protection);
+            size_t id = mp_protection->commit();
             mp_styles->set_xf_protection(id);
             break;
         }
