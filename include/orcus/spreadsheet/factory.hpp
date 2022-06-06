@@ -83,11 +83,7 @@ public:
     virtual void set_font_count(size_t n) override;
     virtual void set_fill_count(size_t n) override;
     virtual void set_border_count(size_t n) override;
-
     virtual void set_number_format_count(size_t n) override;
-    virtual void set_number_format_identifier(size_t id) override;
-    virtual void set_number_format_code(std::string_view s) override;
-    virtual size_t commit_number_format() override;
 
     virtual void set_cell_xf_count(size_t n) override;
     virtual void set_cell_style_xf_count(size_t n) override;

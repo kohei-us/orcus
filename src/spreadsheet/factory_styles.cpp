@@ -41,9 +41,6 @@ struct import_styles::impl
     fill_t cur_fill;
     fill_active_t cur_fill_active;
 
-    number_format_t cur_number_format;
-    number_format_active_t cur_number_format_active;
-
     cell_format_t cur_cell_format;
     cell_style_t cur_cell_style;
 
@@ -111,28 +108,6 @@ void import_styles::set_border_count(size_t n)
 void import_styles::set_number_format_count(size_t n)
 {
     mp_impl->styles_model.reserve_number_format_store(n);
-}
-
-void import_styles::set_number_format_identifier(size_t id)
-{
-    mp_impl->cur_number_format.identifier = id;
-    mp_impl->cur_number_format_active.identifier = true;
-}
-
-void import_styles::set_number_format_code(std::string_view s)
-{
-    mp_impl->cur_number_format.format_string = s;
-    mp_impl->cur_number_format_active.format_string = true;
-}
-
-size_t import_styles::commit_number_format()
-{
-    size_t nf_id = mp_impl->styles_model.append_number_format(
-        mp_impl->cur_number_format, mp_impl->cur_number_format_active);
-
-    mp_impl->cur_number_format.reset();
-    mp_impl->cur_number_format_active.reset();
-    return nf_id;
 }
 
 void import_styles::set_cell_xf_count(size_t n)

@@ -128,9 +128,6 @@ public:
      * @param n number of number format styles.
      */
     virtual void set_number_format_count(size_t n) = 0;
-    virtual void set_number_format_identifier(size_t id) = 0;
-    virtual void set_number_format_code(std::string_view s) = 0;
-    virtual size_t commit_number_format() = 0;
 
     // Cell format and cell style format, and differential cell format records.
     // All of these records share the same data structure for their entries. A
