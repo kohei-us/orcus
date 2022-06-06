@@ -38,9 +38,6 @@ struct import_styles::impl
     import_cell_protection cell_protection;
     import_number_format number_format;
 
-    fill_t cur_fill;
-    fill_active_t cur_fill_active;
-
     cell_format_t cur_cell_format;
     cell_style_t cur_cell_style;
 
