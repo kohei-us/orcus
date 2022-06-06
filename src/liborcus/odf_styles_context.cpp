@@ -766,13 +766,17 @@ void styles_context::commit_default_styles()
     auto* cell_protection = mp_styles->get_cell_protection();
     ENSURE_INTERFACE(cell_protection, import_cell_protection);
 
+    auto* number_format = mp_styles->get_number_format();
+    ENSURE_INTERFACE(number_format, import_number_format);
+
     // Set default styles. Default styles must be associated with an index of 0.
     // Set empty styles for all style types before importing real styles.
     font_style->commit();
     fill_style->commit();
     border_style->commit();
     cell_protection->commit();
-    mp_styles->commit_number_format();
+    number_format->commit();
+
     mp_styles->commit_cell_style_xf();
     mp_styles->commit_cell_xf();
     mp_styles->commit_cell_style();

@@ -69,7 +69,10 @@ public:
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) = 0;
 
     /**
-     * Called on the opening of each element.
+     * Called on the opening of each element. The implementor should call
+     * push_stack() at the beginning of this method to have the base class keep
+     * track of the element stack. Be sure to also call pop_stack() in
+     * end_element() to maintain correct element stack.
      *
      * @param ns namespace token
      * @param name element name
@@ -83,8 +86,10 @@ public:
      * @param ns namespace token
      * @param name element name
      *
-     * @return true if the base element of the context is closing, false
-     *         otherwise.
+     * @return true if the element that's closing is the root element of the
+     *         context, else return false. The implementor should simply call
+     *         pop_stack() and use the returned value from it as this method's
+     *         return value.
      */
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) = 0;
 

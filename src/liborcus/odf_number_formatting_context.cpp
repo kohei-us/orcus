@@ -9,6 +9,7 @@
 #include "odf_namespace_types.hpp"
 #include "odf_token_constants.hpp"
 #include "odf_helper.hpp"
+#include "impl_utils.hpp"
 
 #include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/import_interface.hpp>
@@ -408,6 +409,9 @@ void number_formatting_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t
 
 void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
 {
+    xml_token_pair_t parent = push_stack(ns, name);
+    (void)parent;
+
     m_current_style.character_stream = std::string_view{};
 
     if (ns == NS_odf_number)
@@ -709,6 +713,12 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
 
 bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
+    if (!mp_styles)
+        return pop_stack(ns, name);
+
+    auto* number_format = mp_styles->get_number_format();
+    ENSURE_INTERFACE(number_format, import_number_format);
+
     std::string_view character_content = m_current_style.character_stream;
 
     if (ns == NS_odf_number)
@@ -727,8 +737,8 @@ bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
 
                 if (!m_current_style.number_formatting_code.empty())
                 {
-                    mp_styles->set_number_format_code(m_current_style.number_formatting_code);
-                    id_number_format = mp_styles->commit_number_format();
+                    number_format->set_code(m_current_style.number_formatting_code);
+                    id_number_format = number_format->commit();
                 }
 
                 mp_styles->set_xf_number_format(id_number_format);
@@ -736,7 +746,8 @@ bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
                 mp_styles->set_cell_style_name(m_current_style.name);
                 mp_styles->set_cell_style_xf(mp_styles->commit_cell_style_xf());
                 mp_styles->commit_cell_style();
-                return true;
+                return true; // TODO: fix this
+//              return pop_stack(ns, name);
             }
         }
         else if (name == XML_currency_symbol)
@@ -750,7 +761,9 @@ bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
             m_current_style.number_formatting_code += character_content;
         }
     }
-    return false;
+
+    return false; // TODO: fix this
+//  return pop_stack(ns, name);
 }
 
 
