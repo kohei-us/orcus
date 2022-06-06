@@ -274,6 +274,21 @@ enum class ver_alignment_t
 };
 
 /**
+ * Cell format type. The abbrevaition "xf" refers to "cell format" where the
+ * "x" stands for cell.
+ */
+enum class xf_category_t
+{
+    unknown,
+    /** direct cell format, also abbreviated as xf */
+    cell,
+    /** cell style format */
+    cell_style,
+    /** incremental cell format, also abbreviated as dxf */
+    differential,
+};
+
+/**
  * Type of data table.  A data table can be either of a single-variable
  * column, a single-variable row, or a double-variable type that uses both
  * column and row input cells.

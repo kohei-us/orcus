@@ -825,7 +825,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 if (!ps.empty())
                 {
                     size_t n = strtoul(ps.data(), nullptr, 10);
-                    mp_styles->set_cell_style_xf_count(n);
+                    mp_styles->set_xf_count(ss::xf_category_t::cell_style, n);
                 }
                 m_cell_style_xf = true;
                 break;
@@ -839,7 +839,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 if (!ps.empty())
                 {
                     size_t n = strtoul(ps.data(), nullptr, 10);
-                    mp_styles->set_cell_xf_count(n);
+                    mp_styles->set_xf_count(ss::xf_category_t::cell, n);
                 }
                 m_cell_style_xf = false;
                 break;
@@ -853,7 +853,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 if (!ps.empty())
                 {
                     size_t n = strtoul(ps.data(), nullptr, 10);
-                    mp_styles->set_dxf_count(n);
+                    mp_styles->set_xf_count(ss::xf_category_t::differential, n);
                 }
                 break;
             }

@@ -84,10 +84,7 @@ public:
     virtual void set_fill_count(size_t n) override;
     virtual void set_border_count(size_t n) override;
     virtual void set_number_format_count(size_t n) override;
-
-    virtual void set_cell_xf_count(size_t n) override;
-    virtual void set_cell_style_xf_count(size_t n) override;
-    virtual void set_dxf_count(size_t n) override;
+    virtual void set_xf_count(xf_category_t cat, size_t n) override;
 
     virtual void set_xf_font(size_t index) override;
     virtual void set_xf_fill(size_t index) override;

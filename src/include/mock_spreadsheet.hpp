@@ -52,18 +52,17 @@ public:
     virtual void set_border_count(size_t n) override;
     virtual iface::import_border_style* get_border_style() override;
 
+    virtual void set_xf_count(xf_category_t cat, size_t n) = 0;
+
     // cell style xf
 
-    virtual void set_cell_style_xf_count(size_t n) override;
     virtual size_t commit_cell_style_xf() override;
 
     // cell xf
 
-    virtual void set_cell_xf_count(size_t n) override;
     virtual size_t commit_cell_xf() override;
 
     // dxf
-    virtual void set_dxf_count(size_t n) override;
     virtual size_t commit_dxf() override;
 
     // xf (cell format) - used both by cell xf and cell style xf.

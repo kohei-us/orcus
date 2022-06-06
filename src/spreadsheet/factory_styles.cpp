@@ -107,19 +107,22 @@ void import_styles::set_number_format_count(size_t n)
     mp_impl->styles_model.reserve_number_format_store(n);
 }
 
-void import_styles::set_cell_xf_count(size_t n)
+void import_styles::set_xf_count(xf_category_t cat, size_t n)
 {
-    mp_impl->styles_model.reserve_cell_format_store(n);
-}
-
-void import_styles::set_cell_style_xf_count(size_t n)
-{
-    mp_impl->styles_model.reserve_cell_style_format_store(n);
-}
-
-void import_styles::set_dxf_count(size_t n)
-{
-    mp_impl->styles_model.reserve_diff_cell_format_store(n);
+    switch (cat)
+    {
+        case xf_category_t::cell:
+            mp_impl->styles_model.reserve_cell_format_store(n);
+            break;
+        case xf_category_t::cell_style:
+            mp_impl->styles_model.reserve_cell_style_format_store(n);
+            break;
+        case xf_category_t::differential:
+            mp_impl->styles_model.reserve_diff_cell_format_store(n);
+            break;
+        case xf_category_t::unknown:
+            break;
+    }
 }
 
 void import_styles::set_xf_font(size_t index)

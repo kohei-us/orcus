@@ -135,9 +135,7 @@ public:
     // directly by the index, and the entry in the cell format record references
     // a cell style format in the cell style format record by the index.
 
-    virtual void set_cell_xf_count(size_t n) = 0;
-    virtual void set_cell_style_xf_count(size_t n) = 0;
-    virtual void set_dxf_count(size_t n) = 0;
+    virtual void set_xf_count(xf_category_t cat, size_t n) = 0;
 
     virtual void set_xf_font(size_t index) = 0;
     virtual void set_xf_fill(size_t index) = 0;
