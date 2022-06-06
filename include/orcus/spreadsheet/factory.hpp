@@ -79,6 +79,7 @@ public:
     virtual iface::import_border_style* get_border_style() override;
     virtual iface::import_cell_protection* get_cell_protection() override;
     virtual iface::import_number_format* get_number_format() override;
+    virtual iface::import_xf* get_xf(xf_category_t cat) override;
 
     virtual void set_font_count(size_t n) override;
     virtual void set_fill_count(size_t n) override;
@@ -208,6 +209,30 @@ public:
     virtual size_t commit() override;
 
     void reset();
+};
+
+class ORCUS_SPM_DLLPUBLIC import_xf : public iface::import_xf
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    import_xf() = delete;
+    import_xf(styles& _styles_model, string_pool& sp);
+    virtual ~import_xf() override;
+
+    virtual void set_font(size_t index) override;
+    virtual void set_fill(size_t index) override;
+    virtual void set_border(size_t index) override;
+    virtual void set_protection(size_t index) override;
+    virtual void set_number_format(size_t index) override;
+    virtual void set_style_xf(size_t index) override;
+    virtual void set_apply_alignment(bool b) override;
+    virtual void set_horizontal_alignment(hor_alignment_t align) override;
+    virtual void set_vertical_alignment(ver_alignment_t align) override;
+    virtual size_t commit() override;
+
+    void reset(xf_category_t cat);
 };
 
 class ORCUS_SPM_DLLPUBLIC export_factory : public iface::export_factory

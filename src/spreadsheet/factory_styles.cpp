@@ -37,6 +37,7 @@ struct import_styles::impl
     import_border_style border_style;
     import_cell_protection cell_protection;
     import_number_format number_format;
+    import_xf xf;
 
     cell_format_t cur_cell_format;
     cell_style_t cur_cell_style;
@@ -48,7 +49,8 @@ struct import_styles::impl
         fill_style(_styles_model, sp),
         border_style(_styles_model, sp),
         cell_protection(_styles_model, sp),
-        number_format(_styles_model, sp)
+        number_format(_styles_model, sp),
+        xf(_styles_model, sp)
     {}
 };
 
@@ -85,6 +87,12 @@ iface::import_number_format* import_styles::get_number_format()
 {
     mp_impl->number_format.reset();
     return &mp_impl->number_format;
+}
+
+iface::import_xf* import_styles::get_xf(xf_category_t cat)
+{
+    mp_impl->xf.reset(cat);
+    return &mp_impl->xf;
 }
 
 void import_styles::set_font_count(size_t n)
@@ -623,6 +631,108 @@ void import_number_format::reset()
 {
     mp_impl->cur_numfmt.reset();
     mp_impl->cur_numfmt_active.reset();
+}
+
+struct import_xf::impl
+{
+    styles& styles_model;
+    string_pool& str_pool;
+
+    cell_format_t cur_cell_format;
+    xf_category_t xf_category = xf_category_t::unknown;
+
+    impl(styles& _styles_model, string_pool& sp) :
+        styles_model(_styles_model), str_pool(sp) {}
+};
+
+import_xf::import_xf(styles& _styles_model, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(_styles_model, sp))
+{
+}
+
+import_xf::~import_xf()
+{
+}
+
+void import_xf::set_font(size_t index)
+{
+    mp_impl->cur_cell_format.font = index;
+}
+
+void import_xf::set_fill(size_t index)
+{
+    mp_impl->cur_cell_format.fill = index;
+}
+
+void import_xf::set_border(size_t index)
+{
+    mp_impl->cur_cell_format.border = index;
+
+    // TODO : we need to decide whether to have interface methods for these
+    // apply_foo attributes.  For now there is only one, for alignment.
+    mp_impl->cur_cell_format.apply_border = index > 0;
+}
+
+void import_xf::set_protection(size_t index)
+{
+    mp_impl->cur_cell_format.protection = index;
+}
+
+void import_xf::set_number_format(size_t index)
+{
+    mp_impl->cur_cell_format.number_format = index;
+}
+
+void import_xf::set_style_xf(size_t index)
+{
+    mp_impl->cur_cell_format.style_xf = index;
+}
+
+void import_xf::set_apply_alignment(bool b)
+{
+    mp_impl->cur_cell_format.apply_alignment = b;
+}
+
+void import_xf::set_horizontal_alignment(hor_alignment_t align)
+{
+    mp_impl->cur_cell_format.hor_align = align;
+}
+
+void import_xf::set_vertical_alignment(ver_alignment_t align)
+{
+    mp_impl->cur_cell_format.ver_align = align;
+}
+
+size_t import_xf::commit()
+{
+    size_t xf_id = 0;
+
+    switch (mp_impl->xf_category)
+    {
+        case xf_category_t::cell:
+            xf_id = mp_impl->styles_model.append_cell_format(mp_impl->cur_cell_format);
+            break;
+        case xf_category_t::cell_style:
+            xf_id = mp_impl->styles_model.append_cell_style_format(mp_impl->cur_cell_format);
+            break;
+        case xf_category_t::differential:
+            xf_id = mp_impl->styles_model.append_diff_cell_format(mp_impl->cur_cell_format);
+            break;
+        case xf_category_t::unknown:
+            throw std::logic_error("unknown cell format category");
+    }
+
+    mp_impl->cur_cell_format.reset();
+    return xf_id;
+}
+
+void import_xf::reset(xf_category_t cat)
+{
+    if (cat == xf_category_t::unknown)
+        throw std::invalid_argument("The specified category is 'unknown'.");
+
+    mp_impl->cur_cell_format.reset();
+    mp_impl->xf_category = cat;
 }
 
 }}

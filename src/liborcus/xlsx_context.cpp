@@ -400,65 +400,6 @@ public:
     }
 };
 
-class xf_attr_parser
-{
-    spreadsheet::iface::import_styles& m_styles;
-public:
-    xf_attr_parser(spreadsheet::iface::import_styles& styles) :
-        m_styles(styles) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_borderId:
-            {
-                size_t n = to_long(attr.value);
-                m_styles.set_xf_border(n);
-            }
-            break;
-            case XML_fillId:
-            {
-                size_t n = to_long(attr.value);
-                m_styles.set_xf_fill(n);
-            }
-            break;
-            case XML_fontId:
-            {
-                size_t n = to_long(attr.value);
-                m_styles.set_xf_font(n);
-            }
-            break;
-            case XML_numFmtId:
-            {
-                size_t n = to_long(attr.value);
-                m_styles.set_xf_number_format(n);
-            }
-            break;
-            case XML_xfId:
-            {
-                size_t n = to_long(attr.value);
-                m_styles.set_xf_style_xf(n);
-            }
-            break;
-            case XML_applyBorder:
-            break;
-            case XML_applyFill:
-            break;
-            case XML_applyFont:
-            break;
-            case XML_applyNumberFormat:
-            break;
-            case XML_applyAlignment:
-            {
-                bool b = to_long(attr.value) != 0;
-                m_styles.set_xf_apply_alignment(b);
-            }
-            break;
-        }
-    }
-};
-
 class cell_alignment_attr_parser
 {
     spreadsheet::hor_alignment_t m_hor_align;
@@ -828,6 +769,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     mp_styles->set_xf_count(ss::xf_category_t::cell_style, n);
                 }
                 m_cell_style_xf = true;
+                mp_xf = mp_styles->get_xf(ss::xf_category_t::cell_style);
                 break;
             }
             case XML_cellXfs:
@@ -842,6 +784,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     mp_styles->set_xf_count(ss::xf_category_t::cell, n);
                 }
                 m_cell_style_xf = false;
+                mp_xf = mp_styles->get_xf(ss::xf_category_t::cell);
                 break;
             }
             case XML_dxfs:
@@ -855,6 +798,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     size_t n = strtoul(ps.data(), nullptr, 10);
                     mp_styles->set_xf_count(ss::xf_category_t::differential, n);
                 }
+                mp_xf = mp_styles->get_xf(ss::xf_category_t::differential);
                 break;
             }
             case XML_cellStyles:
@@ -878,17 +822,72 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_xf:
             {
+                assert(mp_xf);
+
                 // Actual cell format attributes (for some reason) abbreviated to
                 // 'xf'.  Used both by cells and cell styles.
-                xml_elem_stack_t allowed;
-                allowed.push_back(xml_elem_stack_t::value_type(NS_ooxml_xlsx, XML_cellXfs));
-                allowed.push_back(xml_elem_stack_t::value_type(NS_ooxml_xlsx, XML_cellStyleXfs));
-                xml_element_expected(parent, allowed);
+                const xml_elem_set_t expected = {
+                    { NS_ooxml_xlsx, XML_cellXfs },
+                    { NS_ooxml_xlsx, XML_cellStyleXfs },
+                };
+                xml_element_expected(parent, expected);
 
-                for_each(attrs.begin(), attrs.end(), xf_attr_parser(*mp_styles));
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    switch (attr.name)
+                    {
+                        case XML_borderId:
+                        {
+                            size_t n = to_long(attr.value);
+                            mp_xf->set_border(n);
+                            break;
+                        }
+                        case XML_fillId:
+                        {
+                            size_t n = to_long(attr.value);
+                            mp_xf->set_fill(n);
+                            break;
+                        }
+                        case XML_fontId:
+                        {
+                            size_t n = to_long(attr.value);
+                            mp_xf->set_font(n);
+                            break;
+                        }
+                        case XML_numFmtId:
+                        {
+                            size_t n = to_long(attr.value);
+                            mp_xf->set_number_format(n);
+                            break;
+                        }
+                        case XML_xfId:
+                        {
+                            size_t n = to_long(attr.value);
+                            mp_xf->set_style_xf(n);
+                            break;
+                        }
+                        case XML_applyBorder:
+                            break;
+                        case XML_applyFill:
+                            break;
+                        case XML_applyFont:
+                            break;
+                        case XML_applyNumberFormat:
+                            break;
+                        case XML_applyAlignment:
+                        {
+                            bool b = to_long(attr.value) != 0;
+                            mp_xf->set_apply_alignment(b);
+                            break;
+                        }
+                    }
+                }
+
                 break;
             }
             case XML_dxf:
+                // TODO: Pick up dxf record. Technically dxf is a sub set of xf,
+                // but for now we use xf for dxf.
                 break;
             case XML_protection:
             {
@@ -925,14 +924,56 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_alignment:
             {
-                xml_elem_stack_t expected_elements;
-                expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_xf));
-                expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
-                xml_element_expected(parent, expected_elements);
-                cell_alignment_attr_parser func;
-                func = for_each(attrs.begin(), attrs.end(), func);
-                mp_styles->set_xf_horizontal_alignment(func.get_hor_align());
-                mp_styles->set_xf_vertical_alignment(func.get_ver_align());
+                assert(mp_xf);
+                const xml_elem_set_t expected = {
+                    { NS_ooxml_xlsx, XML_xf },
+                    { NS_ooxml_xlsx, XML_dxf },
+                };
+                xml_element_expected(parent, expected);
+
+                // NB: default vertical alignment is 'bottom'.
+                ss::hor_alignment_t hor_align = ss::hor_alignment_t::unknown;
+                ss::ver_alignment_t ver_align = ss::ver_alignment_t::bottom;
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    switch (attr.name)
+                    {
+                        case XML_horizontal:
+                        {
+                            if (attr.value == "center")
+                                hor_align = ss::hor_alignment_t::center;
+                            else if (attr.value == "right")
+                                hor_align = ss::hor_alignment_t::right;
+                            else if (attr.value == "left")
+                                hor_align = ss::hor_alignment_t::left;
+                            else if (attr.value == "justify")
+                                hor_align = ss::hor_alignment_t::justified;
+                            else if (attr.value == "distributed")
+                                hor_align = ss::hor_alignment_t::distributed;
+                            break;
+                        }
+                        case XML_vertical:
+                        {
+                            if (attr.value == "top")
+                                ver_align = ss::ver_alignment_t::top;
+                            else if (attr.value == "center")
+                                ver_align = ss::ver_alignment_t::middle;
+                            else if (attr.value == "bottom")
+                                ver_align = ss::ver_alignment_t::bottom;
+                            else if (attr.value == "justify")
+                                ver_align = ss::ver_alignment_t::justified;
+                            else if (attr.value == "distributed")
+                                ver_align = ss::ver_alignment_t::distributed;
+                            break;
+                        }
+                        default:
+                            ;
+                    }
+                }
+
+                mp_xf->set_horizontal_alignment(hor_align);
+                mp_xf->set_vertical_alignment(ver_align);
                 break;
             }
             case XML_numFmts:
@@ -986,14 +1027,15 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
         case XML_cellStyle:
             mp_styles->commit_cell_style();
             break;
-        case XML_xf:
-            if (m_cell_style_xf)
-                mp_styles->commit_cell_style_xf();
-            else
-                mp_styles->commit_cell_xf();
+        case XML_cellStyleXfs:
+        case XML_cellXfs:
+        case XML_dxfs:
+            mp_xf = nullptr;
             break;
+        case XML_xf:
         case XML_dxf:
-            mp_styles->commit_dxf();
+            assert(mp_xf);
+            mp_xf->commit();
             break;
         case XML_protection:
         {
