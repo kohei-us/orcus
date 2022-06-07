@@ -46,39 +46,6 @@ odf_style_family to_style_family(std::string_view val)
     return map.find(val.data(), val.size());
 }
 
-class style_attr_parser
-{
-    std::string_view m_name;
-    odf_style_family m_family;
-
-    std::string_view m_parent_name;
-public:
-    style_attr_parser() :
-        m_family(style_family_unknown) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_odf_style)
-        {
-            switch (attr.name)
-            {
-                case XML_name:
-                    m_name = attr.value;
-                break;
-                case XML_family:
-                    m_family = to_style_family(attr.value);
-                break;
-                case XML_parent_style_name:
-                    m_parent_name = attr.value;
-            }
-        }
-    }
-
-    std::string_view get_name() const { return m_name; }
-    odf_style_family get_family() const { return m_family; }
-    std::string_view get_parent() const { return m_parent_name; }
-};
-
 class col_prop_attr_parser
 {
     length_t m_width;
@@ -214,9 +181,30 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_at
                 };
                 xml_element_expected(parent, expected_parents);
 
-                style_attr_parser func;
-                func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style = std::make_unique<odf_style>(func.get_name(), func.get_family(), func.get_parent());
+                std::string_view style_name;
+                std::string_view parent_style_name;
+                odf_style_family family = style_family_unknown;
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns == NS_odf_style)
+                    {
+                        switch (attr.name)
+                        {
+                            case XML_name:
+                                style_name = attr.value;
+                                break;
+                            case XML_family:
+                                family = to_style_family(attr.value);
+                                break;
+                            case XML_parent_style_name:
+                                parent_style_name = attr.value;
+                                break;
+                        }
+                    }
+                }
+
+                m_current_style = std::make_unique<odf_style>(style_name, family, parent_style_name);
                 break;
             }
             case XML_table_column_properties:
