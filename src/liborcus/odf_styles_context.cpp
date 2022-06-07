@@ -216,7 +216,7 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_at
 
                 style_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
-                m_current_style.reset(new odf_style(func.get_name(), func.get_family(), func.get_parent()));
+                m_current_style = std::make_unique<odf_style>(func.get_name(), func.get_family(), func.get_parent());
                 break;
             }
             case XML_table_column_properties:
@@ -286,36 +286,36 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
         {
             case XML_style:
             {
-                if (m_current_style)
+                if (!m_current_style)
+                    break;
+
+                if (mp_styles && m_current_style->family == style_family_table_cell)
                 {
-                    if (mp_styles && m_current_style->family == style_family_table_cell)
+                    odf_style::cell& cell = *m_current_style->cell_data;
+                    mp_styles->set_xf_font(cell.font);
+                    mp_styles->set_xf_fill(cell.fill);
+                    mp_styles->set_xf_border(cell.border);
+                    mp_styles->set_xf_protection(cell.protection);
+                    size_t xf_id = 0;
+                    if (cell.automatic_style)
+                        xf_id = mp_styles->commit_cell_xf();
+                    else
                     {
-                        odf_style::cell& cell = *m_current_style->cell_data;
-                        mp_styles->set_xf_font(cell.font);
-                        mp_styles->set_xf_fill(cell.fill);
-                        mp_styles->set_xf_border(cell.border);
-                        mp_styles->set_xf_protection(cell.protection);
-                        size_t xf_id = 0;
-                        if (cell.automatic_style)
-                            xf_id = mp_styles->commit_cell_xf();
-                        else
-                        {
-                            size_t style_xf_id = mp_styles->commit_cell_style_xf();
-                            mp_styles->set_cell_style_name(m_current_style->name);
-                            mp_styles->set_cell_style_xf(style_xf_id);
-                            mp_styles->set_cell_style_parent_name(m_current_style->parent_name);
+                        size_t style_xf_id = mp_styles->commit_cell_style_xf();
+                        mp_styles->set_cell_style_name(m_current_style->name);
+                        mp_styles->set_cell_style_xf(style_xf_id);
+                        mp_styles->set_cell_style_parent_name(m_current_style->parent_name);
 
-                            xf_id = mp_styles->commit_cell_style();
-                        }
-                        cell.xf = xf_id;
+                        xf_id = mp_styles->commit_cell_style();
                     }
-
-                    std::string_view style_name = m_current_style->name;
-                    m_styles.insert(
-                        odf_styles_map_type::value_type(
-                            style_name, std::move(m_current_style)));
-                    assert(!m_current_style);
+                    cell.xf = xf_id;
                 }
+
+                std::string_view style_name = m_current_style->name;
+                m_styles.insert(
+                    odf_styles_map_type::value_type(
+                        style_name, std::move(m_current_style)));
+                assert(!m_current_style);
 
                 break;
             }
