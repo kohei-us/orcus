@@ -613,6 +613,9 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
     auto* number_format = styles->get_number_format();
     ENSURE_INTERFACE(number_format, import_number_format);
 
+    mp_xf = styles->get_xf(ss::xf_category_t::cell);
+    ENSURE_INTERFACE(mp_xf, import_xf);
+
     bool fill_set = false;
     bool protection_set = false;
 
@@ -664,7 +667,7 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
                 {
                     number_format->set_code(attr.value);
                     std::size_t index = number_format->commit();
-                    styles->set_xf_number_format(index);
+                    mp_xf->set_number_format(index);
                 }
                 break;
             }
@@ -685,8 +688,8 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
                     hor_alignment = ss::hor_alignment_t::filled;
 
                 if (hor_alignment != ss::hor_alignment_t::unknown)
-                    styles->set_xf_apply_alignment(true);
-                styles->set_xf_horizontal_alignment(hor_alignment);
+                    mp_xf->set_apply_alignment(true);
+                mp_xf->set_horizontal_alignment(hor_alignment);
                 break;
             }
             case XML_VAlign:
@@ -704,8 +707,8 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
                     ver_alignment = ss::ver_alignment_t::distributed;
 
                 if (ver_alignment != ss::ver_alignment_t::unknown)
-                    styles->set_xf_apply_alignment(true);
-                styles->set_xf_vertical_alignment(ver_alignment);
+                    mp_xf->set_apply_alignment(true);
+                mp_xf->set_vertical_alignment(ver_alignment);
                 break;
             }
         }
@@ -714,12 +717,12 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
     if (fill_set)
     {
         size_t fill_id = fill_style->commit();
-        styles->set_xf_fill(fill_id);
+        mp_xf->set_fill(fill_id);
     }
     if (protection_set)
     {
         size_t protection_id = cell_protection->commit();
-        styles->set_xf_protection(protection_id);
+        mp_xf->set_protection(protection_id);
     }
 }
 
@@ -761,11 +764,15 @@ void gnumeric_sheet_context::end_font()
 
 void gnumeric_sheet_context::end_style(bool conditional_format)
 {
-    spreadsheet::iface::import_styles& styles = *mp_factory->get_styles();
-    size_t id = styles.commit_cell_xf();
+    ss::iface::import_styles* styles = mp_factory->get_styles();
+    if (!styles)
+        return;
+
+    assert(mp_xf);
+    size_t xf_id = mp_xf->commit();
     if (!conditional_format)
     {
-        mp_region_data->xf_id = id;
+        mp_region_data->xf_id = xf_id;
     }
     else
     {
@@ -773,7 +780,7 @@ void gnumeric_sheet_context::end_style(bool conditional_format)
             mp_sheet->get_conditional_format();
         if (cond_format)
         {
-            cond_format->set_xf_id(id);
+            cond_format->set_xf_id(xf_id);
         }
     }
 }

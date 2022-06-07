@@ -20,6 +20,7 @@ namespace spreadsheet { namespace iface {
 class import_factory;
 class import_sheet;
 class import_auto_filter;
+class import_xf;
 
 }}
 
@@ -88,6 +89,7 @@ private:
 
     spreadsheet::iface::import_sheet* mp_sheet;
     spreadsheet::iface::import_auto_filter* mp_auto_filter;
+    spreadsheet::iface::import_xf* mp_xf = nullptr;
 
     std::unique_ptr<xml_context_base> mp_child;
     std::unique_ptr<gnumeric_style_region> mp_region_data;
