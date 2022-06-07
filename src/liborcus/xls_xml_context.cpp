@@ -1875,8 +1875,13 @@ void xls_xml_context::commit_default_style()
     ENSURE_INTERFACE(number_format, import_number_format);
     number_format->commit();
 
-    styles->commit_cell_style_xf();
-    styles->commit_cell_xf();
+    auto* xf = styles->get_xf(ss::xf_category_t::cell);
+    ENSURE_INTERFACE(xf, import_xf);
+    xf->commit();
+
+    xf = styles->get_xf(ss::xf_category_t::cell_style);
+    ENSURE_INTERFACE(xf, import_xf);
+    xf->commit();
 
     if (m_default_style)
     {
@@ -1901,6 +1906,9 @@ void xls_xml_context::commit_styles()
 
     for (const std::unique_ptr<style_type>& style : m_styles)
     {
+        auto* xf = styles->get_xf(ss::xf_category_t::cell);
+        ENSURE_INTERFACE(xf, import_xf);
+
         auto* font_style = styles->get_font_style();
         ENSURE_INTERFACE(font_style, import_font_style);
 
@@ -1913,7 +1921,7 @@ void xls_xml_context::commit_styles()
 
         size_t font_id = font_style->commit();
 
-        styles->set_xf_font(font_id);
+        xf->set_font(font_id);
 
         auto* fill_style = styles->get_fill_style();
         ENSURE_INTERFACE(fill_style, import_fill_style);
@@ -1928,7 +1936,7 @@ void xls_xml_context::commit_styles()
                 style->fill.color.blue);
 
             size_t fill_id = fill_style->commit();
-            styles->set_xf_fill(fill_id);
+            xf->set_fill(fill_id);
         }
 
         if (!style->borders.empty())
@@ -1945,16 +1953,16 @@ void xls_xml_context::commit_styles()
             }
 
             size_t border_id = border_style->commit();
-            styles->set_xf_border(border_id);
+            xf->set_border(border_id);
         }
 
         bool apply_alignment =
             style->text_alignment.hor != spreadsheet::hor_alignment_t::unknown ||
             style->text_alignment.ver != spreadsheet::ver_alignment_t::unknown;
 
-        styles->set_xf_apply_alignment(apply_alignment);
-        styles->set_xf_horizontal_alignment(style->text_alignment.hor);
-        styles->set_xf_vertical_alignment(style->text_alignment.ver);
+        xf->set_apply_alignment(apply_alignment);
+        xf->set_horizontal_alignment(style->text_alignment.hor);
+        xf->set_vertical_alignment(style->text_alignment.ver);
 
         if (!style->number_format.empty())
         {
@@ -1962,12 +1970,12 @@ void xls_xml_context::commit_styles()
             ENSURE_INTERFACE(number_format, import_number_format);
             number_format->set_code(style->number_format);
             size_t number_format_id = number_format->commit();
-            styles->set_xf_number_format(number_format_id);
+            xf->set_number_format(number_format_id);
         }
 
         // TODO : handle text indent level.
 
-        size_t xf_id = styles->commit_cell_xf();
+        size_t xf_id = xf->commit();
 
         m_style_map.insert({style->id, xf_id});
     }
