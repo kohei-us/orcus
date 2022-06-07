@@ -248,7 +248,7 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_at
                 paragraph_prop_attr_parser func;
                 func = std::for_each(attrs.begin(), attrs.end(), func);
                 if (func.has_hor_alignment())
-                    mp_styles->set_xf_horizontal_alignment(func.get_hor_alignment());
+                    m_current_style->cell_data->hor_align = func.get_hor_alignment();
 
                 break;
             }
@@ -280,29 +280,42 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
                 if (mp_styles && m_current_style->family == style_family_table_cell)
                 {
                     odf_style::cell& cell = *m_current_style->cell_data;
-                    mp_styles->set_xf_font(cell.font);
-                    mp_styles->set_xf_fill(cell.fill);
-                    mp_styles->set_xf_border(cell.border);
-                    mp_styles->set_xf_protection(cell.protection);
-                    size_t xf_id = 0;
+
                     if (cell.automatic_style)
-                        xf_id = mp_styles->commit_cell_xf();
+                    {
+                        // Import it into the direct cell style store
+                        auto* xf = mp_styles->get_xf(ss::xf_category_t::cell);
+                        xf->set_font(cell.font);
+                        xf->set_fill(cell.fill);
+                        xf->set_border(cell.border);
+                        xf->set_protection(cell.protection);
+                        xf->set_horizontal_alignment(cell.hor_align);
+                        xf->set_vertical_alignment(cell.ver_align);
+                        cell.xf = xf->commit();
+                    }
                     else
                     {
-                        size_t style_xf_id = mp_styles->commit_cell_style_xf();
+                        // Import it into the cell style xf store, and reference
+                        // its index in the cell style name store.
+                        auto* xf = mp_styles->get_xf(ss::xf_category_t::cell_style);
+                        xf->set_font(cell.font);
+                        xf->set_fill(cell.fill);
+                        xf->set_border(cell.border);
+                        xf->set_protection(cell.protection);
+                        xf->set_horizontal_alignment(cell.hor_align);
+                        xf->set_vertical_alignment(cell.ver_align);
+                        size_t style_xf_id = xf->commit();
+
                         mp_styles->set_cell_style_name(m_current_style->name);
                         mp_styles->set_cell_style_xf(style_xf_id);
                         mp_styles->set_cell_style_parent_name(m_current_style->parent_name);
 
-                        xf_id = mp_styles->commit_cell_style();
+                        cell.xf = mp_styles->commit_cell_style();
                     }
-                    cell.xf = xf_id;
                 }
 
                 std::string_view style_name = m_current_style->name;
-                m_styles.insert(
-                    odf_styles_map_type::value_type(
-                        style_name, std::move(m_current_style)));
+                m_styles.emplace(style_name, std::move(m_current_style));
                 assert(!m_current_style);
 
                 break;
@@ -544,7 +557,6 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     border_map_type border_styles;
 
     ss::ver_alignment_t ver_alignment = ss::ver_alignment_t::unknown;
-    bool has_ver_alignment = false;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -662,7 +674,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
                     break;
                 }
                 case XML_vertical_align:
-                    has_ver_alignment = odf::extract_ver_alignment_style(attr.value, ver_alignment);
+                    odf::extract_ver_alignment_style(attr.value, ver_alignment);
                     break;
                 default:
                     ;
@@ -719,9 +731,6 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
         cell_protection_id = cell_protection->commit();
     }
 
-    if (has_ver_alignment)
-        mp_styles->set_xf_vertical_alignment(ver_alignment);
-
     switch (m_current_style->family)
     {
         case style_family_table_cell:
@@ -730,6 +739,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
             data->fill = fill_id;
             data->border = border_id;
             data->protection = cell_protection_id;
+            data->ver_align = ver_alignment;
             break;
         }
         default:
@@ -765,8 +775,14 @@ void styles_context::commit_default_styles()
     cell_protection->commit();
     number_format->commit();
 
-    mp_styles->commit_cell_style_xf();
-    mp_styles->commit_cell_xf();
+    auto* xf = mp_styles->get_xf(ss::xf_category_t::cell);
+    ENSURE_INTERFACE(xf, import_xf);
+    xf->commit();
+
+    xf = mp_styles->get_xf(ss::xf_category_t::cell_style);
+    ENSURE_INTERFACE(xf, import_xf);
+    xf->commit();
+
     mp_styles->commit_cell_style();
 }
 

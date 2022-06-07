@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_ODF_STYLES_HPP
 
 #include <orcus/measurement.hpp>
+#include <orcus/spreadsheet/types.hpp>
 
 #include <map>
 #include <memory>
@@ -45,16 +46,15 @@ struct odf_style
 
     struct cell
     {
-        size_t font;
-        size_t fill;
-        size_t border;
-        size_t protection;
+        size_t font = 0;
+        size_t fill = 0;
+        size_t border = 0;
+        size_t protection = 0;
+        spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
+        spreadsheet::ver_alignment_t ver_align = spreadsheet::ver_alignment_t::unknown;
+        size_t xf = 0;
 
-        size_t xf;
-        bool automatic_style;
-
-        cell() : font(0), fill(0), border(0), protection(0),
-                xf(0), automatic_style(false) {}
+        bool automatic_style = false;
     };
 
     struct table
