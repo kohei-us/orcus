@@ -170,8 +170,10 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_at
                         switch (attr.name)
                         {
                             case XML_column_width:
-                                m_current_style->column_data->width = to_length(attr.value);
+                            {
+                                std::get<odf_style::column>(m_current_style->data).width = to_length(attr.value);
                                 break;
+                            }
                         }
                     }
                 }
@@ -190,9 +192,12 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_at
                         switch (attr.name)
                         {
                             case XML_row_height:
-                                m_current_style->row_data->height = to_length(attr.value);
-                                m_current_style->row_data->height_set = true;
+                            {
+                                auto& data = std::get<odf_style::row>(m_current_style->data);
+                                data.height = to_length(attr.value);
+                                data.height_set = true;
                                 break;
+                            }
                         }
                     }
                 }
@@ -232,7 +237,7 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
 
                 if (mp_styles && m_current_style->family == style_family_table_cell)
                 {
-                    odf_style::cell& cell = *m_current_style->cell_data;
+                    auto& cell = std::get<odf_style::cell>(m_current_style->data);
 
                     if (cell.automatic_style)
                     {
@@ -293,9 +298,11 @@ void styles_context::start_paragraph_properties(const xml_token_pair_t& parent, 
             switch (attr.name)
             {
                 case XML_text_align:
-                    m_current_style->cell_data->hor_align =
-                        odf::extract_hor_alignment_style(attr.value);
+                {
+                    auto& data = std::get<odf_style::cell>(m_current_style->data);
+                    data.hor_align = odf::extract_hor_alignment_style(attr.value);
                     break;
+                }
                 default:
                     ;
             }
@@ -491,14 +498,14 @@ void styles_context::start_text_properties(const xml_token_pair_t& parent, const
     {
         case style_family_table_cell:
         {
-            odf_style::cell* data = m_current_style->cell_data;
-            data->font = font_id;
+            auto& data = std::get<odf_style::cell>(m_current_style->data);
+            data.font = font_id;
             break;
         }
         case style_family_text:
         {
-            odf_style::text* data = m_current_style->text_data;
-            data->font = font_id;
+            auto& data = std::get<odf_style::text>(m_current_style->data);
+            data.font = font_id;
             break;
         }
         default:
@@ -516,7 +523,8 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     if (!mp_styles)
         return;
 
-    m_current_style->cell_data->automatic_style = m_automatic_styles;
+    auto& data = std::get<odf_style::cell>(m_current_style->data);
+    data.automatic_style = m_automatic_styles;
 
     std::optional<spreadsheet::color_rgb_t> bg_color;
 
@@ -703,11 +711,10 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
     {
         case style_family_table_cell:
         {
-            odf_style::cell* data = m_current_style->cell_data;
-            data->fill = fill_id;
-            data->border = border_id;
-            data->protection = cell_protection_id;
-            data->ver_align = ver_alignment;
+            data.fill = fill_id;
+            data.border = border_id;
+            data.protection = cell_protection_id;
+            data.ver_align = ver_alignment;
             break;
         }
         default:

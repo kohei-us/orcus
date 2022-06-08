@@ -7,74 +7,45 @@
 
 #include "odf_styles.hpp"
 
+#include <stdexcept>
+
 namespace orcus {
 
-odf_style::odf_style() : family(style_family_unknown), column_data(nullptr) {}
+odf_style::odf_style() : family(style_family_unknown) {}
 odf_style::odf_style(std::string_view _name, odf_style_family _family, std::string_view parent) :
     name(_name),
     family(_family),
-    parent_name(parent),
-    column_data(nullptr)
+    parent_name(parent)
 {
     switch (family)
     {
         case style_family_table_column:
-            column_data = new column;
-        break;
+            data = column{};
+            break;
         case style_family_table_row:
-            row_data = new row;
-        break;
+            data = row{};
+            break;
         case style_family_table_cell:
-            cell_data = new cell;
-        break;
+            data = cell{};
+            break;
         case style_family_table:
-            table_data = new table;
-        break;
+            data = table{};
+            break;
         case style_family_graphic:
-            graphic_data = new graphic;
-        break;
+            data = graphic{};
+            break;
         case style_family_paragraph:
-            paragraph_data = new paragraph;
-        break;
+            data = paragraph{};
+            break;
         case style_family_text:
-            text_data = new text;
-        break;
+            data = text{};
+            break;
         case style_family_unknown:
-        default:
-            ;
+            throw std::invalid_argument("unkown style family is not allowed");
     }
 }
 
-odf_style::~odf_style()
-{
-    switch (family)
-    {
-        case style_family_table_column:
-            delete column_data;
-        break;
-        case style_family_table_row:
-            delete row_data;
-        break;
-        case style_family_table_cell:
-            delete cell_data;
-        break;
-        case style_family_table:
-            delete table_data;
-        break;
-        case style_family_graphic:
-            delete graphic_data;
-        break;
-        case style_family_paragraph:
-            delete paragraph_data;
-        break;
-        case style_family_text:
-            delete text_data;
-        break;
-        case style_family_unknown:
-        default:
-            ;
-    }
-}
+odf_style::~odf_style() {}
 
 number_formatting_style::number_formatting_style(std::string_view style_name, const bool volatile_style):
     number_formatting(0),

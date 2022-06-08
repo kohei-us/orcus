@@ -183,18 +183,24 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
                 case style_family_table_column:
                 {
                     if (get_config().debug)
-                        cout << "column width: " << it->second->column_data->width.to_string();
+                    {
+                        const auto& data = std::get<odf_style::column>(it->second->data);
+                        std::cout << "column width: " << data.width.to_string();
+                    }
                     break;
                 }
                 case style_family_table_row:
                 {
                     if (get_config().debug)
-                        cout << "row height: " << it->second->row_data->height.to_string();
+                    {
+                        const auto& data = std::get<odf_style::row>(it->second->data);
+                        cout << "row height: " << data.height.to_string();
+                    }
                     break;
                 }
                 case style_family_table_cell:
                 {
-                    const odf_style::cell& cell = *it->second->cell_data;
+                    const auto& cell = std::get<odf_style::cell>(it->second->data);
                     if (get_config().debug)
                         cout << "xf ID: " << cell.xf;
 
@@ -211,7 +217,7 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
                 {
                     if (get_config().debug)
                     {
-                        const odf_style::text& data = *it->second->text_data;
+                        const auto& data = std::get<odf_style::text>(it->second->data);
                         cout << "font ID: " << data.font;
                     }
                     break;
@@ -482,7 +488,11 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
         return;
 
     const odf_style& style = *it->second;
-    sheet_props->set_column_width(m_col, style.column_data->width.value, style.column_data->width.unit);
+
+    sheet_props->set_column_width(
+        m_col,
+        std::get<odf_style::column>(style.data).width.value,
+        std::get<odf_style::column>(style.data).width.unit);
 }
 
 void ods_content_xml_context::end_column()
@@ -530,9 +540,9 @@ void ods_content_xml_context::start_row(const xml_attrs_t& attrs)
             const odf_style& style = *it->second;
             if (style.family == style_family_table_row)
             {
-                const odf_style::row& row_data = *style.row_data;
-                if (row_data.height_set)
-                    sheet_props->set_row_height(m_row, row_data.height.value, row_data.height.unit);
+                const auto& data = std::get<odf_style::row>(style.data);
+                if (data.height_set)
+                    sheet_props->set_row_height(m_row, data.height.value, data.height.unit);
             }
         }
     }

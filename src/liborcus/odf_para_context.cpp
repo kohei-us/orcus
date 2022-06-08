@@ -154,8 +154,8 @@ void text_para_context::flush_segment()
     {
         if (style && style->family == style_family_text)
         {
-            const odf_style::text* data = style->text_data;
-            mp_sstrings->set_segment_font(data->font);
+            const auto& data = std::get<odf_style::text>(style->data);
+            mp_sstrings->set_segment_font(data.font);
         }
 
         for (pstring ps : m_contents)

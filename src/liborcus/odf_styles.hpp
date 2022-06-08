@@ -13,6 +13,7 @@
 
 #include <map>
 #include <memory>
+#include <variant>
 
 namespace orcus {
 
@@ -74,19 +75,13 @@ struct odf_style
         size_t font;
     };
 
+    using data_type = std::variant<column, row, cell, table, graphic, paragraph, text>;
+
     std::string_view name;
     odf_style_family family;
     std::string_view parent_name;
 
-    union {
-        column* column_data;
-        row* row_data;
-        table* table_data;
-        cell* cell_data;
-        graphic* graphic_data;
-        paragraph* paragraph_data;
-        text* text_data;
-    };
+    data_type data;
 
     odf_style(const odf_style&) = delete;
     odf_style& operator=(const odf_style&) = delete;
