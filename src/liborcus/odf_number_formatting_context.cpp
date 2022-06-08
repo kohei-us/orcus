@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <string>
 
-using namespace std;
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {
@@ -358,8 +357,8 @@ public:
 
 class map_attr_parser
 {
-    string m_value;
-    string m_sign;
+    std::string m_value;
+    std::string m_sign;
     bool m_has_map;
 
 public:
@@ -384,8 +383,8 @@ public:
             }
         }
     }
-    string get_value() const { return m_value;}
-    string get_sign() const { return m_sign;}
+    std::string get_value() const { return m_value;}
+    std::string get_sign() const { return m_sign;}
     bool has_map() const { return m_has_map;}
 };
 
@@ -513,7 +512,7 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
                     }
                     else
                     {
-                        std:: string temporary_code;
+                        std::string temporary_code;
                         for(size_t i = 0; i < func.get_min_int_digits(); i++)
                         {
                             if (i % 3 == 0 && i != 0)
