@@ -203,26 +203,8 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_at
                 xml_element_expected(parent, NS_odf_style, XML_style);
                 break;
             case XML_paragraph_properties:
-            {
-                xml_element_expected(parent, NS_odf_style, XML_style);
-
-                for (const xml_token_attr_t& attr : attrs)
-                {
-                    if (attr.ns == NS_odf_fo)
-                    {
-                        switch (attr.name)
-                        {
-                            case XML_text_align:
-                                m_current_style->cell_data->hor_align =
-                                    odf::extract_hor_alignment_style(attr.value);
-                                break;
-                            default:
-                                ;
-                        }
-                    }
-                }
+                start_paragraph_properties(parent, attrs);
                 break;
-            }
             case XML_text_properties:
                 start_text_properties(parent, attrs);
                 break;
@@ -298,6 +280,27 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void styles_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
+}
+
+void styles_context::start_paragraph_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+{
+    xml_element_expected(parent, NS_odf_style, XML_style);
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns == NS_odf_fo)
+        {
+            switch (attr.name)
+            {
+                case XML_text_align:
+                    m_current_style->cell_data->hor_align =
+                        odf::extract_hor_alignment_style(attr.value);
+                    break;
+                default:
+                    ;
+            }
+        }
+    }
 }
 
 void styles_context::start_text_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs)

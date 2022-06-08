@@ -38,6 +38,7 @@ public:
     virtual void characters(std::string_view str, bool transient) override;
 
 private:
+    void start_paragraph_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_text_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_table_cell_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
 
