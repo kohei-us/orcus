@@ -46,26 +46,6 @@ odf_style_family to_style_family(std::string_view val)
     return map.find(val.data(), val.size());
 }
 
-class col_prop_attr_parser
-{
-    length_t m_width;
-public:
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_odf_style)
-        {
-            switch (attr.name)
-            {
-                case XML_column_width:
-                    m_width = to_length(attr.value);
-                break;
-            }
-        }
-    }
-
-    const length_t& get_width() const { return m_width; }
-};
-
 namespace st_style {
 
 typedef mdds::sorted_string_map<ss::strikethrough_style_t> map_type;
@@ -91,36 +71,7 @@ const map_type& get()
 
 } // namespace st_style
 
-class paragraph_prop_attr_parser
-{
-    spreadsheet::hor_alignment_t m_hor_alignment;
-    bool m_has_hor_alignment;
-
-public:
-    paragraph_prop_attr_parser():
-        m_hor_alignment(spreadsheet::hor_alignment_t::unknown),
-        m_has_hor_alignment(false)
-    {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns == NS_odf_fo)
-        {
-            switch (attr.name)
-            {
-                case XML_text_align:
-                    m_has_hor_alignment = odf::extract_hor_alignment_style(attr.value, m_hor_alignment);
-                break;
-                default:
-                    ;
-            }
-        }
-    }
-    bool has_hor_alignment() const { return m_has_hor_alignment;}
-    const spreadsheet::hor_alignment_t& get_hor_alignment() const { return m_hor_alignment;}
-};
-
-}
+} // anonymous namespace
 
 styles_context::styles_context(
     session_context& session_cxt, const tokens& tk, odf_styles_map_type& styles,
@@ -210,33 +161,42 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_at
             case XML_table_column_properties:
             {
                 xml_element_expected(parent, NS_odf_style, XML_style);
-                col_prop_attr_parser func;
-                func = std::for_each(attrs.begin(), attrs.end(), func);
                 assert(m_current_style->family == style_family_table_column);
-                m_current_style->column_data->width = func.get_width();
+
+                for (const xml_token_attr_t& attr: attrs)
+                {
+                    if (attr.ns == NS_odf_style)
+                    {
+                        switch (attr.name)
+                        {
+                            case XML_column_width:
+                                m_current_style->column_data->width = to_length(attr.value);
+                                break;
+                        }
+                    }
+                }
+
                 break;
             }
             case XML_table_row_properties:
             {
                 xml_element_expected(parent, NS_odf_style, XML_style);
+                assert(m_current_style->family == style_family_table_row);
 
-                std::for_each(attrs.begin(), attrs.end(),
-                    [&](const xml_token_attr_t& attr)
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns == NS_odf_style)
                     {
-                        if (attr.ns == NS_odf_style)
+                        switch (attr.name)
                         {
-                            switch (attr.name)
-                            {
-                                case XML_row_height:
-                                    m_current_style->row_data->height = to_length(attr.value);
-                                    m_current_style->row_data->height_set = true;
-                                    break;
-                            }
+                            case XML_row_height:
+                                m_current_style->row_data->height = to_length(attr.value);
+                                m_current_style->row_data->height_set = true;
+                                break;
                         }
                     }
-                );
+                }
 
-                assert(m_current_style->family == style_family_table_row);
                 break;
             }
             case XML_table_properties:
@@ -245,11 +205,22 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_at
             case XML_paragraph_properties:
             {
                 xml_element_expected(parent, NS_odf_style, XML_style);
-                paragraph_prop_attr_parser func;
-                func = std::for_each(attrs.begin(), attrs.end(), func);
-                if (func.has_hor_alignment())
-                    m_current_style->cell_data->hor_align = func.get_hor_alignment();
 
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns == NS_odf_fo)
+                    {
+                        switch (attr.name)
+                        {
+                            case XML_text_align:
+                                odf::extract_hor_alignment_style(
+                                    attr.value, m_current_style->cell_data->hor_align);
+                                break;
+                            default:
+                                ;
+                        }
+                    }
+                }
                 break;
             }
             case XML_text_properties:
