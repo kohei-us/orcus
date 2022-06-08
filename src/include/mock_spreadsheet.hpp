@@ -54,29 +54,6 @@ public:
 
     virtual void set_xf_count(xf_category_t cat, size_t n) = 0;
 
-    // cell style xf
-
-    virtual size_t commit_cell_style_xf() override;
-
-    // cell xf
-
-    virtual size_t commit_cell_xf() override;
-
-    // dxf
-    virtual size_t commit_dxf() override;
-
-    // xf (cell format) - used both by cell xf and cell style xf.
-
-    virtual void set_xf_number_format(size_t index) override;
-    virtual void set_xf_font(size_t index) override;
-    virtual void set_xf_fill(size_t index) override;
-    virtual void set_xf_border(size_t index) override;
-    virtual void set_xf_protection(size_t index) override;
-    virtual void set_xf_style_xf(size_t index) override;
-    virtual void set_xf_apply_alignment(bool b) override;
-    virtual void set_xf_horizontal_alignment(orcus::spreadsheet::hor_alignment_t align) override;
-    virtual void set_xf_vertical_alignment(orcus::spreadsheet::ver_alignment_t align) override;
-
     // cell style entry
 
     virtual void set_cell_style_count(size_t n) override;

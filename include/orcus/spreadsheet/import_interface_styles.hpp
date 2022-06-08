@@ -149,27 +149,6 @@ public:
 
     virtual void set_xf_count(xf_category_t cat, size_t n) = 0;
 
-    virtual void set_xf_font(size_t index) = 0;
-    virtual void set_xf_fill(size_t index) = 0;
-    virtual void set_xf_border(size_t index) = 0;
-    virtual void set_xf_protection(size_t index) = 0;
-    virtual void set_xf_number_format(size_t index) = 0;
-
-    /**
-     * Set the index into the cell style record to specify a named cell style it
-     * uses as its basis.
-     *
-     * @param index index into the cell style record it uses as its basis.
-     */
-    virtual void set_xf_style_xf(size_t index) = 0;
-    virtual void set_xf_apply_alignment(bool b) = 0;
-    virtual void set_xf_horizontal_alignment(hor_alignment_t align) = 0;
-    virtual void set_xf_vertical_alignment(ver_alignment_t align) = 0;
-
-    virtual size_t commit_cell_xf() = 0;
-    virtual size_t commit_cell_style_xf() = 0;
-    virtual size_t commit_dxf() = 0;
-
     // named cell style. It references the actual cell format data via xf index
     // into the cell style format record.
 

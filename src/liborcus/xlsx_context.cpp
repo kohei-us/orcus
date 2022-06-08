@@ -1040,8 +1040,9 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
         case XML_protection:
         {
             assert(mp_protection);
-            size_t id = mp_protection->commit();
-            mp_styles->set_xf_protection(id);
+            size_t prot_id = mp_protection->commit();
+            assert(mp_xf);
+            mp_xf->set_protection(prot_id);
             break;
         }
         case XML_numFmt:

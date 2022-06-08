@@ -39,7 +39,6 @@ struct import_styles::impl
     import_number_format number_format;
     import_xf xf;
 
-    cell_format_t cur_cell_format;
     cell_style_t cur_cell_style;
 
     impl(styles& _styles_model, string_pool& sp) :
@@ -131,76 +130,6 @@ void import_styles::set_xf_count(xf_category_t cat, size_t n)
         case xf_category_t::unknown:
             break;
     }
-}
-
-void import_styles::set_xf_font(size_t index)
-{
-    mp_impl->cur_cell_format.font = index;
-}
-
-void import_styles::set_xf_fill(size_t index)
-{
-    mp_impl->cur_cell_format.fill = index;
-}
-
-void import_styles::set_xf_border(size_t index)
-{
-    mp_impl->cur_cell_format.border = index;
-
-    // TODO : we need to decide whether to have interface methods for these
-    // apply_foo attributes.  For now there is only one, for alignment.
-    mp_impl->cur_cell_format.apply_border = index > 0;
-}
-
-void import_styles::set_xf_protection(size_t index)
-{
-    mp_impl->cur_cell_format.protection = index;
-}
-
-void import_styles::set_xf_number_format(size_t index)
-{
-    mp_impl->cur_cell_format.number_format = index;
-}
-
-void import_styles::set_xf_style_xf(size_t index)
-{
-    mp_impl->cur_cell_format.style_xf = index;
-}
-
-void import_styles::set_xf_apply_alignment(bool b)
-{
-    mp_impl->cur_cell_format.apply_alignment = b;
-}
-
-void import_styles::set_xf_horizontal_alignment(orcus::spreadsheet::hor_alignment_t align)
-{
-    mp_impl->cur_cell_format.hor_align = align;
-}
-
-void import_styles::set_xf_vertical_alignment(orcus::spreadsheet::ver_alignment_t align)
-{
-    mp_impl->cur_cell_format.ver_align = align;
-}
-
-size_t import_styles::commit_cell_xf()
-{
-    size_t n = mp_impl->styles_model.append_cell_format(mp_impl->cur_cell_format);
-    mp_impl->cur_cell_format.reset();
-    return n;
-}
-
-size_t import_styles::commit_cell_style_xf()
-{
-    size_t n = mp_impl->styles_model.append_cell_style_format(mp_impl->cur_cell_format);
-    mp_impl->cur_cell_format.reset();
-    return n;
-}
-
-size_t import_styles::commit_dxf()
-{
-    size_t n = mp_impl->styles_model.append_diff_cell_format(mp_impl->cur_cell_format);
-    mp_impl->cur_cell_format.reset();
-    return n;
 }
 
 void import_styles::set_cell_style_count(size_t n)

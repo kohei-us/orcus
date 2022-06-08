@@ -87,20 +87,6 @@ public:
     virtual void set_number_format_count(size_t n) override;
     virtual void set_xf_count(xf_category_t cat, size_t n) override;
 
-    virtual void set_xf_font(size_t index) override;
-    virtual void set_xf_fill(size_t index) override;
-    virtual void set_xf_border(size_t index) override;
-    virtual void set_xf_protection(size_t index) override;
-    virtual void set_xf_number_format(size_t index) override;
-    virtual void set_xf_style_xf(size_t index) override;
-    virtual void set_xf_apply_alignment(bool b) override;
-    virtual void set_xf_horizontal_alignment(hor_alignment_t align) override;
-    virtual void set_xf_vertical_alignment(ver_alignment_t align) override;
-
-    virtual size_t commit_cell_xf() override;
-    virtual size_t commit_cell_style_xf() override;
-    virtual size_t commit_dxf() override;
-
     virtual void set_cell_style_count(size_t n) override;
     virtual void set_cell_style_name(std::string_view s) override;
     virtual void set_cell_style_xf(size_t index) override;

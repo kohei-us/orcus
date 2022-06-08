@@ -759,7 +759,9 @@ void gnumeric_sheet_context::end_font()
     font_style->set_color(0, front_color.red, front_color.green, front_color.blue);
     font_style->set_name(chars);
     size_t font_id = font_style->commit();
-    styles->set_xf_font(font_id);
+
+    assert(mp_xf);
+    mp_xf->set_font(font_id);
 }
 
 void gnumeric_sheet_context::end_style(bool conditional_format)
