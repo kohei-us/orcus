@@ -21,6 +21,7 @@
 #include <string>
 
 using namespace std;
+namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
@@ -741,10 +742,13 @@ bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
                     id_number_format = number_format->commit();
                 }
 
-                mp_styles->set_xf_number_format(id_number_format);
+                auto* xf = mp_styles->get_xf(ss::xf_category_t::cell_style);
+                ENSURE_INTERFACE(xf, import_xf);
+
+                xf->set_number_format(id_number_format);
 
                 mp_styles->set_cell_style_name(m_current_style.name);
-                mp_styles->set_cell_style_xf(mp_styles->commit_cell_style_xf());
+                mp_styles->set_cell_style_xf(xf->commit());
                 mp_styles->commit_cell_style();
                 return true; // TODO: fix this
 //              return pop_stack(ns, name);
