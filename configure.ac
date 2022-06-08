@@ -120,7 +120,7 @@ AS_IF([test "x$enable_debug" != "xno"], [
 ])
 
 AS_IF([test "x$enable_debug_utils" != "xno"], [
-        CXXFLAGS="$CXXFLAGS -D__ORCUS_DEBUG_UTILS"
+        CXXFLAGS="$CXXFLAGS -g -D__ORCUS_DEBUG_UTILS"
 ])
 
 # zlib is a hard requirement in liborcus-parser.
