@@ -75,25 +75,47 @@ const map_type& get()
 
 } // namespace underline_style
 
-typedef mdds::sorted_string_map<spreadsheet::hor_alignment_t> odf_horizontal_alignment_map;
+namespace hor_align {
 
-odf_horizontal_alignment_map::entry odf_horizontal_alignment_entries[] =
+typedef mdds::sorted_string_map<spreadsheet::hor_alignment_t> map_type;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] =
 {
-    { MDDS_ASCII("center"), spreadsheet::hor_alignment_t::center},
-    { MDDS_ASCII("end"), spreadsheet::hor_alignment_t::right},
-    { MDDS_ASCII("justified"), spreadsheet::hor_alignment_t::justified},
-    { MDDS_ASCII("start"), spreadsheet::hor_alignment_t::left}
+    { MDDS_ASCII("center"), spreadsheet::hor_alignment_t::center },
+    { MDDS_ASCII("end"), spreadsheet::hor_alignment_t::right },
+    { MDDS_ASCII("justified"), spreadsheet::hor_alignment_t::justified },
+    { MDDS_ASCII("start"), spreadsheet::hor_alignment_t::left }
 };
 
-typedef mdds::sorted_string_map<spreadsheet::ver_alignment_t> odf_vertical_alignment_map;
-
-odf_vertical_alignment_map::entry odf_vertical_alignment_entries[] =
+const map_type& get()
 {
-    { MDDS_ASCII("bottom"), spreadsheet::ver_alignment_t::bottom},
-    { MDDS_ASCII("justified"), spreadsheet::ver_alignment_t::justified},
-    { MDDS_ASCII("middle"), spreadsheet::ver_alignment_t::middle},
-    { MDDS_ASCII("top"), spreadsheet::ver_alignment_t::top}
+    static map_type mt(entries, std::size(entries), ss::hor_alignment_t::unknown);
+    return mt;
+}
+
+} // namespace hor_align
+
+namespace ver_align {
+
+typedef mdds::sorted_string_map<spreadsheet::ver_alignment_t> map_type;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] =
+{
+    { MDDS_ASCII("bottom"), spreadsheet::ver_alignment_t::bottom },
+    { MDDS_ASCII("justified"), spreadsheet::ver_alignment_t::justified },
+    { MDDS_ASCII("middle"), spreadsheet::ver_alignment_t::middle },
+    { MDDS_ASCII("top"), spreadsheet::ver_alignment_t::top }
 };
+
+const map_type& get()
+{
+    static map_type mt(entries, std::size(entries), ss::ver_alignment_t::unknown);
+    return mt;
+}
+
+} // namespace ver_align
 
 bool is_valid_hex_digit(const char& character, orcus::spreadsheet::color_elem_t& val)
 {
@@ -209,31 +231,14 @@ orcus::spreadsheet::underline_t odf::extract_underline_style(std::string_view va
     return underline_style::get().find(value.data(), value.size());
 }
 
-bool odf::extract_hor_alignment_style(std::string_view value, spreadsheet::hor_alignment_t& alignment)
+ss::hor_alignment_t odf::extract_hor_alignment_style(std::string_view value)
 {
-    odf_horizontal_alignment_map horizontal_alignment_map(odf_horizontal_alignment_entries,
-            ORCUS_N_ELEMENTS(odf_horizontal_alignment_entries),
-            spreadsheet::hor_alignment_t::unknown);
-
-    alignment = horizontal_alignment_map.find(value.data(), value.size());
-
-    if (alignment == spreadsheet::hor_alignment_t::unknown)
-        return false;
-
-    return true;
+    return hor_align::get().find(value.data(), value.size());
 }
 
-bool odf::extract_ver_alignment_style(std::string_view value, spreadsheet::ver_alignment_t& alignment)
+spreadsheet::ver_alignment_t odf::extract_ver_alignment_style(std::string_view value)
 {
-    odf_vertical_alignment_map vertical_alignment_map(odf_vertical_alignment_entries,
-            ORCUS_N_ELEMENTS(odf_vertical_alignment_entries),
-            spreadsheet::ver_alignment_t::unknown);
-    alignment = vertical_alignment_map.find(value.data(), value.size());
-
-    if (alignment == spreadsheet::ver_alignment_t::unknown)
-        return false;
-
-    return true;
+    return ver_align::get().find(value.data(), value.size());
 }
 
 }

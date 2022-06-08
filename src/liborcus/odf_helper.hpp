@@ -44,9 +44,9 @@ spreadsheet::underline_width_t extract_underline_width(std::string_view value);
 
 spreadsheet::underline_t extract_underline_style(std::string_view value);
 
-bool extract_hor_alignment_style(std::string_view value, spreadsheet::hor_alignment_t& alignment);
+spreadsheet::hor_alignment_t extract_hor_alignment_style(std::string_view value);
 
-bool extract_ver_alignment_style(std::string_view value, spreadsheet::ver_alignment_t& alignment);
+spreadsheet::ver_alignment_t extract_ver_alignment_style(std::string_view value);
 
 }}
 

@@ -213,8 +213,8 @@ void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_at
                         switch (attr.name)
                         {
                             case XML_text_align:
-                                odf::extract_hor_alignment_style(
-                                    attr.value, m_current_style->cell_data->hor_align);
+                                m_current_style->cell_data->hor_align =
+                                    odf::extract_hor_alignment_style(attr.value);
                                 break;
                             default:
                                 ;
@@ -639,7 +639,7 @@ void styles_context::start_table_cell_properties(const xml_token_pair_t& parent,
                     break;
                 }
                 case XML_vertical_align:
-                    odf::extract_ver_alignment_style(attr.value, ver_alignment);
+                    ver_alignment = odf::extract_ver_alignment_style(attr.value);
                     break;
                 default:
                     ;
