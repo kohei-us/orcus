@@ -298,7 +298,12 @@ public:
 
     /**
      * Set the index into the cell style record to specify a named cell style it
-     * uses as its basis.
+     * uses as its base format in case the cell has an underlying style applied.
+     * This is applicable only for a direct cell format i.e. when the xf
+     * category is xf_category_t::cell.  If the category is
+     * xf_category::cell_style, this value should not be used.
+     *
+     * @note This is so far Excel-specific.
      *
      * @param index index into the cell style record it uses as its basis.
      */
