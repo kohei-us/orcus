@@ -746,9 +746,12 @@ bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
 
                 xf->set_number_format(id_number_format);
 
-                mp_styles->set_cell_style_name(m_current_style.name);
-                mp_styles->set_cell_style_xf(xf->commit());
-                mp_styles->commit_cell_style();
+                auto* cell_style = mp_styles->get_cell_style();
+                ENSURE_INTERFACE(cell_style, import_cell_style);
+
+                cell_style->set_name(m_current_style.name);
+                cell_style->set_xf(xf->commit());
+                cell_style->commit();
                 return true; // TODO: fix this
 //              return pop_stack(ns, name);
             }

@@ -243,6 +243,7 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
                     {
                         // Import it into the direct cell style store
                         auto* xf = mp_styles->get_xf(ss::xf_category_t::cell);
+                        ENSURE_INTERFACE(xf, import_xf);
                         xf->set_font(cell.font);
                         xf->set_fill(cell.fill);
                         xf->set_border(cell.border);
@@ -256,6 +257,7 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
                         // Import it into the cell style xf store, and reference
                         // its index in the cell style name store.
                         auto* xf = mp_styles->get_xf(ss::xf_category_t::cell_style);
+                        ENSURE_INTERFACE(xf, import_xf);
                         xf->set_font(cell.font);
                         xf->set_fill(cell.fill);
                         xf->set_border(cell.border);
@@ -264,11 +266,14 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
                         xf->set_vertical_alignment(cell.ver_align);
                         size_t style_xf_id = xf->commit();
 
-                        mp_styles->set_cell_style_name(m_current_style->name);
-                        mp_styles->set_cell_style_xf(style_xf_id);
-                        mp_styles->set_cell_style_parent_name(m_current_style->parent_name);
+                        auto* cell_style = mp_styles->get_cell_style();
+                        ENSURE_INTERFACE(cell_style, import_cell_style);
 
-                        cell.xf = mp_styles->commit_cell_style();
+                        cell_style->set_name(m_current_style->name);
+                        cell_style->set_xf(style_xf_id);
+                        cell_style->set_parent_name(m_current_style->parent_name);
+
+                        cell.xf = cell_style->commit();
                     }
                 }
 
@@ -758,7 +763,9 @@ void styles_context::commit_default_styles()
     ENSURE_INTERFACE(xf, import_xf);
     xf->commit();
 
-    mp_styles->commit_cell_style();
+    auto* cell_style = mp_styles->get_cell_style();
+    ENSURE_INTERFACE(cell_style, import_cell_style);
+    cell_style->commit();
 }
 
 }
