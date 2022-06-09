@@ -80,7 +80,7 @@ styles_context::styles_context(
     mp_styles(iface_styles),
     m_styles(styles),
     m_automatic_styles(false),
-    m_cxt_number_format(session_cxt, tk, m_styles, mp_styles)
+    m_cxt_number_format(session_cxt, tk, mp_styles)
 {
     m_cxt_number_format.transfer_common(*this);
 

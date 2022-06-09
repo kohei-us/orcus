@@ -391,11 +391,9 @@ public:
 }
 
 number_formatting_context::number_formatting_context(
-    session_context& session_cxt, const tokens& tk, odf_styles_map_type& styles,
-    spreadsheet::iface::import_styles* iface_styles) :
+    session_context& session_cxt, const tokens& tk, ss::iface::import_styles* iface_styles) :
     xml_context_base(session_cxt, tk),
-    mp_styles(iface_styles),
-    m_styles(styles)
+    mp_styles(iface_styles)
 {}
 
 xml_context_base* number_formatting_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
