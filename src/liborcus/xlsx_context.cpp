@@ -740,6 +740,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 }
                 m_cell_style_xf = true;
                 mp_xf = mp_styles->get_xf(ss::xf_category_t::cell_style);
+                ENSURE_INTERFACE(mp_xf, import_xf);
                 break;
             }
             case XML_cellXfs:
@@ -755,6 +756,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 }
                 m_cell_style_xf = false;
                 mp_xf = mp_styles->get_xf(ss::xf_category_t::cell);
+                ENSURE_INTERFACE(mp_xf, import_xf);
                 break;
             }
             case XML_dxfs:
@@ -769,6 +771,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     mp_styles->set_xf_count(ss::xf_category_t::differential, n);
                 }
                 mp_xf = mp_styles->get_xf(ss::xf_category_t::differential);
+                ENSURE_INTERFACE(mp_xf, import_xf);
                 break;
             }
             case XML_cellStyles:
@@ -1029,6 +1032,7 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
         case XML_cellStyleXfs:
         case XML_cellXfs:
         case XML_dxfs:
+            assert(mp_xf);
             mp_xf = nullptr;
             break;
         case XML_xf:
