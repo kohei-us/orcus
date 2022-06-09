@@ -24,10 +24,10 @@ namespace spreadsheet { namespace iface {
 /**
  * Context that handles <number:xyz> scope.
  */
-class number_formatting_context : public xml_context_base
+class number_format_context : public xml_context_base
 {
 public:
-    number_formatting_context(
+    number_format_context(
         session_context& session_cxt, const tokens& tk,
         spreadsheet::iface::import_styles* iface_styles);
 

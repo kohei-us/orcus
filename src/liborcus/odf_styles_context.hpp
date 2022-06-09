@@ -10,7 +10,7 @@
 
 #include "xml_context_base.hpp"
 #include "odf_styles.hpp"
-#include "odf_number_formatting_context.hpp"
+#include "odf_number_format_context.hpp"
 
 #include <orcus/global.hpp>
 
@@ -53,7 +53,7 @@ private:
     // an automatic style corresponds to a cell format and not a real style
     bool m_automatic_styles;
 
-    number_formatting_context m_cxt_number_format;
+    number_format_context m_cxt_number_format;
 };
 
 }

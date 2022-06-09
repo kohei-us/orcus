@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "odf_number_formatting_context.hpp"
+#include "odf_number_format_context.hpp"
 #include "odf_namespace_types.hpp"
 #include "odf_token_constants.hpp"
 #include "odf_helper.hpp"
@@ -390,22 +390,22 @@ public:
 
 }
 
-number_formatting_context::number_formatting_context(
+number_format_context::number_format_context(
     session_context& session_cxt, const tokens& tk, ss::iface::import_styles* iface_styles) :
     xml_context_base(session_cxt, tk),
     mp_styles(iface_styles)
 {}
 
-xml_context_base* number_formatting_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
+xml_context_base* number_format_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
     return nullptr;
 }
 
-void number_formatting_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
+void number_format_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
 {
 }
 
-void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
+void number_format_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
     (void)parent;
@@ -709,7 +709,7 @@ void number_formatting_context::start_element(xmlns_id_t ns, xml_token_t name, c
     }
 }
 
-bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
+bool number_format_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
     if (!mp_styles)
         return pop_stack(ns, name);
@@ -781,7 +781,7 @@ bool number_formatting_context::end_element(xmlns_id_t ns, xml_token_t name)
 }
 
 
-void number_formatting_context::characters(std::string_view str, bool transient)
+void number_format_context::characters(std::string_view str, bool transient)
 {
     if (str != "\n")
     {
@@ -792,7 +792,7 @@ void number_formatting_context::characters(std::string_view str, bool transient)
     }
 }
 
-void number_formatting_context::reset()
+void number_format_context::reset()
 {
     m_current_style = odf_number_format{};
 }

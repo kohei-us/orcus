@@ -231,8 +231,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	odf_styles.cpp \
 	odf_styles_context.hpp \
 	odf_styles_context.cpp \
-	odf_number_formatting_context.hpp \
-	odf_number_formatting_context.cpp \
+	odf_number_format_context.hpp \
+	odf_number_format_context.cpp \
 	odf_token_constants.hpp \
 	odf_token_constants.inl \
 	odf_tokens.hpp \
