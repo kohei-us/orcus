@@ -41,7 +41,7 @@ public:
 
 private:
     spreadsheet::iface::import_styles* mp_styles;
-    number_formatting_style m_current_style;
+    odf_number_format m_current_style;
 
     string_pool m_pool;
 };

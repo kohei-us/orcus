@@ -47,10 +47,9 @@ odf_style::odf_style(std::string_view _name, odf_style_family _family, std::stri
 
 odf_style::~odf_style() {}
 
-number_formatting_style::number_formatting_style(std::string_view style_name, const bool volatile_style):
-    number_formatting(0),
-    name(style_name),
-    is_volatile(volatile_style)
+odf_number_format::odf_number_format(std::string_view _name, bool _is_volatile):
+    name(_name),
+    is_volatile(_is_volatile)
 {
 }
 

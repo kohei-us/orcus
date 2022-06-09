@@ -92,21 +92,15 @@ struct odf_style
     ~odf_style();
 };
 
-struct number_formatting_style
+struct odf_number_format
 {
-    size_t number_formatting;
-
     std::string_view name;
-    std::string number_formatting_code;
-    bool is_volatile;
+    std::string code;
+    bool is_volatile = false;
     std::string_view character_stream;
 
-    number_formatting_style():
-        number_formatting(0),
-        is_volatile(0)
-        {}
-
-    number_formatting_style(std::string_view style_name, const bool volatile_style);
+    odf_number_format() = default;
+    odf_number_format(std::string_view _name, bool _is_volatile);
 };
 
 typedef std::map<std::string_view, std::unique_ptr<odf_style>> odf_styles_map_type;
