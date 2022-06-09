@@ -177,8 +177,8 @@ export_sheet
 Spreadsheet Types
 -----------------
 
-Types
-^^^^^
+Type Aliases
+^^^^^^^^^^^^
 
 .. doxygentypedef:: orcus::spreadsheet::row_t
 .. doxygentypedef:: orcus::spreadsheet::col_t
@@ -205,6 +205,12 @@ Structs
    :members:
 
 .. doxygenstruct:: orcus::spreadsheet::color_rgb_t
+   :members:
+
+.. doxygenstruct:: orcus::spreadsheet::split_pane_t
+   :members:
+
+.. doxygenstruct:: orcus::spreadsheet::frozen_pane_t
    :members:
 
 
@@ -236,6 +242,8 @@ Enums
 .. doxygenenum:: orcus::spreadsheet::condition_date_t
 .. doxygenenum:: orcus::spreadsheet::databar_axis_t
 .. doxygenenum:: orcus::spreadsheet::pivot_cache_group_by_t
+.. doxygenenum:: orcus::spreadsheet::sheet_pane_t
+.. doxygenenum:: orcus::spreadsheet::pane_state_t
 
 
 Spreadsheet Global Functions
