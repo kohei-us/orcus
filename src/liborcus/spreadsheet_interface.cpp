@@ -37,6 +37,8 @@ import_number_format::~import_number_format() {}
 
 import_xf::~import_xf() {}
 
+import_cell_style::~import_cell_style() {}
+
 import_sheet_properties::~import_sheet_properties() {}
 
 import_named_expression::~import_named_expression() {}

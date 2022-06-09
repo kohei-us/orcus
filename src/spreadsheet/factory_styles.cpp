@@ -38,6 +38,7 @@ struct import_styles::impl
     import_cell_protection cell_protection;
     import_number_format number_format;
     import_xf xf;
+    import_cell_style cell_style;
 
     cell_style_t cur_cell_style;
 
@@ -49,7 +50,8 @@ struct import_styles::impl
         border_style(_styles_model, sp),
         cell_protection(_styles_model, sp),
         number_format(_styles_model, sp),
-        xf(_styles_model, sp)
+        xf(_styles_model, sp),
+        cell_style(_styles_model, sp)
     {}
 };
 
@@ -92,6 +94,12 @@ iface::import_xf* import_styles::get_xf(xf_category_t cat)
 {
     mp_impl->xf.reset(cat);
     return &mp_impl->xf;
+}
+
+iface::import_cell_style* import_styles::get_cell_style()
+{
+    mp_impl->cell_style.reset();
+    return &mp_impl->cell_style;
 }
 
 void import_styles::set_font_count(size_t n)
@@ -662,6 +670,57 @@ void import_xf::reset(xf_category_t cat)
 
     mp_impl->cur_cell_format.reset();
     mp_impl->xf_category = cat;
+}
+
+struct import_cell_style::impl
+{
+    styles& styles_model;
+    string_pool& str_pool;
+
+    cell_style_t cur_cell_style;
+
+    impl(styles& _styles_model, string_pool& sp) :
+        styles_model(_styles_model), str_pool(sp) {}
+};
+
+import_cell_style::import_cell_style(styles& _styles_model, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(_styles_model, sp))
+{
+}
+
+import_cell_style::~import_cell_style() {}
+
+void import_cell_style::set_name(std::string_view s)
+{
+    mp_impl->cur_cell_style.name = mp_impl->str_pool.intern(s).first;
+}
+
+void import_cell_style::set_xf(size_t index)
+{
+    mp_impl->cur_cell_style.xf = index;
+}
+
+void import_cell_style::set_builtin(size_t index)
+{
+    mp_impl->cur_cell_style.builtin = index;
+}
+
+void import_cell_style::set_parent_name(std::string_view s)
+{
+    mp_impl->cur_cell_style.parent_name = mp_impl->str_pool.intern(s).first;
+}
+
+size_t import_cell_style::commit()
+{
+    size_t n = mp_impl->styles_model.append_cell_style(mp_impl->cur_cell_style);
+    mp_impl->cur_cell_style.reset();
+    return n;
+}
+
+
+void import_cell_style::reset()
+{
+    mp_impl->cur_cell_style.reset();
 }
 
 }}

@@ -157,8 +157,8 @@ class xls_xml_context : public xml_context_base
 
     struct style_type
     {
-        pstring id;
-        pstring name;
+        std::string_view id;
+        std::string_view name;
 
         font_style_type font;
         fill_style_type fill;

@@ -1883,14 +1883,16 @@ void xls_xml_context::commit_default_style()
     ENSURE_INTERFACE(xf, import_xf);
     xf->commit();
 
+    auto* cell_style = styles->get_cell_style();
+    ENSURE_INTERFACE(cell_style, import_cell_style);
+
     if (m_default_style)
     {
-        const pstring& name = m_default_style->name;
-        if (!name.empty())
-            styles->set_cell_style_name(name);
+        if (!m_default_style->name.empty())
+            cell_style->set_name(m_default_style->name);
     }
 
-    styles->commit_cell_style();
+    cell_style->commit();
 }
 
 void xls_xml_context::commit_styles()

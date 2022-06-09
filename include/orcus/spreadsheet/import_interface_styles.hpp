@@ -25,6 +25,7 @@ class import_border_style;
 class import_cell_protection;
 class import_number_format;
 class import_xf;
+class import_cell_style;
 
 /**
  * Interface for styles. Note that because the default style must have an
@@ -104,6 +105,15 @@ public:
      *         indices.
      */
     virtual import_xf* get_xf(xf_category_t cat) = 0;
+
+    /**
+     * Return a pointer to the interface instance for importing named cell style
+     * information.
+     *
+     * @return pointer to the interface instance for importing named cell style
+     *         information.
+     */
+    virtual import_cell_style* get_cell_style() = 0;
 
     /**
      * Set the total number of font styles. This may be called before importing
@@ -311,6 +321,43 @@ public:
     virtual void set_apply_alignment(bool b) = 0;
     virtual void set_horizontal_alignment(hor_alignment_t align) = 0;
     virtual void set_vertical_alignment(ver_alignment_t align) = 0;
+
+    virtual size_t commit() = 0;
+};
+
+class ORCUS_DLLPUBLIC import_cell_style
+{
+public:
+    virtual ~import_cell_style();
+
+    virtual void set_name(std::string_view s) = 0;
+
+    /**
+     * Set the index into the cell format record.  The named cell style applies
+     * the format referenced by this index.
+     *
+     * @param index index into the cell format record.
+     */
+    virtual void set_xf(size_t index) = 0;
+
+    /**
+     * Set the index into the built-in style record.
+     *
+     * @note This is Excel-specific, and unclear whether it's useful outside of
+     * Excel's implementation.  Built-in styles are not stored in file.
+     *
+     * @param index index into the built-in cell style record.
+     */
+    virtual void set_builtin(size_t index) = 0;
+
+    /**
+     * Set the name of the parent cell style it uses as its basis.
+     *
+     * @note ODF uses this but Excel does not use this value.
+     *
+     * @param s name of the parent cell style.
+     */
+    virtual void set_parent_name(std::string_view s) = 0;
 
     virtual size_t commit() = 0;
 };
