@@ -341,10 +341,12 @@ public:
     virtual void set_xf(size_t index) = 0;
 
     /**
-     * Set the index into the built-in style record.
+     * Set the index into the built-in cell style record.
      *
      * @note This is Excel-specific, and unclear whether it's useful outside of
-     * Excel's implementation.  Built-in styles are not stored in file.
+     * Excel's implementation.  Built-in styles are not stored in file, and
+     * Excel likely has its own internal styles stored in the application
+     * itself.
      *
      * @param index index into the built-in cell style record.
      */

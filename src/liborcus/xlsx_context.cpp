@@ -370,36 +370,6 @@ public:
     }
 };
 
-class cell_style_attr_parser
-{
-    spreadsheet::iface::import_styles& m_styles;
-public:
-    cell_style_attr_parser(spreadsheet::iface::import_styles& styles) :
-        m_styles(styles) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_name:
-                m_styles.set_cell_style_name(attr.value);
-            break;
-            case XML_xfId:
-            {
-                size_t n = to_long(attr.value);
-                m_styles.set_cell_style_xf(n);
-            }
-            break;
-            case XML_builtinId:
-            {
-                size_t n = to_long(attr.value);
-                m_styles.set_cell_style_builtin(n);
-            }
-            break;
-        }
-    }
-};
-
 class cell_alignment_attr_parser
 {
     spreadsheet::hor_alignment_t m_hor_align;
@@ -811,13 +781,37 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     size_t n = strtoul(ps.data(), nullptr, 10);
                     mp_styles->set_cell_style_count(n);
                 }
+                mp_cell_style = mp_styles->get_cell_style();
+                ENSURE_INTERFACE(mp_cell_style, import_cell_style);
                 break;
             }
             case XML_cellStyle:
             {
                 // named cell style, some of which are built-in such as 'Normal'.
+                assert(mp_cell_style);
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_cellStyles);
-                for_each(attrs.begin(), attrs.end(), cell_style_attr_parser(*mp_styles));
+
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    switch (attr.name)
+                    {
+                        case XML_name:
+                            mp_cell_style->set_name(attr.value);
+                            break;
+                        case XML_xfId:
+                        {
+                            size_t n = to_long(attr.value);
+                            mp_cell_style->set_xf(n);
+                            break;
+                        }
+                        case XML_builtinId:
+                        {
+                            size_t n = to_long(attr.value);
+                            mp_cell_style->set_builtin(n);
+                        }
+                        break;
+                    }
+                }
                 break;
             }
             case XML_xf:
@@ -1025,7 +1019,12 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
             mp_border = nullptr;
             break;
         case XML_cellStyle:
-            mp_styles->commit_cell_style();
+            assert(mp_cell_style);
+            mp_cell_style->commit();
+            break;
+        case XML_cellStyles:
+            assert(mp_cell_style);
+            mp_cell_style = nullptr;
             break;
         case XML_cellStyleXfs:
         case XML_cellXfs:
