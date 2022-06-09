@@ -29,6 +29,24 @@ import_auto_filter
 .. doxygenclass:: orcus::spreadsheet::iface::import_auto_filter
    :members:
 
+import_border_style
+^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_border_style
+   :members:
+
+import_cell_protection
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_cell_protection
+   :members:
+
+import_cell_style
+^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_cell_style
+   :members:
+
 import_conditional_format
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -47,6 +65,18 @@ import_factory
 .. doxygenclass:: orcus::spreadsheet::iface::import_factory
    :members:
 
+import_fill_style
+^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_fill_style
+   :members:
+
+import_font_style
+^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_font_style
+   :members:
+
 import_formula
 ^^^^^^^^^^^^^^
 
@@ -63,6 +93,12 @@ import_named_expression
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenclass:: orcus::spreadsheet::iface::import_named_expression
+   :members:
+
+import_number_format
+^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_number_format
    :members:
 
 import_pivot_cache_definition
@@ -117,6 +153,12 @@ import_table
 ^^^^^^^^^^^^
 
 .. doxygenclass:: orcus::spreadsheet::iface::import_table
+   :members:
+
+import_xf
+^^^^^^^^^
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_xf
    :members:
 
 export_factory
@@ -186,6 +228,7 @@ Enums
 .. doxygenenum:: orcus::spreadsheet::hor_alignment_t
 .. doxygenenum:: orcus::spreadsheet::ver_alignment_t
 .. doxygenenum:: orcus::spreadsheet::data_table_type_t
+.. doxygenenum:: orcus::spreadsheet::xf_category_t
 .. doxygenenum:: orcus::spreadsheet::totals_row_function_t
 .. doxygenenum:: orcus::spreadsheet::conditional_format_t
 .. doxygenenum:: orcus::spreadsheet::condition_operator_t

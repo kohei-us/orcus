@@ -151,17 +151,25 @@ public:
      */
     virtual void set_number_format_count(size_t n) = 0;
 
-    // Cell format and cell style format, and differential cell format records.
-    // All of these records share the same data structure for their entries. A
-    // cell in a worksheet references an entry in the cell format record
-    // directly by the index, and the entry in the cell format record references
-    // a cell style format in the cell style format record by the index.
-
+    /**
+     * Set the total number of cell format styles for a specified cell format
+     * category. This may be called before importing any of the cell format
+     * styles for the specified category. This will give the implementer a
+     * chance to allocate storage. Note that it may not always be called.
+     *
+     * @param cat cell format category.
+     * @param n number of cell formats styles for the specified cell format
+     *          category.
+     */
     virtual void set_xf_count(xf_category_t cat, size_t n) = 0;
 
-    // named cell style. It references the actual cell format data via xf index
-    // into the cell style format record.
-
+    /**
+     * Set the total number of named cell styles.  This may be called before
+     * importing any cell styles to give the implementer a chance to allocate
+     * storage. Note that it may not always be called.
+     *
+     * @param n number of named cell styles.
+     */
     virtual void set_cell_style_count(size_t n) = 0;
 };
 
@@ -184,6 +192,13 @@ public:
     virtual void set_strikethrough_type(strikethrough_type_t s) = 0;
     virtual void set_strikethrough_width(strikethrough_width_t s) = 0;
     virtual void set_strikethrough_text(strikethrough_text_t s) = 0;
+
+    /**
+     * Commit the font style in the current buffer.
+     *
+     * @return index of the committed font style, to be passed on to the
+     *         import_xf::set_font() method as its argument.
+     */
     virtual size_t commit() = 0;
 };
 
@@ -224,10 +239,10 @@ public:
     virtual void set_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
 
     /**
-     * Commit the fill style currently in the buffer.
+     * Commit the fill style in the current buffer.
      *
-     * @return the ID of the committed fill style, to be passed on to the
-     *         set_xf_fill() method as its argument.
+     * @return index of the committed fill style, to be passed on to the
+     *         import_xf::set_fill() method as its argument.
      */
     virtual size_t commit() = 0;
 };
@@ -241,6 +256,13 @@ public:
     virtual void set_color(
         border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
     virtual void set_width(border_direction_t dir, double width, orcus::length_unit_t unit) = 0;
+
+    /**
+     * Commit the border style in the current buffer.
+     *
+     * @return index of the committed border style, to be passed on to the
+     *         import_xf::set_border() method as its argument.
+     */
     virtual size_t commit() = 0;
 };
 
@@ -253,6 +275,13 @@ public:
     virtual void set_locked(bool b) = 0;
     virtual void set_print_content(bool b) = 0;
     virtual void set_formula_hidden(bool b) = 0;
+
+    /**
+     * Commit the cell protection data in the current buffer.
+     *
+     * @return index of the committed cell protection data, to be passed on to
+     *         the import_xf::set_protection() method as its argument.
+     */
     virtual size_t commit() = 0;
 };
 
@@ -263,18 +292,75 @@ public:
 
     virtual void set_identifier(std::size_t id) = 0;
     virtual void set_code(std::string_view s) = 0;
+
+    /**
+     * Commit the number format data in the current buffer.
+     *
+     * @return index of the committed number format data, to be passed on to the
+     *         import_xf::set_number_format() method as its argument.
+     */
     virtual size_t commit() = 0;
 };
 
+/**
+ * This interface is used to import cell format records for direct cell
+ * formats, named cell style formats, and differential cell formats.
+ *
+ * The following cell format types:
+ * <ul>
+ *   <li>font</li>
+ *   <li>fill</li>
+ *   <li>border</li>
+ *   <li>protection</li>
+ *   <li>number format</li>
+ * </ul>
+ * use indices to reference their records in their respective record pools.
+ *
+ * The horizontal and vertical alignments are specified directly.
+ */
 class ORCUS_DLLPUBLIC import_xf
 {
 public:
     virtual ~import_xf();
 
+    /**
+     * Set the index of the font record, as returned from the
+     * import_font_style::commit() method.
+     *
+     * @param index index of the font record to reference.
+     */
     virtual void set_font(size_t index) = 0;
+
+    /**
+     * Set the index of the fill record, as returned from the
+     * import_fill_style::commit() method.
+     *
+     * @param index index of the fill record to reference.
+     */
     virtual void set_fill(size_t index) = 0;
+
+    /**
+     * Set the index of the border record, as returned from the
+     * import_border_style::commit() method.
+     *
+     * @param index index of the border record to reference.
+     */
     virtual void set_border(size_t index) = 0;
+
+    /**
+     * Set the index of the cell protection record, as returned from the
+     * import_cell_protection::commit() method.
+     *
+     * @param index index of the cell protection record to reference.
+     */
     virtual void set_protection(size_t index) = 0;
+
+    /**
+     * Set the index of the number format record, as returned from the
+     * import_number_format::commit() method.
+     *
+     * @param index index of the number format record to reference.
+     */
     virtual void set_number_format(size_t index) = 0;
 
     /**
@@ -293,9 +379,23 @@ public:
     virtual void set_horizontal_alignment(hor_alignment_t align) = 0;
     virtual void set_vertical_alignment(ver_alignment_t align) = 0;
 
+    /**
+     * Commit the cell format in the current buffer to the storage.
+     *
+     * @return index of the cell format data in the storage.  This index may be
+     *         passed to the import_cell_style::set_xf() method.
+     */
     virtual size_t commit() = 0;
 };
 
+/**
+ * This interface is used to import named cell style records.
+ *
+ * @note The actual cell format data for named cell styles are imported
+ *       through import_xf, and this interface references its index through
+ *       the import_cell_style::set_xf() method.
+ *
+ */
 class ORCUS_DLLPUBLIC import_cell_style
 {
 public:
