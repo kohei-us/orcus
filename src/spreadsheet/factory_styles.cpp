@@ -40,8 +40,6 @@ struct import_styles::impl
     import_xf xf;
     import_cell_style cell_style;
 
-    cell_style_t cur_cell_style;
-
     impl(styles& _styles_model, string_pool& sp) :
         styles_model(_styles_model),
         str_pool(sp),
@@ -143,33 +141,6 @@ void import_styles::set_xf_count(xf_category_t cat, size_t n)
 void import_styles::set_cell_style_count(size_t n)
 {
     mp_impl->styles_model.reserve_cell_style_store(n);
-}
-
-void import_styles::set_cell_style_name(std::string_view s)
-{
-    mp_impl->cur_cell_style.name = mp_impl->str_pool.intern(s).first;
-}
-
-void import_styles::set_cell_style_xf(size_t index)
-{
-    mp_impl->cur_cell_style.xf = index;
-}
-
-void import_styles::set_cell_style_builtin(size_t index)
-{
-    mp_impl->cur_cell_style.builtin = index;
-}
-
-void import_styles::set_cell_style_parent_name(std::string_view s)
-{
-    mp_impl->cur_cell_style.parent_name = mp_impl->str_pool.intern(s).first;
-}
-
-size_t import_styles::commit_cell_style()
-{
-    size_t n = mp_impl->styles_model.append_cell_style(mp_impl->cur_cell_style);
-    mp_impl->cur_cell_style.reset();
-    return n;
 }
 
 struct import_font_style::impl

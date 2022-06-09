@@ -53,14 +53,7 @@ public:
     virtual iface::import_border_style* get_border_style() override;
 
     virtual void set_xf_count(xf_category_t cat, size_t n) = 0;
-
-    // cell style entry
-
     virtual void set_cell_style_count(size_t n) override;
-    virtual void set_cell_style_name(std::string_view s) override;
-    virtual void set_cell_style_xf(size_t index) override;
-    virtual void set_cell_style_builtin(size_t index) override;
-    virtual size_t commit_cell_style() override;
 };
 
 class import_sheet_properties : public orcus::spreadsheet::iface::import_sheet_properties

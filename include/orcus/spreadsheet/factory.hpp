@@ -87,13 +87,7 @@ public:
     virtual void set_border_count(size_t n) override;
     virtual void set_number_format_count(size_t n) override;
     virtual void set_xf_count(xf_category_t cat, size_t n) override;
-
     virtual void set_cell_style_count(size_t n) override;
-    virtual void set_cell_style_name(std::string_view s) override;
-    virtual void set_cell_style_xf(size_t index) override;
-    virtual void set_cell_style_builtin(size_t index) override;
-    virtual void set_cell_style_parent_name(std::string_view s) override;
-    virtual size_t commit_cell_style() override;
 };
 
 class ORCUS_SPM_DLLPUBLIC import_font_style : public iface::import_font_style

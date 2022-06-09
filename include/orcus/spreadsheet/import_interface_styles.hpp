@@ -163,35 +163,6 @@ public:
     // into the cell style format record.
 
     virtual void set_cell_style_count(size_t n) = 0;
-    virtual void set_cell_style_name(std::string_view s) = 0;
-
-    /**
-     * Set the index into the cell style record.  The named cell style uses the
-     * entry specified by this index as its format.
-     *
-     * @param index index into the cell style record.
-     */
-    virtual void set_cell_style_xf(size_t index) = 0;
-
-    /**
-     * Set the index into the built-in style record.
-     *
-     * @note This is Excel-specific, and unclear whether it's useful outside of
-     * Excel's implementation.  Built-in styles are not stored in file.
-     *
-     * @param index index into the built-in cell style record.
-     */
-    virtual void set_cell_style_builtin(size_t index) = 0;
-
-    /**
-     * Set the name of the parent cell style it uses as its basis.
-     *
-     * @note ODF uses this but Excel does not use this value.
-     *
-     * @param s name of the parent cell style.
-     */
-    virtual void set_cell_style_parent_name(std::string_view s) = 0;
-    virtual size_t commit_cell_style() = 0;
 };
 
 class ORCUS_DLLPUBLIC import_font_style
