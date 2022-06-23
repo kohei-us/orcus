@@ -86,7 +86,7 @@ std::string convert_utf16_to_utf8(const char* p, size_t n, unicode_t ut)
             ;
     }
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
     // char16_t does not work with MSVC just yet. This is a workaround. c.f.
     // https://stackoverflow.com/questions/32055357/visual-studio-c-2015-stdcodecvt-with-char16-t-or-char32-t
     const int16_t* pi16 = reinterpret_cast<const int16_t*>(buf.data());

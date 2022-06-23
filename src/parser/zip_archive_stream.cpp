@@ -11,7 +11,7 @@
 #include <sstream>
 #include <cstring>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define fseeko _fseeki64
 #define ftello _ftelli64
 #endif
