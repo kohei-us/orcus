@@ -28,7 +28,7 @@ void doc_debug_state_dumper::dump(const fs::path& outdir) const
 void doc_debug_state_dumper::dump_properties(const fs::path& outdir) const
 {
     const fs::path outpath = outdir / "properties.yaml";
-    std::ofstream of{outpath};
+    std::ofstream of{outpath.native()};
     if (!of)
         return;
 
@@ -40,7 +40,7 @@ void doc_debug_state_dumper::dump_properties(const fs::path& outdir) const
 void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 {
     const fs::path outpath = outdir / "styles.yaml";
-    std::ofstream of{outpath};
+    std::ofstream of{outpath.native()};
     if (!of)
         return;
 
@@ -247,7 +247,7 @@ void sheet_debug_state_dumper::dump_cell_values(const fs::path& outdir) const
 {
     check_dumper dumper{m_sheet, m_sheet_name};
     fs::path outpath = outdir / "cell-values.txt";
-    std::ofstream of{outpath};
+    std::ofstream of{outpath.native()};
     if (of)
         dumper.dump(of);
 }
@@ -255,7 +255,7 @@ void sheet_debug_state_dumper::dump_cell_values(const fs::path& outdir) const
 void sheet_debug_state_dumper::dump_cell_formats(const fs::path& outdir) const
 {
     fs::path outpath = outdir / "cell-formats.yaml";
-    std::ofstream of{outpath};
+    std::ofstream of{outpath.native()};
     if (!of)
         return;
 

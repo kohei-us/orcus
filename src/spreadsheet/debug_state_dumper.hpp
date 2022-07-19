@@ -8,6 +8,7 @@
 #pragma once
 
 #include <boost/filesystem.hpp>
+#include <string_view>
 
 namespace orcus { namespace spreadsheet {
 
@@ -15,8 +16,8 @@ class document;
 
 namespace detail {
 
-class document_impl;
-class sheet_impl;
+struct document_impl;
+struct sheet_impl;
 
 class doc_debug_state_dumper
 {

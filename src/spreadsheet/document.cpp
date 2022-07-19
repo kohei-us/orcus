@@ -264,7 +264,7 @@ void document::dump_flat(const string& outdir) const
         outpath /= std::string{sheet->name};
         outpath.replace_extension(".txt");
 
-        ofstream file(outpath);
+        std::ofstream file(outpath.native());
         if (!file)
         {
             cerr << "failed to create file: " << outpath << endl;
@@ -291,7 +291,7 @@ void document::dump_html(const string& outdir) const
         outpath /= std::string{sheet->name};
         outpath.replace_extension(".html");
 
-        ofstream file(outpath);
+        std::ofstream file(outpath.native());
         if (!file)
         {
             cerr << "failed to create file: " << outpath << endl;
@@ -310,7 +310,7 @@ void document::dump_json(const string& outdir) const
         outpath /= std::string{sheet->name};
         outpath.replace_extension(".json");
 
-        ofstream file(outpath);
+        std::ofstream file(outpath.native());
         if (!file)
         {
             cerr << "failed to create file: " << outpath << endl;
