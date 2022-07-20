@@ -8,6 +8,7 @@
 #ifndef INCLUDED_ORCUS_TYPES_HPP
 #define INCLUDED_ORCUS_TYPES_HPP
 
+#include <cstdint>
 #include <cstdlib>
 #include <vector>
 #include <string>
