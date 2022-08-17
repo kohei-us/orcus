@@ -1,8 +1,6 @@
 #                            -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.65])
-
 # ===================
 # Version information
 # ===================
@@ -36,10 +34,9 @@ CXXFLAGS="-fvisibility=hidden $CXXFLAGS -Wall -pthread -Wshadow"
 # ===========================
 AC_PROG_CPP
 AC_PROG_CXX
+LT_INIT([win32-dll disable-static pic-only])
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AC_PROG_LIBTOOL
-AC_LIBTOOL_WIN32_DLL
 PKG_PROG_PKG_CONFIG([0.20])
 
 # =====================
@@ -98,7 +95,7 @@ AM_CONDITIONAL([HAVE_STATIC_LIB],
 # Development Utilities
 # =====================
 AC_ARG_ENABLE(debug-utils,
-        AC_HELP_STRING([--enable-debug-utils], [Build with extra checks useful during development.]),
+        AS_HELP_STRING([--enable-debug-utils], [Build with extra checks useful during development.]),
         [enable_debug_utils="$enableval"],
         [enable_debug_utils=no]
 )
@@ -217,7 +214,7 @@ AS_IF([test "x$with_tools" != "xno"], [
 # ============
 # mdds support
 # ============
-PKG_CHECK_MODULES([MDDS],[mdds-2.0 >= 1.9.99])
+PKG_CHECK_MODULES([MDDS],[mdds-2.1 >= 2.0.99])
 CXXFLAGS="$CXXFLAGS $MDDS_CFLAGS"
 
 # =================
