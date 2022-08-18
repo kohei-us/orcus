@@ -62,11 +62,9 @@ double parse_numeric(const char*& p, size_t max_length)
     return v;
 }
 
-long parse_integer(const char*& p, size_t max_length)
+const char* parse_integer(const char* p, const char* p_end, long& value)
 {
-    const char* p_end = p + max_length;
-
-    long ret = 0.0;
+    long result = 0.0;
     bool negative_sign = false;
 
     // Check for presence of a sign.
@@ -76,11 +74,11 @@ long parse_integer(const char*& p, size_t max_length)
         {
             case '+':
                 ++p;
-            break;
+                break;
             case '-':
                 negative_sign = true;
                 ++p;
-            break;
+                break;
             default:
                 ;
         }
@@ -89,13 +87,17 @@ long parse_integer(const char*& p, size_t max_length)
     for (; p != p_end; ++p)
     {
         if (*p < '0' || '9' < *p)
-            return negative_sign ? -ret : ret;
+        {
+            value = negative_sign ? -result : result;
+            return p;
+        }
 
-        ret *= 10;
-        ret += *p - '0';
+        result *= 10;
+        result += *p - '0';
     }
 
-    return negative_sign ? -ret : ret;
+    value = negative_sign ? -result : result;
+    return p;
 }
 
 string_escape_char_t get_string_escape_char_type(char c)

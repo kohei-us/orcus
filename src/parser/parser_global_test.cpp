@@ -18,6 +18,8 @@ namespace {
 
 void test_parse_numbers()
 {
+    orcus::test::stack_printer __sp__(__func__);
+
     struct test_case
     {
         const char* str;
@@ -54,8 +56,42 @@ void test_parse_numbers()
     }
 }
 
+void test_parse_integers()
+{
+    orcus::test::stack_printer __sp__(__func__);
+
+    std::string_view test_str = "-100";
+
+    long value;
+    const char* p = test_str.data();
+    const char* p_end = p + test_str.size();
+    const char* p_last = orcus::parse_integer(p, p_end, value);
+
+    assert(value == -100);
+    assert(p_last == p_end);
+
+    --p_end;
+    p_last = orcus::parse_integer(p, p_end, value);
+    assert(value == -10);
+    assert(p_last == p_end);
+
+    --p_end;
+    p_last = orcus::parse_integer(p, p_end, value);
+    assert(value == -1);
+    assert(p_last == p_end);
+
+    test_str = "13.4";  // the parsing should end on the '.'
+    p = test_str.data();
+    p_end = p + test_str.size();
+    p_last = orcus::parse_integer(p, p_end, value);
+    assert(value == 13);
+    assert(p_last == p + 2);
+}
+
 void test_parse_double_quoted_strings()
 {
+    orcus::test::stack_printer __sp__(__func__);
+
     struct test_case
     {
         std::string input;
@@ -97,6 +133,7 @@ void test_parse_double_quoted_strings()
 int main()
 {
     test_parse_numbers();
+    test_parse_integers();
     test_parse_double_quoted_strings();
 
     return 0;

@@ -29,12 +29,12 @@ double to_double(std::string_view s, const char** p_parse_ended)
 
 long to_long(std::string_view s, const char** p_parse_ended)
 {
-    const char* p = s.data();
-    long val = parse_integer(p, s.size());
+    long value;
+    const char* p_last = parse_integer(s.data(), s.data() + s.size(), value);
     if (p_parse_ended)
-        *p_parse_ended = p;
+        *p_parse_ended = p_last;
 
-    return val;
+    return value;
 }
 
 bool to_bool(std::string_view s)
