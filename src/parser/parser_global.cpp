@@ -64,6 +64,9 @@ double parse_numeric(const char*& p, size_t max_length)
 
 const char* parse_integer(const char* p, const char* p_end, long& value)
 {
+    if (p >= p_end)
+        return p;
+
     long result = 0.0;
     bool negative_sign = false;
 

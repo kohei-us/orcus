@@ -86,6 +86,18 @@ void test_parse_integers()
     p_last = orcus::parse_integer(p, p_end, value);
     assert(value == 13);
     assert(p_last == p + 2);
+
+    // What if the p_end points to an earlier address than the p ...
+    std::swap(p, p_end);
+    assert(p > p_end);
+    p_last = orcus::parse_integer(p, p_end, value);
+    assert(p == p_last);
+
+    // Empty char range
+    p = test_str.data();
+    p_end = p;
+    p_last = orcus::parse_integer(p, p_end, value);
+    assert(p_last == p);
 }
 
 void test_parse_double_quoted_strings()
