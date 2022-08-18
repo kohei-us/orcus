@@ -8,6 +8,7 @@
 #include <orcus/global.hpp>
 #include <orcus/tokens.hpp>
 #include <orcus/exception.hpp>
+#include <orcus/parser_global.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -68,7 +69,10 @@ void process_char(const char* p, const char*& digit, size_t& digit_len)
 
 void flush_int(int& store, const char*& digit, size_t& digit_len)
 {
-    store = strtol(digit, nullptr, 10);
+    long v;
+    parse_integer(digit, digit + digit_len, v);
+    store = v;
+
     digit = nullptr;
     digit_len = 0;
 }
@@ -126,10 +130,7 @@ date_time_t to_date_time(std::string_view str)
                 }
 
                 // Flush day.
-                ret.day = strtol(digit, nullptr, 10);
-                digit = nullptr;
-                digit_len = 0;
-
+                flush_int(ret.day, digit, digit_len);
                 ++t_count;
             }
             break;
@@ -219,7 +220,7 @@ date_time_t to_date_time(std::string_view str)
     else
     {
         // Flush day.
-        ret.day = strtol(digit, nullptr, 10);
+        flush_int(ret.day, digit, digit_len);
     }
 
     return ret;

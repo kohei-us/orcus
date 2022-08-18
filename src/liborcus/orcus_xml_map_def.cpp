@@ -74,6 +74,20 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
     spreadsheet::row_t row = -1;
     spreadsheet::col_t col = -1;
 
+    auto to_row = [](std::string_view s) -> spreadsheet::row_t
+    {
+        long v;
+        parse_integer(s.data(), s.data() + s.size(), v);
+        return v;
+    };
+
+    auto to_col = [](std::string_view s) -> spreadsheet::col_t
+    {
+        long v;
+        parse_integer(s.data(), s.data() + s.size(), v);
+        return v;
+    };
+
     if (elem.name == "ns")
     {
         // empty alias is associated with default namespace.
@@ -102,9 +116,9 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
             else if (attr.name == "sheet")
                 sheet = attr.value;
             else if (attr.name == "row")
-                row = strtol(attr.value.data(), nullptr, 10);
+                row = to_row(attr.value);
             else if (attr.name == "column")
-                col = strtol(attr.value.data(), nullptr, 10);
+                col = to_col(attr.value);
         }
 
         m_app.set_cell_link(xpath, sheet, row, col);
@@ -116,9 +130,9 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
             if (attr.name == "sheet")
                 sheet = attr.value;
             else if (attr.name == "row")
-                row = strtol(attr.value.data(), nullptr, 10);
+                row = to_row(attr.value);
             else if (attr.name == "column")
-                col = strtol(attr.value.data(), nullptr, 10);
+                col = to_col(attr.value);
         }
 
         m_app.start_range(sheet, row, col);

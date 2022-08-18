@@ -20,7 +20,11 @@ namespace {
 
 size_t parse_color_string(pstring str)
 {
-    unsigned long col_value = strtol( str.get(), nullptr, 16 );
+    // TODO: switch to using std::from_chars() once all of our baseline compilers support this.
+
+    std::string buf{str.data(), str.size()}; // ensure the buffer is null-terminated.
+
+    unsigned long col_value = strtol(buf.data(), nullptr, 16);
     col_value = col_value >> 8;
     // make sure that this actually worked
     assert( col_value <= 255 );

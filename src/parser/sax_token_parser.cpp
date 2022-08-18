@@ -340,8 +340,8 @@ void sax_token_handler_wrapper_base::attribute(std::string_view name, std::strin
             const char* p = val.data();
             const char* p_end = p + val.size();
 
-            char* endptr = nullptr;
-            long v = std::strtol(p, &endptr, 10);
+            long v;
+            const char* endptr = parse_integer(p, p_end, v);
 
             if (!endptr || endptr >= p_end || *endptr != '.')
                 break;
@@ -349,7 +349,7 @@ void sax_token_handler_wrapper_base::attribute(std::string_view name, std::strin
             m_declaration.version_major = v;
             p = endptr + 1;
 
-            v = std::strtol(p, &endptr, 10);
+            endptr = parse_integer(p, p_end, v);
 
             if (!endptr || endptr > p_end)
                 break;

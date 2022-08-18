@@ -91,6 +91,9 @@ ORCUS_PSR_DLLPUBLIC const char* parse_numeric(const char* p, const char* p_end, 
  * @param value output parameter to assign the matched value to.
  *
  * @return pointer to the first non-matching character.
+ *
+ * @note Use of this function should be eventually replaced with
+ *       std::from_chars() once it becomes available.
  */
 ORCUS_PSR_DLLPUBLIC const char* parse_integer(const char* p, const char* p_end, long& value);
 
