@@ -128,6 +128,25 @@ void test_parse_double_quoted_strings()
 
 }
 
+void test_trim()
+{
+    // test for trimming.
+    std::string s1("test"), s2("  test"), s3("   test  "), s4("test   ");
+    std::string_view sv1(s1), sv2(s2), sv3(s3), sv4(s4);
+    assert(sv1 != sv2);
+    assert(sv1 != sv3);
+    assert(sv2 != sv3);
+    assert(sv1 != sv4);
+
+    std::string_view trimmed = orcus::trim(sv1);
+    assert(sv1 == trimmed); // nothing to trim.
+    assert(sv1 == orcus::trim(sv2));
+    assert(sv1 == orcus::trim(sv3));
+    assert(sv1 == orcus::trim(sv4));
+    assert(sv1.size() == orcus::trim(sv2).size());
+    assert(sv1.size() == orcus::trim(sv3).size());
+}
+
 }
 
 int main()
@@ -135,6 +154,7 @@ int main()
     test_parse_numbers();
     test_parse_integers();
     test_parse_double_quoted_strings();
+    test_trim();
 
     return 0;
 }

@@ -8,7 +8,6 @@
 #include <orcus/global.hpp>
 #include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/types.hpp>
-#include "pstring.hpp"
 
 #include <cstdlib>
 #include <cassert>
@@ -36,7 +35,7 @@ void test_date_time_conversion()
 
     for (size_t i = 0, n = sizeof(tests)/sizeof(tests[0]); i < n; ++i)
     {
-        pstring str(tests[i].str);
+        std::string_view str(tests[i].str);
         date_time_t ret = to_date_time(str);
         cout << "original: " << str << endl;
         cout << "converted: year=" << ret.year << ", month=" << ret.month << ", day="
@@ -208,40 +207,6 @@ void test_string2long_conversion()
     }
 }
 
-void test_pstring_trim()
-{
-    // test for trimming.
-    string s1("test"), s2("  test"), s3("   test  "), s4("test   ");
-    pstring ps1(s1.c_str()), ps2(s2.c_str()), ps3(s3.c_str()), ps4(s4.c_str());
-    assert(ps1 != ps2);
-    assert(ps1 != ps3);
-    assert(ps2 != ps3);
-    assert(ps1 != ps4);
-
-    pstring trimmed = ps1.trim();
-    assert(ps1 == trimmed); // nothing to trim.
-    assert(ps1 == ps2.trim());
-    assert(ps1 == ps3.trim());
-    assert(ps1 == ps4.trim());
-    assert(ps1.size() == ps2.trim().size());
-    assert(ps1.size() == ps3.trim().size());
-}
-
-void test_pstring_equality()
-{
-    // Two pstrings that point to the same buffer but different sizes should
-    // not be equal.
-    string s1("some string");
-    pstring p1(s1.data(), 3), p2(s1.data(), 6);
-    assert(p1 != p2);
-
-    // Two pstrings that point to different buffers but with same content
-    // should be equal.
-    string s2("some string");
-    pstring p3(s2.data(), 6);
-    assert(p2 == p3);
-}
-
 void test_spreadsheet_types()
 {
     std::vector<spreadsheet::error_value_t> values =
@@ -273,8 +238,6 @@ int main()
     test_measurement_conversion_2();
     test_string2number_conversion();
     test_string2long_conversion();
-    test_pstring_trim();
-    test_pstring_equality();
     test_spreadsheet_types();
 
     return EXIT_SUCCESS;
