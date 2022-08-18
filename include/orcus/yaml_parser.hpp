@@ -435,7 +435,8 @@ void yaml_parser<_Handler>::parse_value(const char* p, size_t len)
 
     const char* p0 = p;
     const char* p_end = p + len;
-    double val = parse_numeric(p, len);
+    double val;
+    p = parse_numeric(p, p_end, val);
     if (p == p_end)
     {
         handler_number(val);

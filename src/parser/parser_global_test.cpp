@@ -44,7 +44,8 @@ void test_parse_numbers()
     for (const test_case& test_data : test_cases)
     {
         const char* str = test_data.str;
-        volatile double val = orcus::parse_numeric(str, std::strlen(test_data.str));
+        double val;
+        orcus::parse_numeric(str, str + std::strlen(test_data.str), val);
         if (std::isnan(test_data.val))
         {
             assert(std::isnan(val));

@@ -20,11 +20,12 @@ namespace orcus {
 double to_double(std::string_view s, const char** p_parse_ended)
 {
     const char* p = s.data();
-    double val = parse_numeric(p, s.size());
+    double value;
+    const char* p_last = parse_numeric(p, p + s.size(), value);
     if (p_parse_ended)
-        *p_parse_ended = p;
+        *p_parse_ended = p_last;
 
-    return val;
+    return value;
 }
 
 long to_long(std::string_view s, const char** p_parse_ended)
@@ -71,7 +72,7 @@ length_t to_length(std::string_view str)
     const char* p = str.data();
     const char* p_start = p;
     const char* p_end = p_start + str.size();
-    ret.value = parse_numeric(p, p_end-p);
+    p = parse_numeric(p, p_end, ret.value);
 
     static const length_map units(length_map_entries, ORCUS_N_ELEMENTS(length_map_entries), length_unit_t::unknown);
     std::string_view tail(p, p_end-p);

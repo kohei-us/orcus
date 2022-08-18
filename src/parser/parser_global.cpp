@@ -49,17 +49,17 @@ bool is_in(char c, std::string_view allowed)
     return std::any_of(allowed.begin(), allowed.end(), f);
 }
 
-double parse_numeric(const char*& p, size_t max_length)
+const char* parse_numeric(const char* p, const char* p_end, double& value)
 {
     using numeric_parser_type = detail::numeric_parser<detail::generic_parser_trait>;
-
-    const char* p_end = p + max_length;
 
     numeric_parser_type parser(p, p_end);
     double v = parser.parse();
     if (!std::isnan(v))
         p = parser.get_char_position();
-    return v;
+
+    value = v;
+    return p;
 }
 
 const char* parse_integer(const char* p, const char* p_end, long& value)

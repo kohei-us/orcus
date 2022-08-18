@@ -17,17 +17,17 @@ namespace orcus { namespace json {
 
 namespace {
 
-double parse_numeric_json(const char*& p, size_t max_length)
+const char* parse_numeric_json(const char* p, const char* p_end, double& value)
 {
     using numeric_parser_type = detail::numeric_parser<detail::json_parser_trait>;
-
-    const char* p_end = p + max_length;
 
     numeric_parser_type parser(p, p_end);
     double v = parser.parse();
     if (!std::isnan(v))
         p = parser.get_char_position();
-    return v;
+
+    value = v;
+    return p;
 };
 
 } // anonymous namespace

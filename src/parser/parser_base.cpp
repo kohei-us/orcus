@@ -234,7 +234,8 @@ double parser_base::parse_double()
 {
     size_t max_length = available_size();
     const char* p = mp_char;
-    double val = m_func_parse_numeric(p, max_length);
+    double val;
+    p = m_func_parse_numeric(p, p + max_length, val);
     if (p == mp_char)
         return std::numeric_limits<double>::quiet_NaN();
 

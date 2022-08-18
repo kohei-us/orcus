@@ -40,7 +40,7 @@ public:
 class ORCUS_PSR_DLLPUBLIC parser_base
 {
 protected:
-    using numeric_parser_type = std::function<double(const char*&, size_t)>;
+    using numeric_parser_type = std::function<const char*(const char*, const char*, double&)>;
 
     const char* const mp_begin;
     const char* mp_char;
@@ -48,7 +48,7 @@ protected:
     const bool m_transient_stream;
 
 private:
-    std::function<double(const char*&, size_t)> m_func_parse_numeric;
+    numeric_parser_type m_func_parse_numeric;
 
 protected:
     parser_base(const char* p, size_t n, bool transient_stream);

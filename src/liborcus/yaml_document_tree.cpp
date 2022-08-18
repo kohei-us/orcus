@@ -585,7 +585,8 @@ bool needs_quoting(const std::string& s)
     // See if the whole string is parsed as a number.
     const char* p = s.data();
     const char* p_end = p + s.size();
-    parse_numeric(p, s.size());
+    double v;
+    p = parse_numeric(p, p_end, v);
     if (p == p_end)
         return true;
 

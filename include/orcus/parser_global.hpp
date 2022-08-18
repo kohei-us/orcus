@@ -72,7 +72,16 @@ ORCUS_PSR_DLLPUBLIC bool is_numeric(char c);
  */
 ORCUS_PSR_DLLPUBLIC bool is_in(char c, std::string_view allowed);
 
-ORCUS_PSR_DLLPUBLIC double parse_numeric(const char*& p, size_t max_length);
+/**
+ * Parse a sequence of characters into a double-precision numeric value.
+ *
+ * @param p pointer to the first character to start parsing from.
+ * @param p_end pointer to the first character not allowed to parse.
+ * @param value output parameter to assign the matched value to.
+ *
+ * @return pointer to the first non-matching character.
+ */
+ORCUS_PSR_DLLPUBLIC const char* parse_numeric(const char* p, const char* p_end, double& value);
 
 /**
  * Parse a sequence of characters into an integer value.
