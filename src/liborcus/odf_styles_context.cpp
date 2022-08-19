@@ -27,9 +27,11 @@ namespace orcus {
 
 namespace {
 
-typedef mdds::sorted_string_map<odf_style_family> style_family_map;
+namespace style_family {
 
-style_family_map::entry style_family_entries[] =
+using map_type = mdds::sorted_string_map<odf_style_family>;
+
+constexpr map_type::entry entries[] =
 {
     { MDDS_ASCII("graphic"), style_family_graphic },
     { MDDS_ASCII("paragraph"), style_family_paragraph },
@@ -40,10 +42,17 @@ style_family_map::entry style_family_entries[] =
     { MDDS_ASCII("text"), style_family_text }
 };
 
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), style_family_unknown);
+    return mt;
+}
+
+} // namespace style_family
+
 odf_style_family to_style_family(std::string_view val)
 {
-    static style_family_map map(style_family_entries, ORCUS_N_ELEMENTS(style_family_entries), style_family_unknown);
-    return map.find(val.data(), val.size());
+    return style_family::get().find(val.data(), val.size());
 }
 
 namespace st_style {
@@ -51,13 +60,13 @@ namespace st_style {
 typedef mdds::sorted_string_map<ss::strikethrough_style_t> map_type;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries =
+constexpr map_type::entry entries[] =
 {
     { MDDS_ASCII("dash"), ss::strikethrough_style_t::dash },
     { MDDS_ASCII("dot-dash"), ss::strikethrough_style_t::dot_dash },
     { MDDS_ASCII("dot-dot-dash"), ss::strikethrough_style_t::dot_dot_dash },
     { MDDS_ASCII("dotted"), ss::strikethrough_style_t::dotted },
-    { MDDS_ASCII("long-dash"), ss::strikethrough_style_t::long_dash},
+    { MDDS_ASCII("long-dash"), ss::strikethrough_style_t::long_dash },
     { MDDS_ASCII("none"), ss::strikethrough_style_t::none },
     { MDDS_ASCII("solid"), ss::strikethrough_style_t::solid },
     { MDDS_ASCII("wave"), ss::strikethrough_style_t::wave },
@@ -65,7 +74,7 @@ const std::vector<map_type::entry> entries =
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), ss::strikethrough_style_t::none);
+    static const map_type mt(entries, std::size(entries), ss::strikethrough_style_t::none);
     return mt;
 }
 

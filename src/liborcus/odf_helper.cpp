@@ -20,20 +20,30 @@ namespace orcus {
 
 namespace {
 
-typedef mdds::sorted_string_map<spreadsheet::border_style_t> odf_border_style_map;
+namespace border_style {
 
-odf_border_style_map::entry odf_border_style_entries[] =
+using map_type = mdds::sorted_string_map<spreadsheet::border_style_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] =
 {
-    { MDDS_ASCII("dash-dot"), spreadsheet::border_style_t::dash_dot},
-    { MDDS_ASCII("dash-dot-dot"), spreadsheet::border_style_t::dash_dot_dot},
-    { MDDS_ASCII("dashed"), spreadsheet::border_style_t::dashed},
-    { MDDS_ASCII("dotted"), spreadsheet::border_style_t::dotted},
-    { MDDS_ASCII("double-thin"), spreadsheet::border_style_t::double_thin},
-    { MDDS_ASCII("fine-dashed"), spreadsheet::border_style_t::fine_dashed},
-    { MDDS_ASCII("none"), spreadsheet::border_style_t::none},
-    { MDDS_ASCII("solid"), spreadsheet::border_style_t::solid},
-    { MDDS_ASCII("unknown"), spreadsheet::border_style_t::unknown}
+    { MDDS_ASCII("dash-dot"), spreadsheet::border_style_t::dash_dot },
+    { MDDS_ASCII("dash-dot-dot"), spreadsheet::border_style_t::dash_dot_dot },
+    { MDDS_ASCII("dashed"), spreadsheet::border_style_t::dashed },
+    { MDDS_ASCII("dotted"), spreadsheet::border_style_t::dotted },
+    { MDDS_ASCII("double-thin"), spreadsheet::border_style_t::double_thin },
+    { MDDS_ASCII("fine-dashed"), spreadsheet::border_style_t::fine_dashed },
+    { MDDS_ASCII("none"), spreadsheet::border_style_t::none },
+    { MDDS_ASCII("solid"), spreadsheet::border_style_t::solid },
 };
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::border_style_t::unknown);
+    return mt;
+}
+
+} // namespace border_style
 
 namespace underline_width {
 
@@ -218,12 +228,7 @@ orcus::odf::border_details_t odf::extract_border_details(std::string_view value)
         else if (sub_detail[0] >= '0' && sub_detail[0] <='9')
             border_details.border_width = orcus::to_length(sub_detail);
         else    //  This has to be a style
-        {
-            odf_border_style_map border_style_map(
-                odf_border_style_entries, std::size(odf_border_style_entries), spreadsheet::border_style_t::none);
-            border_details.border_style = border_style_map.find(sub_detail.get(), sub_detail.size());
-        }
-
+            border_details.border_style = border_style::get().find(sub_detail.get(), sub_detail.size());
     }
     return border_details;
 }
