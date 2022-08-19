@@ -152,7 +152,7 @@ void test_json_parse()
 {
     json_config test_config;
 
-    for (std::size_t i = 0; i < ORCUS_N_ELEMENTS(json_test_dirs); ++i)
+    for (std::size_t i = 0; i < std::size(json_test_dirs); ++i)
     {
         fs::path basedir = json_test_dirs[i];
         verify_input(test_config, basedir);
@@ -164,7 +164,7 @@ void test_json_resolve_refs()
     json_config test_config;
     test_config.resolve_references = true;
 
-    for (size_t i = 0; i < ORCUS_N_ELEMENTS(json_test_refs_dirs); ++i)
+    for (size_t i = 0; i < std::size(json_test_refs_dirs); ++i)
     {
         fs::path basedir = json_test_refs_dirs[i];
         verify_input(test_config, basedir);
@@ -181,7 +181,7 @@ void test_json_parse_empty()
         "{\"key1\": {}, \"key2\": {}}"
     };
 
-    for (size_t i = 0; i < ORCUS_N_ELEMENTS(tests); ++i)
+    for (size_t i = 0; i < std::size(tests); ++i)
     {
         const char* test = tests[i];
         std::cout << "JSON stream: '" << test << "' (" << std::strlen(test) << ")" << std::endl;
@@ -212,7 +212,7 @@ void test_json_parse_invalid()
         "\"key\": {\"inner\": 12}"
     };
 
-    for (std::size_t i = 0; i < ORCUS_N_ELEMENTS(invalids); ++i)
+    for (std::size_t i = 0; i < std::size(invalids); ++i)
     {
         const char* invalid_json = invalids[i];
         json::document_tree doc;

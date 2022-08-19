@@ -50,18 +50,29 @@ bool to_bool(std::string_view s)
 
 namespace {
 
-typedef mdds::sorted_string_map<length_unit_t> length_map;
+namespace length {
 
-length_map::entry length_map_entries[] =
+using map_type = mdds::sorted_string_map<length_unit_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] =
 {
-    {MDDS_ASCII("cm"), length_unit_t::centimeter},
-    {MDDS_ASCII("in"), length_unit_t::inch},
-    {MDDS_ASCII("mm"), length_unit_t::millimeter},
-    {MDDS_ASCII("pt"), length_unit_t::point},
-    {MDDS_ASCII("px"), length_unit_t::pixel}
+    { ORCUS_ASCII("cm"), length_unit_t::centimeter },
+    { ORCUS_ASCII("in"), length_unit_t::inch },
+    { ORCUS_ASCII("mm"), length_unit_t::millimeter },
+    { ORCUS_ASCII("pt"), length_unit_t::point },
+    { ORCUS_ASCII("px"), length_unit_t::pixel }
 };
 
+const map_type& get()
+{
+    static map_type mt(entries, std::size(entries), length_unit_t::unknown);
+    return mt;
 }
+
+} // namespace length
+
+} // anonymous namespace
 
 length_t to_length(std::string_view str)
 {
@@ -74,9 +85,8 @@ length_t to_length(std::string_view str)
     const char* p_end = p_start + str.size();
     p = parse_numeric(p, p_end, ret.value);
 
-    static const length_map units(length_map_entries, ORCUS_N_ELEMENTS(length_map_entries), length_unit_t::unknown);
     std::string_view tail(p, p_end-p);
-    ret.unit = units.find(tail.data(), tail.size());
+    ret.unit = length::get().find(tail.data(), tail.size());
 
     return ret;
 }

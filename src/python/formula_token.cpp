@@ -110,7 +110,7 @@ const char* to_formula_token_op(ixion::fopcode_t op)
         "ERROR",
     };
 
-    const int n_names = ORCUS_N_ELEMENTS(names);
+    auto n_names = std::size(names);
     return op < n_names ? names[op] : names[0];
 }
 

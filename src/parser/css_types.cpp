@@ -40,9 +40,7 @@ pe_map_type::entry pseudo_elem_type_entries[] = {
 pseudo_element_t to_pseudo_element(std::string_view s)
 {
     static pe_map_type elem_map(
-        pseudo_elem_type_entries,
-        ORCUS_N_ELEMENTS(pseudo_elem_type_entries),
-        0);
+        pseudo_elem_type_entries, std::size(pseudo_elem_type_entries), 0);
 
     return elem_map.find(s.data(), s.size());
 }
@@ -138,10 +136,7 @@ pc_map_type::entry pseudo_class_type_entries[] = {
 
 pseudo_class_t to_pseudo_class(std::string_view s)
 {
-    static pc_map_type class_map(
-        pseudo_class_type_entries,
-        ORCUS_N_ELEMENTS(pseudo_class_type_entries),
-        0);
+    static pc_map_type class_map(pseudo_class_type_entries, std::size(pseudo_class_type_entries), 0);
 
     return class_map.find(s.data(), s.size());
 }
@@ -149,7 +144,7 @@ pseudo_class_t to_pseudo_class(std::string_view s)
 std::string pseudo_class_to_string(pseudo_class_t val)
 {
     std::ostringstream os;
-    size_t n = ORCUS_N_ELEMENTS(pseudo_class_type_entries);
+    std::size_t n = std::size(pseudo_class_type_entries);
     const pc_map_type::entry* p = pseudo_class_type_entries;
     const pc_map_type::entry* p_end = p + n;
     for (; p != p_end; ++p)
@@ -179,9 +174,7 @@ propfunc_map_type::entry propfunc_type_entries[] = {
 property_function_t to_property_function(std::string_view s)
 {
     static propfunc_map_type propfunc_map(
-        propfunc_type_entries,
-        ORCUS_N_ELEMENTS(propfunc_type_entries),
-        property_function_t::unknown);
+        propfunc_type_entries, std::size(propfunc_type_entries), property_function_t::unknown);
 
     return propfunc_map.find(s.data(), s.size());
 }

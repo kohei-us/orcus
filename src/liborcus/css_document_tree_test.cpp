@@ -220,7 +220,7 @@ void test_css_parse_basic3()
     {
         // h1, h2, h3 and h4 all have identical set of properties.
         const char* names[] = { "h1", "h2", "h3", "h4" };
-        size_t n = ORCUS_N_ELEMENTS(names);
+        std::size_t n = std::size(names);
 
         for (size_t i = 0; i < n; ++i)
         {

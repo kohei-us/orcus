@@ -208,7 +208,8 @@ orcus::odf::border_details_t odf::extract_border_details(std::string_view value)
             border_details.border_width = orcus::to_length(sub_detail);
         else    //  This has to be a style
         {
-            odf_border_style_map border_style_map(odf_border_style_entries, ORCUS_N_ELEMENTS(odf_border_style_entries), spreadsheet::border_style_t::none);
+            odf_border_style_map border_style_map(
+                odf_border_style_entries, std::size(odf_border_style_entries), spreadsheet::border_style_t::none);
             border_details.border_style = border_style_map.find(sub_detail.get(), sub_detail.size());
         }
 
