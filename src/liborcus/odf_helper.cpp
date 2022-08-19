@@ -35,20 +35,31 @@ odf_border_style_map::entry odf_border_style_entries[] =
     { MDDS_ASCII("unknown"), spreadsheet::border_style_t::unknown}
 };
 
-typedef mdds::sorted_string_map<spreadsheet::underline_width_t> odf_underline_width_map;
+namespace underline_width {
 
-odf_underline_width_map::entry odf_underline_width_entries[] =
+using map_type = mdds::sorted_string_map<spreadsheet::underline_width_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] =
 {
-    { MDDS_ASCII("bold"), spreadsheet::underline_width_t::bold},
-    { MDDS_ASCII("medium"), spreadsheet::underline_width_t::medium},
-    { MDDS_ASCII("none"), spreadsheet::underline_width_t::none},
-    { MDDS_ASCII("normal"), spreadsheet::underline_width_t::normal},
-    { MDDS_ASCII("percent"), spreadsheet::underline_width_t::percent},
-    { MDDS_ASCII("positiveInteger"), spreadsheet::underline_width_t::positive_integer},
-    { MDDS_ASCII("positiveLength"), spreadsheet::underline_width_t::positive_length},
-    { MDDS_ASCII("thick"), spreadsheet::underline_width_t::thick},
-    { MDDS_ASCII("thin"), spreadsheet::underline_width_t::thin},
+    { MDDS_ASCII("bold"), spreadsheet::underline_width_t::bold },
+    { MDDS_ASCII("medium"), spreadsheet::underline_width_t::medium },
+    { MDDS_ASCII("none"), spreadsheet::underline_width_t::none },
+    { MDDS_ASCII("normal"), spreadsheet::underline_width_t::normal },
+    { MDDS_ASCII("percent"), spreadsheet::underline_width_t::percent },
+    { MDDS_ASCII("positiveInteger"), spreadsheet::underline_width_t::positive_integer },
+    { MDDS_ASCII("positiveLength"), spreadsheet::underline_width_t::positive_length },
+    { MDDS_ASCII("thick"), spreadsheet::underline_width_t::thick },
+    { MDDS_ASCII("thin"), spreadsheet::underline_width_t::thin },
 };
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::underline_width_t::none);
+    return mt;
+}
+
+} // namespace underline_width
 
 namespace underline_style {
 
@@ -152,7 +163,7 @@ bool convert_color_digits(const pstring& value, orcus::spreadsheet::color_elem_t
     return is_valid_hex_digit(low_val, color_val);
 }
 
-}
+} // anonymous namespace
 
 bool odf::convert_fo_color(
     std::string_view value,
@@ -219,12 +230,7 @@ orcus::odf::border_details_t odf::extract_border_details(std::string_view value)
 
 orcus::spreadsheet::underline_width_t odf::extract_underline_width(std::string_view value)
 {
-    orcus::spreadsheet::underline_width_t underline_width;
-
-    odf_underline_width_map underline_width_map(odf_underline_width_entries, ORCUS_N_ELEMENTS(odf_underline_width_entries), spreadsheet::underline_width_t::none);
-    underline_width = underline_width_map.find(value.data(), value.size());
-
-    return underline_width;
+    return underline_width::get().find(value.data(), value.size());
 }
 
 orcus::spreadsheet::underline_t odf::extract_underline_style(std::string_view value)
