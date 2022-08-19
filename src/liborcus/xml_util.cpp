@@ -11,6 +11,7 @@
 #include <orcus/tokens.hpp>
 
 #include <sstream>
+#include <iostream>
 
 namespace orcus {
 
@@ -50,6 +51,18 @@ void xml_element_printer::print_element(std::ostream& os, xmlns_id_t ns, xml_tok
         os << ns_str << ':';
 
     os << m_tokens.get_token_name(name) << '>';
+}
+
+void print_attrs(const tokens& tokens, const xml_attrs_t& attrs)
+{
+    for (const auto& attr : attrs)
+    {
+        std::cout << "  ";
+        if (attr.ns != XMLNS_UNKNOWN_ID)
+            std::cout << attr.ns << ":";
+
+        std::cout << tokens.get_token_name(attr.name) << " = \"" << attr.value << "\"" << std::endl;
+    }
 }
 
 } // namespace orcus

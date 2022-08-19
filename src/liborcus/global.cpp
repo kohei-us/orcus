@@ -20,34 +20,6 @@ namespace orcus {
 
 namespace {
 
-struct attr_printer
-{
-public:
-    attr_printer(const tokens& tokens) :
-        m_tokens(tokens) {}
-
-    void operator()(const xml_token_attr_t& attr) const
-    {
-        cout << "  ";
-        if (attr.ns != XMLNS_UNKNOWN_ID)
-            cout << attr.ns << ":";
-
-        cout << m_tokens.get_token_name(attr.name) << " = \"" << attr.value << "\"" << endl;
-    }
-
-private:
-    const tokens& m_tokens;
-};
-
-}
-
-void print_attrs(const tokens& tokens, const xml_attrs_t& attrs)
-{
-    for_each(attrs.begin(), attrs.end(), attr_printer(tokens));
-}
-
-namespace {
-
 void process_char(const char* p, const char*& digit, size_t& digit_len)
 {
     if (!digit)

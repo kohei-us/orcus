@@ -22,11 +22,6 @@ namespace orcus {
 class tokens;
 
 /**
- * Print attributes to stdout for debugging purposes.
- */
-ORCUS_DLLPUBLIC void print_attrs(const tokens& tokens, const xml_attrs_t& attrs); // TODO:API: internal to liborcus
-
-/**
  * Parse the string representation of a date-time value, and convert it into
  * a set of numerical values.  A string representation allows either a date
  * only or a date and time value.  It does not allow a time only value; it
