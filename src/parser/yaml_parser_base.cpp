@@ -367,7 +367,7 @@ detail::keyword_t parser_base::parse_keyword(const char* p, size_t len)
 {
     static mdds::sorted_string_map<detail::keyword_t> map(
         keyword_entries,
-        ORCUS_N_ELEMENTS(keyword_entries),
+        std::size(keyword_entries),
         detail::keyword_t::unknown);
 
     detail::keyword_t value = map.find(p, len);

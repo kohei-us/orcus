@@ -45,7 +45,7 @@ void test_sax_token_parser_1()
         "edward"    // 5
     };
 
-    size_t token_count = ORCUS_N_ELEMENTS(token_names);
+    size_t token_count = std::size(token_names);
 
     // Token constants.
     const xml_token_t op_andy    = 1;
@@ -119,7 +119,7 @@ void test_sax_token_parser_1()
     sax_token_parser<handler> parser(content, content_size, token_map, ns_cxt, hdl);
     parser.parse();
 
-    assert(hdl.get_token_count() == ORCUS_N_ELEMENTS(checks));
+    assert(hdl.get_token_count() == std::size(checks));
 }
 
 void test_unicode_string()
@@ -157,7 +157,7 @@ void test_unicode_string()
     const char* token_names[] = {
         "???",
     };
-    size_t token_count = ORCUS_N_ELEMENTS(token_names);
+    size_t token_count = std::size(token_names);
 
     tokens token_map(token_names, token_count);
     xmlns_repository ns_repo;

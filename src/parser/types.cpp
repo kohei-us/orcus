@@ -361,7 +361,7 @@ std::ostream& operator<< (std::ostream& os, format_t v)
     };
 
     size_t vi = static_cast<std::underlying_type_t<format_t>>(v);
-    size_t n = ORCUS_N_ELEMENTS(values);
+    size_t n = std::size(values);
 
     if (vi >= n)
         os << "???";

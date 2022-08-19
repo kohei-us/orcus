@@ -402,9 +402,9 @@ void test_yaml_parse_boolean()
 
     node = node.child(2);
     assert(node.type() == yaml::node_t::sequence);
-    assert(node.child_count() == ORCUS_N_ELEMENTS(values));
+    assert(node.child_count() == std::size(values));
 
-    for (size_t i = 0; i < ORCUS_N_ELEMENTS(values); ++i)
+    for (size_t i = 0; i < std::size(values); ++i)
     {
         node = node.child(i);
         assert(node.type() == yaml::node_t::string);
@@ -443,7 +443,7 @@ void test_yaml_parse_quoted_string()
             "Japan's finest beer"
         };
 
-        size_t n = ORCUS_N_ELEMENTS(values);
+        size_t n = std::size(values);
         assert(node.type() == yaml::node_t::sequence);
         assert(node.child_count() == n);
 
@@ -467,7 +467,7 @@ void test_yaml_parse_quoted_string()
             "#hashtag"
         };
 
-        size_t n = ORCUS_N_ELEMENTS(values);
+        size_t n = std::size(values);
         assert(node.type() == yaml::node_t::sequence);
         assert(node.child_count() == n);
 

@@ -65,7 +65,7 @@ const pc_group_by_map_type& get_pc_group_by_map()
 {
     static pc_group_by_map_type pc_group_by_map(
         pc_group_by_entries,
-        ORCUS_N_ELEMENTS(pc_group_by_entries),
+        std::size(pc_group_by_entries),
         pivot_cache_group_by_t::unknown);
 
     return pc_group_by_map;
@@ -87,7 +87,7 @@ const error_value_map_type& get_error_value_map()
 {
     static error_value_map_type error_value_map(
         error_value_entries,
-        ORCUS_N_ELEMENTS(error_value_entries),
+        std::size(error_value_entries),
         error_value_t::unknown);
 
     return error_value_map;
