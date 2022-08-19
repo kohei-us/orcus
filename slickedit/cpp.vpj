@@ -270,7 +270,6 @@
                 <F N="../src/liborcus/format_detection_test.cpp"/>
                 <F N="../src/liborcus/formula_result.cpp"/>
                 <F N="../src/liborcus/formula_result.hpp"/>
-                <F N="../src/liborcus/global.cpp"/>
                 <F N="../src/liborcus/gnumeric_cell_context.cpp"/>
                 <F N="../src/liborcus/gnumeric_cell_context.hpp"/>
                 <F N="../src/liborcus/gnumeric_cell_context_test.cpp"/>

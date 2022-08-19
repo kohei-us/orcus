@@ -482,6 +482,19 @@ struct ORCUS_PSR_DLLPUBLIC date_time_t
     std::string to_string() const;
 
     void swap(date_time_t& other);
+
+    /**
+     * Parse a string representation of a date-time value, and convert it into a
+     * date_time_t value.  A string representation allows either a date only or
+     * a date and time value, but it does not allow a time only value.
+     *
+     * date only: 2013-04-09
+     * date and time: 2013-04-09T21:34:09.55
+     *
+     * @param str string representation of a date-time value.
+     * @return converted date-time value consisting of a set of numeric values.
+     */
+    static date_time_t from_chars(std::string_view str);
 };
 
 ORCUS_PSR_DLLPUBLIC dump_format_t to_dump_format_enum(std::string_view s);

@@ -48,7 +48,6 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	format_detection.cpp \
 	formula_result.hpp \
 	formula_result.cpp \
-	global.cpp \
 	impl_utils.hpp \
 	info.cpp \
 	interface.cpp \
@@ -171,7 +170,6 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 
 xlsx_sheet_context_test_SOURCES = \
 	formula_result.cpp \
-	global.cpp \
 	ooxml_global.cpp \
 	ooxml_namespace_types.cpp \
 	ooxml_schemas.cpp \
@@ -446,7 +444,6 @@ xml_structure_tree_test_LDADD = \
 # common-test
 
 common_test_SOURCES = \
-	global.cpp \
 	common_test.cpp
 
 common_test_LDADD = \

@@ -370,10 +370,10 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                             interval = to_double(attr.value);
                             break;
                         case XML_startDate:
-                            start_date = to_date_time(attr.value);
+                            start_date = date_time_t::from_chars(attr.value);
                             break;
                         case XML_endDate:
-                            end_date = to_date_time(attr.value);
+                            end_date = date_time_t::from_chars(attr.value);
                             break;
                         case XML_groupBy:
                             group_by = spreadsheet::to_pivot_cache_group_by_enum(attr.value);
@@ -749,7 +749,7 @@ void xlsx_pivot_cache_def_context::start_element_d(
                     switch (attr.name)
                     {
                         case XML_v:
-                            dt = to_date_time(attr.value);
+                            dt = date_time_t::from_chars(attr.value);
                         break;
                         case XML_u:
                             // flag for unused item.
@@ -938,10 +938,10 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
                     max_value = to_double(attr.value);
                     break;
                 case XML_minDate:
-                    min_date = to_date_time(attr.value);
+                    min_date = date_time_t::from_chars(attr.value);
                     break;
                 case XML_maxDate:
-                    max_date = to_date_time(attr.value);
+                    max_date = date_time_t::from_chars(attr.value);
                     break;
                 case XML_longText:
                     has_long_text = to_bool(attr.value);

@@ -384,7 +384,7 @@ void ods_content_xml_context::start_null_date(const xml_attrs_t& attrs)
             null_date = attr.value;
     }
 
-    date_time_t val = to_date_time(null_date);
+    date_time_t val = date_time_t::from_chars(null_date);
 
     gs->set_origin_date(val.year, val.month, val.day);
 }
@@ -738,7 +738,7 @@ void ods_content_xml_context::push_cell_value()
                 break;
             case vt_date:
             {
-                date_time_t val = to_date_time(m_cell_attr.date_value);
+                date_time_t val = date_time_t::from_chars(m_cell_attr.date_value);
                 m_cur_sheet.sheet->set_date_time(
                     m_row, m_col, val.year, val.month, val.day, val.hour, val.minute, val.second);
                 break;

@@ -6,6 +6,7 @@
  */
 
 #include <orcus/types.hpp>
+#include <orcus/parser_global.hpp>
 #include <orcus/global.hpp>
 #include <orcus/xml_namespace.hpp>
 
@@ -242,6 +243,175 @@ void date_time_t::swap(date_time_t& other)
     std::swap(hour, other.hour);
     std::swap(minute, other.minute);
     std::swap(second, other.second);
+}
+
+date_time_t date_time_t::from_chars(std::string_view str)
+{
+    auto flush_int = [](int& store, const char*& digit, size_t& digit_len)
+    {
+        long v;
+        parse_integer(digit, digit + digit_len, v);
+        store = v;
+
+        digit = nullptr;
+        digit_len = 0;
+    };
+
+    auto process_char = [](const char* p, const char*& digit, size_t& digit_len)
+    {
+        if (!digit)
+        {
+            digit = p;
+            digit_len = 1;
+            return;
+        }
+
+        ++digit_len;
+    };
+
+    date_time_t ret;
+    int dash_count = 0, t_count = 0, colon_count = 0;
+
+    const char* p = str.data();
+    const char* p_end = p + str.size();
+    const char* digit = p;
+    size_t digit_len = 0;
+
+    bool valid = true;
+    for (; p != p_end && valid; ++p)
+    {
+        switch (*p)
+        {
+            case '-':
+            {
+                if (t_count || colon_count || !digit)
+                {
+                    // Invalid date-time value.  All dashes must occur before
+                    // any of 'T' and ':' occur.
+                    valid = false;
+                    break;
+                }
+
+                switch (dash_count)
+                {
+                    case 0:
+                        // Flush year.
+                        flush_int(ret.year, digit, digit_len);
+                    break;
+                    case 1:
+                        // Flush month.
+                        flush_int(ret.month, digit, digit_len);
+                    break;
+                    default:
+                        valid = false;
+                }
+                ++dash_count;
+            }
+            break;
+            case 'T':
+            {
+                if (t_count || dash_count != 2 || !digit)
+                {
+                    // Invalid date-time value.
+                    valid = false;
+                    break;
+                }
+
+                // Flush day.
+                flush_int(ret.day, digit, digit_len);
+                ++t_count;
+            }
+            break;
+            case ':':
+            {
+                if (!t_count || !digit)
+                {
+                    // Invalid date-time value.
+                    valid = false;
+                    break;
+                }
+
+                switch (colon_count)
+                {
+                    case 0:
+                        // Flush hour.
+                        flush_int(ret.hour, digit, digit_len);
+                    break;
+                    case 1:
+                        // Flush minute.
+                        flush_int(ret.minute, digit, digit_len);
+                    break;
+                    default:
+                        valid = false;
+                }
+
+                ++colon_count;
+            }
+            break;
+            default:
+            {
+                if (t_count)
+                {
+                    // Time element.
+                    switch (colon_count)
+                    {
+                        case 0:
+                            // Hour
+                            process_char(p, digit, digit_len);
+                        break;
+                        case 1:
+                            // Minute
+                            process_char(p, digit, digit_len);
+                        break;
+                        case 2:
+                            // Second
+                            process_char(p, digit, digit_len);
+                        break;
+                        default:
+                            valid = false;
+                    }
+                }
+                else
+                {
+                    // Date element.
+                    switch (dash_count)
+                    {
+                        case 0:
+                            // Year
+                            process_char(p, digit, digit_len);
+                        break;
+                        case 1:
+                            // Month
+                            process_char(p, digit, digit_len);
+                        break;
+                        case 2:
+                            // Day
+                            process_char(p, digit, digit_len);
+                        break;
+                        default:
+                            valid = false;
+                    }
+                }
+            }
+        }
+
+    }
+
+    if (!valid || !digit)
+        return ret;
+
+    if (t_count)
+    {
+        // Flush second.
+        ret.second = strtod(digit, nullptr);
+    }
+    else
+    {
+        // Flush day.
+        flush_int(ret.day, digit, digit_len);
+    }
+
+    return ret;
 }
 
 bool date_time_t::operator== (const date_time_t& other) const

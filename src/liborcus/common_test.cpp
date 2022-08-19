@@ -36,7 +36,7 @@ void test_date_time_conversion()
     for (size_t i = 0, n = sizeof(tests)/sizeof(tests[0]); i < n; ++i)
     {
         std::string_view str(tests[i].str);
-        date_time_t ret = to_date_time(str);
+        date_time_t ret = date_time_t::from_chars(str);
         cout << "original: " << str << endl;
         cout << "converted: year=" << ret.year << ", month=" << ret.month << ", day="
             << ret.day << ", hour=" << ret.hour << ", minute=" << ret.minute << ", second=" << ret.second << endl;

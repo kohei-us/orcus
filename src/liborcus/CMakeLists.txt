@@ -8,7 +8,6 @@ add_library(orcus-${ORCUS_API_VERSION} SHARED
     dom_tree.cpp
     format_detection.cpp
     formula_result.cpp
-    global.cpp
     info.cpp
     interface.cpp
     json_document_tree.cpp
@@ -167,7 +166,6 @@ add_executable(odf-helper-test EXCLUDE_FROM_ALL
 
 add_executable(xlsx-sheet-context-test EXCLUDE_FROM_ALL
     formula_result.cpp
-    global.cpp
     ooxml_global.cpp
     ooxml_namespace_types.cpp
     ooxml_schemas.cpp

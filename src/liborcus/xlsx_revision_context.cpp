@@ -102,7 +102,7 @@ public:
                     m_guid = attr.value;
                 break;
                 case XML_dateTime:
-                    m_date_time = to_date_time(attr.value);
+                    m_date_time = date_time_t::from_chars(attr.value);
                 break;
                 case XML_maxSheetId:
                     m_next_sheet_id = to_long(attr.value);

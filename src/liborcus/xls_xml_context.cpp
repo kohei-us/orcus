@@ -206,7 +206,7 @@ void xls_xml_data_context::characters(std::string_view str, bool transient)
             break;
         }
         case ct_datetime:
-            m_cell_datetime = to_date_time(str);
+            m_cell_datetime = date_time_t::from_chars(str);
             break;
         default:
             if (get_config().debug)

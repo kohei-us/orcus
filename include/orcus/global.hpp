@@ -18,22 +18,6 @@
 
 namespace orcus {
 
-class tokens;
-
-/**
- * Parse the string representation of a date-time value, and convert it into
- * a set of numerical values.  A string representation allows either a date
- * only or a date and time value.  It does not allow a time only value; it
- * always expects to have a date element.
- *
- * date only: 2013-04-09
- * date and time: 2013-04-09T21:34:09.55
- *
- * @param str string representation of a date-time value.
- * @return converted date-time value consisting of a set of numeric values.
- */
-ORCUS_DLLPUBLIC date_time_t to_date_time(std::string_view str); // TODO:API: internal to liborcus
-
 /**
  * Function object for deleting objects that are stored in map container as
  * pointers.
