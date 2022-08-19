@@ -41,13 +41,6 @@ private:
 
 }
 
-void print_element(const tokens& tokens, xmlns_id_t ns, xml_token_t name)
-{
-    if (ns != XMLNS_UNKNOWN_ID)
-        cout << ns << ":";
-    cout << tokens.get_token_name(name) << endl;
-}
-
 void print_attrs(const tokens& tokens, const xml_attrs_t& attrs)
 {
     for_each(attrs.begin(), attrs.end(), attr_printer(tokens));
