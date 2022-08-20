@@ -27,13 +27,15 @@ namespace orcus {
 
 namespace {
 
-struct elem_prop;
-typedef std::unordered_map<xml_structure_tree::entity_name, elem_prop*, xml_structure_tree::entity_name::hash> element_store_type;
-typedef std::unordered_set<xml_structure_tree::entity_name, xml_structure_tree::entity_name::hash> attribute_names_type;
-
 /** Element properties. */
 struct elem_prop
 {
+    using element_store_type = std::unordered_map<
+        xml_structure_tree::entity_name, elem_prop*, xml_structure_tree::entity_name::hash>;
+
+    using attribute_names_type = std::unordered_set<
+        xml_structure_tree::entity_name, xml_structure_tree::entity_name::hash>;
+
     element_store_type child_elements;
     attribute_names_type attributes;
 
@@ -152,7 +154,7 @@ public:
         assert(!m_stack.empty());
         element_ref& current = m_stack.back();
         xml_structure_tree::entity_name key(elem.ns, elem.name);
-        element_store_type::const_iterator it = current.prop->child_elements.find(key);
+        auto it = current.prop->child_elements.find(key);
         if (it != current.prop->child_elements.end())
         {
             // Recurring element. Set its repeat flag only when it occurs
@@ -170,9 +172,7 @@ public:
         // New element.
         size_t order = current.prop->child_elements.size();
         key.name = m_pool.intern(key.name).first;
-        std::pair<element_store_type::const_iterator,bool> r =
-            current.prop->child_elements.insert(
-                element_store_type::value_type(key, new elem_prop(order)));
+        auto r = current.prop->child_elements.insert(std::make_pair(key, new elem_prop(order)));
 
         if (!r.second)
             throw general_error("Insertion failed");
@@ -194,9 +194,8 @@ public:
 
         // Reset the in-scope count of all child elements to 0 before ending
         // the current scope.
-        element_store_type::iterator it = current.prop->child_elements.begin(), it_end = current.prop->child_elements.end();
-        for (; it != it_end; ++it)
-            it->second->in_scope_count = 0;
+        for (auto& [name, p] : current.prop->child_elements)
+            p->in_scope_count = 0;
 
         m_stack.pop_back();
     }
@@ -391,8 +390,8 @@ xml_structure_tree::element xml_structure_tree::walker::descend(const entity_nam
         throw general_error("Scope is empty.");
 
     assert(mp_impl->m_scopes.back().prop);
-    const element_store_type& child_elems = mp_impl->m_scopes.back().prop->child_elements;
-    element_store_type::const_iterator it = child_elems.find(name);
+    const auto& child_elems = mp_impl->m_scopes.back().prop->child_elements;
+    auto it = child_elems.find(name);
 
     if (it == child_elems.end())
         throw general_error("Specified child element does not exist.");
@@ -575,14 +574,13 @@ void xml_structure_tree::dump_compact(std::ostream& os) const
             for (const entity_name& attr : this_elem.prop->attribute_names)
                 os << elem_name << "/@" << mp_impl->to_string(attr) << std::endl;
 
-            const element_store_type& child_elements = this_elem.prop->child_elements;
-            if (child_elements.empty())
+            if (this_elem.prop->child_elements.empty())
                 continue;
 
             // This element has child elements.  Push a new scope and populate
             // it with all child elements.
             elements_type elems;
-            for (const auto& entry : child_elements)
+            for (const auto& entry : this_elem.prop->child_elements)
             {
                 ref.name = entry.first;
                 ref.prop = entry.second;
