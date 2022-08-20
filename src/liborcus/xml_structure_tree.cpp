@@ -19,6 +19,7 @@
 #include <sstream>
 #include <vector>
 #include <cstdio>
+#include <memory>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -31,7 +32,7 @@ namespace {
 struct elem_prop
 {
     using element_store_type = std::unordered_map<
-        xml_structure_tree::entity_name, elem_prop*, xml_structure_tree::entity_name::hash>;
+        xml_structure_tree::entity_name, std::unique_ptr<elem_prop>, xml_structure_tree::entity_name::hash>;
 
     using attribute_names_type = std::unordered_set<
         xml_structure_tree::entity_name, xml_structure_tree::entity_name::hash>;
@@ -72,11 +73,6 @@ struct elem_prop
         in_scope_count(1),
         repeat(false),
         has_content(false) {}
-
-    ~elem_prop()
-    {
-        for_each(child_elements.begin(), child_elements.end(), map_object_deleter<element_store_type>());
-    };
 };
 
 struct root
@@ -163,7 +159,7 @@ public:
             if (it->second->in_scope_count > 1)
                 it->second->repeat = true;
 
-            element_ref ref(it->first, it->second);
+            element_ref ref(it->first, it->second.get());
             merge_attributes(*it->second);
             m_stack.push_back(ref);
             return;
@@ -172,7 +168,8 @@ public:
         // New element.
         size_t order = current.prop->child_elements.size();
         key.name = m_pool.intern(key.name).first;
-        auto r = current.prop->child_elements.insert(std::make_pair(key, new elem_prop(order)));
+        auto r = current.prop->child_elements.insert(
+            std::make_pair(key, std::make_unique<elem_prop>(order)));
 
         if (!r.second)
             throw general_error("Insertion failed");
@@ -180,7 +177,7 @@ public:
         current.prop->child_element_names.push_back(key);
 
         it = r.first;
-        element_ref ref(it->first, it->second);
+        element_ref ref(it->first, it->second.get());
         merge_attributes(*it->second);
         m_stack.push_back(ref);
     }
@@ -397,7 +394,7 @@ xml_structure_tree::element xml_structure_tree::walker::descend(const entity_nam
         throw general_error("Specified child element does not exist.");
 
     // Push this new child element onto the stack.
-    element_ref ref(name, it->second);
+    element_ref ref(name, it->second.get());
     mp_impl->m_scopes.push_back(ref);
 
     return element(name, it->second->repeat, it->second->has_content);
@@ -501,7 +498,7 @@ xml_structure_tree::element xml_structure_tree::walker::move_to(const std::strin
         {
             if (pstring(mp_impl->m_parent_impl.to_string(child.first)) == parts[i])
             {
-                scopes.emplace_back(child.first, child.second);
+                scopes.emplace_back(child.first, child.second.get());
                 found = true;
                 break;
             }
@@ -583,7 +580,7 @@ void xml_structure_tree::dump_compact(std::ostream& os) const
             for (const auto& entry : this_elem.prop->child_elements)
             {
                 ref.name = entry.first;
-                ref.prop = entry.second;
+                ref.prop = entry.second.get();
                 elems.push_back(ref);
             }
 
