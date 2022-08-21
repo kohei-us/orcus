@@ -52,16 +52,16 @@ namespace {
 
 namespace length {
 
-using map_type = mdds::sorted_string_map<length_unit_t>;
+using map_type = mdds::sorted_string_map<length_unit_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] =
 {
-    { ORCUS_ASCII("cm"), length_unit_t::centimeter },
-    { ORCUS_ASCII("in"), length_unit_t::inch },
-    { ORCUS_ASCII("mm"), length_unit_t::millimeter },
-    { ORCUS_ASCII("pt"), length_unit_t::point },
-    { ORCUS_ASCII("px"), length_unit_t::pixel }
+    { "cm", length_unit_t::centimeter },
+    { "in", length_unit_t::inch },
+    { "mm", length_unit_t::millimeter },
+    { "pt", length_unit_t::point },
+    { "px", length_unit_t::pixel }
 };
 
 const map_type& get()
@@ -86,7 +86,7 @@ length_t to_length(std::string_view str)
     p = parse_numeric(p, p_end, ret.value);
 
     std::string_view tail(p, p_end-p);
-    ret.unit = length::get().find(tail.data(), tail.size());
+    ret.unit = length::get().find(tail);
 
     return ret;
 }

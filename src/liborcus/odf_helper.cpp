@@ -22,19 +22,19 @@ namespace {
 
 namespace border_style {
 
-using map_type = mdds::sorted_string_map<spreadsheet::border_style_t>;
+using map_type = mdds::sorted_string_map<spreadsheet::border_style_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] =
 {
-    { MDDS_ASCII("dash-dot"), spreadsheet::border_style_t::dash_dot },
-    { MDDS_ASCII("dash-dot-dot"), spreadsheet::border_style_t::dash_dot_dot },
-    { MDDS_ASCII("dashed"), spreadsheet::border_style_t::dashed },
-    { MDDS_ASCII("dotted"), spreadsheet::border_style_t::dotted },
-    { MDDS_ASCII("double-thin"), spreadsheet::border_style_t::double_thin },
-    { MDDS_ASCII("fine-dashed"), spreadsheet::border_style_t::fine_dashed },
-    { MDDS_ASCII("none"), spreadsheet::border_style_t::none },
-    { MDDS_ASCII("solid"), spreadsheet::border_style_t::solid },
+    { "dash-dot", spreadsheet::border_style_t::dash_dot },
+    { "dash-dot-dot", spreadsheet::border_style_t::dash_dot_dot },
+    { "dashed", spreadsheet::border_style_t::dashed },
+    { "dotted", spreadsheet::border_style_t::dotted },
+    { "double-thin", spreadsheet::border_style_t::double_thin },
+    { "fine-dashed", spreadsheet::border_style_t::fine_dashed },
+    { "none", spreadsheet::border_style_t::none },
+    { "solid", spreadsheet::border_style_t::solid },
 };
 
 const map_type& get()
@@ -47,20 +47,20 @@ const map_type& get()
 
 namespace underline_width {
 
-using map_type = mdds::sorted_string_map<spreadsheet::underline_width_t>;
+using map_type = mdds::sorted_string_map<spreadsheet::underline_width_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] =
 {
-    { MDDS_ASCII("bold"), spreadsheet::underline_width_t::bold },
-    { MDDS_ASCII("medium"), spreadsheet::underline_width_t::medium },
-    { MDDS_ASCII("none"), spreadsheet::underline_width_t::none },
-    { MDDS_ASCII("normal"), spreadsheet::underline_width_t::normal },
-    { MDDS_ASCII("percent"), spreadsheet::underline_width_t::percent },
-    { MDDS_ASCII("positiveInteger"), spreadsheet::underline_width_t::positive_integer },
-    { MDDS_ASCII("positiveLength"), spreadsheet::underline_width_t::positive_length },
-    { MDDS_ASCII("thick"), spreadsheet::underline_width_t::thick },
-    { MDDS_ASCII("thin"), spreadsheet::underline_width_t::thin },
+    { "bold", spreadsheet::underline_width_t::bold },
+    { "medium", spreadsheet::underline_width_t::medium },
+    { "none", spreadsheet::underline_width_t::none },
+    { "normal", spreadsheet::underline_width_t::normal },
+    { "percent", spreadsheet::underline_width_t::percent },
+    { "positiveInteger", spreadsheet::underline_width_t::positive_integer },
+    { "positiveLength", spreadsheet::underline_width_t::positive_length },
+    { "thick", spreadsheet::underline_width_t::thick },
+    { "thin", spreadsheet::underline_width_t::thin },
 };
 
 const map_type& get()
@@ -73,19 +73,19 @@ const map_type& get()
 
 namespace underline_style {
 
-typedef mdds::sorted_string_map<ss::underline_t> map_type;
+using map_type = mdds::sorted_string_map<ss::underline_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-map_type::entry entries[] =
+constexpr map_type::entry entries[] =
 {
-    { MDDS_ASCII("dash"), ss::underline_t::dash },
-    { MDDS_ASCII("dot-dash"), ss::underline_t::dot_dash },
-    { MDDS_ASCII("dot-dot-dash"), ss::underline_t::dot_dot_dash },
-    { MDDS_ASCII("dotted"), ss::underline_t::dotted },
-    { MDDS_ASCII("long-dash"), ss::underline_t::long_dash },
-    { MDDS_ASCII("none"), ss::underline_t::none },
-    { MDDS_ASCII("solid"), ss::underline_t::single_line },
-    { MDDS_ASCII("wave"), ss::underline_t::wave }
+    { "dash", ss::underline_t::dash },
+    { "dot-dash", ss::underline_t::dot_dash },
+    { "dot-dot-dash", ss::underline_t::dot_dot_dash },
+    { "dotted", ss::underline_t::dotted },
+    { "long-dash", ss::underline_t::long_dash },
+    { "none", ss::underline_t::none },
+    { "solid", ss::underline_t::single_line },
+    { "wave", ss::underline_t::wave }
 };
 
 const map_type& get()
@@ -98,15 +98,15 @@ const map_type& get()
 
 namespace hor_align {
 
-typedef mdds::sorted_string_map<spreadsheet::hor_alignment_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::hor_alignment_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] =
 {
-    { MDDS_ASCII("center"), spreadsheet::hor_alignment_t::center },
-    { MDDS_ASCII("end"), spreadsheet::hor_alignment_t::right },
-    { MDDS_ASCII("justified"), spreadsheet::hor_alignment_t::justified },
-    { MDDS_ASCII("start"), spreadsheet::hor_alignment_t::left }
+    { "center", spreadsheet::hor_alignment_t::center },
+    { "end", spreadsheet::hor_alignment_t::right },
+    { "justified", spreadsheet::hor_alignment_t::justified },
+    { "start", spreadsheet::hor_alignment_t::left }
 };
 
 const map_type& get()
@@ -119,15 +119,15 @@ const map_type& get()
 
 namespace ver_align {
 
-typedef mdds::sorted_string_map<spreadsheet::ver_alignment_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::ver_alignment_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] =
 {
-    { MDDS_ASCII("bottom"), spreadsheet::ver_alignment_t::bottom },
-    { MDDS_ASCII("justified"), spreadsheet::ver_alignment_t::justified },
-    { MDDS_ASCII("middle"), spreadsheet::ver_alignment_t::middle },
-    { MDDS_ASCII("top"), spreadsheet::ver_alignment_t::top }
+    { "bottom", spreadsheet::ver_alignment_t::bottom },
+    { "justified", spreadsheet::ver_alignment_t::justified },
+    { "middle", spreadsheet::ver_alignment_t::middle },
+    { "top", spreadsheet::ver_alignment_t::top }
 };
 
 const map_type& get()
@@ -228,29 +228,29 @@ orcus::odf::border_details_t odf::extract_border_details(std::string_view value)
         else if (sub_detail[0] >= '0' && sub_detail[0] <='9')
             border_details.border_width = orcus::to_length(sub_detail);
         else    //  This has to be a style
-            border_details.border_style = border_style::get().find(sub_detail.get(), sub_detail.size());
+            border_details.border_style = border_style::get().find(sub_detail);
     }
     return border_details;
 }
 
 orcus::spreadsheet::underline_width_t odf::extract_underline_width(std::string_view value)
 {
-    return underline_width::get().find(value.data(), value.size());
+    return underline_width::get().find(value);
 }
 
 orcus::spreadsheet::underline_t odf::extract_underline_style(std::string_view value)
 {
-    return underline_style::get().find(value.data(), value.size());
+    return underline_style::get().find(value);
 }
 
 ss::hor_alignment_t odf::extract_hor_alignment_style(std::string_view value)
 {
-    return hor_align::get().find(value.data(), value.size());
+    return hor_align::get().find(value);
 }
 
 spreadsheet::ver_alignment_t odf::extract_ver_alignment_style(std::string_view value)
 {
-    return ver_align::get().find(value.data(), value.size());
+    return ver_align::get().find(value);
 }
 
 }
