@@ -502,7 +502,7 @@ std::vector<std::pair<std::string_view, dump_format_t>> get_dump_format_entries(
 {
     std::vector<std::pair<std::string_view, dump_format_t>> ret;
     for (const auto& e : dump_format::entries)
-        ret.emplace_back(std::string_view{e.key, e.keylen}, e.value);
+        ret.emplace_back(std::string_view{e.key, e.key_length}, e.value);
 
     return ret;
 }

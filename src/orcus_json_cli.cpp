@@ -105,9 +105,9 @@ std::string build_mode_help_text()
     --ite;
 
     for (; it != ite; ++it)
-        os << std::string(it->key, it->keylen) << ", ";
+        os << std::string(it->key, it->key_length) << ", ";
 
-    os << "or " << std::string(it->key, it->keylen) << ".";
+    os << "or " << std::string(it->key, it->key_length) << ".";
     return os.str();
 }
 

@@ -68,7 +68,7 @@ std::string to_string(output_mode::type t)
 {
     for (const output_mode::map_type::entry& e : output_mode::entries)
         if (t == e.value)
-            return std::string(e.key, e.keylen);
+            return std::string(e.key, e.key_length);
 
     return std::string();
 }
@@ -94,9 +94,9 @@ std::string build_mode_help_text()
     --ite;
 
     for (; it != ite; ++it)
-        os << std::string(it->key, it->keylen) << ", ";
+        os << std::string(it->key, it->key_length) << ", ";
 
-    os << "or " << std::string(it->key, it->keylen) << ".";
+    os << "or " << std::string(it->key, it->key_length) << ".";
     return os.str();
 }
 
