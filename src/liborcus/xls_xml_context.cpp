@@ -605,33 +605,32 @@ const map_type& get()
 
 namespace num_format {
 
-typedef mdds::sorted_string_map<pstring> map_type;
+using map_type = mdds::sorted_string_map<std::string_view, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries =
-{
-    { ORCUS_ASCII("Currency"), "$#,##0.00_);[Red]($#,##0.00)" },
-    { ORCUS_ASCII("Euro Currency"), "[$\xe2\x82\xac-x-euro2] #,##0.00_);[Red]([$\xe2\x82\xac-x-euro2] #,##0.00)" },
-    { ORCUS_ASCII("Fixed"), "0.00" },
-    { ORCUS_ASCII("General Date"), "m/d/yyyy h:mm" },
-    { ORCUS_ASCII("General Number"), "General" },
-    { ORCUS_ASCII("Long Date"), "d-mmm-yy" },
-    { ORCUS_ASCII("Long Time"), "h:mm:ss AM/PM" },
-    { ORCUS_ASCII("Medium Date"), "d-mmm-yy" },
-    { ORCUS_ASCII("Medium Time"), "h:mm AM/PM" },
-    { ORCUS_ASCII("On/Off"), "\"On\";\"On\";\"Off\"" },
-    { ORCUS_ASCII("Percent"), "0.00%" },
-    { ORCUS_ASCII("Scientific"), "0.00E+00" },
-    { ORCUS_ASCII("Short Date"), "m/d/yyyy" },
-    { ORCUS_ASCII("Short Time"), "h:mm" },
-    { ORCUS_ASCII("Standard"), "#,##0.00" },
-    { ORCUS_ASCII("True/False"), "\"True\";\"True\";\"False\"" },
-    { ORCUS_ASCII("Yes/No"), "\"Yes\";\"Yes\";\"No\"" },
+constexpr map_type::entry entries[] = {
+    { "Currency", "$#,##0.00_);[Red]($#,##0.00)" },
+    { "Euro Currency", "[$\xe2\x82\xac-x-euro2] #,##0.00_);[Red]([$\xe2\x82\xac-x-euro2] #,##0.00)" },
+    { "Fixed", "0.00" },
+    { "General Date", "m/d/yyyy h:mm" },
+    { "General Number", "General" },
+    { "Long Date", "d-mmm-yy" },
+    { "Long Time", "h:mm:ss AM/PM" },
+    { "Medium Date", "d-mmm-yy" },
+    { "Medium Time", "h:mm AM/PM" },
+    { "On/Off", "\"On\";\"On\";\"Off\"" },
+    { "Percent", "0.00%" },
+    { "Scientific", "0.00E+00" },
+    { "Short Date", "m/d/yyyy" },
+    { "Short Time", "h:mm" },
+    { "Standard", "#,##0.00" },
+    { "True/False", "\"True\";\"True\";\"False\"" },
+    { "Yes/No", "\"Yes\";\"Yes\";\"No\"" },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), pstring());
+    static const map_type mt(entries, std::size(entries), std::string_view{});
     return mt;
 }
 
@@ -1359,7 +1358,7 @@ void xls_xml_context::start_element_number_format(const xml_attrs_t& attrs)
         {
             case XML_Format:
             {
-                std::string_view code = num_format::get().find(attr.value.data(), attr.value.size());
+                std::string_view code = num_format::get().find(attr.value);
                 m_current_style->number_format = code.empty() ? intern(attr) : code;
                 break;
             }
