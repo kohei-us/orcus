@@ -22,8 +22,7 @@ namespace {
 
 struct check
 {
-    const char* str;
-    size_t length;
+    std::string_view str;
     double expected;
 };
 
@@ -34,7 +33,7 @@ bool run_checks(const std::vector<check>& checks)
 {
     for (const check& c : checks)
     {
-        ParserT parser(c.str, c.str + c.length);
+        ParserT parser(c.str.data(), c.str.data() + c.str.size());
         double v = parser.parse();
 
         if (std::isnan(c.expected))
@@ -65,21 +64,21 @@ void test_generic_number_parsing()
     using parser_type = detail::numeric_parser<detail::generic_parser_trait>;
 
     std::vector<check> checks = {
-        { ORCUS_ASCII("-6.e3"), -6e3 },
-        { ORCUS_ASCII("true"), invalid },
-        { ORCUS_ASCII("1"), 1.0 },
-        { ORCUS_ASCII("1.0"), 1.0 },
-        { ORCUS_ASCII("-1.0"), -1.0 },
-        { ORCUS_ASCII("-01"), -1.0 },
-        { ORCUS_ASCII("2e2"), 200.0 },
-        { ORCUS_ASCII("1.2"), 1.2 },
-        { ORCUS_ASCII("-0.0001"), -0.0001 },
-        { ORCUS_ASCII("-0.0"), 0.0 },
-        { ORCUS_ASCII("+."), invalid },
-        { ORCUS_ASCII("+e"), invalid },
-        { ORCUS_ASCII("+e1"), invalid },
-        { ORCUS_ASCII("+ "), invalid },
-        { ORCUS_ASCII("- "), invalid }
+        { "-6.e3", -6e3 },
+        { "true", invalid },
+        { "1", 1.0 },
+        { "1.0", 1.0 },
+        { "-1.0", -1.0 },
+        { "-01", -1.0 },
+        { "2e2", 200.0 },
+        { "1.2", 1.2 },
+        { "-0.0001", -0.0001 },
+        { "-0.0", 0.0 },
+        { "+.", invalid },
+        { "+e", invalid },
+        { "+e1", invalid },
+        { "+ ", invalid },
+        { "- ", invalid }
     };
 
     assert(run_checks<parser_type>(checks));
@@ -90,7 +89,7 @@ void test_json_number_parsing()
     using parser_type = detail::numeric_parser<detail::json_parser_trait>;
 
     std::vector<check> checks = {
-        { ORCUS_ASCII("-01"), invalid }, // Leading zeros are invalid.
+        { "-01", invalid }, // Leading zeros are invalid.
     };
 
     assert(run_checks<parser_type>(checks));

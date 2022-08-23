@@ -1106,8 +1106,7 @@ void test_xls_xml_view_cursor_per_sheet()
 struct expected_selection
 {
     spreadsheet::sheet_pane_t pane;
-    const char* sel;
-    size_t sel_n;
+    std::string_view sel;
 };
 
 void test_xls_xml_view_cursor_split_pane()
@@ -1147,16 +1146,16 @@ void test_xls_xml_view_cursor_split_pane()
 
     std::vector<expected_selection> expected_selections =
     {
-        { spreadsheet::sheet_pane_t::top_left,     ORCUS_ASCII("R4C5")   },
-        { spreadsheet::sheet_pane_t::top_right,    ORCUS_ASCII("R2C10")  },
-        { spreadsheet::sheet_pane_t::bottom_left,  ORCUS_ASCII("R8C1")   },
-        { spreadsheet::sheet_pane_t::bottom_right, ORCUS_ASCII("R17C10") },
+        { spreadsheet::sheet_pane_t::top_left,     "R4C5"   },
+        { spreadsheet::sheet_pane_t::top_right,    "R2C10"  },
+        { spreadsheet::sheet_pane_t::bottom_left,  "R8C1"   },
+        { spreadsheet::sheet_pane_t::bottom_right, "R17C10" },
     };
 
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range({es.sel, es.sel_n}));
+        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
         spreadsheet::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
@@ -1177,16 +1176,16 @@ void test_xls_xml_view_cursor_split_pane()
 
     expected_selections =
     {
-        { spreadsheet::sheet_pane_t::top_left,     ORCUS_ASCII("R2C3:R6C3")    },
-        { spreadsheet::sheet_pane_t::top_right,    ORCUS_ASCII("R2C8:R2C12")   },
-        { spreadsheet::sheet_pane_t::bottom_left,  ORCUS_ASCII("R18C2:R23C3")  },
-        { spreadsheet::sheet_pane_t::bottom_right, ORCUS_ASCII("R11C8:R13C10") },
+        { spreadsheet::sheet_pane_t::top_left,     "R2C3:R6C3"    },
+        { spreadsheet::sheet_pane_t::top_right,    "R2C8:R2C12"   },
+        { spreadsheet::sheet_pane_t::bottom_left,  "R18C2:R23C3"  },
+        { spreadsheet::sheet_pane_t::bottom_right, "R11C8:R13C10" },
     };
 
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range({es.sel, es.sel_n}));
+        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
         spreadsheet::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
@@ -1207,14 +1206,14 @@ void test_xls_xml_view_cursor_split_pane()
 
     expected_selections =
     {
-        { spreadsheet::sheet_pane_t::top_left,     ORCUS_ASCII("R2C4") },
-        { spreadsheet::sheet_pane_t::bottom_left,  ORCUS_ASCII("R9C3") },
+        { spreadsheet::sheet_pane_t::top_left,     "R2C4" },
+        { spreadsheet::sheet_pane_t::bottom_left,  "R9C3" },
     };
 
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range({es.sel, es.sel_n}));
+        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
         spreadsheet::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
@@ -1235,14 +1234,14 @@ void test_xls_xml_view_cursor_split_pane()
 
     expected_selections =
     {
-        { spreadsheet::sheet_pane_t::top_left,  ORCUS_ASCII("R18C2") },
-        { spreadsheet::sheet_pane_t::top_right, ORCUS_ASCII("R11C9") },
+        { spreadsheet::sheet_pane_t::top_left,  "R18C2" },
+        { spreadsheet::sheet_pane_t::top_right, "R11C9" },
     };
 
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range({es.sel, es.sel_n}));
+        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
         spreadsheet::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
