@@ -488,18 +488,11 @@ struct ORCUS_SPM_DLLPUBLIC color_t
     bool operator!=(const color_t& other) const;
 };
 
-struct ORCUS_DLLPUBLIC color_rgb_t
+struct color_rgb_t
 {
     color_elem_t red;
     color_elem_t green;
     color_elem_t blue;
-
-    color_rgb_t();
-    color_rgb_t(std::initializer_list<color_elem_t> vs);
-    color_rgb_t(const color_rgb_t& other);
-    color_rgb_t(color_rgb_t&& other);
-
-    color_rgb_t& operator= (const color_rgb_t& other);
 };
 
 struct ORCUS_SPM_DLLPUBLIC format_run
