@@ -68,7 +68,7 @@ void parser_base::skip_ws()
 
 void parser_base::parse_true()
 {
-    if (!parse_expected(ORCUS_ASCII("true")))
+    if (!parse_expected("true"))
         throw parse_error("parse_true: boolean 'true' expected.", offset());
 
     skip_ws();
@@ -76,7 +76,7 @@ void parser_base::parse_true()
 
 void parser_base::parse_false()
 {
-    if (!parse_expected(ORCUS_ASCII("false")))
+    if (!parse_expected("false"))
         throw parse_error("parse_false: boolean 'false' expected.", offset());
 
     skip_ws();
@@ -84,7 +84,7 @@ void parser_base::parse_false()
 
 void parser_base::parse_null()
 {
-    if (!parse_expected(ORCUS_ASCII("null")))
+    if (!parse_expected("null"))
         throw parse_error("parse_null: null expected.", offset());
 
     skip_ws();

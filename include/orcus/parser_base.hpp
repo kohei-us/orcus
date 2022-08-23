@@ -92,12 +92,11 @@ protected:
      * character sequence.
      *
      * @param expected sequence of characters to match against.
-     * @param n_expected length of the character sequence.
      *
      * @return true if it matches specified character sequence, false
      *         otherwise.
      */
-    bool parse_expected(const char* expected, size_t n_expected);
+    bool parse_expected(std::string_view expected);
 
     /**
      * Try to parse the next characters as double, or return NaN in case of

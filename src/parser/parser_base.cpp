@@ -202,27 +202,28 @@ void parser_base::skip_space_and_control()
 #endif
 }
 
-bool parser_base::parse_expected(const char* expected, size_t n_expected)
+bool parser_base::parse_expected(std::string_view expected)
 {
-    if (n_expected > available_size())
+    if (expected.size() > available_size())
         return false;
 
 #if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
-    __m128i v_expected = _mm_loadu_si128((const __m128i*)expected);
+    __m128i v_expected = _mm_loadu_si128((const __m128i*)expected.data());
     __m128i v_char_block = _mm_loadu_si128((const __m128i*)mp_char);
 
     const int mode = _SIDD_CMP_EQUAL_ORDERED | _SIDD_UBYTE_OPS | _SIDD_BIT_MASK;
-    __m128i res = _mm_cmpestrm(v_expected, n_expected, v_char_block, n_expected, mode);
+    __m128i res = _mm_cmpestrm(v_expected, expected.size(), v_char_block, expected.size(), mode);
     int mask = _mm_cvtsi128_si32(res);
 
     if (mask)
-        mp_char += n_expected;
+        mp_char += expected.size();
 
     return mask;
 #else
-    for (size_t i = 0; i < n_expected; ++i, ++expected, next())
+    const char* p = expected.data();
+    for (size_t i = 0; i < expected.size(); ++i, ++p, next())
     {
-        if (cur_char() != *expected)
+        if (cur_char() != *p)
             return false;
     }
 
