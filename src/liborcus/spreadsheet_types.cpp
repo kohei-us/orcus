@@ -19,79 +19,79 @@ namespace orcus { namespace spreadsheet {
 
 namespace {
 
-typedef mdds::sorted_string_map<totals_row_function_t> trf_map_type;
-typedef mdds::sorted_string_map<pivot_cache_group_by_t> pc_group_by_map_type;
-typedef mdds::sorted_string_map<error_value_t> error_value_map_type;
+namespace trf {
+
+using map_type = mdds::sorted_string_map<totals_row_function_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-trf_map_type::entry trf_entries[] =
-{
-    { ORCUS_ASCII("average"),   totals_row_function_t::average },
-    { ORCUS_ASCII("count"),     totals_row_function_t::count },
-    { ORCUS_ASCII("countNums"), totals_row_function_t::count_numbers },
-    { ORCUS_ASCII("custom"),    totals_row_function_t::custom },
-    { ORCUS_ASCII("max"),       totals_row_function_t::maximum },
-    { ORCUS_ASCII("min"),       totals_row_function_t::minimum },
-    { ORCUS_ASCII("none"),      totals_row_function_t::none },
-    { ORCUS_ASCII("stdDev"),    totals_row_function_t::standard_deviation },
-    { ORCUS_ASCII("sum"),       totals_row_function_t::sum },
-    { ORCUS_ASCII("var"),       totals_row_function_t::variance },
+constexpr map_type::entry entries[] = {
+    { "average",   totals_row_function_t::average },
+    { "count",     totals_row_function_t::count },
+    { "countNums", totals_row_function_t::count_numbers },
+    { "custom",    totals_row_function_t::custom },
+    { "max",       totals_row_function_t::maximum },
+    { "min",       totals_row_function_t::minimum },
+    { "none",      totals_row_function_t::none },
+    { "stdDev",    totals_row_function_t::standard_deviation },
+    { "sum",       totals_row_function_t::sum },
+    { "var",       totals_row_function_t::variance },
 };
 
-const trf_map_type& get_trf_map()
+const map_type& get()
 {
-    static trf_map_type trf_map(
-        trf_entries,
-        sizeof(trf_entries)/sizeof(trf_entries[0]),
-        totals_row_function_t::none);
-
-    return trf_map;
+    static const map_type map(entries, std::size(entries), totals_row_function_t::none);
+    return map;
 }
+
+} // namespace trf
+
+namespace pc_group_by {
+
+using map_type = mdds::sorted_string_map<pivot_cache_group_by_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-pc_group_by_map_type::entry pc_group_by_entries[] =
-{
-    { ORCUS_ASCII("days"),     pivot_cache_group_by_t::days },
-    { ORCUS_ASCII("hours"),    pivot_cache_group_by_t::hours },
-    { ORCUS_ASCII("minutes"),  pivot_cache_group_by_t::minutes },
-    { ORCUS_ASCII("months"),   pivot_cache_group_by_t::months },
-    { ORCUS_ASCII("quarters"), pivot_cache_group_by_t::quarters },
-    { ORCUS_ASCII("range"),    pivot_cache_group_by_t::range },
-    { ORCUS_ASCII("seconds"),  pivot_cache_group_by_t::seconds },
-    { ORCUS_ASCII("years"),    pivot_cache_group_by_t::years },
+constexpr map_type::entry entries[] = {
+    { "days",     pivot_cache_group_by_t::days },
+    { "hours",    pivot_cache_group_by_t::hours },
+    { "minutes",  pivot_cache_group_by_t::minutes },
+    { "months",   pivot_cache_group_by_t::months },
+    { "quarters", pivot_cache_group_by_t::quarters },
+    { "range",    pivot_cache_group_by_t::range },
+    { "seconds",  pivot_cache_group_by_t::seconds },
+    { "years",    pivot_cache_group_by_t::years },
 };
 
-const pc_group_by_map_type& get_pc_group_by_map()
+const map_type& get()
 {
-    static pc_group_by_map_type pc_group_by_map(
-        pc_group_by_entries,
-        std::size(pc_group_by_entries),
-        pivot_cache_group_by_t::unknown);
-
-    return pc_group_by_map;
+    static const map_type map(entries, std::size(entries), pivot_cache_group_by_t::unknown);
+    return map;
 }
+
+} // namespace pc_group_by
+
+namespace error_value {
+
+using map_type = mdds::sorted_string_map<error_value_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-error_value_map_type::entry error_value_entries[] =
+constexpr map_type::entry entries[] =
 {
-    { ORCUS_ASCII("#DIV/0!"), error_value_t::div0  },
-    { ORCUS_ASCII("#N/A!"),   error_value_t::na    },
-    { ORCUS_ASCII("#NAME?"),  error_value_t::name  },
-    { ORCUS_ASCII("#NULL!"),  error_value_t::null  },
-    { ORCUS_ASCII("#NUM!"),   error_value_t::num   },
-    { ORCUS_ASCII("#REF!"),   error_value_t::ref   },
-    { ORCUS_ASCII("#VALUE!"), error_value_t::value },
+    { "#DIV/0!", error_value_t::div0  },
+    { "#N/A!",   error_value_t::na    },
+    { "#NAME?",  error_value_t::name  },
+    { "#NULL!",  error_value_t::null  },
+    { "#NUM!",   error_value_t::num   },
+    { "#REF!",   error_value_t::ref   },
+    { "#VALUE!", error_value_t::value },
 };
 
-const error_value_map_type& get_error_value_map()
+const map_type& get()
 {
-    static error_value_map_type error_value_map(
-        error_value_entries,
-        std::size(error_value_entries),
-        error_value_t::unknown);
-
-    return error_value_map;
+    static const map_type map(entries, std::size(entries), error_value_t::unknown);
+    return map;
 }
+
+} // namespace error_value
 
 namespace named_colors {
 
@@ -494,17 +494,17 @@ row_height_t get_default_row_height()
 
 totals_row_function_t to_totals_row_function_enum(std::string_view s)
 {
-    return get_trf_map().find(s.data(), s.size());
+    return trf::get().find(s);
 }
 
 pivot_cache_group_by_t to_pivot_cache_group_by_enum(std::string_view s)
 {
-    return get_pc_group_by_map().find(s.data(), s.size());
+    return pc_group_by::get().find(s);
 }
 
 error_value_t to_error_value_enum(std::string_view s)
 {
-    return get_error_value_map().find(s.data(), s.size());
+    return error_value::get().find(s);
 }
 
 color_rgb_t to_color_rgb(std::string_view s)
@@ -584,25 +584,25 @@ std::ostream& operator<< (std::ostream& os, error_value_t ev)
     switch (ev)
     {
         case error_value_t::div0:
-            os << error_value_entries[0].key;
+            os << error_value::entries[0].key;
             break;
         case error_value_t::na:
-            os << error_value_entries[1].key;
+            os << error_value::entries[1].key;
             break;
         case error_value_t::name:
-            os << error_value_entries[2].key;
+            os << error_value::entries[2].key;
             break;
         case error_value_t::null:
-            os << error_value_entries[3].key;
+            os << error_value::entries[3].key;
             break;
         case error_value_t::num:
-            os << error_value_entries[4].key;
+            os << error_value::entries[4].key;
             break;
         case error_value_t::ref:
-            os << error_value_entries[5].key;
+            os << error_value::entries[5].key;
             break;
         case error_value_t::value:
-            os << error_value_entries[6].key;
+            os << error_value::entries[6].key;
             break;
         case error_value_t::unknown:
         default:
