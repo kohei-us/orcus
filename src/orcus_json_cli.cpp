@@ -50,20 +50,20 @@ namespace {
 
 namespace mode {
 
-typedef mdds::sorted_string_map<detail::mode_t> map_type;
+using map_type = mdds::sorted_string_map<detail::mode_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries =
+constexpr map_type::entry entries[] =
 {
-    { ORCUS_ASCII("convert"),   detail::mode_t::convert   },
-    { ORCUS_ASCII("map"),       detail::mode_t::map       },
-    { ORCUS_ASCII("map-gen"),   detail::mode_t::map_gen   },
-    { ORCUS_ASCII("structure"), detail::mode_t::structure },
+    { "convert",   detail::mode_t::convert   },
+    { "map",       detail::mode_t::map       },
+    { "map-gen",   detail::mode_t::map_gen   },
+    { "structure", detail::mode_t::structure },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), detail::mode_t::unknown);
+    static map_type mt(entries, std::size(entries), detail::mode_t::unknown);
     return mt;
 }
 
@@ -101,13 +101,13 @@ std::string build_mode_help_text()
 {
     std::ostringstream os;
     os << "Mode of operation. Select one of the following options: ";
-    auto it = mode::entries.cbegin(), ite = mode::entries.cend();
+    auto it = mode::entries, ite = mode::entries + std::size(mode::entries);
     --ite;
 
     for (; it != ite; ++it)
-        os << std::string(it->key, it->key_length) << ", ";
+        os << it->key << ", ";
 
-    os << "or " << std::string(it->key, it->key_length) << ".";
+    os << "or " << it->key << ".";
     return os.str();
 }
 
@@ -219,7 +219,7 @@ detail::cmd_params parse_json_args(int argc, char** argv)
     if (vm.count("mode"))
     {
         std::string s = vm["mode"].as<std::string>();
-        params.mode = mode::get().find(s.data(), s.size());
+        params.mode = mode::get().find(s);
         if (params.mode == detail::mode_t::unknown)
         {
             cerr << "Unknown mode string '" << s << "'." << endl;
