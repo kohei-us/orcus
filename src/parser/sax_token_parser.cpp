@@ -19,18 +19,18 @@ enum class decl_attr_type { unknown, version, encoding, standalone };
 
 namespace decl_attr {
 
-typedef mdds::sorted_string_map<decl_attr_type> map_type;
+using map_type = mdds::sorted_string_map<decl_attr_type, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries = {
-    { ORCUS_ASCII("encoding"),   decl_attr_type::encoding   },
-    { ORCUS_ASCII("standalone"), decl_attr_type::standalone },
-    { ORCUS_ASCII("version"),    decl_attr_type::version    },
+constexpr map_type::entry entries[] = {
+    { "encoding",   decl_attr_type::encoding   },
+    { "standalone", decl_attr_type::standalone },
+    { "version",    decl_attr_type::version    },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), decl_attr_type::unknown);
+    static map_type mt(entries, std::size(entries), decl_attr_type::unknown);
     return mt;
 }
 
@@ -331,7 +331,7 @@ void sax_token_handler_wrapper_base::set_element(const sax_ns_parser_element& el
 
 void sax_token_handler_wrapper_base::attribute(std::string_view name, std::string_view val)
 {
-    decl_attr_type dat = decl_attr::get().find(name.data(), name.size());
+    decl_attr_type dat = decl_attr::get().find(name);
 
     switch (dat)
     {
