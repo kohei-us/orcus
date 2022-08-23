@@ -467,20 +467,19 @@ namespace {
 
 namespace dump_format {
 
-typedef mdds::sorted_string_map<dump_format_t> map_type;
+using map_type = mdds::sorted_string_map<dump_format_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] =
-{
-    { ORCUS_ASCII("check"),       dump_format_t::check       },
-    { ORCUS_ASCII("csv"),         dump_format_t::csv         },
-    { ORCUS_ASCII("debug-state"), dump_format_t::debug_state },
-    { ORCUS_ASCII("flat"),        dump_format_t::flat        },
-    { ORCUS_ASCII("html"),        dump_format_t::html        },
-    { ORCUS_ASCII("json"),        dump_format_t::json        },
-    { ORCUS_ASCII("none"),        dump_format_t::none        },
-    { ORCUS_ASCII("xml"),         dump_format_t::xml         },
-    { ORCUS_ASCII("yaml"),        dump_format_t::yaml        },
+constexpr map_type::entry entries[] = {
+    { "check",       dump_format_t::check       },
+    { "csv",         dump_format_t::csv         },
+    { "debug-state", dump_format_t::debug_state },
+    { "flat",        dump_format_t::flat        },
+    { "html",        dump_format_t::html        },
+    { "json",        dump_format_t::json        },
+    { "none",        dump_format_t::none        },
+    { "xml",         dump_format_t::xml         },
+    { "yaml",        dump_format_t::yaml        },
 };
 
 const map_type& get()
@@ -495,14 +494,14 @@ const map_type& get()
 
 dump_format_t to_dump_format_enum(std::string_view s)
 {
-    return dump_format::get().find(s.data(), s.size());
+    return dump_format::get().find(s);
 }
 
 std::vector<std::pair<std::string_view, dump_format_t>> get_dump_format_entries()
 {
     std::vector<std::pair<std::string_view, dump_format_t>> ret;
     for (const auto& e : dump_format::entries)
-        ret.emplace_back(std::string_view{e.key, e.key_length}, e.value);
+        ret.emplace_back(e.key, e.value);
 
     return ret;
 }
