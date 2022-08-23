@@ -231,7 +231,7 @@ void parser_base::skip_to_or_blank(
 
 void parser_base::skip_blanks()
 {
-    skip(ORCUS_ASCII(" \t\r\n"));
+    skip(" \t\r\n");
 }
 
 void parser_base::skip_blanks_reverse()

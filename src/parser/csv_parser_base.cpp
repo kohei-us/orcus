@@ -49,7 +49,7 @@ bool parser_base::is_text_qualifier(char c) const
 
 void parser_base::skip_blanks()
 {
-    skip(ORCUS_ASCII(" \t"));
+    skip(" \t");
 }
 
 void parser_base::maybe_skip_bom()

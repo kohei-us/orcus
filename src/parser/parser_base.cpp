@@ -97,10 +97,10 @@ char parser_base::next_char() const
     return *(mp_char+1);
 }
 
-void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
+void parser_base::skip(std::string_view chars_to_skip)
 {
 #if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)
-    __m128i match = _mm_loadu_si128((const __m128i*)chars_to_skip);
+    __m128i match = _mm_loadu_si128((const __m128i*)chars_to_skip.data());
     const int mode = _SIDD_LEAST_SIGNIFICANT | _SIDD_CMP_EQUAL_ANY | _SIDD_UBYTE_OPS | _SIDD_NEGATIVE_POLARITY;
 
     int n_total = available_size();
@@ -112,7 +112,7 @@ void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
         // Find position of the first character that is NOT any of the
         // characters to skip.
         int n = std::min<int>(16, n_total);
-        int r = _mm_cmpestri(match, n_chars_to_skip, char_block, n, mode);
+        int r = _mm_cmpestri(match, chars_to_skip.size(), char_block, n, mode);
 
         if (!r)
             // No characters to skip. Bail out.
@@ -130,7 +130,7 @@ void parser_base::skip(const char* chars_to_skip, size_t n_chars_to_skip)
 #else
     for (; has_char(); next())
     {
-        if (!is_in(*mp_char, {chars_to_skip, n_chars_to_skip}))
+        if (!is_in(*mp_char, chars_to_skip))
             break;
     }
 #endif
