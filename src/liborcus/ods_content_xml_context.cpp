@@ -31,13 +31,13 @@ namespace {
 
 namespace cell_value {
 
-typedef mdds::sorted_string_map<ods_content_xml_context::cell_value_type> map_type;
+using map_type = mdds::sorted_string_map<ods_content_xml_context::cell_value_type, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 map_type::entry entries[] = {
-    { ORCUS_ASCII("date"),   ods_content_xml_context::vt_date },
-    { ORCUS_ASCII("float"),  ods_content_xml_context::vt_float },
-    { ORCUS_ASCII("string"), ods_content_xml_context::vt_string }
+    { "date",   ods_content_xml_context::vt_date },
+    { "float",  ods_content_xml_context::vt_float },
+    { "string", ods_content_xml_context::vt_string }
 };
 
 const map_type& get()
