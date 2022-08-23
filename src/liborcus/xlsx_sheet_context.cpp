@@ -129,19 +129,19 @@ public:
 
 namespace sheet_pane {
 
-typedef mdds::sorted_string_map<spreadsheet::sheet_pane_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::sheet_pane_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries = {
-    { ORCUS_ASCII("bottomLeft"),  spreadsheet::sheet_pane_t::bottom_left  },
-    { ORCUS_ASCII("bottomRight"), spreadsheet::sheet_pane_t::bottom_right },
-    { ORCUS_ASCII("topLeft"),     spreadsheet::sheet_pane_t::top_left     },
-    { ORCUS_ASCII("topRight"),    spreadsheet::sheet_pane_t::top_right    },
+constexpr map_type::entry entries[] = {
+    { "bottomLeft",  spreadsheet::sheet_pane_t::bottom_left  },
+    { "bottomRight", spreadsheet::sheet_pane_t::bottom_right },
+    { "topLeft",     spreadsheet::sheet_pane_t::top_left     },
+    { "topRight",    spreadsheet::sheet_pane_t::top_right    },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), spreadsheet::sheet_pane_t::unspecified);
+    static const map_type mt(entries, std::size(entries), spreadsheet::sheet_pane_t::unspecified);
     return mt;
 }
 
@@ -149,18 +149,18 @@ const map_type& get()
 
 namespace pane_state {
 
-typedef mdds::sorted_string_map<spreadsheet::pane_state_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::pane_state_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries = {
-    { ORCUS_ASCII("frozen"),      spreadsheet::pane_state_t::frozen       },
-    { ORCUS_ASCII("frozenSplit"), spreadsheet::pane_state_t::frozen_split },
-    { ORCUS_ASCII("split"),       spreadsheet::pane_state_t::split        },
+constexpr map_type::entry entries[] = {
+    { "frozen",      spreadsheet::pane_state_t::frozen       },
+    { "frozenSplit", spreadsheet::pane_state_t::frozen_split },
+    { "split",       spreadsheet::pane_state_t::split        },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), spreadsheet::pane_state_t::unspecified);
+    static const map_type mt(entries, std::size(entries), spreadsheet::pane_state_t::unspecified);
     return mt;
 }
 
@@ -168,19 +168,19 @@ const map_type& get()
 
 namespace formula_type {
 
-typedef mdds::sorted_string_map<spreadsheet::formula_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::formula_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries = {
-    { ORCUS_ASCII("array"),     spreadsheet::formula_t::array      },
-    { ORCUS_ASCII("dataTable"), spreadsheet::formula_t::data_table },
-    { ORCUS_ASCII("normal"),    spreadsheet::formula_t::normal     },
-    { ORCUS_ASCII("shared"),    spreadsheet::formula_t::shared     },
+constexpr map_type::entry entries[] = {
+    { "array",     spreadsheet::formula_t::array      },
+    { "dataTable", spreadsheet::formula_t::data_table },
+    { "normal",    spreadsheet::formula_t::normal     },
+    { "shared",    spreadsheet::formula_t::shared     },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), spreadsheet::formula_t::unknown);
+    static const map_type mt(entries, std::size(entries), spreadsheet::formula_t::unknown);
     return mt;
 }
 
@@ -457,7 +457,7 @@ void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, c
         switch (attr.name)
         {
             case XML_t:
-                m_cur_formula.type = formula_type::get().find(attr.value.data(), attr.value.size());
+                m_cur_formula.type = formula_type::get().find(attr.value);
                 break;
             case XML_ref:
                 m_cur_formula.ref = to_rc_range(m_resolver.resolve_range(attr.value));
@@ -547,8 +547,7 @@ void xlsx_sheet_context::start_element_selection(
             {
                 case XML_pane:
                 {
-                    pane = sheet_pane::get().find(
-                        attr.value.data(), attr.value.size());
+                    pane = sheet_pane::get().find(attr.value);
                     break;
                 }
                 case XML_activeCell:
@@ -609,10 +608,10 @@ void xlsx_sheet_context::start_element_pane(
                 top_left_cell = to_rc_address(m_resolver.resolve_address(attr.value));
                 break;
             case XML_activePane:
-                active_pane = sheet_pane::get().find(attr.value.data(), attr.value.size());
+                active_pane = sheet_pane::get().find(attr.value);
                 break;
             case XML_state:
-                pane_state = pane_state::get().find(attr.value.data(), attr.value.size());
+                pane_state = pane_state::get().find(attr.value);
                 break;
             default:
                 ;
