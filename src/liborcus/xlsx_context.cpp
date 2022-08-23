@@ -283,30 +283,29 @@ namespace {
 
 namespace border_style {
 
-typedef mdds::sorted_string_map<spreadsheet::border_style_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::border_style_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries =
-{
-    { ORCUS_ASCII("dashDot"),          spreadsheet::border_style_t::dash_dot            },
-    { ORCUS_ASCII("dashDotDot"),       spreadsheet::border_style_t::dash_dot_dot        },
-    { ORCUS_ASCII("dashed"),           spreadsheet::border_style_t::dashed              },
-    { ORCUS_ASCII("dotted"),           spreadsheet::border_style_t::dotted              },
-    { ORCUS_ASCII("double"),           spreadsheet::border_style_t::double_border       },
-    { ORCUS_ASCII("hair"),             spreadsheet::border_style_t::hair                },
-    { ORCUS_ASCII("medium"),           spreadsheet::border_style_t::medium              },
-    { ORCUS_ASCII("mediumDashDot"),    spreadsheet::border_style_t::medium_dash_dot     },
-    { ORCUS_ASCII("mediumDashDotDot"), spreadsheet::border_style_t::medium_dash_dot_dot },
-    { ORCUS_ASCII("mediumDashed"),     spreadsheet::border_style_t::medium_dashed       },
-    { ORCUS_ASCII("none"),             spreadsheet::border_style_t::none                },
-    { ORCUS_ASCII("slantDashDot"),     spreadsheet::border_style_t::slant_dash_dot      },
-    { ORCUS_ASCII("thick"),            spreadsheet::border_style_t::thick               },
-    { ORCUS_ASCII("thin"),             spreadsheet::border_style_t::thin                }
+constexpr map_type::entry entries[] = {
+    { "dashDot",          spreadsheet::border_style_t::dash_dot            },
+    { "dashDotDot",       spreadsheet::border_style_t::dash_dot_dot        },
+    { "dashed",           spreadsheet::border_style_t::dashed              },
+    { "dotted",           spreadsheet::border_style_t::dotted              },
+    { "double",           spreadsheet::border_style_t::double_border       },
+    { "hair",             spreadsheet::border_style_t::hair                },
+    { "medium",           spreadsheet::border_style_t::medium              },
+    { "mediumDashDot",    spreadsheet::border_style_t::medium_dash_dot     },
+    { "mediumDashDotDot", spreadsheet::border_style_t::medium_dash_dot_dot },
+    { "mediumDashed",     spreadsheet::border_style_t::medium_dashed       },
+    { "none",             spreadsheet::border_style_t::none                },
+    { "slantDashDot",     spreadsheet::border_style_t::slant_dash_dot      },
+    { "thick",            spreadsheet::border_style_t::thick               },
+    { "thin",             spreadsheet::border_style_t::thin                }
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), spreadsheet::border_style_t::none);
+    static const map_type mt(entries, std::size(entries), spreadsheet::border_style_t::none);
     return mt;
 }
 
@@ -314,35 +313,34 @@ const map_type& get()
 
 namespace fill_pattern {
 
-typedef mdds::sorted_string_map<spreadsheet::fill_pattern_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::fill_pattern_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries =
-{
-    { ORCUS_ASCII("darkDown"),        spreadsheet::fill_pattern_t::dark_down        },
-    { ORCUS_ASCII("darkGray"),        spreadsheet::fill_pattern_t::dark_gray        },
-    { ORCUS_ASCII("darkGrid"),        spreadsheet::fill_pattern_t::dark_grid        },
-    { ORCUS_ASCII("darkHorizontal"),  spreadsheet::fill_pattern_t::dark_horizontal  },
-    { ORCUS_ASCII("darkTrellis"),     spreadsheet::fill_pattern_t::dark_trellis     },
-    { ORCUS_ASCII("darkUp"),          spreadsheet::fill_pattern_t::dark_up          },
-    { ORCUS_ASCII("darkVertical"),    spreadsheet::fill_pattern_t::dark_vertical    },
-    { ORCUS_ASCII("gray0625"),        spreadsheet::fill_pattern_t::gray_0625        },
-    { ORCUS_ASCII("gray125"),         spreadsheet::fill_pattern_t::gray_125         },
-    { ORCUS_ASCII("lightDown"),       spreadsheet::fill_pattern_t::light_down       },
-    { ORCUS_ASCII("lightGray"),       spreadsheet::fill_pattern_t::light_gray       },
-    { ORCUS_ASCII("lightGrid"),       spreadsheet::fill_pattern_t::light_grid       },
-    { ORCUS_ASCII("lightHorizontal"), spreadsheet::fill_pattern_t::light_horizontal },
-    { ORCUS_ASCII("lightTrellis"),    spreadsheet::fill_pattern_t::light_trellis    },
-    { ORCUS_ASCII("lightUp"),         spreadsheet::fill_pattern_t::light_up         },
-    { ORCUS_ASCII("lightVertical"),   spreadsheet::fill_pattern_t::light_vertical   },
-    { ORCUS_ASCII("mediumGray"),      spreadsheet::fill_pattern_t::medium_gray      },
-    { ORCUS_ASCII("none"),            spreadsheet::fill_pattern_t::none             },
-    { ORCUS_ASCII("solid"),           spreadsheet::fill_pattern_t::solid            },
+constexpr map_type::entry entries[] = {
+    { "darkDown",        spreadsheet::fill_pattern_t::dark_down        },
+    { "darkGray",        spreadsheet::fill_pattern_t::dark_gray        },
+    { "darkGrid",        spreadsheet::fill_pattern_t::dark_grid        },
+    { "darkHorizontal",  spreadsheet::fill_pattern_t::dark_horizontal  },
+    { "darkTrellis",     spreadsheet::fill_pattern_t::dark_trellis     },
+    { "darkUp",          spreadsheet::fill_pattern_t::dark_up          },
+    { "darkVertical",    spreadsheet::fill_pattern_t::dark_vertical    },
+    { "gray0625",        spreadsheet::fill_pattern_t::gray_0625        },
+    { "gray125",         spreadsheet::fill_pattern_t::gray_125         },
+    { "lightDown",       spreadsheet::fill_pattern_t::light_down       },
+    { "lightGray",       spreadsheet::fill_pattern_t::light_gray       },
+    { "lightGrid",       spreadsheet::fill_pattern_t::light_grid       },
+    { "lightHorizontal", spreadsheet::fill_pattern_t::light_horizontal },
+    { "lightTrellis",    spreadsheet::fill_pattern_t::light_trellis    },
+    { "lightUp",         spreadsheet::fill_pattern_t::light_up         },
+    { "lightVertical",   spreadsheet::fill_pattern_t::light_vertical   },
+    { "mediumGray",      spreadsheet::fill_pattern_t::medium_gray      },
+    { "none",            spreadsheet::fill_pattern_t::none             },
+    { "solid",           spreadsheet::fill_pattern_t::solid            },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), spreadsheet::fill_pattern_t::none);
+    static const map_type mt(entries, std::size(entries), spreadsheet::fill_pattern_t::none);
     return mt;
 }
 
