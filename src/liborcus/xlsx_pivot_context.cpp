@@ -25,25 +25,28 @@ namespace orcus {
 
 namespace {
 
-typedef mdds::sorted_string_map<xlsx_pivot_cache_def_context::source_type> pc_source_type;
+namespace pc_source {
+
+using map_type = mdds::sorted_string_map<xlsx_pivot_cache_def_context::source_type, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-pc_source_type::entry pc_source_entries[] = {
-    { ORCUS_ASCII("consolidation"), xlsx_pivot_cache_def_context::source_type::consolidation },
-    { ORCUS_ASCII("external"),      xlsx_pivot_cache_def_context::source_type::external      },
-    { ORCUS_ASCII("scenario"),      xlsx_pivot_cache_def_context::source_type::scenario      },
-    { ORCUS_ASCII("worksheet"),     xlsx_pivot_cache_def_context::source_type::worksheet     },
+constexpr map_type::entry entries[] = {
+    { "consolidation", xlsx_pivot_cache_def_context::source_type::consolidation },
+    { "external",      xlsx_pivot_cache_def_context::source_type::external      },
+    { "scenario",      xlsx_pivot_cache_def_context::source_type::scenario      },
+    { "worksheet",     xlsx_pivot_cache_def_context::source_type::worksheet     },
 };
 
-const pc_source_type& get_pc_source_map()
+const map_type& get()
 {
-    static pc_source_type source_map(
-        pc_source_entries,
-        sizeof(pc_source_entries)/sizeof(pc_source_entries[0]),
+    static const map_type map(
+        entries, std::size(entries),
         xlsx_pivot_cache_def_context::source_type::unknown);
 
-    return source_map;
+    return map;
 }
+
+} // namespace pc_source
 
 }
 
@@ -147,9 +150,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     switch (attr.name)
                     {
                         case XML_type:
-                            m_source_type =
-                                get_pc_source_map().find(attr.value.data(), attr.value.size());
-
+                            m_source_type = pc_source::get().find(attr.value);
                             source_type_s = attr.value;
                             break;
                         default:
