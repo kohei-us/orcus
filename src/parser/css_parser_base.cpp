@@ -217,14 +217,13 @@ void parser_base::skip_to(const char*&p, size_t& len, char c)
     }
 }
 
-void parser_base::skip_to_or_blank(
-    const char*&p, size_t& len, const char* chars, size_t n_chars)
+void parser_base::skip_to_or_blank(const char*&p, size_t& len, std::string_view chars)
 {
     p = mp_char;
     len = 0;
     for (; has_char(); next(), ++len)
     {
-        if (is_blank(*mp_char) || is_in(*mp_char, {chars, n_chars}))
+        if (is_blank(*mp_char) || is_in(*mp_char, chars))
             return;
     }
 }

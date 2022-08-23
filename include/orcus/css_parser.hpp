@@ -698,7 +698,7 @@ void css_parser<_Handler>::function_url()
     // Unquoted URL value.
     const char* p;
     size_t len;
-    skip_to_or_blank(p, len, ORCUS_ASCII(")"));
+    skip_to_or_blank(p, len, ")");
     skip_comments_and_blanks();
     m_handler.url(p, len);
 #if ORCUS_DEBUG_CSS
