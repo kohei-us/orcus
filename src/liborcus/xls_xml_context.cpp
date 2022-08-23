@@ -518,46 +518,44 @@ namespace {
 
 namespace border_dir {
 
-typedef mdds::sorted_string_map<spreadsheet::border_direction_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::border_direction_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries =
-{
-    { ORCUS_ASCII("Bottom"),        spreadsheet::border_direction_t::bottom         },
-    { ORCUS_ASCII("DiagonalLeft"),  spreadsheet::border_direction_t::diagonal_tl_br },
-    { ORCUS_ASCII("DiagonalRight"), spreadsheet::border_direction_t::diagonal_bl_tr },
-    { ORCUS_ASCII("Left"),          spreadsheet::border_direction_t::left           },
-    { ORCUS_ASCII("Right"),         spreadsheet::border_direction_t::right          },
-    { ORCUS_ASCII("Top"),           spreadsheet::border_direction_t::top            },
+constexpr map_type::entry entries[] = {
+    { "Bottom",        spreadsheet::border_direction_t::bottom         },
+    { "DiagonalLeft",  spreadsheet::border_direction_t::diagonal_tl_br },
+    { "DiagonalRight", spreadsheet::border_direction_t::diagonal_bl_tr },
+    { "Left",          spreadsheet::border_direction_t::left           },
+    { "Right",         spreadsheet::border_direction_t::right          },
+    { "Top",           spreadsheet::border_direction_t::top            },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), spreadsheet::border_direction_t::unknown);
+    static const map_type mt(entries, std::size(entries), spreadsheet::border_direction_t::unknown);
     return mt;
 }
 
-}
+} // namespace border_dir
 
 namespace border_style {
 
-typedef mdds::sorted_string_map<spreadsheet::border_style_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::border_style_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries =
-{
-    { ORCUS_ASCII("Continuous"),   spreadsheet::border_style_t::solid          },
-    { ORCUS_ASCII("Dash"),         spreadsheet::border_style_t::dashed         },
-    { ORCUS_ASCII("DashDot"),      spreadsheet::border_style_t::dash_dot       },
-    { ORCUS_ASCII("DashDotDot"),   spreadsheet::border_style_t::dash_dot_dot   },
-    { ORCUS_ASCII("Dot"),          spreadsheet::border_style_t::dotted         },
-    { ORCUS_ASCII("Double"),       spreadsheet::border_style_t::double_border  },
-    { ORCUS_ASCII("SlantDashDot"), spreadsheet::border_style_t::slant_dash_dot },
+constexpr map_type::entry entries[] = {
+    { "Continuous",   spreadsheet::border_style_t::solid          },
+    { "Dash",         spreadsheet::border_style_t::dashed         },
+    { "DashDot",      spreadsheet::border_style_t::dash_dot       },
+    { "DashDotDot",   spreadsheet::border_style_t::dash_dot_dot   },
+    { "Dot",          spreadsheet::border_style_t::dotted         },
+    { "Double",       spreadsheet::border_style_t::double_border  },
+    { "SlantDashDot", spreadsheet::border_style_t::slant_dash_dot },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), spreadsheet::border_style_t::unknown);
+    static const map_type mt(entries, std::size(entries), spreadsheet::border_style_t::unknown);
     return mt;
 }
 
@@ -1280,12 +1278,12 @@ void xls_xml_context::start_element_border(const xml_attrs_t& attrs)
         {
             case XML_Position:
             {
-                dir = border_dir::get().find(attr.value.data(), attr.value.size());
+                dir = border_dir::get().find(attr.value);
                 break;
             }
             case XML_LineStyle:
             {
-                style = border_style::get().find(attr.value.data(), attr.value.size());
+                style = border_style::get().find(attr.value);
                 break;
             }
             case XML_Weight:
