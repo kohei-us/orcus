@@ -249,17 +249,17 @@ const map_type& get()
 
 namespace formula_error_policy {
 
-using map_type = mdds::sorted_string_map<formula_error_policy_t>;
+using map_type = mdds::sorted_string_map<formula_error_policy_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries = {
-    { ORCUS_ASCII("fail"), formula_error_policy_t::fail },
-    { ORCUS_ASCII("skip"), formula_error_policy_t::skip },
+constexpr map_type::entry entries[] = {
+    { "fail", formula_error_policy_t::fail },
+    { "skip", formula_error_policy_t::skip },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), formula_error_policy_t::unknown);
+    static map_type mt(entries, std::size(entries), formula_error_policy_t::unknown);
     return mt;
 }
 
@@ -576,7 +576,7 @@ color_rgb_t to_color_rgb_from_name(std::string_view s)
 
 formula_error_policy_t to_formula_error_policy(std::string_view s)
 {
-    return formula_error_policy::get().find(s.data(), s.size());
+    return formula_error_policy::get().find(s);
 }
 
 std::ostream& operator<< (std::ostream& os, error_value_t ev)
