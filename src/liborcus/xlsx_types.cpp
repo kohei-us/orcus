@@ -15,90 +15,96 @@ namespace orcus {
 
 namespace {
 
-const char* str_unknown = "unknown";
+constexpr std::string_view str_unknown = "unknown";
 
-typedef mdds::sorted_string_map<xlsx_cell_t> map_type;
+namespace cell_type {
+
+using map_type = mdds::sorted_string_map<xlsx_cell_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-map_type::entry cell_type_entries[] = {
-    { ORCUS_ASCII("b"), xlsx_ct_boolean },
-    { ORCUS_ASCII("e"), xlsx_ct_error },
-    { ORCUS_ASCII("inlineStr"), xlsx_ct_inline_string },
-    { ORCUS_ASCII("n"), xlsx_ct_numeric },
-    { ORCUS_ASCII("s"), xlsx_ct_shared_string },
-    { ORCUS_ASCII("str"), xlsx_ct_formula_string }
+constexpr map_type::entry entries[] = {
+    { "b", xlsx_ct_boolean },
+    { "e", xlsx_ct_error },
+    { "inlineStr", xlsx_ct_inline_string },
+    { "n", xlsx_ct_numeric },
+    { "s", xlsx_ct_shared_string },
+    { "str", xlsx_ct_formula_string }
 };
 
-}
-
-xlsx_cell_t to_xlsx_cell_type(const pstring& s)
+const map_type& get()
 {
-    static map_type ct_map(
-        cell_type_entries,
-        sizeof(cell_type_entries)/sizeof(cell_type_entries[0]),
-        xlsx_ct_unknown);
-
-    return ct_map.find(s.get(), s.size());
+    static const map_type map(entries, std::size(entries), xlsx_ct_unknown);
+    return map;
 }
 
-pstring to_string(xlsx_cell_t type)
+} // namespace cell_type
+
+namespace rca {
+
+using map_type = mdds::sorted_string_map<xlsx_rev_row_column_action_t, mdds::string_view_map_entry>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] = {
+    { "deleteCol", xlsx_rev_rca_delete_column },
+    { "deleteRow", xlsx_rev_rca_delete_row    },
+    { "insertCol", xlsx_rev_rca_insert_column },
+    { "insertRow", xlsx_rev_rca_insert_row    }
+};
+
+const map_type& get()
+{
+    static const map_type map(entries, std::size(entries), xlsx_rev_rca_unknown);
+    return map;
+}
+
+} // namespace rca
+
+} // anonymous namespace
+
+xlsx_cell_t to_xlsx_cell_type(std::string_view s)
+{
+    return cell_type::get().find(s);
+}
+
+std::string_view to_string(xlsx_cell_t type)
 {
     switch (type)
     {
         case xlsx_ct_boolean:
-            return cell_type_entries[0].key;
+            return cell_type::entries[0].key;
         case xlsx_ct_error:
-            return cell_type_entries[1].key;
+            return cell_type::entries[1].key;
         case xlsx_ct_inline_string:
-            return cell_type_entries[2].key;
+            return cell_type::entries[2].key;
         case xlsx_ct_numeric:
-            return cell_type_entries[3].key;
+            return cell_type::entries[3].key;
         case xlsx_ct_shared_string:
-            return cell_type_entries[4].key;
+            return cell_type::entries[4].key;
         case xlsx_ct_formula_string:
-            return cell_type_entries[5].key;
+            return cell_type::entries[5].key;
         default:
             ;
     }
     return str_unknown;
 }
 
-namespace {
-
-typedef mdds::sorted_string_map<xlsx_rev_row_column_action_t> rca_map_type;
-
-// Keys must be sorted.
-rca_map_type::entry rca_entries[] = {
-    { ORCUS_ASCII("deleteCol"), xlsx_rev_rca_delete_column },
-    { ORCUS_ASCII("deleteRow"), xlsx_rev_rca_delete_row    },
-    { ORCUS_ASCII("insertCol"), xlsx_rev_rca_insert_column },
-    { ORCUS_ASCII("insertRow"), xlsx_rev_rca_insert_row    }
-};
-
-}
-
-xlsx_rev_row_column_action_t to_xlsx_rev_row_column_action_type(const pstring& s)
+xlsx_rev_row_column_action_t to_xlsx_rev_row_column_action_type(std::string_view s)
 {
-    static rca_map_type rca_map(
-        rca_entries,
-        sizeof(rca_entries)/sizeof(rca_entries[0]),
-        xlsx_rev_rca_unknown);
-
-    return rca_map.find(s.get(), s.size());
+    return rca::get().find(s);
 }
 
-pstring to_string(xlsx_rev_row_column_action_t type)
+std::string_view to_string(xlsx_rev_row_column_action_t type)
 {
     switch (type)
     {
         case xlsx_rev_rca_delete_column:
-            return rca_entries[0].key;
+            return rca::entries[0].key;
         case xlsx_rev_rca_delete_row:
-            return rca_entries[1].key;
+            return rca::entries[1].key;
         case xlsx_rev_rca_insert_column:
-            return rca_entries[2].key;
+            return rca::entries[2].key;
         case xlsx_rev_rca_insert_row:
-            return rca_entries[3].key;
+            return rca::entries[3].key;
         case xlsx_rev_rca_unknown:
         default:
             ;

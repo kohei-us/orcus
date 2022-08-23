@@ -70,9 +70,9 @@ enum xlsx_cell_t
     xlsx_ct_formula_string,
 };
 
-xlsx_cell_t to_xlsx_cell_type(const pstring& s);
+xlsx_cell_t to_xlsx_cell_type(std::string_view s);
 
-pstring to_string(xlsx_cell_t type);
+std::string_view to_string(xlsx_cell_t type);
 
 enum xlsx_rev_row_column_action_t
 {
@@ -83,9 +83,9 @@ enum xlsx_rev_row_column_action_t
     xlsx_rev_rca_insert_row
 };
 
-xlsx_rev_row_column_action_t to_xlsx_rev_row_column_action_type(const pstring& s);
+xlsx_rev_row_column_action_t to_xlsx_rev_row_column_action_type(std::string_view s);
 
-pstring to_string(xlsx_rev_row_column_action_t type);
+std::string_view to_string(xlsx_rev_row_column_action_t type);
 
 }
 
