@@ -9,6 +9,7 @@
 #define __ORCUS_BASE64_HPP__
 
 #include "env.hpp"
+#include <cstdint>
 #include <vector>
 #include <string>
 
