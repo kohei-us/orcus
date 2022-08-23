@@ -563,21 +563,20 @@ const map_type& get()
 
 namespace hor_align {
 
-typedef mdds::sorted_string_map<spreadsheet::hor_alignment_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::hor_alignment_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries =
-{
-    { ORCUS_ASCII("Center"),      spreadsheet::hor_alignment_t::center      },
-    { ORCUS_ASCII("Distributed"), spreadsheet::hor_alignment_t::distributed },
-    { ORCUS_ASCII("Justify"),     spreadsheet::hor_alignment_t::justified   },
-    { ORCUS_ASCII("Left"),        spreadsheet::hor_alignment_t::left        },
-    { ORCUS_ASCII("Right"),       spreadsheet::hor_alignment_t::right       },
+constexpr map_type::entry entries[] = {
+    { "Center",      spreadsheet::hor_alignment_t::center      },
+    { "Distributed", spreadsheet::hor_alignment_t::distributed },
+    { "Justify",     spreadsheet::hor_alignment_t::justified   },
+    { "Left",        spreadsheet::hor_alignment_t::left        },
+    { "Right",       spreadsheet::hor_alignment_t::right       },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), spreadsheet::hor_alignment_t::unknown);
+    static const map_type mt(entries, std::size(entries), spreadsheet::hor_alignment_t::unknown);
     return mt;
 }
 
@@ -585,21 +584,20 @@ const map_type& get()
 
 namespace ver_align {
 
-typedef mdds::sorted_string_map<spreadsheet::ver_alignment_t> map_type;
+using map_type = mdds::sorted_string_map<spreadsheet::ver_alignment_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-const std::vector<map_type::entry> entries =
-{
-    { ORCUS_ASCII("Bottom"),      spreadsheet::ver_alignment_t::bottom      },
-    { ORCUS_ASCII("Center"),      spreadsheet::ver_alignment_t::middle      },
-    { ORCUS_ASCII("Distributed"), spreadsheet::ver_alignment_t::distributed },
-    { ORCUS_ASCII("Justify"),     spreadsheet::ver_alignment_t::justified   },
-    { ORCUS_ASCII("Top"),         spreadsheet::ver_alignment_t::top         },
+constexpr map_type::entry entries[] = {
+    { "Bottom",      spreadsheet::ver_alignment_t::bottom      },
+    { "Center",      spreadsheet::ver_alignment_t::middle      },
+    { "Distributed", spreadsheet::ver_alignment_t::distributed },
+    { "Justify",     spreadsheet::ver_alignment_t::justified   },
+    { "Top",         spreadsheet::ver_alignment_t::top         },
 };
 
 const map_type& get()
 {
-    static map_type mt(entries.data(), entries.size(), spreadsheet::ver_alignment_t::unknown);
+    static const map_type mt(entries, std::size(entries), spreadsheet::ver_alignment_t::unknown);
     return mt;
 }
 
@@ -1028,14 +1026,12 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                     {
                         case XML_Horizontal:
                         {
-                            m_current_style->text_alignment.hor =
-                                hor_align::get().find(attr.value.data(), attr.value.size());
+                            m_current_style->text_alignment.hor = hor_align::get().find(attr.value);
                             break;
                         }
                         case XML_Vertical:
                         {
-                            m_current_style->text_alignment.ver =
-                                ver_align::get().find(attr.value.data(), attr.value.size());
+                            m_current_style->text_alignment.ver = ver_align::get().find(attr.value);
                             break;
                         }
                         case XML_Indent:
