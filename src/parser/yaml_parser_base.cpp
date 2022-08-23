@@ -317,34 +317,46 @@ void parser_base::set_doc_hash(const char* hash)
 
 namespace {
 
-mdds::sorted_string_map<detail::keyword_t>::entry keyword_entries[] = {
-    { ORCUS_ASCII("FALSE"), detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("False"), detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("N"),     detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("NO"),    detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("NULL"),  detail::keyword_t::null          },
-    { ORCUS_ASCII("No"),    detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("Null"),  detail::keyword_t::null          },
-    { ORCUS_ASCII("OFF"),   detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("ON"),    detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("Off"),   detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("On"),    detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("TRUE"),  detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("True"),  detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("Y"),     detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("YES"),   detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("Yes"),   detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("false"), detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("n"),     detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("no"),    detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("null"),  detail::keyword_t::null          },
-    { ORCUS_ASCII("off"),   detail::keyword_t::boolean_false },
-    { ORCUS_ASCII("on"),    detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("true"),  detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("y"),     detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("yes"),   detail::keyword_t::boolean_true  },
-    { ORCUS_ASCII("~"),     detail::keyword_t::null          },
+namespace keyword {
+
+using map_type = mdds::sorted_string_map<detail::keyword_t, mdds::string_view_map_entry>;
+
+constexpr map_type::entry entries[] = {
+    { "FALSE", detail::keyword_t::boolean_false },
+    { "False", detail::keyword_t::boolean_false },
+    { "N",     detail::keyword_t::boolean_false },
+    { "NO",    detail::keyword_t::boolean_false },
+    { "NULL",  detail::keyword_t::null          },
+    { "No",    detail::keyword_t::boolean_false },
+    { "Null",  detail::keyword_t::null          },
+    { "OFF",   detail::keyword_t::boolean_false },
+    { "ON",    detail::keyword_t::boolean_true  },
+    { "Off",   detail::keyword_t::boolean_false },
+    { "On",    detail::keyword_t::boolean_true  },
+    { "TRUE",  detail::keyword_t::boolean_true  },
+    { "True",  detail::keyword_t::boolean_true  },
+    { "Y",     detail::keyword_t::boolean_true  },
+    { "YES",   detail::keyword_t::boolean_true  },
+    { "Yes",   detail::keyword_t::boolean_true  },
+    { "false", detail::keyword_t::boolean_false },
+    { "n",     detail::keyword_t::boolean_false },
+    { "no",    detail::keyword_t::boolean_false },
+    { "null",  detail::keyword_t::null          },
+    { "off",   detail::keyword_t::boolean_false },
+    { "on",    detail::keyword_t::boolean_true  },
+    { "true",  detail::keyword_t::boolean_true  },
+    { "y",     detail::keyword_t::boolean_true  },
+    { "yes",   detail::keyword_t::boolean_true  },
+    { "~",     detail::keyword_t::null          },
 };
+
+const map_type& get()
+{
+    static const map_type map(entries, std::size(entries), detail::keyword_t::unknown);
+    return map;
+}
+
+} // namespace keyword
 
 void throw_quoted_string_parse_error(
     const char* func_name, const parse_quoted_string_state& ret, std::ptrdiff_t offset)
@@ -365,13 +377,7 @@ void throw_quoted_string_parse_error(
 
 detail::keyword_t parser_base::parse_keyword(const char* p, size_t len)
 {
-    static mdds::sorted_string_map<detail::keyword_t> map(
-        keyword_entries,
-        std::size(keyword_entries),
-        detail::keyword_t::unknown);
-
-    detail::keyword_t value = map.find(p, len);
-    return value;
+    return keyword::get().find({p, len});
 }
 
 parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
