@@ -10,6 +10,7 @@
 
 #include "xml_context_base.hpp"
 #include "odf_styles.hpp"
+#include "odf_style_context.hpp"
 #include "odf_number_format_context.hpp"
 
 #include <unordered_map>
@@ -36,10 +37,6 @@ public:
     virtual void characters(std::string_view str, bool transient) override;
 
 private:
-    void start_paragraph_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void start_text_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void start_table_cell_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-
     void commit_default_styles();
 
 private:
@@ -51,10 +48,12 @@ private:
     // an automatic style corresponds to a cell format and not a real style
     bool m_automatic_styles;
 
+    style_context m_cxt_style;
     number_format_context m_cxt_number_format;
 };
 
-}
+} // namespace orcus
 
 #endif
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

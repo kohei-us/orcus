@@ -54,8 +54,6 @@ struct odf_style
         spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
         spreadsheet::ver_alignment_t ver_align = spreadsheet::ver_alignment_t::unknown;
         size_t xf = 0;
-
-        bool automatic_style = false;
     };
 
     struct table

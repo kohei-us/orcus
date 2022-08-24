@@ -81,6 +81,7 @@ add_library(orcus-${ORCUS_API_VERSION} SHARED
     odf_para_context.cpp
     odf_styles.cpp
     odf_styles_context.cpp
+    odf_style_context.cpp
     odf_number_format_context.cpp
     odf_tokens.cpp
     ods_content_xml_context.cpp
