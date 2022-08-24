@@ -25,6 +25,13 @@ orcus_test_xml_LDADD = \
 
 orcus_test_xml_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS) -DSRCDIR=\""$(top_srcdir)"\"
 
+# orcus-env-dump
+
+orcus_env_dump_SOURCES = orcus_env_dump.cpp
+orcus_env_dump_LDADD = \
+	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	liborcus/liborcus-@ORCUS_API_VERSION@.la
+orcus_env_dump_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 TESTS = \
 	orcus-test-xml \
@@ -133,16 +140,6 @@ orcus_detect_LDADD = \
 	$(BOOST_SYSTEM_LIBS)
 
 orcus_detect_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
-
-#----------------------------------------------------------------------------
-
-# orcus-env-dump
-
-orcus_env_dump_SOURCES = orcus_env_dump.cpp
-orcus_env_dump_LDADD = \
-	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	liborcus/liborcus-@ORCUS_API_VERSION@.la
-orcus_env_dump_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 #----------------------------------------------------------------------------
 
