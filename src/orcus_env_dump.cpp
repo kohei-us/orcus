@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/global.hpp"
 #include "cpu_features.hpp"
 
 #include <iostream>

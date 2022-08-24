@@ -6,7 +6,6 @@
  */
 
 #include "orcus/csv_parser_base.hpp"
-#include "orcus/global.hpp"
 
 #include <cstring>
 

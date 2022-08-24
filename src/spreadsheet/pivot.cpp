@@ -7,7 +7,6 @@
 
 #include "orcus/spreadsheet/pivot.hpp"
 #include "orcus/spreadsheet/document.hpp"
-#include "orcus/global.hpp"
 #include "orcus/string_pool.hpp"
 
 #include <ixion/address.hpp>

@@ -13,7 +13,6 @@
 #include "orcus/spreadsheet/shared_strings.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/sheet.hpp"
-#include "orcus/global.hpp"
 
 #include <ixion/address.hpp>
 #include <ixion/model_context.hpp>

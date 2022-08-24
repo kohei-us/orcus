@@ -7,7 +7,6 @@
 
 #include "test_global.hpp"
 #include <orcus/threaded_json_parser.hpp>
-#include <orcus/global.hpp>
 
 #include <cstring>
 

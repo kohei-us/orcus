@@ -7,7 +7,6 @@
 
 #include <orcus/css_parser_base.hpp>
 #include <orcus/parser_global.hpp>
-#include <orcus/global.hpp>
 
 #include "utf8.hpp"
 

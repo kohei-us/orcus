@@ -8,7 +8,6 @@
 #include "orcus_test_global.hpp"
 #include "orcus/orcus_xls_xml.hpp"
 #include "pstring.hpp"
-#include "orcus/global.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/config.hpp"
 #include "orcus/yaml_document_tree.hpp"

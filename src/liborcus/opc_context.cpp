@@ -13,7 +13,6 @@
 #include "session_context.hpp"
 
 #include "orcus/exception.hpp"
-#include "orcus/global.hpp"
 
 #include <cassert>
 #include <iostream>

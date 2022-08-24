@@ -12,7 +12,6 @@
 
 #include "parser_global.hpp"
 #include "css_parser_base.hpp"
-#include "global.hpp"
 
 #include <cassert>
 #include <algorithm>

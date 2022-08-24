@@ -12,7 +12,6 @@
 #include "gnumeric_helper.hpp"
 #include "impl_utils.hpp"
 
-#include <orcus/global.hpp>
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
 

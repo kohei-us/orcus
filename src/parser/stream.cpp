@@ -7,7 +7,6 @@
 
 #include <orcus/stream.hpp>
 #include <orcus/exception.hpp>
-#include <orcus/global.hpp>
 
 #include <sstream>
 #include <fstream>

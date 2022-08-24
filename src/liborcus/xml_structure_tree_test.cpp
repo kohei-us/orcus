@@ -7,7 +7,6 @@
 
 #include <orcus/xml_structure_tree.hpp>
 #include <orcus/xml_namespace.hpp>
-#include <orcus/global.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/parser_global.hpp>
 

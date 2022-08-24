@@ -6,7 +6,6 @@
  */
 
 #include "orcus/json_parser_base.hpp"
-#include "orcus/global.hpp"
 #include "orcus/cell_buffer.hpp"
 #include "numeric_parser.hpp"
 

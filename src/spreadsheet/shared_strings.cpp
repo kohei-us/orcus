@@ -6,7 +6,6 @@
  */
 
 #include <orcus/spreadsheet/shared_strings.hpp>
-#include <orcus/global.hpp>
 #include <ixion/model_context.hpp>
 
 #include <iostream>

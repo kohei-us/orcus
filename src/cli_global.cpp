@@ -7,8 +7,6 @@
 
 #include "cli_global.hpp"
 
-#include "orcus/global.hpp"
-
 #include <iostream>
 #include <fstream>
 

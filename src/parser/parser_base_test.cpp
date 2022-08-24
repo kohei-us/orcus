@@ -7,7 +7,6 @@
 
 #include "test_global.hpp"
 #include "orcus/parser_base.hpp"
-#include "orcus/global.hpp"
 
 using namespace std;
 using namespace orcus;

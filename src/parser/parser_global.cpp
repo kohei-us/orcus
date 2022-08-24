@@ -7,7 +7,6 @@
 
 #include <orcus/parser_global.hpp>
 #include <orcus/cell_buffer.hpp>
-#include <orcus/global.hpp>
 #include <orcus/exception.hpp>
 
 #include "numeric_parser.hpp"

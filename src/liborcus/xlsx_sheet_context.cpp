@@ -16,7 +16,6 @@
 #include "ooxml_namespace_types.hpp"
 #include "xml_context_global.hpp"
 #include "orcus/exception.hpp"
-#include "orcus/global.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/spreadsheet/import_interface_view.hpp"
 #include "orcus/measurement.hpp"

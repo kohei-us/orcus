@@ -9,7 +9,6 @@
 
 #include "orcus/csv_parser.hpp"
 #include "pstring.hpp"
-#include "orcus/global.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/config.hpp"

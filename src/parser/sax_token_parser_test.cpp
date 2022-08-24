@@ -8,7 +8,6 @@
 #include "test_global.hpp"
 #include "orcus/sax_token_parser.hpp"
 #include "orcus/tokens.hpp"
-#include "orcus/global.hpp"
 #include "orcus/xml_namespace.hpp"
 
 #include <cstring>

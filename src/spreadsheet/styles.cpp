@@ -6,7 +6,6 @@
  */
 
 #include "orcus/spreadsheet/styles.hpp"
-#include "orcus/global.hpp"
 #include "orcus/string_pool.hpp"
 
 #include "ostream_utils.hpp"

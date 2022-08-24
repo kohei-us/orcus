@@ -3,7 +3,6 @@
 #include <orcus/stream.hpp>
 #include <orcus/xml_namespace.hpp>
 #include "pstring.hpp"
-#include <orcus/global.hpp>
 #include <cassert>
 #include <iostream>
 

@@ -6,7 +6,6 @@
  */
 
 #include "orcus/sax_parser_base.hpp"
-#include "orcus/global.hpp"
 
 #include "utf8.hpp"
 

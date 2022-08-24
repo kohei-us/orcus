@@ -6,7 +6,6 @@
  */
 
 #include <orcus/xml_writer.hpp>
-#include <orcus/global.hpp>
 #include <orcus/xml_namespace.hpp>
 #include <orcus/string_pool.hpp>
 #include "pstring.hpp"
@@ -72,6 +71,12 @@ void write_content_encoded(std::string_view content, std::ostream& os)
         p0 = nullptr;
     };
 
+    constexpr std::string_view cv_lt = "&lt;";
+    constexpr std::string_view cv_gt = "&gt;";
+    constexpr std::string_view cv_amp = "&amp;";
+    constexpr std::string_view cv_apos = "&apos;";
+    constexpr std::string_view cv_quot = "&quot;";
+
     const char* p = content.data();
     const char* p_end = p + content.size();
     const char* p0 = nullptr;
@@ -85,23 +90,23 @@ void write_content_encoded(std::string_view content, std::ostream& os)
         {
             case '<':
                 _flush(p0, p);
-                os.write(ORCUS_ASCII("&lt;"));
+                os.write(cv_lt.data(), cv_lt.size());
                 break;
             case '>':
                 _flush(p0, p);
-                os.write(ORCUS_ASCII("&gt;"));
+                os.write(cv_gt.data(), cv_gt.size());
                 break;
             case '&':
                 _flush(p0, p);
-                os.write(ORCUS_ASCII("&amp;"));
+                os.write(cv_amp.data(), cv_amp.size());
                 break;
             case '\'':
                 _flush(p0, p);
-                os.write(ORCUS_ASCII("&apos;"));
+                os.write(cv_apos.data(), cv_apos.size());
                 break;
             case '"':
                 _flush(p0, p);
-                os.write(ORCUS_ASCII("&quot;"));
+                os.write(cv_quot.data(), cv_quot.size());
                 break;
         }
     }

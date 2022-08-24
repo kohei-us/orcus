@@ -7,7 +7,6 @@
 
 #include "xml_map_tree.hpp"
 #include "xpath_parser.hpp"
-#include "orcus/global.hpp"
 
 #define ORCUS_DEBUG_XML_MAP_TREE 0
 

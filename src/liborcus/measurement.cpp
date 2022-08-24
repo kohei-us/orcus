@@ -11,7 +11,6 @@
 
 #include <mdds/sorted_string_map.hpp>
 #include <mdds/global.hpp>
-#include <orcus/global.hpp>
 
 #include <sstream>
 

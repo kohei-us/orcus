@@ -6,7 +6,6 @@
  */
 
 #include "json_map_tree.hpp"
-#include "orcus/global.hpp"
 #include "orcus/measurement.hpp"
 
 #include <iostream>

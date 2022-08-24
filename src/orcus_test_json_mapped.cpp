@@ -10,7 +10,6 @@
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/factory.hpp>
 #include <orcus/exception.hpp>
-#include <orcus/global.hpp>
 #include <orcus/parser_global.hpp>
 
 #include <iostream>

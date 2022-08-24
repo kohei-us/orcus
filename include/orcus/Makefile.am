@@ -16,7 +16,6 @@ liborcus_HEADERS = \
 	env.hpp \
 	exception.hpp \
 	format_detection.hpp \
-	global.hpp \
 	info.hpp \
 	interface.hpp \
 	json_document_tree.hpp \

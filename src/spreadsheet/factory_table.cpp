@@ -8,7 +8,6 @@
 #include "factory_table.hpp"
 #include "formula_global.hpp"
 
-#include "orcus/global.hpp"
 #include "orcus/string_pool.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/sheet.hpp"

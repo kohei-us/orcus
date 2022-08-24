@@ -12,7 +12,6 @@
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/stream.hpp"
-#include "orcus/global.hpp"
 #include "orcus/sax_parser_base.hpp"
 
 #include "orcus_filter_global.hpp"

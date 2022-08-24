@@ -8,7 +8,6 @@
 #include "global_settings.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/factory.hpp"
-#include "orcus/global.hpp"
 
 namespace orcus { namespace spreadsheet {
 

@@ -7,7 +7,6 @@
 
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/styles.hpp"
-#include "orcus/global.hpp"
 #include "orcus/string_pool.hpp"
 
 namespace orcus { namespace spreadsheet {

@@ -7,8 +7,6 @@
 
 #include "ooxml_types.hpp"
 
-#include "orcus/global.hpp"
-
 namespace orcus {
 
 opc_rel_extra::~opc_rel_extra() {}

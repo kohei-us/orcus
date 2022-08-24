@@ -11,7 +11,6 @@
 #include "ooxml_token_constants.hpp"
 #include "ooxml_namespace_types.hpp"
 
-#include "orcus/global.hpp"
 #include "orcus/exception.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/measurement.hpp"

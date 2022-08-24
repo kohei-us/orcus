@@ -13,7 +13,6 @@
 #include "session_context.hpp"
 #include "xlsx_session_data.hpp"
 
-#include "orcus/global.hpp"
 #include "orcus/measurement.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 

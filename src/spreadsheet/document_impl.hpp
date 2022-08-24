@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <orcus/global.hpp>
 #include <orcus/spreadsheet/auto_filter.hpp>
 #include <orcus/spreadsheet/config.hpp>
 #include <orcus/spreadsheet/document.hpp>

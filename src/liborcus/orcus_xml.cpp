@@ -6,7 +6,6 @@
  */
 
 #include <orcus/orcus_xml.hpp>
-#include <orcus/global.hpp>
 #include <orcus/sax_ns_parser.hpp>
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/export_interface.hpp>

@@ -11,7 +11,6 @@
 #include <orcus/measurement.hpp>
 #include <mdds/sorted_string_map.hpp>
 #include <mdds/global.hpp>
-#include <orcus/global.hpp>
 #include <orcus/spreadsheet/styles.hpp>
 
 namespace ss = orcus::spreadsheet;

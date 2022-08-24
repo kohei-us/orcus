@@ -6,7 +6,6 @@
  */
 
 #include "orcus/sax_token_parser_thread.hpp"
-#include "orcus/global.hpp"
 #include "orcus/sax_token_parser.hpp"
 #include "orcus/string_pool.hpp"
 #include "orcus/detail/parser_token_buffer.hpp"

@@ -10,7 +10,6 @@
 
 #include "sax_parser.hpp"
 #include "xml_namespace.hpp"
-#include "global.hpp"
 
 #include <unordered_set>
 #include <vector>

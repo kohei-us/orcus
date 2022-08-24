@@ -8,7 +8,6 @@
 #include "orcus_filter_global.hpp"
 #include "orcus/config.hpp"
 #include "orcus/interface.hpp"
-#include "orcus/global.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 
 #include <mdds/sorted_string_map.hpp>

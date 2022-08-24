@@ -9,7 +9,6 @@
 #include "orcus/yaml_parser_base.hpp"
 #include "orcus/config.hpp"
 #include "orcus/stream.hpp"
-#include "orcus/global.hpp"
 
 #include <iostream>
 #include <fstream>

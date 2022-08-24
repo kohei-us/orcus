@@ -12,7 +12,6 @@
 #include "session_context.hpp"
 #include "ods_session_data.hpp"
 
-#include "orcus/global.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 
 #include <iostream>

@@ -10,7 +10,6 @@
 #include <orcus/stream.hpp>
 #include <orcus/json_document_tree.hpp>
 #include <orcus/json_parser_base.hpp>
-#include <orcus/global.hpp>
 #include <orcus/config.hpp>
 #include <orcus/xml_namespace.hpp>
 #include <orcus/dom_tree.hpp>

@@ -7,7 +7,6 @@
 
 #include "orcus/interface.hpp"
 #include "orcus/config.hpp"
-#include "orcus/global.hpp"
 
 namespace orcus { namespace iface {
 

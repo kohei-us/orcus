@@ -13,7 +13,6 @@
 #include "orcus/orcus_xls_xml.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/factory.hpp"
-#include "orcus/global.hpp"
 #endif
 
 namespace orcus { namespace python {

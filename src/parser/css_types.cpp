@@ -6,7 +6,6 @@
  */
 
 #include <orcus/css_types.hpp>
-#include <orcus/global.hpp>
 #include <mdds/sorted_string_map.hpp>
 #include <mdds/global.hpp>
 

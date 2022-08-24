@@ -7,7 +7,6 @@
 
 #include <orcus/types.hpp>
 #include <orcus/parser_global.hpp>
-#include <orcus/global.hpp>
 #include <orcus/xml_namespace.hpp>
 
 #include <limits>

@@ -6,7 +6,6 @@
  */
 
 #include "test_global.hpp"
-#include "orcus/global.hpp"
 #include "numeric_parser.hpp"
 
 #include <cassert>

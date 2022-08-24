@@ -6,7 +6,6 @@
  */
 
 #include <orcus/yaml_parser_base.hpp>
-#include <orcus/global.hpp>
 #include <orcus/cell_buffer.hpp>
 #include <orcus/parser_global.hpp>
 

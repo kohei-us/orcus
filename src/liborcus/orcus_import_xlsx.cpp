@@ -8,7 +8,6 @@
 #include "orcus/orcus_import_xlsx.hpp"
 
 #include "orcus/xml_namespace.hpp"
-#include "orcus/global.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/config.hpp"
 

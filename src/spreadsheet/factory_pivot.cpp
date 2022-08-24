@@ -7,7 +7,6 @@
 
 #include "factory_pivot.hpp"
 
-#include "orcus/global.hpp"
 #include "orcus/string_pool.hpp"
 #include "orcus/exception.hpp"
 

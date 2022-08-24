@@ -7,7 +7,6 @@
 
 #include "orcus/spreadsheet/view.hpp"
 #include "orcus/spreadsheet/document.hpp"
-#include "orcus/global.hpp"
 
 #include <cassert>
 #include <iostream>

@@ -6,7 +6,6 @@
  */
 
 #include <orcus/spreadsheet/types.hpp>
-#include <orcus/global.hpp>
 #include <orcus/exception.hpp>
 #include "pstring.hpp"
 

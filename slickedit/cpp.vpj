@@ -201,7 +201,6 @@
                 <F N="../include/orcus/env.hpp"/>
                 <F N="../include/orcus/exception.hpp"/>
                 <F N="../include/orcus/format_detection.hpp"/>
-                <F N="../include/orcus/global.hpp"/>
                 <F N="../include/orcus/info.hpp"/>
                 <F N="../include/orcus/interface.hpp"/>
                 <F N="../include/orcus/json_document_tree.hpp"/>

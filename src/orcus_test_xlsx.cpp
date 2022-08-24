@@ -7,7 +7,6 @@
 
 #include "orcus/orcus_xlsx.hpp"
 #include "pstring.hpp"
-#include "orcus/global.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/config.hpp"
 #include "orcus/spreadsheet/factory.hpp"

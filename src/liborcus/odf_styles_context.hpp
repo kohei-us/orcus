@@ -12,8 +12,6 @@
 #include "odf_styles.hpp"
 #include "odf_number_format_context.hpp"
 
-#include <orcus/global.hpp>
-
 #include <unordered_map>
 
 namespace orcus {

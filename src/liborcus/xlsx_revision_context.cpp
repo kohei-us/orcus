@@ -13,7 +13,6 @@
 
 #include "orcus/measurement.hpp"
 #include "orcus/string_pool.hpp"
-#include "orcus/global.hpp"
 
 #include <iostream>
 #include <limits>

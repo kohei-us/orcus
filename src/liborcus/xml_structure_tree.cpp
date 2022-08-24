@@ -8,7 +8,6 @@
 #include <orcus/xml_structure_tree.hpp>
 #include <orcus/sax_ns_parser.hpp>
 #include <orcus/xml_namespace.hpp>
-#include <orcus/global.hpp>
 #include <orcus/exception.hpp>
 #include <orcus/string_pool.hpp>
 

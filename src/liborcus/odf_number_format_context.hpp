@@ -11,7 +11,6 @@
 #include "xml_context_base.hpp"
 #include "odf_styles.hpp"
 
-#include "orcus/global.hpp"
 #include "orcus/string_pool.hpp"
 
 namespace orcus {

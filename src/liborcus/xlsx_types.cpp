@@ -7,8 +7,6 @@
 
 #include "xlsx_types.hpp"
 
-#include "orcus/global.hpp"
-
 #include <mdds/sorted_string_map.hpp>
 
 namespace orcus {

@@ -7,7 +7,6 @@
 
 #include <orcus/json_structure_tree.hpp>
 #include <orcus/json_parser.hpp>
-#include <orcus/global.hpp>
 #include <orcus/string_pool.hpp>
 #include "pstring.hpp"
 

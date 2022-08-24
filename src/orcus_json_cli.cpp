@@ -13,7 +13,6 @@
 #include "orcus/stream.hpp"
 #include "orcus/xml_namespace.hpp"
 #include "orcus/dom_tree.hpp"
-#include "orcus/global.hpp"
 
 #include <iostream>
 #include <fstream>

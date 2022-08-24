@@ -8,7 +8,6 @@
 #include "formula_token.hpp"
 #include "global.hpp"
 #include "orcus/spreadsheet/document.hpp"
-#include "orcus/global.hpp"
 
 #include <ixion/formula.hpp>
 #include <ixion/formula_name_resolver.hpp>

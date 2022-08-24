@@ -9,7 +9,6 @@
 #include <orcus/css_types.hpp>
 #include <orcus/css_parser_base.hpp>
 #include <orcus/stream.hpp>
-#include <orcus/global.hpp>
 
 #include <cstdlib>
 #include <cassert>

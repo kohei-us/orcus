@@ -6,7 +6,6 @@
  */
 
 #include "orcus/sax_ns_parser.hpp"
-#include "orcus/global.hpp"
 #include "orcus/dom_tree.hpp"
 #include "orcus/xml_namespace.hpp"
 #include "orcus/stream.hpp"

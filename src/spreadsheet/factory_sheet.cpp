@@ -9,7 +9,6 @@
 #include "orcus/spreadsheet/sheet.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/view.hpp"
-#include "orcus/global.hpp"
 #include "orcus/measurement.hpp"
 #include "orcus/string_pool.hpp"
 
