@@ -1,4 +1,8 @@
-SUBDIRS = include test parser mso liborcus spreadsheet python
+SUBDIRS = include test parser mso liborcus spreadsheet
+
+if BUILD_PYTHON
+SUBDIRS += python
+endif
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
