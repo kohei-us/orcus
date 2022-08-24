@@ -68,6 +68,7 @@ struct odf_style
 
     struct paragraph
     {
+        spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
     };
 
     struct text

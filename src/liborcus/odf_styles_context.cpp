@@ -55,6 +55,19 @@ odf_style_family to_style_family(std::string_view val)
     return style_family::get().find(val.data(), val.size());
 }
 
+std::string_view to_string(odf_style_family family)
+{
+    static constexpr std::string_view unknown_str = "unknown";
+
+    for (const auto& entry : style_family::entries)
+    {
+        if (entry.value == family)
+            return {entry.key, entry.key_length};
+    }
+
+    return unknown_str;
+}
+
 namespace st_style {
 
 typedef mdds::sorted_string_map<ss::strikethrough_style_t> map_type;
@@ -313,8 +326,32 @@ void styles_context::start_paragraph_properties(const xml_token_pair_t& parent, 
             {
                 case XML_text_align:
                 {
-                    auto& data = std::get<odf_style::cell>(m_current_style->data);
-                    data.hor_align = odf::extract_hor_alignment_style(attr.value);
+                    auto v = odf::extract_hor_alignment_style(attr.value);
+
+                    switch (m_current_style->family)
+                    {
+                        case style_family_table_cell:
+                        {
+                            auto& data = std::get<odf_style::cell>(m_current_style->data);
+                            data.hor_align = v;
+                            break;
+                        }
+                        case style_family_paragraph:
+                        {
+                            auto& data = std::get<odf_style::paragraph>(m_current_style->data);
+                            data.hor_align = v;
+                            break;
+                        }
+                        default:
+                        {
+                            if (get_config().debug)
+                            {
+                                std::ostringstream os;
+                                os << "unhandled fo:text-align attribute (family=" << to_string(m_current_style->family) << ")";
+                                warn(os.str());
+                            }
+                        }
+                    }
                     break;
                 }
                 default:
