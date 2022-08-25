@@ -14,7 +14,9 @@
 #include "xml_stream_parser.hpp"
 #include "ods_content_xml_handler.hpp"
 #include "ods_session_data.hpp"
+#include "odf_document_styles_context.hpp"
 #include "odf_tokens.hpp"
+#include "odf_styles.hpp"
 #include "odf_namespace_types.hpp"
 #include "session_context.hpp"
 
@@ -58,6 +60,33 @@ void orcus_ods::list_content(const zip_archive& archive)
         else
             cout << filename << endl;
     }
+}
+
+void orcus_ods::read_styles(const zip_archive& archive)
+{
+    auto* xstyles = mp_impl->mp_factory->get_styles();
+    if (!xstyles)
+        return;
+
+    std::vector<unsigned char> buf;
+    if (!archive.read_file_entry("styles.xml", buf))
+    {
+        std::cout << "failed to get stat on styles.xml" << std::endl;
+        return;
+    }
+
+    xml_stream_parser parser(
+        get_config(), mp_impl->m_ns_repo, odf_tokens,
+        reinterpret_cast<const char*>(buf.data()), buf.size());
+
+    auto& ods_data = static_cast<ods_session_data&>(*mp_impl->m_cxt.mp_data);
+    auto context = std::make_unique<document_styles_context>(
+        mp_impl->m_cxt, odf_tokens, ods_data.styles_map, xstyles);
+
+    xml_stream_handler handler(mp_impl->m_cxt, odf_tokens, std::move(context));
+
+    parser.set_handler(&handler);
+    parser.parse();
 }
 
 void orcus_ods::read_content(const zip_archive& archive)
@@ -167,6 +196,7 @@ void orcus_ods::read_file_impl(zip_archive_stream* stream)
         gs->set_default_formula_grammar(spreadsheet::formula_grammar_t::ods);
     }
 
+    read_styles(archive);
     read_content(archive);
 
     mp_impl->mp_factory->finalize();

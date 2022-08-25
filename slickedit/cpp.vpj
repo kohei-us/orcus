@@ -306,6 +306,8 @@
                 <F N="../src/liborcus/json_util.cpp"/>
                 <F N="../src/liborcus/json_util.hpp"/>
                 <F N="../src/liborcus/measurement.cpp"/>
+                <F N="../src/liborcus/odf_document_styles_context.cpp"/>
+                <F N="../src/liborcus/odf_document_styles_context.hpp"/>
                 <F N="../src/liborcus/odf_helper.cpp"/>
                 <F N="../src/liborcus/odf_helper.hpp"/>
                 <F N="../src/liborcus/odf_helper_test.cpp"/>

@@ -9,8 +9,9 @@
 #define INCLUDED_ORCUS_ODS_SESSION_DATA_HPP
 
 #include "session_context.hpp"
+#include "odf_styles.hpp"
 
-#include "orcus/spreadsheet/types.hpp"
+#include <orcus/spreadsheet/types.hpp>
 
 #include <deque>
 
@@ -60,6 +61,8 @@ struct ods_session_data : public session_context::custom_data
 
     std::deque<formula> m_formulas;
     std::deque<named_exp> m_named_exps;
+
+    odf_styles_map_type styles_map;
 
     virtual ~ods_session_data();
 };

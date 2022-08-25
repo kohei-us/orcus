@@ -43,8 +43,6 @@ private:
     spreadsheet::iface::import_styles* mp_styles;
     odf_styles_map_type& m_styles;
 
-    std::unique_ptr<odf_style> m_current_style;
-
     // an automatic style corresponds to a cell format and not a real style
     bool m_automatic_styles;
 

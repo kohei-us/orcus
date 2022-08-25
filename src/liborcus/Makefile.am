@@ -223,6 +223,8 @@ endif # WITH_XLS_XML_FILTER
 if WITH_ODS_FILTER
 
 liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
+	odf_document_styles_context.hpp \
+	odf_document_styles_context.cpp \
 	odf_para_context.hpp \
 	odf_para_context.cpp \
 	odf_styles.hpp \

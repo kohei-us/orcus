@@ -54,11 +54,11 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
     if (ns == NS_odf_style && name == XML_style)
     {
         assert(child == &m_cxt_style);
-        m_current_style = m_cxt_style.pop_style();
+        std::unique_ptr<odf_style> current_style = m_cxt_style.pop_style();
 
-        if (mp_styles && m_current_style->family == style_family_table_cell)
+        if (mp_styles && current_style->family == style_family_table_cell)
         {
-            auto& cell = std::get<odf_style::cell>(m_current_style->data);
+            auto& cell = std::get<odf_style::cell>(current_style->data);
 
             if (m_automatic_styles)
             {
@@ -90,16 +90,16 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
                 auto* cell_style = mp_styles->get_cell_style();
                 ENSURE_INTERFACE(cell_style, import_cell_style);
 
-                cell_style->set_name(m_current_style->name);
+                cell_style->set_name(current_style->name);
                 cell_style->set_xf(style_xf_id);
-                cell_style->set_parent_name(m_current_style->parent_name);
+                cell_style->set_parent_name(current_style->parent_name);
 
                 cell.xf = cell_style->commit();
             }
         }
 
-        std::string_view style_name = m_current_style->name;
-        m_styles.emplace(style_name, std::move(m_current_style));
+        std::string_view style_name = current_style->name;
+        m_styles.emplace(style_name, std::move(current_style));
 
         return;
     }

@@ -78,6 +78,7 @@ add_library(orcus-${ORCUS_API_VERSION} SHARED
     xls_xml_handler.cpp
     xls_xml_context.cpp
 # ods filter
+    odf_document_styles_context.cpp
     odf_para_context.cpp
     odf_styles.cpp
     odf_styles_context.cpp
