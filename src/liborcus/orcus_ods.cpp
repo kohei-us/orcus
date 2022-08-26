@@ -30,19 +30,19 @@ namespace orcus {
 
 struct orcus_ods::impl
 {
-    xmlns_repository m_ns_repo;
-    session_context m_cxt;
-    spreadsheet::iface::import_factory* mp_factory;
+    xmlns_repository ns_repo;
+    session_context cxt;
+    spreadsheet::iface::import_factory* xfactory;
 
     impl(spreadsheet::iface::import_factory* im_factory) :
-        m_cxt(new ods_session_data), mp_factory(im_factory) {}
+        cxt(new ods_session_data), xfactory(im_factory) {}
 };
 
 orcus_ods::orcus_ods(spreadsheet::iface::import_factory* factory) :
     iface::import_filter(format_t::ods),
     mp_impl(std::make_unique<impl>(factory))
 {
-    mp_impl->m_ns_repo.add_predefined_values(NS_odf_all);
+    mp_impl->ns_repo.add_predefined_values(NS_odf_all);
 }
 
 orcus_ods::~orcus_ods() {}
@@ -64,7 +64,7 @@ void orcus_ods::list_content(const zip_archive& archive)
 
 void orcus_ods::read_styles(const zip_archive& archive)
 {
-    auto* xstyles = mp_impl->mp_factory->get_styles();
+    auto* xstyles = mp_impl->xfactory->get_styles();
     if (!xstyles)
         return;
 
@@ -76,14 +76,14 @@ void orcus_ods::read_styles(const zip_archive& archive)
     }
 
     xml_stream_parser parser(
-        get_config(), mp_impl->m_ns_repo, odf_tokens,
+        get_config(), mp_impl->ns_repo, odf_tokens,
         reinterpret_cast<const char*>(buf.data()), buf.size());
 
-    auto& ods_data = static_cast<ods_session_data&>(*mp_impl->m_cxt.mp_data);
+    auto& ods_data = static_cast<ods_session_data&>(*mp_impl->cxt.mp_data);
     auto context = std::make_unique<document_styles_context>(
-        mp_impl->m_cxt, odf_tokens, ods_data.styles_map, xstyles);
+        mp_impl->cxt, odf_tokens, ods_data.styles_map, xstyles);
 
-    xml_stream_handler handler(mp_impl->m_cxt, odf_tokens, std::move(context));
+    xml_stream_handler handler(mp_impl->cxt, odf_tokens, std::move(context));
 
     parser.set_handler(&handler);
     parser.parse();
@@ -109,29 +109,29 @@ void orcus_ods::read_content_xml(const unsigned char* p, size_t size)
         use_threads = to_bool(p_env);
 
     auto context = std::make_unique<ods_content_xml_context>(
-        mp_impl->m_cxt, odf_tokens, mp_impl->mp_factory);
+        mp_impl->cxt, odf_tokens, mp_impl->xfactory);
 
     if (use_threads)
     {
         threaded_xml_stream_parser parser(
-            get_config(), mp_impl->m_ns_repo, odf_tokens,
+            get_config(), mp_impl->ns_repo, odf_tokens,
             reinterpret_cast<const char*>(p), size);
 
-        xml_stream_handler handler(mp_impl->m_cxt, odf_tokens, std::move(context));
+        xml_stream_handler handler(mp_impl->cxt, odf_tokens, std::move(context));
         parser.set_handler(&handler);
         parser.parse();
 
         string_pool this_pool;
         parser.swap_string_pool(this_pool);
-        mp_impl->m_cxt.m_string_pool.merge(this_pool);
+        mp_impl->cxt.m_string_pool.merge(this_pool);
     }
     else
     {
         xml_stream_parser parser(
-            get_config(), mp_impl->m_ns_repo, odf_tokens,
+            get_config(), mp_impl->ns_repo, odf_tokens,
             reinterpret_cast<const char*>(p), size);
 
-        xml_stream_handler handler(mp_impl->m_cxt, odf_tokens, std::move(context));
+        xml_stream_handler handler(mp_impl->cxt, odf_tokens, std::move(context));
         parser.set_handler(&handler);
         parser.parse();
     }
@@ -194,7 +194,7 @@ void orcus_ods::read_file_impl(zip_archive_stream* stream)
 
     spreadsheet::formula_grammar_t old_grammar = spreadsheet::formula_grammar_t::unknown;
 
-    spreadsheet::iface::import_global_settings* gs = mp_impl->mp_factory->get_global_settings();
+    spreadsheet::iface::import_global_settings* gs = mp_impl->xfactory->get_global_settings();
     if (gs)
     {
         old_grammar = gs->get_default_formula_grammar();
@@ -204,7 +204,7 @@ void orcus_ods::read_file_impl(zip_archive_stream* stream)
     read_styles(archive);
     read_content(archive);
 
-    mp_impl->mp_factory->finalize();
+    mp_impl->xfactory->finalize();
 
     if (gs)
         // This grammar will be used

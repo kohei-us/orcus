@@ -59,8 +59,8 @@ struct ods_session_data : public session_context::custom_data
         named_exp(const pstring& _name, const pstring& _expression, const pstring& _base, named_exp_type _type, spreadsheet::sheet_t _scope);
     };
 
-    std::deque<formula> m_formulas;
-    std::deque<named_exp> m_named_exps;
+    std::deque<formula> formulas;
+    std::deque<named_exp> named_exps;
 
     odf_styles_map_type styles_map;
 

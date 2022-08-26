@@ -79,7 +79,7 @@ void pick_up_named_range_or_expression(
     ods_session_data& ods_data = static_cast<ods_session_data&>(*cxt.mp_data);
 
     if (!name.empty() && !expression.empty() && !base.empty())
-        ods_data.m_named_exps.emplace_back(name, expression, base, name_type, scope);
+        ods_data.named_exps.emplace_back(name, expression, base, name_type, scope);
 }
 
 } // anonymous namespace
@@ -700,10 +700,10 @@ void ods_content_xml_context::push_cell_value()
         // Store formula cell data for later processing.
         ods_session_data& ods_data =
             static_cast<ods_session_data&>(*get_session_context().mp_data);
-        ods_data.m_formulas.emplace_back(
+        ods_data.formulas.emplace_back(
             m_cur_sheet.index, m_row, m_col, m_cell_attr.formula_grammar, m_cell_attr.formula);
 
-        ods_session_data::formula& formula_data = ods_data.m_formulas.back();
+        ods_session_data::formula& formula_data = ods_data.formulas.back();
 
         // Store formula result.
         switch (m_cell_attr.type)
@@ -758,7 +758,7 @@ void ods_content_xml_context::end_spreadsheet()
 
     if (resolver)
     {
-        for (const ods_session_data::named_exp& data : ods_data.m_named_exps)
+        for (const ods_session_data::named_exp& data : ods_data.named_exps)
         {
             if (get_config().debug)
             {
@@ -807,7 +807,7 @@ void ods_content_xml_context::end_spreadsheet()
     // Push all formula cells.  Formula cells needs to be processed after all
     // the sheet data have been imported, else 3D reference would fail to
     // resolve.
-    for (ods_session_data::formula& data : ods_data.m_formulas)
+    for (ods_session_data::formula& data : ods_data.formulas)
     {
         if (data.sheet < 0 || static_cast<size_t>(data.sheet) >= m_tables.size())
             // Invalid sheet index.
@@ -840,7 +840,7 @@ void ods_content_xml_context::end_spreadsheet()
     }
 
     // Clear the formula buffer.
-    ods_data.m_formulas.clear();
+    ods_data.formulas.clear();
 }
 
 }
