@@ -37,6 +37,18 @@ struct session_context
     session_context() = default;
     session_context(std::unique_ptr<custom_data> data);
 
+    template<typename CDataT>
+    CDataT& get_data()
+    {
+        return static_cast<CDataT&>(*cdata);
+    }
+
+    template<typename CDataT>
+    const CDataT& get_data() const
+    {
+        return static_cast<const CDataT&>(*cdata);
+    }
+
     std::string_view intern(const xml_token_attr_t& attr);
     std::string_view intern(std::string_view s);
 };

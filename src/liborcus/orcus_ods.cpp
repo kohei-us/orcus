@@ -79,7 +79,7 @@ void orcus_ods::read_styles(const zip_archive& archive)
         get_config(), mp_impl->ns_repo, odf_tokens,
         reinterpret_cast<const char*>(buf.data()), buf.size());
 
-    auto& ods_data = static_cast<ods_session_data&>(*mp_impl->cxt.cdata);
+    auto& ods_data = mp_impl->cxt.get_data<ods_session_data>();
     auto context = std::make_unique<document_styles_context>(
         mp_impl->cxt, odf_tokens, ods_data.styles_map, xstyles);
 

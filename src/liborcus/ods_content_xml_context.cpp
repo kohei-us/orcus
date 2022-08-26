@@ -76,7 +76,7 @@ void pick_up_named_range_or_expression(
         }
     }
 
-    ods_session_data& ods_data = static_cast<ods_session_data&>(*cxt.cdata);
+    auto& ods_data = cxt.get_data<ods_session_data>();
 
     if (!name.empty() && !expression.empty() && !base.empty())
         ods_data.named_exps.emplace_back(name, expression, base, name_type, scope);
@@ -698,8 +698,7 @@ void ods_content_xml_context::push_cell_value()
     if (has_formula)
     {
         // Store formula cell data for later processing.
-        ods_session_data& ods_data =
-            static_cast<ods_session_data&>(*get_session_context().cdata);
+        auto& ods_data = get_session_context().get_data<ods_session_data>();
         ods_data.formulas.emplace_back(
             m_cur_sheet.index, m_row, m_col, m_cell_attr.formula_grammar, m_cell_attr.formula);
 
@@ -750,8 +749,7 @@ void ods_content_xml_context::push_cell_value()
 
 void ods_content_xml_context::end_spreadsheet()
 {
-    ods_session_data& ods_data =
-        static_cast<ods_session_data&>(*get_session_context().cdata);
+    auto& ods_data = get_session_context().get_data<ods_session_data>();
 
     ss::iface::import_reference_resolver* resolver =
         mp_factory->get_reference_resolver(ss::formula_ref_context_t::named_expression_base);

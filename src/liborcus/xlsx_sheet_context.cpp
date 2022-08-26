@@ -696,7 +696,7 @@ void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, cons
 void xlsx_sheet_context::end_element_cell()
 {
     session_context& cxt = get_session_context();
-    xlsx_session_data& session_data = static_cast<xlsx_session_data&>(*cxt.cdata);
+    auto& session_data = cxt.get_data<xlsx_session_data>();
 
     bool array_formula_result = handle_array_formula_result(session_data);
 
