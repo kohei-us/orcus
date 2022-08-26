@@ -119,7 +119,7 @@ void opc_content_types_context::start_element(xmlns_id_t ns, xml_token_t name, c
             // We need to use allocated strings for part names here because
             // the part names need to survive after the [Content_Types].xml
             // stream is destroyed.
-            pstring part_name = get_session_context().m_string_pool.intern(func.get_name()).first;
+            pstring part_name = get_session_context().spool.intern(func.get_name()).first;
             m_parts.push_back(
                 xml_part_t(part_name, func.get_content_type()));
         }
@@ -132,7 +132,7 @@ void opc_content_types_context::start_element(xmlns_id_t ns, xml_token_t name, c
 
             // Like the part names, we need to use allocated strings for
             // extension names.
-            pstring ext_name = get_session_context().m_string_pool.intern(func.get_name()).first;
+            pstring ext_name = get_session_context().spool.intern(func.get_name()).first;
             m_ext_defaults.push_back(
                 xml_part_t(ext_name, func.get_content_type()));
         }
@@ -179,13 +179,13 @@ public:
         switch (attr.name)
         {
             case XML_Target:
-                m_rel.target = m_cxt->m_string_pool.intern(attr.value).first;
+                m_rel.target = m_cxt->spool.intern(attr.value).first;
             break;
             case XML_Type:
                 m_rel.type = to_schema(attr.value);
             break;
             case XML_Id:
-                m_rel.rid = m_cxt->m_string_pool.intern(attr.value).first;
+                m_rel.rid = m_cxt->spool.intern(attr.value).first;
             break;
         }
     }

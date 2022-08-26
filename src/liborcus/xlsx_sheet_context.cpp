@@ -392,7 +392,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
 
                 // The rid string must be pooled to the session context's string
                 // pool as it is used long after thet sheet context is deleted.
-                single_attr_getter func(get_session_context().m_string_pool, NS_ooxml_r, XML_id);
+                single_attr_getter func(get_session_context().spool, NS_ooxml_r, XML_id);
                 std::string_view rid = for_each(attrs.begin(), attrs.end(), func).get_value();
 
                 unique_ptr<xlsx_rel_table_info> p(new xlsx_rel_table_info);
@@ -696,7 +696,7 @@ void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, cons
 void xlsx_sheet_context::end_element_cell()
 {
     session_context& cxt = get_session_context();
-    xlsx_session_data& session_data = static_cast<xlsx_session_data&>(*cxt.mp_data);
+    xlsx_session_data& session_data = static_cast<xlsx_session_data&>(*cxt.cdata);
 
     bool array_formula_result = handle_array_formula_result(session_data);
 

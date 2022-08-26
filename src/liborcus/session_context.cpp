@@ -11,19 +11,19 @@ namespace orcus {
 
 session_context::custom_data::~custom_data() {}
 
-session_context::session_context(std::unique_ptr<custom_data> data) : mp_data(std::move(data)) {}
+session_context::session_context(std::unique_ptr<custom_data> data) : cdata(std::move(data)) {}
 
 std::string_view session_context::intern(const xml_token_attr_t& attr)
 {
     if (!attr.transient)
         return attr.value;
 
-    return m_string_pool.intern(attr.value).first;
+    return spool.intern(attr.value).first;
 }
 
 std::string_view session_context::intern(std::string_view s)
 {
-    return m_string_pool.intern(s).first;
+    return spool.intern(s).first;
 }
 
 }

@@ -47,7 +47,7 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
 {
     xml_token_pair_t parent = push_stack(ns, name);
     session_context& cxt = get_session_context();
-    string_pool& sp = cxt.m_string_pool;
+    string_pool& sp = cxt.spool;
 
     if (ns == NS_ooxml_xlsx)
     {
@@ -133,7 +133,7 @@ void xlsx_workbook_context::start_element(xmlns_id_t ns, xml_token_t name, const
                                 if (attr.transient)
                                 {
                                     m_defined_name =
-                                        cxt.m_string_pool.intern(m_defined_name).first;
+                                        cxt.spool.intern(m_defined_name).first;
                                 }
                                 break;
                             }
@@ -217,7 +217,7 @@ void xlsx_workbook_context::characters(std::string_view str, bool transient)
 {
     std::string_view sv(str);
     xml_token_pair_t cur = get_current_element();
-    string_pool& sp = get_session_context().m_string_pool;
+    string_pool& sp = get_session_context().spool;
 
     if (cur.first == NS_ooxml_xlsx)
     {

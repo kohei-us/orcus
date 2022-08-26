@@ -170,7 +170,7 @@ void xlsx_revheaders_context::start_element(xmlns_id_t ns, xml_token_t name, con
             case XML_header:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_headers);
-                header_attr_parser func(get_session_context().m_string_pool);
+                header_attr_parser func(get_session_context().spool);
                 func = for_each(attrs.begin(), attrs.end(), func);
                 cout << "* revision header (guid:" << func.get_guid() << ")" << endl;
                 cout << "  - timestamp: " << func.get_date_time().to_string() << endl;
@@ -565,7 +565,7 @@ void xlsx_revlog_context::characters(std::string_view str, bool transient)
             case XML_t:
                 m_cur_string = str;
                 if (transient)
-                    m_cur_string = get_session_context().m_string_pool.intern(m_cur_string).first;
+                    m_cur_string = get_session_context().spool.intern(m_cur_string).first;
             break;
             default:
                 ;

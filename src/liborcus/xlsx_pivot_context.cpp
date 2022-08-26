@@ -126,7 +126,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             {
                 // The rid string here must be persistent beyond the current
                 // context.
-                rid = get_session_context().m_string_pool.intern(rid).first;
+                rid = get_session_context().spool.intern(rid).first;
 
                 m_pcache_info.data.insert(
                     opc_rel_extras_t::map_type::value_type(

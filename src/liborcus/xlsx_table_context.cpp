@@ -224,7 +224,7 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
         case XML_table:
         {
             xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-            table_attr_parser func(&get_session_context().m_string_pool);
+            table_attr_parser func(&get_session_context().spool);
             func = for_each(attrs.begin(), attrs.end(), func);
 
             if (get_config().debug)
@@ -259,7 +259,7 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
         case XML_tableColumn:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_tableColumns);
-            table_column_attr_parser func(&get_session_context().m_string_pool);
+            table_column_attr_parser func(&get_session_context().spool);
             func = for_each(attrs.begin(), attrs.end(), func);
             if (get_config().debug)
             {

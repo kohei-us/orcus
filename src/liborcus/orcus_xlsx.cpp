@@ -255,7 +255,7 @@ void orcus_xlsx::set_formulas_to_doc()
         }
     };
 
-    xlsx_session_data& sdata = static_cast<xlsx_session_data&>(*mp_impl->m_cxt.mp_data);
+    xlsx_session_data& sdata = static_cast<xlsx_session_data&>(*mp_impl->m_cxt.cdata);
 
     // Insert shared formulas first.
     for (auto& p : sdata.m_shared_formulas)
