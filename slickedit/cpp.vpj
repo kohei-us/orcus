@@ -332,8 +332,6 @@
                 <F N="../src/liborcus/odf_tokens.inl"/>
                 <F N="../src/liborcus/ods_content_xml_context.cpp"/>
                 <F N="../src/liborcus/ods_content_xml_context.hpp"/>
-                <F N="../src/liborcus/ods_content_xml_handler.cpp"/>
-                <F N="../src/liborcus/ods_content_xml_handler.hpp"/>
                 <F N="../src/liborcus/ods_dde_links_context.cpp"/>
                 <F N="../src/liborcus/ods_dde_links_context.hpp"/>
                 <F N="../src/liborcus/ods_session_data.cpp"/>

@@ -12,7 +12,7 @@
 #include <orcus/measurement.hpp>
 
 #include "xml_stream_parser.hpp"
-#include "ods_content_xml_handler.hpp"
+#include "ods_content_xml_context.hpp"
 #include "ods_session_data.hpp"
 #include "odf_document_styles_context.hpp"
 #include "odf_tokens.hpp"
@@ -108,12 +108,16 @@ void orcus_ods::read_content_xml(const unsigned char* p, size_t size)
     if (const char* p_env = std::getenv("ORCUS_ODS_USE_THREADS"); p_env)
         use_threads = to_bool(p_env);
 
+    auto context = std::make_unique<ods_content_xml_context>(
+        mp_impl->m_cxt, odf_tokens, mp_impl->mp_factory);
+
     if (use_threads)
     {
         threaded_xml_stream_parser parser(
             get_config(), mp_impl->m_ns_repo, odf_tokens,
             reinterpret_cast<const char*>(p), size);
-        ods_content_xml_handler handler(mp_impl->m_cxt, odf_tokens, mp_impl->mp_factory);
+
+        xml_stream_handler handler(mp_impl->m_cxt, odf_tokens, std::move(context));
         parser.set_handler(&handler);
         parser.parse();
 
@@ -126,7 +130,8 @@ void orcus_ods::read_content_xml(const unsigned char* p, size_t size)
         xml_stream_parser parser(
             get_config(), mp_impl->m_ns_repo, odf_tokens,
             reinterpret_cast<const char*>(p), size);
-        ods_content_xml_handler handler(mp_impl->m_cxt, odf_tokens, mp_impl->mp_factory);
+
+        xml_stream_handler handler(mp_impl->m_cxt, odf_tokens, std::move(context));
         parser.set_handler(&handler);
         parser.parse();
     }

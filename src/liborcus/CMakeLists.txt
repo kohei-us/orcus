@@ -86,7 +86,6 @@ add_library(orcus-${ORCUS_API_VERSION} SHARED
     odf_number_format_context.cpp
     odf_tokens.cpp
     ods_content_xml_context.cpp
-    ods_content_xml_handler.cpp
     ods_dde_links_context.cpp
     ods_session_data.cpp
     odf_helper.cpp
