@@ -123,7 +123,7 @@ struct orcus_xlsx::impl
     opc_reader m_opc_reader;
 
     impl(spreadsheet::iface::import_factory* factory, orcus_xlsx& parent) :
-        m_cxt(new xlsx_session_data),
+        m_cxt(std::make_unique<xlsx_session_data>()),
         mp_factory(factory),
         m_opc_handler(parent),
         m_opc_reader(parent.get_config(), m_ns_repo, m_cxt, m_opc_handler) {}

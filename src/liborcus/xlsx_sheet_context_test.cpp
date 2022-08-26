@@ -142,7 +142,7 @@ void test_cell_value()
 {
     mock_sheet sheet;
     mock_ref_resolver resolver;
-    session_context cxt(new xlsx_session_data);
+    session_context cxt(std::make_unique<xlsx_session_data>());
     config opt(format_t::xlsx);
     opt.structure_check = false;
 
@@ -168,7 +168,7 @@ void test_cell_bool()
 {
     mock_sheet sheet;
     mock_ref_resolver resolver;
-    session_context cxt(new xlsx_session_data);
+    session_context cxt(std::make_unique<xlsx_session_data>());
     config opt(format_t::xlsx);
     opt.structure_check = false;
 
@@ -195,7 +195,7 @@ void test_array_formula()
 {
     mock_sheet sheet;
     mock_ref_resolver resolver;
-    session_context cxt(new xlsx_session_data);
+    session_context cxt(std::make_unique<xlsx_session_data>());
     config opt(format_t::xlsx);
     opt.structure_check = false;
 
@@ -229,7 +229,7 @@ void test_hidden_col()
 {
     mock_sheet2 sheet;
     mock_ref_resolver resolver;
-    session_context cxt(new xlsx_session_data);
+    session_context cxt(std::make_unique<xlsx_session_data>());
     config opt(format_t::xlsx);
     opt.structure_check = false;
 
@@ -250,7 +250,7 @@ void test_hidden_row()
 {
     mock_sheet2 sheet;
     mock_ref_resolver resolver;
-    session_context cxt(new xlsx_session_data);
+    session_context cxt(std::make_unique<xlsx_session_data>());
     config opt(format_t::xlsx);
     opt.structure_check = false;
 

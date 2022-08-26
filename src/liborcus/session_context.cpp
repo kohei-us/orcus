@@ -11,13 +11,7 @@ namespace orcus {
 
 session_context::custom_data::~custom_data() {}
 
-session_context::session_context() : mp_data(nullptr) {}
-session_context::session_context(custom_data* data) : mp_data(data) {}
-
-session_context::~session_context()
-{
-    mp_data.reset();
-}
+session_context::session_context(std::unique_ptr<custom_data> data) : mp_data(std::move(data)) {}
 
 std::string_view session_context::intern(const xml_token_attr_t& attr)
 {

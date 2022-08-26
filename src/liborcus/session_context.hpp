@@ -34,9 +34,8 @@ struct session_context
 
     std::unique_ptr<custom_data> mp_data;
 
-    session_context();
-    session_context(custom_data* data);
-    ~session_context();
+    session_context() = default;
+    session_context(std::unique_ptr<custom_data> data);
 
     std::string_view intern(const xml_token_attr_t& attr);
     std::string_view intern(std::string_view s);

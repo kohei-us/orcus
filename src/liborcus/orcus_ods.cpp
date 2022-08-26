@@ -35,7 +35,7 @@ struct orcus_ods::impl
     spreadsheet::iface::import_factory* xfactory;
 
     impl(spreadsheet::iface::import_factory* im_factory) :
-        cxt(new ods_session_data), xfactory(im_factory) {}
+        cxt(std::make_unique<ods_session_data>()), xfactory(im_factory) {}
 };
 
 orcus_ods::orcus_ods(spreadsheet::iface::import_factory* factory) :
