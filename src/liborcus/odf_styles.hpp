@@ -14,6 +14,7 @@
 #include <map>
 #include <memory>
 #include <variant>
+#include <ostream>
 
 namespace orcus {
 
@@ -103,6 +104,8 @@ struct odf_number_format
 };
 
 typedef std::map<std::string_view, std::unique_ptr<odf_style>> odf_styles_map_type;
+
+void dump_state(const odf_styles_map_type& styles_map, std::ostream& os);
 
 }
 

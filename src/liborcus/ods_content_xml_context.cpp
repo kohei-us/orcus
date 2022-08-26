@@ -169,64 +169,21 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
     else if (ns == NS_odf_office && name == XML_automatic_styles)
     {
         if (get_config().debug)
-            cout << "styles picked up:" << endl;
+            dump_state(m_styles, std::cout);
 
-        odf_styles_map_type::const_iterator it = m_styles.begin(), it_end = m_styles.end();
-        for (; it != it_end; ++it)
+        spreadsheet::iface::import_styles* xstyles = mp_factory->get_styles();
+        if (xstyles)
         {
-            if (get_config().debug)
-                cout << "  style: " << it->first << " [ ";
-
-            switch (it->second->family)
+            for (const auto& [style_name, style_value] : m_styles)
             {
-                case style_family_table_column:
+                if (style_value->family == style_family_table_cell)
                 {
-                    if (get_config().debug)
-                    {
-                        const auto& data = std::get<odf_style::column>(it->second->data);
-                        std::cout << "column width: " << data.width.to_string();
-                    }
-                    break;
+                    // TODO: Actually we need a boolean flag to see if it is an automatic style or a real style
+                    //  currently we have no way to set a real style to a cell anyway
+                    const auto& cell = std::get<odf_style::cell>(style_value->data);
+                    m_cell_format_map.insert(name2id_type::value_type(style_name, cell.xf));
                 }
-                case style_family_table_row:
-                {
-                    if (get_config().debug)
-                    {
-                        const auto& data = std::get<odf_style::row>(it->second->data);
-                        cout << "row height: " << data.height.to_string();
-                    }
-                    break;
-                }
-                case style_family_table_cell:
-                {
-                    const auto& cell = std::get<odf_style::cell>(it->second->data);
-                    if (get_config().debug)
-                        cout << "xf ID: " << cell.xf;
-
-                    spreadsheet::iface::import_styles* styles = mp_factory->get_styles();
-                    if (styles)
-                    {
-                        // TODO: Actually we need a boolean flag to see if it is an automatic style or a real style
-                        //  currently we have no way to set a real style to a cell anyway
-                        m_cell_format_map.insert(name2id_type::value_type(it->first, cell.xf));
-                    }
-                    break;
-                }
-                case style_family_text:
-                {
-                    if (get_config().debug)
-                    {
-                        const auto& data = std::get<odf_style::text>(it->second->data);
-                        cout << "font ID: " << data.font;
-                    }
-                    break;
-                }
-                default:
-                    ;
             }
-
-            if (get_config().debug)
-                cout << " ]" << endl;
         }
     }
 }

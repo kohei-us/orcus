@@ -87,6 +87,9 @@ void orcus_ods::read_styles(const zip_archive& archive)
 
     parser.set_handler(&handler);
     parser.parse();
+
+    if (get_config().debug)
+        dump_state(ods_data.styles_map, std::cout);
 }
 
 void orcus_ods::read_content(const zip_archive& archive)
