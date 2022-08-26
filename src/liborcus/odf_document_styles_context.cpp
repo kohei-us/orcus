@@ -29,6 +29,7 @@ xml_context_base* document_styles_context::create_child_context(xmlns_id_t ns, x
 {
     if (ns == NS_odf_office && name == XML_styles)
     {
+        m_cxt_styles.transfer_common(*this);
         return &m_cxt_styles;
     }
 

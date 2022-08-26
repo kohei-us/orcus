@@ -26,9 +26,6 @@ styles_context::styles_context(
     m_cxt_style(session_cxt, tk, mp_styles),
     m_cxt_number_format(session_cxt, tk, mp_styles)
 {
-    m_cxt_style.transfer_common(*this);
-    m_cxt_number_format.transfer_common(*this);
-
     commit_default_styles();
 }
 
@@ -36,12 +33,14 @@ xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_
 {
     if (ns == NS_odf_number)
     {
+        m_cxt_number_format.transfer_common(*this);
         m_cxt_number_format.reset();
         return &m_cxt_number_format;
     }
 
     if (ns == NS_odf_style && name == XML_style)
     {
+        m_cxt_style.transfer_common(*this);
         m_cxt_style.reset();
         return &m_cxt_style;
     }
