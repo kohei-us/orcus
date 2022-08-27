@@ -8,9 +8,11 @@
 #include "odf_styles_context.hpp"
 #include "odf_namespace_types.hpp"
 #include "odf_token_constants.hpp"
+#include "ods_session_data.hpp"
 #include "impl_utils.hpp"
 
 #include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <iostream>
 
 namespace ss = orcus::spreadsheet;
 
@@ -23,10 +25,12 @@ styles_context::styles_context(
     mp_styles(iface_styles),
     m_automatic_styles(false),
     m_cxt_style(session_cxt, tk, mp_styles),
-    m_cxt_number_format(session_cxt, tk, mp_styles)
+    m_cxt_number_format(session_cxt, tk, mp_styles),
+    m_cxt_number_style(session_cxt, tk, mp_styles)
 {
     register_child(&m_cxt_style);
     register_child(&m_cxt_number_format);
+    register_child(&m_cxt_number_style);
 
     commit_default_styles();
 }
@@ -35,6 +39,12 @@ xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_
 {
     if (ns == NS_odf_number)
     {
+        if (name == XML_number_style)
+        {
+            m_cxt_number_style.reset();
+            return &m_cxt_number_style;
+        }
+
         m_cxt_number_format.reset();
         return &m_cxt_number_format;
     }
@@ -50,7 +60,52 @@ xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_
 
 void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child)
 {
-    if (ns == NS_odf_style && name == XML_style)
+    if (ns == NS_odf_number)
+    {
+        switch (name)
+        {
+            case XML_number_style:
+            {
+                assert(child == &m_cxt_number_style);
+                auto num_style = m_cxt_number_style.pop_style();
+
+                if (mp_styles)
+                {
+                    auto* number_format = mp_styles->get_number_format();
+                    ENSURE_INTERFACE(number_format, import_number_format);
+
+                    if (!num_style->code.empty())
+                    {
+                        number_format->set_code(num_style->code);
+                        std::size_t id = number_format->commit();
+
+                        if (get_config().debug)
+                        {
+                            std::cout << "number-style: name='" << num_style->name
+                                << "'; code='" << num_style->code
+                                << "'; id=" << id << std::endl;
+                        }
+
+                        auto& sess_cxt = get_session_context();
+                        auto& ods_data = sess_cxt.get_data<ods_session_data>();
+                        auto res = ods_data.number_formats_map.insert_or_assign(
+                            sess_cxt.intern(num_style->name), id);
+
+                        if (!res.second)
+                        {
+                            std::ostringstream os;
+                            os << "number style named '" << num_style->name << "' has been overwritten.";
+                            warn(os.str());
+                        }
+                    }
+                }
+
+                break;
+            }
+            default:;
+        }
+    }
+    else if (ns == NS_odf_style && name == XML_style)
     {
         assert(child == &m_cxt_style);
         std::unique_ptr<odf_style> current_style = m_cxt_style.pop_style();

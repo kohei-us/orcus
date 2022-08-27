@@ -63,6 +63,7 @@ struct ods_session_data : public session_context::custom_data
     std::deque<named_exp> named_exps;
 
     odf_styles_map_type styles_map;
+    std::map<std::string_view, std::size_t> number_formats_map;
 
     virtual ~ods_session_data();
 };

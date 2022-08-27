@@ -24,6 +24,211 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
+number_style_context::number_style_context(
+    session_context& session_cxt, const tokens& tk,
+    spreadsheet::iface::import_styles* xstyles) :
+    xml_context_base(session_cxt, tk),
+    mp_xstyles(xstyles)
+{
+}
+
+xml_context_base* number_style_context::create_child_context(xmlns_id_t ns, xml_token_t name)
+{
+    (void)ns;
+    (void)name;
+
+    return nullptr;
+}
+
+void number_style_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child)
+{
+    (void)ns;
+    (void)name;
+    (void)child;
+}
+
+void number_style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
+{
+    auto parent = push_stack(ns, name);
+    (void)parent;
+
+    if (ns == NS_odf_number)
+    {
+        switch (name)
+        {
+            case XML_number_style:
+                start_element_number_style(attrs);
+                break;
+            case XML_number:
+                start_element_number(attrs);
+                break;
+            default:
+                warn_unhandled();
+        }
+    }
+    else
+        warn_unhandled();
+}
+
+bool number_style_context::end_element(xmlns_id_t ns, xml_token_t name)
+{
+    if (ns == NS_odf_number)
+    {
+        switch (name)
+        {
+            case XML_number_style:
+                end_element_number_style();
+                break;
+            case XML_number:
+                end_element_number();
+                break;
+            default:;
+        }
+    }
+
+    return pop_stack(ns, name);
+}
+
+void number_style_context::characters(std::string_view /*str*/, bool /*transient*/)
+{
+}
+
+void number_style_context::reset()
+{
+    m_current_style = std::make_unique<odf_number_format>();
+    m_country_code = std::string_view{};
+    m_language = std::string_view{};
+    m_decimal_places = 0;
+    m_min_integer_digits = 0;
+}
+
+std::unique_ptr<odf_number_format> number_style_context::pop_style()
+{
+    return std::move(m_current_style);
+}
+
+void number_style_context::start_element_number(const std::vector<xml_token_attr_t>& attrs)
+{
+    bool grouping = false;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns == NS_odf_number)
+        {
+            switch (attr.name)
+            {
+                case XML_decimal_places:
+                {
+                    m_decimal_places = to_long(attr.value);
+                    break;
+                }
+                case XML_grouping:
+                    grouping = to_bool(attr.value);
+                    break;
+                case XML_min_integer_digits:
+                    m_min_integer_digits = to_long(attr.value);
+                    break;
+                default:;
+            }
+        }
+    }
+
+    if (grouping)
+    {
+        if (m_min_integer_digits < 4)
+        {
+            m_current_style->code += "#,";
+
+            for (long i = 0; i < 3 - m_min_integer_digits; ++i)
+                m_current_style->code += "#";
+
+            for (long i = 0; i < m_min_integer_digits; ++i)
+                m_current_style->code += "0";
+        }
+        else
+        {
+            std::string temporary_code;
+
+            for (long i = 0; i < m_min_integer_digits; ++i)
+            {
+                if (i % 3 == 0 && i != 0)
+                    temporary_code += ",";
+
+                temporary_code += "0";
+            }
+
+            std::reverse(temporary_code.begin(), temporary_code.end());
+            m_current_style->code += temporary_code;
+        }
+    }
+    else
+    {
+        if (m_min_integer_digits == 0)
+            m_current_style->code += "#";
+
+        for (long i = 0; i < m_min_integer_digits; ++i)
+            m_current_style->code += "0";
+    }
+
+    if (m_decimal_places > 0)
+    {
+        m_current_style->code += ".";
+        for (long i = 0; i < m_decimal_places; ++i)
+            m_current_style->code += "0";
+    }
+}
+
+void number_style_context::end_element_number()
+{
+}
+
+
+void number_style_context::start_element_number_style(const std::vector<xml_token_attr_t>& attrs)
+{
+    for (const xml_token_attr_t& attr: attrs)
+    {
+        if (attr.ns == NS_odf_number)
+        {
+            switch (attr.name)
+            {
+                case XML_country:
+                    m_country_code = attr.value;
+                    break;
+                case XML_language:
+                    m_language = attr.value;
+                    break;
+                default:
+                    ;
+            }
+        }
+        else if (attr.ns == NS_odf_style)
+        {
+            switch (attr.name)
+            {
+                case XML_name:
+                    m_current_style->name = attr.value;
+                    break;
+                case XML_volatile:
+                    m_current_style->is_volatile = to_bool(attr.value);
+                    break;
+                default:
+                    ;
+            }
+        }
+    }
+}
+
+void number_style_context::end_element_number_style()
+{
+    if (m_current_style->is_volatile)
+    {
+        if (get_config().debug)
+            warn("TODO: handle volatile number style");
+
+        return;
+    }
+}
+
 namespace {
 
 class number_style_attr_parser
@@ -797,6 +1002,6 @@ void number_format_context::reset()
     m_current_style = odf_number_format{};
 }
 
-}
+} // namespace orcus
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

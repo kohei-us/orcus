@@ -19,6 +19,44 @@ namespace spreadsheet { namespace iface {
     class import_styles;
 }}
 
+/**
+ * Context for <number:number-style> scope.
+ */
+class number_style_context : public xml_context_base
+{
+public:
+    number_style_context(
+        session_context& session_cxt, const tokens& tk,
+        spreadsheet::iface::import_styles* xstyles);
+
+    xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
+    void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
+    void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) override;
+    bool end_element(xmlns_id_t ns, xml_token_t name) override;
+    void characters(std::string_view str, bool transient) override;
+
+    void reset();
+
+    std::unique_ptr<odf_number_format> pop_style();
+
+private:
+    void start_element_number(const std::vector<xml_token_attr_t>& attrs);
+    void end_element_number();
+
+    void start_element_number_style(const std::vector<xml_token_attr_t>& attrs);
+    void end_element_number_style();
+
+private:
+    spreadsheet::iface::import_styles* mp_xstyles = nullptr;
+
+    std::unique_ptr<odf_number_format> m_current_style;
+
+    std::string_view m_country_code;
+    std::string_view m_language;
+
+    long m_decimal_places = 0;
+    long m_min_integer_digits = 0;
+};
 
 /**
  * Context that handles <number:xyz> scope.
@@ -45,7 +83,8 @@ private:
     string_pool m_pool;
 };
 
-}
+} // namespace orcus
 
 #endif
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

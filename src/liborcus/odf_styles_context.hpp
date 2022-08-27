@@ -51,6 +51,7 @@ private:
 
     style_context m_cxt_style;
     number_format_context m_cxt_number_format;
+    number_style_context m_cxt_number_style;
 };
 
 } // namespace orcus

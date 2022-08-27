@@ -103,7 +103,7 @@ struct odf_number_format
     odf_number_format(std::string_view _name, bool _is_volatile);
 };
 
-typedef std::map<std::string_view, std::unique_ptr<odf_style>> odf_styles_map_type;
+using odf_styles_map_type = std::map<std::string_view, std::unique_ptr<odf_style>>;
 
 /**
  * Merge two styles collections into one.
