@@ -28,7 +28,7 @@ class styles_context : public xml_context_base
 {
 public:
     styles_context(
-        session_context& session_cxt, const tokens& tk, odf_styles_map_type& styles, spreadsheet::iface::import_styles* iface_styles);
+        session_context& session_cxt, const tokens& tk, spreadsheet::iface::import_styles* iface_styles);
 
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
@@ -36,12 +36,15 @@ public:
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
     virtual void characters(std::string_view str, bool transient) override;
 
+    void reset();
+    odf_styles_map_type pop_styles();
+
 private:
     void commit_default_styles();
 
 private:
     spreadsheet::iface::import_styles* mp_styles;
-    odf_styles_map_type& m_styles;
+    odf_styles_map_type m_styles;
 
     // an automatic style corresponds to a cell format and not a real style
     bool m_automatic_styles;

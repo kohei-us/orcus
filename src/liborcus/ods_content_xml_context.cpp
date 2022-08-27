@@ -116,7 +116,7 @@ ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, c
     m_para_index(0),
     m_has_content(false),
     m_styles(),
-    m_child_styles(session_cxt, tokens, m_styles, mp_factory->get_styles()),
+    m_child_styles(session_cxt, tokens, mp_factory->get_styles()),
     m_child_para(session_cxt, tokens, factory->get_shared_strings(), m_styles),
     m_child_dde_links(session_cxt, tokens)
 {
@@ -146,6 +146,7 @@ xml_context_base* ods_content_xml_context::create_child_context(xmlns_id_t ns, x
 
     if (ns == NS_odf_office && name == XML_automatic_styles)
     {
+        m_child_styles.reset();
         return &m_child_styles;
     }
 
@@ -168,6 +169,10 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
     }
     else if (ns == NS_odf_office && name == XML_automatic_styles)
     {
+        auto new_styles = m_child_styles.pop_styles();
+        merge(m_styles, new_styles);
+        assert(new_styles.empty());
+
         if (get_config().debug)
             dump_state(m_styles, std::cout);
 

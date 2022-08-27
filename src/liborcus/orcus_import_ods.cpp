@@ -29,8 +29,7 @@ void import_ods::read_styles(std::string_view s, spreadsheet::iface::import_styl
         return;
 
     session_context cxt;
-    odf_styles_map_type styles_map;
-    auto context = std::make_unique<styles_context>(cxt, odf_tokens, styles_map, styles);
+    auto context = std::make_unique<styles_context>(cxt, odf_tokens, styles);
 
     xml_stream_handler stream_handler(cxt, odf_tokens, std::move(context));
 

@@ -105,6 +105,16 @@ struct odf_number_format
 
 typedef std::map<std::string_view, std::unique_ptr<odf_style>> odf_styles_map_type;
 
+/**
+ * Merge two styles collections into one.
+ *
+ * @param dst destination where all the styles will be stored when the call
+ *            returns.
+ * @param src source collection to move all the styles from. After the call
+ *            returns this one will be empty.
+ */
+void merge(odf_styles_map_type& dst, odf_styles_map_type& src);
+
 void dump_state(const odf_styles_map_type& styles_map, std::ostream& os);
 
 }

@@ -53,6 +53,14 @@ odf_number_format::odf_number_format(std::string_view _name, bool _is_volatile):
 {
 }
 
+void merge(odf_styles_map_type& dst, odf_styles_map_type& src)
+{
+    for (auto& [name, style] : src)
+        dst.insert_or_assign(name, std::move(style));
+
+    src.clear();
+}
+
 void dump_state(const odf_styles_map_type& styles_map, std::ostream& os)
 {
     os << "styles picked up:\n";

@@ -21,7 +21,7 @@ document_styles_context::document_styles_context(session_context& session_cxt, c
     xml_context_base(session_cxt, tk),
     m_styles_map(styles_map),
     mp_styles(xstyles),
-    m_cxt_styles(session_cxt, tk, styles_map, xstyles)
+    m_cxt_styles(session_cxt, tk, xstyles)
 {
     register_child(&m_cxt_styles);
 }
@@ -30,6 +30,7 @@ xml_context_base* document_styles_context::create_child_context(xmlns_id_t ns, x
 {
     if (ns == NS_odf_office && name == XML_styles)
     {
+        m_cxt_styles.reset();
         return &m_cxt_styles;
     }
 
@@ -41,6 +42,9 @@ void document_styles_context::end_child_context(xmlns_id_t ns, xml_token_t name,
     if (ns == NS_odf_office && name == XML_styles)
     {
         assert(child == &m_cxt_styles);
+        auto new_styles = m_cxt_styles.pop_styles();
+        merge(m_styles_map, new_styles);
+        assert(new_styles.empty());
     }
 }
 

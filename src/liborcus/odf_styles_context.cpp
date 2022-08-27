@@ -17,11 +17,10 @@ namespace ss = orcus::spreadsheet;
 namespace orcus {
 
 styles_context::styles_context(
-    session_context& session_cxt, const tokens& tk, odf_styles_map_type& styles,
+    session_context& session_cxt, const tokens& tk,
     spreadsheet::iface::import_styles* iface_styles) :
     xml_context_base(session_cxt, tk),
     mp_styles(iface_styles),
-    m_styles(styles),
     m_automatic_styles(false),
     m_cxt_style(session_cxt, tk, mp_styles),
     m_cxt_number_format(session_cxt, tk, mp_styles)
@@ -134,6 +133,16 @@ bool styles_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void styles_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
+}
+
+void styles_context::reset()
+{
+    m_styles.clear();
+}
+
+odf_styles_map_type styles_context::pop_styles()
+{
+    return std::move(m_styles);
 }
 
 void styles_context::commit_default_styles()
