@@ -46,6 +46,8 @@ private:
     void start_element_number_style(const std::vector<xml_token_attr_t>& attrs);
     void end_element_number_style();
 
+    void start_element_text_properties(const std::vector<xml_token_attr_t>& attrs);
+
 private:
     spreadsheet::iface::import_styles* mp_xstyles = nullptr;
 

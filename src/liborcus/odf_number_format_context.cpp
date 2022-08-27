@@ -69,6 +69,17 @@ void number_style_context::start_element(xmlns_id_t ns, xml_token_t name, const 
                 warn_unhandled();
         }
     }
+    else if (ns == NS_odf_style)
+    {
+        switch (name)
+        {
+            case XML_text_properties:
+                start_element_text_properties(attrs);
+                break;
+            default:
+                warn_unhandled();
+        }
+    }
     else
         warn_unhandled();
 }
@@ -234,6 +245,47 @@ void number_style_context::end_element_number_style()
             warn("TODO: handle volatile number style");
 
         return;
+    }
+}
+
+void number_style_context::start_element_text_properties(const std::vector<xml_token_attr_t>& attrs)
+{
+    std::string_view color;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns == NS_odf_fo)
+        {
+            switch (attr.name)
+            {
+                case XML_color:
+                {
+                    if (attr.value == "#000000")
+                        color = "BLACK";
+                    if (attr.value == "#ff0000")
+                        color = "RED";
+                    if (attr.value == "#00ff00")
+                        color = "GREEN";
+                    if (attr.value == "#0000ff")
+                        color = "BLUE";
+                    if (attr.value == "#ffff00")
+                        color = "YELLOW";
+                    if (attr.value == "#00ffff")
+                        color = "CYAN";
+                    if (attr.value == "#ff00ff")
+                        color = "MAGENTA";
+                    if (attr.value == "#ffffff")
+                        color = "WHITE";
+                }
+            }
+        }
+    }
+
+    if (!color.empty())
+    {
+        std::ostringstream os;
+        os << '[' << color << ']';
+        m_current_style->code += os.str();
     }
 }
 
