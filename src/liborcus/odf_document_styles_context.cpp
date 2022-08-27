@@ -53,8 +53,6 @@ void document_styles_context::start_element(xmlns_id_t ns, xml_token_t name, con
     auto parent = push_stack(ns, name);
     (void)parent;
 
-    (void)ns;
-    (void)name;
     (void)attrs;
 
     warn_unhandled();
