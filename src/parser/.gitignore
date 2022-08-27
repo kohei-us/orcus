@@ -1,2 +1,4 @@
 parser-test-*
+parser-global-test
 sax-parser-test
+utf8-test
