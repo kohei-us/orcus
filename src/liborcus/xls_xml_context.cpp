@@ -727,6 +727,8 @@ xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tok
     m_cur_merge_down(0), m_cur_merge_across(0),
     m_cc_data(session_cxt, tokens, *this)
 {
+    register_child(&m_cc_data);
+
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
         { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_xls_xml_ss, XML_Workbook }, // root element
@@ -836,7 +838,6 @@ xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token
             case XML_Data:
             {
                 // Move the cell formula string to the Data element context.
-                m_cc_data.transfer_common(*this);
                 m_cc_data.reset();
                 return &m_cc_data;
             }

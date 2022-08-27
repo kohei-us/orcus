@@ -108,11 +108,17 @@ void xml_context_base::set_ns_context(const xmlns_context* p)
 {
     mp_ns_cxt = p;
     m_elem_printer.set_ns_context(p);
+
+    for (auto* child : m_child_contexts)
+        child->set_ns_context(p);
 }
 
 void xml_context_base::set_config(const config& opt)
 {
     m_config = opt;
+
+    for (auto* child : m_child_contexts)
+        child->set_config(opt);
 }
 
 void xml_context_base::transfer_common(const xml_context_base& parent)
@@ -319,5 +325,12 @@ std::string_view xml_context_base::intern(std::string_view s)
     return m_session_cxt.intern(s);
 }
 
+void xml_context_base::register_child(xml_context_base* child)
+{
+    assert(child);
+    m_child_contexts.push_back(child);
 }
+
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

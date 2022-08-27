@@ -110,6 +110,13 @@ public:
 
     void set_config(const config& opt);
 
+    /**
+     * Call this to transfer common settings from parent context to child
+     * context.
+     *
+     * TODO: This should be phased out in favor of calling register_child() to
+     * register child contexts with their parent.
+     */
     void transfer_common(const xml_context_base& parent);
 
     void set_always_allowed_elements(xml_elem_set_t elems);
@@ -166,7 +173,11 @@ protected:
     std::string_view intern(const xml_token_attr_t& attr);
     std::string_view intern(std::string_view s);
 
+    void register_child(xml_context_base* child);
+
 private:
+    std::vector<xml_context_base*> m_child_contexts;
+
     config m_config;
     const xmlns_context* mp_ns_cxt;
     session_context& m_session_cxt;

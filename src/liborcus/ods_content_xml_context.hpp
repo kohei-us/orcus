@@ -12,6 +12,7 @@
 #include "odf_para_context.hpp"
 #include "ods_dde_links_context.hpp"
 #include "odf_styles.hpp"
+#include "odf_styles_context.hpp"
 #include "orcus/spreadsheet/types.hpp"
 
 #include <vector>
@@ -103,8 +104,6 @@ private:
     std::vector<spreadsheet::iface::import_sheet*> m_tables;
     sheet_data m_cur_sheet;
 
-    std::unique_ptr<xml_context_base> mp_child;
-
     row_attr    m_row_attr;
     cell_attr   m_cell_attr; /// attributes of current cell.
 
@@ -116,6 +115,7 @@ private:
     odf_styles_map_type m_styles; /// map storing all automatic styles by their names.
     name2id_type m_cell_format_map; /// map of style names to cell format (xf) IDs.
 
+    styles_context m_child_styles;
     text_para_context m_child_para;
     ods_dde_links_context m_child_dde_links;
 };

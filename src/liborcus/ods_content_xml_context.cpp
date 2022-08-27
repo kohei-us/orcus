@@ -8,7 +8,6 @@
 #include "ods_content_xml_context.hpp"
 #include "odf_token_constants.hpp"
 #include "odf_namespace_types.hpp"
-#include "odf_styles_context.hpp"
 #include "session_context.hpp"
 #include "ods_session_data.hpp"
 
@@ -117,9 +116,14 @@ ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, c
     m_para_index(0),
     m_has_content(false),
     m_styles(),
+    m_child_styles(session_cxt, tokens, m_styles, mp_factory->get_styles()),
     m_child_para(session_cxt, tokens, factory->get_shared_strings(), m_styles),
     m_child_dde_links(session_cxt, tokens)
 {
+    register_child(&m_child_styles);
+    register_child(&m_child_para);
+    register_child(&m_child_dde_links);
+
     spreadsheet::iface::import_global_settings* gs = mp_factory->get_global_settings();
     if (gs)
     {
@@ -137,21 +141,17 @@ xml_context_base* ods_content_xml_context::create_child_context(xmlns_id_t ns, x
     if (ns == NS_odf_text && name == XML_p)
     {
         m_child_para.reset();
-        m_child_para.transfer_common(*this);
         return &m_child_para;
     }
 
     if (ns == NS_odf_office && name == XML_automatic_styles)
     {
-        mp_child.reset(new styles_context(get_session_context(), get_tokens(), m_styles, mp_factory->get_styles()));
-        mp_child->transfer_common(*this);
-        return mp_child.get();
+        return &m_child_styles;
     }
 
     if (ns == NS_odf_table && name == XML_dde_links)
     {
         m_child_dde_links.reset();
-        m_child_dde_links.transfer_common(*this);
         return &m_child_dde_links;
     }
 

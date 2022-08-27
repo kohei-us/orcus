@@ -23,13 +23,13 @@ document_styles_context::document_styles_context(session_context& session_cxt, c
     mp_styles(xstyles),
     m_cxt_styles(session_cxt, tk, styles_map, xstyles)
 {
+    register_child(&m_cxt_styles);
 }
 
 xml_context_base* document_styles_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
     if (ns == NS_odf_office && name == XML_styles)
     {
-        m_cxt_styles.transfer_common(*this);
         return &m_cxt_styles;
     }
 
