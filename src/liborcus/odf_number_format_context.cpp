@@ -62,6 +62,9 @@ void number_style_context::start_element(xmlns_id_t ns, xml_token_t name, const 
             case XML_number:
                 start_element_number(attrs);
                 break;
+            case XML_text:
+                m_text_stream = std::ostringstream{};
+                break;
             default:
                 warn_unhandled();
         }
@@ -82,6 +85,9 @@ bool number_style_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_number:
                 end_element_number();
                 break;
+            case XML_text:
+                m_current_style->code += m_text_stream.str();
+                break;
             default:;
         }
     }
@@ -89,13 +95,15 @@ bool number_style_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void number_style_context::characters(std::string_view /*str*/, bool /*transient*/)
+void number_style_context::characters(std::string_view str, bool /*transient*/)
 {
+    m_text_stream << str;
 }
 
 void number_style_context::reset()
 {
     m_current_style = std::make_unique<odf_number_format>();
+    m_text_stream = std::ostringstream{};
     m_country_code = std::string_view{};
     m_language = std::string_view{};
     m_decimal_places = 0;
@@ -615,7 +623,7 @@ void number_format_context::start_element(xmlns_id_t ns, xml_token_t name, const
     xml_token_pair_t parent = push_stack(ns, name);
     (void)parent;
 
-    m_current_style.character_stream = std::string_view{};
+    m_character_stream = std::string_view{};
 
     if (ns == NS_odf_number)
     {
@@ -922,7 +930,7 @@ bool number_format_context::end_element(xmlns_id_t ns, xml_token_t name)
     auto* number_format = mp_styles->get_number_format();
     ENSURE_INTERFACE(number_format, import_number_format);
 
-    std::string_view character_content = m_current_style.character_stream;
+    std::string_view character_content = m_character_stream;
 
     if (ns == NS_odf_number)
     {
@@ -991,9 +999,9 @@ void number_format_context::characters(std::string_view str, bool transient)
     if (str != "\n")
     {
         if (transient)
-            m_current_style.character_stream = m_pool.intern(str).first;
+            m_character_stream = m_pool.intern(str).first;
         else
-            m_current_style.character_stream = str;
+            m_character_stream = str;
     }
 }
 

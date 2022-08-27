@@ -50,6 +50,7 @@ private:
     spreadsheet::iface::import_styles* mp_xstyles = nullptr;
 
     std::unique_ptr<odf_number_format> m_current_style;
+    std::ostringstream m_text_stream;
 
     std::string_view m_country_code;
     std::string_view m_language;
@@ -79,6 +80,8 @@ public:
 private:
     spreadsheet::iface::import_styles* mp_styles;
     odf_number_format m_current_style;
+
+    std::string_view m_character_stream;
 
     string_pool m_pool;
 };

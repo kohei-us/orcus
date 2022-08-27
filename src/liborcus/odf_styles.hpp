@@ -97,7 +97,6 @@ struct odf_number_format
     std::string_view name;
     std::string code;
     bool is_volatile = false;
-    std::string_view character_stream;
 
     odf_number_format() = default;
     odf_number_format(std::string_view _name, bool _is_volatile);
