@@ -9,6 +9,7 @@
 #include "odf_namespace_types.hpp"
 #include "odf_token_constants.hpp"
 #include "odf_helper.hpp"
+#include "ods_session_data.hpp"
 #include "impl_utils.hpp"
 
 #include <orcus/measurement.hpp>
@@ -72,6 +73,9 @@ void number_style_context::start_element(xmlns_id_t ns, xml_token_t name, const 
         {
             case XML_text_properties:
                 start_element_text_properties(attrs);
+                break;
+            case XML_map:
+                start_element_map(attrs);
                 break;
             default:
                 warn_unhandled();
@@ -284,6 +288,66 @@ void number_style_context::start_element_text_properties(const std::vector<xml_t
         os << '[' << color << ']';
         m_current_style->code += os.str();
     }
+}
+
+void number_style_context::start_element_map(const std::vector<xml_token_attr_t>& attrs)
+{
+    std::string_view comp; // comparison operator e.g. <, >, >=, ...
+    std::string_view value; // right-hand value
+    std::string_view style_name; // style name associated with the mapped rule
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns == NS_odf_style)
+        {
+            switch (attr.name)
+            {
+                case XML_apply_style_name:
+                {
+                    style_name = attr.value;
+                    break;
+                }
+                case XML_condition:
+                {
+                    // value()[comp][rvalue] e.g. 'value()>=0'
+                    constexpr std::string_view prefix = "value()";
+
+                    // check if the attribute value starts with 'value()'
+                    if (attr.value.compare(0, prefix.size(), prefix) == 0)
+                    {
+                        auto pos_value = attr.value.find_first_not_of("<>=", prefix.size());
+
+                        comp = attr.value.substr(prefix.size(), pos_value - prefix.size());
+                        value = attr.value.substr(pos_value);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    if (comp.empty() || value.empty() || style_name.empty())
+        return;
+
+    // fetch the code associated with the mapped rule
+    auto& numfmts = get_session_context().get_data<ods_session_data>().number_formats;
+    std::string_view code = numfmts.get_code(style_name);
+
+    if (code.empty())
+    {
+        if (get_config().debug)
+        {
+            std::ostringstream os;
+            os << "code stored for the number format style named '" << style_name << "' exists, but is empty.";
+            warn(os.str());
+        }
+        return;
+    }
+
+    // prepend the mapped rule to the current code
+    std::ostringstream os;
+    os << '[' << comp << value << ']' << code << ';' << m_current_style->code;
+    m_current_style->code = os.str();
 }
 
 namespace {

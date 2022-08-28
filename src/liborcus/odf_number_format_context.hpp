@@ -45,6 +45,7 @@ private:
     void end_element_number_style();
 
     void start_element_text_properties(const std::vector<xml_token_attr_t>& attrs);
+    void start_element_map(const std::vector<xml_token_attr_t>& attrs);
 
 private:
     std::unique_ptr<odf_number_format> m_current_style;

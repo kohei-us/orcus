@@ -23,7 +23,19 @@ ods_session_data::named_exp::named_exp(
     const pstring& _name, const pstring& _expression, const pstring& _base, named_exp_type _type, spreadsheet::sheet_t _scope) :
     name(_name), expression(_expression), base(_base), type(_type), scope(_scope) {}
 
-ods_session_data::~ods_session_data() {}
+std::string_view ods_session_data::number_formats_store::get_code(std::string_view name) const
+{
+    auto it_name = name2id_map.find(name);
+    if (it_name == name2id_map.end())
+        return {};
+
+    std::size_t id = it_name->second;
+    auto it_code = id2code_map.find(id);
+    if (it_code == id2code_map.end())
+        return {};
+
+    return it_code->second;
+}
 
 }
 

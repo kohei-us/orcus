@@ -68,11 +68,11 @@ struct ods_session_data : public session_context::custom_data
     {
         std::map<std::string_view, std::size_t> name2id_map;
         std::map<std::size_t, std::string> id2code_map;
+
+        std::string_view get_code(std::string_view name) const;
     };
 
     number_formats_store number_formats;
-
-    virtual ~ods_session_data();
 };
 
 }
