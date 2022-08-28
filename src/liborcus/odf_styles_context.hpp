@@ -42,6 +42,8 @@ public:
 private:
     void commit_default_styles();
 
+    void push_number_style(std::unique_ptr<odf_number_format> num_style);
+
 private:
     spreadsheet::iface::import_styles* mp_styles;
     odf_styles_map_type m_styles;

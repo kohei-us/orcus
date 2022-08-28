@@ -67,39 +67,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
             case XML_number_style:
             {
                 assert(child == &m_cxt_number_style);
-                auto num_style = m_cxt_number_style.pop_style();
-
-                if (mp_styles)
-                {
-                    auto* number_format = mp_styles->get_number_format();
-                    ENSURE_INTERFACE(number_format, import_number_format);
-
-                    if (!num_style->code.empty())
-                    {
-                        number_format->set_code(num_style->code);
-                        std::size_t id = number_format->commit();
-
-                        if (get_config().debug)
-                        {
-                            std::cout << "number-style: name='" << num_style->name
-                                << "'; code='" << num_style->code
-                                << "'; id=" << id << std::endl;
-                        }
-
-                        auto& sess_cxt = get_session_context();
-                        auto& ods_data = sess_cxt.get_data<ods_session_data>();
-                        auto res = ods_data.number_formats_map.insert_or_assign(
-                            sess_cxt.intern(num_style->name), id);
-
-                        if (!res.second)
-                        {
-                            std::ostringstream os;
-                            os << "number style named '" << num_style->name << "' has been overwritten.";
-                            warn(os.str());
-                        }
-                    }
-                }
-
+                push_number_style(m_cxt_number_style.pop_style());
                 break;
             }
             default:;
@@ -239,6 +207,45 @@ void styles_context::commit_default_styles()
     auto* cell_style = mp_styles->get_cell_style();
     ENSURE_INTERFACE(cell_style, import_cell_style);
     cell_style->commit();
+}
+
+void styles_context::push_number_style(std::unique_ptr<odf_number_format> num_style)
+{
+    if (!mp_styles)
+        return;
+
+    if (num_style->code.empty())
+        return;
+
+    auto* number_format = mp_styles->get_number_format();
+    ENSURE_INTERFACE(number_format, import_number_format);
+
+    number_format->set_code(num_style->code);
+    std::size_t id = number_format->commit();
+
+    if (get_config().debug)
+    {
+        std::cout << "number-style: name='" << num_style->name
+            << "'; code='" << num_style->code
+            << "'; id=" << id << std::endl;
+    }
+
+    auto& sess_cxt = get_session_context();
+    auto& numfmts_store = sess_cxt.get_data<ods_session_data>().number_formats;
+
+    if (auto res = numfmts_store.name2id_map.insert_or_assign(sess_cxt.intern(num_style->name), id); !res.second)
+    {
+        std::ostringstream os;
+        os << "number style named '" << num_style->name << "' has been overwritten.";
+        warn(os.str());
+    }
+
+    if (auto res = numfmts_store.id2code_map.insert_or_assign(id, std::move(num_style->code)); !res.second)
+    {
+        std::ostringstream os;
+        os << "number style associated with the id of " << id << " has been overwritten.";
+        warn(os.str());
+    }
 }
 
 }
