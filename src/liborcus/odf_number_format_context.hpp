@@ -25,9 +25,7 @@ namespace spreadsheet { namespace iface {
 class number_style_context : public xml_context_base
 {
 public:
-    number_style_context(
-        session_context& session_cxt, const tokens& tk,
-        spreadsheet::iface::import_styles* xstyles);
+    number_style_context(session_context& session_cxt, const tokens& tk);
 
     xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
     void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
@@ -49,8 +47,6 @@ private:
     void start_element_text_properties(const std::vector<xml_token_attr_t>& attrs);
 
 private:
-    spreadsheet::iface::import_styles* mp_xstyles = nullptr;
-
     std::unique_ptr<odf_number_format> m_current_style;
     std::ostringstream m_text_stream;
 

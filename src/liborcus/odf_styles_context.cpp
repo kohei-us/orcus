@@ -26,7 +26,7 @@ styles_context::styles_context(
     m_automatic_styles(false),
     m_cxt_style(session_cxt, tk, mp_styles),
     m_cxt_number_format(session_cxt, tk, mp_styles),
-    m_cxt_number_style(session_cxt, tk, mp_styles)
+    m_cxt_number_style(session_cxt, tk)
 {
     register_child(&m_cxt_style);
     register_child(&m_cxt_number_format);

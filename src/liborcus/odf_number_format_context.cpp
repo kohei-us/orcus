@@ -24,11 +24,8 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
-number_style_context::number_style_context(
-    session_context& session_cxt, const tokens& tk,
-    spreadsheet::iface::import_styles* xstyles) :
-    xml_context_base(session_cxt, tk),
-    mp_xstyles(xstyles)
+number_style_context::number_style_context(session_context& session_cxt, const tokens& tk) :
+    xml_context_base(session_cxt, tk)
 {
 }
 
