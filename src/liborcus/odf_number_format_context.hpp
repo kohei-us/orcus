@@ -42,7 +42,6 @@ private:
     void end_element_number();
 
     void start_element_number_style(const std::vector<xml_token_attr_t>& attrs);
-    void end_element_number_style();
 
     void start_element_text_properties(const std::vector<xml_token_attr_t>& attrs);
     void start_element_map(const std::vector<xml_token_attr_t>& attrs);

@@ -91,9 +91,6 @@ bool number_style_context::end_element(xmlns_id_t ns, xml_token_t name)
     {
         switch (name)
         {
-            case XML_number_style:
-                end_element_number_style();
-                break;
             case XML_number:
                 end_element_number();
                 break;
@@ -228,24 +225,10 @@ void number_style_context::start_element_number_style(const std::vector<xml_toke
                 case XML_name:
                     m_current_style->name = attr.value;
                     break;
-                case XML_volatile:
-                    m_current_style->is_volatile = to_bool(attr.value);
-                    break;
                 default:
                     ;
             }
         }
-    }
-}
-
-void number_style_context::end_element_number_style()
-{
-    if (m_current_style->is_volatile)
-    {
-        if (get_config().debug)
-            warn("TODO: handle volatile number style");
-
-        return;
     }
 }
 
