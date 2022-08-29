@@ -83,8 +83,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
             case XML_currency_style:
             {
                 assert(child == &m_cxt_currency_style);
-                auto style = m_cxt_currency_style.pop_style();
-                (void)style;
+                push_number_style(m_cxt_currency_style.pop_style());
             }
             default:;
         }
@@ -231,7 +230,12 @@ void styles_context::push_number_style(std::unique_ptr<odf_number_format> num_st
         return;
 
     if (num_style->code.empty())
+    {
+        if (get_config().debug)
+            std::cerr << "number-style: name='" << num_style->name << "'; code=<empty>" << std::endl;
+
         return;
+    }
 
     auto* number_format = mp_styles->get_number_format();
     ENSURE_INTERFACE(number_format, import_number_format);
@@ -241,7 +245,7 @@ void styles_context::push_number_style(std::unique_ptr<odf_number_format> num_st
 
     if (get_config().debug)
     {
-        std::cout << "number-style: name='" << num_style->name
+        std::cerr << "number-style: name='" << num_style->name
             << "'; code='" << num_style->code
             << "'; id=" << id << std::endl;
     }

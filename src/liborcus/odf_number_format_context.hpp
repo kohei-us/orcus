@@ -39,18 +39,15 @@ public:
 
 private:
     void start_element_fraction(const std::vector<xml_token_attr_t>& attrs);
-    void start_element_number(const std::vector<xml_token_attr_t>& attrs);
     void start_element_number_style(const std::vector<xml_token_attr_t>& attrs);
     void start_element_scientific_number(const std::vector<xml_token_attr_t>& attrs);
-    void start_element_text_properties(const std::vector<xml_token_attr_t>& attrs);
-    void start_element_map(const std::vector<xml_token_attr_t>& attrs);
 
 private:
     std::unique_ptr<odf_number_format> m_current_style;
     std::ostringstream m_text_stream;
 
-    std::string_view m_country_code;
-    std::string_view m_language;
+    std::string_view m_country_code; // TODO: handle this
+    std::string_view m_language; // TODO: handle this
 };
 
 /**
@@ -72,11 +69,14 @@ public:
     std::unique_ptr<odf_number_format> pop_style();
 
 private:
+    void start_element_currency_style(const std::vector<xml_token_attr_t>& attrs);
+
+private:
     std::unique_ptr<odf_number_format> m_current_style;
     std::ostringstream m_text_stream;
 
-    std::string_view m_country_code;
-    std::string_view m_language;
+    std::string_view m_country_code; // TODO: handle this
+    std::string_view m_language; // TODO: handle this
 };
 
 /**
