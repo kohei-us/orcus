@@ -54,6 +54,9 @@ void number_style_context::start_element(xmlns_id_t ns, xml_token_t name, const 
     {
         switch (name)
         {
+            case XML_fraction:
+                start_element_fraction(attrs);
+                break;
             case XML_number_style:
                 start_element_number_style(attrs);
                 break;
@@ -91,9 +94,6 @@ bool number_style_context::end_element(xmlns_id_t ns, xml_token_t name)
     {
         switch (name)
         {
-            case XML_number:
-                end_element_number();
-                break;
             case XML_text:
                 m_current_style->code += m_text_stream.str();
                 break;
@@ -115,8 +115,6 @@ void number_style_context::reset()
     m_text_stream = std::ostringstream{};
     m_country_code = std::string_view{};
     m_language = std::string_view{};
-    m_decimal_places = 0;
-    m_min_integer_digits = 0;
 }
 
 std::unique_ptr<odf_number_format> number_style_context::pop_style()
@@ -124,9 +122,60 @@ std::unique_ptr<odf_number_format> number_style_context::pop_style()
     return std::move(m_current_style);
 }
 
+void number_style_context::start_element_fraction(const std::vector<xml_token_attr_t>& attrs)
+{
+    long min_integer_digits = 0;
+    long min_numerator_digits = 0;
+    long min_denominator_digits = 0;
+
+    std::optional<std::string_view> denominator_value;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns == NS_odf_number)
+        {
+            switch (attr.name)
+            {
+                case XML_min_integer_digits:
+                    min_integer_digits = to_long(attr.value);
+                    break;
+                case XML_min_numerator_digits:
+                    min_numerator_digits = to_long(attr.value);
+                    break;
+                case XML_min_denominator_digits:
+                    min_denominator_digits = to_long(attr.value);
+                    break;
+                case XML_denominator_value:
+                {
+                    denominator_value = attr.value;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (min_integer_digits > 0)
+    {
+        m_current_style->code += std::string{'#', min_integer_digits};
+        m_current_style->code += ' ';
+    }
+
+    if (min_numerator_digits > 0)
+        m_current_style->code += std::string{'?', min_numerator_digits};
+
+    m_current_style->code += '/';
+
+    if (denominator_value)
+        m_current_style->code += *denominator_value;
+    else if (min_denominator_digits > 0)
+        m_current_style->code += std::string{'?', min_denominator_digits};
+}
+
 void number_style_context::start_element_number(const std::vector<xml_token_attr_t>& attrs)
 {
     bool grouping = false;
+    long decimal_places = 0;
+    long min_integer_digits = 0;
 
     for (const auto& attr : attrs)
     {
@@ -136,14 +185,14 @@ void number_style_context::start_element_number(const std::vector<xml_token_attr
             {
                 case XML_decimal_places:
                 {
-                    m_decimal_places = to_long(attr.value);
+                    decimal_places = to_long(attr.value);
                     break;
                 }
                 case XML_grouping:
                     grouping = to_bool(attr.value);
                     break;
                 case XML_min_integer_digits:
-                    m_min_integer_digits = to_long(attr.value);
+                    min_integer_digits = to_long(attr.value);
                     break;
                 default:;
             }
@@ -152,21 +201,21 @@ void number_style_context::start_element_number(const std::vector<xml_token_attr
 
     if (grouping)
     {
-        if (m_min_integer_digits < 4)
+        if (min_integer_digits < 4)
         {
             m_current_style->code += "#,";
 
-            for (long i = 0; i < 3 - m_min_integer_digits; ++i)
+            for (long i = 0; i < 3 - min_integer_digits; ++i)
                 m_current_style->code += "#";
 
-            for (long i = 0; i < m_min_integer_digits; ++i)
+            for (long i = 0; i < min_integer_digits; ++i)
                 m_current_style->code += "0";
         }
         else
         {
             std::string temporary_code;
 
-            for (long i = 0; i < m_min_integer_digits; ++i)
+            for (long i = 0; i < min_integer_digits; ++i)
             {
                 if (i % 3 == 0 && i != 0)
                     temporary_code += ",";
@@ -180,25 +229,20 @@ void number_style_context::start_element_number(const std::vector<xml_token_attr
     }
     else
     {
-        if (m_min_integer_digits == 0)
+        if (min_integer_digits == 0)
             m_current_style->code += "#";
 
-        for (long i = 0; i < m_min_integer_digits; ++i)
+        for (long i = 0; i < min_integer_digits; ++i)
             m_current_style->code += "0";
     }
 
-    if (m_decimal_places > 0)
+    if (decimal_places > 0)
     {
         m_current_style->code += ".";
-        for (long i = 0; i < m_decimal_places; ++i)
+        for (long i = 0; i < decimal_places; ++i)
             m_current_style->code += "0";
     }
 }
-
-void number_style_context::end_element_number()
-{
-}
-
 
 void number_style_context::start_element_number_style(const std::vector<xml_token_attr_t>& attrs)
 {

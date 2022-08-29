@@ -38,11 +38,9 @@ public:
     std::unique_ptr<odf_number_format> pop_style();
 
 private:
+    void start_element_fraction(const std::vector<xml_token_attr_t>& attrs);
     void start_element_number(const std::vector<xml_token_attr_t>& attrs);
-    void end_element_number();
-
     void start_element_number_style(const std::vector<xml_token_attr_t>& attrs);
-
     void start_element_text_properties(const std::vector<xml_token_attr_t>& attrs);
     void start_element_map(const std::vector<xml_token_attr_t>& attrs);
 
@@ -52,9 +50,6 @@ private:
 
     std::string_view m_country_code;
     std::string_view m_language;
-
-    long m_decimal_places = 0;
-    long m_min_integer_digits = 0;
 };
 
 /**
