@@ -63,6 +63,9 @@ void number_style_context::start_element(xmlns_id_t ns, xml_token_t name, const 
             case XML_number:
                 start_element_number(attrs);
                 break;
+            case XML_scientific_number:
+                start_element_scientific_number(attrs);
+                break;
             case XML_text:
                 m_text_stream = std::ostringstream{};
                 break;
@@ -274,6 +277,86 @@ void number_style_context::start_element_number_style(const std::vector<xml_toke
             }
         }
     }
+}
+
+void number_style_context::start_element_scientific_number(const std::vector<xml_token_attr_t>& attrs)
+{
+    long decimal_places = 0;
+    long min_exponent_digits = 0;
+    long min_integer_digits = 0;
+    bool grouping = false;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns == NS_odf_number)
+        {
+            switch (attr.name)
+            {
+                case XML_decimal_places:
+                    decimal_places = to_long(attr.value);
+                    break;
+                case XML_grouping:
+                    grouping = to_bool(attr.value);
+                    break;
+                case XML_min_exponent_digits:
+                    min_exponent_digits = to_long(attr.value);
+                    break;
+                case XML_min_integer_digits:
+                    min_integer_digits = to_long(attr.value);
+                    break;
+            }
+        }
+    }
+
+    if (grouping)
+    {
+        if (min_integer_digits < 4)
+        {
+            m_current_style->code += "#,";
+
+            for (long i = 0; i < 3 - min_integer_digits; ++i)
+            {
+                m_current_style->code += "#";
+            }
+
+            for (long i = 0; i < min_integer_digits; ++i)
+            {
+                m_current_style->code += "0";
+            }
+        }
+        else
+        {
+            std::string temporary_code;
+            for (long i = 0; i < min_integer_digits; ++i)
+            {
+                if (i % 3 == 0 && i != 0)
+                    temporary_code += ",";
+
+                temporary_code += "0";
+            }
+
+            std::reverse(temporary_code.begin(), temporary_code.end());
+            m_current_style->code += temporary_code;
+        }
+    }
+    else
+    {
+        if (min_integer_digits == 0)
+            m_current_style->code += "#";
+
+        for (long i = 0; i < min_integer_digits; ++i)
+            m_current_style->code += "0";
+    }
+
+    m_current_style->code += ".";
+
+    for (long i = 0; i < decimal_places; ++i)
+        m_current_style->code += "0";
+
+    m_current_style->code += "E+";
+
+    for (long i = 0; i < min_exponent_digits; ++i)
+        m_current_style->code += "0";
 }
 
 void number_style_context::start_element_text_properties(const std::vector<xml_token_attr_t>& attrs)

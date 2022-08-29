@@ -41,6 +41,7 @@ private:
     void start_element_fraction(const std::vector<xml_token_attr_t>& attrs);
     void start_element_number(const std::vector<xml_token_attr_t>& attrs);
     void start_element_number_style(const std::vector<xml_token_attr_t>& attrs);
+    void start_element_scientific_number(const std::vector<xml_token_attr_t>& attrs);
     void start_element_text_properties(const std::vector<xml_token_attr_t>& attrs);
     void start_element_map(const std::vector<xml_token_attr_t>& attrs);
 
