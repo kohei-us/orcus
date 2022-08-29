@@ -28,6 +28,18 @@ namespace orcus {
 number_style_context::number_style_context(session_context& session_cxt, const tokens& tk) :
     xml_context_base(session_cxt, tk)
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_number, XML_number_style }, // root element
+        { NS_odf_number, XML_number_style, NS_odf_number, XML_fraction },
+        { NS_odf_number, XML_number_style, NS_odf_number, XML_number },
+        { NS_odf_number, XML_number_style, NS_odf_number, XML_scientific_number },
+        { NS_odf_number, XML_number_style, NS_odf_number, XML_text },
+        { NS_odf_number, XML_number_style, NS_odf_style, XML_map },
+        { NS_odf_number, XML_number_style, NS_odf_style, XML_text_properties },
+    };
+
+    init_element_validator(rules, std::size(rules));
 }
 
 xml_context_base* number_style_context::create_child_context(xmlns_id_t ns, xml_token_t name)
