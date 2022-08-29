@@ -54,6 +54,7 @@ private:
     style_context m_cxt_style;
     number_format_context m_cxt_number_format;
     number_style_context m_cxt_number_style;
+    currency_style_context m_cxt_currency_style;
 };
 
 } // namespace orcus

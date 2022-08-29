@@ -54,6 +54,32 @@ private:
 };
 
 /**
+ * Context for <number:currency-style> element scope.
+ */
+class currency_style_context : public xml_context_base
+{
+public:
+    currency_style_context(session_context& session_cxt, const tokens& tk);
+
+    xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
+    void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
+    void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) override;
+    bool end_element(xmlns_id_t ns, xml_token_t name) override;
+    void characters(std::string_view str, bool transient) override;
+
+    void reset();
+
+    std::unique_ptr<odf_number_format> pop_style();
+
+private:
+    std::unique_ptr<odf_number_format> m_current_style;
+    std::ostringstream m_text_stream;
+
+    std::string_view m_country_code;
+    std::string_view m_language;
+};
+
+/**
  * Context that handles <number:xyz> scope.
  */
 class number_format_context : public xml_context_base

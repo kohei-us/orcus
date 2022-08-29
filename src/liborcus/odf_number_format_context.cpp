@@ -460,6 +460,55 @@ void number_style_context::start_element_map(const std::vector<xml_token_attr_t>
     m_current_style->code = os.str();
 }
 
+currency_style_context::currency_style_context(session_context& session_cxt, const tokens& tk) :
+    xml_context_base(session_cxt, tk)
+{
+}
+
+xml_context_base* currency_style_context::create_child_context(xmlns_id_t ns, xml_token_t name)
+{
+    (void)ns;
+    (void)name;
+
+    return nullptr;
+}
+
+void currency_style_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child)
+{
+    (void)ns;
+    (void)name;
+    (void)child;
+}
+
+void currency_style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
+{
+    auto parent = push_stack(ns, name);
+    (void)parent;
+    (void)attrs;
+
+    warn_unhandled();
+}
+
+bool currency_style_context::end_element(xmlns_id_t ns, xml_token_t name)
+{
+    return pop_stack(ns, name);
+}
+
+void currency_style_context::characters(std::string_view str, bool /*transient*/)
+{
+    m_text_stream << str;
+}
+
+void currency_style_context::reset()
+{
+    m_current_style = std::make_unique<odf_number_format>();
+}
+
+std::unique_ptr<odf_number_format> currency_style_context::pop_style()
+{
+    return std::move(m_current_style);
+}
+
 namespace {
 
 class number_style_attr_parser

@@ -26,11 +26,13 @@ styles_context::styles_context(
     m_automatic_styles(false),
     m_cxt_style(session_cxt, tk, mp_styles),
     m_cxt_number_format(session_cxt, tk, mp_styles),
-    m_cxt_number_style(session_cxt, tk)
+    m_cxt_number_style(session_cxt, tk),
+    m_cxt_currency_style(session_cxt, tk)
 {
     register_child(&m_cxt_style);
     register_child(&m_cxt_number_format);
     register_child(&m_cxt_number_style);
+    register_child(&m_cxt_currency_style);
 
     commit_default_styles();
 }
@@ -39,10 +41,18 @@ xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_
 {
     if (ns == NS_odf_number)
     {
-        if (name == XML_number_style)
+        switch (name)
         {
-            m_cxt_number_style.reset();
-            return &m_cxt_number_style;
+            case XML_number_style:
+            {
+                m_cxt_number_style.reset();
+                return &m_cxt_number_style;
+            }
+            case XML_currency_style:
+            {
+                m_cxt_currency_style.reset();
+                return &m_cxt_currency_style;
+            }
         }
 
         m_cxt_number_format.reset();
@@ -69,6 +79,12 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
                 assert(child == &m_cxt_number_style);
                 push_number_style(m_cxt_number_style.pop_style());
                 break;
+            }
+            case XML_currency_style:
+            {
+                assert(child == &m_cxt_currency_style);
+                auto style = m_cxt_currency_style.pop_style();
+                (void)style;
             }
             default:;
         }
