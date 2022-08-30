@@ -231,21 +231,6 @@ number_style_context::number_style_context(session_context& session_cxt, const t
     init_element_validator(rules, std::size(rules));
 }
 
-xml_context_base* number_style_context::create_child_context(xmlns_id_t ns, xml_token_t name)
-{
-    (void)ns;
-    (void)name;
-
-    return nullptr;
-}
-
-void number_style_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child)
-{
-    (void)ns;
-    (void)name;
-    (void)child;
-}
-
 void number_style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
 {
     push_stack(ns, name);
@@ -505,21 +490,6 @@ currency_style_context::currency_style_context(session_context& session_cxt, con
     };
 
     init_element_validator(rules, std::size(rules));
-}
-
-xml_context_base* currency_style_context::create_child_context(xmlns_id_t ns, xml_token_t name)
-{
-    (void)ns;
-    (void)name;
-
-    return nullptr;
-}
-
-void currency_style_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child)
-{
-    (void)ns;
-    (void)name;
-    (void)child;
 }
 
 void currency_style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)

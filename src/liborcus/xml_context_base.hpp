@@ -54,7 +54,7 @@ public:
      *         element, or nullptr if the current context can handle the
      *         element.
      */
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) = 0;
+    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
 
     /**
      * This method gets called when the child context is about to get phased
@@ -66,7 +66,7 @@ public:
      * @param child pointer to the child context object that is about to get
      *              phased out.
      */
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) = 0;
+    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
 
     /**
      * Called on the opening of each element. The implementor should call

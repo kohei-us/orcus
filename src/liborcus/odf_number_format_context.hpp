@@ -27,8 +27,6 @@ class number_style_context : public xml_context_base
 public:
     number_style_context(session_context& session_cxt, const tokens& tk);
 
-    xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
-    void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
     void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) override;
     bool end_element(xmlns_id_t ns, xml_token_t name) override;
     void characters(std::string_view str, bool transient) override;
@@ -58,8 +56,6 @@ class currency_style_context : public xml_context_base
 public:
     currency_style_context(session_context& session_cxt, const tokens& tk);
 
-    xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
-    void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
     void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) override;
     bool end_element(xmlns_id_t ns, xml_token_t name) override;
     void characters(std::string_view str, bool transient) override;

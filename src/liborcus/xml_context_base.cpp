@@ -61,6 +61,15 @@ void xml_context_base::declaration(const xml_declaration_t& /*decl*/)
 {
 }
 
+xml_context_base* xml_context_base::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
+{
+    return nullptr;
+}
+
+void xml_context_base::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
+{
+}
+
 bool xml_context_base::evaluate_child_element(xmlns_id_t ns, xml_token_t name) const
 {
     const xml_token_pair_t parent = get_current_element();
