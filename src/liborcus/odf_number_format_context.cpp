@@ -494,6 +494,17 @@ void number_style_context::start_element_scientific_number(const std::vector<xml
 currency_style_context::currency_style_context(session_context& session_cxt, const tokens& tk) :
     xml_context_base(session_cxt, tk)
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_number, XML_currency_style }, // root element
+        { NS_odf_number, XML_currency_style, NS_odf_number, XML_currency_symbol },
+        { NS_odf_number, XML_currency_style, NS_odf_number, XML_number },
+        { NS_odf_number, XML_currency_style, NS_odf_number, XML_text },
+        { NS_odf_number, XML_currency_style, NS_odf_style, XML_map },
+        { NS_odf_number, XML_currency_style, NS_odf_style, XML_text_properties },
+    };
+
+    init_element_validator(rules, std::size(rules));
 }
 
 xml_context_base* currency_style_context::create_child_context(xmlns_id_t ns, xml_token_t name)
