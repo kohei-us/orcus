@@ -27,12 +27,14 @@ styles_context::styles_context(
     m_cxt_style(session_cxt, tk, mp_styles),
     m_cxt_number_format(session_cxt, tk, mp_styles),
     m_cxt_number_style(session_cxt, tk),
-    m_cxt_currency_style(session_cxt, tk)
+    m_cxt_currency_style(session_cxt, tk),
+    m_cxt_boolean_style(session_cxt, tk)
 {
     register_child(&m_cxt_style);
     register_child(&m_cxt_number_format);
     register_child(&m_cxt_number_style);
     register_child(&m_cxt_currency_style);
+    register_child(&m_cxt_boolean_style);
 
     commit_default_styles();
 }
@@ -52,6 +54,11 @@ xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_
             {
                 m_cxt_currency_style.reset();
                 return &m_cxt_currency_style;
+            }
+            case XML_boolean_style:
+            {
+                m_cxt_boolean_style.reset();
+                return &m_cxt_boolean_style;
             }
         }
 
@@ -84,6 +91,13 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
             {
                 assert(child == &m_cxt_currency_style);
                 push_number_style(m_cxt_currency_style.pop_style());
+                break;
+            }
+            case XML_boolean_style:
+            {
+                assert(child == &m_cxt_boolean_style);
+                push_number_style(m_cxt_boolean_style.pop_style());
+                break;
             }
             default:;
         }
@@ -229,11 +243,17 @@ void styles_context::push_number_style(std::unique_ptr<odf_number_format> num_st
     if (!mp_styles)
         return;
 
+    if (num_style->name.empty())
+    {
+        warn("ignoring a number style with empty name.");
+        return;
+    }
+
     if (num_style->code.empty())
     {
-        if (get_config().debug)
-            std::cerr << "number-style: name='" << num_style->name << "'; code=<empty>" << std::endl;
-
+        std::ostringstream os;
+        os << "number style named '" << num_style->name << "' has empty code.";
+        warn(os.str());
         return;
     }
 

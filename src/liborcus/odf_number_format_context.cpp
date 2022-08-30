@@ -214,6 +214,67 @@ parse_result parse_element_map(session_context& cxt, const std::vector<xml_token
 
 } // anonymous namespace
 
+boolean_style_context::boolean_style_context(session_context& session_cxt, const tokens& tk) :
+    xml_context_base(session_cxt, tk)
+{
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_number, XML_boolean_style }, // root element
+        { NS_odf_number, XML_boolean_style, NS_odf_number, XML_boolean },
+    };
+
+    init_element_validator(rules, std::size(rules));
+}
+
+void boolean_style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
+{
+    push_stack(ns, name);
+
+    if (ns == NS_odf_number)
+    {
+        switch (name)
+        {
+            case XML_boolean_style:
+            {
+                for (const auto& attr : attrs)
+                {
+                    if (attr.ns == NS_odf_style && attr.name == XML_name)
+                        m_current_style->name = attr.value;
+                }
+                break;
+            }
+            case XML_boolean:
+            {
+                m_current_style->code += "BOOLEAN";
+                break;
+            }
+            default:
+                warn_unhandled();
+        }
+    }
+    else
+        warn_unhandled();
+}
+
+bool boolean_style_context::end_element(xmlns_id_t ns, xml_token_t name)
+{
+    return pop_stack(ns, name);
+}
+
+void boolean_style_context::characters(std::string_view /*str*/, bool /*transient*/)
+{
+}
+
+void boolean_style_context::reset()
+{
+    m_current_style = std::make_unique<odf_number_format>();
+}
+
+std::unique_ptr<odf_number_format> boolean_style_context::pop_style()
+{
+    return std::move(m_current_style);
+}
+
 number_style_context::number_style_context(session_context& session_cxt, const tokens& tk) :
     xml_context_base(session_cxt, tk)
 {
