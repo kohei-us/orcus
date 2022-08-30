@@ -70,6 +70,10 @@ void xml_context_base::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/
 {
 }
 
+void xml_context_base::characters(std::string_view /*str*/, bool /*transient*/)
+{
+}
+
 bool xml_context_base::evaluate_child_element(xmlns_id_t ns, xml_token_t name) const
 {
     const xml_token_pair_t parent = get_current_element();

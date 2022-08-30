@@ -100,7 +100,7 @@ public:
      * @param str content value.
      * @param transient whether or not the value is transient.
      */
-    virtual void characters(std::string_view str, bool transient) = 0;
+    virtual void characters(std::string_view str, bool transient);
 
     bool evaluate_child_element(xmlns_id_t ns, xml_token_t name) const;
 

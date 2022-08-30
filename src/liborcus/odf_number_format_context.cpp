@@ -214,6 +214,81 @@ parse_result parse_element_map(session_context& cxt, const std::vector<xml_token
 
 } // anonymous namespace
 
+percentage_style_context::percentage_style_context(session_context& session_cxt, const tokens& tk) :
+    xml_context_base(session_cxt, tk)
+{
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_number, XML_percentage_style }, // root element
+        { NS_odf_number, XML_percentage_style, NS_odf_number, XML_number },
+        { NS_odf_number, XML_percentage_style, NS_odf_number, XML_text },
+    };
+
+    init_element_validator(rules, std::size(rules));
+}
+
+void percentage_style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
+{
+    push_stack(ns, name);
+
+    if (ns == NS_odf_number)
+    {
+        switch (name)
+        {
+            case XML_percentage_style:
+            {
+                for (const auto& attr : attrs)
+                {
+                    if (attr.ns == NS_odf_style && attr.name == XML_name)
+                        m_current_style->name = intern(attr);
+                }
+                break;
+            }
+            case XML_number:
+            {
+                parse_element_number(attrs, *m_current_style);
+                break;
+            }
+            case XML_text:
+                m_text_stream = std::ostringstream{};
+                break;
+            default:
+                warn_unhandled();
+        }
+    }
+    else
+        warn_unhandled();
+}
+
+bool percentage_style_context::end_element(xmlns_id_t ns, xml_token_t name)
+{
+    if (ns == NS_odf_number)
+    {
+        switch (name)
+        {
+            case XML_text:
+                m_current_style->code += m_text_stream.str();
+                break;
+        }
+    }
+    return pop_stack(ns, name);
+}
+
+void percentage_style_context::characters(std::string_view str, bool /*transient*/)
+{
+    m_text_stream << str;
+}
+
+void percentage_style_context::reset()
+{
+    m_current_style = std::make_unique<odf_number_format>();
+}
+
+std::unique_ptr<odf_number_format> percentage_style_context::pop_style()
+{
+    return std::move(m_current_style);
+}
+
 boolean_style_context::boolean_style_context(session_context& session_cxt, const tokens& tk) :
     xml_context_base(session_cxt, tk)
 {
@@ -239,7 +314,7 @@ void boolean_style_context::start_element(xmlns_id_t ns, xml_token_t name, const
                 for (const auto& attr : attrs)
                 {
                     if (attr.ns == NS_odf_style && attr.name == XML_name)
-                        m_current_style->name = attr.value;
+                        m_current_style->name = intern(attr);
                 }
                 break;
             }
@@ -259,10 +334,6 @@ void boolean_style_context::start_element(xmlns_id_t ns, xml_token_t name, const
 bool boolean_style_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
     return pop_stack(ns, name);
-}
-
-void boolean_style_context::characters(std::string_view /*str*/, bool /*transient*/)
-{
 }
 
 void boolean_style_context::reset()
