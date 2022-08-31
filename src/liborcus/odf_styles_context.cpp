@@ -25,20 +25,20 @@ styles_context::styles_context(
     mp_styles(iface_styles),
     m_automatic_styles(false),
     m_cxt_style(session_cxt, tk, mp_styles),
-    m_cxt_number_format(session_cxt, tk, mp_styles),
     m_cxt_number_style(session_cxt, tk),
     m_cxt_currency_style(session_cxt, tk),
     m_cxt_boolean_style(session_cxt, tk),
     m_cxt_percentage_style(session_cxt, tk),
-    m_cxt_date_style(session_cxt, tk)
+    m_cxt_date_style(session_cxt, tk),
+    m_cxt_time_style(session_cxt, tk)
 {
     register_child(&m_cxt_style);
-    register_child(&m_cxt_number_format);
     register_child(&m_cxt_number_style);
     register_child(&m_cxt_currency_style);
     register_child(&m_cxt_boolean_style);
     register_child(&m_cxt_percentage_style);
     register_child(&m_cxt_date_style);
+    register_child(&m_cxt_time_style);
 
     commit_default_styles();
 }
@@ -74,10 +74,12 @@ xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_
                 m_cxt_date_style.reset();
                 return &m_cxt_date_style;
             }
+            case XML_time_style:
+            {
+                m_cxt_time_style.reset();
+                return &m_cxt_time_style;
+            }
         }
-
-        m_cxt_number_format.reset();
-        return &m_cxt_number_format;
     }
 
     if (ns == NS_odf_style && name == XML_style)
@@ -123,6 +125,12 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
             {
                 assert(child == &m_cxt_date_style);
                 push_number_style(m_cxt_date_style.pop_style());
+                break;
+            }
+            case XML_time_style:
+            {
+                assert(child == &m_cxt_time_style);
+                push_number_style(m_cxt_time_style.pop_style());
                 break;
             }
             default:;

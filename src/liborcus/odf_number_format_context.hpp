@@ -43,6 +43,28 @@ private:
     std::ostringstream m_text_stream;
 };
 
+class time_style_context : public xml_context_base
+{
+public:
+    time_style_context(session_context& session_cxt, const tokens& tk);
+
+    void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) override;
+    bool end_element(xmlns_id_t ns, xml_token_t name) override;
+    void characters(std::string_view str, bool transient) override;
+
+    void reset();
+
+    std::unique_ptr<odf_number_format> pop_style();
+
+private:
+    void start_element_time_style(const std::vector<xml_token_attr_t>& attrs);
+    void start_element_seconds(const std::vector<xml_token_attr_t>& attrs);
+
+private:
+    std::unique_ptr<odf_number_format> m_current_style;
+    std::ostringstream m_text_stream;
+};
+
 class percentage_style_context : public xml_context_base
 {
 public:
@@ -131,33 +153,6 @@ private:
 
     std::string_view m_country_code; // TODO: handle this
     std::string_view m_language; // TODO: handle this
-};
-
-/**
- * Context that handles <number:xyz> scope.
- */
-class number_format_context : public xml_context_base
-{
-public:
-    number_format_context(
-        session_context& session_cxt, const tokens& tk,
-        spreadsheet::iface::import_styles* iface_styles);
-
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) override;
-    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
-    virtual void characters(std::string_view str, bool transient) override;
-
-    void reset();
-
-private:
-    spreadsheet::iface::import_styles* mp_styles;
-    odf_number_format m_current_style;
-
-    std::string_view m_character_stream;
-
-    string_pool m_pool;
 };
 
 } // namespace orcus
