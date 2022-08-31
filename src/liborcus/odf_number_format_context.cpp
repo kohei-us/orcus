@@ -659,6 +659,7 @@ text_style_context::text_style_context(session_context& session_cxt, const token
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
         { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_number, XML_text_style }, // root element
+        { NS_odf_number, XML_text_style, NS_odf_number, XML_text },
         { NS_odf_number, XML_text_style, NS_odf_number, XML_text_content },
     };
 
@@ -687,6 +688,9 @@ void text_style_context::start_element(xmlns_id_t ns, xml_token_t name, const st
                 m_current_style->code += '@';
                 break;
             }
+            case XML_text:
+                m_text_stream = std::ostringstream{};
+                break;
             default:
                 warn_unhandled();
         }
@@ -697,7 +701,21 @@ void text_style_context::start_element(xmlns_id_t ns, xml_token_t name, const st
 
 bool text_style_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
+    if (ns == NS_odf_number)
+    {
+        switch (name)
+        {
+            case XML_text:
+                m_current_style->code += m_text_stream.str();
+                break;
+        }
+    }
     return pop_stack(ns, name);
+}
+
+void text_style_context::characters(std::string_view str, bool /*transient*/)
+{
+    m_text_stream << str;
 }
 
 void text_style_context::reset()

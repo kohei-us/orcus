@@ -106,6 +106,7 @@ public:
 
     void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) override;
     bool end_element(xmlns_id_t ns, xml_token_t name) override;
+    void characters(std::string_view str, bool transient) override;
 
     void reset();
 
@@ -113,6 +114,7 @@ public:
 
 private:
     std::unique_ptr<odf_number_format> m_current_style;
+    std::ostringstream m_text_stream;
 };
 
 /**
