@@ -24,6 +24,8 @@
 namespace fs = boost::filesystem;
 namespace ss = orcus::spreadsheet;
 
+using orcus::test::stack_printer;
+
 namespace {
 
 struct test_model
@@ -33,7 +35,7 @@ struct test_model
     orcus::spreadsheet::styles styles;
     orcus::spreadsheet::import_styles istyles;
 
-    test_model() : istyles(styles, pool) {}
+    test_model() : styles(), istyles(styles, pool) {}
 
     void load(const fs::path& input_path)
     {
@@ -476,6 +478,8 @@ void test_odf_font(const orcus::spreadsheet::styles& styles)
 void test_number_format_styles()
 {
 #if 0 // TODO: temporarily disable this test
+    stack_printer __sp__(__func__);
+
     test_model model;
     model.load(SRCDIR"/test/ods/styles/number-format.xml");
 
@@ -582,6 +586,8 @@ void test_odf_text_alignment(const orcus::spreadsheet::styles& styles)
 
 void test_cell_styles()
 {
+    stack_printer __sp__(__func__);
+
     test_model model;
 
     model.load(SRCDIR"/test/ods/styles/cell-styles.xml");
@@ -595,6 +601,8 @@ void test_cell_styles()
 
 void test_standard_styles()
 {
+    stack_printer __sp__(__func__);
+
     test_model model;
     model.load(SRCDIR"/test/ods/styles/standard-styles.xml");
 
@@ -947,6 +955,8 @@ void test_standard_styles()
 
 void test_cell_protection_styles()
 {
+    stack_printer __sp__(__func__);
+
     test_model model;
     model.load(SRCDIR"/test/ods/styles/cell-protection.xml");
 

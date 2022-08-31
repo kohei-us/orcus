@@ -15,6 +15,7 @@
 #include "odf_tokens.hpp"
 #include "odf_namespace_types.hpp"
 #include "session_context.hpp"
+#include "ods_session_data.hpp"
 
 #include "xml_stream_parser.hpp"
 
@@ -22,13 +23,13 @@ namespace orcus {
 
 void import_ods::read_styles(std::string_view s, spreadsheet::iface::import_styles* styles)
 {
-    if(!styles)
+    if (!styles)
         return;
 
     if (s.empty())
         return;
 
-    session_context cxt;
+    session_context cxt{std::make_unique<ods_session_data>()};
     auto context = std::make_unique<styles_context>(cxt, odf_tokens, styles);
 
     xml_stream_handler stream_handler(cxt, odf_tokens, std::move(context));
@@ -37,6 +38,7 @@ void import_ods::read_styles(std::string_view s, spreadsheet::iface::import_styl
     ns_repo.add_predefined_values(NS_odf_all);
 
     orcus::config config(format_t::ods);
+    config.debug = true;
     xml_stream_parser parser(
         config, ns_repo, odf_tokens,
         s.data(), s.size());
