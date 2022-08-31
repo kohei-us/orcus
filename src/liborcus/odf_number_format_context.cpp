@@ -27,11 +27,51 @@ namespace orcus {
 
 namespace {
 
+enum class date_style_type
+{
+    unknown = 0,
+    short_symbol,
+    long_symbol
+};
+
+date_style_type to_date_style(std::string_view s)
+{
+    constexpr std::pair<std::string_view, date_style_type> entries[] = {
+        { "short", date_style_type::short_symbol },
+        { "long", date_style_type::long_symbol },
+    };
+
+    for (const auto& entry : entries)
+    {
+        if (s == entry.first)
+            return entry.second;
+    }
+
+    return date_style_type::unknown;
+}
+
 struct parse_result
 {
     bool success = true;
     std::string error_message;
 };
+
+date_style_type parse_attrs_for_date_style(const std::vector<xml_token_attr_t>& attrs)
+{
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns == NS_odf_number)
+        {
+            switch (attr.name)
+            {
+                case XML_style:
+                    return to_date_style(attr.value);
+            }
+        }
+    }
+
+    return date_style_type::unknown;
+}
 
 void parse_element_number(const std::vector<xml_token_attr_t>& attrs, odf_number_format& style)
 {
@@ -213,6 +253,136 @@ parse_result parse_element_map(session_context& cxt, const std::vector<xml_token
 }
 
 } // anonymous namespace
+
+date_style_context::date_style_context(session_context& session_cxt, const tokens& tk) :
+    xml_context_base(session_cxt, tk)
+{
+}
+
+void date_style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
+{
+    push_stack(ns, name);
+
+    if (ns == NS_odf_number)
+    {
+        switch (name)
+        {
+            case XML_date_style:
+                start_element_date_style(attrs);
+                break;
+            case XML_month:
+                start_element_month(attrs);
+                break;
+            case XML_day:
+                start_element_day(attrs);
+                break;
+            case XML_year:
+                start_element_year(attrs);
+                break;
+            case XML_text:
+                m_text_stream = std::ostringstream{};
+                break;
+            default:
+                warn_unhandled();
+        }
+    }
+    else
+        warn_unhandled();
+}
+
+bool date_style_context::end_element(xmlns_id_t ns, xml_token_t name)
+{
+    if (ns == NS_odf_number)
+    {
+        switch (name)
+        {
+            case XML_text:
+                m_current_style->code += m_text_stream.str();
+                break;
+        }
+    }
+    return pop_stack(ns, name);
+}
+
+void date_style_context::characters(std::string_view str, bool /*transient*/)
+{
+    m_text_stream << str;
+}
+
+void date_style_context::reset()
+{
+    m_current_style = std::make_unique<odf_number_format>();
+}
+
+std::unique_ptr<odf_number_format> date_style_context::pop_style()
+{
+    return std::move(m_current_style);
+}
+
+void date_style_context::start_element_date_style(const std::vector<xml_token_attr_t>& attrs)
+{
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns == NS_odf_style)
+        {
+            switch (attr.name)
+            {
+                case XML_name:
+                    m_current_style->name = intern(attr);
+                    break;
+            }
+        }
+    }
+}
+
+void date_style_context::start_element_month(const std::vector<xml_token_attr_t>& attrs)
+{
+    auto style = date_style_type::unknown;
+    bool textual = false;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns == NS_odf_number)
+        {
+            switch (attr.name)
+            {
+                case XML_style:
+                    style = to_date_style(attr.value);
+                    break;
+                case XML_textual:
+                    textual = to_bool(attr.value);
+                    break;
+            }
+        }
+    }
+
+    m_current_style->code += 'M';
+
+    if (style == date_style_type::long_symbol)
+        m_current_style->code += 'M';
+
+    if (textual)
+        m_current_style->code += 'M';
+
+    if (style == date_style_type::long_symbol && textual)
+        m_current_style->code += 'M';
+}
+
+void date_style_context::start_element_day(const std::vector<xml_token_attr_t>& attrs)
+{
+    m_current_style->code += 'D';
+
+    if (parse_attrs_for_date_style(attrs) == date_style_type::long_symbol)
+        m_current_style->code += 'D';
+}
+
+void date_style_context::start_element_year(const std::vector<xml_token_attr_t>& attrs)
+{
+    m_current_style->code += "YY";
+
+    if (parse_attrs_for_date_style(attrs) == date_style_type::long_symbol)
+        m_current_style->code += "YY";
+}
 
 percentage_style_context::percentage_style_context(session_context& session_cxt, const tokens& tk) :
     xml_context_base(session_cxt, tk)

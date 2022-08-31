@@ -57,6 +57,7 @@ private:
     currency_style_context m_cxt_currency_style;
     boolean_style_context m_cxt_boolean_style;
     percentage_style_context m_cxt_percentage_style;
+    date_style_context m_cxt_date_style;
 };
 
 } // namespace orcus
