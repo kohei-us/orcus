@@ -99,6 +99,22 @@ private:
     std::unique_ptr<odf_number_format> m_current_style;
 };
 
+class text_style_context : public xml_context_base
+{
+public:
+    text_style_context(session_context& session_cxt, const tokens& tk);
+
+    void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) override;
+    bool end_element(xmlns_id_t ns, xml_token_t name) override;
+
+    void reset();
+
+    std::unique_ptr<odf_number_format> pop_style();
+
+private:
+    std::unique_ptr<odf_number_format> m_current_style;
+};
+
 /**
  * Context for <number:number-style> scope.
  */

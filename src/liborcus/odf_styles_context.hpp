@@ -55,6 +55,7 @@ private:
     number_style_context m_cxt_number_style;
     currency_style_context m_cxt_currency_style;
     boolean_style_context m_cxt_boolean_style;
+    text_style_context m_cxt_text_style;
     percentage_style_context m_cxt_percentage_style;
     date_style_context m_cxt_date_style;
     time_style_context m_cxt_time_style;

@@ -653,6 +653,63 @@ std::unique_ptr<odf_number_format> boolean_style_context::pop_style()
     return std::move(m_current_style);
 }
 
+text_style_context::text_style_context(session_context& session_cxt, const tokens& tk) :
+    xml_context_base(session_cxt, tk)
+{
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_number, XML_text_style }, // root element
+        { NS_odf_number, XML_text_style, NS_odf_number, XML_text_content },
+    };
+
+    init_element_validator(rules, std::size(rules));
+}
+
+void text_style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
+{
+    push_stack(ns, name);
+
+    if (ns == NS_odf_number)
+    {
+        switch (name)
+        {
+            case XML_text_style:
+            {
+                for (const auto& attr : attrs)
+                {
+                    if (attr.ns == NS_odf_style && attr.name == XML_name)
+                        m_current_style->name = intern(attr);
+                }
+                break;
+            }
+            case XML_text_content:
+            {
+                m_current_style->code += '@';
+                break;
+            }
+            default:
+                warn_unhandled();
+        }
+    }
+    else
+        warn_unhandled();
+}
+
+bool text_style_context::end_element(xmlns_id_t ns, xml_token_t name)
+{
+    return pop_stack(ns, name);
+}
+
+void text_style_context::reset()
+{
+    m_current_style = std::make_unique<odf_number_format>();
+}
+
+std::unique_ptr<odf_number_format> text_style_context::pop_style()
+{
+    return std::move(m_current_style);
+}
+
 number_style_context::number_style_context(session_context& session_cxt, const tokens& tk) :
     xml_context_base(session_cxt, tk)
 {

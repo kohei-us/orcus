@@ -28,6 +28,7 @@ styles_context::styles_context(
     m_cxt_number_style(session_cxt, tk),
     m_cxt_currency_style(session_cxt, tk),
     m_cxt_boolean_style(session_cxt, tk),
+    m_cxt_text_style(session_cxt, tk),
     m_cxt_percentage_style(session_cxt, tk),
     m_cxt_date_style(session_cxt, tk),
     m_cxt_time_style(session_cxt, tk)
@@ -36,6 +37,7 @@ styles_context::styles_context(
     register_child(&m_cxt_number_style);
     register_child(&m_cxt_currency_style);
     register_child(&m_cxt_boolean_style);
+    register_child(&m_cxt_text_style);
     register_child(&m_cxt_percentage_style);
     register_child(&m_cxt_date_style);
     register_child(&m_cxt_time_style);
@@ -63,6 +65,11 @@ xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_
             {
                 m_cxt_boolean_style.reset();
                 return &m_cxt_boolean_style;
+            }
+            case XML_text_style:
+            {
+                m_cxt_text_style.reset();
+                return &m_cxt_text_style;
             }
             case XML_percentage_style:
             {
@@ -113,6 +120,12 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
             {
                 assert(child == &m_cxt_boolean_style);
                 push_number_style(m_cxt_boolean_style.pop_style());
+                break;
+            }
+            case XML_text_style:
+            {
+                assert(child == &m_cxt_text_style);
+                push_number_style(m_cxt_text_style.pop_style());
                 break;
             }
             case XML_percentage_style:
