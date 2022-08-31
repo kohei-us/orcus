@@ -169,6 +169,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
                 xf->set_protection(cell.protection);
                 xf->set_horizontal_alignment(cell.hor_align);
                 xf->set_vertical_alignment(cell.ver_align);
+                xf->set_number_format(cell.number_format);
                 cell.xf = xf->commit();
             }
             else
@@ -183,6 +184,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
                 xf->set_protection(cell.protection);
                 xf->set_horizontal_alignment(cell.hor_align);
                 xf->set_vertical_alignment(cell.ver_align);
+                xf->set_number_format(cell.number_format);
                 size_t style_xf_id = xf->commit();
 
                 auto* cell_style = mp_styles->get_cell_style();

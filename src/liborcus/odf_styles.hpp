@@ -48,13 +48,14 @@ struct odf_style
 
     struct cell
     {
-        size_t font = 0;
-        size_t fill = 0;
-        size_t border = 0;
-        size_t protection = 0;
+        std::size_t font = 0;
+        std::size_t fill = 0;
+        std::size_t border = 0;
+        std::size_t protection = 0;
+        std::size_t xf = 0;
+        std::size_t number_format = 0;
         spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
         spreadsheet::ver_alignment_t ver_align = spreadsheet::ver_alignment_t::unknown;
-        size_t xf = 0;
     };
 
     struct table
