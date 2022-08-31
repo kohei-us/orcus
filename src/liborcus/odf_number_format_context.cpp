@@ -257,6 +257,16 @@ parse_result parse_element_map(session_context& cxt, const std::vector<xml_token
 date_style_context::date_style_context(session_context& session_cxt, const tokens& tk) :
     xml_context_base(session_cxt, tk)
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_number, XML_date_style }, // root element
+        { NS_odf_number, XML_date_style, NS_odf_number, XML_day },
+        { NS_odf_number, XML_date_style, NS_odf_number, XML_month },
+        { NS_odf_number, XML_date_style, NS_odf_number, XML_text },
+        { NS_odf_number, XML_date_style, NS_odf_number, XML_year },
+    };
+
+    init_element_validator(rules, std::size(rules));
 }
 
 void date_style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
