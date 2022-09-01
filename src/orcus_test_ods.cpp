@@ -5,14 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/orcus_ods.hpp"
+#include "test_global.hpp"
 #include "pstring.hpp"
-#include "orcus/stream.hpp"
-#include "orcus/spreadsheet/factory.hpp"
-#include "orcus/spreadsheet/document.hpp"
-#include "orcus/spreadsheet/sheet.hpp"
-#include "orcus/spreadsheet/shared_strings.hpp"
-#include "orcus/spreadsheet/styles.hpp"
+#include <orcus/orcus_ods.hpp>
+#include <orcus/stream.hpp>
+#include <orcus/spreadsheet/factory.hpp>
+#include <orcus/spreadsheet/document.hpp>
+#include <orcus/spreadsheet/sheet.hpp>
+#include <orcus/spreadsheet/shared_strings.hpp>
+#include <orcus/spreadsheet/styles.hpp>
 
 #include <cstdlib>
 #include <cassert>
@@ -21,10 +22,13 @@
 #include <sstream>
 #include <vector>
 
+#include <boost/filesystem.hpp>
 #include <mdds/flat_segment_tree.hpp>
 
 using namespace orcus;
 using namespace orcus::spreadsheet;
+
+namespace fs = boost::filesystem;
 
 typedef mdds::flat_segment_tree<std::size_t, bool> bool_segment_type;
 
@@ -242,6 +246,69 @@ void test_ods_import_formatted_text()
     }
 }
 
+void test_ods_import_number_formats()
+{
+    fs::path filepath{SRCDIR"/test/ods/number-format/basic-set.ods"};
+
+    document doc{{1048576, 16384}};
+    import_factory factory(doc);
+    orcus_ods app(&factory);
+    app.read_file(filepath.string());
+
+    assert(doc.get_sheet_count() > 0);
+    spreadsheet::sheet* sh = doc.get_sheet(0);
+    assert(sh);
+
+    const styles& styles = doc.get_styles();
+
+    struct check
+    {
+        row_t row;
+        col_t col;
+        std::string_view format;
+    };
+
+    const check checks[] = {
+        { 1, 1, "#.000000" }, // B2
+        { 2, 1, "[>=0][$₹]#,##0.00;[RED]-[$₹]#,##0.00" }, // B3
+        { 3, 1, "0.00%" }, // B4
+        { 4, 1, "#.00E+00" }, // B5
+        { 5, 1, "BOOLEAN" }, // B6
+        { 6, 1, "?/11" }, // B7
+        { 7, 1, "MM/DD/YY" }, // B8
+        { 8, 1, "HH:MM:SS AM/PM" }, // B9
+        { 9, 1, "[>=0]0.00;[RED]-0.00" }, // B9
+        { 10, 1, "#,##0.00" }, // B10
+        { 11, 1, "Head @ Tail" }, // B11
+    };
+
+    for (const auto& c : checks)
+    {
+        std::size_t xfid = sh->get_cell_format(c.row, c.col);
+        const cell_format_t* xf = styles.get_cell_format(xfid);
+        if (!xf)
+        {
+            std::cerr << "No cell format entry for (row=" << c.row << "; col=" << c.col << ")" << std::endl;
+            assert(false);
+        }
+
+        const number_format_t* numfmt = styles.get_number_format(xf->number_format);
+        if (!numfmt)
+        {
+            std::cerr << "No number-format entry for (row=" << c.row << "; col=" << c.col << ")" << std::endl;
+            assert(false);
+        }
+
+        if (numfmt->format_string != c.format)
+        {
+            std::cerr << "Number format strings differ: (expected='" << c.format << "'; actual='"
+                << numfmt->format_string << "')" << std::endl;
+
+            assert(false);
+        }
+    }
+}
+
 } // anonymous namespace
 
 int main()
@@ -249,6 +316,8 @@ int main()
     test_ods_import_cell_values();
     test_ods_import_column_widths_row_heights();
     test_ods_import_formatted_text();
+    test_ods_import_number_formats();
+
     return EXIT_SUCCESS;
 }
 
