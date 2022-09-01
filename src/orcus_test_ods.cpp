@@ -6,9 +6,9 @@
  */
 
 #include "test_global.hpp"
-#include "pstring.hpp"
 #include <orcus/orcus_ods.hpp>
 #include <orcus/stream.hpp>
+#include <orcus/parser_global.hpp>
 #include <orcus/spreadsheet/factory.hpp>
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
@@ -72,9 +72,7 @@ void test_ods_import_cell_values()
         assert(!check.empty());
         assert(!control.empty());
 
-        pstring s1(&check[0], check.size());
-        pstring s2 = control.str();
-        assert(s1.trim() == s2.trim());
+        assert(trim(check) == trim(control.str()));
     }
 }
 
