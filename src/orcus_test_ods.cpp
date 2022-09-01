@@ -25,9 +25,8 @@
 
 using namespace orcus;
 using namespace orcus::spreadsheet;
-using namespace std;
 
-typedef mdds::flat_segment_tree<size_t,bool> bool_segment_type;
+typedef mdds::flat_segment_tree<std::size_t, bool> bool_segment_type;
 
 namespace {
 
@@ -44,8 +43,8 @@ void test_ods_import_cell_values()
 {
     for (const char* dir : dirs)
     {
-        string path(dir);
-        cout << path << endl;
+        std::string path(dir);
+        std::cout << path << std::endl;
 
         // Read the input.ods document.
         path.append("input.ods");
@@ -57,9 +56,9 @@ void test_ods_import_cell_values()
         doc.recalc_formula_cells();
 
         // Dump the content of the model.
-        ostringstream os;
+        std::ostringstream os;
         doc.dump_check(os);
-        string check = os.str();
+        std::string check = os.str();
 
         // Check that against known control.
         path = dir;
@@ -125,7 +124,7 @@ void test_ods_import_formatted_text()
 
     // A1 is unformatted
     size_t str_id = sh->get_string_identifier(0,0);
-    const string* str = ss.get_string(str_id);
+    const std::string* str = ss.get_string(str_id);
     assert(str && *str == "Normal Text");
     size_t xfid = sh->get_cell_format(0,0);
     assert(xfid == 0); // ID of 0 represents default format.
@@ -156,7 +155,7 @@ void test_ods_import_formatted_text()
     fmt = ss.get_format_runs(str_id);
     assert(!fmt); // This string should be unformatted.
 
-    // A4 is all bolid and italic.
+    // A4 is all bold and italic.
     str_id = sh->get_string_identifier(3,0);
     str = ss.get_string(str_id);
     assert(str && *str == "Bold and Italic Text");
@@ -243,7 +242,7 @@ void test_ods_import_formatted_text()
     }
 }
 
-}
+} // anonymous namespace
 
 int main()
 {
@@ -252,4 +251,5 @@ int main()
     test_ods_import_formatted_text();
     return EXIT_SUCCESS;
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
