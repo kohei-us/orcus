@@ -231,12 +231,12 @@ void number_format_t::reset()
     *this = number_format_t();
 }
 
-bool number_format_t::operator== (const number_format_t& other) const
+bool number_format_t::operator== (const number_format_t& other) const noexcept
 {
     return identifier == other.identifier && format_string == other.format_string;
 }
 
-bool number_format_t::operator!= (const number_format_t& other) const
+bool number_format_t::operator!= (const number_format_t& other) const noexcept
 {
     return !operator== (other);
 }

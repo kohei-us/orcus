@@ -187,8 +187,8 @@ struct ORCUS_SPM_DLLPUBLIC number_format_t
     number_format_t();
     void reset();
 
-    bool operator== (const number_format_t& other) const; // TODO:API: noexcept
-    bool operator!= (const number_format_t& other) const; // TODO:API: noexcept
+    bool operator== (const number_format_t& other) const noexcept;
+    bool operator!= (const number_format_t& other) const noexcept;
 };
 
 /**
