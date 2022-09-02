@@ -11,6 +11,8 @@
 #include "sheet_impl.hpp"
 #include "ostream_utils.hpp"
 
+#include <fstream>
+
 namespace fs = boost::filesystem;
 
 namespace orcus { namespace spreadsheet { namespace detail {
