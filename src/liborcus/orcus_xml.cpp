@@ -263,9 +263,16 @@ public:
             m_current_chars = m_pool.intern(m_current_chars).first;
     }
 
-    void attribute(std::string_view /*name*/, std::string_view /*val*/)
+    void attribute(std::string_view name, std::string_view val)
     {
-        // Ignore attributes in XML declaration.
+        if (name == "encoding")
+        {
+            if (auto* gs = m_factory.get_global_settings(); gs)
+            {
+                character_set_t cs = to_character_set(val);
+                gs->set_character_set(cs);
+            }
+        }
     }
 
     void attribute(const sax_ns_parser_attribute& at)

@@ -272,6 +272,40 @@ void test_invalid_map_definition()
     }
 }
 
+void test_encoding()
+{
+    test::stack_printer __stack_printer__(__func__);
+
+    const fs::path test_dir = test_base_dir / "encoding";
+
+    struct test_case
+    {
+        const fs::path path;
+        character_set_t charset;
+    };
+
+    const test_case tests[] = {
+        { test_dir / "utf-8.xml", character_set_t::utf_8 },
+        { test_dir / "gbk.xml", character_set_t::gbk },
+    };
+
+    for (const auto& test : tests)
+    {
+        file_content content(test.path.string());
+
+        xmlns_repository repo;
+
+        spreadsheet::range_size_t ss{1048576, 16384};
+        spreadsheet::document doc{ss};
+        spreadsheet::import_factory import_fact(doc);
+        orcus_xml app(repo, &import_fact, nullptr);
+
+        app.read_stream(content.str());
+
+        assert(import_fact.get_character_set() == test.charset);
+    }
+}
+
 } // anonymous namespace
 
 int main()
@@ -279,6 +313,7 @@ int main()
     test_mapped_xml_import();
     test_mapped_xml_import_no_map_definition();
     test_invalid_map_definition();
+    test_encoding();
 
     return EXIT_SUCCESS;
 }
