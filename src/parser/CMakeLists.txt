@@ -49,6 +49,7 @@ set(_TESTS
     string-pool-test
     threaded-json-parser-test
     threaded-sax-token-parser-test
+    types-test
     xml-namespace-test
     xml-writer-test
     yaml-parser-test
@@ -59,7 +60,10 @@ foreach(_TEST ${_TESTS})
     set(_TEST_FILE ${_TEST}.cpp)
     string(REPLACE "-" "_" _TEST_FILE ${_TEST_FILE})
     add_executable(${_TEST} EXCLUDE_FROM_ALL ${_TEST_FILE})
-    target_link_libraries(${_TEST} orcus-parser-${ORCUS_API_VERSION})
+    target_link_libraries(${_TEST}
+        orcus-parser-${ORCUS_API_VERSION}
+        orcus-test
+    )
     add_test(${_TEST} ${_TEST})
 endforeach()
 

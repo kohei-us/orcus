@@ -48,26 +48,27 @@ liborcus_parser_@ORCUS_API_VERSION@_la_LIBADD = \
 	$(ZLIB_LIBS)
 
 EXTRA_PROGRAMS = \
-	parser-test-string-pool \
-	parser-test-xml-namespace \
-	parser-test-xml-validation \
-	parser-test-base64 \
 	css-parser-test \
 	csv-parser-test \
 	json-parser-test \
-	yaml-parser-test \
-	sax-parser-test \
-	sax-ns-parser-test \
-	sax-token-parser-test \
-	parser-test-threaded-sax-token-parser \
-	parser-test-stream \
-	parser-test-threaded-json-parser \
-	parser-test-zip-archive \
-	parser-test-base \
 	parser-global-test \
+	parser-test-base \
+	parser-test-base64 \
 	parser-test-json-validation \
 	parser-test-numeric \
+	parser-test-stream \
+	parser-test-string-pool \
+	parser-test-threaded-json-parser \
+	parser-test-threaded-sax-token-parser \
+	parser-test-xml-namespace \
+	parser-test-xml-validation \
+	parser-test-zip-archive \
+	sax-ns-parser-test \
+	sax-parser-test \
+	sax-token-parser-test \
+	types-test \
 	utf8-test \
+	yaml-parser-test \
 	xml-writer-test
 
 # parser-test-string-pool
@@ -226,6 +227,15 @@ parser_test_json_validation_SOURCES = \
 parser_test_json_validation_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 parser_test_json_validation_CPPFLAGS = $(AM_CPPFLAGS)
 
+# types-test
+
+types_test_SOURCES = types_test.cpp
+
+types_test_LDADD = \
+	liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a
+types_test_CPPFLAGS = $(AM_CPPFLAGS)
+
 # utf8-test
 
 utf8_test_SOURCES = \
@@ -252,24 +262,25 @@ parser_test_numeric_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 parser_test_numeric_CPPFLAGS = $(AM_CPPFLAGS)
 
 TESTS = \
-	parser-test-string-pool \
-	parser-test-xml-namespace \
-	parser-test-xml-validation \
-	parser-test-base64 \
 	css-parser-test \
 	csv-parser-test \
 	json-parser-test \
-	sax-parser-test \
-	sax-ns-parser-test \
-	sax-token-parser-test \
-	parser-test-threaded-sax-token-parser \
-	parser-test-threaded-json-parser \
-	parser-test-stream \
-	parser-test-zip-archive \
-	parser-test-base \
 	parser-global-test \
+	parser-test-base \
+	parser-test-base64 \
 	parser-test-json-validation \
 	parser-test-numeric \
+	parser-test-stream \
+	parser-test-string-pool \
+	parser-test-threaded-json-parser \
+	parser-test-threaded-sax-token-parser \
+	parser-test-xml-namespace \
+	parser-test-xml-validation \
+	parser-test-zip-archive \
+	sax-ns-parser-test \
+	sax-parser-test \
+	sax-token-parser-test \
+	types-test \
 	utf8-test \
 	xml-writer-test
 
