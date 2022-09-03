@@ -287,10 +287,13 @@ void test_encoding()
     const test_case tests[] = {
         { test_dir / "utf-8.xml", character_set_t::utf_8 },
         { test_dir / "gbk.xml", character_set_t::gbk },
+        { test_dir / "euc-jp.xml", character_set_t::euc_jp },
     };
 
     for (const auto& test : tests)
     {
+        std::cout << "reading " << test.path.string() << std::endl;
+
         file_content content(test.path.string());
 
         xmlns_repository repo;
