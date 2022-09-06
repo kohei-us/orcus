@@ -39,7 +39,7 @@ for _file in $(find . -type f); do
     _mimetype=`file --mime-type --brief "$_file"` || abort "failed to determine the mime type of $_file."
     if [ $_mimetype = "application/xml" ] || [ $_mimetype = "text/xml" ]; then
         # beautify the XML file content.
-        _temp=$(tempfile) || abort "failed to create a temporary file."
+        _temp=$(mktemp) || abort "failed to create a temporary file."
         xmllint --format $_file > $_temp || abort "failed to run xmllint on $_file."
         mv $_temp $_file || abort "failed to update $_file."
     fi
