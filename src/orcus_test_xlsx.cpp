@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include "orcus/orcus_xlsx.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/config.hpp"
@@ -785,6 +786,34 @@ void test_xlsx_hidden_rows_columns()
     assert(!sh->is_col_hidden(11, &col_start, &col_end));
     assert(col_start == 11);
     assert(col_end == doc->get_sheet_size().columns); // non-inclusive
+}
+
+void test_xlsx_cell_properties()
+{
+    fs::path path{SRCDIR"/test/xlsx/cell-properties/wrap-and-shrink.xlsx"};
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path.string());
+
+    const ss::styles& styles = doc->get_styles();
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    auto xfid = sh->get_cell_format(0, 1); // B1
+    const auto* xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(!xf->wrap_text);
+    assert(!xf->shrink_to_fit);
+
+    xfid = sh->get_cell_format(1, 1); // B2
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(xf->wrap_text);
+    assert(!xf->shrink_to_fit);
+
+    xfid = sh->get_cell_format(2, 1); // B3
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(!xf->wrap_text);
+    assert(xf->shrink_to_fit);
 }
 
 void test_xlsx_pivot_two_pivot_caches()
@@ -1646,6 +1675,7 @@ int main()
     test_xlsx_cell_borders_directions();
     test_xlsx_cell_borders_colors();
     test_xlsx_hidden_rows_columns();
+    test_xlsx_cell_properties();
 
     // pivot table
     test_xlsx_pivot_two_pivot_caches();

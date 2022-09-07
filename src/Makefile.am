@@ -479,6 +479,7 @@ orcus_test_xlsx_LDFLAGS = \
 orcus_test_xlsx_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	@LIBIXION_LIBS@ \
 	$(BOOST_FILESYSTEM_LIBS) \
