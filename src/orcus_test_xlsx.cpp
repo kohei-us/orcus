@@ -33,7 +33,6 @@
 #include <boost/filesystem.hpp>
 
 using namespace orcus;
-using namespace orcus::spreadsheet;
 namespace ss = orcus::spreadsheet;
 namespace fs = boost::filesystem;
 
@@ -61,8 +60,8 @@ std::unique_ptr<spreadsheet::document> load_doc(const pstring& path, bool recalc
  * Convenience function to retrieve a pivot cache instance from textural
  * sheet name and range name.
  */
-const pivot_cache* get_pivot_cache(
-    const pivot_collection& pc, const pstring& sheet_name, const pstring& range_name)
+const ss::pivot_cache* get_pivot_cache(
+    const ss::pivot_collection& pc, const pstring& sheet_name, const pstring& range_name)
 {
     std::unique_ptr<ixion::formula_name_resolver> resolver =
         ixion::formula_name_resolver::get(
@@ -147,14 +146,14 @@ void test_xlsx_table_autofilter()
 {
     string path(SRCDIR"/test/xlsx/table/autofilter.xlsx");
     spreadsheet::range_size_t ss{1048576, 16384};
-    document doc{ss};
-    import_factory factory(doc);
+    ss::document doc{ss};
+    ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.read_file(path.c_str());
 
-    const sheet* sh = doc.get_sheet(0);
+    const ss::sheet* sh = doc.get_sheet(0);
     assert(sh);
-    const auto_filter_t* af = sh->get_auto_filter_data();
+    const ss::auto_filter_t* af = sh->get_auto_filter_data();
     assert(af);
 
     // Autofilter is over B2:C11.
@@ -164,10 +163,10 @@ void test_xlsx_table_autofilter()
     assert(af->range.last.row == 10);
 
     // Check the match values of the 1st column filter criterion.
-    auto_filter_t::columns_type::const_iterator it = af->columns.find(0);
+    auto it = af->columns.find(0);
     assert(it != af->columns.end());
 
-    const auto_filter_column_t* afc = &it->second;
+    const ss::auto_filter_column_t* afc = &it->second;
     assert(afc->match_values.count("A") > 0);
     assert(afc->match_values.count("C") > 0);
 
@@ -181,13 +180,13 @@ void test_xlsx_table_autofilter()
 void test_xlsx_table()
 {
     string path(SRCDIR"/test/xlsx/table/table-1.xlsx");
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
+    ss::document doc{{1048576, 16384}};
+    ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.read_file(path.c_str());
 
     pstring name("Table1");
-    const table_t* p = doc.get_table(name);
+    const ss::table_t* p = doc.get_table(name);
     assert(p);
     assert(p->identifier == 1);
     assert(p->name == name);
@@ -207,28 +206,28 @@ void test_xlsx_table()
     // Table1 has 2 table columns.
     assert(p->columns.size() == 2);
 
-    const table_column_t* tcol = &p->columns[0];
+    const ss::table_column_t* tcol = &p->columns[0];
     assert(tcol);
     assert(tcol->identifier == 1);
     assert(tcol->name == "Category");
     assert(tcol->totals_row_label == "Total");
-    assert(tcol->totals_row_function == totals_row_function_t::none);
+    assert(tcol->totals_row_function == ss::totals_row_function_t::none);
 
     tcol = &p->columns[1];
     assert(tcol);
     assert(tcol->identifier == 2);
     assert(tcol->name == "Value");
     assert(tcol->totals_row_label.empty());
-    assert(tcol->totals_row_function == totals_row_function_t::sum);
+    assert(tcol->totals_row_function == ss::totals_row_function_t::sum);
 
-    const auto_filter_t& filter = p->filter;
+    const auto& filter = p->filter;
 
     // Auto filter range is C3:D8.
     range.last.row = 7;
     assert(filter.range == range);
 
     assert(filter.columns.size() == 1);
-    const auto_filter_column_t& afc = filter.columns.begin()->second;
+    const ss::auto_filter_column_t& afc = filter.columns.begin()->second;
     assert(afc.match_values.size() == 4);
     assert(afc.match_values.count("A") > 0);
     assert(afc.match_values.count("C") > 0);
@@ -236,7 +235,7 @@ void test_xlsx_table()
     assert(afc.match_values.count("E") > 0);
 
     // Check table style.
-    const table_style_t& style = p->style;
+    const ss::table_style_t& style = p->style;
     assert(style.name == "TableStyleLight9");
     assert(style.show_first_column == false);
     assert(style.show_last_column == false);
@@ -249,14 +248,14 @@ void test_xlsx_merged_cells()
     string path(SRCDIR"/test/xlsx/merged-cells/simple.xlsx");
 
     spreadsheet::range_size_t ss{1048576, 16384};
-    document doc{ss};
-    import_factory factory(doc);
+    ss::document doc{ss};
+    ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
     app.read_file(path.c_str());
 
-    const sheet* sheet1 = doc.get_sheet("Sheet1");
+    const ss::sheet* sheet1 = doc.get_sheet("Sheet1");
     assert(sheet1);
 
     spreadsheet::range_t merge_range = sheet1->get_merge_cell_range(0, 1);
@@ -294,14 +293,14 @@ void test_xlsx_date_time()
 {
     string path(SRCDIR"/test/xlsx/date-time/input.xlsx");
 
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
+    ss::document doc{{1048576, 16384}};
+    ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
     app.read_file(path.c_str());
 
-    const sheet* sheet1 = doc.get_sheet("Sheet1");
+    const ss::sheet* sheet1 = doc.get_sheet("Sheet1");
     assert(sheet1);
 
     // B1 contains date-only value.
@@ -502,19 +501,19 @@ void test_xlsx_cell_borders_single_cells()
 
     std::vector<check> checks =
     {
-        {  3, 1, border_style_t::hair                },
-        {  5, 1, border_style_t::dotted              },
-        {  7, 1, border_style_t::dash_dot_dot        },
-        {  9, 1, border_style_t::dash_dot            },
-        { 11, 1, border_style_t::dashed              },
-        { 13, 1, border_style_t::thin                },
-        {  1, 3, border_style_t::medium_dash_dot_dot },
-        {  3, 3, border_style_t::slant_dash_dot      },
-        {  5, 3, border_style_t::medium_dash_dot     },
-        {  7, 3, border_style_t::medium_dashed       },
-        {  9, 3, border_style_t::medium              },
-        { 11, 3, border_style_t::thick               },
-        { 13, 3, border_style_t::double_border       },
+        {  3, 1, ss::border_style_t::hair                },
+        {  5, 1, ss::border_style_t::dotted              },
+        {  7, 1, ss::border_style_t::dash_dot_dot        },
+        {  9, 1, ss::border_style_t::dash_dot            },
+        { 11, 1, ss::border_style_t::dashed              },
+        { 13, 1, ss::border_style_t::thin                },
+        {  1, 3, ss::border_style_t::medium_dash_dot_dot },
+        {  3, 3, ss::border_style_t::slant_dash_dot      },
+        {  5, 3, ss::border_style_t::medium_dash_dot     },
+        {  7, 3, ss::border_style_t::medium_dashed       },
+        {  9, 3, ss::border_style_t::medium              },
+        { 11, 3, ss::border_style_t::thick               },
+        { 13, 3, ss::border_style_t::double_border       },
     };
 
     for (const check& c : checks)
@@ -654,16 +653,16 @@ void test_xlsx_cell_borders_colors()
 
     struct check
     {
-        spreadsheet::row_t row;
-        spreadsheet::col_t col;
-        color_t color;
+        ss::row_t row;
+        ss::col_t col;
+        ss::color_t color;
     };
 
     std::vector<check> checks =
     {
-        { 2, 1, color_t(0xFF, 0xFF,    0,    0) }, // B3 - red
-        { 3, 1, color_t(0xFF,    0, 0x70, 0xC0) }, // B4 - blue
-        { 4, 1, color_t(0xFF,    0, 0xB0, 0x50) }, // B5 - green
+        { 2, 1, ss::color_t(0xFF, 0xFF,    0,    0) }, // B3 - red
+        { 3, 1, ss::color_t(0xFF,    0, 0x70, 0xC0) }, // B4 - blue
+        { 4, 1, ss::color_t(0xFF,    0, 0xB0, 0x50) }, // B5 - green
     };
 
     for (const check& c : checks)
@@ -677,10 +676,10 @@ void test_xlsx_cell_borders_colors()
         const spreadsheet::border_t* border = styles.get_border(cf->border);
         assert(border);
 
-        assert(border->left.style   == border_style_t::unknown);
-        assert(border->right.style  == border_style_t::thick);
-        assert(border->top.style    == border_style_t::unknown);
-        assert(border->bottom.style == border_style_t::unknown);
+        assert(border->left.style   == ss::border_style_t::unknown);
+        assert(border->right.style  == ss::border_style_t::thick);
+        assert(border->top.style    == ss::border_style_t::unknown);
+        assert(border->bottom.style == ss::border_style_t::unknown);
 
         assert(border->right.border_color == c.color);
     }
@@ -690,21 +689,21 @@ void test_xlsx_cell_borders_colors()
 
     size_t xf = sh->get_cell_format(6, 1); // B7
 
-    const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
+    const ss::cell_format_t* cf = styles.get_cell_format(xf);
     assert(cf);
     assert(cf->apply_border);
 
-    const spreadsheet::border_t* border = styles.get_border(cf->border);
+    const ss::border_t* border = styles.get_border(cf->border);
     assert(border);
 
-    assert(border->left.style == border_style_t::thick);
-    assert(border->left.border_color == color_t(0xFF, 0xFF, 0xFF, 0)); // yellow
+    assert(border->left.style == ss::border_style_t::thick);
+    assert(border->left.border_color == ss::color_t(0xFF, 0xFF, 0xFF, 0)); // yellow
 
-    assert(border->right.style == border_style_t::thick);
-    assert(border->right.border_color == color_t(0xFF, 0x70, 0x30, 0xA0)); // purple
+    assert(border->right.style == ss::border_style_t::thick);
+    assert(border->right.border_color == ss::color_t(0xFF, 0x70, 0x30, 0xA0)); // purple
 
-    assert(border->diagonal.style == border_style_t::thick);
-    assert(border->diagonal.border_color == color_t(0xFF, 0x00, 0xB0, 0xF0)); // light blue
+    assert(border->diagonal.style == ss::border_style_t::thick);
+    assert(border->diagonal.border_color == ss::color_t(0xFF, 0x00, 0xB0, 0xF0)); // light blue
 
     // B7 also contains multi-line string.  Test that as well.
     ixion::model_context& model = doc->get_model_context();
@@ -794,37 +793,37 @@ void test_xlsx_pivot_two_pivot_caches()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
 
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
+    ss::document doc{{1048576, 16384}};
+    ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
     app.read_file(path.c_str());
 
-    const pivot_collection& pc = doc.get_pivot_collection();
+    const ss::pivot_collection& pc = doc.get_pivot_collection();
     assert(pc.get_cache_count() == 2);
 
     // B2:C6 on sheet 'Data'.
-    const pivot_cache* cache = get_pivot_cache(pc, "Data", "B2:C6");
+    const ss::pivot_cache* cache = get_pivot_cache(pc, "Data", "B2:C6");
     assert(cache);
     assert(cache->get_field_count() == 2);
 
     // Test the content of this cache.
-    const pivot_cache_field_t* fld = cache->get_field(0);
+    const ss::pivot_cache_field_t* fld = cache->get_field(0);
     assert(fld);
     assert(fld->name == "F1");
 
     {
         // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
-        std::set<pivot_cache_item_t> expected =
+        std::set<ss::pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(std::string_view{"A"}),
-            pivot_cache_item_t(std::string_view{"B"}),
-            pivot_cache_item_t(std::string_view{"C"}),
-            pivot_cache_item_t(std::string_view{"D"}),
+            std::string_view{"A"},
+            std::string_view{"B"},
+            std::string_view{"C"},
+            std::string_view{"D"},
         };
 
-        std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
+        std::set<ss::pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
         assert(actual == expected);
     }
 
@@ -839,12 +838,12 @@ void test_xlsx_pivot_two_pivot_caches()
 
     {
         // Check the records.
-        pivot_cache::records_type expected =
+        ss::pivot_cache::records_type expected =
         {
-            { pivot_cache_record_value_t(size_t(0)), pivot_cache_record_value_t(1.0) },
-            { pivot_cache_record_value_t(size_t(1)), pivot_cache_record_value_t(2.0) },
-            { pivot_cache_record_value_t(size_t(2)), pivot_cache_record_value_t(3.0) },
-            { pivot_cache_record_value_t(size_t(3)), pivot_cache_record_value_t(4.0) },
+            { std::size_t(0), 1.0 },
+            { std::size_t(1), 2.0 },
+            { std::size_t(2), 3.0 },
+            { std::size_t(3), 4.0 },
         };
 
         assert(expected == cache->get_all_records());
@@ -862,15 +861,15 @@ void test_xlsx_pivot_two_pivot_caches()
     assert(fld->name == "F2");
 
     {
-        std::set<pivot_cache_item_t> expected =
+        std::set<ss::pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(std::string_view{"W"}),
-            pivot_cache_item_t(std::string_view{"X"}),
-            pivot_cache_item_t(std::string_view{"Y"}),
-            pivot_cache_item_t(std::string_view{"Z"}),
+            std::string_view{"W"},
+            std::string_view{"X"},
+            std::string_view{"Y"},
+            std::string_view{"Z"},
         };
 
-        std::set<pivot_cache_item_t> actual;
+        std::set<ss::pivot_cache_item_t> actual;
         actual.insert(fld->items.begin(), fld->items.end());
         assert(actual == expected);
     }
@@ -886,12 +885,12 @@ void test_xlsx_pivot_two_pivot_caches()
 
     {
         // Check the records.
-        pivot_cache::records_type expected =
+        ss::pivot_cache::records_type expected =
         {
-            { pivot_cache_record_value_t(size_t(0)), pivot_cache_record_value_t(4.0) },
-            { pivot_cache_record_value_t(size_t(1)), pivot_cache_record_value_t(3.0) },
-            { pivot_cache_record_value_t(size_t(2)), pivot_cache_record_value_t(2.0) },
-            { pivot_cache_record_value_t(size_t(3)), pivot_cache_record_value_t(1.0) },
+            { std::size_t(0), 4.0 },
+            { std::size_t(1), 3.0 },
+            { std::size_t(2), 2.0 },
+            { std::size_t(3), 1.0 },
         };
 
         assert(expected == cache->get_all_records());
@@ -902,23 +901,23 @@ void test_xlsx_pivot_mixed_type_field()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/mixed-type-field.xlsx");
 
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
+    ss::document doc{{1048576, 16384}};
+    ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
     app.read_file(path.c_str());
 
-    const pivot_collection& pc = doc.get_pivot_collection();
+    const ss::pivot_collection& pc = doc.get_pivot_collection();
     assert(pc.get_cache_count() == 2);
 
     // B2:C7 on sheet 'Data'.
-    const pivot_cache* cache = get_pivot_cache(pc, "Data", "B2:C7");
+    const ss::pivot_cache* cache = get_pivot_cache(pc, "Data", "B2:C7");
     assert(cache);
     assert(cache->get_field_count() == 2);
 
     // 1st field
-    const pivot_cache_field_t* fld = cache->get_field(0);
+    const ss::pivot_cache_field_t* fld = cache->get_field(0);
     assert(fld);
     assert(fld->name == "F1");
     assert(fld->min_value && fld->min_value == 1.0);
@@ -927,16 +926,16 @@ void test_xlsx_pivot_mixed_type_field()
     {
         // This field should contain 3 string items 'A', 'B', 'C' and 2 numeric
         // items 1 and 2.
-        std::set<pivot_cache_item_t> expected =
+        std::set<ss::pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(std::string_view{"A"}),
-            pivot_cache_item_t(std::string_view{"B"}),
-            pivot_cache_item_t(std::string_view{"C"}),
-            pivot_cache_item_t(1.0),
-            pivot_cache_item_t(2.0),
+            std::string_view{"A"},
+            std::string_view{"B"},
+            std::string_view{"C"},
+            1.0,
+            2.0,
         };
 
-        std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
+        std::set<ss::pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
         assert(actual == expected);
     }
 
@@ -953,13 +952,13 @@ void test_xlsx_pivot_mixed_type_field()
 
     {
         // Check the records.
-        pivot_cache::records_type expected =
+        ss::pivot_cache::records_type expected =
         {
-            { pivot_cache_record_value_t(size_t(0)), pivot_cache_record_value_t(1.1) },
-            { pivot_cache_record_value_t(size_t(1)), pivot_cache_record_value_t(1.2) },
-            { pivot_cache_record_value_t(size_t(2)), pivot_cache_record_value_t(1.3) },
-            { pivot_cache_record_value_t(size_t(3)), pivot_cache_record_value_t(1.4) },
-            { pivot_cache_record_value_t(size_t(4)), pivot_cache_record_value_t(1.5) },
+            { size_t(0), 1.1 },
+            { size_t(1), 1.2 },
+            { size_t(2), 1.3 },
+            { size_t(3), 1.4 },
+            { size_t(4), 1.5 },
         };
 
         assert(expected == cache->get_all_records());
@@ -980,18 +979,18 @@ void test_xlsx_pivot_mixed_type_field()
     {
         // This field should contain 3 string items 'A', 'B', 'C' and 4 numeric
         // items 1, 2, 3.5 and 5.
-        std::set<pivot_cache_item_t> expected =
+        std::set<ss::pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(std::string_view{"A"}),
-            pivot_cache_item_t(std::string_view{"B"}),
-            pivot_cache_item_t(std::string_view{"C"}),
-            pivot_cache_item_t(1.0),
-            pivot_cache_item_t(2.0),
-            pivot_cache_item_t(3.5),
-            pivot_cache_item_t(5.0),
+            std::string_view{"A"},
+            std::string_view{"B"},
+            std::string_view{"C"},
+            1.0,
+            2.0,
+            3.5,
+            5.0,
         };
 
-        std::set<pivot_cache_item_t> actual;
+        std::set<ss::pivot_cache_item_t> actual;
         actual.insert(fld->items.begin(), fld->items.end());
         assert(actual == expected);
     }
@@ -1009,15 +1008,15 @@ void test_xlsx_pivot_mixed_type_field()
 
     {
         // Check the records.
-        pivot_cache::records_type expected =
+        ss::pivot_cache::records_type expected =
         {
-            { pivot_cache_record_value_t(size_t(0)), pivot_cache_record_value_t(1.1) },
-            { pivot_cache_record_value_t(size_t(1)), pivot_cache_record_value_t(1.2) },
-            { pivot_cache_record_value_t(size_t(2)), pivot_cache_record_value_t(1.3) },
-            { pivot_cache_record_value_t(size_t(3)), pivot_cache_record_value_t(1.4) },
-            { pivot_cache_record_value_t(size_t(4)), pivot_cache_record_value_t(1.5) },
-            { pivot_cache_record_value_t(size_t(5)), pivot_cache_record_value_t(1.8) },
-            { pivot_cache_record_value_t(size_t(6)), pivot_cache_record_value_t(2.2) },
+            { std::size_t(0), 1.1 },
+            { std::size_t(1), 1.2 },
+            { std::size_t(2), 1.3 },
+            { std::size_t(3), 1.4 },
+            { std::size_t(4), 1.5 },
+            { std::size_t(5), 1.8 },
+            { std::size_t(6), 2.2 },
         };
 
         assert(expected == cache->get_all_records());
@@ -1028,37 +1027,37 @@ void test_xlsx_pivot_group_field()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/group-field.xlsx");
 
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
+    ss::document doc{{1048576, 16384}};
+    ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
     app.read_file(path.c_str());
 
-    const pivot_collection& pc = doc.get_pivot_collection();
+    const ss::pivot_collection& pc = doc.get_pivot_collection();
     assert(pc.get_cache_count() == 1);
 
     // B2:C6 on sheet 'Sheet1'.
-    const pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C6");
+    const ss::pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C6");
     assert(cache);
     assert(cache->get_field_count() == 3);
 
     // First field is labeled 'Key'.
-    const pivot_cache_field_t* fld = cache->get_field(0);
+    const ss::pivot_cache_field_t* fld = cache->get_field(0);
     assert(fld);
     assert(fld->name == "Key");
 
     {
         // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
-        std::set<pivot_cache_item_t> expected =
+        std::set<ss::pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(std::string_view{"A"}),
-            pivot_cache_item_t(std::string_view{"B"}),
-            pivot_cache_item_t(std::string_view{"C"}),
-            pivot_cache_item_t(std::string_view{"D"}),
+            std::string_view{"A"},
+            std::string_view{"B"},
+            std::string_view{"C"},
+            std::string_view{"D"},
         };
 
-        std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
+        std::set<ss::pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
         assert(actual == expected);
     }
 
@@ -1079,20 +1078,20 @@ void test_xlsx_pivot_group_field()
     assert(fld->name == "Key2");
     assert(fld->items.empty());
 
-    const pivot_cache_group_data_t* gd = fld->group_data.get();
+    const ss::pivot_cache_group_data_t* gd = fld->group_data.get();
     assert(gd);
     assert(gd->base_field == 0);
     assert(gd->items.size() == 2);
 
     {
         // It should have two items - Group1 and Group2.
-        std::set<pivot_cache_item_t> expected =
+        std::set<ss::pivot_cache_item_t> expected =
         {
-            pivot_cache_item_t(std::string_view{"Group1"}),
-            pivot_cache_item_t(std::string_view{"Group2"}),
+            std::string_view{"Group1"},
+            std::string_view{"Group2"},
         };
 
-        std::set<pivot_cache_item_t> actual;
+        std::set<ss::pivot_cache_item_t> actual;
         actual.insert(gd->items.begin(), gd->items.end());
         assert(actual == expected);
     }
@@ -1100,17 +1099,17 @@ void test_xlsx_pivot_group_field()
     // Group1 should group 'A' and 'B' from the 1st field, and Group2 should
     // group 'C' and 'D'.
 
-    pivot_cache_indices_t expected_group = { 0, 0, 1, 1 };
+    ss::pivot_cache_indices_t expected_group = { 0, 0, 1, 1 };
     assert(gd->base_to_group_indices == expected_group);
 
     {
         // Check the records.
-        pivot_cache::records_type expected =
+        ss::pivot_cache::records_type expected =
         {
-            { pivot_cache_record_value_t(size_t(0)), pivot_cache_record_value_t(1.0) },
-            { pivot_cache_record_value_t(size_t(1)), pivot_cache_record_value_t(2.0) },
-            { pivot_cache_record_value_t(size_t(2)), pivot_cache_record_value_t(3.0) },
-            { pivot_cache_record_value_t(size_t(3)), pivot_cache_record_value_t(4.0) },
+            { std::size_t(0), 1.0 },
+            { std::size_t(1), 2.0 },
+            { std::size_t(2), 3.0 },
+            { std::size_t(3), 4.0 },
         };
 
         assert(expected == cache->get_all_records());
@@ -1121,23 +1120,23 @@ void test_xlsx_pivot_group_by_numbers()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/group-by-numbers.xlsx");
 
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
+    ss::document doc{{1048576, 16384}};
+    ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
     app.read_file(path.c_str());
 
-    const pivot_collection& pc = doc.get_pivot_collection();
+    const ss::pivot_collection& pc = doc.get_pivot_collection();
     assert(pc.get_cache_count() == 1);
 
     // B2:C13 on sheet 'Sheet1'.
-    const pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C13");
+    const ss::pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C13");
     assert(cache);
     assert(cache->get_field_count() == 2);
 
     // First field is a field with numeric grouping with intervals.
-    const pivot_cache_field_t* fld = cache->get_field(0);
+    const ss::pivot_cache_field_t* fld = cache->get_field(0);
     assert(fld);
     assert(fld->name == "V1");
 
@@ -1150,34 +1149,34 @@ void test_xlsx_pivot_group_by_numbers()
 
     // We'll just make sure that all 11 items are of numeric type.
 
-    for (const pivot_cache_item_t& item : fld->items)
+    for (const auto& item : fld->items)
     {
-        assert(item.type == pivot_cache_item_t::item_type::numeric);
+        assert(item.type == ss::pivot_cache_item_t::item_type::numeric);
         assert(*fld->min_value <= std::get<double>(item.value));
         assert(std::get<double>(item.value) <= *fld->max_value);
     }
 
     // This field is also gruop field with 7 numeric intervals of width 2.
     assert(fld->group_data);
-    const pivot_cache_group_data_t& grp = *fld->group_data;
+    const ss::pivot_cache_group_data_t& grp = *fld->group_data;
     assert(grp.items.size() == 7);
 
-    pivot_cache_items_t expected =
+    ss::pivot_cache_items_t expected =
     {
-        pivot_cache_item_t(std::string_view{"<0"}),
-        pivot_cache_item_t(std::string_view{"0-2"}),
-        pivot_cache_item_t(std::string_view{"2-4"}),
-        pivot_cache_item_t(std::string_view{"4-6"}),
-        pivot_cache_item_t(std::string_view{"6-8"}),
-        pivot_cache_item_t(std::string_view{"8-10"}),
-        pivot_cache_item_t(std::string_view{">10"}),
+        std::string_view{"<0"},
+        std::string_view{"0-2"},
+        std::string_view{"2-4"},
+        std::string_view{"4-6"},
+        std::string_view{"6-8"},
+        std::string_view{"8-10"},
+        std::string_view{">10"},
     };
 
     assert(grp.items == expected);
 
     // Check the numeric range properties.
     assert(grp.range_grouping);
-    assert(grp.range_grouping->group_by == pivot_cache_group_by_t::range);
+    assert(grp.range_grouping->group_by == ss::pivot_cache_group_by_t::range);
     assert(!grp.range_grouping->auto_start);
     assert(!grp.range_grouping->auto_end);
     assert(grp.range_grouping->start == 0.0);
@@ -1202,21 +1201,21 @@ void test_xlsx_pivot_group_by_dates()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/group-by-dates.xlsx");
 
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
+    ss::document doc{{1048576, 16384}};
+    ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
     app.read_file(path.c_str());
 
-    const pivot_collection& pc = doc.get_pivot_collection();
+    const ss::pivot_collection& pc = doc.get_pivot_collection();
     assert(pc.get_cache_count() == 1);
 
-    const pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C14");
+    const ss::pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C14");
     assert(cache);
 
     // First field is a date field.
-    const pivot_cache_field_t* fld = cache->get_field(0);
+    const ss::pivot_cache_field_t* fld = cache->get_field(0);
     assert(fld);
     assert(fld->name == "Date");
 
@@ -1226,52 +1225,52 @@ void test_xlsx_pivot_group_by_dates()
     assert(fld->max_date);
     assert(*fld->max_date == date_time_t(2014, 12, 2));
 
-    pivot_cache_items_t expected =
+    ss::pivot_cache_items_t expected =
     {
-        pivot_cache_item_t(date_time_t(2014, 1, 1)),
-        pivot_cache_item_t(date_time_t(2014, 2, 1)),
-        pivot_cache_item_t(date_time_t(2014, 3, 1)),
-        pivot_cache_item_t(date_time_t(2014, 4, 1)),
-        pivot_cache_item_t(date_time_t(2014, 5, 1)),
-        pivot_cache_item_t(date_time_t(2014, 6, 1)),
-        pivot_cache_item_t(date_time_t(2014, 7, 1)),
-        pivot_cache_item_t(date_time_t(2014, 8, 1)),
-        pivot_cache_item_t(date_time_t(2014, 9, 1)),
-        pivot_cache_item_t(date_time_t(2014, 10, 1)),
-        pivot_cache_item_t(date_time_t(2014, 11, 1)),
-        pivot_cache_item_t(date_time_t(2014, 12, 1)),
+        date_time_t(2014, 1, 1),
+        date_time_t(2014, 2, 1),
+        date_time_t(2014, 3, 1),
+        date_time_t(2014, 4, 1),
+        date_time_t(2014, 5, 1),
+        date_time_t(2014, 6, 1),
+        date_time_t(2014, 7, 1),
+        date_time_t(2014, 8, 1),
+        date_time_t(2014, 9, 1),
+        date_time_t(2014, 10, 1),
+        date_time_t(2014, 11, 1),
+        date_time_t(2014, 12, 1),
     };
 
-    pivot_cache_items_t actual(fld->items.begin(), fld->items.end());
+    ss::pivot_cache_items_t actual(fld->items.begin(), fld->items.end());
     assert(actual == expected);
 
     // This field is grouped by month.
 
     assert(fld->group_data);
-    const pivot_cache_group_data_t& gd = *fld->group_data;
+    const ss::pivot_cache_group_data_t& gd = *fld->group_data;
 
     expected =
     {
-        pivot_cache_item_t(std::string_view{"<1/1/2014"}),
-        pivot_cache_item_t(std::string_view{"Jan"}),
-        pivot_cache_item_t(std::string_view{"Feb"}),
-        pivot_cache_item_t(std::string_view{"Mar"}),
-        pivot_cache_item_t(std::string_view{"Apr"}),
-        pivot_cache_item_t(std::string_view{"May"}),
-        pivot_cache_item_t(std::string_view{"Jun"}),
-        pivot_cache_item_t(std::string_view{"Jul"}),
-        pivot_cache_item_t(std::string_view{"Aug"}),
-        pivot_cache_item_t(std::string_view{"Sep"}),
-        pivot_cache_item_t(std::string_view{"Oct"}),
-        pivot_cache_item_t(std::string_view{"Nov"}),
-        pivot_cache_item_t(std::string_view{"Dec"}),
-        pivot_cache_item_t(std::string_view{">12/2/2014"}),
+        std::string_view{"<1/1/2014"},
+        std::string_view{"Jan"},
+        std::string_view{"Feb"},
+        std::string_view{"Mar"},
+        std::string_view{"Apr"},
+        std::string_view{"May"},
+        std::string_view{"Jun"},
+        std::string_view{"Jul"},
+        std::string_view{"Aug"},
+        std::string_view{"Sep"},
+        std::string_view{"Oct"},
+        std::string_view{"Nov"},
+        std::string_view{"Dec"},
+        std::string_view{">12/2/2014"},
     };
 
     assert(gd.items == expected);
 
     assert(gd.range_grouping);
-    assert(gd.range_grouping->group_by == pivot_cache_group_by_t::months);
+    assert(gd.range_grouping->group_by == ss::pivot_cache_group_by_t::months);
 
     assert(gd.range_grouping->start_date == date_time_t(2014,1,1));
     assert(gd.range_grouping->end_date == date_time_t(2014,12,2));
@@ -1288,22 +1287,22 @@ void test_xlsx_pivot_group_by_dates()
     assert(fld);
     assert(fld->name == "Quarters");
     assert(fld->group_data);
-    const pivot_cache_group_data_t& gd_qtrs = *fld->group_data;
+    const ss::pivot_cache_group_data_t& gd_qtrs = *fld->group_data;
     assert(gd_qtrs.base_field == 0);
 
     assert(gd_qtrs.range_grouping);
-    assert(gd_qtrs.range_grouping->group_by == pivot_cache_group_by_t::quarters);
+    assert(gd_qtrs.range_grouping->group_by == ss::pivot_cache_group_by_t::quarters);
     assert(gd_qtrs.range_grouping->start_date == date_time_t(2014,1,1));
     assert(gd_qtrs.range_grouping->end_date == date_time_t(2014,12,2));
 
     expected =
     {
-        pivot_cache_item_t(std::string_view{"<1/1/2014"}),
-        pivot_cache_item_t(std::string_view{"Qtr1"}),
-        pivot_cache_item_t(std::string_view{"Qtr2"}),
-        pivot_cache_item_t(std::string_view{"Qtr3"}),
-        pivot_cache_item_t(std::string_view{"Qtr4"}),
-        pivot_cache_item_t(std::string_view{">12/2/2014"}),
+        std::string_view{"<1/1/2014"},
+        std::string_view{"Qtr1"},
+        std::string_view{"Qtr2"},
+        std::string_view{"Qtr3"},
+        std::string_view{"Qtr4"},
+        std::string_view{">12/2/2014"},
     };
 
     assert(gd_qtrs.items == expected);
@@ -1313,34 +1312,34 @@ void test_xlsx_pivot_error_values()
 {
     string path(SRCDIR"/test/xlsx/pivot-table/error-values.xlsx");
 
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
+    ss::document doc{{1048576, 16384}};
+    ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
     app.read_file(path.c_str());
 
-    const pivot_collection& pc = doc.get_pivot_collection();
+    const ss::pivot_collection& pc = doc.get_pivot_collection();
     assert(pc.get_cache_count() == 1);
 
-    const pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C6");
+    const ss::pivot_cache* cache = get_pivot_cache(pc, "Sheet1", "B2:C6");
     assert(cache);
 
-    const pivot_cache_field_t* fld = cache->get_field(0);
+    const ss::pivot_cache_field_t* fld = cache->get_field(0);
 
     assert(fld);
     assert(fld->name == "F1");
 
     // This field should contain 4 string items 'A', 'B', 'C' and 'D'.
-    std::set<pivot_cache_item_t> expected =
+    std::set<ss::pivot_cache_item_t> expected =
     {
-        pivot_cache_item_t(std::string_view{"A"}),
-        pivot_cache_item_t(std::string_view{"B"}),
-        pivot_cache_item_t(std::string_view{"C"}),
-        pivot_cache_item_t(std::string_view{"D"}),
+        std::string_view{"A"},
+        std::string_view{"B"},
+        std::string_view{"C"},
+        std::string_view{"D"},
     };
 
-    std::set<pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
+    std::set<ss::pivot_cache_item_t> actual(fld->items.begin(), fld->items.end());
     assert(actual == expected);
 
     fld = cache->get_field(1);
@@ -1350,8 +1349,8 @@ void test_xlsx_pivot_error_values()
 
     expected =
     {
-        pivot_cache_item_t(spreadsheet::error_value_t::div0),
-        pivot_cache_item_t(spreadsheet::error_value_t::name),
+        spreadsheet::error_value_t::div0,
+        spreadsheet::error_value_t::name,
     };
 
     actual.clear();
@@ -1364,9 +1363,9 @@ void test_xlsx_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xlsx/view/cursor-per-sheet.xlsx");
 
-    document doc{{1048576, 16384}};
-    spreadsheet::view view(doc);
-    spreadsheet::import_factory factory(doc, view);
+    ss::document doc{{1048576, 16384}};
+    ss::view view(doc);
+    ss::import_factory factory(doc, view);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
@@ -1375,16 +1374,16 @@ void test_xlsx_view_cursor_per_sheet()
     // Sheet3 should be active.
     assert(view.get_active_sheet() == 2);
 
-    const spreadsheet::sheet_view* sv = view.get_sheet_view(0);
+    const ss::sheet_view* sv = view.get_sheet_view(0);
     assert(sv);
 
-    spreadsheet::iface::import_reference_resolver* resolver =
-        factory.get_reference_resolver(spreadsheet::formula_ref_context_t::global);
+    ss::iface::import_reference_resolver* resolver =
+        factory.get_reference_resolver(ss::formula_ref_context_t::global);
     assert(resolver);
 
     // On Sheet1, the cursor should be set to C4.
-    spreadsheet::range_t expected = to_rc_range(resolver->resolve_range("C4"));
-    spreadsheet::range_t actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    ss::range_t expected = to_rc_range(resolver->resolve_range("C4"));
+    ss::range_t actual = sv->get_selection(ss::sheet_pane_t::top_left);
     assert(expected == actual);
 
     sv = view.get_sheet_view(1);
@@ -1392,7 +1391,7 @@ void test_xlsx_view_cursor_per_sheet()
 
     // On Sheet2, the cursor should be set to D8.
     expected = to_rc_range(resolver->resolve_range("D8"));
-    actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    actual = sv->get_selection(ss::sheet_pane_t::top_left);
     assert(expected == actual);
 
     sv = view.get_sheet_view(2);
@@ -1400,7 +1399,7 @@ void test_xlsx_view_cursor_per_sheet()
 
     // On Sheet3, the cursor should be set to D2.
     expected = to_rc_range(resolver->resolve_range("D2"));
-    actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    actual = sv->get_selection(ss::sheet_pane_t::top_left);
     assert(expected == actual);
 
     sv = view.get_sheet_view(3);
@@ -1408,13 +1407,13 @@ void test_xlsx_view_cursor_per_sheet()
 
     // On Sheet4, the cursor should be set to C5:E8.
     expected = to_rc_range(resolver->resolve_range("C5:E8"));
-    actual = sv->get_selection(spreadsheet::sheet_pane_t::top_left);
+    actual = sv->get_selection(ss::sheet_pane_t::top_left);
     assert(expected == actual);
 }
 
 struct expected_selection
 {
-    spreadsheet::sheet_pane_t pane;
+    ss::sheet_pane_t pane;
     std::string_view sel;
 };
 
@@ -1422,48 +1421,48 @@ void test_xlsx_view_cursor_split_pane()
 {
     string path(SRCDIR"/test/xlsx/view/cursor-split-pane.xlsx");
 
-    document doc{{1048576, 16384}};
-    spreadsheet::view view(doc);
-    spreadsheet::import_factory factory(doc, view);
+    ss::document doc{{1048576, 16384}};
+    ss::view view(doc);
+    ss::import_factory factory(doc, view);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
     app.read_file(path.c_str());
 
-    spreadsheet::iface::import_reference_resolver* resolver =
-        factory.get_reference_resolver(spreadsheet::formula_ref_context_t::global);
+    ss::iface::import_reference_resolver* resolver =
+        factory.get_reference_resolver(ss::formula_ref_context_t::global);
     assert(resolver);
 
     // Sheet4 should be active.
     assert(view.get_active_sheet() == 3);
 
-    const spreadsheet::sheet_view* sv = view.get_sheet_view(0);
+    const ss::sheet_view* sv = view.get_sheet_view(0);
     assert(sv);
 
     // On Sheet1, the view is split into 4.
-    assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_left);
+    assert(sv->get_active_pane() == ss::sheet_pane_t::bottom_left);
     assert(sv->get_split_pane().hor_split == 5190.0);
     assert(sv->get_split_pane().ver_split == 1800.0);
 
     {
-        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address("F6"));
-        spreadsheet::address_t actual = sv->get_split_pane().top_left_cell;
+        ss::address_t expected = to_rc_address(resolver->resolve_address("F6"));
+        ss::address_t actual = sv->get_split_pane().top_left_cell;
         assert(expected == actual);
     }
 
     std::vector<expected_selection> expected_selections =
     {
-        { spreadsheet::sheet_pane_t::top_left,     "E4"  },
-        { spreadsheet::sheet_pane_t::top_right,    "J2"  },
-        { spreadsheet::sheet_pane_t::bottom_left,  "A8"  },
-        { spreadsheet::sheet_pane_t::bottom_right, "J17" },
+        { ss::sheet_pane_t::top_left,     "E4"  },
+        { ss::sheet_pane_t::top_right,    "J2"  },
+        { ss::sheet_pane_t::bottom_left,  "A8"  },
+        { ss::sheet_pane_t::bottom_right, "J17" },
     };
 
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
-        spreadsheet::range_t actual = sv->get_selection(es.pane);
+        ss::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
+        ss::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
 
@@ -1471,29 +1470,29 @@ void test_xlsx_view_cursor_split_pane()
     assert(sv);
 
     // Sheet2 is also split into 4 views.
-    assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::top_right);
+    assert(sv->get_active_pane() == ss::sheet_pane_t::top_right);
     assert(sv->get_split_pane().hor_split == 5190.0);
     assert(sv->get_split_pane().ver_split == 2400.0);
 
     {
-        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address("F8"));
-        spreadsheet::address_t actual = sv->get_split_pane().top_left_cell;
+        ss::address_t expected = to_rc_address(resolver->resolve_address("F8"));
+        ss::address_t actual = sv->get_split_pane().top_left_cell;
         assert(expected == actual);
     }
 
     expected_selections =
     {
-        { spreadsheet::sheet_pane_t::top_left,     "C2:C6"   },
-        { spreadsheet::sheet_pane_t::top_right,    "H2:L2"   },
-        { spreadsheet::sheet_pane_t::bottom_left,  "B18:C23" },
-        { spreadsheet::sheet_pane_t::bottom_right, "H11:J13" },
+        { ss::sheet_pane_t::top_left,     "C2:C6"   },
+        { ss::sheet_pane_t::top_right,    "H2:L2"   },
+        { ss::sheet_pane_t::bottom_left,  "B18:C23" },
+        { ss::sheet_pane_t::bottom_right, "H11:J13" },
     };
 
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
-        spreadsheet::range_t actual = sv->get_selection(es.pane);
+        ss::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
+        ss::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
 
@@ -1501,27 +1500,27 @@ void test_xlsx_view_cursor_split_pane()
     assert(sv);
 
     // Sheet3 is horizontally split into top and bottom views (top-left and bottom-left).
-    assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_left);
+    assert(sv->get_active_pane() == ss::sheet_pane_t::bottom_left);
     assert(sv->get_split_pane().hor_split == 0.0);
     assert(sv->get_split_pane().ver_split == 1500.0);
 
     {
-        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address("A5"));
-        spreadsheet::address_t actual = sv->get_split_pane().top_left_cell;
+        ss::address_t expected = to_rc_address(resolver->resolve_address("A5"));
+        ss::address_t actual = sv->get_split_pane().top_left_cell;
         assert(expected == actual);
     }
 
     expected_selections =
     {
-        { spreadsheet::sheet_pane_t::top_left,     "D2" },
-        { spreadsheet::sheet_pane_t::bottom_left,  "C9" },
+        { ss::sheet_pane_t::top_left,     "D2" },
+        { ss::sheet_pane_t::bottom_left,  "C9" },
     };
 
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
-        spreadsheet::range_t actual = sv->get_selection(es.pane);
+        ss::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
+        ss::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
 
@@ -1529,27 +1528,27 @@ void test_xlsx_view_cursor_split_pane()
     assert(sv);
 
     // Sheet4 is vertically split into left and right views (top-left and top-right).
-    assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::top_left);
+    assert(sv->get_active_pane() == ss::sheet_pane_t::top_left);
     assert(sv->get_split_pane().hor_split == 4230.0);
     assert(sv->get_split_pane().ver_split == 0.0);
 
     {
-        spreadsheet::address_t expected = to_rc_address(resolver->resolve_address("E1"));
-        spreadsheet::address_t actual = sv->get_split_pane().top_left_cell;
+        ss::address_t expected = to_rc_address(resolver->resolve_address("E1"));
+        ss::address_t actual = sv->get_split_pane().top_left_cell;
         assert(expected == actual);
     }
 
     expected_selections =
     {
-        { spreadsheet::sheet_pane_t::top_left,  "B18" },
-        { spreadsheet::sheet_pane_t::top_right, "I11" },
+        { ss::sheet_pane_t::top_left,  "B18" },
+        { ss::sheet_pane_t::top_right, "I11" },
     };
 
     for (const expected_selection& es : expected_selections)
     {
         // cursor in the top-left pane.
-        spreadsheet::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
-        spreadsheet::range_t actual = sv->get_selection(es.pane);
+        ss::range_t expected = to_rc_range(resolver->resolve_range(es.sel));
+        ss::range_t actual = sv->get_selection(es.pane);
         assert(expected == actual);
     }
 }
@@ -1558,31 +1557,31 @@ void test_xlsx_view_frozen_pane()
 {
     string path(SRCDIR"/test/xlsx/view/frozen-pane.xlsx");
 
-    document doc{{1048576, 16384}};
-    spreadsheet::view view(doc);
-    spreadsheet::import_factory factory(doc, view);
+    ss::document doc{{1048576, 16384}};
+    ss::view view(doc);
+    ss::import_factory factory(doc, view);
     orcus_xlsx app(&factory);
     app.set_config(test_config);
 
     app.read_file(path.c_str());
 
-    spreadsheet::iface::import_reference_resolver* resolver =
-        factory.get_reference_resolver(spreadsheet::formula_ref_context_t::global);
+    ss::iface::import_reference_resolver* resolver =
+        factory.get_reference_resolver(ss::formula_ref_context_t::global);
     assert(resolver);
 
     // Sheet3 should be active.
     assert(view.get_active_sheet() == 2);
 
-    const spreadsheet::sheet_view* sv = view.get_sheet_view(0);
+    const ss::sheet_view* sv = view.get_sheet_view(0);
     assert(sv);
 
     {
         // Sheet1 is vertically frozen between columns A and B.
-        const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
+        const ss::frozen_pane_t& fp = sv->get_frozen_pane();
         assert(fp.top_left_cell == to_rc_address(resolver->resolve_address("B1")));
         assert(fp.visible_columns == 1);
         assert(fp.visible_rows == 0);
-        assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::top_right);
+        assert(sv->get_active_pane() == ss::sheet_pane_t::top_right);
     }
 
     sv = view.get_sheet_view(1);
@@ -1590,11 +1589,11 @@ void test_xlsx_view_frozen_pane()
 
     {
         // Sheet2 is horizontally frozen between rows 1 and 2.
-        const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
+        const ss::frozen_pane_t& fp = sv->get_frozen_pane();
         assert(fp.top_left_cell == to_rc_address(resolver->resolve_address("A2")));
         assert(fp.visible_columns == 0);
         assert(fp.visible_rows == 1);
-        assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_left);
+        assert(sv->get_active_pane() == ss::sheet_pane_t::bottom_left);
     }
 
     sv = view.get_sheet_view(2);
@@ -1602,18 +1601,18 @@ void test_xlsx_view_frozen_pane()
 
     {
         // Sheet3 is frozen both horizontally and vertically.
-        const spreadsheet::frozen_pane_t& fp = sv->get_frozen_pane();
+        const ss::frozen_pane_t& fp = sv->get_frozen_pane();
         assert(fp.top_left_cell == to_rc_address(resolver->resolve_address("E9")));
         assert(fp.visible_columns == 4);
         assert(fp.visible_rows == 8);
-        assert(sv->get_active_pane() == spreadsheet::sheet_pane_t::bottom_right);
+        assert(sv->get_active_pane() == ss::sheet_pane_t::bottom_right);
     }
 }
 
 void test_xlsx_doc_structure_unordered_sheet_positions()
 {
     pstring path(SRCDIR"/test/xlsx/doc-structure/unordered-sheet-positions.xlsx");
-    std::unique_ptr<spreadsheet::document> doc = load_doc(path);
+    std::unique_ptr<ss::document> doc = load_doc(path);
 
     // There should be 9 sheets named S1, S2, ..., S9.
     std::vector<pstring> expected_sheet_names = {
@@ -1622,8 +1621,8 @@ void test_xlsx_doc_structure_unordered_sheet_positions()
 
     assert(doc->get_sheet_count() == expected_sheet_names.size());
 
-    sheet_t n = expected_sheet_names.size();
-    for (sheet_t i = 0; i < n; ++i)
+    ss::sheet_t n = expected_sheet_names.size();
+    for (ss::sheet_t i = 0; i < n; ++i)
     {
         pstring sheet_name = doc->get_sheet_name(i);
         assert(sheet_name == expected_sheet_names[i]);
