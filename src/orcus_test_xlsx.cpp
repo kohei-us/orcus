@@ -6,7 +6,6 @@
  */
 
 #include "orcus/orcus_xlsx.hpp"
-#include "pstring.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/config.hpp"
 #include "orcus/spreadsheet/factory.hpp"
@@ -16,6 +15,7 @@
 #include "orcus/spreadsheet/auto_filter.hpp"
 #include "orcus/spreadsheet/pivot.hpp"
 #include "orcus/spreadsheet/styles.hpp"
+#include <orcus/parser_global.hpp>
 
 #include <cstdlib>
 #include <cassert>
@@ -40,13 +40,13 @@ namespace {
 
 config test_config(format_t::xlsx);
 
-std::unique_ptr<spreadsheet::document> load_doc(const pstring& path, bool recalc = true)
+std::unique_ptr<spreadsheet::document> load_doc(const std::string_view& path, bool recalc = true)
 {
     spreadsheet::range_size_t ss{1048576, 16384};
     std::unique_ptr<spreadsheet::document> doc = std::make_unique<spreadsheet::document>(ss);
     spreadsheet::import_factory factory(*doc);
     orcus_xlsx app(&factory);
-    app.read_file(path.str());
+    app.read_file(std::string{path});
     app.set_config(test_config);
     if (recalc)
         doc->recalc_formula_cells();
@@ -59,7 +59,7 @@ std::unique_ptr<spreadsheet::document> load_doc(const pstring& path, bool recalc
  * sheet name and range name.
  */
 const ss::pivot_cache* get_pivot_cache(
-    const ss::pivot_collection& pc, const pstring& sheet_name, const pstring& range_name)
+    const ss::pivot_collection& pc, const std::string_view& sheet_name, std::string_view range_name)
 {
     std::unique_ptr<ixion::formula_name_resolver> resolver =
         ixion::formula_name_resolver::get(
@@ -71,7 +71,7 @@ const ss::pivot_cache* get_pivot_cache(
     ixion::abs_address_t origin(0,0,0);
 
     ixion::formula_name_t fn =
-        resolver->resolve({range_name.get(), range_name.size()}, origin);
+        resolver->resolve(range_name, origin);
 
     if (fn.type != ixion::formula_name_t::range_reference)
         return nullptr;
@@ -124,9 +124,9 @@ void test_xlsx_import()
         assert(!check.empty());
         assert(!control.empty());
 
-        pstring s1(&check[0], check.size());
-        pstring s2 = control.str();
-        assert(s1.trim() == s2.trim());
+        std::string_view s1(&check[0], check.size());
+        std::string_view s2 = control.str();
+        assert(orcus::trim(s1) == orcus::trim(s2));
     };
 
     for (const fs::path& dir : dirs_recalc)
@@ -183,7 +183,7 @@ void test_xlsx_table()
     orcus_xlsx app(&factory);
     app.read_file(path.c_str());
 
-    pstring name("Table1");
+    std::string_view name("Table1");
     const ss::table_t* p = doc.get_table(name);
     assert(p);
     assert(p->identifier == 1);
@@ -327,7 +327,7 @@ void test_xlsx_date_time()
 
 void test_xlsx_background_fill()
 {
-    pstring path(SRCDIR"/test/xlsx/background-color/standard.xlsx");
+    std::string_view path(SRCDIR"/test/xlsx/background-color/standard.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
     spreadsheet::styles& styles = doc->get_styles();
@@ -373,7 +373,7 @@ void test_xlsx_background_fill()
 
 void test_xlsx_number_format()
 {
-    pstring path(SRCDIR"/test/xlsx/number-format/date-time.xlsx");
+    std::string_view path(SRCDIR"/test/xlsx/number-format/date-time.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
     spreadsheet::sheet* sh = doc->get_sheet(0);
@@ -383,7 +383,7 @@ void test_xlsx_number_format()
     {
         ss::row_t row;
         ss::col_t col;
-        pstring expected;
+        std::string_view expected;
     };
 
     std::vector<check> checks =
@@ -416,7 +416,7 @@ void test_xlsx_number_format()
 
 void test_xlsx_text_alignment()
 {
-    pstring path(SRCDIR"/test/xlsx/text-alignment/input.xlsx");
+    std::string_view path(SRCDIR"/test/xlsx/text-alignment/input.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
     spreadsheet::styles& styles = doc->get_styles();
@@ -482,7 +482,7 @@ void test_xlsx_text_alignment()
 
 void test_xlsx_cell_borders_single_cells()
 {
-    pstring path(SRCDIR"/test/xlsx/borders/single-cells.xlsx");
+    std::string_view path(SRCDIR"/test/xlsx/borders/single-cells.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
     spreadsheet::styles& styles = doc->get_styles();
@@ -532,7 +532,7 @@ void test_xlsx_cell_borders_single_cells()
 
 void test_xlsx_cell_borders_directions()
 {
-    pstring path(SRCDIR"/test/xlsx/borders/directions.xlsx");
+    std::string_view path(SRCDIR"/test/xlsx/borders/directions.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
     spreadsheet::styles& styles = doc->get_styles();
@@ -641,7 +641,7 @@ void test_xlsx_cell_borders_directions()
 
 void test_xlsx_cell_borders_colors()
 {
-    pstring path(SRCDIR"/test/xlsx/borders/colors.xlsx");
+    std::string_view path(SRCDIR"/test/xlsx/borders/colors.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
     spreadsheet::styles& styles = doc->get_styles();
@@ -713,7 +713,7 @@ void test_xlsx_cell_borders_colors()
 
 void test_xlsx_hidden_rows_columns()
 {
-    pstring path(SRCDIR"/test/xlsx/hidden-rows-columns/input.xlsx");
+    std::string_view path(SRCDIR"/test/xlsx/hidden-rows-columns/input.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
     spreadsheet::sheet* sh = doc->get_sheet("Hidden Rows");
@@ -1609,11 +1609,11 @@ void test_xlsx_view_frozen_pane()
 
 void test_xlsx_doc_structure_unordered_sheet_positions()
 {
-    pstring path(SRCDIR"/test/xlsx/doc-structure/unordered-sheet-positions.xlsx");
+    std::string_view path(SRCDIR"/test/xlsx/doc-structure/unordered-sheet-positions.xlsx");
     std::unique_ptr<ss::document> doc = load_doc(path);
 
     // There should be 9 sheets named S1, S2, ..., S9.
-    std::vector<pstring> expected_sheet_names = {
+    std::vector<std::string_view> expected_sheet_names = {
         "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"
     };
 
@@ -1622,7 +1622,7 @@ void test_xlsx_doc_structure_unordered_sheet_positions()
     ss::sheet_t n = expected_sheet_names.size();
     for (ss::sheet_t i = 0; i < n; ++i)
     {
-        pstring sheet_name = doc->get_sheet_name(i);
+        std::string_view sheet_name = doc->get_sheet_name(i);
         assert(sheet_name == expected_sheet_names[i]);
     }
 }
