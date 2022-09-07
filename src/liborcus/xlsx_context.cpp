@@ -595,10 +595,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 mp_font->set_name(ps);
                 break;
             }
-            case XML_family:
-                break;
-            case XML_scheme:
-                break;
             case XML_fills:
             {
                 std::string_view ps = for_each(
@@ -876,10 +872,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
 
                 break;
             }
-            case XML_dxf:
-                // TODO: Pick up dxf record. Technically dxf is a sub set of xf,
-                // but for now we use xf for dxf.
-                break;
             case XML_protection:
             {
                 mp_protection = mp_styles->get_cell_protection();
