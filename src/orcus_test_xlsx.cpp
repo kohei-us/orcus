@@ -36,8 +36,6 @@ using namespace orcus;
 namespace ss = orcus::spreadsheet;
 namespace fs = boost::filesystem;
 
-using namespace std;
-
 namespace {
 
 config test_config(format_t::xlsx);
@@ -115,9 +113,9 @@ void test_xlsx_import()
         auto doc = load_doc(filepath.string(), recalc);
 
         // Dump the content of the model.
-        ostringstream os;
+        std::ostringstream os;
         doc->dump_check(os);
-        string check = os.str();
+        std::string check = os.str();
 
         // Check that against known control.
         filepath = dir / "check.txt";
@@ -144,7 +142,7 @@ void test_xlsx_import()
 
 void test_xlsx_table_autofilter()
 {
-    string path(SRCDIR"/test/xlsx/table/autofilter.xlsx");
+    std::string path(SRCDIR"/test/xlsx/table/autofilter.xlsx");
     spreadsheet::range_size_t ss{1048576, 16384};
     ss::document doc{ss};
     ss::import_factory factory(doc);
@@ -179,7 +177,7 @@ void test_xlsx_table_autofilter()
 
 void test_xlsx_table()
 {
-    string path(SRCDIR"/test/xlsx/table/table-1.xlsx");
+    std::string path(SRCDIR"/test/xlsx/table/table-1.xlsx");
     ss::document doc{{1048576, 16384}};
     ss::import_factory factory(doc);
     orcus_xlsx app(&factory);
@@ -245,7 +243,7 @@ void test_xlsx_table()
 
 void test_xlsx_merged_cells()
 {
-    string path(SRCDIR"/test/xlsx/merged-cells/simple.xlsx");
+    std::string path(SRCDIR"/test/xlsx/merged-cells/simple.xlsx");
 
     spreadsheet::range_size_t ss{1048576, 16384};
     ss::document doc{ss};
@@ -291,7 +289,7 @@ void test_xlsx_merged_cells()
 
 void test_xlsx_date_time()
 {
-    string path(SRCDIR"/test/xlsx/date-time/input.xlsx");
+    std::string path(SRCDIR"/test/xlsx/date-time/input.xlsx");
 
     ss::document doc{{1048576, 16384}};
     ss::import_factory factory(doc);
@@ -791,7 +789,7 @@ void test_xlsx_hidden_rows_columns()
 
 void test_xlsx_pivot_two_pivot_caches()
 {
-    string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
+    std::string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
 
     ss::document doc{{1048576, 16384}};
     ss::import_factory factory(doc);
@@ -899,7 +897,7 @@ void test_xlsx_pivot_two_pivot_caches()
 
 void test_xlsx_pivot_mixed_type_field()
 {
-    string path(SRCDIR"/test/xlsx/pivot-table/mixed-type-field.xlsx");
+    std::string path(SRCDIR"/test/xlsx/pivot-table/mixed-type-field.xlsx");
 
     ss::document doc{{1048576, 16384}};
     ss::import_factory factory(doc);
@@ -1025,7 +1023,7 @@ void test_xlsx_pivot_mixed_type_field()
 
 void test_xlsx_pivot_group_field()
 {
-    string path(SRCDIR"/test/xlsx/pivot-table/group-field.xlsx");
+    std::string path(SRCDIR"/test/xlsx/pivot-table/group-field.xlsx");
 
     ss::document doc{{1048576, 16384}};
     ss::import_factory factory(doc);
@@ -1118,7 +1116,7 @@ void test_xlsx_pivot_group_field()
 
 void test_xlsx_pivot_group_by_numbers()
 {
-    string path(SRCDIR"/test/xlsx/pivot-table/group-by-numbers.xlsx");
+    std::string path(SRCDIR"/test/xlsx/pivot-table/group-by-numbers.xlsx");
 
     ss::document doc{{1048576, 16384}};
     ss::import_factory factory(doc);
@@ -1199,7 +1197,7 @@ void test_xlsx_pivot_group_by_numbers()
 
 void test_xlsx_pivot_group_by_dates()
 {
-    string path(SRCDIR"/test/xlsx/pivot-table/group-by-dates.xlsx");
+    std::string path(SRCDIR"/test/xlsx/pivot-table/group-by-dates.xlsx");
 
     ss::document doc{{1048576, 16384}};
     ss::import_factory factory(doc);
@@ -1310,7 +1308,7 @@ void test_xlsx_pivot_group_by_dates()
 
 void test_xlsx_pivot_error_values()
 {
-    string path(SRCDIR"/test/xlsx/pivot-table/error-values.xlsx");
+    std::string path(SRCDIR"/test/xlsx/pivot-table/error-values.xlsx");
 
     ss::document doc{{1048576, 16384}};
     ss::import_factory factory(doc);
@@ -1361,7 +1359,7 @@ void test_xlsx_pivot_error_values()
 
 void test_xlsx_view_cursor_per_sheet()
 {
-    string path(SRCDIR"/test/xlsx/view/cursor-per-sheet.xlsx");
+    std::string path(SRCDIR"/test/xlsx/view/cursor-per-sheet.xlsx");
 
     ss::document doc{{1048576, 16384}};
     ss::view view(doc);
@@ -1419,7 +1417,7 @@ struct expected_selection
 
 void test_xlsx_view_cursor_split_pane()
 {
-    string path(SRCDIR"/test/xlsx/view/cursor-split-pane.xlsx");
+    std::string path(SRCDIR"/test/xlsx/view/cursor-split-pane.xlsx");
 
     ss::document doc{{1048576, 16384}};
     ss::view view(doc);
@@ -1555,7 +1553,7 @@ void test_xlsx_view_cursor_split_pane()
 
 void test_xlsx_view_frozen_pane()
 {
-    string path(SRCDIR"/test/xlsx/view/frozen-pane.xlsx");
+    std::string path(SRCDIR"/test/xlsx/view/frozen-pane.xlsx");
 
     ss::document doc{{1048576, 16384}};
     ss::view view(doc);
