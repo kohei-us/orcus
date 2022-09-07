@@ -905,6 +905,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 // NB: default vertical alignment is 'bottom'.
                 ss::hor_alignment_t hor_align = ss::hor_alignment_t::unknown;
                 ss::ver_alignment_t ver_align = ss::ver_alignment_t::bottom;
+                bool wrap_text = false;
+                bool shrink_to_fit = false;
 
                 for (const xml_token_attr_t& attr : attrs)
                 {
@@ -938,13 +940,19 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                                 ver_align = ss::ver_alignment_t::distributed;
                             break;
                         }
-                        default:
-                            ;
+                        case XML_wrapText:
+                            wrap_text = to_bool(attr.value);
+                            break;
+                        case XML_shrinkToFit:
+                            shrink_to_fit = to_bool(attr.value);
+                            break;
                     }
                 }
 
                 mp_xf->set_horizontal_alignment(hor_align);
                 mp_xf->set_vertical_alignment(ver_align);
+                mp_xf->set_wrap_text(wrap_text);
+                mp_xf->set_shrink_to_fit(shrink_to_fit);
                 break;
             }
             case XML_numFmts:
