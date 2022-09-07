@@ -72,10 +72,10 @@ public:
     virtual void characters(std::string_view str, bool transient);
 
 private:
-    void start_element_number_format(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_element_number_format(const xml_attrs_t& attrs);
 
-    void start_element_border(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void start_element_diagonal(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_element_border(const xml_attrs_t& attrs);
+    void start_element_diagonal(const xml_attrs_t& attrs);
     void start_border_color(const xml_attrs_t& attrs);
     void start_font_color(const xml_attrs_t& attrs);
 

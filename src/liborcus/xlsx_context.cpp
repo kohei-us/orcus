@@ -433,7 +433,65 @@ xlsx_styles_context::xlsx_styles_context(session_context& session_cxt, const tok
     mp_styles(styles),
     m_diagonal_up(false), m_diagonal_down(false),
     m_cur_border_dir(spreadsheet::border_direction_t::unknown),
-    m_cell_style_xf(false) {}
+    m_cell_style_xf(false)
+{
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_ooxml_xlsx, XML_styleSheet }, // root element
+        { NS_ooxml_xlsx, XML_border, NS_ooxml_xlsx, XML_bottom },
+        { NS_ooxml_xlsx, XML_border, NS_ooxml_xlsx, XML_diagonal },
+        { NS_ooxml_xlsx, XML_border, NS_ooxml_xlsx, XML_left },
+        { NS_ooxml_xlsx, XML_border, NS_ooxml_xlsx, XML_right },
+        { NS_ooxml_xlsx, XML_border, NS_ooxml_xlsx, XML_top },
+        { NS_ooxml_xlsx, XML_borders, NS_ooxml_xlsx, XML_border },
+        { NS_ooxml_xlsx, XML_bottom, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_cellStyleXfs, NS_ooxml_xlsx, XML_xf },
+        { NS_ooxml_xlsx, XML_cellStyles, NS_ooxml_xlsx, XML_cellStyle },
+        { NS_ooxml_xlsx, XML_cellXfs, NS_ooxml_xlsx, XML_xf },
+        { NS_ooxml_xlsx, XML_diagonal, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_dx, NS_ooxml_xlsx, XML_fill },
+        { NS_ooxml_xlsx, XML_dxf, NS_ooxml_xlsx, XML_alignment },
+        { NS_ooxml_xlsx, XML_dxf, NS_ooxml_xlsx, XML_border },
+        { NS_ooxml_xlsx, XML_dxf, NS_ooxml_xlsx, XML_font },
+        { NS_ooxml_xlsx, XML_dxf, NS_ooxml_xlsx, XML_numFmt },
+        { NS_ooxml_xlsx, XML_dxf, NS_ooxml_xlsx, XML_protection },
+        { NS_ooxml_xlsx, XML_end, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_fill, NS_ooxml_xlsx, XML_patternFill },
+        { NS_ooxml_xlsx, XML_fills, NS_ooxml_xlsx, XML_fill },
+        { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_b },
+        { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_family },
+        { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_i },
+        { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_name },
+        { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_scheme },
+        { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_sz },
+        { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_u },
+        { NS_ooxml_xlsx, XML_fonts, NS_ooxml_xlsx, XML_font },
+        { NS_ooxml_xlsx, XML_horizontal, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_left, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_mruColors, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_numFmts, NS_ooxml_xlsx, XML_numFmt },
+        { NS_ooxml_xlsx, XML_patternFill, NS_ooxml_xlsx, XML_bgColor },
+        { NS_ooxml_xlsx, XML_patternFill, NS_ooxml_xlsx, XML_fgColor },
+        { NS_ooxml_xlsx, XML_right, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_start, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_stop, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_styleSheet, NS_ooxml_xlsx, XML_borders },
+        { NS_ooxml_xlsx, XML_styleSheet, NS_ooxml_xlsx, XML_cellStyleXfs },
+        { NS_ooxml_xlsx, XML_styleSheet, NS_ooxml_xlsx, XML_cellStyles },
+        { NS_ooxml_xlsx, XML_styleSheet, NS_ooxml_xlsx, XML_cellXfs },
+        { NS_ooxml_xlsx, XML_styleSheet, NS_ooxml_xlsx, XML_dxfs },
+        { NS_ooxml_xlsx, XML_styleSheet, NS_ooxml_xlsx, XML_fills },
+        { NS_ooxml_xlsx, XML_styleSheet, NS_ooxml_xlsx, XML_fonts },
+        { NS_ooxml_xlsx, XML_styleSheet, NS_ooxml_xlsx, XML_numFmts },
+        { NS_ooxml_xlsx, XML_top, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_vertical, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_xf, NS_ooxml_xlsx, XML_alignment },
+        { NS_ooxml_xlsx, XML_xf, NS_ooxml_xlsx, XML_protection },
+    };
+
+    init_element_validator(rules, std::size(rules));
+}
 
 xlsx_styles_context::~xlsx_styles_context() {}
 
@@ -457,14 +515,12 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_styleSheet:
             {
                 // root element
-                xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
                 if (get_config().debug)
                     print_attrs(get_tokens(), attrs);
                 break;
             }
             case XML_fonts:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 size_t font_count = to_long(ps);
@@ -473,27 +529,20 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_font:
             {
-                xml_elem_stack_t expected_elements;
-                expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_fonts));
-                expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
-                xml_element_expected(parent, expected_elements);
                 mp_font = mp_styles->get_font_style();
                 ENSURE_INTERFACE(mp_font, import_font_style);
                 break;
             }
             case XML_b:
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 assert(mp_font);
                 mp_font->set_bold(true);
                 break;
             case XML_i:
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 assert(mp_font);
                 mp_font->set_italic(true);
                 break;
             case XML_u:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 assert(mp_font);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
@@ -510,7 +559,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_sz:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 assert(mp_font);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
@@ -520,23 +568,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_color:
             {
-                // The color element can occur under various parent elements.
-                const xml_elem_set_t expected = {
-                    { NS_ooxml_xlsx, XML_bottom },
-                    { NS_ooxml_xlsx, XML_diagonal },
-                    { NS_ooxml_xlsx, XML_end },
-                    { NS_ooxml_xlsx, XML_font },
-                    { NS_ooxml_xlsx, XML_horizontal },
-                    { NS_ooxml_xlsx, XML_left },
-                    { NS_ooxml_xlsx, XML_mruColors },
-                    { NS_ooxml_xlsx, XML_right },
-                    { NS_ooxml_xlsx, XML_start },
-                    { NS_ooxml_xlsx, XML_stop },
-                    { NS_ooxml_xlsx, XML_top },
-                    { NS_ooxml_xlsx, XML_vertical },
-                };
-                xml_element_expected(parent, expected);
-
                 if (parent.first == NS_ooxml_xlsx)
                 {
                     switch (parent.second)
@@ -559,21 +590,17 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_name:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
                 mp_font->set_name(ps);
                 break;
             }
             case XML_family:
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 break;
             case XML_scheme:
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_font);
                 break;
             case XML_fills:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 size_t fill_count = to_long(ps);
@@ -582,13 +609,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_fill:
             {
-                xml_elem_set_t expected = {
-                    xml_token_pair_t(NS_ooxml_xlsx, XML_fills),
-                    xml_token_pair_t(NS_ooxml_xlsx, XML_dxf)
-                };
-
-                xml_element_expected(parent, expected);
-
                 mp_fill = mp_styles->get_fill_style();
                 ENSURE_INTERFACE(mp_fill, import_fill_style);
 
@@ -596,7 +616,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_patternFill:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_fill);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_patternType)).get_value();
                 assert(mp_fill);
@@ -605,7 +624,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_fgColor:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_patternFill);
                 assert(mp_fill);
 
                 for (const xml_token_attr_t& attr : attrs)
@@ -637,8 +655,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_bgColor:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_patternFill);
-
                 for (const xml_token_attr_t& attr : attrs)
                 {
                     switch (attr.name)
@@ -668,7 +684,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_borders:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 size_t border_count = to_long(ps);
@@ -677,7 +692,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_border:
             {
-                start_element_border(parent, attrs);
+                start_element_border(attrs);
 
                 mp_border = mp_styles->get_border_style();
                 ENSURE_INTERFACE(mp_border, import_border_style);
@@ -686,7 +701,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_top:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
                 assert(mp_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::top;
                 border_attr_parser func(spreadsheet::border_direction_t::top, *mp_border);
@@ -695,7 +709,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_bottom:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
                 assert(mp_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::bottom;
                 border_attr_parser func(spreadsheet::border_direction_t::bottom, *mp_border);
@@ -704,7 +717,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_left:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
                 assert(mp_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::left;
                 border_attr_parser func(spreadsheet::border_direction_t::left, *mp_border);
@@ -713,7 +725,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_right:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
                 assert(mp_border);
                 m_cur_border_dir = spreadsheet::border_direction_t::right;
                 border_attr_parser func(spreadsheet::border_direction_t::right, *mp_border);
@@ -722,12 +733,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_diagonal:
             {
-                start_element_diagonal(parent, attrs);
+                start_element_diagonal(attrs);
                 break;
             }
             case XML_cellStyleXfs:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 if (!ps.empty())
@@ -743,7 +753,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_cellXfs:
             {
                 // Collection of un-named cell formats used in the document.
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 if (!ps.empty())
@@ -759,7 +768,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_dxfs:
             {
                 // Collection of differential formats used in the document.
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 if (!ps.empty())
@@ -773,7 +781,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_cellStyles:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 std::string_view ps = for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 if (!ps.empty())
@@ -789,7 +796,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             {
                 // named cell style, some of which are built-in such as 'Normal'.
                 assert(mp_cell_style);
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_cellStyles);
 
                 for (const xml_token_attr_t& attr : attrs)
                 {
@@ -817,15 +823,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_xf:
             {
                 assert(mp_xf);
-
-                // Actual cell format attributes (for some reason) abbreviated to
-                // 'xf'.  Used both by cells and cell styles.
-                const xml_elem_set_t expected = {
-                    { NS_ooxml_xlsx, XML_cellXfs },
-                    { NS_ooxml_xlsx, XML_cellStyleXfs },
-                };
-                xml_element_expected(parent, expected);
-
                 for (const xml_token_attr_t& attr : attrs)
                 {
                     switch (attr.name)
@@ -885,13 +882,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 break;
             case XML_protection:
             {
-                const xml_elem_set_t expected_elements = {
-                    { NS_ooxml_xlsx, XML_xf },
-                    { NS_ooxml_xlsx, XML_dxf },
-                };
-
-                xml_element_expected(parent, expected_elements);
-
                 mp_protection = mp_styles->get_cell_protection();
                 ENSURE_INTERFACE(mp_protection, import_cell_protection);
 
@@ -919,11 +909,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_alignment:
             {
                 assert(mp_xf);
-                const xml_elem_set_t expected = {
-                    { NS_ooxml_xlsx, XML_xf },
-                    { NS_ooxml_xlsx, XML_dxf },
-                };
-                xml_element_expected(parent, expected);
 
                 // NB: default vertical alignment is 'bottom'.
                 ss::hor_alignment_t hor_align = ss::hor_alignment_t::unknown;
@@ -972,7 +957,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_numFmts:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_styleSheet);
                 std::string_view val =
                     for_each(
                         attrs.begin(), attrs.end(),
@@ -985,7 +969,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 break;
             }
             case XML_numFmt:
-                start_element_number_format(parent, attrs);
+                start_element_number_format(attrs);
                 break;
             default:
                 warn_unhandled();
@@ -1057,15 +1041,8 @@ void xlsx_styles_context::characters(std::string_view /*str*/, bool /*transient*
     // not used in the styles.xml part.
 }
 
-void xlsx_styles_context::start_element_number_format(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xlsx_styles_context::start_element_number_format(const xml_attrs_t& attrs)
 {
-    const xml_elem_set_t expected_elements = {
-        { NS_ooxml_xlsx, XML_numFmts },
-        { NS_ooxml_xlsx, XML_dxf },
-    };
-
-    xml_element_expected(parent, expected_elements);
-
     if (!mp_styles)
         return;
 
@@ -1094,13 +1071,8 @@ void xlsx_styles_context::start_element_number_format(const xml_token_pair_t& pa
     }
 }
 
-void xlsx_styles_context::start_element_border(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xlsx_styles_context::start_element_border(const xml_attrs_t& attrs)
 {
-    xml_elem_stack_t expected_elements;
-    expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_borders));
-    expected_elements.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_dxf));
-    xml_element_expected(parent, expected_elements);
-
     bool diagonal_up = false;
     bool diagonal_down = false;
 
@@ -1130,9 +1102,8 @@ void xlsx_styles_context::start_element_border(const xml_token_pair_t& parent, c
     m_diagonal_down = diagonal_down;
 }
 
-void xlsx_styles_context::start_element_diagonal(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xlsx_styles_context::start_element_diagonal(const xml_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_ooxml_xlsx, XML_border);
     assert(mp_border);
 
     m_cur_border_dir = spreadsheet::border_direction_t::unknown;
