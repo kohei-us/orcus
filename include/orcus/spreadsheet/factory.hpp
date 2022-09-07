@@ -211,6 +211,8 @@ public:
     virtual void set_apply_alignment(bool b) override;
     virtual void set_horizontal_alignment(hor_alignment_t align) override;
     virtual void set_vertical_alignment(ver_alignment_t align) override;
+    virtual void set_wrap_text(bool b) override;
+    virtual void set_shrink_to_fit(bool b) override;
     virtual size_t commit() override;
 
     void reset(xf_category_t cat);

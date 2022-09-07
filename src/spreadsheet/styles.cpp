@@ -276,7 +276,9 @@ cell_format_t::cell_format_t() :
     apply_fill(false),
     apply_border(false),
     apply_alignment(false),
-    apply_protection(false)
+    apply_protection(false),
+    wrap_text(false),
+    shrink_to_fit(false)
 {
 }
 

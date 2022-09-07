@@ -225,6 +225,8 @@ struct ORCUS_SPM_DLLPUBLIC cell_format_t
     bool apply_border:1;
     bool apply_alignment:1;
     bool apply_protection:1;
+    bool wrap_text:1;
+    bool shrink_to_fit:1;
 
     cell_format_t();
     void reset();

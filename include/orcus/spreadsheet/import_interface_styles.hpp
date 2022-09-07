@@ -375,9 +375,27 @@ public:
      * @param index index into the cell style record it uses as its basis.
      */
     virtual void set_style_xf(size_t index) = 0;
+
     virtual void set_apply_alignment(bool b) = 0;
     virtual void set_horizontal_alignment(hor_alignment_t align) = 0;
     virtual void set_vertical_alignment(ver_alignment_t align) = 0;
+
+    /**
+     * Specify whether or not to wrap text when the text spills over the cell
+     * region.
+     *
+     * @param b whether or not to wrap text when the text spills over the cell
+     *          region.
+     */
+    virtual void set_wrap_text(bool b) = 0;
+
+    /**
+     * Specify whether or not to shrink the text within cell until it fits
+     * inside the cell.
+     *
+     * @param b whether or not to shrink the text.
+     */
+    virtual void set_shrink_to_fit(bool b) = 0;
 
     /**
      * Commit the cell format in the current buffer to the storage.

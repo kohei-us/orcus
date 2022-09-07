@@ -610,6 +610,17 @@ void import_xf::set_vertical_alignment(ver_alignment_t align)
     mp_impl->cur_cell_format.ver_align = align;
 }
 
+void import_xf::set_wrap_text(bool b)
+{
+    mp_impl->cur_cell_format.wrap_text = b;
+}
+
+void import_xf::set_shrink_to_fit(bool b)
+{
+    mp_impl->cur_cell_format.shrink_to_fit = b;
+}
+
+
 size_t import_xf::commit()
 {
     size_t xf_id = 0;

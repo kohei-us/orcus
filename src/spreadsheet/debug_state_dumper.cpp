@@ -64,7 +64,9 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
            << "    apply-fill: " << xf.apply_fill << std::endl
            << "    apply-border: " << xf.apply_border << std::endl
            << "    apply-alignment: " << xf.apply_alignment << std::endl
-           << "    apply-protection: " << xf.apply_protection << std::endl;
+           << "    apply-protection: " << xf.apply_protection << std::endl
+           << "    wrap-text: " << xf.wrap_text << std::endl
+           << "    shrink-to-fit: " << xf.shrink_to_fit << std::endl;
     };
 
     auto active_value = [&of](std::string_view name, const auto& v, bool active, int level=2)
