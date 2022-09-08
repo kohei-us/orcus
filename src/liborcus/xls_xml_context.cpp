@@ -1847,21 +1847,18 @@ void xls_xml_context::commit_default_style()
     ss::iface::import_font_style* font_style = styles->get_font_style();
     ENSURE_INTERFACE(font_style, import_font_style);
 
-    if (font_style)
+    if (m_default_style)
     {
-        if (m_default_style)
-        {
-            font_style->set_bold(m_default_style->font.bold);
-            font_style->set_italic(m_default_style->font.italic);
-            font_style->set_color(
-                0,
-                m_default_style->font.color.red,
-                m_default_style->font.color.green,
-                m_default_style->font.color.blue);
-        }
-
-        font_style->commit();
+        font_style->set_bold(m_default_style->font.bold);
+        font_style->set_italic(m_default_style->font.italic);
+        font_style->set_color(
+            0,
+            m_default_style->font.color.red,
+            m_default_style->font.color.green,
+            m_default_style->font.color.blue);
     }
+
+    font_style->commit();
 
     ss::iface::import_fill_style* fill_style = styles->get_fill_style();
     ENSURE_INTERFACE(fill_style, import_fill_style);
