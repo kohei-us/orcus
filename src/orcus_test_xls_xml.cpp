@@ -7,9 +7,9 @@
 
 #include "orcus_test_global.hpp"
 #include "orcus/orcus_xls_xml.hpp"
-#include "pstring.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/config.hpp"
+#include <orcus/parser_global.hpp>
 #include "orcus/yaml_document_tree.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #include "orcus/spreadsheet/document.hpp"
@@ -38,7 +38,7 @@ namespace {
 
 config test_config(format_t::xls_xml);
 
-std::vector<const char*> dirs = {
+constexpr std::string_view dirs[] = {
     SRCDIR"/test/xls-xml/basic/",
     SRCDIR"/test/xls-xml/basic-utf-16-be/",
     SRCDIR"/test/xls-xml/basic-utf-16-le/",
@@ -64,6 +64,8 @@ std::unique_ptr<spreadsheet::document> load_doc_from_filepath(
     bool recalc=true,
     ss::formula_error_policy_t error_policy=ss::formula_error_policy_t::fail)
 {
+    std::cout << path << std::endl;
+
     spreadsheet::range_size_t ss{1048576, 16384};
     std::unique_ptr<spreadsheet::document> doc = std::make_unique<spreadsheet::document>(ss);
     spreadsheet::import_factory factory(*doc);
@@ -102,9 +104,10 @@ class doc_loader
     spreadsheet::import_factory m_factory;
 
 public:
-    doc_loader(const pstring& path) :
+    doc_loader(std::string_view path) :
         m_doc({1048576, 16384}), m_factory(m_doc)
     {
+        std::cout << path << std::endl;
         orcus_xls_xml app(&m_factory);
         app.read_file(path.data());
     }
@@ -152,9 +155,9 @@ void update_config(spreadsheet::document& doc, const string& path)
 
 void test_xls_xml_import()
 {
-    auto verify = [](spreadsheet::document& doc, const std::string& dir)
+    auto verify = [](spreadsheet::document& doc, std::string_view dir)
     {
-        std::string path = dir;
+        std::string path{dir};
         path.append("config.yaml");
         update_config(doc, path);
 
@@ -171,10 +174,10 @@ void test_xls_xml_import()
         assert(!check.empty());
         assert(!control.empty());
 
-        pstring s1(check.data(), check.size());
-        pstring s2 = control.str();
-        s1 = s1.trim();
-        s2 = s2.trim();
+        std::string_view s1(check.data(), check.size());
+        std::string_view s2 = control.str();
+        s1 = orcus::trim(s1);
+        s2 = orcus::trim(s2);
 
         if (s1 != s2)
         {
@@ -187,7 +190,7 @@ void test_xls_xml_import()
         }
     };
 
-    for (const char* dir : dirs)
+    for (auto dir : dirs)
     {
         cout << dir << endl;
 
@@ -205,9 +208,7 @@ void test_xls_xml_import()
 
 void test_xls_xml_merged_cells()
 {
-    const char* filepath = SRCDIR"/test/xls-xml/merged-cells/input.xml";
-
-    std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(filepath);
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/merged-cells/input.xml");
 
     const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
     assert(sheet1);
@@ -245,9 +246,7 @@ void test_xls_xml_merged_cells()
 
 void test_xls_xml_date_time()
 {
-    const char* filepath = SRCDIR"/test/xls-xml/date-time/input.xml";
-
-    std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(filepath);
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/date-time/input.xml");
 
     const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
     assert(sheet1);
@@ -278,8 +277,7 @@ void test_xls_xml_date_time()
 
 void test_xls_xml_bold_and_italic()
 {
-    std::unique_ptr<spreadsheet::document> doc =
-        load_doc_from_filepath(SRCDIR"/test/xls-xml/bold-and-italic/input.xml");
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/bold-and-italic/input.xml");
 
     const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
     assert(sheet1);
@@ -364,8 +362,7 @@ void test_xls_xml_bold_and_italic()
 
 void test_xls_xml_colored_text()
 {
-    std::unique_ptr<spreadsheet::document> doc =
-        load_doc_from_filepath(SRCDIR"/test/xls-xml/colored-text/input.xml");
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/colored-text/input.xml");
 
     const spreadsheet::sheet* sheet1 = doc->get_sheet("ColoredText");
     assert(sheet1);
@@ -463,8 +460,7 @@ void test_xls_xml_column_width_row_height()
         int decimals;
     };
 
-    std::unique_ptr<spreadsheet::document> doc =
-        load_doc_from_filepath(SRCDIR"/test/xls-xml/column-width-row-height/input.xml");
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/column-width-row-height/input.xml");
 
     const spreadsheet::sheet* sheet1 = doc->get_sheet(0);
     assert(sheet1);
@@ -515,8 +511,7 @@ void test_xls_xml_column_width_row_height()
 
 void test_xls_xml_background_fill()
 {
-    pstring path(SRCDIR"/test/xls-xml/background-color/standard.xml");
-    std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(path.str());
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/background-color/standard.xml");
 
     spreadsheet::styles& styles = doc->get_styles();
 
@@ -569,14 +564,15 @@ void test_xls_xml_background_fill()
 
 void test_xls_xml_named_colors()
 {
-    std::vector<pstring> paths;
-    paths.emplace_back(SRCDIR"/test/xls-xml/named-colors/input.xml");
-    paths.emplace_back(SRCDIR"/test/xls-xml/named-colors/input-upper.xml");
+    constexpr std::string_view paths[] = {
+        SRCDIR"/test/xls-xml/named-colors/input.xml",
+        SRCDIR"/test/xls-xml/named-colors/input-upper.xml"
+    };
 
-    for (const pstring& path : paths)
+    for (auto path : paths)
     {
         cout << path << endl;
-        std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(path.str());
+        std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(std::string{path});
 
         spreadsheet::styles& styles = doc->get_styles();
         const ixion::model_context& model = doc->get_model_context();
@@ -604,8 +600,7 @@ void test_xls_xml_named_colors()
 
 void test_xls_xml_text_alignment()
 {
-    pstring path(SRCDIR"/test/xls-xml/text-alignment/input.xml");
-    std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(path.str());
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/text-alignment/input.xml");
 
     spreadsheet::styles& styles = doc->get_styles();
 
@@ -670,9 +665,7 @@ void test_xls_xml_text_alignment()
 
 void test_xls_xml_cell_borders_single_cells()
 {
-    pstring path(SRCDIR"/test/xls-xml/borders/single-cells.xml");
-    cout << path << endl;
-    std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(path.str());
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/borders/single-cells.xml");
 
     spreadsheet::styles& styles = doc->get_styles();
 
@@ -722,9 +715,7 @@ void test_xls_xml_cell_borders_single_cells()
 
 void test_xls_xml_cell_borders_directions()
 {
-    pstring path(SRCDIR"/test/xls-xml/borders/directions.xml");
-    cout << path << endl;
-    std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(path.str());
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/borders/directions.xml");
 
     spreadsheet::styles& styles = doc->get_styles();
 
@@ -835,9 +826,7 @@ void test_xls_xml_cell_borders_colors()
     using spreadsheet::color_t;
     using spreadsheet::border_style_t;
 
-    pstring path(SRCDIR"/test/xls-xml/borders/colors.xml");
-    cout << path << endl;
-    std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(path.str());
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/borders/colors.xml");
 
     spreadsheet::styles& styles = doc->get_styles();
 
@@ -911,9 +900,7 @@ void test_xls_xml_cell_borders_colors()
 
 void test_xls_xml_hidden_rows_columns()
 {
-    pstring path(SRCDIR"/test/xls-xml/hidden-rows-columns/input.xml");
-    cout << path << endl;
-    std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(path.str());
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/hidden-rows-columns/input.xml");
 
     spreadsheet::sheet* sh = doc->get_sheet("Hidden Rows");
     assert(sh);
@@ -988,17 +975,13 @@ void test_xls_xml_hidden_rows_columns()
 
 void test_xls_xml_character_set()
 {
-    pstring path(SRCDIR"/test/xls-xml/character-set/input.xml");
-    cout << path << endl;
-    doc_loader loader(path);
-
+    doc_loader loader(SRCDIR"/test/xls-xml/character-set/input.xml");
     assert(loader.get_factory().get_character_set() == character_set_t::windows_1252);
 }
 
 void test_xls_xml_number_format()
 {
-    pstring path(SRCDIR"/test/xls-xml/number-format/date-time.xml");
-    doc_loader loader(path);
+    doc_loader loader(SRCDIR"/test/xls-xml/number-format/date-time.xml");
 
     const spreadsheet::document& doc = loader.get_doc();
     const spreadsheet::styles& styles = doc.get_styles();
@@ -1010,7 +993,7 @@ void test_xls_xml_number_format()
     {
         ss::row_t row;
         ss::col_t col;
-        pstring expected;
+        std::string_view expected;
     };
 
     std::vector<check> checks =
@@ -1049,8 +1032,7 @@ void test_xls_xml_number_format()
 
 void test_xls_xml_cell_properties()
 {
-    std::string path{SRCDIR"/test/xls-xml/cell-properties/wrap-and-shrink.xml"};
-    auto doc = load_doc_from_filepath(path);
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/cell-properties/wrap-and-shrink.xml");
 
     const ss::styles& styles = doc->get_styles();
     const ss::sheet* sh = doc->get_sheet(0);
