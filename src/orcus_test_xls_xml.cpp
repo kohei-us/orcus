@@ -30,7 +30,6 @@
 #include <iostream>
 #include <fstream>
 
-
 using namespace orcus;
 using namespace std;
 namespace ss = orcus::spreadsheet;
@@ -1048,6 +1047,34 @@ void test_xls_xml_number_format()
     }
 }
 
+void test_xls_xml_cell_properties()
+{
+    std::string path{SRCDIR"/test/xls-xml/cell-properties/wrap-and-shrink.xml"};
+    auto doc = load_doc_from_filepath(path);
+
+    const ss::styles& styles = doc->get_styles();
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    std::size_t xfid = sh->get_cell_format(0, 1); // B1
+    const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(!xf->wrap_text);
+    assert(!xf->shrink_to_fit);
+
+    xfid = sh->get_cell_format(1, 1); // B2
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(xf->wrap_text);
+    assert(!xf->shrink_to_fit);
+
+    xfid = sh->get_cell_format(2, 1); // B3
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(!xf->wrap_text);
+    assert(xf->shrink_to_fit);
+}
+
 void test_xls_xml_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
@@ -1362,6 +1389,7 @@ int main()
     test_xls_xml_hidden_rows_columns();
     test_xls_xml_character_set();
     test_xls_xml_number_format();
+    test_xls_xml_cell_properties();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();

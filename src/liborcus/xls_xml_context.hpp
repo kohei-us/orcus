@@ -153,6 +153,8 @@ class xls_xml_context : public xml_context_base
         spreadsheet::hor_alignment_t hor = spreadsheet::hor_alignment_t::unknown;
         spreadsheet::ver_alignment_t ver = spreadsheet::ver_alignment_t::unknown;
         int8_t indent = 0;
+        bool wrap_text = false;
+        bool shrink_to_fit = false;
     };
 
     struct style_type

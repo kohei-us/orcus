@@ -1039,6 +1039,16 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                             m_current_style->text_alignment.indent = to_long(attr.value);
                             break;
                         }
+                        case XML_WrapText:
+                        {
+                            m_current_style->text_alignment.wrap_text = to_bool(attr.value);
+                            break;
+                        }
+                        case XML_ShrinkToFit:
+                        {
+                            m_current_style->text_alignment.shrink_to_fit = to_bool(attr.value);
+                            break;
+                        }
                         default:
                             ;
                     }
@@ -1954,11 +1964,14 @@ void xls_xml_context::commit_styles()
 
         bool apply_alignment =
             style->text_alignment.hor != spreadsheet::hor_alignment_t::unknown ||
-            style->text_alignment.ver != spreadsheet::ver_alignment_t::unknown;
+            style->text_alignment.ver != spreadsheet::ver_alignment_t::unknown ||
+            style->text_alignment.wrap_text || style->text_alignment.shrink_to_fit;
 
         xf->set_apply_alignment(apply_alignment);
         xf->set_horizontal_alignment(style->text_alignment.hor);
         xf->set_vertical_alignment(style->text_alignment.ver);
+        xf->set_wrap_text(style->text_alignment.wrap_text);
+        xf->set_shrink_to_fit(style->text_alignment.shrink_to_fit);
 
         if (!style->number_format.empty())
         {
