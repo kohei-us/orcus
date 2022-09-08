@@ -518,8 +518,8 @@ void style_context::start_table_cell_properties(const xml_token_pair_t& parent, 
     border_map_type border_styles;
 
     ss::ver_alignment_t ver_alignment = ss::ver_alignment_t::unknown;
-    bool wrap_text = false;
-    bool shrink_to_fit = false;
+    std::optional<bool> wrap_text;
+    std::optional<bool> shrink_to_fit;
 
     for (const xml_token_attr_t& attr : attrs)
     {

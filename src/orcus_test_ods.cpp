@@ -332,6 +332,7 @@ void test_ods_import_cell_properties()
     xf = styles.get_cell_format(xfid);
     assert(xf);
     assert(xf->wrap_text);
+    assert(*xf->wrap_text);
     assert(!xf->shrink_to_fit);
 
     xfid = sh->get_cell_format(2, 1); // B3
@@ -339,6 +340,7 @@ void test_ods_import_cell_properties()
     assert(xf);
     assert(!xf->wrap_text);
     assert(xf->shrink_to_fit);
+    assert(*xf->shrink_to_fit);
 }
 
 } // anonymous namespace

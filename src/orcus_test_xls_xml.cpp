@@ -1041,6 +1041,7 @@ void test_xls_xml_cell_properties()
     std::size_t xfid = sh->get_cell_format(0, 1); // B1
     const ss::cell_format_t* xf = styles.get_cell_format(xfid);
     assert(xf);
+    // TODO: These results may not be correct. We need to properly import the "Default" style.
     assert(!xf->wrap_text);
     assert(!xf->shrink_to_fit);
 
@@ -1048,13 +1049,17 @@ void test_xls_xml_cell_properties()
     xf = styles.get_cell_format(xfid);
     assert(xf);
     assert(xf->wrap_text);
-    assert(!xf->shrink_to_fit);
+    assert(*xf->wrap_text);
+    assert(xf->shrink_to_fit);
+    assert(!*xf->shrink_to_fit);
 
     xfid = sh->get_cell_format(2, 1); // B3
     xf = styles.get_cell_format(xfid);
     assert(xf);
-    assert(!xf->wrap_text);
+    assert(xf->wrap_text);
+    assert(!*xf->wrap_text);
     assert(xf->shrink_to_fit);
+    assert(*xf->shrink_to_fit);
 }
 
 void test_xls_xml_view_cursor_per_sheet()

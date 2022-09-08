@@ -807,13 +807,17 @@ void test_xlsx_cell_properties()
     xf = styles.get_cell_format(xfid);
     assert(xf);
     assert(xf->wrap_text);
-    assert(!xf->shrink_to_fit);
+    assert(*xf->wrap_text);
+    assert(xf->shrink_to_fit);
+    assert(!*xf->shrink_to_fit);
 
     xfid = sh->get_cell_format(2, 1); // B3
     xf = styles.get_cell_format(xfid);
     assert(xf);
-    assert(!xf->wrap_text);
+    assert(xf->wrap_text);
+    assert(!*xf->wrap_text);
     assert(xf->shrink_to_fit);
+    assert(*xf->shrink_to_fit);
 }
 
 void test_xlsx_pivot_two_pivot_caches()

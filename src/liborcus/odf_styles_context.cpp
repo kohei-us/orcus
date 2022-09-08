@@ -167,11 +167,17 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
                 xf->set_fill(cell.fill);
                 xf->set_border(cell.border);
                 xf->set_protection(cell.protection);
-                xf->set_horizontal_alignment(cell.hor_align);
-                xf->set_vertical_alignment(cell.ver_align);
                 xf->set_number_format(cell.number_format);
-                xf->set_wrap_text(cell.wrap_text);
-                xf->set_shrink_to_fit(cell.shrink_to_fit);
+
+                if (cell.hor_align != ss::hor_alignment_t::unknown)
+                    xf->set_horizontal_alignment(cell.hor_align);
+                if (cell.ver_align != ss::ver_alignment_t::unknown)
+                    xf->set_vertical_alignment(cell.ver_align);
+                if (cell.wrap_text)
+                    xf->set_wrap_text(*cell.wrap_text);
+                if (cell.shrink_to_fit)
+                    xf->set_shrink_to_fit(*cell.shrink_to_fit);
+
                 cell.xf = xf->commit();
             }
             else
@@ -184,11 +190,17 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
                 xf->set_fill(cell.fill);
                 xf->set_border(cell.border);
                 xf->set_protection(cell.protection);
-                xf->set_horizontal_alignment(cell.hor_align);
-                xf->set_vertical_alignment(cell.ver_align);
                 xf->set_number_format(cell.number_format);
-                xf->set_wrap_text(cell.wrap_text);
-                xf->set_shrink_to_fit(cell.shrink_to_fit);
+
+                if (cell.hor_align != ss::hor_alignment_t::unknown)
+                    xf->set_horizontal_alignment(cell.hor_align);
+                if (cell.ver_align != ss::ver_alignment_t::unknown)
+                    xf->set_vertical_alignment(cell.ver_align);
+                if (cell.wrap_text)
+                    xf->set_wrap_text(*cell.wrap_text);
+                if (cell.shrink_to_fit)
+                    xf->set_shrink_to_fit(*cell.shrink_to_fit);
+
                 size_t style_xf_id = xf->commit();
 
                 auto* cell_style = mp_styles->get_cell_style();

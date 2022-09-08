@@ -14,6 +14,7 @@
 
 #include <memory>
 #include <string_view>
+#include <optional>
 
 namespace orcus { namespace spreadsheet {
 
@@ -219,14 +220,14 @@ struct ORCUS_SPM_DLLPUBLIC cell_format_t
     size_t style_xf;        /// style XF ID (used only for cell format)
     hor_alignment_t hor_align;
     ver_alignment_t ver_align;
+    std::optional<bool> wrap_text;
+    std::optional<bool> shrink_to_fit;
     bool apply_num_format:1;
     bool apply_font:1;
     bool apply_fill:1;
     bool apply_border:1;
     bool apply_alignment:1;
     bool apply_protection:1;
-    bool wrap_text:1;
-    bool shrink_to_fit:1;
 
     cell_format_t();
     void reset();

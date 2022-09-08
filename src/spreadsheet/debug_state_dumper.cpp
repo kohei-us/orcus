@@ -48,7 +48,15 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
     of << std::boolalpha;
 
-    auto dump_xf = [&of](std::size_t i, const cell_format_t& xf)
+    auto to_string = [](std::optional<bool> v) -> std::string
+    {
+        if (!v)
+            return "(unset)";
+
+        return *v ? "true" : "false";
+    };
+
+    auto dump_xf = [&of,to_string](std::size_t i, const cell_format_t& xf)
     {
         of << "  - id: " << i << std::endl
            << "    font: " << xf.font << std::endl
@@ -65,8 +73,8 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
            << "    apply-border: " << xf.apply_border << std::endl
            << "    apply-alignment: " << xf.apply_alignment << std::endl
            << "    apply-protection: " << xf.apply_protection << std::endl
-           << "    wrap-text: " << xf.wrap_text << std::endl
-           << "    shrink-to-fit: " << xf.shrink_to_fit << std::endl;
+           << "    wrap-text: " << to_string(xf.wrap_text) << std::endl
+           << "    shrink-to-fit: " << to_string(xf.shrink_to_fit) << std::endl;
     };
 
     auto active_value = [&of](std::string_view name, const auto& v, bool active, int level=2)
