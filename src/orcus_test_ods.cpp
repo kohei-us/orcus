@@ -28,6 +28,8 @@
 using namespace orcus;
 using namespace orcus::spreadsheet;
 
+namespace ss = orcus::spreadsheet;
+
 namespace fs = boost::filesystem;
 
 typedef mdds::flat_segment_tree<std::size_t, bool> bool_segment_type;
@@ -307,6 +309,38 @@ void test_ods_import_number_formats()
     }
 }
 
+void test_ods_import_cell_properties()
+{
+    fs::path filepath{SRCDIR"/test/ods/cell-properties/wrap-and-shrink.ods"};
+
+    document doc{{1048576, 16384}};
+    import_factory factory(doc);
+    orcus_ods app(&factory);
+    app.read_file(filepath.string());
+
+    const ss::styles& styles = doc.get_styles();
+    const ss::sheet* sh = doc.get_sheet(0);
+    assert(sh);
+
+    std::size_t xfid = sh->get_cell_format(0, 1); // B1
+    const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(!xf->wrap_text);
+    assert(!xf->shrink_to_fit);
+
+    xfid = sh->get_cell_format(1, 1); // B2
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(xf->wrap_text);
+    assert(!xf->shrink_to_fit);
+
+    xfid = sh->get_cell_format(2, 1); // B3
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(!xf->wrap_text);
+    assert(xf->shrink_to_fit);
+}
+
 } // anonymous namespace
 
 int main()
@@ -315,6 +349,7 @@ int main()
     test_ods_import_column_widths_row_heights();
     test_ods_import_formatted_text();
     test_ods_import_number_formats();
+    test_ods_import_cell_properties();
 
     return EXIT_SUCCESS;
 }

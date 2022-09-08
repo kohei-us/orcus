@@ -56,6 +56,8 @@ struct odf_style
         std::size_t number_format = 0;
         spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
         spreadsheet::ver_alignment_t ver_align = spreadsheet::ver_alignment_t::unknown;
+        bool wrap_text = false;
+        bool shrink_to_fit = false;
     };
 
     struct table

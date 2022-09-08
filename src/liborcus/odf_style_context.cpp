@@ -518,6 +518,8 @@ void style_context::start_table_cell_properties(const xml_token_pair_t& parent, 
     border_map_type border_styles;
 
     ss::ver_alignment_t ver_alignment = ss::ver_alignment_t::unknown;
+    bool wrap_text = false;
+    bool shrink_to_fit = false;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -581,13 +583,18 @@ void style_context::start_table_cell_properties(const xml_token_pair_t& parent, 
                     border_styles.insert_or_assign(ss::border_direction_t::diagonal_tl_br, border_details);
                     break;
                 }
+                case XML_wrap_option:
+                {
+                    wrap_text = (attr.value == "wrap");
+                    break;
+                }
                 default:
                     ;
             }
         }
         else if (attr.ns == NS_odf_style)
         {
-            switch(attr.name)
+            switch (attr.name)
             {
                 case XML_print_content:
                 {
@@ -630,6 +637,9 @@ void style_context::start_table_cell_properties(const xml_token_pair_t& parent, 
                 }
                 case XML_vertical_align:
                     ver_alignment = odf::extract_ver_alignment_style(attr.value);
+                    break;
+                case XML_shrink_to_fit:
+                    shrink_to_fit = to_bool(attr.value);
                     break;
                 default:
                     ;
@@ -694,6 +704,8 @@ void style_context::start_table_cell_properties(const xml_token_pair_t& parent, 
             data.border = border_id;
             data.protection = cell_protection_id;
             data.ver_align = ver_alignment;
+            data.wrap_text = wrap_text;
+            data.shrink_to_fit = shrink_to_fit;
             break;
         }
         default:
