@@ -618,7 +618,7 @@ void test_xls_xml_text_alignment()
 
     std::vector<check> checks =
     {
-        {  1, 2, false, spreadsheet::hor_alignment_t::unknown,     spreadsheet::ver_alignment_t::unknown     }, // C2
+        {  1, 2,  true, spreadsheet::hor_alignment_t::unknown,     spreadsheet::ver_alignment_t::bottom      }, // C2
         {  2, 2,  true, spreadsheet::hor_alignment_t::left,        spreadsheet::ver_alignment_t::bottom      }, // C3
         {  3, 2,  true, spreadsheet::hor_alignment_t::center,      spreadsheet::ver_alignment_t::bottom      }, // C4
         {  4, 2,  true, spreadsheet::hor_alignment_t::right,       spreadsheet::ver_alignment_t::bottom      }, // C5
@@ -649,6 +649,7 @@ void test_xls_xml_text_alignment()
 
     for (const check& c : checks)
     {
+        std::cout << "row=" << c.row << "; col=" << c.col << std::endl;
         size_t xf = sh->get_cell_format(c.row, c.col);
 
         const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
@@ -1041,9 +1042,10 @@ void test_xls_xml_cell_properties()
     std::size_t xfid = sh->get_cell_format(0, 1); // B1
     const ss::cell_format_t* xf = styles.get_cell_format(xfid);
     assert(xf);
-    // TODO: These results may not be correct. We need to properly import the "Default" style.
-    assert(!xf->wrap_text);
-    assert(!xf->shrink_to_fit);
+    assert(xf->wrap_text);
+    assert(!*xf->wrap_text);
+    assert(xf->shrink_to_fit);
+    assert(!*xf->shrink_to_fit);
 
     xfid = sh->get_cell_format(1, 1); // B2
     xf = styles.get_cell_format(xfid);

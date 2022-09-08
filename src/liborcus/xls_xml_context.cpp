@@ -1878,16 +1878,38 @@ void xls_xml_context::commit_default_style()
 
     auto* xf = styles->get_xf(ss::xf_category_t::cell);
     ENSURE_INTERFACE(xf, import_xf);
+
+    auto set_default_style = [this](ss::iface::import_xf* ixf)
+    {
+        bool apply_alignment =
+            m_default_style->text_alignment.hor != spreadsheet::hor_alignment_t::unknown ||
+            m_default_style->text_alignment.ver != spreadsheet::ver_alignment_t::unknown ||
+            m_default_style->text_alignment.wrap_text || m_default_style->text_alignment.shrink_to_fit;
+
+        ixf->set_apply_alignment(apply_alignment);
+        ixf->set_horizontal_alignment(m_default_style->text_alignment.hor);
+        ixf->set_vertical_alignment(m_default_style->text_alignment.ver);
+        ixf->set_wrap_text(m_default_style->text_alignment.wrap_text);
+        ixf->set_shrink_to_fit(m_default_style->text_alignment.shrink_to_fit);
+    };
+
+    if (m_default_style)
+        set_default_style(xf);
+
     xf->commit();
 
     xf = styles->get_xf(ss::xf_category_t::cell_style);
     ENSURE_INTERFACE(xf, import_xf);
+
+    if (m_default_style && m_default_style->name == "Normal")
+        set_default_style(xf);
+
     xf->commit();
 
     auto* cell_style = styles->get_cell_style();
     ENSURE_INTERFACE(cell_style, import_cell_style);
 
-    if (m_default_style)
+    if (m_default_style && m_default_style->name == "Normal")
     {
         if (!m_default_style->name.empty())
             cell_style->set_name(m_default_style->name);
