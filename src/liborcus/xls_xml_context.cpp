@@ -294,7 +294,7 @@ void xls_xml_data_context::start_element_data(
 
 void xls_xml_data_context::end_element_data()
 {
-    pstring formula = m_parent_cxt.pop_and_clear_formula();
+    auto formula = m_parent_cxt.pop_and_clear_formula();
 
     if (!formula.empty())
     {
@@ -455,7 +455,7 @@ void xls_xml_data_context::push_array_result(
     }
 }
 
-void xls_xml_data_context::push_formula_cell(const pstring& formula)
+void xls_xml_data_context::push_formula_cell(std::string_view formula)
 {
     switch (m_cell_type)
     {
@@ -470,7 +470,7 @@ void xls_xml_data_context::push_formula_cell(const pstring& formula)
     }
 }
 
-void xls_xml_data_context::store_array_formula_parent_cell(const pstring& formula)
+void xls_xml_data_context::store_array_formula_parent_cell(std::string_view formula)
 {
     spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
     spreadsheet::range_t range = m_parent_cxt.get_array_range();
@@ -639,11 +639,11 @@ const map_type& get()
 } // anonymous namespace
 
 xls_xml_context::array_formula_type::array_formula_type(
-    const spreadsheet::range_t& _range, const pstring& _formula) :
+    const spreadsheet::range_t& _range, std::string_view _formula) :
     formula(_formula),
     results(_range.last.row-_range.first.row+1, _range.last.column-_range.first.column+1) {}
 
-xls_xml_context::named_exp::named_exp(const pstring& _name, const pstring& _expression, spreadsheet::sheet_t _scope) :
+xls_xml_context::named_exp::named_exp(std::string_view _name, std::string_view _expression, spreadsheet::sheet_t _scope) :
     name(_name), expression(_expression), scope(_scope) {}
 
 xls_xml_context::selection::selection() : pane(spreadsheet::sheet_pane_t::unspecified), col(-1), row(-1)
@@ -884,7 +884,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 break;
             case XML_NamedRange:
             {
-                pstring name_s, exp;
+                std::string_view name_s, exp;
 
                 for (const xml_token_attr_t& attr : attrs)
                 {
@@ -900,7 +900,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                         {
                             exp = attr.value;
                             if (exp.size() > 1 && exp[0] == '=')
-                                exp = pstring(exp.data()+1, exp.size()-1);
+                                exp = std::string_view{exp.data()+1, exp.size()-1};
                             if (!exp.empty() && attr.transient)
                                 exp = intern(exp);
                             break;
@@ -924,7 +924,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 break;
             case XML_Style:
             {
-                pstring style_id, style_name;
+                std::string_view style_id, style_name;
 
                 for (const xml_token_attr_t& attr : attrs)
                 {
@@ -1358,7 +1358,7 @@ void xls_xml_context::start_element_border(const xml_attrs_t& attrs)
 
 void xls_xml_context::start_element_number_format(const xml_attrs_t& attrs)
 {
-    m_current_style->number_format.clear();
+    m_current_style->number_format = std::string_view{};
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -1382,8 +1382,8 @@ void xls_xml_context::start_element_number_format(const xml_attrs_t& attrs)
 void xls_xml_context::start_element_cell(const xml_attrs_t& attrs)
 {
     long col_index = 0;
-    pstring formula;
-    m_cur_cell_style_id.clear();
+    std::string_view formula;
+    m_cur_cell_style_id = std::string_view{};
 
     m_cur_merge_across = 0; // extra column(s) that are part of the merged cell.
     m_cur_merge_down = 0; // extra row(s) that are part of the merged cell.
@@ -1408,7 +1408,7 @@ void xls_xml_context::start_element_cell(const xml_attrs_t& attrs)
             case XML_Formula:
                 if (attr.value[0] == '=' && attr.value.size() > 1)
                 {
-                    pstring s(attr.value.data()+1, attr.value.size()-1);
+                    std::string_view s{attr.value.data()+1, attr.value.size()-1};
                     formula = s;
                     if (attr.transient)
                         formula = intern(s);
@@ -1586,7 +1586,7 @@ void xls_xml_context::start_element_table(const xml_attrs_t& attrs)
 void xls_xml_context::start_element_worksheet(const xml_attrs_t& attrs)
 {
     ++m_cur_sheet;
-    pstring sheet_name;
+    std::string_view sheet_name;
     m_cell_formulas.emplace_back();
 
     for (const xml_token_attr_t& attr : attrs)
@@ -1662,7 +1662,7 @@ void xls_xml_context::end_element_cell()
         store_cell_formula(m_cur_cell_formula, formula_result());
     }
 
-    m_cur_cell_formula.clear();
+    m_cur_cell_formula = std::string_view{};
 
     ++m_cur_col;
     if (m_cur_merge_across > 0)
@@ -2044,10 +2044,10 @@ spreadsheet::address_t xls_xml_context::get_current_pos() const
     return pos;
 }
 
-pstring xls_xml_context::pop_and_clear_formula()
+std::string_view xls_xml_context::pop_and_clear_formula()
 {
-    pstring f = m_cur_cell_formula;
-    m_cur_cell_formula.clear();
+    std::string_view f = m_cur_cell_formula;
+    m_cur_cell_formula = std::string_view{};
     return f;
 }
 
@@ -2076,7 +2076,7 @@ xls_xml_context::array_formulas_type& xls_xml_context::get_array_formula_store()
     return m_array_formulas;
 }
 
-void xls_xml_context::store_cell_formula(const pstring& formula, const formula_result& res)
+void xls_xml_context::store_cell_formula(std::string_view formula, const formula_result& res)
 {
     assert(m_cur_sheet < ss::sheet_t(m_cell_formulas.size()));
 

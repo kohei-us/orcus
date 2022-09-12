@@ -14,7 +14,6 @@
 #include "orcus/string_pool.hpp"
 
 #include "formula_result.hpp"
-#include "pstring.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -99,8 +98,8 @@ private:
     void push_array_result(
         range_formula_results& res, size_t row_offset, size_t col_offset);
 
-    void push_formula_cell(const pstring& formula);
-    void store_array_formula_parent_cell(const pstring& formula);
+    void push_formula_cell(std::string_view formula);
+    void store_array_formula_parent_cell(std::string_view formula);
     void update_current_format();
 };
 
@@ -111,16 +110,16 @@ class xls_xml_context : public xml_context_base
     struct cell_formula_type
     {
         spreadsheet::address_t pos;
-        pstring formula;
+        std::string_view formula;
         formula_result result;
     };
 
     struct array_formula_type
     {
-        pstring formula;
+        std::string_view formula;
         range_formula_results results;
 
-        array_formula_type(const spreadsheet::range_t& _range, const pstring& _formula);
+        array_formula_type(const spreadsheet::range_t& _range, std::string_view _formula);
     };
 
     struct border_style_type
@@ -165,17 +164,17 @@ class xls_xml_context : public xml_context_base
         font_style_type font;
         fill_style_type fill;
         text_alignment_type text_alignment;
-        pstring number_format;
+        std::string_view number_format;
         std::vector<border_style_type> borders;
     };
 
     struct named_exp
     {
-        pstring name;
-        pstring expression;
+        std::string_view name;
+        std::string_view expression;
         spreadsheet::sheet_t scope;
 
-        named_exp(const pstring& _name, const pstring& _expression, spreadsheet::sheet_t _scope);
+        named_exp(std::string_view _name, std::string_view _expression, spreadsheet::sheet_t _scope);
     };
 
     struct selection
@@ -216,7 +215,7 @@ class xls_xml_context : public xml_context_base
 
     using named_expressions_type = std::vector<named_exp>;
     using styles_type = std::vector<std::unique_ptr<style_type>>;
-    using style_id_xf_map_type = std::unordered_map<pstring, size_t, pstring::hash>;
+    using style_id_xf_map_type = std::unordered_map<std::string_view, std::size_t>;
     using array_formula_pair_type = std::pair<spreadsheet::range_t, std::unique_ptr<array_formula_type>>;
     using array_formulas_type = std::list<array_formula_pair_type>;
     using cell_formulas_type = std::deque<std::deque<cell_formula_type>>;
@@ -268,12 +267,12 @@ private:
     spreadsheet::iface::import_factory* get_import_factory();
     spreadsheet::iface::import_sheet* get_import_sheet();
     spreadsheet::address_t get_current_pos() const;
-    pstring pop_and_clear_formula();
+    std::string_view pop_and_clear_formula();
     bool is_array_formula() const;
     const spreadsheet::range_t& get_array_range() const;
     array_formulas_type& get_array_formula_store();
 
-    void store_cell_formula(const pstring& formula, const formula_result& res);
+    void store_cell_formula(std::string_view formula, const formula_result& res);
 
 private:
     spreadsheet::iface::import_factory* mp_factory;
@@ -289,8 +288,8 @@ private:
     spreadsheet::row_t m_cur_merge_down;
     spreadsheet::col_t m_cur_merge_across;
     spreadsheet::range_t m_cur_array_range;
-    pstring m_cur_cell_formula;
-    pstring m_cur_cell_style_id;
+    std::string_view m_cur_cell_formula;
+    std::string_view m_cur_cell_style_id;
 
     cell_formulas_type m_cell_formulas;
     array_formulas_type m_array_formulas;
