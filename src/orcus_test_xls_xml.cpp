@@ -1107,7 +1107,19 @@ void test_xls_xml_cell_properties_default_style()
     assert(numfmt);
     assert(numfmt->format_string == "0.0000");
 
-    //TODO: protection
+    // protection
+    const ss::protection_t* prot = styles.get_protection(xf->protection);
+    assert(prot);
+    assert(prot->formula_hidden);
+
+    // A1:G6 should all use the default cell style.
+    for (ss::row_t row = 0; row <= 5; ++row)
+    {
+        for (ss::col_t col = 0; col <= 6; ++col)
+        {
+            assert(sh->get_cell_format(row, col) == xfid_default);
+        }
+    }
 }
 
 void test_xls_xml_view_cursor_per_sheet()

@@ -160,6 +160,11 @@ class xls_xml_context : public xml_context_base
         bool shrink_to_fit = false;
     };
 
+    struct cell_protection_type
+    {
+        std::optional<bool> hide_formula;
+    };
+
     struct style_type
     {
         std::string_view id;
@@ -168,6 +173,7 @@ class xls_xml_context : public xml_context_base
         font_style_type font;
         fill_style_type fill;
         text_alignment_type text_alignment;
+        cell_protection_type cell_protection;
         std::string_view number_format;
         std::vector<border_style_type> borders;
     };

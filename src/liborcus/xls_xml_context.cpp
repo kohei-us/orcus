@@ -1063,6 +1063,21 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 }
                 break;
             }
+            case XML_Protection:
+            {
+                for (const xml_token_attr_t& attr : attrs)
+                {
+                    if (attr.ns == NS_xls_xml_x)
+                    {
+                        switch (attr.name)
+                        {
+                            case XML_HideFormula:
+                                m_current_style->cell_protection.hide_formula = to_bool(attr.value);
+                                break;
+                        }
+                    }
+                }
+            }
             default:
                 warn_unhandled();
         }
@@ -1912,7 +1927,9 @@ void xls_xml_context::commit_default_style()
 
     if (m_default_style)
     {
-        // TODO
+        const auto& cp = m_default_style->cell_protection;
+        if (cp.hide_formula)
+            cell_protection->set_formula_hidden(*cp.hide_formula);
     }
 
     id = cell_protection->commit();
