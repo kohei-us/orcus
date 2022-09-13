@@ -1031,7 +1031,7 @@ void test_xls_xml_number_format()
     }
 }
 
-void test_xls_xml_cell_properties()
+void test_xls_xml_cell_properties_wrap_and_shrink()
 {
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/cell-properties/wrap-and-shrink.xml");
 
@@ -1062,6 +1062,52 @@ void test_xls_xml_cell_properties()
     assert(!*xf->wrap_text);
     assert(xf->shrink_to_fit);
     assert(*xf->shrink_to_fit);
+}
+
+void test_xls_xml_cell_properties_default_style()
+{
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/cell-properties/default-style.xml");
+
+    const ss::color_t black{255, 0, 0, 0};
+
+    const ss::styles& styles = doc->get_styles();
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    std::size_t xfid_default = sh->get_cell_format(0, 0); // A1
+    const ss::cell_format_t* xf = styles.get_cell_format(xfid_default);
+    assert(xf);
+
+    // alignments
+    assert(xf->hor_align == ss::hor_alignment_t::center);
+    assert(xf->ver_align == ss::ver_alignment_t::bottom);
+
+    // font
+    const ss::font_t* font_style = styles.get_font(xf->font);
+    assert(font_style);
+    assert(font_style->name == "DejaVu Sans");
+    assert(font_style->size == 12.0);
+    assert(font_style->color == black);
+
+    // fill
+    const ss::fill_t* fill_style = styles.get_fill(xf->fill);
+    assert(fill_style);
+    assert(fill_style->pattern_type == ss::fill_pattern_t::solid);
+    const ss::color_t fill_color_fg{255, 0xE2, 0xEF, 0xDA};
+    assert(fill_style->fg_color == fill_color_fg);
+
+    // border
+    const ss::border_t* border_style = styles.get_border(xf->border);
+    assert(border_style);
+
+    assert(border_style->bottom.style == ss::border_style_t::dotted);
+
+    // number format
+    const ss::number_format_t* numfmt = styles.get_number_format(xf->number_format);
+    assert(numfmt);
+    assert(numfmt->format_string == "0.0000");
+
+    //TODO: protection
 }
 
 void test_xls_xml_view_cursor_per_sheet()
@@ -1378,7 +1424,8 @@ int main()
     test_xls_xml_hidden_rows_columns();
     test_xls_xml_character_set();
     test_xls_xml_number_format();
-    test_xls_xml_cell_properties();
+    test_xls_xml_cell_properties_wrap_and_shrink();
+    test_xls_xml_cell_properties_default_style();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();

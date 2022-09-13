@@ -968,6 +968,11 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
 
                     switch (attr.name)
                     {
+                        case XML_FontName:
+                        {
+                            m_current_style->font.name = intern(attr);
+                            break;
+                        }
                         case XML_Bold:
                         {
                             m_current_style->font.bold = to_bool(attr.value);
@@ -983,8 +988,11 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                             m_current_style->font.color = to_rgb(attr.value);
                             break;
                         }
-                        default:
-                            ;
+                        case XML_Size:
+                        {
+                            m_current_style->font.size = to_double(attr.value);
+                            break;
+                        }
                     }
                 }
                 break;
@@ -1849,32 +1857,75 @@ void xls_xml_context::commit_default_style()
 
     if (m_default_style)
     {
-        font_style->set_bold(m_default_style->font.bold);
-        font_style->set_italic(m_default_style->font.italic);
-        font_style->set_color(
-            0,
-            m_default_style->font.color.red,
-            m_default_style->font.color.green,
-            m_default_style->font.color.blue);
+        const auto& font = m_default_style->font;
+
+        if (!font.name.empty())
+            font_style->set_name(font.name);
+
+        if (font.size)
+            font_style->set_size(*font.size);
+
+        font_style->set_bold(font.bold);
+        font_style->set_italic(font.italic);
+        font_style->set_color(255, font.color.red, font.color.green, font.color.blue);
     }
 
-    font_style->commit();
+    std::size_t id = font_style->commit();
+    assert(id == 0);
 
     ss::iface::import_fill_style* fill_style = styles->get_fill_style();
     ENSURE_INTERFACE(fill_style, import_fill_style);
-    fill_style->commit();
+
+    if (m_default_style)
+    {
+        if (m_default_style->fill.solid)
+            fill_style->set_pattern_type(ss::fill_pattern_t::solid);
+
+        fill_style->set_fg_color(
+            255,
+            m_default_style->fill.color.red,
+            m_default_style->fill.color.green,
+            m_default_style->fill.color.blue
+        );
+    }
+
+    id = fill_style->commit();
+    assert(id == 0);
 
     auto* border_style = styles->get_border_style();
     ENSURE_INTERFACE(border_style, import_border_style);
-    border_style->commit();
+
+    if (m_default_style && !m_default_style->borders.empty())
+    {
+        for (const border_style_type& b : m_default_style->borders)
+        {
+            border_style->set_style(b.dir, b.style);
+            border_style->set_color(b.dir, 255, b.color.red, b.color.green, b.color.blue);
+        }
+    }
+
+    id = border_style->commit();
+    assert(id == 0);
 
     auto* cell_protection = styles->get_cell_protection();
     ENSURE_INTERFACE(cell_protection, import_cell_protection);
-    cell_protection->commit();
+
+    if (m_default_style)
+    {
+        // TODO
+    }
+
+    id = cell_protection->commit();
+    assert(id == 0);
 
     auto* number_format = styles->get_number_format();
     ENSURE_INTERFACE(number_format, import_number_format);
-    number_format->commit();
+
+    if (m_default_style)
+        number_format->set_code(m_default_style->number_format);
+
+    id = number_format->commit();
+    assert(id == 0);
 
     auto* xf = styles->get_xf(ss::xf_category_t::cell);
     ENSURE_INTERFACE(xf, import_xf);
@@ -1896,7 +1947,8 @@ void xls_xml_context::commit_default_style()
     if (m_default_style)
         set_default_style(xf);
 
-    xf->commit();
+    id = xf->commit();
+    assert(id == 0);
 
     xf = styles->get_xf(ss::xf_category_t::cell_style);
     ENSURE_INTERFACE(xf, import_xf);
@@ -1904,7 +1956,8 @@ void xls_xml_context::commit_default_style()
     if (m_default_style && m_default_style->name == "Normal")
         set_default_style(xf);
 
-    xf->commit();
+    id = xf->commit();
+    assert(id == 0);
 
     auto* cell_style = styles->get_cell_style();
     ENSURE_INTERFACE(cell_style, import_cell_style);

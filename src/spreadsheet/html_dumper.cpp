@@ -267,7 +267,7 @@ void build_border_style(std::ostringstream& os, const char* style_name, const bo
 void build_style_string(std::string& str, const styles& styles, const cell_format_t& fmt)
 {
     std::ostringstream os;
-    if (fmt.font)
+
     {
         const font_t* p = styles.get_font(fmt.font);
         if (p)
@@ -290,7 +290,7 @@ void build_style_string(std::string& str, const styles& styles, const cell_forma
             }
         }
     }
-    if (fmt.fill)
+
     {
         const fill_t* p = styles.get_fill(fmt.fill);
         if (p)
@@ -305,7 +305,6 @@ void build_style_string(std::string& str, const styles& styles, const cell_forma
         }
     }
 
-    if (fmt.border)
     {
         const border_t* p = styles.get_border(fmt.border);
         if (p)
@@ -504,7 +503,6 @@ void html_dumper::dump(std::ostream& os) const
                     }
                 }
 
-                if (xf_id)
                 {
                     // Apply cell format.
                     const styles& styles = m_doc.get_styles();

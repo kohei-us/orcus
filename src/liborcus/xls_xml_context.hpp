@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <list>
 #include <deque>
+#include <optional>
 
 namespace orcus {
 
@@ -131,6 +132,9 @@ class xls_xml_context : public xml_context_base
 
     struct font_style_type
     {
+        std::string_view name;
+        std::string_view family;
+        std::optional<double> size;
         bool bold = false;
         bool italic = false;
 
