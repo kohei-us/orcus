@@ -109,7 +109,7 @@ AC_ARG_ENABLE(debug,
         [enable_debug=no]
 )
 AS_IF([test "x$enable_debug" != "xno"], [
-        CXXFLAGS="$CXXFLAGS -g -O0 -DMDDS_ASSERT_STRING_MAP"
+        CXXFLAGS="$CXXFLAGS -g -O0"
         enable_debug_utils=yes
 ], [
         CXXFLAGS="$CXXFLAGS -O2"
@@ -117,7 +117,7 @@ AS_IF([test "x$enable_debug" != "xno"], [
 ])
 
 AS_IF([test "x$enable_debug_utils" != "xno"], [
-        CXXFLAGS="$CXXFLAGS -g -D__ORCUS_DEBUG_UTILS"
+        CXXFLAGS="$CXXFLAGS -g -D__ORCUS_DEBUG_UTILS -DMDDS_SORTED_STRING_MAP_DEBUG"
 ])
 
 # zlib is a hard requirement in liborcus-parser.
