@@ -35,12 +35,32 @@
   </Style>
  </Styles>
  <Worksheet ss:Name="Sheet1">
-  <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="1" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="7" ss:ExpandedRowCount="6" x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="68.25" ss:DefaultRowHeight="15.75">
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">A1</Data></Cell>
     <Cell><Data ss:Type="String">B1</Data></Cell>
     <Cell><Data ss:Type="String">C1</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">A2</Data></Cell>
+    <Cell><Data ss:Type="String">B2</Data></Cell>
+    <Cell><Data ss:Type="String">C2</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">A3</Data></Cell>
+    <Cell><Data ss:Type="String">B3</Data></Cell>
+    <Cell><Data ss:Type="String">C3</Data></Cell>
+   </Row>
+   <Row ss:Index="5" ss:AutoFitHeight="0">
+    <Cell ss:Index="5"><Data ss:Type="String">E5</Data></Cell>
+    <Cell><Data ss:Type="String">F5</Data></Cell>
+    <Cell><Data ss:Type="String">G5</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:Index="5"><Data ss:Type="String">E6</Data></Cell>
+    <Cell><Data ss:Type="String">F6</Data></Cell>
+    <Cell><Data ss:Type="String">G6</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -58,7 +78,8 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>2</ActiveRow>
+     <ActiveRow>5</ActiveRow>
+     <ActiveCol>4</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
