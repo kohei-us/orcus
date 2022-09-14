@@ -1067,14 +1067,13 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             {
                 for (const xml_token_attr_t& attr : attrs)
                 {
-                    if (attr.ns == NS_xls_xml_x)
+                    if (attr.ns == NS_xls_xml_x && attr.name == XML_HideFormula)
                     {
-                        switch (attr.name)
-                        {
-                            case XML_HideFormula:
-                                m_current_style->cell_protection.hide_formula = to_bool(attr.value);
-                                break;
-                        }
+                        m_current_style->cell_protection.hide_formula = to_bool(attr.value);
+                    }
+                    else if (attr.ns == NS_xls_xml_ss && attr.name == XML_Protected)
+                    {
+                        m_current_style->cell_protection.locked = to_bool(attr.value);
                     }
                 }
             }
@@ -1928,8 +1927,8 @@ void xls_xml_context::commit_default_style()
     if (m_default_style)
     {
         const auto& cp = m_default_style->cell_protection;
-        if (cp.hide_formula)
-            cell_protection->set_formula_hidden(*cp.hide_formula);
+        cell_protection->set_locked(cp.locked);
+        cell_protection->set_formula_hidden(cp.hide_formula);
     }
 
     id = cell_protection->commit();
@@ -2033,6 +2032,15 @@ void xls_xml_context::commit_styles()
             size_t fill_id = fill_style->commit();
             xf->set_fill(fill_id);
         }
+
+        auto* protect = styles->get_cell_protection();
+        ENSURE_INTERFACE(protect, import_cell_protection);
+
+        protect->set_locked(style->cell_protection.locked);
+        protect->set_formula_hidden(style->cell_protection.hide_formula);
+
+        std::size_t protect_id = protect->commit();
+        xf->set_protection(protect_id);
 
         if (!style->borders.empty())
         {

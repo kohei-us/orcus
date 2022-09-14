@@ -1122,6 +1122,81 @@ void test_xls_xml_cell_properties_default_style()
     }
 }
 
+void test_xls_xml_cell_properties_locked_and_hidden()
+{
+    test::stack_printer __sp__(__func__);
+
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/cell-properties/locked-and-hidden.xml");
+    const ixion::model_context& model = doc->get_model_context();
+
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    {
+        // Check cell string values first.
+
+        struct check_type
+        {
+            ixion::abs_address_t address;
+            std::string_view str;
+        };
+
+        const check_type checks[] = {
+            // sheet, row, column, expected cell string value
+            { { 0, 0, 0 }, "Default (Should be locked but not hidden)" },
+            { { 0, 0, 1 }, "Not Locked and not hidden" },
+            { { 0, 1, 0 }, "Locked and hidden" },
+            { { 0, 1, 1 }, "Not locked and hidden" },
+        };
+
+        for (const auto& c : checks)
+        {
+            ixion::string_id_t sid = model.get_string_identifier(c.address);
+            const std::string* s = model.get_string(sid);
+            assert(s);
+            assert(*s == c.str);
+        }
+    }
+
+    {
+        // Check the cell protection attributes.
+
+        struct check_type
+        {
+            ss::row_t row;
+            ss::col_t col;
+            bool locked;
+            bool formula_hidden;
+        };
+
+        const check_type checks[] = {
+            // row, column, locked, formula-hidden
+            { 0, 0, true, false },
+            { 0, 1, false, false },
+            { 1, 0, true, true },
+            { 1, 1, false, true },
+        };
+
+        const ss::styles& styles = doc->get_styles();
+
+        for (const auto& c : checks)
+        {
+            std::cout << "row=" << c.row << "; col=" << c.col << std::endl;
+
+            std::size_t xfid = sh->get_cell_format(c.row, c.col);
+            const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+            assert(xf);
+
+            const ss::protection_t* prot = styles.get_protection(xf->protection);
+            assert(prot);
+            std::cout << "  * locked: expected=" << c.locked << "; actual=" << prot->locked << std::endl;
+            assert(prot->locked == c.locked);
+            std::cout << "  * formula-hidden: expected=" << c.formula_hidden << "; actual=" << prot->formula_hidden << std::endl;
+            assert(prot->formula_hidden == c.formula_hidden);
+        }
+    }
+}
+
 void test_xls_xml_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
@@ -1438,6 +1513,7 @@ int main()
     test_xls_xml_number_format();
     test_xls_xml_cell_properties_wrap_and_shrink();
     test_xls_xml_cell_properties_default_style();
+    test_xls_xml_cell_properties_locked_and_hidden();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();

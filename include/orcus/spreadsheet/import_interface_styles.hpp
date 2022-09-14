@@ -271,9 +271,38 @@ class ORCUS_DLLPUBLIC import_cell_protection
 public:
     virtual ~import_cell_protection();
 
+    /**
+     * Hide the entire cell content when the sheet is protected.
+     *
+     * @param b whether to hide the entire cell content when the sheet is
+     *          protected.
+     */
     virtual void set_hidden(bool b) = 0;
+
+    /**
+     * Lock the cell when the sheet is protected.
+     *
+     * @param b whether or not to lock the cell when the sheet is protected.
+     */
     virtual void set_locked(bool b) = 0;
+
+    /**
+     * Specify whether or not to print the cell content when the sheet is
+     * protected.
+     *
+     *
+     * @param b whether or not to print the cell content when the sheet is
+     *          protected.
+     */
     virtual void set_print_content(bool b) = 0;
+
+    /**
+     * Hide the formula when the sheet is protected and the cell contains
+     * formula.
+     *
+     * @param b whether or not to hide the formula when the sheet is protected
+     *          and the cell contains formula.
+     */
     virtual void set_formula_hidden(bool b) = 0;
 
     /**

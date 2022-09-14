@@ -51,11 +51,11 @@
    <Column ss:AutoFitWidth="0" ss:Width="132"/>
    <Row ss:Height="30">
     <Cell><Data ss:Type="String">Default (Should be locked but not hidden)</Data></Cell>
-    <Cell ss:StyleID="s63"><Data ss:Type="String">Not Locked and not Hidden</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Not Locked and not hidden</Data></Cell>
    </Row>
    <Row>
-    <Cell ss:StyleID="s64"><Data ss:Type="String">Locked and Hidden</Data></Cell>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">Not Locked and hidden</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Locked and hidden</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Not locked and hidden</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">

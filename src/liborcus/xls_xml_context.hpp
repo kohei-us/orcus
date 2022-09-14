@@ -162,7 +162,8 @@ class xls_xml_context : public xml_context_base
 
     struct cell_protection_type
     {
-        std::optional<bool> hide_formula;
+        bool locked = true;  // NB: default is locked
+        bool hide_formula = false;
     };
 
     struct style_type
