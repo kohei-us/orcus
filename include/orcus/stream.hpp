@@ -163,6 +163,14 @@ ORCUS_PSR_DLLPUBLIC line_with_offset locate_line_with_offset(std::string_view st
  */
 ORCUS_PSR_DLLPUBLIC size_t locate_first_different_char(std::string_view left, std::string_view right);
 
+/**
+ * Calculate the logical length of a UTF-8 encoded string.
+ *
+ * @param s string to calculate the logical length of.
+ * @return logical length of the UTF-8 encoded string.
+ */
+ORCUS_PSR_DLLPUBLIC std::size_t calc_logical_string_length(std::string_view s);
+
 } // namespace orcus
 
 #endif

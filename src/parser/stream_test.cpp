@@ -17,6 +17,8 @@ using namespace orcus;
 
 void test_stream_create_error_output()
 {
+    test::stack_printer __sp__(__func__);
+
     string output = create_parse_error_output("{}", 1);
     cout << output << endl;
     const char* expected = "1:2: {}\n      ^";
@@ -25,6 +27,8 @@ void test_stream_create_error_output()
 
 void test_stream_locate_first_different_char()
 {
+    test::stack_printer __sp__(__func__);
+
     struct test_case
     {
         const char* left;
@@ -50,10 +54,38 @@ void test_stream_locate_first_different_char()
     }
 }
 
+void test_stream_logical_string_length()
+{
+    test::stack_printer __sp__(__func__);
+
+    struct check
+    {
+        std::string_view value;
+        std::size_t length;
+    };
+
+    constexpr check checks[] = {
+        { "東京", 2 },
+        { "大阪は暑い", 5 },
+        { "New York", 8 },
+        { "日本は英語で言うとJapan", 14 },
+        { "fabriqué", 8 },
+        { "garçon", 6 },
+    };
+
+    for (auto [value, expected_len] : checks)
+    {
+        std::size_t len = calc_logical_string_length(value);
+        std::cout << "'" << value << "' (length=" << len << ")" << std::endl;
+        assert(len == expected_len);
+    }
+}
+
 int main()
 {
     test_stream_create_error_output();
     test_stream_locate_first_different_char();
+    test_stream_logical_string_length();
 
     return EXIT_SUCCESS;
 }

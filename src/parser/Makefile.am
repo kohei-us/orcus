@@ -190,7 +190,9 @@ parser_test_threaded_json_parser_CPPFLAGS = $(AM_CPPFLAGS)
 parser_test_stream_SOURCES = \
 	stream_test.cpp
 
-parser_test_stream_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+parser_test_stream_LDADD = \
+	liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a
 parser_test_stream_CPPFLAGS = $(AM_CPPFLAGS)
 
 # parser-test-zip-archive

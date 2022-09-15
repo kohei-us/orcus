@@ -8,6 +8,8 @@
 #include <orcus/stream.hpp>
 #include <orcus/exception.hpp>
 
+#include "utf8.hpp"
+
 #include <sstream>
 #include <fstream>
 #include <tuple>
@@ -407,6 +409,38 @@ size_t locate_first_different_char(std::string_view left, std::string_view right
     }
 
     return n;
+}
+
+std::size_t calc_logical_string_length(std::string_view s)
+{
+    std::size_t length = 0;
+
+    const char* p = s.data();
+    const char* p_end = p + s.size();
+
+    while (p < p_end)
+    {
+        ++length;
+
+        auto n_bytes = calc_utf8_byte_length(*p);
+        if (!n_bytes || n_bytes > 4)
+        {
+            std::ostringstream os;
+            os << "'" << s << "' contains invalid character at position " << std::distance(s.data(), p);
+            throw std::invalid_argument(os.str());
+        }
+
+        p += n_bytes;
+    }
+
+    if (p != p_end)
+    {
+        std::ostringstream os;
+        os << "last character of '" << s << "' ended prematurely";
+        throw std::invalid_argument(os.str());
+    }
+
+    return length;
 }
 
 }
