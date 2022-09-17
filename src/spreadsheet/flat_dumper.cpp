@@ -7,7 +7,8 @@
 
 #include "flat_dumper.hpp"
 #include "number_format.hpp"
-#include "orcus/spreadsheet/document.hpp"
+#include <orcus/spreadsheet/document.hpp>
+#include <orcus/stream.hpp>
 
 #include <ixion/formula.hpp>
 #include <ixion/model_context.hpp>
@@ -82,8 +83,8 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                 ixion::string_id_t sindex = std::get<ixion::string_id_t>(c.value);
                 const std::string* p = cxt.get_string(sindex);
                 assert(p);
+                cell_str_width = calc_logical_string_length(*p);
                 mx[to_pos(c.row, c.col)] = std::move(*p);
-                cell_str_width = p->size();
                 break;
             }
             case ixion::celltype_t::numeric:
@@ -92,7 +93,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                 format_to_file_output(os2, std::get<double>(c.value));
                 os2 << " [v]";
                 std::string s = os2.str();
-                cell_str_width = s.size();
+                cell_str_width = calc_logical_string_length(s);
                 mx[to_pos(c.row, c.col)] = std::move(s);
                 break;
             }
@@ -101,7 +102,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                 std::ostringstream os2;
                 os2 << (std::get<bool>(c.value) ? "true" : "false") << " [b]";
                 std::string s = os2.str();
-                cell_str_width = s.size();
+                cell_str_width = calc_logical_string_length(s);
                 mx[to_pos(c.row, c.col)] = std::move(s);
                 break;
             }
@@ -146,7 +147,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                     }
 
                     std::string s = os2.str();
-                    cell_str_width = s.size();
+                    cell_str_width = calc_logical_string_length(s);
                     mx[to_pos(c.row, c.col)] = std::move(s);
                 }
                 break;
@@ -191,7 +192,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
             else
             {
                 os << ' ' << s;
-                cw -= s.size();
+                cw -= calc_logical_string_length(s);
                 for (size_t i = 0; i < cw; ++i)
                     os << ' ';
                 os << " |";
