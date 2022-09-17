@@ -21,6 +21,7 @@
 #include <vector>
 
 using namespace orcus;
+namespace ss = orcus::spreadsheet;
 
 namespace {
 
@@ -33,6 +34,8 @@ std::vector<const char*> dirs = {
 
 void test_csv_import()
 {
+    test::stack_printer __sp__(__func__);
+
     for (const char* dir : dirs)
     {
         std::string path(dir);
@@ -86,6 +89,8 @@ void test_csv_import()
 
 void test_csv_import_split_sheet()
 {
+    test::stack_printer __sp__(__func__);
+
     const char* dir = SRCDIR"/test/csv/split-sheet/";
 
     std::string path(dir);
@@ -175,7 +180,44 @@ void test_csv_import_split_sheet()
     test::verify_content(__FILE__, __LINE__, control.str(), check);
 }
 
+void test_csv_dump_flat_utf8()
+{
+    test::stack_printer __sp__(__func__);
+
+    constexpr std::string_view src =
+        "New York,fabriqué\n"
+        "garçon,вход\n"
+        "выход,помогите\n"
+        "Nähe,San Diego";
+
+    constexpr std::string_view expected =
+        "rows: 4  cols: 2\n"
+        "+----------+-----------+\n"
+        "| New York | fabriqué  |\n"
+        "+----------+-----------+\n"
+        "| garçon   | вход      |\n"
+        "+----------+-----------+\n"
+        "| выход    | помогите  |\n"
+        "+----------+-----------+\n"
+        "| Nähe     | San Diego |\n"
+        "+----------+-----------+\n";
+
+    ss::range_size_t ss{1048576, 16384};
+    ss::document doc{ss};
+    ss::import_factory factory(doc);
+    orcus_csv app(&factory);
+    app.read_stream(src);
+
+    const ss::sheet* sh = doc.get_sheet(0);
+    assert(sh);
+    std::ostringstream os;
+    sh->dump_flat(os);
+    std::string flat_dump = os.str();
+
+    test::verify_content(__FILE__, __LINE__, expected, flat_dump);
 }
+
+} // anonymous namespace
 
 int main()
 {
@@ -183,6 +225,7 @@ int main()
     {
         test_csv_import();
         test_csv_import_split_sheet();
+        test_csv_dump_flat_utf8();
     }
     catch (const std::exception& e)
     {
