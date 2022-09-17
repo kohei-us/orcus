@@ -71,6 +71,10 @@ void test_stream_logical_string_length()
         { "日本は英語で言うとJapan", 14 },
         { "fabriqué", 8 },
         { "garçon", 6 },
+        { "вход", 4 },
+        { "выход", 5 },
+        { "помогите", 8 },
+        { "Nähe", 4 },
     };
 
     for (auto [value, expected_len] : checks)
