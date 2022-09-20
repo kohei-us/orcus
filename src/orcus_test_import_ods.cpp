@@ -535,7 +535,7 @@ void test_cell_styles()
 
     test_model model;
 
-    model.load(SRCDIR"/test/ods/styles/cell-styles.xml");
+    model.load(SRCDIR"/test/ods/import-styles/cell-styles.xml");
     test_odf_fill(model.styles);
     test_odf_border(model.styles);
     test_odf_cell_protection(model.styles);
@@ -549,7 +549,7 @@ void test_standard_styles()
     stack_printer __sp__(__func__);
 
     test_model model;
-    model.load(SRCDIR"/test/ods/styles/standard-styles.xml");
+    model.load(SRCDIR"/test/ods/import-styles/standard-styles.xml");
 
     {
         // Heading only specifies color, font size, font style and font weight.
@@ -903,7 +903,7 @@ void test_cell_protection_styles()
     stack_printer __sp__(__func__);
 
     test_model model;
-    model.load(SRCDIR"/test/ods/styles/cell-protection.xml");
+    model.load(SRCDIR"/test/ods/import-styles/cell-protection.xml");
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Hide_20_Formula", "Protected");
