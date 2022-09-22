@@ -46,74 +46,89 @@ public:
     virtual ~import_styles();
 
     /**
-     * Return a pointer to the interface instance for importing font style
-     * attributes. Note that the import_styles implementer <i>must</i> return a
+     * Signal the start of the import of font style attributes, and return a
+     * pointer to the interface instance for importing the attributes.
+     *
+     * @note Note that the import_styles implementer <i>must</i> return a
      * non-null pointer.
      *
      * @return pointer to the interface instance for importing font style
      *         attributes.
      */
-    virtual import_font_style* get_font_style() = 0;
+    virtual import_font_style* start_font_style() = 0;
 
     /**
-     * Return a pointer to the interface instance for importing fill style
-     * attributes. Note that the import_styles implementer <i>must</i> return a
+     * Signal the start of the import of fill style attributes, and return a
+     * pointer to the interface instance for importing the attributes.
+     *
+     * @note Note that the import_styles implementer <i>must</i> return a
      * non-null pointer.
      *
      * @return pointer to the interface instance for importing fill style
      *         attributes.
      */
-    virtual import_fill_style* get_fill_style() = 0;
+    virtual import_fill_style* start_fill_style() = 0;
 
     /**
-     * Return a pointer to the interface instance for importing border style
-     * attributes. Note that the import_styles implementer <i>must</i> return a
+     * Signal the start of the import of border style attributes, and return a
+     * pointer to the interface instance for importing the attributes.
+     *
+     * @note Note that the import_styles implementer <i>must</i> return a
      * non-null pointer.
      *
      * @return pointer to the interface instance for importing border style
      *         attributes.
      */
-    virtual import_border_style* get_border_style() = 0;
+    virtual import_border_style* start_border_style() = 0;
 
     /**
-     * Return a pointer to the interface instance for importing cell protection
-     * attributes. Note that the import_styles implementer <i>must</i> return a
+     * Signal the start of the import of cell protection attributes, and return
+     * a pointer to the interface instance for importing the attributes.
+     *
+     * @note Note that the import_styles implementer <i>must</i> return a
      * non-null pointer.
      *
      * @return pointer to the interface instance for importing cell protection
      *         attributes.
      */
-    virtual import_cell_protection* get_cell_protection() = 0;
+    virtual import_cell_protection* start_cell_protection() = 0;
 
     /**
-     * Return a pointer to the interface instance for importing number format
-     * attributes. Note that the import_styles implementer <i>must</i> return a
+     * Signal the start of the import of number format attributes and return a
+     * pointer to the interface instance for importing the attributes.
+     *
+     * @note Note that the import_styles implementer <i>must</i> return a
      * non-null pointer.
      *
      * @return pointer to the interface instance for importing number format
      *         attributes.
      */
-    virtual import_number_format* get_number_format() = 0;
+    virtual import_number_format* start_number_format() = 0;
 
     /**
-     * Return a pointer to the interface instance for importing cell format
-     * (xf) indices that each references different format attributes in their
-     * respective pools.  Note that the import_styles implementer <i>must</i>
-     * return a non-null pointer.
+     * Signal the start of the import of cell format (xf) indices that each
+     * reference different format attributes in their respective pools, and
+     * return a pointer to the interface instance for importing the indices.
+     *
+     * @note Note that the import_styles implementer <i>must</i> return a
+     * non-null pointer.
      *
      * @return pointer to the interface instance for importing cell format (xf)
      *         indices.
      */
-    virtual import_xf* get_xf(xf_category_t cat) = 0;
+    virtual import_xf* start_xf(xf_category_t cat) = 0;
 
     /**
-     * Return a pointer to the interface instance for importing named cell style
-     * information.
+     * Signal the start of the import of named cell style information, and
+     * return a pointer to the interface instance for importing the information.
+     *
+     * @note Note that the import_styles implementer <i>must</i> return a
+     *       non-null pointer.
      *
      * @return pointer to the interface instance for importing named cell style
      *         information.
      */
-    virtual import_cell_style* get_cell_style() = 0;
+    virtual import_cell_style* start_cell_style() = 0;
 
     /**
      * Set the total number of font styles. This may be called before importing

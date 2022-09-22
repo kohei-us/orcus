@@ -529,7 +529,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_font:
             {
-                mp_font = mp_styles->get_font_style();
+                mp_font = mp_styles->start_font_style();
                 ENSURE_INTERFACE(mp_font, import_font_style);
                 break;
             }
@@ -605,7 +605,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_fill:
             {
-                mp_fill = mp_styles->get_fill_style();
+                mp_fill = mp_styles->start_fill_style();
                 ENSURE_INTERFACE(mp_fill, import_fill_style);
 
                 break;
@@ -690,7 +690,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             {
                 start_element_border(attrs);
 
-                mp_border = mp_styles->get_border_style();
+                mp_border = mp_styles->start_border_style();
                 ENSURE_INTERFACE(mp_border, import_border_style);
 
                 break;
@@ -742,7 +742,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     mp_styles->set_xf_count(ss::xf_category_t::cell_style, n);
                 }
                 m_cell_style_xf = true;
-                mp_xf = mp_styles->get_xf(ss::xf_category_t::cell_style);
+                mp_xf = mp_styles->start_xf(ss::xf_category_t::cell_style);
                 ENSURE_INTERFACE(mp_xf, import_xf);
                 break;
             }
@@ -757,7 +757,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     mp_styles->set_xf_count(ss::xf_category_t::cell, n);
                 }
                 m_cell_style_xf = false;
-                mp_xf = mp_styles->get_xf(ss::xf_category_t::cell);
+                mp_xf = mp_styles->start_xf(ss::xf_category_t::cell);
                 ENSURE_INTERFACE(mp_xf, import_xf);
                 break;
             }
@@ -771,7 +771,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     size_t n = strtoul(ps.data(), nullptr, 10);
                     mp_styles->set_xf_count(ss::xf_category_t::differential, n);
                 }
-                mp_xf = mp_styles->get_xf(ss::xf_category_t::differential);
+                mp_xf = mp_styles->start_xf(ss::xf_category_t::differential);
                 ENSURE_INTERFACE(mp_xf, import_xf);
                 break;
             }
@@ -784,7 +784,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     size_t n = strtoul(ps.data(), nullptr, 10);
                     mp_styles->set_cell_style_count(n);
                 }
-                mp_cell_style = mp_styles->get_cell_style();
+                mp_cell_style = mp_styles->start_cell_style();
                 ENSURE_INTERFACE(mp_cell_style, import_cell_style);
                 break;
             }
@@ -874,7 +874,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_protection:
             {
-                mp_protection = mp_styles->get_cell_protection();
+                mp_protection = mp_styles->start_cell_protection();
                 ENSURE_INTERFACE(mp_protection, import_cell_protection);
 
                 for (const auto& attr : attrs)
@@ -1046,7 +1046,7 @@ void xlsx_styles_context::start_element_number_format(const xml_attrs_t& attrs)
     if (!mp_styles)
         return;
 
-    mp_numfmt = mp_styles->get_number_format();
+    mp_numfmt = mp_styles->start_number_format();
     ENSURE_INTERFACE(mp_numfmt, import_number_format);
 
     for (const xml_token_attr_t& attr : attrs)

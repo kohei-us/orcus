@@ -521,7 +521,7 @@ void gnumeric_sheet_context::start_font(const xml_attrs_t& attrs)
     if (!styles)
         return;
 
-    auto* font_style = styles->get_font_style();
+    auto* font_style = styles->start_font_style();
     ENSURE_INTERFACE(font_style, import_font_style);
 
     for (const auto& attr : attrs)
@@ -603,16 +603,16 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
     if (!styles)
         return;
 
-    auto* fill_style = styles->get_fill_style();
+    auto* fill_style = styles->start_fill_style();
     ENSURE_INTERFACE(fill_style, import_fill_style);
 
-    auto* cell_protection = styles->get_cell_protection();
+    auto* cell_protection = styles->start_cell_protection();
     ENSURE_INTERFACE(cell_protection, import_cell_protection);
 
-    auto* number_format = styles->get_number_format();
+    auto* number_format = styles->start_number_format();
     ENSURE_INTERFACE(number_format, import_number_format);
 
-    mp_xf = styles->get_xf(ss::xf_category_t::cell);
+    mp_xf = styles->start_xf(ss::xf_category_t::cell);
     ENSURE_INTERFACE(mp_xf, import_xf);
 
     bool fill_set = false;
@@ -752,7 +752,7 @@ void gnumeric_sheet_context::end_font()
     if (!styles)
         return;
 
-    auto* font_style = styles->get_font_style();
+    auto* font_style = styles->start_font_style();
     ENSURE_INTERFACE(font_style, import_font_style);
 
     font_style->set_color(0, front_color.red, front_color.green, front_color.blue);

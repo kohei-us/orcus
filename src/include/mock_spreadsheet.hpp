@@ -40,17 +40,17 @@ public:
     // font
 
     virtual void set_font_count(size_t n) override;
-    virtual iface::import_font_style* get_font_style() override;
+    virtual iface::import_font_style* start_font_style() override;
 
     // fill
 
     virtual void set_fill_count(size_t n) override;
-    virtual iface::import_fill_style* get_fill_style() override;
+    virtual iface::import_fill_style* start_fill_style() override;
 
     // border
 
     virtual void set_border_count(size_t n) override;
-    virtual iface::import_border_style* get_border_style() override;
+    virtual iface::import_border_style* start_border_style() override;
 
     virtual void set_xf_count(xf_category_t cat, size_t n) = 0;
     virtual void set_cell_style_count(size_t n) override;

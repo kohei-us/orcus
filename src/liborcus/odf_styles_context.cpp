@@ -161,7 +161,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
             if (m_automatic_styles)
             {
                 // Import it into the direct cell style store
-                auto* xf = mp_styles->get_xf(ss::xf_category_t::cell);
+                auto* xf = mp_styles->start_xf(ss::xf_category_t::cell);
                 ENSURE_INTERFACE(xf, import_xf);
                 xf->set_font(cell.font);
                 xf->set_fill(cell.fill);
@@ -184,7 +184,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
             {
                 // Import it into the cell style xf store, and reference
                 // its index in the cell style name store.
-                auto* xf = mp_styles->get_xf(ss::xf_category_t::cell_style);
+                auto* xf = mp_styles->start_xf(ss::xf_category_t::cell_style);
                 ENSURE_INTERFACE(xf, import_xf);
                 xf->set_font(cell.font);
                 xf->set_fill(cell.fill);
@@ -203,7 +203,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
 
                 size_t style_xf_id = xf->commit();
 
-                auto* cell_style = mp_styles->get_cell_style();
+                auto* cell_style = mp_styles->start_cell_style();
                 ENSURE_INTERFACE(cell_style, import_cell_style);
 
                 cell_style->set_name(current_style->name);
@@ -265,19 +265,19 @@ void styles_context::commit_default_styles()
     if (!mp_styles)
         return;
 
-    auto* font_style = mp_styles->get_font_style();
+    auto* font_style = mp_styles->start_font_style();
     ENSURE_INTERFACE(font_style, import_font_style);
 
-    auto* fill_style = mp_styles->get_fill_style();
+    auto* fill_style = mp_styles->start_fill_style();
     ENSURE_INTERFACE(fill_style, import_fill_style);
 
-    auto* border_style = mp_styles->get_border_style();
+    auto* border_style = mp_styles->start_border_style();
     ENSURE_INTERFACE(border_style, import_border_style);
 
-    auto* cell_protection = mp_styles->get_cell_protection();
+    auto* cell_protection = mp_styles->start_cell_protection();
     ENSURE_INTERFACE(cell_protection, import_cell_protection);
 
-    auto* number_format = mp_styles->get_number_format();
+    auto* number_format = mp_styles->start_number_format();
     ENSURE_INTERFACE(number_format, import_number_format);
 
     // Set default styles. Default styles must be associated with an index of 0.
@@ -288,15 +288,15 @@ void styles_context::commit_default_styles()
     cell_protection->commit();
     number_format->commit();
 
-    auto* xf = mp_styles->get_xf(ss::xf_category_t::cell);
+    auto* xf = mp_styles->start_xf(ss::xf_category_t::cell);
     ENSURE_INTERFACE(xf, import_xf);
     xf->commit();
 
-    xf = mp_styles->get_xf(ss::xf_category_t::cell_style);
+    xf = mp_styles->start_xf(ss::xf_category_t::cell_style);
     ENSURE_INTERFACE(xf, import_xf);
     xf->commit();
 
-    auto* cell_style = mp_styles->get_cell_style();
+    auto* cell_style = mp_styles->start_cell_style();
     ENSURE_INTERFACE(cell_style, import_cell_style);
     cell_style->commit();
 }
@@ -320,7 +320,7 @@ void styles_context::push_number_style(std::unique_ptr<odf_number_format> num_st
         return;
     }
 
-    auto* number_format = mp_styles->get_number_format();
+    auto* number_format = mp_styles->start_number_format();
     ENSURE_INTERFACE(number_format, import_number_format);
 
     number_format->set_code(num_style->code);

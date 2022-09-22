@@ -57,43 +57,43 @@ import_styles::import_styles(styles& styles_model, string_pool& sp) :
 
 import_styles::~import_styles() {}
 
-iface::import_font_style* import_styles::get_font_style()
+iface::import_font_style* import_styles::start_font_style()
 {
     mp_impl->font_style.reset();
     return &mp_impl->font_style;
 }
 
-iface::import_fill_style* import_styles::get_fill_style()
+iface::import_fill_style* import_styles::start_fill_style()
 {
     mp_impl->fill_style.reset();
     return &mp_impl->fill_style;
 }
 
-iface::import_border_style* import_styles::get_border_style()
+iface::import_border_style* import_styles::start_border_style()
 {
     mp_impl->border_style.reset();
     return &mp_impl->border_style;
 }
 
-iface::import_cell_protection* import_styles::get_cell_protection()
+iface::import_cell_protection* import_styles::start_cell_protection()
 {
     mp_impl->cell_protection.reset();
     return &mp_impl->cell_protection;
 }
 
-iface::import_number_format* import_styles::get_number_format()
+iface::import_number_format* import_styles::start_number_format()
 {
     mp_impl->number_format.reset();
     return &mp_impl->number_format;
 }
 
-iface::import_xf* import_styles::get_xf(xf_category_t cat)
+iface::import_xf* import_styles::start_xf(xf_category_t cat)
 {
     mp_impl->xf.reset(cat);
     return &mp_impl->xf;
 }
 
-iface::import_cell_style* import_styles::get_cell_style()
+iface::import_cell_style* import_styles::start_cell_style()
 {
     mp_impl->cell_style.reset();
     return &mp_impl->cell_style;

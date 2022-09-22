@@ -74,13 +74,13 @@ public:
     import_styles(styles& styles, string_pool& sp);
     virtual ~import_styles() override;
 
-    virtual iface::import_font_style* get_font_style() override;
-    virtual iface::import_fill_style* get_fill_style() override;
-    virtual iface::import_border_style* get_border_style() override;
-    virtual iface::import_cell_protection* get_cell_protection() override;
-    virtual iface::import_number_format* get_number_format() override;
-    virtual iface::import_xf* get_xf(xf_category_t cat) override;
-    virtual iface::import_cell_style* get_cell_style() override;
+    virtual iface::import_font_style* start_font_style() override;
+    virtual iface::import_fill_style* start_fill_style() override;
+    virtual iface::import_border_style* start_border_style() override;
+    virtual iface::import_cell_protection* start_cell_protection() override;
+    virtual iface::import_number_format* start_number_format() override;
+    virtual iface::import_xf* start_xf(xf_category_t cat) override;
+    virtual iface::import_cell_style* start_cell_style() override;
 
     virtual void set_font_count(size_t n) override;
     virtual void set_fill_count(size_t n) override;

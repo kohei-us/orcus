@@ -1866,7 +1866,7 @@ void xls_xml_context::commit_default_style()
     if (!styles)
         return;
 
-    ss::iface::import_font_style* font_style = styles->get_font_style();
+    ss::iface::import_font_style* font_style = styles->start_font_style();
     ENSURE_INTERFACE(font_style, import_font_style);
 
     if (m_default_style)
@@ -1887,7 +1887,7 @@ void xls_xml_context::commit_default_style()
     std::size_t id = font_style->commit();
     assert(id == 0);
 
-    ss::iface::import_fill_style* fill_style = styles->get_fill_style();
+    ss::iface::import_fill_style* fill_style = styles->start_fill_style();
     ENSURE_INTERFACE(fill_style, import_fill_style);
 
     if (m_default_style)
@@ -1906,7 +1906,7 @@ void xls_xml_context::commit_default_style()
     id = fill_style->commit();
     assert(id == 0);
 
-    auto* border_style = styles->get_border_style();
+    auto* border_style = styles->start_border_style();
     ENSURE_INTERFACE(border_style, import_border_style);
 
     if (m_default_style && !m_default_style->borders.empty())
@@ -1921,7 +1921,7 @@ void xls_xml_context::commit_default_style()
     id = border_style->commit();
     assert(id == 0);
 
-    auto* cell_protection = styles->get_cell_protection();
+    auto* cell_protection = styles->start_cell_protection();
     ENSURE_INTERFACE(cell_protection, import_cell_protection);
 
     if (m_default_style)
@@ -1934,7 +1934,7 @@ void xls_xml_context::commit_default_style()
     id = cell_protection->commit();
     assert(id == 0);
 
-    auto* number_format = styles->get_number_format();
+    auto* number_format = styles->start_number_format();
     ENSURE_INTERFACE(number_format, import_number_format);
 
     if (m_default_style)
@@ -1943,7 +1943,7 @@ void xls_xml_context::commit_default_style()
     id = number_format->commit();
     assert(id == 0);
 
-    auto* xf = styles->get_xf(ss::xf_category_t::cell);
+    auto* xf = styles->start_xf(ss::xf_category_t::cell);
     ENSURE_INTERFACE(xf, import_xf);
 
     auto set_default_style = [this](ss::iface::import_xf* ixf)
@@ -1966,7 +1966,7 @@ void xls_xml_context::commit_default_style()
     id = xf->commit();
     assert(id == 0);
 
-    xf = styles->get_xf(ss::xf_category_t::cell_style);
+    xf = styles->start_xf(ss::xf_category_t::cell_style);
     ENSURE_INTERFACE(xf, import_xf);
 
     if (m_default_style && m_default_style->name == "Normal")
@@ -1975,7 +1975,7 @@ void xls_xml_context::commit_default_style()
     id = xf->commit();
     assert(id == 0);
 
-    auto* cell_style = styles->get_cell_style();
+    auto* cell_style = styles->start_cell_style();
     ENSURE_INTERFACE(cell_style, import_cell_style);
 
     if (m_default_style && m_default_style->name == "Normal")
@@ -2000,10 +2000,10 @@ void xls_xml_context::commit_styles()
 
     for (const std::unique_ptr<style_type>& style : m_styles)
     {
-        auto* xf = styles->get_xf(ss::xf_category_t::cell);
+        auto* xf = styles->start_xf(ss::xf_category_t::cell);
         ENSURE_INTERFACE(xf, import_xf);
 
-        auto* font_style = styles->get_font_style();
+        auto* font_style = styles->start_font_style();
         ENSURE_INTERFACE(font_style, import_font_style);
 
         font_style->set_bold(style->font.bold);
@@ -2017,7 +2017,7 @@ void xls_xml_context::commit_styles()
 
         xf->set_font(font_id);
 
-        auto* fill_style = styles->get_fill_style();
+        auto* fill_style = styles->start_fill_style();
         ENSURE_INTERFACE(fill_style, import_fill_style);
 
         if (style->fill.solid)
@@ -2033,7 +2033,7 @@ void xls_xml_context::commit_styles()
             xf->set_fill(fill_id);
         }
 
-        auto* protect = styles->get_cell_protection();
+        auto* protect = styles->start_cell_protection();
         ENSURE_INTERFACE(protect, import_cell_protection);
 
         protect->set_locked(style->cell_protection.locked);
@@ -2046,7 +2046,7 @@ void xls_xml_context::commit_styles()
         {
             styles->set_border_count(style->borders.size());
 
-            auto* border_style = styles->get_border_style();
+            auto* border_style = styles->start_border_style();
             ENSURE_INTERFACE(border_style, import_border_style);
 
             for (const border_style_type& b : style->borders)
@@ -2072,7 +2072,7 @@ void xls_xml_context::commit_styles()
 
         if (!style->number_format.empty())
         {
-            auto* number_format = styles->get_number_format();
+            auto* number_format = styles->start_number_format();
             ENSURE_INTERFACE(number_format, import_number_format);
             number_format->set_code(style->number_format);
             size_t number_format_id = number_format->commit();

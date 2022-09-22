@@ -423,7 +423,7 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     }
 
     // Commit the font data.
-    auto* font_style = mp_styles->get_font_style();
+    auto* font_style = mp_styles->start_font_style();
     ENSURE_INTERFACE(font_style, import_font_style);
 
     if (font_name)
@@ -653,7 +653,7 @@ void style_context::start_table_cell_properties(const xml_token_pair_t& parent, 
 
     if (bg_color)
     {
-        auto* fill_style = mp_styles->get_fill_style();
+        auto* fill_style = mp_styles->start_fill_style();
         ENSURE_INTERFACE(fill_style, import_fill_style);
 
         fill_style->set_pattern_type(ss::fill_pattern_t::solid);
@@ -663,7 +663,7 @@ void style_context::start_table_cell_properties(const xml_token_pair_t& parent, 
 
     if (!border_styles.empty())
     {
-        auto* border_style = mp_styles->get_border_style();
+        auto* border_style = mp_styles->start_border_style();
         ENSURE_INTERFACE(border_style, import_border_style);
 
         for (const auto& [dir, details] : border_styles)
@@ -678,7 +678,7 @@ void style_context::start_table_cell_properties(const xml_token_pair_t& parent, 
 
     if (cell_protection_set)
     {
-        auto* cell_protection = mp_styles->get_cell_protection();
+        auto* cell_protection = mp_styles->start_cell_protection();
         ENSURE_INTERFACE(cell_protection, import_cell_protection);
 
         if (hidden)

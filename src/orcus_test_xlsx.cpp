@@ -408,7 +408,7 @@ void test_xlsx_number_format()
         const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
 
-        const spreadsheet::number_format_t* nf = styles.get_number_format(cf->number_format);
+        const spreadsheet::number_format_t* nf = styles.start_number_format(cf->number_format);
         assert(nf);
         assert(nf->format_string == c.expected);
     }
