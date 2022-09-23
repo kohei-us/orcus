@@ -169,6 +169,7 @@ class xls_xml_context : public xml_context_base
     struct style_type
     {
         std::string_view id;
+        std::string_view parent_id;
         std::string_view name;
 
         font_style_type font;
@@ -177,6 +178,12 @@ class xls_xml_context : public xml_context_base
         cell_protection_type cell_protection;
         std::string_view number_format;
         std::vector<border_style_type> borders;
+    };
+
+    struct style_map_type
+    {
+        std::size_t xfid;
+        spreadsheet::xf_category_t category;
     };
 
     struct named_exp
@@ -226,7 +233,7 @@ class xls_xml_context : public xml_context_base
 
     using named_expressions_type = std::vector<named_exp>;
     using styles_type = std::vector<std::unique_ptr<style_type>>;
-    using style_id_xf_map_type = std::unordered_map<std::string_view, std::size_t>;
+    using style_id_xf_map_type = std::unordered_map<std::string_view, style_map_type>;
     using array_formula_pair_type = std::pair<spreadsheet::range_t, std::unique_ptr<array_formula_type>>;
     using array_formulas_type = std::list<array_formula_pair_type>;
     using cell_formulas_type = std::deque<std::deque<cell_formula_type>>;

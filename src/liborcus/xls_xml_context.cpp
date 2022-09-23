@@ -924,7 +924,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 break;
             case XML_Style:
             {
-                std::string_view style_id, style_name;
+                m_current_style = std::make_unique<style_type>();
 
                 for (const xml_token_attr_t& attr : attrs)
                 {
@@ -934,19 +934,18 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                     switch (attr.name)
                     {
                         case XML_ID:
-                            style_id = intern(attr);
+                            m_current_style->id = intern(attr);
                             break;
                         case XML_Name:
-                            style_name = intern(attr);
+                            m_current_style->name = intern(attr);
+                            break;
+                        case XML_Parent:
+                            m_current_style->parent_id = intern(attr);
                             break;
                         default:
                             ;
                     }
                 }
-
-                m_current_style = std::make_unique<style_type>();
-                m_current_style->id = style_id;
-                m_current_style->name = style_name;
 
                 break;
             }
@@ -1673,7 +1672,7 @@ void xls_xml_context::end_element_cell()
         auto it = m_style_map.find(m_cur_cell_style_id);
         if (it != m_style_map.end())
         {
-            size_t xf_id = it->second;
+            auto [xf_id, category] = it->second;
             mp_cur_sheet->set_format(m_cur_row, m_cur_col, xf_id);
         }
     }
@@ -2000,8 +1999,32 @@ void xls_xml_context::commit_styles()
 
     for (const std::unique_ptr<style_type>& style : m_styles)
     {
-        auto* xf = styles->start_xf(ss::xf_category_t::cell);
+        auto category = style->name.empty() ? ss::xf_category_t::cell : ss::xf_category_t::cell_style;
+
+        auto* xf = styles->start_xf(category);
         ENSURE_INTERFACE(xf, import_xf);
+
+        if (!style->parent_id.empty())
+        {
+            auto it = m_style_map.find(style->parent_id);
+            if (it == m_style_map.end())
+            {
+                std::ostringstream os;
+                os << "style inherits from a parent id of '" << style->parent_id << "' but no records for that id are found";
+                warn(os.str());
+            }
+
+            if (it->second.category == ss::xf_category_t::cell_style)
+            {
+                xf->set_style_xf(it->second.xfid);
+            }
+            else
+            {
+                std::ostringstream os;
+                os << "parent style with the id of '" << style->parent_id << "' is not a named style";
+                warn(os.str());
+            }
+        }
 
         auto* font_style = styles->start_font_style();
         ENSURE_INTERFACE(font_style, import_font_style);
@@ -2081,9 +2104,18 @@ void xls_xml_context::commit_styles()
 
         // TODO : handle text indent level.
 
-        size_t xf_id = xf->commit();
+        std::size_t xfid = xf->commit();
+        m_style_map.insert({style->id, {xfid, category}});
 
-        m_style_map.insert({style->id, xf_id});
+        if (category == ss::xf_category_t::cell_style)
+        {
+            // Push the named cell style record.
+            auto* cell_style = styles->start_cell_style();
+            ENSURE_INTERFACE(cell_style, import_cell_style);
+            cell_style->set_name(style->name);
+            cell_style->set_xf(xfid);
+            cell_style->commit();
+        }
     }
 }
 
