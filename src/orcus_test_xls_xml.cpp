@@ -1258,7 +1258,37 @@ void test_xls_xml_styles_direct_format()
     assert(xf->hor_align == ss::hor_alignment_t::center);
     assert(xf->ver_align == ss::ver_alignment_t::middle);
 
-    // TODO: check B4, D6 and D8.
+    // B4 has yellow background, has "Calibri" font at 14 pt etc
+    xfid = sh->get_cell_format(3, 1);
+
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.name == "Calibri");
+    assert(font->second.name);
+    assert(font->first.size == 14.0);
+    assert(font->second.size);
+    assert(font->first.color == ss::color_t(0xFF, 0x37, 0x56, 0x23));
+    assert(font->second.color);
+
+    // B4 has yellow background
+    const auto* fill = styles.get_fill_state(xf->fill);
+    assert(fill);
+    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->second.pattern_type);
+    assert(fill->first.fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
+    assert(fill->second.fg_color);
+
+    // B4 is horizontally right-aligned and vertically bottom-aligned
+    assert(xf->hor_align == ss::hor_alignment_t::right);
+    assert(xf->ver_align == ss::ver_alignment_t::bottom);
+
+    // B4 has wrap text on
+    assert(xf->wrap_text && *xf->wrap_text);
+
+    // TODO: check D6 and D8.
 }
 
 void test_xls_xml_view_cursor_per_sheet()

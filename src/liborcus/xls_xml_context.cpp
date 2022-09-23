@@ -2029,6 +2029,12 @@ void xls_xml_context::commit_styles()
         auto* font_style = styles->start_font_style();
         ENSURE_INTERFACE(font_style, import_font_style);
 
+        if (!style->font.name.empty())
+            font_style->set_name(style->font.name);
+
+        if (style->font.size)
+            font_style->set_size(*style->font.size);
+
         font_style->set_bold(style->font.bold);
         font_style->set_italic(style->font.italic);
         font_style->set_color(255,
