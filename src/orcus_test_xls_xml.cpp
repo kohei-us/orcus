@@ -1197,6 +1197,70 @@ void test_xls_xml_cell_properties_locked_and_hidden()
     }
 }
 
+void test_xls_xml_styles_direct_format()
+{
+    test::stack_printer __sp__(__func__);
+
+    std::string path{SRCDIR"/test/xls-xml/styles/direct-format.xml"};
+    auto doc = load_doc_from_filepath(path, false, ss::formula_error_policy_t::fail);
+    assert(doc);
+
+    const auto& model = doc->get_model_context();
+
+    {
+        // Check cell string values first.
+
+        struct check_type
+        {
+            ixion::abs_address_t address;
+            std::string_view str;
+        };
+
+        const check_type checks[] = {
+            // sheet, row, column, expected cell string value
+            { { 0, 1, 1 }, "Bold and underlined" },
+            { { 0, 3, 1 }, "Yellow background\nand\nright aligned" },
+            { { 0, 5, 3 }, "Named Format (Good)" },
+            { { 0, 7, 3 }, "Named Format (Good) plus direct format on top" },
+        };
+
+        for (const auto& c : checks)
+        {
+            ixion::string_id_t sid = model.get_string_identifier(c.address);
+            const std::string* s = model.get_string(sid);
+            assert(s);
+            assert(*s == c.str);
+        }
+    }
+
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    const ss::styles& styles = doc->get_styles();
+
+    // Text in B2 is bold, underlined, and horizontally and vertically centered.
+    auto xfid = sh->get_cell_format(1, 1);
+    const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    const auto* font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.bold);
+    assert(font->second.bold);
+
+    const auto* border = styles.get_border_state(xf->border);
+    assert(border);
+
+    // "Continuous" with a weight of 1 is mapped to 'thin' border style.
+    assert(border->first.bottom.style == ss::border_style_t::thin);
+    assert(border->second.bottom.style);
+
+    assert(xf->hor_align == ss::hor_alignment_t::center);
+    assert(xf->ver_align == ss::ver_alignment_t::middle);
+
+    // TODO: check B4, D6 and D8.
+}
+
 void test_xls_xml_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
@@ -1489,7 +1553,7 @@ void test_xls_xml_skip_error_cells()
     assert(is_formula_cell_with_error(ixion::abs_address_t(0, 4, 0)));
 }
 
-}
+} // anonymous namespace
 
 int main()
 {
@@ -1514,6 +1578,7 @@ int main()
     test_xls_xml_cell_properties_wrap_and_shrink();
     test_xls_xml_cell_properties_default_style();
     test_xls_xml_cell_properties_locked_and_hidden();
+    test_xls_xml_styles_direct_format();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();
