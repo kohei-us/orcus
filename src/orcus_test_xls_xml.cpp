@@ -1288,7 +1288,36 @@ void test_xls_xml_styles_direct_format()
     // B4 has wrap text on
     assert(xf->wrap_text && *xf->wrap_text);
 
-    // TODO: check D6 and D8.
+    // D6 only uses "Good" named cell style with no direct formatting
+    xfid = sh->get_cell_format(5, 3);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    const ss::cell_style_t* xstyle = styles.get_cell_style(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Good");
+
+    // Check the format detail of the "Good" style
+    xf = styles.get_cell_style_format(xstyle->xf);
+    assert(xf);
+
+    font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.name == "Calibri");
+    assert(font->second.name);
+    assert(font->first.size == 11.0);
+    assert(font->second.size);
+    assert(font->first.color == ss::color_t(0xFF, 0x00, 0x61, 0x00));
+    assert(font->second.color);
+
+    fill = styles.get_fill_state(xf->fill);
+    assert(fill);
+    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->second.pattern_type);
+    assert(fill->first.fg_color == ss::color_t(0xFF, 0xC6, 0xEF, 0xCE));
+    assert(fill->second.fg_color);
+
+    // TODO: check D8.
 }
 
 void test_xls_xml_view_cursor_per_sheet()

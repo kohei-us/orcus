@@ -1669,10 +1669,10 @@ void xls_xml_context::end_element_cell()
 
     if (mp_cur_sheet && !m_cur_cell_style_id.empty())
     {
-        auto it = m_style_map.find(m_cur_cell_style_id);
-        if (it != m_style_map.end())
+        auto it = m_style_map_cell.find(m_cur_cell_style_id);
+        if (it != m_style_map_cell.end())
         {
-            auto [xf_id, category] = it->second;
+            auto xf_id = it->second;
             mp_cur_sheet->set_format(m_cur_row, m_cur_col, xf_id);
         }
     }
@@ -2006,24 +2006,15 @@ void xls_xml_context::commit_styles()
 
         if (!style->parent_id.empty())
         {
-            auto it = m_style_map.find(style->parent_id);
-            if (it == m_style_map.end())
+            auto it = m_style_map_named_style.find(style->parent_id);
+            if (it == m_style_map_named_style.end())
             {
                 std::ostringstream os;
                 os << "style inherits from a parent id of '" << style->parent_id << "' but no records for that id are found";
                 warn(os.str());
             }
 
-            if (it->second.category == ss::xf_category_t::cell_style)
-            {
-                xf->set_style_xf(it->second.xfid);
-            }
-            else
-            {
-                std::ostringstream os;
-                os << "parent style with the id of '" << style->parent_id << "' is not a named style";
-                warn(os.str());
-            }
+            xf->set_style_xf(it->second);
         }
 
         auto* font_style = styles->start_font_style();
@@ -2111,16 +2102,46 @@ void xls_xml_context::commit_styles()
         // TODO : handle text indent level.
 
         std::size_t xfid = xf->commit();
-        m_style_map.insert({style->id, {xfid, category}});
 
-        if (category == ss::xf_category_t::cell_style)
+        switch (category)
         {
-            // Push the named cell style record.
-            auto* cell_style = styles->start_cell_style();
-            ENSURE_INTERFACE(cell_style, import_cell_style);
-            cell_style->set_name(style->name);
-            cell_style->set_xf(xfid);
-            cell_style->commit();
+            case ss::xf_category_t::cell:
+            {
+                m_style_map_cell.insert({style->id, xfid});
+                break;
+            }
+            case ss::xf_category_t::cell_style:
+            {
+                m_style_map_named_style.insert({style->id, xfid});
+
+                // Push the named cell style record.
+                auto* cell_style = styles->start_cell_style();
+                ENSURE_INTERFACE(cell_style, import_cell_style);
+                cell_style->set_name(style->name);
+                cell_style->set_xf(xfid);
+                cell_style->commit();
+
+                auto* xf_cell = styles->start_xf(ss::xf_category_t::cell);
+                ENSURE_INTERFACE(xf_cell, import_xf);
+                xf_cell->set_style_xf(xfid);
+                xfid = xf_cell->commit();
+                m_style_map_cell.insert({style->id, xfid});
+                break;
+            }
+            case ss::xf_category_t::differential:
+            {
+                std::ostringstream os;
+                os << "differential cell format type is not supported";
+                warn(os.str());
+                break;
+            }
+            case ss::xf_category_t::unknown:
+            {
+                std::ostringstream os;
+                os << "cell format type is unknown";
+                warn(os.str());
+                break;
+            }
         }
     }
 }

@@ -180,12 +180,6 @@ class xls_xml_context : public xml_context_base
         std::vector<border_style_type> borders;
     };
 
-    struct style_map_type
-    {
-        std::size_t xfid;
-        spreadsheet::xf_category_t category;
-    };
-
     struct named_exp
     {
         std::string_view name;
@@ -233,7 +227,7 @@ class xls_xml_context : public xml_context_base
 
     using named_expressions_type = std::vector<named_exp>;
     using styles_type = std::vector<std::unique_ptr<style_type>>;
-    using style_id_xf_map_type = std::unordered_map<std::string_view, style_map_type>;
+    using style_id_xf_map_type = std::unordered_map<std::string_view, std::size_t>;
     using array_formula_pair_type = std::pair<spreadsheet::range_t, std::unique_ptr<array_formula_type>>;
     using array_formulas_type = std::list<array_formula_pair_type>;
     using cell_formulas_type = std::deque<std::deque<cell_formula_type>>;
@@ -321,7 +315,8 @@ private:
     styles_type m_styles;
     table_properties m_table_props;
 
-    style_id_xf_map_type m_style_map;
+    style_id_xf_map_type m_style_map_cell;
+    style_id_xf_map_type m_style_map_named_style;
 
     xls_xml_data_context m_cc_data;
 };
