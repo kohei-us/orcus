@@ -1293,6 +1293,7 @@ void test_xls_xml_styles_direct_format()
     xf = styles.get_cell_format(xfid);
     assert(xf);
 
+    const auto xfid_style_good = xf->style_xf;
     const ss::cell_style_t* xstyle = styles.get_cell_style(xf->style_xf);
     assert(xstyle);
     assert(xstyle->name == "Good");
@@ -1317,7 +1318,26 @@ void test_xls_xml_styles_direct_format()
     assert(fill->first.fg_color == ss::color_t(0xFF, 0xC6, 0xEF, 0xCE));
     assert(fill->second.fg_color);
 
-    // TODO: check D8.
+    // D8 has some direct formats applied on top of "Good" named style
+    xfid = sh->get_cell_format(7, 3);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    // Make sure it has the "Good" style as its basis
+    assert(xf->style_xf == xfid_style_good);
+    xstyle = styles.get_cell_style(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Good");
+
+    // Format directly applied to D8 on top of "Good" style
+    assert(xf->hor_align == ss::hor_alignment_t::center);
+    assert(xf->ver_align == ss::ver_alignment_t::bottom);
+    assert(xf->wrap_text);
+    assert(*xf->wrap_text);
+    font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.bold);
+    assert(font->second.bold);
 }
 
 void test_xls_xml_view_cursor_per_sheet()
@@ -1616,7 +1636,7 @@ void test_xls_xml_skip_error_cells()
 
 int main()
 {
-    test_config.debug = true;
+    test_config.debug = false;
     test_config.structure_check = true;
 
     test_xls_xml_import();
