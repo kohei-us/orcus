@@ -107,6 +107,8 @@ std::vector<fs::path> dirs_non_recalc = {
  */
 void test_xlsx_import()
 {
+    test::stack_printer __sp__(__func__);
+
     auto run_check = [](const fs::path& dir, bool recalc)
     {
         // Read the input.xlsx document.
@@ -143,6 +145,8 @@ void test_xlsx_import()
 
 void test_xlsx_table_autofilter()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/table/autofilter.xlsx");
     spreadsheet::range_size_t ss{1048576, 16384};
     ss::document doc{ss};
@@ -178,6 +182,8 @@ void test_xlsx_table_autofilter()
 
 void test_xlsx_table()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/table/table-1.xlsx");
     ss::document doc{{1048576, 16384}};
     ss::import_factory factory(doc);
@@ -244,6 +250,8 @@ void test_xlsx_table()
 
 void test_xlsx_merged_cells()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/merged-cells/simple.xlsx");
 
     spreadsheet::range_size_t ss{1048576, 16384};
@@ -290,6 +298,8 @@ void test_xlsx_merged_cells()
 
 void test_xlsx_date_time()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/date-time/input.xlsx");
 
     ss::document doc{{1048576, 16384}};
@@ -328,6 +338,8 @@ void test_xlsx_date_time()
 
 void test_xlsx_background_fill()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string_view path(SRCDIR"/test/xlsx/background-color/standard.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
@@ -374,6 +386,8 @@ void test_xlsx_background_fill()
 
 void test_xlsx_number_format()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string_view path(SRCDIR"/test/xlsx/number-format/date-time.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
@@ -417,6 +431,8 @@ void test_xlsx_number_format()
 
 void test_xlsx_text_alignment()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string_view path(SRCDIR"/test/xlsx/text-alignment/input.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
@@ -483,6 +499,8 @@ void test_xlsx_text_alignment()
 
 void test_xlsx_cell_borders_single_cells()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string_view path(SRCDIR"/test/xlsx/borders/single-cells.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
@@ -533,6 +551,8 @@ void test_xlsx_cell_borders_single_cells()
 
 void test_xlsx_cell_borders_directions()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string_view path(SRCDIR"/test/xlsx/borders/directions.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
@@ -642,6 +662,8 @@ void test_xlsx_cell_borders_directions()
 
 void test_xlsx_cell_borders_colors()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string_view path(SRCDIR"/test/xlsx/borders/colors.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
@@ -714,6 +736,8 @@ void test_xlsx_cell_borders_colors()
 
 void test_xlsx_hidden_rows_columns()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string_view path(SRCDIR"/test/xlsx/hidden-rows-columns/input.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
 
@@ -790,6 +814,8 @@ void test_xlsx_hidden_rows_columns()
 
 void test_xlsx_cell_properties()
 {
+    test::stack_printer __sp__(__func__);
+
     fs::path path{SRCDIR"/test/xlsx/cell-properties/wrap-and-shrink.xlsx"};
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.string());
 
@@ -820,8 +846,155 @@ void test_xlsx_cell_properties()
     assert(*xf->shrink_to_fit);
 }
 
+void test_xlsx_styles_direct_format()
+{
+    test::stack_printer __sp__(__func__);
+
+    fs::path path{SRCDIR"/test/xlsx/styles/direct-format.xlsx"};
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path.string());
+    assert(doc);
+
+    const auto& model = doc->get_model_context();
+
+    {
+        // Check cell string values first.
+
+        struct check_type
+        {
+            ixion::abs_address_t address;
+            std::string_view str;
+        };
+
+        const check_type checks[] = {
+            // sheet, row, column, expected cell string value
+            { { 0, 1, 1 }, "Bold and underlined" },
+            { { 0, 3, 1 }, "Yellow background\nand\nright aligned" },
+            { { 0, 5, 3 }, "Named Format (Good)" },
+            { { 0, 7, 3 }, "Named Format (Good) plus direct format on top" },
+        };
+
+        for (const auto& c : checks)
+        {
+            ixion::string_id_t sid = model.get_string_identifier(c.address);
+            const std::string* s = model.get_string(sid);
+            assert(s);
+            assert(*s == c.str);
+        }
+    }
+
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    const ss::styles& styles = doc->get_styles();
+
+    // Text in B2 is bold, underlined, and horizontally and vertically centered.
+    auto xfid = sh->get_cell_format(1, 1);
+    const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    const auto* font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.bold);
+    assert(font->second.bold);
+
+    const auto* border = styles.get_border_state(xf->border);
+    assert(border);
+
+    // "Continuous" with a weight of 1 is mapped to 'thin' border style.
+    assert(border->first.bottom.style == ss::border_style_t::thin);
+    assert(border->second.bottom.style);
+
+    assert(xf->hor_align == ss::hor_alignment_t::center);
+    assert(xf->ver_align == ss::ver_alignment_t::middle);
+
+    // B4 has yellow background, has "Calibri" font at 14 pt etc
+    xfid = sh->get_cell_format(3, 1);
+
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.name == "Calibri");
+    assert(font->second.name);
+    assert(font->first.size == 14.0);
+    assert(font->second.size);
+#if 0
+    assert(font->first.color == ss::color_t(0xFF, 0x37, 0x56, 0x23));
+    assert(font->second.color);
+
+    // B4 has yellow background
+    const auto* fill = styles.get_fill_state(xf->fill);
+    assert(fill);
+    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->second.pattern_type);
+    assert(fill->first.fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
+    assert(fill->second.fg_color);
+
+    // B4 is horizontally right-aligned and vertically bottom-aligned
+    assert(xf->hor_align == ss::hor_alignment_t::right);
+    assert(xf->ver_align == ss::ver_alignment_t::bottom);
+
+    // B4 has wrap text on
+    assert(xf->wrap_text && *xf->wrap_text);
+
+    // D6 only uses "Good" named cell style with no direct formatting
+    xfid = sh->get_cell_format(5, 3);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    const auto xfid_style_good = xf->style_xf;
+    const ss::cell_style_t* xstyle = styles.get_cell_style(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Good");
+
+    // Check the format detail of the "Good" style
+    xf = styles.get_cell_style_format(xstyle->xf);
+    assert(xf);
+
+    font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.name == "Calibri");
+    assert(font->second.name);
+    assert(font->first.size == 11.0);
+    assert(font->second.size);
+    assert(font->first.color == ss::color_t(0xFF, 0x00, 0x61, 0x00));
+    assert(font->second.color);
+
+    fill = styles.get_fill_state(xf->fill);
+    assert(fill);
+    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->second.pattern_type);
+    assert(fill->first.fg_color == ss::color_t(0xFF, 0xC6, 0xEF, 0xCE));
+    assert(fill->second.fg_color);
+
+    // D8 has some direct formats applied on top of "Good" named style
+    xfid = sh->get_cell_format(7, 3);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    // Make sure it has the "Good" style as its basis
+    assert(xf->style_xf == xfid_style_good);
+    xstyle = styles.get_cell_style(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Good");
+
+    // Format directly applied to D8 on top of "Good" style
+    assert(xf->hor_align == ss::hor_alignment_t::center);
+    assert(xf->ver_align == ss::ver_alignment_t::bottom);
+    assert(xf->wrap_text);
+    assert(*xf->wrap_text);
+    font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.bold);
+    assert(font->second.bold);
+#endif
+}
+
 void test_xlsx_pivot_two_pivot_caches()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
 
     ss::document doc{{1048576, 16384}};
@@ -930,6 +1103,8 @@ void test_xlsx_pivot_two_pivot_caches()
 
 void test_xlsx_pivot_mixed_type_field()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/pivot-table/mixed-type-field.xlsx");
 
     ss::document doc{{1048576, 16384}};
@@ -1056,6 +1231,8 @@ void test_xlsx_pivot_mixed_type_field()
 
 void test_xlsx_pivot_group_field()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/pivot-table/group-field.xlsx");
 
     ss::document doc{{1048576, 16384}};
@@ -1149,6 +1326,8 @@ void test_xlsx_pivot_group_field()
 
 void test_xlsx_pivot_group_by_numbers()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/pivot-table/group-by-numbers.xlsx");
 
     ss::document doc{{1048576, 16384}};
@@ -1230,6 +1409,8 @@ void test_xlsx_pivot_group_by_numbers()
 
 void test_xlsx_pivot_group_by_dates()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/pivot-table/group-by-dates.xlsx");
 
     ss::document doc{{1048576, 16384}};
@@ -1341,6 +1522,8 @@ void test_xlsx_pivot_group_by_dates()
 
 void test_xlsx_pivot_error_values()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/pivot-table/error-values.xlsx");
 
     ss::document doc{{1048576, 16384}};
@@ -1392,6 +1575,8 @@ void test_xlsx_pivot_error_values()
 
 void test_xlsx_view_cursor_per_sheet()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/view/cursor-per-sheet.xlsx");
 
     ss::document doc{{1048576, 16384}};
@@ -1450,6 +1635,8 @@ struct expected_selection
 
 void test_xlsx_view_cursor_split_pane()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/view/cursor-split-pane.xlsx");
 
     ss::document doc{{1048576, 16384}};
@@ -1586,6 +1773,8 @@ void test_xlsx_view_cursor_split_pane()
 
 void test_xlsx_view_frozen_pane()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string path(SRCDIR"/test/xlsx/view/frozen-pane.xlsx");
 
     ss::document doc{{1048576, 16384}};
@@ -1642,6 +1831,8 @@ void test_xlsx_view_frozen_pane()
 
 void test_xlsx_doc_structure_unordered_sheet_positions()
 {
+    test::stack_printer __sp__(__func__);
+
     std::string_view path(SRCDIR"/test/xlsx/doc-structure/unordered-sheet-positions.xlsx");
     std::unique_ptr<ss::document> doc = load_doc(path);
 
@@ -1664,7 +1855,7 @@ void test_xlsx_doc_structure_unordered_sheet_positions()
 
 int main()
 {
-    test_config.debug = true;
+    test_config.debug = false;
     test_config.structure_check = true;
 
     test_xlsx_import();
@@ -1680,6 +1871,7 @@ int main()
     test_xlsx_cell_borders_colors();
     test_xlsx_hidden_rows_columns();
     test_xlsx_cell_properties();
+    test_xlsx_styles_direct_format();
 
     // pivot table
     test_xlsx_pivot_two_pivot_caches();
