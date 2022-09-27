@@ -920,8 +920,10 @@ void test_xlsx_styles_direct_format()
     assert(font->first.size == 14.0);
     assert(font->second.size);
 #if 0
+    // TODO: xlsx stores this color as a theme index which we don't yet support
     assert(font->first.color == ss::color_t(0xFF, 0x37, 0x56, 0x23));
     assert(font->second.color);
+#endif
 
     // B4 has yellow background
     const auto* fill = styles.get_fill_state(xf->fill);
@@ -988,7 +990,6 @@ void test_xlsx_styles_direct_format()
     assert(font);
     assert(font->first.bold);
     assert(font->second.bold);
-#endif
 }
 
 void test_xlsx_pivot_two_pivot_caches()

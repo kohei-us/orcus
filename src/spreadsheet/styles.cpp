@@ -634,6 +634,20 @@ void styles::clear()
     mp_impl = std::make_unique<impl>();
 }
 
+void styles::finalize()
+{
+    // Sort the cell styles records by their xf ID's, as they may not appear in
+    // the same order as their corresponding cell style format records that the
+    // xf ID's point to.
+
+    auto less_func = [](const cell_style_t& left, const cell_style_t& right)
+    {
+        return left.xf < right.xf;
+    };
+
+    std::sort(mp_impl->cell_styles.begin(), mp_impl->cell_styles.end(), less_func);
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

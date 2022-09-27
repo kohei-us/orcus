@@ -337,6 +337,7 @@ public:
     size_t get_cell_styles_count() const;
 
     void clear();
+    void finalize();
 };
 
 }}

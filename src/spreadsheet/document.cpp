@@ -118,6 +118,8 @@ void document::finalize()
             sh->data.finalize();
         }
     );
+
+    mp_impl->styles_store.finalize();
 }
 
 sheet* document::append_sheet(std::string_view sheet_name)
