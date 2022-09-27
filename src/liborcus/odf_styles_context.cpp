@@ -202,6 +202,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
                     xf->set_shrink_to_fit(*cell.shrink_to_fit);
 
                 size_t style_xf_id = xf->commit();
+                cell.xf = style_xf_id;
 
                 auto* cell_style = mp_styles->start_cell_style();
                 ENSURE_INTERFACE(cell_style, import_cell_style);
@@ -209,8 +210,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
                 cell_style->set_name(current_style->name);
                 cell_style->set_xf(style_xf_id);
                 cell_style->set_parent_name(current_style->parent_name);
-
-                cell.xf = cell_style->commit();
+                cell_style->commit();
             }
         }
 

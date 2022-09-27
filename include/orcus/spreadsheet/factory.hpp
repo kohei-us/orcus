@@ -232,7 +232,7 @@ public:
     void set_xf(size_t index) override;
     void set_builtin(size_t index) override;
     void set_parent_name(std::string_view s) override;
-    size_t commit() override;
+    void commit() override;
 
     void reset();
 };

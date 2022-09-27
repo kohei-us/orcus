@@ -494,7 +494,7 @@ public:
      */
     virtual void set_parent_name(std::string_view s) = 0;
 
-    virtual size_t commit() = 0;
+    virtual void commit() = 0;
 };
 
 }}}

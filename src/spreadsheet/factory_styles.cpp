@@ -691,11 +691,10 @@ void import_cell_style::set_parent_name(std::string_view s)
     mp_impl->cur_cell_style.parent_name = mp_impl->str_pool.intern(s).first;
 }
 
-size_t import_cell_style::commit()
+void import_cell_style::commit()
 {
-    size_t n = mp_impl->styles_model.append_cell_style(mp_impl->cur_cell_style);
+    mp_impl->styles_model.append_cell_style(mp_impl->cur_cell_style);
     mp_impl->cur_cell_style.reset();
-    return n;
 }
 
 
