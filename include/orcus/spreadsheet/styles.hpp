@@ -304,7 +304,7 @@ public:
     size_t append_diff_cell_format(const cell_format_t& cf);
 
     void reserve_cell_style_store(size_t n);
-    size_t append_cell_style(const cell_style_t& cs);
+    void append_cell_style(const cell_style_t& cs);
 
     const font_t* get_font(size_t index) const;
     const style_attrs_t<font_t>* get_font_state(size_t index) const;
@@ -325,6 +325,7 @@ public:
     const cell_format_t* get_cell_style_format(size_t index) const;
     const cell_format_t* get_dxf_format(size_t index) const;
     const cell_style_t* get_cell_style(size_t index) const;
+    const cell_style_t* get_cell_style_by_xf(size_t xfid) const;
 
     size_t get_font_count() const;
     size_t get_fill_count() const;

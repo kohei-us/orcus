@@ -946,7 +946,7 @@ void test_xlsx_styles_direct_format()
     assert(xf);
 
     const auto xfid_style_good = xf->style_xf;
-    const ss::cell_style_t* xstyle = styles.get_cell_style(xf->style_xf);
+    const ss::cell_style_t* xstyle = styles.get_cell_style_by_xf(xf->style_xf);
     assert(xstyle);
     assert(xstyle->name == "Good");
 
@@ -977,7 +977,7 @@ void test_xlsx_styles_direct_format()
 
     // Make sure it has the "Good" style as its basis
     assert(xf->style_xf == xfid_style_good);
-    xstyle = styles.get_cell_style(xf->style_xf);
+    xstyle = styles.get_cell_style_by_xf(xf->style_xf);
     assert(xstyle);
     assert(xstyle->name == "Good");
 

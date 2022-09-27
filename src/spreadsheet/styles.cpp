@@ -14,6 +14,7 @@
 #include <cassert>
 #include <iomanip>
 #include <vector>
+#include <map>
 
 namespace orcus { namespace spreadsheet {
 
@@ -322,6 +323,7 @@ struct styles::impl
     std::vector<cell_format_t> cell_formats;
     std::vector<cell_format_t> dxf_formats;
     std::vector<cell_style_t> cell_styles;
+    std::map<std::size_t, std::size_t> cell_styles_map; // style xf to style position in `cell_styles`
 
     string_pool str_pool;
 };
@@ -466,10 +468,9 @@ void styles::reserve_cell_style_store(size_t n)
     mp_impl->cell_styles.reserve(n);
 }
 
-size_t styles::append_cell_style(const cell_style_t& cs)
+void styles::append_cell_style(const cell_style_t& cs)
 {
     mp_impl->cell_styles.push_back(cs);
-    return mp_impl->cell_styles.size() - 1;
 }
 
 const font_t* styles::get_font(size_t index) const
@@ -584,6 +585,16 @@ const cell_style_t* styles::get_cell_style(size_t index) const
     return &mp_impl->cell_styles[index];
 }
 
+const cell_style_t* styles::get_cell_style_by_xf(size_t xfid) const
+{
+    auto it = mp_impl->cell_styles_map.find(xfid);
+    if (it == mp_impl->cell_styles_map.end())
+        return nullptr;
+
+    auto index = it->second;
+    return &mp_impl->cell_styles[index];
+}
+
 size_t styles::get_font_count() const
 {
     return mp_impl->fonts.size();
@@ -636,16 +647,11 @@ void styles::clear()
 
 void styles::finalize()
 {
-    // Sort the cell styles records by their xf ID's, as they may not appear in
-    // the same order as their corresponding cell style format records that the
-    // xf ID's point to.
-
-    auto less_func = [](const cell_style_t& left, const cell_style_t& right)
+    for (std::size_t i = 0; i < mp_impl->cell_styles.size(); ++i)
     {
-        return left.xf < right.xf;
-    };
-
-    std::sort(mp_impl->cell_styles.begin(), mp_impl->cell_styles.end(), less_func);
+        const auto& entry = mp_impl->cell_styles[i];
+        mp_impl->cell_styles_map.insert_or_assign(entry.xf, i);
+    }
 }
 
 }}
