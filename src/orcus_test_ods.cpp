@@ -36,6 +36,17 @@ typedef mdds::flat_segment_tree<std::size_t, bool> bool_segment_type;
 
 namespace {
 
+std::unique_ptr<ss::document> load_doc(const fs::path& filepath)
+{
+    spreadsheet::range_size_t ss{1048576, 16384};
+    std::unique_ptr<ss::document> doc = std::make_unique<ss::document>(ss);
+    import_factory factory(*doc);
+    orcus_ods app(&factory);
+    app.read_file(filepath.string());
+
+    return doc;
+}
+
 std::vector<const char*> dirs = {
     SRCDIR"/test/ods/raw-values-1/",
     SRCDIR"/test/ods/formula-1/",
@@ -49,27 +60,23 @@ void test_ods_import_cell_values()
 {
     for (const char* dir : dirs)
     {
-        std::string path(dir);
-        std::cout << path << std::endl;
+        fs::path filepath{dir};
+        filepath /= "input.ods";
+        std::cout << filepath << std::endl;
 
-        // Read the input.ods document.
-        path.append("input.ods");
-        spreadsheet::range_size_t ss{1048576, 16384};
-        spreadsheet::document doc{ss};
-        spreadsheet::import_factory factory(doc);
-        orcus_ods app(&factory);
-        app.read_file(path.c_str());
-        doc.recalc_formula_cells();
+        auto doc = load_doc(filepath);
+        assert(doc);
+        doc->recalc_formula_cells();
 
         // Dump the content of the model.
         std::ostringstream os;
-        doc.dump_check(os);
+        doc->dump_check(os);
         std::string check = os.str();
 
         // Check that against known control.
-        path = dir;
-        path.append("check.txt");
-        file_content control(path.data());
+        filepath = dir;
+        filepath /= "check.txt";
+        file_content control{filepath.string()};
 
         assert(!check.empty());
         assert(!control.empty());
@@ -80,15 +87,12 @@ void test_ods_import_cell_values()
 
 void test_ods_import_column_widths_row_heights()
 {
-    const char* filepath = SRCDIR"/test/ods/column-width-row-height/input.ods";
-    spreadsheet::range_size_t ss{1048576, 16384};
-    document doc{ss};
-    import_factory factory(doc);
-    orcus_ods app(&factory);
-    app.read_file(filepath);
+    fs::path filepath{SRCDIR"/test/ods/column-width-row-height/input.ods"};
+    auto doc = load_doc(filepath);
+    assert(doc);
 
-    assert(doc.get_sheet_count() > 0);
-    spreadsheet::sheet* sh = doc.get_sheet(0);
+    assert(doc->get_sheet_count() > 0);
+    spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
 
     // Column widths are in twips.
@@ -112,19 +116,17 @@ void test_ods_import_column_widths_row_heights()
 
 void test_ods_import_formatted_text()
 {
-    const char* filepath = SRCDIR"/test/ods/formatted-text/bold-and-italic.ods";
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
-    orcus_ods app(&factory);
-    app.read_file(filepath);
+    fs::path filepath{SRCDIR"/test/ods/formatted-text/bold-and-italic.ods"};
+    auto doc = load_doc(filepath);
+    assert(doc);
 
-    assert(doc.get_sheet_count() > 0);
-    spreadsheet::sheet* sh = doc.get_sheet(0);
+    assert(doc->get_sheet_count() > 0);
+    spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
 
-    const shared_strings& ss = doc.get_shared_strings();
+    const shared_strings& ss = doc->get_shared_strings();
 
-    const styles& styles = doc.get_styles();
+    const styles& styles = doc->get_styles();
 
     // A1 is unformatted
     size_t str_id = sh->get_string_identifier(0,0);
@@ -250,16 +252,14 @@ void test_ods_import_number_formats()
 {
     fs::path filepath{SRCDIR"/test/ods/number-format/basic-set.ods"};
 
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
-    orcus_ods app(&factory);
-    app.read_file(filepath.string());
+    auto doc = load_doc(filepath);
+    assert(doc);
 
-    assert(doc.get_sheet_count() > 0);
-    spreadsheet::sheet* sh = doc.get_sheet(0);
+    assert(doc->get_sheet_count() > 0);
+    spreadsheet::sheet* sh = doc->get_sheet(0);
     assert(sh);
 
-    const styles& styles = doc.get_styles();
+    const styles& styles = doc->get_styles();
 
     struct check
     {
@@ -313,13 +313,11 @@ void test_ods_import_cell_properties()
 {
     fs::path filepath{SRCDIR"/test/ods/cell-properties/wrap-and-shrink.ods"};
 
-    document doc{{1048576, 16384}};
-    import_factory factory(doc);
-    orcus_ods app(&factory);
-    app.read_file(filepath.string());
+    auto doc = load_doc(filepath);
+    assert(doc);
 
-    const ss::styles& styles = doc.get_styles();
-    const ss::sheet* sh = doc.get_sheet(0);
+    const ss::styles& styles = doc->get_styles();
+    const ss::sheet* sh = doc->get_sheet(0);
     assert(sh);
 
     std::size_t xfid = sh->get_cell_format(0, 1); // B1
@@ -343,6 +341,14 @@ void test_ods_import_cell_properties()
     assert(*xf->shrink_to_fit);
 }
 
+void test_ods_import_styles_direct_format()
+{
+    fs::path filepath{SRCDIR"/test/ods/styles/direct-format.ods"};
+
+    auto doc = load_doc(filepath);
+    assert(doc);
+}
+
 } // anonymous namespace
 
 int main()
@@ -352,6 +358,7 @@ int main()
     test_ods_import_formatted_text();
     test_ods_import_number_formats();
     test_ods_import_cell_properties();
+    test_ods_import_styles_direct_format();
 
     return EXIT_SUCCESS;
 }
