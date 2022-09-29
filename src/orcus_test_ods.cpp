@@ -347,6 +347,23 @@ void test_ods_import_styles_direct_format()
 
     auto doc = load_doc(filepath);
     assert(doc);
+
+    const ss::styles& styles = doc->get_styles();
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    // B2 - horizontally center, bold and underlined
+    std::size_t xfid = sh->get_cell_format(1, 1);
+    const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(xf->hor_align == ss::hor_alignment_t::center);
+
+    const ss::font_t* font = styles.get_font(xf->font);
+    assert(font);
+    assert(font->bold);
+    assert(font->underline_style == ss::underline_t::single_line);
+
+    // TODO: B4, D4 and D6
 }
 
 } // anonymous namespace
