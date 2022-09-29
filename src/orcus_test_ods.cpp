@@ -363,7 +363,27 @@ void test_ods_import_styles_direct_format()
     assert(font->bold);
     assert(font->underline_style == ss::underline_t::single_line);
 
-    // TODO: B4, D4 and D6
+    // B4 - yellow background and right-aligned
+    xfid = sh->get_cell_format(3, 1);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(xf->hor_align == ss::hor_alignment_t::right);
+
+    const ss::fill_t* fill = styles.get_fill(xf->fill);
+    assert(fill);
+    assert(fill->pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
+
+    // D4 - named style "Good" applied with no direct formatting on top
+    xfid = sh->get_cell_format(3, 3);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    const ss::cell_style_t* xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+//  assert(xstyle->name == "Good"); TODO: fix this
+
+    // TODO: D6
 }
 
 } // anonymous namespace
