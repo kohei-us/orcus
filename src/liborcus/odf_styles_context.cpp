@@ -214,7 +214,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
             }
         }
 
-        std::string_view style_name = current_style->name;
+        std::string_view style_name = get_session_context().intern(current_style->name);
         m_styles.emplace(style_name, std::move(current_style));
     }
 }

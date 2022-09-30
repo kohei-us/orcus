@@ -381,7 +381,7 @@ void test_ods_import_styles_direct_format()
 
     const ss::cell_style_t* xstyle = styles.get_cell_style_by_xf(xf->style_xf);
     assert(xstyle);
-//  assert(xstyle->name == "Good"); TODO: fix this
+    assert(xstyle->name == "Good");
 
     // TODO: D6
 }

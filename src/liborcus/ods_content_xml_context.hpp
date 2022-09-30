@@ -95,6 +95,7 @@ private:
     void start_cell(const xml_attrs_t& attrs);
     void end_cell();
 
+    void push_cell_format();
     void push_cell_value();
 
     void end_spreadsheet();
@@ -113,7 +114,7 @@ private:
     bool m_has_content;
 
     odf_styles_map_type m_styles; /// map storing all automatic styles by their names.
-    name2id_type m_cell_format_map; /// map of style names to cell format (xf) IDs.
+    name2id_type m_cell_format_map; /// map of automatic style names to cell format (xf) IDs.
 
     styles_context m_child_styles;
     text_para_context m_child_para;

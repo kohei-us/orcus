@@ -10,8 +10,10 @@
 #include "odf_namespace_types.hpp"
 #include "session_context.hpp"
 #include "ods_session_data.hpp"
+#include "impl_utils.hpp"
 
-#include "orcus/spreadsheet/import_interface.hpp"
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_styles.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -636,10 +638,7 @@ void ods_content_xml_context::start_cell(const xml_attrs_t& attrs)
 
 void ods_content_xml_context::end_cell()
 {
-    name2id_type::const_iterator it = m_cell_format_map.find(m_cell_attr.style_name);
-    if (m_cur_sheet.sheet && it != m_cell_format_map.end())
-        m_cur_sheet.sheet->set_format(m_row, m_col, it->second);
-
+    push_cell_format();
     push_cell_value();
 
     ++m_col;
@@ -650,6 +649,52 @@ void ods_content_xml_context::end_cell()
             push_cell_value();
     }
     m_has_content = false;
+}
+
+void ods_content_xml_context::push_cell_format()
+{
+    if (!m_cur_sheet.sheet)
+        return;
+
+    ss::iface::import_styles* xstyles = mp_factory->get_styles();
+    if (!xstyles)
+        return;
+
+    {
+        auto it = m_cell_format_map.find(m_cell_attr.style_name);
+        if (it != m_cell_format_map.end())
+        {
+            m_cur_sheet.sheet->set_format(m_row, m_col, it->second);
+            // style key found and direct cell format set.
+            return;
+        }
+    }
+
+    const ods_session_data& ods_data = get_session_context().get_data<ods_session_data>();
+
+    {
+        auto it = ods_data.styles_map.find(m_cell_attr.style_name);
+        if (it == ods_data.styles_map.end())
+            // style key not found and it's not a named style.
+            return;
+
+        const odf_style& style = *it->second;
+        if (style.family != style_family_table_cell)
+            // it's a named style but not a cell style
+            return;
+
+        // It references a named style. Create a direct cell style that
+        // references this named style, and set that as the cell format since we
+        // can't reference a named style directly from a cell.
+        const auto& celldata = std::get<odf_style::cell>(style.data);
+
+        ss::iface::import_xf* xf = xstyles->start_xf(ss::xf_category_t::cell);
+        ENSURE_INTERFACE(xf, import_xf);
+        xf->set_style_xf(celldata.xf);
+        std::size_t xfid = xf->commit();
+        m_cell_format_map.insert({m_cell_attr.style_name, xfid});
+        m_cur_sheet.sheet->set_format(m_row, m_col, xfid);
+    }
 }
 
 void ods_content_xml_context::push_cell_value()
