@@ -44,6 +44,8 @@ private:
 
     void push_number_style(std::unique_ptr<odf_number_format> num_style);
 
+    std::optional<std::size_t> query_parent_style_xfid(std::string_view parent_name) const;
+
 private:
     spreadsheet::iface::import_styles* mp_styles;
     odf_styles_map_type m_styles;

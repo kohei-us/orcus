@@ -125,6 +125,7 @@ protected:
     void init_element_validator(const xml_element_validator::rule* rules, std::size_t n_rules);
 
     session_context& get_session_context();
+    const session_context& get_session_context() const;
     const tokens& get_tokens() const;
     xml_token_pair_t push_stack(xmlns_id_t ns, xml_token_t name);
     bool pop_stack(xmlns_id_t ns, xml_token_t name);

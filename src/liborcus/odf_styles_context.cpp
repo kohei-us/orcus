@@ -154,6 +154,8 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
         assert(child == &m_cxt_style);
         std::unique_ptr<odf_style> current_style = m_cxt_style.pop_style();
 
+        std::optional<std::size_t> parent_xfid = query_parent_style_xfid(current_style->parent_name);
+
         if (mp_styles && current_style->family == style_family_table_cell)
         {
             auto& cell = std::get<odf_style::cell>(current_style->data);
@@ -178,6 +180,9 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
                 if (cell.shrink_to_fit)
                     xf->set_shrink_to_fit(*cell.shrink_to_fit);
 
+                if (parent_xfid)
+                    xf->set_style_xf(*parent_xfid);
+
                 cell.xf = xf->commit();
             }
             else
@@ -200,6 +205,9 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
                     xf->set_wrap_text(*cell.wrap_text);
                 if (cell.shrink_to_fit)
                     xf->set_shrink_to_fit(*cell.shrink_to_fit);
+
+                if (parent_xfid)
+                    xf->set_style_xf(*parent_xfid);
 
                 size_t style_xf_id = xf->commit();
                 cell.xf = style_xf_id;
@@ -349,6 +357,29 @@ void styles_context::push_number_style(std::unique_ptr<odf_number_format> num_st
         os << "number style associated with the id of " << id << " has been overwritten.";
         warn(os.str());
     }
+}
+
+std::optional<std::size_t> styles_context::query_parent_style_xfid(std::string_view parent_name) const
+{
+    std::optional<std::size_t> parent_xfid;
+
+    if (parent_name.empty())
+        return parent_xfid;
+
+    const ods_session_data& ods_data = get_session_context().get_data<ods_session_data>();
+
+    auto it = ods_data.styles_map.find(parent_name);
+    if (it == ods_data.styles_map.end())
+        return parent_xfid;
+
+    const odf_style& s = *it->second;
+    if (s.family != style_family_table_cell)
+        return parent_xfid;
+
+    const odf_style::cell& c = std::get<odf_style::cell>(s.data);
+    parent_xfid = c.xf;
+
+    return parent_xfid;
 }
 
 }

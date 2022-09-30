@@ -156,6 +156,11 @@ session_context& xml_context_base::get_session_context()
     return m_session_cxt;
 }
 
+const session_context& xml_context_base::get_session_context() const
+{
+    return m_session_cxt;
+}
+
 const tokens& xml_context_base::get_tokens() const
 {
     return m_tokens;

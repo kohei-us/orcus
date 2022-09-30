@@ -358,10 +358,12 @@ void test_ods_import_styles_direct_format()
     assert(xf);
     assert(xf->hor_align == ss::hor_alignment_t::center);
 
-    const ss::font_t* font = styles.get_font(xf->font);
+    const auto* font = styles.get_font_state(xf->font);
     assert(font);
-    assert(font->bold);
-    assert(font->underline_style == ss::underline_t::single_line);
+    assert(font->first.bold);
+    assert(font->second.bold);
+    assert(font->first.underline_style == ss::underline_t::single_line);
+    assert(font->second.underline_style);
 
     // B4 - yellow background and right-aligned
     xfid = sh->get_cell_format(3, 1);
@@ -369,10 +371,12 @@ void test_ods_import_styles_direct_format()
     assert(xf);
     assert(xf->hor_align == ss::hor_alignment_t::right);
 
-    const ss::fill_t* fill = styles.get_fill(xf->fill);
+    const auto* fill = styles.get_fill_state(xf->fill);
     assert(fill);
-    assert(fill->pattern_type == ss::fill_pattern_t::solid);
-    assert(fill->fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
+    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->second.pattern_type);
+    assert(fill->first.fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
+    assert(fill->second.fg_color);
 
     // D4 - named style "Good" applied with no direct formatting on top
     xfid = sh->get_cell_format(3, 3);
@@ -383,7 +387,23 @@ void test_ods_import_styles_direct_format()
     assert(xstyle);
     assert(xstyle->name == "Good");
 
-    // TODO: D6
+    // D6 - named style "Good" plus wrap-text, center and middle aligned and bold text
+    xfid = sh->get_cell_format(5, 3);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(xf->hor_align == ss::hor_alignment_t::center);
+    assert(xf->ver_align == ss::ver_alignment_t::middle);
+    assert(xf->wrap_text);
+    assert(*xf->wrap_text);
+
+    font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.bold);
+    assert(font->second.bold);
+
+    xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Good");
 }
 
 } // anonymous namespace
