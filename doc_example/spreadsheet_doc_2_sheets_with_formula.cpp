@@ -164,6 +164,10 @@ public:
 
     virtual void set_format(ss::row_t, ss::col_t, ss::row_t, ss::col_t, std::size_t) override {}
 
+    virtual void set_column_format(ss::col_t, std::size_t) override {}
+
+    virtual void set_row_format(ss::col_t, std::size_t) override {}
+
     virtual void fill_down_cells(ss::row_t, ss::col_t, ss::row_t) override {}
 
     virtual ss::iface::import_formula* get_formula() override

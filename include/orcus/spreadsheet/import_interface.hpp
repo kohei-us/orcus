@@ -634,6 +634,9 @@ public:
      * Set cell format to specified cell.  The cell format is referred to by
      * the xf (cell format) index in the styles table.
      *
+     * @note This method gets called after both set_column_format() and
+     *       set_row_format().
+     *
      * @param row row ID
      * @param col column ID
      * @param xf_index 0-based xf (cell format) index
@@ -652,6 +655,30 @@ public:
      */
     virtual void set_format(row_t row_start, col_t col_start,
         row_t row_end, col_t col_end, size_t xf_index) = 0;
+
+    /**
+     * Set cell format to a specified column.  The cell format is referred to by
+     * the xf (cell format) index in the styles table.
+     *
+     * @note This method gets called first before set_row_format() or
+     *       set_format() variants.
+     *
+     * @param col column ID
+     * @param xf_index 0-based xf (cell format) index
+     */
+    virtual void set_column_format(col_t col, std::size_t xf_index) = 0;
+
+    /**
+     * Set cell format to a specified row.  The cell format is referred to by
+     * the xf (cell format) index in the styles table.
+     *
+     * @note This method gets called after set_column_format() but before
+     *       set_format().
+     *
+     * @param row row ID
+     * @param xf_index 0-based xf (cell format) index
+     */
+    virtual void set_row_format(row_t row, std::size_t xf_index) = 0;
 
     /**
      * Duplicate the value of the source cell to one or more cells located
