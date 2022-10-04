@@ -21,7 +21,6 @@
 #include <iostream>
 #include <limits>
 
-using namespace std;
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {
@@ -211,8 +210,8 @@ void xls_xml_data_context::characters(std::string_view str, bool transient)
         default:
             if (get_config().debug)
             {
-                cout << "warning: unknown cell type '" << m_cell_type
-                    << "': characters='" << str << "'" << endl;
+                std::cout << "warning: unknown cell type '" << m_cell_type
+                    << "': characters='" << str << "'" << std::endl;
             }
     }
 }
@@ -376,7 +375,7 @@ void xls_xml_data_context::end_element_data()
         }
         default:
             if (get_config().debug)
-                cout << "warning: unknown cell type '" << m_cell_type << "': value not pushed." << endl;
+                std::cout << "warning: unknown cell type '" << m_cell_type << "': value not pushed." << std::endl;
     }
 
     m_cell_type = ct_unknown;
@@ -451,7 +450,7 @@ void xls_xml_data_context::push_array_result(
         case ct_string:
         default:
             if (get_config().debug)
-                cout << "warning: unknown cell type '" << m_cell_type << "': value not pushed." << endl;
+                std::cout << "warning: unknown cell type '" << m_cell_type << "': value not pushed." << std::endl;
     }
 }
 
@@ -1639,7 +1638,7 @@ void xls_xml_context::start_element_worksheet(const xml_attrs_t& attrs)
     m_cur_col = 0;
 
     if (get_config().debug)
-        cout << "worksheet: name: '" << sheet_name << "'" << endl;
+        std::cout << "worksheet: name: '" << sheet_name << "'" << std::endl;
 }
 
 void xls_xml_context::end_element_borders()
