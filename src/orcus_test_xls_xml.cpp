@@ -1340,6 +1340,84 @@ void test_xls_xml_styles_direct_format()
     assert(font->second.bold);
 }
 
+void test_xls_xml_styles_column_styles()
+{
+    test::stack_printer __sp__(__func__);
+
+    std::string path{SRCDIR"/test/xls-xml/styles/column-styles.xml"};
+    auto doc = load_doc_from_filepath(path, false, ss::formula_error_policy_t::fail);
+    assert(doc);
+    auto doc_size = doc->get_sheet_size();
+
+    const ss::styles& styles = doc->get_styles();
+
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    {
+        // On Sheet1, check the named styles applied on columns B:D and F.
+        // Columns A and E should have Normal style applied.
+        const std::tuple<ss::row_t, ss::col_t, std::string> checks[] = {
+            { 0, 0, "Normal" },
+            { 0, 1, "Bad" },
+            { 0, 2, "Good" },
+            { 0, 3, "Neutral" },
+            { 0, 4, "Normal" },
+            { 0, 5, "Note" },
+            { doc_size.rows - 1, 0, "Normal" },
+            { doc_size.rows - 1, 1, "Bad" },
+            { doc_size.rows - 1, 2, "Good" },
+            { doc_size.rows - 1, 3, "Neutral" },
+            { doc_size.rows - 1, 4, "Normal" },
+            { doc_size.rows - 1, 5, "Note" },
+        };
+
+        for (const auto& check : checks)
+        {
+            ss::row_t r = std::get<0>(check);
+            ss::col_t c = std::get<1>(check);
+            std::string_view name = std::get<2>(check);
+
+            std::size_t xfid = sh->get_cell_format(r, c);
+            std::cout << "row=" << r << "; column=" << c << "; xfid=" << xfid << std::endl;
+            const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+            assert(xf);
+            std::cout << "style xfid=" << xf->style_xf << std::endl;
+
+            const ss::cell_style_t* xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+            assert(xstyle);
+            if (xstyle->name != name)
+                std::cout << "names differ! (expected=" << name << "; actual=" << xstyle->name << ")" << std::endl;
+
+            assert(xstyle->name == name);
+        }
+    }
+
+    sh = doc->get_sheet(1);
+    assert(sh);
+
+    // Columns B:D should have "Good" named style applied.
+    {
+        const std::pair<ss::row_t, ss::col_t> cells[] = {
+            { 0, 1 },
+            { 0, 3 },
+            { doc_size.rows - 1, 1 },
+            { doc_size.rows - 1, 3 },
+        };
+
+        for (const auto& cell : cells)
+        {
+            std::size_t xfid = sh->get_cell_format(cell.first, cell.second);
+            const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+            assert(xf);
+
+            const ss::cell_style_t* xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+            assert(xstyle);
+            assert(xstyle->name == "Good");
+        }
+    }
+}
+
 void test_xls_xml_view_cursor_per_sheet()
 {
     string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
@@ -1658,6 +1736,7 @@ int main()
     test_xls_xml_cell_properties_default_style();
     test_xls_xml_cell_properties_locked_and_hidden();
     test_xls_xml_styles_direct_format();
+    test_xls_xml_styles_column_styles();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();

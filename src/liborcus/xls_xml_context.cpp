@@ -1469,48 +1469,68 @@ void xls_xml_context::start_element_cell(const xml_attrs_t& attrs)
 
 void xls_xml_context::start_element_column(const xml_attrs_t& attrs)
 {
-    if (!mp_sheet_props)
+    if (!mp_sheet_props && !mp_cur_sheet)
         return;
 
     spreadsheet::col_t col_index = m_cur_prop_col;
     spreadsheet::col_t span = 0;
     double width = 0.0;
     bool hidden = false;
+    std::optional<std::string_view> style_id;
 
-    std::for_each(attrs.begin(), attrs.end(),
-        [&](const xml_token_attr_t& attr)
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.value.empty())
+            continue;
+
+        if (attr.ns != NS_xls_xml_ss)
+            continue;
+
+        switch (attr.name)
         {
-            if (attr.value.empty())
-                return;
-
-            if (attr.ns != NS_xls_xml_ss)
-                return;
-
-            switch (attr.name)
-            {
-                case XML_Index:
-                    // Convert from 1-based to 0-based.
-                    col_index = to_long(attr.value) - 1;
-                    break;
-                case XML_Width:
-                    width = to_double(attr.value);
-                    break;
-                case XML_Span:
-                    span = to_long(attr.value);
-                    break;
-                case XML_Hidden:
-                    hidden = to_long(attr.value) != 0;
-                default:
-                    ;
-            }
+            case XML_Index:
+                // Convert from 1-based to 0-based.
+                col_index = to_long(attr.value) - 1;
+                break;
+            case XML_Width:
+                width = to_double(attr.value);
+                break;
+            case XML_Span:
+                span = to_long(attr.value);
+                break;
+            case XML_Hidden:
+                hidden = to_long(attr.value) != 0;
+                break;
+            case XML_StyleID:
+                style_id = attr.value; // no need to intern since it gets used in the same function scope
+                break;
         }
-    );
+    }
 
     for (; span >= 0; --span, ++col_index)
     {
-        // Column widths are stored as points.
-        mp_sheet_props->set_column_width(col_index, width, orcus::length_unit_t::point);
-        mp_sheet_props->set_column_hidden(col_index, hidden);
+        if (mp_cur_sheet && style_id)
+        {
+            auto it = m_style_map_cell.find(*style_id);
+            if (it != m_style_map_cell.end())
+            {
+                std::size_t xfid = it->second;
+                mp_cur_sheet->set_column_format(col_index, xfid);
+            }
+            else
+            {
+                std::ostringstream os;
+                os << "xfid for the style ID of '" << *style_id << "' not found in the cache";
+                warn(os.str());
+            }
+        }
+
+        if (mp_sheet_props)
+        {
+            // Column widths are stored as points.
+            mp_sheet_props->set_column_width(col_index, width, orcus::length_unit_t::point);
+            mp_sheet_props->set_column_hidden(col_index, hidden);
+        }
     }
 
     m_cur_prop_col = col_index;
@@ -2120,9 +2140,12 @@ void xls_xml_context::commit_styles()
                 cell_style->set_xf(xfid);
                 cell_style->commit();
 
+                // Since we don't allow directly referencing a named cell style,
+                // we will create a regular cell style that references the named
+                // style instead.
                 auto* xf_cell = styles->start_xf(ss::xf_category_t::cell);
                 ENSURE_INTERFACE(xf_cell, import_xf);
-                xf_cell->set_style_xf(xfid);
+                xf_cell->set_style_xf(xfid); // reference the named style
                 xfid = xf_cell->commit();
                 m_style_map_cell.insert({style->id, xfid});
                 break;

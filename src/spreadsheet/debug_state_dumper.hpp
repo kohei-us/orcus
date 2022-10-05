@@ -46,6 +46,7 @@ public:
 private:
     void dump_cell_values(const boost::filesystem::path& outdir) const;
     void dump_cell_formats(const boost::filesystem::path& outdir) const;
+    void dump_column_formats(const boost::filesystem::path& outdir) const;
 };
 
 }}}

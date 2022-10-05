@@ -164,6 +164,11 @@ void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t co
     }
 }
 
+void sheet::set_column_format(col_t col, std::size_t index)
+{
+    mp_impl->column_formats.insert_back(col, col+1, index);
+}
+
 void sheet::set_formula(row_t row, col_t col, const ixion::formula_tokens_store_ptr_t& tokens)
 {
     ixion::model_context& cxt = mp_impl->doc.get_model_context();
@@ -506,19 +511,30 @@ void sheet::dump_debug_state(const std::string& output_dir, std::string_view she
 
 size_t sheet::get_cell_format(row_t row, col_t col) const
 {
-    auto itr = mp_impl->cell_formats.find(col);
-    if (itr == mp_impl->cell_formats.end())
-        return 0;
+    // Check the cell format store first
+    auto it = mp_impl->cell_formats.find(col);
+    if (it != mp_impl->cell_formats.end())
+    {
+        detail::segment_row_index_type& con = *it->second;
+        if (!con.is_tree_valid())
+            con.build_tree();
 
-    detail::segment_row_index_type& con = *itr->second;
-    if (!con.is_tree_valid())
-        con.build_tree();
+        // Return only if the index is not a default index
+        std::size_t index;
+        if (con.search_tree(row, index).second && index)
+            return index;
+    }
 
-    size_t index;
-    if (!con.search_tree(row, index).second)
-        return 0;
+    // Not found in the cell format store. Check the column store.
+    if (!mp_impl->column_formats.is_tree_valid())
+        mp_impl->column_formats.build_tree();
 
-    return index;
+    std::size_t index;
+    if (mp_impl->column_formats.search_tree(col, index).second)
+        return index;
+
+    // Not found. Return the default format index.
+    return 0;
 }
 
 }}

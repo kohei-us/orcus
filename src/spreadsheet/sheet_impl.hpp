@@ -18,7 +18,8 @@ class sheet;
 
 namespace detail {
 
-typedef mdds::flat_segment_tree<row_t, size_t>  segment_row_index_type;
+using segment_row_index_type = mdds::flat_segment_tree<row_t, std::size_t>;
+using segment_col_index_type = mdds::flat_segment_tree<col_t, std::size_t>;
 typedef std::unordered_map<col_t, std::unique_ptr<segment_row_index_type>> cell_format_type;
 
 // Widths and heights are stored in twips.
@@ -48,6 +49,7 @@ struct sheet_impl
     std::unique_ptr<auto_filter_t> auto_filter_data;
 
     cell_format_type cell_formats;
+    segment_col_index_type column_formats;
     const sheet_t sheet_id;
 
     sheet_impl() = delete;
