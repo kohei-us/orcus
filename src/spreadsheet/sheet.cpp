@@ -169,6 +169,11 @@ void sheet::set_column_format(col_t col, std::size_t index)
     mp_impl->column_formats.insert_back(col, col+1, index);
 }
 
+void sheet::set_row_format(row_t row, std::size_t index)
+{
+    mp_impl->row_formats.insert_back(row, row+1, index);
+}
+
 void sheet::set_formula(row_t row, col_t col, const ixion::formula_tokens_store_ptr_t& tokens)
 {
     ixion::model_context& cxt = mp_impl->doc.get_model_context();
@@ -525,12 +530,19 @@ size_t sheet::get_cell_format(row_t row, col_t col) const
             return index;
     }
 
-    // Not found in the cell format store. Check the column store.
+    // Not found in the cell format store. Check the row store.
+    if (!mp_impl->row_formats.is_tree_valid())
+        mp_impl->row_formats.build_tree();
+
+    std::size_t index;
+    if (mp_impl->row_formats.search_tree(row, index).second && index)
+        return index;
+
+    // Not found in the row store. Check the column store.
     if (!mp_impl->column_formats.is_tree_valid())
         mp_impl->column_formats.build_tree();
 
-    std::size_t index;
-    if (mp_impl->column_formats.search_tree(col, index).second)
+    if (mp_impl->column_formats.search_tree(col, index).second && index)
         return index;
 
     // Not found. Return the default format index.

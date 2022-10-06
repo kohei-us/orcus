@@ -503,10 +503,8 @@ void import_sheet::set_column_format(col_t col, std::size_t xf_index)
 
 void import_sheet::set_row_format(row_t row, std::size_t xf_index)
 {
-    (void)row;
-    (void)xf_index;
+    m_sheet.set_row_format(row, xf_index);
 }
-
 
 void import_sheet::set_string(row_t row, col_t col, string_id_t sindex)
 {

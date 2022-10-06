@@ -56,6 +56,7 @@ public:
     void set_format(row_t row, col_t col, size_t index);
     void set_format(row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t index);
     void set_column_format(col_t col, std::size_t index);
+    void set_row_format(row_t row, std::size_t index);
 
     void set_formula(row_t row, col_t col, const ixion::formula_tokens_store_ptr_t& tokens);
     void set_formula(row_t row, col_t col, const ixion::formula_tokens_store_ptr_t& tokens, ixion::formula_result result);

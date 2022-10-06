@@ -1543,6 +1543,7 @@ void xls_xml_context::start_element_row(const xml_attrs_t& attrs)
     bool has_height = false;
     bool hidden = false;
     double height = 0.0;
+    std::optional<std::string_view> style_id;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -1563,8 +1564,9 @@ void xls_xml_context::start_element_row(const xml_attrs_t& attrs)
                 case XML_Hidden:
                     hidden = to_long(attr.value) != 0;
                     break;
-                default:
-                    ;
+                case XML_StyleID:
+                    style_id = attr.value; // no need to intern since it gets used in the same function scope
+                    break;
             }
         }
     }
@@ -1573,6 +1575,22 @@ void xls_xml_context::start_element_row(const xml_attrs_t& attrs)
     {
         // 1-based row index. Convert it to a 0-based one.
         m_cur_row = row_index - 1;
+    }
+
+    if (mp_cur_sheet && style_id)
+    {
+        auto it = m_style_map_cell.find(*style_id);
+        if (it != m_style_map_cell.end())
+        {
+            std::size_t xfid = it->second;
+            mp_cur_sheet->set_row_format(m_cur_row, xfid);
+        }
+        else
+        {
+            std::ostringstream os;
+            os << "xfid for the style ID of '" << *style_id << "' not found in the cache";
+            warn(os.str());
+        }
     }
 
     if (mp_sheet_props)

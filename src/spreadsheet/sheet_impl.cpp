@@ -23,6 +23,7 @@ sheet_impl::sheet_impl(document& _doc, sheet& /*sh*/, sheet_t sheet_index) :
     col_hidden_pos(col_hidden.begin()),
     row_hidden_pos(row_hidden.begin()),
     column_formats(0, doc.get_sheet_size().columns, 0),
+    row_formats(0, doc.get_sheet_size().rows, 0),
     sheet_id(sheet_index) {}
 
 sheet_impl::~sheet_impl() {}

@@ -50,6 +50,7 @@ struct sheet_impl
 
     cell_format_type cell_formats;
     segment_col_index_type column_formats;
+    segment_row_index_type row_formats;
     const sheet_t sheet_id;
 
     sheet_impl() = delete;

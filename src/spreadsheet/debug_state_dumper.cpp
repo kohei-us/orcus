@@ -254,6 +254,7 @@ void sheet_debug_state_dumper::dump(const fs::path& outdir) const
     dump_cell_values(outdir);
     dump_cell_formats(outdir);
     dump_column_formats(outdir);
+    dump_row_formats(outdir);
 }
 
 void sheet_debug_state_dumper::dump_cell_values(const fs::path& outdir) const
@@ -298,7 +299,7 @@ void sheet_debug_state_dumper::dump_cell_formats(const fs::path& outdir) const
     }
 }
 
-void sheet_debug_state_dumper::dump_column_formats(const boost::filesystem::path& outdir) const
+void sheet_debug_state_dumper::dump_column_formats(const fs::path& outdir) const
 {
     fs::path outpath = outdir / "column-formats.yaml";
     std::ofstream of{outpath.native()};
@@ -311,6 +312,23 @@ void sheet_debug_state_dumper::dump_column_formats(const boost::filesystem::path
     for (; it_seg != it_seg_end; ++it_seg)
     {
         of << "- columns: " << it_seg->start << '-' << (it_seg->end - 1) << std::endl;
+        of << "  xf: " << it_seg->value << std::endl;
+    }
+}
+
+void sheet_debug_state_dumper::dump_row_formats(const fs::path& outdir) const
+{
+    fs::path outpath = outdir / "row-formats.yaml";
+    std::ofstream of{outpath.native()};
+    if (!of)
+        return;
+
+    auto it_seg = m_sheet.row_formats.begin_segment();
+    auto it_seg_end = m_sheet.row_formats.end_segment();
+
+    for (; it_seg != it_seg_end; ++it_seg)
+    {
+        of << "- rows: " << it_seg->start << '-' << (it_seg->end - 1) << std::endl;
         of << "  xf: " << it_seg->value << std::endl;
     }
 }

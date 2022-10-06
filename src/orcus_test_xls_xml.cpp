@@ -1393,6 +1393,37 @@ void test_xls_xml_styles_column_styles()
         }
     }
 
+    {
+        // Row 10 has green background, and row 11 has orange background.
+        const std::tuple<ss::row_t, ss::color_t> checks[] = {
+            { 9, {0xFF, 0x92, 0xD0, 0x50} },
+            { 10, {0xFF, 0xFF, 0xC0, 0x00} },
+        };
+
+        for (const auto& check : checks)
+        {
+            const ss::row_t row = std::get<0>(check);
+            const ss::color_t color = std::get<1>(check);
+
+            for (ss::col_t col = 0; col <= 6; ++col)
+            {
+                std::size_t xfid = sh->get_cell_format(row, col);
+                std::cout << "row=" << row << "; column=" << col << "; xfid=" << xfid << std::endl;
+                const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+                assert(xf);
+
+                const auto* fill = styles.get_fill_state(xf->fill);
+                assert(fill);
+
+                assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+                assert(fill->second.pattern_type);
+
+                assert(fill->first.fg_color == color);
+                assert(fill->second.fg_color);
+            }
+        }
+    }
+
     sh = doc->get_sheet(1);
     assert(sh);
 
