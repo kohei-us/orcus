@@ -27,10 +27,10 @@ namespace orcus {
 
 namespace {
 
-spreadsheet::color_rgb_t to_rgb(std::string_view s)
+ss::color_rgb_t to_rgb(std::string_view s)
 {
     if (!s.empty() && s[0] == '#')
-        return spreadsheet::to_color_rgb(s);
+        return ss::to_color_rgb(s);
     else
     {
         // This may be a color name.  Lower-case it before sending it to the
@@ -46,7 +46,7 @@ spreadsheet::color_rgb_t to_rgb(std::string_view s)
             }
         );
 
-        return spreadsheet::to_color_rgb_from_name(s_lower);
+        return ss::to_color_rgb_from_name(s_lower);
     }
 }
 
@@ -311,8 +311,8 @@ void xls_xml_data_context::end_element_data()
         return;
     }
 
-    spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
-    spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
+    ss::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
+    ss::address_t pos = m_parent_cxt.get_current_pos();
 
     switch (m_cell_type)
     {
@@ -323,7 +323,7 @@ void xls_xml_data_context::end_element_data()
             break;
         case ct_string:
         {
-            spreadsheet::iface::import_shared_strings* ss =
+            ss::iface::import_shared_strings* ss =
                 m_parent_cxt.get_import_factory()->get_shared_strings();
 
             if (!ss)
@@ -384,14 +384,14 @@ void xls_xml_data_context::end_element_data()
 bool xls_xml_data_context::handle_array_formula_result()
 {
     xls_xml_context::array_formulas_type& store = m_parent_cxt.get_array_formula_store();
-    spreadsheet::address_t cur_pos = m_parent_cxt.get_current_pos();
+    ss::address_t cur_pos = m_parent_cxt.get_current_pos();
 
     // See if the current cell is within an array formula range.
     auto it = store.begin(), ite = store.end();
 
     while (it != ite)
     {
-        const spreadsheet::range_t& ref = it->first;
+        const ss::range_t& ref = it->first;
         xls_xml_context::array_formula_type& af = *it->second;
 
         if (ref.last.row < cur_pos.row)
@@ -399,8 +399,8 @@ bool xls_xml_data_context::handle_array_formula_result()
             // If this result range lies above the current row, push the array
             // and delete it from the list.
 
-            spreadsheet::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
-            spreadsheet::iface::import_array_formula* array = nullptr;
+            ss::iface::import_sheet* sheet = m_parent_cxt.get_import_sheet();
+            ss::iface::import_array_formula* array = nullptr;
 
             if (sheet)
                 array = sheet->get_array_formula();
@@ -408,7 +408,7 @@ bool xls_xml_data_context::handle_array_formula_result()
             if (array)
             {
                 push_array_formula(
-                    array, ref, af.formula, spreadsheet::formula_grammar_t::xls_xml, af.results);
+                    array, ref, af.formula, ss::formula_grammar_t::xls_xml, af.results);
             }
 
             store.erase(it++);
@@ -471,8 +471,8 @@ void xls_xml_data_context::push_formula_cell(std::string_view formula)
 
 void xls_xml_data_context::store_array_formula_parent_cell(std::string_view formula)
 {
-    spreadsheet::address_t pos = m_parent_cxt.get_current_pos();
-    spreadsheet::range_t range = m_parent_cxt.get_array_range();
+    ss::address_t pos = m_parent_cxt.get_current_pos();
+    ss::range_t range = m_parent_cxt.get_array_range();
     xls_xml_context::array_formulas_type& store = m_parent_cxt.get_array_formula_store();
 
     range += pos;
@@ -517,21 +517,21 @@ namespace {
 
 namespace border_dir {
 
-using map_type = mdds::sorted_string_map<spreadsheet::border_direction_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::border_direction_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] = {
-    { "Bottom",        spreadsheet::border_direction_t::bottom         },
-    { "DiagonalLeft",  spreadsheet::border_direction_t::diagonal_tl_br },
-    { "DiagonalRight", spreadsheet::border_direction_t::diagonal_bl_tr },
-    { "Left",          spreadsheet::border_direction_t::left           },
-    { "Right",         spreadsheet::border_direction_t::right          },
-    { "Top",           spreadsheet::border_direction_t::top            },
+    { "Bottom",        ss::border_direction_t::bottom         },
+    { "DiagonalLeft",  ss::border_direction_t::diagonal_tl_br },
+    { "DiagonalRight", ss::border_direction_t::diagonal_bl_tr },
+    { "Left",          ss::border_direction_t::left           },
+    { "Right",         ss::border_direction_t::right          },
+    { "Top",           ss::border_direction_t::top            },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), spreadsheet::border_direction_t::unknown);
+    static const map_type mt(entries, std::size(entries), ss::border_direction_t::unknown);
     return mt;
 }
 
@@ -539,22 +539,22 @@ const map_type& get()
 
 namespace border_style {
 
-using map_type = mdds::sorted_string_map<spreadsheet::border_style_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::border_style_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] = {
-    { "Continuous",   spreadsheet::border_style_t::solid          },
-    { "Dash",         spreadsheet::border_style_t::dashed         },
-    { "DashDot",      spreadsheet::border_style_t::dash_dot       },
-    { "DashDotDot",   spreadsheet::border_style_t::dash_dot_dot   },
-    { "Dot",          spreadsheet::border_style_t::dotted         },
-    { "Double",       spreadsheet::border_style_t::double_border  },
-    { "SlantDashDot", spreadsheet::border_style_t::slant_dash_dot },
+    { "Continuous",   ss::border_style_t::solid          },
+    { "Dash",         ss::border_style_t::dashed         },
+    { "DashDot",      ss::border_style_t::dash_dot       },
+    { "DashDotDot",   ss::border_style_t::dash_dot_dot   },
+    { "Dot",          ss::border_style_t::dotted         },
+    { "Double",       ss::border_style_t::double_border  },
+    { "SlantDashDot", ss::border_style_t::slant_dash_dot },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), spreadsheet::border_style_t::unknown);
+    static const map_type mt(entries, std::size(entries), ss::border_style_t::unknown);
     return mt;
 }
 
@@ -562,20 +562,20 @@ const map_type& get()
 
 namespace hor_align {
 
-using map_type = mdds::sorted_string_map<spreadsheet::hor_alignment_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::hor_alignment_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] = {
-    { "Center",      spreadsheet::hor_alignment_t::center      },
-    { "Distributed", spreadsheet::hor_alignment_t::distributed },
-    { "Justify",     spreadsheet::hor_alignment_t::justified   },
-    { "Left",        spreadsheet::hor_alignment_t::left        },
-    { "Right",       spreadsheet::hor_alignment_t::right       },
+    { "Center",      ss::hor_alignment_t::center      },
+    { "Distributed", ss::hor_alignment_t::distributed },
+    { "Justify",     ss::hor_alignment_t::justified   },
+    { "Left",        ss::hor_alignment_t::left        },
+    { "Right",       ss::hor_alignment_t::right       },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), spreadsheet::hor_alignment_t::unknown);
+    static const map_type mt(entries, std::size(entries), ss::hor_alignment_t::unknown);
     return mt;
 }
 
@@ -583,20 +583,20 @@ const map_type& get()
 
 namespace ver_align {
 
-using map_type = mdds::sorted_string_map<spreadsheet::ver_alignment_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::ver_alignment_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] = {
-    { "Bottom",      spreadsheet::ver_alignment_t::bottom      },
-    { "Center",      spreadsheet::ver_alignment_t::middle      },
-    { "Distributed", spreadsheet::ver_alignment_t::distributed },
-    { "Justify",     spreadsheet::ver_alignment_t::justified   },
-    { "Top",         spreadsheet::ver_alignment_t::top         },
+    { "Bottom",      ss::ver_alignment_t::bottom      },
+    { "Center",      ss::ver_alignment_t::middle      },
+    { "Distributed", ss::ver_alignment_t::distributed },
+    { "Justify",     ss::ver_alignment_t::justified   },
+    { "Top",         ss::ver_alignment_t::top         },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), spreadsheet::ver_alignment_t::unknown);
+    static const map_type mt(entries, std::size(entries), ss::ver_alignment_t::unknown);
     return mt;
 }
 
@@ -638,14 +638,14 @@ const map_type& get()
 } // anonymous namespace
 
 xls_xml_context::array_formula_type::array_formula_type(
-    const spreadsheet::range_t& _range, std::string_view _formula) :
+    const ss::range_t& _range, std::string_view _formula) :
     formula(_formula),
     results(_range.last.row-_range.first.row+1, _range.last.column-_range.first.column+1) {}
 
-xls_xml_context::named_exp::named_exp(std::string_view _name, std::string_view _expression, spreadsheet::sheet_t _scope) :
+xls_xml_context::named_exp::named_exp(std::string_view _name, std::string_view _expression, ss::sheet_t _scope) :
     name(_name), expression(_expression), scope(_scope) {}
 
-xls_xml_context::selection::selection() : pane(spreadsheet::sheet_pane_t::unspecified), col(-1), row(-1)
+xls_xml_context::selection::selection() : pane(ss::sheet_pane_t::unspecified), col(-1), row(-1)
 {
     range.first.column = -1;
     range.first.row = -1;
@@ -655,7 +655,7 @@ xls_xml_context::selection::selection() : pane(spreadsheet::sheet_pane_t::unspec
 
 void xls_xml_context::selection::reset()
 {
-    pane = spreadsheet::sheet_pane_t::unspecified;
+    pane = ss::sheet_pane_t::unspecified;
     col = 0;
     row = 0;
 
@@ -676,15 +676,15 @@ bool xls_xml_context::selection::valid_range() const
 }
 
 xls_xml_context::split_pane::split_pane() :
-    pane_state(spreadsheet::pane_state_t::split),
-    active_pane(spreadsheet::sheet_pane_t::top_left),
+    pane_state(ss::pane_state_t::split),
+    active_pane(ss::sheet_pane_t::top_left),
     split_horizontal(0.0), split_vertical(0.0),
     top_row_bottom_pane(0), left_col_right_pane(0) {}
 
 void xls_xml_context::split_pane::reset()
 {
-    pane_state = spreadsheet::pane_state_t::split;
-    active_pane = spreadsheet::sheet_pane_t::top_left;
+    pane_state = ss::pane_state_t::split;
+    active_pane = ss::sheet_pane_t::top_left;
     split_horizontal = 0.0;
     split_vertical = 0.0;
     top_row_bottom_pane = 0;
@@ -696,9 +696,9 @@ bool xls_xml_context::split_pane::split() const
     return (split_horizontal || split_vertical) && (top_row_bottom_pane || left_col_right_pane);
 }
 
-spreadsheet::address_t xls_xml_context::split_pane::get_top_left_cell() const
+ss::address_t xls_xml_context::split_pane::get_top_left_cell() const
 {
-    spreadsheet::address_t pos;
+    ss::address_t pos;
     pos.column = left_col_right_pane;
     pos.row = top_row_bottom_pane;
     return pos;
@@ -715,7 +715,7 @@ void xls_xml_context::table_properties::reset()
     pos.column = 0;
 }
 
-xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
+xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
     mp_cur_sheet(nullptr),
@@ -821,7 +821,7 @@ xls_xml_context::~xls_xml_context()
 
 void xls_xml_context::declaration(const xml_declaration_t& decl)
 {
-    spreadsheet::iface::import_global_settings* gs = mp_factory->get_global_settings();
+    ss::iface::import_global_settings* gs = mp_factory->get_global_settings();
     if (!gs)
         return;
 
@@ -1088,13 +1088,13 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
                 break;
             case XML_FreezePanes:
                 // TODO : check if this is correct.
-                m_split_pane.pane_state = spreadsheet::pane_state_t::frozen_split;
+                m_split_pane.pane_state = ss::pane_state_t::frozen_split;
                 break;
             case XML_FrozenNoSplit:
-                m_split_pane.pane_state = spreadsheet::pane_state_t::frozen;
+                m_split_pane.pane_state = ss::pane_state_t::frozen;
                 break;
             case XML_ActivePane:
-                m_split_pane.active_pane = spreadsheet::sheet_pane_t::unspecified;
+                m_split_pane.active_pane = ss::sheet_pane_t::unspecified;
                 break;
             case XML_SplitHorizontal:
                 m_split_pane.split_horizontal = 0.0;
@@ -1125,7 +1125,7 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_a
             {
                 if (mp_cur_sheet)
                 {
-                    spreadsheet::iface::import_sheet_view* sv = mp_cur_sheet->get_sheet_view();
+                    ss::iface::import_sheet_view* sv = mp_cur_sheet->get_sheet_view();
                     if (sv)
                         sv->set_sheet_active();
                 }
@@ -1211,17 +1211,17 @@ bool xls_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 namespace {
 
-spreadsheet::sheet_pane_t to_sheet_pane(long v)
+ss::sheet_pane_t to_sheet_pane(long v)
 {
-    static const std::vector<spreadsheet::sheet_pane_t> mapping = {
-        spreadsheet::sheet_pane_t::bottom_right,  // 0
-        spreadsheet::sheet_pane_t::top_right,     // 1
-        spreadsheet::sheet_pane_t::bottom_left,   // 2
-        spreadsheet::sheet_pane_t::top_left,      // 3
+    static const std::vector<ss::sheet_pane_t> mapping = {
+        ss::sheet_pane_t::bottom_right,  // 0
+        ss::sheet_pane_t::top_right,     // 1
+        ss::sheet_pane_t::bottom_left,   // 2
+        ss::sheet_pane_t::top_left,      // 3
     };
 
     if (v < 0 || size_t(v) >= mapping.size())
-        return spreadsheet::sheet_pane_t::unspecified;
+        return ss::sheet_pane_t::unspecified;
 
     return mapping[v];
 }
@@ -1269,8 +1269,8 @@ void xls_xml_context::characters(std::string_view str, bool /*transient*/)
                 break;
             case XML_RangeSelection:
             {
-                spreadsheet::iface::import_reference_resolver* resolver =
-                    mp_factory->get_reference_resolver(spreadsheet::formula_ref_context_t::global);
+                ss::iface::import_reference_resolver* resolver =
+                    mp_factory->get_reference_resolver(ss::formula_ref_context_t::global);
 
                 if (resolver)
                     m_cursor_selection.range = to_rc_range(resolver->resolve_range(str));
@@ -1290,9 +1290,9 @@ void xls_xml_context::start_element_borders(const xml_attrs_t& /*attrs*/)
 
 void xls_xml_context::start_element_border(const xml_attrs_t& attrs)
 {
-    spreadsheet::border_direction_t dir = spreadsheet::border_direction_t::unknown;
-    spreadsheet::border_style_t style = spreadsheet::border_style_t::unknown;
-    spreadsheet::color_rgb_t color;
+    ss::border_direction_t dir = ss::border_direction_t::unknown;
+    ss::border_style_t style = ss::border_style_t::unknown;
+    ss::color_rgb_t color;
     long weight = 0;
 
     for (const xml_token_attr_t& attr : attrs)
@@ -1327,7 +1327,7 @@ void xls_xml_context::start_element_border(const xml_attrs_t& attrs)
         }
     }
 
-    if (dir == spreadsheet::border_direction_t::unknown || style == spreadsheet::border_style_t::unknown)
+    if (dir == ss::border_direction_t::unknown || style == ss::border_style_t::unknown)
         return;
 
     m_current_style->borders.emplace_back();
@@ -1338,38 +1338,38 @@ void xls_xml_context::start_element_border(const xml_attrs_t& attrs)
 
     switch (bs.style)
     {
-        case spreadsheet::border_style_t::solid:
+        case ss::border_style_t::solid:
         {
             switch (weight)
             {
                 case 0:
-                    bs.style = spreadsheet::border_style_t::hair;
+                    bs.style = ss::border_style_t::hair;
                     break;
                 case 1:
-                    bs.style = spreadsheet::border_style_t::thin;
+                    bs.style = ss::border_style_t::thin;
                     break;
                 case 2:
-                    bs.style = spreadsheet::border_style_t::medium;
+                    bs.style = ss::border_style_t::medium;
                     break;
                 case 3:
-                    bs.style = spreadsheet::border_style_t::thick;
+                    bs.style = ss::border_style_t::thick;
                     break;
                 default:
                     ;
             }
             break;
         }
-        case spreadsheet::border_style_t::dashed:
+        case ss::border_style_t::dashed:
             if (weight > 1)
-                bs.style = spreadsheet::border_style_t::medium_dashed;
+                bs.style = ss::border_style_t::medium_dashed;
             break;
-        case spreadsheet::border_style_t::dash_dot:
+        case ss::border_style_t::dash_dot:
             if (weight > 1)
-                bs.style = spreadsheet::border_style_t::medium_dash_dot;
+                bs.style = ss::border_style_t::medium_dash_dot;
             break;
-        case spreadsheet::border_style_t::dash_dot_dot:
+        case ss::border_style_t::dash_dot_dot:
             if (weight > 1)
-                bs.style = spreadsheet::border_style_t::medium_dash_dot_dot;
+                bs.style = ss::border_style_t::medium_dash_dot_dot;
             break;
         default:
             ;
@@ -1445,8 +1445,8 @@ void xls_xml_context::start_element_cell(const xml_attrs_t& attrs)
                 break;
             case XML_ArrayRange:
             {
-                spreadsheet::iface::import_reference_resolver* resolver =
-                    mp_factory->get_reference_resolver(spreadsheet::formula_ref_context_t::global);
+                ss::iface::import_reference_resolver* resolver =
+                    mp_factory->get_reference_resolver(ss::formula_ref_context_t::global);
                 if (resolver)
                     m_cur_array_range = to_rc_range(resolver->resolve_range(attr.value));
 
@@ -1472,8 +1472,8 @@ void xls_xml_context::start_element_column(const xml_attrs_t& attrs)
     if (!mp_sheet_props && !mp_cur_sheet)
         return;
 
-    spreadsheet::col_t col_index = m_cur_prop_col;
-    spreadsheet::col_t span = 0;
+    ss::col_t col_index = m_cur_prop_col;
+    ss::col_t span = 0;
     double width = 0.0;
     bool hidden = false;
     std::optional<std::string_view> style_id;
@@ -1539,7 +1539,7 @@ void xls_xml_context::start_element_column(const xml_attrs_t& attrs)
 void xls_xml_context::start_element_row(const xml_attrs_t& attrs)
 {
     m_cur_col = m_table_props.pos.column;
-    spreadsheet::row_t row_index = -1;
+    ss::row_t row_index = -1;
     bool has_height = false;
     bool hidden = false;
     double height = 0.0;
@@ -1605,8 +1605,8 @@ void xls_xml_context::start_element_row(const xml_attrs_t& attrs)
 
 void xls_xml_context::start_element_table(const xml_attrs_t& attrs)
 {
-    spreadsheet::row_t row_index = -1;
-    spreadsheet::col_t col_index = -1;
+    ss::row_t row_index = -1;
+    ss::col_t col_index = -1;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -1663,7 +1663,7 @@ void xls_xml_context::start_element_worksheet(const xml_attrs_t& attrs)
     }
 
     mp_cur_sheet = mp_factory->append_sheet(m_cur_sheet, sheet_name);
-    spreadsheet::iface::import_named_expression* sheet_named_exp = nullptr;
+    ss::iface::import_named_expression* sheet_named_exp = nullptr;
     if (mp_cur_sheet)
     {
         mp_sheet_props = mp_cur_sheet->get_sheet_properties();
@@ -1695,7 +1695,7 @@ void xls_xml_context::end_element_cell()
 {
     if (mp_sheet_props && (m_cur_merge_across > 0 || m_cur_merge_down > 0))
     {
-        spreadsheet::range_t merge_range;
+        ss::range_t merge_range;
         merge_range.first.column = m_cur_col;
         merge_range.first.row = m_cur_row;
         merge_range.last.column = m_cur_col + m_cur_merge_across;
@@ -1753,7 +1753,7 @@ void xls_xml_context::end_element_workbook()
     if (!mp_factory)
         return;
 
-    spreadsheet::iface::import_named_expression* ne_global = mp_factory->get_named_expression();
+    ss::iface::import_named_expression* ne_global = mp_factory->get_named_expression();
     if (ne_global)
     {
         // global scope named expressions.
@@ -1769,7 +1769,7 @@ void xls_xml_context::end_element_workbook()
 
     for (const named_exp& ne : m_named_exps_sheet)
     {
-        spreadsheet::iface::import_named_expression* p = nullptr;
+        ss::iface::import_named_expression* p = nullptr;
         if (ne.scope >= 0 && size_t(ne.scope) < m_sheet_named_exps.size())
             p = m_sheet_named_exps[ne.scope]; // it may be nullptr.
 
@@ -1783,11 +1783,11 @@ void xls_xml_context::end_element_workbook()
     // push all cell formulas
     for (size_t sheet_pos = 0; sheet_pos < m_cell_formulas.size(); ++sheet_pos)
     {
-        spreadsheet::iface::import_sheet* sheet = mp_factory->get_sheet(sheet_pos);
+        ss::iface::import_sheet* sheet = mp_factory->get_sheet(sheet_pos);
         if (!sheet)
             continue;
 
-        spreadsheet::iface::import_formula* xformula = sheet->get_formula();
+        ss::iface::import_formula* xformula = sheet->get_formula();
         if (!xformula)
             continue;
 
@@ -1821,11 +1821,11 @@ void xls_xml_context::end_element_styles()
 
 void xls_xml_context::end_element_pane()
 {
-    spreadsheet::iface::import_sheet_view* sv = mp_cur_sheet->get_sheet_view();
+    ss::iface::import_sheet_view* sv = mp_cur_sheet->get_sheet_view();
     if (!sv)
         return;
 
-    if (m_cursor_selection.pane == spreadsheet::sheet_pane_t::unspecified)
+    if (m_cursor_selection.pane == ss::sheet_pane_t::unspecified)
         return;
 
     if (m_cursor_selection.valid_range())
@@ -1834,7 +1834,7 @@ void xls_xml_context::end_element_pane()
     }
     else if (m_cursor_selection.valid_cursor())
     {
-        spreadsheet::range_t sel;
+        ss::range_t sel;
         sel.first.column = m_cursor_selection.col;
         sel.first.row = m_cursor_selection.row;
         sel.last = sel.first;
@@ -1850,7 +1850,7 @@ void xls_xml_context::end_element_worksheet_options()
 
 void xls_xml_context::commit_split_pane()
 {
-    spreadsheet::iface::import_sheet_view* sv = mp_cur_sheet->get_sheet_view();
+    ss::iface::import_sheet_view* sv = mp_cur_sheet->get_sheet_view();
     if (!sv)
         return;
 
@@ -1859,9 +1859,9 @@ void xls_xml_context::commit_split_pane()
 
     switch (m_split_pane.pane_state)
     {
-        case spreadsheet::pane_state_t::split:
+        case ss::pane_state_t::split:
         {
-            spreadsheet::address_t top_left_cell = m_split_pane.get_top_left_cell();
+            ss::address_t top_left_cell = m_split_pane.get_top_left_cell();
 
             // NB: The term "split vertical" in Excel 2003 XML refers to the
             // vertical split bar position which in this case corresponds with
@@ -1872,23 +1872,23 @@ void xls_xml_context::commit_split_pane()
                 top_left_cell, m_split_pane.active_pane);
             break;
         }
-        case spreadsheet::pane_state_t::frozen:
+        case ss::pane_state_t::frozen:
         {
-            spreadsheet::address_t top_left_cell = m_split_pane.get_top_left_cell();
+            ss::address_t top_left_cell = m_split_pane.get_top_left_cell();
 
             // NB: Note for the split pane above also applies here.
-            spreadsheet::col_t visible_cols = m_split_pane.split_vertical;
-            spreadsheet::row_t visible_rows = m_split_pane.split_horizontal;
+            ss::col_t visible_cols = m_split_pane.split_vertical;
+            ss::row_t visible_rows = m_split_pane.split_horizontal;
 
             sv->set_frozen_pane(
                 visible_cols, visible_rows,
                 top_left_cell, m_split_pane.active_pane);
             break;
         }
-        case spreadsheet::pane_state_t::frozen_split:
+        case ss::pane_state_t::frozen_split:
             // not handled yet.
             break;
-        case spreadsheet::pane_state_t::unspecified:
+        case ss::pane_state_t::unspecified:
         default:
             ;
     }
@@ -1985,8 +1985,8 @@ void xls_xml_context::commit_default_style()
     auto set_default_style = [this](ss::iface::import_xf* ixf)
     {
         bool apply_alignment =
-            m_default_style->text_alignment.hor != spreadsheet::hor_alignment_t::unknown ||
-            m_default_style->text_alignment.ver != spreadsheet::ver_alignment_t::unknown ||
+            m_default_style->text_alignment.hor != ss::hor_alignment_t::unknown ||
+            m_default_style->text_alignment.ver != ss::ver_alignment_t::unknown ||
             m_default_style->text_alignment.wrap_text || m_default_style->text_alignment.shrink_to_fit;
 
         ixf->set_apply_alignment(apply_alignment);
@@ -2080,7 +2080,7 @@ void xls_xml_context::commit_styles()
         if (style->fill.solid)
         {
             // TODO : add support for fill types other than 'solid'.
-            fill_style->set_pattern_type(spreadsheet::fill_pattern_t::solid);
+            fill_style->set_pattern_type(ss::fill_pattern_t::solid);
             fill_style->set_fg_color(255,
                 style->fill.color.red,
                 style->fill.color.green,
@@ -2117,8 +2117,8 @@ void xls_xml_context::commit_styles()
         }
 
         bool apply_alignment =
-            style->text_alignment.hor != spreadsheet::hor_alignment_t::unknown ||
-            style->text_alignment.ver != spreadsheet::ver_alignment_t::unknown ||
+            style->text_alignment.hor != ss::hor_alignment_t::unknown ||
+            style->text_alignment.ver != ss::ver_alignment_t::unknown ||
             style->text_alignment.wrap_text || style->text_alignment.shrink_to_fit;
 
         xf->set_apply_alignment(apply_alignment);
@@ -2191,7 +2191,7 @@ void xls_xml_context::push_all_array_formulas()
     if (!mp_cur_sheet)
         return;
 
-    spreadsheet::iface::import_array_formula* array = mp_cur_sheet->get_array_formula();
+    ss::iface::import_array_formula* array = mp_cur_sheet->get_array_formula();
     if (!array)
         return;
 
@@ -2199,23 +2199,23 @@ void xls_xml_context::push_all_array_formulas()
     {
         const array_formula_type& af = *pair.second;
         push_array_formula(
-            array, pair.first, af.formula, spreadsheet::formula_grammar_t::xls_xml, af.results);
+            array, pair.first, af.formula, ss::formula_grammar_t::xls_xml, af.results);
     }
 }
 
-spreadsheet::iface::import_factory* xls_xml_context::get_import_factory()
+ss::iface::import_factory* xls_xml_context::get_import_factory()
 {
     return mp_factory;
 }
 
-spreadsheet::iface::import_sheet* xls_xml_context::get_import_sheet()
+ss::iface::import_sheet* xls_xml_context::get_import_sheet()
 {
     return mp_cur_sheet;
 }
 
-spreadsheet::address_t xls_xml_context::get_current_pos() const
+ss::address_t xls_xml_context::get_current_pos() const
 {
-    spreadsheet::address_t pos;
+    ss::address_t pos;
     pos.row = m_cur_row;
     pos.column = m_cur_col;
     return pos;
@@ -2243,7 +2243,7 @@ bool xls_xml_context::is_array_formula() const
     return true;
 }
 
-const spreadsheet::range_t& xls_xml_context::get_array_range() const
+const ss::range_t& xls_xml_context::get_array_range() const
 {
     return m_cur_array_range;
 }
