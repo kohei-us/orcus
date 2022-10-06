@@ -31,7 +31,6 @@
 #include <fstream>
 
 using namespace orcus;
-using namespace std;
 namespace ss = orcus::spreadsheet;
 
 namespace {
@@ -78,7 +77,7 @@ std::unique_ptr<spreadsheet::document> load_doc_from_filepath(
     return doc;
 }
 
-std::unique_ptr<spreadsheet::document> load_doc_from_stream(const string& path)
+std::unique_ptr<spreadsheet::document> load_doc_from_stream(const std::string& path)
 {
     spreadsheet::range_size_t ss{1048576, 16384};
     std::unique_ptr<spreadsheet::document> doc = std::make_unique<spreadsheet::document>(ss);
@@ -123,7 +122,7 @@ public:
     }
 };
 
-void update_config(spreadsheet::document& doc, const string& path)
+void update_config(spreadsheet::document& doc, const std::string& path)
 {
     try
     {
@@ -162,9 +161,9 @@ void test_xls_xml_import()
         update_config(doc, path);
 
         // Dump the content of the model.
-        ostringstream os;
+        std::ostringstream os;
         doc.dump_check(os);
-        string check = os.str();
+        std::string check = os.str();
 
         // Check that against known control.
         path = dir;
@@ -184,17 +183,17 @@ void test_xls_xml_import()
             size_t offset = locate_first_different_char(s1, s2);
             auto line1 = locate_line_with_offset(s1, offset);
             auto line2 = locate_line_with_offset(s2, offset);
-            cout << "expected: " << line2.line << endl;
-            cout << "observed: " << line1.line << endl;
+            std::cout << "expected: " << line2.line << std::endl;
+            std::cout << "observed: " << line1.line << std::endl;
             assert(!"content verification failed");
         }
     };
 
     for (auto dir : dirs)
     {
-        cout << dir << endl;
+        std::cout << dir << std::endl;
 
-        string path(dir);
+        std::string path(dir);
 
         // Read the input.xml document.
         path.append("input.xml");
@@ -288,7 +287,7 @@ void test_xls_xml_bold_and_italic()
 
     // A1 contains unformatted text.
     size_t si = sheet1->get_string_identifier(0, 0);
-    const string* sp = ss.get_string(si);
+    const std::string* sp = ss.get_string(si);
     assert(sp);
     assert(*sp == "Normal Text");
 
@@ -409,14 +408,14 @@ void test_xls_xml_colored_text()
         assert(font->color.blue == c.blue);
 
         size_t si = sheet1->get_string_identifier(c.row, 0);
-        const string* s = ss.get_string(si);
+        const std::string* s = ss.get_string(si);
         assert(s);
         assert(*s == c.text);
     }
 
     // Cell B2 contains mix-colored text.
     size_t si = sheet1->get_string_identifier(1, 1);
-    const string* s = ss.get_string(si);
+    const std::string* s = ss.get_string(si);
     assert(s);
     assert(*s == "Red and Blue");
     const spreadsheet::format_runs_t* fmt_runs = ss.get_format_runs(si);
@@ -571,7 +570,7 @@ void test_xls_xml_named_colors()
 
     for (auto path : paths)
     {
-        cout << path << endl;
+        std::cout << path << std::endl;
         std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(std::string{path});
 
         spreadsheet::styles& styles = doc->get_styles();
@@ -584,7 +583,7 @@ void test_xls_xml_named_colors()
         {
             // Column B stores the expected RGB value in hex.
             size_t sid = model.get_string_identifier(ixion::abs_address_t(sh->get_index(), row, 1));
-            const string* s = model.get_string(sid);
+            const std::string* s = model.get_string(sid);
             assert(s);
             spreadsheet::color_rgb_t expected = spreadsheet::to_color_rgb(*s);
 
@@ -699,7 +698,7 @@ void test_xls_xml_cell_borders_single_cells()
 
     for (const check& c : checks)
     {
-        cout << "(row: " << c.row << "; col: " << c.col << "; expected: " << int(c.style) << ")" << endl;
+        std::cout << "(row: " << c.row << "; col: " << c.col << "; expected: " << int(c.style) << ")" << std::endl;
         size_t xf = sh->get_cell_format(c.row, c.col);
         const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
@@ -1451,7 +1450,7 @@ void test_xls_xml_styles_column_styles()
 
 void test_xls_xml_view_cursor_per_sheet()
 {
-    string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
+    std::string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
 
     spreadsheet::range_size_t ss{1048576, 16384};
     spreadsheet::document doc{ss};
@@ -1511,7 +1510,7 @@ struct expected_selection
 
 void test_xls_xml_view_cursor_split_pane()
 {
-    string path(SRCDIR"/test/xls-xml/view/cursor-split-pane.xml");
+    std::string path(SRCDIR"/test/xls-xml/view/cursor-split-pane.xml");
 
     spreadsheet::range_size_t ss{1048576, 16384};
     spreadsheet::document doc{ss};
@@ -1649,7 +1648,7 @@ void test_xls_xml_view_cursor_split_pane()
 
 void test_xls_xml_view_frozen_pane()
 {
-    string path(SRCDIR"/test/xls-xml/view/frozen-pane.xml");
+    std::string path(SRCDIR"/test/xls-xml/view/frozen-pane.xml");
 
     spreadsheet::range_size_t ss{1048576, 16384};
     spreadsheet::document doc{ss};
@@ -1707,7 +1706,7 @@ void test_xls_xml_view_frozen_pane()
 
 void test_xls_xml_skip_error_cells()
 {
-    string path(SRCDIR"/test/xls-xml/formula-cells-parse-error/input.xml");
+    std::string path(SRCDIR"/test/xls-xml/formula-cells-parse-error/input.xml");
 
     try
     {
