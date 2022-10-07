@@ -36,19 +36,19 @@ namespace {
 
 namespace sheet_pane {
 
-using map_type = mdds::sorted_string_map<spreadsheet::sheet_pane_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::sheet_pane_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] = {
-    { "bottomLeft",  spreadsheet::sheet_pane_t::bottom_left  },
-    { "bottomRight", spreadsheet::sheet_pane_t::bottom_right },
-    { "topLeft",     spreadsheet::sheet_pane_t::top_left     },
-    { "topRight",    spreadsheet::sheet_pane_t::top_right    },
+    { "bottomLeft",  ss::sheet_pane_t::bottom_left  },
+    { "bottomRight", ss::sheet_pane_t::bottom_right },
+    { "topLeft",     ss::sheet_pane_t::top_left     },
+    { "topRight",    ss::sheet_pane_t::top_right    },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), spreadsheet::sheet_pane_t::unspecified);
+    static const map_type mt(entries, std::size(entries), ss::sheet_pane_t::unspecified);
     return mt;
 }
 
@@ -56,18 +56,18 @@ const map_type& get()
 
 namespace pane_state {
 
-using map_type = mdds::sorted_string_map<spreadsheet::pane_state_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::pane_state_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] = {
-    { "frozen",      spreadsheet::pane_state_t::frozen       },
-    { "frozenSplit", spreadsheet::pane_state_t::frozen_split },
-    { "split",       spreadsheet::pane_state_t::split        },
+    { "frozen",      ss::pane_state_t::frozen       },
+    { "frozenSplit", ss::pane_state_t::frozen_split },
+    { "split",       ss::pane_state_t::split        },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), spreadsheet::pane_state_t::unspecified);
+    static const map_type mt(entries, std::size(entries), ss::pane_state_t::unspecified);
     return mt;
 }
 
@@ -75,19 +75,19 @@ const map_type& get()
 
 namespace formula_type {
 
-using map_type = mdds::sorted_string_map<spreadsheet::formula_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::formula_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] = {
-    { "array",     spreadsheet::formula_t::array      },
-    { "dataTable", spreadsheet::formula_t::data_table },
-    { "normal",    spreadsheet::formula_t::normal     },
-    { "shared",    spreadsheet::formula_t::shared     },
+    { "array",     ss::formula_t::array      },
+    { "dataTable", ss::formula_t::data_table },
+    { "normal",    ss::formula_t::normal     },
+    { "shared",    ss::formula_t::shared     },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), spreadsheet::formula_t::unknown);
+    static const map_type mt(entries, std::size(entries), ss::formula_t::unknown);
     return mt;
 }
 
@@ -96,7 +96,7 @@ const map_type& get()
 } // anonymous namespace
 
 xlsx_sheet_context::formula::formula() :
-    type(spreadsheet::formula_t::unknown),
+    type(ss::formula_t::unknown),
     str(),
     data_table_ref1(),
     data_table_ref2(),
@@ -117,9 +117,9 @@ void xlsx_sheet_context::formula::reset()
 }
 
 xlsx_sheet_context::xlsx_sheet_context(
-    session_context& session_cxt, const tokens& tokens, spreadsheet::sheet_t sheet_id,
-    spreadsheet::iface::import_reference_resolver& resolver,
-    spreadsheet::iface::import_sheet& sheet) :
+    session_context& session_cxt, const tokens& tokens, ss::sheet_t sheet_id,
+    ss::iface::import_reference_resolver& resolver,
+    ss::iface::import_sheet& sheet) :
     xml_context_base(session_cxt, tokens),
     m_resolver(resolver),
     m_sheet(sheet),
@@ -161,7 +161,7 @@ void xlsx_sheet_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_
 
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
     {
-        spreadsheet::iface::import_auto_filter* af = m_sheet.get_auto_filter();
+        ss::iface::import_auto_filter* af = m_sheet.get_auto_filter();
         if (!af)
             return;
 
@@ -203,14 +203,14 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_mergeCells);
 
-                spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
+                ss::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
                 if (sheet_props)
                 {
                     // ref contains merged range in A1 reference style.
                     std::string_view ref = for_each(
                         attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_ref)).get_value();
 
-                    spreadsheet::src_range_t range = m_resolver.resolve_range(ref);
+                    ss::src_range_t range = m_resolver.resolve_range(ref);
                     sheet_props->set_merge_cell_range(to_rc_range(range));
                 }
                 break;
@@ -368,7 +368,7 @@ void xlsx_sheet_context::start_element_sheet_view(
 {
     xml_element_expected(parent, NS_ooxml_xlsx, XML_sheetViews);
 
-    spreadsheet::iface::import_sheet_view* view = m_sheet.get_sheet_view();
+    ss::iface::import_sheet_view* view = m_sheet.get_sheet_view();
     if (!view)
         return;
 
@@ -401,14 +401,14 @@ void xlsx_sheet_context::start_element_selection(
     elems.emplace_back(NS_ooxml_xlsx, XML_customSheetView);
     xml_element_expected(parent, elems);
 
-    spreadsheet::iface::import_sheet_view* view = m_sheet.get_sheet_view();
+    ss::iface::import_sheet_view* view = m_sheet.get_sheet_view();
     if (!view)
         return;
 
     // example: <selection pane="topRight" activeCell="H2" sqref="H2:L2"/>
 
-    spreadsheet::sheet_pane_t pane = spreadsheet::sheet_pane_t::unspecified;
-    spreadsheet::range_t range;
+    ss::sheet_pane_t pane = ss::sheet_pane_t::unspecified;
+    ss::range_t range;
     range.first.column = -1;
     range.first.row = -1;
     range.last = range.first;
@@ -440,8 +440,8 @@ void xlsx_sheet_context::start_element_selection(
         }
     }
 
-    if (pane == spreadsheet::sheet_pane_t::unspecified)
-        pane = spreadsheet::sheet_pane_t::top_left;
+    if (pane == ss::sheet_pane_t::unspecified)
+        pane = ss::sheet_pane_t::top_left;
 
     view->set_selected_range(pane, range);
 }
@@ -454,16 +454,16 @@ void xlsx_sheet_context::start_element_pane(
     elems.emplace_back(NS_ooxml_xlsx, XML_customSheetView);
     xml_element_expected(parent, elems);
 
-    spreadsheet::iface::import_sheet_view* view = m_sheet.get_sheet_view();
+    ss::iface::import_sheet_view* view = m_sheet.get_sheet_view();
     if (!view)
         return;
 
     // <pane xSplit="4" ySplit="8" topLeftCell="E9" activePane="bottomRight" state="frozen"/>
 
     double xsplit = 0.0, ysplit = 0.0;
-    spreadsheet::address_t top_left_cell;
-    spreadsheet::sheet_pane_t active_pane = spreadsheet::sheet_pane_t::unspecified;
-    spreadsheet::pane_state_t pane_state = spreadsheet::pane_state_t::unspecified;
+    ss::address_t top_left_cell;
+    ss::sheet_pane_t active_pane = ss::sheet_pane_t::unspecified;
+    ss::pane_state_t pane_state = ss::pane_state_t::unspecified;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -492,21 +492,21 @@ void xlsx_sheet_context::start_element_pane(
         }
     }
 
-    if (active_pane == spreadsheet::sheet_pane_t::unspecified)
-        active_pane = spreadsheet::sheet_pane_t::top_left;
+    if (active_pane == ss::sheet_pane_t::unspecified)
+        active_pane = ss::sheet_pane_t::top_left;
 
-    if (pane_state == spreadsheet::pane_state_t::unspecified)
-        pane_state = spreadsheet::pane_state_t::split;
+    if (pane_state == ss::pane_state_t::unspecified)
+        pane_state = ss::pane_state_t::split;
 
     switch (pane_state)
     {
-        case spreadsheet::pane_state_t::frozen:
+        case ss::pane_state_t::frozen:
             view->set_frozen_pane(xsplit, ysplit, top_left_cell, active_pane);
             break;
-        case spreadsheet::pane_state_t::split:
+        case ss::pane_state_t::split:
             view->set_split_pane(xsplit, ysplit, top_left_cell, active_pane);
             break;
-        case spreadsheet::pane_state_t::frozen_split:
+        case ss::pane_state_t::frozen_split:
             if (get_config().debug)
                 cout << "FIXME: frozen-split state not yet handled." << endl;
             break;
@@ -518,7 +518,7 @@ void xlsx_sheet_context::start_element_pane(
 void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
 {
     xlsx_cell_t cell_type = xlsx_ct_numeric;
-    spreadsheet::address_t address;
+    ss::address_t address;
     address.column = 0;
     address.row = 0;
     size_t xf = 0;
@@ -702,7 +702,7 @@ void xlsx_sheet_context::end_element_cell()
     }
     else if (!m_cur_formula.str.empty())
     {
-        if (m_cur_formula.type == spreadsheet::formula_t::shared && m_cur_formula.shared_id >= 0)
+        if (m_cur_formula.type == ss::formula_t::shared && m_cur_formula.shared_id >= 0)
         {
             // shared formula expression
             session_data.m_shared_formulas.push_back(
@@ -713,7 +713,7 @@ void xlsx_sheet_context::end_element_cell()
             xlsx_session_data::shared_formula& f = *session_data.m_shared_formulas.back();
             push_raw_cell_result(f.result, session_data);
         }
-        else if (m_cur_formula.type == spreadsheet::formula_t::array)
+        else if (m_cur_formula.type == ss::formula_t::array)
         {
             // array formula expression
             session_data.m_array_formulas.push_back(
@@ -735,7 +735,7 @@ void xlsx_sheet_context::end_element_cell()
             push_raw_cell_result(f.result, session_data);
         }
     }
-    else if (m_cur_formula.type == spreadsheet::formula_t::shared && m_cur_formula.shared_id >= 0)
+    else if (m_cur_formula.type == ss::formula_t::shared && m_cur_formula.shared_id >= 0)
     {
         // shared formula without formula expression
         session_data.m_shared_formulas.push_back(
@@ -745,15 +745,15 @@ void xlsx_sheet_context::end_element_cell()
         xlsx_session_data::shared_formula& f = *session_data.m_shared_formulas.back();
         push_raw_cell_result(f.result, session_data);
     }
-    else if (m_cur_formula.type == spreadsheet::formula_t::data_table)
+    else if (m_cur_formula.type == ss::formula_t::data_table)
     {
         // Import data table.
-        spreadsheet::iface::import_data_table* dt = m_sheet.get_data_table();
+        ss::iface::import_data_table* dt = m_sheet.get_data_table();
         if (dt)
         {
             if (m_cur_formula.data_table_2d)
             {
-                dt->set_type(spreadsheet::data_table_type_t::both);
+                dt->set_type(ss::data_table_type_t::both);
                 dt->set_range(m_cur_formula.ref);
                 dt->set_first_reference(
                     m_cur_formula.data_table_ref1,
@@ -764,7 +764,7 @@ void xlsx_sheet_context::end_element_cell()
             }
             else if (m_cur_formula.data_table_row_based)
             {
-                dt->set_type(spreadsheet::data_table_type_t::row);
+                dt->set_type(ss::data_table_type_t::row);
                 dt->set_range(m_cur_formula.ref);
                 dt->set_first_reference(
                     m_cur_formula.data_table_ref1,
@@ -772,7 +772,7 @@ void xlsx_sheet_context::end_element_cell()
             }
             else
             {
-                dt->set_type(spreadsheet::data_table_type_t::column);
+                dt->set_type(ss::data_table_type_t::column);
                 dt->set_range(m_cur_formula.ref);
                 dt->set_first_reference(
                     m_cur_formula.data_table_ref1,
@@ -890,7 +890,7 @@ bool xlsx_sheet_context::handle_array_formula_result(xlsx_session_data& session_
 
     while (it != ite)
     {
-        const spreadsheet::range_t& ref = it->first;
+        const ss::range_t& ref = it->first;
 
         if (ref.last.row < m_cur_row)
         {
