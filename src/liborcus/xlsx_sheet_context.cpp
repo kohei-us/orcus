@@ -25,106 +25,14 @@
 #include <algorithm>
 #include <sstream>
 #include <vector>
+#include <optional>
 
 using namespace std;
+namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
 namespace {
-
-class col_attr_parser
-{
-    long m_min;
-    long m_max;
-    double m_width;
-    bool m_custom_width;
-    bool m_contains_width;
-    bool m_hidden;
-public:
-    col_attr_parser() : m_min(0), m_max(0), m_width(0.0), m_custom_width(false),
-                        m_contains_width(false), m_hidden(false) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.value.empty())
-            return;
-
-        switch (attr.name)
-        {
-            case XML_min:
-                m_min = to_long(attr.value);
-            break;
-            case XML_max:
-                m_max = to_long(attr.value);
-            break;
-            case XML_width:
-                m_width = to_double(attr.value);
-                m_contains_width = true;
-            break;
-            case XML_customWidth:
-                m_custom_width = to_long(attr.value);
-            break;
-            case XML_hidden:
-                m_hidden = to_long(attr.value);
-            break;
-            default:
-                ;
-        }
-    }
-
-    long get_min() const { return m_min; }
-    long get_max() const { return m_max; }
-    double get_width() const { return m_width; }
-    bool is_custom_width() const { return m_custom_width; }
-    bool contains_width() const { return m_contains_width; }
-    bool is_hidden() const { return m_hidden; }
-};
-
-class row_attr_parser
-{
-    spreadsheet::row_t m_row;
-    length_t m_height;
-    bool m_contains_address;
-    bool m_hidden;
-public:
-    row_attr_parser() : m_row(0), m_contains_address(false), m_hidden(false) {}
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_r:
-            {
-                // row index
-                m_row = static_cast<spreadsheet::row_t>(to_long(attr.value));
-                if (!m_row)
-                    throw xml_structure_error("row number can never be zero!");
-
-                m_row -= 1; // from 1-based to 0-based.
-                m_contains_address = true;
-            }
-            break;
-            case XML_ht:
-            {
-                m_height.value = to_double(attr.value);
-                m_height.unit = length_unit_t::point;
-            }
-            break;
-            case XML_hidden:
-                m_hidden = to_long(attr.value) != 0;
-            break;
-            default:
-                ;
-        }
-    }
-
-    spreadsheet::row_t get_row() const { return m_row; }
-
-    length_t get_height() const { return m_height; }
-
-    bool contains_address() const { return m_contains_address; }
-
-    bool is_hidden() const { return m_hidden; }
-};
 
 namespace sheet_pane {
 
@@ -282,22 +190,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             case XML_col:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_cols);
-                col_attr_parser func;
-                func = for_each(attrs.begin(), attrs.end(), func);
-
-                spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
-                if (sheet_props)
-                {
-                    double width = func.get_width();
-                    bool contains_width = func.contains_width();
-                    bool hidden = func.is_hidden();
-                    for (spreadsheet::col_t col = func.get_min(); col <= func.get_max(); ++col)
-                    {
-                        if (contains_width)
-                            sheet_props->set_column_width(col-1, width, length_unit_t::xlsx_column_digit);
-                        sheet_props->set_column_hidden(col-1, hidden);
-                    }
-                }
+                start_element_col(attrs);
                 break;
             }
             case XML_dimension:
@@ -351,25 +244,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             case XML_row:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_sheetData);
-                row_attr_parser func;
-                func = for_each(attrs.begin(), attrs.end(), func);
-                if (func.contains_address())
-                    m_cur_row = func.get_row();
-                else
-                    ++m_cur_row;
-
-                m_cur_col = -1;
-
-                spreadsheet::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
-                if (sheet_props)
-                {
-                    length_t ht = func.get_height();
-                    if (ht.unit != length_unit_t::unknown)
-                        sheet_props->set_row_height(m_cur_row, ht.value, ht.unit);
-
-                    bool hidden = func.is_hidden();
-                    sheet_props->set_row_hidden(m_cur_row, hidden);
-                }
+                start_element_row(attrs);
                 break;
             }
             case XML_c:
@@ -691,6 +566,128 @@ void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, cons
 
     m_cur_cell_type = cell_type;
     m_cur_cell_xf = xf;
+}
+
+void xlsx_sheet_context::start_element_col(const xml_attrs_t& attrs)
+{
+    long col_min = 0; // 1-based
+    long col_max = 0; // 1-based
+    bool col_hidden = false;
+    std::optional<double> col_width;
+    std::optional<std::size_t> xfid;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.value.empty())
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_min:
+                col_min = to_long(attr.value);
+                break;
+            case XML_max:
+                col_max = to_long(attr.value);
+                break;
+            case XML_width:
+                col_width = to_double(attr.value);
+                break;
+            case XML_hidden:
+                col_hidden = to_long(attr.value);
+                break;
+            case XML_style:
+                xfid = to_long(attr.value);
+                break;
+        }
+    }
+
+    if (!col_min || !col_max || col_min > col_max)
+    {
+        std::ostringstream os;
+        os << "column element has invalid column indices: (min=" << col_min << "; max=" << col_max << ")";
+        warn(os.str());
+        return;
+    }
+
+    if (xfid)
+    {
+        for (ss::col_t col = col_min; col <= col_max; ++col)
+            m_sheet.set_column_format(col-1, *xfid);
+    }
+
+    ss::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
+    if (sheet_props)
+    {
+        for (ss::col_t col = col_min; col <= col_max; ++col)
+        {
+            if (col_width)
+                sheet_props->set_column_width(col-1, *col_width, length_unit_t::xlsx_column_digit);
+            sheet_props->set_column_hidden(col-1, col_hidden);
+        }
+    }
+}
+
+void xlsx_sheet_context::start_element_row(const xml_attrs_t& attrs)
+{
+    ss::row_t row = 0;
+    length_t height;
+    bool contains_address = false;
+    bool hidden = false;
+    bool custom_format = false;
+    std::optional<std::size_t> xfid;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_r:
+            {
+                // row index
+                row = static_cast<ss::row_t>(to_long(attr.value));
+                if (!row)
+                    throw xml_structure_error("row number can never be zero!");
+
+                row -= 1; // from 1-based to 0-based.
+                contains_address = true;
+                break;
+            }
+            case XML_ht:
+            {
+                height.value = to_double(attr.value);
+                height.unit = length_unit_t::point;
+                break;
+            }
+            case XML_hidden:
+                hidden = to_long(attr.value) != 0;
+                break;
+            case XML_s:
+                xfid = to_long(attr.value);
+                break;
+            case XML_customFormat:
+                custom_format = to_bool(attr.value);
+                break;
+        }
+    }
+
+    if (contains_address)
+        m_cur_row = row;
+    else
+        ++m_cur_row;
+
+    m_cur_col = -1;
+
+    if (custom_format && xfid)
+        // The specs say we only honor this style id only when the custom format is set.
+        m_sheet.set_row_format(m_cur_row, *xfid);
+
+    ss::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
+    if (sheet_props)
+    {
+        if (height.unit != length_unit_t::unknown)
+            sheet_props->set_row_height(m_cur_row, height.value, height.unit);
+
+        sheet_props->set_row_hidden(m_cur_row, hidden);
+    }
 }
 
 void xlsx_sheet_context::end_element_cell()

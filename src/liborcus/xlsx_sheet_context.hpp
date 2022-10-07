@@ -81,6 +81,9 @@ private:
     void start_element_selection(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_pane(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
     void start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_element_col(const xml_attrs_t& attrs);
+    void start_element_row(const xml_attrs_t& attrs);
+
     void end_element_cell();
     void push_raw_cell_value();
     void push_raw_cell_result(range_formula_results& res, size_t row_offset, size_t col_offset, xlsx_session_data& session_data) const;

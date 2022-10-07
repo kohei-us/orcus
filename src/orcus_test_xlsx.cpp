@@ -992,6 +992,116 @@ void test_xlsx_styles_direct_format()
     assert(font->second.bold);
 }
 
+void test_xlsx_styles_column_styles()
+{
+    test::stack_printer __sp__(__func__);
+
+    fs::path path{SRCDIR"/test/xlsx/styles/column-styles.xlsx"};
+    std::unique_ptr<spreadsheet::document> doc = load_doc(path.string());
+    assert(doc);
+
+    auto doc_size = doc->get_sheet_size();
+
+    const ss::styles& styles = doc->get_styles();
+
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    {
+        // On Sheet1, check the named styles applied on columns B:D and F.
+        // Columns A and E should have Normal style applied.
+        const std::tuple<ss::row_t, ss::col_t, std::string> checks[] = {
+            { 0, 0, "Normal" },
+            { 0, 1, "Bad" },
+            { 0, 2, "Good" },
+            { 0, 3, "Neutral" },
+            { 0, 4, "Normal" },
+            { 0, 5, "Note" },
+            { doc_size.rows - 1, 0, "Normal" },
+            { doc_size.rows - 1, 1, "Bad" },
+            { doc_size.rows - 1, 2, "Good" },
+            { doc_size.rows - 1, 3, "Neutral" },
+            { doc_size.rows - 1, 4, "Normal" },
+            { doc_size.rows - 1, 5, "Note" },
+        };
+
+        for (const auto& check : checks)
+        {
+            ss::row_t r = std::get<0>(check);
+            ss::col_t c = std::get<1>(check);
+            std::string_view name = std::get<2>(check);
+
+            std::size_t xfid = sh->get_cell_format(r, c);
+            std::cout << "row=" << r << "; column=" << c << "; xfid=" << xfid << std::endl;
+            const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+            assert(xf);
+            std::cout << "style xfid=" << xf->style_xf << std::endl;
+
+            const ss::cell_style_t* xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+            assert(xstyle);
+            if (xstyle->name != name)
+                std::cout << "names differ! (expected=" << name << "; actual=" << xstyle->name << ")" << std::endl;
+
+            assert(xstyle->name == name);
+        }
+    }
+
+    {
+        // Row 10 has green background, and row 11 has orange background.
+        const std::tuple<ss::row_t, ss::color_t> checks[] = {
+            { 9, {0xFF, 0x92, 0xD0, 0x50} },
+            { 10, {0xFF, 0xFF, 0xC0, 0x00} },
+        };
+
+        for (const auto& check : checks)
+        {
+            const ss::row_t row = std::get<0>(check);
+            const ss::color_t color = std::get<1>(check);
+
+            for (ss::col_t col = 0; col <= 6; ++col)
+            {
+                std::size_t xfid = sh->get_cell_format(row, col);
+                std::cout << "row=" << row << "; column=" << col << "; xfid=" << xfid << std::endl;
+                const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+                assert(xf);
+
+                const auto* fill = styles.get_fill_state(xf->fill);
+                assert(fill);
+
+                assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+                assert(fill->second.pattern_type);
+
+                assert(fill->first.fg_color == color);
+                assert(fill->second.fg_color);
+            }
+        }
+    }
+
+    sh = doc->get_sheet(1);
+    assert(sh);
+
+    // Columns B:D should have "Good" named style applied.
+    {
+        const std::pair<ss::row_t, ss::col_t> cells[] = {
+            { 0, 1 },
+            { 0, 3 },
+            { doc_size.rows - 1, 1 },
+            { doc_size.rows - 1, 3 },
+        };
+
+        for (const auto& cell : cells)
+        {
+            std::size_t xfid = sh->get_cell_format(cell.first, cell.second);
+            const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+            assert(xf);
+
+            const ss::cell_style_t* xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+            assert(xstyle);
+            assert(xstyle->name == "Good");
+        }
+    }
+}
+
 void test_xlsx_pivot_two_pivot_caches()
 {
     test::stack_printer __sp__(__func__);
@@ -1873,6 +1983,7 @@ int main()
     test_xlsx_hidden_rows_columns();
     test_xlsx_cell_properties();
     test_xlsx_styles_direct_format();
+    test_xlsx_styles_column_styles();
 
     // pivot table
     test_xlsx_pivot_two_pivot_caches();
