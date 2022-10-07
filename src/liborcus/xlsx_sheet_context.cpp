@@ -27,7 +27,6 @@
 #include <vector>
 #include <optional>
 
-using namespace std;
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {
@@ -270,7 +269,7 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
                 single_attr_getter func(get_session_context().spool, NS_ooxml_r, XML_id);
                 std::string_view rid = for_each(attrs.begin(), attrs.end(), func).get_value();
 
-                unique_ptr<xlsx_rel_table_info> p(new xlsx_rel_table_info);
+                std::unique_ptr<xlsx_rel_table_info> p(new xlsx_rel_table_info);
                 p->sheet_interface = &m_sheet;
                 m_rel_extras.data.insert(
                     opc_rel_extras_t::map_type::value_type(rid, std::move(p)));
@@ -507,8 +506,7 @@ void xlsx_sheet_context::start_element_pane(
             view->set_split_pane(xsplit, ysplit, top_left_cell, active_pane);
             break;
         case ss::pane_state_t::frozen_split:
-            if (get_config().debug)
-                cout << "FIXME: frozen-split state not yet handled." << endl;
+            warn("FIXME: frozen-split state not yet handled.");
             break;
         default:
             ;
