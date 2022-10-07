@@ -629,9 +629,8 @@ void xlsx_sheet_context::start_element_col(const xml_attrs_t& attrs)
 
 void xlsx_sheet_context::start_element_row(const xml_attrs_t& attrs)
 {
-    ss::row_t row = 0;
+    std::optional<ss::row_t> row;
     length_t height;
-    bool contains_address = false;
     bool hidden = false;
     bool custom_format = false;
     std::optional<std::size_t> xfid;
@@ -643,12 +642,12 @@ void xlsx_sheet_context::start_element_row(const xml_attrs_t& attrs)
             case XML_r:
             {
                 // row index
-                row = static_cast<ss::row_t>(to_long(attr.value));
-                if (!row)
+                long this_row = to_long(attr.value);
+                if (!this_row)
                     throw xml_structure_error("row number can never be zero!");
 
-                row -= 1; // from 1-based to 0-based.
-                contains_address = true;
+                this_row -= 1; // from 1-based to 0-based.
+                row = this_row;
                 break;
             }
             case XML_ht:
@@ -669,8 +668,8 @@ void xlsx_sheet_context::start_element_row(const xml_attrs_t& attrs)
         }
     }
 
-    if (contains_address)
-        m_cur_row = row;
+    if (row)
+        m_cur_row = *row;
     else
         ++m_cur_row;
 
