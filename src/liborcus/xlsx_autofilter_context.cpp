@@ -126,6 +126,15 @@ void xlsx_autofilter_context::push_to_model(spreadsheet::iface::import_auto_filt
     af.commit();
 }
 
+void xlsx_autofilter_context::reset()
+{
+    m_pool.clear();
+    m_ref_range = std::string_view{};
+    m_cur_col = -1;
+    m_cur_match_values.clear();
+    m_column_filters.clear();
+}
+
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -44,6 +44,8 @@ public:
 
     void push_to_model(spreadsheet::iface::import_auto_filter& af) const;
 
+    void reset();
+
 private:
     spreadsheet::iface::import_reference_resolver& m_resolver;
 

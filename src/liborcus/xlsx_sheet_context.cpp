@@ -126,8 +126,11 @@ xlsx_sheet_context::xlsx_sheet_context(
     m_cur_row(-1),
     m_cur_col(-1),
     m_cur_cell_type(xlsx_ct_numeric),
-    m_cur_cell_xf(0)
+    m_cur_cell_xf(0),
+    m_cxt_autofilter(session_cxt, tokens, m_resolver)
 {
+    register_child(&m_cxt_autofilter);
+
     init_ooxml_context(*this);
 }
 
@@ -139,9 +142,8 @@ xml_context_base* xlsx_sheet_context::create_child_context(xmlns_id_t ns, xml_to
 {
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
     {
-        mp_child.reset(new xlsx_autofilter_context(get_session_context(), get_tokens(), m_resolver));
-        mp_child->transfer_common(*this);
-        return mp_child.get();
+        m_cxt_autofilter.reset();
+        return &m_cxt_autofilter;
     }
     else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting && m_sheet.get_conditional_format())
     {

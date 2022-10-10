@@ -11,6 +11,7 @@
 #include "xml_context_base.hpp"
 #include "ooxml_types.hpp"
 #include "xlsx_types.hpp"
+#include "xlsx_autofilter_context.hpp"
 
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/string_pool.hpp"
@@ -130,6 +131,8 @@ private:
      * Extra data to pass on to subsequent parts via relations.
      */
     opc_rel_extras_t m_rel_extras;
+
+    xlsx_autofilter_context m_cxt_autofilter;
 };
 
 }
