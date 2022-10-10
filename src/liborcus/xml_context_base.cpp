@@ -134,12 +134,6 @@ void xml_context_base::set_config(const config& opt)
         child->set_config(opt);
 }
 
-void xml_context_base::transfer_common(const xml_context_base& parent)
-{
-    set_config(parent.m_config);
-    set_ns_context(parent.mp_ns_cxt);
-}
-
 void xml_context_base::set_always_allowed_elements(xml_elem_set_t elems)
 {
     m_always_allowed_elements = std::move(elems);

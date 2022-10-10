@@ -110,15 +110,6 @@ public:
 
     void set_config(const config& opt);
 
-    /**
-     * Call this to transfer common settings from parent context to child
-     * context.
-     *
-     * TODO: This should be phased out in favor of calling register_child() to
-     * register child contexts with their parent.
-     */
-    void transfer_common(const xml_context_base& parent);
-
     void set_always_allowed_elements(xml_elem_set_t elems);
 
 protected:
