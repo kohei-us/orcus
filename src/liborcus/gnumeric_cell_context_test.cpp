@@ -168,7 +168,8 @@ void test_cell_value()
     import_factory factory;
     session_context cxt;
 
-    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory, &sheet);
+    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory);
+    context.reset(&sheet);
 
     orcus::xmlns_id_t ns = NS_gnumeric_gnm;
     orcus::xml_token_t elem = XML_Cell;
@@ -187,7 +188,8 @@ void test_cell_bool()
     import_factory factory;
     session_context cxt;
 
-    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory, &sheet);
+    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory);
+    context.reset(&sheet);
 
     orcus::xmlns_id_t ns = NS_gnumeric_gnm;
     orcus::xml_token_t elem = XML_Cell;
@@ -206,7 +208,8 @@ void test_cell_string()
     mock_factory factory;
     session_context cxt;
 
-    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory, &sheet);
+    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory);
+    context.reset(&sheet);
 
     orcus::xmlns_id_t ns = NS_gnumeric_gnm;
     orcus::xml_token_t elem = XML_Cell;
@@ -260,7 +263,8 @@ void test_shared_formula_with_string()
     mock_factory factory;
     session_context cxt;
 
-    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory, &sheet);
+    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory);
+    context.reset(&sheet);
 
     orcus::xmlns_id_t ns = NS_gnumeric_gnm;
     orcus::xml_token_t elem = XML_Cell;
@@ -310,7 +314,8 @@ void test_shared_formula_without_string()
     mock_factory factory;
     session_context cxt;
 
-    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory, &sheet);
+    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory);
+    context.reset(&sheet);
 
     orcus::xmlns_id_t ns = NS_gnumeric_gnm;
     orcus::xml_token_t elem = XML_Cell;
@@ -330,7 +335,8 @@ void test_cell_formula()
     mock_factory factory;
     session_context cxt;
 
-    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory, &sheet);
+    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory);
+    context.reset(&sheet);
 
     orcus::xmlns_id_t ns = NS_gnumeric_gnm;
     orcus::xml_token_t elem = XML_Cell;
@@ -348,7 +354,8 @@ void test_cell_array_formula()
     mock_factory factory;
     session_context cxt;
 
-    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory, &sheet);
+    orcus::gnumeric_cell_context context(cxt, orcus::gnumeric_tokens, &factory);
+    context.reset(&sheet);
 
     orcus::xmlns_id_t ns = NS_gnumeric_gnm;
     orcus::xml_token_t elem = XML_Cell;

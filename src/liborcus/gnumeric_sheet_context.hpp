@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_GNUMERIC_SHEET_CONTEXT_HPP
 
 #include "xml_context_base.hpp"
+#include "gnumeric_cell_context.hpp"
 #include "orcus/spreadsheet/types.hpp"
 
 #include "orcus/string_pool.hpp"
@@ -106,6 +107,8 @@ private:
      * Used for temporary storage of characters
      */
     std::string_view m_chars;
+
+    gnumeric_cell_context m_cxt_cell;
 };
 
 } // namespace orcus

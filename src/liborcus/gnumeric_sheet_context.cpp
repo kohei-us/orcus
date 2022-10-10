@@ -336,8 +336,10 @@ gnumeric_sheet_context::gnumeric_sheet_context(
     mp_factory(factory),
     m_sheet_index(-1),
     mp_sheet(nullptr),
-    mp_auto_filter(nullptr)
+    mp_auto_filter(nullptr),
+    m_cxt_cell(session_cxt, tokens, factory)
 {
+    register_child(&m_cxt_cell);
 }
 
 gnumeric_sheet_context::~gnumeric_sheet_context() = default;
@@ -346,9 +348,8 @@ xml_context_base* gnumeric_sheet_context::create_child_context(xmlns_id_t ns, xm
 {
     if (ns == NS_gnumeric_gnm && name == XML_Cells)
     {
-        mp_child.reset(new gnumeric_cell_context(get_session_context(), get_tokens(), mp_factory, mp_sheet));
-        mp_child->transfer_common(*this);
-        return mp_child.get();
+        m_cxt_cell.reset(mp_sheet);
+        return &m_cxt_cell;
     }
 
     return nullptr;

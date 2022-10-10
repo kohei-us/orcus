@@ -14,7 +14,7 @@
 #include <fstream>
 #include <algorithm>
 
-using namespace std;
+namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
@@ -112,25 +112,14 @@ private:
 
 // ============================================================================
 
-gnumeric_cell_context::gnumeric_cell_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory, spreadsheet::iface::import_sheet* sheet) :
+gnumeric_cell_context::gnumeric_cell_context(session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
-    mp_sheet(sheet)
+    mp_sheet(nullptr)
 {
 }
 
-gnumeric_cell_context::~gnumeric_cell_context()
-{
-}
-
-xml_context_base* gnumeric_cell_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
-{
-    return nullptr;
-}
-
-void gnumeric_cell_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
-{
-}
+gnumeric_cell_context::~gnumeric_cell_context() = default;
 
 void gnumeric_cell_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
 {
@@ -173,6 +162,14 @@ void gnumeric_cell_context::characters(std::string_view str, bool transient)
         chars = m_pool.intern(str).first;
     else
         chars = str;
+}
+
+void gnumeric_cell_context::reset(ss::iface::import_sheet* sheet)
+{
+    mp_cell_data.reset();
+    m_pool.clear();
+    chars = std::string_view{};
+    mp_sheet = sheet;
 }
 
 void gnumeric_cell_context::start_cell(const xml_attrs_t& attrs)
