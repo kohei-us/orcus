@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_GNUMERICCONTEXT_HPP
 
 #include "xml_context_base.hpp"
+#include "gnumeric_sheet_context.hpp"
 #include "orcus/spreadsheet/types.hpp"
 
 #include <vector>
@@ -39,6 +40,8 @@ private:
     spreadsheet::iface::import_factory* mp_factory;
     std::unique_ptr<xml_context_base> mp_child;
     spreadsheet::sheet_t m_sheet_count;
+
+    gnumeric_sheet_context m_cxt_sheet;
 };
 
 }

@@ -83,7 +83,8 @@ void test_column_width()
     mock_factory factory;
     session_context cxt;
 
-    orcus::gnumeric_sheet_context context(cxt, orcus::gnumeric_tokens, &factory, 0);
+    orcus::gnumeric_sheet_context context(cxt, orcus::gnumeric_tokens, &factory);
+    context.reset(0);
     orcus::xmlns_id_t ns = NS_gnumeric_gnm;
     orcus::xml_token_t parent = XML_Sheet;
     orcus::xml_attrs_t parent_attr;

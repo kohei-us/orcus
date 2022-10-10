@@ -331,18 +331,16 @@ private:
 
 
 gnumeric_sheet_context::gnumeric_sheet_context(
-    session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory, spreadsheet::sheet_t sheet_index) :
+    session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
-    m_sheet_index(sheet_index),
+    m_sheet_index(-1),
     mp_sheet(nullptr),
     mp_auto_filter(nullptr)
 {
 }
 
-gnumeric_sheet_context::~gnumeric_sheet_context()
-{
-}
+gnumeric_sheet_context::~gnumeric_sheet_context() = default;
 
 xml_context_base* gnumeric_sheet_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
@@ -354,10 +352,6 @@ xml_context_base* gnumeric_sheet_context::create_child_context(xmlns_id_t ns, xm
     }
 
     return nullptr;
-}
-
-void gnumeric_sheet_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
-{
 }
 
 void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
@@ -510,9 +504,26 @@ bool gnumeric_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
 void gnumeric_sheet_context::characters(std::string_view str, bool transient)
 {
     if (transient)
-        chars = m_pool.intern(str).first;
+        m_chars = m_pool.intern(str).first;
     else
-        chars = str;
+        m_chars = str;
+}
+
+void gnumeric_sheet_context::reset(spreadsheet::sheet_t sheet_index)
+{
+    m_sheet_index = sheet_index;
+
+    mp_sheet = nullptr;
+    mp_auto_filter = nullptr;
+    mp_xf = nullptr;
+
+    mp_child.reset();
+    mp_region_data.reset();
+
+    m_front_color = gnumeric_color();
+
+    m_pool.clear();
+    m_chars = std::string_view{};
 }
 
 void gnumeric_sheet_context::start_font(const xml_attrs_t& attrs)
@@ -630,9 +641,9 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
 
                 fill_set = true;
 
-                front_color.red = red;
-                front_color.blue = blue;
-                front_color.green = green;
+                m_front_color.red = red;
+                m_front_color.blue = blue;
+                m_front_color.green = green;
                 break;
             }
             case XML_Back:
@@ -743,7 +754,7 @@ void gnumeric_sheet_context::start_condition(const xml_attrs_t& attrs)
 
 void gnumeric_sheet_context::end_table()
 {
-    mp_sheet = mp_factory->append_sheet(m_sheet_index, chars);
+    mp_sheet = mp_factory->append_sheet(m_sheet_index, m_chars);
 }
 
 void gnumeric_sheet_context::end_font()
@@ -755,8 +766,8 @@ void gnumeric_sheet_context::end_font()
     auto* font_style = styles->start_font_style();
     ENSURE_INTERFACE(font_style, import_font_style);
 
-    font_style->set_color(0, front_color.red, front_color.green, front_color.blue);
-    font_style->set_name(chars);
+    font_style->set_color(0, m_front_color.red, m_front_color.green, m_front_color.blue);
+    font_style->set_name(m_chars);
     size_t font_id = font_style->commit();
 
     assert(mp_xf);
@@ -821,7 +832,7 @@ void gnumeric_sheet_context::end_expression()
         mp_sheet->get_conditional_format();
     if (cond_format)
     {
-        cond_format->set_formula(chars);
+        cond_format->set_formula(m_chars);
         cond_format->commit_condition();
     }
 }

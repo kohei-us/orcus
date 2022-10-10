@@ -58,15 +58,19 @@ struct gnumeric_style_region
 class gnumeric_sheet_context : public xml_context_base
 {
 public:
-    gnumeric_sheet_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory, spreadsheet::sheet_t sheet_index);
-    virtual ~gnumeric_sheet_context();
+    gnumeric_sheet_context(
+        session_context& session_cxt, const tokens& tokens,
+        spreadsheet::iface::import_factory* factory);
 
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
+    virtual ~gnumeric_sheet_context() override;
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs);
-    virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(std::string_view str, bool transient);
+    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
+
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs) override;
+    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
+    virtual void characters(std::string_view str, bool transient) override;
+
+    void reset(spreadsheet::sheet_t sheet_index);
 
 private:
     void start_style_region(const xml_attrs_t& attrs);
@@ -94,14 +98,14 @@ private:
     std::unique_ptr<xml_context_base> mp_child;
     std::unique_ptr<gnumeric_style_region> mp_region_data;
 
-    gnumeric_color front_color;
+    gnumeric_color m_front_color;
 
     string_pool m_pool;
 
     /**
      * Used for temporary storage of characters
      */
-    std::string_view chars;
+    std::string_view m_chars;
 };
 
 } // namespace orcus
