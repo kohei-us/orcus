@@ -6,8 +6,6 @@
  */
 
 #include "xlsx_sheet_context.hpp"
-#include "xlsx_autofilter_context.hpp"
-#include "xlsx_conditional_format_context.hpp"
 #include "xlsx_session_data.hpp"
 #include "xlsx_types.hpp"
 #include "ooxml_global.hpp"
@@ -127,9 +125,11 @@ xlsx_sheet_context::xlsx_sheet_context(
     m_cur_col(-1),
     m_cur_cell_type(xlsx_ct_numeric),
     m_cur_cell_xf(0),
-    m_cxt_autofilter(session_cxt, tokens, m_resolver)
+    m_cxt_autofilter(session_cxt, tokens, m_resolver),
+    m_cxt_cond_format(session_cxt, tokens, m_sheet.get_conditional_format())
 {
     register_child(&m_cxt_autofilter);
+    register_child(&m_cxt_cond_format);
 
     init_ooxml_context(*this);
 }
@@ -145,12 +145,10 @@ xml_context_base* xlsx_sheet_context::create_child_context(xmlns_id_t ns, xml_to
         m_cxt_autofilter.reset();
         return &m_cxt_autofilter;
     }
-    else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting && m_sheet.get_conditional_format())
+    else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting)
     {
-        mp_child.reset(new xlsx_conditional_format_context(get_session_context(), get_tokens(),
-            m_sheet.get_conditional_format()));
-        mp_child->transfer_common(*this);
-        return mp_child.get();
+        m_cxt_cond_format.reset();
+        return &m_cxt_cond_format;
     }
     return nullptr;
 }

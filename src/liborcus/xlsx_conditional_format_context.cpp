@@ -865,6 +865,13 @@ void xlsx_conditional_format_context::characters(std::string_view str, bool tran
         m_cur_str = m_pool.intern(m_cur_str).first;
 }
 
+void xlsx_conditional_format_context::reset()
+{
+    m_pool.clear();
+    m_cur_str = std::string_view{};
+    m_cfvo_values.clear();
+    m_colors.clear();
+}
 
 }
 

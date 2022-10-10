@@ -49,6 +49,8 @@ public:
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
     virtual void characters(std::string_view str, bool transient) override;
 
+    void reset();
+
 private:
     spreadsheet::iface::import_conditional_format* m_cond_format;
 

@@ -12,6 +12,7 @@
 #include "ooxml_types.hpp"
 #include "xlsx_types.hpp"
 #include "xlsx_autofilter_context.hpp"
+#include "xlsx_conditional_format_context.hpp"
 
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/string_pool.hpp"
@@ -133,6 +134,7 @@ private:
     opc_rel_extras_t m_rel_extras;
 
     xlsx_autofilter_context m_cxt_autofilter;
+    xlsx_conditional_format_context m_cxt_cond_format;
 };
 
 }
