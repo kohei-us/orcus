@@ -59,6 +59,13 @@ void test_basic()
     assert(pool.size() == 4);
     assert(str == static_str);
     assert(str.data() != static_str.data());
+
+    // Make sure that the pool remains usable after calling clear().
+    pool.clear();
+    assert(pool.size() == 0);
+    ret = pool.intern(static_str);
+    assert(ret.second); // it should be a new string
+    assert(ret.first == static_str);
 }
 
 void test_merge()
