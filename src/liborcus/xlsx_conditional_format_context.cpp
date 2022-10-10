@@ -171,7 +171,7 @@ bool parse_boolean_flag(const xml_token_attr_t& attr, bool default_value)
 struct cfRule_attr_parser
 {
 
-    cfRule_attr_parser(spreadsheet::iface::import_conditional_format& cond_format):
+    cfRule_attr_parser(ss::iface::import_conditional_format& cond_format):
         m_cond_format(cond_format),
         m_type(none),
         m_operator(operator_default),
@@ -248,152 +248,152 @@ struct cfRule_attr_parser
         switch (m_type)
         {
             case expression:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::expression);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::expression);
             break;
             case cellIs:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::expression);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::expression);
                 switch (m_operator)
                 {
                     case operator_beginsWith:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::begins_with);
+                        m_cond_format.set_operator(ss::condition_operator_t::begins_with);
                     break;
                     case operator_between:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::between);
+                        m_cond_format.set_operator(ss::condition_operator_t::between);
                     break;
                     case operator_containsText:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::contains);
+                        m_cond_format.set_operator(ss::condition_operator_t::contains);
                     break;
                     case operator_endsWith:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::ends_with);
+                        m_cond_format.set_operator(ss::condition_operator_t::ends_with);
                     break;
                     case operator_equal:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::equal);
+                        m_cond_format.set_operator(ss::condition_operator_t::equal);
                     break;
                     case operator_greaterThan:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::greater);
+                        m_cond_format.set_operator(ss::condition_operator_t::greater);
                     break;
                     case operator_greaterThanOrEqual:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::greater_equal);
+                        m_cond_format.set_operator(ss::condition_operator_t::greater_equal);
                     break;
                     case operator_lessThan:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::less);
+                        m_cond_format.set_operator(ss::condition_operator_t::less);
                     break;
                     case operator_lessThanOrEqual:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::less_equal);
+                        m_cond_format.set_operator(ss::condition_operator_t::less_equal);
                     break;
                     case operator_notBetween:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::not_between);
+                        m_cond_format.set_operator(ss::condition_operator_t::not_between);
                     break;
                     case operator_notContains:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::not_contains);
+                        m_cond_format.set_operator(ss::condition_operator_t::not_contains);
                     break;
                     case operator_notEqual:
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::not_equal);
+                        m_cond_format.set_operator(ss::condition_operator_t::not_equal);
                     break;
                     default:
                     break;
                 }
             break;
             case colorScale:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::colorscale);
+                m_cond_format.set_type(ss::conditional_format_t::colorscale);
             break;
             case dataBar:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::databar);
+                m_cond_format.set_type(ss::conditional_format_t::databar);
             break;
             case iconSet:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::iconset);
+                m_cond_format.set_type(ss::conditional_format_t::iconset);
             break;
             case top10:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
                 if (m_bottom)
                 {
-                    m_cond_format.set_operator(spreadsheet::condition_operator_t::bottom_n);
+                    m_cond_format.set_operator(ss::condition_operator_t::bottom_n);
                 }
                 else
                 {
-                    m_cond_format.set_operator(spreadsheet::condition_operator_t::top_n);
+                    m_cond_format.set_operator(ss::condition_operator_t::top_n);
                 }
                 m_cond_format.set_formula(m_rank);
             break;
             case uniqueValues:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::unique);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::unique);
             break;
             case duplicateValues:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::duplicate);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::duplicate);
             break;
             case containsText:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::contains);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::contains);
                 m_cond_format.set_formula(m_text);
             break;
             case notContainsText:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::not_contains);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::not_contains);
                 m_cond_format.set_formula(m_text);
             break;
             case beginsWith:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::begins_with);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::begins_with);
                 m_cond_format.set_formula(m_text);
             break;
             case endsWith:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::ends_with);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::ends_with);
                 m_cond_format.set_formula(m_text);
             break;
             case containsBlanks:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::contains_blanks);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::contains_blanks);
             break;
             case containsErrors:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::contains_error);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::contains_error);
             break;
             case notContainsErrors:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
-                m_cond_format.set_operator(spreadsheet::condition_operator_t::contains_no_error);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
+                m_cond_format.set_operator(ss::condition_operator_t::contains_no_error);
             break;
             case timePeriod:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::date);
+                m_cond_format.set_type(ss::conditional_format_t::date);
                 switch (m_date)
                 {
                     case date_last7Days:
-                        m_cond_format.set_date(orcus::spreadsheet::condition_date_t::last_7_days);
+                        m_cond_format.set_date(ss::condition_date_t::last_7_days);
                     break;
                     case date_lastMonth:
-                        m_cond_format.set_date(orcus::spreadsheet::condition_date_t::last_month);
+                        m_cond_format.set_date(ss::condition_date_t::last_month);
                     break;
                     case date_lastWeek:
-                        m_cond_format.set_date(orcus::spreadsheet::condition_date_t::last_week);
+                        m_cond_format.set_date(ss::condition_date_t::last_week);
                     break;
                     case date_nextMonth:
-                        m_cond_format.set_date(orcus::spreadsheet::condition_date_t::next_month);
+                        m_cond_format.set_date(ss::condition_date_t::next_month);
                     break;
                     case date_thisMonth:
-                        m_cond_format.set_date(orcus::spreadsheet::condition_date_t::this_month);
+                        m_cond_format.set_date(ss::condition_date_t::this_month);
                     break;
                     case date_thisWeek:
-                        m_cond_format.set_date(orcus::spreadsheet::condition_date_t::this_week);
+                        m_cond_format.set_date(ss::condition_date_t::this_week);
                     break;
                     case date_today:
-                        m_cond_format.set_date(orcus::spreadsheet::condition_date_t::today);
+                        m_cond_format.set_date(ss::condition_date_t::today);
                     break;
                     case date_tomorrow:
-                        m_cond_format.set_date(orcus::spreadsheet::condition_date_t::tomorrow);
+                        m_cond_format.set_date(ss::condition_date_t::tomorrow);
                     break;
                     case date_yesterday:
-                        m_cond_format.set_date(orcus::spreadsheet::condition_date_t::yesterday);
+                        m_cond_format.set_date(ss::condition_date_t::yesterday);
                     break;
                     default:
                     break;
                 }
             break;
             case aboveAverage:
-                m_cond_format.set_type(spreadsheet::conditional_format_t::condition);
+                m_cond_format.set_type(ss::conditional_format_t::condition);
                 if (!m_std_dev.empty())
                 {
                     // TODO: we need a way to mark that as std dev in the interfaces
@@ -403,22 +403,22 @@ struct cfRule_attr_parser
                 {
                     if (m_equal_average)
                     {
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::above_equal_average);
+                        m_cond_format.set_operator(ss::condition_operator_t::above_equal_average);
                     }
                     else
                     {
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::above_average);
+                        m_cond_format.set_operator(ss::condition_operator_t::above_average);
                     }
                 }
                 else
                 {
                     if (m_equal_average)
                     {
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::below_equal_average);
+                        m_cond_format.set_operator(ss::condition_operator_t::below_equal_average);
                     }
                     else
                     {
-                        m_cond_format.set_operator(spreadsheet::condition_operator_t::below_average);
+                        m_cond_format.set_operator(ss::condition_operator_t::below_average);
                     }
                 }
             break;
@@ -428,7 +428,7 @@ struct cfRule_attr_parser
     }
 
 private:
-    spreadsheet::iface::import_conditional_format& m_cond_format;
+    ss::iface::import_conditional_format& m_cond_format;
     xlsx_cond_format_type m_type;
     xlsx_cond_format_operator m_operator;
     xlsx_cond_format_date m_date;
@@ -459,7 +459,7 @@ struct conditional_formatting_attr_parser
     }
 
 private:
-    spreadsheet::iface::import_conditional_format* m_cond_format;
+    ss::iface::import_conditional_format* m_cond_format;
 };
 
 enum xlsx_cond_format_cfvo_type
@@ -574,7 +574,7 @@ struct data_bar_attr_parser
         }
     }
 
-    void import_data(spreadsheet::iface::import_conditional_format& cond_format)
+    void import_data(ss::iface::import_conditional_format& cond_format)
     {
         cond_format.set_show_value(m_show_value);
         cond_format.set_min_databar_length(m_min_length);
@@ -618,7 +618,7 @@ struct icon_set_attr_parser
         }
     }
 
-    void import_data(spreadsheet::iface::import_conditional_format& cond_format)
+    void import_data(ss::iface::import_conditional_format& cond_format)
     {
         cond_format.set_show_value(m_show_value);
         cond_format.set_iconset_reverse(m_reverse);
@@ -636,7 +636,7 @@ private:
 
 xlsx_conditional_format_context::xlsx_conditional_format_context(
         session_context& session_cxt, const tokens& tokens,
-        spreadsheet::iface::import_conditional_format* import_cond_format):
+        ss::iface::import_conditional_format* import_cond_format):
     xml_context_base(session_cxt, tokens),
     m_cond_format(import_cond_format)
 {
@@ -730,7 +730,7 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
 
 namespace {
 
-void import_cfvo(const cfvo_values& values, spreadsheet::iface::import_conditional_format& cond_format)
+void import_cfvo(const cfvo_values& values, ss::iface::import_conditional_format& cond_format)
 {
     if (!values.m_value.empty())
         cond_format.set_formula(values.m_value);
@@ -738,22 +738,22 @@ void import_cfvo(const cfvo_values& values, spreadsheet::iface::import_condition
     switch (values.m_type)
     {
         case cfvo_num:
-            cond_format.set_condition_type(spreadsheet::condition_type_t::value);
+            cond_format.set_condition_type(ss::condition_type_t::value);
             break;
         case cfvo_percent:
-            cond_format.set_condition_type(spreadsheet::condition_type_t::percent);
+            cond_format.set_condition_type(ss::condition_type_t::percent);
             break;
         case cfvo_max:
-            cond_format.set_condition_type(spreadsheet::condition_type_t::max);
+            cond_format.set_condition_type(ss::condition_type_t::max);
             break;
         case cfvo_min:
-            cond_format.set_condition_type(spreadsheet::condition_type_t::min);
+            cond_format.set_condition_type(ss::condition_type_t::min);
             break;
         case cfvo_formula:
-            cond_format.set_condition_type(spreadsheet::condition_type_t::formula);
+            cond_format.set_condition_type(ss::condition_type_t::formula);
             break;
         case cfvo_percentile:
-            cond_format.set_condition_type(spreadsheet::condition_type_t::percentile);
+            cond_format.set_condition_type(ss::condition_type_t::percentile);
             break;
         default:;
     }
