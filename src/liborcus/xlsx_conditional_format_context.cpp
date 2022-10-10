@@ -18,6 +18,8 @@
 #include <mdds/sorted_string_map.hpp>
 #include <mdds/global.hpp>
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus {
 
 namespace {
@@ -444,7 +446,7 @@ private:
 
 struct conditional_formatting_attr_parser
 {
-    conditional_formatting_attr_parser(spreadsheet::iface::import_conditional_format& cond_format):
+    conditional_formatting_attr_parser(ss::iface::import_conditional_format* cond_format):
         m_cond_format(cond_format)
     {
     }
@@ -454,15 +456,13 @@ struct conditional_formatting_attr_parser
         switch (attr.name)
         {
             case XML_sqref:
-                m_cond_format.set_range(attr.value);
-            break;
-            default:
-            break;
+                m_cond_format->set_range(attr.value);
+                break;
         }
     }
 
 private:
-    spreadsheet::iface::import_conditional_format& m_cond_format;
+    spreadsheet::iface::import_conditional_format* m_cond_format;
 };
 
 enum xlsx_cond_format_cfvo_type
@@ -639,7 +639,7 @@ private:
 
 xlsx_conditional_format_context::xlsx_conditional_format_context(
         session_context& session_cxt, const tokens& tokens,
-        spreadsheet::iface::import_conditional_format& import_cond_format):
+        spreadsheet::iface::import_conditional_format* import_cond_format):
     xml_context_base(session_cxt, tokens),
     m_cond_format(import_cond_format)
 {
@@ -667,36 +667,42 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
         case XML_conditionalFormatting:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
-            std::for_each(attrs.begin(), attrs.end(), conditional_formatting_attr_parser(m_cond_format));
+            if (m_cond_format)
+                std::for_each(attrs.begin(), attrs.end(), conditional_formatting_attr_parser(m_cond_format));
+            break;
         }
-        break;
         case XML_cfRule:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_conditionalFormatting);
-            cfRule_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), cfRule_attr_parser(m_cond_format));
-            parser.set_type();
+            if (m_cond_format)
+            {
+                cfRule_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), cfRule_attr_parser(*m_cond_format));
+                parser.set_type();
+            }
+            break;
         }
-        break;
         case XML_cfvo:
         {
             cfvo_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), cfvo_attr_parser(m_pool));
             m_cfvo_values.push_back(parser.get_values());
+            break;
         }
-        break;
         case XML_dataBar:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cfRule);
             data_bar_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), data_bar_attr_parser());
-            parser.import_data(m_cond_format);
+            if (m_cond_format)
+                parser.import_data(*m_cond_format);
+            break;
         }
-        break;
         case XML_iconSet:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cfRule);
             icon_set_attr_parser parser = std::for_each(attrs.begin(), attrs.end(), icon_set_attr_parser());
-            parser.import_data(m_cond_format);
+            if (m_cond_format)
+                parser.import_data(*m_cond_format);
+            break;
         }
-        break;
         case XML_color:
         {
             for (const xml_token_attr_t& attr : attrs)
@@ -714,12 +720,12 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
                         ;
                 }
             }
+            break;
         }
-        break;
         case XML_formula:
-        break;
+            break;
         case XML_colorScale:
-        break;
+            break;
         default:
             warn_unhandled();
     }
@@ -731,28 +737,28 @@ void import_cfvo(const cfvo_values& values, spreadsheet::iface::import_condition
 {
     if (!values.m_value.empty())
         cond_format.set_formula(values.m_value);
+
     switch (values.m_type)
     {
         case cfvo_num:
             cond_format.set_condition_type(spreadsheet::condition_type_t::value);
-        break;
+            break;
         case cfvo_percent:
             cond_format.set_condition_type(spreadsheet::condition_type_t::percent);
-        break;
+            break;
         case cfvo_max:
             cond_format.set_condition_type(spreadsheet::condition_type_t::max);
-        break;
+            break;
         case cfvo_min:
             cond_format.set_condition_type(spreadsheet::condition_type_t::min);
-        break;
+            break;
         case cfvo_formula:
             cond_format.set_condition_type(spreadsheet::condition_type_t::formula);
-        break;
+            break;
         case cfvo_percentile:
             cond_format.set_condition_type(spreadsheet::condition_type_t::percentile);
-        break;
-        default:
-        break;
+            break;
+        default:;
     }
 }
 
@@ -764,68 +770,91 @@ bool xlsx_conditional_format_context::end_element(xmlns_id_t ns, xml_token_t nam
     {
         case XML_conditionalFormatting:
         {
-            m_cond_format.commit_format();
+            if (m_cond_format)
+                m_cond_format->commit_format();
+            break;
         }
-        break;
         case XML_cfRule:
         {
-            m_cond_format.commit_entry();
+            if (m_cond_format)
+                m_cond_format->commit_entry();
             m_cfvo_values.clear();
             m_colors.clear();
+            break;
         }
-        break;
         case XML_cfvo:
-        break;
+            break;
         case XML_color:
-        break;
+            break;
         case XML_formula:
         {
-            m_cond_format.set_formula(m_cur_str);
-            m_cond_format.commit_condition();
+            if (m_cond_format)
+            {
+                m_cond_format->set_formula(m_cur_str);
+                m_cond_format->commit_condition();
+            }
+            break;
         }
-        break;
         case XML_dataBar:
         {
             if (m_colors.size() != 1)
                 throw general_error("invalid dataBar record");
+
             if (m_cfvo_values.size() != 2)
                 throw general_error("invalid dataBar record");
-            argb_color& color = m_colors[0];
-            m_cond_format.set_databar_color_positive(color.alpha, color.red,
-                    color.green, color.blue);
-            m_cond_format.set_databar_color_negative(color.alpha, color.red,
-                    color.green, color.blue);
-            for (std::vector<cfvo_values>::const_iterator itr = m_cfvo_values.begin(); itr != m_cfvo_values.end(); ++itr) {
-                import_cfvo(*itr, m_cond_format);
-                m_cond_format.commit_condition();
+
+            if (m_cond_format)
+            {
+                argb_color& color = m_colors[0];
+                m_cond_format->set_databar_color_positive(color.alpha, color.red,
+                        color.green, color.blue);
+                m_cond_format->set_databar_color_negative(color.alpha, color.red,
+                        color.green, color.blue);
+
+                for (const auto& cfvo : m_cfvo_values)
+                {
+                    import_cfvo(cfvo, *m_cond_format);
+                    m_cond_format->commit_condition();
+                }
             }
+            break;
         }
-        break;
         case XML_iconSet:
+        {
             if (m_cfvo_values.size() < 2)
                 throw general_error("invalid iconSet record");
-            for (std::vector<cfvo_values>::const_iterator itr = m_cfvo_values.begin(); itr != m_cfvo_values.end(); ++itr) {
-                import_cfvo(*itr, m_cond_format);
-                m_cond_format.commit_condition();
+
+            if (m_cond_format)
+            {
+                for (const auto& cfvo : m_cfvo_values)
+                {
+                    import_cfvo(cfvo, *m_cond_format);
+                    m_cond_format->commit_condition();
+                }
             }
-        break;
+            break;
+        }
         case XML_colorScale:
         {
             if (m_cfvo_values.size() < 2)
                 throw general_error("invalid colorScale record");
+
             if (m_cfvo_values.size() != m_colors.size())
                 throw general_error("invalid colorScale record");
-            std::vector<argb_color>::const_iterator itrColor = m_colors.begin();
-            for (std::vector<cfvo_values>::const_iterator itr = m_cfvo_values.begin(); itr != m_cfvo_values.end(); ++itr, ++itrColor) {
-                import_cfvo(*itr, m_cond_format);
-                m_cond_format.set_color(itrColor->alpha, itrColor->red,
-                        itrColor->green, itrColor->blue);
-                m_cond_format.commit_condition();
+
+            if (m_cond_format)
+            {
+                std::vector<argb_color>::const_iterator itrColor = m_colors.begin();
+                for (std::vector<cfvo_values>::const_iterator itr = m_cfvo_values.begin(); itr != m_cfvo_values.end(); ++itr, ++itrColor)
+                {
+                    import_cfvo(*itr, *m_cond_format);
+                    m_cond_format->set_color(itrColor->alpha, itrColor->red,
+                            itrColor->green, itrColor->blue);
+                    m_cond_format->commit_condition();
+                }
             }
+            break;
         }
-        break;
-        default:
-            ;
     }
 
     m_cur_str.clear();

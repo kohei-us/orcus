@@ -148,7 +148,7 @@ xml_context_base* xlsx_sheet_context::create_child_context(xmlns_id_t ns, xml_to
     else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting && m_sheet.get_conditional_format())
     {
         mp_child.reset(new xlsx_conditional_format_context(get_session_context(), get_tokens(),
-                    *m_sheet.get_conditional_format()));
+            m_sheet.get_conditional_format()));
         mp_child->transfer_common(*this);
         return mp_child.get();
     }

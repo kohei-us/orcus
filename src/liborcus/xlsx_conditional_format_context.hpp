@@ -39,18 +39,18 @@ public:
     
     xlsx_conditional_format_context(
             session_context& session_cxt, const tokens& tokens,
-            spreadsheet::iface::import_conditional_format& import_cond_format);
-    virtual ~xlsx_conditional_format_context();
+            spreadsheet::iface::import_conditional_format* import_cond_format);
+    virtual ~xlsx_conditional_format_context() override;
 
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
+    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
+    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs);
-    virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(std::string_view str, bool transient);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs) override;
+    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
+    virtual void characters(std::string_view str, bool transient) override;
 
 private:
-    spreadsheet::iface::import_conditional_format& m_cond_format;
+    spreadsheet::iface::import_conditional_format* m_cond_format;
 
     string_pool m_pool;
     pstring m_cur_str;
