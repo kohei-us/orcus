@@ -53,7 +53,7 @@ private:
     spreadsheet::iface::import_conditional_format* m_cond_format;
 
     string_pool m_pool;
-    pstring m_cur_str;
+    std::string_view m_cur_str;
 
     std::vector<cfvo_values> m_cfvo_values;
     std::vector<argb_color> m_colors;

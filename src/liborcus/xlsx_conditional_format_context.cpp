@@ -439,9 +439,9 @@ private:
     bool m_equal_average;
     bool m_percent;
     bool m_bottom;
-    pstring m_text;
-    pstring m_std_dev;
-    pstring m_rank;
+    std::string_view m_text;
+    std::string_view m_std_dev;
+    std::string_view m_rank;
 };
 
 struct conditional_formatting_attr_parser
@@ -500,7 +500,7 @@ struct cfvo_values
 
     bool m_include_equal;
     xlsx_cond_format_cfvo_type m_type;
-    pstring m_value;
+    std::string_view m_value;
 };
 
 namespace {
@@ -632,7 +632,7 @@ private:
     bool m_reverse;
     bool m_percent;
     bool m_show_value;
-    pstring icon_name;
+    std::string_view icon_name;
 };
 
 }
@@ -857,7 +857,7 @@ bool xlsx_conditional_format_context::end_element(xmlns_id_t ns, xml_token_t nam
         }
     }
 
-    m_cur_str.clear();
+    m_cur_str = std::string_view{};
     return pop_stack(ns, name);
 }
 
