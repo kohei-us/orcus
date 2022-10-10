@@ -9,8 +9,7 @@
 #define ORCUS_XLSX_TABLE_CONTEXT_HPP
 
 #include "xml_context_base.hpp"
-
-#include <memory>
+#include "xlsx_autofilter_context.hpp"
 
 namespace orcus {
 
@@ -40,7 +39,8 @@ public:
 private:
     spreadsheet::iface::import_table& m_table;
     spreadsheet::iface::import_reference_resolver& m_resolver;
-    std::unique_ptr<xml_context_base> mp_child;
+
+    xlsx_autofilter_context m_cxt_autofilter;
 };
 
 }

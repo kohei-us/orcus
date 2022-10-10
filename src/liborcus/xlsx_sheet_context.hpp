@@ -17,7 +17,6 @@
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/string_pool.hpp"
 
-#include <memory>
 #include <list>
 
 namespace orcus {
@@ -112,8 +111,6 @@ private:
     pstring intern_in_context(const pstring& str, bool transient);
 
 private:
-    std::unique_ptr<xml_context_base> mp_child;
-
     spreadsheet::iface::import_reference_resolver& m_resolver;
     spreadsheet::iface::import_sheet& m_sheet; /// sheet model instance for the loaded document.
     string_pool m_pool;

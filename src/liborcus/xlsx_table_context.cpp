@@ -9,6 +9,7 @@
 #include "xlsx_autofilter_context.hpp"
 #include "ooxml_namespace_types.hpp"
 #include "ooxml_token_constants.hpp"
+#include "ooxml_global.hpp"
 #include "session_context.hpp"
 #include "xml_context_global.hpp"
 
@@ -183,7 +184,13 @@ xlsx_table_context::xlsx_table_context(
     session_context& session_cxt, const tokens& tokens,
     spreadsheet::iface::import_table& table,
     spreadsheet::iface::import_reference_resolver& resolver) :
-    xml_context_base(session_cxt, tokens), m_table(table), m_resolver(resolver) {}
+    xml_context_base(session_cxt, tokens), m_table(table), m_resolver(resolver),
+    m_cxt_autofilter(session_cxt, tokens, resolver)
+{
+    register_child(&m_cxt_autofilter);
+
+    init_ooxml_context(*this);
+}
 
 xlsx_table_context::~xlsx_table_context() {}
 
@@ -191,9 +198,8 @@ xml_context_base* xlsx_table_context::create_child_context(xmlns_id_t ns, xml_to
 {
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
     {
-        mp_child.reset(new xlsx_autofilter_context(get_session_context(), get_tokens(), m_resolver));
-        mp_child->transfer_common(*this);
-        return mp_child.get();
+        m_cxt_autofilter.reset();
+        return &m_cxt_autofilter;
     }
     return nullptr;
 }
@@ -202,6 +208,8 @@ void xlsx_table_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_
 {
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
     {
+        assert(child == &m_cxt_autofilter);
+
         spreadsheet::iface::import_auto_filter* af = m_table.get_auto_filter();
         if (!af)
             return;
