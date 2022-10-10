@@ -159,13 +159,10 @@ bool parse_boolean_flag(const xml_token_attr_t& attr, bool default_value)
     {
         case boolean_default:
             return default_value;
-        break;
         case boolean_true:
             return true;
-        break;
         case boolean_false:
             return false;
-        break;
     }
 
     return default_value;
