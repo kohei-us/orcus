@@ -134,9 +134,7 @@ ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, c
     }
 }
 
-ods_content_xml_context::~ods_content_xml_context()
-{
-}
+ods_content_xml_context::~ods_content_xml_context() = default;
 
 xml_context_base* ods_content_xml_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
@@ -326,10 +324,6 @@ bool ods_content_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
         }
     }
     return pop_stack(ns, name);
-}
-
-void ods_content_xml_context::characters(std::string_view /*str*/, bool /*transient*/)
-{
 }
 
 void ods_content_xml_context::start_null_date(const xml_attrs_t& attrs)
