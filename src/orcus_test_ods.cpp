@@ -132,8 +132,12 @@ void test_ods_import_formatted_text()
     size_t str_id = sh->get_string_identifier(0,0);
     const std::string* str = ss.get_string(str_id);
     assert(str && *str == "Normal Text");
-    size_t xfid = sh->get_cell_format(0,0);
-    assert(xfid == 0); // ID of 0 represents default format.
+    std::size_t xfid = sh->get_cell_format(0, 0);
+    const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+    assert(xf);
+    const ss::cell_style_t* xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Default");
     const format_runs_t* fmt = ss.get_format_runs(str_id);
     assert(!fmt); // The string should be unformatted.
 
@@ -142,7 +146,7 @@ void test_ods_import_formatted_text()
     str = ss.get_string(str_id);
     assert(str && *str == "Bold Text");
     xfid = sh->get_cell_format(1,0);
-    const cell_format_t* xf = styles.get_cell_format(xfid);
+    xf = styles.get_cell_format(xfid);
     assert(xf);
     const font_t* font_data = styles.get_font(xf->font);
     assert(font_data && font_data->bold && !font_data->italic);
@@ -406,6 +410,52 @@ void test_ods_import_styles_direct_format()
     assert(xstyle->name == "Good");
 }
 
+void test_ods_import_styles_column_styles()
+{
+    fs::path filepath{SRCDIR"/test/ods/styles/column-styles.ods"};
+
+    auto doc = load_doc(filepath);
+    assert(doc);
+
+    const ss::styles& styles = doc->get_styles();
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    // A1 should have the Default style applied.
+    std::size_t xfid = sh->get_cell_format(0, 0);
+    const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    const ss::cell_style_t* xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Default");
+
+    // This Default style has some custom properties.
+    xf = styles.get_cell_style_format(xf->style_xf);
+    assert(xf);
+
+    // Default style has a solid fill with light green color.
+    const auto* fill = styles.get_fill_state(xf->fill);
+    assert(fill);
+    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->second.pattern_type);
+    assert(fill->first.fg_color == ss::color_t(0xFF, 0xF6, 0xF9, 0xD4));
+    assert(fill->second.fg_color);
+    assert(!fill->second.bg_color);
+
+    // Default style has a 14pt DejaVu Sans font with normal weight
+    const auto* font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.name == "DejaVu Sans");
+    assert(font->second.name);
+    assert(font->first.size == 14.0);
+    assert(font->second.size);
+    assert(!font->first.bold);
+    assert(font->second.bold);
+
+    assert(xf->hor_align == ss::hor_alignment_t::center);
+}
+
 } // anonymous namespace
 
 int main()
@@ -416,6 +466,7 @@ int main()
     test_ods_import_number_formats();
     test_ods_import_cell_properties();
     test_ods_import_styles_direct_format();
+    test_ods_import_styles_column_styles();
 
     return EXIT_SUCCESS;
 }

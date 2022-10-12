@@ -94,6 +94,17 @@ private:
     void start_cell(const xml_attrs_t& attrs);
     void end_cell();
 
+    /**
+     * Push a named cell style as a parent style of an automatic style, as we
+     * cannot directly reference a named cell style from a cell, column etc.
+     *
+     * @param style_name name of the named cell style to push.
+     *
+     * @return xfid of the newly-created automatic style that "wraps" the named
+     *         cell as its parent if the call is successful, else it's not set.
+     */
+    std::optional<std::size_t> push_named_cell_style(std::string_view style_name);
+    void push_default_column_cell_style(std::string_view style_name);
     void push_cell_format();
     void push_cell_value();
 

@@ -429,27 +429,35 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
         return;
 
     std::string_view style_name;
+    std::string_view default_cell_style_name;
 
     for (const xml_token_attr_t& attr : attrs)
     {
         if (attr.ns == NS_odf_table)
         {
-            if (attr.name == XML_style_name)
-                style_name = attr.value;
+            switch (attr.name)
+            {
+                case XML_style_name:
+                    style_name = attr.value;
+                    break;
+                case XML_default_cell_style_name:
+                    default_cell_style_name = attr.value;
+                    break;
+            }
         }
     }
 
-    auto it = m_styles.find(style_name);
-    if (it == m_styles.end())
-        // Style by this name not found.
-        return;
+    if (auto it = m_styles.find(style_name); it != m_styles.end())
+    {
+        const odf_style& style = *it->second;
 
-    const odf_style& style = *it->second;
+        sheet_props->set_column_width(
+            m_col,
+            std::get<odf_style::column>(style.data).width.value,
+            std::get<odf_style::column>(style.data).width.unit);
+    }
 
-    sheet_props->set_column_width(
-        m_col,
-        std::get<odf_style::column>(style.data).width.value,
-        std::get<odf_style::column>(style.data).width.unit);
+    push_default_column_cell_style(default_cell_style_name);
 }
 
 void ods_content_xml_context::end_column()
@@ -645,50 +653,77 @@ void ods_content_xml_context::end_cell()
     m_has_content = false;
 }
 
+std::optional<std::size_t> ods_content_xml_context::push_named_cell_style(std::string_view style_name)
+{
+    ss::iface::import_styles* xstyles = mp_factory->get_styles();
+    if (!xstyles)
+        return {};
+
+    const ods_session_data& ods_data = get_session_context().get_data<ods_session_data>();
+
+    auto it = ods_data.styles_map.find(style_name);
+    if (it == ods_data.styles_map.end())
+        return {};
+
+    // found in the named styles store.
+    const odf_style& style = *it->second;
+    if (style.family != style_family_table_cell)
+        // it's a named style but not a cell style
+        return {};
+
+    // It references a named style. Create a direct cell (aka automatic) style
+    // that references this named style, and set that as the cell format since
+    // we can't reference a named style directly from a cell.
+    const auto& celldata = std::get<odf_style::cell>(style.data);
+
+    ss::iface::import_xf* xf = xstyles->start_xf(ss::xf_category_t::cell);
+    ENSURE_INTERFACE(xf, import_xf);
+    xf->set_style_xf(celldata.xf);
+    std::size_t xfid = xf->commit();
+    m_cell_format_map.insert({m_cell_attr.style_name, xfid});
+    m_cur_sheet.sheet->set_column_format(m_col, xfid);
+    return xfid;
+}
+
+void ods_content_xml_context::push_default_column_cell_style(std::string_view style_name)
+{
+    if (style_name.empty())
+        return;
+
+    if (!m_cur_sheet.sheet)
+        return;
+
+    if (auto it = m_cell_format_map.find(style_name); it != m_cell_format_map.end())
+    {
+        // automatic style already present for this name.
+        m_cur_sheet.sheet->set_column_format(m_col, it->second);
+        return;
+    }
+
+    auto xfid = push_named_cell_style(style_name);
+    if (!xfid)
+        return;
+
+    m_cur_sheet.sheet->set_column_format(m_col, *xfid);
+}
+
 void ods_content_xml_context::push_cell_format()
 {
     if (!m_cur_sheet.sheet)
         return;
 
-    ss::iface::import_styles* xstyles = mp_factory->get_styles();
-    if (!xstyles)
+    if (auto it = m_cell_format_map.find(m_cell_attr.style_name); it != m_cell_format_map.end())
+    {
+        m_cur_sheet.sheet->set_format(m_row, m_col, it->second);
+        // style key found and direct cell format set.
+        return;
+    }
+
+    auto xfid = push_named_cell_style(m_cell_attr.style_name);
+    if (!xfid)
         return;
 
-    {
-        auto it = m_cell_format_map.find(m_cell_attr.style_name);
-        if (it != m_cell_format_map.end())
-        {
-            m_cur_sheet.sheet->set_format(m_row, m_col, it->second);
-            // style key found and direct cell format set.
-            return;
-        }
-    }
-
-    const ods_session_data& ods_data = get_session_context().get_data<ods_session_data>();
-
-    {
-        auto it = ods_data.styles_map.find(m_cell_attr.style_name);
-        if (it == ods_data.styles_map.end())
-            // style key not found and it's not a named style.
-            return;
-
-        const odf_style& style = *it->second;
-        if (style.family != style_family_table_cell)
-            // it's a named style but not a cell style
-            return;
-
-        // It references a named style. Create a direct cell style that
-        // references this named style, and set that as the cell format since we
-        // can't reference a named style directly from a cell.
-        const auto& celldata = std::get<odf_style::cell>(style.data);
-
-        ss::iface::import_xf* xf = xstyles->start_xf(ss::xf_category_t::cell);
-        ENSURE_INTERFACE(xf, import_xf);
-        xf->set_style_xf(celldata.xf);
-        std::size_t xfid = xf->commit();
-        m_cell_format_map.insert({m_cell_attr.style_name, xfid});
-        m_cur_sheet.sheet->set_format(m_row, m_col, xfid);
-    }
+    m_cur_sheet.sheet->set_format(m_row, m_col, *xfid);
 }
 
 void ods_content_xml_context::push_cell_value()
