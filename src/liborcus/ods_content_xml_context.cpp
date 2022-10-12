@@ -685,7 +685,6 @@ std::optional<std::size_t> ods_content_xml_context::push_named_cell_style(std::s
     xf->set_style_xf(celldata.xf);
     std::size_t xfid = xf->commit();
     m_cell_format_map.insert({m_cell_attr.style_name, xfid});
-    m_cur_sheet.sheet->set_column_format(m_col, xfid);
     return xfid;
 }
 
@@ -709,8 +708,7 @@ void ods_content_xml_context::push_default_column_cell_style(
     if (auto it = m_cell_format_map.find(style_name); it != m_cell_format_map.end())
     {
         // automatic style already present for this name.
-        for (ss::col_t col = m_col; col < m_col + span; ++col)
-            m_cur_sheet.sheet->set_column_format(col, it->second);
+        m_cur_sheet.sheet->set_column_format(m_col, span, it->second);
         return;
     }
 
@@ -718,8 +716,7 @@ void ods_content_xml_context::push_default_column_cell_style(
     if (!xfid)
         return;
 
-    for (ss::col_t col = m_col; col < m_col + span; ++col)
-        m_cur_sheet.sheet->set_column_format(col, *xfid);
+    m_cur_sheet.sheet->set_column_format(m_col, span, *xfid);
 }
 
 void ods_content_xml_context::push_cell_format()

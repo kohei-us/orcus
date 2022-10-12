@@ -292,7 +292,7 @@ void import_sheet::set_format(row_t, col_t, row_t, col_t, size_t)
     assert(false);
 }
 
-void import_sheet::set_column_format(col_t, std::size_t)
+void import_sheet::set_column_format(col_t, col_t, std::size_t)
 {
     assert(false);
 }

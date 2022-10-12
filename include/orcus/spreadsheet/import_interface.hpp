@@ -679,9 +679,11 @@ public:
      *       set_format() variants.
      *
      * @param col column ID
+     * @param col_span number of contiguous columns to apply the format to. It
+     *                 must be at least one.
      * @param xf_index 0-based xf (cell format) index
      */
-    virtual void set_column_format(col_t col, std::size_t xf_index) = 0;
+    virtual void set_column_format(col_t col, col_t col_span, std::size_t xf_index) = 0;
 
     /**
      * Set cell format to a specified row.  The cell format is referred to by

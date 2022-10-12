@@ -143,7 +143,7 @@ public:
     virtual void set_format(orcus::spreadsheet::row_t row_start, orcus::spreadsheet::col_t col_start,
             orcus::spreadsheet::row_t row_end, orcus::spreadsheet::col_t col_end, size_t xf_index) override;
 
-    virtual void set_column_format(col_t col, std::size_t xf_index) override;
+    virtual void set_column_format(col_t col, col_t col_span, std::size_t xf_index) override;
 
     virtual void set_row_format(row_t col, std::size_t xf_index) override;
 

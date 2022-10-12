@@ -223,7 +223,7 @@ public:
     virtual void set_date_time(row_t row, col_t col, int year, int month, int day, int hour, int minute, double second) override;
     virtual void set_format(row_t row, col_t col, size_t xf_index) override;
     virtual void set_format(row_t row_start, col_t col_start, row_t row_end, col_t col_end, size_t xf_index) override;
-    virtual void set_column_format(col_t col, std::size_t xf_index) override;
+    virtual void set_column_format(col_t col, col_t col_span, std::size_t xf_index) override;
     virtual void set_row_format(row_t row, std::size_t xf_index) override;
     virtual void set_string(row_t row, col_t col, string_id_t sindex) override;
     virtual void set_value(row_t row, col_t col, double value) override;

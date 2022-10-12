@@ -164,9 +164,10 @@ void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t co
     }
 }
 
-void sheet::set_column_format(col_t col, std::size_t index)
+void sheet::set_column_format(col_t col, col_t col_span, std::size_t index)
 {
-    mp_impl->column_formats.insert_back(col, col+1, index);
+    if (col_span > 0)
+        mp_impl->column_formats.insert_back(col, col + col_span, index);
 }
 
 void sheet::set_row_format(row_t row, std::size_t index)

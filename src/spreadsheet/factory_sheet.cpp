@@ -496,9 +496,9 @@ void import_sheet::set_format(
     m_sheet.set_format(row_start, col_start, row_end, col_end, xf_index);
 }
 
-void import_sheet::set_column_format(col_t col, std::size_t xf_index)
+void import_sheet::set_column_format(col_t col, col_t col_span, std::size_t xf_index)
 {
-    m_sheet.set_column_format(col, xf_index);
+    m_sheet.set_column_format(col, col_span, xf_index);
 }
 
 void import_sheet::set_row_format(row_t row, std::size_t xf_index)

@@ -1518,26 +1518,23 @@ void xls_xml_context::start_element_column(const xml_attrs_t& attrs)
         mp_sheet_props->set_column_hidden(col_index, span + 1, hidden);
     }
 
-    for (; span >= 0; --span, ++col_index)
+    if (mp_cur_sheet && style_id)
     {
-        if (mp_cur_sheet && style_id)
+        auto it = m_style_map_cell.find(*style_id);
+        if (it != m_style_map_cell.end())
         {
-            auto it = m_style_map_cell.find(*style_id);
-            if (it != m_style_map_cell.end())
-            {
-                std::size_t xfid = it->second;
-                mp_cur_sheet->set_column_format(col_index, xfid);
-            }
-            else
-            {
-                std::ostringstream os;
-                os << "xfid for the style ID of '" << *style_id << "' not found in the cache";
-                warn(os.str());
-            }
+            std::size_t xfid = it->second;
+            mp_cur_sheet->set_column_format(col_index, span + 1, xfid);
+        }
+        else
+        {
+            std::ostringstream os;
+            os << "xfid for the style ID of '" << *style_id << "' not found in the cache";
+            warn(os.str());
         }
     }
 
-    m_cur_prop_col = col_index;
+    m_cur_prop_col = col_index + span + 1;
 }
 
 void xls_xml_context::start_element_row(const xml_attrs_t& attrs)

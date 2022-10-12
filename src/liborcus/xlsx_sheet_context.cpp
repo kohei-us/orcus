@@ -608,10 +608,7 @@ void xlsx_sheet_context::start_element_col(const xml_attrs_t& attrs)
     }
 
     if (xfid)
-    {
-        for (ss::col_t col = col_min; col <= col_max; ++col)
-            m_sheet.set_column_format(col-1, *xfid);
-    }
+        m_sheet.set_column_format(col_min - 1, col_max - col_min + 1, *xfid);
 
     ss::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
     if (sheet_props)
