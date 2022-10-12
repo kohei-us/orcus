@@ -104,7 +104,7 @@ private:
      *         cell as its parent if the call is successful, else it's not set.
      */
     std::optional<std::size_t> push_named_cell_style(std::string_view style_name);
-    void push_default_column_cell_style(std::string_view style_name);
+    void push_default_column_cell_style(std::string_view style_name, spreadsheet::col_t span);
     void push_cell_format();
     void push_cell_value();
 

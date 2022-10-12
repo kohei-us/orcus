@@ -430,6 +430,7 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
 
     std::string_view style_name;
     std::string_view default_cell_style_name;
+    ss::col_t columns_repeated = 1;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -443,6 +444,9 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
                 case XML_default_cell_style_name:
                     default_cell_style_name = attr.value;
                     break;
+                case XML_number_columns_repeated:
+                    columns_repeated = to_long(attr.value);
+                    break;
             }
         }
     }
@@ -451,13 +455,16 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
     {
         const odf_style& style = *it->second;
 
-        sheet_props->set_column_width(
-            m_col,
-            std::get<odf_style::column>(style.data).width.value,
-            std::get<odf_style::column>(style.data).width.unit);
+        for (ss::col_t col = m_col; col < m_col + columns_repeated; ++col)
+        {
+            sheet_props->set_column_width(
+                col,
+                std::get<odf_style::column>(style.data).width.value,
+                std::get<odf_style::column>(style.data).width.unit);
+        }
     }
 
-    push_default_column_cell_style(default_cell_style_name);
+    push_default_column_cell_style(default_cell_style_name, columns_repeated);
 }
 
 void ods_content_xml_context::end_column()
@@ -685,8 +692,17 @@ std::optional<std::size_t> ods_content_xml_context::push_named_cell_style(std::s
     return xfid;
 }
 
-void ods_content_xml_context::push_default_column_cell_style(std::string_view style_name)
+void ods_content_xml_context::push_default_column_cell_style(
+    std::string_view style_name, ss::col_t span)
 {
+    if (span < 1)
+    {
+        std::ostringstream os;
+        os << "Column " << m_col << " on sheet " << m_cur_sheet.index << " has an invalid span of " << span;
+        warn(os.str());
+        return;
+    }
+
     if (style_name.empty())
         return;
 
@@ -696,7 +712,8 @@ void ods_content_xml_context::push_default_column_cell_style(std::string_view st
     if (auto it = m_cell_format_map.find(style_name); it != m_cell_format_map.end())
     {
         // automatic style already present for this name.
-        m_cur_sheet.sheet->set_column_format(m_col, it->second);
+        for (ss::col_t col = m_col; col < m_col + span; ++col)
+            m_cur_sheet.sheet->set_column_format(col, it->second);
         return;
     }
 
@@ -704,7 +721,8 @@ void ods_content_xml_context::push_default_column_cell_style(std::string_view st
     if (!xfid)
         return;
 
-    m_cur_sheet.sheet->set_column_format(m_col, *xfid);
+    for (ss::col_t col = m_col; col < m_col + span; ++col)
+        m_cur_sheet.sheet->set_column_format(col, *xfid);
 }
 
 void ods_content_xml_context::push_cell_format()
