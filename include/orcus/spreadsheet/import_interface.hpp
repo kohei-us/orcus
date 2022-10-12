@@ -133,9 +133,24 @@ class ORCUS_DLLPUBLIC import_sheet_properties
 public:
     virtual ~import_sheet_properties();
 
-    virtual void set_column_width(col_t col, double width, orcus::length_unit_t unit) = 0;
+    /**
+     * Set column width to specified column(s).
+     *
+     * @param col      0-based position of the first column.
+     * @param col_span number of contiguous columns to apply the width to.
+     * @param width    column width to apply.
+     * @param unit     unit of measurement to use for the width value.
+     */
+    virtual void set_column_width(col_t col, col_t col_span, double width, orcus::length_unit_t unit) = 0;
 
-    virtual void set_column_hidden(col_t col, bool hidden) = 0;
+    /**
+     * Set column hidden flag to specified column(s).
+     *
+     * @param col      0-based position of the first column.
+     * @param col_span number of contiguous columns to apply the flag to.
+     * @param hidden   flag indicating whether or not the columns are hidden.
+     */
+    virtual void set_column_hidden(col_t col, col_t col_span, bool hidden) = 0;
 
     virtual void set_row_height(row_t row, double height, orcus::length_unit_t unit) = 0;
 

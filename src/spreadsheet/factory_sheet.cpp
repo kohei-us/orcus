@@ -581,15 +581,15 @@ import_sheet_properties::import_sheet_properties(document& doc, sheet& sh) :
 
 import_sheet_properties::~import_sheet_properties() {}
 
-void import_sheet_properties::set_column_width(col_t col, double width, orcus::length_unit_t unit)
+void import_sheet_properties::set_column_width(col_t col, col_t col_span, double width, orcus::length_unit_t unit)
 {
     col_width_t w = orcus::convert(width, unit, length_unit_t::twip);
-    m_sheet.set_col_width(col, w);
+    m_sheet.set_col_width(col, col_span, w);
 }
 
-void import_sheet_properties::set_column_hidden(col_t col, bool hidden)
+void import_sheet_properties::set_column_hidden(col_t col, col_t col_span, bool hidden)
 {
-    m_sheet.set_col_hidden(col, hidden);
+    m_sheet.set_col_hidden(col, col_span, hidden);
 }
 
 void import_sheet_properties::set_row_height(row_t row, double height, orcus::length_unit_t unit)

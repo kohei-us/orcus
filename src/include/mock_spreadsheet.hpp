@@ -61,9 +61,11 @@ class import_sheet_properties : public orcus::spreadsheet::iface::import_sheet_p
 public:
     virtual ~import_sheet_properties() override;
 
-    virtual void set_column_width(orcus::spreadsheet::col_t col, double width, orcus::length_unit_t unit) override;
+    virtual void set_column_width(
+        orcus::spreadsheet::col_t col, orcus::spreadsheet::col_t col_span, double width, orcus::length_unit_t unit) override;
 
-    virtual void set_column_hidden(orcus::spreadsheet::col_t col, bool hidden) override;
+    virtual void set_column_hidden(
+        orcus::spreadsheet::col_t col, orcus::spreadsheet::col_t col_span, bool hidden) override;
 
     virtual void set_row_height(orcus::spreadsheet::row_t row, double height, orcus::length_unit_t unit) override;
 

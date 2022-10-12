@@ -113,9 +113,10 @@ public:
 class mock_sheet_properties : public import_sheet_properties
 {
 public:
-    void set_column_hidden(col_t col, bool hidden)
+    void set_column_hidden(col_t col, col_t col_span, bool hidden)
     {
         assert(col == 1);
+        assert(col_span == 1);
         assert(hidden);
     }
 

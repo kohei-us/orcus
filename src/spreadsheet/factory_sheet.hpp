@@ -66,8 +66,8 @@ public:
     import_sheet_properties(document& doc, sheet& sh);
     ~import_sheet_properties();
 
-    virtual void set_column_width(col_t col, double width, orcus::length_unit_t unit);
-    virtual void set_column_hidden(col_t col, bool hidden);
+    virtual void set_column_width(col_t col, col_t col_span, double width, orcus::length_unit_t unit);
+    virtual void set_column_hidden(col_t col, col_t col_span, bool hidden);
     virtual void set_row_height(row_t row, double height, orcus::length_unit_t unit);
     virtual void set_row_hidden(row_t row, bool hidden);
     virtual void set_merge_cell_range(const range_t& range);

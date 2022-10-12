@@ -455,13 +455,10 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
     {
         const odf_style& style = *it->second;
 
-        for (ss::col_t col = m_col; col < m_col + columns_repeated; ++col)
-        {
-            sheet_props->set_column_width(
-                col,
-                std::get<odf_style::column>(style.data).width.value,
-                std::get<odf_style::column>(style.data).width.unit);
-        }
+        sheet_props->set_column_width(
+            m_col, columns_repeated,
+            std::get<odf_style::column>(style.data).width.value,
+            std::get<odf_style::column>(style.data).width.unit);
     }
 
     push_default_column_cell_style(default_cell_style_name, columns_repeated);

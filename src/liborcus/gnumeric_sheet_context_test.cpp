@@ -25,14 +25,15 @@ using namespace orcus::spreadsheet::mock;
 class mock_sheet_properties : public import_sheet_properties
 {
 public:
-    virtual void set_column_width(col_t col, double size, length_unit_t unit)
+    virtual void set_column_width(col_t col, col_t col_span, double size, length_unit_t unit)
     {
         assert(col == 2);
+        assert(col_span == 1);
         assert(size == 37.3);
         assert(unit == length_unit_t::point);
     }
 
-    virtual void set_column_hidden(col_t, bool)
+    virtual void set_column_hidden(col_t, col_t, bool)
     {
     }
 

@@ -616,12 +616,11 @@ void xlsx_sheet_context::start_element_col(const xml_attrs_t& attrs)
     ss::iface::import_sheet_properties* sheet_props = m_sheet.get_sheet_properties();
     if (sheet_props)
     {
-        for (ss::col_t col = col_min; col <= col_max; ++col)
-        {
-            if (col_width)
-                sheet_props->set_column_width(col-1, *col_width, length_unit_t::xlsx_column_digit);
-            sheet_props->set_column_hidden(col-1, col_hidden);
-        }
+        if (col_width)
+            sheet_props->set_column_width(
+                col_min - 1, col_max - col_min + 1, *col_width, length_unit_t::xlsx_column_digit);
+
+        sheet_props->set_column_hidden(col_min - 1, col_max - col_min + 1, col_hidden);
     }
 }
 

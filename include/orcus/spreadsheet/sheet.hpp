@@ -63,10 +63,10 @@ public:
     void set_grouped_formula(const range_t& range, ixion::formula_tokens_t tokens);
     void set_grouped_formula(const range_t& range, ixion::formula_tokens_t tokens, ixion::formula_result result);
 
-    void set_col_width(col_t col, col_width_t width);
+    void set_col_width(col_t col, col_t col_span, col_width_t width);
     col_width_t get_col_width(col_t col, col_t* col_start, col_t* col_end) const;
 
-    void set_col_hidden(col_t col, bool hidden);
+    void set_col_hidden(col_t col, col_t col_span, bool hidden);
     bool is_col_hidden(col_t col, col_t* col_start, col_t* col_end) const;
 
     void set_row_height(row_t row, row_height_t height);

@@ -1496,6 +1496,10 @@ void xls_xml_context::start_element_column(const xml_attrs_t& attrs)
                 width = to_double(attr.value);
                 break;
             case XML_Span:
+                // Span is the number of extra columns after the first one i.e.
+                // if the span is 1, the properties get applied to two
+                // consecutive columns.  Not very intuitive, but this is how it
+                // appears to work.
                 span = to_long(attr.value);
                 break;
             case XML_Hidden:
@@ -1505,6 +1509,13 @@ void xls_xml_context::start_element_column(const xml_attrs_t& attrs)
                 style_id = attr.value; // no need to intern since it gets used in the same function scope
                 break;
         }
+    }
+
+    if (mp_sheet_props)
+    {
+        // Column widths are stored as points.
+        mp_sheet_props->set_column_width(col_index, span + 1, width, orcus::length_unit_t::point);
+        mp_sheet_props->set_column_hidden(col_index, span + 1, hidden);
     }
 
     for (; span >= 0; --span, ++col_index)
@@ -1523,13 +1534,6 @@ void xls_xml_context::start_element_column(const xml_attrs_t& attrs)
                 os << "xfid for the style ID of '" << *style_id << "' not found in the cache";
                 warn(os.str());
             }
-        }
-
-        if (mp_sheet_props)
-        {
-            // Column widths are stored as points.
-            mp_sheet_props->set_column_width(col_index, width, orcus::length_unit_t::point);
-            mp_sheet_props->set_column_hidden(col_index, hidden);
         }
     }
 

@@ -253,10 +253,10 @@ void sheet::set_grouped_formula(const range_t& range, ixion::formula_tokens_t to
     }
 }
 
-void sheet::set_col_width(col_t col, col_width_t width)
+void sheet::set_col_width(col_t col, col_t col_span, col_width_t width)
 {
     mp_impl->col_width_pos =
-        mp_impl->col_widths.insert(mp_impl->col_width_pos, col, col+1, width).first;
+        mp_impl->col_widths.insert(mp_impl->col_width_pos, col, col+col_span, width).first;
 }
 
 col_width_t sheet::get_col_width(col_t col, col_t* col_start, col_t* col_end) const
@@ -272,10 +272,10 @@ col_width_t sheet::get_col_width(col_t col, col_t* col_start, col_t* col_end) co
     return ret;
 }
 
-void sheet::set_col_hidden(col_t col, bool hidden)
+void sheet::set_col_hidden(col_t col, col_t col_span, bool hidden)
 {
     mp_impl->col_hidden_pos =
-        mp_impl->col_hidden.insert(mp_impl->col_hidden_pos, col, col+1, hidden).first;
+        mp_impl->col_hidden.insert(mp_impl->col_hidden_pos, col, col+col_span, hidden).first;
 }
 
 bool sheet::is_col_hidden(col_t col, col_t* col_start, col_t* col_end) const
