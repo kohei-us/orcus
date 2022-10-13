@@ -373,7 +373,20 @@ std::optional<std::size_t> styles_context::query_parent_style_xfid(std::string_v
 
     auto it = ods_data.styles_map.find(parent_name);
     if (it == ods_data.styles_map.end())
+    {
+        // Not found in the session store. Check the current styles map too.
+        auto it2 = m_styles.find(parent_name);
+        if (it2 != m_styles.end())
+        {
+            const odf_style& s = *it2->second;
+            if (s.family == style_family_table_cell)
+            {
+                const odf_style::cell& c = std::get<odf_style::cell>(s.data);
+                parent_xfid = c.xf;
+            }
+        }
         return parent_xfid;
+    }
 
     const odf_style& s = *it->second;
     if (s.family != style_family_table_cell)

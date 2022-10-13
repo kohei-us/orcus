@@ -474,8 +474,12 @@ void test_ods_import_styles_column_styles()
     assert(xstyle);
     assert(xstyle->name == "Gray With Lime" || xstyle->display_name == "Gray With Lime");
 
+    // Its parent style should be "Default".
     xf = styles.get_cell_style_format(xf->style_xf);
     assert(xf);
+    xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Default");
 
     // solid gray background
     fill = styles.get_fill_state(xf->fill);
@@ -494,6 +498,8 @@ void test_ods_import_styles_column_styles()
     assert(font->second.size);
     assert(font->first.bold);
     assert(font->second.bold);
+
+    // TODO: check the left and right borders
 }
 
 } // anonymous namespace
