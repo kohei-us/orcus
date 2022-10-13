@@ -15,9 +15,8 @@ session_context::session_context(std::unique_ptr<custom_data> data) : cdata(std:
 
 std::string_view session_context::intern(const xml_token_attr_t& attr)
 {
-    if (!attr.transient)
-        return attr.value;
-
+    // NB: always intern regardless of the transient flag since the string may
+    // be used in another stream.
     return spool.intern(attr.value).first;
 }
 

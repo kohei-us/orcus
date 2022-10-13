@@ -236,6 +236,7 @@ struct ORCUS_SPM_DLLPUBLIC cell_format_t
 struct ORCUS_SPM_DLLPUBLIC cell_style_t
 {
     std::string_view name;
+    std::string_view display_name;
     size_t xf;
     size_t builtin;
     std::string_view parent_name;

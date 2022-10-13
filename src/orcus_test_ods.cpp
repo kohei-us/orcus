@@ -465,6 +465,35 @@ void test_ods_import_styles_column_styles()
         xfid = sh->get_cell_format(doc->get_sheet_size().rows-1, col); // bottom cell
         assert(xfid == xfid_default);
     }
+
+    // Column C should have "Gray With Lime" style applied
+    xfid = sh->get_cell_format(0, 2);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Gray With Lime" || xstyle->display_name == "Gray With Lime");
+
+    xf = styles.get_cell_style_format(xf->style_xf);
+    assert(xf);
+
+    // solid gray background
+    fill = styles.get_fill_state(xf->fill);
+    assert(fill);
+    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->second.pattern_type);
+    assert(fill->first.fg_color == ss::color_t(0xFF, 0xCC, 0xCC, 0xCC));
+    assert(fill->second.fg_color);
+    assert(!fill->second.bg_color);
+
+    // bold, 16pt font, name not set
+    font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(!font->second.name);
+    assert(font->first.size == 16.0);
+    assert(font->second.size);
+    assert(font->first.bold);
+    assert(font->second.bold);
 }
 
 } // anonymous namespace

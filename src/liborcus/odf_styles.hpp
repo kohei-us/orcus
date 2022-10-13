@@ -82,6 +82,7 @@ struct odf_style
     using data_type = std::variant<column, row, cell, table, graphic, paragraph, text>;
 
     std::string_view name;
+    std::string_view display_name;
     odf_style_family family;
     std::string_view parent_name;
 
@@ -91,7 +92,7 @@ struct odf_style
     odf_style& operator=(const odf_style&) = delete;
 
     odf_style();
-    odf_style(std::string_view _name, odf_style_family _family, std::string_view parent);
+    odf_style(std::string_view _name, std::string_view _display_name, odf_style_family _family, std::string_view parent);
 
     ~odf_style();
 };

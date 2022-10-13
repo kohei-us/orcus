@@ -676,6 +676,11 @@ void import_cell_style::set_name(std::string_view s)
     mp_impl->cur_cell_style.name = mp_impl->str_pool.intern(s).first;
 }
 
+void import_cell_style::set_display_name(std::string_view s)
+{
+    mp_impl->cur_cell_style.display_name = mp_impl->str_pool.intern(s).first;
+}
+
 void import_cell_style::set_xf(size_t index)
 {
     mp_impl->cur_cell_style.xf = index;

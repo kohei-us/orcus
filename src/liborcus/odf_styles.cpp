@@ -12,8 +12,9 @@
 namespace orcus {
 
 odf_style::odf_style() : family(style_family_unknown) {}
-odf_style::odf_style(std::string_view _name, odf_style_family _family, std::string_view parent) :
+odf_style::odf_style(std::string_view _name, std::string_view _display_name, odf_style_family _family, std::string_view parent) :
     name(_name),
+    display_name(_display_name),
     family(_family),
     parent_name(parent)
 {

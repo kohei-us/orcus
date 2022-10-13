@@ -110,6 +110,7 @@ void style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::ve
                 xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
 
                 std::string_view style_name;
+                std::string_view display_style_name;
                 std::string_view parent_style_name;
                 std::optional<std::string_view> data_style_name;
                 odf_style_family family = style_family_unknown;
@@ -121,22 +122,26 @@ void style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::ve
                         switch (attr.name)
                         {
                             case XML_name:
-                                style_name = attr.value;
+                                style_name = intern(attr.value);
+                                break;
+                            case XML_display_name:
+                                display_style_name = intern(attr.value);
                                 break;
                             case XML_family:
                                 family = to_style_family(attr.value);
                                 break;
                             case XML_parent_style_name:
-                                parent_style_name = attr.value;
+                                parent_style_name = intern(attr.value);
                                 break;
                             case XML_data_style_name:
-                                data_style_name = attr.value;
+                                data_style_name = attr.value; // no need to intern
                                 break;
                         }
                     }
                 }
 
-                m_current_style = std::make_unique<odf_style>(style_name, family, parent_style_name);
+                m_current_style = std::make_unique<odf_style>(
+                    style_name, display_style_name, family, parent_style_name);
 
                 if (data_style_name && family == style_family_table_cell)
                 {

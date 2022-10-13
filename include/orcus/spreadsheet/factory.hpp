@@ -229,6 +229,7 @@ public:
     virtual ~import_cell_style() override;
 
     void set_name(std::string_view s) override;
+    void set_display_name(std::string_view s) override;
     void set_xf(size_t index) override;
     void set_builtin(size_t index) override;
     void set_parent_name(std::string_view s) override;

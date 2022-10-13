@@ -463,7 +463,25 @@ class ORCUS_DLLPUBLIC import_cell_style
 public:
     virtual ~import_cell_style();
 
+    /**
+     * Set the name associated with the named cell style.
+     *
+     * @param s name of the named cell style.
+     */
     virtual void set_name(std::string_view s) = 0;
+
+    /**
+     * Set the name associated with the named cell style intended for display
+     * purposes.
+     *
+     * @param s name to use for display purposes.
+     *
+     * @note Not all supported formats make use of this property. Also, the
+     *       style may not always have this property even if the format supports
+     *       it. ODF uses this property when the original name contains
+     *       characters that cannot be used in internal symbols.
+     */
+    virtual void set_display_name(std::string_view s) = 0;
 
     /**
      * Set the index into the cell format record.  The named cell style applies

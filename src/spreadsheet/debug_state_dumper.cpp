@@ -121,6 +121,7 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
         of << "  - id: " << i << std::endl
            << "    name: " << cs->name << std::endl
+           << "    display-name: " << cs->display_name << std::endl
            << "    parent: " << cs->parent_name << std::endl
            << "    xf: " << cs->xf << std::endl
            << "    builtin: " << cs->builtin << std::endl;
