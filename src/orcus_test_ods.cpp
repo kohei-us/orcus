@@ -454,6 +454,17 @@ void test_ods_import_styles_column_styles()
     assert(font->second.bold);
 
     assert(xf->hor_align == ss::hor_alignment_t::center);
+
+    // Columns B, E, G and rest all should have the "Default" style applied.
+    std::size_t xfid_default = xfid;
+    for (ss::col_t col : {1, 4, 6, 7, 8})
+    {
+        std::cout << "column " << col << std::endl;
+        xfid = sh->get_cell_format(0, col); // top cell
+        assert(xfid == xfid_default);
+        xfid = sh->get_cell_format(doc->get_sheet_size().rows-1, col); // bottom cell
+        assert(xfid == xfid_default);
+    }
 }
 
 } // anonymous namespace

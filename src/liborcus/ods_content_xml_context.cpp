@@ -442,7 +442,7 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
                     style_name = attr.value;
                     break;
                 case XML_default_cell_style_name:
-                    default_cell_style_name = attr.value;
+                    default_cell_style_name = intern(attr);
                     break;
                 case XML_number_columns_repeated:
                     columns_repeated = to_long(attr.value);
@@ -684,7 +684,7 @@ std::optional<std::size_t> ods_content_xml_context::push_named_cell_style(std::s
     ENSURE_INTERFACE(xf, import_xf);
     xf->set_style_xf(celldata.xf);
     std::size_t xfid = xf->commit();
-    m_cell_format_map.insert({m_cell_attr.style_name, xfid});
+    m_cell_format_map.insert({style_name, xfid});
     return xfid;
 }
 
@@ -714,7 +714,12 @@ void ods_content_xml_context::push_default_column_cell_style(
 
     auto xfid = push_named_cell_style(style_name);
     if (!xfid)
+    {
+        std::ostringstream os;
+        os << "failed to push a new cell style of name '" << style_name << "' to cache";
+        warn(os.str());
         return;
+    }
 
     m_cur_sheet.sheet->set_column_format(m_col, span, *xfid);
 }

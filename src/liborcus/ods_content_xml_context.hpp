@@ -29,7 +29,7 @@ class import_sheet;
 
 class ods_content_xml_context : public xml_context_base
 {
-    typedef std::unordered_map<pstring, size_t, pstring::hash> name2id_type;
+    typedef std::unordered_map<std::string_view, std::size_t> name2id_type;
 
 public:
     struct sheet_data
