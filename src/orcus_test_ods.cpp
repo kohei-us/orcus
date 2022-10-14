@@ -559,6 +559,28 @@ void test_ods_import_styles_column_styles()
     assert(font->second.underline_type);
     assert(font->first.underline_color == font->first.color); // same as font color
     assert(font->second.underline_color);
+
+    // Column F has "Default" style plus solid light purple background and bold font on top
+    xfid = sh->get_cell_format(0, 5);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Default");
+
+    // light purple solid background
+    fill = styles.get_fill_state(xf->fill);
+    assert(fill);
+    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->second.pattern_type);
+    assert(fill->first.fg_color == ss::color_t(0xFF, 0xE0, 0xC2, 0xCD));
+    assert(fill->second.fg_color);
+
+    // bold font
+    font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.bold);
+    assert(font->second.bold);
 }
 
 } // anonymous namespace
