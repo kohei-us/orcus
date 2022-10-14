@@ -452,6 +452,9 @@ struct ORCUS_PSR_DLLPUBLIC length_t
     double value;
 
     length_t();
+    length_t(length_unit_t _unit, double _value);
+    length_t(const length_t& other);
+    length_t& operator= (const length_t& other);
 
     std::string to_string() const;
 

@@ -499,7 +499,66 @@ void test_ods_import_styles_column_styles()
     assert(font->first.bold);
     assert(font->second.bold);
 
-    // TODO: check the left and right borders
+    // left and right borders are solid light green
+    const auto* border = styles.get_border_state(xf->border);
+    assert(border);
+
+    assert(border->first.left.style == ss::border_style_t::solid);
+    assert(border->second.left.style);
+    assert(border->first.left.border_width == length_t(length_unit_t::point, 2.01));
+    assert(border->second.left.border_width);
+    assert(border->first.left.border_color == ss::color_t(0xFF, 0x81, 0xD4, 0x1A));
+    assert(border->second.left.border_color);
+
+    assert(border->first.right.style == ss::border_style_t::solid);
+    assert(border->second.right.style);
+    assert(border->first.right.border_width == length_t(length_unit_t::point, 2.01));
+    assert(border->second.right.border_width);
+    assert(border->first.right.border_color == ss::color_t(0xFF, 0x81, 0xD4, 0x1A));
+    assert(border->second.right.border_color);
+
+    // Column D should have "Emphasis" style applied
+    xfid = sh->get_cell_format(0, 3);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Emphasis" || xstyle->display_name == "Emphasis");
+
+    // Its parent style should be "Default".
+    xf = styles.get_cell_style_format(xf->style_xf);
+    assert(xf);
+    xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Default");
+
+    // solid pink background
+    fill = styles.get_fill_state(xf->fill);
+    assert(fill);
+    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->second.pattern_type);
+    assert(fill->first.fg_color == ss::color_t(0xFF, 0xFF, 0xd7, 0xd7));
+    assert(fill->second.fg_color);
+    assert(!fill->second.bg_color);
+
+    // font name 'Rasa Light', 18pt, underlined (solid double), red, not bold
+    font = styles.get_font_state(xf->font);
+    assert(font);
+    assert(font->first.name == "Rasa Light");
+    assert(font->second.name);
+    assert(font->first.size == 18.0);
+    assert(font->second.size);
+    assert(!font->first.bold); // in the file, it is given as a font weight of 250
+    assert(font->second.bold);
+    assert(font->first.color == ss::color_t(0xFF, 0xFF, 0x00, 0x00));
+    assert(font->second.color);
+    // double underline is stored as single-line double-type?
+    assert(font->first.underline_style == ss::underline_t::single_line);
+    assert(font->second.underline_style);
+    assert(font->first.underline_type == ss::underline_type_t::double_type);
+    assert(font->second.underline_type);
+    assert(font->first.underline_color == font->first.color); // same as font color
+    assert(font->second.underline_color);
 }
 
 } // anonymous namespace

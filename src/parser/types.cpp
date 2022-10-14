@@ -172,6 +172,12 @@ bool xml_declaration_t::operator!= (const xml_declaration_t& other) const
 
 length_t::length_t() : unit(length_unit_t::unknown), value(0.0) {}
 
+length_t::length_t(length_unit_t _unit, double _value) : unit(_unit), value(_value) {}
+
+length_t::length_t(const length_t& other) = default;
+
+length_t& length_t::operator= (const length_t& other) = default;
+
 std::string length_t::to_string() const
 {
     std::ostringstream os;
