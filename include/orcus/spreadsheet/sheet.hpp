@@ -64,6 +64,20 @@ public:
     void set_grouped_formula(const range_t& range, ixion::formula_tokens_t tokens, ixion::formula_result result);
 
     void set_col_width(col_t col, col_t col_span, col_width_t width);
+
+    /**
+     * Get column width in twips.
+     *
+     * @param col       column index
+     * @param col_start pointer to a variable to store the index of the starting
+     *                  column of the range with the same width. Pass nullptr if
+     *                  the caller doesn't need this information.
+     * @param col_end   pointer to a variable to store the index of the ending
+     *                  column plus one, of the range with the same width. Pass
+     *                  nullptr if the caller doesn't need this information.
+     *
+     * @return width of the specified column index (in twips).
+     */
     col_width_t get_col_width(col_t col, col_t* col_start, col_t* col_end) const;
 
     void set_col_hidden(col_t col, col_t col_span, bool hidden);

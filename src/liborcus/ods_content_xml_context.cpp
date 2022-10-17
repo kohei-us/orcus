@@ -114,7 +114,7 @@ ods_content_xml_context::cell_attr::cell_attr() :
 ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
-    m_row(0), m_col(0),
+    m_row(0), m_col(0), m_col_repeated(0),
     m_para_index(0),
     m_has_content(false),
     m_styles(),
@@ -430,7 +430,7 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
 
     std::string_view style_name;
     std::string_view default_cell_style_name;
-    ss::col_t columns_repeated = 1;
+    m_col_repeated = 1;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -445,7 +445,7 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
                     default_cell_style_name = intern(attr);
                     break;
                 case XML_number_columns_repeated:
-                    columns_repeated = to_long(attr.value);
+                    m_col_repeated = to_long(attr.value);
                     break;
             }
         }
@@ -456,17 +456,17 @@ void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
         const odf_style& style = *it->second;
 
         sheet_props->set_column_width(
-            m_col, columns_repeated,
+            m_col, m_col_repeated,
             std::get<odf_style::column>(style.data).width.value,
             std::get<odf_style::column>(style.data).width.unit);
     }
 
-    push_default_column_cell_style(default_cell_style_name, columns_repeated);
+    push_default_column_cell_style(default_cell_style_name, m_col_repeated);
 }
 
 void ods_content_xml_context::end_column()
 {
-    ++m_col;
+    m_col += m_col_repeated;
 }
 
 void ods_content_xml_context::start_row(const xml_attrs_t& attrs)

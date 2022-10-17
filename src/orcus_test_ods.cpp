@@ -599,6 +599,58 @@ void test_ods_import_styles_column_styles()
         assert(fill->first.fg_color == ss::color_t(0xFF, 0x00, 0xA9, 0x33));
         assert(fill->second.fg_color);
     }
+
+    // Move on to the next sheet...
+    sh = doc->get_sheet(1);
+    assert(sh);
+
+    // Column A uses "Default"
+    xfid = sh->get_cell_format(0, 0);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Default");
+
+    // Columns B:D use "Gray With Lime" with direct background color
+    for (ss::col_t col : {1, 2, 3})
+    {
+        std::cout << "column " << col << std::endl;
+        xfid = sh->get_cell_format(0, col);
+        xf = styles.get_cell_format(xfid);
+        assert(xf);
+
+        xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+        assert(xstyle);
+        assert(xstyle->name == "Gray With Lime" || xstyle->display_name == "Gray With Lime");
+
+        fill = styles.get_fill_state(xf->fill);
+        assert(fill);
+        assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+        assert(fill->second.pattern_type);
+        assert(fill->first.fg_color == ss::color_t(0xFF, 0xFF, 0xDE, 0x59));
+        assert(fill->second.fg_color);
+    }
+
+    // Column E and the rest all use "Default"
+    xfid = sh->get_cell_format(0, 4);
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    xstyle = styles.get_cell_style_by_xf(xf->style_xf);
+    assert(xstyle);
+    assert(xstyle->name == "Default");
+
+    // Columns F:I have narrower width of 0.5 inch.
+    {
+        ss::col_t col_start = -1, col_end = -1;
+        // column widths are stored in twips
+        ss::col_width_t cw = sh->get_col_width(5, &col_start, &col_end);
+        assert(col_start == 5);
+        assert(col_end == 9); // column I has an id = 8, plus 1 for the end position
+        length_t v{length_unit_t::inch, 0.5};
+        ss::col_width_t cw_expected = convert(0.5, length_unit_t::inch, length_unit_t::twip);
+        assert(cw == cw_expected);
+    }
 }
 
 } // anonymous namespace

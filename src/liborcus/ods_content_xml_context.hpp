@@ -120,6 +120,7 @@ private:
 
     int m_row;
     int m_col;
+    int m_col_repeated;
     size_t m_para_index;
     bool m_has_content;
 
