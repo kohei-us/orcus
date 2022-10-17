@@ -581,6 +581,24 @@ void test_ods_import_styles_column_styles()
     assert(font);
     assert(font->first.bold);
     assert(font->second.bold);
+
+    // Check on row 10 cell format from column A to column G
+    for (ss::col_t col = 0; col <= 100; ++col)
+    {
+        std::cout << "(row=9; column=" << col << ")" << std::endl;
+        xfid = sh->get_cell_format(9, col);
+        xf = styles.get_cell_format(xfid);
+        assert(xf);
+        assert(xf->ver_align == ss::ver_alignment_t::top);
+
+        fill = styles.get_fill_state(xf->fill);
+        assert(fill);
+
+        assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
+        assert(fill->second.pattern_type);
+        assert(fill->first.fg_color == ss::color_t(0xFF, 0x00, 0xA9, 0x33));
+        assert(fill->second.fg_color);
+    }
 }
 
 } // anonymous namespace

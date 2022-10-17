@@ -731,7 +731,8 @@ void ods_content_xml_context::push_cell_format()
 
     if (auto it = m_cell_format_map.find(m_cell_attr.style_name); it != m_cell_format_map.end())
     {
-        m_cur_sheet.sheet->set_format(m_row, m_col, it->second);
+        for (ss::col_t col_offset = 0; col_offset < m_cell_attr.number_columns_repeated; ++col_offset)
+            m_cur_sheet.sheet->set_format(m_row, m_col + col_offset, it->second);
         // style key found and direct cell format set.
         return;
     }
@@ -740,7 +741,8 @@ void ods_content_xml_context::push_cell_format()
     if (!xfid)
         return;
 
-    m_cur_sheet.sheet->set_format(m_row, m_col, *xfid);
+    for (ss::col_t col_offset = 0; col_offset < m_cell_attr.number_columns_repeated; ++col_offset)
+        m_cur_sheet.sheet->set_format(m_row, m_col + col_offset, *xfid);
 }
 
 void ods_content_xml_context::push_cell_value()
