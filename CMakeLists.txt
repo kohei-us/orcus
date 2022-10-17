@@ -31,7 +31,7 @@ set(CMAKE_CTEST_COMMAND ctest)
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 
-find_library(IXION_LIB ixion-0.17 PATHS ${IXION_LIBRARYDIR})
+find_library(IXION_LIB ixion-0.18 PATHS ${IXION_LIBRARYDIR})
 
 if(NOT IXION_LIB)
     message(FATAL_ERROR "Ixion not found.")

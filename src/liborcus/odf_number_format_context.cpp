@@ -494,7 +494,7 @@ void time_style_context::start_element_time_style(const std::vector<xml_token_at
 void time_style_context::start_element_seconds(const std::vector<xml_token_attr_t>& attrs)
 {
     auto style = date_style_type::unknown;
-    std::optional<long> decimal_places;
+    std::optional<std::size_t> decimal_places;
 
     for (const auto& attr : attrs)
     {
@@ -831,9 +831,9 @@ std::unique_ptr<odf_number_format> number_style_context::pop_style()
 
 void number_style_context::start_element_fraction(const std::vector<xml_token_attr_t>& attrs)
 {
-    long min_integer_digits = 0;
-    long min_numerator_digits = 0;
-    long min_denominator_digits = 0;
+    std::size_t min_integer_digits = 0;
+    std::size_t min_numerator_digits = 0;
+    std::size_t min_denominator_digits = 0;
 
     std::optional<std::string_view> denominator_value;
 
