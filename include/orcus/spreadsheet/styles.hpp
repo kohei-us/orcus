@@ -21,9 +21,17 @@ namespace orcus { namespace spreadsheet {
 struct ORCUS_SPM_DLLPUBLIC font_t
 {
     std::string_view name;
+    std::string_view name_asian;
+    std::string_view name_complex;
     double size;
+    double size_asian;
+    double size_complex;
     bool bold:1;
+    bool bold_asian:1;
+    bool bold_complex:1;
     bool italic:1;
+    bool italic_asian:1;
+    bool italic_complex:1;
     underline_t underline_style;
     underline_width_t underline_width;
     underline_mode_t underline_mode;
@@ -45,9 +53,17 @@ struct ORCUS_SPM_DLLPUBLIC font_t
 struct ORCUS_SPM_DLLPUBLIC font_active_t
 {
     bool name = false;
+    bool name_asian = false;
+    bool name_complex = false;
     bool size = false;
+    bool size_asian = false;
+    bool size_complex = false;
     bool bold = false;
+    bool bold_asian = false;
+    bool bold_complex = false;
     bool italic = false;
+    bool italic_asian = false;
+    bool italic_complex = false;
     bool underline_style = false;
     bool underline_width = false;
     bool underline_mode = false;

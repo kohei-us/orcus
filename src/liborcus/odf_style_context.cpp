@@ -311,10 +311,20 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
         // TODO : handle this properly in the future.
         return;
 
+    // NB: no need to intern the font names since they are consumed at the end
+    // of this function.
     std::optional<std::string_view> font_name;
+    std::optional<std::string_view> font_name_asian;
+    std::optional<std::string_view> font_name_complex;
     std::optional<length_t> font_size;
+    std::optional<length_t> font_size_asian;
+    std::optional<length_t> font_size_complex;
     std::optional<bool> bold;
+    std::optional<bool> bold_asian;
+    std::optional<bool> bold_complex;
     std::optional<bool> italic;
+    std::optional<bool> italic_asian;
+    std::optional<bool> italic_complex;
     std::optional<ss::color_rgb_t> color;
 
     bool underline_use_font_color = false;
@@ -337,6 +347,30 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
             {
                 case XML_font_name:
                     font_name = attr.value;
+                    break;
+                case XML_font_name_asian:
+                    font_name_asian = attr.value;
+                    break;
+                case XML_font_name_complex:
+                    font_name_complex = attr.value;
+                    break;
+                case XML_font_size_asian:
+                    font_size_asian = to_length(attr.value);
+                    break;
+                case XML_font_size_complex:
+                    font_size_complex = to_length(attr.value);
+                    break;
+                case XML_font_style_asian:
+                    italic_asian = attr.value == "italic";
+                    break;
+                case XML_font_style_complex:
+                    italic_complex = attr.value == "italic";
+                    break;
+                case XML_font_weight_asian:
+                    bold_asian = attr.value == "bold";
+                    break;
+                case XML_font_weight_complex:
+                    bold_complex = attr.value == "bold";
                     break;
                 case XML_text_underline_color:
                     underline_use_font_color = (attr.value == "font-color");
@@ -401,8 +435,6 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
                         strikethrough_text = ss::strikethrough_text_t::unknown;
                     break;
                 }
-                default:
-                    ;
             }
         }
         else if (attr.ns == NS_odf_fo)
@@ -421,8 +453,6 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
                 case XML_color:
                     color = odf::convert_fo_color(attr.value);
                     break;
-                default:
-                    ;
             }
         }
     }
@@ -434,14 +464,38 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     if (font_name)
         font_style->set_name(*font_name);
 
+    if (font_name_asian)
+        font_style->set_name_asian(*font_name_asian);
+
+    if (font_name_complex)
+        font_style->set_name_complex(*font_name_complex);
+
     if (font_size && font_size->unit == length_unit_t::point)
         font_style->set_size(font_size->value);
+
+    if (font_size_asian && font_size_asian->unit == length_unit_t::point)
+        font_style->set_size_asian(font_size_asian->value);
+
+    if (font_size_complex && font_size_complex->unit == length_unit_t::point)
+        font_style->set_size_complex(font_size_complex->value);
 
     if (bold)
         font_style->set_bold(*bold);
 
+    if (bold_asian)
+        font_style->set_bold_asian(*bold_asian);
+
+    if (bold_complex)
+        font_style->set_bold_complex(*bold_complex);
+
     if (italic)
         font_style->set_italic(*italic);
+
+    if (italic_asian)
+        font_style->set_italic_asian(*italic_asian);
+
+    if (italic_complex)
+        font_style->set_italic_complex(*italic_complex);
 
     if (color)
         font_style->set_color(255, color->red, color->green, color->blue);

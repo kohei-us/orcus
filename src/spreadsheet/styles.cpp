@@ -19,8 +19,16 @@
 namespace orcus { namespace spreadsheet {
 
 font_t::font_t() :
-    size(0.0), bold(false),
-    italic(false), underline_style(underline_t::none),
+    size(0.0),
+    size_asian(0.0),
+    size_complex(0.0),
+    bold(false),
+    bold_asian(false),
+    bold_complex(false),
+    italic(false),
+    italic_asian(false),
+    italic_complex(false),
+    underline_style(underline_t::none),
     underline_width(underline_width_t::none),
     underline_mode(underline_mode_t::continuous),
     underline_type(underline_type_t::none),
@@ -40,9 +48,17 @@ void font_t::reset()
 void font_active_t::set() noexcept
 {
     name = true;
+    name_asian = true;
+    name_complex = true;
     size = true;
+    size_asian = true;
+    size_complex = true;
     bold = true;
+    bold_asian = true;
+    bold_complex = true;
     italic = true;
+    italic_asian = true;
+    italic_complex = true;
     underline_style = true;
     underline_width = true;
     underline_mode = true;
@@ -63,9 +79,17 @@ void font_active_t::reset()
 bool font_active_t::operator== (const font_active_t& other) const noexcept
 {
     return name == other.name &&
+        name_asian == other.name_asian &&
+        name_complex == other.name_complex &&
         size == other.size &&
+        size_asian == other.size_asian &&
+        size_complex == other.size_complex &&
         bold == other.bold &&
+        bold_asian == other.bold_asian &&
+        bold_complex == other.bold_complex &&
         italic == other.italic &&
+        italic_asian == other.italic_asian &&
+        italic_complex == other.italic_complex &&
         underline_style == other.underline_style &&
         underline_width == other.underline_width &&
         underline_mode == other.underline_mode &&

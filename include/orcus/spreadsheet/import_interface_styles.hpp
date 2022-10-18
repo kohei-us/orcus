@@ -194,9 +194,21 @@ public:
     virtual ~import_font_style();
 
     virtual void set_bold(bool b) = 0;
+    virtual void set_bold_asian(bool b) = 0;
+    virtual void set_bold_complex(bool b) = 0;
+
     virtual void set_italic(bool b) = 0;
+    virtual void set_italic_asian(bool b) = 0;
+    virtual void set_italic_complex(bool b) = 0;
+
     virtual void set_name(std::string_view s) = 0;
+    virtual void set_name_asian(std::string_view s) = 0;
+    virtual void set_name_complex(std::string_view s) = 0;
+
     virtual void set_size(double point) = 0;
+    virtual void set_size_asian(double point) = 0;
+    virtual void set_size_complex(double point) = 0;
+
     virtual void set_underline(underline_t e) = 0;
     virtual void set_underline_width(underline_width_t e) = 0;
     virtual void set_underline_mode(underline_mode_t e) = 0;

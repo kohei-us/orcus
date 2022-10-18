@@ -169,10 +169,34 @@ void import_font_style::set_bold(bool b)
     mp_impl->cur_font_active.bold = true;
 }
 
+void import_font_style::set_bold_asian(bool b)
+{
+    mp_impl->cur_font.bold_asian = b;
+    mp_impl->cur_font_active.bold_asian = true;
+}
+
+void import_font_style::set_bold_complex(bool b)
+{
+    mp_impl->cur_font.bold_complex = b;
+    mp_impl->cur_font_active.bold_complex = true;
+}
+
 void import_font_style::set_italic(bool b)
 {
     mp_impl->cur_font.italic = b;
     mp_impl->cur_font_active.italic = true;
+}
+
+void import_font_style::set_italic_asian(bool b)
+{
+    mp_impl->cur_font.italic_asian = b;
+    mp_impl->cur_font_active.italic_asian = true;
+}
+
+void import_font_style::set_italic_complex(bool b)
+{
+    mp_impl->cur_font.italic_complex = b;
+    mp_impl->cur_font_active.italic_complex = true;
 }
 
 void import_font_style::set_name(std::string_view s)
@@ -181,10 +205,34 @@ void import_font_style::set_name(std::string_view s)
     mp_impl->cur_font_active.name = true;
 }
 
+void import_font_style::set_name_asian(std::string_view s)
+{
+    mp_impl->cur_font.name_asian = mp_impl->str_pool.intern(s).first;
+    mp_impl->cur_font_active.name_asian = true;
+}
+
+void import_font_style::set_name_complex(std::string_view s)
+{
+    mp_impl->cur_font.name_complex = mp_impl->str_pool.intern(s).first;
+    mp_impl->cur_font_active.name_complex = true;
+}
+
 void import_font_style::set_size(double point)
 {
     mp_impl->cur_font.size = point;
     mp_impl->cur_font_active.size = true;
+}
+
+void import_font_style::set_size_asian(double point)
+{
+    mp_impl->cur_font.size_asian = point;
+    mp_impl->cur_font_active.size_asian = true;
+}
+
+void import_font_style::set_size_complex(double point)
+{
+    mp_impl->cur_font.size_complex = point;
+    mp_impl->cur_font_active.size_complex = true;
 }
 
 void import_font_style::set_underline(underline_t e)

@@ -653,6 +653,65 @@ void test_ods_import_styles_column_styles()
     }
 }
 
+void test_ods_import_styles_asian_complex()
+{
+    fs::path filepath{SRCDIR"/test/ods/styles/asian-complex.ods"};
+
+    auto doc = load_doc(filepath);
+    assert(doc);
+
+    const ss::styles& styles = doc->get_styles();
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    std::size_t xfid = sh->get_cell_format(0, 0); // A1
+    const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    const auto* font = styles.get_font_state(xf->font);
+    assert(font);
+
+    assert(font->first.name == "FreeMono");
+    assert(font->second.name);
+    assert(font->first.size == 12.0);
+    assert(font->second.size);
+    assert(!font->second.bold); // bold not set
+    assert(font->first.italic);
+    assert(font->second.italic);
+
+    xfid = sh->get_cell_format(1, 0); // A2
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    font = styles.get_font_state(xf->font);
+    assert(font);
+
+    assert(font->first.name_asian == "Noto Sans CJK SC");
+    assert(font->second.name_asian);
+    assert(font->first.size_asian == 16.0);
+    assert(font->second.size_asian);
+    assert(font->first.bold_asian);
+    assert(font->second.bold_asian);
+    assert(font->first.italic_asian);
+    assert(font->second.italic_asian);
+
+    xfid = sh->get_cell_format(2, 0); // A3
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+
+    font = styles.get_font_state(xf->font);
+    assert(font);
+
+    assert(font->first.name_complex == "Gubbi");
+    assert(font->second.name_complex);
+    assert(font->first.size_complex == 24.0);
+    assert(font->second.size_complex);
+    assert(font->first.bold_complex);
+    assert(font->second.bold_complex);
+    assert(font->first.italic_complex);
+    assert(font->second.italic_complex);
+}
+
 } // anonymous namespace
 
 int main()
@@ -664,6 +723,7 @@ int main()
     test_ods_import_cell_properties();
     test_ods_import_styles_direct_format();
     test_ods_import_styles_column_styles();
+    test_ods_import_styles_asian_complex();
 
     return EXIT_SUCCESS;
 }

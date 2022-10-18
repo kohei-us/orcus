@@ -101,9 +101,21 @@ public:
     virtual ~import_font_style() override;
 
     virtual void set_bold(bool b) override;
+    virtual void set_bold_asian(bool b) override;
+    virtual void set_bold_complex(bool b) override;
+
     virtual void set_italic(bool b) override;
+    virtual void set_italic_asian(bool b) override;
+    virtual void set_italic_complex(bool b) override;
+
     virtual void set_name(std::string_view s) override;
+    virtual void set_name_asian(std::string_view s) override;
+    virtual void set_name_complex(std::string_view s) override;
+
     virtual void set_size(double point) override;
+    virtual void set_size_asian(double point) override;
+    virtual void set_size_complex(double point) override;
+
     virtual void set_underline(underline_t e) override;
     virtual void set_underline_width(underline_width_t e) override;
     virtual void set_underline_mode(underline_mode_t e) override;

@@ -156,9 +156,17 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
         of << "  - id: " << i << std::endl;
         active_value("name", font.name, active.name, 2);
+        active_value("name-asian", font.name_asian, active.name_asian, 2);
+        active_value("name-complex", font.name_complex, active.name_complex, 2);
         active_value("size", font.size, active.size);
+        active_value("size-asian", font.size_asian, active.size_asian);
+        active_value("size-complex", font.size_complex, active.size_complex);
         active_value("bold", font.bold, active.bold);
+        active_value("bold-asian", font.bold_asian, active.bold_asian);
+        active_value("bold-complex", font.bold_complex, active.bold_complex);
         active_value("italic", font.italic, active.italic);
+        active_value("italic-asian", font.italic_asian, active.italic_asian);
+        active_value("italic-complex", font.italic_complex, active.italic_complex);
         active_value("underline-style", font.underline_style, active.underline_style, 2);
         active_value("underline-width", font.underline_width, active.underline_width, 2);
         active_value("underline-mode", font.underline_mode, active.underline_mode, 2);
