@@ -214,39 +214,11 @@ bool border_active_t::operator!= (const border_active_t& other) const noexcept
     return !operator== (other);
 }
 
-protection_t::protection_t() :
-    locked(false), hidden(false), print_content(false), formula_hidden(false)
-{
-}
+protection_t::protection_t() = default;
 
 void protection_t::reset()
 {
     *this = protection_t();
-}
-
-void protection_active_t::set() noexcept
-{
-    locked = true;
-    hidden = true;
-    print_content = true;
-    formula_hidden = true;
-}
-
-void protection_active_t::reset()
-{
-    *this = protection_active_t();
-}
-
-bool protection_active_t::operator== (const protection_active_t& other) const noexcept
-{
-    return locked == other.locked && hidden == other.hidden &&
-        print_content == other.print_content &&
-        formula_hidden == other.formula_hidden;
-}
-
-bool protection_active_t::operator!= (const protection_active_t& other) const noexcept
-{
-    return !operator== (other);
 }
 
 number_format_t::number_format_t() = default;
@@ -320,7 +292,7 @@ struct styles::impl
     std::vector<style_attrs_t<font_t>> fonts;
     std::vector<style_attrs_t<fill_t>> fills;
     std::vector<style_attrs_t<border_t>> borders;
-    std::vector<style_attrs_t<protection_t>> protections;
+    std::vector<protection_t> protections;
     std::vector<number_format_t> number_formats;
     std::vector<cell_format_t> cell_style_formats;
     std::vector<cell_format_t> cell_formats;
@@ -394,18 +366,9 @@ size_t styles::append_border(const border_t& value, const border_active_t& activ
     return mp_impl->borders.size() - 1;
 }
 
-size_t styles::append_protection(const protection_t& protection)
+std::size_t styles::append_protection(const protection_t& protection)
 {
-    // Preserve current behavior until next API version.
-    protection_active_t active;
-    active.set();
-    mp_impl->protections.emplace_back(protection, active);
-    return mp_impl->protections.size() - 1;
-}
-
-size_t styles::append_protection(const protection_t& value, const protection_active_t& active)
-{
-    mp_impl->protections.emplace_back(value, active);
+    mp_impl->protections.emplace_back(protection);
     return mp_impl->protections.size() - 1;
 }
 
@@ -528,14 +491,6 @@ const style_attrs_t<border_t>* styles::get_border_state(size_t index) const
 }
 
 const protection_t* styles::get_protection(size_t index) const
-{
-    if (index >= mp_impl->protections.size())
-        return nullptr;
-
-    return &mp_impl->protections[index].first;
-}
-
-const style_attrs_t<protection_t>* styles::get_protection_state(size_t index) const
 {
     if (index >= mp_impl->protections.size())
         return nullptr;

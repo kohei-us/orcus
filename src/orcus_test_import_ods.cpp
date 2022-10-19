@@ -184,37 +184,27 @@ bool verify_active_fill_attrs(
     return true;
 }
 
-bool verify_active_protection_attrs(
-    const std::pair<ss::protection_t, ss::protection_active_t>& expected,
-    const std::pair<ss::protection_t, ss::protection_active_t>& actual)
+bool verify_protection_attrs(const ss::protection_t& expected, const ss::protection_t& actual)
 {
-    if (expected.second != actual.second)
-    {
-        std::cerr << "active masks differ!" << std::endl;
-        return false;
-    }
-
-    const ss::protection_active_t& mask = expected.second;
-
-    if (mask.locked && expected.first.locked != actual.first.locked)
+    if (expected.locked != actual.locked)
     {
         std::cerr << "locked states differ!" << std::endl;
         return false;
     }
 
-    if (mask.hidden && expected.first.hidden != actual.first.hidden)
+    if (expected.hidden != actual.hidden)
     {
         std::cerr << "hidden states differ!" << std::endl;
         return false;
     }
 
-    if (mask.print_content && expected.first.print_content != actual.first.print_content)
+    if (expected.print_content != actual.print_content)
     {
         std::cerr << "'print content' states differ!" << std::endl;
         return false;
     }
 
-    if (mask.formula_hidden && expected.first.formula_hidden != actual.first.formula_hidden)
+    if (expected.formula_hidden != actual.formula_hidden)
     {
         std::cerr << "'formula hidden' states differ!" << std::endl;
         return false;
@@ -398,10 +388,10 @@ void test_odf_cell_protection(const orcus::spreadsheet::styles& styles)
     assert(cell_format);
 
     const orcus::spreadsheet::protection_t* cell_protection = styles.get_protection(protection);
-    assert(cell_protection->locked == true);
-    assert(cell_protection->hidden == true);
-    assert(cell_protection->print_content == true);
-    assert(cell_protection->formula_hidden == false);
+    assert(*cell_protection->locked == true);
+    assert(*cell_protection->hidden == true);
+    assert(*cell_protection->print_content == true);
+    assert(*cell_protection->formula_hidden == false);
 
     /* Test that Cell is  protected and formula is hidden , Print Content is false */
     style = find_cell_style_by_name("Name6", styles);
@@ -412,10 +402,10 @@ void test_odf_cell_protection(const orcus::spreadsheet::styles& styles)
     assert(cell_format);
 
     cell_protection = styles.get_protection(protection);
-    assert(cell_protection->locked == true);
-    assert(cell_protection->hidden == false);
-    assert(cell_protection->print_content == false);
-    assert(cell_protection->formula_hidden == true);
+    assert(*cell_protection->locked == true);
+    assert(!cell_protection->hidden); // not set
+    assert(*cell_protection->print_content == false);
+    assert(*cell_protection->formula_hidden == true);
 
     /* Test that Cell is not protected by any way, Print Content is false */
     style = find_cell_style_by_name("Name7", styles);
@@ -426,10 +416,10 @@ void test_odf_cell_protection(const orcus::spreadsheet::styles& styles)
     assert(cell_format);
 
     cell_protection = styles.get_protection(protection);
-    assert(cell_protection->locked == false);
-    assert(cell_protection->hidden == false);
-    assert(cell_protection->print_content == true);
-    assert(cell_protection->formula_hidden == false);
+    assert(*cell_protection->locked == false);
+    assert(*cell_protection->hidden == false);
+    assert(*cell_protection->print_content == true);
+    assert(*cell_protection->formula_hidden == false);
 }
 
 void test_odf_font(const orcus::spreadsheet::styles& styles)
@@ -909,72 +899,60 @@ void test_cell_protection_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Hide_20_Formula", "Protected");
         assert(cell_format);
 
-        const auto* protection_state = model.styles.get_protection_state(cell_format->protection);
-        assert(protection_state);
+        const auto* protection = model.styles.get_protection(cell_format->protection);
+        assert(protection);
 
-        std::pair<ss::protection_t, ss::protection_active_t> expected;
-        expected.first.locked = true;
-        expected.first.formula_hidden = true;
-        expected.first.print_content = true;
-        expected.second.locked = true;
-        expected.second.formula_hidden = true;
-        expected.second.print_content = true;
+        ss::protection_t expected;
+        expected.locked = true;
+        expected.formula_hidden = true;
+        expected.print_content = true;
 
-        assert(verify_active_protection_attrs(expected, *protection_state));
+        assert(verify_protection_attrs(expected, *protection));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Hide_20_When_20_Printing", "Protected");
         assert(cell_format);
 
-        const auto* protection_state = model.styles.get_protection_state(cell_format->protection);
-        assert(protection_state);
+        const auto* protection = model.styles.get_protection(cell_format->protection);
+        assert(protection);
 
-        std::pair<ss::protection_t, ss::protection_active_t> expected;
-        expected.first.locked = true;
-        expected.first.print_content = false;
-        expected.second.locked = true;
-        expected.second.print_content = true;
+        ss::protection_t expected;
+        expected.locked = true;
+        expected.print_content = false;
 
-        assert(verify_active_protection_attrs(expected, *protection_state));
+        assert(verify_protection_attrs(expected, *protection));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Hide_20_All", "Protected");
         assert(cell_format);
 
-        const auto* protection_state = model.styles.get_protection_state(cell_format->protection);
-        assert(protection_state);
+        const auto* protection = model.styles.get_protection(cell_format->protection);
+        assert(protection);
 
-        std::pair<ss::protection_t, ss::protection_active_t> expected;
-        expected.first.locked = true;
-        expected.first.hidden = true;
-        expected.first.print_content = true;
-        expected.second.locked = true;
-        expected.second.hidden = true;
-        expected.second.print_content = true;
+        ss::protection_t expected;
+        expected.locked = true;
+        expected.hidden = true;
+        expected.print_content = true;
 
-        assert(verify_active_protection_attrs(expected, *protection_state));
+        assert(verify_protection_attrs(expected, *protection));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Not_20_Protected", "Default");
         assert(cell_format);
 
-        const auto* protection_state = model.styles.get_protection_state(cell_format->protection);
-        assert(protection_state);
+        const auto* protection = model.styles.get_protection(cell_format->protection);
+        assert(protection);
 
-        std::pair<ss::protection_t, ss::protection_active_t> expected;
-        expected.first.locked = false;
-        expected.first.hidden = false;
-        expected.first.print_content = true;
-        expected.first.formula_hidden = false;
-        expected.second.locked = true;
-        expected.second.hidden = true;
-        expected.second.print_content = true;
-        expected.second.formula_hidden = true;
+        ss::protection_t expected;
+        expected.locked = false;
+        expected.hidden = false;
+        expected.print_content = true;
+        expected.formula_hidden = false;
 
-        assert(verify_active_protection_attrs(expected, *protection_state));
+        assert(verify_protection_attrs(expected, *protection));
     }
 }
 

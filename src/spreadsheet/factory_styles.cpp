@@ -482,7 +482,6 @@ struct import_cell_protection::impl
     string_pool& str_pool;
 
     protection_t cur_protection;
-    protection_active_t cur_protection_active;
 
     impl(styles& _styles_model, string_pool& sp) :
         styles_model(_styles_model), str_pool(sp) {}
@@ -500,42 +499,33 @@ import_cell_protection::~import_cell_protection()
 void import_cell_protection::set_hidden(bool b)
 {
     mp_impl->cur_protection.hidden = b;
-    mp_impl->cur_protection_active.hidden = true;
 }
 
 void import_cell_protection::set_locked(bool b)
 {
     mp_impl->cur_protection.locked = b;
-    mp_impl->cur_protection_active.locked = true;
 }
 
 void import_cell_protection::set_print_content(bool b)
 {
     mp_impl->cur_protection.print_content = b;
-    mp_impl->cur_protection_active.print_content = true;
 }
 
 void import_cell_protection::set_formula_hidden(bool b)
 {
     mp_impl->cur_protection.formula_hidden = b;
-    mp_impl->cur_protection_active.formula_hidden = true;
 }
 
-size_t import_cell_protection::commit()
+std::size_t import_cell_protection::commit()
 {
-    size_t cp_id = mp_impl->styles_model.append_protection(
-        mp_impl->cur_protection, mp_impl->cur_protection_active);
-
+    std::size_t cp_id = mp_impl->styles_model.append_protection(mp_impl->cur_protection);
     mp_impl->cur_protection.reset();
-    mp_impl->cur_protection_active.reset();
-
     return cp_id;
 }
 
 void import_cell_protection::reset()
 {
     mp_impl->cur_protection.reset();
-    mp_impl->cur_protection_active.reset();
 }
 
 struct import_number_format::impl

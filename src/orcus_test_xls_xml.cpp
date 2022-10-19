@@ -1188,10 +1188,12 @@ void test_xls_xml_cell_properties_locked_and_hidden()
 
             const ss::protection_t* prot = styles.get_protection(xf->protection);
             assert(prot);
-            std::cout << "  * locked: expected=" << c.locked << "; actual=" << prot->locked << std::endl;
-            assert(prot->locked == c.locked);
-            std::cout << "  * formula-hidden: expected=" << c.formula_hidden << "; actual=" << prot->formula_hidden << std::endl;
-            assert(prot->formula_hidden == c.formula_hidden);
+            assert(prot->locked);
+            assert(prot->formula_hidden);
+            std::cout << "  * locked: expected=" << c.locked << "; actual=" << *prot->locked << std::endl;
+            assert(*prot->locked == c.locked);
+            std::cout << "  * formula-hidden: expected=" << c.formula_hidden << "; actual=" << *prot->formula_hidden << std::endl;
+            assert(*prot->formula_hidden == c.formula_hidden);
         }
     }
 }

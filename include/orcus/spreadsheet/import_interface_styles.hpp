@@ -338,7 +338,7 @@ public:
      * @return index of the committed cell protection data, to be passed on to
      *         the import_xf::set_protection() method as its argument.
      */
-    virtual size_t commit() = 0;
+    virtual std::size_t commit() = 0;
 };
 
 class ORCUS_DLLPUBLIC import_number_format
