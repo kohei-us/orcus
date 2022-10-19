@@ -544,7 +544,6 @@ struct import_number_format::impl
     string_pool& str_pool;
 
     number_format_t cur_numfmt;
-    number_format_active_t cur_numfmt_active;
 
     impl(styles& _styles_model, string_pool& sp) :
         styles_model(_styles_model), str_pool(sp) {}
@@ -562,22 +561,17 @@ import_number_format::~import_number_format()
 void import_number_format::set_identifier(std::size_t id)
 {
     mp_impl->cur_numfmt.identifier = id;
-    mp_impl->cur_numfmt_active.identifier = true;
 }
 
 void import_number_format::set_code(std::string_view s)
 {
     mp_impl->cur_numfmt.format_string = s;
-    mp_impl->cur_numfmt_active.format_string = true;
 }
 
 size_t import_number_format::commit()
 {
-    std::size_t fmt_id = mp_impl->styles_model.append_number_format(
-        mp_impl->cur_numfmt, mp_impl->cur_numfmt_active);
-
+    std::size_t fmt_id = mp_impl->styles_model.append_number_format(mp_impl->cur_numfmt);
     mp_impl->cur_numfmt.reset();
-    mp_impl->cur_numfmt_active.reset();
 
     return fmt_id;
 }
@@ -585,7 +579,6 @@ size_t import_number_format::commit()
 void import_number_format::reset()
 {
     mp_impl->cur_numfmt.reset();
-    mp_impl->cur_numfmt_active.reset();
 }
 
 struct import_xf::impl

@@ -303,10 +303,10 @@ void test_ods_import_number_formats()
             assert(false);
         }
 
-        if (numfmt->format_string != c.format)
+        if (numfmt->format_string && *numfmt->format_string != c.format)
         {
             std::cerr << "Number format strings differ: (expected='" << c.format << "'; actual='"
-                << numfmt->format_string << "')" << std::endl;
+                << *numfmt->format_string << "')" << std::endl;
 
             assert(false);
         }

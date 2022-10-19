@@ -105,6 +105,34 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         of << std::endl;
     };
 
+    auto optional_value = [&of](std::string_view name, const std::optional<auto>& v, int level=2)
+    {
+        constexpr char q = '"';
+        constexpr const char* indent_unit_s = "  ";
+
+        std::string indent = indent_unit_s;
+        for (int i = 0; i < level - 1; ++i)
+            indent += indent_unit_s;
+
+        of << indent << name << ": ";
+
+        if (v)
+        {
+            std::ostringstream os;
+            os << *v;
+            std::string s = os.str();
+            bool quote = s.find_first_of("#:-") != s.npos;
+            if (quote)
+                of << q << s << q;
+            else
+                of << s;
+        }
+        else
+            of << "(unset)";
+
+        of << std::endl;
+    };
+
     auto dump_border = [&active_value](const border_attrs_t& _attrs, const border_attrs_active_t& _active)
     {
         active_value("style", _attrs.style, _active.style, 3);
@@ -243,15 +271,12 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
     for (std::size_t i = 0; i < m_doc.styles_store.get_number_format_count(); ++i)
     {
-        const auto* state = m_doc.styles_store.get_number_format_state(i);
-        assert(state);
+        const number_format_t* numfmt = m_doc.styles_store.get_number_format(i);
+        assert(numfmt);
 
         of << "  - id: " << i << std::endl;
-        const number_format_t& numfmt = state->first;
-        const number_format_active_t& active = state->second;
-
-        active_value("identifier", numfmt.identifier, active.identifier, 2);
-        active_value("format-string", numfmt.format_string, active.format_string, 2);
+        optional_value("identifier", numfmt->identifier, 2);
+        optional_value("format-string", numfmt->format_string, 2);
     }
 }
 

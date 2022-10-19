@@ -249,7 +249,7 @@ bool protection_active_t::operator!= (const protection_active_t& other) const no
     return !operator== (other);
 }
 
-number_format_t::number_format_t() : identifier(0) {}
+number_format_t::number_format_t() = default;
 
 void number_format_t::reset()
 {
@@ -262,27 +262,6 @@ bool number_format_t::operator== (const number_format_t& other) const noexcept
 }
 
 bool number_format_t::operator!= (const number_format_t& other) const noexcept
-{
-    return !operator== (other);
-}
-
-void number_format_active_t::set() noexcept
-{
-    identifier = true;
-    format_string = true;
-}
-
-void number_format_active_t::reset()
-{
-    *this = number_format_active_t();
-}
-
-bool number_format_active_t::operator== (const number_format_active_t& other) const noexcept
-{
-    return identifier == other.identifier && format_string == other.format_string;
-}
-
-bool number_format_active_t::operator!= (const number_format_active_t& other) const noexcept
 {
     return !operator== (other);
 }
@@ -342,7 +321,7 @@ struct styles::impl
     std::vector<style_attrs_t<fill_t>> fills;
     std::vector<style_attrs_t<border_t>> borders;
     std::vector<style_attrs_t<protection_t>> protections;
-    std::vector<style_attrs_t<number_format_t>> number_formats;
+    std::vector<number_format_t> number_formats;
     std::vector<cell_format_t> cell_style_formats;
     std::vector<cell_format_t> cell_formats;
     std::vector<cell_format_t> dxf_formats;
@@ -435,22 +414,17 @@ void styles::reserve_number_format_store(size_t n)
     mp_impl->number_formats.reserve(n);
 }
 
-size_t styles::append_number_format(const number_format_t& nf)
+std::size_t styles::append_number_format(const number_format_t& nf)
 {
-    // Preserve current behavior until next API version.
-    number_format_active_t active;
-    active.set();
-    number_format_t copied = nf;
-    copied.format_string = mp_impl->str_pool.intern(nf.format_string).first;
-    mp_impl->number_formats.emplace_back(copied, active);
-    return mp_impl->number_formats.size() - 1;
-}
+    if (nf.format_string)
+    {
+        number_format_t copied = nf;
+        copied.format_string = mp_impl->str_pool.intern(*nf.format_string).first;
+        mp_impl->number_formats.emplace_back(copied);
+    }
+    else
+        mp_impl->number_formats.emplace_back(nf);
 
-size_t styles::append_number_format(const number_format_t& value, const number_format_active_t& active)
-{
-    number_format_t copied = value;
-    copied.format_string = mp_impl->str_pool.intern(value.format_string).first;
-    mp_impl->number_formats.emplace_back(copied, active);
     return mp_impl->number_formats.size() - 1;
 }
 
@@ -570,14 +544,6 @@ const style_attrs_t<protection_t>* styles::get_protection_state(size_t index) co
 }
 
 const number_format_t* styles::get_number_format(size_t index) const
-{
-    if (index >= mp_impl->number_formats.size())
-        return nullptr;
-
-    return &mp_impl->number_formats[index].first;
-}
-
-const style_attrs_t<number_format_t>* styles::get_number_format_state(size_t index) const
 {
     if (index >= mp_impl->number_formats.size())
         return nullptr;

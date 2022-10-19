@@ -198,29 +198,14 @@ struct ORCUS_SPM_DLLPUBLIC protection_active_t
 
 struct ORCUS_SPM_DLLPUBLIC number_format_t
 {
-    size_t identifier;
-    std::string_view format_string;
+    std::optional<std::size_t> identifier;
+    std::optional<std::string_view> format_string;
 
     number_format_t();
     void reset();
 
     bool operator== (const number_format_t& other) const noexcept;
     bool operator!= (const number_format_t& other) const noexcept;
-};
-
-/**
- * Active attribute flags associated with number_format_t.
- */
-struct ORCUS_SPM_DLLPUBLIC number_format_active_t
-{
-    bool identifier = false;
-    bool format_string = false;
-
-    void set() noexcept;
-    void reset();
-
-    bool operator== (const number_format_active_t& other) const noexcept;
-    bool operator!= (const number_format_active_t& other) const noexcept;
 };
 
 /**
@@ -270,7 +255,6 @@ template<> struct to_active_type<font_t> { using type = font_active_t; };
 template<> struct to_active_type<fill_t> { using type = fill_active_t; };
 template<> struct to_active_type<border_t> { using type = border_active_t; };
 template<> struct to_active_type<protection_t> { using type = protection_active_t; };
-template<> struct to_active_type<number_format_t> { using type = number_format_active_t; };
 
 } // namespace detail
 
@@ -308,8 +292,7 @@ public:
     size_t append_protection(const protection_t& value, const protection_active_t& active);
 
     void reserve_number_format_store(size_t n);
-    size_t append_number_format(const number_format_t& nf);
-    size_t append_number_format(const number_format_t& value, const number_format_active_t& active);
+    std::size_t append_number_format(const number_format_t& nf);
 
     void reserve_cell_style_format_store(size_t n);
     size_t append_cell_style_format(const cell_format_t& cf);
@@ -336,8 +319,6 @@ public:
     const style_attrs_t<protection_t>* get_protection_state(size_t index) const;
 
     const number_format_t* get_number_format(size_t index) const;
-    const style_attrs_t<number_format_t>* get_number_format_state(size_t index) const;
-
     const cell_format_t* get_cell_format(size_t index) const;
     const cell_format_t* get_cell_style_format(size_t index) const;
     const cell_format_t* get_dxf_format(size_t index) const;
