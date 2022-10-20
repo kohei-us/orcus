@@ -139,79 +139,18 @@ bool fill_active_t::operator!= (const fill_active_t& other) const noexcept
     return !operator==(other);
 }
 
-border_attrs_t::border_attrs_t():
-    style(orcus::spreadsheet::border_style_t::unknown)
-{
-}
+border_attrs_t::border_attrs_t() = default;
 
 void border_attrs_t::reset()
 {
     *this = border_attrs_t();
 }
 
-void border_attrs_active_t::set() noexcept
-{
-    style = true;
-    border_color = true;
-    border_width = true;
-}
-
-void border_attrs_active_t::reset()
-{
-    *this = border_attrs_active_t();
-}
-
-bool border_attrs_active_t::operator== (const border_attrs_active_t& other) const noexcept
-{
-    return style == other.style && border_color == other.border_color && border_width == other.border_width;
-}
-
-bool border_attrs_active_t::operator!= (const border_attrs_active_t& other) const noexcept
-{
-    return !operator==(other);
-}
-
-border_t::border_t()
-{
-}
+border_t::border_t() = default;
 
 void border_t::reset()
 {
     *this = border_t();
-}
-
-void border_active_t::set() noexcept
-{
-    top.set();
-    bottom.set();
-    left.set();
-    right.set();
-    diagonal.set();
-    diagonal_bl_tr.set();
-    diagonal_tl_br.set();
-}
-
-void border_active_t::reset()
-{
-    top.reset();
-    bottom.reset();
-    left.reset();
-    right.reset();
-    diagonal.reset();
-    diagonal_bl_tr.reset();
-    diagonal_tl_br.reset();
-}
-
-bool border_active_t::operator== (const border_active_t& other) const noexcept
-{
-    return top == other.top && bottom == other.bottom &&
-        left == other.left && right == other.right && diagonal == other.diagonal &&
-        diagonal_bl_tr == other.diagonal_bl_tr && diagonal_tl_br == other.diagonal_tl_br;
-}
-
-bool border_active_t::operator!= (const border_active_t& other) const noexcept
-{
-    return !operator== (other);
 }
 
 protection_t::protection_t() = default;
@@ -291,7 +230,7 @@ struct styles::impl
 {
     std::vector<style_attrs_t<font_t>> fonts;
     std::vector<style_attrs_t<fill_t>> fills;
-    std::vector<style_attrs_t<border_t>> borders;
+    std::vector<border_t> borders;
     std::vector<protection_t> protections;
     std::vector<number_format_t> number_formats;
     std::vector<cell_format_t> cell_style_formats;
@@ -351,18 +290,9 @@ void styles::reserve_border_store(size_t n)
     mp_impl->borders.reserve(n);
 }
 
-size_t styles::append_border(const border_t& border)
+std::size_t styles::append_border(const border_t& border)
 {
-    // Preserve current behavior until next API version.
-    border_active_t active;
-    active.set();
-    mp_impl->borders.emplace_back(border, active);
-    return mp_impl->borders.size() - 1;
-}
-
-size_t styles::append_border(const border_t& value, const border_active_t& active)
-{
-    mp_impl->borders.emplace_back(value, active);
+    mp_impl->borders.emplace_back(border);
     return mp_impl->borders.size() - 1;
 }
 
@@ -475,14 +405,6 @@ const style_attrs_t<fill_t>* styles::get_fill_state(size_t index) const
 }
 
 const border_t* styles::get_border(size_t index) const
-{
-    if (index >= mp_impl->borders.size())
-        return nullptr;
-
-    return &mp_impl->borders[index].first;
-}
-
-const style_attrs_t<border_t>* styles::get_border_state(size_t index) const
 {
     if (index >= mp_impl->borders.size())
         return nullptr;

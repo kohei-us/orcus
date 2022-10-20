@@ -500,22 +500,22 @@ void test_ods_import_styles_column_styles()
     assert(font->second.bold);
 
     // left and right borders are solid light green
-    const auto* border = styles.get_border_state(xf->border);
+    const ss::border_t* border = styles.get_border(xf->border);
     assert(border);
 
-    assert(border->first.left.style == ss::border_style_t::solid);
-    assert(border->second.left.style);
-    assert(border->first.left.border_width == length_t(length_unit_t::point, 2.01));
-    assert(border->second.left.border_width);
-    assert(border->first.left.border_color == ss::color_t(0xFF, 0x81, 0xD4, 0x1A));
-    assert(border->second.left.border_color);
+    assert(border->left.style);
+    assert(*border->left.style == ss::border_style_t::solid);
+    assert(border->left.border_width);
+    assert(*border->left.border_width == length_t(length_unit_t::point, 2.01));
+    assert(border->left.border_color);
+    assert(*border->left.border_color == ss::color_t(0xFF, 0x81, 0xD4, 0x1A));
 
-    assert(border->first.right.style == ss::border_style_t::solid);
-    assert(border->second.right.style);
-    assert(border->first.right.border_width == length_t(length_unit_t::point, 2.01));
-    assert(border->second.right.border_width);
-    assert(border->first.right.border_color == ss::color_t(0xFF, 0x81, 0xD4, 0x1A));
-    assert(border->second.right.border_color);
+    assert(border->right.style);
+    assert(*border->right.style == ss::border_style_t::solid);
+    assert(border->right.border_width);
+    assert(*border->right.border_width == length_t(length_unit_t::point, 2.01));
+    assert(border->right.border_color);
+    assert(*border->right.border_color == ss::color_t(0xFF, 0x81, 0xD4, 0x1A));
 
     // Column D should have "Emphasis" style applied
     xfid = sh->get_cell_format(0, 3);

@@ -110,28 +110,12 @@ struct ORCUS_SPM_DLLPUBLIC fill_active_t
 
 struct ORCUS_SPM_DLLPUBLIC border_attrs_t
 {
-    border_style_t style;
-    color_t border_color;
-    length_t border_width;
+    std::optional<border_style_t> style;
+    std::optional<color_t> border_color;
+    std::optional<length_t> border_width;
 
     border_attrs_t();
     void reset();
-};
-
-/**
- * Specifies whether each attribute of border_attrs_t is active or not.
- */
-struct ORCUS_SPM_DLLPUBLIC border_attrs_active_t
-{
-    bool style = false;
-    bool border_color = false;
-    bool border_width = false;
-
-    void set() noexcept;
-    void reset();
-
-    bool operator== (const border_attrs_active_t& other) const noexcept;
-    bool operator!= (const border_attrs_active_t& other) const noexcept;
 };
 
 struct ORCUS_SPM_DLLPUBLIC border_t
@@ -146,26 +130,6 @@ struct ORCUS_SPM_DLLPUBLIC border_t
 
     border_t();
     void reset();
-};
-
-/**
- * Active attribute flags associated with border_t.
- */
-struct ORCUS_SPM_DLLPUBLIC border_active_t
-{
-    border_attrs_active_t top;
-    border_attrs_active_t bottom;
-    border_attrs_active_t left;
-    border_attrs_active_t right;
-    border_attrs_active_t diagonal;
-    border_attrs_active_t diagonal_bl_tr;
-    border_attrs_active_t diagonal_tl_br;
-
-    void set() noexcept;
-    void reset();
-
-    bool operator== (const border_active_t& other) const noexcept;
-    bool operator!= (const border_active_t& other) const noexcept;
 };
 
 struct ORCUS_SPM_DLLPUBLIC protection_t
@@ -236,7 +200,6 @@ struct to_active_type;
 
 template<> struct to_active_type<font_t> { using type = font_active_t; };
 template<> struct to_active_type<fill_t> { using type = fill_active_t; };
-template<> struct to_active_type<border_t> { using type = border_active_t; };
 
 } // namespace detail
 
@@ -267,8 +230,7 @@ public:
     size_t append_fill(const fill_t& value, const fill_active_t& active);
 
     void reserve_border_store(size_t n);
-    size_t append_border(const border_t& border);
-    size_t append_border(const border_t& value, const border_active_t& active);
+    std::size_t append_border(const border_t& border);
 
     std::size_t append_protection(const protection_t& protection);
 
@@ -294,8 +256,6 @@ public:
     const style_attrs_t<fill_t>* get_fill_state(size_t index) const;
 
     const border_t* get_border(size_t index) const;
-    const style_attrs_t<border_t>* get_border_state(size_t index) const;
-
     const protection_t* get_protection(size_t index) const;
     const number_format_t* get_number_format(size_t index) const;
     const cell_format_t* get_cell_format(size_t index) const;

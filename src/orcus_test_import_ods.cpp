@@ -213,34 +213,41 @@ bool verify_protection_attrs(const ss::protection_t& expected, const ss::protect
     return true;
 }
 
-bool verify_active_border_attrs(
-    const std::pair<ss::border_t, ss::border_active_t>& expected,
-    const std::pair<ss::border_t, ss::border_active_t>& actual)
+bool verify_border_attrs(const ss::border_t& expected, const ss::border_t& actual)
 {
-    if (expected.second != actual.second)
+    auto verify_single = [](std::string_view name, const ss::border_attrs_t& _expected, const ss::border_attrs_t& _actual)
     {
-        std::cerr << "active masks differ!" << std::endl;
-        return false;
-    }
+        if (_expected.style != _actual.style)
+        {
+            std::cerr << name << " border style states differ!" << std::endl;
+            return false;
+        }
 
-    const ss::border_active_t& mask = expected.second;
-
-    auto verify_single = [](std::string_view name, const ss::border_attrs_active_t& _mask,
-        const ss::border_attrs_t& _expected, const ss::border_attrs_t& _actual)
-    {
-        if (_mask.style && _expected.style != _actual.style)
+        if (_expected.style && *_expected.style != *_actual.style)
         {
             std::cerr << name << " border styles differ!" << std::endl;
             return false;
         }
 
-        if (_mask.border_color && _expected.border_color != _actual.border_color)
+        if (_expected.border_color != _actual.border_color)
+        {
+            std::cerr << name << " border color states differ!" << std::endl;
+            return false;
+        }
+
+        if (_expected.border_color && *_expected.border_color != *_actual.border_color)
         {
             std::cerr << name << " border colors differ!" << std::endl;
             return false;
         }
 
-        if (_mask.border_width && _expected.border_width != _actual.border_width)
+        if (_expected.border_width != _actual.border_width)
+        {
+            std::cerr << name << " border width states differ!" << std::endl;
+            return false;
+        }
+
+        if (_expected.border_width && *_expected.border_width != *_actual.border_width)
         {
             std::cerr << name << " border widths differ!" << std::endl;
             return false;
@@ -249,25 +256,25 @@ bool verify_active_border_attrs(
         return true;
     };
 
-    if (!verify_single("top", mask.top, expected.first.top, actual.first.top))
+    if (!verify_single("top", expected.top, actual.top))
         return false;
 
-    if (!verify_single("bottom", mask.bottom, expected.first.bottom, actual.first.bottom))
+    if (!verify_single("bottom", expected.bottom, actual.bottom))
         return false;
 
-    if (!verify_single("left", mask.left, expected.first.left, actual.first.left))
+    if (!verify_single("left", expected.left, actual.left))
         return false;
 
-    if (!verify_single("right", mask.right, expected.first.right, actual.first.right))
+    if (!verify_single("right", expected.right, actual.right))
         return false;
 
-    if (!verify_single("diagonal", mask.diagonal, expected.first.diagonal, actual.first.diagonal))
+    if (!verify_single("diagonal", expected.diagonal, actual.diagonal))
         return false;
 
-    if (!verify_single("diagonal_bl_tr", mask.diagonal_bl_tr, expected.first.diagonal_bl_tr, actual.first.diagonal_bl_tr))
+    if (!verify_single("diagonal_bl_tr", expected.diagonal_bl_tr, actual.diagonal_bl_tr))
         return false;
 
-    if (!verify_single("diagonal_tl_br", mask.diagonal_tl_br, expected.first.diagonal_tl_br, actual.first.diagonal_tl_br))
+    if (!verify_single("diagonal_tl_br", expected.diagonal_tl_br, actual.diagonal_tl_br))
         return false;
 
     return true;
@@ -324,57 +331,105 @@ void test_odf_fill(const orcus::spreadsheet::styles& styles)
 void test_odf_border(const orcus::spreadsheet::styles &styles)
 {
     /* Test that border style applies to all the sides when not specified */
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name1", styles);
+    const ss::cell_style_t* style = find_cell_style_by_name("Name1", styles);
     assert(style);
-    size_t xf = style->xf;
-    const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
-    size_t border = cell_format->border;
+    const ss::cell_format_t* cell_format = styles.get_cell_style_format(style->xf);
     assert(cell_format);
 
-    const orcus::spreadsheet::border_t* cell_border = styles.get_border(border);
-    assert(cell_border->top.style == orcus::spreadsheet::border_style_t::dotted);
-    assert(cell_border->bottom.style == orcus::spreadsheet::border_style_t::dotted);
-    assert(cell_border->left.style == orcus::spreadsheet::border_style_t::dotted);
-    assert(cell_border->right.style == orcus::spreadsheet::border_style_t::dotted);
-    assert(cell_border->top.border_color.red == 0xff);
-    assert(cell_border->bottom.border_color.green == 0xcc);
-    assert(cell_border->left.border_color.blue == 0x12);
-    assert(cell_border->right.border_width.value == 0.06);
-    assert(cell_border->top.border_width.value == 0.06);
+    const ss::border_t* cell_border = styles.get_border(cell_format->border);
+    assert(cell_border->top.style);
+    assert(*cell_border->top.style == ss::border_style_t::dotted);
+    assert(cell_border->bottom.style);
+    assert(*cell_border->bottom.style == ss::border_style_t::dotted);
+    assert(cell_border->left.style);
+    assert(*cell_border->left.style == ss::border_style_t::dotted);
+    assert(cell_border->right.style);
+    assert(*cell_border->right.style == ss::border_style_t::dotted);
 
-    /*Test that border applies to only specified sides*/
+    ss::color_t expected_color{0xFF, 0xFF, 0xCC, 0x12};
+    assert(cell_border->top.border_color);
+    assert(*cell_border->top.border_color == expected_color);
+    assert(cell_border->bottom.border_color);
+    assert(*cell_border->bottom.border_color == expected_color);
+    assert(cell_border->left.border_color);
+    assert(*cell_border->left.border_color == expected_color);
+    assert(cell_border->right.border_color);
+    assert(*cell_border->right.border_color == expected_color);
+
+    orcus::length_t expected_width{orcus::length_unit_t::point, 0.06};
+    assert(cell_border->top.border_width);
+    assert(*cell_border->top.border_width == expected_width);
+    assert(cell_border->bottom.border_width);
+    assert(*cell_border->bottom.border_width == expected_width);
+    assert(cell_border->left.border_width);
+    assert(*cell_border->left.border_width == expected_width);
+    assert(cell_border->right.border_width);
+    assert(*cell_border->right.border_width == expected_width);
+
     style = find_cell_style_by_name("Name2", styles);
     assert(style);
-    xf = style->xf;
-    cell_format = styles.get_cell_style_format(xf);
-    border = cell_format->border;
+    cell_format = styles.get_cell_style_format(style->xf);
     assert(cell_format);
 
-    cell_border = styles.get_border(border);
-    assert(cell_border->top.style == orcus::spreadsheet::border_style_t::fine_dashed);
-    assert(cell_border->bottom.style == orcus::spreadsheet::border_style_t::double_thin);
-    assert(cell_border->left.style == orcus::spreadsheet::border_style_t::none);
-    assert(cell_border->right.style == orcus::spreadsheet::border_style_t::dash_dot_dot);
-    assert(cell_border->top.border_color.red == 0xff);
-    assert(cell_border->bottom.border_color.green == 0xee);
-    assert(cell_border->left.border_color.blue == 0x11);
-    assert(cell_border->right.border_width.value == 0.22);
-    assert(cell_border->bottom.border_width.value == 1.74);
+    cell_border = styles.get_border(cell_format->border);
+    assert(cell_border);
+    assert(cell_border->top.style);
+    assert(*cell_border->top.style == ss::border_style_t::fine_dashed);
+    assert(cell_border->bottom.style);
+    assert(*cell_border->bottom.style == ss::border_style_t::double_thin);
+    assert(cell_border->left.style);
+    assert(*cell_border->left.style == ss::border_style_t::none);
+    assert(cell_border->right.style);
+    assert(*cell_border->right.style == ss::border_style_t::dash_dot_dot);
+
+    assert(cell_border->top.border_color);
+    assert(*cell_border->top.border_color == ss::color_t(0xFF, 0xFF, 0xEE, 0x11));
+    assert(cell_border->bottom.border_color);
+    assert(*cell_border->bottom.border_color == ss::color_t(0xFF, 0xAE, 0xEE, 0x11));
+    assert(cell_border->left.border_color);
+    assert(*cell_border->left.border_color == ss::color_t(0xFF, 0x11, 0xEE, 0x11));
+    assert(cell_border->right.border_color);
+    assert(*cell_border->right.border_color == ss::color_t(0xFF, 0x05, 0xEE, 0x11));
+
+    expected_width.value = 0.74; // point
+    assert(cell_border->top.border_width);
+    assert(*cell_border->top.border_width == expected_width);
+    expected_width.value = 1.74;
+    assert(cell_border->bottom.border_width);
+    assert(*cell_border->bottom.border_width == expected_width);
+    expected_width.value = 0.74;
+    assert(cell_border->left.border_width);
+    assert(*cell_border->left.border_width == expected_width);
+    expected_width.value = 0.22;
+    assert(cell_border->right.border_width);
+    assert(*cell_border->right.border_width == expected_width);
 
     /*Test that border applies to the diagonal*/
     style = find_cell_style_by_name("Name3", styles);
     assert(style);
-    xf = style->xf;
-    cell_format = styles.get_cell_style_format(xf);
-    border = cell_format->border;
+    cell_format = styles.get_cell_style_format(style->xf);
     assert(cell_format);
 
-    cell_border = styles.get_border(border);
-    assert(cell_border->diagonal_bl_tr.style == orcus::spreadsheet::border_style_t::dashed);
-    assert(cell_border->diagonal_tl_br.style == orcus::spreadsheet::border_style_t::dash_dot);
-    assert(cell_border->diagonal_bl_tr.border_color.red == 0xff);
-    assert(cell_border->diagonal_tl_br.border_color.green == 0x00);
-    assert(cell_border->diagonal_tl_br.border_width.value == 0.74);
+    cell_border = styles.get_border(cell_format->border);
+    assert(cell_border);
+
+    // 1.74pt dashed #ffccee
+    assert(cell_border->diagonal_bl_tr.style);
+    assert(*cell_border->diagonal_bl_tr.style == ss::border_style_t::dashed);
+    assert(cell_border->diagonal_bl_tr.border_color);
+    assert(*cell_border->diagonal_bl_tr.border_color == ss::color_t(0xFF, 0xFF, 0xCC, 0xEE));
+    expected_width.value = 1.74;
+    assert(cell_border->diagonal_bl_tr.border_width);
+    assert(*cell_border->diagonal_bl_tr.border_width == expected_width);
+
+    // 0.74pt dash-dot #120000
+    assert(cell_border->diagonal_tl_br.style);
+    assert(*cell_border->diagonal_tl_br.style == ss::border_style_t::dash_dot);
+    assert(cell_border->diagonal_tl_br.border_color);
+    assert(*cell_border->diagonal_tl_br.border_color == ss::color_t(0xFF, 0x12, 0x00, 0x00));
+    expected_width.value = 0.74;
+    assert(cell_border->diagonal_tl_br.border_width);
+    assert(*cell_border->diagonal_tl_br.border_width == expected_width);
 }
 
 void test_odf_cell_protection(const orcus::spreadsheet::styles& styles)
@@ -624,27 +679,18 @@ void test_standard_styles()
         assert(verify_active_fill_attrs(expected_fill, *fill_state));
 
         // fo:border="0.75pt solid #808080" -> same border attributes applied to top, bottom, left and right borders.
-        std::pair<ss::border_t, ss::border_active_t> expected_border;
-        expected_border.first.top.style = ss::border_style_t::solid;
-        expected_border.first.top.border_width.value = 0.75;
-        expected_border.first.top.border_width.unit = orcus::length_unit_t::point;
-        expected_border.first.top.border_color = ss::color_t(0x80, 0x80, 0x80);
+        ss::border_t expected_border;
+        expected_border.top.style = ss::border_style_t::solid;
+        expected_border.top.border_width = orcus::length_t{orcus::length_unit_t::point, 0.75};
+        expected_border.top.border_color = ss::color_t(0xFF, 0x80, 0x80, 0x80);
 
-        expected_border.first.bottom = expected_border.first.top;
-        expected_border.first.left = expected_border.first.top;
-        expected_border.first.right = expected_border.first.top;
+        expected_border.bottom = expected_border.top;
+        expected_border.left = expected_border.top;
+        expected_border.right = expected_border.top;
 
-        expected_border.second.top.style = true;
-        expected_border.second.top.border_width = true;
-        expected_border.second.top.border_color = true;
-
-        expected_border.second.bottom = expected_border.second.top;
-        expected_border.second.left = expected_border.second.top;
-        expected_border.second.right = expected_border.second.top;
-
-        const auto* border_state = model.styles.get_border_state(cell_format->border);
-        assert(border_state);
-        assert(verify_active_border_attrs(expected_border, *border_state));
+        const auto* actual_border = model.styles.get_border(cell_format->border);
+        assert(actual_border);
+        assert(verify_border_attrs(expected_border, *actual_border));
     }
 
     {

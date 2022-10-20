@@ -201,66 +201,86 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
 
 void build_border_style(std::ostringstream& os, const char* style_name, const border_attrs_t& attrs)
 {
+    if (!attrs.style || *attrs.style == border_style_t::none)
+        return;
+
     os << style_name << ": ";
-    if (attrs.style == border_style_t::thin)
+    switch (*attrs.style)
     {
-        os << "solid 1px ";
-    }
-    else if (attrs.style == border_style_t::medium)
-    {
-        os << "solid 2px ";
-    }
-    else if (attrs.style == border_style_t::thick)
-    {
-        os << "solid 3px ";
-    }
-    else if (attrs.style == border_style_t::hair)
-    {
-        os << "solid 0.5px ";
-    }
-    else if (attrs.style == border_style_t::dotted)
-    {
-        os << "dotted 1px ";
-    }
-    else if (attrs.style == border_style_t::dashed)
-    {
-        os << "dashed 1px ";
-    }
-    else if (attrs.style == border_style_t::double_border)
-    {
-        os << "3px double ";
-    }
-    else if (attrs.style == border_style_t::dash_dot)
-    {
-        // CSS doesn't support dash-dot.
-        os << "dashed 1px ";
-    }
-    else if (attrs.style == border_style_t::dash_dot_dot)
-    {
-        // CSS doesn't support dash-dot-dot.
-        os << "dashed 1px ";
-    }
-    else if (attrs.style == border_style_t::medium_dashed)
-    {
-        os << "dashed 2px ";
-    }
-    else if (attrs.style == border_style_t::medium_dash_dot)
-    {
-        // CSS doesn't support dash-dot.
-        os << "dashed 2px ";
-    }
-    else if (attrs.style == border_style_t::medium_dash_dot_dot)
-    {
-        // CSS doesn't support dash-dot-dot.
-        os << "dashed 2px ";
-    }
-    else if (attrs.style == border_style_t::slant_dash_dot)
-    {
-        // CSS doesn't support dash-dot.
-        os << "dashed 2px ";
+        case border_style_t::thin:
+        {
+            os << "solid 1px ";
+            break;
+        }
+        case border_style_t::medium:
+        {
+            os << "solid 2px ";
+            break;
+        }
+        case border_style_t::thick:
+        {
+            os << "solid 3px ";
+            break;
+        }
+        case border_style_t::hair:
+        {
+            os << "solid 0.5px ";
+            break;
+        }
+        case border_style_t::dotted:
+        {
+            os << "dotted 1px ";
+            break;
+        }
+        case border_style_t::dashed:
+        {
+            os << "dashed 1px ";
+            break;
+        }
+        case border_style_t::double_border:
+        {
+            os << "3px double ";
+            break;
+        }
+        case border_style_t::dash_dot:
+        {
+            // CSS doesn't support dash-dot.
+            os << "dashed 1px ";
+            break;
+        }
+        case border_style_t::dash_dot_dot:
+        {
+            // CSS doesn't support dash-dot-dot.
+            os << "dashed 1px ";
+            break;
+        }
+        case border_style_t::medium_dashed:
+        {
+            os << "dashed 2px ";
+            break;
+        }
+        case border_style_t::medium_dash_dot:
+        {
+            // CSS doesn't support dash-dot.
+            os << "dashed 2px ";
+            break;
+        }
+        case border_style_t::medium_dash_dot_dot:
+        {
+            // CSS doesn't support dash-dot-dot.
+            os << "dashed 2px ";
+            break;
+        }
+        case border_style_t::slant_dash_dot:
+        {
+            // CSS doesn't support dash-dot.
+            os << "dashed 2px ";
+            break;
+        }
+        default:;
     }
 
-    build_rgb_color(os, attrs.border_color);
+    build_rgb_color(os, *attrs.border_color);
     os << "; ";
 }
 

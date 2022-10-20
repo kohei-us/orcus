@@ -133,11 +133,11 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         of << std::endl;
     };
 
-    auto dump_border = [&active_value](const border_attrs_t& _attrs, const border_attrs_active_t& _active)
+    auto dump_border = [&optional_value](const border_attrs_t& _attrs)
     {
-        active_value("style", _attrs.style, _active.style, 3);
-        active_value("color", _attrs.border_color, _active.border_color, 3);
-        active_value("width", _attrs.border_width, _active.border_width, 3);
+        optional_value("style", _attrs.style, 3);
+        optional_value("color", _attrs.border_color, 3);
+        optional_value("width", _attrs.border_width, 3);
     };
 
     of << "cell-styles:" << std::endl;
@@ -226,28 +226,25 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
     for (std::size_t i = 0; i < m_doc.styles_store.get_border_count(); ++i)
     {
-        const auto* state = m_doc.styles_store.get_border_state(i);
-        assert(state);
+        const border_t* border = m_doc.styles_store.get_border(i);
+        assert(border);
 
         of << "  - id: " << i << std::endl;
 
-        const border_t& border = state->first;
-        const border_active_t& active = state->second;
-
         of << "    top:" << std::endl;
-        dump_border(border.top, active.top);
+        dump_border(border->top);
         of << "    bottom:" << std::endl;
-        dump_border(border.bottom, active.bottom);
+        dump_border(border->bottom);
         of << "    left:" << std::endl;
-        dump_border(border.left, active.left);
+        dump_border(border->left);
         of << "    right:" << std::endl;
-        dump_border(border.right, active.right);
+        dump_border(border->right);
         of << "    diagonal:" << std::endl;
-        dump_border(border.diagonal, active.diagonal);
+        dump_border(border->diagonal);
         of << "    diagonal-bl-tr:" << std::endl;
-        dump_border(border.diagonal_bl_tr, active.diagonal_bl_tr);
+        dump_border(border->diagonal_bl_tr);
         of << "    diagonal-tl-br:" << std::endl;
-        dump_border(border.diagonal_tl_br, active.diagonal_tl_br);
+        dump_border(border->diagonal_tl_br);
     }
 
     of << "protections:" << std::endl;
