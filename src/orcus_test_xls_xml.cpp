@@ -302,8 +302,8 @@ void test_xls_xml_bold_and_italic()
     assert(cf);
     const spreadsheet::font_t* font = styles.get_font(cf->font);
     assert(font);
-    assert(font->bold);
-    assert(!font->italic);
+    assert(*font->bold);
+    assert(!*font->italic);
 
     // A3 contains italic text.
     si = sheet1->get_string_identifier(2, 0);
@@ -316,8 +316,8 @@ void test_xls_xml_bold_and_italic()
     assert(cf);
     font = styles.get_font(cf->font);
     assert(font);
-    assert(!font->bold);
-    assert(font->italic);
+    assert(!*font->bold);
+    assert(*font->italic);
 
     // A4 contains bold and italic text.
     si = sheet1->get_string_identifier(3, 0);
@@ -402,10 +402,10 @@ void test_xls_xml_colored_text()
 
         const spreadsheet::font_t* font = styles.get_font(xf->font);
         assert(font);
-
-        assert(font->color.red == c.red);
-        assert(font->color.green == c.green);
-        assert(font->color.blue == c.blue);
+        assert(font->color);
+        assert(font->color.value().red == c.red);
+        assert(font->color.value().green == c.green);
+        assert(font->color.value().blue == c.blue);
 
         size_t si = sheet1->get_string_identifier(c.row, 0);
         const std::string* s = ss.get_string(si);
@@ -1254,10 +1254,10 @@ void test_xls_xml_styles_direct_format()
     const ss::cell_format_t* xf = styles.get_cell_format(xfid);
     assert(xf);
 
-    const auto* font = styles.get_font_state(xf->font);
+    const ss::font_t* font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.bold);
-    assert(font->second.bold);
+    assert(font->bold);
+    assert(*font->bold);
 
     const auto* border = styles.get_border(xf->border);
     assert(border);
@@ -1275,14 +1275,14 @@ void test_xls_xml_styles_direct_format()
     xf = styles.get_cell_format(xfid);
     assert(xf);
 
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.name == "Calibri");
-    assert(font->second.name);
-    assert(font->first.size == 14.0);
-    assert(font->second.size);
-    assert(font->first.color == ss::color_t(0xFF, 0x37, 0x56, 0x23));
-    assert(font->second.color);
+    assert(font->name);
+    assert(*font->name == "Calibri");
+    assert(font->size);
+    assert(*font->size == 14.0);
+    assert(font->color);
+    assert(*font->color == ss::color_t(0xFF, 0x37, 0x56, 0x23));
 
     // B4 has yellow background
     const ss::fill_t* fill = styles.get_fill(xf->fill);
@@ -1313,14 +1313,14 @@ void test_xls_xml_styles_direct_format()
     xf = styles.get_cell_style_format(xstyle->xf);
     assert(xf);
 
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.name == "Calibri");
-    assert(font->second.name);
-    assert(font->first.size == 11.0);
-    assert(font->second.size);
-    assert(font->first.color == ss::color_t(0xFF, 0x00, 0x61, 0x00));
-    assert(font->second.color);
+    assert(font->name);
+    assert(*font->name == "Calibri");
+    assert(font->size);
+    assert(*font->size == 11.0);
+    assert(font->color);
+    assert(*font->color == ss::color_t(0xFF, 0x00, 0x61, 0x00));
 
     fill = styles.get_fill(xf->fill);
     assert(fill);
@@ -1345,10 +1345,10 @@ void test_xls_xml_styles_direct_format()
     assert(xf->ver_align == ss::ver_alignment_t::bottom);
     assert(xf->wrap_text);
     assert(*xf->wrap_text);
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.bold);
-    assert(font->second.bold);
+    assert(font->bold);
+    assert(*font->bold);
 }
 
 void test_xls_xml_styles_column_styles()

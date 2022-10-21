@@ -77,34 +77,6 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
            << "    shrink-to-fit: " << to_string(xf.shrink_to_fit) << std::endl;
     };
 
-    auto active_value = [&of](std::string_view name, const auto& v, bool active, int level=2)
-    {
-        constexpr char q = '"';
-        constexpr const char* indent_unit_s = "  ";
-
-        std::string indent = indent_unit_s;
-        for (int i = 0; i < level - 1; ++i)
-            indent += indent_unit_s;
-
-        of << indent << name << ": ";
-
-        if (active)
-        {
-            std::ostringstream os;
-            os << v;
-            std::string s = os.str();
-            bool quote = s.find_first_of("#:-") != s.npos;
-            if (quote)
-                of << q << s << q;
-            else
-                of << s;
-        }
-        else
-            of << "(unset)";
-
-        of << std::endl;
-    };
-
     auto optional_value = [&of](std::string_view name, const std::optional<auto>& v, int level=2)
     {
         constexpr char q = '"';
@@ -177,34 +149,32 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
     for (std::size_t i = 0; i < m_doc.styles_store.get_font_count(); ++i)
     {
-        const auto* state = m_doc.styles_store.get_font_state(i);
-        assert(state);
-        const font_t& font = state->first;
-        const font_active_t& active = state->second;
+        const font_t* font = m_doc.styles_store.get_font(i);
+        assert(font);
 
         of << "  - id: " << i << std::endl;
-        active_value("name", font.name, active.name, 2);
-        active_value("name-asian", font.name_asian, active.name_asian, 2);
-        active_value("name-complex", font.name_complex, active.name_complex, 2);
-        active_value("size", font.size, active.size);
-        active_value("size-asian", font.size_asian, active.size_asian);
-        active_value("size-complex", font.size_complex, active.size_complex);
-        active_value("bold", font.bold, active.bold);
-        active_value("bold-asian", font.bold_asian, active.bold_asian);
-        active_value("bold-complex", font.bold_complex, active.bold_complex);
-        active_value("italic", font.italic, active.italic);
-        active_value("italic-asian", font.italic_asian, active.italic_asian);
-        active_value("italic-complex", font.italic_complex, active.italic_complex);
-        active_value("underline-style", font.underline_style, active.underline_style, 2);
-        active_value("underline-width", font.underline_width, active.underline_width, 2);
-        active_value("underline-mode", font.underline_mode, active.underline_mode, 2);
-        active_value("underline-type", font.underline_type, active.underline_type, 2);
-        active_value("underline-color", font.underline_color, active.underline_color, 2);
-        active_value("color", font.color, active.color, 2);
-        active_value("strikethrough-style", font.strikethrough_style, active.strikethrough_style, 2);
-        active_value("strikethrough-width", font.strikethrough_width, active.strikethrough_width, 2);
-        active_value("strikethrough-type", font.strikethrough_type, active.strikethrough_type, 2);
-        active_value("strikethrough-text", font.strikethrough_text, active.strikethrough_text, 2);
+        optional_value("name", font->name, 2);
+        optional_value("name-asian", font->name_asian, 2);
+        optional_value("name-complex", font->name_complex, 2);
+        optional_value("size", font->size, 2);
+        optional_value("size-asian", font->size_asian, 2);
+        optional_value("size-complex", font->size_complex, 2);
+        optional_value("bold", font->bold, 2);
+        optional_value("bold-asian", font->bold_asian, 2);
+        optional_value("bold-complex", font->bold_complex, 2);
+        optional_value("italic", font->italic, 2);
+        optional_value("italic-asian", font->italic_asian, 2);
+        optional_value("italic-complex", font->italic_complex, 2);
+        optional_value("underline-style", font->underline_style, 2);
+        optional_value("underline-width", font->underline_width, 2);
+        optional_value("underline-mode", font->underline_mode, 2);
+        optional_value("underline-type", font->underline_type, 2);
+        optional_value("underline-color", font->underline_color, 2);
+        optional_value("color", font->color, 2);
+        optional_value("strikethrough-style", font->strikethrough_style, 2);
+        optional_value("strikethrough-width", font->strikethrough_width, 2);
+        optional_value("strikethrough-type", font->strikethrough_type, 2);
+        optional_value("strikethrough-text", font->strikethrough_text, 2);
     }
 
     of << "fills:" << std::endl;

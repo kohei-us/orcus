@@ -20,66 +20,31 @@ namespace orcus { namespace spreadsheet {
 
 struct ORCUS_SPM_DLLPUBLIC font_t
 {
-    std::string_view name;
-    std::string_view name_asian;
-    std::string_view name_complex;
-    double size;
-    double size_asian;
-    double size_complex;
-    bool bold:1;
-    bool bold_asian:1;
-    bool bold_complex:1;
-    bool italic:1;
-    bool italic_asian:1;
-    bool italic_complex:1;
-    underline_t underline_style;
-    underline_width_t underline_width;
-    underline_mode_t underline_mode;
-    underline_type_t underline_type;
-    color_t underline_color;
-    color_t color;
-    strikethrough_style_t strikethrough_style;
-    strikethrough_width_t strikethrough_width;
-    strikethrough_type_t strikethrough_type;
-    strikethrough_text_t strikethrough_text;
+    std::optional<std::string_view> name;
+    std::optional<std::string_view> name_asian;
+    std::optional<std::string_view> name_complex;
+    std::optional<double> size;
+    std::optional<double> size_asian;
+    std::optional<double> size_complex;
+    std::optional<bool> bold;
+    std::optional<bool> bold_asian;
+    std::optional<bool> bold_complex;
+    std::optional<bool> italic;
+    std::optional<bool> italic_asian;
+    std::optional<bool> italic_complex;
+    std::optional<underline_t> underline_style;
+    std::optional<underline_width_t> underline_width;
+    std::optional<underline_mode_t> underline_mode;
+    std::optional<underline_type_t> underline_type;
+    std::optional<color_t> underline_color;
+    std::optional<color_t> color;
+    std::optional<strikethrough_style_t> strikethrough_style;
+    std::optional<strikethrough_width_t> strikethrough_width;
+    std::optional<strikethrough_type_t> strikethrough_type;
+    std::optional<strikethrough_text_t> strikethrough_text;
 
     font_t();
     void reset();
-};
-
-/**
- * Specifies whether each attribute of font_t is active or not.
- */
-struct ORCUS_SPM_DLLPUBLIC font_active_t
-{
-    bool name = false;
-    bool name_asian = false;
-    bool name_complex = false;
-    bool size = false;
-    bool size_asian = false;
-    bool size_complex = false;
-    bool bold = false;
-    bool bold_asian = false;
-    bool bold_complex = false;
-    bool italic = false;
-    bool italic_asian = false;
-    bool italic_complex = false;
-    bool underline_style = false;
-    bool underline_width = false;
-    bool underline_mode = false;
-    bool underline_type = false;
-    bool underline_color = false;
-    bool color = false;
-    bool strikethrough_style = false;
-    bool strikethrough_width = false;
-    bool strikethrough_type = false;
-    bool strikethrough_text = false;
-
-    void set() noexcept;
-    void reset();
-
-    bool operator== (const font_active_t& other) const noexcept;
-    bool operator!= (const font_active_t& other) const noexcept;
 };
 
 struct ORCUS_SPM_DLLPUBLIC fill_t
@@ -177,22 +142,6 @@ struct ORCUS_SPM_DLLPUBLIC cell_style_t
     void reset();
 };
 
-namespace detail {
-
-template<typename T>
-struct to_active_type;
-
-template<> struct to_active_type<font_t> { using type = font_active_t; };
-
-} // namespace detail
-
-/**
- * Template to pair the source style type with its active flags.  The active
- * flags store whether each style attribute is applied or not.
- */
-template<typename T>
-using style_attrs_t = std::pair<T, typename detail::to_active_type<T>::type>;
-
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_t& c);
 
 class ORCUS_SPM_DLLPUBLIC styles
@@ -205,8 +154,7 @@ public:
     ~styles();
 
     void reserve_font_store(size_t n);
-    size_t append_font(const font_t& font);
-    size_t append_font(const font_t& value, const font_active_t& active);
+    std::size_t append_font(const font_t& font);
 
     void reserve_fill_store(size_t n);
     std::size_t append_fill(const fill_t& fill);
@@ -232,8 +180,6 @@ public:
     void append_cell_style(const cell_style_t& cs);
 
     const font_t* get_font(size_t index) const;
-    const style_attrs_t<font_t>* get_font_state(size_t index) const;
-
     const fill_t* get_fill(size_t index) const;
     const border_t* get_border(size_t index) const;
     const protection_t* get_protection(size_t index) const;

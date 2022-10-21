@@ -42,11 +42,17 @@ void import_shared_strings::set_segment_font(size_t font_index)
     if (!font_data)
         return;
 
-    m_cur_format.bold = font_data->bold;
-    m_cur_format.italic = font_data->italic;
-    m_cur_format.font = font_data->name; // font names are already interned when set.
-    m_cur_format.font_size = font_data->size;
-    m_cur_format.color = font_data->color;
+    m_cur_format.bold = font_data->bold ? *font_data->bold : false;
+    m_cur_format.italic = font_data->italic ? *font_data->italic : false;
+
+    if (font_data->name)
+        m_cur_format.font = *font_data->name; // font names are already interned when set.
+
+    if (font_data->size)
+        m_cur_format.font_size = *font_data->size;
+
+    if (font_data->color)
+        m_cur_format.color = *font_data->color;
 }
 
 void import_shared_strings::set_segment_bold(bool b)

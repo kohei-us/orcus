@@ -149,7 +149,11 @@ void test_ods_import_formatted_text()
     xf = styles.get_cell_format(xfid);
     assert(xf);
     const font_t* font_data = styles.get_font(xf->font);
-    assert(font_data && font_data->bold && !font_data->italic);
+    assert(font_data);
+    assert(font_data->bold);
+    assert(*font_data->bold);
+    assert(font_data->italic);
+    assert(!*font_data->italic);
     fmt = ss.get_format_runs(str_id);
     assert(!fmt); // This string should be unformatted.
 
@@ -161,7 +165,11 @@ void test_ods_import_formatted_text()
     xf = styles.get_cell_format(xfid);
     assert(xf);
     font_data = styles.get_font(xf->font);
-    assert(font_data && !font_data->bold && font_data->italic);
+    assert(font_data);
+    assert(font_data->bold);
+    assert(!*font_data->bold);
+    assert(font_data->italic);
+    assert(*font_data->italic);
     fmt = ss.get_format_runs(str_id);
     assert(!fmt); // This string should be unformatted.
 
@@ -173,7 +181,11 @@ void test_ods_import_formatted_text()
     xf = styles.get_cell_format(xfid);
     assert(xf);
     font_data = styles.get_font(xf->font);
-    assert(font_data && font_data->bold && font_data->italic);
+    assert(font_data);
+    assert(font_data->bold);
+    assert(*font_data->bold);
+    assert(font_data->italic);
+    assert(*font_data->italic);
     fmt = ss.get_format_runs(str_id);
     assert(!fmt); // This string should be unformatted.
 
@@ -190,7 +202,8 @@ void test_ods_import_formatted_text()
 
     {
         // Check the bold format segment.
-        bool_segment_type bold_runs(0, str->size(), font_data->bold);
+        bool_segment_type bold_runs(0, str->size(), font_data->bold ? *font_data->bold : false);
+
         for (size_t i = 0, n = fmt->size(); i < n; ++i)
         {
             format_run run = fmt->at(i);
@@ -218,7 +231,8 @@ void test_ods_import_formatted_text()
 
     {
         // Check the italic format segment.
-        bool_segment_type italic_runs(0, str->size(), font_data->italic);
+        bool_segment_type italic_runs(0, str->size(), font_data->italic ? *font_data->italic : false);
+
         for (size_t i = 0, n = fmt->size(); i < n; ++i)
         {
             format_run run = fmt->at(i);
@@ -362,12 +376,12 @@ void test_ods_import_styles_direct_format()
     assert(xf);
     assert(xf->hor_align == ss::hor_alignment_t::center);
 
-    const auto* font = styles.get_font_state(xf->font);
+    const ss::font_t* font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.bold);
-    assert(font->second.bold);
-    assert(font->first.underline_style == ss::underline_t::single_line);
-    assert(font->second.underline_style);
+    assert(font->bold);
+    assert(*font->bold);
+    assert(font->underline_style);
+    assert(*font->underline_style == ss::underline_t::single_line);
 
     // B4 - yellow background and right-aligned
     xfid = sh->get_cell_format(3, 1);
@@ -400,10 +414,10 @@ void test_ods_import_styles_direct_format()
     assert(xf->wrap_text);
     assert(*xf->wrap_text);
 
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.bold);
-    assert(font->second.bold);
+    assert(font->bold);
+    assert(*font->bold);
 
     xstyle = styles.get_cell_style_by_xf(xf->style_xf);
     assert(xstyle);
@@ -444,14 +458,14 @@ void test_ods_import_styles_column_styles()
     assert(!fill->bg_color);
 
     // Default style has a 14pt DejaVu Sans font with normal weight
-    const auto* font = styles.get_font_state(xf->font);
+    const ss::font_t* font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.name == "DejaVu Sans");
-    assert(font->second.name);
-    assert(font->first.size == 14.0);
-    assert(font->second.size);
-    assert(!font->first.bold);
-    assert(font->second.bold);
+    assert(font->name);
+    assert(*font->name == "DejaVu Sans");
+    assert(font->size);
+    assert(*font->size == 14.0);
+    assert(font->bold);
+    assert(!*font->bold);
 
     assert(xf->hor_align == ss::hor_alignment_t::center);
 
@@ -491,13 +505,13 @@ void test_ods_import_styles_column_styles()
     assert(!fill->bg_color);
 
     // bold, 16pt font, name not set
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
-    assert(!font->second.name);
-    assert(font->first.size == 16.0);
-    assert(font->second.size);
-    assert(font->first.bold);
-    assert(font->second.bold);
+    assert(!font->name);
+    assert(font->size);
+    assert(*font->size == 16.0);
+    assert(font->bold);
+    assert(*font->bold);
 
     // left and right borders are solid light green
     const ss::border_t* border = styles.get_border(xf->border);
@@ -542,23 +556,23 @@ void test_ods_import_styles_column_styles()
     assert(!fill->bg_color);
 
     // font name 'Rasa Light', 18pt, underlined (solid double), red, not bold
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.name == "Rasa Light");
-    assert(font->second.name);
-    assert(font->first.size == 18.0);
-    assert(font->second.size);
-    assert(!font->first.bold); // in the file, it is given as a font weight of 250
-    assert(font->second.bold);
-    assert(font->first.color == ss::color_t(0xFF, 0xFF, 0x00, 0x00));
-    assert(font->second.color);
+    assert(font->name);
+    assert(*font->name == "Rasa Light");
+    assert(font->size);
+    assert(*font->size == 18.0);
+    assert(font->bold);
+    assert(!*font->bold); // in the file, it is given as a font weight of 250
+    assert(font->color);
+    assert(*font->color == ss::color_t(0xFF, 0xFF, 0x00, 0x00));
     // double underline is stored as single-line double-type?
-    assert(font->first.underline_style == ss::underline_t::single_line);
-    assert(font->second.underline_style);
-    assert(font->first.underline_type == ss::underline_type_t::double_type);
-    assert(font->second.underline_type);
-    assert(font->first.underline_color == font->first.color); // same as font color
-    assert(font->second.underline_color);
+    assert(font->underline_style);
+    assert(*font->underline_style == ss::underline_t::single_line);
+    assert(font->underline_type);
+    assert(*font->underline_type == ss::underline_type_t::double_type);
+    assert(font->underline_color);
+    assert(*font->underline_color == *font->color); // same as font color
 
     // Column F has "Default" style plus solid light purple background and bold font on top
     xfid = sh->get_cell_format(0, 5);
@@ -577,10 +591,10 @@ void test_ods_import_styles_column_styles()
     assert(*fill->fg_color == ss::color_t(0xFF, 0xE0, 0xC2, 0xCD));
 
     // bold font
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.bold);
-    assert(font->second.bold);
+    assert(font->bold);
+    assert(*font->bold);
 
     // Check on row 10 cell format from column A to column G
     for (ss::col_t col = 0; col <= 100; ++col)
@@ -668,48 +682,48 @@ void test_ods_import_styles_asian_complex()
     const ss::cell_format_t* xf = styles.get_cell_format(xfid);
     assert(xf);
 
-    const auto* font = styles.get_font_state(xf->font);
+    const ss::font_t* font = styles.get_font(xf->font);
     assert(font);
 
-    assert(font->first.name == "FreeMono");
-    assert(font->second.name);
-    assert(font->first.size == 12.0);
-    assert(font->second.size);
-    assert(!font->second.bold); // bold not set
-    assert(font->first.italic);
-    assert(font->second.italic);
+    assert(font->name);
+    assert(*font->name == "FreeMono");
+    assert(font->size);
+    assert(*font->size == 12.0);
+    assert(!font->bold); // bold not set
+    assert(font->italic);
+    assert(*font->italic);
 
     xfid = sh->get_cell_format(1, 0); // A2
     xf = styles.get_cell_format(xfid);
     assert(xf);
 
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
 
-    assert(font->first.name_asian == "Noto Sans CJK SC");
-    assert(font->second.name_asian);
-    assert(font->first.size_asian == 16.0);
-    assert(font->second.size_asian);
-    assert(font->first.bold_asian);
-    assert(font->second.bold_asian);
-    assert(font->first.italic_asian);
-    assert(font->second.italic_asian);
+    assert(font->name_asian);
+    assert(*font->name_asian == "Noto Sans CJK SC");
+    assert(font->size_asian);
+    assert(*font->size_asian == 16.0);
+    assert(font->bold_asian);
+    assert(*font->bold_asian);
+    assert(font->italic_asian);
+    assert(*font->italic_asian);
 
     xfid = sh->get_cell_format(2, 0); // A3
     xf = styles.get_cell_format(xfid);
     assert(xf);
 
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
 
-    assert(font->first.name_complex == "Gubbi");
-    assert(font->second.name_complex);
-    assert(font->first.size_complex == 24.0);
-    assert(font->second.size_complex);
-    assert(font->first.bold_complex);
-    assert(font->second.bold_complex);
-    assert(font->first.italic_complex);
-    assert(font->second.italic_complex);
+    assert(font->name_complex);
+    assert(*font->name_complex == "Gubbi");
+    assert(font->size_complex);
+    assert(*font->size_complex == 24.0);
+    assert(font->bold_complex);
+    assert(*font->bold_complex);
+    assert(font->italic_complex);
+    assert(*font->italic_complex);
 }
 
 } // anonymous namespace

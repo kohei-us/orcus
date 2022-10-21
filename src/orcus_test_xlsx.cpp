@@ -900,10 +900,10 @@ void test_xlsx_styles_direct_format()
     const ss::cell_format_t* xf = styles.get_cell_format(xfid);
     assert(xf);
 
-    const auto* font = styles.get_font_state(xf->font);
+    const ss::font_t* font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.bold);
-    assert(font->second.bold);
+    assert(font->bold);
+    assert(*font->bold);
 
     const ss::border_t* border = styles.get_border(xf->border);
     assert(border);
@@ -921,12 +921,12 @@ void test_xlsx_styles_direct_format()
     xf = styles.get_cell_format(xfid);
     assert(xf);
 
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.name == "Calibri");
-    assert(font->second.name);
-    assert(font->first.size == 14.0);
-    assert(font->second.size);
+    assert(font->name);
+    assert(*font->name == "Calibri");
+    assert(font->size);
+    assert(*font->size == 14.0);
 #if 0
     // TODO: xlsx stores this color as a theme index which we don't yet support
     assert(font->first.color == ss::color_t(0xFF, 0x37, 0x56, 0x23));
@@ -962,14 +962,14 @@ void test_xlsx_styles_direct_format()
     xf = styles.get_cell_style_format(xstyle->xf);
     assert(xf);
 
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.name == "Calibri");
-    assert(font->second.name);
-    assert(font->first.size == 11.0);
-    assert(font->second.size);
-    assert(font->first.color == ss::color_t(0xFF, 0x00, 0x61, 0x00));
-    assert(font->second.color);
+    assert(font->name);
+    assert(*font->name == "Calibri");
+    assert(font->size);
+    assert(*font->size == 11.0);
+    assert(font->color);
+    assert(*font->color == ss::color_t(0xFF, 0x00, 0x61, 0x00));
 
     fill = styles.get_fill(xf->fill);
     assert(fill);
@@ -994,10 +994,10 @@ void test_xlsx_styles_direct_format()
     assert(xf->ver_align == ss::ver_alignment_t::bottom);
     assert(xf->wrap_text);
     assert(*xf->wrap_text);
-    font = styles.get_font_state(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
-    assert(font->first.bold);
-    assert(font->second.bold);
+    assert(font->bold);
+    assert(*font->bold);
 }
 
 void test_xlsx_styles_column_styles()

@@ -32,8 +32,8 @@ struct test_model
 {
     orcus::string_pool pool;
     orcus::file_content content;
-    orcus::spreadsheet::styles styles;
-    orcus::spreadsheet::import_styles istyles;
+    ss::styles styles;
+    ss::import_styles istyles;
 
     test_model() : styles(), istyles(styles, pool) {}
 
@@ -52,99 +52,173 @@ struct test_model
     }
 };
 
-bool verify_active_font_attrs(
-    const std::pair<ss::font_t, ss::font_active_t>& expected,
-    const std::pair<ss::font_t, ss::font_active_t>& actual)
+bool verify_font_attrs(const ss::font_t& expected, const ss::font_t& actual)
 {
-    if (expected.second != actual.second)
+    if (expected.name != actual.name)
     {
-        std::cerr << "active masks differ!" << std::endl;
+        std::cerr << "font name states differ!" << std::endl;
         return false;
     }
 
-    const ss::font_active_t& mask = expected.second;
-
-    if (mask.name && expected.first.name != actual.first.name)
+    if (expected.name && *expected.name != *actual.name)
     {
         std::cerr << "font names differ!" << std::endl;
         return false;
     }
 
-    if (mask.size && expected.first.size != actual.first.size)
+    if (expected.size != actual.size)
+    {
+        std::cerr << "font size states differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.size && *expected.size != *actual.size)
     {
         std::cerr << "font sizes differ!" << std::endl;
         return false;
     }
 
-    if (mask.bold && expected.first.bold != actual.first.bold)
+    if (expected.bold != actual.bold)
     {
-        std::cerr << "font boldnesses differ!" << std::endl;
+        std::cerr << "font bold states differ!" << std::endl;
         return false;
     }
 
-    if (mask.italic && expected.first.italic != actual.first.italic)
+    if (expected.bold && *expected.bold != *actual.bold)
     {
-        std::cerr << "font italic flags differ!" << std::endl;
+        std::cerr << "font bold values differ!" << std::endl;
         return false;
     }
 
-    if (mask.underline_style && expected.first.underline_style != actual.first.underline_style)
+    if (expected.italic != actual.italic)
     {
-        std::cerr << "underline styles differ!" << std::endl;
+        std::cerr << "font italic states differ!" << std::endl;
         return false;
     }
 
-    if (mask.underline_width && expected.first.underline_width != actual.first.underline_width)
+    if (expected.italic && *expected.italic != *actual.italic)
     {
-        std::cerr << "underline widths differ!" << std::endl;
+        std::cerr << "font italic values differ!" << std::endl;
         return false;
     }
 
-    if (mask.underline_mode && expected.first.underline_mode != actual.first.underline_mode)
+    if (expected.underline_style != actual.underline_style)
     {
-        std::cerr << "underline modes differ!" << std::endl;
+        std::cerr << "underline_style states differ!" << std::endl;
         return false;
     }
 
-    if (mask.underline_type && expected.first.underline_type != actual.first.underline_type)
+    if (expected.underline_style && *expected.underline_style != *actual.underline_style)
     {
-        std::cerr << "underline types differ!" << std::endl;
+        std::cerr << "underline_style values differ!" << std::endl;
         return false;
     }
 
-    if (mask.underline_color && expected.first.underline_color != actual.first.underline_color)
+    if (expected.underline_width != actual.underline_width)
     {
-        std::cerr << "underline colors differ!" << std::endl;
+        std::cerr << "underline_width states differ!" << std::endl;
         return false;
     }
 
-    if (mask.color && expected.first.color != actual.first.color)
+    if (expected.underline_width && *expected.underline_width != *actual.underline_width)
     {
-        std::cerr << "font colors differ!" << std::endl;
+        std::cerr << "underline_width values differ!" << std::endl;
         return false;
     }
 
-    if (mask.strikethrough_style && expected.first.strikethrough_style != actual.first.strikethrough_style)
+    if (expected.underline_mode != actual.underline_mode)
     {
-        std::cerr << "strikethrough styles differ!" << std::endl;
+        std::cerr << "underline_mode states differ!" << std::endl;
         return false;
     }
 
-    if (mask.strikethrough_width && expected.first.strikethrough_width != actual.first.strikethrough_width)
+    if (expected.underline_mode && *expected.underline_mode != *actual.underline_mode)
     {
-        std::cerr << "strikethrough widths differ!" << std::endl;
+        std::cerr << "underline_mode values differ!" << std::endl;
         return false;
     }
 
-    if (mask.strikethrough_type && expected.first.strikethrough_type != actual.first.strikethrough_type)
+    if (expected.underline_type != actual.underline_type)
     {
-        std::cerr << "strikethrough types differ!" << std::endl;
+        std::cerr << "underline_type states differ!" << std::endl;
         return false;
     }
 
-    if (mask.strikethrough_text && expected.first.strikethrough_text != actual.first.strikethrough_text)
+    if (expected.underline_type && *expected.underline_type != *actual.underline_type)
     {
-        std::cerr << "strikethrough texts differ!" << std::endl;
+        std::cerr << "underline_type values differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.underline_color != actual.underline_color)
+    {
+        std::cerr << "underline_color states differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.underline_color && *expected.underline_color != *actual.underline_color)
+    {
+        std::cerr << "underline_color values differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.color != actual.color)
+    {
+        std::cerr << "font color states differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.color && *expected.color != *actual.color)
+    {
+        std::cerr << "font color values differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.strikethrough_style != actual.strikethrough_style)
+    {
+        std::cerr << "strikethrough_style states differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.strikethrough_style && *expected.strikethrough_style != *actual.strikethrough_style)
+    {
+        std::cerr << "strikethrough_style values differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.strikethrough_width != actual.strikethrough_width)
+    {
+        std::cerr << "strikethrough_width states differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.strikethrough_width && *expected.strikethrough_width != *actual.strikethrough_width)
+    {
+        std::cerr << "strikethrough_width values differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.strikethrough_type != actual.strikethrough_type)
+    {
+        std::cerr << "strikethrough_type states differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.strikethrough_type && *expected.strikethrough_type != *actual.strikethrough_type)
+    {
+        std::cerr << "strikethrough_type values differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.strikethrough_text != actual.strikethrough_text)
+    {
+        std::cerr << "strikethrough_text states differ!" << std::endl;
+        return false;
+    }
+
+    if (expected.strikethrough_text && *expected.strikethrough_text != *actual.strikethrough_text)
+    {
+        std::cerr << "strikethrough_text values differ!" << std::endl;
         return false;
     }
 
@@ -288,13 +362,13 @@ bool verify_border_attrs(const ss::border_t& expected, const ss::border_t& actua
     return true;
 }
 
-const orcus::spreadsheet::cell_style_t* find_cell_style_by_name(
-    std::string_view name, const orcus::spreadsheet::styles& styles)
+const ss::cell_style_t* find_cell_style_by_name(
+    std::string_view name, const ss::styles& styles)
 {
     size_t n = styles.get_cell_styles_count();
     for (size_t i = 0; i < n; ++i)
     {
-        const orcus::spreadsheet::cell_style_t* cur_style = styles.get_cell_style(i);
+        const ss::cell_style_t* cur_style = styles.get_cell_style(i);
         if (cur_style->name == name)
             return cur_style;
     }
@@ -318,13 +392,13 @@ const ss::cell_format_t* find_cell_format(const ss::styles& styles, std::string_
     return styles.get_cell_style_format(style->xf);
 }
 
-void test_odf_fill(const orcus::spreadsheet::styles& styles)
+void test_odf_fill(const ss::styles& styles)
 {
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name1", styles);
+    const ss::cell_style_t* style = find_cell_style_by_name("Name1", styles);
     assert(style);
     assert(style->parent_name == "Text");
     size_t xf = style->xf;
-    const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
+    const ss::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
 
     size_t fill = cell_format->fill;
@@ -336,7 +410,7 @@ void test_odf_fill(const orcus::spreadsheet::styles& styles)
     assert(*cell_fill->pattern_type == ss::fill_pattern_t::solid);
 }
 
-void test_odf_border(const orcus::spreadsheet::styles &styles)
+void test_odf_border(const ss::styles &styles)
 {
     /* Test that border style applies to all the sides when not specified */
     const ss::cell_style_t* style = find_cell_style_by_name("Name1", styles);
@@ -440,17 +514,17 @@ void test_odf_border(const orcus::spreadsheet::styles &styles)
     assert(*cell_border->diagonal_tl_br.border_width == expected_width);
 }
 
-void test_odf_cell_protection(const orcus::spreadsheet::styles& styles)
+void test_odf_cell_protection(const ss::styles& styles)
 {
     /* Test that Cell is only protected and not hidden , Print Content is true */
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name5", styles);
+    const ss::cell_style_t* style = find_cell_style_by_name("Name5", styles);
     assert(style);
     size_t  xf = style->xf;
-    const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
+    const ss::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     size_t protection = cell_format->protection;
     assert(cell_format);
 
-    const orcus::spreadsheet::protection_t* cell_protection = styles.get_protection(protection);
+    const ss::protection_t* cell_protection = styles.get_protection(protection);
     assert(*cell_protection->locked == true);
     assert(*cell_protection->hidden == true);
     assert(*cell_protection->print_content == true);
@@ -485,27 +559,27 @@ void test_odf_cell_protection(const orcus::spreadsheet::styles& styles)
     assert(*cell_protection->formula_hidden == false);
 }
 
-void test_odf_font(const orcus::spreadsheet::styles& styles)
+void test_odf_font(const ss::styles& styles)
 {
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name8", styles);
+    const ss::cell_style_t* style = find_cell_style_by_name("Name8", styles);
     assert(style);
     size_t xf = style->xf;
-    const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
+    const ss::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     size_t font = cell_format->font;
     assert(cell_format);
 
-    const orcus::spreadsheet::font_t* cell_font = styles.get_font(font);
-    assert(cell_font->name == "Liberation Sans");
-    assert(cell_font->size == 24);
-    assert(cell_font->bold == true);
-    assert(cell_font->italic == true);
-    assert(cell_font->underline_style == orcus::spreadsheet::underline_t::single_line);
-    assert(cell_font->underline_width == orcus::spreadsheet::underline_width_t::thick);
-    assert(cell_font->underline_mode == orcus::spreadsheet::underline_mode_t::continuous);
-    assert(cell_font->underline_type == orcus::spreadsheet::underline_type_t::none);
-    assert(cell_font->color.red == (int)0x80);
-    assert(cell_font->color.green == (int)0x80);
-    assert(cell_font->color.blue == (int)0x80);
+    const ss::font_t* cell_font = styles.get_font(font);
+    assert(*cell_font->name == "Liberation Sans");
+    assert(*cell_font->size == 24);
+    assert(*cell_font->bold == true);
+    assert(*cell_font->italic == true);
+    assert(*cell_font->underline_style == ss::underline_t::single_line);
+    assert(*cell_font->underline_width == ss::underline_width_t::thick);
+    assert(!cell_font->underline_mode); // not set
+    assert(!cell_font->underline_type); // not set
+    assert(cell_font->color->red == (int)0x80);
+    assert(cell_font->color->green == (int)0x80);
+    assert(cell_font->color->blue == (int)0x80);
 
     style = find_cell_style_by_name("Name9", styles);
     assert(style);
@@ -515,33 +589,33 @@ void test_odf_font(const orcus::spreadsheet::styles& styles)
     assert(cell_format);
 
     cell_font = styles.get_font(font);
-    assert(cell_font->name == "Tahoma");
-    assert(cell_font->size == 00);
-    assert(cell_font->bold == true);
-    assert(cell_font->italic == false);
-    assert(cell_font->underline_style == orcus::spreadsheet::underline_t::dash);
-    assert(cell_font->underline_width == orcus::spreadsheet::underline_width_t::bold);
-    assert(cell_font->underline_mode == orcus::spreadsheet::underline_mode_t::continuous);
-    assert(cell_font->underline_type == orcus::spreadsheet::underline_type_t::none);
-    assert(cell_font->underline_color.red == (int)0x18);
-    assert(cell_font->underline_color.green == (int)0x56);
-    assert(cell_font->underline_color.blue == (int)0xff);
+    assert(*cell_font->name == "Tahoma");
+    assert(*cell_font->size == 00);
+    assert(*cell_font->bold == true);
+    assert(*cell_font->italic == false);
+    assert(*cell_font->underline_style == ss::underline_t::dash);
+    assert(*cell_font->underline_width == ss::underline_width_t::bold);
+    assert(!cell_font->underline_mode); // not set
+    assert(!cell_font->underline_type); // not set
+    assert(cell_font->underline_color->red == (int)0x18);
+    assert(cell_font->underline_color->green == (int)0x56);
+    assert(cell_font->underline_color->blue == (int)0xff);
 }
 
-void test_odf_text_strikethrough(const orcus::spreadsheet::styles& styles)
+void test_odf_text_strikethrough(const ss::styles& styles)
 {
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name20", styles);
+    const ss::cell_style_t* style = find_cell_style_by_name("Name20", styles);
     assert(style);
     size_t xf = style->xf;
-    const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
+    const ss::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     size_t font = cell_format->font;
     assert(cell_format);
 
-    const orcus::spreadsheet::font_t* cell_font = styles.get_font(font);
-    assert(cell_font->strikethrough_style == orcus::spreadsheet::strikethrough_style_t::solid);
-    assert(cell_font->strikethrough_width == orcus::spreadsheet::strikethrough_width_t::unknown);
-    assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single_type);
-    assert(cell_font->strikethrough_text == orcus::spreadsheet::strikethrough_text_t::unknown);
+    const ss::font_t* cell_font = styles.get_font(font);
+    assert(*cell_font->strikethrough_style == ss::strikethrough_style_t::solid);
+    assert(!cell_font->strikethrough_width); // not set
+    assert(*cell_font->strikethrough_type == ss::strikethrough_type_t::single_type);
+    assert(!cell_font->strikethrough_text); // not set
 
     style = find_cell_style_by_name("Name21", styles);
     assert(style);
@@ -551,10 +625,10 @@ void test_odf_text_strikethrough(const orcus::spreadsheet::styles& styles)
     assert(cell_format);
 
     cell_font = styles.get_font(font);
-    assert(cell_font->strikethrough_style == orcus::spreadsheet::strikethrough_style_t::solid);
-    assert(cell_font->strikethrough_width == orcus::spreadsheet::strikethrough_width_t::bold);
-    assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single_type);
-    assert(cell_font->strikethrough_text == orcus::spreadsheet::strikethrough_text_t::unknown);
+    assert(*cell_font->strikethrough_style == ss::strikethrough_style_t::solid);
+    assert(*cell_font->strikethrough_width == ss::strikethrough_width_t::bold);
+    assert(*cell_font->strikethrough_type == ss::strikethrough_type_t::single_type);
+    assert(!cell_font->strikethrough_text); // not set
 
     style = find_cell_style_by_name("Name22", styles);
     assert(style);
@@ -564,22 +638,22 @@ void test_odf_text_strikethrough(const orcus::spreadsheet::styles& styles)
     assert(cell_format);
 
     cell_font = styles.get_font(font);
-    assert(cell_font->strikethrough_style == orcus::spreadsheet::strikethrough_style_t::solid);
-    assert(cell_font->strikethrough_width == orcus::spreadsheet::strikethrough_width_t::unknown);
-    assert(cell_font->strikethrough_type == orcus::spreadsheet::strikethrough_type_t::single_type);
-    assert(cell_font->strikethrough_text == orcus::spreadsheet::strikethrough_text_t::slash);
+    assert(*cell_font->strikethrough_style == ss::strikethrough_style_t::solid);
+    assert(!cell_font->strikethrough_width); // not set
+    assert(*cell_font->strikethrough_type == ss::strikethrough_type_t::single_type);
+    assert(*cell_font->strikethrough_text == ss::strikethrough_text_t::slash);
 }
 
-void test_odf_text_alignment(const orcus::spreadsheet::styles& styles)
+void test_odf_text_alignment(const ss::styles& styles)
 {
-    const orcus::spreadsheet::cell_style_t* style = find_cell_style_by_name("Name23", styles);
+    const ss::cell_style_t* style = find_cell_style_by_name("Name23", styles);
     assert(style);
     size_t xf = style->xf;
-    const orcus::spreadsheet::cell_format_t* cell_format = styles.get_cell_style_format(xf);
+    const ss::cell_format_t* cell_format = styles.get_cell_style_format(xf);
     assert(cell_format);
 
-    assert(cell_format->hor_align == orcus::spreadsheet::hor_alignment_t::right);
-    assert(cell_format->ver_align == orcus::spreadsheet::ver_alignment_t::middle);
+    assert(cell_format->hor_align == ss::hor_alignment_t::right);
+    assert(cell_format->ver_align == ss::ver_alignment_t::middle);
 }
 
 void test_cell_styles()
@@ -609,19 +683,15 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Heading", "Default");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.size = 24;
-        expected.first.bold = true;
-        expected.first.italic = false;
-        expected.first.color = ss::color_t(0, 0, 0);
-        expected.second.size = true;
-        expected.second.bold = true;
-        expected.second.italic = true;
-        expected.second.color = true;
+        ss::font_t expected;
+        expected.size = 24;
+        expected.bold = true;
+        expected.italic = false;
+        expected.color = ss::color_t(0, 0, 0);
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
     }
 
     {
@@ -629,13 +699,12 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Heading 1", "Heading");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.size = 18;
-        expected.second.size = true;
+        ss::font_t expected;
+        expected.size = 18;
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
     }
 
     {
@@ -643,13 +712,12 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Heading 2", "Heading");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.size = 12;
-        expected.second.size = true;
+        ss::font_t expected;
+        expected.size = 12;
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
     }
 
     {
@@ -657,24 +725,23 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Text", "Default");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected; // nothing is active
+        ss::font_t expected; // nothing is active
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Note", "Text");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color = ss::color_t(0x33, 0x33, 0x33);
-        expected.second.color = true;
+        ss::font_t expected;
+        expected.color = ss::color_t(0x33, 0x33, 0x33);
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
 
         ss::fill_t expected_fill;
         expected_fill.pattern_type = ss::fill_pattern_t::solid;
@@ -703,15 +770,13 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Footnote", "Text");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color = ss::color_t(0x80, 0x80, 0x80);
-        expected.first.italic = true;
-        expected.second.color = true;
-        expected.second.italic = true;
+        ss::font_t expected;
+        expected.color = ss::color_t(0x80, 0x80, 0x80);
+        expected.italic = true;
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
     }
 
     {
@@ -722,26 +787,23 @@ void test_standard_styles()
         // text-underline-color incorrectly, we cannot perform exhaustive check.
         // We can only check the attributes individually.
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-
-        const ss::font_t& values = font_state->first;
-        const ss::font_active_t& active = font_state->second;
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
 
         // fo:color="#0000ee"
-        assert(values.color == ss::color_t(0x00, 0x00, 0xee));
-        assert(active.color);
+        assert(actual->color);
+        assert(*actual->color == ss::color_t(0x00, 0x00, 0xee));
 
         // style:text-underline-style="solid"
-        assert(values.underline_style == ss::underline_t::single_line); // solid
-        assert(active.underline_style);
+        assert(actual->underline_style);
+        assert(*actual->underline_style == ss::underline_t::single_line); // solid
 
         // style:text-underline-width="auto"
         // TODO: we cannot handle this until 0.18.
 
         // style:text-underline-color="font-color" (use the same color as the font)
-        assert(values.underline_color == ss::color_t(0x00, 0x00, 0xee));
-        assert(active.underline_color);
+        assert(actual->underline_color);
+        assert(*actual->underline_color == ss::color_t(0x00, 0x00, 0xee));
     }
 
     {
@@ -753,13 +815,12 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Good", "Status");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color = ss::color_t(0x00, 0x66, 0x00);
-        expected.second.color = true;
+        ss::font_t expected;
+        expected.color = ss::color_t(0x00, 0x66, 0x00);
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
 
         ss::fill_t expected_fill;
         expected_fill.pattern_type = ss::fill_pattern_t::solid;
@@ -774,13 +835,12 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Neutral", "Status");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color = ss::color_t(0x99, 0x66, 0x00);
-        expected.second.color = true;
+        ss::font_t expected;
+        expected.color = ss::color_t(0x99, 0x66, 0x00);
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
 
         ss::fill_t expected_fill;
         expected_fill.pattern_type = ss::fill_pattern_t::solid;
@@ -795,13 +855,12 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Bad", "Status");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color = ss::color_t(0xcc, 0x00, 0x00);
-        expected.second.color = true;
+        ss::font_t expected;
+        expected.color = ss::color_t(0xcc, 0x00, 0x00);
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
 
         ss::fill_t expected_fill;
         expected_fill.pattern_type = ss::fill_pattern_t::solid;
@@ -816,28 +875,25 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Warning", "Status");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color = ss::color_t(0xcc, 0x00, 0x00);
-        expected.second.color = true;
+        ss::font_t expected;
+        expected.color = ss::color_t(0xcc, 0x00, 0x00);
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Error", "Status");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color = ss::color_t(0xff, 0xff, 0xff);
-        expected.first.bold = true;
-        expected.second.color = true;
-        expected.second.bold = true;
+        ss::font_t expected;
+        expected.color = ss::color_t(0xff, 0xff, 0xff);
+        expected.bold = true;
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
 
         ss::fill_t expected_fill;
         expected_fill.pattern_type = ss::fill_pattern_t::solid;
@@ -852,26 +908,24 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent", "Default");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.bold = true;
-        expected.second.bold = true;
+        ss::font_t expected;
+        expected.bold = true;
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
     }
 
     {
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent 1", "Accent");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color = ss::color_t(0xff, 0xff, 0xff);
-        expected.second.color = true;
+        ss::font_t expected;
+        expected.color = ss::color_t(0xff, 0xff, 0xff);
 
-        const auto* font_state = model.styles.get_font_state(cell_format->font);
-        assert(font_state);
-        assert(verify_active_font_attrs(expected, *font_state));
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
 
         ss::fill_t expected_fill;
         expected_fill.pattern_type = ss::fill_pattern_t::solid;
@@ -886,9 +940,12 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Accent 2", "Accent");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.color = ss::color_t(0xff, 0xff, 0xff);
-        expected.second.color = true;
+        ss::font_t expected;
+        expected.color = ss::color_t(0xff, 0xff, 0xff);
+
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
 
         ss::fill_t expected_fill;
         expected_fill.pattern_type = ss::fill_pattern_t::solid;
@@ -916,13 +973,14 @@ void test_standard_styles()
         const ss::cell_format_t* cell_format = find_cell_format(model.styles, "Result", "Default");
         assert(cell_format);
 
-        std::pair<ss::font_t, ss::font_active_t> expected;
-        expected.first.bold = true;
-        expected.first.italic = true;
-        expected.first.underline_style = ss::underline_t::single_line;
-        expected.second.bold = true;
-        expected.second.italic = true;
-        expected.second.underline_style = true;
+        ss::font_t expected;
+        expected.bold = true;
+        expected.italic = true;
+        expected.underline_style = ss::underline_t::single_line;
+
+        const ss::font_t* actual = model.styles.get_font(cell_format->font);
+        assert(actual);
+        assert(verify_font_attrs(expected, *actual));
     }
 }
 

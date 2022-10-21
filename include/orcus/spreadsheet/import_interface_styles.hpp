@@ -226,7 +226,7 @@ public:
      * @return index of the committed font style, to be passed on to the
      *         import_xf::set_font() method as its argument.
      */
-    virtual size_t commit() = 0;
+    virtual std::size_t commit() = 0;
 };
 
 class ORCUS_DLLPUBLIC import_fill_style

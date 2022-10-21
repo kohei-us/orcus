@@ -18,93 +18,11 @@
 
 namespace orcus { namespace spreadsheet {
 
-font_t::font_t() :
-    size(0.0),
-    size_asian(0.0),
-    size_complex(0.0),
-    bold(false),
-    bold_asian(false),
-    bold_complex(false),
-    italic(false),
-    italic_asian(false),
-    italic_complex(false),
-    underline_style(underline_t::none),
-    underline_width(underline_width_t::none),
-    underline_mode(underline_mode_t::continuous),
-    underline_type(underline_type_t::none),
-    color(),
-    strikethrough_style(strikethrough_style_t::none),
-    strikethrough_width(strikethrough_width_t::unknown),
-    strikethrough_type(strikethrough_type_t::unknown),
-    strikethrough_text(strikethrough_text_t::unknown)
-{
-}
+font_t::font_t() = default;
 
 void font_t::reset()
 {
     *this = font_t();
-}
-
-void font_active_t::set() noexcept
-{
-    name = true;
-    name_asian = true;
-    name_complex = true;
-    size = true;
-    size_asian = true;
-    size_complex = true;
-    bold = true;
-    bold_asian = true;
-    bold_complex = true;
-    italic = true;
-    italic_asian = true;
-    italic_complex = true;
-    underline_style = true;
-    underline_width = true;
-    underline_mode = true;
-    underline_type = true;
-    underline_color = true;
-    color = true;
-    strikethrough_style = true;
-    strikethrough_width = true;
-    strikethrough_type = true;
-    strikethrough_text = true;
-}
-
-void font_active_t::reset()
-{
-    *this = font_active_t();
-}
-
-bool font_active_t::operator== (const font_active_t& other) const noexcept
-{
-    return name == other.name &&
-        name_asian == other.name_asian &&
-        name_complex == other.name_complex &&
-        size == other.size &&
-        size_asian == other.size_asian &&
-        size_complex == other.size_complex &&
-        bold == other.bold &&
-        bold_asian == other.bold_asian &&
-        bold_complex == other.bold_complex &&
-        italic == other.italic &&
-        italic_asian == other.italic_asian &&
-        italic_complex == other.italic_complex &&
-        underline_style == other.underline_style &&
-        underline_width == other.underline_width &&
-        underline_mode == other.underline_mode &&
-        underline_type == other.underline_type &&
-        underline_color == other.underline_color &&
-        color == other.color &&
-        strikethrough_style == other.strikethrough_style &&
-        strikethrough_width == other.strikethrough_width &&
-        strikethrough_type == other.strikethrough_type &&
-        strikethrough_text == other.strikethrough_text;
-}
-
-bool font_active_t::operator!= (const font_active_t& other) const noexcept
-{
-    return !operator== (other);
 }
 
 fill_t::fill_t() = default;
@@ -203,7 +121,7 @@ std::ostream& operator<< (std::ostream& os, const color_t& c)
 
 struct styles::impl
 {
-    std::vector<style_attrs_t<font_t>> fonts;
+    std::vector<font_t> fonts;
     std::vector<fill_t> fills;
     std::vector<border_t> borders;
     std::vector<protection_t> protections;
@@ -225,18 +143,9 @@ void styles::reserve_font_store(size_t n)
     mp_impl->fonts.reserve(n);
 }
 
-size_t styles::append_font(const font_t& font)
+std::size_t styles::append_font(const font_t& font)
 {
-    // Preserve current behavior until next API version.
-    font_active_t active;
-    active.set();
-    mp_impl->fonts.emplace_back(font, active);
-    return mp_impl->fonts.size() - 1;
-}
-
-size_t styles::append_font(const font_t& value, const font_active_t& active)
-{
-    mp_impl->fonts.emplace_back(value, active);
+    mp_impl->fonts.emplace_back(font);
     return mp_impl->fonts.size() - 1;
 }
 
@@ -331,14 +240,6 @@ void styles::append_cell_style(const cell_style_t& cs)
 }
 
 const font_t* styles::get_font(size_t index) const
-{
-    if (index >= mp_impl->fonts.size())
-        return nullptr;
-
-    return &mp_impl->fonts[index].first;
-}
-
-const style_attrs_t<font_t>* styles::get_font_state(size_t index) const
 {
     if (index >= mp_impl->fonts.size())
         return nullptr;

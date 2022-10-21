@@ -126,7 +126,7 @@ public:
     virtual void set_strikethrough_type(strikethrough_type_t s) override;
     virtual void set_strikethrough_width(strikethrough_width_t s) override;
     virtual void set_strikethrough_text(strikethrough_text_t s) override;
-    virtual size_t commit() override;
+    virtual std::size_t commit() override;
 
     void reset();
 };

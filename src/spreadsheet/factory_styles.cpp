@@ -133,7 +133,6 @@ struct import_font_style::impl
     string_pool& str_pool;
 
     font_t cur_font;
-    font_active_t cur_font_active;
 
     impl(styles& _styles_model, string_pool& sp) :
         styles_model(_styles_model), str_pool(sp) {}
@@ -151,147 +150,123 @@ import_font_style::~import_font_style()
 void import_font_style::set_bold(bool b)
 {
     mp_impl->cur_font.bold = b;
-    mp_impl->cur_font_active.bold = true;
 }
 
 void import_font_style::set_bold_asian(bool b)
 {
     mp_impl->cur_font.bold_asian = b;
-    mp_impl->cur_font_active.bold_asian = true;
 }
 
 void import_font_style::set_bold_complex(bool b)
 {
     mp_impl->cur_font.bold_complex = b;
-    mp_impl->cur_font_active.bold_complex = true;
 }
 
 void import_font_style::set_italic(bool b)
 {
     mp_impl->cur_font.italic = b;
-    mp_impl->cur_font_active.italic = true;
 }
 
 void import_font_style::set_italic_asian(bool b)
 {
     mp_impl->cur_font.italic_asian = b;
-    mp_impl->cur_font_active.italic_asian = true;
 }
 
 void import_font_style::set_italic_complex(bool b)
 {
     mp_impl->cur_font.italic_complex = b;
-    mp_impl->cur_font_active.italic_complex = true;
 }
 
 void import_font_style::set_name(std::string_view s)
 {
     mp_impl->cur_font.name = mp_impl->str_pool.intern(s).first;
-    mp_impl->cur_font_active.name = true;
 }
 
 void import_font_style::set_name_asian(std::string_view s)
 {
     mp_impl->cur_font.name_asian = mp_impl->str_pool.intern(s).first;
-    mp_impl->cur_font_active.name_asian = true;
 }
 
 void import_font_style::set_name_complex(std::string_view s)
 {
     mp_impl->cur_font.name_complex = mp_impl->str_pool.intern(s).first;
-    mp_impl->cur_font_active.name_complex = true;
 }
 
 void import_font_style::set_size(double point)
 {
     mp_impl->cur_font.size = point;
-    mp_impl->cur_font_active.size = true;
 }
 
 void import_font_style::set_size_asian(double point)
 {
     mp_impl->cur_font.size_asian = point;
-    mp_impl->cur_font_active.size_asian = true;
 }
 
 void import_font_style::set_size_complex(double point)
 {
     mp_impl->cur_font.size_complex = point;
-    mp_impl->cur_font_active.size_complex = true;
 }
 
 void import_font_style::set_underline(underline_t e)
 {
     mp_impl->cur_font.underline_style = e;
-    mp_impl->cur_font_active.underline_style = true;
 }
 
 void import_font_style::set_underline_width(underline_width_t e)
 {
     mp_impl->cur_font.underline_width = e;
-    mp_impl->cur_font_active.underline_width = true;
 }
 
 void import_font_style::set_underline_mode(underline_mode_t e)
 {
     mp_impl->cur_font.underline_mode = e;
-    mp_impl->cur_font_active.underline_mode = true;
 }
 
 void import_font_style::set_underline_type(underline_type_t e)
 {
     mp_impl->cur_font.underline_type = e;
-    mp_impl->cur_font_active.underline_type = true;
 }
 
 void import_font_style::set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
     mp_impl->cur_font.underline_color = color_t(alpha, red, green, blue);
-    mp_impl->cur_font_active.underline_color = true;
 }
 
 void import_font_style::set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
     mp_impl->cur_font.color = color_t(alpha, red, green, blue);
-    mp_impl->cur_font_active.color = true;
 }
 
 void import_font_style::set_strikethrough_style(strikethrough_style_t s)
 {
     mp_impl->cur_font.strikethrough_style = s;
-    mp_impl->cur_font_active.strikethrough_style = true;
 }
 
 void import_font_style::set_strikethrough_type(strikethrough_type_t s)
 {
     mp_impl->cur_font.strikethrough_type = s;
-    mp_impl->cur_font_active.strikethrough_type = true;
 }
 
 void import_font_style::set_strikethrough_width(strikethrough_width_t s)
 {
     mp_impl->cur_font.strikethrough_width = s;
-    mp_impl->cur_font_active.strikethrough_width = true;
 }
 
 void import_font_style::set_strikethrough_text(strikethrough_text_t s)
 {
     mp_impl->cur_font.strikethrough_text = s;
-    mp_impl->cur_font_active.strikethrough_text = true;
 }
 
-size_t import_font_style::commit()
+std::size_t import_font_style::commit()
 {
-    size_t font_id = mp_impl->styles_model.append_font(mp_impl->cur_font, mp_impl->cur_font_active);
+    std::size_t font_id = mp_impl->styles_model.append_font(mp_impl->cur_font);
     mp_impl->cur_font.reset();
-    mp_impl->cur_font_active.reset();
     return font_id;
 }
 
 void import_font_style::reset()
 {
     mp_impl->cur_font.reset();
-    mp_impl->cur_font_active.reset();
 }
 
 struct import_fill_style::impl

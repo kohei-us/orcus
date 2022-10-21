@@ -292,21 +292,24 @@ void build_style_string(std::string& str, const styles& styles, const cell_forma
         const font_t* p = styles.get_font(fmt.font);
         if (p)
         {
-            if (!p->name.empty())
-                os << "font-family: " << p->name << ";";
+            if (p->name && !p->name.value().empty())
+                os << "font-family: " << *p->name << ";";
             if (p->size)
-                os << "font-size: " << p->size << "pt;";
-            if (p->bold)
+                os << "font-size: " << *p->size << "pt;";
+            if (p->bold && *p->bold)
                 os << "font-weight: bold;";
-            if (p->italic)
+            if (p->italic && *p->italic)
                 os << "font-style: italic;";
 
-            const color_t& r = p->color;
-            if (r.red || r.green || r.blue)
+            if (p->color)
             {
-                os << "color: ";
-                build_rgb_color(os, r);
-                os << ";";
+                const color_t& r = *p->color;
+                if (r.red || r.green || r.blue)
+                {
+                    os << "color: ";
+                    build_rgb_color(os, r);
+                    os << ";";
+                }
             }
         }
     }
