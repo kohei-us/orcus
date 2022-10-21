@@ -375,12 +375,12 @@ void test_ods_import_styles_direct_format()
     assert(xf);
     assert(xf->hor_align == ss::hor_alignment_t::right);
 
-    const auto* fill = styles.get_fill_state(xf->fill);
+    const ss::fill_t* fill = styles.get_fill(xf->fill);
     assert(fill);
-    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-    assert(fill->second.pattern_type);
-    assert(fill->first.fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
-    assert(fill->second.fg_color);
+    assert(fill->pattern_type);
+    assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->fg_color);
+    assert(*fill->fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
 
     // D4 - named style "Good" applied with no direct formatting on top
     xfid = sh->get_cell_format(3, 3);
@@ -435,13 +435,13 @@ void test_ods_import_styles_column_styles()
     assert(xf);
 
     // Default style has a solid fill with light green color.
-    const auto* fill = styles.get_fill_state(xf->fill);
+    const ss::fill_t* fill = styles.get_fill(xf->fill);
     assert(fill);
-    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-    assert(fill->second.pattern_type);
-    assert(fill->first.fg_color == ss::color_t(0xFF, 0xF6, 0xF9, 0xD4));
-    assert(fill->second.fg_color);
-    assert(!fill->second.bg_color);
+    assert(fill->pattern_type);
+    assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->fg_color);
+    assert(*fill->fg_color == ss::color_t(0xFF, 0xF6, 0xF9, 0xD4));
+    assert(!fill->bg_color);
 
     // Default style has a 14pt DejaVu Sans font with normal weight
     const auto* font = styles.get_font_state(xf->font);
@@ -482,13 +482,13 @@ void test_ods_import_styles_column_styles()
     assert(xstyle->name == "Default");
 
     // solid gray background
-    fill = styles.get_fill_state(xf->fill);
+    fill = styles.get_fill(xf->fill);
     assert(fill);
-    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-    assert(fill->second.pattern_type);
-    assert(fill->first.fg_color == ss::color_t(0xFF, 0xCC, 0xCC, 0xCC));
-    assert(fill->second.fg_color);
-    assert(!fill->second.bg_color);
+    assert(fill->pattern_type);
+    assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->fg_color);
+    assert(fill->fg_color == ss::color_t(0xFF, 0xCC, 0xCC, 0xCC));
+    assert(!fill->bg_color);
 
     // bold, 16pt font, name not set
     font = styles.get_font_state(xf->font);
@@ -533,13 +533,13 @@ void test_ods_import_styles_column_styles()
     assert(xstyle->name == "Default");
 
     // solid pink background
-    fill = styles.get_fill_state(xf->fill);
+    fill = styles.get_fill(xf->fill);
     assert(fill);
-    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-    assert(fill->second.pattern_type);
-    assert(fill->first.fg_color == ss::color_t(0xFF, 0xFF, 0xd7, 0xd7));
-    assert(fill->second.fg_color);
-    assert(!fill->second.bg_color);
+    assert(fill->pattern_type);
+    assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->fg_color);
+    assert(*fill->fg_color == ss::color_t(0xFF, 0xFF, 0xd7, 0xd7));
+    assert(!fill->bg_color);
 
     // font name 'Rasa Light', 18pt, underlined (solid double), red, not bold
     font = styles.get_font_state(xf->font);
@@ -569,12 +569,12 @@ void test_ods_import_styles_column_styles()
     assert(xstyle->name == "Default");
 
     // light purple solid background
-    fill = styles.get_fill_state(xf->fill);
+    fill = styles.get_fill(xf->fill);
     assert(fill);
-    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-    assert(fill->second.pattern_type);
-    assert(fill->first.fg_color == ss::color_t(0xFF, 0xE0, 0xC2, 0xCD));
-    assert(fill->second.fg_color);
+    assert(fill->pattern_type);
+    assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->fg_color);
+    assert(*fill->fg_color == ss::color_t(0xFF, 0xE0, 0xC2, 0xCD));
 
     // bold font
     font = styles.get_font_state(xf->font);
@@ -591,13 +591,13 @@ void test_ods_import_styles_column_styles()
         assert(xf);
         assert(xf->ver_align == ss::ver_alignment_t::top);
 
-        fill = styles.get_fill_state(xf->fill);
+        fill = styles.get_fill(xf->fill);
         assert(fill);
 
-        assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-        assert(fill->second.pattern_type);
-        assert(fill->first.fg_color == ss::color_t(0xFF, 0x00, 0xA9, 0x33));
-        assert(fill->second.fg_color);
+        assert(fill->pattern_type);
+        assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+        assert(fill->fg_color);
+        assert(*fill->fg_color == ss::color_t(0xFF, 0x00, 0xA9, 0x33));
     }
 
     // Move on to the next sheet...
@@ -624,12 +624,12 @@ void test_ods_import_styles_column_styles()
         assert(xstyle);
         assert(xstyle->name == "Gray With Lime" || xstyle->display_name == "Gray With Lime");
 
-        fill = styles.get_fill_state(xf->fill);
+        fill = styles.get_fill(xf->fill);
         assert(fill);
-        assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-        assert(fill->second.pattern_type);
-        assert(fill->first.fg_color == ss::color_t(0xFF, 0xFF, 0xDE, 0x59));
-        assert(fill->second.fg_color);
+        assert(fill->pattern_type);
+        assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+        assert(fill->fg_color);
+        assert(*fill->fg_color == ss::color_t(0xFF, 0xFF, 0xDE, 0x59));
     }
 
     // Column E and the rest all use "Default"

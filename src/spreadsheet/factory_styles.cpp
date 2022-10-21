@@ -300,7 +300,6 @@ struct import_fill_style::impl
     string_pool& str_pool;
 
     fill_t cur_fill;
-    fill_active_t cur_fill_active;
 
     impl(styles& _styles_model, string_pool& sp) :
         styles_model(_styles_model), str_pool(sp) {}
@@ -318,39 +317,28 @@ import_fill_style::~import_fill_style()
 void import_fill_style::set_pattern_type(fill_pattern_t fp)
 {
     mp_impl->cur_fill.pattern_type = fp;
-    mp_impl->cur_fill_active.pattern_type = true;
 }
 
 void import_fill_style::set_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
-    mp_impl->cur_fill.fg_color.alpha = alpha;
-    mp_impl->cur_fill.fg_color.red = red;
-    mp_impl->cur_fill.fg_color.green = green;
-    mp_impl->cur_fill.fg_color.blue = blue;
-    mp_impl->cur_fill_active.fg_color = true;
+    mp_impl->cur_fill.fg_color = color_t{alpha, red, green, blue};
 }
 
 void import_fill_style::set_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
-    mp_impl->cur_fill.bg_color.alpha = alpha;
-    mp_impl->cur_fill.bg_color.red = red;
-    mp_impl->cur_fill.bg_color.green = green;
-    mp_impl->cur_fill.bg_color.blue = blue;
-    mp_impl->cur_fill_active.bg_color = true;
+    mp_impl->cur_fill.bg_color = color_t{alpha, red, green, blue};
 }
 
 size_t import_fill_style::commit()
 {
-    size_t fill_id = mp_impl->styles_model.append_fill(mp_impl->cur_fill, mp_impl->cur_fill_active);
+    size_t fill_id = mp_impl->styles_model.append_fill(mp_impl->cur_fill);
     mp_impl->cur_fill.reset();
-    mp_impl->cur_fill_active.reset();
     return fill_id;
 }
 
 void import_fill_style::reset()
 {
     mp_impl->cur_fill.reset();
-    mp_impl->cur_fill_active.reset();
 }
 
 struct import_border_style::impl

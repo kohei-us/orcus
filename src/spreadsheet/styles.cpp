@@ -107,36 +107,11 @@ bool font_active_t::operator!= (const font_active_t& other) const noexcept
     return !operator== (other);
 }
 
-fill_t::fill_t() :
-    pattern_type(fill_pattern_t::none)
-{
-}
+fill_t::fill_t() = default;
 
 void fill_t::reset()
 {
     *this = fill_t();
-}
-
-void fill_active_t::set() noexcept
-{
-    pattern_type = true;
-    fg_color = true;
-    bg_color = true;
-}
-
-void fill_active_t::reset()
-{
-    *this = fill_active_t();
-}
-
-bool fill_active_t::operator== (const fill_active_t& other) const noexcept
-{
-    return pattern_type == other.pattern_type && fg_color == other.fg_color && bg_color == other.bg_color;
-}
-
-bool fill_active_t::operator!= (const fill_active_t& other) const noexcept
-{
-    return !operator==(other);
 }
 
 border_attrs_t::border_attrs_t() = default;
@@ -229,7 +204,7 @@ std::ostream& operator<< (std::ostream& os, const color_t& c)
 struct styles::impl
 {
     std::vector<style_attrs_t<font_t>> fonts;
-    std::vector<style_attrs_t<fill_t>> fills;
+    std::vector<fill_t> fills;
     std::vector<border_t> borders;
     std::vector<protection_t> protections;
     std::vector<number_format_t> number_formats;
@@ -270,18 +245,9 @@ void styles::reserve_fill_store(size_t n)
     mp_impl->fills.reserve(n);
 }
 
-size_t styles::append_fill(const fill_t& fill)
+std::size_t styles::append_fill(const fill_t& fill)
 {
-    // Preserve current behavior until next API version.
-    fill_active_t active;
-    active.set();
-    mp_impl->fills.emplace_back(fill, active);
-    return mp_impl->fills.size() - 1;
-}
-
-size_t styles::append_fill(const fill_t& value, const fill_active_t& active)
-{
-    mp_impl->fills.emplace_back(value, active);
+    mp_impl->fills.emplace_back(fill);
     return mp_impl->fills.size() - 1;
 }
 
@@ -389,14 +355,6 @@ const cell_format_t* styles::get_cell_format(size_t index) const
 }
 
 const fill_t* styles::get_fill(size_t index) const
-{
-    if (index >= mp_impl->fills.size())
-        return nullptr;
-
-    return &mp_impl->fills[index].first;
-}
-
-const style_attrs_t<fill_t>* styles::get_fill_state(size_t index) const
 {
     if (index >= mp_impl->fills.size())
         return nullptr;

@@ -934,12 +934,12 @@ void test_xlsx_styles_direct_format()
 #endif
 
     // B4 has yellow background
-    const auto* fill = styles.get_fill_state(xf->fill);
+    const ss::fill_t* fill = styles.get_fill(xf->fill);
     assert(fill);
-    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-    assert(fill->second.pattern_type);
-    assert(fill->first.fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
-    assert(fill->second.fg_color);
+    assert(fill->pattern_type);
+    assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->fg_color);
+    assert(*fill->fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
 
     // B4 is horizontally right-aligned and vertically bottom-aligned
     assert(xf->hor_align == ss::hor_alignment_t::right);
@@ -971,12 +971,12 @@ void test_xlsx_styles_direct_format()
     assert(font->first.color == ss::color_t(0xFF, 0x00, 0x61, 0x00));
     assert(font->second.color);
 
-    fill = styles.get_fill_state(xf->fill);
+    fill = styles.get_fill(xf->fill);
     assert(fill);
-    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-    assert(fill->second.pattern_type);
-    assert(fill->first.fg_color == ss::color_t(0xFF, 0xC6, 0xEF, 0xCE));
-    assert(fill->second.fg_color);
+    assert(fill->pattern_type);
+    assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->fg_color);
+    assert(*fill->fg_color == ss::color_t(0xFF, 0xC6, 0xEF, 0xCE));
 
     // D8 has some direct formats applied on top of "Good" named style
     xfid = sh->get_cell_format(7, 3);
@@ -1073,14 +1073,14 @@ void test_xlsx_styles_column_styles()
                 const ss::cell_format_t* xf = styles.get_cell_format(xfid);
                 assert(xf);
 
-                const auto* fill = styles.get_fill_state(xf->fill);
+                const ss::fill_t* fill = styles.get_fill(xf->fill);
                 assert(fill);
 
-                assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-                assert(fill->second.pattern_type);
+                assert(fill->pattern_type);
+                assert(*fill->pattern_type == ss::fill_pattern_t::solid);
 
-                assert(fill->first.fg_color == color);
-                assert(fill->second.fg_color);
+                assert(fill->fg_color);
+                assert(*fill->fg_color == color);
             }
         }
     }

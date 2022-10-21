@@ -211,15 +211,13 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 
     for (std::size_t i = 0; i < m_doc.styles_store.get_fill_count(); ++i)
     {
-        const auto* state = m_doc.styles_store.get_fill_state(i);
-        assert(state);
-        const fill_t& fill = state->first;
-        const fill_active_t& active = state->second;
+        const fill_t* fill = m_doc.styles_store.get_fill(i);
+        assert(fill);
 
         of << "  - id: " << i << std::endl;
-        active_value("pattern", fill.pattern_type, active.pattern_type);
-        active_value("fg-color", fill.fg_color, active.fg_color, 2);
-        active_value("bg-color", fill.bg_color, active.bg_color, 2);
+        optional_value("pattern", fill->pattern_type, 2);
+        optional_value("fg-color", fill->fg_color, 2);
+        optional_value("bg-color", fill->bg_color, 2);
     }
 
     of << "borders:" << std::endl;

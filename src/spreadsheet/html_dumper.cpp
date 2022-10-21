@@ -315,9 +315,9 @@ void build_style_string(std::string& str, const styles& styles, const cell_forma
         const fill_t* p = styles.get_fill(fmt.fill);
         if (p)
         {
-            if (p->pattern_type == fill_pattern_t::solid)
+            if (p->pattern_type && *p->pattern_type == fill_pattern_t::solid && p->fg_color)
             {
-                const color_t& r = p->fg_color;
+                const color_t& r = *p->fg_color;
                 os << "background-color: ";
                 build_rgb_color(os, r);
                 os << ";";

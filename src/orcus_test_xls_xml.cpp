@@ -579,7 +579,7 @@ void test_xls_xml_named_colors()
         spreadsheet::sheet* sh = doc->get_sheet(0);
         assert(sh);
 
-        for (spreadsheet::row_t row = 1; row < 141; ++row)
+        for (ss::row_t row = 1; row < 141; ++row)
         {
             // Column B stores the expected RGB value in hex.
             size_t sid = model.get_string_identifier(ixion::abs_address_t(sh->get_index(), row, 1));
@@ -588,8 +588,9 @@ void test_xls_xml_named_colors()
             spreadsheet::color_rgb_t expected = spreadsheet::to_color_rgb(*s);
 
             size_t xf = sh->get_cell_format(row, 0);
-            const spreadsheet::fill_t* fill_data = styles.get_fill(xf);
-            const spreadsheet::color_t& actual = fill_data->fg_color;
+            const ss::fill_t* fill_data = styles.get_fill(xf);
+            assert(fill_data->fg_color);
+            const ss::color_t& actual = *fill_data->fg_color;
             assert(expected.red == actual.red);
             assert(expected.green == actual.green);
             assert(expected.blue == actual.blue);
@@ -1284,12 +1285,12 @@ void test_xls_xml_styles_direct_format()
     assert(font->second.color);
 
     // B4 has yellow background
-    const auto* fill = styles.get_fill_state(xf->fill);
+    const ss::fill_t* fill = styles.get_fill(xf->fill);
     assert(fill);
-    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-    assert(fill->second.pattern_type);
-    assert(fill->first.fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
-    assert(fill->second.fg_color);
+    assert(fill->pattern_type);
+    assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->fg_color);
+    assert(*fill->fg_color == ss::color_t(0xFF, 0xFF, 0xFF, 0x00));
 
     // B4 is horizontally right-aligned and vertically bottom-aligned
     assert(xf->hor_align == ss::hor_alignment_t::right);
@@ -1321,12 +1322,12 @@ void test_xls_xml_styles_direct_format()
     assert(font->first.color == ss::color_t(0xFF, 0x00, 0x61, 0x00));
     assert(font->second.color);
 
-    fill = styles.get_fill_state(xf->fill);
+    fill = styles.get_fill(xf->fill);
     assert(fill);
-    assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-    assert(fill->second.pattern_type);
-    assert(fill->first.fg_color == ss::color_t(0xFF, 0xC6, 0xEF, 0xCE));
-    assert(fill->second.fg_color);
+    assert(fill->pattern_type);
+    assert(*fill->pattern_type == ss::fill_pattern_t::solid);
+    assert(fill->fg_color);
+    assert(*fill->fg_color == ss::color_t(0xFF, 0xC6, 0xEF, 0xCE));
 
     // D8 has some direct formats applied on top of "Good" named style
     xfid = sh->get_cell_format(7, 3);
@@ -1422,14 +1423,14 @@ void test_xls_xml_styles_column_styles()
                 const ss::cell_format_t* xf = styles.get_cell_format(xfid);
                 assert(xf);
 
-                const auto* fill = styles.get_fill_state(xf->fill);
+                const ss::fill_t* fill = styles.get_fill(xf->fill);
                 assert(fill);
 
-                assert(fill->first.pattern_type == ss::fill_pattern_t::solid);
-                assert(fill->second.pattern_type);
+                assert(fill->pattern_type);
+                assert(*fill->pattern_type == ss::fill_pattern_t::solid);
 
-                assert(fill->first.fg_color == color);
-                assert(fill->second.fg_color);
+                assert(fill->fg_color);
+                assert(*fill->fg_color == color);
             }
         }
     }
