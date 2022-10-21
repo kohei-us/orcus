@@ -16,11 +16,11 @@ ods_session_data::formula_result::formula_result() :
 
 ods_session_data::formula::formula(
     spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _col,
-    spreadsheet::formula_grammar_t _grammar, const pstring& _exp) :
+    spreadsheet::formula_grammar_t _grammar, std::string_view _exp) :
     sheet(_sheet), row(_row), column(_col), grammar(_grammar), exp(_exp) {}
 
 ods_session_data::named_exp::named_exp(
-    const pstring& _name, const pstring& _expression, const pstring& _base, named_exp_type _type, spreadsheet::sheet_t _scope) :
+    std::string_view _name, std::string_view _expression, std::string_view _base, named_exp_type _type, spreadsheet::sheet_t _scope) :
     name(_name), expression(_expression), base(_base), type(_type), scope(_scope) {}
 
 std::string_view ods_session_data::number_formats_store::get_code(std::string_view name) const

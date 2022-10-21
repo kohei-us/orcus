@@ -54,9 +54,9 @@ void pick_up_named_range_or_expression(
     session_context& cxt, const xml_attrs_t& attrs, xmlns_id_t exp_attr_ns, xml_token_t exp_attr_name,
     ods_session_data::named_exp_type name_type, ss::sheet_t scope)
 {
-    pstring name;
-    pstring expression;
-    pstring base;
+    std::string_view name;
+    std::string_view expression;
+    std::string_view base;
 
     for (const xml_token_attr_t& attr : attrs)
     {

@@ -323,8 +323,8 @@ private:
     gnumeric_filter_field_type_t m_filter_field_type;
     gnumeric_filter_field_op_t m_filter_op;
 
-    pstring m_filter_value_type;
-    pstring m_filter_value;
+    std::string_view m_filter_value_type;
+    std::string_view m_filter_value;
 };
 
 }

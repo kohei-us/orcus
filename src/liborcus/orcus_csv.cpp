@@ -8,7 +8,6 @@
 #include "orcus/orcus_csv.hpp"
 
 #include "orcus/csv_parser.hpp"
-#include "pstring.hpp"
 #include "orcus/stream.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 #include "orcus/config.hpp"
@@ -29,9 +28,9 @@ struct header_cell
 {
     spreadsheet::row_t row;
     spreadsheet::col_t col;
-    pstring value;
+    std::string_view value;
 
-    header_cell(spreadsheet::row_t _row, spreadsheet::col_t _col, const pstring& _value) :
+    header_cell(spreadsheet::row_t _row, spreadsheet::col_t _col, std::string_view _value) :
         row(_row), col(_col), value(_value) {}
 };
 
@@ -96,7 +95,7 @@ public:
 
         if (m_sheet == 0 && size_t(m_row) < csv.header_row_size)
         {
-            pstring v(p, n);
+            std::string_view v{p, n};
             if (transient)
                 v = m_pool.intern(v).first;
 

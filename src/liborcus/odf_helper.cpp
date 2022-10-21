@@ -161,7 +161,7 @@ bool is_valid_hex_digit(const char& character, orcus::spreadsheet::color_elem_t&
 }
 
 // converts two characters starting at index to a color value
-bool convert_color_digits(const pstring& value, orcus::spreadsheet::color_elem_t& color_val, size_t index)
+bool convert_color_digits(std::string_view value, orcus::spreadsheet::color_elem_t& color_val, size_t index)
 {
     const char& high_val = value[index];
     color_val = 0;
@@ -218,9 +218,9 @@ orcus::odf::border_details_t odf::extract_border_details(std::string_view value)
 {
     border_details_t border_details;
 
-    std::vector<pstring> detail = orcus::string_helper::split_string(value,' ');
+    auto detail = orcus::string_helper::split_string(value,' ');
 
-    for (auto& sub_detail : detail)
+    for (const auto& sub_detail : detail)
     {
         if (sub_detail[0] == '#')
             convert_fo_color(sub_detail, border_details.red, border_details.green, border_details.blue);

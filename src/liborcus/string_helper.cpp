@@ -9,17 +9,17 @@
 
 namespace orcus {
 
-std::vector<pstring> string_helper::split_string(const pstring& str, const char sep)
+std::vector<std::string_view> string_helper::split_string(std::string_view str, const char sep)
 {
-    std::vector<pstring> ret;
+    std::vector<std::string_view> ret;
 
-    size_t len = 0;
-    const char* start = str.get();
+    std::size_t len = 0;
+    const char* start = str.data();
     for (size_t i = 0, n = str.size(); i < n; ++i)
     {
         if (str[i] == sep)
         {
-            ret.push_back( pstring( start, len ) );
+            ret.emplace_back(start, len);
 
             // if not at the end move the start string
             if (i < n-1)
@@ -30,7 +30,7 @@ std::vector<pstring> string_helper::split_string(const pstring& str, const char 
         else
             ++len;
     }
-    ret.push_back( pstring( start, len ) );
+    ret.emplace_back(start, len);
 
     return ret;
 }

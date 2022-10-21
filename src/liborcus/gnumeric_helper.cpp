@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <vector>
 #include <cassert>
+#include <string>
 
 namespace orcus {
 
@@ -18,7 +19,7 @@ using ::orcus::spreadsheet::color_elem_t;
 
 namespace {
 
-size_t parse_color_string(pstring str)
+size_t parse_color_string(std::string_view str)
 {
     // TODO: switch to using std::from_chars() once all of our baseline compilers support this.
 
@@ -27,16 +28,16 @@ size_t parse_color_string(pstring str)
     unsigned long col_value = strtol(buf.data(), nullptr, 16);
     col_value = col_value >> 8;
     // make sure that this actually worked
-    assert( col_value <= 255 );
+    assert(col_value <= 255);
 
     return static_cast<color_elem_t>(col_value);
 }
 
 }
 
-bool gnumeric_helper::parse_RGB_color_attribute(color_elem_t& red, color_elem_t& green, color_elem_t& blue, const pstring& attr)
+bool gnumeric_helper::parse_RGB_color_attribute(color_elem_t& red, color_elem_t& green, color_elem_t& blue, std::string_view attr)
 {
-    std::vector<pstring> color = string_helper::split_string(attr, ':');
+    auto color = string_helper::split_string(attr, ':');
 
     if (color.size() != 3)
         return false;

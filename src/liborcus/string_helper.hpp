@@ -6,15 +6,14 @@
  */
 
 #include <vector>
-
-#include "pstring.hpp"
+#include <string_view>
 
 namespace orcus {
 
 class string_helper
 {
 public:
-    static std::vector<pstring> split_string(const pstring& string, const char separator);
+    static std::vector<std::string_view> split_string(std::string_view str, const char sep);
 };
 
 }

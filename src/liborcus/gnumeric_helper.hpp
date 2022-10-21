@@ -8,8 +8,7 @@
 #ifndef __ORCUS_GNUMERIC_HELPER__
 #define __ORCUS_GNUMERIC_HELPER__
 
-#include "orcus/spreadsheet/types.hpp"
-#include "pstring.hpp"
+#include <orcus/spreadsheet/types.hpp>
 
 namespace orcus {
 
@@ -28,7 +27,7 @@ public:
      */
     static bool parse_RGB_color_attribute(spreadsheet::color_elem_t& red,
             spreadsheet::color_elem_t& green,
-            spreadsheet::color_elem_t& blue, const pstring& attr);
+            spreadsheet::color_elem_t& blue, std::string_view attr);
 };
 
 }

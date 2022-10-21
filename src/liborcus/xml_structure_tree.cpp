@@ -122,11 +122,11 @@ public:
 
     void doctype(const sax::doctype_declaration&) {}
 
-    void start_declaration(const pstring& /*name*/)
+    void start_declaration(std::string_view /*name*/)
     {
     }
 
-    void end_declaration(const pstring& /*name*/)
+    void end_declaration(std::string_view /*name*/)
     {
         m_attrs.clear();
     }
@@ -205,7 +205,7 @@ public:
         current.prop->has_content = true;
     }
 
-    void attribute(const pstring&, const pstring&)
+    void attribute(std::string_view, std::string_view)
     {
         // Attribute for declaration. We don't handle this.
     }
@@ -336,9 +336,8 @@ bool xml_structure_tree::entity_name::operator== (const entity_name& r) const
 
 size_t xml_structure_tree::entity_name::hash::operator() (const entity_name& val) const
 {
-    static pstring::hash hasher;
     size_t n = reinterpret_cast<size_t>(val.ns);
-    n += hasher(val.name);
+    n += std::hash<std::string_view>{}(val.name);
     return n;
 }
 
@@ -464,8 +463,7 @@ std::string xml_structure_tree::walker::get_path() const
 
 xml_structure_tree::element xml_structure_tree::walker::move_to(const std::string& path)
 {
-    pstring p(path);
-    std::vector<pstring> parts = string_helper::split_string(p, '/');
+    auto parts = string_helper::split_string(path, '/');
     if (parts.empty())
         throw general_error("invalid format for path");
 
@@ -483,7 +481,7 @@ xml_structure_tree::element xml_structure_tree::walker::move_to(const std::strin
         throw general_error("invalid format for path");
 
     element_ref root_ref(mp_impl->mp_root->name, &mp_impl->mp_root->prop);
-    if (pstring(mp_impl->m_parent_impl.to_string(root_ref.name)) != parts[0])
+    if (mp_impl->m_parent_impl.to_string(root_ref.name) != parts[0])
         throw general_error("path does not match any element");
 
     std::vector<element_ref> scopes;
@@ -495,7 +493,7 @@ xml_structure_tree::element xml_structure_tree::walker::move_to(const std::strin
         bool found = false;
         for (auto& child : prop.child_elements)
         {
-            if (pstring(mp_impl->m_parent_impl.to_string(child.first)) == parts[i])
+            if (mp_impl->m_parent_impl.to_string(child.first) == parts[i])
             {
                 scopes.emplace_back(child.first, child.second.get());
                 found = true;
