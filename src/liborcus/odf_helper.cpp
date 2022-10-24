@@ -51,15 +51,12 @@ using map_type = mdds::sorted_string_map<spreadsheet::underline_width_t, mdds::s
 // Keys must be sorted.
 constexpr map_type::entry entries[] =
 {
-    { "bold", spreadsheet::underline_width_t::bold },
-    { "medium", spreadsheet::underline_width_t::medium },
-    { "none", spreadsheet::underline_width_t::none },
-    { "normal", spreadsheet::underline_width_t::normal },
-    { "percent", spreadsheet::underline_width_t::percent },
-    { "positiveInteger", spreadsheet::underline_width_t::positive_integer },
-    { "positiveLength", spreadsheet::underline_width_t::positive_length },
-    { "thick", spreadsheet::underline_width_t::thick },
-    { "thin", spreadsheet::underline_width_t::thin },
+    { "auto", ss::underline_width_t::automatic },
+    { "bold", ss::underline_width_t::bold },
+    { "dash", ss::underline_width_t::dash },
+    { "medium", ss::underline_width_t::medium },
+    { "thick", ss::underline_width_t::thick },
+    { "thin", ss::underline_width_t::thin },
 };
 
 const map_type& get()
@@ -232,8 +229,14 @@ orcus::odf::border_details_t odf::extract_border_details(std::string_view value)
     return border_details;
 }
 
-orcus::spreadsheet::underline_width_t odf::extract_underline_width(std::string_view value)
+ss::underline_width_t odf::extract_underline_width(std::string_view value)
 {
+    // TODO: style:text-underline-width also allows:
+    // * percent value
+    // * positive integer
+    // * positive length
+    // As we encounter real-life examples of these values, we should add code to
+    // handle them here.  For now, we only handle enumerated values.
     return underline_width::get().find(value);
 }
 

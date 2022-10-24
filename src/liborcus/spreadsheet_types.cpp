@@ -672,13 +672,14 @@ std::ostream& operator<< (std::ostream& os, underline_width_t ulwidth)
 {
     static constexpr std::string_view names[] = {
         "none",
-        "normal",
+        "automatic",
         "bold",
-        "thin",
+        "dash",
         "medium",
         "thick",
-        "positive_integer",
+        "thin",
         "percent",
+        "positive_integer",
         "positive_length",
     };
 

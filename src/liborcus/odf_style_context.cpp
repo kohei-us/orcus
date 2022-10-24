@@ -327,7 +327,6 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     std::optional<bool> italic_complex;
     std::optional<ss::color_rgb_t> color;
 
-    bool underline_use_font_color = false;
     std::optional<ss::color_rgb_t> underline_color;
     std::optional<ss::underline_t> underline_style;
     std::optional<ss::underline_type_t> underline_type;
@@ -373,8 +372,8 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
                     bold_complex = attr.value == "bold";
                     break;
                 case XML_text_underline_color:
-                    underline_use_font_color = (attr.value == "font-color");
-                    underline_color = odf::convert_fo_color(attr.value);
+                    if (attr.value != "font-color")
+                        underline_color = odf::convert_fo_color(attr.value);
                     break;
                 case XML_text_underline_mode:
                     if (attr.value == "skip-white-space")
@@ -503,9 +502,6 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     if (underline_color)
         // Separate underline color is specified.
         font_style->set_underline_color(255, underline_color->red, underline_color->green, underline_color->blue);
-    else if (color && underline_use_font_color)
-        // Use the same color as the font.
-        font_style->set_underline_color(255, color->red, color->green, color->blue);
 
     if (underline_width)
         font_style->set_underline_width(*underline_width);

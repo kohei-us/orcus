@@ -799,11 +799,11 @@ void test_standard_styles()
         assert(*actual->underline_style == ss::underline_t::single_line); // solid
 
         // style:text-underline-width="auto"
-        // TODO: we cannot handle this until 0.18.
+        assert(actual->underline_width);
+        assert(*actual->underline_width == ss::underline_width_t::automatic);
 
         // style:text-underline-color="font-color" (use the same color as the font)
-        assert(actual->underline_color);
-        assert(*actual->underline_color == ss::color_t(0x00, 0x00, 0xee));
+        assert(!actual->underline_color); // this implies the same color as the font
     }
 
     {

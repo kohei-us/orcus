@@ -213,8 +213,29 @@ public:
     virtual void set_underline_width(underline_width_t e) = 0;
     virtual void set_underline_mode(underline_mode_t e) = 0;
     virtual void set_underline_type(underline_type_t e) = 0;
+
+    /**
+     * Specify the color of an underline in ARGB format.
+     *
+     * @param alpha alpha component of the color.
+     * @param red red component of the color.
+     * @param green green component of the color.
+     * @param blue blue component of the color.
+     *
+     * @note If this value is not explicitly set, the font color should be used.
+     */
     virtual void set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+
+    /**
+     * Specify the color of font in ARGB format.
+     *
+     * @param alpha alpha component of the color.
+     * @param red red component of the color.
+     * @param green green component of the color.
+     * @param blue blue component of the color.
+     */
     virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+
     virtual void set_strikethrough_style(strikethrough_style_t s) = 0;
     virtual void set_strikethrough_type(strikethrough_type_t s) = 0;
     virtual void set_strikethrough_width(strikethrough_width_t s) = 0;

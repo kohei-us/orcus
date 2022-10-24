@@ -218,16 +218,25 @@ enum class underline_t
     wave
 };
 
+/**
+ * Underline width types, specific to ODF.  When the enum value is either
+ * percent, positive_integer, or positive_length, the actual value should be
+ * given separately.
+ *
+ * @note The automatic enum value corresponds with the "auto" text value,
+ * which could not be used since it's a keyword in C++.
+ */
 enum class underline_width_t
 {
     none = 0,
-    normal,
+    automatic,
     bold,
-    thin,
+    dash,
     medium,
     thick,
-    positive_integer,
+    thin,
     percent,
+    positive_integer,
     positive_length
 };
 
