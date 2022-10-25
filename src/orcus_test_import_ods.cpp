@@ -528,7 +528,7 @@ void test_odf_cell_protection(const ss::styles& styles)
     assert(*cell_protection->locked == true);
     assert(*cell_protection->hidden == true);
     assert(*cell_protection->print_content == true);
-    assert(*cell_protection->formula_hidden == false);
+    assert(!cell_protection->formula_hidden);
 
     /* Test that Cell is  protected and formula is hidden , Print Content is false */
     style = find_cell_style_by_name("Name6", styles);
@@ -592,7 +592,7 @@ void test_odf_font(const ss::styles& styles)
     assert(*cell_font->name == "Tahoma");
     assert(*cell_font->size == 00);
     assert(*cell_font->bold == true);
-    assert(*cell_font->italic == false);
+    assert(!cell_font->italic);
     assert(*cell_font->underline_style == ss::underline_t::dash);
     assert(*cell_font->underline_width == ss::underline_width_t::bold);
     assert(!cell_font->underline_mode); // not set
