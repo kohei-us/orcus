@@ -77,8 +77,10 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
            << "    shrink-to-fit: " << to_string(xf.shrink_to_fit) << std::endl;
     };
 
-    auto optional_value = [&of](std::string_view name, const std::optional<auto>& v, int level=2)
+    auto optional_value = [&of](std::string_view name, const auto& v, int level=2)
     {
+        // v is of type std::optional<T>.
+
         constexpr char q = '"';
         constexpr const char* indent_unit_s = "  ";
 

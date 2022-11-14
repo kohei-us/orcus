@@ -1726,7 +1726,7 @@ void test_xls_xml_skip_error_cells()
         (void)doc;
         assert(!"exception was expected, but was not thrown.");
     }
-    catch (const std::exception& e)
+    catch (const std::exception&)
     {
         // works as expected
     }
