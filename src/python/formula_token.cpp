@@ -233,7 +233,7 @@ PyObject* create_formula_token_object(const ss::document& doc, const ixion::abs_
     assert(resolver);
     std::string ft_s = ixion::print_formula_token(cxt, pos, *resolver, token);
 
-    PyObject* obj = create_and_init_formula_token_object(token.get_opcode(), std::move(ft_s));
+    PyObject* obj = create_and_init_formula_token_object(token.opcode, std::move(ft_s));
     if (!obj)
         return nullptr;
 

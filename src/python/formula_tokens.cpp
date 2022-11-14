@@ -89,7 +89,7 @@ PyObject* tp_iternext(PyObject* self)
         return nullptr;
     }
 
-    PyObject* ft_obj = create_formula_token_object(*data.doc, data.origin, **data.pos);
+    PyObject* ft_obj = create_formula_token_object(*data.doc, data.origin, *data.pos);
     ++data.pos;
     return ft_obj;
 }

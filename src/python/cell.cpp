@@ -270,7 +270,7 @@ PyObject* create_cell_object_formula(
     }
 
     const ixion::formula_tokens_t& tokens = fc->get_tokens()->get();
-    bool is_error = !tokens.empty() && tokens[0]->get_opcode() == ixion::fop_error;
+    bool is_error = !tokens.empty() && tokens[0].opcode == ixion::fop_error;
 
     PyObject* obj = create_and_init_cell_object(is_error ? "FORMULA_WITH_ERROR": "FORMULA");
     if (!obj)
