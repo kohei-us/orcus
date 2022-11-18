@@ -1,3 +1,70 @@
+orcus 0.18.0
+
+* general
+
+  * fixed the flat output mode to properly calculate the lengths of UTF-8
+    encoded strings.
+
+  * replaced all uses of std::strtol() to parse_integer() to properly parse
+    strings that are not necessarily null-terminated.
+
+  * added a new output format type 'debug-state' which dumps the internal
+    state of the populated document model in detail.  This can be useful
+    during debugging.
+
+  * separated the import_shared_string interface implementation from the
+    backend shared strings store per separation of responsibility.
+
+  * merged the foo_t and foo_active_t struct pair, such as font_t and
+    font_active_t, in the styles store into a single type using std::optional.
+
+* ods
+
+  * reimplemented the number format styles import to correctly keep track of
+    element stacks and correctly perform structure checks to detect malformed
+    documents.
+
+  * added new interface to import named styles applied to columns.
+
+  * added new interface to import attributes for asian and complex scripts for
+    the folloiwng font attributes:
+
+    * font name
+
+    * font size
+
+    * font style
+
+    * font weight
+
+  * re-designed the styles import interface to make it multi-level.
+
+  * re-worked the import of the style:text-underline-width attribute to make
+    its handling more in line with the specifications.
+
+* xls-xml
+
+  * added support for importing wrap-text and shrink-to-fit cell format
+    attributes.
+
+  * added support for importing cell-hidden and locked attributes.
+
+  * added support for importing direct and named cell formats applied to
+    columns and rows.
+
+* xlsx
+
+  * added support for importing wrap-text and shrink-to-fit cell format
+    attributes.
+
+  * added support for importing direct and named cell formats applied to
+    columns and rows.
+
+* xml-map
+
+  * added a new interface to pass the encoding information to the document
+    model so that it can correctly decode non-UTF-8-encoded string values.
+
 orcus 0.17.2
 
 * ods
