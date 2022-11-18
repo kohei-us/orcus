@@ -118,14 +118,20 @@ public:
 
 struct ORCUS_PSR_DLLPUBLIC line_with_offset
 {
+    /** content of the entire line. */
     std::string line;
-    size_t line_number;
-    size_t offset_on_line;
+    /** 0-based line number. */
+    std::size_t line_number;
+    /** 0-based offset within the line. */
+    std::size_t offset_on_line;
 
-    line_with_offset(std::string _line, size_t _line_number, size_t _offset_on_line);
+    line_with_offset(std::string _line, std::size_t _line_number, std::size_t _offset_on_line);
     line_with_offset(const line_with_offset& other);
     line_with_offset(line_with_offset&& other);
     ~line_with_offset();
+
+    bool operator== (const line_with_offset& other) const;
+    bool operator!= (const line_with_offset& other) const;
 };
 
 /**
@@ -143,11 +149,14 @@ ORCUS_PSR_DLLPUBLIC std::string create_parse_error_output(std::string_view strm,
  * Given a string consisting of multiple lines i.e. multiple line breaks,
  * find the line that contains the specified offset position.
  *
- * @param strm string buffer containing multiple lines.
+ * @param strm string stream containing multiple lines to search.
  * @param offset offset position.
  *
  * @return structure containing information about the line containing the
  *         offset position.
+ *
+ * @exception std::invalid_argument if the offset value equals or exceeds the
+ *               length of the string stream being searched.
  */
 ORCUS_PSR_DLLPUBLIC line_with_offset locate_line_with_offset(std::string_view strm, std::ptrdiff_t offset);
 
