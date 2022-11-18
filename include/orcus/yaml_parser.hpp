@@ -13,6 +13,10 @@
 
 namespace orcus {
 
+/**
+ * Blank handler class for @p yaml_parser.  One can sub-class this and
+ * overwrite callback functions one needs to handle.
+ */
 class yaml_handler
 {
 public:
@@ -103,11 +107,19 @@ public:
     void null() {}
 };
 
-template<typename _Handler>
+/**
+ * Parser for YAML documents.
+ *
+ * @tparam HandlerT Hanlder type with member functions for event callbacks.
+ *         Refer to @p yaml_handler.
+ *
+ * @warning This parser is still highly experimental.  Use with caution.
+ */
+template<typename HandlerT>
 class yaml_parser : public yaml::parser_base
 {
 public:
-    typedef _Handler handler_type;
+    typedef HandlerT handler_type;
 
     yaml_parser(const char* p, size_t n, handler_type& hdl);
 
