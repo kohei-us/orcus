@@ -15,12 +15,6 @@ Utilities
 .. doxygenclass:: orcus::zip_archive
    :members:
 
-.. doxygenclass:: orcus::file_content
-   :members:
-
-.. doxygenclass:: orcus::memory_content
-   :members:
-
 
 XML Types
 =========
