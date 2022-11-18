@@ -154,129 +154,135 @@ test_data = \
 	test/json-structure/repeat-objects/input.json \
 	test/json-structure/arrays-in-object/check.txt \
 	test/json-structure/arrays-in-object/input.json \
-	test/xlsx/date-cell/input.xlsx \
-	test/xlsx/named-expression/check.txt \
-	test/xlsx/named-expression/input.xlsx \
-	test/xlsx/revision/cell-change-basic.xlsx \
-	test/xlsx/formula-array-1/check.txt \
-	test/xlsx/formula-array-1/input.xlsx \
-	test/xlsx/formula-cells/check.txt \
-	test/xlsx/formula-cells/input.xlsx \
-	test/xlsx/empty-shared-strings/check.txt \
-	test/xlsx/empty-shared-strings/input.xlsx \
-	test/xlsx/data-table/one-variable.xlsx \
-	test/xlsx/data-table/multi-table.xlsx \
-	test/xlsx/doc-structure/unordered-sheet-positions.xlsx \
-	test/xlsx/formatted-text/colored-text.xlsx \
-	test/xlsx/formatted-text/bold-and-italic.xlsx \
-	test/xlsx/matrix-results/input.xlsx \
-	test/xlsx/text-alignment/input.xlsx \
+	test/xlsx/borders/directions.xlsx \
+	test/xlsx/borders/grid-box.xlsx \
+	test/xlsx/borders/single-cells.xlsx \
+	test/xlsx/borders/colors.xlsx \
 	test/xlsx/boolean-values/check.txt \
 	test/xlsx/boolean-values/input.xlsx \
-	test/xlsx/named-expression-sheet-local/check.txt \
-	test/xlsx/named-expression-sheet-local/input.xlsx \
 	test/xlsx/hidden-rows-columns/input.xlsx \
-	test/xlsx/borders/directions.xlsx \
-	test/xlsx/borders/colors.xlsx \
-	test/xlsx/borders/single-cells.xlsx \
-	test/xlsx/borders/grid-box.xlsx \
-	test/xlsx/number-format/date-time.xlsx \
-	test/xlsx/formula-shared/check.txt \
-	test/xlsx/formula-shared/input.xlsx \
-	test/xlsx/formula-with-string-results/check.txt \
-	test/xlsx/formula-with-string-results/input.xlsx \
-	test/xlsx/merged-cells/simple.xlsx \
 	test/xlsx/raw-values-1/check.txt \
 	test/xlsx/raw-values-1/input.xlsx \
-	test/xlsx/column-width-row-height/input.xlsx \
+	test/xlsx/revision/cell-change-basic.xlsx \
+	test/xlsx/styles/column-styles.xlsx \
+	test/xlsx/styles/direct-format.xlsx \
+	test/xlsx/formula-shared/check.txt \
+	test/xlsx/formula-shared/input.xlsx \
+	test/xlsx/text-alignment/input.xlsx \
+	test/xlsx/matrix-results/input.xlsx \
+	test/xlsx/named-expression/check.txt \
+	test/xlsx/named-expression/input.xlsx \
+	test/xlsx/formula-array-1/check.txt \
+	test/xlsx/formula-array-1/input.xlsx \
 	test/xlsx/test.xlsx \
-	test/xlsx/formula-simple.xlsx \
-	test/xlsx/pivot-table/two-pivot-caches.xlsx \
-	test/xlsx/pivot-table/group-by-numbers.xlsx \
-	test/xlsx/pivot-table/three-pivot-tables-on-one-sheet.xlsx \
-	test/xlsx/pivot-table/group-by-dates.xlsx \
-	test/xlsx/pivot-table/chart-simple.xlsx \
-	test/xlsx/pivot-table/group-field.xlsx \
-	test/xlsx/pivot-table/mixed-type-field.xlsx \
-	test/xlsx/pivot-table/error-values.xlsx \
-	test/xlsx/pivot-table/two-tables-one-source.xlsx \
-	test/xlsx/pivot-table/many-fields.xlsx \
-	test/xlsx/background-color/standard.xlsx \
-	test/xlsx/view/cursor-per-sheet.xlsx \
 	test/xlsx/view/cursor-split-pane.xlsx \
 	test/xlsx/view/frozen-pane.xlsx \
-	test/xlsx/table/table-2.xlsx \
-	test/xlsx/table/autofilter-text-filter-1.xlsx \
-	test/xlsx/table/table-1.xlsx \
-	test/xlsx/table/autofilter.xlsx \
-	test/xlsx/date-time/input.xlsx \
+	test/xlsx/view/cursor-per-sheet.xlsx \
+	test/xlsx/formula-cells/check.txt \
+	test/xlsx/formula-cells/input.xlsx \
+	test/xlsx/cell-properties/wrap-and-shrink.xlsx \
+	test/xlsx/formula-with-string-results/check.txt \
+	test/xlsx/formula-with-string-results/input.xlsx \
 	test/xlsx/named-expression-relative/input.xlsx \
-	test/xml-mapped/attribute-basic/check-nomap.txt \
-	test/xml-mapped/attribute-basic/check.txt \
+	test/xlsx/data-table/one-variable.xlsx \
+	test/xlsx/data-table/multi-table.xlsx \
+	test/xlsx/number-format/date-time.xlsx \
+	test/xlsx/empty-shared-strings/check.txt \
+	test/xlsx/empty-shared-strings/input.xlsx \
+	test/xlsx/column-width-row-height/input.xlsx \
+	test/xlsx/merged-cells/simple.xlsx \
+	test/xlsx/date-time/input.xlsx \
+	test/xlsx/date-cell/input.xlsx \
+	test/xlsx/doc-structure/unordered-sheet-positions.xlsx \
+	test/xlsx/named-expression-sheet-local/check.txt \
+	test/xlsx/named-expression-sheet-local/input.xlsx \
+	test/xlsx/background-color/standard.xlsx \
+	test/xlsx/table/table-1.xlsx \
+	test/xlsx/table/table-2.xlsx \
+	test/xlsx/table/autofilter.xlsx \
+	test/xlsx/table/autofilter-text-filter-1.xlsx \
+	test/xlsx/formatted-text/colored-text.xlsx \
+	test/xlsx/formatted-text/bold-and-italic.xlsx \
+	test/xlsx/pivot-table/error-values.xlsx \
+	test/xlsx/pivot-table/chart-simple.xlsx \
+	test/xlsx/pivot-table/mixed-type-field.xlsx \
+	test/xlsx/pivot-table/group-field.xlsx \
+	test/xlsx/pivot-table/three-pivot-tables-on-one-sheet.xlsx \
+	test/xlsx/pivot-table/two-pivot-caches.xlsx \
+	test/xlsx/pivot-table/group-by-dates.xlsx \
+	test/xlsx/pivot-table/group-by-numbers.xlsx \
+	test/xlsx/pivot-table/two-tables-one-source.xlsx \
+	test/xlsx/pivot-table/many-fields.xlsx \
+	test/xlsx/formula-simple.xlsx \
 	test/xml-mapped/attribute-basic/input.xml \
+	test/xml-mapped/attribute-basic/check.txt \
 	test/xml-mapped/attribute-basic/map.xml \
-	test/xml-mapped/attribute-namespace-2/check-nomap.txt \
-	test/xml-mapped/attribute-namespace-2/check.txt \
-	test/xml-mapped/attribute-namespace-2/input.xml \
-	test/xml-mapped/attribute-namespace-2/map.xml \
-	test/xml-mapped/attribute-namespace/check-nomap.txt \
-	test/xml-mapped/attribute-namespace/check.txt \
-	test/xml-mapped/attribute-namespace/input.xml \
-	test/xml-mapped/attribute-namespace/map.xml \
-	test/xml-mapped/attribute-range-self-close/check-nomap.txt \
-	test/xml-mapped/attribute-range-self-close/check.txt \
-	test/xml-mapped/attribute-range-self-close/input.xml \
-	test/xml-mapped/attribute-range-self-close/map.xml \
-	test/xml-mapped/attribute-single-element-2/check.txt \
-	test/xml-mapped/attribute-single-element-2/input.xml \
-	test/xml-mapped/attribute-single-element-2/map.xml \
-	test/xml-mapped/attribute-single-element/check.txt \
-	test/xml-mapped/attribute-single-element/input.xml \
-	test/xml-mapped/attribute-single-element/map.xml \
-	test/xml-mapped/content-basic/check-nomap.txt \
-	test/xml-mapped/content-basic/check.txt \
-	test/xml-mapped/content-basic/input.xml \
-	test/xml-mapped/content-basic/map.xml \
-	test/xml-mapped/content-namespace-2/check-nomap.txt \
-	test/xml-mapped/content-namespace-2/check.txt \
+	test/xml-mapped/attribute-basic/check-nomap.txt \
 	test/xml-mapped/content-namespace-2/input.xml \
+	test/xml-mapped/content-namespace-2/check.txt \
 	test/xml-mapped/content-namespace-2/map.xml \
-	test/xml-mapped/content-namespace-3/check-nomap.txt \
-	test/xml-mapped/content-namespace-3/check.txt \
-	test/xml-mapped/content-namespace-3/input.xml \
-	test/xml-mapped/content-namespace-3/map.xml \
-	test/xml-mapped/content-namespace/check-nomap.txt \
-	test/xml-mapped/content-namespace/check.txt \
-	test/xml-mapped/content-namespace/input.xml \
-	test/xml-mapped/content-namespace/map.xml \
-	test/xml-mapped/custom-labels-2/check.txt \
+	test/xml-mapped/content-namespace-2/check-nomap.txt \
 	test/xml-mapped/custom-labels-2/input.xml \
+	test/xml-mapped/custom-labels-2/check.txt \
 	test/xml-mapped/custom-labels-2/map.xml \
-	test/xml-mapped/custom-labels/check.txt \
-	test/xml-mapped/custom-labels/input.xml \
-	test/xml-mapped/custom-labels/map.xml \
-	test/xml-mapped/fuel-economy/check-nomap.txt \
-	test/xml-mapped/fuel-economy/check.txt \
-	test/xml-mapped/fuel-economy/input.xml \
-	test/xml-mapped/fuel-economy/map.xml \
+	test/xml-mapped/content-namespace-3/input.xml \
+	test/xml-mapped/content-namespace-3/check.txt \
+	test/xml-mapped/content-namespace-3/map.xml \
+	test/xml-mapped/content-namespace-3/check-nomap.txt \
+	test/xml-mapped/attribute-single-element/input.xml \
+	test/xml-mapped/attribute-single-element/check.txt \
+	test/xml-mapped/attribute-single-element/map.xml \
+	test/xml-mapped/attribute-range-self-close/input.xml \
+	test/xml-mapped/attribute-range-self-close/check.txt \
+	test/xml-mapped/attribute-range-self-close/map.xml \
+	test/xml-mapped/attribute-range-self-close/check-nomap.txt \
+	test/xml-mapped/nested-repeats-3/input.xml \
+	test/xml-mapped/nested-repeats-3/check.txt \
+	test/xml-mapped/nested-repeats-3/map.xml \
+	test/xml-mapped/nested-repeats-3/check-nomap.txt \
+	test/xml-mapped/encoding/euc-jp.xml \
+	test/xml-mapped/encoding/gbk.xml \
+	test/xml-mapped/encoding/utf-8.xml \
 	test/xml-mapped/invalids/map-defs/non-leaf-element-linked.xml \
 	test/xml-mapped/invalids/map-defs/not-xml.xml \
-	test/xml-mapped/nested-repeats-2/check-nomap.txt \
-	test/xml-mapped/nested-repeats-2/check.txt \
-	test/xml-mapped/nested-repeats-2/input.xml \
-	test/xml-mapped/nested-repeats-2/map.xml \
-	test/xml-mapped/nested-repeats-3/check-nomap.txt \
-	test/xml-mapped/nested-repeats-3/check.txt \
-	test/xml-mapped/nested-repeats-3/input.xml \
-	test/xml-mapped/nested-repeats-3/map.xml \
-	test/xml-mapped/nested-repeats-4/check-nomap.txt \
-	test/xml-mapped/nested-repeats-4/check.txt \
+	test/xml-mapped/attribute-namespace-2/input.xml \
+	test/xml-mapped/attribute-namespace-2/check.txt \
+	test/xml-mapped/attribute-namespace-2/map.xml \
+	test/xml-mapped/attribute-namespace-2/check-nomap.txt \
+	test/xml-mapped/content-namespace/input.xml \
+	test/xml-mapped/content-namespace/check.txt \
+	test/xml-mapped/content-namespace/map.xml \
+	test/xml-mapped/content-namespace/check-nomap.txt \
 	test/xml-mapped/nested-repeats-4/input.xml \
+	test/xml-mapped/nested-repeats-4/check.txt \
 	test/xml-mapped/nested-repeats-4/map.xml \
-	test/xml-mapped/nested-repeats/check-nomap.txt \
-	test/xml-mapped/nested-repeats/check.txt \
+	test/xml-mapped/nested-repeats-4/check-nomap.txt \
+	test/xml-mapped/attribute-single-element-2/input.xml \
+	test/xml-mapped/attribute-single-element-2/check.txt \
+	test/xml-mapped/attribute-single-element-2/map.xml \
 	test/xml-mapped/nested-repeats/input.xml \
+	test/xml-mapped/nested-repeats/check.txt \
 	test/xml-mapped/nested-repeats/map.xml \
+	test/xml-mapped/nested-repeats/check-nomap.txt \
+	test/xml-mapped/fuel-economy/input.xml \
+	test/xml-mapped/fuel-economy/check.txt \
+	test/xml-mapped/fuel-economy/map.xml \
+	test/xml-mapped/fuel-economy/check-nomap.txt \
+	test/xml-mapped/content-basic/input.xml \
+	test/xml-mapped/content-basic/check.txt \
+	test/xml-mapped/content-basic/map.xml \
+	test/xml-mapped/content-basic/check-nomap.txt \
+	test/xml-mapped/nested-repeats-2/input.xml \
+	test/xml-mapped/nested-repeats-2/check.txt \
+	test/xml-mapped/nested-repeats-2/map.xml \
+	test/xml-mapped/nested-repeats-2/check-nomap.txt \
+	test/xml-mapped/custom-labels/input.xml \
+	test/xml-mapped/custom-labels/check.txt \
+	test/xml-mapped/custom-labels/map.xml \
+	test/xml-mapped/attribute-namespace/input.xml \
+	test/xml-mapped/attribute-namespace/check.txt \
+	test/xml-mapped/attribute-namespace/map.xml \
+	test/xml-mapped/attribute-namespace/check-nomap.txt \
 	test/xml/simple/check.txt \
 	test/xml/simple/input.xml \
 	test/xml/no-decl-1/check.txt \
@@ -690,86 +696,96 @@ test_data = \
 	test/yaml/invalids/2.yaml \
 	test/yaml/invalids/1.yaml \
 	test/yaml/literal-block-2/input.yaml \
-	test/xls-xml/background-color/standard.xml \
-	test/xls-xml/basic-utf-16-be/check.txt \
-	test/xls-xml/basic-utf-16-be/input.xml \
-	test/xls-xml/basic-utf-16-le/check.txt \
-	test/xls-xml/basic-utf-16-le/input.xml \
-	test/xls-xml/basic/check.txt \
-	test/xls-xml/basic/input.xml \
-	test/xls-xml/bold-and-italic/check.txt \
-	test/xls-xml/bold-and-italic/input.xml \
 	test/xls-xml/borders/colors.xml \
-	test/xls-xml/borders/directions.xml \
-	test/xls-xml/borders/grid-box.xml \
 	test/xls-xml/borders/single-cells.xml \
-	test/xls-xml/character-set/input.xml \
-	test/xls-xml/colored-text/check.txt \
-	test/xls-xml/colored-text/input.xml \
-	test/xls-xml/column-width-row-height/input.xml \
-	test/xls-xml/date-time/input.xml \
-	test/xls-xml/empty-rows/check.txt \
-	test/xls-xml/empty-rows/input.xml \
-	test/xls-xml/formula-array-1/check.txt \
-	test/xls-xml/formula-array-1/input.xml \
-	test/xls-xml/formula-cells-1/check.txt \
+	test/xls-xml/borders/grid-box.xml \
+	test/xls-xml/borders/directions.xml \
 	test/xls-xml/formula-cells-1/input.xml \
-	test/xls-xml/formula-cells-2/check.txt \
-	test/xls-xml/formula-cells-2/config.yaml \
-	test/xls-xml/formula-cells-2/input.xml \
-	test/xls-xml/formula-cells-3/check.txt \
-	test/xls-xml/formula-cells-3/input.xml \
+	test/xls-xml/formula-cells-1/check.txt \
 	test/xls-xml/formula-cells-parse-error/input.xml \
+	test/xls-xml/colored-text/input.xml \
+	test/xls-xml/colored-text/check.txt \
 	test/xls-xml/hidden-rows-columns/input.xml \
-	test/xls-xml/invalid-sub-structure/check.txt \
-	test/xls-xml/invalid-sub-structure/input.xml \
-	test/xls-xml/leading-whitespace/check.txt \
-	test/xls-xml/leading-whitespace/input.xml \
-	test/xls-xml/matrix-results/input.xml \
-	test/xls-xml/merged-cells/check.txt \
-	test/xls-xml/merged-cells/input.xml \
-	test/xls-xml/named-colors/check.txt \
-	test/xls-xml/named-colors/input-upper.xml \
-	test/xls-xml/named-colors/input.xml \
-	test/xls-xml/named-colors/run.py \
-	test/xls-xml/named-colors/saved-by-excel.xml \
-	test/xls-xml/named-expression-sheet-local/check.txt \
-	test/xls-xml/named-expression-sheet-local/input.xml \
-	test/xls-xml/named-expression/check.txt \
-	test/xls-xml/named-expression/input.xml \
-	test/xls-xml/number-format/date-time.xml \
-	test/xls-xml/raw-values-1/check.txt \
 	test/xls-xml/raw-values-1/input.xml \
-	test/xls-xml/table-offset/check.txt \
-	test/xls-xml/table-offset/input.xml \
-	test/xls-xml/table/autofilter.xml \
+	test/xls-xml/raw-values-1/check.txt \
+	test/xls-xml/styles/direct-format.xml \
+	test/xls-xml/styles/column-styles.xml \
+	test/xls-xml/invalid-sub-structure/input.xml \
+	test/xls-xml/invalid-sub-structure/check.txt \
+	test/xls-xml/basic-utf-16-be/input.xml \
+	test/xls-xml/basic-utf-16-be/check.txt \
 	test/xls-xml/text-alignment/input.xml \
+	test/xls-xml/matrix-results/input.xml \
+	test/xls-xml/named-expression/input.xml \
+	test/xls-xml/named-expression/check.txt \
+	test/xls-xml/formula-array-1/input.xml \
+	test/xls-xml/formula-array-1/check.txt \
+	test/xls-xml/empty-rows/input.xml \
+	test/xls-xml/empty-rows/check.txt \
+	test/xls-xml/basic/input.xml \
+	test/xls-xml/basic/check.txt \
 	test/xls-xml/view/cursor-per-sheet.xml \
-	test/xls-xml/view/cursor-split-pane.xml \
 	test/xls-xml/view/frozen-pane.xml \
-	test/ods/named-range/input.ods \
-	test/ods/named-range/check.txt \
-	test/ods/date-cell/input.ods \
-	test/ods/named-expression/input.ods \
-	test/ods/named-expression/check.txt \
-	test/ods/formula-2/input.ods \
-	test/ods/formula-2/check.txt \
-	test/ods/test.ods \
-	test/ods/formatted-text/bold-and-italic.ods \
-	test/ods/japanese.ods \
-	test/ods/named-expression-sheet-local/input.ods \
-	test/ods/named-expression-sheet-local/check.txt \
+	test/xls-xml/view/cursor-split-pane.xml \
+	test/xls-xml/bold-and-italic/input.xml \
+	test/xls-xml/bold-and-italic/check.txt \
+	test/xls-xml/cell-properties/locked-and-hidden.xml \
+	test/xls-xml/cell-properties/default-style.xml \
+	test/xls-xml/cell-properties/wrap-and-shrink.xml \
+	test/xls-xml/named-colors/input.xml \
+	test/xls-xml/named-colors/input-upper.xml \
+	test/xls-xml/named-colors/saved-by-excel.xml \
+	test/xls-xml/named-colors/check.txt \
+	test/xls-xml/named-colors/run.py \
+	test/xls-xml/formula-cells-3/input.xml \
+	test/xls-xml/formula-cells-3/check.txt \
+	test/xls-xml/leading-whitespace/input.xml \
+	test/xls-xml/leading-whitespace/check.txt \
+	test/xls-xml/basic-utf-16-le/input.xml \
+	test/xls-xml/basic-utf-16-le/check.txt \
+	test/xls-xml/number-format/date-time.xml \
+	test/xls-xml/formula-cells-2/input.xml \
+	test/xls-xml/formula-cells-2/config.yaml \
+	test/xls-xml/formula-cells-2/check.txt \
+	test/xls-xml/table-offset/input.xml \
+	test/xls-xml/table-offset/check.txt \
+	test/xls-xml/column-width-row-height/input.xml \
+	test/xls-xml/character-set/input.xml \
+	test/xls-xml/merged-cells/input.xml \
+	test/xls-xml/merged-cells/check.txt \
+	test/xls-xml/date-time/input.xml \
+	test/xls-xml/named-expression-sheet-local/input.xml \
+	test/xls-xml/named-expression-sheet-local/check.txt \
+	test/xls-xml/background-color/standard.xml \
+	test/xls-xml/table/autofilter.xml \
 	test/ods/borders/grid-box.ods \
 	test/ods/borders/single-cells.ods \
-	test/ods/raw-values-1/input.ods \
+	test/ods/import-styles/cell-protection.xml \
+	test/ods/import-styles/standard-styles.xml \
+	test/ods/import-styles/cell-styles.xml \
 	test/ods/raw-values-1/check.txt \
-	test/ods/column-width-row-height/input.ods \
-	test/ods/styles/cell-protection.xml \
-	test/ods/styles/cell-styles.xml \
-	test/ods/styles/number-format.xml \
-	test/ods/styles/standard-styles.xml \
+	test/ods/raw-values-1/input.ods \
+	test/ods/styles/text-underlines.ods \
+	test/ods/styles/column-styles.ods \
+	test/ods/styles/direct-format.ods \
+	test/ods/styles/asian-complex.ods \
+	test/ods/test.ods \
+	test/ods/named-expression/check.txt \
+	test/ods/named-expression/input.ods \
+	test/ods/formula-1/check.txt \
 	test/ods/formula-1/input.ods \
-	test/ods/formula-1/check.txt
+	test/ods/cell-properties/wrap-and-shrink.ods \
+	test/ods/formula-2/check.txt \
+	test/ods/formula-2/input.ods \
+	test/ods/number-format/basic-set.ods \
+	test/ods/column-width-row-height/input.ods \
+	test/ods/date-cell/input.ods \
+	test/ods/japanese.ods \
+	test/ods/named-expression-sheet-local/check.txt \
+	test/ods/named-expression-sheet-local/input.ods \
+	test/ods/named-range/check.txt \
+	test/ods/named-range/input.ods \
+	test/ods/formatted-text/bold-and-italic.ods
 
 EXTRA_DIST = \
 	CHANGELOG \
