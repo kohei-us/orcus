@@ -8,6 +8,8 @@
 #include "test_global.hpp"
 #include <orcus/string_pool.hpp>
 
+#include <type_traits>
+
 using namespace orcus;
 
 void test_basic()
@@ -105,10 +107,27 @@ void test_merge()
     assert(entries.size() == pool1.size());
 }
 
+void test_move()
+{
+    static_assert(!std::is_copy_constructible_v<orcus::string_pool>);
+    static_assert(std::is_move_constructible_v<orcus::string_pool>);
+
+    string_pool pool1;
+    pool1.intern("A");
+    pool1.intern("B");
+    pool1.intern("C");
+    pool1.intern("D");
+    pool1.intern("E");
+
+    string_pool pool2 = std::move(pool1);
+    assert(pool2.size() == 5);
+}
+
 int main()
 {
     test_basic();
     test_merge();
+    test_move();
 
     return EXIT_SUCCESS;
 }

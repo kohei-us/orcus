@@ -20,7 +20,7 @@ namespace orcus {
  * This class implements a shared string pool with the ability to merge with
  * other pools.
  *
- * @note Instances of this class are not copyable.
+ * @note This class is not copy-constructible, but is move-constructible.
  */
 class ORCUS_PSR_DLLPUBLIC string_pool
 {
@@ -29,6 +29,7 @@ public:
     string_pool& operator=(const string_pool&) = delete;
 
     string_pool();
+    string_pool(string_pool&& other);
     ~string_pool();
 
     /**

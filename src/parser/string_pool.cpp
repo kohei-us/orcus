@@ -41,6 +41,8 @@ struct string_pool::impl
 
 string_pool::string_pool() : mp_impl(std::make_unique<impl>()) {}
 
+string_pool::string_pool(string_pool&& other) : mp_impl(std::move(other.mp_impl)) {}
+
 string_pool::~string_pool() = default;
 
 std::pair<std::string_view, bool> string_pool::intern(std::string_view str)
