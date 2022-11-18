@@ -15,11 +15,24 @@
 
 namespace orcus {
 
+/**
+ * XML token store that provides mapping of integral token indentifiers and
+ * their original names.  Instances of this class are typically used as global
+ * constants.
+ *
+ * @note The string values for the original token names should be static
+ *       values whose values and memory addresses remain unchanged during the
+ *       life cycle of the instance that references them.
+ *
+ * @note This class is not copy-constructible.
+ */
 class ORCUS_PSR_DLLPUBLIC tokens
 {
 public:
     tokens() = delete;
+    tokens(const tokens&) = delete;
     tokens(const char** token_names, size_t token_name_count);
+    ~tokens();
 
     /**
      * Check if a token returned from get_token() method is valid.

@@ -17,6 +17,8 @@ tokens::tokens(const char** token_names, size_t token_name_count) :
         m_tokens.emplace(m_token_names[i], xml_token_t(i));
 }
 
+tokens::~tokens() = default;
+
 bool tokens::is_valid_token(xml_token_t token) const
 {
     return token != XML_UNKNOWN_TOKEN;
