@@ -175,16 +175,12 @@ struct file_content::impl
 file_content::file_content() :
     mp_impl(std::make_unique<impl>()) {}
 
-file_content::file_content(file_content&& other) :
-    mp_impl(std::move(other.mp_impl))
-{
-    other.mp_impl = std::make_unique<impl>();
-}
+file_content::file_content(file_content&& other) = default;
 
 file_content::file_content(std::string_view filepath) :
     mp_impl(std::make_unique<impl>(filepath)) {}
 
-file_content::~file_content() {}
+file_content::~file_content() = default;
 
 const char* file_content::data() const
 {
@@ -251,13 +247,8 @@ memory_content::memory_content() : mp_impl(std::make_unique<impl>()) {}
 memory_content::memory_content(std::string_view s) :
     mp_impl(std::make_unique<impl>(s)) {}
 
-memory_content::memory_content(memory_content&& other) :
-    mp_impl(std::move(other.mp_impl))
-{
-    other.mp_impl = std::make_unique<impl>();
-}
-
-memory_content::~memory_content() {}
+memory_content::memory_content(memory_content&& other) = default;
+memory_content::~memory_content() = default;
 
 const char* memory_content::data() const
 {
@@ -309,19 +300,9 @@ line_with_offset::line_with_offset(std::string _line, size_t _line_number, size_
     offset_on_line(_offset_on_line)
 {}
 
-line_with_offset::line_with_offset(const line_with_offset& other) :
-    line(other.line),
-    line_number(other.line_number),
-    offset_on_line(other.offset_on_line)
-{}
-
-line_with_offset::line_with_offset(line_with_offset&& other) :
-    line(std::move(other.line)),
-    line_number(other.line_number),
-    offset_on_line(other.offset_on_line)
-{}
-
-line_with_offset::~line_with_offset() {}
+line_with_offset::line_with_offset(const line_with_offset& other) = default;
+line_with_offset::line_with_offset(line_with_offset&& other) = default;
+line_with_offset::~line_with_offset() = default;
 
 std::string create_parse_error_output(std::string_view strm, std::ptrdiff_t offset)
 {
