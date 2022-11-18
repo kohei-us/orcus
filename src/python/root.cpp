@@ -34,7 +34,7 @@ PyObject* detect_format(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 
     try
     {
-        format_t ft = orcus::detect(reinterpret_cast<const unsigned char*>(p), n);
+        format_t ft = orcus::detect({p, n});
 
         switch (ft)
         {

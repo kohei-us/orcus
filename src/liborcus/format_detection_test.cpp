@@ -34,8 +34,7 @@ void test_detect_formats()
     {
         orcus::file_content content(tests[i].path.string());
         assert(!content.empty());
-        orcus::format_t detected = orcus::detect(
-            reinterpret_cast<const unsigned char*>(content.data()), content.size());
+        orcus::format_t detected = orcus::detect(content.str());
 
         assert(detected == tests[i].format);
     }
@@ -54,9 +53,7 @@ void test_invalids()
         orcus::file_content content(p.string());
         assert(!content.empty());
 
-        orcus::format_t detected = orcus::detect(
-            reinterpret_cast<const unsigned char*>(content.data()), content.size());
-
+        orcus::format_t detected = orcus::detect(content.str());
         assert(detected == orcus::format_t::unknown);
     }
 }

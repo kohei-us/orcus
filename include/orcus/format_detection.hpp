@@ -15,7 +15,12 @@
 
 namespace orcus {
 
-ORCUS_DLLPUBLIC format_t detect(const unsigned char* buffer, size_t length);
+/**
+ * Detect the format of a given document stream.
+ *
+ * @param strm document stream to detect the format of.
+ */
+ORCUS_DLLPUBLIC format_t detect(std::string_view strm);
 
 }
 

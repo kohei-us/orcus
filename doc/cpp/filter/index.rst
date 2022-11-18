@@ -51,3 +51,7 @@ Generic XML
    :members:
 
 
+Utility Functions
+-----------------
+
+.. doxygenfunction:: orcus::detect

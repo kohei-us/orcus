@@ -30,7 +30,7 @@ int main(int argc, char** argv) try
         return EXIT_FAILURE;
     }
 
-    format_t detected_type = detect(reinterpret_cast<const unsigned char*>(content.data()), content.size());
+    format_t detected_type = detect(content.str());
 
     cout << "type: ";
     switch (detected_type)

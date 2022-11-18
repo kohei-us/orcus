@@ -48,22 +48,24 @@
 
 namespace orcus {
 
-format_t detect(const unsigned char* buffer, size_t length) try
+format_t detect(std::string_view strm) try
 {
+    const auto* p = reinterpret_cast<const unsigned char*>(strm.data());
+
 #if ODS_ENABLED
-    if (orcus_ods::detect(buffer, length))
+    if (orcus_ods::detect(p, strm.size()))
         return format_t::ods;
 #endif
 #if XLSX_ENABLED
-    if (orcus_xlsx::detect(buffer, length))
+    if (orcus_xlsx::detect(p, strm.size()))
         return format_t::xlsx;
 #endif
 #if GNUMERIC_ENABLED
-    if (orcus_gnumeric::detect(buffer, length))
+    if (orcus_gnumeric::detect(p, strm.size()))
         return format_t::gnumeric;
 #endif
 #if XLS_XML_ENABLED
-    if (orcus_xls_xml::detect(buffer, length))
+    if (orcus_xls_xml::detect(p, strm.size()))
         return format_t::xls_xml;
 #endif
 
