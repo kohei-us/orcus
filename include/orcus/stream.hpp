@@ -16,9 +16,10 @@
 namespace orcus {
 
 /**
- * Represents the content of a file.  The file content may be either
- * in-memory, or memory-mapped; it is initially memory-mapped, but it may
- * become in-memory when converted to a different encoding.
+ * Represents the content of a file.
+ *
+ * The file content is memory-mapped initially, but may later become in-memory
+ * if the non-utf-8 content gets converted to utf-8.
  */
 class ORCUS_PSR_DLLPUBLIC file_content
 {
