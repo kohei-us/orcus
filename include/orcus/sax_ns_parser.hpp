@@ -83,17 +83,6 @@ struct elem_scope
 
 typedef std::vector<std::unique_ptr<elem_scope>> elem_scopes_type;
 
-class pop_ns_by_key
-{
-    xmlns_context& m_cxt;
-public:
-    pop_ns_by_key(xmlns_context& cxt) : m_cxt(cxt) {}
-    void operator() (std::string_view key)
-    {
-        m_cxt.pop(key);
-    }
-};
-
 }
 
 class sax_ns_handler
@@ -246,7 +235,8 @@ private:
             m_handler.end_element(m_elem);
 
             // Pop all namespaces declared in this scope.
-            std::for_each(scope.ns_keys.begin(), scope.ns_keys.end(), __sax::pop_ns_by_key(m_ns_cxt));
+            for (const std::string_view& key : scope.ns_keys)
+                m_ns_cxt.pop(key);
 
             m_scopes.pop_back();
         }
