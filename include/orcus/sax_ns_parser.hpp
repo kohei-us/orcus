@@ -46,7 +46,7 @@ struct sax_ns_parser_attribute
     bool transient;
 };
 
-namespace __sax {
+namespace sax { namespace detail {
 
 struct entity_name
 {
@@ -83,7 +83,7 @@ struct elem_scope
 
 typedef std::vector<std::unique_ptr<elem_scope>> elem_scopes_type;
 
-}
+}} // namespace sax::detail
 
 class sax_ns_handler
 {
@@ -171,9 +171,9 @@ private:
      */
     class handler_wrapper
     {
-        __sax::elem_scopes_type m_scopes;
-        __sax::ns_keys_type m_ns_keys;
-        __sax::entity_names_type m_attrs;
+        sax::detail::elem_scopes_type m_scopes;
+        sax::detail::ns_keys_type m_ns_keys;
+        sax::detail::entity_names_type m_attrs;
 
         sax_ns_parser_element m_elem;
         sax_ns_parser_attribute m_attr;
@@ -205,8 +205,8 @@ private:
 
         void start_element(const sax::parser_element& elem)
         {
-            m_scopes.push_back(std::make_unique<__sax::elem_scope>());
-            __sax::elem_scope& scope = *m_scopes.back();
+            m_scopes.push_back(std::make_unique<sax::detail::elem_scope>());
+            sax::detail::elem_scope& scope = *m_scopes.back();
             scope.ns = m_ns_cxt.get(elem.ns);
             scope.name = elem.name;
             scope.ns_keys.swap(m_ns_keys);
@@ -223,7 +223,7 @@ private:
 
         void end_element(const sax::parser_element& elem)
         {
-            __sax::elem_scope& scope = *m_scopes.back();
+            sax::detail::elem_scope& scope = *m_scopes.back();
             if (scope.ns != m_ns_cxt.get(elem.ns) || scope.name != elem.name)
                 throw sax::malformed_xml_error("mis-matching closing element.", -1);
 
@@ -255,11 +255,11 @@ private:
                 return;
             }
 
-            if (m_attrs.count(__sax::entity_name(attr.ns, attr.name)) > 0)
+            if (m_attrs.count(sax::detail::entity_name(attr.ns, attr.name)) > 0)
                 throw sax::malformed_xml_error(
                     "You can't define two attributes of the same name in the same element.", -1);
 
-            m_attrs.insert(__sax::entity_name(attr.ns, attr.name));
+            m_attrs.insert(sax::detail::entity_name(attr.ns, attr.name));
 
             if (attr.ns.empty() && attr.name == "xmlns")
             {

@@ -53,7 +53,7 @@ bool parse_token::operator!= (const parse_token& other) const
 
 struct parser_thread::impl
 {
-    detail::thread::parser_token_buffer<parse_tokens_t> m_token_buffer;
+    orcus::detail::thread::parser_token_buffer<parse_tokens_t> m_token_buffer;
     string_pool m_pool;
     std::vector<std::unique_ptr<xml_token_element_t>> m_element_store;
 
