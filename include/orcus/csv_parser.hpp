@@ -53,11 +53,17 @@ public:
     }
 };
 
-template<typename _Handler>
+/**
+ * Parser for CSV documents.
+ *
+ * @tparam HandlerT Hanlder type with member functions for event callbacks.
+ *         Refer to @p csv_handler.
+ */
+template<typename HandlerT>
 class csv_parser : public csv::parser_base
 {
 public:
-    typedef _Handler handler_type;
+    typedef HandlerT handler_type;
 
     csv_parser(const char* p, size_t n, handler_type& hdl, const csv::parser_config& config);
     void parse();

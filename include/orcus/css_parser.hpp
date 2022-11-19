@@ -188,11 +188,17 @@ public:
     void end_property() {}
 };
 
-template<typename _Handler>
+/**
+ * Parser for CSS documents.
+ *
+ * @tparam HandlerT Hanlder type with member functions for event callbacks.
+ *         Refer to @p css_handler.
+ */
+template<typename HandlerT>
 class css_parser : public css::parser_base
 {
 public:
-    typedef _Handler handler_type;
+    typedef HandlerT handler_type;
 
     css_parser(const char* p, size_t n, handler_type& hdl);
     void parse();

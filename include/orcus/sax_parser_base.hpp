@@ -83,25 +83,33 @@ ORCUS_PSR_DLLPUBLIC std::string decode_xml_unicode_char(const char* p, size_t n)
  */
 struct parser_element
 {
-    std::string_view ns;            // element namespace (optional)
-    std::string_view name;          // element name
-    std::ptrdiff_t begin_pos; // position of the opening brace '<'.
-    std::ptrdiff_t end_pos;   // position of the char after the closing brace '>'.
+    /** Optional element namespace. It may be empty if it's not given. */
+    std::string_view ns;
+    /** Element name. */
+    std::string_view name;
+    /** Position of the opening brace '<'. */
+    std::ptrdiff_t begin_pos;
+    /** Position immediately after the closing brace '>'. */
+    std::ptrdiff_t end_pos;
 };
 
 /**
  * Attribute properties passed by sax_parser to its handler's attribute()
- * call. When an attribute value is transient, it has been converted due to
- * presence of encoded character(s) and stored in a temporary buffer. The
- * handler must assume that the value will not survive beyond the scope of
- * the callback.
+ * call. When an attribute value is "transient", it has been converted due to
+ * presence of encoded character(s) and has been stored in a temporary buffer.
+ * The handler must assume that the value will not survive after the callback
+ * function ends.
  */
 struct parser_attribute
 {
-    std::string_view ns;      // attribute namespace (optional)
-    std::string_view name;    // attribute name
-    std::string_view value;   // attribute value
-    bool transient;  // whether or not the attribute value is on a temporary buffer.
+    /** Optional attribute namespace.  It may be empty if it's not given. */
+    std::string_view ns;
+    /** Attribute name. */
+    std::string_view name;
+    /** Attribute value. */
+    std::string_view value;
+    /** Whether or not the attribute value is in a temporary buffer. */
+    bool transient;
 };
 
 class ORCUS_PSR_DLLPUBLIC parser_base : public ::orcus::parser_base

@@ -21,7 +21,7 @@ struct sax_parser_default_config
      * corresponds with version 1.0 whereas a value of 11 corresponds with
      * version 1.1.
      */
-    static const uint8_t baseline_version = 10;
+    static constexpr uint8_t baseline_version = 10;
 };
 
 class sax_handler
@@ -113,19 +113,30 @@ public:
 };
 
 /**
- * Template-based sax parser that doesn't use function pointer for
- * callbacks for better performance, especially on large XML streams.
+ * SAX parser for XML documents.
+ *
+ * This parser is barebone in that it only parses the document and picks up
+ * all encountered elements and attributes without checking proper element
+ * pairs. The user is responsible for checking whether or not the document is
+ * well-formed in terms of element scopes.
+ *
+ * This parser additionally records the begin and end offset positions of each
+ * element.
+ *
+ * @tparam HandlerT Hanlder type with member functions for event callbacks.
+ *         Refer to @p sax_handler.
+ * @tparam ConfigT Parser configuration.
  */
-template<typename _Handler, typename _Config = sax_parser_default_config>
+template<typename HandlerT, typename ConfigT = sax_parser_default_config>
 class sax_parser : public sax::parser_base
 {
 public:
-    typedef _Handler handler_type;
-    typedef _Config config_type;
+    typedef HandlerT handler_type;
+    typedef ConfigT config_type;
 
     sax_parser(const char* content, const size_t size, handler_type& handler);
     sax_parser(const char* content, const size_t size, bool transient_stream, handler_type& handler);
-    ~sax_parser();
+    ~sax_parser() = default;
 
     void parse();
 
@@ -164,11 +175,6 @@ sax_parser<_Handler,_Config>::sax_parser(
     const char* content, const size_t size, bool transient_stream, handler_type& handler) :
     sax::parser_base(content, size, transient_stream),
     m_handler(handler)
-{
-}
-
-template<typename _Handler, typename _Config>
-sax_parser<_Handler,_Config>::~sax_parser()
 {
 }
 

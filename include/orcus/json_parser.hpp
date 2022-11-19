@@ -107,14 +107,16 @@ public:
 };
 
 /**
- * Low-level JSON parser.  The caller must provide a handler class to
- * receive callbacks.
+ * Parser for JSON documents.
+ *
+ * @tparam HandlerT Hanlder type with member functions for event callbacks.
+ *         Refer to @p json_handler.
  */
-template<typename _Handler>
+template<typename HandlerT>
 class json_parser : public json::parser_base
 {
 public:
-    typedef _Handler handler_type;
+    typedef HandlerT handler_type;
 
     /**
      * Constructor.

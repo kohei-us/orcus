@@ -31,7 +31,7 @@ using std::endl;
 namespace orcus { namespace csv {
 
 /**
- * Run-time configuration object for orcus::csv_parser.
+ * Run-time configuration object for @p orcus::csv_parser.
  */
 struct ORCUS_PSR_DLLPUBLIC parser_config
 {

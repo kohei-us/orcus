@@ -20,20 +20,30 @@ namespace orcus {
 
 struct sax_ns_parser_element
 {
-    xmlns_id_t ns;         // element namespace
-    std::string_view ns_alias;      // element namespace alias
-    std::string_view name;          // element name
-    std::ptrdiff_t begin_pos; // position of the opening brace '<'.
-    std::ptrdiff_t end_pos;   // position of the char after the closing brace '>'.
+    /** Element namespace identifier. */
+    xmlns_id_t ns;
+    /** Element namespace alias. */
+    std::string_view ns_alias;
+    /** Element name. */
+    std::string_view name;
+    /** Position of the opening brace '<'. */
+    std::ptrdiff_t begin_pos;
+    /** Position immediately after the closing brace '>'. */
+    std::ptrdiff_t end_pos;
 };
 
 struct sax_ns_parser_attribute
 {
-    xmlns_id_t ns;    // attribute namespace
-    std::string_view ns_alias; // attribute namespace alias
-    std::string_view name;     // attribute name
-    std::string_view value;    // attribute value
-    bool transient;   // whether or not the attribute value is transient.
+    /** Attribute namespace identifier. */
+    xmlns_id_t ns;
+    /** Attribute namespace alias. */
+    std::string_view ns_alias;
+    /** Attribute name. */
+    std::string_view name;
+    /** Attribute value. */
+    std::string_view value;
+    /** Whether or not the attribute value is transient. */
+    bool transient;
 };
 
 namespace __sax {
@@ -89,37 +99,80 @@ public:
 class sax_ns_handler
 {
 public:
-    void doctype(const orcus::sax::doctype_declaration& /*dtd*/) {}
+    void doctype(const orcus::sax::doctype_declaration& dtd)
+    {
+        (void)dtd;
+    }
 
-    void start_declaration(std::string_view /*decl*/) {}
+    void start_declaration(std::string_view decl)
+    {
+        (void)decl;
+    }
 
-    void end_declaration(std::string_view /*decl*/) {}
+    void end_declaration(std::string_view decl)
+    {
+        (void)decl;
+    }
 
-    void start_element(const orcus::sax_ns_parser_element& /*elem*/) {}
+    void start_element(const orcus::sax_ns_parser_element& elem)
+    {
+        (void)elem;
+    }
 
-    void end_element(const orcus::sax_ns_parser_element& /*elem*/) {}
+    void end_element(const orcus::sax_ns_parser_element& elem)
+    {
+        (void)elem;
+    }
 
-    void characters(std::string_view /*val*/, bool /*transient*/) {}
+    void characters(std::string_view val, bool transient)
+    {
+        (void)val;
+        (void)transient;
+    }
 
-    void attribute(std::string_view /*name*/, std::string_view /*val*/) {}
+    void attribute(std::string_view name, std::string_view val)
+    {
+        (void)name;
+        (void)val;
+    }
 
-    void attribute(const orcus::sax_ns_parser_attribute& /*attr*/) {}
+    void attribute(const orcus::sax_ns_parser_attribute& attr)
+    {
+        (void)attr;
+    }
 };
 
 /**
- * SAX based XML parser with proper namespace handling.
+ * SAX based XML parser with extra namespace handling.
+ *
+ * It uses an instance of xmlns_context passed by the caller to validate and
+ * convert namespace values into identifiers.  The namespace identifier of
+ * each encountered element is always given even if one is not explicitly
+ * given.
+ *
+ * This parser keeps track of element scopes and detects non-matching element
+ * pairs.
+ *
+ * @tparam HandlerT Hanlder type with member functions for event callbacks.
+ *         Refer to @p sax_ns_handler.
  */
-template<typename _Handler>
+template<typename Handler>
 class sax_ns_parser
 {
 public:
-    typedef _Handler handler_type;
+    typedef Handler handler_type;
 
     sax_ns_parser(const char* content, const size_t size, xmlns_context& ns_cxt, handler_type& handler);
     sax_ns_parser(const char* content, const size_t size, bool transient_stream,
                   xmlns_context& ns_cxt, handler_type& handler);
-    ~sax_ns_parser();
+    ~sax_ns_parser() = default;
 
+    /**
+     * Start parsing the document.
+     *
+     * @exception orcus::sax::malformed_xml_error when it encounters a
+     *                 non-matching closing element.
+     */
     void parse();
 
 private:
@@ -262,11 +315,6 @@ template<typename _Handler>
 sax_ns_parser<_Handler>::sax_ns_parser(
     const char* content, const size_t size, bool transient_stream, xmlns_context& ns_cxt, handler_type& handler) :
     m_wrapper(ns_cxt, handler), m_parser(content, size, transient_stream, m_wrapper)
-{
-}
-
-template<typename _Handler>
-sax_ns_parser<_Handler>::~sax_ns_parser()
 {
 }
 

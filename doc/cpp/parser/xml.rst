@@ -3,28 +3,47 @@
 XML Parsers
 ===========
 
+SAX base parser
+---------------
+
 .. doxygenclass:: orcus::sax_parser
    :members:
 
-.. doxygenclass:: orcus::sax_ns_parser
+.. doxygenstruct:: orcus::sax_parser_default_config
    :members:
-
-.. doxygenclass:: orcus::sax_token_parser
-   :members:
-
-
-Parser Handlers
----------------
 
 .. doxygenclass:: orcus::sax_handler
+   :members:
+
+.. doxygenstruct:: orcus::sax::parser_element
+   :members:
+
+.. doxygenstruct:: orcus::sax::parser_attribute
+   :members:
+
+SAX namespace parser
+--------------------
+
+.. doxygenclass:: orcus::sax_ns_parser
    :members:
 
 .. doxygenclass:: orcus::sax_ns_handler
    :members:
 
-.. doxygenclass:: orcus::sax_token_handler
+.. doxygenstruct:: orcus::sax_ns_parser_element
    :members:
 
+.. doxygenstruct:: orcus::sax_ns_parser_attribute
+   :members:
+
+SAX token parser
+----------------
+
+.. doxygenclass:: orcus::sax_token_parser
+   :members:
+
+.. doxygenclass:: orcus::sax_token_handler
+   :members:
 
 Namespace
 ---------
@@ -34,3 +53,16 @@ Namespace
 
 .. doxygenclass:: orcus::xmlns_context
    :members:
+
+Common
+------
+
+.. doxygenclass:: orcus::sax::malformed_xml_error
+   :members:
+
+.. doxygenstruct:: orcus::sax::doctype_declaration
+   :members:
+
+.. doxygenfunction:: orcus::sax::decode_xml_encoded_char
+
+.. doxygenfunction:: orcus::sax::decode_xml_unicode_char
