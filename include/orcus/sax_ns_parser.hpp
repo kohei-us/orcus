@@ -13,7 +13,6 @@
 
 #include <unordered_set>
 #include <vector>
-#include <memory>
 #include <algorithm>
 
 namespace orcus {
@@ -79,9 +78,13 @@ struct elem_scope
     xmlns_id_t ns;
     std::string_view name;
     ns_keys_type ns_keys;
+
+    elem_scope() {}
+    elem_scope(const elem_scope&) = delete;
+    elem_scope(elem_scope&& other) = default;
 };
 
-typedef std::vector<std::unique_ptr<elem_scope>> elem_scopes_type;
+using elem_scopes_type = std::vector<elem_scope>;
 
 }} // namespace sax::detail
 
@@ -205,8 +208,8 @@ private:
 
         void start_element(const sax::parser_element& elem)
         {
-            m_scopes.push_back(std::make_unique<sax::detail::elem_scope>());
-            sax::detail::elem_scope& scope = *m_scopes.back();
+            m_scopes.emplace_back();
+            sax::detail::elem_scope& scope = m_scopes.back();
             scope.ns = m_ns_cxt.get(elem.ns);
             scope.name = elem.name;
             scope.ns_keys.swap(m_ns_keys);
@@ -223,7 +226,7 @@ private:
 
         void end_element(const sax::parser_element& elem)
         {
-            sax::detail::elem_scope& scope = *m_scopes.back();
+            sax::detail::elem_scope& scope = m_scopes.back();
             if (scope.ns != m_ns_cxt.get(elem.ns) || scope.name != elem.name)
                 throw sax::malformed_xml_error("mis-matching closing element.", -1);
 
