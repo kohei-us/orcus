@@ -30,11 +30,11 @@ public:
     /**
      * Called when a doctype declaration &lt;!DOCTYPE ... &gt; is encountered.
      *
-     * @param param struct containing doctype declaration data.
+     * @param dtd struct containing doctype declaration data.
      */
-    void doctype(const orcus::sax::doctype_declaration& param)
+    void doctype(const orcus::sax::doctype_declaration& dtd)
     {
-        (void)param;
+        (void)dtd;
     }
 
     /**
