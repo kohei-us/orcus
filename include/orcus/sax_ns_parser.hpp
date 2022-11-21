@@ -208,11 +208,11 @@ public:
  * @tparam HandlerT Hanlder type with member functions for event callbacks.
  *         Refer to @p sax_ns_handler.
  */
-template<typename Handler>
+template<typename HandlerT>
 class sax_ns_parser
 {
 public:
-    typedef Handler handler_type;
+    typedef HandlerT handler_type;
 
     sax_ns_parser(const char* content, const size_t size, xmlns_context& ns_cxt, handler_type& handler);
     sax_ns_parser(const char* content, const size_t size, bool transient_stream,
@@ -357,22 +357,22 @@ private:
     sax_parser<handler_wrapper> m_parser;
 };
 
-template<typename _Handler>
-sax_ns_parser<_Handler>::sax_ns_parser(
+template<typename HandlerT>
+sax_ns_parser<HandlerT>::sax_ns_parser(
     const char* content, const size_t size, xmlns_context& ns_cxt, handler_type& handler) :
     m_wrapper(ns_cxt, handler), m_parser(content, size, m_wrapper)
 {
 }
 
-template<typename _Handler>
-sax_ns_parser<_Handler>::sax_ns_parser(
+template<typename HandlerT>
+sax_ns_parser<HandlerT>::sax_ns_parser(
     const char* content, const size_t size, bool transient_stream, xmlns_context& ns_cxt, handler_type& handler) :
     m_wrapper(ns_cxt, handler), m_parser(content, size, transient_stream, m_wrapper)
 {
 }
 
-template<typename _Handler>
-void sax_ns_parser<_Handler>::parse()
+template<typename HandlerT>
+void sax_ns_parser<HandlerT>::parse()
 {
     m_parser.parse();
 }

@@ -162,24 +162,24 @@ private:
     handler_type& m_handler;
 };
 
-template<typename _Handler, typename _Config>
-sax_parser<_Handler,_Config>::sax_parser(
+template<typename HandlerT, typename ConfigT>
+sax_parser<HandlerT,ConfigT>::sax_parser(
     const char* content, const size_t size, handler_type& handler) :
     sax::parser_base(content, size, false),
     m_handler(handler)
 {
 }
 
-template<typename _Handler, typename _Config>
-sax_parser<_Handler,_Config>::sax_parser(
+template<typename HandlerT, typename ConfigT>
+sax_parser<HandlerT,ConfigT>::sax_parser(
     const char* content, const size_t size, bool transient_stream, handler_type& handler) :
     sax::parser_base(content, size, transient_stream),
     m_handler(handler)
 {
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::parse()
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::parse()
 {
     m_nest_level = 0;
     mp_char = mp_begin;
@@ -190,8 +190,8 @@ void sax_parser<_Handler,_Config>::parse()
     assert(m_buffer_pos == 0);
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::header()
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::header()
 {
     // we don't handle multi byte encodings so we can just skip bom entry if exists.
     skip_bom();
@@ -210,8 +210,8 @@ void sax_parser<_Handler,_Config>::header()
     }
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::body()
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::body()
 {
     while (has_char())
     {
@@ -230,8 +230,8 @@ void sax_parser<_Handler,_Config>::body()
     }
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::element()
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::element()
 {
     assert(cur_char() == '<');
     std::ptrdiff_t pos = offset();
@@ -252,8 +252,8 @@ void sax_parser<_Handler,_Config>::element()
     element_open(pos);
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::element_open(std::ptrdiff_t begin_pos)
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::element_open(std::ptrdiff_t begin_pos)
 {
     sax::parser_element elem;
     element_name(elem, begin_pos);
@@ -297,8 +297,8 @@ void sax_parser<_Handler,_Config>::element_open(std::ptrdiff_t begin_pos)
     }
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::element_close(std::ptrdiff_t begin_pos)
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::element_close(std::ptrdiff_t begin_pos)
 {
     assert(cur_char() == '/');
     nest_down();
@@ -319,8 +319,8 @@ void sax_parser<_Handler,_Config>::element_close(std::ptrdiff_t begin_pos)
         m_root_elem_open = false;
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::special_tag()
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::special_tag()
 {
     assert(cur_char() == '!');
     // This can be either <![CDATA, <!--, or <!DOCTYPE.
@@ -366,8 +366,8 @@ void sax_parser<_Handler,_Config>::special_tag()
     }
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::declaration(const char* name_check)
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::declaration(const char* name_check)
 {
     assert(cur_char() == '?');
     next_check();
@@ -406,8 +406,8 @@ void sax_parser<_Handler,_Config>::declaration(const char* name_check)
 #endif
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::cdata()
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::cdata()
 {
     size_t len = remains();
     assert(len > 3);
@@ -443,8 +443,8 @@ void sax_parser<_Handler,_Config>::cdata()
     throw sax::malformed_xml_error("malformed CDATA section.", offset());
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::doctype()
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::doctype()
 {
     // Parse the root element first.
     sax::doctype_declaration param;
@@ -509,8 +509,8 @@ void sax_parser<_Handler,_Config>::doctype()
     next();
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::characters()
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::characters()
 {
     const char* p0 = mp_char;
     for (; has_char(); next())
@@ -540,8 +540,8 @@ void sax_parser<_Handler,_Config>::characters()
     }
 }
 
-template<typename _Handler, typename _Config>
-void sax_parser<_Handler,_Config>::attribute()
+template<typename HandlerT, typename ConfigT>
+void sax_parser<HandlerT,ConfigT>::attribute()
 {
     sax::parser_attribute attr;
     attribute_name(attr.ns, attr.name);
