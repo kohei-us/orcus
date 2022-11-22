@@ -332,7 +332,7 @@ int main(int argc, char** argv) try
                 ;
         }
     }
-    catch (const sax::malformed_xml_error& e)
+    catch (const malformed_xml_error& e)
     {
         cerr << create_parse_error_output(content.str(), e.offset()) << endl;
         cerr << e.what() << endl;

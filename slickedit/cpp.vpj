@@ -620,7 +620,6 @@
             <F N="../src/orcus_xml_main.cpp"/>
             <F N="../src/orcus_yaml_main.cpp"/>
             <F N="../src/orcus_zip_dump.cpp"/>
-            <F N="../src/test_global.cpp"/>
         </Folder>
     </Files>
 </Project>

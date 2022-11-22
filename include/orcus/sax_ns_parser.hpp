@@ -222,7 +222,7 @@ public:
     /**
      * Start parsing the document.
      *
-     * @exception orcus::sax::malformed_xml_error when it encounters a
+     * @exception orcus::malformed_xml_error when it encounters a
      *                 non-matching closing element.
      */
     void parse();
@@ -288,7 +288,7 @@ private:
         {
             sax::detail::elem_scope& scope = m_scopes.back();
             if (scope.ns != m_ns_cxt.get(elem.ns) || scope.name != elem.name)
-                throw sax::malformed_xml_error("mis-matching closing element.", -1);
+                throw malformed_xml_error("mis-matching closing element.", -1);
 
             m_elem.ns = scope.ns;
             m_elem.ns_alias = elem.ns;
@@ -319,7 +319,7 @@ private:
             }
 
             if (m_attrs.count(sax::detail::entity_name(attr.ns, attr.name)) > 0)
-                throw sax::malformed_xml_error(
+                throw malformed_xml_error(
                     "You can't define two attributes of the same name in the same element.", -1);
 
             m_attrs.insert(sax::detail::entity_name(attr.ns, attr.name));

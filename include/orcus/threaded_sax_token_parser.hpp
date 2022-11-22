@@ -150,7 +150,7 @@ void threaded_sax_token_parser<_Handler>::process_tokens(const sax::parse_tokens
             case sax::parse_token_t::parse_error:
             {
                 auto v = std::get<parse_error_value_t>(t.value);
-                throw sax::malformed_xml_error(std::string{v.str}, v.offset);
+                throw malformed_xml_error(std::string{v.str}, v.offset);
             }
             default:
                 throw general_error("unknown token type encountered.");

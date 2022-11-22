@@ -19,7 +19,7 @@ class ORCUS_PSR_DLLPUBLIC general_error : public std::exception
 {
 public:
     explicit general_error(std::string msg);
-    explicit general_error(const std::string& cls, const std::string& msg);
+    explicit general_error(std::string_view cls, std::string_view msg);
     virtual ~general_error() noexcept;
     virtual const char* what() const noexcept;
 
@@ -95,7 +95,7 @@ class ORCUS_PSR_DLLPUBLIC parse_error : public general_error
     std::ptrdiff_t m_offset;  /// offset in the stream where the error occurred.
 
 protected:
-    parse_error(const std::string& cls, const std::string& msg, std::ptrdiff_t offset);
+    parse_error(std::string_view cls, std::string_view msg, std::ptrdiff_t offset);
 
 public:
     parse_error(std::string msg, std::ptrdiff_t offset);
@@ -112,6 +112,17 @@ public:
 
     static void throw_with(
         std::string_view msg_before, std::string_view msg, std::string_view msg_after, std::ptrdiff_t offset);
+};
+
+/**
+ * This exception is thrown when SAX parser detects a malformed XML document.
+ */
+class ORCUS_PSR_DLLPUBLIC malformed_xml_error : public orcus::parse_error
+{
+public:
+    malformed_xml_error() = delete;
+    malformed_xml_error(std::string_view msg, std::ptrdiff_t offset);
+    virtual ~malformed_xml_error();
 };
 
 namespace detail {

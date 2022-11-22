@@ -30,17 +30,6 @@ using std::endl;
 namespace orcus { namespace sax {
 
 /**
- * This exception is thrown when SAX parser detects a malformed XML document.
- */
-class ORCUS_PSR_DLLPUBLIC malformed_xml_error : public ::orcus::parse_error
-{
-public:
-    malformed_xml_error() = delete;
-    malformed_xml_error(const std::string& msg, std::ptrdiff_t offset);
-    virtual ~malformed_xml_error();
-};
-
-/**
  * Document type declaration passed by sax_parser to its handler's doctype()
  * call.
  */

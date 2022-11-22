@@ -18,7 +18,7 @@ general_error::general_error(std::string msg) :
 {
 }
 
-general_error::general_error(const std::string& cls, const std::string& msg)
+general_error::general_error(std::string_view cls, std::string_view msg)
 {
     std::ostringstream os;
     os << cls << ": " << msg;
@@ -96,7 +96,7 @@ std::string build_message(
 
 }
 
-parse_error::parse_error(const std::string& cls, const std::string& msg, std::ptrdiff_t offset) :
+parse_error::parse_error(std::string_view cls, std::string_view msg, std::ptrdiff_t offset) :
     general_error(cls, msg), m_offset(offset)
 {
     append_msg(build_offset_msg(offset));
@@ -125,6 +125,11 @@ void parse_error::throw_with(
     throw parse_error(build_message(msg_before, msg, msg_after), offset);
 }
 
-}
+malformed_xml_error::malformed_xml_error(std::string_view msg, std::ptrdiff_t offset) :
+    orcus::parse_error("malformed_xml_error", msg, offset) {}
+
+malformed_xml_error::~malformed_xml_error() = default;
+
+} // namespace orcus
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -38,7 +38,7 @@ void test_invalid()
             parser.parse();
             assert(!"exception was expected, but one was not thrown.");
         }
-        catch (const orcus::sax::malformed_xml_error& e)
+        catch (const orcus::malformed_xml_error& e)
         {
             std::cerr << orcus::create_parse_error_output(content.str(), e.offset()) << std::endl;
             std::cerr << e.what() << std::endl;

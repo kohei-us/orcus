@@ -134,7 +134,7 @@ void test_sax_token_parser_1()
             parser.parse();
             assert(!"An exception was expected, but one was not thrown.");
         }
-        catch (const sax::malformed_xml_error& e)
+        catch (const malformed_xml_error& e)
         {
             assert(e.offset() == 28u);
         }

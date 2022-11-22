@@ -29,3 +29,6 @@ Exceptions
 
 .. doxygenclass:: orcus::parse_error
    :members:
+
+.. doxygenclass:: orcus::malformed_xml_error
+   :members:

@@ -57,9 +57,6 @@ Namespace
 Common
 ------
 
-.. doxygenclass:: orcus::sax::malformed_xml_error
-   :members:
-
 .. doxygenstruct:: orcus::sax::doctype_declaration
    :members:
 

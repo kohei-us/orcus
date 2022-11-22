@@ -197,14 +197,14 @@ void sax_parser<HandlerT,ConfigT>::header()
     skip_bom();
     skip_space_and_control();
     if (!has_char() || cur_char() != '<')
-        throw sax::malformed_xml_error("xml file must begin with '<'.", offset());
+        throw malformed_xml_error("xml file must begin with '<'.", offset());
 
     if (config_type::baseline_version >= 11)
     {
         // XML version 1.1 requires a header declaration whereas in 1.0 it's
         // optional.
         if (next_char_checked() != '?')
-            throw sax::malformed_xml_error("xml file must begin with '<?'.", offset());
+            throw malformed_xml_error("xml file must begin with '<?'.", offset());
 
         declaration("xml");
     }
@@ -266,7 +266,7 @@ void sax_parser<HandlerT,ConfigT>::element_open(std::ptrdiff_t begin_pos)
         {
             // Self-closing element: <element/>
             if (next_and_char() != '>')
-                throw sax::malformed_xml_error("expected '/>' to self-close the element.", offset());
+                throw malformed_xml_error("expected '/>' to self-close the element.", offset());
             next();
             elem.end_pos = offset();
             m_handler.start_element(elem);
@@ -307,7 +307,7 @@ void sax_parser<HandlerT,ConfigT>::element_close(std::ptrdiff_t begin_pos)
     element_name(elem, begin_pos);
 
     if (cur_char() != '>')
-        throw sax::malformed_xml_error("expected '>' to close the element.", offset());
+        throw malformed_xml_error("expected '>' to close the element.", offset());
     next();
     elem.end_pos = offset();
 
@@ -326,7 +326,7 @@ void sax_parser<HandlerT,ConfigT>::special_tag()
     // This can be either <![CDATA, <!--, or <!DOCTYPE.
     size_t len = remains();
     if (len < 2)
-        throw sax::malformed_xml_error("special tag too short.", offset());
+        throw malformed_xml_error("special tag too short.", offset());
 
     switch (next_and_char())
     {
@@ -334,11 +334,11 @@ void sax_parser<HandlerT,ConfigT>::special_tag()
         {
             // Possibly comment.
             if (next_and_char() != '-')
-                throw sax::malformed_xml_error("comment expected.", offset());
+                throw malformed_xml_error("comment expected.", offset());
 
             len -= 2;
             if (len < 3)
-                throw sax::malformed_xml_error("malformed comment.", offset());
+                throw malformed_xml_error("malformed comment.", offset());
 
             next();
             comment();
@@ -362,7 +362,7 @@ void sax_parser<HandlerT,ConfigT>::special_tag()
         }
         break;
         default:
-            throw sax::malformed_xml_error("failed to parse special tag.", offset());
+            throw malformed_xml_error("failed to parse special tag.", offset());
     }
 }
 
@@ -383,7 +383,7 @@ void sax_parser<HandlerT,ConfigT>::declaration(const char* name_check)
     {
         std::ostringstream os;
         os << "declaration name of '" << name_check << "' was expected, but '" << decl_name << "' was found instead.";
-        throw sax::malformed_xml_error(os.str(), offset());
+        throw malformed_xml_error(os.str(), offset());
     }
 
     m_handler.start_declaration(decl_name);
@@ -396,7 +396,7 @@ void sax_parser<HandlerT,ConfigT>::declaration(const char* name_check)
         skip_space_and_control();
     }
     if (next_char_checked() != '>')
-        throw sax::malformed_xml_error("declaration must end with '?>'.", offset());
+        throw malformed_xml_error("declaration must end with '?>'.", offset());
 
     m_handler.end_declaration(decl_name);
     reset_buffer_pos();
@@ -440,7 +440,7 @@ void sax_parser<HandlerT,ConfigT>::cdata()
         else
             match = 0;
     }
-    throw sax::malformed_xml_error("malformed CDATA section.", offset());
+    throw malformed_xml_error("malformed CDATA section.", offset());
 }
 
 template<typename HandlerT, typename ConfigT>
@@ -454,21 +454,21 @@ void sax_parser<HandlerT,ConfigT>::doctype()
     // Either PUBLIC or SYSTEM.
     size_t len = remains();
     if (len < 6)
-        throw sax::malformed_xml_error("DOCTYPE section too short.", offset());
+        throw malformed_xml_error("DOCTYPE section too short.", offset());
 
     param.keyword = sax::doctype_declaration::keyword_type::dtd_private;
     char c = cur_char();
     if (c == 'P')
     {
         if (next_and_char() != 'U' || next_and_char() != 'B' || next_and_char() != 'L' || next_and_char() != 'I' || next_and_char() != 'C')
-            throw sax::malformed_xml_error("malformed DOCTYPE section.", offset());
+            throw malformed_xml_error("malformed DOCTYPE section.", offset());
 
         param.keyword = sax::doctype_declaration::keyword_type::dtd_public;
     }
     else if (c == 'S')
     {
         if (next_and_char() != 'Y' || next_and_char() != 'S' || next_and_char() != 'T' || next_and_char() != 'E' || next_and_char() != 'M')
-            throw sax::malformed_xml_error("malformed DOCTYPE section.", offset());
+            throw malformed_xml_error("malformed DOCTYPE section.", offset());
     }
 
     next_check();
@@ -500,7 +500,7 @@ void sax_parser<HandlerT,ConfigT>::doctype()
     has_char_throw("DOCTYPE section too short.");
 
     if (cur_char() != '>')
-        throw sax::malformed_xml_error("malformed DOCTYPE section - closing '>' expected but not found.", offset());
+        throw malformed_xml_error("malformed DOCTYPE section - closing '>' expected but not found.", offset());
 
 #if ORCUS_DEBUG_SAX_PARSER
     cout << "sax_parser::doctype: root='" << param.root_element << "', fpi='" << param.fpi << "' uri='" << param.uri << "'" << endl;
@@ -557,7 +557,7 @@ void sax_parser<HandlerT,ConfigT>::attribute()
     {
         std::ostringstream os;
         os << "Attribute must begin with 'name=..'. (ns='" << attr.ns << "', name='" << attr.name << "')";
-        throw sax::malformed_xml_error(os.str(), offset());
+        throw malformed_xml_error(os.str(), offset());
     }
 
     next_check(); // skip the '='.
