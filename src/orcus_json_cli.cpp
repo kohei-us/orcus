@@ -425,7 +425,7 @@ int main(int argc, char** argv)
                 return EXIT_FAILURE;
         }
     }
-    catch (const json::parse_error& e)
+    catch (const parse_error& e)
     {
         cerr << create_parse_error_output(content.str(), e.offset()) << endl;
         cerr << e.what() << endl;

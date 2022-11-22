@@ -115,5 +115,18 @@ std::string parse_error::build_message(
     return os.str();
 }
 
+void parse_error::throw_with(
+    std::string_view msg_before, char c, std::string_view msg_after, std::ptrdiff_t offset)
+{
+    throw parse_error(build_message(msg_before, c, msg_after), offset);
 }
+
+void parse_error::throw_with(
+    std::string_view msg_before, std::string_view msg, std::string_view msg_after, std::ptrdiff_t offset)
+{
+    throw parse_error(build_message(msg_before, msg, msg_after), offset);
+}
+
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -248,7 +248,7 @@ PyObject* json_loads(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
         parser.parse();
         return hdl.get_root();
     }
-    catch (const orcus::json::parse_error& e)
+    catch (const orcus::parse_error& e)
     {
         PyErr_SetString(PyExc_TypeError, e.what());
     }

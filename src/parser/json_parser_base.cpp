@@ -31,21 +31,6 @@ const char* parse_numeric_json(const char* p, const char* p_end, double& value)
 
 } // anonymous namespace
 
-parse_error::parse_error(const std::string& msg, std::ptrdiff_t offset) :
-    ::orcus::parse_error(msg, offset) {}
-
-void parse_error::throw_with(
-    const char* msg_before, char c, const char* msg_after, std::ptrdiff_t offset)
-{
-    throw parse_error(build_message(msg_before, c, msg_after), offset);
-}
-
-void parse_error::throw_with(
-    const char* msg_before, const char* p, size_t n, const char* msg_after, std::ptrdiff_t offset)
-{
-    throw parse_error(build_message(msg_before, {p, n}, msg_after), offset);
-}
-
 struct parser_base::impl
 {
     cell_buffer m_buffer;

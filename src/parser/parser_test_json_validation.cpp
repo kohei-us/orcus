@@ -372,7 +372,7 @@ void test_pass()
             orcus::json_parser<orcus::json_handler> parser(content.c_str(), content.size(), hdl);
             parser.parse();
         }
-        catch (const orcus::json::parse_error& e)
+        catch (const orcus::parse_error& e)
         {
             std::cout << e.what() << std::endl;
             std::cout << orcus::create_parse_error_output(content, e.offset()) << std::endl;

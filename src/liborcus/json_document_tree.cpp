@@ -1701,7 +1701,7 @@ void document_tree::load(std::string_view stream, const json_config& config)
         {
             doc.load(ext_content.str(), ext_config);
         }
-        catch (const json::parse_error& e)
+        catch (const parse_error& e)
         {
             std::ostringstream os;
             os << "Error while parsing " << extpath.string() << std::endl;

@@ -169,7 +169,7 @@ void test_threaded_json_parser_invalid()
             parser.parse();
             assert(false);
         }
-        catch (const json::parse_error&)
+        catch (const parse_error&)
         {
             // works as expected.
             cout << "invalid source: " << src << endl;

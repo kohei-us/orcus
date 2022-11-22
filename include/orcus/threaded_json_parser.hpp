@@ -168,7 +168,7 @@ void threaded_json_parser<_Handler>::process_tokens(json::parse_tokens_t& tokens
                 case json::parse_token_t::parse_error:
                 {
                     auto v = std::get<parse_error_value_t>(t.value);
-                    throw json::parse_error(std::string{v.str}, v.offset);
+                    throw parse_error(std::string{v.str}, v.offset);
                 }
                 case json::parse_token_t::unknown:
                 default:

@@ -466,7 +466,7 @@ void orcus_json::read_map_definition(std::string_view stream)
             }
         }
     }
-    catch (const json::parse_error& e)
+    catch (const parse_error& e)
     {
         std::ostringstream os;
         os << "Error parsing the map definition file:" << std::endl

@@ -8,24 +8,13 @@
 #ifndef INCLUDED_ORCUS_JSON_PARSER_BASE_HPP
 #define INCLUDED_ORCUS_JSON_PARSER_BASE_HPP
 
-#include "orcus/parser_base.hpp"
-#include "orcus/parser_global.hpp"
+#include "parser_base.hpp"
+#include "parser_global.hpp"
+#include "exception.hpp"
 
 #include <memory>
 
 namespace orcus { namespace json {
-
-class ORCUS_PSR_DLLPUBLIC parse_error : public ::orcus::parse_error
-{
-public:
-    parse_error(const std::string& msg, std::ptrdiff_t offset);
-
-    static void throw_with(
-        const char* msg_before, char c, const char* msg_after, std::ptrdiff_t offset);
-
-    static void throw_with(
-        const char* msg_before, const char* p, size_t n, const char* msg_after, std::ptrdiff_t offset);
-};
 
 class ORCUS_PSR_DLLPUBLIC parser_base : public ::orcus::parser_base
 {

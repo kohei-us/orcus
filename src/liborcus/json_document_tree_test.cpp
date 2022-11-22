@@ -189,7 +189,7 @@ void test_json_parse_empty()
         {
             doc.load(test, test_config);
         }
-        catch (const json::parse_error& e)
+        catch (const parse_error& e)
         {
             std::cout << create_parse_error_output(test, e.offset()) << std::endl;
             std::cout << e.what() << std::endl;
@@ -221,7 +221,7 @@ void test_json_parse_invalid()
             std::cerr << "Invalid JSON expression is parsed as valid: '" << invalid_json << "'" << std::endl;
             assert(false);
         }
-        catch (const json::parse_error& e)
+        catch (const parse_error& e)
         {
             // works as expected.
             std::cout << "invalid expression tested: " << invalid_json << std::endl;
