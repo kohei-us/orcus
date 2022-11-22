@@ -37,7 +37,7 @@ struct parser_base::impl
 };
 
 parser_base::parser_base(const char* p, size_t n) :
-    ::orcus::parser_base(p, n, false), mp_impl(std::make_unique<impl>())
+    orcus::parser_base(p, n), mp_impl(std::make_unique<impl>())
 {
 
     set_numeric_parser(parse_numeric_json);

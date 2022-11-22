@@ -118,7 +118,7 @@ protected:
     bool m_root_elem_open:1;
 
 protected:
-    parser_base(const char* content, size_t size, bool transient_stream);
+    parser_base(const char* content, size_t size);
     ~parser_base();
 
     void next_check()

@@ -135,7 +135,6 @@ public:
     typedef ConfigT config_type;
 
     sax_parser(const char* content, const size_t size, handler_type& handler);
-    sax_parser(const char* content, const size_t size, bool transient_stream, handler_type& handler);
     ~sax_parser() = default;
 
     void parse();
@@ -165,15 +164,7 @@ private:
 template<typename HandlerT, typename ConfigT>
 sax_parser<HandlerT,ConfigT>::sax_parser(
     const char* content, const size_t size, handler_type& handler) :
-    sax::parser_base(content, size, false),
-    m_handler(handler)
-{
-}
-
-template<typename HandlerT, typename ConfigT>
-sax_parser<HandlerT,ConfigT>::sax_parser(
-    const char* content, const size_t size, bool transient_stream, handler_type& handler) :
-    sax::parser_base(content, size, transient_stream),
+    sax::parser_base(content, size),
     m_handler(handler)
 {
 }
@@ -433,7 +424,7 @@ void sax_parser<HandlerT,ConfigT>::cdata()
         {
             // Found ']]>'.
             size_t cdata_len = i - 2;
-            m_handler.characters(std::string_view(p0, cdata_len), transient_stream());
+            m_handler.characters(std::string_view(p0, cdata_len), false);
             next();
             return;
         }
@@ -526,7 +517,7 @@ void sax_parser<HandlerT,ConfigT>::characters()
             buf.append(p0, mp_char-p0);
             characters_with_encoded_char(buf);
             if (buf.empty())
-                m_handler.characters(std::string_view{}, transient_stream());
+                m_handler.characters(std::string_view{}, false);
             else
                 m_handler.characters(std::string_view(buf.get(), buf.size()), true);
             return;
@@ -536,7 +527,7 @@ void sax_parser<HandlerT,ConfigT>::characters()
     if (mp_char > p0)
     {
         std::string_view val(p0, mp_char-p0);
-        m_handler.characters(val, transient_stream());
+        m_handler.characters(val, false);
     }
 }
 

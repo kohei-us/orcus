@@ -140,10 +140,6 @@ public:
         const char* content, const size_t size, const tokens& _tokens,
         xmlns_context& ns_cxt, handler_type& handler);
 
-    sax_token_parser(
-        const char* content, const size_t size, bool transient_stream,
-        const tokens& _tokens, xmlns_context& ns_cxt, handler_type& handler);
-
     ~sax_token_parser() = default;
 
     void parse();
@@ -201,15 +197,6 @@ sax_token_parser<HandlerT>::sax_token_parser(
     const char* content, const size_t size, const tokens& _tokens, xmlns_context& ns_cxt, handler_type& handler) :
     m_wrapper(_tokens, handler),
     m_parser(content, size, ns_cxt, m_wrapper)
-{
-}
-
-template<typename HandlerT>
-sax_token_parser<HandlerT>::sax_token_parser(
-    const char* content, const size_t size, bool transient_stream,
-    const tokens& _tokens, xmlns_context& ns_cxt, handler_type& handler) :
-    m_wrapper(_tokens, handler),
-    m_parser(content, size, transient_stream, ns_cxt, m_wrapper)
 {
 }
 

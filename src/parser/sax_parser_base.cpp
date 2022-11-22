@@ -108,8 +108,8 @@ struct parser_base::impl
     std::vector<std::unique_ptr<cell_buffer>> m_cell_buffers;
 };
 
-parser_base::parser_base(const char* content, size_t size, bool transient_stream) :
-    ::orcus::parser_base(content, size, transient_stream),
+parser_base::parser_base(const char* content, size_t size) :
+    ::orcus::parser_base(content, size),
     mp_impl(std::make_unique<impl>()),
     m_nest_level(0),
     m_buffer_pos(0),
@@ -322,7 +322,7 @@ bool parser_base::value(std::string_view& str, bool decode)
     // Skip the closing quote.
     next();
 
-    return transient_stream();
+    return false;
 }
 
 void parser_base::name(std::string_view& str)

@@ -27,20 +27,17 @@ protected:
     const char* const mp_begin;
     const char* mp_char;
     const char* mp_end;
-    const bool m_transient_stream;
 
 private:
     numeric_parser_type m_func_parse_numeric;
 
 protected:
-    parser_base(const char* p, size_t n, bool transient_stream);
+    parser_base(const char* p, size_t n);
 
     void set_numeric_parser(const numeric_parser_type& func)
     {
         m_func_parse_numeric = func;
     }
-
-    bool transient_stream() const { return m_transient_stream; }
 
     bool has_char() const
     {

@@ -18,7 +18,7 @@
 namespace orcus { namespace css {
 
 parser_base::parser_base(const char* p, size_t n) :
-    ::orcus::parser_base(p, n, false),
+    orcus::parser_base(p, n),
     m_simple_selector_count(0),
     m_combinator(combinator_t::descendant) {}
 

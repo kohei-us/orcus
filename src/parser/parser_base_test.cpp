@@ -16,7 +16,7 @@ void test_skip_space_and_control()
     class _test_type : public orcus::parser_base
     {
     public:
-        _test_type(const char* p, size_t n) : orcus::parser_base(p, n, false) {}
+        _test_type(const char* p, size_t n) : orcus::parser_base(p, n) {}
 
         void run()
         {

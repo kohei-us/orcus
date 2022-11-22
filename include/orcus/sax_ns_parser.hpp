@@ -215,8 +215,6 @@ public:
     typedef HandlerT handler_type;
 
     sax_ns_parser(const char* content, const size_t size, xmlns_context& ns_cxt, handler_type& handler);
-    sax_ns_parser(const char* content, const size_t size, bool transient_stream,
-                  xmlns_context& ns_cxt, handler_type& handler);
     ~sax_ns_parser() = default;
 
     /**
@@ -361,13 +359,6 @@ template<typename HandlerT>
 sax_ns_parser<HandlerT>::sax_ns_parser(
     const char* content, const size_t size, xmlns_context& ns_cxt, handler_type& handler) :
     m_wrapper(ns_cxt, handler), m_parser(content, size, m_wrapper)
-{
-}
-
-template<typename HandlerT>
-sax_ns_parser<HandlerT>::sax_ns_parser(
-    const char* content, const size_t size, bool transient_stream, xmlns_context& ns_cxt, handler_type& handler) :
-    m_wrapper(ns_cxt, handler), m_parser(content, size, transient_stream, m_wrapper)
 {
 }
 
