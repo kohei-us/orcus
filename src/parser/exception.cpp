@@ -81,6 +81,21 @@ std::string build_offset_msg(std::ptrdiff_t offset)
     return os.str();
 }
 
+std::string build_message(std::string_view msg_before, char c, std::string_view msg_after)
+{
+    std::ostringstream os;
+    os << msg_before << c << msg_after;
+    return os.str();
+}
+
+std::string build_message(
+    std::string_view msg_before, std::string_view msg, std::string_view msg_after)
+{
+    std::ostringstream os;
+    os << msg_before << msg << msg_after;
+    return os.str();
+}
+
 }
 
 parse_error::parse_error(const std::string& msg, std::ptrdiff_t offset) :
@@ -98,21 +113,6 @@ parse_error::parse_error(const std::string& cls, const std::string& msg, std::pt
 std::ptrdiff_t parse_error::offset() const
 {
     return m_offset;
-}
-
-std::string parse_error::build_message(std::string_view msg_before, char c, std::string_view msg_after)
-{
-    std::ostringstream os;
-    os << msg_before << c << msg_after;
-    return os.str();
-}
-
-std::string parse_error::build_message(
-    std::string_view msg_before, std::string_view msg, std::string_view msg_after)
-{
-    std::ostringstream os;
-    os << msg_before << msg << msg_after;
-    return os.str();
 }
 
 void parse_error::throw_with(
