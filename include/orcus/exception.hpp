@@ -87,17 +87,24 @@ public:
 };
 
 /**
- * Exception related to parsing error that includes the offset in the stream
+ * Exception related to a parsing error that includes an offset in the stream
  * where the error occurred.
  */
 class ORCUS_PSR_DLLPUBLIC parse_error : public general_error
 {
     std::ptrdiff_t m_offset;  /// offset in the stream where the error occurred.
 
-public:
-    parse_error(std::string msg, std::ptrdiff_t offset);
+protected:
     parse_error(const std::string& cls, const std::string& msg, std::ptrdiff_t offset);
 
+public:
+    parse_error(std::string msg, std::ptrdiff_t offset);
+
+    /**
+     * Get the offset in a stream associated with the error.
+     *
+     * @return offset in a stream where the error occurred.
+     */
     std::ptrdiff_t offset() const;
 
     static void throw_with(

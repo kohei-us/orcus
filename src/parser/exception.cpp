@@ -96,14 +96,14 @@ std::string build_message(
 
 }
 
-parse_error::parse_error(std::string msg, std::ptrdiff_t offset) :
-    general_error(std::move(msg)), m_offset(offset)
+parse_error::parse_error(const std::string& cls, const std::string& msg, std::ptrdiff_t offset) :
+    general_error(cls, msg), m_offset(offset)
 {
     append_msg(build_offset_msg(offset));
 }
 
-parse_error::parse_error(const std::string& cls, const std::string& msg, std::ptrdiff_t offset) :
-    general_error(cls, msg), m_offset(offset)
+parse_error::parse_error(std::string msg, std::ptrdiff_t offset) :
+    general_error(std::move(msg)), m_offset(offset)
 {
     append_msg(build_offset_msg(offset));
 }
