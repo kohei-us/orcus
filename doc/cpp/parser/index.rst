@@ -5,6 +5,7 @@ Low-Level Parsers and Utilities
 .. toctree::
    :maxdepth: 1
 
+   exception.rst
    stream.rst
    util.rst
    css.rst

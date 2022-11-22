@@ -119,13 +119,22 @@ public:
 };
 
 /**
- * XML parser that tokenizes element and attribute names while parsing.
+ * SAX parser that tokenizes element and attribute names while parsing. All
+ * pre-defined elements and attribute names are translated into integral
+ * identifiers via use of @ref tokens.  The user of this class needs to
+ * provide a pre-defined set of element and attribute names at construction
+ * time.
+ *
+ * This parser internally uses @ref sax_ns_parser.
+ *
+ * @tparam HandlerT Handler type with member functions for event callbacks.
+ *         Refer to @ref sax_token_handler.
  */
-template<typename _Handler>
+template<typename HandlerT>
 class sax_token_parser
 {
 public:
-    typedef _Handler    handler_type;
+    typedef HandlerT handler_type;
 
     sax_token_parser(
         const char* content, const size_t size, const tokens& _tokens,
@@ -135,7 +144,7 @@ public:
         const char* content, const size_t size, bool transient_stream,
         const tokens& _tokens, xmlns_context& ns_cxt, handler_type& handler);
 
-    ~sax_token_parser();
+    ~sax_token_parser() = default;
 
     void parse();
 
@@ -187,16 +196,16 @@ private:
     sax_ns_parser<handler_wrapper> m_parser;
 };
 
-template<typename _Handler>
-sax_token_parser<_Handler>::sax_token_parser(
+template<typename HandlerT>
+sax_token_parser<HandlerT>::sax_token_parser(
     const char* content, const size_t size, const tokens& _tokens, xmlns_context& ns_cxt, handler_type& handler) :
     m_wrapper(_tokens, handler),
     m_parser(content, size, ns_cxt, m_wrapper)
 {
 }
 
-template<typename _Handler>
-sax_token_parser<_Handler>::sax_token_parser(
+template<typename HandlerT>
+sax_token_parser<HandlerT>::sax_token_parser(
     const char* content, const size_t size, bool transient_stream,
     const tokens& _tokens, xmlns_context& ns_cxt, handler_type& handler) :
     m_wrapper(_tokens, handler),
@@ -204,18 +213,13 @@ sax_token_parser<_Handler>::sax_token_parser(
 {
 }
 
-template<typename _Handler>
-sax_token_parser<_Handler>::~sax_token_parser()
-{
-}
-
-template<typename _Handler>
-void sax_token_parser<_Handler>::parse()
+template<typename HandlerT>
+void sax_token_parser<HandlerT>::parse()
 {
     m_parser.parse();
 }
 
-}
+} // namespace orcus
 
 #endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

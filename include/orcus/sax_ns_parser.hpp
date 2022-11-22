@@ -205,8 +205,8 @@ public:
  * This parser keeps track of element scopes and detects non-matching element
  * pairs.
  *
- * @tparam HandlerT Hanlder type with member functions for event callbacks.
- *         Refer to @p sax_ns_handler.
+ * @tparam HandlerT Handler type with member functions for event callbacks.
+ *         Refer to @ref sax_ns_handler.
  */
 template<typename HandlerT>
 class sax_ns_parser

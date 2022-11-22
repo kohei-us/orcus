@@ -3,11 +3,23 @@
 Stream
 ======
 
+Stream buffers
+--------------
+
 .. doxygenclass:: orcus::file_content
    :members:
 
 .. doxygenclass:: orcus::memory_content
    :members:
+
+Exceptions
+----------
+
+.. doxygenclass:: orcus::parse_error
+   :members:
+
+Utility functions
+-----------------
 
 .. doxygenstruct:: orcus::line_with_offset
    :members:

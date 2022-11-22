@@ -123,8 +123,8 @@ public:
  * This parser additionally records the begin and end offset positions of each
  * element.
  *
- * @tparam HandlerT Hanlder type with member functions for event callbacks.
- *         Refer to @p sax_handler.
+ * @tparam HandlerT Handler type with member functions for event callbacks.
+ *         Refer to @ref sax_handler.
  * @tparam ConfigT Parser configuration.
  */
 template<typename HandlerT, typename ConfigT = sax_parser_default_config>
