@@ -96,7 +96,7 @@ void test_yaml_invalids()
             doc.load(strm.str());
             assert(!"yaml::parse_error was not thrown, but expected to be.");
         }
-        catch (const yaml::parse_error&)
+        catch (const parse_error&)
         {
             // This is expected.
         }

@@ -15,15 +15,6 @@
 
 namespace orcus { namespace yaml {
 
-class ORCUS_PSR_DLLPUBLIC parse_error : public ::orcus::parse_error
-{
-public:
-    parse_error(const std::string& msg, std::ptrdiff_t offset);
-
-    static void throw_with(const char* msg_before, char c, const char* msg_after, std::ptrdiff_t offset);
-    static void throw_with(const char* msg_before, const char* p, size_t n, const char* msg_after, std::ptrdiff_t offset);
-};
-
 namespace detail {
 
 enum class scope_t

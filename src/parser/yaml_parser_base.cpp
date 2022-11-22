@@ -19,20 +19,6 @@
 
 namespace orcus { namespace yaml {
 
-parse_error::parse_error(const std::string& msg, std::ptrdiff_t offset) :
-    ::orcus::parse_error(msg, offset) {}
-
-void parse_error::throw_with(const char* msg_before, char c, const char* msg_after, std::ptrdiff_t offset)
-{
-    throw parse_error(build_message(msg_before, c, msg_after), offset);
-}
-
-void parse_error::throw_with(
-    const char* msg_before, const char* p, size_t n, const char* msg_after, std::ptrdiff_t offset)
-{
-    throw parse_error(build_message(msg_before, {p, n}, msg_after), offset);
-}
-
 struct scope
 {
     size_t width;
@@ -439,7 +425,7 @@ parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
         // Key has not been found.
         detail::scope_t st = get_scope_type();
         if (st == detail::scope_t::map)
-            throw yaml::parse_error("key was expected, but not found.", offset_last_char_of_line());
+            throw parse_error("key was expected, but not found.", offset_last_char_of_line());
     }
 
     return kv;
@@ -493,7 +479,7 @@ void parser_base::handle_line_in_literal(size_t indent)
         // Start a new multi-line string scope.
 
         if (indent == cur_scope)
-            throw yaml::parse_error("parse: first line of a literal block must be indented.", offset());
+            throw parse_error("parse: first line of a literal block must be indented.", offset());
 
         push_scope(indent);
         set_scope_type(yaml::detail::scope_t::multi_line_string);
