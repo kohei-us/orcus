@@ -108,7 +108,7 @@ void test_css_invalids()
             doc.load(content.str());
             assert(!"css::parse_error was not thrown, but expected to be.");
         }
-        catch (const css::parse_error&)
+        catch (const parse_error&)
         {
             // This is expected.
         }

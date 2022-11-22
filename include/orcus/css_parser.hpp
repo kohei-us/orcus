@@ -285,7 +285,7 @@ void css_parser<_Handler>::rule()
                 block();
             break;
             default:
-                css::parse_error::throw_with("rule: failed to parse '", c, "'");
+                parse_error::throw_with("rule: failed to parse '", c, "'", offset());
         }
     }
 }
@@ -298,7 +298,7 @@ void css_parser<_Handler>::at_rule_name()
     next();
     char c = cur_char();
     if (!is_alpha(c))
-        throw css::parse_error("at_rule_name: first character of an at-rule name must be an alphabet.");
+        throw parse_error("at_rule_name: first character of an at-rule name must be an alphabet.", offset());
 
     const char* p;
     size_t len;
@@ -389,8 +389,8 @@ void css_parser<_Handler>::simple_selector_name()
                     identifier(p, n);
                     css::pseudo_element_t elem = css::to_pseudo_element({p, n});
                     if (!elem)
-                        css::parse_error::throw_with(
-                            "selector_name: unknown pseudo element '", p, n, "'");
+                        parse_error::throw_with(
+                            "selector_name: unknown pseudo element '", {p, n}, "'", offset());
 
                     m_handler.simple_selector_pseudo_element(elem);
                 }
@@ -400,8 +400,8 @@ void css_parser<_Handler>::simple_selector_name()
                     identifier(p, n);
                     css::pseudo_class_t pc = css::to_pseudo_class({p, n});
                     if (!pc)
-                        css::parse_error::throw_with(
-                            "selector_name: unknown pseudo class '", p, n, "'");
+                        parse_error::throw_with(
+                            "selector_name: unknown pseudo class '", {p, n}, "'", offset());
 
                     m_handler.simple_selector_pseudo_class(pc);
                 }
@@ -430,8 +430,8 @@ void css_parser<_Handler>::property_name()
     assert(has_char());
     char c = cur_char();
     if (!is_alpha(c) && c != '.')
-        css::parse_error::throw_with(
-            "property_name: first character of a name must be an alphabet or a dot, but found '", c, "'");
+        parse_error::throw_with(
+            "property_name: first character of a name must be an alphabet or a dot, but found '", c, "'", offset());
 
     const char* p;
     size_t len;
@@ -453,7 +453,7 @@ void css_parser<_Handler>::property()
     m_handler.begin_property();
     property_name();
     if (cur_char() != ':')
-        throw css::parse_error("property: ':' expected.");
+        throw parse_error("property: ':' expected.", offset());
     next();
     skip_comments_and_blanks();
 
@@ -537,7 +537,7 @@ void css_parser<_Handler>::function_value(std::string_view v)
     assert(cur_char() == '(');
     css::property_function_t func = css::to_property_function(v);
     if (func == css::property_function_t::unknown)
-        css::parse_error::throw_with("function_value: unknown function '", v, "'");
+        parse_error::throw_with("function_value: unknown function '", v, "'", offset());
 
     // Move to the first character of the first argument.
     next();
@@ -561,12 +561,12 @@ void css_parser<_Handler>::function_value(std::string_view v)
             function_url();
         break;
         default:
-            css::parse_error::throw_with("function_value: unhandled function '", v, "'");
+            parse_error::throw_with("function_value: unhandled function '", v, "'", offset());
     }
 
     char c = cur_char();
     if (c != ')')
-        css::parse_error::throw_with("function_value: ')' expected but '", c, "' found.");
+        parse_error::throw_with("function_value: ')' expected but '", c, "' found.", offset());
 
     next();
     skip_comments_and_blanks();
@@ -594,7 +594,7 @@ void css_parser<_Handler>::function_rgb(bool alpha)
         c = cur_char();
 
         if (c != ',')
-            css::parse_error::throw_with("function_rgb: ',' expected but '", c, "' found.");
+            parse_error::throw_with("function_rgb: ',' expected but '", c, "' found.", offset());
 
         next();
         skip_comments_and_blanks();
@@ -604,7 +604,7 @@ void css_parser<_Handler>::function_rgb(bool alpha)
     {
         c = cur_char();
         if (c != ',')
-            css::parse_error::throw_with("function_rgb: ',' expected but '", c, "' found.");
+            parse_error::throw_with("function_rgb: ',' expected but '", c, "' found.", offset());
 
         next();
         skip_comments_and_blanks();
@@ -641,7 +641,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
 
     char c = cur_char();
     if (c != ',')
-        css::parse_error::throw_with("function_hsl: ',' expected but '", c, "' found.");
+        parse_error::throw_with("function_hsl: ',' expected but '", c, "' found.", offset());
 
     next();
     skip_comments_and_blanks();
@@ -652,7 +652,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
 
     c = cur_char();
     if (c != ',')
-        css::parse_error::throw_with("function_hsl: ',' expected but '", c, "' found.");
+        parse_error::throw_with("function_hsl: ',' expected but '", c, "' found.", offset());
 
     next();
     skip_comments_and_blanks();
@@ -669,7 +669,7 @@ void css_parser<_Handler>::function_hsl(bool alpha)
 
     c = cur_char();
     if (c != ',')
-        css::parse_error::throw_with("function_hsl: ',' expected but '", c, "' found.");
+        parse_error::throw_with("function_hsl: ',' expected but '", c, "' found.", offset());
 
     next();
     skip_comments_and_blanks();
@@ -761,7 +761,7 @@ void css_parser<_Handler>::block()
     }
 
     if (cur_char() != '}')
-        throw css::parse_error("block: '}' expected.");
+        throw parse_error("block: '}' expected.", offset());
 
     m_handler.end_block();
 

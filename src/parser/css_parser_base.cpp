@@ -15,28 +15,7 @@
 #include <cmath>
 #include <limits>
 
-using namespace std;
-
 namespace orcus { namespace css {
-
-parse_error::parse_error(const std::string& msg) :
-    orcus::parse_error(msg, 0) {}
-
-void parse_error::throw_with(const char* msg_before, char c, const char* msg_after)
-{
-    throw parse_error(build_message(msg_before, c, msg_after));
-}
-
-void parse_error::throw_with(
-    const char* msg_before, const char* p, size_t n, const char* msg_after)
-{
-    throw parse_error(build_message(msg_before, {p, n}, msg_after));
-}
-
-void parse_error::throw_with(const char* msg_before, std::string_view s, const char* msg_after)
-{
-    throw parse_error(build_message(msg_before, s, msg_after));
-}
 
 parser_base::parser_base(const char* p, size_t n) :
     ::orcus::parser_base(p, n, false),
@@ -80,7 +59,7 @@ uint8_t parser_base::parse_uint8()
     }
 
     if (!len)
-        throw css::parse_error("parse_uint8: no digit encountered.");
+        throw parse_error("parse_uint8: no digit encountered.", offset());
 
     int maxval = std::numeric_limits<uint8_t>::max();
     if (val > maxval)
@@ -91,20 +70,20 @@ uint8_t parser_base::parse_uint8()
 
 std::string_view parser_base::parse_value()
 {
-    auto throw_invalid = [](uint8_t n_bytes)
+    auto throw_invalid = [this](uint8_t n_bytes)
     {
         std::ostringstream os;
         os << "parse_value: invalid utf-8 byte length (" << int(n_bytes) << ")";
-        throw css::parse_error(os.str());
+        throw parse_error(os.str(), offset());
     };
 
-    auto check_byte_length_or_throw = [](uint8_t n_bytes, std::size_t max_size)
+    auto check_byte_length_or_throw = [this](uint8_t n_bytes, std::size_t max_size)
     {
         if (std::size_t(n_bytes) > max_size)
         {
             std::ostringstream os;
             os << "parse_value: utf-8 byte length is " << int(n_bytes) << " but only " << max_size << " bytes remaining.";
-            throw css::parse_error(os.str());
+            throw parse_error(os.str(), offset());
         }
     };
 
@@ -126,7 +105,7 @@ std::string_view parser_base::parse_value()
         case 1:
         {
             if (!is_alpha(c) && !is_numeric(c) && !is_in(c, "-+.#"))
-                css::parse_error::throw_with("parse_value: illegal first character of a value '", c, "'");
+                parse_error::throw_with("parse_value: illegal first character of a value '", c, "'", offset());
             break;
         }
         case 2:
@@ -180,8 +159,8 @@ double parser_base::parse_percent()
     double v = parse_double_or_throw();
 
     if (*mp_char != '%')
-        css::parse_error::throw_with(
-            "parse_percent: '%' expected after the numeric value, but '", *mp_char, "' found.");
+        parse_error::throw_with(
+            "parse_percent: '%' expected after the numeric value, but '", *mp_char, "' found.", offset());
 
     next(); // skip the '%'.
     return v;
@@ -191,7 +170,7 @@ double parser_base::parse_double_or_throw()
 {
     double v = parse_double();
     if (std::isnan(v))
-        throw css::parse_error("parse_double: failed to parse double precision value.");
+        throw parse_error("parse_double: failed to parse double precision value.", offset());
     return v;
 }
 
@@ -202,7 +181,7 @@ void parser_base::literal(const char*& p, size_t& len, char quote)
     skip_to(p, len, quote);
 
     if (cur_char() != quote)
-        throw css::parse_error("literal: end quote has never been reached.");
+        throw parse_error("literal: end quote has never been reached.", offset());
 }
 
 void parser_base::skip_to(const char*&p, size_t& len, char c)
@@ -339,8 +318,8 @@ void parser_base::skip_comments_and_blanks()
 void parser_base::set_combinator(char c, css::combinator_t combinator)
 {
     if (!m_simple_selector_count)
-        css::parse_error::throw_with(
-            "set_combinator: combinator '", c, "' encountered without parent element.");
+        parse_error::throw_with(
+            "set_combinator: combinator '", c, "' encountered without parent element.", offset());
 
     m_combinator = combinator;
     next();
