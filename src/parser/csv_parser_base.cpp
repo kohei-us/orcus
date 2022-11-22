@@ -15,15 +15,6 @@ parser_config::parser_config() :
     text_qualifier('\0'),
     trim_cell_value(false) {}
 
-parse_error::parse_error(const std::string& msg) : m_msg(msg) {}
-
-parse_error::~parse_error() = default;
-
-const char* parse_error::what() const throw()
-{
-    return m_msg.c_str();
-}
-
 parser_base::parser_base(
     const char* p, size_t n, const csv::parser_config& config) :
     ::orcus::parser_base(p, n, false), m_config(config)

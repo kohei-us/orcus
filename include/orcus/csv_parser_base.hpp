@@ -54,15 +54,6 @@ struct ORCUS_PSR_DLLPUBLIC parser_config
     parser_config();
 };
 
-class ORCUS_PSR_DLLPUBLIC parse_error : public std::exception
-{
-    std::string m_msg;
-public:
-    parse_error(const std::string& msg);
-    virtual ~parse_error();
-    virtual const char* what() const throw();
-};
-
 class ORCUS_PSR_DLLPUBLIC parser_base : public ::orcus::parser_base
 {
 protected:

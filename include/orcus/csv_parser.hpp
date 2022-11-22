@@ -135,7 +135,7 @@ void csv_parser<_Handler>::row()
         }
 
         if (!is_delim(c))
-            throw orcus::csv::parse_error("expected a delimiter");
+            throw orcus::parse_error("expected a delimiter", offset());
 
         next();
 
@@ -263,7 +263,7 @@ void csv_parser<_Handler>::parse_cell_with_quote(const char* p0, size_t len0)
     }
 
     // Stream ended prematurely.
-    throw csv::parse_error("stream ended prematurely while parsing quoted cell.");
+    throw parse_error("stream ended prematurely while parsing quoted cell.", offset());
 }
 
 template<typename _Handler>

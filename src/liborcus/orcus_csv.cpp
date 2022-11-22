@@ -158,9 +158,9 @@ struct orcus_csv::impl
             // The parser has decided to end the import due to the destination
             // sheet being full.
         }
-        catch (const csv::parse_error& e)
+        catch (const parse_error& e)
         {
-            cout << "parse failed: " << e.what() << endl;
+            cout << "parse failed at offset " << e.offset() << ": " << e.what() << endl;
         }
     }
 };
