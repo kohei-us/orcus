@@ -13,21 +13,19 @@ using namespace std;
 
 namespace orcus {
 
-general_error::general_error(const string& msg) :
-    m_msg(msg)
+general_error::general_error(std::string msg) :
+    m_msg(std::move(msg))
 {
 }
 
 general_error::general_error(const std::string& cls, const std::string& msg)
 {
-    ostringstream os;
+    std::ostringstream os;
     os << cls << ": " << msg;
     m_msg = os.str();
 }
 
-general_error::~general_error() noexcept
-{
-}
+general_error::~general_error() noexcept = default;
 
 const char* general_error::what() const noexcept
 {
@@ -44,33 +42,33 @@ invalid_arg_error::invalid_arg_error(const std::string& msg) :
 
 invalid_arg_error::~invalid_arg_error() noexcept {}
 
-xml_structure_error::xml_structure_error(const string& msg) :
-    general_error(msg) {}
+xml_structure_error::xml_structure_error(std::string msg) :
+    general_error(std::move(msg)) {}
 
-xml_structure_error::~xml_structure_error() noexcept {}
+xml_structure_error::~xml_structure_error() noexcept = default;
 
-json_structure_error::json_structure_error(const string& msg) :
-    general_error(msg) {}
+json_structure_error::json_structure_error(std::string msg) :
+    general_error(std::move(msg)) {}
 
-json_structure_error::~json_structure_error() noexcept {}
+json_structure_error::~json_structure_error() noexcept = default;
 
-invalid_map_error::invalid_map_error(const string& msg) :
-    general_error(msg) {}
+invalid_map_error::invalid_map_error(std::string msg) :
+    general_error(std::move(msg)) {}
 
-invalid_map_error::~invalid_map_error() noexcept {}
+invalid_map_error::~invalid_map_error() noexcept = default;
 
-value_error::value_error(const string& msg) :
-    general_error(msg) {}
+value_error::value_error(std::string msg) :
+    general_error(std::move(msg)) {}
 
-value_error::~value_error() noexcept {}
+value_error::~value_error() noexcept = default;
 
-xpath_error::xpath_error(const string& msg) : general_error(msg) {}
+xpath_error::xpath_error(std::string msg) : general_error(std::move(msg)) {}
 
-xpath_error::~xpath_error() noexcept {}
+xpath_error::~xpath_error() noexcept = default;
 
-interface_error::interface_error(const std::string& msg) : general_error(msg) {}
+interface_error::interface_error(std::string msg) : general_error(std::move(msg)) {}
 
-interface_error::~interface_error() noexcept {}
+interface_error::~interface_error() noexcept = default;
 
 namespace {
 
@@ -98,8 +96,8 @@ std::string build_message(
 
 }
 
-parse_error::parse_error(const std::string& msg, std::ptrdiff_t offset) :
-    general_error(msg), m_offset(offset)
+parse_error::parse_error(std::string msg, std::ptrdiff_t offset) :
+    general_error(std::move(msg)), m_offset(offset)
 {
     append_msg(build_offset_msg(offset));
 }

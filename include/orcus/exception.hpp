@@ -18,7 +18,7 @@ namespace orcus {
 class ORCUS_PSR_DLLPUBLIC general_error : public std::exception
 {
 public:
-    explicit general_error(const std::string& msg);
+    explicit general_error(std::string msg);
     explicit general_error(const std::string& cls, const std::string& msg);
     virtual ~general_error() noexcept;
     virtual const char* what() const noexcept;
@@ -27,7 +27,7 @@ protected:
     void append_msg(const std::string& s);
 
 private:
-    ::std::string m_msg;
+    std::string m_msg;
 };
 
 class ORCUS_PSR_DLLPUBLIC invalid_arg_error : public std::invalid_argument
@@ -40,28 +40,28 @@ public:
 class ORCUS_PSR_DLLPUBLIC xml_structure_error : public general_error
 {
 public:
-    explicit xml_structure_error(const ::std::string& msg);
+    explicit xml_structure_error(std::string msg);
     virtual ~xml_structure_error() noexcept;
 };
 
 class ORCUS_PSR_DLLPUBLIC json_structure_error : public general_error
 {
 public:
-    explicit json_structure_error(const ::std::string& msg);
+    explicit json_structure_error(std::string msg);
     virtual ~json_structure_error() noexcept;
 };
 
 class ORCUS_PSR_DLLPUBLIC invalid_map_error : public general_error
 {
 public:
-    explicit invalid_map_error(const ::std::string& msg);
+    explicit invalid_map_error(std::string msg);
     virtual ~invalid_map_error() noexcept;
 };
 
 class ORCUS_PSR_DLLPUBLIC value_error : public general_error
 {
 public:
-    explicit value_error(const std::string& msg);
+    explicit value_error(std::string msg);
     virtual ~value_error() noexcept;
 };
 
@@ -71,7 +71,7 @@ public:
 class ORCUS_PSR_DLLPUBLIC xpath_error : public general_error
 {
 public:
-    xpath_error(const std::string& msg);
+    xpath_error(std::string msg);
     virtual ~xpath_error() noexcept;
 };
 
@@ -82,7 +82,7 @@ public:
 class ORCUS_PSR_DLLPUBLIC interface_error : public general_error
 {
 public:
-    interface_error(const std::string& msg);
+    interface_error(std::string msg);
     virtual ~interface_error() noexcept;
 };
 
@@ -95,7 +95,7 @@ class ORCUS_PSR_DLLPUBLIC parse_error : public general_error
     std::ptrdiff_t m_offset;  /// offset in the stream where the error occurred.
 
 public:
-    parse_error(const std::string& msg, std::ptrdiff_t offset);
+    parse_error(std::string msg, std::ptrdiff_t offset);
     parse_error(const std::string& cls, const std::string& msg, std::ptrdiff_t offset);
 
     std::ptrdiff_t offset() const;
