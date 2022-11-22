@@ -37,7 +37,7 @@ class ORCUS_PSR_DLLPUBLIC malformed_xml_error : public ::orcus::parse_error
 public:
     malformed_xml_error() = delete;
     malformed_xml_error(const std::string& msg, std::ptrdiff_t offset);
-    virtual ~malformed_xml_error() throw();
+    virtual ~malformed_xml_error();
 };
 
 /**

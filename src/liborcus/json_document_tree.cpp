@@ -106,12 +106,12 @@ std::ostream& operator<< (std::ostream& os, node_t nt)
 document_error::document_error(const std::string& msg) :
     general_error("json::document_error", msg) {}
 
-document_error::~document_error() throw() {}
+document_error::~document_error() = default;
 
 key_value_error::key_value_error(const std::string& msg) :
     document_error(msg) {}
 
-key_value_error::~key_value_error() throw() {}
+key_value_error::~key_value_error() = default;
 
 struct json_value final
 {

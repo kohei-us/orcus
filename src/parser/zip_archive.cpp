@@ -32,7 +32,7 @@ zip_error::zip_error(const std::string& msg) : m_msg()
     m_msg = os.str();
 }
 
-zip_error::~zip_error() throw() {}
+zip_error::~zip_error() = default;
 
 const char* zip_error::what() const throw()
 {

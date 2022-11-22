@@ -26,7 +26,7 @@ class ORCUS_PSR_DLLPUBLIC zip_error : public std::exception
 public:
     zip_error();
     zip_error(const std::string& msg);
-    virtual ~zip_error() throw();
+    virtual ~zip_error();
 
     virtual const char* what() const throw();
 };

@@ -30,7 +30,7 @@ namespace orcus { namespace yaml {
 document_error::document_error(const std::string& msg) :
     general_error("yaml_document_error", msg) {}
 
-document_error::~document_error() throw() {}
+document_error::~document_error() = default;
 
 struct yaml_value
 {

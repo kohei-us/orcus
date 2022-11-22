@@ -17,7 +17,7 @@ parser_config::parser_config() :
 
 parse_error::parse_error(const std::string& msg) : m_msg(msg) {}
 
-parse_error::~parse_error() throw() {}
+parse_error::~parse_error() = default;
 
 const char* parse_error::what() const throw()
 {

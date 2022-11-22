@@ -59,7 +59,7 @@ class ORCUS_PSR_DLLPUBLIC parse_error : public std::exception
     std::string m_msg;
 public:
     parse_error(const std::string& msg);
-    virtual ~parse_error() throw();
+    virtual ~parse_error();
     virtual const char* what() const throw();
 };
 

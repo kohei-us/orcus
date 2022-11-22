@@ -25,7 +25,7 @@ class ORCUS_DLLPUBLIC document_error : public general_error
 {
 public:
     document_error(const std::string& msg);
-    virtual ~document_error() throw();
+    virtual ~document_error();
 };
 
 enum class node_t : uint8_t
