@@ -19,32 +19,6 @@ namespace orcus {
 
 class tokens;
 
-namespace sax {
-
-#if ORCUS_DEBUG_SAX_PARSER
-template<typename _Attr, typename _Tokens>
-class attr_printer
-{
-public:
-    attr_printer(const _Tokens& tokens, const ::std::string& indent) :
-        m_tokens(tokens), m_indent(indent) {}
-
-    void operator() (const _Attr& attr) const
-    {
-        using namespace std;
-        cout << m_indent << "  attribute: "
-            << attr.ns << ":"
-            << m_tokens.get_token_name(attr.name) << "=\""
-            << attr.value.str() << "\"" << endl;
-    }
-private:
-    const _Tokens& m_tokens;
-    ::std::string m_indent;
-};
-#endif
-
-}
-
 class ORCUS_PSR_DLLPUBLIC sax_token_handler_wrapper_base
 {
 protected:
