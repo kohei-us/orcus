@@ -30,12 +30,12 @@ void parse_error::throw_with(const char* msg_before, char c, const char* msg_aft
 void parse_error::throw_with(
     const char* msg_before, const char* p, size_t n, const char* msg_after)
 {
-    throw parse_error(build_message(msg_before, p, n, msg_after));
+    throw parse_error(build_message(msg_before, {p, n}, msg_after));
 }
 
 void parse_error::throw_with(const char* msg_before, std::string_view s, const char* msg_after)
 {
-    throw parse_error(build_message(msg_before, s.data(), s.size(), msg_after));
+    throw parse_error(build_message(msg_before, s, msg_after));
 }
 
 parser_base::parser_base(const char* p, size_t n) :

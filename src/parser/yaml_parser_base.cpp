@@ -30,7 +30,7 @@ void parse_error::throw_with(const char* msg_before, char c, const char* msg_aft
 void parse_error::throw_with(
     const char* msg_before, const char* p, size_t n, const char* msg_after, std::ptrdiff_t offset)
 {
-    throw parse_error(build_message(msg_before, p, n, msg_after), offset);
+    throw parse_error(build_message(msg_before, {p, n}, msg_after), offset);
 }
 
 struct scope

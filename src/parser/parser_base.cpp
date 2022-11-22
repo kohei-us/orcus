@@ -21,65 +21,6 @@
 
 namespace orcus {
 
-namespace {
-
-std::string build_offset_msg(std::ptrdiff_t offset)
-{
-    std::ostringstream os;
-    os << " (offset=" << offset << ')';
-    return os.str();
-}
-
-}
-
-parse_error::parse_error(const std::string& msg, std::ptrdiff_t offset) :
-    general_error(msg), m_offset(offset)
-{
-    append_msg(build_offset_msg(offset));
-}
-
-parse_error::parse_error(const std::string& cls, const std::string& msg, std::ptrdiff_t offset) :
-    general_error(cls, msg), m_offset(offset)
-{
-    append_msg(build_offset_msg(offset));
-}
-
-std::ptrdiff_t parse_error::offset() const
-{
-    return m_offset;
-}
-
-std::string parse_error::build_message(const char* msg_before, char c, const char* msg_after)
-{
-    std::ostringstream os;
-
-    if (msg_before)
-        os << msg_before;
-
-    os << c;
-
-    if (msg_after)
-        os << msg_after;
-
-    return os.str();
-}
-
-std::string parse_error::build_message(
-    const char* msg_before, const char* p, size_t n, const char* msg_after)
-{
-    std::ostringstream os;
-
-    if (msg_before)
-        os << msg_before;
-
-    os << std::string_view(p, n);
-
-    if (msg_after)
-        os << msg_after;
-
-    return os.str();
-}
-
 parser_base::parser_base(const char* p, size_t n, bool transient_stream) :
     mp_begin(p), mp_char(p), mp_end(p+n),
     m_transient_stream(transient_stream),

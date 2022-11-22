@@ -8,8 +8,8 @@
 #ifndef INCLUDED_ORCUS_PARSER_BASE_HPP
 #define INCLUDED_ORCUS_PARSER_BASE_HPP
 
-#include "orcus/env.hpp"
-#include "orcus/exception.hpp"
+#include "env.hpp"
+#include "exception.hpp"
 
 #include <string>
 #include <cstdlib>
@@ -18,24 +18,6 @@
 #include <functional>
 
 namespace orcus {
-
-/**
- * Exception related to parsing error that includes the offset in the stream
- * where the error occurred.
- */
-class ORCUS_PSR_DLLPUBLIC parse_error : public general_error
-{
-    std::ptrdiff_t m_offset;  /// offset in the stream where the error occurred.
-protected:
-    parse_error(const std::string& msg, std::ptrdiff_t offset);
-    parse_error(const std::string& cls, const std::string& msg, std::ptrdiff_t offset);
-
-    static std::string build_message(const char* msg_before, char c, const char* msg_after);
-    static std::string build_message(const char* msg_before, const char* p, size_t n, const char* msg_after);
-
-public:
-    std::ptrdiff_t offset() const;
-};
 
 class ORCUS_PSR_DLLPUBLIC parser_base
 {

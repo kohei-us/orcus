@@ -819,5 +819,8 @@ doc-sphinx:
 
 doc: doc-doxygen doc-sphinx
 
+doc-clean:
+	@rm -rf ./doc/_build ./doc/_doxygen
+
 
 

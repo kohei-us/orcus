@@ -12,12 +12,6 @@ Stream buffers
 .. doxygenclass:: orcus::memory_content
    :members:
 
-Exceptions
-----------
-
-.. doxygenclass:: orcus::parse_error
-   :members:
-
 Utility functions
 -----------------
 

@@ -86,6 +86,25 @@ public:
     virtual ~interface_error() noexcept;
 };
 
+/**
+ * Exception related to parsing error that includes the offset in the stream
+ * where the error occurred.
+ */
+class ORCUS_PSR_DLLPUBLIC parse_error : public general_error
+{
+    std::ptrdiff_t m_offset;  /// offset in the stream where the error occurred.
+
+protected:
+    parse_error(const std::string& msg, std::ptrdiff_t offset);
+    parse_error(const std::string& cls, const std::string& msg, std::ptrdiff_t offset);
+
+    static std::string build_message(std::string_view msg_before, char c, std::string_view msg_after);
+    static std::string build_message(std::string_view msg_before, std::string_view msg, std::string_view msg_after);
+
+public:
+    std::ptrdiff_t offset() const;
+};
+
 namespace detail {
 
 /**

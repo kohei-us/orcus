@@ -27,3 +27,5 @@ Exceptions
 .. doxygenclass:: orcus::interface_error
    :members:
 
+.. doxygenclass:: orcus::parse_error
+   :members:
