@@ -12,9 +12,6 @@ Utilities
 .. doxygenclass:: orcus::cell_buffer
    :members:
 
-.. doxygenclass:: orcus::zip_archive
-   :members:
-
 
 XML Types
 =========

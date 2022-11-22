@@ -7,6 +7,7 @@ Low-Level Parsers and Utilities
 
    exception.rst
    stream.rst
+   archive.rst
    util.rst
    css.rst
    csv.rst
