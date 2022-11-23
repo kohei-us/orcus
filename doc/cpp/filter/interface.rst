@@ -1,9 +1,9 @@
 
-Types and Interfaces
-====================
+Spreadsheet types and interfaces
+================================
 
 
-Global Interface
+Global interface
 ----------------
 
 .. doxygenclass:: orcus::iface::import_filter
@@ -14,7 +14,7 @@ Global Interface
 
 .. _spreadsheet-interface:
 
-Spreadsheet Interface
+Spreadsheet interface
 ---------------------
 
 import_array_formula
@@ -174,10 +174,10 @@ export_sheet
    :members:
 
 
-Spreadsheet Types
+Spreadsheet types
 -----------------
 
-Type Aliases
+Type aliases
 ^^^^^^^^^^^^
 
 .. doxygentypedef:: orcus::spreadsheet::row_t
@@ -246,7 +246,7 @@ Enums
 .. doxygenenum:: orcus::spreadsheet::pane_state_t
 
 
-Spreadsheet Global Functions
+Spreadsheet global functions
 ----------------------------
 
 .. doxygenfunction:: orcus::spreadsheet::get_default_column_width

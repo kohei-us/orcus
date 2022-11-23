@@ -1,6 +1,6 @@
 .. highlight:: cpp
 
-XML Writer
+XML writer
 ==========
 
 .. doxygenclass:: orcus::xml_writer

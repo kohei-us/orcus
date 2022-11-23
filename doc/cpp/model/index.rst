@@ -1,5 +1,5 @@
 
-Document Model
+Document model
 ==============
 
 .. toctree::

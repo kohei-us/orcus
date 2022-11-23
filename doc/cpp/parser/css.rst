@@ -1,18 +1,18 @@
 .. highlight:: cpp
 
-CSS Parser
+CSS parser
 ==========
 
 .. doxygenclass:: orcus::css_parser
    :members:
 
-Parser Handler
+Parser handler
 --------------
 
 .. doxygenclass:: orcus::css_handler
    :members:
 
-CSS Types
+CSS types
 ---------
 
 .. doxygenenum:: orcus::css::combinator_t

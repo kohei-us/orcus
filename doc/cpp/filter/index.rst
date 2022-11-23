@@ -1,16 +1,16 @@
 
-Spreadsheet Import Filters
+Spreadsheet import filters
 ==========================
 
 
-Plain Text (CSV)
+Plain text (CSV)
 ----------------
 
 .. doxygenclass:: orcus::orcus_csv
    :members:
 
 
-Open Document Spreadsheet
+Open document spreadsheet
 -------------------------
 
 .. doxygenclass:: orcus::orcus_ods
@@ -51,7 +51,7 @@ Generic XML
    :members:
 
 
-Utility Functions
+Utility functions
 -----------------
 
 .. doxygenfunction:: orcus::detect

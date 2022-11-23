@@ -1,5 +1,5 @@
 
-Spreadsheet Document
+Spreadsheet document
 ====================
 
 
@@ -17,7 +17,7 @@ Sheet
    :members:
 
 
-Pivot Table
+Pivot table
 -----------
 
 .. doxygenstruct:: orcus::spreadsheet::pivot_cache_record_value_t
@@ -39,7 +39,7 @@ Pivot Table
    :members:
 
 
-Import Factory
+Import factory
 --------------
 
 .. doxygenclass:: orcus::spreadsheet::import_factory

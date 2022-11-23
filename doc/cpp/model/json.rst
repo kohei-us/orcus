@@ -1,5 +1,5 @@
 
-JSON Document Tree
+JSON document tree
 ==================
 
 Document tree

@@ -1,6 +1,6 @@
 .. highlight:: cpp
 
-XML Parsers
+XML parsers
 ===========
 
 SAX base parser

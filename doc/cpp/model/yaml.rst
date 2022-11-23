@@ -1,4 +1,4 @@
 
-YAML Document Tree
+YAML document tree
 ==================
 

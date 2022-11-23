@@ -13,7 +13,7 @@ Utilities
    :members:
 
 
-XML Types
+XML types
 =========
 
 .. doxygentypedef:: orcus::xml_token_t
@@ -30,7 +30,7 @@ XML Types
 
 .. doxygentypedef:: orcus::xml_attrs_t
 
-Other Types
+Other types
 ===========
 
 .. doxygenenum:: orcus::character_set_t

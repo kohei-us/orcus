@@ -1,6 +1,6 @@
 .. highlight:: cpp
 
-YAML Parser
+YAML parser
 ===========
 
 .. doxygenclass:: orcus::yaml_parser

@@ -1,5 +1,5 @@
 
-Low-Level Parsers and Utilities
+Low-level parsers and utilities
 ===============================
 
 .. toctree::
