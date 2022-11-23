@@ -5,13 +5,14 @@ Low-level parsers and utilities
 .. toctree::
    :maxdepth: 1
 
-   exception.rst
-   stream.rst
-   archive.rst
-   util.rst
+   xml.rst
+   xml_writer.rst
+   json.rst
    css.rst
    csv.rst
-   json.rst
-   xml.rst
    yaml.rst
-   xml_writer.rst
+   types.rst
+   util.rst
+   stream.rst
+   archive.rst
+   exception.rst
