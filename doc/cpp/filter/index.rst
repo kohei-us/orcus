@@ -51,6 +51,13 @@ Generic XML
    :members:
 
 
+Generic JSON
+------------
+
+.. doxygenclass:: orcus::orcus_json
+   :members:
+
+
 Utility functions
 -----------------
 
