@@ -117,12 +117,22 @@ public:
 /**
  * This exception is thrown when SAX parser detects a malformed XML document.
  */
-class ORCUS_PSR_DLLPUBLIC malformed_xml_error : public orcus::parse_error
+class ORCUS_PSR_DLLPUBLIC malformed_xml_error : public parse_error
 {
 public:
     malformed_xml_error() = delete;
     malformed_xml_error(std::string_view msg, std::ptrdiff_t offset);
     virtual ~malformed_xml_error();
+};
+
+/**
+ * Exception related to parsing of zip archive stream.
+ */
+class ORCUS_PSR_DLLPUBLIC zip_error : public general_error
+{
+public:
+    zip_error(std::string_view msg);
+    virtual ~zip_error();
 };
 
 namespace detail {

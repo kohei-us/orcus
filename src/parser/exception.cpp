@@ -130,6 +130,12 @@ malformed_xml_error::malformed_xml_error(std::string_view msg, std::ptrdiff_t of
 
 malformed_xml_error::~malformed_xml_error() = default;
 
+zip_error::zip_error(std::string_view msg) : general_error("zip_error", msg)
+{
+}
+
+zip_error::~zip_error() = default;
+
 } // namespace orcus
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

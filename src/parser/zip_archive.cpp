@@ -24,21 +24,6 @@
 
 namespace orcus {
 
-zip_error::zip_error() {}
-zip_error::zip_error(const std::string& msg) : m_msg()
-{
-    std::ostringstream os;
-    os << "zip error: " << msg;
-    m_msg = os.str();
-}
-
-zip_error::~zip_error() = default;
-
-const char* zip_error::what() const throw()
-{
-    return m_msg.c_str();
-}
-
 namespace {
 
 struct zip_file_param
@@ -259,7 +244,7 @@ void zip_archive_impl::load()
 {
     size_t central_dir_end_pos = seek_central_dir();
     if (!central_dir_end_pos)
-        throw zip_error();
+        throw zip_error("failed to seek the end position of the central directory");
 
     m_central_dir_end = zip_stream_parser(m_stream, central_dir_end_pos);
 

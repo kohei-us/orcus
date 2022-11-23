@@ -9,9 +9,9 @@
 #define INCLUDED_ORCUS_ZIP_ARCHIVE_HPP
 
 #include "env.hpp"
+#include "exception.hpp"
 
 #include <cstdlib>
-#include <exception>
 #include <string>
 #include <vector>
 
@@ -19,17 +19,6 @@ namespace orcus {
 
 class zip_archive_stream;
 class zip_archive_impl;
-
-class ORCUS_PSR_DLLPUBLIC zip_error : public std::exception
-{
-    std::string m_msg;
-public:
-    zip_error();
-    zip_error(const std::string& msg);
-    virtual ~zip_error();
-
-    virtual const char* what() const throw();
-};
 
 class ORCUS_PSR_DLLPUBLIC zip_archive
 {

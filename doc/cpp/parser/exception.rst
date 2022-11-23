@@ -32,3 +32,6 @@ Exceptions
 
 .. doxygenclass:: orcus::malformed_xml_error
    :members:
+
+.. doxygenclass:: orcus::zip_error
+   :members:
