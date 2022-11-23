@@ -22,10 +22,9 @@ catch (...) \
 { \
 }
 
-using namespace std;
 using namespace orcus;
 
-void test_zip_archive_stream(zip_archive_stream* const strm, const unsigned char* const data, size_t const length)
+void test_zip_archive_stream(zip_archive_stream* const strm, const unsigned char* const data, std::size_t const length)
 {
     assert(strm->size() == length);
     assert(strm->tell() == 0);
@@ -34,17 +33,17 @@ void test_zip_archive_stream(zip_archive_stream* const strm, const unsigned char
     unsigned char* buf = buffer.data();
 
     strm->read(buf, 2);
-    assert(equal(data, data + 2, buf));
+    assert(std::equal(data, data + 2, buf));
     assert(strm->tell() == 0);
     strm->read(buf, length);
-    assert(equal(data, data + length, buf));
+    assert(std::equal(data, data + length, buf));
     ASSERT_THROW(strm->read(buf, length + 1));
     strm->read(buf, 0);
 
     strm->seek(2);
     assert(strm->tell() == 2);
     strm->read(buf, 2);
-    assert(equal(data + 2, data + 4, buf));
+    assert(std::equal(data + 2, data + 4, buf));
     strm->seek(length);
     assert(strm->tell() == length);
     ASSERT_THROW(strm->seek(length + 1));
