@@ -36,7 +36,7 @@ void print_element(std::ostream& os, const tokens& t, xmlns_id_t ns, xml_token_t
 /**
  * Print attributes to stdout for debugging purposes.
  */
-void print_attrs(const tokens& tokens, const xml_attrs_t& attrs);
+void print_attrs(const tokens& tokens, const xml_token_attrs_t& attrs);
 
 } // namespace orcus
 

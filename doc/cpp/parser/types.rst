@@ -12,9 +12,9 @@ Constants
 Type aliases
 ------------
 
-.. doxygentypedef:: orcus::xml_attrs_t
 .. doxygentypedef:: orcus::xml_elem_set_t
 .. doxygentypedef:: orcus::xml_elem_stack_t
+.. doxygentypedef:: orcus::xml_token_attrs_t
 .. doxygentypedef:: orcus::xml_token_pair_t
 .. doxygentypedef:: orcus::xml_token_t
 .. doxygentypedef:: orcus::xmlns_id_t

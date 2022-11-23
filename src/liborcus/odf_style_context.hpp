@@ -37,9 +37,9 @@ public:
     std::unique_ptr<odf_style> pop_style();
 
 private:
-    void start_paragraph_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void start_text_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void start_table_cell_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_paragraph_properties(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_text_properties(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_table_cell_properties(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
 
 private:
     spreadsheet::iface::import_styles* mp_styles = nullptr;

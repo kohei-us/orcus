@@ -121,7 +121,7 @@ gnumeric_cell_context::gnumeric_cell_context(session_context& session_cxt, const
 
 gnumeric_cell_context::~gnumeric_cell_context() = default;
 
-void gnumeric_cell_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
+void gnumeric_cell_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     push_stack(ns, name);
 
@@ -172,7 +172,7 @@ void gnumeric_cell_context::reset(ss::iface::import_sheet* sheet)
     mp_sheet = sheet;
 }
 
-void gnumeric_cell_context::start_cell(const xml_attrs_t& attrs)
+void gnumeric_cell_context::start_cell(const xml_token_attrs_t& attrs)
 {
     mp_cell_data.reset(new gnumeric_cell_data);
     cell_attr_parser parser = for_each(attrs.begin(), attrs.end(), cell_attr_parser());

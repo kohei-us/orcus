@@ -51,7 +51,7 @@ const map_type& get()
 } // namespace cell_value
 
 void pick_up_named_range_or_expression(
-    session_context& cxt, const xml_attrs_t& attrs, xmlns_id_t exp_attr_ns, xml_token_t exp_attr_name,
+    session_context& cxt, const xml_token_attrs_t& attrs, xmlns_id_t exp_attr_ns, xml_token_t exp_attr_name,
     ods_session_data::named_exp_type name_type, ss::sheet_t scope)
 {
     std::string_view name;
@@ -193,7 +193,7 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
     }
 }
 
-void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
+void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
 
@@ -326,7 +326,7 @@ bool ods_content_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void ods_content_xml_context::start_null_date(const xml_attrs_t& attrs)
+void ods_content_xml_context::start_null_date(const xml_token_attrs_t& attrs)
 {
     spreadsheet::iface::import_global_settings* gs = mp_factory->get_global_settings();
     if (!gs)
@@ -346,7 +346,7 @@ void ods_content_xml_context::start_null_date(const xml_attrs_t& attrs)
     gs->set_origin_date(val.year, val.month, val.day);
 }
 
-void ods_content_xml_context::start_table(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void ods_content_xml_context::start_table(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     static const xml_elem_set_t expected = {
         { NS_odf_office, XML_spreadsheet },
@@ -391,7 +391,7 @@ void ods_content_xml_context::end_table()
     }
 }
 
-void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     xml_element_expected(parent, NS_odf_table, XML_named_expressions);
 
@@ -404,7 +404,7 @@ void ods_content_xml_context::end_named_range()
 {
 }
 
-void ods_content_xml_context::start_named_expression(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void ods_content_xml_context::start_named_expression(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     xml_element_expected(parent, NS_odf_table, XML_named_expressions);
 
@@ -417,7 +417,7 @@ void ods_content_xml_context::end_named_expression()
 {
 }
 
-void ods_content_xml_context::start_column(const xml_attrs_t& attrs)
+void ods_content_xml_context::start_column(const xml_token_attrs_t& attrs)
 {
     if (!m_cur_sheet.sheet)
         return;
@@ -469,7 +469,7 @@ void ods_content_xml_context::end_column()
     m_col += m_col_repeated;
 }
 
-void ods_content_xml_context::start_row(const xml_attrs_t& attrs)
+void ods_content_xml_context::start_row(const xml_token_attrs_t& attrs)
 {
     m_col = 0;
     m_row_attr = row_attr();
@@ -528,7 +528,7 @@ void ods_content_xml_context::end_row()
     m_row += m_row_attr.number_rows_repeated;
 }
 
-void ods_content_xml_context::start_cell(const xml_attrs_t& attrs)
+void ods_content_xml_context::start_cell(const xml_token_attrs_t& attrs)
 {
     m_cell_attr = cell_attr();
 

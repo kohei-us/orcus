@@ -31,14 +31,14 @@ public:
         spreadsheet::iface::import_factory* factory);
     virtual ~gnumeric_cell_context() override;
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs) override;
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
     virtual void characters(std::string_view str, bool transient) override;
 
     void reset(spreadsheet::iface::import_sheet* sheet);
 
 private:
-    void start_cell(const xml_attrs_t& attrs);
+    void start_cell(const xml_token_attrs_t& attrs);
     void end_cell();
 private:
     spreadsheet::iface::import_factory* mp_factory;

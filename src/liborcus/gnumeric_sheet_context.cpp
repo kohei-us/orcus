@@ -355,7 +355,7 @@ xml_context_base* gnumeric_sheet_context::create_child_context(xmlns_id_t ns, xm
     return nullptr;
 }
 
-void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
+void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
     if (ns == NS_gnumeric_gnm)
@@ -527,7 +527,7 @@ void gnumeric_sheet_context::reset(spreadsheet::sheet_t sheet_index)
     m_chars = std::string_view{};
 }
 
-void gnumeric_sheet_context::start_font(const xml_attrs_t& attrs)
+void gnumeric_sheet_context::start_font(const xml_token_attrs_t& attrs)
 {
     auto* styles = mp_factory->get_styles();
     if (!styles)
@@ -579,7 +579,7 @@ void gnumeric_sheet_context::start_font(const xml_attrs_t& attrs)
     }
 }
 
-void gnumeric_sheet_context::start_col(const xml_attrs_t& attrs)
+void gnumeric_sheet_context::start_col(const xml_token_attrs_t& attrs)
 {
     gnumeric_col_row_info col_info = for_each(attrs.begin(), attrs.end(),
             gnumeric_col_row_info());
@@ -593,7 +593,7 @@ void gnumeric_sheet_context::start_col(const xml_attrs_t& attrs)
     p_sheet_props->set_column_hidden(col, col_span, hidden);
 }
 
-void gnumeric_sheet_context::start_row(const xml_attrs_t& attrs)
+void gnumeric_sheet_context::start_row(const xml_token_attrs_t& attrs)
 {
     gnumeric_col_row_info row_info = for_each(attrs.begin(), attrs.end(),
             gnumeric_col_row_info());
@@ -608,7 +608,7 @@ void gnumeric_sheet_context::start_row(const xml_attrs_t& attrs)
     }
 }
 
-void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
+void gnumeric_sheet_context::start_style(const xml_token_attrs_t& attrs)
 {
     auto* styles = mp_factory->get_styles();
     if (!styles)
@@ -736,13 +736,13 @@ void gnumeric_sheet_context::start_style(const xml_attrs_t& attrs)
     }
 }
 
-void gnumeric_sheet_context::start_style_region(const xml_attrs_t& attrs)
+void gnumeric_sheet_context::start_style_region(const xml_token_attrs_t& attrs)
 {
     mp_region_data.reset(new gnumeric_style_region());
     for_each(attrs.begin(), attrs.end(), gnumeric_style_region_attr_parser(*mp_region_data));
 }
 
-void gnumeric_sheet_context::start_condition(const xml_attrs_t& attrs)
+void gnumeric_sheet_context::start_condition(const xml_token_attrs_t& attrs)
 {
     spreadsheet::iface::import_conditional_format* cond_format =
         mp_sheet->get_conditional_format();

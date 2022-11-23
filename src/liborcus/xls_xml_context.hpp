@@ -92,7 +92,7 @@ public:
 
 private:
 
-    void start_element_data(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
+    void start_element_data(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
     void end_element_data();
 
     bool handle_array_formula_result();
@@ -241,20 +241,20 @@ public:
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs) override;
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
     virtual void characters(std::string_view str, bool transient) override;
 
 private:
 
-    void start_element_borders(const xml_attrs_t& attrs);
-    void start_element_border(const xml_attrs_t& attrs);
-    void start_element_number_format(const xml_attrs_t& attrs);
-    void start_element_cell(const xml_attrs_t& attrs);
-    void start_element_column(const xml_attrs_t& attrs);
-    void start_element_row(const xml_attrs_t& attrs);
-    void start_element_table(const xml_attrs_t& attrs);
-    void start_element_worksheet(const xml_attrs_t& attrs);
+    void start_element_borders(const xml_token_attrs_t& attrs);
+    void start_element_border(const xml_token_attrs_t& attrs);
+    void start_element_number_format(const xml_token_attrs_t& attrs);
+    void start_element_cell(const xml_token_attrs_t& attrs);
+    void start_element_column(const xml_token_attrs_t& attrs);
+    void start_element_row(const xml_token_attrs_t& attrs);
+    void start_element_table(const xml_token_attrs_t& attrs);
+    void start_element_worksheet(const xml_token_attrs_t& attrs);
 
     void end_element_borders();
     void end_element_border();

@@ -262,7 +262,7 @@ void xls_xml_data_context::reset()
 }
 
 void xls_xml_data_context::start_element_data(
-    const xml_token_pair_t& /*parent*/, const xml_attrs_t& attrs)
+    const xml_token_pair_t& /*parent*/, const xml_token_attrs_t& attrs)
 {
     m_cell_type = ct_unknown;
     m_cell_string.clear();
@@ -851,7 +851,7 @@ void xls_xml_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/,
 {
 }
 
-void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
+void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     push_stack(ns, name);
 
@@ -1283,12 +1283,12 @@ void xls_xml_context::characters(std::string_view str, bool /*transient*/)
     }
 }
 
-void xls_xml_context::start_element_borders(const xml_attrs_t& /*attrs*/)
+void xls_xml_context::start_element_borders(const xml_token_attrs_t& /*attrs*/)
 {
     m_current_style->borders.clear();
 }
 
-void xls_xml_context::start_element_border(const xml_attrs_t& attrs)
+void xls_xml_context::start_element_border(const xml_token_attrs_t& attrs)
 {
     ss::border_direction_t dir = ss::border_direction_t::unknown;
     ss::border_style_t style = ss::border_style_t::unknown;
@@ -1376,7 +1376,7 @@ void xls_xml_context::start_element_border(const xml_attrs_t& attrs)
     }
 }
 
-void xls_xml_context::start_element_number_format(const xml_attrs_t& attrs)
+void xls_xml_context::start_element_number_format(const xml_token_attrs_t& attrs)
 {
     m_current_style->number_format = std::string_view{};
 
@@ -1399,7 +1399,7 @@ void xls_xml_context::start_element_number_format(const xml_attrs_t& attrs)
     }
 }
 
-void xls_xml_context::start_element_cell(const xml_attrs_t& attrs)
+void xls_xml_context::start_element_cell(const xml_token_attrs_t& attrs)
 {
     long col_index = 0;
     std::string_view formula;
@@ -1467,7 +1467,7 @@ void xls_xml_context::start_element_cell(const xml_attrs_t& attrs)
     }
 }
 
-void xls_xml_context::start_element_column(const xml_attrs_t& attrs)
+void xls_xml_context::start_element_column(const xml_token_attrs_t& attrs)
 {
     if (!mp_sheet_props && !mp_cur_sheet)
         return;
@@ -1537,7 +1537,7 @@ void xls_xml_context::start_element_column(const xml_attrs_t& attrs)
     m_cur_prop_col = col_index + span + 1;
 }
 
-void xls_xml_context::start_element_row(const xml_attrs_t& attrs)
+void xls_xml_context::start_element_row(const xml_token_attrs_t& attrs)
 {
     m_cur_col = m_table_props.pos.column;
     ss::row_t row_index = -1;
@@ -1604,7 +1604,7 @@ void xls_xml_context::start_element_row(const xml_attrs_t& attrs)
     }
 }
 
-void xls_xml_context::start_element_table(const xml_attrs_t& attrs)
+void xls_xml_context::start_element_table(const xml_token_attrs_t& attrs)
 {
     ss::row_t row_index = -1;
     ss::col_t col_index = -1;
@@ -1642,7 +1642,7 @@ void xls_xml_context::start_element_table(const xml_attrs_t& attrs)
         m_table_props.pos.column = col_index - 1;
 }
 
-void xls_xml_context::start_element_worksheet(const xml_attrs_t& attrs)
+void xls_xml_context::start_element_worksheet(const xml_token_attrs_t& attrs)
 {
     ++m_cur_sheet;
     std::string_view sheet_name;

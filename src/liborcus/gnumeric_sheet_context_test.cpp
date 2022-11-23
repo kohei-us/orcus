@@ -88,18 +88,18 @@ void test_column_width()
     context.reset(0);
     orcus::xmlns_id_t ns = NS_gnumeric_gnm;
     orcus::xml_token_t parent = XML_Sheet;
-    orcus::xml_attrs_t parent_attr;
+    orcus::xml_token_attrs_t parent_attr;
     context.start_element(ns, parent, parent_attr);
     {
         orcus::xml_token_t elem = XML_Name;
-        orcus::xml_attrs_t attrs;
+        orcus::xml_token_attrs_t attrs;
         context.start_element(ns, elem, attrs);
         context.characters("test", false);
         context.end_element(ns, elem);
     }
     {
         orcus::xml_token_t elem = XML_ColInfo;
-        orcus::xml_attrs_t attrs;
+        orcus::xml_token_attrs_t attrs;
         attrs.push_back(xml_token_attr_t(ns, XML_No, "2", false));
         attrs.push_back(xml_token_attr_t(ns, XML_Unit, "37.3", false));
         attrs.push_back(xml_token_attr_t(ns, XML_Unit, "37.3", false));

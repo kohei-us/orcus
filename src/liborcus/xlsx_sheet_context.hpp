@@ -70,20 +70,20 @@ public:
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
     virtual void characters(std::string_view str, bool transient);
 
     void pop_rel_extras(opc_rel_extras_t& other);
 
 private:
-    void start_element_formula(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void start_element_sheet_view(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void start_element_selection(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void start_element_pane(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs);
-    void start_element_col(const xml_attrs_t& attrs);
-    void start_element_row(const xml_attrs_t& attrs);
+    void start_element_formula(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_element_sheet_view(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_element_selection(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_element_pane(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_element_cell(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_element_col(const xml_token_attrs_t& attrs);
+    void start_element_row(const xml_token_attrs_t& attrs);
 
     void end_element_cell();
     void push_raw_cell_value();

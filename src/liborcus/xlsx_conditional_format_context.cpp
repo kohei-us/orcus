@@ -655,7 +655,7 @@ void xlsx_conditional_format_context::end_child_context(xmlns_id_t /*ns*/, xml_t
 {
 }
 
-void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
+void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
 

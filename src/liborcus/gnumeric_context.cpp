@@ -52,7 +52,7 @@ void gnumeric_content_xml_context::end_child_context(xmlns_id_t /*ns*/, xml_toke
 {
 }
 
-void gnumeric_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& /*attrs*/)
+void gnumeric_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& /*attrs*/)
 {
     push_stack(ns, name);
 

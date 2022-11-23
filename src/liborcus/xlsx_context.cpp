@@ -105,7 +105,7 @@ void xlsx_shared_strings_context::end_child_context(xmlns_id_t /*ns*/, xml_token
 {
 }
 
-void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
+void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
     switch (name)
@@ -504,7 +504,7 @@ void xlsx_styles_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*nam
 {
 }
 
-void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
+void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
 
@@ -1041,7 +1041,7 @@ void xlsx_styles_context::characters(std::string_view /*str*/, bool /*transient*
     // not used in the styles.xml part.
 }
 
-void xlsx_styles_context::start_element_number_format(const xml_attrs_t& attrs)
+void xlsx_styles_context::start_element_number_format(const xml_token_attrs_t& attrs)
 {
     if (!mp_styles)
         return;
@@ -1071,7 +1071,7 @@ void xlsx_styles_context::start_element_number_format(const xml_attrs_t& attrs)
     }
 }
 
-void xlsx_styles_context::start_element_border(const xml_attrs_t& attrs)
+void xlsx_styles_context::start_element_border(const xml_token_attrs_t& attrs)
 {
     bool diagonal_up = false;
     bool diagonal_down = false;
@@ -1102,7 +1102,7 @@ void xlsx_styles_context::start_element_border(const xml_attrs_t& attrs)
     m_diagonal_down = diagonal_down;
 }
 
-void xlsx_styles_context::start_element_diagonal(const xml_attrs_t& attrs)
+void xlsx_styles_context::start_element_diagonal(const xml_token_attrs_t& attrs)
 {
     assert(mp_border);
 
@@ -1128,7 +1128,7 @@ void xlsx_styles_context::start_element_diagonal(const xml_attrs_t& attrs)
     for_each(attrs.begin(), attrs.end(), func);
 }
 
-void xlsx_styles_context::start_border_color(const xml_attrs_t& attrs)
+void xlsx_styles_context::start_border_color(const xml_token_attrs_t& attrs)
 {
     assert(mp_border);
 
@@ -1143,7 +1143,7 @@ void xlsx_styles_context::start_border_color(const xml_attrs_t& attrs)
         mp_border->set_color(m_cur_border_dir, alpha, red, green, blue);
 }
 
-void xlsx_styles_context::start_font_color(const xml_attrs_t& attrs)
+void xlsx_styles_context::start_font_color(const xml_token_attrs_t& attrs)
 {
     assert(mp_font);
 

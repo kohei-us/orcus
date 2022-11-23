@@ -67,19 +67,19 @@ public:
 
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs) override;
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
     virtual void characters(std::string_view str, bool transient) override;
 
     void reset(spreadsheet::sheet_t sheet_index);
 
 private:
-    void start_style_region(const xml_attrs_t& attrs);
-    void start_style(const xml_attrs_t& attrs);
-    void start_font(const xml_attrs_t& attrs);
-    void start_col(const xml_attrs_t& attrs);
-    void start_row(const xml_attrs_t& attrs);
-    void start_condition(const xml_attrs_t& attrs);
+    void start_style_region(const xml_token_attrs_t& attrs);
+    void start_style(const xml_token_attrs_t& attrs);
+    void start_font(const xml_token_attrs_t& attrs);
+    void start_col(const xml_token_attrs_t& attrs);
+    void start_row(const xml_token_attrs_t& attrs);
+    void start_condition(const xml_token_attrs_t& attrs);
 
     void end_table();
     void end_style(bool conditional_format);

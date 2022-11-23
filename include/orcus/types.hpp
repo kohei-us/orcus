@@ -92,6 +92,8 @@ struct ORCUS_PSR_DLLPUBLIC xml_token_attr_t
         std::string_view _value, bool _transient);
 };
 
+using xml_token_attrs_t = std::vector<xml_token_attr_t>;
+
 /**
  * Element properties passed to its handler via start_element() and
  * end_element() calls.
@@ -500,8 +502,6 @@ ORCUS_PSR_DLLPUBLIC std::vector<std::pair<std::string_view, dump_format_t>> get_
 ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const length_t& v);
 ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const date_time_t& v);
 ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, format_t v);
-
-typedef ::std::vector<xml_token_attr_t> xml_attrs_t;
 
 /**
  * Generic constant to be used to indicate that a valid index value is

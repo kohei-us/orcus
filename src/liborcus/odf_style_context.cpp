@@ -251,7 +251,7 @@ void style_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
 }
 
-void style_context::start_paragraph_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void style_context::start_paragraph_properties(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     xml_element_expected(parent, NS_odf_style, XML_style);
 
@@ -298,7 +298,7 @@ void style_context::start_paragraph_properties(const xml_token_pair_t& parent, c
     }
 }
 
-void style_context::start_text_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void style_context::start_text_properties(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     static const xml_elem_set_t expected = {
         { NS_odf_style, XML_style },
@@ -548,7 +548,7 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     }
 }
 
-void style_context::start_table_cell_properties(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void style_context::start_table_cell_properties(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     xml_element_expected(parent, NS_odf_style, XML_style);
 

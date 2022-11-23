@@ -169,7 +169,7 @@ void xlsx_sheet_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_
     }
 }
 
-void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_attrs_t& attrs)
+void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
 
@@ -312,7 +312,7 @@ void xlsx_sheet_context::characters(std::string_view str, bool transient)
     m_cur_str = intern_in_context(str, transient);
 }
 
-void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     const xml_elem_set_t expected = {
         { NS_ooxml_xlsx, XML_c },
@@ -363,7 +363,7 @@ void xlsx_sheet_context::start_element_formula(const xml_token_pair_t& parent, c
 }
 
 void xlsx_sheet_context::start_element_sheet_view(
-    const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+    const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     xml_element_expected(parent, NS_ooxml_xlsx, XML_sheetViews);
 
@@ -393,7 +393,7 @@ void xlsx_sheet_context::start_element_sheet_view(
 }
 
 void xlsx_sheet_context::start_element_selection(
-    const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+    const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     xml_elem_stack_t elems;
     elems.emplace_back(NS_ooxml_xlsx, XML_sheetView);
@@ -446,7 +446,7 @@ void xlsx_sheet_context::start_element_selection(
 }
 
 void xlsx_sheet_context::start_element_pane(
-    const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+    const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     xml_elem_stack_t elems;
     elems.emplace_back(NS_ooxml_xlsx, XML_sheetView);
@@ -513,7 +513,7 @@ void xlsx_sheet_context::start_element_pane(
     }
 }
 
-void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, const xml_attrs_t& attrs)
+void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
     xlsx_cell_t cell_type = xlsx_ct_numeric;
     ss::address_t address;
@@ -566,7 +566,7 @@ void xlsx_sheet_context::start_element_cell(const xml_token_pair_t& parent, cons
     m_cur_cell_xf = xf;
 }
 
-void xlsx_sheet_context::start_element_col(const xml_attrs_t& attrs)
+void xlsx_sheet_context::start_element_col(const xml_token_attrs_t& attrs)
 {
     long col_min = 0; // 1-based
     long col_max = 0; // 1-based
@@ -621,7 +621,7 @@ void xlsx_sheet_context::start_element_col(const xml_attrs_t& attrs)
     }
 }
 
-void xlsx_sheet_context::start_element_row(const xml_attrs_t& attrs)
+void xlsx_sheet_context::start_element_row(const xml_token_attrs_t& attrs)
 {
     std::optional<ss::row_t> row;
     length_t height;

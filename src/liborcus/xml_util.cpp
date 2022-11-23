@@ -53,7 +53,7 @@ void xml_element_printer::print_element(std::ostream& os, xmlns_id_t ns, xml_tok
     os << m_tokens.get_token_name(name) << '>';
 }
 
-void print_attrs(const tokens& tokens, const xml_attrs_t& attrs)
+void print_attrs(const tokens& tokens, const xml_token_attrs_t& attrs)
 {
     for (const auto& attr : attrs)
     {
