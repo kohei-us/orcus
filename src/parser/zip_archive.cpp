@@ -212,7 +212,7 @@ public:
         return m_file_params.size();
     }
 
-    bool read_file_entry(std::string_view entry_name, std::vector<unsigned char>& buf) const;
+    std::vector<unsigned char> read_file_entry(std::string_view entry_name) const;
 
 private:
 
@@ -371,11 +371,11 @@ void zip_archive::impl::dump_file_entry(size_t pos) const
 
     m_stream->seek(file_header.tell());
 
-    std::vector<unsigned char> buf;
-    if (read_file_entry(param.filename, buf))
+    std::vector<unsigned char> buf = read_file_entry(param.filename);
+    if (!buf.empty())
     {
         std::cout << "-- data section" << std::endl;
-        std::cout << &buf[0] << std::endl;
+        std::cout << buf.data() << std::endl;
         std::cout << "--" << std::endl;
     }
 }
@@ -401,17 +401,20 @@ std::string_view zip_archive::impl::get_file_entry_name(std::size_t pos) const
     return m_file_params[pos].filename;
 }
 
-bool zip_archive::impl::read_file_entry(std::string_view entry_name, std::vector<unsigned char>& buf) const
+std::vector<unsigned char> zip_archive::impl::read_file_entry(std::string_view entry_name) const
 {
     filename_map_type::const_iterator it = m_filenames.find(entry_name);
     if (it == m_filenames.end())
-        // entry name not found.
-        return false;
+    {
+        std::ostringstream os;
+        os << "entry named '" << entry_name << "' not found";
+        throw zip_error(os.str());
+    }
+
 
     size_t index = it->second;
     if (index >= m_file_params.size())
-        // entry index is out of bound.
-        return false;
+        throw zip_error("entry index is out-of-bound");
 
     const zip_file_param& param = m_file_params[index];
 
@@ -435,33 +438,31 @@ bool zip_archive::impl::read_file_entry(std::string_view entry_name, std::vector
     m_stream->seek(file_header.tell());
 
     std::vector<unsigned char> raw_buf(param.size_compressed+1, 0);
-    m_stream->read(&raw_buf[0], param.size_compressed);
+    m_stream->read(raw_buf.data(), param.size_compressed);
 
     switch (param.compress_method)
     {
         case zip_file_param::stored:
+        {
             // Not compressed at all.
-            buf.swap(raw_buf);
-            return true;
+            return raw_buf;
+        }
         case zip_file_param::deflated:
         {
             // deflate compression
             std::vector<unsigned char> zip_buf(param.size_uncompressed+1, 0); // null-terminated
             zip_inflater inflater(raw_buf, zip_buf, param);
             if (!inflater.init())
-                break;
+                throw zip_error("error during initialization of inflater");
 
             if (!inflater.inflate())
                 throw zip_error("error during inflate.");
 
-            buf.swap(zip_buf);
-            return true;
+            return zip_buf;
         }
-        default:
-            ;
     }
 
-    return false;
+    throw std::logic_error("compress method can be either 'stored' or 'deflated', but neither has happened");
 }
 
 size_t zip_archive::impl::seek_central_dir()
@@ -577,9 +578,9 @@ size_t zip_archive::get_file_entry_count() const
     return mp_impl->get_file_entry_count();
 }
 
-bool zip_archive::read_file_entry(std::string_view entry_name, std::vector<unsigned char>& buf) const
+std::vector<unsigned char> zip_archive::read_file_entry(std::string_view entry_name) const
 {
-    return mp_impl->read_file_entry(entry_name, buf);
+    return mp_impl->read_file_entry(entry_name);
 }
 
 }

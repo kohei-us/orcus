@@ -69,9 +69,14 @@ void orcus_ods::read_styles(const zip_archive& archive)
         return;
 
     std::vector<unsigned char> buf;
-    if (!archive.read_file_entry("styles.xml", buf))
+
+    try
     {
-        std::cout << "failed to get stat on styles.xml" << std::endl;
+        buf = archive.read_file_entry("styles.xml");
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "failed to get stat on styles.xml (reason: " << e.what() << ")" << std::endl;
         return;
     }
 
@@ -95,13 +100,18 @@ void orcus_ods::read_styles(const zip_archive& archive)
 void orcus_ods::read_content(const zip_archive& archive)
 {
     vector<unsigned char> buf;
-    if (!archive.read_file_entry("content.xml", buf))
+
+    try
     {
-        cout << "failed to get stat on content.xml" << endl;
+        buf = archive.read_file_entry("content.xml");
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "failed to get stat on content.xml (reason: " << e.what() << ")" << std::endl;
         return;
     }
 
-    read_content_xml(&buf[0], buf.size());
+    read_content_xml(buf.data(), buf.size());
 }
 
 void orcus_ods::read_content_xml(const unsigned char* p, size_t size)
@@ -144,33 +154,31 @@ bool orcus_ods::detect(const unsigned char* blob, size_t size)
 {
     zip_archive_stream_blob stream(blob, size);
     zip_archive archive(&stream);
+
     try
     {
         archive.load();
+
+        std::vector<unsigned char> buf = archive.read_file_entry("mimetype");
+
+        if (buf.empty())
+            // mimetype is empty.
+            return false;
+
+        const char* mimetype = "application/vnd.oasis.opendocument.spreadsheet";
+        size_t n = strlen(mimetype);
+        if (buf.size() < n)
+            return false;
+
+        if (strncmp(mimetype, reinterpret_cast<const char*>(buf.data()), n))
+            // The mimetype content differs.
+            return false;
     }
     catch (const zip_error&)
     {
         // Not a valid zip archive.
         return false;
     }
-
-    vector<unsigned char> buf;
-    if (!archive.read_file_entry("mimetype", buf))
-        // Failed to read 'mimetype' entry.
-        return false;
-
-    if (buf.empty())
-        // mimetype is empty.
-        return false;
-
-    const char* mimetype = "application/vnd.oasis.opendocument.spreadsheet";
-    size_t n = strlen(mimetype);
-    if (buf.size() < n)
-        return false;
-
-    if (strncmp(mimetype, reinterpret_cast<const char*>(&buf[0]), n))
-        // The mimetype content differs.
-        return false;
 
     return true;
 }

@@ -71,7 +71,16 @@ void opc_reader::read_file(std::unique_ptr<zip_archive_stream>&& stream)
 
 bool opc_reader::open_zip_stream(const string& path, vector<unsigned char>& buf)
 {
-    return m_archive->read_file_entry(path.c_str(), buf);
+    try
+    {
+        std::vector<unsigned char> entry = m_archive->read_file_entry(path.c_str());
+        buf.swap(entry);
+        return true;
+    }
+    catch (const std::exception&)
+    {
+        return false;
+    }
 }
 
 void opc_reader::read_part(const pstring& path, const schema_t type, opc_rel_extra* data)

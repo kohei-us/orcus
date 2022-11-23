@@ -154,50 +154,47 @@ bool orcus_xlsx::detect(const unsigned char* blob, size_t size)
 {
     zip_archive_stream_blob stream(blob, size);
     zip_archive archive(&stream);
+
     try
     {
         archive.load();
+
+        // Find and parse [Content_Types].xml which is required for OPC package.
+        std::vector<unsigned char> buf = archive.read_file_entry("[Content_Types].xml");
+
+        if (buf.empty())
+            return false;
+
+        config opt(format_t::xlsx);
+        xmlns_repository ns_repo;
+        ns_repo.add_predefined_values(NS_opc_all);
+        session_context session_cxt;
+        xml_stream_parser parser(
+            opt, ns_repo, opc_tokens, reinterpret_cast<const char*>(&buf[0]), buf.size());
+
+        xml_simple_stream_handler handler(
+            session_cxt, opc_tokens,
+            std::make_unique<opc_content_types_context>(session_cxt, opc_tokens));
+        parser.set_handler(&handler);
+        parser.parse();
+
+        opc_content_types_context& context =
+            static_cast<opc_content_types_context&>(handler.get_context());
+
+        std::vector<xml_part_t> parts;
+        context.pop_parts(parts);
+
+        if (parts.empty())
+            return false;
+
+        // See if we can find the workbook stream.
+        xml_part_t workbook_part("/xl/workbook.xml", CT_ooxml_xlsx_sheet_main);
+        return std::find(parts.begin(), parts.end(), workbook_part) != parts.end();
     }
-    catch (const zip_error&)
+    catch (const std::exception&)
     {
-        // Not a valid zip archive.
         return false;
     }
-
-    // Find and parse [Content_Types].xml which is required for OPC package.
-    vector<unsigned char> buf;
-    if (!archive.read_file_entry("[Content_Types].xml", buf))
-        // Failed to read the contnet types entry.
-        return false;
-
-    if (buf.empty())
-        return false;
-
-    config opt(format_t::xlsx);
-    xmlns_repository ns_repo;
-    ns_repo.add_predefined_values(NS_opc_all);
-    session_context session_cxt;
-    xml_stream_parser parser(
-        opt, ns_repo, opc_tokens, reinterpret_cast<const char*>(&buf[0]), buf.size());
-
-    xml_simple_stream_handler handler(
-        session_cxt, opc_tokens,
-        std::make_unique<opc_content_types_context>(session_cxt, opc_tokens));
-    parser.set_handler(&handler);
-    parser.parse();
-
-    opc_content_types_context& context =
-        static_cast<opc_content_types_context&>(handler.get_context());
-
-    std::vector<xml_part_t> parts;
-    context.pop_parts(parts);
-
-    if (parts.empty())
-        return false;
-
-    // See if we can find the workbook stream.
-    xml_part_t workbook_part("/xl/workbook.xml", CT_ooxml_xlsx_sheet_main);
-    return std::find(parts.begin(), parts.end(), workbook_part) != parts.end();
 }
 
 void orcus_xlsx::read_file(const string& filepath)

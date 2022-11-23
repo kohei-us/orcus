@@ -74,17 +74,18 @@ public:
     size_t get_file_entry_count() const;
 
     /**
-     * Retrieve data stream of specified file entry into buffer. The retrieved
-     * data stream gets uncompressed if the original stream is compressed.
-     * The method will overwrite the content of passed buffer if there is any
-     * pre-existing data in it.
+     * Retrieve data stream of specified file entry. The retrieved data stream
+     * gets uncompressed if the original stream is compressed.
      *
-     * @param entry_name file entry name
+     * @param entry_name file entry name.
      * @param buf buffer to put the retrieved data stream into.
      *
-     * @return true if successful, false otherwise.
+     * @return buffer containing the data stream for specified entry.
+     *
+     * @exception zip_error thrown when any problem is encountered during data
+     *                      stream retrieval.
      */
-    bool read_file_entry(std::string_view entry_name, std::vector<unsigned char>& buf) const;
+    std::vector<unsigned char> read_file_entry(std::string_view entry_name) const;
 };
 
 }
