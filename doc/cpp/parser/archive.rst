@@ -5,6 +5,9 @@ Archive
 Zip archive
 -----------
 
+.. doxygenstruct:: orcus::zip_file_entry_header
+   :members:
+
 .. doxygenclass:: orcus::zip_archive
    :members:
 

@@ -51,6 +51,8 @@ void verify_content(
 
 }} // namespace orcus::test
 
+#define ORCUS_TEST_FUNC_SCOPE orcus::test::stack_printer __sp__(__func__)
+
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

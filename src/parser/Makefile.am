@@ -200,8 +200,15 @@ parser_test_stream_CPPFLAGS = $(AM_CPPFLAGS)
 parser_test_zip_archive_SOURCES = \
 	zip_archive_test.cpp
 
-parser_test_zip_archive_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 parser_test_zip_archive_CPPFLAGS = $(AM_CPPFLAGS)
+parser_test_zip_archive_LDADD = \
+	liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a \
+	$(BOOST_SYSTEM_LIBS) \
+	$(BOOST_FILESYSTEM_LIBS)
+parser_test_zip_archive_LDFLAGS = \
+	$(BOOST_SYSTEM_LDFLAGS) \
+	$(BOOST_FILESYSTEM_LDFLAGS)
 
 # parser-test-base
 

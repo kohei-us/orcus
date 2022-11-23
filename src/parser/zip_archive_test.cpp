@@ -10,7 +10,10 @@
 #include <cstdlib>
 #include <vector>
 
-#include "orcus/zip_archive_stream.hpp"
+#include <orcus/zip_archive_stream.hpp>
+#include <orcus/zip_archive.hpp>
+
+#include <boost/filesystem.hpp>
 
 #define ASSERT_THROW(expr) \
 try \
@@ -23,6 +26,7 @@ catch (...) \
 }
 
 using namespace orcus;
+namespace fs = boost::filesystem;
 
 void test_zip_archive_stream(zip_archive_stream* const strm, const unsigned char* const data, std::size_t const length)
 {
@@ -52,14 +56,42 @@ void test_zip_archive_stream(zip_archive_stream* const strm, const unsigned char
 
 void test_zip_archive_stream_blob()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     const unsigned char data[] = "My hovercraft is full of eels.";
     zip_archive_stream_blob strm(data, sizeof(data));
     test_zip_archive_stream(&strm, data, sizeof(data));
 }
 
+void test_zip_archive_file_entry_header()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath{SRCDIR"/test/ods/raw-values-1/input.ods"};
+    assert(fs::is_regular_file(filepath));
+
+    zip_archive_stream_fd strm(filepath.string().c_str());
+
+    zip_archive archive(&strm);
+    archive.load();
+    std::size_t n_entries = archive.get_file_entry_count();
+    for (std::size_t i = 0; i < n_entries; ++i)
+    {
+        std::string_view name = archive.get_file_entry_name(i);
+        std::cout << "* entry name: " << name << std::endl;
+        zip_file_entry_header header = archive.get_file_entry_header(i);
+        assert(header.filename == name);
+        assert(header.header_signature == 0x04034b50);
+
+        // 0 = none; 8 = deflate
+        assert(header.compression_method == 0 || header.compression_method == 8);
+    }
+}
+
 int main()
 {
     test_zip_archive_stream_blob();
+    test_zip_archive_file_entry_header();
 
     return EXIT_SUCCESS;
 }

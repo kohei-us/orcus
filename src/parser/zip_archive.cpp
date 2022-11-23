@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <sstream>
 #include <string_view>
+#include <iomanip>
 
 #include <zlib.h>
 #include <zconf.h>
@@ -121,6 +122,18 @@ public:
         return std::string(reinterpret_cast<const char*>(&buf[0]));
     }
 
+    std::vector<uint8_t> read_bytes(std::size_t n)
+    {
+        if (!n)
+            throw zip_error("attempt to read string of zero size.");
+
+        std::vector<uint8_t> buf;
+        m_stream->seek(m_pos+m_pos_internal);
+        m_stream->read(buf.data(), n);
+        m_pos_internal += n;
+        return buf;
+    }
+
     std::string_view read_string(size_t n, string_pool& pool)
     {
         std::vector<unsigned char> buf(n+1, '\0');
@@ -184,6 +197,32 @@ struct central_dir_end
 
 } // anonymous namespace
 
+
+zip_file_entry_header::zip_file_entry_header() = default;
+zip_file_entry_header::zip_file_entry_header(const zip_file_entry_header& other) = default;
+zip_file_entry_header::zip_file_entry_header(zip_file_entry_header&& other) = default;
+zip_file_entry_header::~zip_file_entry_header() = default;
+
+zip_file_entry_header& zip_file_entry_header::operator=(const zip_file_entry_header& other) = default;
+zip_file_entry_header& zip_file_entry_header::operator=(zip_file_entry_header&& other) = default;
+
+std::ostream& operator<<(std::ostream& os, const zip_file_entry_header& header)
+{
+    os << "header signature: 0x" << std::hex << std::setfill('0') << std::setw(8) << header.header_signature << "\n"
+       << "version needed to extract: " << header.required_version << "\n"
+       << "general purpose bit flag: 0x" << std::hex << std::setfill('0') << std::setw(4) << header.flag << "\n"
+       << "compression method: " << header.compression_method << "\n"
+       << "last modified time: " << header.last_modified_time << "\n"
+       << "last modified date: " << header.last_modified_date << "\n"
+       << "crc32: 0x" << std::hex << std::setfill('0') << std::setw(8) << header.crc32 << "\n"
+       << "compressed size: " << header.compressed_size << "\n"
+       << "uncompressed size: " << header.uncompressed_size << "\n"
+       << "filename: " << header.filename << "\n"
+       << "extra field length: " << header.extra_field.size();
+
+    return os;
+}
+
 class zip_archive::impl
 {
     typedef std::vector<zip_file_param> file_params_type;
@@ -203,8 +242,8 @@ public:
     impl(zip_archive_stream* stream);
 
     void load();
-    void dump_file_entry(size_t pos) const;
-    void dump_file_entry(std::string_view entry_name) const;
+    zip_file_entry_header get_file_entry_header(std::size_t index) const;
+    zip_file_entry_header get_file_entry_header(std::string_view name) const;
     std::string_view get_file_entry_name(size_t pos) const;
 
     size_t get_file_entry_count() const
@@ -248,6 +287,50 @@ void zip_archive::impl::load()
 
     // Read file entries that are in the front part of the central directory.
     read_file_entries();
+}
+
+zip_file_entry_header zip_archive::impl::get_file_entry_header(std::size_t index) const
+{
+    if (index >= m_file_params.size())
+        throw zip_error("invalid file entry index.");
+
+    const zip_file_param& param = m_file_params[index];
+    zip_stream_parser file_header(m_stream, param.offset_file_header);
+
+    zip_file_entry_header header;
+
+    header.header_signature = file_header.read_4bytes();
+    header.required_version = file_header.read_2bytes();
+    header.flag = file_header.read_2bytes();
+    header.compression_method = file_header.read_2bytes();
+    header.last_modified_time = file_header.read_2bytes();
+    header.last_modified_date = file_header.read_2bytes();
+    header.crc32 = file_header.read_4bytes();
+    header.compressed_size = file_header.read_4bytes();
+    header.uncompressed_size = file_header.read_4bytes();
+    uint16_t filename_len = file_header.read_2bytes();
+    uint16_t extra_field_len = file_header.read_2bytes();
+
+    if (filename_len)
+        header.filename = file_header.read_string(filename_len);
+
+    if (extra_field_len)
+        header.extra_field = file_header.read_bytes(extra_field_len);
+
+    return header;
+}
+
+zip_file_entry_header zip_archive::impl::get_file_entry_header(std::string_view name) const
+{
+    auto it = m_filenames.find(name);
+    if (it == m_filenames.end())
+    {
+        std::ostringstream os;
+        os << "file entry named '" << name << "' not found";
+        throw zip_error(os.str());
+    }
+
+    return get_file_entry_header(it->second);
 }
 
 void zip_archive::impl::read_file_entries()
@@ -322,75 +405,6 @@ void zip_archive::impl::read_file_entries()
         std::cout << "--" << std::endl;
 #endif
     }
-}
-
-void zip_archive::impl::dump_file_entry(size_t pos) const
-{
-    if (pos >= m_file_params.size())
-        throw zip_error("invalid file entry index.");
-
-    const zip_file_param& param = m_file_params[pos];
-    std::cout << "-- filename: " << param.filename << std::endl;
-
-    zip_stream_parser file_header(m_stream, param.offset_file_header);
-    uint32_t v32 = file_header.read_4bytes();
-    printf("  header signature: 0x%8.8x\n", v32);
-    uint16_t v16 = file_header.read_2bytes();
-    std::cout << "  version needed to extract: " << v16 << std::endl;
-    v16 = file_header.read_2bytes();
-    printf("  general purpose bit flag: 0x%4.4x\n", v16);
-    v16 = file_header.read_2bytes();
-    std::cout << "  compression method: " << v16 << std::endl;
-    v16 = file_header.read_2bytes();
-    std::cout << "  file last modified time: " << v16 << std::endl;
-    v16 = file_header.read_2bytes();
-    std::cout << "  file last modified date: " << v16 << std::endl;
-    v32 = file_header.read_4bytes();
-    printf("  crc32: 0x%8.8x\n", v32);
-    v32 = file_header.read_4bytes();
-    std::cout << "  compressed size: " << v32 << std::endl;
-    v32 = file_header.read_4bytes();
-    std::cout << "  uncompressed size: " << v32 << std::endl;
-    size_t filename_len = file_header.read_2bytes();
-    std::cout << "  filename length: " << filename_len << std::endl;
-    uint16_t extra_field_len = file_header.read_2bytes();
-    std::cout << "  extra field length: " << extra_field_len << std::endl;
-    if (filename_len)
-    {
-        std::string filename = file_header.read_string(filename_len);
-        std::cout << "  filename: '" << filename << "'" << std::endl;
-    }
-
-    if (extra_field_len)
-    {
-        // Ignore extra field.
-        file_header.skip_bytes(extra_field_len);
-    }
-
-    // Header followed by the actual data bytes.
-
-    m_stream->seek(file_header.tell());
-
-    std::vector<unsigned char> buf = read_file_entry(param.filename);
-    if (!buf.empty())
-    {
-        std::cout << "-- data section" << std::endl;
-        std::cout << buf.data() << std::endl;
-        std::cout << "--" << std::endl;
-    }
-}
-
-void zip_archive::impl::dump_file_entry(std::string_view entry_name) const
-{
-    filename_map_type::const_iterator it = m_filenames.find(entry_name);
-    if (it == m_filenames.end())
-    {
-        // entry name not found.
-        std::cout << "file entry '" << entry_name << "' not found." << std::endl;
-        return;
-    }
-
-    dump_file_entry(it->second);
 }
 
 std::string_view zip_archive::impl::get_file_entry_name(std::size_t pos) const
@@ -558,19 +572,19 @@ void zip_archive::load()
     mp_impl->load();
 }
 
-void zip_archive::dump_file_entry(size_t index) const
+zip_file_entry_header zip_archive::get_file_entry_header(std::size_t index) const
 {
-    mp_impl->dump_file_entry(index);
+    return mp_impl->get_file_entry_header(index);
+}
+
+zip_file_entry_header zip_archive::get_file_entry_header(std::string_view name) const
+{
+    return mp_impl->get_file_entry_header(name);
 }
 
 std::string_view zip_archive::get_file_entry_name(std::size_t index) const
 {
     return mp_impl->get_file_entry_name(index);
-}
-
-void zip_archive::dump_file_entry(std::string_view entry_name) const
-{
-    mp_impl->dump_file_entry(entry_name);
 }
 
 size_t zip_archive::get_file_entry_count() const

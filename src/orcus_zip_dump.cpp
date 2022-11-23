@@ -29,12 +29,16 @@ int main(int argc, char** argv)
         if (argc < 3)
         {
             for (size_t i = 0; i < n; ++i)
-                archive.dump_file_entry(i);
+            {
+                auto header = archive.get_file_entry_header(i);
+                std::cout << "--" << std::endl;
+                std::cout << header << std::endl;
+            }
             return EXIT_SUCCESS;
         }
 
-        const char* entry_name = argv[2];
-        archive.dump_file_entry(entry_name);
+        auto header = archive.get_file_entry_header(argv[2]);
+        std::cout << header << std::endl;
     }
     catch (const std::exception& e)
     {

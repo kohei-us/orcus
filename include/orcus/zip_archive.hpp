@@ -14,8 +14,38 @@
 #include <string_view>
 #include <vector>
 #include <memory>
+#include <ostream>
 
 namespace orcus {
+
+/**
+ * Structure containing file entry header attributes.
+ */
+struct ORCUS_PSR_DLLPUBLIC zip_file_entry_header
+{
+    uint32_t header_signature = 0;
+    uint16_t required_version = 0;
+    uint16_t flag = 0;
+    uint16_t compression_method = 0;
+    uint16_t last_modified_time = 0;
+    uint16_t last_modified_date = 0;
+    uint32_t crc32 = 0;
+    uint32_t compressed_size = 0;
+    uint32_t uncompressed_size = 0;
+
+    std::string filename;
+    std::vector<uint8_t> extra_field;
+
+    zip_file_entry_header();
+    zip_file_entry_header(const zip_file_entry_header& other);
+    zip_file_entry_header(zip_file_entry_header&& other);
+    ~zip_file_entry_header();
+
+    zip_file_entry_header& operator=(const zip_file_entry_header& other);
+    zip_file_entry_header& operator=(zip_file_entry_header&& other);
+};
+
+ORCUS_PSR_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const zip_file_entry_header& header);
 
 class zip_archive_stream;
 
@@ -41,19 +71,22 @@ public:
     void load();
 
     /**
-     * Dump the content of a specified file entry to stdout.
+     * Retrieve the header information for a file entry specified by index.
      *
-     * @param index file entry index
+     * @param index file entry index.
+     *
+     * @return header information for a file entry.
      */
-    void dump_file_entry(size_t index) const;
+    zip_file_entry_header get_file_entry_header(std::size_t index) const;
 
     /**
-     * Dump the content of a specified file entry to stdout.
+     * Retrieve the header information for a file entry specified by name.
      *
+     * @param name file entry name.
      *
-     * @param entry_name file entry name.
+     * @return header information for a file entry.
      */
-    void dump_file_entry(std::string_view entry_name) const;
+    zip_file_entry_header get_file_entry_header(std::string_view name) const;
 
     /**
      * Get file entry name from its index.
