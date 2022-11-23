@@ -184,7 +184,7 @@ struct central_dir_end
 
 } // anonymous namespace
 
-class zip_archive_impl
+class zip_archive::impl
 {
     typedef std::vector<zip_file_param> file_params_type;
     typedef std::unordered_map<std::string_view, std::size_t> filename_map_type;
@@ -200,8 +200,7 @@ class zip_archive_impl
     filename_map_type m_filenames;
 
 public:
-    zip_archive_impl(zip_archive_stream* stream);
-    ~zip_archive_impl();
+    impl(zip_archive_stream* stream);
 
     void load();
     void dump_file_entry(size_t pos) const;
@@ -227,7 +226,7 @@ private:
     void read_file_entries();
 };
 
-zip_archive_impl::zip_archive_impl(zip_archive_stream* stream) :
+zip_archive::impl::impl(zip_archive_stream* stream) :
     m_stream(stream), m_stream_size(0), m_central_dir_pos(0)
 {
     if (!m_stream)
@@ -236,11 +235,7 @@ zip_archive_impl::zip_archive_impl(zip_archive_stream* stream) :
     m_stream_size = m_stream->size();
 }
 
-zip_archive_impl::~zip_archive_impl()
-{
-}
-
-void zip_archive_impl::load()
+void zip_archive::impl::load()
 {
     size_t central_dir_end_pos = seek_central_dir();
     if (!central_dir_end_pos)
@@ -255,7 +250,7 @@ void zip_archive_impl::load()
     read_file_entries();
 }
 
-void zip_archive_impl::read_file_entries()
+void zip_archive::impl::read_file_entries()
 {
     m_file_params.clear();
 
@@ -329,7 +324,7 @@ void zip_archive_impl::read_file_entries()
     }
 }
 
-void zip_archive_impl::dump_file_entry(size_t pos) const
+void zip_archive::impl::dump_file_entry(size_t pos) const
 {
     if (pos >= m_file_params.size())
         throw zip_error("invalid file entry index.");
@@ -385,7 +380,7 @@ void zip_archive_impl::dump_file_entry(size_t pos) const
     }
 }
 
-void zip_archive_impl::dump_file_entry(std::string_view entry_name) const
+void zip_archive::impl::dump_file_entry(std::string_view entry_name) const
 {
     filename_map_type::const_iterator it = m_filenames.find(entry_name);
     if (it == m_filenames.end())
@@ -398,7 +393,7 @@ void zip_archive_impl::dump_file_entry(std::string_view entry_name) const
     dump_file_entry(it->second);
 }
 
-std::string_view zip_archive_impl::get_file_entry_name(std::size_t pos) const
+std::string_view zip_archive::impl::get_file_entry_name(std::size_t pos) const
 {
     if (pos >= m_file_params.size())
         return std::string_view{};
@@ -406,7 +401,7 @@ std::string_view zip_archive_impl::get_file_entry_name(std::size_t pos) const
     return m_file_params[pos].filename;
 }
 
-bool zip_archive_impl::read_file_entry(std::string_view entry_name, std::vector<unsigned char>& buf) const
+bool zip_archive::impl::read_file_entry(std::string_view entry_name, std::vector<unsigned char>& buf) const
 {
     filename_map_type::const_iterator it = m_filenames.find(entry_name);
     if (it == m_filenames.end())
@@ -469,7 +464,7 @@ bool zip_archive_impl::read_file_entry(std::string_view entry_name, std::vector<
     return false;
 }
 
-size_t zip_archive_impl::seek_central_dir()
+size_t zip_archive::impl::seek_central_dir()
 {
     // Search for the position of 0x06054b50 (read in little endian order - so
     // it's 0x50, 0x4b, 0x05, 0x06 in this order) somewhere near the end of
@@ -523,7 +518,7 @@ size_t zip_archive_impl::seek_central_dir()
     return 0;
 }
 
-void zip_archive_impl::read_central_dir_end()
+void zip_archive::impl::read_central_dir_end()
 {
     central_dir_end content;
     content.magic_number = m_central_dir_end.read_4bytes();
@@ -551,15 +546,11 @@ void zip_archive_impl::read_central_dir_end()
 #endif
 }
 
-zip_archive::zip_archive(zip_archive_stream* stream) :
-    mp_impl(new zip_archive_impl(stream))
+zip_archive::zip_archive(zip_archive_stream* stream) : mp_impl(std::make_unique<impl>(stream))
 {
 }
 
-zip_archive::~zip_archive()
-{
-    delete mp_impl;
-}
+zip_archive::~zip_archive() = default;
 
 void zip_archive::load()
 {

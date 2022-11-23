@@ -11,24 +11,25 @@
 #include "env.hpp"
 #include "exception.hpp"
 
-#include <cstdlib>
-#include <string>
+#include <string_view>
 #include <vector>
+#include <memory>
 
 namespace orcus {
 
 class zip_archive_stream;
-class zip_archive_impl;
 
 class ORCUS_PSR_DLLPUBLIC zip_archive
 {
-    zip_archive_impl* mp_impl;
+    struct impl;
 
+    std::unique_ptr<impl> mp_impl;
+
+public:
     zip_archive() = delete;
     zip_archive(const zip_archive&) = delete;
     zip_archive& operator= (const zip_archive) = delete;
 
-public:
     zip_archive(zip_archive_stream* stream);
     ~zip_archive();
 
