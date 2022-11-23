@@ -219,15 +219,8 @@ date_time_t::date_time_t(int _year, int _month, int _day) :
 date_time_t::date_time_t(int _year, int _month, int _day, int _hour, int _minute, double _second) :
     year(_year), month(_month), day(_day), hour(_hour), minute(_minute), second(_second) {}
 
-date_time_t::date_time_t(const date_time_t& other) :
-    year(other.year),
-    month(other.month),
-    day(other.day),
-    hour(other.hour),
-    minute(other.minute),
-    second(other.second) {}
-
-date_time_t::~date_time_t() {}
+date_time_t::date_time_t(const date_time_t& other) = default;
+date_time_t::~date_time_t() = default;
 
 date_time_t& date_time_t::operator= (date_time_t other)
 {

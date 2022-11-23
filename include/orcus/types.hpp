@@ -455,6 +455,9 @@ struct ORCUS_PSR_DLLPUBLIC length_t
     bool operator!= (const length_t& other) const noexcept;
 };
 
+/**
+ * Struct that holds a date or date-time value.
+ */
 struct ORCUS_PSR_DLLPUBLIC date_time_t
 {
     int year;
@@ -476,17 +479,30 @@ struct ORCUS_PSR_DLLPUBLIC date_time_t
     bool operator!= (const date_time_t& other) const;
     bool operator< (const date_time_t& other) const;
 
+    /**
+     * Convert the date-time value to an ISO-formatted string representation.
+     *
+     * @return ISO-formatted string representation of the date-time value.
+     */
     std::string to_string() const;
 
+    /**
+     * Swap the value with another instance.
+     *
+     * @param other another instance to swap values with.
+     */
     void swap(date_time_t& other);
 
     /**
-     * Parse a string representation of a date-time value, and convert it into a
-     * date_time_t value.  A string representation allows either a date only or
-     * a date and time value, but it does not allow a time only value.
+     * Parse an ISO-formatted string representation of a date-time value, and
+     * convert it into a date_time_t value.  A string representation allows
+     * either a date only or a date and time value, but it does not allow a time
+     * only value.
      *
-     * date only: 2013-04-09
-     * date and time: 2013-04-09T21:34:09.55
+     * Here are some examples of ISO-formatted date and date-time values:
+     *
+     * @li <b>2013-04-09</b> (date only)
+     * @li <b>2013-04-09T21:34:09.55</b> (date and time)
      *
      * @param str string representation of a date-time value.
      * @return converted date-time value consisting of a set of numeric values.
