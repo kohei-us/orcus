@@ -20,12 +20,6 @@ namespace orcus {
 class xmlns_context;
 class xmlns_repository;
 
-/**
- * Generic constant to be used to indicate that a valid index value is
- * expected but not found.
- */
-ORCUS_PSR_DLLPUBLIC extern const size_t index_not_found;
-
 // XML specific types
 
 using xml_token_t = size_t;
@@ -40,9 +34,6 @@ struct ORCUS_PSR_DLLPUBLIC xml_token_pair_hash
 
 using xml_elem_stack_t = std::vector<xml_token_pair_t>;
 using xml_elem_set_t = std::unordered_set<xml_token_pair_t, xml_token_pair_hash>;
-
-ORCUS_PSR_DLLPUBLIC extern const xmlns_id_t XMLNS_UNKNOWN_ID;
-ORCUS_PSR_DLLPUBLIC extern const xml_token_t XML_UNKNOWN_TOKEN;
 
 struct ORCUS_PSR_DLLPUBLIC parse_error_value_t
 {
@@ -511,6 +502,22 @@ ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const date_time_
 ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, format_t v);
 
 typedef ::std::vector<xml_token_attr_t> xml_attrs_t;
+
+/**
+ * Generic constant to be used to indicate that a valid index value is
+ * expected but not found.
+ */
+ORCUS_PSR_DLLPUBLIC extern const std::size_t INDEX_NOT_FOUND;
+
+/**
+ * Value associated with an unknown XML namespace.
+ */
+ORCUS_PSR_DLLPUBLIC extern const xmlns_id_t XMLNS_UNKNOWN_ID;
+
+/**
+ * Value associated with an unknown XML token.
+ */
+ORCUS_PSR_DLLPUBLIC extern const xml_token_t XML_UNKNOWN_TOKEN;
 
 }
 

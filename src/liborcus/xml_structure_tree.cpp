@@ -263,7 +263,7 @@ void print_scope(std::ostream& os, const scopes_type& scopes, const xmlns_contex
     {
         os << "/";
         size_t num_id = cxt.get_index((*it)->name.ns);
-        if (num_id != index_not_found)
+        if (num_id != INDEX_NOT_FOUND)
             os << "ns" << num_id << ":";
         os << (*it)->name.name;
         if ((*it)->repeat)
@@ -292,7 +292,7 @@ struct xml_structure_tree::impl
     std::string to_string(const xml_structure_tree::entity_name& name) const
     {
         std::ostringstream ss;
-        if (m_xmlns_cxt.get_index(name.ns) != index_not_found)
+        if (m_xmlns_cxt.get_index(name.ns) != INDEX_NOT_FOUND)
             ss << m_xmlns_cxt.get_short_name(name.ns) << ":";
         ss << name.name;
         return ss.str();
@@ -555,7 +555,7 @@ void xml_structure_tree::dump_compact(std::ostream& os) const
 
             ss << "/";
             size_t num_id = cxt.get_index(this_elem.name.ns);
-            if (num_id != index_not_found)
+            if (num_id != INDEX_NOT_FOUND)
                 ss << "ns" << num_id << ":";
             ss << this_elem.name.name;
             if (this_elem.prop->repeat)

@@ -5,9 +5,9 @@ Basic types
 Constants
 ---------
 
+.. doxygenvariable:: orcus::INDEX_NOT_FOUND
 .. doxygenvariable:: orcus::XMLNS_UNKNOWN_ID
 .. doxygenvariable:: orcus::XML_UNKNOWN_TOKEN
-.. doxygenvariable:: orcus::index_not_found
 
 Type aliases
 ------------

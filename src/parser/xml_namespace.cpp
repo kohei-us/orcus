@@ -150,7 +150,7 @@ string xmlns_repository::get_short_name(xmlns_id_t ns_id) const
 
 string xmlns_repository::get_short_name(size_t index) const
 {
-    if (index == index_not_found)
+    if (index == INDEX_NOT_FOUND)
         return string("???");
 
     ostringstream os;
@@ -161,11 +161,11 @@ string xmlns_repository::get_short_name(size_t index) const
 size_t xmlns_repository::get_index(xmlns_id_t ns_id) const
 {
     if (!ns_id)
-        return index_not_found;
+        return INDEX_NOT_FOUND;
 
     auto it = mp_impl->m_strid_map.find(std::string_view(ns_id));
     if (it == mp_impl->m_strid_map.end())
-        return index_not_found;
+        return INDEX_NOT_FOUND;
 
     return it->second;
 }
@@ -382,7 +382,7 @@ public:
     void operator() (xmlns_id_t ns)
     {
         size_t num_id = m_cxt.get_index(ns);
-        if (num_id != index_not_found)
+        if (num_id != INDEX_NOT_FOUND)
             m_store.push_back(ns_item(num_id, ns));
     }
 };
@@ -444,7 +444,7 @@ void xmlns_context::dump(std::ostream& os) const
     {
         xmlns_id_t ns_id = *it;
         size_t num_id = get_index(ns_id);
-        if (num_id == index_not_found)
+        if (num_id == INDEX_NOT_FOUND)
             continue;
 
         os << "ns" << num_id << "=\"" << ns_id << '"' << endl;
@@ -457,7 +457,7 @@ void xmlns_context::dump_state(std::ostream& os) const
     for (xmlns_id_t ns_id : get_all_namespaces())
     {
         size_t num_id = get_index(ns_id);
-        if (num_id == index_not_found)
+        if (num_id == INDEX_NOT_FOUND)
             continue;
 
         os << "  ns" << num_id << ": \"" << ns_id << '"' << std::endl;

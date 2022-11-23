@@ -119,7 +119,7 @@ void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
     if (name.ns)
     {
         size_t index = cxt.get_index(name.ns);
-        if (index != index_not_found)
+        if (index != INDEX_NOT_FOUND)
             os << "ns" << index << ':';
     }
     os << name.name;
