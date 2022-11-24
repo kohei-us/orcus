@@ -32,18 +32,32 @@ using xml_token_t = std::size_t;
  */
 using xmlns_id_t = const char*;
 
+/**
+ * Parser token that represents the state of a parse error, used by
+ * threaded_json_parser and threaded_sax_token_parser when transferring
+ * parse status between threads.
+ */
 struct ORCUS_PSR_DLLPUBLIC parse_error_value_t
 {
+    /** error message associated with the parse error. */
     std::string_view str;
+    /** offset in stream where the error occurred. */
     std::ptrdiff_t offset;
 
     parse_error_value_t();
+    parse_error_value_t(const parse_error_value_t& other);
     parse_error_value_t(std::string_view _str, std::ptrdiff_t _offset);
+
+    parse_error_value_t& operator=(const parse_error_value_t& other);
 
     bool operator==(const parse_error_value_t& other) const;
     bool operator!=(const parse_error_value_t& other) const;
 };
 
+/**
+ * Represents a name with a normalized namespace in XML documents.  This can
+ * be used either as an element name or as an attribute name.
+ */
 struct ORCUS_PSR_DLLPUBLIC xml_name_t
 {
     enum to_string_type { use_alias, use_short_name };
@@ -51,20 +65,47 @@ struct ORCUS_PSR_DLLPUBLIC xml_name_t
     xmlns_id_t ns;
     std::string_view name;
 
-    xml_name_t();
+    xml_name_t() noexcept;
     xml_name_t(xmlns_id_t _ns, std::string_view _name);
-    xml_name_t(const xml_name_t& r);
+    xml_name_t(const xml_name_t& other);
 
     xml_name_t& operator= (const xml_name_t& other);
 
-    bool operator== (const xml_name_t& other) const;
-    bool operator!= (const xml_name_t& other) const;
+    bool operator== (const xml_name_t& other) const noexcept;
+    bool operator!= (const xml_name_t& other) const noexcept;
 
+    /**
+     * Convert a namespace-name value pair to a string representation with the
+     * namespace value converted to either an alias or a unique "short name".
+     * Refer to @link xmlns_context::get_alias() get_alias() @endlink and
+     * @link xmlns_context::get_short_name() get_short_name() @endlink
+     * for the explanations of an alias and short name.
+     *
+     * @param cxt namespace context object associated with the XML stream
+     *            currently being parsed.
+     * @param type policy on how to convert a namespace identifier to a string
+     *             representation.
+     *
+     * @return string representation of a namespace-name value pair.
+     */
     std::string to_string(const xmlns_context& cxt, to_string_type type) const;
 
+    /**
+     * Convert a namespace-name value pair to a string representation with the
+     * namespace value converted to a unique "short name". Refer to
+     * orcus::xmlns_repository::get_short_name() get_short_name() @endlink for the
+     * explanations of a short name.
+     *
+     * @param repo namespace repository.
+     *
+     * @return string representation of a namespace-name value pair.
+     */
     std::string to_string(const xmlns_repository& repo) const;
 };
 
+/**
+ * Struct containing properties of a tokenized XML attribute.
+ */
 struct ORCUS_PSR_DLLPUBLIC xml_token_attr_t
 {
     xmlns_id_t ns;
@@ -82,18 +123,26 @@ struct ORCUS_PSR_DLLPUBLIC xml_token_attr_t
     bool transient;
 
     xml_token_attr_t();
+    xml_token_attr_t(const xml_token_attr_t& other);
     xml_token_attr_t(
         xmlns_id_t _ns, xml_token_t _name, std::string_view _value, bool _transient);
     xml_token_attr_t(
         xmlns_id_t _ns, xml_token_t _name, std::string_view _raw_name,
         std::string_view _value, bool _transient);
+
+    xml_token_attr_t& operator=(const xml_token_attr_t& other);
 };
 
 using xml_token_attrs_t = std::vector<xml_token_attr_t>;
 
 /**
- * Element properties passed to its handler via start_element() and
- * end_element() calls.
+ * Struct containing XML element properties passed to the handler of
+ * sax_token_parser via its @p start_element() and @p end_element()
+ * calls.
+ *
+ * @see
+ *      @li sax_token_handler::start_element
+ *      @li sax_token_handler::end_element
  */
 struct ORCUS_PSR_DLLPUBLIC xml_token_element_t
 {
@@ -111,7 +160,7 @@ struct ORCUS_PSR_DLLPUBLIC xml_token_element_t
 };
 
 /**
- * Character set types.
+ * Character set types, generated from IANA character-sets specifications.
  *
  * @see https://www.iana.org/assignments/character-sets/character-sets.xhtml
  */
@@ -378,6 +427,9 @@ enum class character_set_t
     windows_874,
 };
 
+/**
+ * Struct holding XML declaration properties.
+ */
 struct ORCUS_PSR_DLLPUBLIC xml_declaration_t
 {
     uint8_t version_major;
@@ -396,8 +448,6 @@ struct ORCUS_PSR_DLLPUBLIC xml_declaration_t
     bool operator!= (const xml_declaration_t& other) const;
 };
 
-// Other types
-
 enum class length_unit_t
 {
     unknown = 0,
@@ -408,8 +458,6 @@ enum class length_unit_t
     point,
     twip,
     pixel
-
-    // TODO: Add more.
 };
 
 enum class format_t
@@ -424,7 +472,7 @@ enum class format_t
 
 enum class dump_format_t
 {
-    unknown,
+    unknown = 0,
     none,
     check,
     csv,
@@ -436,6 +484,9 @@ enum class dump_format_t
     debug_state
 };
 
+/**
+ * Represents a length with unit of measurement.
+ */
 struct ORCUS_PSR_DLLPUBLIC length_t
 {
     length_unit_t unit;
@@ -507,9 +558,36 @@ struct ORCUS_PSR_DLLPUBLIC date_time_t
     static date_time_t from_chars(std::string_view str);
 };
 
+/**
+ * Parse a string that represents an output format type and convert it to a
+ * corresponding enum value.
+ *
+ * @param s string representing an output format type.
+ *
+ * @return enum value representing a character set, or
+ *         character_set_t::unknown in case it cannot be
+ *         determined.
+ */
 ORCUS_PSR_DLLPUBLIC dump_format_t to_dump_format_enum(std::string_view s);
+
+/**
+ * Parse a string that represents a character set and convert it to a
+ * corresponding enum value.
+ *
+ * @param s string representing a character set.
+ *
+ * @return enum value representing a character set, or
+ *         character_set_t::unspecified in case it cannot be
+ *         determined.
+ */
 ORCUS_PSR_DLLPUBLIC character_set_t to_character_set(std::string_view s);
 
+/**
+ * Get a list of available output format entries.  Each entry consists of the
+ * name of a format and its enum value equivalent.
+ *
+ * @return list of available output format entries.
+ */
 ORCUS_PSR_DLLPUBLIC std::vector<std::pair<std::string_view, dump_format_t>> get_dump_format_entries();
 
 ORCUS_PSR_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const length_t& v);

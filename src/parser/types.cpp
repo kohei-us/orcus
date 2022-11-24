@@ -24,10 +24,14 @@ parse_error_value_t::parse_error_value_t() :
 {
 }
 
+parse_error_value_t::parse_error_value_t(const parse_error_value_t& other) = default;
+
 parse_error_value_t::parse_error_value_t(std::string_view _str, std::ptrdiff_t _offset) :
     str(_str), offset(_offset)
 {
 }
+
+parse_error_value_t& parse_error_value_t::operator=(const parse_error_value_t& other) = default;
 
 bool parse_error_value_t::operator==(const parse_error_value_t& other) const
 {
@@ -39,23 +43,18 @@ bool parse_error_value_t::operator!=(const parse_error_value_t& other) const
     return !operator==(other);
 }
 
-xml_name_t::xml_name_t() : ns(XMLNS_UNKNOWN_ID), name() {}
+xml_name_t::xml_name_t() noexcept : ns(XMLNS_UNKNOWN_ID), name() {}
 xml_name_t::xml_name_t(xmlns_id_t _ns, std::string_view _name) : ns(_ns), name(_name) {}
-xml_name_t::xml_name_t(const xml_name_t& r) : ns(r.ns), name(r.name) {}
+xml_name_t::xml_name_t(const xml_name_t& other) = default;
 
-xml_name_t& xml_name_t::operator= (const xml_name_t& other)
-{
-    ns = other.ns;
-    name = other.name;
-    return *this;
-}
+xml_name_t& xml_name_t::operator= (const xml_name_t& other) = default;
 
-bool xml_name_t::operator== (const xml_name_t& other) const
+bool xml_name_t::operator== (const xml_name_t& other) const noexcept
 {
     return ns == other.ns && name == other.name;
 }
 
-bool xml_name_t::operator!= (const xml_name_t& other) const
+bool xml_name_t::operator!= (const xml_name_t& other) const noexcept
 {
     return !operator==(other);
 }
@@ -103,6 +102,8 @@ std::string xml_name_t::to_string(const xmlns_repository& repo) const
 xml_token_attr_t::xml_token_attr_t() :
     ns(XMLNS_UNKNOWN_ID), name(XML_UNKNOWN_TOKEN), transient(false) {}
 
+xml_token_attr_t::xml_token_attr_t(const xml_token_attr_t& other) = default;
+
 xml_token_attr_t::xml_token_attr_t(
     xmlns_id_t _ns, xml_token_t _name, std::string_view _value, bool _transient) :
     ns(_ns), name(_name), value(_value), transient(_transient) {}
@@ -110,6 +111,8 @@ xml_token_attr_t::xml_token_attr_t(
 xml_token_attr_t::xml_token_attr_t(
     xmlns_id_t _ns, xml_token_t _name, std::string_view _raw_name, std::string_view _value, bool _transient) :
     ns(_ns), name(_name), raw_name(_raw_name), value(_value), transient(_transient) {}
+
+xml_token_attr_t& xml_token_attr_t::operator=(const xml_token_attr_t& other) = default;
 
 xml_token_element_t::xml_token_element_t() : ns(nullptr), name(XML_UNKNOWN_TOKEN) {}
 

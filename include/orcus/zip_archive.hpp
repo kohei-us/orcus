@@ -111,7 +111,6 @@ public:
      * gets uncompressed if the original stream is compressed.
      *
      * @param entry_name file entry name.
-     * @param buf buffer to put the retrieved data stream into.
      *
      * @return buffer containing the data stream for specified entry.
      *
