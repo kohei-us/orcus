@@ -92,8 +92,8 @@ struct ORCUS_PSR_DLLPUBLIC xml_name_t
 
     /**
      * Convert a namespace-name value pair to a string representation with the
-     * namespace value converted to a unique "short name". Refer to
-     * orcus::xmlns_repository::get_short_name() get_short_name() @endlink for the
+     * namespace value converted to a unique "short name". Refer to @link
+     * xmlns_repository::get_short_name() get_short_name() @endlink for the
      * explanations of a short name.
      *
      * @param repo namespace repository.

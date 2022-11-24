@@ -145,15 +145,11 @@ xmlns_id_t xmlns_repository::get_identifier(size_t index) const
 string xmlns_repository::get_short_name(xmlns_id_t ns_id) const
 {
     size_t index = get_index(ns_id);
-    return get_short_name(index);
-}
 
-string xmlns_repository::get_short_name(size_t index) const
-{
     if (index == INDEX_NOT_FOUND)
         return string("???");
 
-    ostringstream os;
+    std::ostringstream os;
     os << "ns" << index;
     return os.str();
 }

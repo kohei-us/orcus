@@ -66,8 +66,11 @@ public:
      */
     xmlns_id_t get_identifier(size_t index) const;
 
+    /**
+     * See xmlns_context::get_short_name() for the explanation of this method,
+     * which works identically to it.
+     */
     std::string get_short_name(xmlns_id_t ns_id) const;
-    std::string get_short_name(size_t index) const;
 };
 
 /**
@@ -123,8 +126,8 @@ public:
      * but still guaranteed to be unique to the identifier it is associated
      * with.
      *
-     * <p>Note that the xmlns_repository class has method of the same
-     * name, and that method works identically to this method.</p>
+     * @note The xmlns_repository class has method of the same name, and that
+     *       method works identically to this method.
      *
      * @param ns_id a namespace identifier to obtain short name for.
      *
