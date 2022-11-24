@@ -63,7 +63,7 @@ struct xmlns_repository::impl
 };
 
 xmlns_repository::xmlns_repository() : mp_impl(std::make_unique<impl>()) {}
-xmlns_repository::~xmlns_repository() {}
+xmlns_repository::~xmlns_repository() = default;
 
 xmlns_id_t xmlns_repository::intern(std::string_view uri)
 {
@@ -192,7 +192,7 @@ xmlns_context::xmlns_context(xmlns_context&& r) : mp_impl(std::move(r.mp_impl))
     r.mp_impl = std::make_unique<impl>();
 }
 
-xmlns_context::~xmlns_context() {}
+xmlns_context::~xmlns_context() = default;
 
 xmlns_context& xmlns_context::operator= (const xmlns_context& r)
 {
@@ -208,37 +208,37 @@ xmlns_context& xmlns_context::operator= (xmlns_context&& r)
     return *this;
 }
 
-xmlns_id_t xmlns_context::push(std::string_view key, std::string_view uri)
+xmlns_id_t xmlns_context::push(std::string_view alias, std::string_view uri)
 {
     if (!mp_impl->repo)
         throw general_error("this context is not associated with any repo.");
 
 #if ORCUS_DEBUG_XML_NAMESPACE
-    cout << "xmlns_context::push: key='" << key << "', uri='" << uri << "'" << endl;
+    cout << "xmlns_context::push: key='" << alias << "', uri='" << uri << "'" << endl;
 #endif
     mp_impl->m_trim_all_ns = true;
 
     xmlns_id_t id = mp_impl->repo->intern(uri);
     std::string_view uri_interned = id ? std::string_view(id) : std::string_view();
 
-    if (key.empty())
+    if (alias.empty())
     {
-        // empty key value is associated with default namespace.
+        // empty alias value is associated with default namespace.
         mp_impl->m_default.push_back(uri_interned.data());
         mp_impl->m_all_ns.push_back(uri_interned.data());
         return mp_impl->m_default.back();
     }
 
-    // See if this key already exists.
-    alias_map_type::iterator it = mp_impl->m_map.find(key);
+    // See if this alias already exists.
+    alias_map_type::iterator it = mp_impl->m_map.find(alias);
     if (it == mp_impl->m_map.end())
     {
-        // This is the first time this key is used.
+        // This is the first time this alias is used.
         xmlns_list_type nslist;
         nslist.push_back(uri_interned.data());
         mp_impl->m_all_ns.push_back(uri_interned.data());
         std::pair<alias_map_type::iterator,bool> r =
-            mp_impl->m_map.insert(alias_map_type::value_type(key, nslist));
+            mp_impl->m_map.insert(alias_map_type::value_type(alias, nslist));
 
         if (!r.second)
             // insertion failed.
@@ -247,21 +247,21 @@ xmlns_id_t xmlns_context::push(std::string_view key, std::string_view uri)
         return nslist.back();
     }
 
-    // The key already exists.
+    // The alias already exists.
     xmlns_list_type& nslist = it->second;
     nslist.push_back(uri_interned.data());
     mp_impl->m_all_ns.push_back(uri_interned.data());
     return nslist.back();
 }
 
-void xmlns_context::pop(std::string_view key)
+void xmlns_context::pop(std::string_view alias)
 {
 #if ORCUS_DEBUG_XML_NAMESPACE
-    cout << "xmlns_context::pop: key='" << key << "'" << endl;
+    cout << "xmlns_context::pop: alias='" << alias << "'" << endl;
 #endif
-    if (key.empty())
+    if (alias.empty())
     {
-        // empty key value is associated with default namespace.
+        // empty alias value is associated with default namespace.
         if (mp_impl->m_default.empty())
             throw general_error("default namespace stack is empty.");
 
@@ -269,10 +269,14 @@ void xmlns_context::pop(std::string_view key)
         return;
     }
 
-    // See if this key really exists.
-    alias_map_type::iterator it = mp_impl->m_map.find(key);
+    // See if this alias really exists.
+    alias_map_type::iterator it = mp_impl->m_map.find(alias);
     if (it == mp_impl->m_map.end())
-        throw general_error("failed to find the key.");
+    {
+        std::ostringstream os;
+        os << "alias named '" << alias << "' was attempted to be popped, but was not found in the stack";
+        throw general_error(os.str());
+    }
 
     xmlns_list_type& nslist = it->second;
     if (nslist.empty())
@@ -281,19 +285,19 @@ void xmlns_context::pop(std::string_view key)
     nslist.pop_back();
 }
 
-xmlns_id_t xmlns_context::get(std::string_view key) const
+xmlns_id_t xmlns_context::get(std::string_view alias) const
 {
 #if ORCUS_DEBUG_XML_NAMESPACE
-    cout << "xmlns_context::get: alias='" << key << "', default ns stack size="
+    cout << "xmlns_context::get: alias='" << alias << "', default ns stack size="
         << mp_impl->m_default.size() << ", non-default alias count=" << mp_impl->m_map.size();
     cout << ", ";
     print_map_keys(mp_impl->m_map);
     cout << endl;
 #endif
-    if (key.empty())
+    if (alias.empty())
         return mp_impl->m_default.empty() ? XMLNS_UNKNOWN_ID : mp_impl->m_default.back();
 
-    alias_map_type::const_iterator it = mp_impl->m_map.find(key);
+    alias_map_type::const_iterator it = mp_impl->m_map.find(alias);
     if (it == mp_impl->m_map.end())
     {
 #if ORCUS_DEBUG_XML_NAMESPACE

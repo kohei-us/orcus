@@ -32,12 +32,12 @@ class ORCUS_PSR_DLLPUBLIC xmlns_repository
 
     xmlns_id_t intern(std::string_view uri);
 
-    xmlns_repository(const xmlns_repository&); // disabled
-    xmlns_repository& operator= (const xmlns_repository&); // disabled
-
     size_t get_index(xmlns_id_t ns_id) const;
 
 public:
+    xmlns_repository(const xmlns_repository&) = delete;
+    xmlns_repository& operator= (const xmlns_repository&) = delete;
+
     xmlns_repository();
     ~xmlns_repository();
 
@@ -55,6 +55,14 @@ public:
      */
     void add_predefined_values(const xmlns_id_t* predefined_ns);
 
+    /**
+     * Create a context object associated with this namespace repository.
+     *
+     * @warning Since this context object references values in this repo, make
+     *          sure that it will not out-live the repository object itself.
+     *
+     * @return context object to use for a new XML stream.
+     */
     xmlns_context create_context();
 
     /**
@@ -79,7 +87,7 @@ public:
  * instance of this class any longer than the life cycle of the xml stream
  * it is used in.
  *
- * An empty key value is associated with a default namespace.
+ * An empty key value i.e. `""` is associated with a default namespace.
  */
 class ORCUS_PSR_DLLPUBLIC xmlns_context
 {
@@ -98,17 +106,33 @@ public:
     xmlns_context& operator= (const xmlns_context& r);
     xmlns_context& operator= (xmlns_context&& r);
 
-    xmlns_id_t push(std::string_view key, std::string_view uri);
-    void pop(std::string_view key);
+    /**
+     * Push a new namespace alias-value pair to the stack.
+     *
+     * @param alias namespace alias to push onto the stack.  If the same alias
+     *              is already present, this overwrites it until it gets popped
+     *              off the stack.
+     * @param uri namespace name to associate with the alias.
+     *
+     * @return normalized namespace identifier for the namespace name.
+     */
+    xmlns_id_t push(std::string_view alias, std::string_view uri);
+
+    /**
+     * Pop a namespace alias from the stack.
+     *
+     * @param alias namespace alias to pop from the stack.
+     */
+    void pop(std::string_view alias);
 
     /**
      * Get the currnet namespace identifier for a specified namespace alias.
      *
-     * @param key namespace alias to get the current namespace identifier for.
+     * @param alias namespace alias to get the current namespace identifier for.
      *
      * @return current namespace identifier associated with the alias.
      */
-    xmlns_id_t get(std::string_view key) const;
+    xmlns_id_t get(std::string_view alias) const;
 
     /**
      * Get a unique index value associated with a specified identifier.  An
