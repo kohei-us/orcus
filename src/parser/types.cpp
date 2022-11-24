@@ -19,11 +19,6 @@
 
 namespace orcus {
 
-size_t xml_token_pair_hash::operator()(const xml_token_pair_t& v) const
-{
-    return std::hash<const char*>()(v.first) ^ std::hash<size_t>()(v.second);
-}
-
 parse_error_value_t::parse_error_value_t() :
     offset(0)
 {

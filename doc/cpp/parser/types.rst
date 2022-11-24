@@ -12,10 +12,7 @@ Constants
 Type aliases
 ------------
 
-.. doxygentypedef:: orcus::xml_elem_set_t
-.. doxygentypedef:: orcus::xml_elem_stack_t
 .. doxygentypedef:: orcus::xml_token_attrs_t
-.. doxygentypedef:: orcus::xml_token_pair_t
 .. doxygentypedef:: orcus::xml_token_t
 .. doxygentypedef:: orcus::xmlns_id_t
 
@@ -29,7 +26,6 @@ Structs
 .. doxygenstruct:: orcus::xml_name_t
 .. doxygenstruct:: orcus::xml_token_attr_t
 .. doxygenstruct:: orcus::xml_token_element_t
-.. doxygenstruct:: orcus::xml_token_pair_hash
 
 Enums
 -----

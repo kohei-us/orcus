@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <orcus/types.hpp>
+#include "xml_element_types.hpp"
 
 #include <unordered_map>
 

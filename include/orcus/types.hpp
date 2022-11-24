@@ -25,16 +25,6 @@ class xmlns_repository;
 using xml_token_t = size_t;
 using xmlns_id_t = const char*;
 
-using xml_token_pair_t = std::pair<xmlns_id_t, xml_token_t>;
-
-struct ORCUS_PSR_DLLPUBLIC xml_token_pair_hash
-{
-    size_t operator()(const xml_token_pair_t& v) const;
-};
-
-using xml_elem_stack_t = std::vector<xml_token_pair_t>;
-using xml_elem_set_t = std::unordered_set<xml_token_pair_t, xml_token_pair_hash>;
-
 struct ORCUS_PSR_DLLPUBLIC parse_error_value_t
 {
     std::string_view str;
