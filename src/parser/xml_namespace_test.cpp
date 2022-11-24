@@ -20,6 +20,8 @@ namespace {
 
 void test_basic()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     pstring xmlns1("http://some.xmlns/");
     pstring xmlns2("http://other.xmlns/");
 
@@ -53,6 +55,8 @@ void test_basic()
 
 void test_all_namespaces()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     pstring key1("a"), key2("b"), key3("c");
     pstring ns1("foo"), ns2("baa"), ns3("hmm");
 
@@ -110,6 +114,8 @@ void test_predefined_ns()
 
 void test_xml_name_t()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     xml_name_t name1;
     name1.ns = NS_test_name1;
     name1.name = "foo";
@@ -127,6 +133,8 @@ void test_xml_name_t()
 
 void test_ns_context()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     xmlns_repository repo;
     repo.add_predefined_values(NS_test_all);
 
@@ -193,6 +201,30 @@ void test_ns_context()
     assert(id1 == id2);
 }
 
+void test_repo_move()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    static_assert(!std::is_copy_constructible_v<xmlns_repository>);
+    static_assert(std::is_move_constructible_v<xmlns_repository>);
+
+    xmlns_repository repo;
+    repo.add_predefined_values(NS_test_all);
+
+    xmlns_repository repo_moved = std::move(repo); // move construction
+    xmlns_repository repo_moved2;
+    repo_moved2 = std::move(repo_moved); // move assignment
+
+    xmlns_id_t ns_id = repo_moved2.get_identifier(0);
+    assert(ns_id != XMLNS_UNKNOWN_ID);
+    ns_id = repo_moved2.get_identifier(1);
+    assert(ns_id != XMLNS_UNKNOWN_ID);
+    ns_id = repo_moved2.get_identifier(2);
+    assert(ns_id != XMLNS_UNKNOWN_ID);
+    ns_id = repo_moved2.get_identifier(3);
+    assert(ns_id == XMLNS_UNKNOWN_ID);
+}
+
 } // anonymous namespace
 
 int main()
@@ -202,6 +234,7 @@ int main()
     test_predefined_ns();
     test_xml_name_t();
     test_ns_context();
+    test_repo_move();
 
     return EXIT_SUCCESS;
 }

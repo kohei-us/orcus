@@ -86,7 +86,9 @@ parser_test_xml_namespace_SOURCES = \
 	xml_namespace.cpp \
 	xml_namespace_test.cpp
 
-parser_test_xml_namespace_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+parser_test_xml_namespace_LDADD = \
+	liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a
 parser_test_xml_namespace_CPPFLAGS = $(AM_CPPFLAGS)
 
 # parser-test-xml-validation

@@ -63,7 +63,14 @@ struct xmlns_repository::impl
 };
 
 xmlns_repository::xmlns_repository() : mp_impl(std::make_unique<impl>()) {}
+xmlns_repository::xmlns_repository(xmlns_repository&& other) : mp_impl(std::move(other.mp_impl)) {}
 xmlns_repository::~xmlns_repository() = default;
+
+xmlns_repository& xmlns_repository::operator= (xmlns_repository&& other)
+{
+    mp_impl = std::move(other.mp_impl);
+    return *this;
+}
 
 xmlns_id_t xmlns_repository::intern(std::string_view uri)
 {

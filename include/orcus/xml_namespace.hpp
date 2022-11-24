@@ -22,6 +22,9 @@ struct xmlns_context_impl;
 /**
  * Central XML namespace repository that stores all namespaces that are used
  * in the current session.
+ *
+ * @warning this class is not copyable, but is movable; however, the
+ *          moved-from object will not be usable after the move.
  */
 class ORCUS_PSR_DLLPUBLIC xmlns_repository
 {
@@ -39,7 +42,10 @@ public:
     xmlns_repository& operator= (const xmlns_repository&) = delete;
 
     xmlns_repository();
+    xmlns_repository(xmlns_repository&& other);
     ~xmlns_repository();
+
+    xmlns_repository& operator= (xmlns_repository&&);
 
     /**
      * Add a set of predefined namespace values to the repository.
@@ -58,8 +64,9 @@ public:
     /**
      * Create a context object associated with this namespace repository.
      *
-     * @warning Since this context object references values in this repo, make
-     *          sure that it will not out-live the repository object itself.
+     * @warning Since this context object references values stored in the repo,
+     *          make sure that it will not out-live the repository object
+     *          itself.
      *
      * @return context object to use for a new XML stream.
      */
