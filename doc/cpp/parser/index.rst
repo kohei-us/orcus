@@ -14,5 +14,6 @@ Low-level parsers and utilities
    types.rst
    util.rst
    stream.rst
+   base64.rst
    archive.rst
    exception.rst
