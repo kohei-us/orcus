@@ -448,18 +448,32 @@ struct ORCUS_PSR_DLLPUBLIC xml_declaration_t
     bool operator!= (const xml_declaration_t& other) const;
 };
 
+/**
+ * Unit of length, as used in length_t.
+ */
 enum class length_unit_t
 {
     unknown = 0,
     centimeter,
     millimeter,
+    /**
+     * Special unit of length used by Excel, defined as the maximum digit width
+     * of font used as the "Normal" style font.
+     *
+     * @note Since it's not possible to determine the actual length using this
+     * unit, it is approximated by 1.9 millimeters.
+     */
     xlsx_column_digit,
     inch,
     point,
+    /** One twip is a twentieth of a point equal to 1/1440 of an inch. */
     twip,
     pixel
 };
 
+/**
+ * Input formats that orcus can import.
+ */
 enum class format_t
 {
     unknown = 0,
@@ -470,6 +484,9 @@ enum class format_t
     csv
 };
 
+/**
+ * Formats supported by orcus as output formats.
+ */
 enum class dump_format_t
 {
     unknown = 0,
@@ -485,7 +502,7 @@ enum class dump_format_t
 };
 
 /**
- * Represents a length with unit of measurement.
+ * Holds a length value with unit of measurement.
  */
 struct ORCUS_PSR_DLLPUBLIC length_t
 {
