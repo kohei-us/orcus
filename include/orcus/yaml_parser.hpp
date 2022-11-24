@@ -14,8 +14,8 @@
 namespace orcus {
 
 /**
- * Blank handler class for @p yaml_parser.  One can sub-class this and
- * overwrite callback functions one needs to handle.
+ * Blank handler class for yaml_parser.  One can sub-class this and overwrite
+ * callback functions one needs to handle.
  */
 class yaml_handler
 {
@@ -111,7 +111,7 @@ public:
  * Parser for YAML documents.
  *
  * @tparam HandlerT Hanlder type with member functions for event callbacks.
- *         Refer to @p yaml_handler.
+ *         Refer to yaml_handler.
  *
  * @warning This parser is still highly experimental.  Use with caution.
  */

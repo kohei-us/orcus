@@ -57,7 +57,7 @@ public:
  * Parser for CSV documents.
  *
  * @tparam HandlerT Hanlder type with member functions for event callbacks.
- *         Refer to @p csv_handler.
+ *         Refer to csv_handler.
  */
 template<typename HandlerT>
 class csv_parser : public csv::parser_base

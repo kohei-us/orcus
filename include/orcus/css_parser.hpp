@@ -192,7 +192,7 @@ public:
  * Parser for CSS documents.
  *
  * @tparam HandlerT Hanlder type with member functions for event callbacks.
- *         Refer to @p css_handler.
+ *         Refer to css_handler.
  */
 template<typename HandlerT>
 class css_parser : public css::parser_base

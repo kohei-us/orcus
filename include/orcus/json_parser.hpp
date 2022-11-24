@@ -110,7 +110,7 @@ public:
  * Parser for JSON documents.
  *
  * @tparam HandlerT Hanlder type with member functions for event callbacks.
- *         Refer to @p json_handler.
+ *         Refer to json_handler.
  */
 template<typename HandlerT>
 class json_parser : public json::parser_base
