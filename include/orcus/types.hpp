@@ -20,9 +20,16 @@ namespace orcus {
 class xmlns_context;
 class xmlns_repository;
 
-// XML specific types
+/**
+ * Integral type that represents a tokenized XML element name.
+ */
+using xml_token_t = std::size_t;
 
-using xml_token_t = size_t;
+/**
+ * Type that represents a normalized XML namespace identifier.  Internally it
+ * is a pointer value that points to a static char buffer that stores a
+ * namespace name.
+ */
 using xmlns_id_t = const char*;
 
 struct ORCUS_PSR_DLLPUBLIC parse_error_value_t
