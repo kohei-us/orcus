@@ -18,13 +18,12 @@ using namespace orcus;
 void test_handler()
 {
     const char* test_code = "<?xml version=\"1.0\"?><root/>";
-    size_t len = strlen(test_code);
 
     orcus::sax_token_handler hdl;
     orcus::tokens token_map(nullptr, 0);
     orcus::xmlns_repository repo;
     orcus::xmlns_context cxt = repo.create_context();
-    orcus::sax_token_parser<orcus::sax_token_handler> parser(test_code, len, token_map, cxt, hdl);
+    orcus::sax_token_parser<orcus::sax_token_handler> parser(test_code, token_map, cxt, hdl);
     parser.parse();
 }
 
@@ -32,7 +31,6 @@ void test_sax_token_parser_1()
 {
     // Test XML content.
     const char* content = "<?xml version=\"1.0\"?><root><andy/><bruce/><charlie/><david/><edward/><frank/></root>";
-    size_t content_size = strlen(content);
 
     // Array of tokens to define for this test.
     const char* token_names[] = {
@@ -115,7 +113,7 @@ void test_sax_token_parser_1()
     tokens token_map(token_names, token_count);
     xmlns_repository ns_repo;
     xmlns_context ns_cxt = ns_repo.create_context();
-    sax_token_parser<handler> parser(content, content_size, token_map, ns_cxt, hdl);
+    sax_token_parser<handler> parser(content, token_map, ns_cxt, hdl);
     parser.parse();
 
     assert(hdl.get_token_count() == std::size(checks));
@@ -162,13 +160,13 @@ void test_unicode_string()
     xmlns_repository ns_repo;
     xmlns_context ns_cxt = ns_repo.create_context();
     handler hdl(u8"\u0021");
-    sax_token_parser<handler> parser1(content1, strlen(content1), token_map, ns_cxt, hdl);
+    sax_token_parser<handler> parser1(content1, token_map, ns_cxt, hdl);
     parser1.parse();
     hdl = handler(u8"\u00B6");
-    sax_token_parser<handler> parser2(content2, strlen(content2), token_map, ns_cxt, hdl);
+    sax_token_parser<handler> parser2(content2, token_map, ns_cxt, hdl);
     parser2.parse();
     hdl = handler(u8"\u20B9");
-    sax_token_parser<handler> parser3(content3, strlen(content3), token_map, ns_cxt, hdl);
+    sax_token_parser<handler> parser3(content3, token_map, ns_cxt, hdl);
     parser3.parse();
 }
 
@@ -221,7 +219,7 @@ void test_declaration()
     {
         xml_declaration_t decl;
         handler hdl(decl);
-        sax_token_parser<handler> parser(c.content.data(), c.content.size(), token_map, ns_cxt, hdl);
+        sax_token_parser<handler> parser(c.content, token_map, ns_cxt, hdl);
         parser.parse();
 
         assert(decl == c.decl);

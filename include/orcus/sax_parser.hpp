@@ -134,7 +134,7 @@ public:
     typedef HandlerT handler_type;
     typedef ConfigT config_type;
 
-    sax_parser(const char* content, const size_t size, handler_type& handler);
+    sax_parser(std::string_view content, handler_type& handler);
     ~sax_parser() = default;
 
     void parse();
@@ -162,9 +162,8 @@ private:
 };
 
 template<typename HandlerT, typename ConfigT>
-sax_parser<HandlerT,ConfigT>::sax_parser(
-    const char* content, const size_t size, handler_type& handler) :
-    sax::parser_base(content, size),
+sax_parser<HandlerT,ConfigT>::sax_parser(std::string_view content, handler_type& handler) :
+    sax::parser_base(content.data(), content.size()),
     m_handler(handler)
 {
 }

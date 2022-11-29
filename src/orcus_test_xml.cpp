@@ -203,7 +203,7 @@ void test_xml_encoded_attrs()
     assert(!content.empty());
 
     sax_handler_encoded_attrs hdl;
-    sax_parser<sax_handler_encoded_attrs> parser(content.data(), content.size(), hdl);
+    sax_parser<sax_handler_encoded_attrs> parser(content.str(), hdl);
     parser.parse();
 
     vector<string> expected;

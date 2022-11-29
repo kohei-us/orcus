@@ -580,8 +580,7 @@ document_tree::~document_tree() {}
 
 void document_tree::load(std::string_view strm)
 {
-    sax_ns_parser<impl> parser(
-        strm.data(), strm.size(), mp_impl->m_ns_cxt, *mp_impl);
+    sax_ns_parser<impl> parser(strm, mp_impl->m_ns_cxt, *mp_impl);
     parser.parse();
 }
 

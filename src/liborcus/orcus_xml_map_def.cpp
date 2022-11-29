@@ -189,7 +189,7 @@ void orcus_xml::read_map_definition(std::string_view stream)
     try
     {
         xml_map_sax_handler handler(*this);
-        sax_parser<xml_map_sax_handler> parser(stream.data(), stream.size(), handler);
+        sax_parser<xml_map_sax_handler> parser(stream, handler);
         parser.parse();
     }
     catch (const parse_error& e)

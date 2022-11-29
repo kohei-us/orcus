@@ -31,7 +31,7 @@ void test_invalid()
         orcus::file_content content(entry.string());
 
         _handler hdl;
-        orcus::sax_parser<_handler> parser(content.data(), content.size(), hdl);
+        orcus::sax_parser<_handler> parser(content.str(), hdl);
 
         try
         {

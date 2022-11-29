@@ -585,7 +585,7 @@ void orcus_xml::read_stream(std::string_view stream)
     xml_data_sax_handler handler(
        *mp_impl->im_factory, mp_impl->link_positions, mp_impl->map_tree);
 
-    sax_ns_parser<xml_data_sax_handler> parser(stream.data(), stream.size(), ns_cxt, handler);
+    sax_ns_parser<xml_data_sax_handler> parser(stream, ns_cxt, handler);
     parser.parse();
 }
 

@@ -219,7 +219,7 @@ void encryption_info_reader::read(const char* p, size_t n)
 #endif
     orcus::xmlns_context cxt = mp_impl->m_ns_repo.create_context();
     sax_handler hdl(cxt);
-    orcus::sax_ns_parser<sax_handler> parser(p, n, cxt, hdl);
+    orcus::sax_ns_parser<sax_handler> parser({p, n}, cxt, hdl);
     parser.parse();
 }
 

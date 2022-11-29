@@ -214,7 +214,7 @@ class sax_ns_parser
 public:
     typedef HandlerT handler_type;
 
-    sax_ns_parser(const char* content, const size_t size, xmlns_context& ns_cxt, handler_type& handler);
+    sax_ns_parser(std::string_view content, xmlns_context& ns_cxt, handler_type& handler);
     ~sax_ns_parser() = default;
 
     /**
@@ -357,8 +357,8 @@ private:
 
 template<typename HandlerT>
 sax_ns_parser<HandlerT>::sax_ns_parser(
-    const char* content, const size_t size, xmlns_context& ns_cxt, handler_type& handler) :
-    m_wrapper(ns_cxt, handler), m_parser(content, size, m_wrapper)
+    std::string_view content, xmlns_context& ns_cxt, handler_type& handler) :
+    m_wrapper(ns_cxt, handler), m_parser(content, m_wrapper)
 {
 }
 

@@ -111,7 +111,7 @@ public:
     typedef HandlerT handler_type;
 
     sax_token_parser(
-        const char* content, const size_t size, const tokens& _tokens,
+        std::string_view content, const tokens& _tokens,
         xmlns_context& ns_cxt, handler_type& handler);
 
     ~sax_token_parser() = default;
@@ -168,9 +168,9 @@ private:
 
 template<typename HandlerT>
 sax_token_parser<HandlerT>::sax_token_parser(
-    const char* content, const size_t size, const tokens& _tokens, xmlns_context& ns_cxt, handler_type& handler) :
+    std::string_view content, const tokens& _tokens, xmlns_context& ns_cxt, handler_type& handler) :
     m_wrapper(_tokens, handler),
-    m_parser(content, size, ns_cxt, m_wrapper)
+    m_parser(content, ns_cxt, m_wrapper)
 {
 }
 

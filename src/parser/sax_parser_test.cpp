@@ -14,10 +14,9 @@ using namespace std;
 void test_handler()
 {
     const char* test_code = "<?xml version=\"1.0\"?><root/>";
-    size_t len = std::strlen(test_code);
 
     orcus::sax_handler hdl;
-    orcus::sax_parser<orcus::sax_handler> parser(test_code, len, hdl);
+    orcus::sax_parser<orcus::sax_handler> parser(test_code, hdl);
     parser.parse();
 }
 
@@ -31,7 +30,7 @@ void test_attr_equal_with_whitespace()
     ;
 
     _handler hdl;
-    orcus::sax_parser<_handler> parser(content, strlen(content), hdl);
+    orcus::sax_parser<_handler> parser(content, hdl);
     parser.parse();
 }
 
@@ -52,7 +51,7 @@ void test_attr_with_encoded_chars_single_quotes()
     ;
 
     _handler hdl;
-    orcus::sax_parser<_handler> parser(content, strlen(content), hdl);
+    orcus::sax_parser<_handler> parser(content, hdl);
     parser.parse();
 }
 

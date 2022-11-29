@@ -135,7 +135,7 @@ struct parser_thread::impl
         {
             try
             {
-                orcus::sax_token_parser<impl> parser(mp_char, m_size, m_tokens, m_ns_cxt, *this);
+                orcus::sax_token_parser<impl> parser({mp_char, m_size}, m_tokens, m_ns_cxt, *this);
                 parser.parse();
             }
             catch (const malformed_xml_error& e)

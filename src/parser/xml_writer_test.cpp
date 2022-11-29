@@ -49,7 +49,7 @@ void test_encoded_content()
 
         _handler hdl;
 
-        sax_parser<_handler> parser(stream.data(), stream.size(), hdl);
+        sax_parser<_handler> parser(stream, hdl);
         parser.parse();
 
         std::string content_read = hdl.os_content.str();

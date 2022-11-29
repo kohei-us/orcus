@@ -13,12 +13,11 @@
 void test_handler()
 {
     const char* test_code = "<?xml version=\"1.0\"?><root/>";
-    size_t len = std::strlen(test_code);
     orcus::sax_ns_handler hdl;
     orcus::xmlns_repository repo;
     orcus::xmlns_context cxt = repo.create_context();
 
-    orcus::sax_ns_parser<orcus::sax_ns_handler> parser(test_code, len, cxt, hdl);
+    orcus::sax_ns_parser<orcus::sax_ns_handler> parser(test_code, cxt, hdl);
     parser.parse();
 }
 
@@ -53,7 +52,6 @@ void test_default_attr_ns()
     };
 
     const char* test_code = "<?xml version=\"1.0\"?><root xmlns='test:foo'><elem attr='1'/></root>";
-    size_t len = strlen(test_code);
 
     const orcus::xmlns_id_t predefined[] = { default_ns, nullptr };
 
@@ -65,7 +63,7 @@ void test_default_attr_ns()
     _handler hdl;
     hdl.default_ns_expected = default_ns;
 
-    orcus::sax_ns_parser<_handler> parser(test_code, len, cxt, hdl);
+    orcus::sax_ns_parser<_handler> parser(test_code, cxt, hdl);
     parser.parse();
 }
 
