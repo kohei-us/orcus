@@ -287,7 +287,7 @@ std::string_view parser_base::merge_line_buffer()
     mp_impl->m_line_buffer.clear();
     mp_impl->m_in_literal_block = false;
 
-    return std::string_view(buf.get(), buf.size());
+    return buf.str();
 }
 
 const char* parser_base::get_doc_hash() const

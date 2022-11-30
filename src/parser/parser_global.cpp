@@ -184,19 +184,20 @@ parse_quoted_string_state parse_string_with_escaped_char(
         switch (*p)
         {
             case '"':
+            {
                 // closing quote.
                 buffer.append(p_head, len);
                 ++p; // skip the quote.
-                ret.str = buffer.get();
-                ret.length = buffer.size();
+                std::string_view s = buffer.str();
+                ret.str = s.data();
+                ret.length = s.size();
                 return ret;
-            break;
+            }
             case '\\':
             {
                 escape = true;
                 continue;
             }
-            break;
             default:
                 ;
         }
@@ -243,8 +244,9 @@ parse_quoted_string_state parse_single_quoted_string_buffered(
                 if (last == '\'')
                 {
                     buffer.append(p0, len-1);
-                    ret.str = buffer.get();
-                    ret.length = buffer.size();
+                    auto s = buffer.str();
+                    ret.str = s.data();
+                    ret.length = s.size();
                     return ret;
                 }
             }
@@ -257,8 +259,9 @@ parse_quoted_string_state parse_single_quoted_string_buffered(
     if (last == '\'')
     {
         buffer.append(p0, len-1);
-        ret.str = buffer.get();
-        ret.length = buffer.size();
+        auto s = buffer.str();
+        ret.str = s.data();
+        ret.length = s.size();
         return ret;
     }
 

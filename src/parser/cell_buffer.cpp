@@ -51,16 +51,6 @@ std::string_view cell_buffer::str() const
     return std::string_view{m_buffer.data(), m_buf_size};
 }
 
-const char* cell_buffer::get() const
-{
-    return m_buffer.data();
-}
-
-size_t cell_buffer::size() const
-{
-    return m_buf_size;
-}
-
 bool cell_buffer::empty() const
 {
     return m_buf_size == 0;

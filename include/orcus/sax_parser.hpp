@@ -518,7 +518,7 @@ void sax_parser<HandlerT,ConfigT>::characters()
             if (buf.empty())
                 m_handler.characters(std::string_view{}, false);
             else
-                m_handler.characters(std::string_view(buf.get(), buf.size()), true);
+                m_handler.characters(buf.str(), true);
             return;
         }
     }

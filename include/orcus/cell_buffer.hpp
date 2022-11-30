@@ -33,15 +33,6 @@ public:
 
     std::string_view str() const;
 
-    const char* get() const;
-
-    /**
-     * Get the logical size of the buffer.  This may differ from the actual
-     * buffer size.
-     *
-     * @return logical size of the buffer.
-     */
-    size_t size() const;
     bool empty() const;
 };
 
