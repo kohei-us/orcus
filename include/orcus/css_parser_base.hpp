@@ -21,7 +21,7 @@ namespace orcus { namespace css {
 class ORCUS_PSR_DLLPUBLIC parser_base : public ::orcus::parser_base
 {
 public:
-    parser_base(const char* p, size_t n);
+    parser_base(std::string_view content);
 
 protected:
 

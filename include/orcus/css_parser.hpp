@@ -31,19 +31,19 @@ namespace orcus {
 class css_handler
 {
 public:
-    void at_rule_name(const char* p, size_t n)
+    void at_rule_name(std::string_view name)
     {
-        (void)p; (void)n;
+        (void)name;
     }
 
-    void simple_selector_type(const char* p, size_t n)
+    void simple_selector_type(std::string_view type)
     {
-        (void)p; (void)n;
+        (void)type;
     }
 
-    void simple_selector_class(const char* p, size_t n)
+    void simple_selector_class(std::string_view cls)
     {
-        (void)p; (void)n;
+        (void)cls;
     }
 
     void simple_selector_pseudo_element(orcus::css::pseudo_element_t pe)
@@ -56,9 +56,9 @@ public:
         (void)pc;
     }
 
-    void simple_selector_id(const char* p, size_t n)
+    void simple_selector_id(std::string_view id)
     {
-        (void)p; (void)n;
+        (void)id;
     }
 
     void end_simple_selector() {}
@@ -73,23 +73,21 @@ public:
     /**
      * Called at each property name.
      *
-     * @param p pointer to the char-array containing the property name string.
-     * @param n length of the property name string.
+     * @param name property name string.
      */
-    void property_name(const char* p, size_t n)
+    void property_name(std::string_view name)
     {
-        (void)p; (void)n;
+        (void)name;
     }
 
     /**
      * Called at each ordinary property value string.
      *
-     * @param p pointer to the char-array containing the value string.
-     * @param n length of the value string.
+     * @param value value string.
      */
-    void value(const char* p, size_t n)
+    void value(std::string_view value)
     {
-        (void)p; (void)n;
+        (void)value;
     }
 
     /**
@@ -147,12 +145,11 @@ public:
     /**
      * Called at each URL value of a property.
      *
-     * @param p pointer to the char-array containing the URL value string.
-     * @param n length of the URL value string.
+     * @param url URL value string.
      */
-    void url(const char* p, size_t n)
+    void url(std::string_view url)
     {
-        (void)p; (void)n;
+        (void)url;
     }
 
     /**
@@ -200,7 +197,7 @@ class css_parser : public css::parser_base
 public:
     typedef HandlerT handler_type;
 
-    css_parser(const char* p, size_t n, handler_type& hdl);
+    css_parser(std::string_view content, handler_type& hdl);
     void parse();
 
 private:
@@ -227,8 +224,8 @@ private:
 };
 
 template<typename _Handler>
-css_parser<_Handler>::css_parser(const char* p, size_t n, handler_type& hdl) :
-    css::parser_base(p, n), m_handler(hdl) {}
+css_parser<_Handler>::css_parser(std::string_view content, handler_type& hdl) :
+    css::parser_base(content), m_handler(hdl) {}
 
 template<typename _Handler>
 void css_parser<_Handler>::parse()
@@ -305,7 +302,7 @@ void css_parser<_Handler>::at_rule_name()
     identifier(p, len);
     skip_blanks();
 
-    m_handler.at_rule_name(p, len);
+    m_handler.at_rule_name({p, len});
 #if ORCUS_DEBUG_CSS
     std::string foo(p, len);
     std::cout << "at-rule name: " << foo.c_str() << std::endl;
@@ -348,7 +345,7 @@ void css_parser<_Handler>::simple_selector_name()
         std::string s(p, n);
         cout << " type=" << s;
 #endif
-        m_handler.simple_selector_type(p, n);
+        m_handler.simple_selector_type({p, n});
     }
 
     bool in_loop = true;
@@ -360,7 +357,7 @@ void css_parser<_Handler>::simple_selector_name()
             {
                 next();
                 identifier(p, n);
-                m_handler.simple_selector_class(p, n);
+                m_handler.simple_selector_class({p, n});
 #if ORCUS_DEBUG_CSS
                 std::string s(p, n);
                 std::cout << " class=" << s;
@@ -371,7 +368,7 @@ void css_parser<_Handler>::simple_selector_name()
             {
                 next();
                 identifier(p, n);
-                m_handler.simple_selector_id(p, n);
+                m_handler.simple_selector_id({p, n});
 #if ORCUS_DEBUG_CSS
                 std::string s(p, n);
                 std::cout << " id=" << s;
@@ -438,7 +435,7 @@ void css_parser<_Handler>::property_name()
     identifier(p, len);
     skip_comments_and_blanks();
 
-    m_handler.property_name(p, len);
+    m_handler.property_name({p, len});
 #if ORCUS_DEBUG_CSS
     std::string foo(p, len);
     std::cout << "property name: " << foo.c_str() << std::endl;
@@ -494,7 +491,7 @@ void css_parser<_Handler>::quoted_value(char c)
     next();
     skip_blanks();
 
-    m_handler.value(p, len);
+    m_handler.value({p, len});
 #if ORCUS_DEBUG_CSS
     std::string foo(p, len);
     std::cout << "quoted value: " << foo.c_str() << std::endl;
@@ -522,7 +519,7 @@ void css_parser<_Handler>::value()
         return;
     }
 
-    m_handler.value(v.data(), v.size());
+    m_handler.value(v);
 
     skip_comments_and_blanks();
 
@@ -693,7 +690,7 @@ void css_parser<_Handler>::function_url()
         literal(p, len, c);
         next();
         skip_comments_and_blanks();
-        m_handler.url(p, len);
+        m_handler.url({p, len});
 #if ORCUS_DEBUG_CSS
         std::cout << "url(" << std::string(p, len) << ")" << std::endl;
 #endif
@@ -705,7 +702,7 @@ void css_parser<_Handler>::function_url()
     size_t len;
     skip_to_or_blank(p, len, ")");
     skip_comments_and_blanks();
-    m_handler.url(p, len);
+    m_handler.url({p, len});
 #if ORCUS_DEBUG_CSS
     std::cout << "url(" << std::string(p, len) << ")" << std::endl;
 #endif

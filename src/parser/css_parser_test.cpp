@@ -12,10 +12,9 @@
 void test_handler()
 {
     const char* test_code = "p { background-color: white; }";
-    size_t n = strlen(test_code);
 
     orcus::css_handler hdl;
-    orcus::css_parser<orcus::css_handler> parser(test_code, n, hdl);
+    orcus::css_parser<orcus::css_handler> parser(test_code, hdl);
     parser.parse();
 }
 
