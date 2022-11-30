@@ -136,9 +136,9 @@ public:
         push_node(json_map_tree::input_node_type::object);
     }
 
-    void object_key(const char* p, size_t len, bool /*transient*/)
+    void object_key(std::string_view key, bool /*transient*/)
     {
-        m_walker.set_object_key(p, len);
+        m_walker.set_object_key(key.data(), key.size());
     }
 
     void end_object()
@@ -167,10 +167,10 @@ public:
         pop_node(json_map_tree::input_node_type::value);
     }
 
-    void string(const char* p, size_t len, bool /*transient*/)
+    void string(std::string_view val, bool /*transient*/)
     {
         push_node(json_map_tree::input_node_type::value);
-        commit_value(json_value(p, len));
+        commit_value(json_value(val.data(), val.size()));
         pop_node(json_map_tree::input_node_type::value);
     }
 
@@ -386,7 +386,7 @@ void orcus_json::read_stream(std::string_view stream)
     }
 
     json_content_handler hdl(mp_impl->map_tree, *mp_impl->im_factory);
-    json_parser<json_content_handler> parser(stream.data(), stream.size(), hdl);
+    json_parser<json_content_handler> parser(stream, hdl);
     parser.parse();
 
     mp_impl->im_factory->finalize();

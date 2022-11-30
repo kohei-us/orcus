@@ -96,9 +96,8 @@ public:
         do_work();
     }
 
-    void object_key(const char* p, size_t len, bool transient)
+    void object_key(std::string_view s, bool transient)
     {
-        std::string_view s{p, len};
         if (transient)
             s = m_pool.intern(s).first;
 
@@ -130,9 +129,8 @@ public:
         do_work();
     }
 
-    void string(const char* p, size_t len, bool transient)
+    void string(std::string_view s, bool transient)
     {
-        std::string_view s{p, len};
         if (transient)
             s = m_pool.intern(s).first;
 
@@ -171,7 +169,7 @@ int main(int argc, char** argv) try
 
     {
         stack_printer __stack_printer__("parsing");
-        orcus::json_parser<handler> parser(content.data(), content.size(), hdl);
+        orcus::json_parser<handler> parser(content, hdl);
         parser.parse();
     }
 

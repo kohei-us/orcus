@@ -12,10 +12,9 @@
 void test_handler()
 {
     const char* test_code = "{\"key1\": [1,2,3,4,5], \"key2\": 12.3}";
-    size_t n = strlen(test_code);
 
     orcus::json_handler hdl;
-    orcus::json_parser<orcus::json_handler> parser(test_code, n, hdl);
+    orcus::json_parser<orcus::json_handler> parser(test_code, hdl);
     parser.parse();
 }
 

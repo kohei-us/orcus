@@ -8,14 +8,14 @@ using namespace std;
 class json_parser_handler : public orcus::json_handler
 {
 public:
-    void object_key(const char* p, size_t len, bool /*transient*/)
+    void object_key(std::string_view key, bool /*transient*/)
     {
-        cout << "object key: " << std::string_view(p, len) << endl;
+        cout << "object key: " << key << endl;
     }
 
-    void string(const char* p, size_t len, bool /*transient*/)
+    void string(std::string_view val, bool /*transient*/)
     {
-        cout << "string: " << std::string_view(p, len) << endl;
+        cout << "string: " << val << endl;
     }
 
     void number(double val)
@@ -27,13 +27,12 @@ public:
 int main()
 {
     const char* test_code = "{\"key1\": [1,2,3,4,5], \"key2\": 12.3}";
-    size_t n_test_code = strlen(test_code);
 
     cout << "JSON string: " << test_code << endl;
 
     // Instantiate the parser with an own handler.
     json_parser_handler hdl;
-    orcus::json_parser<json_parser_handler> parser(test_code, n_test_code, hdl);
+    orcus::json_parser<json_parser_handler> parser(test_code, hdl);
 
     // Parse the string.
     parser.parse();

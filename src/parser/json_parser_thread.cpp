@@ -77,7 +77,7 @@ struct parser_thread::impl
     {
         try
         {
-            json_parser<parser_thread::impl> parser(mp_char, m_size, *this);
+            json_parser<parser_thread::impl> parser({mp_char, m_size}, *this);
             parser.parse();
         }
         catch (const parse_error& e)
@@ -119,9 +119,8 @@ struct parser_thread::impl
         check_and_notify();
     }
 
-    void object_key(const char* p, size_t len, bool transient)
+    void object_key(std::string_view s, bool transient)
     {
-        std::string_view s{p, len};
         if (transient)
             s = m_pool.intern(s).first;
 
@@ -153,9 +152,8 @@ struct parser_thread::impl
         check_and_notify();
     }
 
-    void string(const char* p, size_t len, bool transient)
+    void string(std::string_view s, bool transient)
     {
-        std::string_view s{p, len};
         if (transient)
             s = m_pool.intern(s).first;
 

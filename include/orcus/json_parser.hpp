@@ -46,17 +46,16 @@ public:
     /**
      * Called when a key value string of an object is encountered.
      *
-     * @param p pointer to the first character of the key value string.
-     * @param len length of the key value string.
+     * @param key key value string.
      * @param transient true if the string value is stored in a temporary
      *                  buffer which is not guaranteed to hold the string
      *                  value after the end of this callback. When false, the
      *                  pointer points to somewhere in the JSON stream being
      *                  parsed.
      */
-    void object_key(const char* p, size_t len, bool transient)
+    void object_key(std::string_view key, bool transient)
     {
-        (void)p; (void)len; (void)transient;
+        (void)key; (void)transient;
     }
 
     /**
@@ -82,17 +81,16 @@ public:
     /**
      * Called when a string value is encountered.
      *
-     * @param p pointer to the first character of the string value.
-     * @param len length of the string value.
+     * @param val string value.
      * @param transient true if the string value is stored in a temporary
      *                  buffer which is not guaranteed to hold the string
      *                  value after the end of this callback. When false, the
      *                  pointer points to somewhere in the JSON stream being
      *                  parsed.
      */
-    void string(const char* p, size_t len, bool transient)
+    void string(std::string_view val, bool transient)
     {
-        (void)p; (void)len; (void)transient;
+        (void)val; (void)transient;
     }
 
     /**
@@ -121,11 +119,10 @@ public:
     /**
      * Constructor.
      *
-     * @param p pointer to a string stream containing JSON string.
-     * @param n size of the stream.
+     * @param content string stream containing JSON string.
      * @param hdl handler class instance.
      */
-    json_parser(const char* p, size_t n, handler_type& hdl);
+    json_parser(std::string_view content, handler_type& hdl);
 
     /**
      * Call this method to start parsing.
@@ -147,8 +144,8 @@ private:
 
 template<typename _Handler>
 json_parser<_Handler>::json_parser(
-    const char* p, size_t n, handler_type& hdl) :
-    json::parser_base(p, n), m_handler(hdl) {}
+    std::string_view content, handler_type& hdl) :
+    json::parser_base(content), m_handler(hdl) {}
 
 template<typename _Handler>
 void json_parser<_Handler>::parse()
@@ -331,7 +328,7 @@ void json_parser<_Handler>::object()
                 throw parse_error("object: unknown error while parsing a key value.", offset());
         }
 
-        m_handler.object_key(res.str, res.length, res.transient);
+        m_handler.object_key({res.str, res.length}, res.transient);
 
         skip_ws();
         if (cur_char() != ':')
@@ -385,7 +382,7 @@ void json_parser<_Handler>::string()
     parse_quoted_string_state res = parse_string();
     if (res.str)
     {
-        m_handler.string(res.str, res.length, res.transient);
+        m_handler.string({res.str, res.length}, res.transient);
         return;
     }
 

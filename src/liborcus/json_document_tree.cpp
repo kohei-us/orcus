@@ -750,10 +750,10 @@ public:
         }
     }
 
-    void object_key(const char* p, size_t len, bool transient)
+    void object_key(std::string_view key, bool transient)
     {
         parser_stack& cur = m_stack.back();
-        cur.key = std::string_view(p, len);
+        cur.key = key;
         if (m_config.persistent_string_values || transient)
             // The tree manages the life cycle of this string value.
             cur.key = m_res.str_pool.intern(cur.key).first;
@@ -780,9 +780,8 @@ public:
         push_value(m_res.obj_pool.construct(detail::node_t::null));
     }
 
-    void string(const char* p, size_t len, bool transient)
+    void string(std::string_view s, bool transient)
     {
-        std::string_view s(p, len);
         if (m_config.persistent_string_values || transient)
             // The tree manages the life cycle of this string value.
             s = m_res.str_pool.intern(s).first;
@@ -1674,7 +1673,7 @@ document_tree& document_tree::operator= (object obj)
 void document_tree::load(std::string_view stream, const json_config& config)
 {
     json::parser_handler hdl(config, mp_impl->m_res);
-    json_parser<json::parser_handler> parser(stream.data(), stream.size(), hdl);
+    json_parser<json::parser_handler> parser(stream, hdl);
     parser.parse();
     mp_impl->m_root = hdl.get_root();
 

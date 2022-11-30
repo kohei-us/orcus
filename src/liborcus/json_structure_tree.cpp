@@ -64,7 +64,7 @@ struct structure_node
      */
     int32_t child_count = 0;
 
-    pstring name; //< value of a key for a object key node.
+    std::string_view name; //< value of a key for a object key node.
 
     /**
      * For a value node that is an immediate child of an array node, these
@@ -203,10 +203,10 @@ struct structure_tree::impl
         push_stack(node_type::object);
     }
 
-    void object_key(const char* p, size_t len, bool transient)
+    void object_key(std::string_view key, bool transient)
     {
         structure_node node(node_type::object_key);
-        node.name = pstring(p, len);
+        node.name = key;
 
         if (transient)
             node.name = m_pool.intern(node.name).first;
@@ -234,7 +234,7 @@ struct structure_tree::impl
         push_value();
     }
 
-    void string(const char* /*p*/, size_t /*len*/, bool /*transient*/)
+    void string(std::string_view /*val*/, bool /*transient*/)
     {
         push_value();
     }
@@ -666,7 +666,7 @@ structure_tree::~structure_tree() {}
 
 void structure_tree::parse(std::string_view stream)
 {
-    json_parser<impl> parser(stream.data(), stream.size(), *mp_impl);
+    json_parser<impl> parser(stream, *mp_impl);
     parser.parse();
 }
 

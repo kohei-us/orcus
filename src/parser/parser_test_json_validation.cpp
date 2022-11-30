@@ -369,7 +369,7 @@ void test_pass()
         std::cout << test_file_name << std::endl;
         try
         {
-            orcus::json_parser<orcus::json_handler> parser(content.c_str(), content.size(), hdl);
+            orcus::json_parser<orcus::json_handler> parser(content, hdl);
             parser.parse();
         }
         catch (const orcus::parse_error& e)
@@ -391,7 +391,7 @@ void test_fail()
         std::cout << test_file_name << std::endl;
         bool failed = false;
         try {
-            orcus::json_parser<orcus::json_handler> parser(content.c_str(), content.size(), hdl);
+            orcus::json_parser<orcus::json_handler> parser(content, hdl);
             parser.parse();
         }
         catch (const orcus::parse_error&)
@@ -416,7 +416,7 @@ void test_indeterminate()
         std::string content = load_file(test_file_name);
         std::cout << test_file_name << std::endl;
         try {
-            orcus::json_parser<orcus::json_handler> parser(content.c_str(), content.size(), hdl);
+            orcus::json_parser<orcus::json_handler> parser(content, hdl);
             parser.parse();
         }
         catch (const orcus::parse_error&)

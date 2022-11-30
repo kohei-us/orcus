@@ -36,8 +36,8 @@ struct parser_base::impl
     cell_buffer m_buffer;
 };
 
-parser_base::parser_base(const char* p, size_t n) :
-    orcus::parser_base(p, n), mp_impl(std::make_unique<impl>())
+parser_base::parser_base(std::string_view content) :
+    orcus::parser_base(content.data(), content.size()), mp_impl(std::make_unique<impl>())
 {
 
     set_numeric_parser(parse_numeric_json);

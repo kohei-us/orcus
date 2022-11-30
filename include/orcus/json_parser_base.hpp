@@ -27,7 +27,7 @@ protected:
     parser_base(const parser_base&) = delete;
     parser_base& operator=(const parser_base&) = delete;
 
-    parser_base(const char* p, size_t n);
+    parser_base(std::string_view content);
     ~parser_base();
 
     void skip_ws();
