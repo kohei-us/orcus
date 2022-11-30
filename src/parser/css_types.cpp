@@ -22,26 +22,33 @@ const pseudo_element_t pseudo_element_backdrop     = 0x0020;
 
 namespace {
 
-typedef mdds::sorted_string_map<pseudo_element_t> pe_map_type;
+namespace pseudo_elem {
+
+using map_type = mdds::sorted_string_map<pseudo_element_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-pe_map_type::entry pseudo_elem_type_entries[] = {
-    { MDDS_ASCII("after"),        pseudo_element_after        },
-    { MDDS_ASCII("backdrop"),     pseudo_element_backdrop     },
-    { MDDS_ASCII("before"),       pseudo_element_before       },
-    { MDDS_ASCII("first-letter"), pseudo_element_first_letter },
-    { MDDS_ASCII("first-line"),   pseudo_element_first_line   },
-    { MDDS_ASCII("selection"),    pseudo_element_selection    },
+constexpr map_type::entry entries[] = {
+    { "after",        pseudo_element_after        },
+    { "backdrop",     pseudo_element_backdrop     },
+    { "before",       pseudo_element_before       },
+    { "first-letter", pseudo_element_first_letter },
+    { "first-line",   pseudo_element_first_line   },
+    { "selection",    pseudo_element_selection    },
 };
+
+const map_type& get()
+{
+    static map_type map(entries, std::size(entries), 0);
+    return map;
+}
+
+} // namespace pseudo_elem
 
 }
 
 pseudo_element_t to_pseudo_element(std::string_view s)
 {
-    static pe_map_type elem_map(
-        pseudo_elem_type_entries, std::size(pseudo_elem_type_entries), 0);
-
-    return elem_map.find(s.data(), s.size());
+    return pseudo_elem::get().find(s);
 }
 
 const pseudo_class_t pseudo_class_active            = 0x0000000000000001;
@@ -86,66 +93,74 @@ const pseudo_class_t pseudo_class_visited           = 0x0000004000000000;
 
 namespace {
 
-typedef mdds::sorted_string_map<pseudo_class_t> pc_map_type;
+namespace pseudo_class {
+
+using map_type = mdds::sorted_string_map<pseudo_class_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
-pc_map_type::entry pseudo_class_type_entries[] = {
-    { MDDS_ASCII("active"),           pseudo_class_active           },
-    { MDDS_ASCII("checked"),          pseudo_class_checked          },
-    { MDDS_ASCII("default"),          pseudo_class_default          },
-    { MDDS_ASCII("dir"),              pseudo_class_dir              },
-    { MDDS_ASCII("disabled"),         pseudo_class_disabled         },
-    { MDDS_ASCII("empty"),            pseudo_class_empty            },
-    { MDDS_ASCII("enabled"),          pseudo_class_enabled          },
-    { MDDS_ASCII("first"),            pseudo_class_first            },
-    { MDDS_ASCII("first-child"),      pseudo_class_first_child      },
-    { MDDS_ASCII("first-of-type"),    pseudo_class_first_of_type    },
-    { MDDS_ASCII("focus"),            pseudo_class_focus            },
-    { MDDS_ASCII("fullscreen"),       pseudo_class_fullscreen       },
-    { MDDS_ASCII("hover"),            pseudo_class_hover            },
-    { MDDS_ASCII("in-range"),         pseudo_class_in_range         },
-    { MDDS_ASCII("indeterminate"),    pseudo_class_indeterminate    },
-    { MDDS_ASCII("invalid"),          pseudo_class_invalid          },
-    { MDDS_ASCII("lang"),             pseudo_class_lang             },
-    { MDDS_ASCII("last-child"),       pseudo_class_last_child       },
-    { MDDS_ASCII("last-of-type"),     pseudo_class_last_of_type     },
-    { MDDS_ASCII("left"),             pseudo_class_left             },
-    { MDDS_ASCII("link"),             pseudo_class_link             },
-    { MDDS_ASCII("not"),              pseudo_class_not              },
-    { MDDS_ASCII("nth-child"),        pseudo_class_nth_child        },
-    { MDDS_ASCII("nth-last-child"),   pseudo_class_nth_last_child   },
-    { MDDS_ASCII("nth-last-of-type"), pseudo_class_nth_last_of_type },
-    { MDDS_ASCII("nth-of-type"),      pseudo_class_nth_of_type      },
-    { MDDS_ASCII("only-child"),       pseudo_class_only_child       },
-    { MDDS_ASCII("only-of-type"),     pseudo_class_only_of_type     },
-    { MDDS_ASCII("optional"),         pseudo_class_optional         },
-    { MDDS_ASCII("out-of-range"),     pseudo_class_out_of_range     },
-    { MDDS_ASCII("read-only"),        pseudo_class_read_only        },
-    { MDDS_ASCII("read-write"),       pseudo_class_read_write       },
-    { MDDS_ASCII("required"),         pseudo_class_required         },
-    { MDDS_ASCII("right"),            pseudo_class_right            },
-    { MDDS_ASCII("root"),             pseudo_class_root             },
-    { MDDS_ASCII("scope"),            pseudo_class_scope            },
-    { MDDS_ASCII("target"),           pseudo_class_target           },
-    { MDDS_ASCII("valid"),            pseudo_class_valid            },
-    { MDDS_ASCII("visited"),          pseudo_class_visited          },
+constexpr map_type::entry entries[] = {
+    { "active",           pseudo_class_active           },
+    { "checked",          pseudo_class_checked          },
+    { "default",          pseudo_class_default          },
+    { "dir",              pseudo_class_dir              },
+    { "disabled",         pseudo_class_disabled         },
+    { "empty",            pseudo_class_empty            },
+    { "enabled",          pseudo_class_enabled          },
+    { "first",            pseudo_class_first            },
+    { "first-child",      pseudo_class_first_child      },
+    { "first-of-type",    pseudo_class_first_of_type    },
+    { "focus",            pseudo_class_focus            },
+    { "fullscreen",       pseudo_class_fullscreen       },
+    { "hover",            pseudo_class_hover            },
+    { "in-range",         pseudo_class_in_range         },
+    { "indeterminate",    pseudo_class_indeterminate    },
+    { "invalid",          pseudo_class_invalid          },
+    { "lang",             pseudo_class_lang             },
+    { "last-child",       pseudo_class_last_child       },
+    { "last-of-type",     pseudo_class_last_of_type     },
+    { "left",             pseudo_class_left             },
+    { "link",             pseudo_class_link             },
+    { "not",              pseudo_class_not              },
+    { "nth-child",        pseudo_class_nth_child        },
+    { "nth-last-child",   pseudo_class_nth_last_child   },
+    { "nth-last-of-type", pseudo_class_nth_last_of_type },
+    { "nth-of-type",      pseudo_class_nth_of_type      },
+    { "only-child",       pseudo_class_only_child       },
+    { "only-of-type",     pseudo_class_only_of_type     },
+    { "optional",         pseudo_class_optional         },
+    { "out-of-range",     pseudo_class_out_of_range     },
+    { "read-only",        pseudo_class_read_only        },
+    { "read-write",       pseudo_class_read_write       },
+    { "required",         pseudo_class_required         },
+    { "right",            pseudo_class_right            },
+    { "root",             pseudo_class_root             },
+    { "scope",            pseudo_class_scope            },
+    { "target",           pseudo_class_target           },
+    { "valid",            pseudo_class_valid            },
+    { "visited",          pseudo_class_visited          },
 };
+
+const map_type& get()
+{
+    static map_type map(entries, std::size(entries), 0);
+    return map;
+}
+
+} // namespace pseudo_class
 
 }
 
 pseudo_class_t to_pseudo_class(std::string_view s)
 {
-    static pc_map_type class_map(pseudo_class_type_entries, std::size(pseudo_class_type_entries), 0);
-
-    return class_map.find(s.data(), s.size());
+    return pseudo_class::get().find(s);
 }
 
 std::string pseudo_class_to_string(pseudo_class_t val)
 {
     std::ostringstream os;
-    std::size_t n = std::size(pseudo_class_type_entries);
-    const pc_map_type::entry* p = pseudo_class_type_entries;
-    const pc_map_type::entry* p_end = p + n;
+    std::size_t n = std::size(pseudo_class::entries);
+    const pseudo_class::map_type::entry* p = pseudo_class::entries;
+    const pseudo_class::map_type::entry* p_end = p + n;
     for (; p != p_end; ++p)
     {
         if (val & p->value)
