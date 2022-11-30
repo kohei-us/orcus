@@ -150,6 +150,20 @@ public:
      */
     void end_selector() {}
 
+    /**
+     * Calling upon encountering a combinator.  A combinator is an operator that
+     * combines other selectors.  Given the following CSS block:
+     *
+     * @code{.css}
+     * div > p {
+     *   background-color: yellow;
+     * }
+     * @endcode
+     *
+     * the `>` is the combinator that combines the `div` and `p` selectors.
+     *
+     * @param combinator type of combinator encountered.
+     */
     void combinator(orcus::css::combinator_t combinator)
     {
         (void)combinator;

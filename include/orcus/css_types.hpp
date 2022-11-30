@@ -18,11 +18,11 @@ namespace orcus { namespace css {
 
 enum class combinator_t
 {
-    /// 'E F' where F is a descendant of E.
+    /// `E F` where `F` is a descendant of `E`.
     descendant,
-    /// 'E > F' where F is a direct child of E.
+    /// `E > F` where `F` is a direct child of `E`.
     direct_child,
-    /// 'E + F' where F is a direct sibling of E where E precedes F.
+    /// `E + F` where `F` is a direct sibling of `E` where `E` precedes `F`.
     next_sibling
 };
 
