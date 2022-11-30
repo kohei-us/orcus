@@ -19,7 +19,7 @@ struct import_filter::impl
 
 import_filter::import_filter(format_t input) : mp_impl(std::make_unique<impl>(input)) {}
 
-import_filter::~import_filter() {}
+import_filter::~import_filter() = default;
 
 void import_filter::set_config(const config& v)
 {
@@ -31,7 +31,7 @@ const config& import_filter::get_config() const
     return mp_impl->m_config;
 }
 
-document_dumper::~document_dumper() {}
+document_dumper::~document_dumper() = default;
 
 }}
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
