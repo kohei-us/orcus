@@ -73,12 +73,11 @@ public:
     /**
      * Called when a string value is encountered.
      *
-     * @param p pointer to the first character of the string value.
-     * @param n length of the string value.
+     * @param value string value.
      */
-    void string(const char* p, size_t n)
+    void string(std::string_view value)
     {
-        (void)p; (void)n;
+        (void)value;
     }
 
     /**
@@ -121,7 +120,7 @@ class yaml_parser : public yaml::parser_base
 public:
     typedef HandlerT handler_type;
 
-    yaml_parser(const char* p, size_t n, handler_type& hdl);
+    yaml_parser(std::string_view content, handler_type& hdl);
 
     void parse();
 
@@ -229,7 +228,7 @@ template<typename _Handler>
 void yaml_parser<_Handler>::handler_string(const char* p, size_t n)
 {
     push_parse_token(yaml::detail::parse_token_t::string);
-    m_handler.string(p, n);
+    m_handler.string({p, n});
 }
 
 template<typename _Handler>
@@ -261,8 +260,8 @@ void yaml_parser<_Handler>::handler_null()
 }
 
 template<typename _Handler>
-yaml_parser<_Handler>::yaml_parser(const char* p, size_t n, handler_type& hdl) :
-    yaml::parser_base(p, n), m_handler(hdl) {}
+yaml_parser<_Handler>::yaml_parser(std::string_view content, handler_type& hdl) :
+    yaml::parser_base(content), m_handler(hdl) {}
 
 template<typename _Handler>
 void yaml_parser<_Handler>::parse()

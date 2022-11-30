@@ -53,10 +53,10 @@ const size_t parser_base::parse_indent_blank_line    = std::numeric_limits<size_
 const size_t parser_base::parse_indent_end_of_stream = std::numeric_limits<size_t>::max() - 1;
 const size_t parser_base::scope_empty = std::numeric_limits<size_t>::max() - 2;
 
-parser_base::parser_base(const char* p, size_t n) :
-    orcus::parser_base(p, n), mp_impl(std::make_unique<impl>()) {}
+parser_base::parser_base(std::string_view content) :
+    orcus::parser_base(content.data(), content.size()), mp_impl(std::make_unique<impl>()) {}
 
-parser_base::~parser_base() {}
+parser_base::~parser_base() = default;
 
 void parser_base::push_parse_token(detail::parse_token_t t)
 {

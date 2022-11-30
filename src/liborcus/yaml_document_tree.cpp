@@ -96,8 +96,7 @@ struct yaml_value_string : public yaml_value
     std::string value_string;
 
     yaml_value_string() : yaml_value(node_t::string) {}
-    yaml_value_string(const std::string& s) : yaml_value(node_t::string), value_string(s) {}
-    yaml_value_string(const char* p, size_t n) : yaml_value(node_t::string), value_string(p, n) {}
+    yaml_value_string(std::string_view s) : yaml_value(node_t::string), value_string(s) {}
     virtual ~yaml_value_string() {}
 
     virtual std::string print() const
@@ -302,17 +301,17 @@ public:
         m_stack.pop_back();
     }
 
-    void string(const char* p, size_t n)
+    void string(std::string_view v)
     {
         assert(m_in_document);
 
         if (m_root)
         {
-            yaml_value* yv = push_value(std::make_unique<yaml_value_string>(p, n));
+            yaml_value* yv = push_value(std::make_unique<yaml_value_string>(v));
             assert(yv && yv->type == node_t::string);
         }
         else
-            m_root = std::make_unique<yaml_value_string>(p, n);
+            m_root = std::make_unique<yaml_value_string>(v);
     }
 
     void number(double val)
@@ -543,7 +542,7 @@ document_tree::~document_tree() {}
 void document_tree::load(std::string_view s)
 {
     handler hdl;
-    yaml_parser<handler> parser(s.data(), s.size(), hdl);
+    yaml_parser<handler> parser(s, hdl);
     parser.parse();
     hdl.swap(mp_impl->m_docs);
 }
