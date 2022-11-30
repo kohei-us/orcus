@@ -31,38 +31,123 @@ namespace orcus {
 class css_handler
 {
 public:
+    /**
+     * Called upon encountering an at-rule.
+     *
+     * @param name name of the at-rule.
+     */
     void at_rule_name(std::string_view name)
     {
         (void)name;
     }
 
+    /**
+     * Called upon encountering a simple selector type.  A simple selector may
+     * consist of
+     *
+     * @code{.txt}
+     * <type>.<class>#<id>
+     * @endcode
+     *
+     * and this function only passes the type part of the simple selector
+     * expression.
+     *
+     * @param type simple selector type.
+     */
     void simple_selector_type(std::string_view type)
     {
         (void)type;
     }
 
+    /**
+     * Called upon encountering a simple selector class.  A simple selector may
+     * consist of
+     *
+     * @code{.txt}
+     * <type>.<class>#<id>
+     * @endcode
+     *
+     * and this function only passes the class part of the simple selector
+     * expression.
+     *
+     * @param cls simple selector class.
+     */
     void simple_selector_class(std::string_view cls)
     {
         (void)cls;
     }
 
+    /**
+     * Called upon encountering a pseudo element of a simple selector.  For
+     * instance, given the following CSS block:
+     *
+     * @code{.css}
+     * p::first-line {
+     *   color: blue;
+     *   text-transform: uppercase;
+     * }
+     * @endcode
+     *
+     * the `first-line` part is the pseudo element of the selector named `p`.
+     *
+     * @param pe pseudo element of a simple selector.
+     */
     void simple_selector_pseudo_element(orcus::css::pseudo_element_t pe)
     {
         (void)pe;
     }
 
+    /**
+     * Called upon encountering a pseudo class of a simple selector.  For
+     * instance, given the following CSS block:
+     *
+     * @code{.css}
+     * button:hover {
+     *   color: blue;
+     * }
+     * @endcode
+     *
+     * the `hover` part is the pseudo class of the selector named `button`.
+     *
+     * @param pc pseudo class of a simple selector.
+     */
     void simple_selector_pseudo_class(orcus::css::pseudo_class_t pc)
     {
         (void)pc;
     }
 
+    /**
+     * Called upon encountering a simple selector id.  A simple selector may
+     * consist of
+     *
+     * @code{.txt}
+     * <type>.<class>#<id>
+     * @endcode
+     *
+     * and this function only passes the id part of the simle selector
+     * expression.
+     *
+     * @param id simple selector id.
+     */
     void simple_selector_id(std::string_view id)
     {
         (void)id;
     }
 
+    /**
+     * Called at the end of a simple selector expression.
+     *
+     * @todo find out the difference between a simple selector and a selector,
+     *       and document it.
+     */
     void end_simple_selector() {}
 
+    /**
+     * Called at the end of a selector expression.
+     *
+     * @todo find out the difference between a simple selector and a selector,
+     *       and document it.
+     */
     void end_selector() {}
 
     void combinator(orcus::css::combinator_t combinator)
@@ -175,12 +260,19 @@ public:
     void end_block() {}
 
     /**
-     * Called at the beginning of each property.
+     * Called at the beginning of a single property expression.  Each property
+     * expression may consist of
+     *
+     * @code{.txt}
+     * <name> : <value>, ..., <value>
+     * @endcode
+     *
+     * terminated by either a `;` or `}`.
      */
     void begin_property() {}
 
     /**
-     * Called at the end of each property.
+     * Called at the end of a single property expression.
      */
     void end_property() {}
 };
