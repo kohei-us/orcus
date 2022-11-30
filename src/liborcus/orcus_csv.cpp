@@ -89,20 +89,19 @@ public:
         m_col = 0;
     }
 
-    void cell(const char* p, size_t n, bool transient)
+    void cell(std::string_view v, bool transient)
     {
         auto csv = std::get<config::csv_config>(m_app_config.data);
 
         if (m_sheet == 0 && size_t(m_row) < csv.header_row_size)
         {
-            std::string_view v{p, n};
             if (transient)
                 v = m_pool.intern(v).first;
 
             m_header_cells.emplace_back(m_row, m_col, v);
         }
 
-        mp_sheet->set_auto(m_row, m_col, {p, n});
+        mp_sheet->set_auto(m_row, m_col, v);
         ++m_col;
     }
 
@@ -148,7 +147,7 @@ struct orcus_csv::impl
         csv::parser_config config;
         config.delimiters.push_back(',');
         config.text_qualifier = '"';
-        csv_parser<orcus_csv_handler> parser(stream.data(), stream.size(), handler, config);
+        csv_parser<orcus_csv_handler> parser(stream, handler, config);
         try
         {
             parser.parse();

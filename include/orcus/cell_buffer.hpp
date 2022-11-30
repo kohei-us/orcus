@@ -30,6 +30,9 @@ public:
 
     void append(const char* p, size_t len);
     void reset();
+
+    std::string_view str() const;
+
     const char* get() const;
 
     /**

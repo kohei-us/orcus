@@ -46,6 +46,11 @@ void cell_buffer::reset()
     m_buf_size = 0;
 }
 
+std::string_view cell_buffer::str() const
+{
+    return std::string_view{m_buffer.data(), m_buf_size};
+}
+
 const char* cell_buffer::get() const
 {
     return m_buffer.data();

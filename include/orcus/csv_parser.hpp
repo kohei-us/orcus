@@ -38,8 +38,7 @@ public:
     /**
      * Called after every cell is parsed.
      *
-     * @param p pointer to the first character of a cell content.
-     * @param n number of characters the cell content consists of.
+     * @param value cell content.
      * @param transient when true, the text content has been converted and is
      *                  stored in a temporary buffer.  In such case, there is
      *                  no guarantee that the text content remain available
@@ -47,9 +46,9 @@ public:
      *                  the text content is guaranteed to be valid so long as
      *                  the original CSV stream content is valid.
      */
-    void cell(const char* p, size_t n, bool transient)
+    void cell(std::string_view value, bool transient)
     {
-        (void)p; (void)n; (void)transient;
+        (void)value; (void)transient;
     }
 };
 
@@ -65,7 +64,7 @@ class csv_parser : public csv::parser_base
 public:
     typedef HandlerT handler_type;
 
-    csv_parser(const char* p, size_t n, handler_type& hdl, const csv::parser_config& config);
+    csv_parser(std::string_view content, handler_type& hdl, const csv::parser_config& config);
     void parse();
 
 private:
@@ -88,8 +87,8 @@ private:
 
 template<typename _Handler>
 csv_parser<_Handler>::csv_parser(
-    const char* p, size_t n, handler_type& hdl, const csv::parser_config& config) :
-    csv::parser_base(p, n, config), m_handler(hdl) {}
+    std::string_view content, handler_type& hdl, const csv::parser_config& config) :
+    csv::parser_base(content, config), m_handler(hdl) {}
 
 template<typename _Handler>
 void csv_parser<_Handler>::parse()
@@ -205,14 +204,14 @@ void csv_parser<_Handler>::quoted_cell()
         }
 
         // Closing quote.
-        m_handler.cell(p0, len-1, false);
+        m_handler.cell({p0, len-1}, false);
         next();
         skip_blanks();
         return;
     }
 
     // Stream ended prematurely.  Handle it gracefully.
-    m_handler.cell(p0, len, false);
+    m_handler.cell({p0, len}, false);
 }
 
 template<typename _Handler>
@@ -256,7 +255,7 @@ void csv_parser<_Handler>::parse_cell_with_quote(const char* p0, size_t len0)
         // buffer, push the value to the handler, and exit normally.
         m_cell_buf.append(p_cur, cur_len);
 
-        m_handler.cell(m_cell_buf.get(), m_cell_buf.size(), true);
+        m_handler.cell(m_cell_buf.str(), true);
         next();
         skip_blanks();
         return;
@@ -292,7 +291,7 @@ void csv_parser<_Handler>::push_cell_value(const char* p, size_t n)
         }
     }
 
-    m_handler.cell(p, len, false);
+    m_handler.cell({p, len}, false);
 #if ORCUS_DEBUG_CSV
     if (len)
         cout << "(cell:'" << std::string(p, len) << "')" << endl;

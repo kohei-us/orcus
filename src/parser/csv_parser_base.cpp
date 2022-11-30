@@ -16,8 +16,8 @@ parser_config::parser_config() :
     trim_cell_value(false) {}
 
 parser_base::parser_base(
-    const char* p, size_t n, const csv::parser_config& config) :
-    ::orcus::parser_base(p, n), m_config(config)
+    std::string_view content, const csv::parser_config& config) :
+    ::orcus::parser_base(content.data(), content.size()), m_config(config)
 {
     maybe_skip_bom();
 }

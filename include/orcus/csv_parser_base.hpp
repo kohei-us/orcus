@@ -61,7 +61,7 @@ protected:
     cell_buffer m_cell_buf;
 
 protected:
-    parser_base(const char* p, size_t n, const parser_config& config);
+    parser_base(std::string_view content, const parser_config& config);
 
     /**
      * This is different from the global 'is_blank' in that it doesn't treat
