@@ -6,5 +6,5 @@ Import filters
    :maxdepth: 1
 
    config.rst
-   interface.rst
+   interface/index.rst
    spreadsheet.rst
