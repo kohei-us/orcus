@@ -2,6 +2,8 @@
 Spreadsheet types
 =================
 
+These types are used throughout the spreadsheet import and export interfaces.
+
 Type aliases
 ------------
 
