@@ -197,9 +197,10 @@ bool orcus_xlsx::detect(const unsigned char* blob, size_t size)
     }
 }
 
-void orcus_xlsx::read_file(const string& filepath)
+void orcus_xlsx::read_file(std::string_view filepath)
 {
-    std::unique_ptr<zip_archive_stream> stream(new zip_archive_stream_fd(filepath.c_str()));
+    std::unique_ptr<zip_archive_stream> stream(
+        new zip_archive_stream_fd(std::string{filepath}.c_str()));
     mp_impl->m_opc_reader.read_file(std::move(stream));
 
     // Formulas need to be inserted to the document after the shared string

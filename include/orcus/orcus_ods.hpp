@@ -33,7 +33,7 @@ public:
 
     static bool detect(const unsigned char* blob, size_t size);
 
-    virtual void read_file(const std::string& filepath) override;
+    virtual void read_file(std::string_view filepath) override;
 
     virtual void read_stream(std::string_view stream) override;
 

@@ -102,7 +102,7 @@ bool orcus_xls_xml::detect(const unsigned char* buffer, size_t size)
     return false;
 }
 
-void orcus_xls_xml::read_file(const string& filepath)
+void orcus_xls_xml::read_file(std::string_view filepath)
 {
     file_content content(filepath.data());
     if (content.empty())

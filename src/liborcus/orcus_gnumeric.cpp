@@ -122,13 +122,13 @@ bool orcus_gnumeric::detect(const unsigned char* buffer, size_t size)
     return false;
 }
 
-void orcus_gnumeric::read_file(const string& filepath)
+void orcus_gnumeric::read_file(std::string_view filepath)
 {
 #if ORCUS_DEBUG_GNUMERIC
     cout << "reading " << filepath << endl;
 #endif
 
-    file_content content(filepath.data());
+    file_content content(filepath);
     if (content.empty())
         return;
 

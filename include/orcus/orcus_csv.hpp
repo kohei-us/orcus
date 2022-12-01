@@ -29,7 +29,7 @@ public:
     orcus_csv(spreadsheet::iface::import_factory* factory);
     ~orcus_csv();
 
-    virtual void read_file(const std::string& filepath) override;
+    virtual void read_file(std::string_view filepath) override;
     virtual void read_stream(std::string_view stream) override;
 
     virtual std::string_view get_name() const override;

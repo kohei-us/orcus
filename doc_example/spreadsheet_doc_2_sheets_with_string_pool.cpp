@@ -194,10 +194,11 @@ public:
 int main()
 {
     std::filesystem::path input_dir = std::getenv("INPUTDIR");
+    auto filepath = input_dir / "multi-sheets.ods";
 
     my_import_factory factory;
     orcus::orcus_ods loader(&factory);
-    loader.read_file(input_dir / "multi-sheets.ods");
+    loader.read_file(filepath.native());
 
     return EXIT_SUCCESS;
 }

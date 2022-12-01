@@ -25,7 +25,8 @@ int main()
     // Pass the factory to the document loader, and read the content from a file
     // to populate the document.
     orcus_ods loader(&factory);
-    loader.read_file(input_dir / "document.ods");
+    auto filepath = input_dir / "document.ods";
+    loader.read_file(filepath.native());
     doc.recalc_formula_cells();
 
     // Now that the document is fully populated, access its content.

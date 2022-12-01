@@ -37,7 +37,7 @@ public:
      *
      * @param filepath path to a local file.  It must be a system path.
      */
-    virtual void read_file(const std::string& filepath) = 0;
+    virtual void read_file(std::string_view filepath) = 0;
 
     /**
      * Read the content of an in-memory stream.

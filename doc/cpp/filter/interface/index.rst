@@ -1,6 +1,6 @@
 
-Spreadsheet types and interfaces
-================================
+Types and interfaces
+====================
 
 .. toctree::
    :maxdepth: 1
