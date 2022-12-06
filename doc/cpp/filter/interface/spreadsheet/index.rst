@@ -8,6 +8,7 @@ Spreadsheet interfaces
    :maxdepth: 1
 
    document.rst
+   sheet.rst
    pivot.rst
    styles.rst
    view.rst
