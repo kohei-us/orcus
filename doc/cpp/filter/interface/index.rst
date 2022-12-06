@@ -6,8 +6,7 @@ Types and interfaces
    :maxdepth: 1
 
    global.rst
-   spreadsheet.rst
+   spreadsheet/index.rst
    types.rst
    view_types.rst
    functions.rst
-

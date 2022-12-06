@@ -37,9 +37,6 @@ Structs
 .. doxygenstruct:: orcus::spreadsheet::src_range_t
    :members:
 
-.. doxygenstruct:: orcus::spreadsheet::color_t
-   :members:
-
 .. doxygenstruct:: orcus::spreadsheet::color_rgb_t
    :members:
 
