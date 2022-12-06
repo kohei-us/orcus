@@ -10,7 +10,7 @@
 
 #include "../env.hpp"
 #include "../measurement.hpp"
-#include "types.hpp"
+#include "document_types.hpp"
 
 #include <memory>
 #include <string_view>

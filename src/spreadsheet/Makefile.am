@@ -24,6 +24,7 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	document.cpp \
 	document_impl.hpp \
 	document_impl.cpp \
+	document_types.cpp \
 	dumper_global.hpp \
 	dumper_global.cpp \
 	factory.cpp \

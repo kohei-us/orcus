@@ -8,7 +8,7 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_SHARED_STRINGS_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_SHARED_STRINGS_HPP
 
-#include "types.hpp"
+#include "document_types.hpp"
 
 #include <vector>
 #include <memory>

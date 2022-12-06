@@ -265,26 +265,26 @@ enum class formula_ref_context_t
      */
     global = 0,
 
-    /** base cell position of either a named range or expression. */
+    /** Base cell position of either a named range or expression. */
     named_expression_base,
 
     /**
-     * named range is a special case of named expression where the expression
+     * Named range is a special case of named expression where the expression
      * consists of only one range token.
      */
     named_range,
 };
 
 /**
- * Policy on how to handle a formula cell containing an expression that has
- * not been successfully parsed.
+ * Type of policy on how to handle a formula cell with an erroneous expression
+ * that has been parsed unsuccessfully.
  */
 enum class formula_error_policy_t
 {
     unknown,
-    /** loading of the document will be halted. */
+    /** Loading of the document will be halted. */
     fail,
-    /** the error cell will be skipped. */
+    /** The error cell will be skipped. */
     skip
 };
 
@@ -401,17 +401,17 @@ enum class ver_alignment_t
 };
 
 /**
- * Cell format categories. The abbrevaition "xf" refers to "cell format" where
- * the "x" stands for cell.
+ * Cell format categories. The abbreviation "xf" stands for "cell format"
+ * where the "x" is short for cell.
  */
 enum class xf_category_t
 {
     unknown,
-    /** Direct cell format, also abbreviated as xf */
+    /** Direct cell format, also often referenced as xf. */
     cell,
-    /** Cell format for named styles */
+    /** Cell format for named styles. */
     cell_style,
-    /** Incremental cell format, also abbreviated as dxf */
+    /** Incremental cell format, also referenced as dxf. */
     differential,
 };
 
@@ -444,6 +444,9 @@ enum class totals_row_function_t
     custom
 };
 
+/**
+ * Type of conditional format.
+ */
 enum class conditional_format_t
 {
     unknown = 0,
@@ -455,6 +458,9 @@ enum class conditional_format_t
     iconset
 };
 
+/**
+ * Operator type associated with a conditional format rule.
+ */
 enum class condition_operator_t
 {
     unknown = 0,
@@ -484,6 +490,14 @@ enum class condition_operator_t
     expression
 };
 
+/**
+ * Type of a condition in a conditional format rule.  This is applicable only
+ * when the type of a conditional format entry is either:
+ *
+ * @li @p colorscale,
+ * @li @p databar or
+ * @li @p iconset.
+ */
 enum class condition_type_t
 {
     unknown = 0,
@@ -496,6 +510,10 @@ enum class condition_type_t
     percentile
 };
 
+/**
+ * Type of a date condition when the type of a conditional format entry is
+ * @p date.
+ */
 enum class condition_date_t
 {
     unknown = 0,
@@ -514,6 +532,10 @@ enum class condition_date_t
     last_year,
 };
 
+/**
+ * Databar axis type, applicable only when the type of a conditional format
+ * entry is @p databar.
+ */
 enum class databar_axis_t
 {
     none = 0,
@@ -521,31 +543,57 @@ enum class databar_axis_t
     automatic
 };
 
+/**
+ * Type of range grouping in a group field of a pivot table cache.
+ */
 enum class pivot_cache_group_by_t
 {
+    /**
+     * Type of range grouping is unknown.
+     *
+     * This is an implicit default value of this type.
+     */
     unknown = 0,
-    days,     // grouping on "days" for date values.
-    hours,    // grouping on "hours" for date values.
-    minutes,  // grouping on "minutes" for date values.
-    months,   // grouping on "months" for date values.
-    quarters, // grouping on "quarters" for date values.
-    range,    // grouping by numeric ranges for numeric values.
-    seconds,  // grouping on "seconds" for date values.
-    years     // grouping on "years" for date values.
+    /** Grouping on "days" for date values. */
+    days,
+    /** Grouping on "hours" for date values. */
+    hours,
+    /** Grouping on "minutes" for date values. */
+    minutes,
+    /** Grouping on "months" for date values. */
+    months,
+    /** Grouping on "quarters" for date values. */
+    quarters,
+    /** Grouping by numeric ranges for numeric values. */
+    range,
+    /** Grouping on "seconds" for date values. */
+    seconds,
+    /** Grouping on "years" for date values. */
+    years
 };
 
+/**
+ * Stores a 2-dimensional cell address.
+ */
 struct address_t
 {
     row_t row;
     col_t column;
 };
 
+/**
+ * Stores the size of a range of a spreadsheet.
+ */
 struct range_size_t
 {
     row_t rows;
     col_t columns;
 };
 
+/**
+ * Stores a 2-dimensional cell range by storing the positions of the top-left
+ * and bottom-right corners of the range.
+ */
 struct range_t
 {
     address_t first;
@@ -553,7 +601,7 @@ struct range_t
 };
 
 /**
- * Stores 3-dimensional cell address.  The 'src' stands for
+ * Stores 3-dimensional cell address.  The 'src' abbreviation stands for
  * sheet-row-column.
  */
 struct src_address_t
@@ -564,7 +612,7 @@ struct src_address_t
 };
 
 /**
- * Stores 3-dimensional range address.  The 'src' stands for
+ * Stores 3-dimensional cell range address.  The 'src' abbreviation stands for
  * sheet-row-column.
  */
 struct src_range_t
@@ -573,7 +621,16 @@ struct src_range_t
     src_address_t last;
 };
 
+/**
+ * Convert a 3-dimensional cell address to a 2-dimensional counterpart by
+ * dropping the sheet index.
+ */
 ORCUS_DLLPUBLIC address_t to_rc_address(const src_address_t& r);
+
+/**
+ * Convert a 3-dimensional cell range address to a 2-dimensional counterpart
+ * by dropping the sheet indices.
+ */
 ORCUS_DLLPUBLIC range_t to_rc_range(const src_range_t& r);
 
 ORCUS_DLLPUBLIC bool operator== (const address_t& left, const address_t& right);
@@ -598,47 +655,15 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const address_t& v);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const src_address_t& v);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const range_t& v);
 
-struct ORCUS_SPM_DLLPUBLIC color_t
-{
-    color_elem_t alpha;
-    color_elem_t red;
-    color_elem_t green;
-    color_elem_t blue;
-
-    color_t();
-    color_t(color_elem_t _red, color_elem_t _green, color_elem_t _blue);
-    color_t(color_elem_t _alpha, color_elem_t _red, color_elem_t _green, color_elem_t _blue);
-
-    void reset();
-
-    bool operator==(const color_t& other) const;
-    bool operator!=(const color_t& other) const;
-};
-
+/**
+ * Stores a color value in RGB format.
+ */
 struct color_rgb_t
 {
     color_elem_t red;
     color_elem_t green;
     color_elem_t blue;
 };
-
-struct ORCUS_SPM_DLLPUBLIC format_run
-{
-    size_t pos;
-    size_t size;
-    std::string_view font;
-    double font_size;
-    color_t color;
-    bool bold:1;
-    bool italic:1;
-
-    format_run();
-
-    void reset();
-    bool formatted() const;
-};
-
-using format_runs_t = std::vector<format_run>;
 
 /**
  * Convert a string representation of a totals row function name to its

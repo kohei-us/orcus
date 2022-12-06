@@ -8,6 +8,7 @@
 #pragma once
 
 #include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/document_types.hpp>
 
 #include <memory>
 

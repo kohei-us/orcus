@@ -570,5 +570,5 @@ Implement more interfaces
 -------------------------
 
 This section has covered only a part of the available spreadsheet interfaces
-you can implement in your code.  Refer to the :ref:`spreadsheet-interface`
+you can implement in your code.  Refer to the :ref:`spreadsheet-interfaces`
 section to see the complete list of interfaces.

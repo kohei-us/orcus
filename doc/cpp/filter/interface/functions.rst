@@ -1,6 +1,6 @@
 
-Spreadsheet global functions
-============================
+Spreadsheet utility functions
+=============================
 
 .. doxygenfunction:: orcus::spreadsheet::get_default_column_width
 .. doxygenfunction:: orcus::spreadsheet::get_default_row_height
@@ -8,3 +8,5 @@ Spreadsheet global functions
 .. doxygenfunction:: orcus::spreadsheet::to_pivot_cache_group_by_enum
 .. doxygenfunction:: orcus::spreadsheet::to_error_value_enum
 .. doxygenfunction:: orcus::spreadsheet::to_color_rgb
+.. doxygenfunction:: orcus::spreadsheet::to_rc_address
+.. doxygenfunction:: orcus::spreadsheet::to_rc_range

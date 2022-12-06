@@ -15,6 +15,7 @@ liborcus_HEADERS += \
 	auto_filter.hpp \
 	config.hpp \
 	document.hpp \
+	document_types.hpp \
 	factory.hpp \
 	pivot.hpp \
 	shared_strings.hpp \

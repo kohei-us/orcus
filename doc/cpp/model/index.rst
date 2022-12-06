@@ -1,6 +1,6 @@
 
-Document model
-==============
+Document models
+===============
 
 .. toctree::
    :maxdepth: 1

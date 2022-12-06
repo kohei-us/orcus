@@ -4,8 +4,8 @@ Spreadsheet types
 
 These types are used throughout the spreadsheet import and export interfaces.
 
-Type aliases
-------------
+Integral types
+--------------
 
 .. doxygentypedef:: orcus::spreadsheet::row_t
 .. doxygentypedef:: orcus::spreadsheet::col_t
@@ -31,13 +31,16 @@ Structs
 .. doxygenstruct:: orcus::spreadsheet::range_t
    :members:
 
+.. doxygenstruct:: orcus::spreadsheet::src_address_t
+   :members:
+
+.. doxygenstruct:: orcus::spreadsheet::src_range_t
+   :members:
+
+.. doxygenstruct:: orcus::spreadsheet::color_t
+   :members:
+
 .. doxygenstruct:: orcus::spreadsheet::color_rgb_t
-   :members:
-
-.. doxygenstruct:: orcus::spreadsheet::split_pane_t
-   :members:
-
-.. doxygenstruct:: orcus::spreadsheet::frozen_pane_t
    :members:
 
 
@@ -54,14 +57,16 @@ Enums
 .. doxygenenum:: orcus::spreadsheet::strikethrough_text_t
 .. doxygenenum:: orcus::spreadsheet::formula_grammar_t
 .. doxygenenum:: orcus::spreadsheet::formula_t
+.. doxygenenum:: orcus::spreadsheet::formula_ref_context_t
+.. doxygenenum:: orcus::spreadsheet::formula_error_policy_t
 .. doxygenenum:: orcus::spreadsheet::underline_t
 .. doxygenenum:: orcus::spreadsheet::underline_width_t
 .. doxygenenum:: orcus::spreadsheet::underline_mode_t
 .. doxygenenum:: orcus::spreadsheet::underline_type_t
 .. doxygenenum:: orcus::spreadsheet::hor_alignment_t
 .. doxygenenum:: orcus::spreadsheet::ver_alignment_t
-.. doxygenenum:: orcus::spreadsheet::data_table_type_t
 .. doxygenenum:: orcus::spreadsheet::xf_category_t
+.. doxygenenum:: orcus::spreadsheet::data_table_type_t
 .. doxygenenum:: orcus::spreadsheet::totals_row_function_t
 .. doxygenenum:: orcus::spreadsheet::conditional_format_t
 .. doxygenenum:: orcus::spreadsheet::condition_operator_t
@@ -69,5 +74,3 @@ Enums
 .. doxygenenum:: orcus::spreadsheet::condition_date_t
 .. doxygenenum:: orcus::spreadsheet::databar_axis_t
 .. doxygenenum:: orcus::spreadsheet::pivot_cache_group_by_t
-.. doxygenenum:: orcus::spreadsheet::sheet_pane_t
-.. doxygenenum:: orcus::spreadsheet::pane_state_t
