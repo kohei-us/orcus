@@ -717,6 +717,10 @@ public:
     virtual range_size_t get_sheet_size() const = 0;
 };
 
+/**
+ * Interface for specifying global settings that may affect how the
+ * implementor should process certain values and properties.
+ */
 class ORCUS_DLLPUBLIC import_global_settings
 {
 public:
@@ -724,7 +728,8 @@ public:
 
     /**
      * Set the date that is to be represented by a value of 0.  All date
-     * values will be internally represented relative to this date afterward.
+     * values should be represented relative to this date.  This may affect, for
+     * instance, values imported via @ref import_sheet::set_date_time().
      *
      * @param year 1-based value representing year
      * @param month 1-based value representing month, varying from 1 through
@@ -734,26 +739,33 @@ public:
     virtual void set_origin_date(int year, int month, int day) = 0;
 
     /**
-     * Set formula grammar to be used globally when parsing formulas if the
-     * grammar is not specified.  This grammar will also be used when parsing
+     * Set the formula grammar to be used globally when parsing formulas if the
+     * grammar is not specified.  This grammar should also be used when parsing
      * range strings associated with shared formula ranges, array formula
      * ranges, autofilter ranges etc.
      *
-     * @param grammar default formula grammar
+     * Note that the import filter may specify what formula grammar to use
+     * locally when importing formula expressions for cells via @ref
+     * import_formula::set_formula(), in which case the implementor should honor
+     * that one instead.
+     *
+     * @param grammar default formula grammar to use globally unless otherwise
+     *                specified.
      */
     virtual void set_default_formula_grammar(formula_grammar_t grammar) = 0;
 
     /**
-     * Get current default formula grammar.
+     * Get current global formula grammar.  The import filter may use this
+     * method to query the current global formula grammar.
      *
      * @return current default formula grammar.
      */
     virtual formula_grammar_t get_default_formula_grammar() const = 0;
 
     /**
-     * Set the character set to be used when parsing string values.
+     * Set the character set to use when parsing encoded string values.
      *
-     * @param charset character set to apply when parsing string values.
+     * @param charset character set to use when parsing encoded string values.
      */
     virtual void set_character_set(character_set_t charset) = 0;
 };
@@ -806,9 +818,10 @@ public:
     virtual ~import_factory();
 
     /**
-     * Obtain an optional interface for global settings, which is used to
-     * specify global filter settings that may affect how certain values and
-     * properties get imported by the filter.
+     * Obtain an optional interface for global settings, which the import filter
+     * uses to specify global filter settings that may affect how certain values
+     * and properties should be processed.  The implementor can use this
+     * interface to decide how to process relevant values and properties.
      *
      * @return pointer to the global settings interface, or a @p nullptr if the
      *         implementor doesn't support it.
