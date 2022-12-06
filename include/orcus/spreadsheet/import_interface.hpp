@@ -792,101 +792,139 @@ public:
 };
 
 /**
- * This interface provides the filters a means to instantiate concrete
- * classes that implement the above interfaces.  The client code never has
- * to manually delete objects returned by its methods; the implementor of
- * this interface must manage the life cycles of objects it returns.
+ * This interface is the entry point for the import filter code to instantiate
+ * other, more specialized interfaces.  The life cycles of any specialized
+ * interfaces returned from this interface shall be managed by the implementor
+ * of this interface.
  *
- * The implementor of this interface normally wraps the document instance
- * inside it and have the document instance manage the life cycles of
- * various objects it creates.
+ * The implementer of this interface may wrap a backend document store that
+ * needs to be populated.
  */
 class ORCUS_DLLPUBLIC import_factory
 {
 public:
     virtual ~import_factory();
 
+    /**
+     * Obtain an optional interface for global settings, which is used to
+     * specify global filter settings that may affect how certain values and
+     * properties get imported by the filter.
+     *
+     * @return pointer to the global settings interface, or a @p nullptr if the
+     *         implementor doesn't support it.
+     */
     virtual import_global_settings* get_global_settings();
 
     /**
-     * @return pointer to the shared strings instance. It may return NULL if
-     *         the client app doesn't support shared strings.
+     * Obtain an optional interface for importing shared strings for string
+     * cells.  Implementing this interface is required in order to import string
+     * cell values.
+     *
+     * @return pointer to the shared strings interface, or a @p nullptr if the
+     *         implementor doesn't support it.
      */
     virtual import_shared_strings* get_shared_strings();
 
+    /**
+     * Obtain an optional interface for importing global named expressions.
+     *
+     * Note that @ref import_sheet also provides the same interface, but its
+     * interface is for importing sheet-local named expressions.
+     *
+     * @return pointer to the global named expression interface, or a @p nullptr
+     *         if the implementor doesn't support it.
+     */
     virtual import_named_expression* get_named_expression();
 
     /**
-     * @return pointer to the styles instance. It may return NULL if the
-     *         client app doesn't support styles.
+     * Obtain an optional interface for importing styles used to add formatting
+     * properties to cell values.
+     *
+     * @return pointer to the styles interface, or a @p nullptr if the
+     *         implementor doesn't support it.
      */
     virtual import_styles* get_styles();
 
+    /**
+     * Obtain an optional interface for resolving cell and cell-range references
+     * from string values.
+     *
+     * @param cxt context in which the formula expression containing the
+     *            references to be resolved occurs.
+     *
+     * @return pointer to the reference resolve interfance, or a @nullptr if the
+     *         implementor doesn't support it.
+     */
     virtual import_reference_resolver* get_reference_resolver(formula_ref_context_t cxt);
 
     /**
-     * Create an interface for pivot cache definition import for a specified
-     * cache ID.  In case a pivot cache alrady exists for the passed ID, the
-     * client app should overwrite the existing cache with a brand-new cache
-     * instance.
+     * Obtain an optional interface for pivot cache definition import for a
+     * specified cache ID.  In case a pivot cache alrady exists for the passed
+     * ID, the implementor should overwrite the existing cache with a brand-new
+     * cache instance.
      *
      * @param cache_id numeric ID associated with the pivot cache.
      *
-     * @return pointer to the pivot cache interface instance. If may return
-     *         NULL if the client app doesn't support pivot tables.
+     * @return pointer to the pivot cache interface, or a @p nullptr if the
+     *         implementor doesn't support pivot cache import.
      */
     virtual import_pivot_cache_definition* create_pivot_cache_definition(
         pivot_cache_id_t cache_id);
 
     /**
-     * Create an interface for pivot cache records import for a specified
-     * cache ID.
+     * Obtain an optional interface for pivot cache records import for a
+     * specified cache ID.
      *
      * @param cache_id numeric ID associated with the pivot cache.
      *
-     * @return pointer to the pivot cache records interface instance.  If may
-     *         return nullptr if the client app doesn't support pivot tables.
+     * @return pointer to the pivot cache records interface, or a @p nullptr if
+     *         the implementor doesn't support pivot cache import.
      */
     virtual import_pivot_cache_records* create_pivot_cache_records(
         pivot_cache_id_t cache_id);
 
     /**
-     * Append a sheet with specified sheet position index and name.
+     * Append a sheet with a specified sheet position index and name and return
+     * an interface for importing its content.  The implementor can use a call
+     * to this method as a signal to create and append a new sheet instance to
+     * the document store.
      *
      * @param sheet_index position index of the sheet to be appended.  It is
      *                    0-based i.e. the first sheet to be appended will
      *                    have an index value of 0.
      * @param name sheet name.
      *
-     * @return pointer to the sheet instance. It may return nullptr if the
-     *         client app fails to append a new sheet.
+     * @return pointer to the sheet instance, or a @p nullptr if the implementor
+     *         doesn't support it.  Note, however, that if the implementor
+     *         doesn't support this interface, no cell values will get imported.
      */
     virtual import_sheet* append_sheet(sheet_t sheet_index, std::string_view name) = 0;
 
     /**
-     * Get a sheet instance by name.
+     * Get a sheet instance by name.  The import filter may use this method to
+     * get access to an existing sheet after it has been created.
      *
      * @param name sheet name.
      *
      * @return pointer to the sheet instance whose name matches the name
-     *         passed to this method. It returns nullptr if no sheet instance
-     *         exists by the specified name.
+     *         passed to this method. It returns a @p nullptr if no sheet
+     *         instance exists by the specified name.
      */
     virtual import_sheet* get_sheet(std::string_view name) = 0;
 
     /**
-     * Retrieve sheet instance by specified numerical sheet index.
+     * Retrieve a sheet instance by a specified numerical sheet index.
      *
-     * @param sheet_index sheet index
+     * @param sheet_index sheet index.
      *
-     * @return pointer to the sheet instance, or nullptr if no sheet instance
-     *         exists at specified sheet index position.
+     * @return pointer to the sheet instance, or a @p nullptr if no sheet
+     *         instance exists at the specified sheet index.
      */
     virtual import_sheet* get_sheet(sheet_t sheet_index) = 0;
 
     /**
-     * This method is called at the end of import, to give the implementor a
-     * chance to perform post-processing if necessary.
+     * The import filter calls this method after completing its import, to give
+     * the implementor a chance to perform post-processing.
      */
     virtual void finalize() = 0;
 };
