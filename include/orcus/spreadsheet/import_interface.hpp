@@ -49,21 +49,23 @@ class import_sheet_view;
  * example demonstrates how the code may look like:
  *
  * @code{.cpp}
+ * import_shared_strings* iface = ...;
+ *
  * // store a segment with specific font, size and boldness.
- * set_segment_font_name("FreeMono");
- * set_segment_font_size(14);
- * set_segment_font_bold(true);
- * append_segment("a bold and big segment");
+ * iface->set_segment_font_name("FreeMono");
+ * iface->set_segment_font_size(14);
+ * iface->set_segment_font_bold(true);
+ * iface->append_segment("a bold and big segment");
  *
  * // store an unformatted segment.
- * append_segment(" followed by ");
+ * iface->append_segment(" followed by ");
  *
  * // store a segment with smaller, italic font.
- * set_segment_font_size(7);
- * set_segment_font_italic(true);
- * append_segment("a small and italic segment");
+ * iface->set_segment_font_size(7);
+ * iface->set_segment_font_italic(true);
+ * iface->append_segment("a small and italic segment");
  *
- * commit_segments(); // commit the whole formatted string to the pool.
+ * iface->commit_segments(); // commit the whole formatted string to the pool.
  * @endcode
  */
 class ORCUS_DLLPUBLIC import_shared_strings
@@ -208,14 +210,36 @@ public:
 /**
  * Interface for importing named expressions or ranges.
  *
- * Note that this interface has two different methods for defining named
- * expressions - set_named_expression() and set_named_range().
+ * This interface has two different methods for defining named expressions:
  *
- * The set_named_expression() method is generally used to pass named
- * expression strings.  The set_named_range() method is used only when the
- * format uses a different syntax to express a named range.  A named range
- * is a special case of named expression where the expression consists of
- * one range token.
+ * @li set_named_expression() and
+ * @li set_named_range().
+ *
+ * Generally speaking, set_named_expression() can be used to define both named
+ * expression and named range.  However, the implementor may choose to apply a
+ * different syntax rule to parse an expression passed to set_named_range(),
+ * depending on the formula grammar defined via @ref
+ * import_global_settings::set_default_formula_grammar().  For instance, the
+ * OpenDocument Spreadsheet format is known to use different syntax rules
+ * between named expressions and named ranges.
+ *
+ * A named range is a special case of a named expression where the expression
+ * consists of only one single cell range token.
+ *
+ * Here is a code example of how a named expression is defined:
+ *
+ * @code{.cpp}
+ * import_named_expression* iface = ...;
+ *
+ * // set the A1 on the first sheet as its origin (optional).
+ * src_address_t origin{0, 0, 0};
+ * iface->set_base_position(origin);
+ * iface->set_named_expression("MyExpression", "SUM(A1:B10)+SUM(D1:D4)");
+ * iface->commit();
+ * @endcode
+ *
+ * Replace the above set_named_expression() call with set_named_range() if you
+ * wish to define a named range instead.
  */
 class ORCUS_DLLPUBLIC import_named_expression
 {
@@ -223,16 +247,16 @@ public:
     virtual ~import_named_expression();
 
     /**
-     * Specify an optional base position from which to evaluate a named
-     * expression.  If not specified, the implementor should use the top-left
-     * cell position on the first sheet as its implied base position.
+     * Specify an optional base position, or origin, from which to evaluate a
+     * named expression.  If not specified, the implementor should use the
+     * top-left corner cell on the first sheet as its origin.
      *
-     * @param pos cell position to be used as the base.
+     * @param pos cell position to be used as the origin.
      */
     virtual void set_base_position(const src_address_t& pos) = 0;
 
     /**
-     * Define a new named expression or overwrite an existing one.
+     * Set a named expression to the buffer.
      *
      * @param name name of the expression to be defined.
      * @param expression expression to be associated with the name.
@@ -240,14 +264,17 @@ public:
     virtual void set_named_expression(std::string_view name, std::string_view expression) = 0;
 
     /**
-     * Define a new named range or overwrite an existin gone.  Note that you
-     * can only define one named range or expression per single commit.
+     * Set a named range to the buffer.
      *
      * @param name name of the expression to be defined.
      * @param range range to be associated with the name.
      */
     virtual void set_named_range(std::string_view name, std::string_view range) = 0;
 
+    /**
+     * Commit the named expression or range currently in the buffer to the
+     * document.
+     */
     virtual void commit() = 0;
 };
 
