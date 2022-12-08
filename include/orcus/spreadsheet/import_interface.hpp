@@ -26,7 +26,45 @@ class import_pivot_cache_records;
 class import_sheet_view;
 
 /**
- * Interface class designed to be derived by the implementor.
+ * Interface for importing raw string values shared in string cells.  String
+ * values may be either with or without formatted segments.
+ *
+ * To insert an unformatted string, simply use either append() or add()
+ * method.  The string will then be immediately pushed to the pool.
+ *
+ * To insert a string with mixed formatted segments, you need to first use one
+ * or more of:
+ *
+ * @li set_segment_font()
+ * @li set_segment_bold()
+ * @li set_segment_italic()
+ * @li set_segment_font_name()
+ * @li set_segment_font_size()
+ * @li set_segment_font_color()
+ *
+ * to define the format attribute(s) of a string segment followed by a call to
+ * append_segment().  This may be repeated as many times as necessary.  Then
+ * as the final step, call commit_segments() to insert the entire series of
+ * formatted segments to the pool as a single string entry.  The following
+ * example demonstrates how the code may look like:
+ *
+ * @code{.cpp}
+ * // store a segment with specific font, size and boldness.
+ * set_segment_font_name("FreeMono");
+ * set_segment_font_size(14);
+ * set_segment_font_bold(true);
+ * append_segment("a bold and big segment");
+ *
+ * // store an unformatted segment.
+ * append_segment(" followed by ");
+ *
+ * // store a segment with smaller, italic font.
+ * set_segment_font_size(7);
+ * set_segment_font_italic(true);
+ * append_segment("a small and italic segment");
+ *
+ * commit_segments(); // commit the whole formatted string to the pool.
+ * @endcode
  */
 class ORCUS_DLLPUBLIC import_shared_strings
 {
@@ -34,67 +72,69 @@ public:
     virtual ~import_shared_strings();
 
     /**
-     * Append new string to the string list.  Order of insertion is important
-     * since that determines the numerical ID values of inserted strings.
-     * Note that this method assumes that the caller knows the string being
-     * appended is not yet in the pool.
+     * Append a new string to the sequence of strings.  Order of insertion
+     * determines the numerical ID value of an inserted string. Note that this
+     * method assumes that the caller knows the string being appended is not yet
+     * in the pool; it does not check on duplicated strings.
      *
      * @param s string to append to the pool.
      *
-     * @return ID of the string just inserted.
+     * @return ID of the inserted string.
      */
     virtual size_t append(std::string_view s) = 0;
 
     /**
-     * Similar to the append method, it adds new string to the string pool;
+     * Similar to the append() method, it adds a new string to the string pool;
      * however, this method checks if the string being added is already in the
      * pool before each insertion, to avoid duplicated strings.
      *
      * @param s string to add to the pool.
      *
-     * @return ID of the string just inserted.
+     * @return ID of the inserted string.
      */
     virtual size_t add(std::string_view s) = 0;
 
     /**
-     * Set the index of a font to apply to the current format attributes.
+     * Set the index of a font to apply to the current format attributes.  Refer
+     * to the import_font_style interface on how to obtain a font index.  Note
+     * that a single font index is associated with multiple font-related
+     * formatting attributes, such as font name, font color, boldness and
+     * italics.
      *
      * @param font_index positive integer representing the font to use.
      */
     virtual void set_segment_font(size_t font_index) = 0;
 
     /**
-     * Set whether or not to make the font bold to the current format
-     * attributes.
+     * Set whether or not to make the current segment bold.
      *
      * @param b true if it's bold, false otherwise.
      */
     virtual void set_segment_bold(bool b) = 0;
 
     /**
-     * Set whether or not to set the font italic font to the current format
-     * attributes.
+     * Set whether or not to make the current segment italic.
      *
      * @param b true if it's italic, false otherwise.
      */
     virtual void set_segment_italic(bool b) = 0;
 
     /**
-     * Set the name of a font to the current format attributes.
+     * Set the name of a font to the current segment.
      *
      * @param s font name.
      */
     virtual void set_segment_font_name(std::string_view s) = 0;
 
     /**
-     * Set a font size to the current format attributes.
+     * Set a font size to the current segment.
      *
      * @param point font size in points.
      */
     virtual void set_segment_font_size(double point) = 0;
 
     /**
-     * Set the color of a font in ARGB to the current format attributes.
+     * Set the color of a font in ARGB format to the current segment.
      *
      * @param alpha alpha component value (0-255).
      * @param red red component value (0-255).
@@ -104,21 +144,21 @@ public:
     virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
 
     /**
-     * Append a string segment with the current format attributes to the
-     * formatted string buffer.
+     * Push the current string segment to the buffer. Any formatting attributes
+     * defined so far will be applied to this segment.
      *
-     * @param s string segment value.
+     * @param s string value for the segment.
      */
     virtual void append_segment(std::string_view s) = 0;
 
     /**
-     * Store the formatted string in the current buffer to the shared strings
-     * store.  The implementation may choose to unconditionally append the
-     * string to the store, or choose to look for an existing indentical
-     * formatted string to reuse and discard the new one if one exists.
+     * Store the entire formatted string in the current buffer to the shared
+     * strings pool.  The implementor may choose to unconditionally append the
+     * string to the pool, or choose to find an existing duplicate and reuse
+     * it instead.
      *
      * @return ID of the string just inserted, or the ID of an existing string
-     *         with identical formatting attributes.
+     *         with identical formatting.
      */
     virtual size_t commit_segments() = 0;
 };
