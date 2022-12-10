@@ -2,6 +2,9 @@
 Document import
 ===============
 
+The following interfaces handle importing of contents and properties related to
+the entire document store.
+
 .. doxygenclass:: orcus::spreadsheet::iface::import_factory
    :members:
 
