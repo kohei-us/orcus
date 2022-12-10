@@ -837,6 +837,13 @@ public:
     virtual void set_character_set(character_set_t charset) = 0;
 };
 
+/**
+ * This is an interface to allow the implementor to provide its own reference
+ * address parsers, for both single cell references and cell range references.
+ * The implementor may choose to provide a different parser depending of the
+ * type of formula_ref_context_t argument given to the @ref
+ * import_factory::get_reference_resolver() call.
+ */
 class ORCUS_DLLPUBLIC import_reference_resolver
 {
 public:
@@ -932,8 +939,8 @@ public:
      * @param cxt context in which the formula expression containing the
      *            references to be resolved occurs.
      *
-     * @return pointer to the reference resolve interfance, or a @nullptr if the
-     *         implementor doesn't support it.
+     * @return pointer to the reference resolve interfance, or a @p nullptr if
+     *         the implementor doesn't support it.
      */
     virtual import_reference_resolver* get_reference_resolver(formula_ref_context_t cxt);
 
