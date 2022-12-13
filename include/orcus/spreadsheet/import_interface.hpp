@@ -166,9 +166,13 @@ public:
 };
 
 /**
- * Interface for importing sheet properties.  Sheet properties are those
- * that are used for decorative purposes but are not necessarily a part of
- * the sheet cell values.
+ * Interface for importing sheet properties.  Sheet properties include:
+ *
+ * @li column widths and row heights,
+ * @li hidden flags for columns and rows, and
+ * @li merged cell ranges.
+ *
+ * These properties are independent of the cell contents of a sheet.
  */
 class ORCUS_DLLPUBLIC import_sheet_properties
 {
@@ -176,7 +180,7 @@ public:
     virtual ~import_sheet_properties();
 
     /**
-     * Set column width to specified column(s).
+     * Set a column width to one or more columns.
      *
      * @param col      0-based position of the first column.
      * @param col_span number of contiguous columns to apply the width to.
@@ -186,7 +190,7 @@ public:
     virtual void set_column_width(col_t col, col_t col_span, double width, orcus::length_unit_t unit) = 0;
 
     /**
-     * Set column hidden flag to specified column(s).
+     * Set a column hidden flag to one or more columns.
      *
      * @param col      0-based position of the first column.
      * @param col_span number of contiguous columns to apply the flag to.
@@ -194,15 +198,32 @@ public:
      */
     virtual void set_column_hidden(col_t col, col_t col_span, bool hidden) = 0;
 
+    /**
+     * Set a row height to specified row.
+     *
+     * @param row 0-based position of a row.
+     * @param height new row height value to set.
+     * @param unit unit of the new row height value.
+     *
+     * @todo Convert this to take a raw span.
+     */
     virtual void set_row_height(row_t row, double height, orcus::length_unit_t unit) = 0;
 
+    /**
+     * Set a row hidden flag to a specified row.
+     *
+     * @param row    0-based position of a row.
+     * @param hidden flag indicating whether or not the row is hidden.
+     *
+     * @todo Convert this to take a raw span.
+     */
     virtual void set_row_hidden(row_t row, bool hidden) = 0;
 
     /**
-     * Specify merged cell range.
+     * Set a merged cell range.
      *
      * @param range structure containing the top-left and bottom-right
-     *              positions of the merged cell range.
+     *              positions of a merged cell range.
      */
     virtual void set_merge_cell_range(const range_t& range) = 0;
 };
