@@ -591,69 +591,96 @@ public:
 };
 
 /**
- * Interface for sheet.
+ * Interface for importing the content and properties of a sheet.
  */
 class ORCUS_DLLPUBLIC import_sheet
 {
 public:
     virtual ~import_sheet();
 
+    /**
+     * Get an optional interface for importing properties that are specific to a
+     * view of a sheet.
+     *
+     * @return pointer to the interface for importing view properties, or a @p
+     *         nullptr if the implementor doesn't support it.
+     */
     virtual import_sheet_view* get_sheet_view();
 
+    /**
+     * Get an optional interface for importing sheet properties.
+     *
+     * @return pointer to the interface for importing sheet properties, or a @p
+     *         nullptr if the implementor doesn't support it.
+     */
     virtual import_sheet_properties* get_sheet_properties();
 
     /**
-     * Get an interface for importing data tables.  Note that the implementer
-     * may decide not to support this feature in which case this method
-     * returns NULL.  The implementer is responsible for managing the life
-     * cycle of the returned interface object.
+     * Get an optional interface for importing data tables.  Note that the
+     * implementer may decide not to support this feature in which case this
+     * method should return a @p nullptr.
      *
-     * The implementor should also initialize the internal state of the
-     * temporary data table object when this method is called.
+     * The implementor should initialize the internal state of the temporary
+     * data table object when this method is called.
      *
-     * @return pointer to the data table interface object.
+     * @return pointer to the data table interface object, or a @p nullptr if
+     *         the implementor doesn't support it.
      */
     virtual import_data_table* get_data_table();
 
     /**
-     * Get an interface for importing auto filter ranges.
+     * Get an optional interface for importing auto filter ranges.
      *
-     * The implementor should also initialize the internal state of the
-     * temporary auto filter object when this method is called.
+     * The implementor should initialize the internal state of the temporary
+     * auto filter object when this method is called.
      *
-     * @return pointer to the auto filter interface object.
+     * @return pointer to the auto filter interface object, or a @p nullptr if
+     *         the implementor doesn't support it.
      */
     virtual import_auto_filter* get_auto_filter();
 
     /**
-     * Get an interface for importing tables.  The implementer is responsible
-     * for managing the life cycle of the returned interface object.
+     * Get an interface for importing tables.
      *
-     * The implementor should also initialize the internal state of the
-     * temporary table object when this method is called.
+     * The implementor should initialize the internal state of the temporary
+     * table object when this method is called.
      *
-     * @return pointer to the table interface object, or NULL if the
+     * @return pointer to the table interface object, or @p nullptr if the
      *         implementer doesn't support importing of tables.
      */
     virtual import_table* get_table();
 
     /**
-     * get an interface for importing conditional formats. The implementer is responsible
-     * for managing the life cycle of the returned interface object.
+     * Get an optional interface for importing conditional formats.
      *
-     * @return pointer to the conditional format interface object, or NULL
-     *          if the implementer doesn't support importing conditional formats.
+     * @return pointer to the conditional format interface object, or @p nullptr
+     *          if the implementer doesn't support importing conditional
+     *          formats.
      */
     virtual import_conditional_format* get_conditional_format();
 
+    /**
+     * Get an optional interface for importing sheet-local named expressions.
+     *
+     * @return pointer to the sheet-local named expression interface, or a @p
+     *         nullptr if the implementor doesn't support it.
+     */
     virtual import_named_expression* get_named_expression();
 
+    /**
+     * Get an optional interface for importing array formulas.  An array formula
+     * is a formula expression applied to a range of cells where each cell may
+     * have a different result value.
+     *
+     * @return pointer to the array formula import interface, or a @p nullptr if
+     *         the implementor doesn't support it.
+     */
     virtual import_array_formula* get_array_formula();
 
     /**
-     * Get an interface for importing formula cells.
+     * Get an optional interface for importing formula cells.
      *
-     * @return pointer to the formula interface object, or nullptr if the
+     * @return pointer to the formula interface object, or a @p nullptr if the
      *         implementer doesn't support importing of formula cells.
      */
     virtual import_formula* get_formula();
