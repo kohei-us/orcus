@@ -351,6 +351,36 @@ public:
     virtual void commit() = 0;
 };
 
+/**
+ * Interface for importing auto filters.
+ *
+ * Importing a single auto filter would roughly follow the following flow:
+ *
+ * @code{.cpp}
+ * import_auto_filter* iface = ... ;
+ *
+ * range_t range;
+ * range.first.column = 0;
+ * range.first.row = 0;
+ * range.last.column = 3;
+ * range.last.row = 1000;
+ * iface->set_range(range); // Auto filter is applied for A1:D1001.
+ *
+ * // Column A is filtered for a value of "A".
+ * iface->set_column(0);
+ * iface->append_column_match_value("A");
+ * iface->commit_column();
+ *
+ * // Column D is filtered for values of 1 and 4.
+ * iface->set_column(3);
+ * iface->append_column_match_value("1");
+ * iface->append_column_match_value("4");
+ * iface->commit_column();
+ *
+ * // Push the autofilter data in the current buffer to the sheet store.
+ * iface->commit();
+ * @endcode
+ */
 class ORCUS_DLLPUBLIC import_auto_filter
 {
 public:
@@ -366,27 +396,35 @@ public:
 
     /**
      * Specify the column position of a filter. The position is relative to
-     * the first column in the auto filter range.
+     * the first column in the auto filter range.  This method gets called at
+     * the beginning of each column filter data.  The implementor may initialize
+     * the column filter data buffer when this method is called.
+     *
+     * @note This column position is relative to the first column in the
+     *       autofilter range.
      *
      * @param col 0-based column position of a filter relative to the first
-     *            column.
+     *            column of the auto filter range.
      */
     virtual void set_column(col_t col) = 0;
 
     /**
-     * Add a match value to the current column filter.
+     * Append a match value to the current column filter.  A single column
+     * filter may have one or more match values.
      *
-     * @param value match value.
+     * @param value match value to append to the current column filter.
      */
     virtual void append_column_match_value(std::string_view value) = 0;
 
     /**
-     * Commit current column filter to the current auto filter.
+     * Commit the current column filter data to the current auto filter buffer.
+     * The implementor may clear the current column filter buffer after this
+     * call.
      */
     virtual void commit_column() = 0;
 
     /**
-     * Commit current auto filter to the model.
+     * Commit current auto filter data stored in the buffer to the sheet store.
      */
     virtual void commit() = 0;
 };

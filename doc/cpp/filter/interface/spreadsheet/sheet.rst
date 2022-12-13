@@ -2,6 +2,9 @@
 Sheet import
 ============
 
+The following interfaces handle importing of contents and properties related to
+individual sheets.
+
 .. doxygenclass:: orcus::spreadsheet::iface::import_sheet
    :members:
 
