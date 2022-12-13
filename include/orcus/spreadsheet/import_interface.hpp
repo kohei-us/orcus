@@ -307,14 +307,47 @@ class ORCUS_DLLPUBLIC import_data_table
 public:
     virtual ~import_data_table();
 
+    /**
+     * Set the type of a data table.  A data table can either:
+     *
+     * @li be a single-variable column-oriented,
+     * @li be a single-variable row-oriented, or
+     * @li use two variables that use both column and row.
+     *
+     * @param type type of a data table.
+     */
     virtual void set_type(data_table_type_t type) = 0;
 
+    /**
+     * Set the range of a data table.
+     *
+     * @param range range of a data table.
+     */
     virtual void set_range(const range_t& range) = 0;
 
+    /**
+     * Set the reference of the first input cell.
+     *
+     * @param ref     reference of the first input cell.
+     * @param deleted whether or not this input cell has been deleted.
+     */
     virtual void set_first_reference(std::string_view ref, bool deleted) = 0;
 
+    /**
+     * Set the reference of the second input cell but only if the data table
+     * uses two variables.
+     *
+     * @note This method gets called only if the data table uses two variables.
+     *
+     * @param ref     reference of the second input cell.
+     * @param deleted whether or not this input cell has been deleted.
+     */
     virtual void set_second_reference(std::string_view ref, bool deleted) = 0;
 
+    /**
+     * Store the current data table data in the buffer to the backend sheet
+     * storage.
+     */
     virtual void commit() = 0;
 };
 
