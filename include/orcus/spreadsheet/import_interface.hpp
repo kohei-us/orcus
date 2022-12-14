@@ -733,6 +733,11 @@ public:
     virtual void commit() = 0;
 };
 
+/**
+ * Interface for importing the properties of a single formula cell.  A formula
+ * cell contains a formula expression that can be computed, and optionally a
+ * cached result of the last computation performed on the expression.
+ */
 class ORCUS_DLLPUBLIC import_formula
 {
 public:
