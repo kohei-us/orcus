@@ -585,40 +585,151 @@ public:
 };
 
 /**
- * Interface for table.  A table is a range within a sheet that consists of
- * one or more data columns with a header row that contains their labels.
+ * Interface for table.  A table is a range of cells within a sheet that
+ * consists of one or more data columns with a header row that contains their
+ * labels.
  */
 class ORCUS_DLLPUBLIC import_table
 {
 public:
     virtual ~import_table();
 
+    /**
+     * Get an optional interface for importing auto filter data stored as part
+     * of a table.
+     *
+     * The implementor should initialize the internal state of the temporary
+     * auto filter object when this method is called.
+     *
+     * @return pointer to the auto filter interface object, or a @p nullptr if
+     *         the implementor doesn't support it.
+     */
     virtual import_auto_filter* get_auto_filter();
 
+    /**
+     * Set an integral identifier unique to the table.
+     *
+     * @param id identifier associated with the table.
+     */
     virtual void set_identifier(size_t id) = 0;
 
+    /**
+     * Set a cell range associated with the table.
+     *
+     * @param ref cell range associated with the table.
+     *
+     * @todo use reference resolver for this.
+     */
     virtual void set_range(std::string_view ref) = 0;
 
+    /**
+     * Set the number of totals rows.
+     *
+     * @param row_count number of totals rows.
+     */
     virtual void set_totals_row_count(size_t row_count) = 0;
 
+    /**
+     * Set the internal name of the table.
+     *
+     * @param name name of the table.
+     */
     virtual void set_name(std::string_view name) = 0;
 
+    /**
+     * Set the displayed name of the table.
+     *
+     * @param name displayed name of the table.
+     */
     virtual void set_display_name(std::string_view name) = 0;
 
+    /**
+     * Set the number of columns the table contains.
+     *
+     * @param n number of columns in the table.
+     *
+     * @note This method gets called before the column data gets imported.  The
+     *       implementor can use this call to initialize the buffer for storing
+     *       the column data.
+     */
     virtual void set_column_count(size_t n) = 0;
 
+    /**
+     * Set an integral identifier for a column.
+     *
+     * @param id integral identifier for a column.
+     */
     virtual void set_column_identifier(size_t id) = 0;
+
+    /**
+     * Set a name of a column.
+     *
+     * @param name name of a column.
+     */
     virtual void set_column_name(std::string_view name) = 0;
+
+    /**
+     * Set the totals row label for a column.
+     *
+     * @param label row label for a column.
+     */
     virtual void set_column_totals_row_label(std::string_view label) = 0;
+
+    /**
+     * Set the totals row function for a column.
+     *
+     * @param func totals row function for a column.
+     */
     virtual void set_column_totals_row_function(totals_row_function_t func) = 0;
+
+    /**
+     * Push and append the column data stored in the current column data buffer
+     * into the table buffer.
+     */
     virtual void commit_column() = 0;
 
+    /**
+     * Set the name of a style to apply to the table.
+     *
+     * @param name name of a style to apply to the table.
+     */
     virtual void set_style_name(std::string_view name) = 0;
+
+    /**
+     * Specify whether or not the first column in the table should have the
+     * style applied.
+     *
+     * @param b whether or not the first column in the table should have the
+     *          style applied.
+     */
     virtual void set_style_show_first_column(bool b) = 0;
+
+    /**
+     * Specify whether or not the last column in the table should have the style
+     * applied.
+     *
+     * @param b whether or not the last column in the table should have the
+     *          style applied.
+     */
     virtual void set_style_show_last_column(bool b) = 0;
+
+    /**
+     * Specify whether or not row stripe formatting is applied.
+     *
+     * @param b whether or not row stripe formatting is applied.
+     */
     virtual void set_style_show_row_stripes(bool b) = 0;
+
+    /**
+     * Specify whether or not column stripe formatting is applied.
+     *
+     * @param b whether or not column stripe formatting is applied.
+     */
     virtual void set_style_show_column_stripes(bool b) = 0;
 
+    /**
+     * Push the data stored in the table buffer into the document store.
+     */
     virtual void commit() = 0;
 };
 
