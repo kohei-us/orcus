@@ -432,24 +432,45 @@ public:
 /**
  * This is an optional interface to import conditional formatting.
  *
- * A conditional format consists of:
- * <ul>
- *  <li>a range</li>
- *  <li>several entries</li>
- * </ul>
+ * In general, a single conditional format consists of:
  *
- * Each entry consists of:
- * <ul>
- *   <li>a type</li>
- *   <li>a few properties depending on the type (optional)</li>
- *   <li>zero or more conditions depending on the type</li>
- * </ul>
+ * @li a cell range the format is applied to, and
+ * @li one or more rule entries.
  *
- * Each condition consists of:
- * <ul>
- *   <li>a formula/value/string</li>
- *   <li>a color (optional)</li>
- * </ul>
+ * Each rule entry consists of:
+ *
+ * @li a type of rule,
+ * @li zero or more rule properties, and
+ * @li zero or more conditions depending on the rule type.
+ *
+ * Lastly, each condition consists of:
+ *
+ * @li a formula, value, or string,
+ * @li an optional color.
+ *
+ * The flow of the import process varies depending on the type of the
+ * conditional formatting being imported.  The following is an example of
+ * importing a conditional formatting that consists of a rule that applies a
+ * format when the cell value is greather than 2:
+ *
+ * @code{.cpp}
+ * import_conditional_format* iface = ... ;
+ *
+ * iface->set_range("A2:A13");
+ * iface->set_xf_id(14); // apply differential format (dxf) whose ID is 14
+ * iface->set_type(conditional_format_t::condition); // rule entry type
+ * iface->set_operator(condition_operator_t::expression);
+ * iface->set_operator(condition_operator_t::greater);
+ *
+ * iface->set_formula("2");
+ * iface->commit_condition();
+ *
+ * iface->commit_entry();
+ *
+ * iface->commit_format();
+ * @endcode
+ *
+ * @todo Revise this API for simplification.
  */
 class ORCUS_DLLPUBLIC import_conditional_format
 {
