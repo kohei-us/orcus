@@ -171,7 +171,7 @@ void import_pivot_cache_def::set_field_name(std::string_view name)
     m_current_field.name = intern(name);
 }
 
-iface::import_pivot_cache_field_group* import_pivot_cache_def::create_field_group(size_t base_index)
+iface::import_pivot_cache_field_group* import_pivot_cache_def::start_field_group(size_t base_index)
 {
     m_current_field_group =
         std::make_unique<import_pc_field_group>(m_doc, m_current_field, base_index);

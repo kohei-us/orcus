@@ -23,7 +23,7 @@ namespace orcus { namespace spreadsheet { namespace iface {
 class import_pivot_cache_field_group;
 
 /**
- * Interface for importing pivot cache definition.
+ * Interface for importing pivot cache definitions.
  */
 class ORCUS_DLLPUBLIC import_pivot_cache_definition
 {
@@ -36,6 +36,8 @@ public:
      *
      * @param ref range string specifying the source range.
      * @param sheet_name name of the worksheet where the source data is located.
+     *
+     * @todo use the ref resolver to resolve the range.
      */
     virtual void set_worksheet_source(std::string_view ref, std::string_view sheet_name) = 0;
 
@@ -90,16 +92,17 @@ public:
     virtual void set_field_max_date(const date_time_t& dt) = 0;
 
     /**
-     * Mark the current field as a group field.
+     * Mark the current field as a group field and initiate its import.
      *
-     * This method gets called first to signify that the current field is a
-     * group field.
+     * The implementor should create an internal storage to prepare for the
+     * importing of field group data when this method gets called.
      *
      * @param base_index 0-based index of the field this field is the parent
      *                   group of.
-     * @return interface for importing group field data.
+     * @return interface for importing group field data, or a @p nullptr if the
+     *         implementor doesn't support it.
      */
-    virtual import_pivot_cache_field_group* create_field_group(size_t base_index) = 0;
+    virtual import_pivot_cache_field_group* start_field_group(size_t base_index) = 0;
 
     /**
      * Commit the field in the current field buffer to the pivot cache model.
@@ -147,7 +150,7 @@ public:
 };
 
 /**
- * Interface for importing group field settings in a pivot cache.
+ * Interface for importing group field settings in a pivot cache definition.
  */
 class ORCUS_DLLPUBLIC import_pivot_cache_field_group
 {
@@ -291,19 +294,53 @@ class ORCUS_DLLPUBLIC import_pivot_cache_records
 public:
     virtual ~import_pivot_cache_records();
 
+    /**
+     * Set the number of records included in pivot cache records.
+     *
+     * @note This method gets called before the very first record gets imported.
+     *       The implementor can use this call as an opportunity to initialize
+     *       any internal buffers used to store the imported records.
+     *
+     * @param n number of records included in pivot cache records.
+     */
     virtual void set_record_count(size_t n) = 0;
 
+    /**
+     * Append to the current record buffer a numeric value as a column value.
+     *
+     * @param v numeric value to append to the current record buffer as a column
+     *          value.
+     */
     virtual void append_record_value_numeric(double v) = 0;
 
+    /**
+     * Append to the current record buffer a character value as a column value.
+     *
+     * @param s character value to append to the current record buffer as a
+     *          column value.
+     */
     virtual void append_record_value_character(std::string_view s) = 0;
 
+    /**
+     * Append to the current record buffer a column value referenced by an index
+     * into the shared items table of a pivot cache field.  The corresponding
+     * field in the pivot cache definition should provide the shared items table
+     * that this index references.
+     *
+     * @param index index into the shared items table of a pivot cache field.
+     */
     virtual void append_record_value_shared_item(size_t index) = 0;
 
     /**
-     * Commit the record in the current buffer, and clears the buffer.
+     * Commit the record in the current record buffer.
+     *
+     * The implementor can clear the buffer afterward.
      */
     virtual void commit_record() = 0;
 
+    /**
+     * Commit the entire records set to the document store.
+     */
     virtual void commit() = 0;
 };
 

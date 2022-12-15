@@ -93,7 +93,6 @@ public:
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs);
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(std::string_view str, bool transient);
 };
 
 /**

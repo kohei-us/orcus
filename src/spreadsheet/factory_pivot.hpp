@@ -58,7 +58,7 @@ public:
 
     virtual void set_field_name(std::string_view name) override;
 
-    virtual iface::import_pivot_cache_field_group* create_field_group(size_t base_index) override;
+    virtual iface::import_pivot_cache_field_group* start_field_group(size_t base_index) override;
 
     virtual void set_field_min_value(double v) override;
 

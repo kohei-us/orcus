@@ -298,7 +298,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
             if (group_base >= 0)
             {
                 // This is a group field.
-                m_pcache_field_group = m_pcache.create_field_group(group_base);
+                m_pcache_field_group = m_pcache.start_field_group(group_base);
             }
             break;
         }
@@ -385,18 +385,21 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 }
             );
 
-            // Pass the values to the interface.
-            m_pcache_field_group->set_range_grouping_type(group_by);
-            m_pcache_field_group->set_range_auto_start(auto_start);
-            m_pcache_field_group->set_range_auto_end(auto_end);
-            m_pcache_field_group->set_range_start_number(start);
-            m_pcache_field_group->set_range_end_number(end);
-            m_pcache_field_group->set_range_interval(interval);
+            if (m_pcache_field_group)
+            {
+                // Pass the values to the interface.
+                m_pcache_field_group->set_range_grouping_type(group_by);
+                m_pcache_field_group->set_range_auto_start(auto_start);
+                m_pcache_field_group->set_range_auto_end(auto_end);
+                m_pcache_field_group->set_range_start_number(start);
+                m_pcache_field_group->set_range_end_number(end);
+                m_pcache_field_group->set_range_interval(interval);
 
-            if (start_date)
-                m_pcache_field_group->set_range_start_date(*start_date);
-            if (end_date)
-                m_pcache_field_group->set_range_end_date(*end_date);
+                if (start_date)
+                    m_pcache_field_group->set_range_start_date(*start_date);
+                if (end_date)
+                    m_pcache_field_group->set_range_end_date(*end_date);
+            }
 
             if (get_config().debug)
             {
@@ -1100,10 +1103,6 @@ bool xlsx_pivot_cache_rec_context::end_element(xmlns_id_t ns, xml_token_t name)
     }
 
     return pop_stack(ns, name);
-}
-
-void xlsx_pivot_cache_rec_context::characters(std::string_view /*str*/, bool /*transient*/)
-{
 }
 
 xlsx_pivot_table_context::xlsx_pivot_table_context(session_context& cxt, const tokens& tokens) :
