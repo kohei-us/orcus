@@ -97,8 +97,8 @@ public:
      * The implementor should create an internal storage to prepare for the
      * importing of field group data when this method gets called.
      *
-     * @param base_index 0-based index of the field this field is the parent
-     *                   group of.
+     * @param base_index 0-based index of the field this group field uses as its
+     *                   base.
      * @return interface for importing group field data, or a @p nullptr if the
      *         implementor doesn't support it.
      */
