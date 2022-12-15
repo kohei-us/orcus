@@ -799,23 +799,72 @@ public:
     virtual void commit() = 0;
 };
 
+/**
+ * Interface for importing the properties of an array formula which occupies a
+ * range of cells.  Cells that are part of an array formula share the same
+ * formula expression but may have different calculation results.
+ */
 class ORCUS_DLLPUBLIC import_array_formula
 {
 public:
     virtual ~import_array_formula();
 
+    /**
+     * Set the range of an array formula.
+     *
+     * @param range range of an array formula.
+     */
     virtual void set_range(const range_t& range) = 0;
 
+    /**
+     * Set the formula expression of an array formula.
+     *
+     * @param grammar grammar to use to compile the formula string into
+     *                tokens.
+     * @param formula formula expression of an array formula.
+     */
     virtual void set_formula(formula_grammar_t grammar, std::string_view formula) = 0;
 
+    /**
+     * Set a cached string result of a cell within the array formula range.
+     *
+     * @param row 0-based row position of a cell.
+     * @param col 0-based column position of a cell.
+     * @param value cached string value to set.
+     */
     virtual void set_result_string(row_t row, col_t col, std::string_view value) = 0;
 
+    /**
+     * Set a cached numeric result of a cell within the array formula range.
+     *
+     * @param row 0-based row position of a cell.
+     * @param col 0-based column position of a cell.
+     * @param value cached numeric value to set.
+     */
     virtual void set_result_value(row_t row, col_t col, double value) = 0;
 
+    /**
+     * Set a cached boolean result of a cell within the array formula range.
+     *
+     * @param row 0-based row position of a cell.
+     * @param col 0-based column position of a cell.
+     * @param value cached boolean value to set.
+     */
     virtual void set_result_bool(row_t row, col_t col, bool value) = 0;
 
+    /**
+     * Set an empty value as a cached result to a cell within the array formula
+     * range.
+     *
+     * @param row 0-based row position of a cell.
+     * @param col 0-based column position of a cell.
+     */
     virtual void set_result_empty(row_t row, col_t col) = 0;
 
+    /**
+     * Push the properties of an array formula currently stored in the buffer to
+     * the sheet store.
+     */
     virtual void commit() = 0;
 };
 
