@@ -19,7 +19,6 @@
 #include <iostream>
 #include <optional>
 
-using namespace std;
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {
@@ -94,31 +93,31 @@ public:
             case XML_name:
                 mp_table->set_style_name(attr.value);
                 if (m_debug)
-                    cout << "  * table style info (name=" << attr.value << ")" << endl;
+                    std::cout << "  * table style info (name=" << attr.value << ")" << std::endl;
             break;
             case XML_showFirstColumn:
                 b = to_bool(attr.value);
                 mp_table->set_style_show_first_column(b);
                 if (m_debug)
-                    cout << "    * show first column: " << b << endl;
+                    std::cout << "    * show first column: " << b << std::endl;
             break;
             case XML_showLastColumn:
                 b = to_bool(attr.value);
                 mp_table->set_style_show_last_column(b);
                 if (m_debug)
-                    cout << "    * show last column: " << b << endl;
+                    std::cout << "    * show last column: " << b << std::endl;
             break;
             case XML_showRowStripes:
                 b = to_bool(attr.value);
                 mp_table->set_style_show_row_stripes(b);
                 if (m_debug)
-                    cout << "    * show row stripes: " << b << endl;
+                    std::cout << "    * show row stripes: " << b << std::endl;
             break;
             case XML_showColumnStripes:
                 b = to_bool(attr.value);
                 mp_table->set_style_show_column_stripes(b);
                 if (m_debug)
-                    cout << "    * show column stripes: " << b << endl;
+                    std::cout << "    * show column stripes: " << b << std::endl;
             break;
             default:
                 ;
@@ -173,7 +172,7 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
     if (ns != NS_ooxml_xlsx)
         return;
 
-    pstring str;
+    std::string_view str;
 
     switch (name)
     {
@@ -189,7 +188,7 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             single_long_attr_getter func(NS_ooxml_xlsx, XML_count);
             long column_count = for_each(attrs.begin(), attrs.end(), func).get_value();
             if (get_config().debug)
-                cout << "  * column count: " << column_count << endl;
+                std::cout << "  * column count: " << column_count << std::endl;
 
             m_table.set_column_count(column_count);
         }
@@ -201,9 +200,9 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             func = for_each(attrs.begin(), attrs.end(), func);
             if (get_config().debug)
             {
-                cout << "  * table column (id=" << func.get_id() << "; name=" << func.get_name() << ")" << endl;
-                cout << "    * totals row label: " << func.get_totals_row_label() << endl;
-                cout << "    * totals func: " << static_cast<int>(func.get_totals_row_function()) << endl;
+                std::cout << "  * table column (id=" << func.get_id() << "; name=" << func.get_name() << ")" << std::endl;
+                std::cout << "    * totals row label: " << func.get_totals_row_label() << std::endl;
+                std::cout << "    * totals func: " << static_cast<int>(func.get_totals_row_function()) << std::endl;
             }
 
             m_table.set_column_identifier(func.get_id());
@@ -288,12 +287,12 @@ void xlsx_table_context::start_element_table(const xml_token_attrs_t& attrs)
             return v ? *v : "-";
         };
 
-        cout << "* table (range=" << str_or_not(ref)
+        std::cout << "* table (range=" << str_or_not(ref)
              << "; id=" << id
              << "; name=" << str_or_not(name)
-             << "; display name=" << str_or_not(display_name) << ")" << endl;
+             << "; display name=" << str_or_not(display_name) << ")" << std::endl;
 
-        cout << "  * totals row count: " << totals_row_count << endl;
+        std::cout << "  * totals row count: " << totals_row_count << std::endl;
     }
 
     if (id >= 0)
