@@ -614,13 +614,11 @@ public:
     virtual void set_identifier(size_t id) = 0;
 
     /**
-     * Set a cell range associated with the table.
+     * Set a 2-dimensional cell range associated with the table.
      *
-     * @param ref cell range associated with the table.
-     *
-     * @todo use reference resolver for this.
+     * @param range cell range associated with the table.
      */
-    virtual void set_range(std::string_view ref) = 0;
+    virtual void set_range(const range_t& range) = 0;
 
     /**
      * Set the number of totals rows.

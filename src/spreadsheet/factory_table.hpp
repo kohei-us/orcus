@@ -28,7 +28,7 @@ public:
 
     virtual iface::import_auto_filter* get_auto_filter() override;
 
-    virtual void set_range(std::string_view ref) override;
+    virtual void set_range(const range_t& range) override;
     virtual void set_identifier(size_t id) override;
     virtual void set_name(std::string_view name) override;
     virtual void set_display_name(std::string_view name) override;

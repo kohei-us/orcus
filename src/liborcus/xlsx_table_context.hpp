@@ -34,7 +34,9 @@ public:
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(std::string_view str, bool transient);
+
+private:
+    void start_element_table(const xml_token_attrs_t& attrs);
 
 private:
     spreadsheet::iface::import_table& m_table;

@@ -105,17 +105,9 @@ iface::import_auto_filter* import_table::get_auto_filter()
     return &mp_impl->m_auto_filter;
 }
 
-void import_table::set_range(std::string_view ref)
+void import_table::set_range(const range_t& range)
 {
-    const ixion::formula_name_resolver* resolver =
-        mp_impl->m_doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
-    if (!resolver)
-        return;
-
-    ixion::abs_range_t& range = mp_impl->mp_data->range;
-    range = to_abs_range(*resolver, ref.data(), ref.size());
-    if (range.valid())
-        range.first.sheet = range.last.sheet = mp_impl->m_sheet.get_index();
+    mp_impl->mp_data->range = to_abs_range(range, mp_impl->m_sheet.get_index());
 }
 
 void import_table::set_identifier(size_t id)
