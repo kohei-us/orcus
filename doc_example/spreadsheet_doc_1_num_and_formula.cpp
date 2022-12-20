@@ -32,13 +32,16 @@ int main()
     // Now that the document is fully populated, access its content.
     const ixion::model_context& model = doc.get_model_context();
 
+    //!code-start: print-numeric-cells
     for (spreadsheet::row_t row = 1; row <= 6; ++row)
     {
         ixion::abs_address_t pos(0, row, 0);
         double value = model.get_numeric_value(pos);
         std::cout << "A" << (pos.row+1) << ": " << value << std::endl;
     }
+    //!code-end: print-numeric-cells
 
+    //!code-start: print-formula-cells
     for (spreadsheet::row_t row = 1; row <=6; ++row)
     {
         ixion::abs_address_t pos(0, row, 2); // Column C
@@ -53,6 +56,7 @@ int main()
         const std::string& s = result.get_string();
         std::cout << "C" << (pos.row+1) << ": " << s << std::endl;
     }
+    //!code-end: print-formula-cells
 
     return EXIT_SUCCESS;
 }

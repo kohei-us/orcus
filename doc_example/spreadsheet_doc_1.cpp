@@ -16,29 +16,37 @@ int main()
 {
     std::filesystem::path input_dir = std::getenv("INPUTDIR");
 
-    // Instantiate a document, and wrap it with a factory.
+    //!code-start: instantiate
     spreadsheet::range_size_t ss{1048576, 16384};
     spreadsheet::document doc{ss};
     spreadsheet::import_factory factory{doc};
+    //!code-end: instantiate
 
-    // Pass the factory to the document loader, and read the content from a file
-    // to populate the document.
+    //!code-start: loader
     orcus_ods loader(&factory);
+    //!code-end: loader
+
+    //!code-start: read-file
     auto filepath = input_dir / "document.ods";
     loader.read_file(filepath.native());
+    //!code-end: read-file
 
-    // Now that the document is fully populated, access its content.
+    //!code-start: model-context
     const ixion::model_context& model = doc.get_model_context();
+    //!code-end: model-context
 
-    // Read the header row and print its content.
-
+    //!code-start: string-id
     ixion::abs_address_t pos(0, 0, 0); // Set the cell position to A1.
     ixion::string_id_t str_id = model.get_string_identifier(pos);
+    //!code-end: string-id
 
+    //!code-start: print-string
     const std::string* s = model.get_string(str_id);
     assert(s);
     std::cout << "A1: " << *s << std::endl;
+    //!code-end: print-string
 
+    //!code-start: rest
     pos.column = 1; // Move to B1
     str_id = model.get_string_identifier(pos);
     s = model.get_string(str_id);
@@ -50,6 +58,7 @@ int main()
     s = model.get_string(str_id);
     assert(s);
     std::cout << "C1: " << *s << std::endl;
+    //!code-end: rest
 
     return EXIT_SUCCESS;
 }

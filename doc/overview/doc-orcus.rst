@@ -33,13 +33,17 @@ class available in orcus.  Then immediately pass this document to the
 
 .. literalinclude:: ../../doc_example/spreadsheet_doc_1.cpp
    :language: C++
-   :lines: 18-21
+   :start-after: //!code-start: instantiate
+   :end-before: //!code-end: instantiate
+   :dedent: 4
 
 The next step is to create the loader instance and pass the factory to it:
 
 .. literalinclude:: ../../doc_example/spreadsheet_doc_1.cpp
    :language: C++
-   :lines: 23-26
+   :start-after: //!code-start: loader
+   :end-before: //!code-end: loader
+   :dedent: 4
 
 In this example we are using the :cpp:class:`~orcus::orcus_ods` filter class
 because the document we are loading is of Open Document Spreadsheet type, but
@@ -50,7 +54,9 @@ and passing the path to the file as its argument:
 
 .. literalinclude:: ../../doc_example/spreadsheet_doc_1.cpp
    :language: C++
-   :lines: 26
+   :start-after: //!code-start: read-file
+   :end-before: //!code-end: read-file
+   :dedent: 4
 
 Once this call returns, the document has been fully populated.  What the rest
 of the code does is to access the content of the first row of the first sheet of
@@ -59,21 +65,27 @@ store that we call *model context*:
 
 .. literalinclude:: ../../doc_example/spreadsheet_doc_1.cpp
    :language: C++
-   :lines: 29
+   :start-after: //!code-start: model-context
+   :end-before: //!code-end: model-context
+   :dedent: 4
 
 Since the content of cell A1 is a string, to get the value you need to first
 get the ID of the string:
 
 .. literalinclude:: ../../doc_example/spreadsheet_doc_1.cpp
    :language: C++
-   :lines: 33-34
+   :start-after: //!code-start: string-id
+   :end-before: //!code-end: string-id
+   :dedent: 4
 
 Once you have the ID of the string, you can pass that to the model to get the
 actual string value and print it to the standard output:
 
 .. literalinclude:: ../../doc_example/spreadsheet_doc_1.cpp
    :language: C++
-   :lines: 36-38
+   :start-after: //!code-start: print-string
+   :end-before: //!code-end: print-string
+   :dedent: 4
 
 Here we assume that the string value exists for the given ID.  In case you
 pass a string ID value to the :cpp:func:`get_string` method and there isn't a string
@@ -99,7 +111,9 @@ The rest of the code basically repeats the same process for cells B1 and C1:
 
 .. literalinclude:: ../../doc_example/spreadsheet_doc_1.cpp
    :language: C++
-   :lines: 40-50
+   :start-after: //!code-start: rest
+   :end-before: //!code-end: rest
+   :dedent: 4
 
 and generate the following output:
 
@@ -115,7 +129,9 @@ code, the following code block:
 
 .. literalinclude:: ../../doc_example/spreadsheet_doc_1_num_and_formula.cpp
    :language: C++
-   :lines: 33-38
+   :start-after: //!code-start: print-numeric-cells
+   :end-before: //!code-end: print-numeric-cells
+   :dedent: 4
 
 will access the cells from A2 through A7 and print out their numeric values.
 You should see the following output generated from this code block:
@@ -137,7 +153,9 @@ C7:
 
 .. literalinclude:: ../../doc_example/spreadsheet_doc_1_num_and_formula.cpp
    :language: C++
-   :lines: 40-53
+   :start-after: //!code-start: print-formula-cells
+   :end-before: //!code-end: print-formula-cells
+   :dedent: 4
 
 For each cell, this code first accesses the stored formula cell instance, get
 a reference to its cached result, then obtain its string result value to print
