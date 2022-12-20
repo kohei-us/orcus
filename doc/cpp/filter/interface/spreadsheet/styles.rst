@@ -2,6 +2,9 @@
 Styles import
 =============
 
+The folloiwng interfaces handle importing of properties related to various
+formatting styles.
+
 .. doxygenclass:: orcus::spreadsheet::iface::import_styles
    :members:
 

@@ -293,7 +293,9 @@ enum class formula_error_policy_t
  */
 enum class underline_t
 {
+    /** Underline is absent. */
     none = 0,
+    /** Underline consists of a single line. */
     single_line,
     /**
      * Single line for accounting format.
@@ -301,6 +303,7 @@ enum class underline_t
      * @note This is unique to xlsx format.
      */
     single_accounting,
+    /** Underline consists of a double line. */
     double_line,
     /**
      * Double line for accounting format.
@@ -308,11 +311,17 @@ enum class underline_t
      * @note This is unique to xlsx format.
      */
     double_accounting,
+    /** Underline is dotted. */
     dotted,
+    /** Underline is dashed. */
     dash,
+    /** Underline consists of repeated long dash segments. */
     long_dash,
+    /** Underline consists of repeated dot and dash segments. */
     dot_dash,
+    /** Underline consists of repeated dot, dot and dash segments. */
     dot_dot_dash,
+    /** Underline is waved. */
     wave
 };
 
@@ -341,6 +350,8 @@ enum class underline_width_t
 /**
  * Underline mode that determines whether an underline is applied to both
  * words and spaces, or words only.
+ *
+ * @note This is specific to ODS format.
  */
 enum class underline_mode_t
 {
@@ -352,6 +363,8 @@ enum class underline_mode_t
 
 /**
  * Whether a single line or a double line is used as an underline.
+ *
+ * @todo Perhaps we should merge this with underline_t.
  */
 enum class underline_type_t
 {

@@ -28,17 +28,26 @@ class import_xf;
 class import_cell_style;
 
 /**
- * Interface for styles. Note that because the default style must have an
- * index of 0 in each style category, the caller must commit the default
- * styles first before importing and setting other, non-default styles. The
- * indices of the styles are assigned sequentially starting with 0 and upward
- * in each style category.  Font, fill, border, cell protection etc are
- * considered categories in this context.
+ * Interface for importing styles.  This one acts as an entry point and
+ * provides other interfaces for the style categories.
  *
- * The term 'xf' here stands for cell format.
+ * The styles are to be stored in a <a
+ * href="https://en.wikipedia.org/wiki/Flyweight_pattern">flyweight</a>
+ * fashion where each style category maintains an array of stored style
+ * items, which are referenced by their indices.  Each time a style
+ * item is pushed through the interface, it returns an index representing the
+ * item.  The indices are to be assigned sequentially starting with 0 in each
+ * style category, and <em>the default style must get an index of 0</em>.
+ * Because of this, the import filter imports the default styles first before
+ * importing other non-default styles.
  *
- * In contrast to xf formatting, dxf (differential formats) format only stores
- * the format information that is different from the base format data.
+ * The appreviation @p xf stands for cell format, and is used throughout the
+ * styles API.  Similarly, the @p dxf stands for differential cell format, and
+ * stores partial format properties that are to be applied on top of the base
+ * format properties.
+ *
+ * @note The implementor of this interface @em must implement all interfaces
+ *       for all the style categories that this interface returns.
  */
 class ORCUS_DLLPUBLIC import_styles
 {
@@ -188,30 +197,136 @@ public:
     virtual void set_cell_style_count(size_t n) = 0;
 };
 
+/**
+ * Interface for importing font style items.  The following font style
+ * properties store different values for western, asian and complex scripts:
+ *
+ * @li font name
+ * @li font size
+ * @li font weight (normal or bold)
+ * @li font style (normal or italic)
+ */
 class ORCUS_DLLPUBLIC import_font_style
 {
 public:
     virtual ~import_font_style();
 
+    /**
+     * Set the font weight to either normal or bold, for western script.
+     *
+     * @param b whether the font has normal (false) or bold weight (true).
+     */
     virtual void set_bold(bool b) = 0;
+
+    /**
+     * Set the font weight to either normal or bold, for asian script.
+     *
+     * @param b whether the font has normal (false) or bold weight (true).
+     */
     virtual void set_bold_asian(bool b) = 0;
+
+    /**
+     * Set the font weight to either normal or bold, for complex script.
+     *
+     * @param b whether the font has normal (false) or bold weight (true).
+     */
     virtual void set_bold_complex(bool b) = 0;
 
+    /**
+     * Set the font style to either normal or italic, for western script.
+     *
+     * @param b whether the font has normal (false) or italic style (true).
+     */
     virtual void set_italic(bool b) = 0;
+
+    /**
+     * Set the font style to either normal or italic, for asian script.
+     *
+     * @param b whether the font has normal (false) or italic style (true).
+     */
     virtual void set_italic_asian(bool b) = 0;
+
+    /**
+     * Set the font style to either normal or italic, for complex script.
+     *
+     * @param b whether the font has normal (false) or italic style (true).
+     */
     virtual void set_italic_complex(bool b) = 0;
 
+    /**
+     * Set the name of a font, for western script.
+     *
+     * @param s font name.
+     */
     virtual void set_name(std::string_view s) = 0;
+
+    /**
+     * Set the name of a font, for asian script.
+     *
+     * @param s font name.
+     */
     virtual void set_name_asian(std::string_view s) = 0;
+
+    /**
+     * Set the name of a font, for complex script.
+     *
+     * @param s font name.
+     */
     virtual void set_name_complex(std::string_view s) = 0;
 
+    /**
+     * Set the size of a font in points, for western script.
+     *
+     * @param point font size in points.
+     */
     virtual void set_size(double point) = 0;
+
+    /**
+     * Set the size of a font in points, for asian script.
+     *
+     * @param point font size in points.
+     */
     virtual void set_size_asian(double point) = 0;
+
+    /**
+     * Set the size of a font in points, for complex script.
+     *
+     * @param point font size in points.
+     */
     virtual void set_size_complex(double point) = 0;
 
+    /**
+     * Set the underline type of a font.
+     *
+     * @param e underline type of a font.
+     */
     virtual void set_underline(underline_t e) = 0;
+
+    /**
+     * Set the width of the underline of a font.
+     *
+     * @param e width of the underline of a font.
+     */
     virtual void set_underline_width(underline_width_t e) = 0;
+
+    /**
+     * Set whether the underline of a font is continuous over the gaps, or skip
+     * the gaps.
+     *
+     * @param e whether the underline of a font is continuous over the gaps or
+     *          skip the gaps.
+     */
     virtual void set_underline_mode(underline_mode_t e) = 0;
+
+    /**
+     * Set whether the underline of a font consists of a single line, or a
+     * double line.
+     *
+     * @param e whether the underline of a font consists of a single line, or a
+     *          double line.
+     *
+     * @todo Look into merging this with set_underline().
+     */
     virtual void set_underline_type(underline_type_t e) = 0;
 
     /**
@@ -236,9 +351,34 @@ public:
      */
     virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
 
+    /**
+     * Set the strikethrough style of a font.
+     *
+     * @param s strikethrough style of a font.
+     */
     virtual void set_strikethrough_style(strikethrough_style_t s) = 0;
+
+    /**
+     * Set whether the strikethrough of a font consists of a single line or a
+     * double line.
+     *
+     * @param s whether the strikethrough of a font consists of a single line or
+     *          a double line.
+     */
     virtual void set_strikethrough_type(strikethrough_type_t s) = 0;
+
+    /**
+     * Set the width of the strikethrough of a font.
+     *
+     * @param s the width of the strikethrough of a font.
+     */
     virtual void set_strikethrough_width(strikethrough_width_t s) = 0;
+
+    /**
+     * Set the text to use as a strikethrough.
+     *
+     * @param s text to use as a strikethrough.
+     */
     virtual void set_strikethrough_text(strikethrough_text_t s) = 0;
 
     /**
@@ -250,6 +390,9 @@ public:
     virtual std::size_t commit() = 0;
 };
 
+/**
+ * Interface for importing fill style items.
+ */
 class ORCUS_DLLPUBLIC import_fill_style
 {
 public:
@@ -295,14 +438,41 @@ public:
     virtual size_t commit() = 0;
 };
 
+/**
+ * Interface for importing border style items.
+ */
 class ORCUS_DLLPUBLIC import_border_style
 {
 public:
     virtual ~import_border_style();
 
+    /**
+     * Set the border style to a specified border position.
+     *
+     * @param dir    position of a border to set the style to.
+     * @param style  border style to set.
+     */
     virtual void set_style(border_direction_t dir, border_style_t style) = 0;
+
+    /**
+     * Set the color of a border.
+     *
+     * @param dir    position of a border to set the color to.
+     * @param alpha  alpha element of the color.
+     * @param red    red element of the color.
+     * @param green  green element of the color.
+     * @param blue   blue element of the color.
+     */
     virtual void set_color(
         border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+
+    /**
+     * Set the width of a border.
+     *
+     * @param dir    position of a border.
+     * @param width  width of a border.
+     * @param unit   unit of measurement to use in the border width.
+     */
     virtual void set_width(border_direction_t dir, double width, orcus::length_unit_t unit) = 0;
 
     /**
@@ -314,6 +484,9 @@ public:
     virtual size_t commit() = 0;
 };
 
+/**
+ * Interface for importing cell protection items.
+ */
 class ORCUS_DLLPUBLIC import_cell_protection
 {
 public:
@@ -362,19 +535,44 @@ public:
     virtual std::size_t commit() = 0;
 };
 
+/**
+ * Interface for importing number format items.
+ */
 class ORCUS_DLLPUBLIC import_number_format
 {
 public:
     virtual ~import_number_format();
 
+    /**
+     * Set the integral identifier of a number format.
+     *
+     * @param id integral indentifier of a number format.
+     *
+     * @note This is specific to xlsx format.  In xlsx, this identifier gets
+     *       used to reference number formats instead of the identifier returned
+     *       by the commit() method.
+     *
+     * @todo Perhaps when this method is called, the commit() method of the
+     *       corresponding item should return the value set in this method
+     *       instead.
+     */
     virtual void set_identifier(std::size_t id) = 0;
+
+    /**
+     * Set the number format code.
+     *
+     * @param s number format code.
+     */
     virtual void set_code(std::string_view s) = 0;
 
     /**
-     * Commit the number format data in the current buffer.
+     * Commit the number format item in the current buffer.
      *
-     * @return index of the committed number format data, to be passed on to the
+     * @return index of the committed number format item, to be passed on to the
      *         import_xf::set_number_format() method as its argument.
+     *
+     * @todo Look into returning the identifier set through the set_identifier()
+     *       method.
      */
     virtual size_t commit() = 0;
 };
@@ -443,18 +641,36 @@ public:
     /**
      * Set the index into the cell style record to specify a named cell style it
      * uses as its base format in case the cell has an underlying style applied.
-     * This is applicable only for a direct cell format i.e. when the xf
-     * category is xf_category_t::cell.  If the category is
-     * xf_category::cell_style, this value should not be used.
-     *
-     * @note This is so far Excel-specific.
+     * This can be used for a direct cell format i.e. when the xf category is
+     * xf_category_t::cell or for a cell style format i.e. the xf category is
+     * xf_category_t::cell_style.  In a cell style format, this can be used to
+     * reference a parent style.
      *
      * @param index index into the cell style record it uses as its basis.
      */
     virtual void set_style_xf(size_t index) = 0;
 
+    /**
+     * Set the flag indicating whether or not to apply the alignment attribute.
+     *
+     * @param b flag indicating whether or not to apply the alignment attribute.
+     *
+     * @note This is specific to Excel format.
+     */
     virtual void set_apply_alignment(bool b) = 0;
+
+    /**
+     * Set the horizontal alignment of a style.
+     *
+     * @param align horizontal alignment of a style.
+     */
     virtual void set_horizontal_alignment(hor_alignment_t align) = 0;
+
+    /**
+     * Set the vertical alignment of a style.
+     *
+     * @param align vertical alignment of a style.
+     */
     virtual void set_vertical_alignment(ver_alignment_t align) = 0;
 
     /**
@@ -545,6 +761,11 @@ public:
      */
     virtual void set_parent_name(std::string_view s) = 0;
 
+    /**
+     * Commit the cell style format in the current buffer to the storage.
+     *
+     * @note This method does @em not return an index.
+     */
     virtual void commit() = 0;
 };
 
