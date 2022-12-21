@@ -15,19 +15,39 @@
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
+/**
+ * Interface for exporting sheet contents.
+ */
 class export_sheet
 {
 public:
     ORCUS_DLLPUBLIC virtual ~export_sheet() = 0;
 
+    /**
+     * Write the content of a cell to an output stream.
+     *
+     * @param os output stream to write the cell content to.
+     * @param row 0-based row position of a cell.
+     * @param col 0-based column position of a cell.
+     */
     virtual void write_string(std::ostream& os, orcus::spreadsheet::row_t row, orcus::spreadsheet::col_t col) const = 0;
 };
 
+/**
+ * Entry-point interface for exporting document contents.
+ */
 class export_factory
 {
 public:
     ORCUS_DLLPUBLIC virtual ~export_factory() = 0;
 
+    /**
+     * Obtain an interface for exporting sheet content.
+     *
+     * @param sheet_name name of the sheet to export.
+     *
+     * @return pointer to an interface for exporting sheet content.
+     */
     virtual const export_sheet* get_sheet(std::string_view sheet_name) const = 0;
 };
 

@@ -16,13 +16,17 @@
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
+/**
+ * Interface for importing view properties.  This interface may be obtained
+ * from the import_sheet interface.
+ */
 class ORCUS_DLLPUBLIC import_sheet_view
 {
 public:
     virtual ~import_sheet_view();
 
     /**
-     * Set this sheet as the active sheet.
+     * Set the current sheet as the active sheet.
      */
     virtual void set_sheet_active() = 0;
 
