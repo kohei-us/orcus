@@ -376,17 +376,6 @@ enum class underline_type_t
 };
 
 /**
- * Collection of various underline attributes.
- */
-struct underline_attrs_t
-{
-    underline_t underline_style;
-    underline_width_t underline_width;
-    underline_mode_t underline_mode;
-    underline_type_t underline_type;
-};
-
-/**
  * Type of horizontal alignment applied to a cell content.
  */
 enum class hor_alignment_t

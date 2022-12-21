@@ -19,9 +19,6 @@ Integral types
 Structs
 -------
 
-.. doxygenstruct:: orcus::spreadsheet::underline_attrs_t
-   :members:
-
 .. doxygenstruct:: orcus::spreadsheet::address_t
    :members:
 
