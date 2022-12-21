@@ -48,7 +48,7 @@ public:
         sheet_pane_t active_pane) = 0;
 
     /**
-     * Set the information about frozen view in the current sheet.
+     * Set the state of frozen view in the current sheet.
      *
      * @param visible_columns number of visible columns in the left pane.
      * @param visible_rows number of visible rows in the top pane.

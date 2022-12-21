@@ -13,25 +13,34 @@
 namespace orcus { namespace spreadsheet {
 
 /**
- * Type of sheet pane position in a split sheet view.
+ * Sheet pane position in a split sheet view.  When the sheet is split, it is
+ * split into four panes.
  */
 enum class sheet_pane_t : uint8_t
 {
     unspecified = 0,
+    /** Top-left pane. */
     top_left,
+    /** Top-right pane. */
     top_right,
+    /** Bottom-left pane. */
     bottom_left,
+    /** Bottom-right pane. */
     bottom_right
 };
 
 /**
- * Type of pane state - whether it's frozen, split, or both.
+ * State of a split pane - whether it's frozen, split, or both.
  */
 enum class pane_state_t : uint8_t
 {
+    /** The state of the pane is not specified. */
     unspecified = 0,
+    /** The pane is frozen. */
     frozen,
+    /** The pane is split. */
     split,
+    /** The pane is both frozen and split. */
     frozen_split
 };
 
@@ -61,13 +70,21 @@ struct split_pane_t
 };
 
 /**
- * Store information about the state of a frozen sheet view.
+ * Store the state of a frozen sheet view.
  */
 struct frozen_pane_t
 {
+    /**
+     * The number of visible columns in the top-left pane.
+     */
     col_t visible_columns;
+    /**
+     * The number of visible rows in the top-left pane.
+     */
     row_t visible_rows;
-
+    /**
+     * The position of the top-left cell in the bottom-right pane.
+     */
     address_t top_left_cell;
 };
 
