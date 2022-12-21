@@ -7,4 +7,5 @@ Import filters
 
    config.rst
    interface/index.rst
+   functions.rst
    spreadsheet.rst

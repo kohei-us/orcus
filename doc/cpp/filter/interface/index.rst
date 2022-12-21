@@ -9,4 +9,3 @@ Types and interfaces
    spreadsheet/index.rst
    types.rst
    view_types.rst
-   functions.rst
