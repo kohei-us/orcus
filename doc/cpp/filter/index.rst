@@ -1,6 +1,6 @@
 
-Import filters
-==============
+Filters
+=======
 
 This section presents the API's from the ``liborcus`` part of this library,
 which contains the import filters that process various file formats containing
@@ -19,5 +19,6 @@ provides all required interfaces.
 
    import_filter/index.rst
    interface/index.rst
+   types/index.rst
    functions.rst
    config.rst

@@ -1,8 +1,6 @@
 
-Spreadsheet types
-=================
-
-These types are used throughout the spreadsheet import and export interfaces.
+Core types
+==========
 
 Integral types
 --------------

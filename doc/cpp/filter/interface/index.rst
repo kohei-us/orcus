@@ -1,11 +1,9 @@
 
-Types and interfaces
-====================
+Interfaces
+==========
 
 .. toctree::
    :maxdepth: 1
 
    global.rst
    spreadsheet/index.rst
-   types.rst
-   view_types.rst

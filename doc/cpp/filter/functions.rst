@@ -1,6 +1,6 @@
 
-Spreadsheet utility functions
-=============================
+Utility functions
+=================
 
 Special values functions
 ------------------------

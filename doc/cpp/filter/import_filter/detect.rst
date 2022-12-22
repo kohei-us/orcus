@@ -1,5 +1,5 @@
 
-Utility functions
-=================
+Format detection
+================
 
 .. doxygenfunction:: orcus::detect

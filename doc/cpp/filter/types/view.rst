@@ -1,6 +1,6 @@
 
-Spreadsheet view types
-======================
+View types
+==========
 
 Structs
 -------

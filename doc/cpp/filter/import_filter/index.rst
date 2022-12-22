@@ -1,6 +1,6 @@
 
-Spreadsheet import filters
-==========================
+Import filters
+==============
 
 .. toctree::
    :maxdepth: 1
@@ -12,7 +12,7 @@ Spreadsheet import filters
    gnumeric.rst
    xml.rst
    json.rst
-   utils.rst
+   detect.rst
 
 
 
