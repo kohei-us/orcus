@@ -1,6 +1,6 @@
 
-Configuration classes
-=====================
+Configurations
+==============
 
 .. doxygenstruct:: orcus::config
    :members:
