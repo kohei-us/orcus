@@ -7,4 +7,5 @@ C++ API
 
    parser/index.rst
    filter/index.rst
-   model/index.rst
+   tree-doc/index.rst
+   spreadsheet-doc/index.rst

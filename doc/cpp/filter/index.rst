@@ -17,7 +17,7 @@ provides all required interfaces.
 .. toctree::
    :maxdepth: 1
 
-   import_filter/index.rst
+   import-filter/index.rst
    interface/index.rst
    types/index.rst
    utils.rst
