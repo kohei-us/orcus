@@ -371,7 +371,7 @@ void styles::clear()
     mp_impl = std::make_unique<impl>();
 }
 
-void styles::finalize()
+void styles::finalize_import()
 {
     for (std::size_t i = 0; i < mp_impl->cell_styles.size(); ++i)
     {

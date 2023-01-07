@@ -34,6 +34,7 @@ class shared_strings;
 class styles;
 class pivot_collection;
 class sheet;
+class import_factory;
 
 struct document_config;
 struct table_t;
@@ -52,6 +53,7 @@ struct document_impl;
 class ORCUS_SPM_DLLPUBLIC document : public orcus::iface::document_dumper
 {
     friend class sheet;
+    friend class import_factory;
 
 public:
     document(const document&) = delete;
@@ -171,9 +173,8 @@ public:
      */
     const table_t* get_table(std::string_view name) const;
 
-    void finalize();
-
 private:
+    void finalize_import();
     void insert_dirty_cell(const ixion::abs_address_t& pos);
 
 private:

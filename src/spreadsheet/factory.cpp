@@ -305,7 +305,7 @@ iface::import_sheet* import_factory::get_sheet(sheet_t sheet_index)
 
 void import_factory::finalize()
 {
-    mp_impl->m_doc.finalize();
+    mp_impl->m_doc.finalize_import();
 
     if (mp_impl->m_recalc_formula_cells)
         mp_impl->m_doc.recalc_formula_cells();

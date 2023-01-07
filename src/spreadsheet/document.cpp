@@ -115,16 +115,16 @@ const table_t* document::get_table(std::string_view name) const
     return it == mp_impl->tables.end() ? nullptr : it->second.get();
 }
 
-void document::finalize()
+void document::finalize_import()
 {
     std::for_each(mp_impl->sheets.begin(), mp_impl->sheets.end(),
         [](std::unique_ptr<detail::sheet_item>& sh)
         {
-            sh->data.finalize();
+            sh->data.finalize_import();
         }
     );
 
-    mp_impl->styles_store.finalize();
+    mp_impl->styles_store.finalize_import();
 }
 
 sheet* document::append_sheet(std::string_view sheet_name)

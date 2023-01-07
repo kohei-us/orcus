@@ -466,7 +466,7 @@ date_time_t sheet::get_date_time(row_t row, col_t col) const
     return date_time_t(d.year(), d.month(), d.day(), hours, minutes, seconds);
 }
 
-void sheet::finalize()
+void sheet::finalize_import()
 {
     mp_impl->col_widths.build_tree();
     mp_impl->row_heights.build_tree();

@@ -39,6 +39,7 @@ struct sheet_impl;
  */
 class ORCUS_SPM_DLLPUBLIC sheet
 {
+    friend class document;
     friend struct detail::sheet_impl;
 
     static const row_t max_row_limit;
@@ -124,8 +125,6 @@ public:
 
     date_time_t get_date_time(row_t row, col_t col) const;
 
-    void finalize();
-
     void dump_flat(std::ostream& os) const;
     void dump_check(std::ostream& os, std::string_view sheet_name) const;
     void dump_html(std::ostream& os) const;
@@ -140,6 +139,8 @@ public:
     size_t get_cell_format(row_t row, col_t col) const;
 
 private:
+    void finalize_import();
+
     std::unique_ptr<detail::sheet_impl> mp_impl;
 };
 

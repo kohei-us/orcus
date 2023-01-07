@@ -18,6 +18,8 @@
 
 namespace orcus { namespace spreadsheet {
 
+class document;
+
 struct ORCUS_SPM_DLLPUBLIC font_t
 {
     std::optional<std::string_view> name;
@@ -146,6 +148,8 @@ ORCUS_SPM_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_t& c
 
 class ORCUS_SPM_DLLPUBLIC styles
 {
+    friend class document;
+
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
@@ -201,7 +205,9 @@ public:
     size_t get_cell_styles_count() const;
 
     void clear();
-    void finalize();
+
+private:
+    void finalize_import();
 };
 
 }}
