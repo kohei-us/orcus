@@ -13,7 +13,8 @@
 namespace orcus { namespace spreadsheet {
 
 /**
- * Stores a color value in ARGB format.
+ * Stores a color value in ARGB format.  Each color component ranges from 0 to
+ * 255 (8-bit).
  */
 struct ORCUS_SPM_DLLPUBLIC color_t
 {
