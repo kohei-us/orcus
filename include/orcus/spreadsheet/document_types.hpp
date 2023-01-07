@@ -33,22 +33,43 @@ struct ORCUS_SPM_DLLPUBLIC color_t
     bool operator!=(const color_t& other) const;
 };
 
+/**
+ * Contains formatting properties of a section of a string.  This is used in
+ * the stroage of rich-text strings.
+ */
 struct ORCUS_SPM_DLLPUBLIC format_run
 {
-    size_t pos;
-    size_t size;
+    /** Position of the section where the formatting starts. */
+    std::size_t pos;
+    /** Length of the section. */
+    std::size_t size;
+    /** Name of the font. */
     std::string_view font;
+    /** Size of the font. */
     double font_size;
+    /** Color of the section. */
     color_t color;
+    /** Whether or not the font is bold. */
     bool bold:1;
+    /** Whether or not the font is italic. */
     bool italic:1;
 
     format_run();
 
+    /**
+     * Reset the properties to unformatted state.
+     */
     void reset();
+
+    /**
+     * Query whether or not the section contains non-default format properties.
+     *
+     * @return @p true of it's formatted, otherwise @p false.
+     */
     bool formatted() const;
 };
 
+/** Collection of format properties of a string. */
 using format_runs_t = std::vector<format_run>;
 
 }} // namespace orcus::spreadsheet

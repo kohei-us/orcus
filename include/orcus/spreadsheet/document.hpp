@@ -45,8 +45,9 @@ struct document_impl;
 }
 
 /**
- * Internal document representation used only for testing the filters.  It
- * uses ixion's model_context implementation to store raw cell values.
+ * Store spreadsheet document content.  It uses the @p model_context class
+ * from the ixion library to store raw cell values required in the computation
+ * of formula expressions.
  */
 class ORCUS_SPM_DLLPUBLIC document : public orcus::iface::document_dumper
 {
@@ -85,7 +86,11 @@ public:
      */
     void recalc_formula_cells();
 
+    /** See @ref iface::document_dumper. */
     virtual void dump(dump_format_t format, const std::string& output) const override;
+
+    /** See @ref iface::document_dumper. */
+    virtual void dump_check(std::ostream& os) const override;
 
     /**
      * Dump document content to specified output directory in flat format.
@@ -122,12 +127,6 @@ public:
      */
     void dump_debug_state(const std::string& outdir) const;
 
-    /**
-     * Dump document content to stdout in the special format used for content
-     * verification during unit test.
-     */
-    virtual void dump_check(std::ostream& os) const override;
-
     sheet_t get_sheet_index(std::string_view name) const;
     std::string_view get_sheet_name(sheet_t sheet_pos) const;
 
@@ -150,6 +149,7 @@ public:
     void set_config(const document_config& cfg);
 
     string_pool& get_string_pool();
+    const string_pool& get_string_pool() const;
 
     /**
      * Insert a new table object into the document.  The document will take
@@ -161,6 +161,14 @@ public:
      */
     void insert_table(table_t* p);
 
+    /**
+     * Get a structure containing properties of a named table.
+     *
+     * @param name Name of the table.
+     *
+     * @return Pointer to the structure containing the properties of a named
+     *         table, or @p nullptr if no such table exists for the given name.
+     */
     const table_t* get_table(std::string_view name) const;
 
     void finalize();

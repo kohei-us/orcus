@@ -2,6 +2,9 @@
 Spreadsheet document
 ====================
 
+This section contains the API's related to the spreadsheet document storage, which
+is provided by the ``liborcus-spreadsheet`` part of this library.
+
 
 Document types
 --------------

@@ -95,6 +95,11 @@ string_pool& document::get_string_pool()
     return mp_impl->string_pool_store;
 }
 
+const string_pool& document::get_string_pool() const
+{
+    return mp_impl->string_pool_store;
+}
+
 void document::insert_table(table_t* p)
 {
     if (!p)
@@ -251,6 +256,12 @@ void document::dump(dump_format_t format, const std::string& output) const
     }
 }
 
+void document::dump_check(ostream& os) const
+{
+    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
+        sheet->data.dump_check(os, sheet->name);
+}
+
 void document::dump_flat(const string& outdir) const
 {
     cout << "----------------------------------------------------------------------" << endl;
@@ -277,12 +288,6 @@ void document::dump_flat(const string& outdir) const
         file << "Sheet name: " << sheet->name << endl;
         sheet->data.dump_flat(file);
     }
-}
-
-void document::dump_check(ostream& os) const
-{
-    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
-        sheet->data.dump_check(os, sheet->name);
 }
 
 void document::dump_html(const string& outdir) const

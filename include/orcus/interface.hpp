@@ -78,8 +78,8 @@ public:
     virtual void dump(dump_format_t format, const std::string& output) const = 0;
 
     /**
-     * Dump the content of a document in a special "check" format suitable as
-     * unit testing controls.
+     * Dump the content of a document in a specialized "check" format suitable
+     * for content verification.
      *
      * @param os output stream to write the transformed content to.
      */
