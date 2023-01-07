@@ -3,7 +3,8 @@ JSON document tree
 ==================
 
 Document tree
-`````````````
+-------------
+
 .. doxygenclass:: orcus::json::document_tree
    :members:
 
@@ -26,7 +27,8 @@ Document tree
    :project: orcus
 
 Exceptions
-``````````
+----------
+
 .. doxygenclass:: orcus::json::document_error
    :members:
 
