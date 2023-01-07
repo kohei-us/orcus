@@ -62,6 +62,12 @@ public:
     document(const range_size_t& sheet_size);
     ~document();
 
+    /** See @ref iface::document_dumper. */
+    virtual void dump(dump_format_t format, const std::string& output) const override;
+
+    /** See @ref iface::document_dumper. */
+    virtual void dump_check(std::ostream& os) const override;
+
     shared_strings& get_shared_strings();
     const shared_strings& get_shared_strings() const;
 
@@ -87,12 +93,6 @@ public:
      * not yet been calculated.
      */
     void recalc_formula_cells();
-
-    /** See @ref iface::document_dumper. */
-    virtual void dump(dump_format_t format, const std::string& output) const override;
-
-    /** See @ref iface::document_dumper. */
-    virtual void dump_check(std::ostream& os) const override;
 
     /**
      * Dump document content to specified output directory in flat format.
