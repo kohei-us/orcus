@@ -11,121 +11,167 @@
 
 namespace orcus { namespace spreadsheet {
 
-struct import_styles::impl
+namespace {
+
+class import_font_style : public iface::import_font_style
 {
-    styles& styles_model;
-    string_pool& str_pool;
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
-    import_font_style font_style;
-    import_fill_style fill_style;
-    import_border_style border_style;
-    import_cell_protection cell_protection;
-    import_number_format number_format;
-    import_xf xf;
-    import_cell_style cell_style;
+public:
+    import_font_style() = delete;
+    import_font_style(styles& _styles_model, string_pool& sp);
+    virtual ~import_font_style() override;
 
-    impl(styles& _styles_model, string_pool& sp) :
-        styles_model(_styles_model),
-        str_pool(sp),
-        font_style(_styles_model, sp),
-        fill_style(_styles_model, sp),
-        border_style(_styles_model, sp),
-        cell_protection(_styles_model, sp),
-        number_format(_styles_model, sp),
-        xf(_styles_model, sp),
-        cell_style(_styles_model, sp)
-    {}
+    virtual void set_bold(bool b) override;
+    virtual void set_bold_asian(bool b) override;
+    virtual void set_bold_complex(bool b) override;
+
+    virtual void set_italic(bool b) override;
+    virtual void set_italic_asian(bool b) override;
+    virtual void set_italic_complex(bool b) override;
+
+    virtual void set_name(std::string_view s) override;
+    virtual void set_name_asian(std::string_view s) override;
+    virtual void set_name_complex(std::string_view s) override;
+
+    virtual void set_size(double point) override;
+    virtual void set_size_asian(double point) override;
+    virtual void set_size_complex(double point) override;
+
+    virtual void set_underline(underline_t e) override;
+    virtual void set_underline_width(underline_width_t e) override;
+    virtual void set_underline_mode(underline_mode_t e) override;
+    virtual void set_underline_type(underline_type_t e) override;
+    virtual void set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual void set_strikethrough_style(strikethrough_style_t s) override;
+    virtual void set_strikethrough_type(strikethrough_type_t s) override;
+    virtual void set_strikethrough_width(strikethrough_width_t s) override;
+    virtual void set_strikethrough_text(strikethrough_text_t s) override;
+    virtual std::size_t commit() override;
+
+    void reset();
 };
 
-import_styles::import_styles(styles& styles_model, string_pool& sp) :
-    mp_impl(std::make_unique<impl>(styles_model, sp)) {}
-
-import_styles::~import_styles() {}
-
-iface::import_font_style* import_styles::start_font_style()
+class import_fill_style : public iface::import_fill_style
 {
-    mp_impl->font_style.reset();
-    return &mp_impl->font_style;
-}
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
-iface::import_fill_style* import_styles::start_fill_style()
-{
-    mp_impl->fill_style.reset();
-    return &mp_impl->fill_style;
-}
+public:
+    import_fill_style() = delete;
+    import_fill_style(styles& _styles_model, string_pool& sp);
+    virtual ~import_fill_style() override;
 
-iface::import_border_style* import_styles::start_border_style()
-{
-    mp_impl->border_style.reset();
-    return &mp_impl->border_style;
-}
+    virtual void set_pattern_type(fill_pattern_t fp) override;
+    virtual void set_fg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual void set_bg_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual size_t commit() override;
 
-iface::import_cell_protection* import_styles::start_cell_protection()
-{
-    mp_impl->cell_protection.reset();
-    return &mp_impl->cell_protection;
-}
+    void reset();
+};
 
-iface::import_number_format* import_styles::start_number_format()
+class import_border_style : public iface::import_border_style
 {
-    mp_impl->number_format.reset();
-    return &mp_impl->number_format;
-}
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
-iface::import_xf* import_styles::start_xf(xf_category_t cat)
-{
-    mp_impl->xf.reset(cat);
-    return &mp_impl->xf;
-}
+public:
+    import_border_style() = delete;
+    import_border_style(styles& _styles_model, string_pool& sp);
+    virtual ~import_border_style() override;
 
-iface::import_cell_style* import_styles::start_cell_style()
-{
-    mp_impl->cell_style.reset();
-    return &mp_impl->cell_style;
-}
+    virtual void set_style(border_direction_t dir, border_style_t style) override;
+    virtual void set_color(
+        border_direction_t dir, color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual void set_width(border_direction_t dir, double width, orcus::length_unit_t unit) override;
+    virtual size_t commit() override;
 
-void import_styles::set_font_count(size_t n)
-{
-    mp_impl->styles_model.reserve_font_store(n);
-}
+    void reset();
+};
 
-void import_styles::set_fill_count(size_t n)
+class import_cell_protection : public iface::import_cell_protection
 {
-    mp_impl->styles_model.reserve_fill_store(n);
-}
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
 
-void import_styles::set_border_count(size_t n)
-{
-    mp_impl->styles_model.reserve_border_store(n);
-}
+public:
+    import_cell_protection() = delete;
+    import_cell_protection(styles& _styles_model, string_pool& sp);
+    virtual ~import_cell_protection() override;
 
-void import_styles::set_number_format_count(size_t n)
-{
-    mp_impl->styles_model.reserve_number_format_store(n);
-}
+    virtual void set_hidden(bool b) override;
+    virtual void set_locked(bool b) override;
+    virtual void set_print_content(bool b) override;
+    virtual void set_formula_hidden(bool b) override;
+    virtual size_t commit() override;
 
-void import_styles::set_xf_count(xf_category_t cat, size_t n)
-{
-    switch (cat)
-    {
-        case xf_category_t::cell:
-            mp_impl->styles_model.reserve_cell_format_store(n);
-            break;
-        case xf_category_t::cell_style:
-            mp_impl->styles_model.reserve_cell_style_format_store(n);
-            break;
-        case xf_category_t::differential:
-            mp_impl->styles_model.reserve_diff_cell_format_store(n);
-            break;
-        case xf_category_t::unknown:
-            break;
-    }
-}
+    void reset();
+};
 
-void import_styles::set_cell_style_count(size_t n)
+class import_number_format : public iface::import_number_format
 {
-    mp_impl->styles_model.reserve_cell_style_store(n);
-}
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    import_number_format() = delete;
+    import_number_format(styles& _styles_model, string_pool& sp);
+    virtual ~import_number_format() override;
+
+    virtual void set_identifier(std::size_t id) override;
+    virtual void set_code(std::string_view s) override;
+    virtual size_t commit() override;
+
+    void reset();
+};
+
+class import_xf : public iface::import_xf
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    import_xf() = delete;
+    import_xf(styles& _styles_model, string_pool& sp);
+    virtual ~import_xf() override;
+
+    virtual void set_font(size_t index) override;
+    virtual void set_fill(size_t index) override;
+    virtual void set_border(size_t index) override;
+    virtual void set_protection(size_t index) override;
+    virtual void set_number_format(size_t index) override;
+    virtual void set_style_xf(size_t index) override;
+    virtual void set_apply_alignment(bool b) override;
+    virtual void set_horizontal_alignment(hor_alignment_t align) override;
+    virtual void set_vertical_alignment(ver_alignment_t align) override;
+    virtual void set_wrap_text(bool b) override;
+    virtual void set_shrink_to_fit(bool b) override;
+    virtual size_t commit() override;
+
+    void reset(xf_category_t cat);
+};
+
+class import_cell_style : public iface::import_cell_style
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    import_cell_style() = delete;
+    import_cell_style(styles& _styles_model, string_pool& sp);
+    virtual ~import_cell_style() override;
+
+    void set_name(std::string_view s) override;
+    void set_display_name(std::string_view s) override;
+    void set_xf(size_t index) override;
+    void set_builtin(size_t index) override;
+    void set_parent_name(std::string_view s) override;
+    void commit() override;
+
+    void reset();
+};
 
 struct import_font_style::impl
 {
@@ -659,10 +705,127 @@ void import_cell_style::commit()
     mp_impl->cur_cell_style.reset();
 }
 
-
 void import_cell_style::reset()
 {
     mp_impl->cur_cell_style.reset();
+}
+
+} // anonymous namespace
+
+struct import_styles::impl
+{
+    styles& styles_model;
+    string_pool& str_pool;
+
+    import_font_style font_style;
+    import_fill_style fill_style;
+    import_border_style border_style;
+    import_cell_protection cell_protection;
+    import_number_format number_format;
+    import_xf xf;
+    import_cell_style cell_style;
+
+    impl(styles& _styles_model, string_pool& sp) :
+        styles_model(_styles_model),
+        str_pool(sp),
+        font_style(_styles_model, sp),
+        fill_style(_styles_model, sp),
+        border_style(_styles_model, sp),
+        cell_protection(_styles_model, sp),
+        number_format(_styles_model, sp),
+        xf(_styles_model, sp),
+        cell_style(_styles_model, sp)
+    {}
+};
+
+import_styles::import_styles(styles& styles_model, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(styles_model, sp)) {}
+
+import_styles::~import_styles() {}
+
+iface::import_font_style* import_styles::start_font_style()
+{
+    mp_impl->font_style.reset();
+    return &mp_impl->font_style;
+}
+
+iface::import_fill_style* import_styles::start_fill_style()
+{
+    mp_impl->fill_style.reset();
+    return &mp_impl->fill_style;
+}
+
+iface::import_border_style* import_styles::start_border_style()
+{
+    mp_impl->border_style.reset();
+    return &mp_impl->border_style;
+}
+
+iface::import_cell_protection* import_styles::start_cell_protection()
+{
+    mp_impl->cell_protection.reset();
+    return &mp_impl->cell_protection;
+}
+
+iface::import_number_format* import_styles::start_number_format()
+{
+    mp_impl->number_format.reset();
+    return &mp_impl->number_format;
+}
+
+iface::import_xf* import_styles::start_xf(xf_category_t cat)
+{
+    mp_impl->xf.reset(cat);
+    return &mp_impl->xf;
+}
+
+iface::import_cell_style* import_styles::start_cell_style()
+{
+    mp_impl->cell_style.reset();
+    return &mp_impl->cell_style;
+}
+
+void import_styles::set_font_count(size_t n)
+{
+    mp_impl->styles_model.reserve_font_store(n);
+}
+
+void import_styles::set_fill_count(size_t n)
+{
+    mp_impl->styles_model.reserve_fill_store(n);
+}
+
+void import_styles::set_border_count(size_t n)
+{
+    mp_impl->styles_model.reserve_border_store(n);
+}
+
+void import_styles::set_number_format_count(size_t n)
+{
+    mp_impl->styles_model.reserve_number_format_store(n);
+}
+
+void import_styles::set_xf_count(xf_category_t cat, size_t n)
+{
+    switch (cat)
+    {
+        case xf_category_t::cell:
+            mp_impl->styles_model.reserve_cell_format_store(n);
+            break;
+        case xf_category_t::cell_style:
+            mp_impl->styles_model.reserve_cell_style_format_store(n);
+            break;
+        case xf_category_t::differential:
+            mp_impl->styles_model.reserve_diff_cell_format_store(n);
+            break;
+        case xf_category_t::unknown:
+            break;
+    }
+}
+
+void import_styles::set_cell_style_count(size_t n)
+{
+    mp_impl->styles_model.reserve_cell_style_store(n);
 }
 
 }}
