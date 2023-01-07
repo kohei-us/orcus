@@ -1,6 +1,6 @@
 
-Utility functions
-=================
+Utilities
+=========
 
 Special values functions
 ------------------------

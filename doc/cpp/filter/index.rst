@@ -20,5 +20,5 @@ provides all required interfaces.
    import_filter/index.rst
    interface/index.rst
    types/index.rst
-   functions.rst
+   utils.rst
    config.rst
