@@ -94,41 +94,6 @@ public:
      */
     void recalc_formula_cells();
 
-    /**
-     * Dump document content to specified output directory in flat format.
-     *
-     * @param outdir path to the output directory.
-     */
-    void dump_flat(const std::string& outdir) const;
-
-    /**
-     * Dump document content to specified output directory in html format.
-     *
-     * @param outdir path to the output directory.
-     */
-    void dump_html(const ::std::string& outdir) const;
-
-    /**
-     * Dump document content to specified output directory in json format.
-     *
-     * @param outdir path to the output directory.
-     */
-    void dump_json(const ::std::string& outdir) const;
-
-    /**
-     * Dump document content to specified output directory in csv format.
-     *
-     * @param outdir path to the output directory.
-     */
-    void dump_csv(const std::string& outdir) const;
-
-    /**
-     * Dump document content to specified output directory for debugging.
-     *
-     * @param outdir path to the output directory.
-     */
-    void dump_debug_state(const std::string& outdir) const;
-
     sheet_t get_sheet_index(std::string_view name) const;
     std::string_view get_sheet_name(sheet_t sheet_pos) const;
 
@@ -174,6 +139,12 @@ public:
     const table_t* get_table(std::string_view name) const;
 
 private:
+    void dump_flat(const std::string& outdir) const;
+    void dump_html(const ::std::string& outdir) const;
+    void dump_json(const ::std::string& outdir) const;
+    void dump_csv(const std::string& outdir) const;
+    void dump_debug_state(const std::string& outdir) const;
+
     void finalize_import();
     void insert_dirty_cell(const ixion::abs_address_t& pos);
 
