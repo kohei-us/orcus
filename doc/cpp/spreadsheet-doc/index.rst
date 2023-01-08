@@ -10,8 +10,8 @@ computation of formula cells.
 .. toctree::
    :maxdepth: 1
 
+   types.rst
    document.rst
    sheet.rst
    pivot.rst
-   factory.rst
-   types.rst
+   import-export.rst
