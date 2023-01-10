@@ -13,5 +13,9 @@ computation of formula cells.
    types.rst
    document.rst
    sheet.rst
+   table.rst
    pivot.rst
+   styles.rst
+   view.rst
+   shared-strings.rst
    import-export.rst

@@ -209,11 +209,11 @@ struct import_factory::impl
 import_factory::import_factory(document& doc) :
     mp_impl(std::make_unique<impl>(*this, doc)) {}
 
-import_factory::import_factory(document& doc, view& view) :
+import_factory::import_factory(document& doc, view& view_store) :
     mp_impl(std::make_unique<impl>(*this, doc))
 {
     // Store the optional view store.
-    mp_impl->m_view = &view;
+    mp_impl->m_view = &view_store;
 }
 
 import_factory::~import_factory() {}

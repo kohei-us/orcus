@@ -738,8 +738,8 @@ struct import_styles::impl
     {}
 };
 
-import_styles::import_styles(styles& styles_model, string_pool& sp) :
-    mp_impl(std::make_unique<impl>(styles_model, sp)) {}
+import_styles::import_styles(styles& styles_store, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(styles_store, sp)) {}
 
 import_styles::~import_styles() {}
 

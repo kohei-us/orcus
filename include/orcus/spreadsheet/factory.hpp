@@ -25,13 +25,17 @@ class document;
 class view;
 class styles;
 
+/**
+ * Wraps @ref document and @ref view stores.  This is to be used by the import
+ * filter to populate the document and view stores.
+ */
 class ORCUS_SPM_DLLPUBLIC import_factory : public iface::import_factory
 {
     struct impl;
     std::unique_ptr<impl> mp_impl;
 public:
     import_factory(document& doc);
-    import_factory(document& doc, view& view);
+    import_factory(document& doc, view& view_store);
     virtual ~import_factory();
 
     virtual iface::import_global_settings* get_global_settings() override;
@@ -66,12 +70,16 @@ public:
     void set_formula_error_policy(formula_error_policy_t policy);
 };
 
+/**
+ * Wraps @ref styles store.  This is to be used by an import styles parser to
+ * populate the styles store.
+ */
 class ORCUS_SPM_DLLPUBLIC import_styles : public iface::import_styles
 {
     struct impl;
     std::unique_ptr<impl> mp_impl;
 public:
-    import_styles(styles& styles, string_pool& sp);
+    import_styles(styles& styles_store, string_pool& sp);
     virtual ~import_styles() override;
 
     virtual iface::import_font_style* start_font_style() override;
@@ -90,6 +98,12 @@ public:
     virtual void set_cell_style_count(size_t n) override;
 };
 
+/**
+ * Wraps @ref document store and faciliates export of its content.
+ *
+ * @warning It currently provides very limited functionality especially when
+ *          compared to that of the @ref import_factory.
+ */
 class ORCUS_SPM_DLLPUBLIC export_factory : public iface::export_factory
 {
     struct impl;
