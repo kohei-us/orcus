@@ -18,6 +18,9 @@ orcus 0.18.0
   * merged the foo_t and foo_active_t struct pair, such as font_t and
     font_active_t, in the styles store into a single type using std::optional.
 
+  * revised the documentation and public API and cleaned things up where
+    necessary.
+
 * ods
 
   * reimplemented the number format styles import to correctly keep track of
