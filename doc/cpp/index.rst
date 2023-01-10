@@ -6,6 +6,5 @@ C++ API
    :maxdepth: 2
 
    parser/index.rst
-   filter/index.rst
-   tree-doc/index.rst
+   core/index.rst
    spreadsheet-doc/index.rst

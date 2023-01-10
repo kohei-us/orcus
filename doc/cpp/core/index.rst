@@ -1,6 +1,6 @@
 
-Filters
-=======
+Core
+====
 
 This section presents the API's from the ``liborcus`` part of this library,
 which contains the import filters that process various file formats containing
@@ -18,6 +18,7 @@ provides all required interfaces.
    :maxdepth: 1
 
    import-filter/index.rst
+   tree-doc/index.rst
    interface/index.rst
    types/index.rst
    utils.rst
