@@ -1,6 +1,6 @@
 
-Python API
-==========
+Python API reference
+====================
 
 Packages
 --------

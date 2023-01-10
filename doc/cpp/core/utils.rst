@@ -2,14 +2,14 @@
 Utilities
 =========
 
-Special values functions
-------------------------
+Special values
+--------------
 
 .. doxygenfunction:: orcus::spreadsheet::get_default_column_width
 .. doxygenfunction:: orcus::spreadsheet::get_default_row_height
 
-Type conversion functions
--------------------------
+Type conversion
+---------------
 
 .. doxygenfunction:: orcus::spreadsheet::to_totals_row_function_enum
 .. doxygenfunction:: orcus::spreadsheet::to_pivot_cache_group_by_enum
