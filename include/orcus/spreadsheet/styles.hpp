@@ -20,6 +20,9 @@ namespace orcus { namespace spreadsheet {
 
 class document;
 
+/**
+ * Font style record.
+ */
 struct ORCUS_SPM_DLLPUBLIC font_t
 {
     std::optional<std::string_view> name;
@@ -49,6 +52,9 @@ struct ORCUS_SPM_DLLPUBLIC font_t
     void reset();
 };
 
+/**
+ * Fill style record.
+ */
 struct ORCUS_SPM_DLLPUBLIC fill_t
 {
     std::optional<fill_pattern_t> pattern_type;
@@ -59,6 +65,9 @@ struct ORCUS_SPM_DLLPUBLIC fill_t
     void reset();
 };
 
+/**
+ * Attributes for a single border.
+ */
 struct ORCUS_SPM_DLLPUBLIC border_attrs_t
 {
     std::optional<border_style_t> style;
@@ -69,6 +78,9 @@ struct ORCUS_SPM_DLLPUBLIC border_attrs_t
     void reset();
 };
 
+/**
+ * Style record for the borders of a single cell.
+ */
 struct ORCUS_SPM_DLLPUBLIC border_t
 {
     border_attrs_t top;
@@ -83,6 +95,9 @@ struct ORCUS_SPM_DLLPUBLIC border_t
     void reset();
 };
 
+/**
+ * Style record for cell protection attributes.
+ */
 struct ORCUS_SPM_DLLPUBLIC protection_t
 {
     std::optional<bool> locked;
@@ -94,6 +109,9 @@ struct ORCUS_SPM_DLLPUBLIC protection_t
     void reset();
 };
 
+/**
+ * Style record for a number format.
+ */
 struct ORCUS_SPM_DLLPUBLIC number_format_t
 {
     std::optional<std::size_t> identifier;
@@ -107,19 +125,30 @@ struct ORCUS_SPM_DLLPUBLIC number_format_t
 };
 
 /**
- * Cell format attributes
+ * Format attributes for a single cell.  It references the format entries via
+ * integer indices, with some exceptions.
  */
 struct ORCUS_SPM_DLLPUBLIC cell_format_t
 {
-    size_t font;            /// font ID
-    size_t fill;            /// fill ID
-    size_t border;          /// border ID
-    size_t protection;      /// protection ID
-    size_t number_format;   /// number format ID
-    size_t style_xf;        /// style XF ID (used only for cell format)
+    /** ID of a font style record. */
+    std::size_t font;
+    /** ID of a fill style record. */
+    std::size_t fill;
+    /** ID of a border style record. */
+    std::size_t border;
+    /** ID for a cell protection record. */
+    std::size_t protection;
+    /** ID for a number format record. */
+    std::size_t number_format;
+    /** ID for a parent named style. */
+    std::size_t style_xf;
+    /** Horizontal alignment of a cell. */
     hor_alignment_t hor_align;
+    /** Vertical alignment of a cell. */
     ver_alignment_t ver_align;
+    /** Flag on whether or not wrap text is enabled. */
     std::optional<bool> wrap_text;
+    /** Flag on whether or not shrink to fit is enabled. */
     std::optional<bool> shrink_to_fit;
     bool apply_num_format:1;
     bool apply_font:1;
@@ -132,12 +161,18 @@ struct ORCUS_SPM_DLLPUBLIC cell_format_t
     void reset();
 };
 
+/**
+ * Attributes of a named cell style.
+ *
+ * Refer to @ref orcus::spreadsheet::iface::import_cell_style for how the data
+ *      members of this struct are used in practice.
+ */
 struct ORCUS_SPM_DLLPUBLIC cell_style_t
 {
     std::string_view name;
     std::string_view display_name;
-    size_t xf;
-    size_t builtin;
+    std::size_t xf;
+    std::size_t builtin;
     std::string_view parent_name;
 
     cell_style_t();
@@ -146,6 +181,10 @@ struct ORCUS_SPM_DLLPUBLIC cell_style_t
 
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_t& c);
 
+/**
+ * Stores various styles records such that they can be referenced via integer
+ * indices.
+ */
 class ORCUS_SPM_DLLPUBLIC styles
 {
     friend class document;
