@@ -267,7 +267,7 @@ void document::dump_flat(const string& outdir) const
     cout << "----------------------------------------------------------------------" << endl;
     cout << "  Document content summary" << endl;
     cout << "----------------------------------------------------------------------" << endl;
-    mp_impl->ss_store.dump();
+    mp_impl->ss_store.dump(cout);
 
     cout << "number of sheets: " << mp_impl->sheets.size() << endl;
 

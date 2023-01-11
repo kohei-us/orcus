@@ -68,10 +68,7 @@ public:
      */
     const std::string* get_string(std::size_t index) const;
 
-    /**
-     * @todo Take std::ostream as an output param.
-     */
-    void dump() const;
+    void dump(std::ostream& os) const;
 };
 
 }}

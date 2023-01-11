@@ -52,9 +52,9 @@ const std::string* shared_strings::get_string(std::size_t index) const
     return mp_impl->context.get_string(index);
 }
 
-void shared_strings::dump() const
+void shared_strings::dump(std::ostream& os) const
 {
-    std::cout << "number of shared strings: " << mp_impl->context.get_string_count() << std::endl;
+    os << "number of shared strings: " << mp_impl->context.get_string_count() << std::endl;
 }
 
 }}
