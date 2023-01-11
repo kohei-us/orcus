@@ -9,6 +9,14 @@
 
 namespace orcus { namespace spreadsheet {
 
+auto_filter_column_t::auto_filter_column_t() = default;
+auto_filter_column_t::auto_filter_column_t(const auto_filter_column_t& other) = default;
+auto_filter_column_t::auto_filter_column_t(auto_filter_column_t&& other) = default;
+auto_filter_column_t::~auto_filter_column_t() = default;
+
+auto_filter_column_t& auto_filter_column_t::operator=(const auto_filter_column_t& other) = default;
+auto_filter_column_t& auto_filter_column_t::operator=(auto_filter_column_t&& other) = default;
+
 void auto_filter_column_t::reset()
 {
     match_values.clear();
@@ -20,6 +28,12 @@ void auto_filter_column_t::swap(auto_filter_column_t& r)
 }
 
 auto_filter_t::auto_filter_t() : range(ixion::abs_range_t::invalid) {}
+auto_filter_t::auto_filter_t(const auto_filter_t& other) = default;
+auto_filter_t::auto_filter_t(auto_filter_t&& other) = default;
+auto_filter_t::~auto_filter_t() = default;
+
+auto_filter_t& auto_filter_t::operator=(const auto_filter_t& other) = default;
+auto_filter_t& auto_filter_t::operator=(auto_filter_t&& other) = default;
 
 void auto_filter_t::reset()
 {
@@ -33,24 +47,21 @@ void auto_filter_t::swap(auto_filter_t& r)
     columns.swap(r.columns);
 }
 
-void auto_filter_t::commit_column(col_t col, auto_filter_column_t& data)
+void auto_filter_t::commit_column(col_t col, auto_filter_column_t data)
 {
     if (col < 0)
         // Invalid column index.  Nothing happens.
         return;
 
-    columns_type::iterator it = columns.lower_bound(col);
-    if (it == columns.end() || columns.key_comp()(col, it->first))
-    {
-        // Insert a new entry for this column.
-        columns.insert(it, columns_type::value_type(col, data));
-    }
-    else
-        // Swap with the existing column data.
-        it->second.swap(data);
+    columns.insert_or_assign(col, std::move(data));
 }
 
 table_column_t::table_column_t() : identifier(0), totals_row_function(totals_row_function_t::none) {}
+
+table_column_t::table_column_t(const table_column_t& other) = default;
+table_column_t::~table_column_t() = default;
+
+table_column_t& table_column_t::operator=(const table_column_t& other) = default;
 
 void table_column_t::reset()
 {
@@ -66,6 +77,11 @@ table_style_t::table_style_t() :
     show_row_stripes(false),
     show_column_stripes(false) {}
 
+table_style_t::table_style_t(const table_style_t& other) = default;
+table_style_t::~table_style_t() = default;
+
+table_style_t& table_style_t::operator=(const table_style_t& other) = default;
+
 void table_style_t::reset()
 {
     name = std::string_view{};
@@ -76,6 +92,12 @@ void table_style_t::reset()
 }
 
 table_t::table_t() : identifier(0), range(ixion::abs_range_t::invalid), totals_row_count(0) {}
+table_t::table_t(const table_t& other) = default;
+table_t::table_t(table_t&& other) = default;
+table_t::~table_t() = default;
+
+table_t& table_t::operator=(const table_t& other) = default;
+table_t& table_t::operator=(table_t&& other) = default;
 
 void table_t::reset()
 {

@@ -26,6 +26,14 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_column_t
     using match_values_type = std::unordered_set<std::string_view>;
     match_values_type match_values;
 
+    auto_filter_column_t();
+    auto_filter_column_t(const auto_filter_column_t& other);
+    auto_filter_column_t(auto_filter_column_t&& other);
+    ~auto_filter_column_t();
+
+    auto_filter_column_t& operator=(const auto_filter_column_t& other);
+    auto_filter_column_t& operator=(auto_filter_column_t&& other);
+
     void reset();
     void swap(auto_filter_column_t& r);
 };
@@ -43,19 +51,23 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
     columns_type columns;
 
     auto_filter_t();
+    auto_filter_t(const auto_filter_t& other);
+    auto_filter_t(auto_filter_t&& other);
+    ~auto_filter_t();
+
+    auto_filter_t& operator=(const auto_filter_t& other);
+    auto_filter_t& operator=(auto_filter_t&& other);
 
     void reset();
     void swap(auto_filter_t& r);
 
     /**
-     * Set column data to specified column index.  The data may not contain
-     * the original data after the call when overwriting it with an existing
-     * data previously associated with the same column index.
+     * Set column data to specified column index.
      *
      * @param col column index to associate the data to.
      * @param data column data.
      */
-    void commit_column(col_t col, auto_filter_column_t& data);
+    void commit_column(col_t col, auto_filter_column_t data);
 };
 
 /**
@@ -63,12 +75,16 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
  */
 struct ORCUS_SPM_DLLPUBLIC table_column_t
 {
-    size_t identifier;
+    std::size_t identifier;
     std::string_view name;
     std::string_view totals_row_label;
     totals_row_function_t totals_row_function;
 
     table_column_t();
+    table_column_t(const table_column_t& other);
+    ~table_column_t();
+
+    table_column_t& operator=(const table_column_t& other);
 
     void reset();
 };
@@ -86,6 +102,10 @@ struct ORCUS_SPM_DLLPUBLIC table_style_t
     bool show_column_stripes:1;
 
     table_style_t();
+    table_style_t(const table_style_t& other);
+    ~table_style_t();
+
+    table_style_t& operator=(const table_style_t& other);
 
     void reset();
 };
@@ -112,6 +132,12 @@ struct ORCUS_SPM_DLLPUBLIC table_t
     table_style_t style;
 
     table_t();
+    table_t(const table_t& other);
+    table_t(table_t&& other);
+    ~table_t();
+
+    table_t& operator=(const table_t& other);
+    table_t& operator=(table_t&& other);
 
     void reset();
 };
