@@ -32,14 +32,14 @@ struct shared_strings::impl
 
 shared_strings::shared_strings(ixion::model_context& cxt) : mp_impl(std::make_unique<impl>(cxt)) {}
 
-shared_strings::~shared_strings() {}
+shared_strings::~shared_strings() = default;
 
 void shared_strings::set_format_runs(std::size_t sindex, std::unique_ptr<format_runs_t> runs)
 {
     mp_impl->formats.insert_or_assign(sindex, std::move(runs));
 }
 
-const format_runs_t* shared_strings::get_format_runs(size_t index) const
+const format_runs_t* shared_strings::get_format_runs(std::size_t index) const
 {
     auto it = mp_impl->formats.find(index);
     if (it != mp_impl->formats.end())
@@ -47,7 +47,7 @@ const format_runs_t* shared_strings::get_format_runs(size_t index) const
     return nullptr;
 }
 
-const std::string* shared_strings::get_string(size_t index) const
+const std::string* shared_strings::get_string(std::size_t index) const
 {
     return mp_impl->context.get_string(index);
 }

@@ -21,7 +21,11 @@ namespace orcus {
 namespace spreadsheet {
 
 /**
- * This class handles global pool of string instances.
+ * This class manages access to a pool of shared string instances for both
+ * unformatted strings and rich-text strings.  The underlying string values
+ * themselves are stored externally in the `ixion::model_context` instance
+ * which this class references; this class itself only stores the format
+ * properties of the rich-text strings.
  */
 class ORCUS_SPM_DLLPUBLIC shared_strings
 {
@@ -37,17 +41,36 @@ public:
     ~shared_strings();
 
     /**
-     * Set the entire format runs for a string.
+     * Set the entire format runs of a string.
      *
-     * @param sindex index of the string to associated the format runs with.
+     * @param sindex index of the string to associate the format runs with.
      * @param runs format runs.
      */
     void set_format_runs(std::size_t sindex, std::unique_ptr<format_runs_t> runs);
 
-    const format_runs_t* get_format_runs(size_t index) const;
+    /**
+     * Get the entire format runs of a string.
+     *
+     * @param index index of the string to get the format runs of.
+     *
+     * @return pointer to the format runs, or @p nullptr if no format runs exist
+     *         for the specified string index.
+     */
+    const format_runs_t* get_format_runs(std::size_t index) const;
 
-    const std::string* get_string(size_t index) const;
+    /**
+     * Get an underlying string value associated with an index.
+     *
+     * @param index index of a string value.
+     *
+     * @return pointer to a string value associated with the index, or @p
+     *         nullptr in case of an invalid string index.
+     */
+    const std::string* get_string(std::size_t index) const;
 
+    /**
+     * @todo Take std::ostream as an output param.
+     */
     void dump() const;
 };
 
