@@ -293,6 +293,7 @@ TESTS = \
 	sax-token-parser-test \
 	types-test \
 	utf8-test \
+	yaml-parser-test \
 	xml-writer-test
 
 distclean-local:

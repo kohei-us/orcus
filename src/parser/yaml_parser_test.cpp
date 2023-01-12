@@ -7,20 +7,18 @@
 
 #include <orcus/yaml_parser.hpp>
 
-#include <cstring>
+#include <string>
 
 void test_handler()
 {
-    const char* test_code =
+    constexpr std::string_view test_code =
     "section-one:\n"
     "  - item 1\n"
     "  - item 2\n"
     "\n";
 
-    size_t n = strlen(test_code);
-
     orcus::yaml_handler hdl;
-    orcus::yaml_parser<orcus::yaml_handler> parser(test_code, n, hdl);
+    orcus::yaml_parser<orcus::yaml_handler> parser(test_code, hdl);
     parser.parse();
 }
 
