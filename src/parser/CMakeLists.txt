@@ -64,6 +64,11 @@ foreach(_TEST ${_TESTS})
         orcus-parser-${ORCUS_API_VERSION}
         orcus-test
     )
+
+    target_compile_definitions(${_TEST} PRIVATE
+        SRCDIR="${PROJECT_SOURCE_DIR}"
+    )
+
     add_test(${_TEST} ${_TEST})
 endforeach()
 
