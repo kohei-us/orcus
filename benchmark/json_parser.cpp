@@ -169,7 +169,7 @@ int main(int argc, char** argv) try
 
     {
         stack_printer __stack_printer__("parsing");
-        orcus::json_parser<handler> parser(content, hdl);
+        orcus::json_parser<handler> parser(content.str(), hdl);
         parser.parse();
     }
 

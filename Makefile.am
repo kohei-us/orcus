@@ -1,4 +1,4 @@
-SUBDIRS = src include benchmark	doc_example
+SUBDIRS = src include benchmark doc_example
 ACLOCAL_AMFLAGS = -I m4
 
 pcfiles = liborcus-@ORCUS_API_VERSION@.pc
@@ -12,31 +12,96 @@ pkgconfigdir = $(libdir)/pkgconfig
 doc_data = \
 	doc/conf.py \
 	doc/doxygen.conf \
-	doc/index.rst \
-	doc/cli/index.rst \
-	doc/cli/orcus_csv.rst \
-	doc/cli/orcus_gnumeric.rst \
-	doc/cli/orcus_json.rst \
 	doc/cli/orcus_ods.rst \
-	doc/cli/orcus_xls_xml.rst \
-	doc/cli/orcus_xlsx.rst \
-	doc/cli/orcus_xml.rst \
 	doc/cli/orcus_yaml.rst \
-	doc/cpp/filter/index.rst \
-	doc/cpp/index.rst \
-	doc/cpp/model/index.rst \
-	doc/cpp/model/json.rst \
-	doc/cpp/model/spreadsheet.rst \
-	doc/cpp/model/yaml.rst \
-	doc/cpp/parser/csv.rst \
-	doc/cpp/parser/index.rst \
+	doc/cli/orcus_xls_xml.rst \
+	doc/cli/orcus_csv.rst \
+	doc/cli/index.rst \
+	doc/cli/orcus_json.rst \
+	doc/cli/orcus_gnumeric.rst \
+	doc/cli/orcus_xml.rst \
+	doc/cli/orcus_xlsx.rst \
+	doc/notes/json_map/index.rst \
+	doc/notes/index.rst \
+	doc/notes/xml_map/index.rst \
+	doc/index.rst \
+	doc/python/orcus/gnumeric/index.rst \
+	doc/python/orcus/xlsx/index.rst \
+	doc/python/orcus/tools/bugzilla.rst \
+	doc/python/orcus/tools/index.rst \
+	doc/python/orcus/tools/file_processor.rst \
+	doc/python/orcus/document.rst \
+	doc/python/orcus/xls_xml/index.rst \
+	doc/python/orcus/formula_token_type.rst \
+	doc/python/orcus/formula_token_op.rst \
+	doc/python/orcus/format_type.rst \
+	doc/python/orcus/index.rst \
+	doc/python/orcus/sheet.rst \
+	doc/python/orcus/sheet_rows.rst \
+	doc/python/orcus/cell_type.rst \
+	doc/python/orcus/named_expressions.rst \
+	doc/python/orcus/formula_tokens.rst \
+	doc/python/orcus/formula_token.rst \
+	doc/python/orcus/ods/index.rst \
+	doc/python/orcus/csv/index.rst \
+	doc/python/orcus/cell.rst \
+	doc/python/index.rst \
+	doc/overview/json.rst \
+	doc/overview/yaml.rst \
+	doc/overview/index.rst \
+	doc/overview/doc-user.rst \
+	doc/overview/doc-orcus.rst \
+	doc/cpp/spreadsheet-doc/types.rst \
+	doc/cpp/spreadsheet-doc/view.rst \
+	doc/cpp/spreadsheet-doc/pivot.rst \
+	doc/cpp/spreadsheet-doc/document.rst \
+	doc/cpp/spreadsheet-doc/shared-strings.rst \
+	doc/cpp/spreadsheet-doc/index.rst \
+	doc/cpp/spreadsheet-doc/sheet.rst \
+	doc/cpp/spreadsheet-doc/import-export.rst \
+	doc/cpp/spreadsheet-doc/table.rst \
+	doc/cpp/spreadsheet-doc/styles.rst \
+	doc/cpp/core/utils.rst \
+	doc/cpp/core/index.rst \
+	doc/cpp/core/import-filter/json.rst \
+	doc/cpp/core/import-filter/ods.rst \
+	doc/cpp/core/import-filter/xml.rst \
+	doc/cpp/core/import-filter/xls_xml.rst \
+	doc/cpp/core/import-filter/xlsx.rst \
+	doc/cpp/core/import-filter/gnumeric.rst \
+	doc/cpp/core/import-filter/index.rst \
+	doc/cpp/core/import-filter/csv.rst \
+	doc/cpp/core/import-filter/detect.rst \
+	doc/cpp/core/tree-doc/json.rst \
+	doc/cpp/core/tree-doc/yaml.rst \
+	doc/cpp/core/tree-doc/index.rst \
+	doc/cpp/core/config.rst \
+	doc/cpp/core/types/view.rst \
+	doc/cpp/core/types/index.rst \
+	doc/cpp/core/types/core.rst \
+	doc/cpp/core/interface/index.rst \
+	doc/cpp/core/interface/spreadsheet/view.rst \
+	doc/cpp/core/interface/spreadsheet/pivot.rst \
+	doc/cpp/core/interface/spreadsheet/document.rst \
+	doc/cpp/core/interface/spreadsheet/document_export.rst \
+	doc/cpp/core/interface/spreadsheet/index.rst \
+	doc/cpp/core/interface/spreadsheet/sheet.rst \
+	doc/cpp/core/interface/spreadsheet/styles.rst \
+	doc/cpp/core/interface/global.rst \
+	doc/cpp/parser/css.rst \
 	doc/cpp/parser/json.rst \
-	doc/cpp/parser/util.rst \
+	doc/cpp/parser/types.rst \
+	doc/cpp/parser/archive.rst \
+	doc/cpp/parser/base64.rst \
 	doc/cpp/parser/xml.rst \
 	doc/cpp/parser/yaml.rst \
-	doc/overview/index.rst \
-	doc/overview/json.rst \
-	doc/python/index.rst
+	doc/cpp/parser/xml_writer.rst \
+	doc/cpp/parser/index.rst \
+	doc/cpp/parser/csv.rst \
+	doc/cpp/parser/util.rst \
+	doc/cpp/parser/stream.rst \
+	doc/cpp/parser/exception.rst \
+	doc/cpp/index.rst
 
 doc_example_data = \
 	doc_example/files/document.ods \
