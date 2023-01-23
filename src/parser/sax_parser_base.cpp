@@ -178,10 +178,15 @@ void parser_base::skip_bom()
     unsigned char c = static_cast<unsigned char>(cur_char());
     if (c != '<')
     {
-        if (c != 0xef || static_cast<unsigned char>(next_and_char()) != 0xbb ||
-            static_cast<unsigned char>(next_and_char()) != 0xbf || next_and_char() != '<')
-            throw malformed_xml_error(
-                "unsupported encoding. only 8 bit encodings are supported", offset());
+        do
+        {
+            if (c != 0xef || static_cast<unsigned char>(next_and_char()) != 0xbb
+                || static_cast<unsigned char>(next_and_char()) != 0xbf)
+                throw malformed_xml_error(
+                    "unsupported encoding. only 8 bit encodings are supported", offset());
+            c = static_cast<unsigned char>(next_and_char());
+        }
+        while (c == 0xef);
     }
 }
 
