@@ -127,7 +127,7 @@ class xls_xml_context : public xml_context_base
     {
         spreadsheet::border_direction_t dir = spreadsheet::border_direction_t::unknown;
         spreadsheet::border_style_t style = spreadsheet::border_style_t::unknown;
-        spreadsheet::color_rgb_t color;
+        std::optional<spreadsheet::color_rgb_t> color;
     };
 
     struct font_style_type

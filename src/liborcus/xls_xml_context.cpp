@@ -1292,7 +1292,7 @@ void xls_xml_context::start_element_border(const xml_token_attrs_t& attrs)
 {
     ss::border_direction_t dir = ss::border_direction_t::unknown;
     ss::border_style_t style = ss::border_style_t::unknown;
-    ss::color_rgb_t color;
+    std::optional<ss::color_rgb_t> color;
     long weight = 0;
 
     for (const xml_token_attr_t& attr : attrs)
@@ -1950,8 +1950,14 @@ void xls_xml_context::commit_default_style()
     {
         for (const border_style_type& b : m_default_style->borders)
         {
-            border_style->set_style(b.dir, b.style);
-            border_style->set_color(b.dir, 255, b.color.red, b.color.green, b.color.blue);
+            if (b.dir == ss::border_direction_t::unknown)
+                continue;
+
+            if (b.style != ss::border_style_t::unknown)
+                border_style->set_style(b.dir, b.style);
+
+            if (b.color)
+                border_style->set_color(b.dir, 255, b.color->red, b.color->green, b.color->blue);
         }
     }
 
@@ -2109,8 +2115,14 @@ void xls_xml_context::commit_styles()
 
             for (const border_style_type& b : style->borders)
             {
-                border_style->set_style(b.dir, b.style);
-                border_style->set_color(b.dir, 255, b.color.red, b.color.green, b.color.blue);
+                if (b.dir == ss::border_direction_t::unknown)
+                    continue;
+
+                if (b.style != ss::border_style_t::unknown)
+                    border_style->set_style(b.dir, b.style);
+
+                if (b.color)
+                    border_style->set_color(b.dir, 255, b.color->red, b.color->green, b.color->blue);
             }
 
             size_t border_id = border_style->commit();
