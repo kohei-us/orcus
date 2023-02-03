@@ -19,24 +19,18 @@
 #include <iostream>
 #include <sstream>
 
-using namespace std;
-
 namespace orcus {
 
 namespace {
 
 template<typename T>
-void print_element_stack(ostream& os, const T& elem_stack)
+void print_element_stack(std::ostream& os, const T& elem_stack)
 {
-    typename T::const_iterator it = elem_stack.begin(), it_end = elem_stack.end();
-    for (; it != it_end; ++it)
-    {
-        const xml_map_tree::element& elem = **it;
+    for (const auto& elem : elem_stack)
         os << '/' << elem.name.name;
-    }
 }
 
-}
+} // anonymous namespace
 
 xml_map_tree::range_field_link::range_field_link(const pstring& _xpath, const pstring& _label) :
     xpath(_xpath), label(_label) {}
