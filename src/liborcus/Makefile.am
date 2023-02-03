@@ -430,7 +430,8 @@ xml_map_tree_test_SOURCES = \
 
 xml_map_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a
 
 # xml-structure-tree-test
 

@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include "xml_map_tree.hpp"
 #include "orcus/xml_namespace.hpp"
 
@@ -17,6 +18,8 @@ using namespace std;
 
 void test_path_insertion()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     xmlns_repository repo;
     xml_map_tree tree(repo);
     xml_map_tree::cell_position ref;
@@ -71,6 +74,7 @@ void test_path_insertion()
     tree.append_range_field_link("/data/entries/entry/id", pstring());
     tree.append_range_field_link("/data/entries/entry/name", pstring());
     tree.append_range_field_link("/data/entries/entry/score", pstring());
+    tree.set_range_row_group("/data/entries/entry");
     tree.commit_range();
     p0 = tree.get_link("/data/entries/entry/id");
     assert(p0 && p0->node_type == xml_map_tree::linkable_node_type::element);
@@ -102,6 +106,8 @@ void test_path_insertion()
 
 void test_attr_path_insertion()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     xmlns_repository repo;
     xml_map_tree tree(repo);
     xml_map_tree::cell_position ref;
@@ -153,6 +159,8 @@ void test_attr_path_insertion()
 
 void test_tree_walk()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     xmlns_repository repo;
     xml_map_tree tree(repo);
     xml_map_tree::cell_position ref;
@@ -196,6 +204,8 @@ void test_tree_walk()
 
 void test_tree_walk_namespace()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     xmlns_repository repo;
     xml_map_tree tree(repo);
     xml_map_tree::cell_position ref;
@@ -214,6 +224,7 @@ void test_tree_walk_namespace()
     tree.append_range_field_link("/a:table/a:rows/a:row/a:population", pstring());
     ++ref.col;
     tree.append_range_field_link("/a:table/a:rows/a:row/a:year", pstring());
+    tree.set_range_row_group("/a:table/a:rows/a:row");
     tree.commit_range();
 
     xmlns_id_t ns_a = tree.get_namespace("a");

@@ -27,7 +27,7 @@ template<typename T>
 void print_element_stack(std::ostream& os, const T& elem_stack)
 {
     for (const auto& elem : elem_stack)
-        os << '/' << elem.name.name;
+        os << '/' << elem->name.name;
 }
 
 } // anonymous namespace
@@ -393,17 +393,16 @@ void xml_map_tree::insert_range_field_link(
     // current range reference.
     if (range_parent.empty())
     {
-        // First field link in this range.
-        auto it_end = linked_node.elem_stack.end();
-        if (linked_node.node->node_type == linkable_node_type::element)
-            --it_end; // Skip the linked element, which is used as a field in a range.
+        // First field link in this range. Find the first row-group element
+        // going up from the linked node.
+        auto rit = linked_node.elem_stack.rbegin();
+        while (rit != linked_node.elem_stack.rend() && !(*rit)->row_group)
+            ++rit;
 
-        --it_end; // Skip the next-up element, which is used to group a single record entry.
+        ++rit; // parent of the raw group
+        auto it_end = rit.base();
+
         range_parent.assign(linked_node.elem_stack.begin(), it_end);
-#if ORCUS_DEBUG_XML_MAP_TREE
-        print_element_stack(cout, range_parent);
-        cout << endl;
-#endif
     }
     else
     {
@@ -429,6 +428,11 @@ void xml_map_tree::insert_range_field_link(
         if (range_parent.empty())
             throw xpath_error("Two field links in the same range reference must at least share the first level of their paths.");
     }
+
+#if ORCUS_DEBUG_XML_MAP_TREE
+        print_element_stack(std::cout, range_parent);
+        std::cout << std::endl;
+#endif
 }
 
 void xml_map_tree::set_range_row_group(std::string_view xpath)
