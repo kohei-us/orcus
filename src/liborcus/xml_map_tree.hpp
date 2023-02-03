@@ -113,9 +113,9 @@ public:
 
     typedef std::map<cell_position, range_reference*> range_ref_map_type;
 
-    enum linkable_node_type { node_unknown, node_element, node_attribute };
-    enum reference_type { reference_unknown, reference_cell, reference_range_field };
-    enum element_type { element_unknown, element_linked, element_unlinked };
+    enum class linkable_node_type { unknown, element, attribute };
+    enum class reference_type { unknown, cell, range_field };
+    enum class element_type { unknown, linked, unlinked };
 
     struct linkable
     {
