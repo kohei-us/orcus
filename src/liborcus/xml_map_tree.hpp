@@ -8,7 +8,6 @@
 #ifndef INCLUDED_ORCUS_XML_MAP_TREE_HPP
 #define INCLUDED_ORCUS_XML_MAP_TREE_HPP
 
-#include "pstring.hpp"
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/exception.hpp"
 #include "orcus/types.hpp"
@@ -39,10 +38,10 @@ class xml_map_tree
 {
     struct range_field_link
     {
-        pstring xpath;
-        pstring label;
+        std::string_view xpath;
+        std::string_view label;
 
-        range_field_link(const pstring& _xpath, const pstring& _label);
+        range_field_link(std::string_view _xpath, std::string_view _label);
     };
 
 public:
@@ -130,8 +129,8 @@ public:
             field_in_range* field_ref;
         };
 
-        pstring label; // custom header label
-        mutable pstring ns_alias; // namespace alias used in the content stream.
+        std::string_view label; // custom header label
+        mutable std::string_view ns_alias; // namespace alias used in the content stream.
 
         linkable(const linkable&) = delete;
         linkable& operator=(const linkable&) = delete;
@@ -231,23 +230,23 @@ public:
     xml_map_tree(xmlns_repository& xmlns_repo);
     ~xml_map_tree();
 
-    void set_namespace_alias(const pstring& alias, const pstring& uri, bool default_ns);
-    xmlns_id_t get_namespace(const pstring& alias) const;
+    void set_namespace_alias(std::string_view alias, std::string_view uri, bool default_ns);
+    xmlns_id_t get_namespace(std::string_view alias) const;
 
-    void set_cell_link(const pstring& xpath, const cell_position& ref);
+    void set_cell_link(std::string_view xpath, const cell_position& ref);
 
     void start_range(const cell_position& pos);
-    void append_range_field_link(const pstring& xpath, const pstring& label);
-    void set_range_row_group(const pstring& xpath);
+    void append_range_field_link(std::string_view xpath, std::string_view label);
+    void set_range_row_group(std::string_view xpath);
     void commit_range();
 
-    const linkable* get_link(const pstring& xpath) const;
+    const linkable* get_link(std::string_view xpath) const;
 
     walker get_tree_walker() const;
 
     range_ref_map_type& get_range_references();
 
-    pstring intern_string(const pstring& str) const;
+    std::string_view intern_string(std::string_view str) const;
 
 private:
     void insert_range_field_link(
@@ -271,9 +270,9 @@ private:
      * @param xpath path to the linked node.
      * @param type type of reference, either a cell or a range field.
      */
-    linked_node_type get_linked_node(const pstring& xpath, reference_type type);
+    linked_node_type get_linked_node(std::string_view xpath, reference_type type);
 
-    element* get_element(const pstring& xpath);
+    element* get_element(std::string_view xpath);
 
 private:
 

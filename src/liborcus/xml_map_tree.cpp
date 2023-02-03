@@ -32,7 +32,7 @@ void print_element_stack(std::ostream& os, const T& elem_stack)
 
 } // anonymous namespace
 
-xml_map_tree::range_field_link::range_field_link(const pstring& _xpath, const pstring& _label) :
+xml_map_tree::range_field_link::range_field_link(std::string_view _xpath, std::string_view _label) :
     xpath(_xpath), label(_label) {}
 
 xml_map_tree::element_position::element_position() :
@@ -284,26 +284,26 @@ xml_map_tree::xml_map_tree(xmlns_repository& xmlns_repo) :
 
 xml_map_tree::~xml_map_tree() {}
 
-void xml_map_tree::set_namespace_alias(const pstring& alias, const pstring& uri, bool default_ns)
+void xml_map_tree::set_namespace_alias(std::string_view alias, std::string_view uri, bool default_ns)
 {
 #if ORCUS_DEBUG_XML_MAP_TREE
     cout << "xml_map_tree::set_namespace_alias: alias='" << alias << "', uri='" << uri << "', default=" << default_ns << endl;
 #endif
     // We need to turn the alias string persistent because the xmlns context
     // doesn't intern the alias strings.
-    pstring alias_safe = m_names.intern(alias).first;
+    std::string_view alias_safe = m_names.intern(alias).first;
     xmlns_id_t ns = m_xmlns_cxt.push(alias_safe, uri);
 
     if (default_ns)
         m_default_ns = ns;
 }
 
-xmlns_id_t xml_map_tree::get_namespace(const pstring& alias) const
+xmlns_id_t xml_map_tree::get_namespace(std::string_view alias) const
 {
     return m_xmlns_cxt.get(alias);
 }
 
-void xml_map_tree::set_cell_link(const pstring& xpath, const cell_position& ref)
+void xml_map_tree::set_cell_link(std::string_view xpath, const cell_position& ref)
 {
     if (xpath.empty())
         return;
@@ -339,7 +339,7 @@ void xml_map_tree::start_range(const cell_position& pos)
     m_cur_range_pos = pos;
 }
 
-void xml_map_tree::append_range_field_link(const pstring& xpath, const pstring& label)
+void xml_map_tree::append_range_field_link(std::string_view xpath, std::string_view label)
 {
     if (xpath.empty())
         return;
@@ -431,7 +431,7 @@ void xml_map_tree::insert_range_field_link(
     }
 }
 
-void xml_map_tree::set_range_row_group(const pstring& xpath)
+void xml_map_tree::set_range_row_group(std::string_view xpath)
 {
     if (xpath.empty())
         return;
@@ -475,7 +475,7 @@ void xml_map_tree::commit_range()
     m_cur_range_pos.col = -1;
 }
 
-const xml_map_tree::linkable* xml_map_tree::get_link(const pstring& xpath) const
+const xml_map_tree::linkable* xml_map_tree::get_link(std::string_view xpath) const
 {
     if (!mp_root)
         return nullptr;
@@ -488,7 +488,7 @@ const xml_map_tree::linkable* xml_map_tree::get_link(const pstring& xpath) const
 #endif
     const linkable* cur_node = mp_root;
 
-    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size(), m_default_ns);
+    xpath_parser parser(m_xmlns_cxt, xpath.data(), xpath.size(), m_default_ns);
 
     // Check the root element first.
     xpath_parser::token token = parser.next();
@@ -568,7 +568,7 @@ xml_map_tree::range_ref_map_type& xml_map_tree::get_range_references()
     return m_field_refs;
 }
 
-pstring xml_map_tree::intern_string(const pstring& str) const
+std::string_view xml_map_tree::intern_string(std::string_view str) const
 {
     return m_names.intern(str).first;
 }
@@ -608,12 +608,12 @@ void xml_map_tree::create_ref_store(linkable& node)
     }
 }
 
-xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpath, reference_type ref_type)
+xml_map_tree::linked_node_type xml_map_tree::get_linked_node(std::string_view xpath, reference_type ref_type)
 {
     linked_node_type ret;
 
     assert(!xpath.empty());
-    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size(), m_default_ns);
+    xpath_parser parser(m_xmlns_cxt, xpath.data(), xpath.size(), m_default_ns);
 
     // Get the root element first.
     xpath_parser::token token = parser.next();
@@ -709,10 +709,10 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(const pstring& xpat
     return ret;
 }
 
-xml_map_tree::element* xml_map_tree::get_element(const pstring& xpath)
+xml_map_tree::element* xml_map_tree::get_element(std::string_view xpath)
 {
     assert(!xpath.empty());
-    xpath_parser parser(m_xmlns_cxt, xpath.get(), xpath.size(), m_default_ns);
+    xpath_parser parser(m_xmlns_cxt, xpath.data(), xpath.size(), m_default_ns);
 
     // Get the root element first.
     xpath_parser::token token = parser.next();
