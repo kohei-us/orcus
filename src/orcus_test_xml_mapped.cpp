@@ -26,7 +26,6 @@
 
 #include <boost/filesystem.hpp>
 
-using namespace std;
 using namespace orcus;
 namespace fs = boost::filesystem;
 
@@ -70,7 +69,7 @@ void test_mapped_xml_import()
         file_content content(filepath);
         dom::document_tree tree(cxt);
         tree.load(content.str());
-        ostringstream os;
+        std::ostringstream os;
         tree.dump_compact(os);
         dump_content = os.str();
     };
@@ -87,7 +86,7 @@ void test_mapped_xml_import()
         fs::path check_file = base_dir / "check.txt";
 
         // Load the data file content.
-        cout << "reading " << data_file.string() << endl;
+        std::cout << "reading " << data_file.string() << std::endl;
         file_content content(data_file.string().data());
         std::string data_strm{content.str()};
 
@@ -112,9 +111,9 @@ void test_mapped_xml_import()
         assert(data_strm[data_strm.size()-1] == '\0');
 
         // Check the content of the document against static check file.
-        ostringstream os;
+        std::ostringstream os;
         doc.dump_check(os);
-        string loaded = os.str();
+        std::string loaded = os.str();
         content.load(check_file.string().data());
         strm = content.str();
 
@@ -130,8 +129,8 @@ void test_mapped_xml_import()
         if (tc.output_equals_input)
         {
             // Output to xml file with the linked values coming from the document.
-            string out_file = temp_output_xml;
-            cout << "writing to " << out_file << endl;
+            std::string out_file = temp_output_xml;
+            std::cout << "writing to " << out_file << std::endl;
             {
                 // Create a duplicate source XML stream.
                 content.load(data_file.string().data());
@@ -144,15 +143,15 @@ void test_mapped_xml_import()
             // Compare the logical xml content of the output xml with the
             // input one. They should be identical.
 
-            string dump_input, dump_output;
-            string strm_data_file, strm_out_file; // Hold the stream content in memory while the namespace context is being used.
+            std::string dump_input, dump_output;
+            std::string strm_data_file, strm_out_file; // Hold the stream content in memory while the namespace context is being used.
             dump_xml_structure(dump_input, strm_data_file, data_file.string().data(), cxt);
             dump_xml_structure(dump_output, strm_out_file, out_file.data(), cxt);
             assert(!dump_input.empty() && !dump_output.empty());
 
-            cout << dump_input << endl;
-            cout << "--" << endl;
-            cout << dump_output << endl;
+            std::cout << dump_input << std::endl;
+            std::cout << "--" << std::endl;
+            std::cout << dump_output << std::endl;
             assert(dump_input == dump_output);
 
             // Delete the temporary xml output.
@@ -186,7 +185,7 @@ void test_mapped_xml_import_no_map_definition()
         fs::path input_file = base_dir / "input.xml";
         fs::path check_file = base_dir / "check-nomap.txt";
 
-        cout << "reading " << input_file.string() << endl;
+        std::cout << "reading " << input_file.string() << std::endl;
 
         file_content content(input_file.string().data());
         file_content expected(check_file.string().data());
@@ -246,7 +245,7 @@ void test_invalid_map_definition()
 
     for (const fs::path& test : tests)
     {
-        cout << test.string() << endl;
+        std::cout << test.string() << std::endl;
         file_content content(test.string().data());
         doc.clear();
 
@@ -258,15 +257,15 @@ void test_invalid_map_definition()
         catch (const invalid_map_error& e)
         {
             // Success!
-            cout << endl
-                << "Exception received as expected, with the following message:" << endl
-                << endl
-                << test::prefix_multiline_string(e.what(), "  ") << endl
-                << endl;
+            std::cout << std::endl
+                << "Exception received as expected, with the following message:" << std::endl
+                << std::endl
+                << test::prefix_multiline_string(e.what(), "  ") << std::endl
+                << std::endl;
         }
         catch (const std::exception& e)
         {
-            cerr << e.what() << endl;
+            std::cerr << e.what() << std::endl;
             assert(!"Wrong exception thrown.");
         }
     }
