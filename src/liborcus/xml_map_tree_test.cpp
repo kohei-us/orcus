@@ -14,7 +14,6 @@
 #include <iostream>
 
 using namespace orcus;
-using namespace std;
 
 void test_path_insertion()
 {
@@ -71,9 +70,9 @@ void test_path_insertion()
     ref.col = 0;
     ref.sheet = std::string_view{"test3"};
     tree.start_range(ref);
-    tree.append_range_field_link("/data/entries/entry/id", pstring());
-    tree.append_range_field_link("/data/entries/entry/name", pstring());
-    tree.append_range_field_link("/data/entries/entry/score", pstring());
+    tree.append_range_field_link("/data/entries/entry/id", std::string_view{});
+    tree.append_range_field_link("/data/entries/entry/name", std::string_view{});
+    tree.append_range_field_link("/data/entries/entry/score", std::string_view{});
     tree.set_range_row_group("/data/entries/entry");
     tree.commit_range();
     p0 = tree.get_link("/data/entries/entry/id");
@@ -219,11 +218,11 @@ void test_tree_walk_namespace()
     tree.start_range(ref);
     ref.row = 2;
     ref.col = 0;
-    tree.append_range_field_link("/a:table/a:rows/a:row/a:city", pstring());
+    tree.append_range_field_link("/a:table/a:rows/a:row/a:city", std::string_view{});
     ++ref.col;
-    tree.append_range_field_link("/a:table/a:rows/a:row/a:population", pstring());
+    tree.append_range_field_link("/a:table/a:rows/a:row/a:population", std::string_view{});
     ++ref.col;
-    tree.append_range_field_link("/a:table/a:rows/a:row/a:year", pstring());
+    tree.append_range_field_link("/a:table/a:rows/a:row/a:year", std::string_view{});
     tree.set_range_row_group("/a:table/a:rows/a:row");
     tree.commit_range();
 
