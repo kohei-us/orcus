@@ -35,7 +35,7 @@ namespace {
 
 void test_mapped_xml_import()
 {
-    test::stack_printer __stack_printer__("::test_mapped_xml_import");
+    ORCUS_TEST_FUNC_SCOPE;
 
     struct test_case
     {
@@ -162,7 +162,7 @@ void test_mapped_xml_import()
 
 void test_mapped_xml_import_no_map_definition()
 {
-    test::stack_printer __stack_printer__("::test_mapped_xml_import_no_map_definition");
+    ORCUS_TEST_FUNC_SCOPE;
 
     const std::vector<fs::path> tests = {
         test_base_dir / "attribute-basic",
@@ -170,6 +170,7 @@ void test_mapped_xml_import_no_map_definition()
         test_base_dir / "attribute-namespace-2",
         test_base_dir / "attribute-range-self-close",
         test_base_dir / "content-basic",
+        test_base_dir / "content-one-column",
         test_base_dir / "content-namespace",
         test_base_dir / "content-namespace-2",
         test_base_dir / "content-namespace-3",
@@ -227,7 +228,7 @@ void test_mapped_xml_import_no_map_definition()
 
 void test_invalid_map_definition()
 {
-    test::stack_printer __stack_printer__("::test_invalid_map_definition");
+    ORCUS_TEST_FUNC_SCOPE;
 
     fs::path invalids_dir = test_base_dir / "invalids" / "map-defs";
 
@@ -273,7 +274,7 @@ void test_invalid_map_definition()
 
 void test_encoding()
 {
-    test::stack_printer __stack_printer__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     const fs::path test_dir = test_base_dir / "encoding";
 
