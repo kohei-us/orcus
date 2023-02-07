@@ -154,6 +154,8 @@ void update_config(spreadsheet::document& doc, const std::string& path)
 
 void test_xls_xml_import()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto verify = [](spreadsheet::document& doc, std::string_view dir)
     {
         std::string path{dir};
@@ -207,6 +209,8 @@ void test_xls_xml_import()
 
 void test_xls_xml_merged_cells()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/merged-cells/input.xml");
 
     const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
@@ -245,6 +249,8 @@ void test_xls_xml_merged_cells()
 
 void test_xls_xml_date_time()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/date-time/input.xml");
 
     const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
@@ -276,6 +282,8 @@ void test_xls_xml_date_time()
 
 void test_xls_xml_bold_and_italic()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/bold-and-italic/input.xml");
 
     const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
@@ -361,6 +369,8 @@ void test_xls_xml_bold_and_italic()
 
 void test_xls_xml_colored_text()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/colored-text/input.xml");
 
     const spreadsheet::sheet* sheet1 = doc->get_sheet("ColoredText");
@@ -445,6 +455,8 @@ void test_xls_xml_colored_text()
 
 void test_xls_xml_column_width_row_height()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     struct cw_check
     {
         spreadsheet::col_t col;
@@ -510,6 +522,8 @@ void test_xls_xml_column_width_row_height()
 
 void test_xls_xml_background_fill()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/background-color/standard.xml");
 
     spreadsheet::styles& styles = doc->get_styles();
@@ -563,6 +577,8 @@ void test_xls_xml_background_fill()
 
 void test_xls_xml_named_colors()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     constexpr std::string_view paths[] = {
         SRCDIR"/test/xls-xml/named-colors/input.xml",
         SRCDIR"/test/xls-xml/named-colors/input-upper.xml"
@@ -600,6 +616,8 @@ void test_xls_xml_named_colors()
 
 void test_xls_xml_text_alignment()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/text-alignment/input.xml");
 
     spreadsheet::styles& styles = doc->get_styles();
@@ -666,6 +684,8 @@ void test_xls_xml_text_alignment()
 
 void test_xls_xml_cell_borders_single_cells()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/borders/single-cells.xml");
 
     spreadsheet::styles& styles = doc->get_styles();
@@ -716,6 +736,8 @@ void test_xls_xml_cell_borders_single_cells()
 
 void test_xls_xml_cell_borders_directions()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/borders/directions.xml");
 
     spreadsheet::styles& styles = doc->get_styles();
@@ -930,6 +952,8 @@ void test_xls_xml_cell_borders_directions()
 
 void test_xls_xml_cell_borders_colors()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     using spreadsheet::color_t;
     using spreadsheet::border_style_t;
 
@@ -1008,6 +1032,8 @@ void test_xls_xml_cell_borders_colors()
 
 void test_xls_xml_hidden_rows_columns()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/hidden-rows-columns/input.xml");
 
     spreadsheet::sheet* sh = doc->get_sheet("Hidden Rows");
@@ -1083,12 +1109,16 @@ void test_xls_xml_hidden_rows_columns()
 
 void test_xls_xml_character_set()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     doc_loader loader(SRCDIR"/test/xls-xml/character-set/input.xml");
     assert(loader.get_factory().get_character_set() == character_set_t::windows_1252);
 }
 
 void test_xls_xml_number_format()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     doc_loader loader(SRCDIR"/test/xls-xml/number-format/date-time.xml");
 
     const spreadsheet::document& doc = loader.get_doc();
@@ -1140,6 +1170,8 @@ void test_xls_xml_number_format()
 
 void test_xls_xml_cell_properties_wrap_and_shrink()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/cell-properties/wrap-and-shrink.xml");
 
     const ss::styles& styles = doc->get_styles();
@@ -1173,6 +1205,8 @@ void test_xls_xml_cell_properties_wrap_and_shrink()
 
 void test_xls_xml_cell_properties_default_style()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/cell-properties/default-style.xml");
 
     const ss::color_t black{255, 0, 0, 0};
@@ -1231,7 +1265,7 @@ void test_xls_xml_cell_properties_default_style()
 
 void test_xls_xml_cell_properties_locked_and_hidden()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/cell-properties/locked-and-hidden.xml");
     const ixion::model_context& model = doc->get_model_context();
@@ -1308,7 +1342,7 @@ void test_xls_xml_cell_properties_locked_and_hidden()
 
 void test_xls_xml_styles_direct_format()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path{SRCDIR"/test/xls-xml/styles/direct-format.xml"};
     auto doc = load_doc_from_filepath(path, false, ss::formula_error_policy_t::fail);
@@ -1451,7 +1485,7 @@ void test_xls_xml_styles_direct_format()
 
 void test_xls_xml_styles_column_styles()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path{SRCDIR"/test/xls-xml/styles/column-styles.xml"};
     auto doc = load_doc_from_filepath(path, false, ss::formula_error_policy_t::fail);
@@ -1560,6 +1594,8 @@ void test_xls_xml_styles_column_styles()
 
 void test_xls_xml_view_cursor_per_sheet()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     std::string path(SRCDIR"/test/xls-xml/view/cursor-per-sheet.xml");
 
     spreadsheet::range_size_t ss{1048576, 16384};
@@ -1620,6 +1656,8 @@ struct expected_selection
 
 void test_xls_xml_view_cursor_split_pane()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     std::string path(SRCDIR"/test/xls-xml/view/cursor-split-pane.xml");
 
     spreadsheet::range_size_t ss{1048576, 16384};
@@ -1758,6 +1796,8 @@ void test_xls_xml_view_cursor_split_pane()
 
 void test_xls_xml_view_frozen_pane()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     std::string path(SRCDIR"/test/xls-xml/view/frozen-pane.xml");
 
     spreadsheet::range_size_t ss{1048576, 16384};
@@ -1816,6 +1856,8 @@ void test_xls_xml_view_frozen_pane()
 
 void test_xls_xml_skip_error_cells()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     std::string path(SRCDIR"/test/xls-xml/formula-cells-parse-error/input.xml");
 
     try
@@ -1848,6 +1890,33 @@ void test_xls_xml_skip_error_cells()
     // Make sure these two cells have been imported as formula cells with error.
     assert(is_formula_cell_with_error(ixion::abs_address_t(0, 1, 1)));
     assert(is_formula_cell_with_error(ixion::abs_address_t(0, 4, 0)));
+}
+
+/**
+ * The test input file starts with double BOM's.
+ */
+void test_xls_xml_double_bom()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    std::string path(SRCDIR"/test/xls-xml/double-bom/input.xml");
+
+    // Make sure the test file does contain double BOM's.
+    orcus::file_content content{path};
+    auto content_s = content.str();
+
+    constexpr std::string_view BOM = "\xef\xbb\xbf";
+    assert(content_s.substr(0, 3) == BOM);
+    assert(content_s.substr(3, 3) == BOM);
+
+    auto doc = load_doc_from_filepath(path, false, ss::formula_error_policy_t::fail);
+
+    assert(doc->get_sheet_count() == 5u);
+    assert(doc->get_sheet_name(0) == "Holdings");
+    assert(doc->get_sheet_name(1) == "Overview");
+    assert(doc->get_sheet_name(2) == "Historical");
+    assert(doc->get_sheet_name(3) == "Performance");
+    assert(doc->get_sheet_name(4) == "Distributions");
 }
 
 } // anonymous namespace
@@ -1884,6 +1953,7 @@ int main()
     test_xls_xml_view_frozen_pane();
 
     test_xls_xml_skip_error_cells();
+    test_xls_xml_double_bom();
 
     return EXIT_SUCCESS;
 }
