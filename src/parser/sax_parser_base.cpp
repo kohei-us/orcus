@@ -164,23 +164,22 @@ void parser_base::comment()
 
 void parser_base::skip_bom()
 {
-    if (remains() < 4)
-        // Stream too short to have a byte order mark.
-        return;
+    // Skip one or more BOM's.
+    constexpr std::string_view BOM = "\xEF\xBB\xBF";
 
-    // 0xef 0xbb 0 xbf is the UTF-8 byte order mark
-    unsigned char c = static_cast<unsigned char>(cur_char());
-    if (c != '<')
+    while (true)
     {
-        do
-        {
-            if (c != 0xef || static_cast<unsigned char>(next_and_char()) != 0xbb
-                || static_cast<unsigned char>(next_and_char()) != 0xbf)
-                throw malformed_xml_error(
-                    "unsupported encoding. only 8 bit encodings are supported", offset());
-            c = static_cast<unsigned char>(next_and_char());
-        }
-        while (c == 0xef);
+        if (remains() < 3)
+            return;
+
+        if (cur_char() != BOM[0])
+            return;
+
+        if (next_and_char() != BOM[1] || next_and_char() != BOM[2])
+            throw malformed_xml_error(
+                "unsupported encoding. only 8 bit encodings are supported", offset());
+
+        next();
     }
 }
 
