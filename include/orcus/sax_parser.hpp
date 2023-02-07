@@ -183,9 +183,13 @@ void sax_parser<HandlerT,ConfigT>::parse()
 template<typename HandlerT, typename ConfigT>
 void sax_parser<HandlerT,ConfigT>::header()
 {
+    // Allow leading whitespace in the XML stream.
+    // TODO : Make this configurable since strictly speaking such an XML
+    // sttream is invalid.
+    skip_space_and_control();
+
     // we don't handle multi byte encodings so we can just skip bom entry if exists.
     skip_bom();
-    skip_space_and_control();
     if (!has_char() || cur_char() != '<')
         throw malformed_xml_error("xml file must begin with '<'.", offset());
 

@@ -168,12 +168,6 @@ void parser_base::skip_bom()
         // Stream too short to have a byte order mark.
         return;
 
-    if (is_blank(cur_char()))
-        // Allow leading whitespace in the XML stream.
-        // TODO : Make this configurable since strictly speaking such an XML
-        // sttream is invalid.
-        return;
-
     // 0xef 0xbb 0 xbf is the UTF-8 byte order mark
     unsigned char c = static_cast<unsigned char>(cur_char());
     if (c != '<')
