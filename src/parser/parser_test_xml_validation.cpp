@@ -15,8 +15,44 @@
 
 namespace fs = boost::filesystem;
 
+void test_valid()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    struct _handler : public orcus::sax_handler {};
+
+    fs::path root_dir = fs::path{SRCDIR} / "test" / "xml" / "valids";
+
+    if (!fs::is_directory(root_dir))
+        return;
+
+    for (const fs::path& entry : boost::make_iterator_range(fs::directory_iterator{root_dir}, {}))
+    {
+        std::cout << "input file: " << entry << std::endl;
+
+        orcus::file_content content(entry.string());
+
+        _handler hdl;
+        orcus::sax_parser<_handler> parser(content.str(), hdl);
+
+        try
+        {
+            parser.parse();
+        }
+        catch (const orcus::malformed_xml_error& e)
+        {
+            std::cerr << orcus::create_parse_error_output(content.str(), e.offset()) << std::endl;
+            std::cerr << e.what() << std::endl;
+            assert(!"This was supposed to be a valid XML!");
+
+        }
+    }
+}
+
 void test_invalid()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     struct _handler : public orcus::sax_handler {};
 
     fs::path root_dir = fs::path{SRCDIR} / "test" / "xml" / "invalids";
@@ -52,6 +88,7 @@ void test_invalid()
 
 int main()
 {
+    test_valid();
     test_invalid();
 
     return EXIT_SUCCESS;

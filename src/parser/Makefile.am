@@ -102,6 +102,7 @@ parser_test_xml_validation_LDFLAGS = \
 	$(BOOST_FILESYSTEM_LDFLAGS)
 parser_test_xml_validation_LDADD = \
 	liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a \
 	$(BOOST_SYSTEM_LIBS) \
 	$(BOOST_FILESYSTEM_LIBS)
 
