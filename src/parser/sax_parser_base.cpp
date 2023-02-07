@@ -135,7 +135,7 @@ cell_buffer& parser_base::get_cell_buffer()
 void parser_base::comment()
 {
     // Parse until we reach '-->'.
-    size_t len = remains();
+    size_t len = available_size();
     assert(len > 3);
     char c = cur_char();
     size_t i = 0;
@@ -169,7 +169,7 @@ void parser_base::skip_bom()
 
     while (true)
     {
-        if (remains() < 3)
+        if (available_size() < 3)
             return;
 
         if (cur_char() != BOM[0])
@@ -185,7 +185,7 @@ void parser_base::skip_bom()
 
 void parser_base::expects_next(const char* p, size_t n)
 {
-    if (remains() < n+1)
+    if (available_size() < n+1)
         throw malformed_xml_error(
             "not enough stream left to check for an expected string segment.", offset());
 

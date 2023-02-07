@@ -146,22 +146,6 @@ protected:
             throw malformed_xml_error(msg, offset());
     }
 
-    /**
-     * Determine the number of remaining characters <strong>including</strong>
-     * the current character.
-     *
-     *
-     * @return number of remaining characters including the current character.
-     */
-    inline size_t remains() const
-    {
-#if ORCUS_DEBUG_SAX_PARSER
-        if (mp_char >= mp_end)
-            throw malformed_xml_error("xml stream ended prematurely.", offset());
-#endif
-        return mp_end - mp_char;
-    }
-
     char cur_char_checked() const
     {
         if (!has_char())

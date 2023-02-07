@@ -318,7 +318,7 @@ void sax_parser<HandlerT,ConfigT>::special_tag()
 {
     assert(cur_char() == '!');
     // This can be either <![CDATA, <!--, or <!DOCTYPE.
-    size_t len = remains();
+    size_t len = available_size();
     if (len < 2)
         throw malformed_xml_error("special tag too short.", offset());
 
@@ -403,7 +403,7 @@ void sax_parser<HandlerT,ConfigT>::declaration(const char* name_check)
 template<typename HandlerT, typename ConfigT>
 void sax_parser<HandlerT,ConfigT>::cdata()
 {
-    size_t len = remains();
+    size_t len = available_size();
     assert(len > 3);
 
     // Parse until we reach ']]>'.
@@ -446,7 +446,7 @@ void sax_parser<HandlerT,ConfigT>::doctype()
     skip_space_and_control();
 
     // Either PUBLIC or SYSTEM.
-    size_t len = remains();
+    size_t len = available_size();
     if (len < 6)
         throw malformed_xml_error("DOCTYPE section too short.", offset());
 
