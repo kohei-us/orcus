@@ -177,11 +177,6 @@ protected:
 
     void comment();
 
-    /**
-     * Skip an optional byte order mark at the begining of the xml stream.
-     */
-    void skip_bom();
-
     void expects_next(const char* p, size_t n);
 
     void parse_encoded_char(cell_buffer& buf);

@@ -57,7 +57,27 @@ protected:
 
     char cur_char() const { return *mp_char; }
 
-    char next_char() const;
+    /**
+     * Peek a character at specified offset from the current position without
+     * advancing the current position.
+     *
+     * @note The caller <strong>must</strong> ensure that the specified offset
+     *       position is a valid position.  This method does not check its
+     *       validity.
+     *
+     * @param offset offset from the current position to peek at.
+     *
+     * @return character at a specified offset position from the current
+     *         position.
+     */
+    char peek_char(std::size_t offset=1) const;
+
+    /**
+     * Skip an optional byte order mark at the current position of the stream.
+     *
+     * Currently we only check for UTF-8 BOM.
+     */
+    void skip_bom();
 
     void skip(std::string_view chars_to_skip);
 

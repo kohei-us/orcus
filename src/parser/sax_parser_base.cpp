@@ -162,27 +162,6 @@ void parser_base::comment()
     next();
 }
 
-void parser_base::skip_bom()
-{
-    // Skip one or more BOM's.
-    constexpr std::string_view BOM = "\xEF\xBB\xBF";
-
-    while (true)
-    {
-        if (available_size() < 3)
-            return;
-
-        if (cur_char() != BOM[0])
-            return;
-
-        if (next_and_char() != BOM[1] || next_and_char() != BOM[2])
-            throw malformed_xml_error(
-                "unsupported encoding. only 8 bit encodings are supported", offset());
-
-        next();
-    }
-}
-
 void parser_base::expects_next(const char* p, size_t n)
 {
     if (available_size() < n+1)

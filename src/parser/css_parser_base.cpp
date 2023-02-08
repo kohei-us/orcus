@@ -277,7 +277,7 @@ bool parser_base::skip_comment()
     if (c != '/')
         return false;
 
-    if (remaining_size() > 2 && next_char() == '*')
+    if (remaining_size() > 2 && peek_char() == '*')
     {
         next();
         comment();

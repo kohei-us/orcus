@@ -251,7 +251,7 @@ void json_parser<_Handler>::array()
                     end_array();
                     return;
                 case ',':
-                    if (next_char() == ']')
+                    if (peek_char() == ']')
                     {
                         parse_error::throw_with(
                             "array: ']' expected but '", cur_char(), "' found.", offset() );

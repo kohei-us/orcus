@@ -32,9 +32,29 @@ void parser_base::prev(size_t dec)
     mp_char -= dec;
 }
 
-char parser_base::next_char() const
+char parser_base::peek_char(std::size_t offset) const
 {
-    return *(mp_char+1);
+    return *(mp_char + offset);
+}
+
+void parser_base::skip_bom()
+{
+    // Skip one or more UTF-8 BOM's.
+    constexpr std::string_view BOM = "\xEF\xBB\xBF";
+
+    while (true)
+    {
+        if (available_size() < 3)
+            return;
+
+        if (cur_char() != BOM[0])
+            return;
+
+        if (peek_char(1) != BOM[1] || peek_char(2) != BOM[2])
+            return;
+
+        next(3);
+    }
 }
 
 void parser_base::skip(std::string_view chars_to_skip)

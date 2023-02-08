@@ -196,7 +196,7 @@ void csv_parser<_Handler>::quoted_cell()
         // current char is a quote. Check if the next char is also a text
         // qualifier.
 
-        if (has_next() && is_text_qualifier(next_char()))
+        if (has_next() && is_text_qualifier(peek_char()))
         {
             next();
             parse_cell_with_quote(p0, len);
@@ -240,7 +240,7 @@ void csv_parser<_Handler>::parse_cell_with_quote(const char* p0, size_t len0)
         if (!is_text_qualifier(c))
             continue;
 
-        if (has_next() && is_text_qualifier(next_char()))
+        if (has_next() && is_text_qualifier(peek_char()))
         {
             // double quotation.  Copy the current segment to the cell buffer.
             m_cell_buf.append(p_cur, cur_len);
