@@ -19,7 +19,7 @@ parser_base::parser_base(
     std::string_view content, const csv::parser_config& config) :
     ::orcus::parser_base(content.data(), content.size()), m_config(config)
 {
-    maybe_skip_bom();
+    skip_bom();
 }
 
 bool parser_base::is_blank(char c) const
@@ -40,17 +40,6 @@ bool parser_base::is_text_qualifier(char c) const
 void parser_base::skip_blanks()
 {
     skip(" \t");
-}
-
-void parser_base::maybe_skip_bom()
-{
-    if (remaining_size() < 3)
-        // Ensure that the stream contains at least 3 bytes.
-        return;
-
-    static const char* bom = "\xEF\xBB\xBF";
-    if (!strncmp(mp_char, bom, 3))
-        next(3);
 }
 
 }}
