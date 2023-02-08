@@ -12,6 +12,7 @@
 #include "ostream_utils.hpp"
 
 #include <fstream>
+#include <algorithm>
 
 namespace fs = boost::filesystem;
 
