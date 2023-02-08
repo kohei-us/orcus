@@ -73,6 +73,20 @@ protected:
     char peek_char(std::size_t offset=1) const;
 
     /**
+     * Peek a segment of contiguous characters of a specified length starting
+     * from the current position.
+     *
+     * @note The caller <strong>must</strong> ensure that the specified
+     *       substring segment is entirely valid.  This method does not check
+     *       its validity.
+     *
+     * @param length length of the segment to peek.
+     *
+     * @return segment of contiguous characters.
+     */
+    std::string_view peek_chars(std::size_t length) const;
+
+    /**
      * Skip an optional byte order mark at the current position of the stream.
      *
      * Currently we only check for UTF-8 BOM.

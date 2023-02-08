@@ -37,6 +37,11 @@ char parser_base::peek_char(std::size_t offset) const
     return *(mp_char + offset);
 }
 
+std::string_view parser_base::peek_chars(std::size_t length) const
+{
+    return {mp_char, length};
+}
+
 void parser_base::skip_bom()
 {
     // Skip one or more UTF-8 BOM's.
@@ -47,10 +52,7 @@ void parser_base::skip_bom()
         if (available_size() < 3)
             return;
 
-        if (cur_char() != BOM[0])
-            return;
-
-        if (peek_char(1) != BOM[1] || peek_char(2) != BOM[2])
+        if (peek_chars(3) != BOM)
             return;
 
         next(3);
