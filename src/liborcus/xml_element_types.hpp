@@ -17,7 +17,7 @@ namespace orcus {
  */
 using xml_token_pair_t = std::pair<xmlns_id_t, xml_token_t>;
 
-struct ORCUS_PSR_DLLPUBLIC xml_token_pair_hash
+struct ORCUS_DLLPUBLIC xml_token_pair_hash
 {
     size_t operator()(const xml_token_pair_t& v) const;
 };
