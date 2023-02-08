@@ -51,7 +51,7 @@ class zip_archive_stream;
 
 class ORCUS_PSR_DLLPUBLIC zip_archive
 {
-    struct impl;
+    class impl;
 
     std::unique_ptr<impl> mp_impl;
 

@@ -212,7 +212,7 @@ target_compile_definitions(xlsx-sheet-context-test PRIVATE
 
 target_link_libraries(odf-helper-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(xlsx-sheet-context-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
-target_link_libraries(xml-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
+target_link_libraries(xml-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 target_link_libraries(json-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(xpath-parser-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
 add_test(odf-helper-test odf-helper-test)
