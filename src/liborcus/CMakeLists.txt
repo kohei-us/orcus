@@ -183,6 +183,7 @@ add_executable(xlsx-sheet-context-test EXCLUDE_FROM_ALL
     xlsx_types.cpp
     xml_context_base.cpp
     xml_context_global.cpp
+    xml_element_types.cpp
     xml_element_validator.cpp
     xml_empty_context.cpp
     xml_util.cpp
