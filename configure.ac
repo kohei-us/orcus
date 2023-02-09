@@ -179,11 +179,18 @@ AC_ARG_WITH(cpu-features,
         [with_cpu_features=no]
 )
 
+AC_ARG_WITH(benchmark,
+        AS_HELP_STRING([--without-benchmark], [Disables building of benchmark testing programs.]),
+        [with_benchmark="$withval"],
+        [with_benchmark=yes]
+)
+
 AM_CONDITIONAL([WITH_ODS_FILTER], [test "x$with_ods_filter" != "xno"])
 AM_CONDITIONAL([WITH_XLSX_FILTER], [test "x$with_xlsx_filter" != "xno"])
 AM_CONDITIONAL([WITH_XLS_XML_FILTER], [test "x$with_xls_xml_filter" != "xno"])
 AM_CONDITIONAL([WITH_GNUMERIC_FILTER], [test "x$with_gnumeric_filter" != "xno"])
 AM_CONDITIONAL([WITH_TOOLS], [test "x$with_tools" != "xno"])
+AM_CONDITIONAL([WITH_BENCHMARK], [test "x$with_benchmark" != "xno"])
 
 AS_IF([test "x$with_ods_filter" != "xno"], [
         CXXFLAGS="$CXXFLAGS -D__ORCUS_ODS"
@@ -373,6 +380,7 @@ Build configuration:
         python-xls-xml         $with_python_xls_xml
         python-gnumeric        $with_python_gnumeric
         cpu-features           $with_cpu_features
+        benchmark              $with_benchmark
 ==============================================================================
 ])
 
