@@ -6,7 +6,7 @@
 # ===================
 m4_define([orcus_major_version], [0])
 m4_define([orcus_minor_version], [18])
-m4_define([orcus_micro_version], [0])
+m4_define([orcus_micro_version], [1])
 m4_define([orcus_version], [orcus_major_version.orcus_minor_version.orcus_micro_version])
 
 # ===============
