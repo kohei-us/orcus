@@ -1,8 +1,14 @@
-SUBDIRS = src include doc_example
+SUBDIRS = src include
 
 if WITH_BENCHMARK
 
 SUBDIRS += benchmark
+
+endif
+
+if WITH_DOC_EXAMPLE
+
+SUBDIRS += doc_example
 
 endif
 

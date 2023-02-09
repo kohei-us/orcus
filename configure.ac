@@ -185,12 +185,19 @@ AC_ARG_WITH(benchmark,
         [with_benchmark=yes]
 )
 
+AC_ARG_WITH(doc-example,
+        AS_HELP_STRING([--without-doc-example], [Disables building of example code used in documentation.]),
+        [with_doc_example="$withval"],
+        [with_doc_example=yes]
+)
+
 AM_CONDITIONAL([WITH_ODS_FILTER], [test "x$with_ods_filter" != "xno"])
 AM_CONDITIONAL([WITH_XLSX_FILTER], [test "x$with_xlsx_filter" != "xno"])
 AM_CONDITIONAL([WITH_XLS_XML_FILTER], [test "x$with_xls_xml_filter" != "xno"])
 AM_CONDITIONAL([WITH_GNUMERIC_FILTER], [test "x$with_gnumeric_filter" != "xno"])
 AM_CONDITIONAL([WITH_TOOLS], [test "x$with_tools" != "xno"])
 AM_CONDITIONAL([WITH_BENCHMARK], [test "x$with_benchmark" != "xno"])
+AM_CONDITIONAL([WITH_DOC_EXAMPLE], [test "x$with_doc_example" != "xno"])
 
 AS_IF([test "x$with_ods_filter" != "xno"], [
         CXXFLAGS="$CXXFLAGS -D__ORCUS_ODS"
@@ -381,6 +388,7 @@ Build configuration:
         python-gnumeric        $with_python_gnumeric
         cpu-features           $with_cpu_features
         benchmark              $with_benchmark
+        doc-example            $with_doc_example
 ==============================================================================
 ])
 
