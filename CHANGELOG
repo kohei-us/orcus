@@ -8,8 +8,8 @@ orcus 0.18.1
 
 * xml-map
 
-  * fixed a bug where an XML document consisting of simple single-column
-    records were not properly converted to sheet data.
+  * fixed a bug where XML documents consisting of simple single-column records
+    were not properly converted to sheet data.
 
 * xls-xml
 
