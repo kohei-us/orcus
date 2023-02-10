@@ -12,7 +12,6 @@
 // release build
 #undef NDEBUG
 #include <cassert>
-#define NDEBUG
 #else
 // debug build
 #include <cassert>
