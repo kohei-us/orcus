@@ -71,7 +71,7 @@ format_t detect(std::string_view strm) try
 
     return format_t::unknown;
 }
-catch (const std::exception& e)
+catch (const std::exception&)
 {
     return format_t::unknown;
 }

@@ -102,7 +102,7 @@ void threaded_sax_token_parser<_Handler>::parse()
 
         process_tokens(tokens);
     }
-    catch (const std::exception& e)
+    catch (const std::exception&)
     {
         m_parser_thread.abort();
         throw;
