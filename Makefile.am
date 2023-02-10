@@ -303,6 +303,8 @@ test_data = \
 	test/xml-mapped/custom-labels-2/input.xml \
 	test/xml-mapped/custom-labels-2/check.txt \
 	test/xml-mapped/custom-labels-2/map.xml \
+	test/xml-mapped/content-one-column/input.xml \
+	test/xml-mapped/content-one-column/check-nomap.txt \
 	test/xml-mapped/content-namespace-3/input.xml \
 	test/xml-mapped/content-namespace-3/check.txt \
 	test/xml-mapped/content-namespace-3/map.xml \
@@ -810,6 +812,7 @@ test_data = \
 	test/xls-xml/cell-properties/locked-and-hidden.xml \
 	test/xls-xml/cell-properties/default-style.xml \
 	test/xls-xml/cell-properties/wrap-and-shrink.xml \
+	test/xls-xml/double-bom/input.xml \
 	test/xls-xml/named-colors/input.xml \
 	test/xls-xml/named-colors/input-upper.xml \
 	test/xls-xml/named-colors/saved-by-excel.xml \
