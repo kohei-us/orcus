@@ -481,7 +481,8 @@ enum class format_t
     xlsx,
     gnumeric,
     xls_xml,
-    csv
+    csv,
+    parquet
 };
 
 /**

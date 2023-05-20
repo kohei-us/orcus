@@ -380,6 +380,13 @@ TESTS += gnumeric-helper-test
 
 endif # WITH_GNUMERIC_FILTER
 
+if WITH_PARQUET_FILTER
+
+liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
+	orcus_parquet.cpp
+
+endif # WITH_PARQUET_FILTER
+
 # css-document-tree-test
 
 css_document_tree_test_SOURCES = \

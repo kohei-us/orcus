@@ -16,7 +16,7 @@ def main():
     table = pa.Table.from_pandas(df)
     import pyarrow.parquet as pq
 
-    pq.write_table(table, 'test.parquet')
+    pq.write_table(table, 'test.parquet', compression='SNAPPY')
 
 
 

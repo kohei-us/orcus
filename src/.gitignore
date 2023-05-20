@@ -4,6 +4,7 @@ orcus-gnumeric
 orcus-json
 orcus-mso-encryption
 orcus-ods
+orcus-parquet
 orcus-xls-xml
 orcus-xlsx
 orcus-xml

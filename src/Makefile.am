@@ -334,6 +334,32 @@ orcus_gnumeric_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLA
 
 endif # WITH_GNUMERIC_FILTER
 
+if WITH_PARQUET_FILTER
+
+bin_PROGRAMS += \
+	orcus-parquet
+
+# orcus-parquet
+
+orcus_parquet_SOURCES = \
+	orcus_filter_global.hpp \
+	orcus_filter_global.cpp \
+	orcus_parquet_main.cpp
+
+orcus_parquet_LDFLAGS = \
+	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
+	$(BOOST_FILESYSTEM_LDFLAGS) \
+	$(BOOST_SYSTEM_LDFLAGS)
+orcus_parquet_LDADD = \
+	liborcus/liborcus-@ORCUS_API_VERSION@.la \
+	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	$(BOOST_PROGRAM_OPTIONS_LIBS) \
+	$(BOOST_FILESYSTEM_LIBS) \
+	$(BOOST_SYSTEM_LIBS)
+
+endif # WITH_PARQUET_FILTER
+
 endif # BUILD_SPREADSHEET_MODEL
 
 endif # WITH_TOOLS
