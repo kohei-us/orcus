@@ -173,6 +173,16 @@ AC_ARG_WITH(gnumeric-filter,
         [with_gnumeric_filter=yes]
 )
 
+# ======================
+# parquet filter support
+# ======================
+AC_ARG_WITH(parquet-filter,
+            AS_HELP_STRING([--without-parquet-filter],
+                           [Disables the parquet import filter. The parquet import filter depends on Apache Parquet.]),
+        [with_parquet_filter="$withval"],
+        [with_parquet_filter=yes]
+)
+
 AC_ARG_WITH(cpu-features,
         AS_HELP_STRING([--with-cpu-features], [Enables custom CPU features.]),
         [with_cpu_features="$withval"],
@@ -195,7 +205,7 @@ AM_CONDITIONAL([WITH_ODS_FILTER], [test "x$with_ods_filter" != "xno"])
 AM_CONDITIONAL([WITH_XLSX_FILTER], [test "x$with_xlsx_filter" != "xno"])
 AM_CONDITIONAL([WITH_XLS_XML_FILTER], [test "x$with_xls_xml_filter" != "xno"])
 AM_CONDITIONAL([WITH_GNUMERIC_FILTER], [test "x$with_gnumeric_filter" != "xno"])
-AM_CONDITIONAL([WITH_PARQUET_FILTER], [test "xyes" != "xno"])  # TODO: properly handle this
+AM_CONDITIONAL([WITH_PARQUET_FILTER], [test "x$with_parquet_filter" != "xno"])
 AM_CONDITIONAL([WITH_TOOLS], [test "x$with_tools" != "xno"])
 AM_CONDITIONAL([WITH_BENCHMARK], [test "x$with_benchmark" != "xno"])
 AM_CONDITIONAL([WITH_DOC_EXAMPLE], [test "x$with_doc_example" != "xno"])
@@ -217,7 +227,10 @@ AS_IF([test "x$with_gnumeric_filter" != "xno"], [
         BOOST_IOSTREAMS
 ])
 
-CSSFLAGS="$CXXFLAGS -D__ORCUS_PARQUET"  # TODO: properly handle this
+AS_IF([test "x$with_parquet_filter" != "xno"], [
+        CSSFLAGS="$CXXFLAGS -D__ORCUS_PARQUET"
+        PKG_CHECK_MODULES([PARQUET], [parquet])
+])
 
 AS_IF([test "x$with_cpu_features" != "xno"], [
         CXXFLAGS="$CXXFLAGS -D__ORCUS_CPU_FEATURES"

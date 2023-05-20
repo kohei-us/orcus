@@ -385,6 +385,15 @@ if WITH_PARQUET_FILTER
 liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	orcus_parquet.cpp
 
+liborcus_@ORCUS_API_VERSION@_la_CXXFLAGS += \
+	$(PARQUET_CFLAGS)
+
+liborcus_@ORCUS_API_VERSION@_la_LDFLAGS += \
+	$(PARQUET_LDFLAGS)
+
+liborcus_@ORCUS_API_VERSION@_la_LIBADD += \
+	$(PARQUET_LIBS)
+
 endif # WITH_PARQUET_FILTER
 
 # css-document-tree-test
