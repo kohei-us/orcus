@@ -177,10 +177,10 @@ AC_ARG_WITH(gnumeric-filter,
 # parquet filter support
 # ======================
 AC_ARG_WITH(parquet-filter,
-            AS_HELP_STRING([--without-parquet-filter],
+            AS_HELP_STRING([--with-parquet-filter],
                            [Disables the parquet import filter. The parquet import filter depends on Apache Parquet.]),
         [with_parquet_filter="$withval"],
-        [with_parquet_filter=yes]
+        [with_parquet_filter=no]
 )
 
 AC_ARG_WITH(cpu-features,
@@ -395,7 +395,8 @@ Build configuration:
         ods-filter             $with_ods_filter
         xlsx-filter            $with_xlsx_filter
         xls-xml-filter         $with_xls_xml_filter
-        xls-gnumeric           $with_gnumeric_filter
+        gnumeric               $with_gnumeric_filter
+        parquet                $with_parquet_filter
         tools                  $with_tools
         python                 $enable_python
         python-xlsx            $with_python_xlsx

@@ -27,7 +27,6 @@ liborcus_HEADERS = \
 	measurement.hpp \
 	orcus_csv.hpp \
 	orcus_json.hpp \
-	orcus_parquet.hpp \
 	orcus_xml.hpp \
 	parser_base.hpp \
 	parser_global.hpp \
@@ -80,3 +79,10 @@ liborcus_HEADERS += \
 	orcus_gnumeric.hpp
 
 endif # WITH_GNUMERIC_FILTER
+
+if WITH_PARQUET_FILTER
+
+liborcus_HEADERS += \
+	orcus_parquet.hpp
+
+endif # WITH_PARQUET_FILTER
