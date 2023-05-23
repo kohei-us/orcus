@@ -7,6 +7,7 @@
 
 #include <orcus/orcus_parquet.hpp>
 #include <orcus/stream.hpp>
+#include <orcus/spreadsheet/types.hpp>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
@@ -15,10 +16,10 @@
 #include <parquet/stream_reader.h>
 #pragma GCC diagnostic pop
 
-#include <iostream>
+#include <boost/filesystem/path.hpp>
 
-using std::cout;
-using std::endl;
+namespace ss = orcus::spreadsheet;
+namespace fs = boost::filesystem;
 
 namespace orcus {
 
@@ -53,21 +54,26 @@ void orcus_parquet::read_file(std::string_view filepath)
     auto file_reader = parquet::ParquetFileReader::Open(infile);
     auto file_md = file_reader->metadata();
 
+    if (file_md->num_rows() < 0 || file_md->num_columns() < 0)
+        // Nothing to import. Bail out.
+        return;
+
+    auto sheet_name = fs::path{std::string{filepath}}.stem().string();
+    ss::iface::import_sheet* sheet = mp_impl->factory->append_sheet(0, sheet_name);
+
+    if (!sheet)
+        // Failed to append sheet. Bail out.
+        return;
+
     const parquet::SchemaDescriptor* schema_desc = file_md->schema();
 
-    std::vector<const parquet::ColumnDescriptor*> column_types;
+    std::vector<std::pair<ss::col_t, const parquet::ColumnDescriptor*>> column_types;
     column_types.reserve(schema_desc->num_columns());
 
     for (int i = 0; i < schema_desc->num_columns(); ++i)
     {
-        cout << "column " << i << ":" << endl;
         const parquet::ColumnDescriptor* col_desc = schema_desc->Column(i);
-        column_types.push_back(col_desc);
-
-        cout << "  name: " << col_desc->name() << endl;
-        cout << "  physical type: " << col_desc->physical_type() << endl;
-        cout << "  converted type: " << col_desc->converted_type() << endl;
-        cout << "  type length: " << col_desc->type_length() << endl;
+        column_types.emplace_back(i, col_desc);
     }
 
     parquet::StreamReader stream{std::move(file_reader)};
@@ -75,16 +81,23 @@ void orcus_parquet::read_file(std::string_view filepath)
     if (stream.eof())
         return;
 
-    cout << "row values:" << endl;
+    ss::iface::import_shared_strings* sstrings = mp_impl->factory->get_shared_strings();
 
-    // print column labels
-    for (const parquet::ColumnDescriptor* p : column_types)
-        cout << p->name() << ' ';
-    cout << endl;
+    // Import column labels as first row
+    for (const auto& [col, p] : column_types)
+    {
+        if (!sstrings)
+            continue;
+
+        std::size_t si = sstrings->add(p->name());
+        sheet->set_string(0, col, si);
+    }
 
     for (int i = 0; i < file_md->num_rows(); ++i)
     {
-        for (const parquet::ColumnDescriptor* p : column_types)
+        ss::row_t row = i + 1; // account for the header row
+
+        for (const auto& [col, p] : column_types)
         {
             switch (p->physical_type())
             {
@@ -94,9 +107,13 @@ void orcus_parquet::read_file(std::string_view filepath)
                     {
                         case parquet::ConvertedType::UTF8:
                         {
+                            if (!sstrings)
+                                break;
+
                             std::string v;
                             stream >> v;
-                            cout << v << ' ';
+                            std::size_t si = sstrings->add(v);
+                            sheet->set_string(row, col, si);
                             break;
                         }
                         default:
@@ -112,7 +129,7 @@ void orcus_parquet::read_file(std::string_view filepath)
                         {
                             int64_t v;
                             stream >> v;
-                            cout << v << ' ';
+                            sheet->set_value(row, col, v);
                             break;
                         }
                         default:
@@ -127,7 +144,7 @@ void orcus_parquet::read_file(std::string_view filepath)
 
                     bool v;
                     stream >> v;
-                    cout << v << ' ';
+                    sheet->set_bool(row, col, v);
                     break;
                 }
                 case parquet::Type::DOUBLE:
@@ -137,7 +154,7 @@ void orcus_parquet::read_file(std::string_view filepath)
 
                     double v;
                     stream >> v;
-                    cout << v << ' ';
+                    sheet->set_value(row, col, v);
                     break;
                 }
                 default:
@@ -150,7 +167,6 @@ void orcus_parquet::read_file(std::string_view filepath)
         }
 
         stream >> parquet::EndRow;
-        cout << endl;
     }
 }
 
