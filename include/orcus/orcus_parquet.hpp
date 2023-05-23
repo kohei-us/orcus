@@ -32,7 +32,7 @@ public:
     virtual std::string_view get_name() const override;
 
 private:
-    struct impl;
+    class impl;
     std::unique_ptr<impl> mp_impl;
 };
 
