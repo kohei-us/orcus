@@ -25,7 +25,127 @@ namespace orcus {
 
 class orcus_parquet::impl
 {
-    spreadsheet::iface::import_factory* m_factory;
+    using columns_type = std::vector<std::pair<ss::col_t, const parquet::ColumnDescriptor*>>;
+
+    ss::iface::import_factory* m_factory = nullptr;
+    ss::iface::import_shared_strings* m_sstrings = nullptr;
+    ss::iface::import_sheet* m_sheet = nullptr;
+
+    columns_type m_columns;
+
+    parquet::StreamReader m_stream;
+
+    static columns_type init_columns(const parquet::FileMetaData& file_md)
+    {
+        columns_type columns;
+
+        const parquet::SchemaDescriptor* schema_desc = file_md.schema();
+
+        if (!schema_desc)
+            return columns;
+
+        columns.reserve(schema_desc->num_columns());
+
+        for (int i = 0; i < schema_desc->num_columns(); ++i)
+        {
+            const parquet::ColumnDescriptor* col_desc = schema_desc->Column(i);
+            columns.emplace_back(i, col_desc);
+        }
+
+        return columns;
+    }
+
+    /**
+     * Import column labels as the first row.
+     */
+    void import_column_labels()
+    {
+        // Import column labels as first row
+        for (const auto& [col, p] : m_columns)
+        {
+            if (!m_sstrings)
+                continue;
+
+            std::size_t si = m_sstrings->add(p->name());
+            m_sheet->set_string(0, col, si);
+        }
+    }
+
+    void import_byte_array(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
+    {
+        switch (p->converted_type())
+        {
+            case parquet::ConvertedType::UTF8:
+            {
+                if (!m_sstrings)
+                    break;
+
+                std::string v;
+                m_stream >> v;
+                std::size_t si = m_sstrings->add(v);
+                m_sheet->set_string(row, col, si);
+                break;
+            }
+            default:
+                throw std::runtime_error("WIP: unhandled converted type for BYTE_ARRAY");
+        }
+    }
+
+    void import_fixed_len_byte_array(ss::row_t /*row*/, ss::col_t /*col*/, const parquet::ColumnDescriptor* /*p*/)
+    {
+        throw std::runtime_error("WIP: physical=FIXED_LEN_BYTE_ARRAY not handled yet");
+    }
+
+    void import_int32(ss::row_t /*row*/, ss::col_t /*col*/, const parquet::ColumnDescriptor* /*p*/)
+    {
+        throw std::runtime_error("WIP: physical=INT32 not handled yet");
+    }
+
+    void import_int64(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
+    {
+        switch (p->converted_type())
+        {
+            case parquet::ConvertedType::NONE:
+            {
+                int64_t v;
+                m_stream >> v;
+                m_sheet->set_value(row, col, v);
+                break;
+            }
+            default:
+                throw std::runtime_error("WIP: unhandled converted type for INT64");
+        }
+    }
+
+    void import_int96(ss::row_t /*row*/, ss::col_t /*col*/, const parquet::ColumnDescriptor* /*p*/)
+    {
+        throw std::runtime_error("WIP: physical=INT96 not handled yet");
+    }
+
+    void import_boolean(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
+    {
+        if (p->converted_type() != parquet::ConvertedType::NONE)
+            throw std::runtime_error("WIP: unhandled covnerted type for BOOLEAN");
+
+        bool v;
+        m_stream >> v;
+        m_sheet->set_bool(row, col, v);
+    }
+
+    void import_float(ss::row_t /*row*/, ss::col_t /*col*/, const parquet::ColumnDescriptor* /*p*/)
+    {
+        throw std::runtime_error("WIP: physical=FLOAT not handled yet");
+    }
+
+    void import_double(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
+    {
+        if (p->converted_type() != parquet::ConvertedType::NONE)
+            throw std::runtime_error("WIP: unhandled covnerted type for DOUBLE");
+
+        double v;
+        m_stream >> v;
+        m_sheet->set_value(row, col, v);
+    }
 
 public:
     impl(spreadsheet::iface::import_factory* factory) : m_factory(factory) {}
@@ -46,114 +166,83 @@ public:
             return;
 
         auto sheet_name = filepath.stem().string();
-        ss::iface::import_sheet* sheet = m_factory->append_sheet(0, sheet_name);
+        m_sheet = m_factory->append_sheet(0, sheet_name);
 
-        if (!sheet)
+        if (!m_sheet)
             // Failed to append sheet. Bail out.
             return;
 
-        const parquet::SchemaDescriptor* schema_desc = file_md->schema();
-
-        std::vector<std::pair<ss::col_t, const parquet::ColumnDescriptor*>> column_types;
-        column_types.reserve(schema_desc->num_columns());
-
-        for (int i = 0; i < schema_desc->num_columns(); ++i)
-        {
-            const parquet::ColumnDescriptor* col_desc = schema_desc->Column(i);
-            column_types.emplace_back(i, col_desc);
-        }
-
-        parquet::StreamReader stream{std::move(file_reader)};
-
-        if (stream.eof())
+        m_columns = init_columns(*file_md);
+        if (m_columns.empty())
+            // Column data initialization failed. Bail out.
             return;
 
-        ss::iface::import_shared_strings* sstrings = m_factory->get_shared_strings();
+        m_stream = parquet::StreamReader{std::move(file_reader)};
+        if (m_stream.eof())
+            return;
 
-        // Import column labels as first row
-        for (const auto& [col, p] : column_types)
-        {
-            if (!sstrings)
-                continue;
+        m_sstrings = m_factory->get_shared_strings();
 
-            std::size_t si = sstrings->add(p->name());
-            sheet->set_string(0, col, si);
-        }
+        import_column_labels();
 
         for (int i = 0; i < file_md->num_rows(); ++i)
         {
             ss::row_t row = i + 1; // account for the header row
 
-            for (const auto& [col, p] : column_types)
+            for (const auto& [col, p] : m_columns)
             {
                 switch (p->physical_type())
                 {
-                    case parquet::Type::BYTE_ARRAY:
+                    case parquet::Type::BOOLEAN:
                     {
-                        switch (p->converted_type())
-                        {
-                            case parquet::ConvertedType::UTF8:
-                            {
-                                if (!sstrings)
-                                    break;
-
-                                std::string v;
-                                stream >> v;
-                                std::size_t si = sstrings->add(v);
-                                sheet->set_string(row, col, si);
-                                break;
-                            }
-                            default:
-                                throw std::runtime_error("WIP: unhandled converted type for BYTE_ARRAY");
-                        }
+                        import_boolean(row, col, p);
+                        break;
+                    }
+                    case parquet::Type::INT32:
+                    {
+                        import_int32(row, col, p);
                         break;
                     }
                     case parquet::Type::INT64:
                     {
-                        switch (p->converted_type())
-                        {
-                            case parquet::ConvertedType::NONE:
-                            {
-                                int64_t v;
-                                stream >> v;
-                                sheet->set_value(row, col, v);
-                                break;
-                            }
-                            default:
-                                throw std::runtime_error("WIP: unhandled converted type for INT64");
-                        }
+                        import_int64(row, col, p);
                         break;
                     }
-                    case parquet::Type::BOOLEAN:
+                    case parquet::Type::INT96:
                     {
-                        if (p->converted_type() != parquet::ConvertedType::NONE)
-                            throw std::runtime_error("WIP: unhandled covnerted type for BOOLEAN");
-
-                        bool v;
-                        stream >> v;
-                        sheet->set_bool(row, col, v);
+                        import_int96(row, col, p);
+                        break;
+                    }
+                    case parquet::Type::FLOAT:
+                    {
+                        import_float(row, col, p);
                         break;
                     }
                     case parquet::Type::DOUBLE:
                     {
-                        if (p->converted_type() != parquet::ConvertedType::NONE)
-                            throw std::runtime_error("WIP: unhandled covnerted type for DOUBLE");
-
-                        double v;
-                        stream >> v;
-                        sheet->set_value(row, col, v);
+                        import_double(row, col, p);
+                        break;
+                    }
+                    case parquet::Type::BYTE_ARRAY:
+                    {
+                        import_byte_array(row, col, p);
+                        break;
+                    }
+                    case parquet::Type::FIXED_LEN_BYTE_ARRAY:
+                    {
+                        import_fixed_len_byte_array(row, col, p);
                         break;
                     }
                     default:
                     {
                         std::ostringstream os;
-                        os << "WIP: not handled type: physical=" << p->physical_type() << "; converted=" << p->converted_type();
+                        os << "WIP: type not handled: physical=" << p->physical_type() << "; converted=" << p->converted_type();
                         throw std::runtime_error(os.str());
                     }
                 }
             }
 
-            stream >> parquet::EndRow;
+            m_stream >> parquet::EndRow;
         }
     }
 };
