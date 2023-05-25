@@ -12,11 +12,15 @@ using std::endl;
 
 int main(int argc, char** argv)
 {
+    if (argc < 2)
+        return EXIT_FAILURE;
+
+    const char* filepath = argv[1];
     std::shared_ptr<arrow::io::ReadableFile> infile;
 
     PARQUET_ASSIGN_OR_THROW(
         infile,
-        arrow::io::ReadableFile::Open("test.parquet"));
+        arrow::io::ReadableFile::Open(filepath));
 
     auto file_reader = parquet::ParquetFileReader::Open(infile);
     auto file_md = file_reader->metadata();
@@ -47,6 +51,7 @@ int main(int argc, char** argv)
             cout << "      type: " << cc->type() << endl;
             cout << "      data page offset: " << std::dec << cc->data_page_offset() << endl;
             cout << "      has dictionary page: " << cc->has_dictionary_page() << endl;
+            cout << "      compression: " << cc->compression() << endl;
             if (cc->has_dictionary_page())
                 cout << "      dictionary page offset: " << cc->dictionary_page_offset() << endl;
             cout << "      has index page: " << cc->has_index_page() << endl;
