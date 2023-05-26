@@ -96,9 +96,20 @@ class orcus_parquet::impl
         throw std::runtime_error("WIP: physical=FIXED_LEN_BYTE_ARRAY not handled yet");
     }
 
-    void import_int32(ss::row_t /*row*/, ss::col_t /*col*/, const parquet::ColumnDescriptor* /*p*/)
+    void import_int32(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
     {
-        throw std::runtime_error("WIP: physical=INT32 not handled yet");
+        switch (p->converted_type())
+        {
+            case parquet::ConvertedType::NONE:
+            {
+                int32_t v;
+                m_stream >> v;
+                m_sheet->set_value(row, col, v);
+                break;
+            }
+            default:
+                throw std::runtime_error("WIP: unhandled converted type for INT32");
+        }
     }
 
     void import_int64(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
@@ -132,9 +143,14 @@ class orcus_parquet::impl
         m_sheet->set_bool(row, col, v);
     }
 
-    void import_float(ss::row_t /*row*/, ss::col_t /*col*/, const parquet::ColumnDescriptor* /*p*/)
+    void import_float(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
     {
-        throw std::runtime_error("WIP: physical=FLOAT not handled yet");
+        if (p->converted_type() != parquet::ConvertedType::NONE)
+            throw std::runtime_error("WIP: unhandled covnerted type for FLOAT");
+
+        float v;
+        m_stream >> v;
+        m_sheet->set_value(row, col, v);
     }
 
     void import_double(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
