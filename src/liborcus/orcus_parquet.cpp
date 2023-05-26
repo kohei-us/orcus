@@ -7,6 +7,7 @@
 
 #include <orcus/orcus_parquet.hpp>
 #include <orcus/stream.hpp>
+#include <orcus/config.hpp>
 #include <orcus/spreadsheet/types.hpp>
 
 #pragma GCC diagnostic push
@@ -17,6 +18,7 @@
 #pragma GCC diagnostic pop
 
 #include <boost/filesystem/path.hpp>
+#include <iostream>
 
 namespace ss = orcus::spreadsheet;
 namespace fs = boost::filesystem;
@@ -26,6 +28,8 @@ namespace orcus {
 class orcus_parquet::impl
 {
     using columns_type = std::vector<std::pair<ss::col_t, const parquet::ColumnDescriptor*>>;
+
+    const config& m_config;
 
     ss::iface::import_factory* m_factory = nullptr;
     ss::iface::import_shared_strings* m_sstrings = nullptr;
@@ -53,6 +57,14 @@ class orcus_parquet::impl
         }
 
         return columns;
+    }
+
+    void warn(std::string_view msg)
+    {
+        if (!m_config.debug)
+            return;
+
+        std::cerr << "warning: " << msg << std::endl;
     }
 
     /**
@@ -87,13 +99,13 @@ class orcus_parquet::impl
                 break;
             }
             default:
-                throw std::runtime_error("WIP: unhandled converted type for BYTE_ARRAY");
+                warn("WIP: unhandled converted type for BYTE_ARRAY");
         }
     }
 
     void import_fixed_len_byte_array(ss::row_t /*row*/, ss::col_t /*col*/, const parquet::ColumnDescriptor* /*p*/)
     {
-        throw std::runtime_error("WIP: physical=FIXED_LEN_BYTE_ARRAY not handled yet");
+        warn("WIP: physical=FIXED_LEN_BYTE_ARRAY not handled yet");
     }
 
     void import_int32(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
@@ -108,7 +120,7 @@ class orcus_parquet::impl
                 break;
             }
             default:
-                throw std::runtime_error("WIP: unhandled converted type for INT32");
+                warn("WIP: unhandled converted type for INT32");
         }
     }
 
@@ -124,19 +136,22 @@ class orcus_parquet::impl
                 break;
             }
             default:
-                throw std::runtime_error("WIP: unhandled converted type for INT64");
+                warn("WIP: unhandled converted type for INT64");
         }
     }
 
     void import_int96(ss::row_t /*row*/, ss::col_t /*col*/, const parquet::ColumnDescriptor* /*p*/)
     {
-        throw std::runtime_error("WIP: physical=INT96 not handled yet");
+        warn("WIP: physical=INT96 not handled yet");
     }
 
     void import_boolean(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
     {
         if (p->converted_type() != parquet::ConvertedType::NONE)
-            throw std::runtime_error("WIP: unhandled covnerted type for BOOLEAN");
+        {
+            warn("WIP: unhandled covnerted type for BOOLEAN");
+            return;
+        }
 
         bool v;
         m_stream >> v;
@@ -146,7 +161,10 @@ class orcus_parquet::impl
     void import_float(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
     {
         if (p->converted_type() != parquet::ConvertedType::NONE)
-            throw std::runtime_error("WIP: unhandled covnerted type for FLOAT");
+        {
+            warn("WIP: unhandled covnerted type for FLOAT");
+            return;
+        }
 
         float v;
         m_stream >> v;
@@ -156,7 +174,10 @@ class orcus_parquet::impl
     void import_double(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
     {
         if (p->converted_type() != parquet::ConvertedType::NONE)
-            throw std::runtime_error("WIP: unhandled covnerted type for DOUBLE");
+        {
+            warn("WIP: unhandled covnerted type for DOUBLE");
+            return;
+        }
 
         double v;
         m_stream >> v;
@@ -164,7 +185,7 @@ class orcus_parquet::impl
     }
 
 public:
-    impl(spreadsheet::iface::import_factory* factory) : m_factory(factory) {}
+    impl(const config& c, ss::iface::import_factory* factory) : m_config(c), m_factory(factory) {}
 
     void read_file(fs::path filepath)
     {
@@ -253,7 +274,7 @@ public:
                     {
                         std::ostringstream os;
                         os << "WIP: type not handled: physical=" << p->physical_type() << "; converted=" << p->converted_type();
-                        throw std::runtime_error(os.str());
+                        warn(os.str());
                     }
                 }
             }
@@ -265,7 +286,7 @@ public:
 
 orcus_parquet::orcus_parquet(spreadsheet::iface::import_factory* factory) :
     iface::import_filter(format_t::parquet),
-    mp_impl(std::make_unique<impl>(factory))
+    mp_impl(std::make_unique<impl>(get_config(), factory))
 {
 }
 
