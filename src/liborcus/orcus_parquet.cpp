@@ -19,6 +19,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <iostream>
+#include <unordered_map>
 
 namespace ss = orcus::spreadsheet;
 namespace fs = boost::filesystem;
@@ -184,6 +185,89 @@ class orcus_parquet::impl
         m_sheet->set_value(row, col, v);
     }
 
+    void dump_metadata(const parquet::FileMetaData& metadata) const
+    {
+        if (!m_config.debug)
+            return;
+
+        auto _bool_v = [](bool v) { return v ? "true" : "false"; };
+
+        auto _compression_v = [](parquet::Compression::type t) -> std::string_view
+        {
+            const std::unordered_map<parquet::Compression::type, std::string_view> mapping =
+            {
+                { parquet::Compression::UNCOMPRESSED, "UNCOMPRESSED" },
+                { parquet::Compression::SNAPPY, "SNAPPY" },
+                { parquet::Compression::GZIP, "GZIP" },
+                { parquet::Compression::BROTLI, "BROTLI" },
+                { parquet::Compression::ZSTD, "ZSTD" },
+                { parquet::Compression::LZ4, "LZ4" },
+                { parquet::Compression::LZ4_FRAME, "LZ4_FRAME" },
+                { parquet::Compression::LZO, "LZO" },
+                { parquet::Compression::BZ2, "BZ2" },
+                { parquet::Compression::LZ4_HADOOP, "LZ4_HADOOP" },
+            };
+
+            auto it = mapping.find(t);
+            return it == mapping.end() ? "???" : it->second;
+        };
+
+        std::cerr << "num columns: " << metadata.num_columns() << std::endl;
+        std::cerr << "num rows: " << metadata.num_rows() << std::endl;
+        std::cerr << "num row groups: " << metadata.num_row_groups() << std::endl;
+        std::cerr << "num schema elements: " << metadata.num_schema_elements() << std::endl;
+        std::cerr << "can decompress: " << _bool_v(metadata.can_decompress()) << std::endl;
+
+        for (int i = 0; i < metadata.num_row_groups(); ++i)
+        {
+            std::cerr << "row group " << i << ":" << std::endl;
+            auto rg = metadata.RowGroup(i);
+            std::cerr << "  num rows: " << rg->num_rows() << std::endl;
+            std::cerr << "  total byte size: " << rg->total_byte_size() << std::endl;
+            std::cerr << "  total compressed size: " << rg->total_compressed_size() << std::endl;
+            std::cerr << "  file offset: " << rg->file_offset() << std::endl;
+            std::cerr << "  num columns: " << rg->num_columns() << std::endl;
+
+            for (int j = 0; j < rg->num_columns(); ++j)
+            {
+                std::cerr << "  column chunk " << j << ":" << std::endl;
+                auto cc = rg->ColumnChunk(j);
+                std::cerr << "    file path: " << cc->file_path() << std::endl;
+                std::cerr << "    num values: " << cc->num_values() << std::endl;
+                std::cerr << "    type: " << cc->type() << std::endl;
+                std::cerr << "    data page offset: " << std::dec << cc->data_page_offset() << std::endl;
+                std::cerr << "    compression: " << _compression_v(cc->compression()) << std::endl;
+                std::cerr << "    has dictionary page: " << _bool_v(cc->has_dictionary_page()) << std::endl;
+
+                if (cc->has_dictionary_page())
+                    std::cerr << "    dictionary page offset: " << cc->dictionary_page_offset() << std::endl;
+
+                std::cerr << "    has index page: " << _bool_v(cc->has_index_page()) << std::endl;
+                if (cc->has_index_page())
+                    std::cerr << "    index page offset: " << cc->index_page_offset() << std::endl;
+            }
+        }
+
+        if (const parquet::SchemaDescriptor* schema_desc = metadata.schema(); schema_desc)
+        {
+            std::cerr << "schema:" << std::endl;
+            std::cerr << "  name: " << schema_desc->name() << std::endl;
+            std::cerr << "  num columns: " << schema_desc->num_columns() << std::endl;
+
+            for (int i = 0; i < schema_desc->num_columns(); ++i)
+            {
+                if (const parquet::ColumnDescriptor* col_desc = schema_desc->Column(i); col_desc)
+                {
+                    std::cerr << "  column " << i << ":" << std::endl;
+                    std::cerr << "    name: " << col_desc->name() << std::endl;
+                    std::cerr << "    physical type: " << col_desc->physical_type() << std::endl;
+                    std::cerr << "    converted type: " << col_desc->converted_type() << std::endl;
+                    std::cerr << "    type length: " << col_desc->type_length() << std::endl;
+                }
+            }
+        }
+    }
+
 public:
     impl(const config& c, ss::iface::import_factory* factory) : m_config(c), m_factory(factory) {}
 
@@ -197,6 +281,8 @@ public:
 
         auto file_reader = parquet::ParquetFileReader::Open(infile);
         auto file_md = file_reader->metadata();
+
+        dump_metadata(*file_md);
 
         if (file_md->num_rows() < 0 || file_md->num_columns() < 0)
             // Nothing to import. Bail out.
