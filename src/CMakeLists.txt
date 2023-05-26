@@ -5,56 +5,56 @@ add_subdirectory(liborcus)
 add_subdirectory(spreadsheet)
 
 add_executable(orcus-detect
-    ${PROJECT_SOURCE_DIR}/src/orcus_detect_main.cpp
+    orcus_detect_main.cpp
 )
 
 add_executable(orcus-css-dump
-    ${PROJECT_SOURCE_DIR}/src/orcus_css_dump.cpp
+    orcus_css_dump.cpp
 )
 
 add_executable(orcus-zip-dump
-    ${PROJECT_SOURCE_DIR}/src/orcus_zip_dump.cpp
+    orcus_zip_dump.cpp
 )
 
 add_executable(orcus-json
-    ${PROJECT_SOURCE_DIR}/src/cli_global.cpp
-    ${PROJECT_SOURCE_DIR}/src/orcus_json_cli.cpp
-    ${PROJECT_SOURCE_DIR}/src/orcus_json_cli_map.cpp
+    cli_global.cpp
+    orcus_json_cli.cpp
+    orcus_json_cli_map.cpp
 )
 
 add_executable(orcus-yaml
-    ${PROJECT_SOURCE_DIR}/src/orcus_yaml_main.cpp
+    orcus_yaml_main.cpp
 )
 
 add_executable(orcus-csv
-    ${PROJECT_SOURCE_DIR}/src/orcus_csv_main.cpp
-    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+    orcus_csv_main.cpp
+    orcus_filter_global.cpp
 )
 
 add_executable(orcus-xml
-    ${PROJECT_SOURCE_DIR}/src/orcus_xml_main.cpp
-    ${PROJECT_SOURCE_DIR}/src/cli_global.cpp
-    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+    orcus_xml_main.cpp
+    cli_global.cpp
+    orcus_filter_global.cpp
 )
 
 add_executable(orcus-ods
-    ${PROJECT_SOURCE_DIR}/src/orcus_ods_main.cpp
-    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+    orcus_ods_main.cpp
+    orcus_filter_global.cpp
 )
 
 add_executable(orcus-styles-ods
-    ${PROJECT_SOURCE_DIR}/src/orcus_ods_styles.cpp
-    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+    orcus_ods_styles.cpp
+    orcus_filter_global.cpp
 )
 
 add_executable(orcus-xlsx
-    ${PROJECT_SOURCE_DIR}/src/orcus_xlsx_main.cpp
-    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+    orcus_xlsx_main.cpp
+    orcus_filter_global.cpp
 )
 
 add_executable(orcus-xls-xml
-    ${PROJECT_SOURCE_DIR}/src/orcus_xls_xml_main.cpp
-    ${PROJECT_SOURCE_DIR}/src/orcus_filter_global.cpp
+    orcus_xls_xml_main.cpp
+    orcus_filter_global.cpp
 )
 
 target_link_libraries(orcus-detect orcus-${ORCUS_API_VERSION})
@@ -112,7 +112,7 @@ add_executable(orcus-test-import-ods EXCLUDE_FROM_ALL
     orcus_test_import_ods.cpp
 )
 
-set(_TESTS
+list(APPEND _TESTS
     orcus-test-csv
     orcus-test-ods
     orcus-test-xls-xml
@@ -122,6 +122,36 @@ set(_TESTS
     orcus-test-json-mapped
     orcus-test-import-ods
 )
+
+list(APPEND _INSTALL_TARGETS
+    orcus-detect
+    orcus-css-dump
+    orcus-zip-dump
+    orcus-json
+    orcus-yaml
+    orcus-csv
+    orcus-xml
+    orcus-ods
+    orcus-styles-ods
+    orcus-xlsx
+    orcus-xls-xml
+)
+
+if(ORCUS_WITH_PARQUET)
+    add_executable(orcus-parquet
+        orcus_parquet_main.cpp
+        orcus_filter_global.cpp
+    )
+    target_link_libraries(orcus-parquet
+        orcus-parser-${ORCUS_API_VERSION}
+        orcus-spreadsheet-model-${ORCUS_API_VERSION}
+        orcus-${ORCUS_API_VERSION}
+    )
+    list(APPEND _INSTALL_TARGETS orcus-parquet)
+
+    add_executable(orcus-test-parquet EXCLUDE_FROM_ALL orcus_test_parquet.cpp)
+    list(APPEND _TESTS orcus-test-parquet)
+endif()
 
 foreach(_TEST ${_TESTS})
     target_link_libraries(${_TEST}
@@ -151,18 +181,7 @@ endforeach()
 add_dependencies(check ${_TESTS})
 
 install(
-    TARGETS
-        orcus-detect
-        orcus-css-dump
-        orcus-zip-dump
-        orcus-json
-        orcus-yaml
-        orcus-csv
-        orcus-xml
-        orcus-ods
-        orcus-styles-ods
-        orcus-xlsx
-        orcus-xls-xml
+    TARGETS ${_INSTALL_TARGETS}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

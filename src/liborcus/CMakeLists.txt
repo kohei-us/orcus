@@ -1,5 +1,5 @@
 
-add_library(orcus-${ORCUS_API_VERSION} SHARED
+list(APPEND _SOURCES
 # core
     config.cpp
     css_document_tree.cpp
@@ -104,6 +104,12 @@ add_library(orcus-${ORCUS_API_VERSION} SHARED
 #   gnumeric_tokens.cpp
 #   orcus_gnumeric.cpp
 )
+
+if(WITH_ORCUS_PARQUET)
+    list(APPEND _SOURCES orcus_parquet.cpp)
+endif()
+
+add_library(orcus-${ORCUS_API_VERSION} SHARED ${_SOURCES})
 
 configure_file(constants.inl.in ${CMAKE_CURRENT_BINARY_DIR}/constants.inl)
 
