@@ -229,8 +229,9 @@ class orcus_parquet::impl
             return os.str();
         };
 
-        std::cerr << "size: " << metadata.size() << std::endl;
+        std::cerr << "metadata size: " << metadata.size() << std::endl;
         std::cerr << "version: " << _version_v(metadata.version()) << std::endl;
+        std::cerr << "created by: " << metadata.created_by() << std::endl;
         std::cerr << "num columns: " << metadata.num_columns() << std::endl;
         std::cerr << "num rows: " << metadata.num_rows() << std::endl;
         std::cerr << "num row groups: " << metadata.num_row_groups() << std::endl;
