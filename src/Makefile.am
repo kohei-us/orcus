@@ -568,6 +568,31 @@ TESTS += orcus-test-gnumeric
 
 endif # WITH_GNUMERIC_FILTER
 
+if WITH_PARQUET_FILTER
+
+EXTRA_PROGRAMS += orcus-test-parquet
+
+orcus_test_parquet_SOURCES = \
+	orcus_test_parquet.cpp
+
+orcus_test_parquet_LDADD = \
+	liborcus/liborcus-@ORCUS_API_VERSION@.la \
+	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	./test/liborcus-test.a \
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	@LIBIXION_LIBS@ \
+	$(BOOST_FILESYSTEM_LIBS) \
+	$(BOOST_SYSTEM_LIBS)
+
+orcus_test_parquet_CPPFLAGS = \
+	@LIBIXION_CFLAGS@  $(AM_CPPFLAGS) \
+	-I$(top_builddir)/lib/liborcus/liborcus.la -DSRCDIR=\""$(top_srcdir)"\"
+
+TESTS += \
+	orcus-test-parquet
+
+endif #WITH_PARQUET_FILTER
+
 endif # BUILD_SPREADSHEET_MODEL
 
 distclean-local:
