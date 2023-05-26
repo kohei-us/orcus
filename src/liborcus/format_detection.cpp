@@ -33,6 +33,12 @@
 #define XLS_XML_ENABLED 0
 #endif
 
+#ifdef __ORCUS_PARQUET
+#define PARQUET_ENABLED 1
+#else
+#define PARQUET_ENABLED 0
+#endif
+
 #if ODS_ENABLED
 #include "orcus/orcus_ods.hpp"
 #endif
@@ -44,6 +50,9 @@
 #endif
 #if XLS_XML_ENABLED
 #include "orcus/orcus_xls_xml.hpp"
+#endif
+#if PARQUET_ENABLED
+#include "orcus/orcus_parquet.hpp"
 #endif
 
 namespace orcus {
@@ -67,6 +76,10 @@ format_t detect(std::string_view strm) try
 #if XLS_XML_ENABLED
     if (orcus_xls_xml::detect(p, strm.size()))
         return format_t::xls_xml;
+#endif
+#if PARQUET_ENABLED
+    if (orcus_parquet::detect(p, strm.size()))
+        return format_t::parquet;
 #endif
 
     return format_t::unknown;

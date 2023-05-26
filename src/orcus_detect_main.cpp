@@ -37,19 +37,22 @@ int main(int argc, char** argv) try
     {
         case format_t::csv:
             cout << "plain text format";
-        break;
+            break;
         case format_t::gnumeric:
             cout << "Gnumeric";
-        break;
+            break;
         case format_t::ods:
             cout << "OpenDocument Spreadsheet";
-        break;
+            break;
         case format_t::xls_xml:
             cout << "Microsoft Excel XML";
-        break;
+            break;
         case format_t::xlsx:
             cout << "Microsoft Office Open XML Excel 2007+";
-        break;
+            break;
+        case format_t::parquet:
+            cout << "Apache Parquet";
+            break;
         case format_t::unknown:
         default:
             cout << "unknown";

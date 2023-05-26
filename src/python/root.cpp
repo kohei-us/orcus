@@ -46,6 +46,8 @@ PyObject* detect_format(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
                 return get_python_enum_value("FormatType", "GNUMERIC");
             case format_t::xls_xml:
                 return get_python_enum_value("FormatType", "XLS_XML");
+            case format_t::parquet:
+                return get_python_enum_value("FormatType", "PARQUET");
             case format_t::csv:
                 return get_python_enum_value("FormatType", "CSV");
             case format_t::unknown:

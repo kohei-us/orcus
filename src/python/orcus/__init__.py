@@ -29,6 +29,7 @@ class FormatType(Enum):
     YAML       = 6
     JSON       = 7
     XML        = 8
+    PARQUET    = 9
 
 
 class CellType(Enum):

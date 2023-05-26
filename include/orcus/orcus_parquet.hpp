@@ -23,7 +23,7 @@ public:
     orcus_parquet(spreadsheet::iface::import_factory* factory);
     ~orcus_parquet();
 
-    static bool detect(const unsigned char* blob, size_t size);
+    static bool detect(const unsigned char* blob, std::size_t size);
 
     virtual void read_file(std::string_view filepath) override;
 

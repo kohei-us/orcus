@@ -192,7 +192,22 @@ class orcus_parquet::impl
 
         auto _bool_v = [](bool v) { return v ? "true" : "false"; };
 
-        auto _compression_v = [](parquet::Compression::type t) -> std::string_view
+        auto _version_v = [](parquet::ParquetVersion::type t) -> std::string
+        {
+            const std::unordered_map<parquet::ParquetVersion::type, std::string_view> mapping =
+            {
+                { parquet::ParquetVersion::PARQUET_1_0, "PARQUET_1_0" },
+                { parquet::ParquetVersion::PARQUET_2_4, "PARQUET_2_4" },
+                { parquet::ParquetVersion::PARQUET_2_6, "PARQUET_2_6" },
+            };
+
+            std::ostringstream os;
+            auto it = mapping.find(t);
+            os << (it == mapping.end() ? "???" : it->second) << " (" << int(t) << ")";
+            return os.str();
+        };
+
+        auto _compression_v = [](parquet::Compression::type t) -> std::string
         {
             const std::unordered_map<parquet::Compression::type, std::string_view> mapping =
             {
@@ -208,10 +223,13 @@ class orcus_parquet::impl
                 { parquet::Compression::LZ4_HADOOP, "LZ4_HADOOP" },
             };
 
+            std::ostringstream os;
             auto it = mapping.find(t);
-            return it == mapping.end() ? "???" : it->second;
+            os << (it == mapping.end() ? "???" : it->second) << " (" << int(t) << ")";
+            return os.str();
         };
 
+        std::cerr << "version: " << _version_v(metadata.version()) << std::endl;
         std::cerr << "num columns: " << metadata.num_columns() << std::endl;
         std::cerr << "num rows: " << metadata.num_rows() << std::endl;
         std::cerr << "num row groups: " << metadata.num_row_groups() << std::endl;
@@ -378,9 +396,26 @@ orcus_parquet::orcus_parquet(spreadsheet::iface::import_factory* factory) :
 
 orcus_parquet::~orcus_parquet() = default;
 
-bool orcus_parquet::detect(const unsigned char* /*blob*/, size_t /*size*/)
+bool orcus_parquet::detect(const unsigned char* blob, std::size_t size)
 {
-    return false;
+    if (size < 8u)
+        // TODO: determine the real minimum size
+        return false;
+
+    const auto* p = blob;
+
+    // Check the first 4 bytes.
+    if (std::string_view(reinterpret_cast<const char*>(p), 4) != "PAR1")
+        return false;
+
+    // Check the last 4 bytes.
+    p += size - 4u;
+    if (std::string_view(reinterpret_cast<const char*>(p), 4) != "PAR1")
+        return false;
+
+    // TODO: anything else we can check?
+
+    return true;
 }
 
 void orcus_parquet::read_file(std::string_view filepath)

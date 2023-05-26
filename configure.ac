@@ -228,7 +228,7 @@ AS_IF([test "x$with_gnumeric_filter" != "xno"], [
 ])
 
 AS_IF([test "x$with_parquet_filter" != "xno"], [
-        CSSFLAGS="$CXXFLAGS -D__ORCUS_PARQUET"
+        CXXFLAGS="$CXXFLAGS -D__ORCUS_PARQUET"
         PKG_CHECK_MODULES([PARQUET], [parquet])
 ])
 
