@@ -5,10 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <orcus/format_detection.hpp>
-
-#include <iostream>
-
 #ifdef __ORCUS_ODS
 #define ODS_ENABLED 1
 #else
@@ -39,21 +35,25 @@
 #define PARQUET_ENABLED 0
 #endif
 
+#include <orcus/format_detection.hpp>
+
 #if ODS_ENABLED
-#include "orcus/orcus_ods.hpp"
+#include <orcus/orcus_ods.hpp>
 #endif
 #if XLSX_ENABLED
-#include "orcus/orcus_xlsx.hpp"
+#include <orcus/orcus_xlsx.hpp>
 #endif
 #if GNUMERIC_ENABLED
-#include "orcus/orcus_gnumeric.hpp"
+#include <orcus/orcus_gnumeric.hpp>
 #endif
 #if XLS_XML_ENABLED
-#include "orcus/orcus_xls_xml.hpp"
+#include <orcus/orcus_xls_xml.hpp>
 #endif
 #if PARQUET_ENABLED
-#include "orcus/orcus_parquet.hpp"
+#include <orcus/orcus_parquet.hpp>
 #endif
+
+#include <iostream>
 
 namespace orcus {
 
