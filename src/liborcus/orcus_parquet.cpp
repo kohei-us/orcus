@@ -229,6 +229,7 @@ class orcus_parquet::impl
             return os.str();
         };
 
+        std::cerr << "size: " << metadata.size() << std::endl;
         std::cerr << "version: " << _version_v(metadata.version()) << std::endl;
         std::cerr << "num columns: " << metadata.num_columns() << std::endl;
         std::cerr << "num rows: " << metadata.num_rows() << std::endl;
@@ -398,8 +399,9 @@ orcus_parquet::~orcus_parquet() = default;
 
 bool orcus_parquet::detect(const unsigned char* blob, std::size_t size)
 {
-    if (size < 8u)
-        // TODO: determine the real minimum size
+    if (size < 12u)
+        // At minimum header magic bytes (4), footer magic bytes (4), and the
+        // footer metadata length (4).
         return false;
 
     const auto* p = blob;
@@ -413,7 +415,20 @@ bool orcus_parquet::detect(const unsigned char* blob, std::size_t size)
     if (std::string_view(reinterpret_cast<const char*>(p), 4) != "PAR1")
         return false;
 
-    // TODO: anything else we can check?
+    // Check the footer metadata size (little endian)
+    p -= 1u;
+    std::uint32_t footer_size = *p--;
+    footer_size <<= 8;
+    footer_size |= *p--;
+    footer_size <<= 8;
+    footer_size |= *p--;
+    footer_size <<= 8;
+    footer_size |= *p;
+
+    p -= footer_size;
+    if (p <= blob)
+        // footer metadata position must be within the stream.
+        return false;
 
     return true;
 }
