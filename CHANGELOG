@@ -1,3 +1,10 @@
+orcus <next release>
+
+* parquet
+
+  * added partial support for Apache Parquet import filter.  This is still
+    heavily experimental.
+
 orcus 0.18.1
 
 * sax parser
