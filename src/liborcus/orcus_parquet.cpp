@@ -18,6 +18,7 @@
 #pragma GCC diagnostic pop
 
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
 #include <iostream>
 #include <unordered_map>
 
@@ -387,6 +388,29 @@ public:
 
             m_stream >> parquet::EndRow;
         }
+
+        m_factory->finalize();
+    }
+
+    void read_stream(std::string_view stream)
+    {
+        // TODO : Parquet API doesn't seem to support reading from stream. Figure
+        // out how to implement this properly.  For now, save the stream to a temp
+        // file and load from it.
+
+        fs::path tmp_path = fs::temp_directory_path() / fs::unique_path();
+
+        std::ofstream of{tmp_path.native()};
+        if (!of)
+        {
+            std::ostringstream os;
+            os << "failed to create a temporary file at " << tmp_path;
+            warn(os.str());
+            return;
+        }
+
+        of << stream;
+        read_file(tmp_path.native());
     }
 };
 
@@ -439,10 +463,9 @@ void orcus_parquet::read_file(std::string_view filepath)
     mp_impl->read_file(fs::path{std::string{filepath}});
 }
 
-void orcus_parquet::read_stream(std::string_view /*stream*/)
+void orcus_parquet::read_stream(std::string_view stream)
 {
-    // TODO : Parquet API doesn't seem to support reading from stream. Figure
-    // out how to implement this.
+    mp_impl->read_stream(stream);
 }
 
 std::string_view orcus_parquet::get_name() const
