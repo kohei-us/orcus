@@ -105,8 +105,21 @@ list(APPEND _SOURCES
 #   orcus_gnumeric.cpp
 )
 
-if(WITH_ORCUS_PARQUET)
+list(APPEND _COMPILE_DEFS
+    __ORCUS_BUILDING_DLL
+    __ORCUS_XLSX
+    __ORCUS_ODS
+    __ORCUS_XLS_XML
+)
+
+list(APPEND _LINK_LIBS
+    orcus-parser-${ORCUS_API_VERSION}
+)
+
+if(ORCUS_WITH_PARQUET)
     list(APPEND _SOURCES orcus_parquet.cpp)
+    list(APPEND _COMPILE_DEFS __ORCUS_PARQUET)
+    list(APPEND _LINK_LIBS Parquet::parquet_shared)
 endif()
 
 add_library(orcus-${ORCUS_API_VERSION} SHARED ${_SOURCES})
@@ -115,14 +128,9 @@ configure_file(constants.inl.in ${CMAKE_CURRENT_BINARY_DIR}/constants.inl)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-target_link_libraries(orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
+target_link_libraries(orcus-${ORCUS_API_VERSION} ${_LINK_LIBS})
 
-target_compile_definitions(orcus-${ORCUS_API_VERSION} PRIVATE
-    __ORCUS_BUILDING_DLL
-    __ORCUS_XLSX
-    __ORCUS_ODS
-    __ORCUS_XLS_XML
-)
+target_compile_definitions(orcus-${ORCUS_API_VERSION} PRIVATE ${_COMPILE_DEFS})
 
 # single-file test programs
 

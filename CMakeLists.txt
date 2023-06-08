@@ -71,6 +71,10 @@ if(ORCUS_WITH_CPU_FEATURES)
 
 endif()
 
+if(ORCUS_WITH_PARQUET)
+    find_package(Parquet)
+endif()
+
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src/include
