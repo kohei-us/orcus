@@ -43,7 +43,7 @@ void test_parquet_basic()
         spreadsheet::import_factory fact(doc);
         orcus_parquet app(&fact);
 
-        app.read_file(docpath.native());
+        app.read_file(docpath.string());
         assert(doc.get_sheet_count() == 1);
 
         // Dump the content of the model.
@@ -52,7 +52,7 @@ void test_parquet_basic()
         std::string check = os.str();
 
         const fs::path check_path = BASIC_TEST_DOC_DIR / (docpath.filename().string() + ".check");
-        file_content control{check_path.native()};
+        file_content control{check_path.string()};
 
         test::verify_content(__FILE__, __LINE__, control.str(), check);
     }
@@ -67,7 +67,7 @@ void test_parquet_detection()
         const auto docpath = BASIC_TEST_DOC_DIR / std::string{test_doc};
         assert(fs::is_regular_file(docpath));
 
-        file_content content{docpath.native()};
+        file_content content{docpath.string()};
         auto strm = content.str();
         bool res = orcus_parquet::detect(reinterpret_cast<const unsigned char*>(strm.data()), strm.size());
         assert(res);
