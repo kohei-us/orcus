@@ -14,7 +14,9 @@
 #pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <arrow/io/file.h>
+#include <arrow/io/memory.h>
 #include <parquet/stream_reader.h>
+#include <parquet/arrow/reader.h>
 #pragma GCC diagnostic pop
 
 #include <boost/filesystem/path.hpp>
@@ -289,18 +291,17 @@ class orcus_parquet::impl
         }
     }
 
-public:
-    impl(const config& c, ss::iface::import_factory* factory) : m_config(c), m_factory(factory) {}
-
-    void read_file(fs::path filepath)
+    void read_stream_with_sheet_name(std::string_view sheet_name, std::string_view stream)
     {
-        std::shared_ptr<arrow::io::ReadableFile> infile;
+        auto buf = std::make_shared<arrow::io::BufferReader>(stream);
 
-        PARQUET_ASSIGN_OR_THROW(
-            infile,
-            arrow::io::ReadableFile::Open(filepath.string()));
+        auto file_reader = parquet::ParquetFileReader::Open(buf);
+        if (!file_reader)
+        {
+            warn("failed to open a parquet file reader from an in-memory buffer.");
+            return;
+        }
 
-        auto file_reader = parquet::ParquetFileReader::Open(infile);
         auto file_md = file_reader->metadata();
 
         dump_metadata(*file_md);
@@ -309,7 +310,6 @@ public:
             // Nothing to import. Bail out.
             return;
 
-        auto sheet_name = filepath.stem().string();
         m_sheet = m_factory->append_sheet(0, sheet_name);
 
         if (!m_sheet)
@@ -392,25 +392,18 @@ public:
         m_factory->finalize();
     }
 
+public:
+    impl(const config& c, ss::iface::import_factory* factory) : m_config(c), m_factory(factory) {}
+
+    void read_file(fs::path filepath)
+    {
+        file_content fc(filepath.string());
+        read_stream_with_sheet_name(filepath.stem().string(), fc.str());
+    }
+
     void read_stream(std::string_view stream)
     {
-        // TODO : Parquet API doesn't seem to support reading from stream. Figure
-        // out how to implement this properly.  For now, save the stream to a temp
-        // file and load from it.
-
-        fs::path tmp_path = fs::temp_directory_path() / fs::unique_path();
-
-        std::ofstream of{tmp_path.native()};
-        if (!of)
-        {
-            std::ostringstream os;
-            os << "failed to create a temporary file at " << tmp_path;
-            warn(os.str());
-            return;
-        }
-
-        of << stream;
-        read_file(tmp_path.native());
+        read_stream_with_sheet_name("Data", stream);
     }
 };
 
