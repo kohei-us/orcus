@@ -19,6 +19,7 @@
 
 using namespace orcus;
 namespace fs = boost::filesystem;
+namespace ss = orcus::spreadsheet;
 
 const fs::path BASIC_TEST_DOC_DIR = SRCDIR"/test/parquet/basic";
 
@@ -27,6 +28,25 @@ constexpr std::string_view BASIC_TEST_DOCS[] = {
     "basic-nocomp.parquet",
     "basic-snappy.parquet",
     "basic-zstd.parquet",
+};
+
+struct doc_context
+{
+    ss::document doc;
+    ss::import_factory factory;
+    orcus_parquet app;
+
+    doc_context() :
+        doc{ss::range_size_t{1048576, 16384}}, factory{doc}, app{&factory}
+    {
+    }
+
+    std::string get_check_string() const
+    {
+        std::ostringstream os;
+        doc.dump_check(os);
+        return os.str();
+    }
 };
 
 void test_parquet_basic()
@@ -38,23 +58,27 @@ void test_parquet_basic()
         const auto docpath = BASIC_TEST_DOC_DIR / std::string{test_doc};
         assert(fs::is_regular_file(docpath));
 
-        spreadsheet::range_size_t ss{1048576, 16384};
-        spreadsheet::document doc{ss};
-        spreadsheet::import_factory fact(doc);
-        orcus_parquet app(&fact);
+        // Test the file import.
+        auto cxt = std::make_unique<doc_context>();
+        cxt->app.read_file(docpath.string());
+        assert(cxt->doc.get_sheet_count() == 1);
 
-        app.read_file(docpath.string());
-        assert(doc.get_sheet_count() == 1);
-
-        // Dump the content of the model.
-        std::ostringstream os;
-        doc.dump_check(os);
-        std::string check = os.str();
-
+        // Check the content vs control
         const fs::path check_path = BASIC_TEST_DOC_DIR / (docpath.filename().string() + ".check");
         file_content control{check_path.string()};
 
-        test::verify_content(__FILE__, __LINE__, control.str(), check);
+        test::verify_content(__FILE__, __LINE__, control.str(), cxt->get_check_string());
+
+        // Test the stream import.  Manually change the sheet name to the stem
+        // of the input file since the sheet name is set to 'Data' for stream
+        // imports.
+        cxt = std::make_unique<doc_context>();
+        file_content fc(docpath.string());
+        cxt->app.read_stream(fc.str());
+        cxt->doc.set_sheet_name(0, docpath.stem().string());
+
+        // Check the content vs control
+        test::verify_content(__FILE__, __LINE__, control.str(), cxt->get_check_string());
     }
 }
 

@@ -97,6 +97,14 @@ public:
     sheet_t get_sheet_index(std::string_view name) const;
     std::string_view get_sheet_name(sheet_t sheet_pos) const;
 
+    /**
+     * Set a new name to a sheet.
+     *
+     * @param sheet_pos 0-based position of a sheet.
+     * @param name      New name to set to a sheet.
+     */
+    void set_sheet_name(sheet_t sheet_pos, std::string name);
+
     range_size_t get_sheet_size() const;
     void set_sheet_size(const range_size_t& sheet_size);
     size_t get_sheet_count() const;

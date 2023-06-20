@@ -388,6 +388,15 @@ std::string_view document::get_sheet_name(sheet_t sheet_pos) const
     return mp_impl->sheets[pos]->name;
 }
 
+void document::set_sheet_name(sheet_t sheet_pos, std::string name)
+{
+    assert(mp_impl->sheets.size() == mp_impl->context.get_sheet_count());
+
+    std::string_view name_interned = mp_impl->string_pool_store.intern(name).first;
+    mp_impl->context.set_sheet_name(sheet_pos, std::move(name)); // will throw on invalid name or position
+    mp_impl->sheets[sheet_pos]->name = name_interned;
+}
+
 range_size_t document::get_sheet_size() const
 {
     ixion::rc_size_t ss = mp_impl->context.get_sheet_size();
