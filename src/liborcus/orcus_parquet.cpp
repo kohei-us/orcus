@@ -415,12 +415,28 @@ public:
     void read_file(fs::path filepath)
     {
         file_content fc(filepath.string());
-        read_stream_with_sheet_name(filepath.stem().string(), fc.str());
+        try
+        {
+            read_stream_with_sheet_name(filepath.stem().string(), fc.str());
+        }
+        catch (const std::exception& e)
+        {
+            warn(e.what());
+            m_factory->finalize();
+        }
     }
 
     void read_stream(std::string_view stream)
     {
-        read_stream_with_sheet_name("Data", stream);
+        try
+        {
+            read_stream_with_sheet_name("Data", stream);
+        }
+        catch (const std::exception& e)
+        {
+            warn(e.what());
+            m_factory->finalize();
+        }
     }
 };
 
