@@ -94,7 +94,10 @@ class orcus_parquet::impl
             case parquet::ConvertedType::UTF8:
             {
                 if (!m_sstrings)
+                {
+                    m_stream.SkipColumns(1);
                     break;
+                }
 
                 std::string v;
                 m_stream >> v;
@@ -103,13 +106,20 @@ class orcus_parquet::impl
                 break;
             }
             default:
-                warn("WIP: unhandled converted type for BYTE_ARRAY");
+            {
+                std::ostringstream os;
+                os << "WIP: unhandled converted type for BYTE_ARRAY (converted="
+                    << p->converted_type() << ")";
+                warn(os.str());
+                m_stream.SkipColumns(1);
+            }
         }
     }
 
     void import_fixed_len_byte_array(ss::row_t /*row*/, ss::col_t /*col*/, const parquet::ColumnDescriptor* /*p*/)
     {
         warn("WIP: physical=FIXED_LEN_BYTE_ARRAY not handled yet");
+        m_stream.SkipColumns(1);
     }
 
     void import_int32(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
@@ -125,6 +135,7 @@ class orcus_parquet::impl
             }
             default:
                 warn("WIP: unhandled converted type for INT32");
+                m_stream.SkipColumns(1);
         }
     }
 
@@ -141,12 +152,14 @@ class orcus_parquet::impl
             }
             default:
                 warn("WIP: unhandled converted type for INT64");
+                m_stream.SkipColumns(1);
         }
     }
 
     void import_int96(ss::row_t /*row*/, ss::col_t /*col*/, const parquet::ColumnDescriptor* /*p*/)
     {
         warn("WIP: physical=INT96 not handled yet");
+        m_stream.SkipColumns(1);
     }
 
     void import_boolean(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
@@ -154,6 +167,7 @@ class orcus_parquet::impl
         if (p->converted_type() != parquet::ConvertedType::NONE)
         {
             warn("WIP: unhandled covnerted type for BOOLEAN");
+            m_stream.SkipColumns(1);
             return;
         }
 
@@ -167,6 +181,7 @@ class orcus_parquet::impl
         if (p->converted_type() != parquet::ConvertedType::NONE)
         {
             warn("WIP: unhandled covnerted type for FLOAT");
+            m_stream.SkipColumns(1);
             return;
         }
 
@@ -180,6 +195,7 @@ class orcus_parquet::impl
         if (p->converted_type() != parquet::ConvertedType::NONE)
         {
             warn("WIP: unhandled covnerted type for DOUBLE");
+            m_stream.SkipColumns(1);
             return;
         }
 
@@ -382,6 +398,7 @@ class orcus_parquet::impl
                         std::ostringstream os;
                         os << "WIP: type not handled: physical=" << p->physical_type() << "; converted=" << p->converted_type();
                         warn(os.str());
+                        m_stream.SkipColumns(1);
                     }
                 }
             }
