@@ -63,7 +63,7 @@ class orcus_parquet::impl
         return columns;
     }
 
-    void warn(std::string_view msg)
+    void warn(std::string_view msg) const
     {
         if (!m_config.debug)
             return;
@@ -87,6 +87,26 @@ class orcus_parquet::impl
         }
     }
 
+    template<typename T>
+    std::optional<T> read_or_warn(ss::row_t row, ss::col_t col)
+    {
+        T v;
+
+        try
+        {
+            m_stream >> v;
+            return v;
+        }
+        catch (const std::exception& e)
+        {
+            std::ostringstream os;
+            os << "failed to read a value for (row=" << row << "; col=" << col << ")";
+            warn(os.str());
+        }
+
+        return std::optional<T>{};
+    }
+
     void import_byte_array(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
     {
         switch (p->converted_type())
@@ -99,10 +119,11 @@ class orcus_parquet::impl
                     break;
                 }
 
-                std::string v;
-                m_stream >> v;
-                std::size_t si = m_sstrings->add(v);
-                m_sheet->set_string(row, col, si);
+                if (auto v = read_or_warn<std::string>(row, col); v)
+                {
+                    std::size_t si = m_sstrings->add(*v);
+                    m_sheet->set_string(row, col, si);
+                }
                 break;
             }
             default:
@@ -128,9 +149,8 @@ class orcus_parquet::impl
         {
             case parquet::ConvertedType::NONE:
             {
-                int32_t v;
-                m_stream >> v;
-                m_sheet->set_value(row, col, v);
+                if (auto v = read_or_warn<int32_t>(row, col); v)
+                    m_sheet->set_value(row, col, *v);
                 break;
             }
             default:
@@ -145,9 +165,8 @@ class orcus_parquet::impl
         {
             case parquet::ConvertedType::NONE:
             {
-                int64_t v;
-                m_stream >> v;
-                m_sheet->set_value(row, col, v);
+                if (auto v = read_or_warn<int64_t>(row, col); v)
+                    m_sheet->set_value(row, col, *v);
                 break;
             }
             default:
@@ -171,9 +190,8 @@ class orcus_parquet::impl
             return;
         }
 
-        bool v;
-        m_stream >> v;
-        m_sheet->set_bool(row, col, v);
+        if (auto v = read_or_warn<bool>(row, col); v)
+            m_sheet->set_bool(row, col, *v);
     }
 
     void import_float(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
@@ -185,9 +203,8 @@ class orcus_parquet::impl
             return;
         }
 
-        float v;
-        m_stream >> v;
-        m_sheet->set_value(row, col, v);
+        if (auto v = read_or_warn<float>(row, col); v)
+            m_sheet->set_value(row, col, *v);
     }
 
     void import_double(ss::row_t row, ss::col_t col, const parquet::ColumnDescriptor* p)
@@ -199,9 +216,8 @@ class orcus_parquet::impl
             return;
         }
 
-        double v;
-        m_stream >> v;
-        m_sheet->set_value(row, col, v);
+        if (auto v = read_or_warn<double>(row, col); v)
+            m_sheet->set_value(row, col, *v);
     }
 
     void dump_metadata(const parquet::FileMetaData& metadata) const
