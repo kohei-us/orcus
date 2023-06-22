@@ -100,7 +100,7 @@ class orcus_parquet::impl
         catch (const std::exception& e)
         {
             std::ostringstream os;
-            os << "failed to read a value for (row=" << row << "; col=" << col << ")";
+            os << "failed to read a value for (row=" << row << "; col=" << col << "): " << e.what();
             warn(os.str());
         }
 
