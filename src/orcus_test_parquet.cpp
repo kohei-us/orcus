@@ -28,6 +28,7 @@ constexpr std::string_view BASIC_TEST_DOCS[] = {
     "basic-nocomp.parquet",
     "basic-snappy.parquet",
     "basic-zstd.parquet",
+    "float-with-nan.parquet",
 };
 
 struct doc_context
@@ -56,6 +57,7 @@ void test_parquet_basic()
     for (auto test_doc : BASIC_TEST_DOCS)
     {
         const auto docpath = BASIC_TEST_DOC_DIR / std::string{test_doc};
+        std::cout << docpath << std::endl;
         assert(fs::is_regular_file(docpath));
 
         // Test the file import.

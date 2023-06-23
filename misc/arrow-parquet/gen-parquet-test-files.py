@@ -8,7 +8,6 @@
 ########################################################################
 
 import pandas as pd
-import argparse
 from pathlib import Path
 
 
@@ -51,11 +50,19 @@ gen_str.values = (
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--destdir", type=Path, default=Path("../../test/parquet/basic"))
-    args = parser.parse_args()
+    data = {
+        "float64 with nan": [1.2, 3.4, None, None, 5.6]
+    }
 
-    args.destdir.mkdir(parents=True, exist_ok=True)
+    df = pd.DataFrame(data=data)
+    df["float64 with nan"] = df["float64 with nan"].astype("float64")
+
+    print(df)
+    print(df.dtypes)
+
+    outdir = Path("../../test/parquet/basic")
+    outpath = outdir / "float-with-non.parquet"
+    df.to_parquet(outpath, engine="pyarrow", compression=None)
 
     row_size = 10
     data = {
@@ -75,9 +82,9 @@ def main():
     print(df)
     print(df.dtypes)
 
-    df.to_parquet(args.destdir / f"basic-nocomp.parquet", engine="pyarrow", compression=None)
+    df.to_parquet(outdir / f"basic-nocomp.parquet", engine="pyarrow", compression=None)
     for comp in ("gzip", "snappy", "zstd"):
-        df.to_parquet(args.destdir / f"basic-{comp}.parquet", engine="pyarrow", compression=comp)
+        df.to_parquet(outdir / f"basic-{comp}.parquet", engine="pyarrow", compression=comp)
 
 
 if __name__ == "__main__":

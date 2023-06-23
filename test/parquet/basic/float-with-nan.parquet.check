@@ -1,0 +1,4 @@
+float-with-nan/0/0:string:"float64 with nan"
+float-with-nan/1/0:numeric:1.2
+float-with-nan/2/0:numeric:3.4
+float-with-nan/5/0:numeric:5.6
