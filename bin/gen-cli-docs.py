@@ -162,6 +162,7 @@ def main():
         "orcus-xml",
         "orcus-xls-xml",
         "orcus-yaml",
+        "orcus-parquet",
     )
     for cmd in cmds:
         parse(args.cmd_dir, args.output_dir, cmd)

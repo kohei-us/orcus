@@ -9,6 +9,7 @@ CLI
    orcus_gnumeric.rst
    orcus_json.rst
    orcus_ods.rst
+   orcus_parquet.rst
    orcus_xls_xml.rst
    orcus_xlsx.rst
    orcus_xml.rst

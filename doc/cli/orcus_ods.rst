@@ -43,11 +43,13 @@ Options
   
     - check - Flat format that fully encodes document content. Suitable for automated testing.
     - csv - CSV format.
+    - debug-state - This format dumps the internal state of the document in detail, useful for debugging.
     - flat - Flat text format that displays document content in grid.
     - html - HTML format.
     - json - JSON format.
     - none - No output to be generated. Maybe useful during development.
     - xml - This format is currently unsupported.
+    - yaml - This format is currently unsupported.
 
 - ``--row-size arg``
 

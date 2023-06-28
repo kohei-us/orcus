@@ -1,4 +1,4 @@
-orcus-xls-xml
+orcus-parquet
 =============
 
 Usage
@@ -6,7 +6,7 @@ Usage
 
 .. code-block::
 
-   orcus-xls-xml [options] FILE
+   orcus-parquet [options] FILE
 
 The FILE must specify a path to an existing file.
 
