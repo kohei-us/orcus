@@ -26,7 +26,7 @@ int main(int argc, char** argv)
         spreadsheet::import_factory fact(doc, view);
         orcus_xlsx app(&fact);
 
-        if (parse_import_filter_args(argc, argv, fact, app, doc))
+        if (!parse_import_filter_args(argc, argv, fact, app, doc))
             return EXIT_FAILURE;
     }
     catch (const std::exception& e)

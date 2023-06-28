@@ -20,7 +20,7 @@ int main(int argc, char** argv) try
     orcus::spreadsheet::import_factory fact(doc);
     orcus::orcus_parquet app(&fact);
 
-    if (parse_import_filter_args(argc, argv, fact, app, doc))
+    if (!parse_import_filter_args(argc, argv, fact, app, doc))
         return EXIT_FAILURE;
 
     return EXIT_SUCCESS;

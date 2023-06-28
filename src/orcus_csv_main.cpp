@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 
     try
     {
-        if (parse_import_filter_args(argc, argv, fact, app, doc, &hdl))
+        if (!parse_import_filter_args(argc, argv, fact, app, doc, &hdl))
             return EXIT_FAILURE;
     }
     catch (const std::exception& e)
