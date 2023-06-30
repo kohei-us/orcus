@@ -323,6 +323,28 @@ class orcus_parquet::impl
         }
     }
 
+    /**
+     * Check to see if this file is safe to load.  There are some conditions
+     * that are known to lead to trouble if we proceed to load.
+     */
+    bool is_safe_to_load(const parquet::FileMetaData& metadata) const
+    {
+        const parquet::SchemaDescriptor* schema = metadata.schema();
+        if (!schema)
+            return false;
+
+        const auto* gnode = schema->group_node();
+        if (!gnode)
+            return false;
+
+        if (schema->group_node()->field_count() != schema->num_columns())
+            // StreamReader assumes these two values to be equal, and crashes
+            // if not.  But with some files the two can be different.
+            return false;
+
+        return true;
+    }
+
     void read_stream_with_sheet_name(std::string_view sheet_name, std::string_view stream)
     {
         auto buf = std::make_shared<arrow::io::BufferReader>(stream);
@@ -337,6 +359,12 @@ class orcus_parquet::impl
         auto file_md = file_reader->metadata();
 
         dump_metadata(*file_md);
+
+        if (!is_safe_to_load(*file_md))
+        {
+            warn("aborting because this file exhibits a condition known to lead to issues if loaded.");
+            return;
+        }
 
         if (file_md->num_rows() < 0 || file_md->num_columns() < 0)
             // Nothing to import. Bail out.
