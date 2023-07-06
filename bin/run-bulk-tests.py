@@ -15,7 +15,7 @@ from pathlib import Path
 
 
 def main():
-    desc="""Tool to bulk-test a number of files and collect all their results
+    desc = """Tool to bulk-test a number of files and collect all their results
     into a single output directory."""
 
     parser = argparse.ArgumentParser(description=desc)
@@ -61,4 +61,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
