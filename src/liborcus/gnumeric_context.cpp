@@ -15,13 +15,7 @@
 #include <fstream>
 #include <algorithm>
 
-using namespace std;
-
 namespace orcus {
-
-namespace {
-
-}
 
 gnumeric_content_xml_context::gnumeric_content_xml_context(
     session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
@@ -33,9 +27,7 @@ gnumeric_content_xml_context::gnumeric_content_xml_context(
     register_child(&m_cxt_sheet);
 }
 
-gnumeric_content_xml_context::~gnumeric_content_xml_context()
-{
-}
+gnumeric_content_xml_context::~gnumeric_content_xml_context() = default;
 
 xml_context_base* gnumeric_content_xml_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
@@ -55,28 +47,11 @@ void gnumeric_content_xml_context::end_child_context(xmlns_id_t /*ns*/, xml_toke
 void gnumeric_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& /*attrs*/)
 {
     push_stack(ns, name);
-
-    if (ns == NS_gnumeric_gnm)
-    {
-        switch (name)
-        {
-            default:
-                warn_unhandled();
-        }
-    }
-    else
-        warn_unhandled();
+    warn_unhandled();
 }
 
 bool gnumeric_content_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
-    if (ns == NS_gnumeric_gnm)
-    {
-        switch (name)
-        {
-
-        }
-    }
     return pop_stack(ns, name);
 }
 
@@ -85,4 +60,5 @@ void gnumeric_content_xml_context::characters(std::string_view /*str*/, bool /*t
 }
 
 }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
