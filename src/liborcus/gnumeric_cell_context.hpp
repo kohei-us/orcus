@@ -69,8 +69,6 @@ private:
     spreadsheet::iface::import_factory* mp_factory;
     spreadsheet::iface::import_sheet* mp_sheet;
 
-    string_pool m_pool;
-
     std::optional<cell_data> m_cell_data;
     std::string_view m_chars;
 };

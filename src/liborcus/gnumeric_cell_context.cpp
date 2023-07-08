@@ -68,16 +68,14 @@ bool gnumeric_cell_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void gnumeric_cell_context::characters(std::string_view str, bool transient)
 {
+    m_chars = str;
     if (transient)
-        m_chars = m_pool.intern(str).first;
-    else
-        m_chars = str;
+        m_chars = intern(m_chars);
 }
 
 void gnumeric_cell_context::reset(ss::iface::import_sheet* sheet)
 {
     m_cell_data.reset();
-    m_pool.clear();
     m_chars = std::string_view{};
     mp_sheet = sheet;
 }
