@@ -22,6 +22,7 @@ namespace {
 
 std::vector<const char*> dirs = {
     SRCDIR"/test/gnumeric/raw-values-1/",
+    SRCDIR"/test/gnumeric/formula-cells/",
 };
 
 void test_gnumeric_import()
@@ -39,6 +40,9 @@ void test_gnumeric_import()
         spreadsheet::import_factory factory(doc);
         orcus_gnumeric app(&factory);
         app.read_file(path.c_str());
+
+        // Gnumeric doc doesn't cache formula results.
+        doc.recalc_formula_cells();
 
         // Dump the content of the model.
         ostringstream os;
