@@ -20,31 +20,8 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
-enum gnumeric_cell_type
-{
-    cell_type_bool,
-    cell_type_value,
-    cell_type_string,
-    cell_type_formula,
-    cell_type_shared_formula,
-    cell_type_array,
-    cell_type_unknown
-};
-
-
-struct gnumeric_cell_data
-{
-    gnumeric_cell_data() : row(0), col(0), cell_type(cell_type_unknown), shared_formula_id(-1),
-                            array_rows(0), array_cols(0) {}
-    ss::row_t row;
-    ss::col_t col;
-    gnumeric_cell_type cell_type;
-    std::size_t shared_formula_id;
-    ss::row_t array_rows;
-    ss::col_t array_cols;
-};
-
-gnumeric_cell_context::gnumeric_cell_context(session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
+gnumeric_cell_context::gnumeric_cell_context(
+    session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
     mp_sheet(nullptr)
@@ -53,7 +30,8 @@ gnumeric_cell_context::gnumeric_cell_context(session_context& session_cxt, const
 
 gnumeric_cell_context::~gnumeric_cell_context() = default;
 
-void gnumeric_cell_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
+void gnumeric_cell_context::start_element(
+    xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     push_stack(ns, name);
 
@@ -98,7 +76,7 @@ void gnumeric_cell_context::characters(std::string_view str, bool transient)
 
 void gnumeric_cell_context::reset(ss::iface::import_sheet* sheet)
 {
-    mp_cell_data.reset();
+    m_cell_data.reset();
     m_pool.clear();
     m_chars = std::string_view{};
     mp_sheet = sheet;
@@ -106,48 +84,47 @@ void gnumeric_cell_context::reset(ss::iface::import_sheet* sheet)
 
 void gnumeric_cell_context::start_cell(const xml_token_attrs_t& attrs)
 {
-    mp_cell_data.reset(new gnumeric_cell_data);
-    mp_cell_data->cell_type = cell_type_formula;
+    m_cell_data = cell_data{};
+    m_cell_data->type = cell_type_formula;
 
     for (const auto& attr : attrs)
     {
         switch (attr.name)
         {
             case XML_Row:
-                mp_cell_data->row = to_long(attr.value);
+                m_cell_data->row = to_long(attr.value);
                 break;
             case XML_Col:
-                mp_cell_data->col = to_long(attr.value);
+                m_cell_data->col = to_long(attr.value);
                 break;
             case XML_ValueType:
             {
-                long value_type = to_long(attr.value);
-                switch (value_type)
+                switch (to_long(attr.value))
                 {
                     case 20:
-                        mp_cell_data->cell_type = cell_type_bool;
+                        m_cell_data->type = cell_type_bool;
                         break;
                     case 30:
                     case 40:
-                        mp_cell_data->cell_type = cell_type_value;
+                        m_cell_data->type = cell_type_value;
                         break;
                     case 60:
-                        mp_cell_data->cell_type = cell_type_string;
+                        m_cell_data->type = cell_type_string;
                         break;
                 }
                 break;
             }
             case XML_ExprID:
-                mp_cell_data->shared_formula_id = to_long(attr.value);
-                mp_cell_data->cell_type = cell_type_shared_formula;
+                m_cell_data->shared_formula_id = to_long(attr.value);
+                m_cell_data->type = cell_type_shared_formula;
                 break;
             case XML_Rows:
-                mp_cell_data->array_rows = to_long(attr.value);
-                mp_cell_data->cell_type = cell_type_array;
+                m_cell_data->array_rows = to_long(attr.value);
+                m_cell_data->type = cell_type_array;
                 break;
             case XML_Cols:
-                mp_cell_data->array_cols = to_long(attr.value);
-                mp_cell_data->cell_type = cell_type_array;
+                m_cell_data->array_cols = to_long(attr.value);
+                m_cell_data->type = cell_type_array;
                 break;
         }
     }
@@ -155,13 +132,13 @@ void gnumeric_cell_context::start_cell(const xml_token_attrs_t& attrs)
 
 void gnumeric_cell_context::end_cell()
 {
-    if (!mp_cell_data)
+    if (!m_cell_data)
         return;
 
-    ss::col_t col = mp_cell_data->col;
-    ss::row_t row = mp_cell_data->row;
-    gnumeric_cell_type cell_type = mp_cell_data->cell_type;
-    switch (cell_type)
+    ss::col_t col = m_cell_data->col;
+    ss::row_t row = m_cell_data->row;
+
+    switch (m_cell_data->type)
     {
         case cell_type_value:
         {
@@ -207,7 +184,7 @@ void gnumeric_cell_context::end_cell()
                 break;
 
             xformula->set_formula(ss::formula_grammar_t::gnumeric, m_chars.substr(1));
-            xformula->set_shared_formula_index(mp_cell_data->shared_formula_id);
+            xformula->set_shared_formula_index(m_cell_data->shared_formula_id);
             xformula->commit();
             break;
         }
@@ -216,8 +193,8 @@ void gnumeric_cell_context::end_cell()
             ss::range_t range;
             range.first.column = col;
             range.first.row = row;
-            range.last.column = col + mp_cell_data->array_cols - 1;
-            range.last.row = row + mp_cell_data->array_rows - 1;
+            range.last.column = col + m_cell_data->array_cols - 1;
+            range.last.row = row + m_cell_data->array_rows - 1;
 
             ss::iface::import_array_formula* af = mp_sheet->get_array_formula();
             if (!af)
@@ -242,7 +219,7 @@ void gnumeric_cell_context::end_cell()
             ;
     }
 
-    mp_cell_data.reset();
+    m_cell_data.reset();
 }
 
 }

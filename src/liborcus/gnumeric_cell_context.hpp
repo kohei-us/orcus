@@ -11,6 +11,9 @@
 #include "xml_context_base.hpp"
 
 #include <orcus/string_pool.hpp>
+#include <orcus/spreadsheet/types.hpp>
+
+#include <optional>
 
 namespace orcus {
 
@@ -25,6 +28,27 @@ struct gnumeric_cell_data;
 
 class gnumeric_cell_context : public xml_context_base
 {
+    enum cell_type
+    {
+        cell_type_unknown,
+        cell_type_bool,
+        cell_type_value,
+        cell_type_string,
+        cell_type_formula,
+        cell_type_shared_formula,
+        cell_type_array,
+    };
+
+    struct cell_data
+    {
+        cell_type type = cell_type_unknown;
+        spreadsheet::row_t row = 0;
+        spreadsheet::col_t col = 0;
+        spreadsheet::row_t array_rows = 0;
+        spreadsheet::col_t array_cols = 0;
+        std::size_t shared_formula_id = 0;
+    };
+
 public:
     gnumeric_cell_context(
         session_context& session_cxt, const tokens& tokens,
@@ -40,19 +64,15 @@ public:
 private:
     void start_cell(const xml_token_attrs_t& attrs);
     void end_cell();
+
 private:
     spreadsheet::iface::import_factory* mp_factory;
-
-    std::unique_ptr<gnumeric_cell_data> mp_cell_data;
+    spreadsheet::iface::import_sheet* mp_sheet;
 
     string_pool m_pool;
 
-    /**
-    * Used for temporary storage of characters
-    */
+    std::optional<cell_data> m_cell_data;
     std::string_view m_chars;
-
-    spreadsheet::iface::import_sheet* mp_sheet;
 };
 
 } // namespace orcus
