@@ -64,28 +64,28 @@ private:
     gnumeric_style_region& m_style_region_data;
 };
 
-spreadsheet::condition_operator_t get_condition_operator(int val)
+ss::condition_operator_t get_condition_operator(int val)
 {
     switch(val)
     {
         case 0:
-            return spreadsheet::condition_operator_t::between;
+            return ss::condition_operator_t::between;
         case 1:
-            return spreadsheet::condition_operator_t::not_between;
+            return ss::condition_operator_t::not_between;
         case 2:
-            return spreadsheet::condition_operator_t::equal;
+            return ss::condition_operator_t::equal;
         case 3:
-            return spreadsheet::condition_operator_t::not_equal;
+            return ss::condition_operator_t::not_equal;
         case 4:
-            return spreadsheet::condition_operator_t::greater;
+            return ss::condition_operator_t::greater;
         case 5:
-            return spreadsheet::condition_operator_t::less;
+            return ss::condition_operator_t::less;
         case 6:
-            return spreadsheet::condition_operator_t::greater_equal;
+            return ss::condition_operator_t::greater_equal;
         case 7:
-            return spreadsheet::condition_operator_t::less_equal;
+            return ss::condition_operator_t::less_equal;
         case 8:
-            return spreadsheet::condition_operator_t::expression;
+            return ss::condition_operator_t::expression;
         case 9:
         case 10:
         case 11:
@@ -95,31 +95,31 @@ spreadsheet::condition_operator_t get_condition_operator(int val)
         case 15:
             break;
         case 16:
-            return spreadsheet::condition_operator_t::contains;
+            return ss::condition_operator_t::contains;
         case 17:
-            return spreadsheet::condition_operator_t::not_contains;
+            return ss::condition_operator_t::not_contains;
         case 18:
-            return spreadsheet::condition_operator_t::begins_with;
+            return ss::condition_operator_t::begins_with;
         case 19:
             break;
         case 20:
-            return spreadsheet::condition_operator_t::ends_with;
+            return ss::condition_operator_t::ends_with;
         case 21:
             break;
         case 22:
-            return spreadsheet::condition_operator_t::contains_error;
+            return ss::condition_operator_t::contains_error;
         case 23:
-            return spreadsheet::condition_operator_t::contains_no_error;
+            return ss::condition_operator_t::contains_no_error;
         default:
             break;
     }
-    return orcus::spreadsheet::condition_operator_t::unknown;
+    return ss::condition_operator_t::unknown;
 }
 
 class gnumeric_condition_attr_parser
 {
 public:
-    gnumeric_condition_attr_parser(spreadsheet::iface::import_conditional_format* cond_format):
+    gnumeric_condition_attr_parser(ss::iface::import_conditional_format* cond_format):
         m_cond_format(cond_format) {}
 
     void operator()(const xml_token_attr_t& attr)
@@ -129,7 +129,7 @@ public:
             case XML_Operator:
             {
                 int val = atoi(attr.value.data());
-                spreadsheet::condition_operator_t op = get_condition_operator(val);
+                ss::condition_operator_t op = get_condition_operator(val);
                 m_cond_format->set_operator(op);
             }
             break;
@@ -139,7 +139,7 @@ public:
     }
 
 private:
-    spreadsheet::iface::import_conditional_format* m_cond_format;
+    ss::iface::import_conditional_format* m_cond_format;
 };
 
 class gnumeric_col_row_info
@@ -231,7 +231,7 @@ enum gnumeric_filter_field_type_t
 class gnumeric_autofilter_field_attr_parser
 {
 public:
-    gnumeric_autofilter_field_attr_parser(spreadsheet::iface::import_auto_filter& auto_filter):
+    gnumeric_autofilter_field_attr_parser(ss::iface::import_auto_filter& auto_filter):
         m_auto_filter(auto_filter),
         m_filter_field_type(filter_type_invalid),
         m_filter_op(filter_op_invalid) {}
@@ -242,7 +242,7 @@ public:
         {
             case XML_Index:
             {
-                spreadsheet::col_t col = atoi(attr.value.data());
+                ss::col_t col = atoi(attr.value.data());
                 m_auto_filter.set_column(col);
             }
             break;
@@ -318,7 +318,7 @@ private:
         }
     }
 
-    spreadsheet::iface::import_auto_filter& m_auto_filter;
+    ss::iface::import_auto_filter& m_auto_filter;
 
     gnumeric_filter_field_type_t m_filter_field_type;
     gnumeric_filter_field_op_t m_filter_op;
@@ -331,7 +331,7 @@ private:
 
 
 gnumeric_sheet_context::gnumeric_sheet_context(
-    session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
+    session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
     m_sheet_index(-1),
@@ -382,8 +382,8 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
             break;
             case XML_Filter:
             {
-                spreadsheet::iface::import_reference_resolver* resolver =
-                    mp_factory->get_reference_resolver(spreadsheet::formula_ref_context_t::global);
+                ss::iface::import_reference_resolver* resolver =
+                    mp_factory->get_reference_resolver(ss::formula_ref_context_t::global);
 
                 mp_auto_filter = mp_sheet->get_auto_filter();
 
@@ -395,7 +395,7 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
                         {
                             case XML_Area:
                             {
-                                spreadsheet::range_t range = to_rc_range(
+                                ss::range_t range = to_rc_range(
                                     resolver->resolve_range(attr.value));
                                 mp_auto_filter->set_range(range);
                             }
@@ -510,7 +510,7 @@ void gnumeric_sheet_context::characters(std::string_view str, bool transient)
         m_chars = str;
 }
 
-void gnumeric_sheet_context::reset(spreadsheet::sheet_t sheet_index)
+void gnumeric_sheet_context::reset(ss::sheet_t sheet_index)
 {
     m_sheet_index = sheet_index;
 
@@ -564,13 +564,13 @@ void gnumeric_sheet_context::start_font(const xml_token_attrs_t& attrs)
                 switch (n)
                 {
                     case 0:
-                        font_style->set_underline(spreadsheet::underline_t::none);
+                        font_style->set_underline(ss::underline_t::none);
                         break;
                     case 1:
-                        font_style->set_underline(spreadsheet::underline_t::single_line);
+                        font_style->set_underline(ss::underline_t::single_line);
                         break;
                     case 2:
-                        font_style->set_underline(spreadsheet::underline_t::double_line);
+                        font_style->set_underline(ss::underline_t::double_line);
                         break;
                 }
                 break;
@@ -583,7 +583,7 @@ void gnumeric_sheet_context::start_col(const xml_token_attrs_t& attrs)
 {
     gnumeric_col_row_info col_info = for_each(attrs.begin(), attrs.end(),
             gnumeric_col_row_info());
-    spreadsheet::iface::import_sheet_properties* p_sheet_props = mp_sheet->get_sheet_properties();
+    ss::iface::import_sheet_properties* p_sheet_props = mp_sheet->get_sheet_properties();
     double col_size = col_info.get_size();
     bool hidden = col_info.is_hidden();
     std::size_t col = col_info.get_position();
@@ -597,7 +597,7 @@ void gnumeric_sheet_context::start_row(const xml_token_attrs_t& attrs)
 {
     gnumeric_col_row_info row_info = for_each(attrs.begin(), attrs.end(),
             gnumeric_col_row_info());
-    spreadsheet::iface::import_sheet_properties* p_sheet_props = mp_sheet->get_sheet_properties();
+    ss::iface::import_sheet_properties* p_sheet_props = mp_sheet->get_sheet_properties();
     double row_size = row_info.get_size();
     bool hidden = row_info.is_hidden();
     for (size_t i = row_info.get_position(),
@@ -744,7 +744,7 @@ void gnumeric_sheet_context::start_style_region(const xml_token_attrs_t& attrs)
 
 void gnumeric_sheet_context::start_condition(const xml_token_attrs_t& attrs)
 {
-    spreadsheet::iface::import_conditional_format* cond_format =
+    ss::iface::import_conditional_format* cond_format =
         mp_sheet->get_conditional_format();
     if (cond_format)
     {
@@ -759,7 +759,7 @@ void gnumeric_sheet_context::end_table()
 
 void gnumeric_sheet_context::end_font()
 {
-    spreadsheet::iface::import_styles* styles = mp_factory->get_styles();
+    ss::iface::import_styles* styles = mp_factory->get_styles();
     if (!styles)
         return;
 
@@ -788,7 +788,7 @@ void gnumeric_sheet_context::end_style(bool conditional_format)
     }
     else
     {
-        spreadsheet::iface::import_conditional_format* cond_format =
+        ss::iface::import_conditional_format* cond_format =
             mp_sheet->get_conditional_format();
         if (cond_format)
         {
@@ -804,7 +804,7 @@ void gnumeric_sheet_context::end_style_region()
 
     if (mp_region_data->contains_conditional_format)
     {
-        spreadsheet::iface::import_conditional_format* cond_format =
+        ss::iface::import_conditional_format* cond_format =
             mp_sheet->get_conditional_format();
         if (cond_format)
         {
@@ -818,7 +818,7 @@ void gnumeric_sheet_context::end_style_region()
 
 void gnumeric_sheet_context::end_condition()
 {
-    spreadsheet::iface::import_conditional_format* cond_format =
+    ss::iface::import_conditional_format* cond_format =
         mp_sheet->get_conditional_format();
     if (cond_format)
     {
@@ -828,7 +828,7 @@ void gnumeric_sheet_context::end_condition()
 
 void gnumeric_sheet_context::end_expression()
 {
-    spreadsheet::iface::import_conditional_format* cond_format =
+    ss::iface::import_conditional_format* cond_format =
         mp_sheet->get_conditional_format();
     if (cond_format)
     {
