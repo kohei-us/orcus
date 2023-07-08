@@ -44,7 +44,7 @@ bool to_bool(std::string_view s)
         // Any single char other than '0' is true.
         return s[0] != '0';
 
-    return s == "true";
+    return s == "true" || s == "TRUE";
 }
 
 namespace {

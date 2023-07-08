@@ -8,7 +8,9 @@
 #include "gnumeric_token_constants.hpp"
 #include "gnumeric_namespace_types.hpp"
 #include "gnumeric_cell_context.hpp"
-#include "orcus/spreadsheet/import_interface.hpp"
+
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/measurement.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -112,14 +114,14 @@ void gnumeric_cell_context::start_cell(const xml_token_attrs_t& attrs)
         switch (attr.name)
         {
             case XML_Row:
-                mp_cell_data->row = atoi(attr.value.data());
+                mp_cell_data->row = to_long(attr.value);
                 break;
             case XML_Col:
-                mp_cell_data->col = atoi(attr.value.data());
+                mp_cell_data->col = to_long(attr.value);
                 break;
             case XML_ValueType:
             {
-                int value_type = atoi(attr.value.data());
+                long value_type = to_long(attr.value);
                 switch (value_type)
                 {
                     case 20:
@@ -136,15 +138,15 @@ void gnumeric_cell_context::start_cell(const xml_token_attrs_t& attrs)
                 break;
             }
             case XML_ExprID:
-                mp_cell_data->shared_formula_id = atoi(attr.value.data());
+                mp_cell_data->shared_formula_id = to_long(attr.value);
                 mp_cell_data->cell_type = cell_type_shared_formula;
                 break;
             case XML_Rows:
-                mp_cell_data->array_rows = atoi(attr.value.data());
+                mp_cell_data->array_rows = to_long(attr.value);
                 mp_cell_data->cell_type = cell_type_array;
                 break;
             case XML_Cols:
-                mp_cell_data->array_cols = atoi(attr.value.data());
+                mp_cell_data->array_cols = to_long(attr.value);
                 mp_cell_data->cell_type = cell_type_array;
                 break;
         }
@@ -163,7 +165,7 @@ void gnumeric_cell_context::end_cell()
     {
         case cell_type_value:
         {
-            double val = atof(m_chars.data());
+            double val = to_double(m_chars);
             mp_sheet->set_value(row, col, val);
             break;
         }
@@ -232,7 +234,7 @@ void gnumeric_cell_context::end_cell()
         }
         case cell_type_bool:
         {
-            bool val = m_chars == "TRUE";
+            bool val = to_bool(m_chars);
             mp_sheet->set_bool(row, col, val);
             break;
         }
