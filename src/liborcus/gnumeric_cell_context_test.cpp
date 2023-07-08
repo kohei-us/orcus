@@ -38,7 +38,7 @@ public:
     virtual void set_formula(formula_grammar_t grammar, std::string_view formula) override
     {
         assert(grammar == formula_grammar_t::gnumeric);
-        assert(formula == "=arrayFormula");
+        assert(formula == "arrayFormula");
     }
 
     virtual void set_result_bool(row_t, col_t, bool) override
@@ -74,7 +74,7 @@ public:
     virtual void set_formula(formula_grammar_t grammar, std::string_view formula) override
     {
         assert(grammar == formula_grammar_t::gnumeric);
-        assert(formula == "=formula");
+        assert(formula == "formula");
     }
 
     virtual void set_shared_formula_index(size_t) override
@@ -236,7 +236,7 @@ void test_shared_formula_with_string()
         void set_formula(formula_grammar_t grammar, std::string_view formula) override
         {
             assert(grammar == formula_grammar_t::gnumeric);
-            assert(formula == "=basicFormulaString");
+            assert(formula == "basicFormulaString");
         }
 
         void set_shared_formula_index(size_t index) override
@@ -365,7 +365,7 @@ void test_cell_array_formula()
     attrs.push_back(xml_token_attr_t(NS_gnumeric_gnm, XML_Rows, "2", false));
     attrs.push_back(xml_token_attr_t(NS_gnumeric_gnm, XML_Cols, "3", false));
     context.start_element(ns, elem, attrs);
-    context.characters("=arrayFormula", false);
+    context.characters("arrayFormula", false);
     context.end_element(ns, elem);
 }
 

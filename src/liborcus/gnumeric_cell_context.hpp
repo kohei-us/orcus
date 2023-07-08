@@ -50,7 +50,7 @@ private:
     /**
     * Used for temporary storage of characters
     */
-    std::string_view chars;
+    std::string_view m_chars;
 
     spreadsheet::iface::import_sheet* mp_sheet;
 };

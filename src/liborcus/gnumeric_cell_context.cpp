@@ -18,8 +18,6 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
-using namespace spreadsheet;
-
 enum gnumeric_cell_type
 {
     cell_type_bool,
@@ -36,81 +34,13 @@ struct gnumeric_cell_data
 {
     gnumeric_cell_data() : row(0), col(0), cell_type(cell_type_unknown), shared_formula_id(-1),
                             array_rows(0), array_cols(0) {}
-    row_t row;
-    col_t col;
+    ss::row_t row;
+    ss::col_t col;
     gnumeric_cell_type cell_type;
-    size_t shared_formula_id;
-    row_t array_rows;
-    col_t array_cols;
+    std::size_t shared_formula_id;
+    ss::row_t array_rows;
+    ss::col_t array_cols;
 };
-
-namespace {
-
-class cell_attr_parser
-{
-public:
-    cell_attr_parser()
-    {
-        cell_data.cell_type = cell_type_formula;
-    }
-
-    cell_attr_parser(const cell_attr_parser& r):
-        cell_data(r.cell_data) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_Row:
-                cell_data.row = atoi(attr.value.data());
-                break;
-            case XML_Col:
-                cell_data.col = atoi(attr.value.data());
-                break;
-            case XML_ValueType:
-            {
-                int value_type = atoi(attr.value.data());
-                switch (value_type)
-                {
-                    case 20:
-                        cell_data.cell_type = cell_type_bool;
-                        break;
-                    case 30:
-                    case 40:
-                        cell_data.cell_type = cell_type_value;
-                        break;
-                    case 60:
-                        cell_data.cell_type = cell_type_string;
-                }
-            }
-            break;
-            case XML_ExprID:
-                cell_data.shared_formula_id = atoi(attr.value.data());
-                cell_data.cell_type = cell_type_shared_formula;
-                break;
-            case XML_Rows:
-                cell_data.array_rows = atoi(attr.value.data());
-                cell_data.cell_type = cell_type_array;
-                break;
-            case XML_Cols:
-                cell_data.array_cols = atoi(attr.value.data());
-                cell_data.cell_type = cell_type_array;
-                break;
-        }
-    }
-
-    gnumeric_cell_data get_cell_data() const
-    {
-        return cell_data;
-    }
-
-private:
-    gnumeric_cell_data cell_data;
-};
-
-}
-
-// ============================================================================
 
 gnumeric_cell_context::gnumeric_cell_context(session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
@@ -159,24 +89,66 @@ bool gnumeric_cell_context::end_element(xmlns_id_t ns, xml_token_t name)
 void gnumeric_cell_context::characters(std::string_view str, bool transient)
 {
     if (transient)
-        chars = m_pool.intern(str).first;
+        m_chars = m_pool.intern(str).first;
     else
-        chars = str;
+        m_chars = str;
 }
 
 void gnumeric_cell_context::reset(ss::iface::import_sheet* sheet)
 {
     mp_cell_data.reset();
     m_pool.clear();
-    chars = std::string_view{};
+    m_chars = std::string_view{};
     mp_sheet = sheet;
 }
 
 void gnumeric_cell_context::start_cell(const xml_token_attrs_t& attrs)
 {
     mp_cell_data.reset(new gnumeric_cell_data);
-    cell_attr_parser parser = for_each(attrs.begin(), attrs.end(), cell_attr_parser());
-    *mp_cell_data = parser.get_cell_data();
+    mp_cell_data->cell_type = cell_type_formula;
+
+    for (const auto& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_Row:
+                mp_cell_data->row = atoi(attr.value.data());
+                break;
+            case XML_Col:
+                mp_cell_data->col = atoi(attr.value.data());
+                break;
+            case XML_ValueType:
+            {
+                int value_type = atoi(attr.value.data());
+                switch (value_type)
+                {
+                    case 20:
+                        mp_cell_data->cell_type = cell_type_bool;
+                        break;
+                    case 30:
+                    case 40:
+                        mp_cell_data->cell_type = cell_type_value;
+                        break;
+                    case 60:
+                        mp_cell_data->cell_type = cell_type_string;
+                        break;
+                }
+                break;
+            }
+            case XML_ExprID:
+                mp_cell_data->shared_formula_id = atoi(attr.value.data());
+                mp_cell_data->cell_type = cell_type_shared_formula;
+                break;
+            case XML_Rows:
+                mp_cell_data->array_rows = atoi(attr.value.data());
+                mp_cell_data->cell_type = cell_type_array;
+                break;
+            case XML_Cols:
+                mp_cell_data->array_cols = atoi(attr.value.data());
+                mp_cell_data->cell_type = cell_type_array;
+                break;
+        }
+    }
 }
 
 void gnumeric_cell_context::end_cell()
@@ -184,76 +156,86 @@ void gnumeric_cell_context::end_cell()
     if (!mp_cell_data)
         return;
 
-    col_t col = mp_cell_data->col;
-    row_t row = mp_cell_data->row;
+    ss::col_t col = mp_cell_data->col;
+    ss::row_t row = mp_cell_data->row;
     gnumeric_cell_type cell_type = mp_cell_data->cell_type;
     switch (cell_type)
     {
         case cell_type_value:
         {
-            double val = atof(chars.data());
+            double val = atof(m_chars.data());
             mp_sheet->set_value(row, col, val);
+            break;
         }
-        break;
         case cell_type_string:
         {
-            spreadsheet::iface::import_shared_strings* shared_strings = mp_factory->get_shared_strings();
+            ss::iface::import_shared_strings* shared_strings = mp_factory->get_shared_strings();
             if (!shared_strings)
                 break;
 
-            size_t id = shared_strings->add(chars);
+            size_t id = shared_strings->add(m_chars);
             mp_sheet->set_string(row, col, id);
+            break;
         }
-        break;
         case cell_type_formula:
         {
-            spreadsheet::iface::import_formula* xformula = mp_sheet->get_formula();
+            ss::iface::import_formula* xformula = mp_sheet->get_formula();
             if (!xformula)
                 break;
 
+            if (m_chars.empty() || m_chars[0] != '=')
+                // formula string should start with a '='
+                break;
+
             xformula->set_position(row, col);
-            xformula->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars);
+            xformula->set_formula(ss::formula_grammar_t::gnumeric, m_chars.substr(1));
             xformula->commit();
             break;
         }
         case cell_type_shared_formula:
         {
-            spreadsheet::iface::import_formula* xformula = mp_sheet->get_formula();
+            ss::iface::import_formula* xformula = mp_sheet->get_formula();
             if (!xformula)
                 break;
 
             xformula->set_position(row, col);
 
-            if (!chars.empty())
-                xformula->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars);
+            if (m_chars.empty() || m_chars[0] != '=')
+                // formula string should start with a '='
+                break;
 
+            xformula->set_formula(ss::formula_grammar_t::gnumeric, m_chars.substr(1));
             xformula->set_shared_formula_index(mp_cell_data->shared_formula_id);
             xformula->commit();
             break;
         }
         case cell_type_array:
         {
-            range_t range;
+            ss::range_t range;
             range.first.column = col;
             range.first.row = row;
             range.last.column = col + mp_cell_data->array_cols - 1;
             range.last.row = row + mp_cell_data->array_rows - 1;
 
-            iface::import_array_formula* af = mp_sheet->get_array_formula();
-            if (af)
-            {
-                af->set_range(range);
-                af->set_formula(spreadsheet::formula_grammar_t::gnumeric, chars);
-                af->commit();
-            }
+            ss::iface::import_array_formula* af = mp_sheet->get_array_formula();
+            if (!af)
+                break;
+
+            if (m_chars.empty() || m_chars[0] != '=')
+                // formula string should start with a '='
+                break;
+
+            af->set_range(range);
+            af->set_formula(ss::formula_grammar_t::gnumeric, m_chars.substr(1));
+            af->commit();
+            break;
         }
-        break;
         case cell_type_bool:
         {
-            bool val = chars == "TRUE";
+            bool val = m_chars == "TRUE";
             mp_sheet->set_bool(row, col, val);
+            break;
         }
-        break;
         default:
             ;
     }
