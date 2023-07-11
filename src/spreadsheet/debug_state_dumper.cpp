@@ -286,14 +286,11 @@ void sheet_debug_state_dumper::dump_cell_formats(const fs::path& outdir) const
         assert(it != m_sheet.cell_formats.end());
         const segment_row_index_type& rows = *it->second;
 
-        auto it_seg = rows.begin_segment();
-        auto it_seg_end = rows.end_segment();
-
-        for (; it_seg != it_seg_end; ++it_seg)
+        for (const auto& seg : rows.segment_range())
         {
             // NB: end position is not inclusive.
-            of << "  - rows: " << it_seg->start << '-' << (it_seg->end - 1) << std::endl;
-            of << "    xf: " << it_seg->value << std::endl;
+            of << "  - rows: " << seg.start << '-' << (seg.end - 1) << std::endl;
+            of << "    xf: " << seg.value << std::endl;
         }
     }
 }
@@ -305,13 +302,10 @@ void sheet_debug_state_dumper::dump_column_formats(const fs::path& outdir) const
     if (!of)
         return;
 
-    auto it_seg = m_sheet.column_formats.begin_segment();
-    auto it_seg_end = m_sheet.column_formats.end_segment();
-
-    for (; it_seg != it_seg_end; ++it_seg)
+    for (const auto& seg : m_sheet.column_formats.segment_range())
     {
-        of << "- columns: " << it_seg->start << '-' << (it_seg->end - 1) << std::endl;
-        of << "  xf: " << it_seg->value << std::endl;
+        of << "- columns: " << seg.start << '-' << (seg.end - 1) << std::endl;
+        of << "  xf: " << seg.value << std::endl;
     }
 }
 
@@ -322,13 +316,10 @@ void sheet_debug_state_dumper::dump_row_formats(const fs::path& outdir) const
     if (!of)
         return;
 
-    auto it_seg = m_sheet.row_formats.begin_segment();
-    auto it_seg_end = m_sheet.row_formats.end_segment();
-
-    for (; it_seg != it_seg_end; ++it_seg)
+    for (const auto& seg : m_sheet.row_formats.segment_range())
     {
-        of << "- rows: " << it_seg->start << '-' << (it_seg->end - 1) << std::endl;
-        of << "  xf: " << it_seg->value << std::endl;
+        of << "- rows: " << seg.start << '-' << (seg.end - 1) << std::endl;
+        of << "  xf: " << seg.value << std::endl;
     }
 }
 
