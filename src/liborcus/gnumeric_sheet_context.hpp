@@ -10,9 +10,12 @@
 
 #include "xml_context_base.hpp"
 #include "gnumeric_cell_context.hpp"
-#include "orcus/spreadsheet/types.hpp"
 
-#include "orcus/string_pool.hpp"
+#include <orcus/spreadsheet/types.hpp>
+#include <orcus/string_pool.hpp>
+
+#include <memory>
+#include <optional>
 
 namespace orcus {
 
@@ -37,27 +40,19 @@ struct gnumeric_color
         blue(0) {}
 };
 
-struct gnumeric_style_region
-{
-    spreadsheet::row_t start_row;
-    spreadsheet::row_t end_row;
-    spreadsheet::col_t start_col;
-    spreadsheet::col_t end_col;
-
-    size_t xf_id;
-    bool contains_conditional_format;
-
-    gnumeric_style_region():
-        start_row(0),
-        end_row(0),
-        start_col(0),
-        end_col(0),
-        xf_id(0),
-        contains_conditional_format(false) {}
-};
-
 class gnumeric_sheet_context : public xml_context_base
 {
+    struct style_region
+    {
+        spreadsheet::row_t start_row = 0;
+        spreadsheet::row_t end_row = 0;
+        spreadsheet::col_t start_col = 0;
+        spreadsheet::col_t end_col = 0;
+
+        std::size_t xf_id = 0;
+        bool contains_conditional_format = false;
+    };
+
 public:
     gnumeric_sheet_context(
         session_context& session_cxt, const tokens& tokens,
@@ -99,7 +94,7 @@ private:
     spreadsheet::iface::import_xf* mp_xf = nullptr;
 
     std::unique_ptr<xml_context_base> mp_child;
-    std::unique_ptr<gnumeric_style_region> mp_region_data;
+    std::optional<style_region> m_region_data;
 
     gnumeric_color m_front_color;
 

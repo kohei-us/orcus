@@ -181,9 +181,9 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
             }
             case XML_Condition:
             {
-                if (!mp_region_data->contains_conditional_format)
+                if (!m_region_data->contains_conditional_format)
                 {
-                    mp_region_data->contains_conditional_format = true;
+                    m_region_data->contains_conditional_format = true;
                     end_style(false);
                 }
                 start_condition(attrs);
@@ -228,7 +228,7 @@ bool gnumeric_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
                     // The conditional format entry contains a mandatory style element
                     // Therefore when we have a conditional format the end_style method
                     // is already called in start_element of the XML_Condition case.
-                    if (!mp_region_data->contains_conditional_format)
+                    if (!m_region_data->contains_conditional_format)
                     {
                         end_style(false);
                     }
@@ -274,7 +274,7 @@ void gnumeric_sheet_context::reset(ss::sheet_t sheet_index)
     mp_xf = nullptr;
 
     mp_child.reset();
-    mp_region_data.reset();
+    m_region_data.reset();
 
     m_front_color = gnumeric_color();
 
@@ -550,7 +550,7 @@ void gnumeric_sheet_context::start_style(const xml_token_attrs_t& attrs)
 
 void gnumeric_sheet_context::start_style_region(const xml_token_attrs_t& attrs)
 {
-    mp_region_data.reset(new gnumeric_style_region());
+    m_region_data = style_region{};
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -559,25 +559,25 @@ void gnumeric_sheet_context::start_style_region(const xml_token_attrs_t& attrs)
             case XML_startCol:
             {
                 size_t n = atoi(attr.value.data());
-                mp_region_data->start_col = n;
+                m_region_data->start_col = n;
                 break;
             }
             case XML_startRow:
             {
                 size_t n = atoi(attr.value.data());
-                mp_region_data->start_row = n;
+                m_region_data->start_row = n;
                 break;
             }
             case XML_endCol:
             {
                 size_t n = atoi(attr.value.data());
-                mp_region_data->end_col = n;
+                m_region_data->end_col = n;
                 break;
             }
             case XML_endRow:
             {
                 size_t n = atoi(attr.value.data());
-                mp_region_data->end_row = n;
+                m_region_data->end_row = n;
                 break;
             }
             default:
@@ -725,7 +725,7 @@ void gnumeric_sheet_context::end_style(bool conditional_format)
     size_t xf_id = mp_xf->commit();
     if (!conditional_format)
     {
-        mp_region_data->xf_id = xf_id;
+        m_region_data->xf_id = xf_id;
     }
     else
     {
@@ -740,21 +740,21 @@ void gnumeric_sheet_context::end_style(bool conditional_format)
 
 void gnumeric_sheet_context::end_style_region()
 {
-    mp_sheet->set_format(mp_region_data->start_row, mp_region_data->start_col,
-            mp_region_data->end_row, mp_region_data->end_col, mp_region_data->xf_id);
+    mp_sheet->set_format(m_region_data->start_row, m_region_data->start_col,
+            m_region_data->end_row, m_region_data->end_col, m_region_data->xf_id);
 
-    if (mp_region_data->contains_conditional_format)
+    if (m_region_data->contains_conditional_format)
     {
         ss::iface::import_conditional_format* cond_format =
             mp_sheet->get_conditional_format();
         if (cond_format)
         {
-            cond_format->set_range(mp_region_data->start_row, mp_region_data->start_col,
-                    mp_region_data->end_row, mp_region_data->end_col);
+            cond_format->set_range(m_region_data->start_row, m_region_data->start_col,
+                    m_region_data->end_row, m_region_data->end_col);
             cond_format->commit_format();
         }
     }
-    mp_region_data.reset();
+    m_region_data.reset();
 }
 
 void gnumeric_sheet_context::end_condition()
