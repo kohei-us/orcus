@@ -28,18 +28,6 @@ class import_xf;
 
 }}
 
-struct gnumeric_color
-{
-    spreadsheet::color_elem_t red;
-    spreadsheet::color_elem_t green;
-    spreadsheet::color_elem_t blue;
-
-    gnumeric_color():
-        red(0),
-        green(0),
-        blue(0) {}
-};
-
 class gnumeric_sheet_context : public xml_context_base
 {
     struct style_region
@@ -96,7 +84,7 @@ private:
     std::unique_ptr<xml_context_base> mp_child;
     std::optional<style_region> m_region_data;
 
-    gnumeric_color m_front_color;
+    spreadsheet::color_rgb_t m_front_color;
 
     /**
      * Used for temporary storage of characters

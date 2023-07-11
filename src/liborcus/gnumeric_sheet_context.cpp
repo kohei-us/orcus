@@ -276,7 +276,9 @@ void gnumeric_sheet_context::reset(ss::sheet_t sheet_index)
     mp_child.reset();
     m_region_data.reset();
 
-    m_front_color = gnumeric_color();
+    m_front_color.red = 0;
+    m_front_color.green = 0;
+    m_front_color.blue = 0;
 
     m_chars = std::string_view{};
 }
