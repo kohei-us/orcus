@@ -147,7 +147,7 @@ void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t co
         auto itr = mp_impl->cell_formats.find(col);
         if (itr == mp_impl->cell_formats.end())
         {
-            auto p = std::make_unique<detail::segment_row_index_type>(0, mp_impl->doc.get_sheet_size().rows+1, 0);
+            auto p = std::make_unique<detail::segment_row_index_type>(0, mp_impl->doc.get_sheet_size().rows, 0);
             auto r = mp_impl->cell_formats.emplace(col, std::move(p));
 
             if (!r.second)
