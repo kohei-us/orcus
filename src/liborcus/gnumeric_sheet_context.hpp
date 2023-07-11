@@ -103,8 +103,6 @@ private:
 
     gnumeric_color m_front_color;
 
-    string_pool m_pool;
-
     /**
      * Used for temporary storage of characters
      */
