@@ -99,9 +99,6 @@ gnumeric_sheet_context::gnumeric_sheet_context(
     session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
-    m_sheet_index(-1),
-    mp_sheet(nullptr),
-    mp_auto_filter(nullptr),
     m_cxt_cell(session_cxt, tokens, factory)
 {
     register_child(&m_cxt_cell);
@@ -273,7 +270,6 @@ void gnumeric_sheet_context::reset(ss::sheet_t sheet_index)
     mp_auto_filter = nullptr;
     mp_xf = nullptr;
 
-    mp_child.reset();
     m_region_data.reset();
 
     m_front_color.red = 0;

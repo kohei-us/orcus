@@ -74,14 +74,13 @@ private:
     void end_expression();
 
 private:
-    spreadsheet::iface::import_factory* mp_factory;
-    spreadsheet::sheet_t m_sheet_index;
+    spreadsheet::iface::import_factory* mp_factory = nullptr;
+    spreadsheet::sheet_t m_sheet_index = -1;
 
-    spreadsheet::iface::import_sheet* mp_sheet;
-    spreadsheet::iface::import_auto_filter* mp_auto_filter;
+    spreadsheet::iface::import_sheet* mp_sheet = nullptr;
+    spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
     spreadsheet::iface::import_xf* mp_xf = nullptr;
 
-    std::unique_ptr<xml_context_base> mp_child;
     std::optional<style_region> m_region_data;
 
     spreadsheet::color_rgb_t m_front_color;
