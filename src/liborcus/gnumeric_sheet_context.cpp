@@ -14,6 +14,7 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <orcus/measurement.hpp>
 
 namespace ss = orcus::spreadsheet;
 
@@ -21,52 +22,9 @@ namespace orcus {
 
 namespace {
 
-class gnumeric_style_region_attr_parser
-{
-public:
-    gnumeric_style_region_attr_parser(gnumeric_style_region& style_region_data):
-        m_style_region_data(style_region_data) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch(attr.name)
-        {
-            case XML_startCol:
-            {
-                size_t n = atoi(attr.value.data());
-                m_style_region_data.start_col = n;
-            }
-            break;
-            case XML_startRow:
-            {
-                size_t n = atoi(attr.value.data());
-                m_style_region_data.start_row = n;
-            }
-            break;
-            case XML_endCol:
-            {
-                size_t n = atoi(attr.value.data());
-                m_style_region_data.end_col = n;
-            }
-            break;
-            case XML_endRow:
-            {
-                size_t n = atoi(attr.value.data());
-                m_style_region_data.end_row = n;
-            }
-            break;
-            default:
-                ;
-        }
-    }
-
-private:
-    gnumeric_style_region& m_style_region_data;
-};
-
 ss::condition_operator_t get_condition_operator(int val)
 {
-    switch(val)
+    switch (val)
     {
         case 0:
             return ss::condition_operator_t::between;
@@ -116,99 +74,6 @@ ss::condition_operator_t get_condition_operator(int val)
     return ss::condition_operator_t::unknown;
 }
 
-class gnumeric_condition_attr_parser
-{
-public:
-    gnumeric_condition_attr_parser(ss::iface::import_conditional_format* cond_format):
-        m_cond_format(cond_format) {}
-
-    void operator()(const xml_token_attr_t& attr)
-    {
-        switch(attr.name)
-        {
-            case XML_Operator:
-            {
-                int val = atoi(attr.value.data());
-                ss::condition_operator_t op = get_condition_operator(val);
-                m_cond_format->set_operator(op);
-            }
-            break;
-            default:
-            break;
-        }
-    }
-
-private:
-    ss::iface::import_conditional_format* m_cond_format;
-};
-
-class gnumeric_col_row_info
-{
-public:
-    gnumeric_col_row_info() :
-        m_position(0),
-        m_num_repeated(1),
-        m_size(0.0),
-        m_hidden(false) {}
-
-    void operator()(const xml_token_attr_t& attr)
-    {
-        switch (attr.name)
-        {
-            case XML_No:
-            {
-                size_t i = atoi(attr.value.data());
-                m_position = i;
-            }
-            break;
-            case XML_Unit:
-            {
-                double n = atof(attr.value.data());
-                m_size = n;
-            }
-            break;
-            case XML_Count:
-            {
-                size_t i = atoi(attr.value.data());
-                m_num_repeated = i;
-            }
-            break;
-            case XML_Hidden:
-            {
-                bool b = atoi(attr.value.data()) != 0;
-                m_hidden = b;
-            }
-        }
-    }
-
-    size_t get_position() const
-    {
-        return m_position;
-    }
-
-    size_t get_col_row_repeated() const
-    {
-        return m_num_repeated;
-    }
-
-    double get_size() const
-    {
-        return m_size;
-    }
-
-    bool is_hidden() const
-    {
-        return m_hidden;
-    }
-
-private:
-    size_t m_position;
-    size_t m_num_repeated;
-    double m_size;
-    bool m_hidden;
-
-};
-
 enum gnumeric_filter_field_op_t
 {
     filter_equal,
@@ -228,107 +93,7 @@ enum gnumeric_filter_field_type_t
     filter_type_invalid
 };
 
-class gnumeric_autofilter_field_attr_parser
-{
-public:
-    gnumeric_autofilter_field_attr_parser(ss::iface::import_auto_filter& auto_filter):
-        m_auto_filter(auto_filter),
-        m_filter_field_type(filter_type_invalid),
-        m_filter_op(filter_op_invalid) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        switch(attr.name)
-        {
-            case XML_Index:
-            {
-                ss::col_t col = atoi(attr.value.data());
-                m_auto_filter.set_column(col);
-            }
-            break;
-            case XML_Type:
-            {
-                if (attr.value == "expr")
-                    m_filter_field_type = filter_expr;
-                else if (attr.value == "blanks")
-                    m_filter_field_type = filter_blanks;
-                else if (attr.value == "nonblanks")
-                    m_filter_field_type = filter_nonblanks;
-            }
-            break;
-            case XML_Op0:
-            {
-                if (attr.value == "eq")
-                    m_filter_op = filter_equal;
-                else if (attr.value == "gt")
-                    m_filter_op = filter_greaterThan;
-                else if (attr.value == "lt")
-                    m_filter_op = filter_lessThan;
-                else if (attr.value == "gte")
-                    m_filter_op = filter_greaterThanEqual;
-                else if (attr.value == "lte")
-                    m_filter_op = filter_lessThanEqual;
-                else if (attr.value == "ne")
-                    m_filter_op = filter_notEqual;
-            }
-            break;
-            case XML_Value0:
-            {
-                m_filter_value_type = attr.value;
-            }
-            break;
-            case XML_ValueType0:
-            {
-                m_filter_value = attr.value;
-            }
-            break;
-            default:
-                ;
-        }
-    }
-
-    void finalize_filter_import()
-    {
-        switch (m_filter_field_type)
-        {
-            case filter_expr:
-                import_expr();
-                break;
-            case filter_type_invalid:
-                break;
-            default:
-                break;
-        }
-    }
-
-private:
-
-    void import_expr()
-    {
-        // only equal supported in API yet
-        if (m_filter_op != filter_equal)
-            return;
-
-        // import condition for integer (30), double(40) and string (60)
-        if (m_filter_value_type == "30" ||
-                m_filter_value_type == "40" ||
-                m_filter_value_type == "60" )
-        {
-            m_auto_filter.append_column_match_value(m_filter_value);
-        }
-    }
-
-    ss::iface::import_auto_filter& m_auto_filter;
-
-    gnumeric_filter_field_type_t m_filter_field_type;
-    gnumeric_filter_field_op_t m_filter_op;
-
-    std::string_view m_filter_value_type;
-    std::string_view m_filter_value;
-};
-
-}
-
+} // anonymous namespace
 
 gnumeric_sheet_context::gnumeric_sheet_context(
     session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
@@ -358,28 +123,29 @@ xml_context_base* gnumeric_sheet_context::create_child_context(xmlns_id_t ns, xm
 void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
+
     if (ns == NS_gnumeric_gnm)
     {
         switch (name)
         {
             case XML_Font:
                 start_font(attrs);
-            break;
+                break;
             case XML_Style:
                 start_style(attrs);
-            break;
+                break;
             case XML_StyleRegion:
                 start_style_region(attrs);
-            break;
+                break;
             case XML_ColInfo:
                 start_col(attrs);
-            break;
+                break;
             case XML_RowInfo:
                 start_row(attrs);
-            break;
+                break;
             case XML_Filters:
                 // don't need any special handling
-            break;
+                break;
             case XML_Filter:
             {
                 ss::iface::import_reference_resolver* resolver =
@@ -405,21 +171,14 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
                         }
                     }
                 }
+                break;
             }
-            break;
             case XML_Field:
             {
                 assert(parent.first == NS_gnumeric_gnm && parent.second == XML_Filter);
-                if (mp_auto_filter)
-                {
-                    gnumeric_autofilter_field_attr_parser parser =
-                        std::for_each(attrs.begin(), attrs.end(),
-                                gnumeric_autofilter_field_attr_parser(
-                                    *mp_auto_filter));
-                    parser.finalize_filter_import();
-                }
+                start_field(attrs);
+                break;
             }
-            break;
             case XML_Condition:
             {
                 if (!mp_region_data->contains_conditional_format)
@@ -428,15 +187,17 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
                     end_style(false);
                 }
                 start_condition(attrs);
+                break;
             }
-            break;
             case XML_Expression0:
             case XML_Expression1:
-            break;
+                break;
             default:
-                ;
+                warn_unhandled();
         }
     }
+    else
+        warn_unhandled();
 }
 
 bool gnumeric_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
@@ -450,13 +211,11 @@ bool gnumeric_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
                 xml_token_pair_t parent = get_parent_element();
                 if(parent.first == NS_gnumeric_gnm && parent.second == XML_Sheet)
                     end_table();
-                else
-                    warn_unhandled();
+                break;
             }
-            break;
             case XML_Font:
                 end_font();
-            break;
+                break;
             case XML_Style:
             {
                 xml_token_pair_t parent = get_parent_element();
@@ -474,28 +233,25 @@ bool gnumeric_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
                         end_style(false);
                     }
                 }
+                break;
             }
-            break;
             case XML_Filter:
                 if (mp_auto_filter)
                     mp_auto_filter->commit();
-            break;
+                break;
             case XML_Field:
-                if (mp_auto_filter)
-                    mp_auto_filter->commit_column();
-            break;
+                end_field();
+                break;
             case XML_StyleRegion:
                 end_style_region();
-            break;
+                break;
             case XML_Condition:
                 end_condition();
-            break;
+                break;
             case XML_Expression0:
             case XML_Expression1:
                 end_expression();
-            break;
-            default:
-                ;
+                break;
         }
     }
 
@@ -581,30 +337,88 @@ void gnumeric_sheet_context::start_font(const xml_token_attrs_t& attrs)
 
 void gnumeric_sheet_context::start_col(const xml_token_attrs_t& attrs)
 {
-    gnumeric_col_row_info col_info = for_each(attrs.begin(), attrs.end(),
-            gnumeric_col_row_info());
-    ss::iface::import_sheet_properties* p_sheet_props = mp_sheet->get_sheet_properties();
-    double col_size = col_info.get_size();
-    bool hidden = col_info.is_hidden();
-    std::size_t col = col_info.get_position();
-    std::size_t col_span = col_info.get_col_row_repeated();
+    ss::iface::import_sheet_properties* sheet_props = mp_sheet->get_sheet_properties();
+    if (!sheet_props)
+        return;
 
-    p_sheet_props->set_column_width(col, col_span, col_size, length_unit_t::point);
-    p_sheet_props->set_column_hidden(col, col_span, hidden);
+    long col = 0;
+    long col_span = 1;
+    double col_width = 0.0;
+    bool col_hidden = false;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_No:
+            {
+                col = to_long(attr.value);
+                break;
+            }
+            case XML_Unit:
+            {
+                col_width = to_double(attr.value);
+                break;
+            }
+            case XML_Count:
+            {
+                col_span = to_long(attr.value);
+                break;
+            }
+            case XML_Hidden:
+            {
+                col_hidden = to_bool(attr.value);
+                break;
+            }
+        }
+    }
+
+    sheet_props->set_column_width(col, col_span, col_width, length_unit_t::point);
+    sheet_props->set_column_hidden(col, col_span, col_hidden);
 }
 
 void gnumeric_sheet_context::start_row(const xml_token_attrs_t& attrs)
 {
-    gnumeric_col_row_info row_info = for_each(attrs.begin(), attrs.end(),
-            gnumeric_col_row_info());
-    ss::iface::import_sheet_properties* p_sheet_props = mp_sheet->get_sheet_properties();
-    double row_size = row_info.get_size();
-    bool hidden = row_info.is_hidden();
-    for (size_t i = row_info.get_position(),
-            n = row_info.get_col_row_repeated() + row_info.get_position(); i < n; ++i)
+    ss::iface::import_sheet_properties* sheet_props = mp_sheet->get_sheet_properties();
+    if (!sheet_props)
+        return;
+
+    long row = 0;
+    long row_span = 1;
+    double row_height = 0.0;
+    bool row_hidden = false;
+
+    for (const xml_token_attr_t& attr : attrs)
     {
-        p_sheet_props->set_row_height(i, row_size, length_unit_t::point);
-        p_sheet_props->set_row_hidden(i, hidden);
+        switch (attr.name)
+        {
+            case XML_No:
+            {
+                row = to_long(attr.value);
+                break;
+            }
+            case XML_Unit:
+            {
+                row_height = to_double(attr.value);
+                break;
+            }
+            case XML_Count:
+            {
+                row_span = to_long(attr.value);
+                break;
+            }
+            case XML_Hidden:
+            {
+                row_hidden = to_bool(attr.value);
+                break;
+            }
+        }
+    }
+
+    for (long i = 0; i < row_span; ++i)
+    {
+        sheet_props->set_row_height(row + i, row_height, length_unit_t::point);
+        sheet_props->set_row_hidden(row + i, row_hidden);
     }
 }
 
@@ -739,16 +553,145 @@ void gnumeric_sheet_context::start_style(const xml_token_attrs_t& attrs)
 void gnumeric_sheet_context::start_style_region(const xml_token_attrs_t& attrs)
 {
     mp_region_data.reset(new gnumeric_style_region());
-    for_each(attrs.begin(), attrs.end(), gnumeric_style_region_attr_parser(*mp_region_data));
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_startCol:
+            {
+                size_t n = atoi(attr.value.data());
+                mp_region_data->start_col = n;
+                break;
+            }
+            case XML_startRow:
+            {
+                size_t n = atoi(attr.value.data());
+                mp_region_data->start_row = n;
+                break;
+            }
+            case XML_endCol:
+            {
+                size_t n = atoi(attr.value.data());
+                mp_region_data->end_col = n;
+                break;
+            }
+            case XML_endRow:
+            {
+                size_t n = atoi(attr.value.data());
+                mp_region_data->end_row = n;
+                break;
+            }
+            default:
+                ;
+        }
+    }
 }
 
 void gnumeric_sheet_context::start_condition(const xml_token_attrs_t& attrs)
 {
     ss::iface::import_conditional_format* cond_format =
         mp_sheet->get_conditional_format();
-    if (cond_format)
+
+    if (!cond_format)
+        return;
+
+    for (const xml_token_attr_t& attr : attrs)
     {
-        for_each(attrs.begin(), attrs.end(), gnumeric_condition_attr_parser(cond_format));
+        switch (attr.name)
+        {
+            case XML_Operator:
+            {
+                int val = atoi(attr.value.data());
+                ss::condition_operator_t op = get_condition_operator(val);
+                cond_format->set_operator(op);
+                break;
+            }
+        }
+    }
+}
+
+void gnumeric_sheet_context::start_field(const xml_token_attrs_t& attrs)
+{
+    if (!mp_auto_filter)
+        return;
+
+    gnumeric_filter_field_type_t filter_field_type = filter_type_invalid;
+    gnumeric_filter_field_op_t filter_op = filter_op_invalid;
+
+    std::string_view filter_value_type;
+    std::string_view filter_value;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_Index:
+            {
+                ss::col_t col = atoi(attr.value.data());
+                mp_auto_filter->set_column(col);
+                break;
+            }
+            case XML_Type:
+            {
+                if (attr.value == "expr")
+                    filter_field_type = filter_expr;
+                else if (attr.value == "blanks")
+                    filter_field_type = filter_blanks;
+                else if (attr.value == "nonblanks")
+                    filter_field_type = filter_nonblanks;
+                break;
+            }
+            case XML_Op0:
+            {
+                if (attr.value == "eq")
+                    filter_op = filter_equal;
+                else if (attr.value == "gt")
+                    filter_op = filter_greaterThan;
+                else if (attr.value == "lt")
+                    filter_op = filter_lessThan;
+                else if (attr.value == "gte")
+                    filter_op = filter_greaterThanEqual;
+                else if (attr.value == "lte")
+                    filter_op = filter_lessThanEqual;
+                else if (attr.value == "ne")
+                    filter_op = filter_notEqual;
+                break;
+            }
+            case XML_Value0:
+            {
+                filter_value_type = attr.value;
+                break;
+            }
+            case XML_ValueType0:
+            {
+                filter_value = attr.value;
+                break;
+            }
+        }
+    }
+
+    switch (filter_field_type)
+    {
+        case filter_expr:
+        {
+            // only equal supported in API yet
+            if (filter_op != filter_equal)
+                return;
+
+            // import condition for integer (30), double(40) and string (60)
+            if (filter_value_type == "30" ||
+                filter_value_type == "40" ||
+                filter_value_type == "60" )
+            {
+                mp_auto_filter->append_column_match_value(filter_value);
+            }
+            break;
+        }
+        case filter_type_invalid:
+            break;
+        default:
+            break;
     }
 }
 
@@ -824,6 +767,12 @@ void gnumeric_sheet_context::end_condition()
     {
         cond_format->commit_entry();
     }
+}
+
+void gnumeric_sheet_context::end_field()
+{
+    if (mp_auto_filter)
+        mp_auto_filter->commit_column();
 }
 
 void gnumeric_sheet_context::end_expression()

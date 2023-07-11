@@ -80,12 +80,14 @@ private:
     void start_col(const xml_token_attrs_t& attrs);
     void start_row(const xml_token_attrs_t& attrs);
     void start_condition(const xml_token_attrs_t& attrs);
+    void start_field(const xml_token_attrs_t& attrs);
 
     void end_table();
     void end_style(bool conditional_format);
     void end_font();
     void end_style_region();
     void end_condition();
+    void end_field();
     void end_expression();
 
 private:
