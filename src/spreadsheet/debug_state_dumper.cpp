@@ -254,6 +254,8 @@ void sheet_debug_state_dumper::dump(const fs::path& outdir) const
     dump_cell_formats(outdir);
     dump_column_formats(outdir);
     dump_row_formats(outdir);
+    dump_column_widths(outdir);
+    dump_row_heights(outdir);
 }
 
 void sheet_debug_state_dumper::dump_cell_values(const fs::path& outdir) const
@@ -320,6 +322,48 @@ void sheet_debug_state_dumper::dump_row_formats(const fs::path& outdir) const
     {
         of << "- rows: " << seg.start << '-' << (seg.end - 1) << std::endl;
         of << "  xf: " << seg.value << std::endl;
+    }
+}
+
+void sheet_debug_state_dumper::dump_column_widths(const boost::filesystem::path& outdir) const
+{
+    fs::path outpath = outdir / "column-widths.yaml";
+    std::ofstream of{outpath.native()};
+    if (!of)
+        return;
+
+    for (const auto& seg : m_sheet.col_widths.segment_range())
+    {
+        of << "- columns: " << seg.start << '-' << (seg.end - 1) << std::endl;
+        of << "  width: ";
+
+        if (seg.value == get_default_column_width())
+            of << "(default)";
+        else
+            of << seg.value;
+
+        of << std::endl;
+    }
+}
+
+void sheet_debug_state_dumper::dump_row_heights(const boost::filesystem::path& outdir) const
+{
+    fs::path outpath = outdir / "row-heights.yaml";
+    std::ofstream of{outpath.native()};
+    if (!of)
+        return;
+
+    for (const auto& seg : m_sheet.row_heights.segment_range())
+    {
+        of << "- rows: " << seg.start << '-' << (seg.end - 1) << std::endl;
+        of << "  height: ";
+
+        if (seg.value == get_default_row_height())
+            of << "(default)";
+        else
+            of << seg.value;
+
+        of << std::endl;
     }
 }
 

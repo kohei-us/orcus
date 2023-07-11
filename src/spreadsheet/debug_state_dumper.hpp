@@ -48,6 +48,8 @@ private:
     void dump_cell_formats(const boost::filesystem::path& outdir) const;
     void dump_column_formats(const boost::filesystem::path& outdir) const;
     void dump_row_formats(const boost::filesystem::path& outdir) const;
+    void dump_column_widths(const boost::filesystem::path& outdir) const;
+    void dump_row_heights(const boost::filesystem::path& outdir) const;
 };
 
 }}}
