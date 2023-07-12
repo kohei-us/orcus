@@ -26,15 +26,15 @@ class import_sheet;
 class gnumeric_content_xml_context : public xml_context_base
 {
 public:
-    gnumeric_content_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory);
-    virtual ~gnumeric_content_xml_context();
+    gnumeric_content_xml_context(
+        session_context& session_cxt, const tokens& tokens,
+        spreadsheet::iface::import_factory* factory);
 
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
+    virtual ~gnumeric_content_xml_context() override;
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
-    virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(std::string_view str, bool transient);
+    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
+    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
 
 private:
     spreadsheet::iface::import_factory* mp_factory;
