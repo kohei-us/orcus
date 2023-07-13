@@ -10,6 +10,7 @@
 
 #include "xml_context_base.hpp"
 #include "gnumeric_cell_context.hpp"
+#include "gnumeric_filter_context.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
 
@@ -62,14 +63,11 @@ private:
     void start_col(const xml_token_attrs_t& attrs);
     void start_row(const xml_token_attrs_t& attrs);
     void start_condition(const xml_token_attrs_t& attrs);
-    void start_field(const xml_token_attrs_t& attrs);
 
-    void end_table();
     void end_style(bool conditional_format);
     void end_font();
     void end_style_region();
     void end_condition();
-    void end_field();
     void end_expression();
 
 private:
@@ -77,7 +75,6 @@ private:
     spreadsheet::sheet_t m_sheet_index = -1;
 
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
-    spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
     spreadsheet::iface::import_xf* mp_xf = nullptr;
 
     std::optional<style_region> m_region_data;
@@ -90,6 +87,7 @@ private:
     std::string_view m_chars;
 
     gnumeric_cell_context m_cxt_cell;
+    gnumeric_filter_context m_cxt_filter;
 };
 
 } // namespace orcus

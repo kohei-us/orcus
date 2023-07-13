@@ -97,6 +97,7 @@ list(APPEND _SOURCES
 # a way to make this a build-time option.
 #   gnumeric_detection_handler.cpp
 #   gnumeric_cell_context.cpp
+#   gnumeric_filter_context.cpp
 #   gnumeric_context.cpp
 #   gnumeric_handler.cpp
 #   gnumeric_helper.cpp

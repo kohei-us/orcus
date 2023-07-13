@@ -74,44 +74,38 @@ ss::condition_operator_t get_condition_operator(int val)
     return ss::condition_operator_t::unknown;
 }
 
-enum gnumeric_filter_field_op_t
-{
-    filter_equal,
-    filter_greaterThan,
-    filter_lessThan,
-    filter_greaterThanEqual,
-    filter_lessThanEqual,
-    filter_notEqual,
-    filter_op_invalid
-};
-
-enum gnumeric_filter_field_type_t
-{
-    filter_expr,
-    filter_blanks,
-    filter_nonblanks,
-    filter_type_invalid
-};
-
 } // anonymous namespace
 
 gnumeric_sheet_context::gnumeric_sheet_context(
     session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
-    m_cxt_cell(session_cxt, tokens, factory)
+    m_cxt_cell(session_cxt, tokens, factory),
+    m_cxt_filter(session_cxt, tokens, factory)
 {
     register_child(&m_cxt_cell);
+    register_child(&m_cxt_filter);
 }
 
 gnumeric_sheet_context::~gnumeric_sheet_context() = default;
 
 xml_context_base* gnumeric_sheet_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
-    if (ns == NS_gnumeric_gnm && name == XML_Cells)
+    if (ns == NS_gnumeric_gnm)
     {
-        m_cxt_cell.reset(mp_sheet);
-        return &m_cxt_cell;
+        switch (name)
+        {
+            case XML_Cells:
+            {
+                m_cxt_cell.reset(mp_sheet);
+                return &m_cxt_cell;
+            }
+            case XML_Filter:
+            {
+                m_cxt_filter.reset(mp_sheet);
+                return &m_cxt_filter;
+            }
+        }
     }
 
     return nullptr;
@@ -119,7 +113,7 @@ xml_context_base* gnumeric_sheet_context::create_child_context(xmlns_id_t ns, xm
 
 void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
+    push_stack(ns, name);
 
     if (ns == NS_gnumeric_gnm)
     {
@@ -143,39 +137,6 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
             case XML_Filters:
                 // don't need any special handling
                 break;
-            case XML_Filter:
-            {
-                ss::iface::import_reference_resolver* resolver =
-                    mp_factory->get_reference_resolver(ss::formula_ref_context_t::global);
-
-                mp_auto_filter = mp_sheet->get_auto_filter();
-
-                if (resolver && mp_auto_filter)
-                {
-                    for (const xml_token_attr_t& attr : attrs)
-                    {
-                        switch (attr.name)
-                        {
-                            case XML_Area:
-                            {
-                                ss::range_t range = to_rc_range(
-                                    resolver->resolve_range(attr.value));
-                                mp_auto_filter->set_range(range);
-                            }
-                            break;
-                            default:
-                                ;
-                        }
-                    }
-                }
-                break;
-            }
-            case XML_Field:
-            {
-                assert(parent.first == NS_gnumeric_gnm && parent.second == XML_Filter);
-                start_field(attrs);
-                break;
-            }
             case XML_Condition:
             {
                 if (!m_region_data->contains_conditional_format)
@@ -207,7 +168,7 @@ bool gnumeric_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
             {
                 xml_token_pair_t parent = get_parent_element();
                 if(parent.first == NS_gnumeric_gnm && parent.second == XML_Sheet)
-                    end_table();
+                    mp_sheet = mp_factory->append_sheet(m_sheet_index, m_chars);
                 break;
             }
             case XML_Font:
@@ -232,13 +193,6 @@ bool gnumeric_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
                 }
                 break;
             }
-            case XML_Filter:
-                if (mp_auto_filter)
-                    mp_auto_filter->commit();
-                break;
-            case XML_Field:
-                end_field();
-                break;
             case XML_StyleRegion:
                 end_style_region();
                 break;
@@ -267,7 +221,6 @@ void gnumeric_sheet_context::reset(ss::sheet_t sheet_index)
     m_sheet_index = sheet_index;
 
     mp_sheet = nullptr;
-    mp_auto_filter = nullptr;
     mp_xf = nullptr;
 
     m_region_data.reset();
@@ -607,95 +560,6 @@ void gnumeric_sheet_context::start_condition(const xml_token_attrs_t& attrs)
     }
 }
 
-void gnumeric_sheet_context::start_field(const xml_token_attrs_t& attrs)
-{
-    if (!mp_auto_filter)
-        return;
-
-    gnumeric_filter_field_type_t filter_field_type = filter_type_invalid;
-    gnumeric_filter_field_op_t filter_op = filter_op_invalid;
-
-    std::string_view filter_value_type;
-    std::string_view filter_value;
-
-    for (const xml_token_attr_t& attr : attrs)
-    {
-        switch (attr.name)
-        {
-            case XML_Index:
-            {
-                ss::col_t col = atoi(attr.value.data());
-                mp_auto_filter->set_column(col);
-                break;
-            }
-            case XML_Type:
-            {
-                if (attr.value == "expr")
-                    filter_field_type = filter_expr;
-                else if (attr.value == "blanks")
-                    filter_field_type = filter_blanks;
-                else if (attr.value == "nonblanks")
-                    filter_field_type = filter_nonblanks;
-                break;
-            }
-            case XML_Op0:
-            {
-                if (attr.value == "eq")
-                    filter_op = filter_equal;
-                else if (attr.value == "gt")
-                    filter_op = filter_greaterThan;
-                else if (attr.value == "lt")
-                    filter_op = filter_lessThan;
-                else if (attr.value == "gte")
-                    filter_op = filter_greaterThanEqual;
-                else if (attr.value == "lte")
-                    filter_op = filter_lessThanEqual;
-                else if (attr.value == "ne")
-                    filter_op = filter_notEqual;
-                break;
-            }
-            case XML_Value0:
-            {
-                filter_value_type = attr.value;
-                break;
-            }
-            case XML_ValueType0:
-            {
-                filter_value = attr.value;
-                break;
-            }
-        }
-    }
-
-    switch (filter_field_type)
-    {
-        case filter_expr:
-        {
-            // only equal supported in API yet
-            if (filter_op != filter_equal)
-                return;
-
-            // import condition for integer (30), double(40) and string (60)
-            if (filter_value_type == "30" ||
-                filter_value_type == "40" ||
-                filter_value_type == "60" )
-            {
-                mp_auto_filter->append_column_match_value(filter_value);
-            }
-            break;
-        }
-        case filter_type_invalid:
-            break;
-        default:
-            break;
-    }
-}
-
-void gnumeric_sheet_context::end_table()
-{
-    mp_sheet = mp_factory->append_sheet(m_sheet_index, m_chars);
-}
-
 void gnumeric_sheet_context::end_font()
 {
     ss::iface::import_styles* styles = mp_factory->get_styles();
@@ -763,12 +627,6 @@ void gnumeric_sheet_context::end_condition()
     {
         cond_format->commit_entry();
     }
-}
-
-void gnumeric_sheet_context::end_field()
-{
-    if (mp_auto_filter)
-        mp_auto_filter->commit_column();
 }
 
 void gnumeric_sheet_context::end_expression()

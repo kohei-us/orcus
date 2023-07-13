@@ -280,22 +280,24 @@ endif # WITH_ODS_FILTER
 if WITH_GNUMERIC_FILTER
 
 liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
+	gnumeric_cell_context.cpp \
 	gnumeric_cell_context.hpp \
+	gnumeric_context.cpp \
 	gnumeric_context.hpp \
-	gnumeric_detection_handler.hpp \
 	gnumeric_detection_handler.cpp \
+	gnumeric_detection_handler.hpp \
+	gnumeric_filter_context.cpp \
+	gnumeric_filter_context.hpp \
+	gnumeric_handler.cpp \
 	gnumeric_handler.hpp \
+	gnumeric_helper.cpp \
 	gnumeric_helper.hpp \
+	gnumeric_sheet_context.cpp \
 	gnumeric_sheet_context.hpp \
 	gnumeric_token_constants.hpp \
 	gnumeric_token_constants.inl \
-	gnumeric_tokens.hpp \
-	gnumeric_cell_context.cpp \
-	gnumeric_context.cpp \
-	gnumeric_handler.cpp \
-	gnumeric_helper.cpp \
-	gnumeric_sheet_context.cpp \
 	gnumeric_tokens.cpp \
+	gnumeric_tokens.hpp \
 	gnumeric_tokens.inl \
 	orcus_gnumeric.cpp
 
@@ -342,6 +344,7 @@ gnumeric_sheet_context_test_SOURCES = \
 	gnumeric_sheet_context_test.cpp \
 	gnumeric_sheet_context.cpp \
 	gnumeric_cell_context.cpp \
+	gnumeric_filter_context.cpp \
 	gnumeric_helper.cpp \
 	xml_context_base.cpp \
 	xml_element_types.cpp \
