@@ -10,7 +10,6 @@
 
 #include "xml_context_base.hpp"
 
-#include <orcus/string_pool.hpp>
 #include <orcus/spreadsheet/types.hpp>
 
 #include <optional>

@@ -12,7 +12,6 @@
 #include "gnumeric_cell_context.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
-#include <orcus/string_pool.hpp>
 
 #include <memory>
 #include <optional>
