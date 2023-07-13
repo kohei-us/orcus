@@ -286,6 +286,9 @@ void gnumeric_sheet_context::start_font(const xml_token_attrs_t& attrs)
 
 void gnumeric_sheet_context::start_col(const xml_token_attrs_t& attrs)
 {
+    if (!mp_sheet)
+        return;
+
     ss::iface::import_sheet_properties* sheet_props = mp_sheet->get_sheet_properties();
     if (!sheet_props)
         return;
@@ -328,6 +331,9 @@ void gnumeric_sheet_context::start_col(const xml_token_attrs_t& attrs)
 
 void gnumeric_sheet_context::start_row(const xml_token_attrs_t& attrs)
 {
+    if (!mp_sheet)
+        return;
+
     ss::iface::import_sheet_properties* sheet_props = mp_sheet->get_sheet_properties();
     if (!sheet_props)
         return;
@@ -539,6 +545,9 @@ void gnumeric_sheet_context::start_style_region(const xml_token_attrs_t& attrs)
 
 void gnumeric_sheet_context::start_condition(const xml_token_attrs_t& attrs)
 {
+    if (!mp_sheet)
+        return;
+
     ss::iface::import_conditional_format* cond_format =
         mp_sheet->get_conditional_format();
 
@@ -589,7 +598,7 @@ void gnumeric_sheet_context::end_style(bool conditional_format)
     {
         m_region_data->xf_id = xf_id;
     }
-    else
+    else if (mp_sheet)
     {
         ss::iface::import_conditional_format* cond_format =
             mp_sheet->get_conditional_format();
@@ -602,6 +611,9 @@ void gnumeric_sheet_context::end_style(bool conditional_format)
 
 void gnumeric_sheet_context::end_style_region()
 {
+    if (!mp_sheet)
+        return;
+
     mp_sheet->set_format(m_region_data->start_row, m_region_data->start_col,
             m_region_data->end_row, m_region_data->end_col, m_region_data->xf_id);
 
@@ -621,6 +633,9 @@ void gnumeric_sheet_context::end_style_region()
 
 void gnumeric_sheet_context::end_condition()
 {
+    if (!mp_sheet)
+        return;
+
     ss::iface::import_conditional_format* cond_format =
         mp_sheet->get_conditional_format();
     if (cond_format)
@@ -631,6 +646,9 @@ void gnumeric_sheet_context::end_condition()
 
 void gnumeric_sheet_context::end_expression()
 {
+    if (!mp_sheet)
+        return;
+
     ss::iface::import_conditional_format* cond_format =
         mp_sheet->get_conditional_format();
     if (cond_format)
