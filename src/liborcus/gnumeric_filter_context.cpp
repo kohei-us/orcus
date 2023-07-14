@@ -13,6 +13,7 @@
 #include <orcus/measurement.hpp>
 
 #include <iostream>
+#include <optional>
 
 namespace ss = orcus::spreadsheet;
 
@@ -100,11 +101,6 @@ void gnumeric_filter_context::reset(spreadsheet::iface::import_sheet* sheet)
 {
     mp_sheet = sheet;
     mp_auto_filter = nullptr;
-
-    m_area.first.column = -1;
-    m_area.first.row = -1;
-    m_area.last.column = -1;
-    m_area.last.row = -1;
 }
 
 void gnumeric_filter_context::start_filter(const xml_token_attrs_t& attrs)
@@ -122,17 +118,27 @@ void gnumeric_filter_context::start_filter(const xml_token_attrs_t& attrs)
     if (!mp_auto_filter)
         return;
 
+    std::optional<spreadsheet::range_t> area;
+
     for (const xml_token_attr_t& attr : attrs)
     {
         switch (attr.name)
         {
             case XML_Area:
-                m_area = to_rc_range(resolver->resolve_range(attr.value));
+                area = to_rc_range(resolver->resolve_range(attr.value));
                 break;
             default:
                 ;
         }
     }
+
+    if (!area)
+    {
+        mp_auto_filter = nullptr;
+        return;
+    }
+
+    mp_auto_filter->set_range(*area);
 }
 
 void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
@@ -143,6 +149,7 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
     gnumeric_filter_field_type_t filter_field_type = filter_type_invalid;
     gnumeric_filter_field_op_t filter_op = filter_op_invalid;
 
+    ss::col_t col = -1;
     std::string_view filter_value_type;
     std::string_view filter_value;
 
@@ -152,8 +159,7 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
         {
             case XML_Index:
             {
-                ss::col_t col = to_long(attr.value.data());
-                mp_auto_filter->set_column(col);
+                col = to_long(attr.value.data());
                 break;
             }
             case XML_Type:
@@ -195,6 +201,11 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
         }
     }
 
+    if (col < 0)
+        return;
+
+    mp_auto_filter->set_column(col);
+
     switch (filter_field_type)
     {
         case filter_expr:
@@ -212,9 +223,11 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
             }
             break;
         }
-        case filter_type_invalid:
+        case filter_blanks:
             break;
-        default:
+        case filter_nonblanks:
+            break;
+        case filter_type_invalid:
             break;
     }
 }
@@ -230,7 +243,6 @@ void gnumeric_filter_context::end_field()
     if (mp_auto_filter)
         mp_auto_filter->commit_column();
 }
-
 
 }
 

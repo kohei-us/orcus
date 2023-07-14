@@ -11,6 +11,8 @@
 #include "sheet_impl.hpp"
 #include "ostream_utils.hpp"
 
+#include <ixion/formula_name_resolver.hpp>
+
 #include <fstream>
 #include <algorithm>
 
@@ -256,6 +258,7 @@ void sheet_debug_state_dumper::dump(const fs::path& outdir) const
     dump_row_formats(outdir);
     dump_column_widths(outdir);
     dump_row_heights(outdir);
+    dump_auto_filter(outdir);
 }
 
 void sheet_debug_state_dumper::dump_cell_values(const fs::path& outdir) const
@@ -364,6 +367,41 @@ void sheet_debug_state_dumper::dump_row_heights(const boost::filesystem::path& o
             of << seg.value;
 
         of << std::endl;
+    }
+}
+
+void sheet_debug_state_dumper::dump_auto_filter(const boost::filesystem::path& outdir) const
+{
+    if (!m_sheet.auto_filter_data)
+        return;
+
+    fs::path outpath = outdir / "auto-filter.yaml";
+    std::ofstream of{outpath.native()};
+    if (!of)
+        return;
+
+    const auto_filter_t& data = *m_sheet.auto_filter_data;
+
+    auto resolver = ixion::formula_name_resolver::get(
+        ixion::formula_name_resolver_t::excel_a1, nullptr);
+
+    if (!resolver)
+        return;
+
+    ixion::abs_address_t origin;
+    ixion::range_t name{data.range};
+    name.set_absolute(false);
+
+    of << "range: " << resolver->get_name(name, origin, false) << "\n";
+    of << "columns:\n";
+
+    for (const auto& [col, cdata] : data.columns)
+    {
+        of << "- column: " << col << "\n";
+        of << "  match-values:\n";
+
+        for (const auto& v : cdata.match_values)
+            of << "  - " << v << std::endl;
     }
 }
 

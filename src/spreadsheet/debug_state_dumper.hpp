@@ -50,6 +50,7 @@ private:
     void dump_row_formats(const boost::filesystem::path& outdir) const;
     void dump_column_widths(const boost::filesystem::path& outdir) const;
     void dump_row_heights(const boost::filesystem::path& outdir) const;
+    void dump_auto_filter(const boost::filesystem::path& outdir) const;
 };
 
 }}}

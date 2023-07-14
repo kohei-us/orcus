@@ -47,8 +47,6 @@ private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
     spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
-
-    spreadsheet::range_t m_area;
 };
 
 }
