@@ -12,7 +12,9 @@
 #include <orcus/spreadsheet/factory.hpp>
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
+#include <orcus/spreadsheet/auto_filter.hpp>
 
+#include <ixion/address.hpp>
 #include <boost/filesystem/path.hpp>
 #include <iostream>
 #include <sstream>
@@ -79,6 +81,7 @@ void test_gnumeric_column_widths_row_heights()
 
     assert(doc->get_sheet_count() == 1);
     const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
 
     {
         // column, column width (twips), column span
@@ -134,12 +137,47 @@ void test_gnumeric_column_widths_row_heights()
     }
 }
 
+void test_gnumeric_auto_filter()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/table/autofilter.gnumeric";
+    auto doc = load_doc(filepath);
+
+    assert(doc->get_sheet_count() == 1);
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    const ss::auto_filter_t* af = sh->get_auto_filter_data();
+    assert(af);
+    ixion::abs_range_t b2_c11{0, 1, 1, 10, 2};
+    assert(af->range == b2_c11);
+    assert(af->columns.size() == 2);
+
+    auto it = af->columns.begin();
+    assert(it->first == 0);
+    {
+        const ss::auto_filter_column_t& afc = it->second;
+        assert(afc.match_values.size() == 1);
+        assert(*afc.match_values.begin() == "A");
+    }
+
+    ++it;
+    assert(it->first == 1);
+    {
+        const ss::auto_filter_column_t& afc = it->second;
+        assert(afc.match_values.size() == 1);
+        assert(*afc.match_values.begin() == "1");
+    }
+}
+
 }
 
 int main()
 {
     test_gnumeric_import();
     test_gnumeric_column_widths_row_heights();
+    test_gnumeric_auto_filter();
 
     return EXIT_SUCCESS;
 }
