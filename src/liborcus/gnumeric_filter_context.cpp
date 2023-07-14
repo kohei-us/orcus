@@ -48,6 +48,13 @@ gnumeric_filter_context::gnumeric_filter_context(
     xml_context_base(session_cxt, tokens),
     mp_factory(factory)
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_gnumeric_gnm, XML_Filter }, // root element
+        { NS_gnumeric_gnm, XML_Filter, NS_gnumeric_gnm, XML_Field },
+    };
+
+    init_element_validator(rules, std::size(rules));
 }
 
 gnumeric_filter_context::~gnumeric_filter_context() = default;
