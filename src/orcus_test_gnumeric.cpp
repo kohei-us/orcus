@@ -171,6 +171,84 @@ void test_gnumeric_auto_filter()
     }
 }
 
+void test_gnumeric_hidden_rows_columns()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/hidden-rows-columns/input.gnumeric";
+    auto doc = load_doc(filepath);
+
+    spreadsheet::sheet* sh = doc->get_sheet("Hidden Rows");
+    assert(sh);
+
+    spreadsheet::row_t row_start = -1, row_end = -1;
+
+    // Row 1 is visible.
+    assert(!sh->is_row_hidden(0, &row_start, &row_end));
+    assert(row_start == 0);
+    assert(row_end == 1); // the end position is non-inclusive.
+
+    // Rows 2-3 are hidden.
+    assert(sh->is_row_hidden(1, &row_start, &row_end));
+    assert(row_start == 1);
+    assert(row_end == 3); // the end position is non-inclusive.
+
+    // Row 4 is visible.
+    assert(!sh->is_row_hidden(3, &row_start, &row_end));
+    assert(row_start == 3);
+    assert(row_end == 4); // the end position is non-inclusive.
+
+    // Row 5 is hidden.
+    assert(sh->is_row_hidden(4, &row_start, &row_end));
+    assert(row_start == 4);
+    assert(row_end == 5); // the end position is non-inclusive.
+
+    // Rows 6-8 are visible.
+    assert(!sh->is_row_hidden(5, &row_start, &row_end));
+    assert(row_start == 5);
+    assert(row_end == 8); // the end position is non-inclusive.
+
+    // Row 9 is hidden.
+    assert(sh->is_row_hidden(8, &row_start, &row_end));
+    assert(row_start == 8);
+    assert(row_end == 9); // the end position is non-inclusive.
+
+    // The rest of the rows are visible.
+    assert(!sh->is_row_hidden(9, &row_start, &row_end));
+    assert(row_start == 9);
+    assert(row_end == doc->get_sheet_size().rows); // the end position is non-inclusive.
+
+    sh = doc->get_sheet("Hidden Columns");
+    assert(sh);
+
+    spreadsheet::col_t col_start = -1, col_end = -1;
+
+    // Columns A-B are visible.
+    assert(!sh->is_col_hidden(0, &col_start, &col_end));
+    assert(col_start == 0);
+    assert(col_end == 2); // non-inclusive
+
+    // Columns C-E are hidden.
+    assert(sh->is_col_hidden(2, &col_start, &col_end));
+    assert(col_start == 2);
+    assert(col_end == 6); // non-inclusive
+
+    // Columns G-J are visible.
+    assert(!sh->is_col_hidden(6, &col_start, &col_end));
+    assert(col_start == 6);
+    assert(col_end == 10); // non-inclusive
+
+    // Column K is hidden.
+    assert(sh->is_col_hidden(10, &col_start, &col_end));
+    assert(col_start == 10);
+    assert(col_end == 11); // non-inclusive
+
+    // The rest of the columns are all visible.
+    assert(!sh->is_col_hidden(11, &col_start, &col_end));
+    assert(col_start == 11);
+    assert(col_end == doc->get_sheet_size().columns); // non-inclusive
+}
+
 }
 
 int main()
@@ -178,6 +256,7 @@ int main()
     test_gnumeric_import();
     test_gnumeric_column_widths_row_heights();
     test_gnumeric_auto_filter();
+    test_gnumeric_hidden_rows_columns();
 
     return EXIT_SUCCESS;
 }
