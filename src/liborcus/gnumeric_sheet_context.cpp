@@ -83,6 +83,25 @@ gnumeric_sheet_context::gnumeric_sheet_context(
     m_cxt_cell(session_cxt, tokens, factory),
     m_cxt_filter(session_cxt, tokens, factory)
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_gnumeric_gnm, XML_Sheet }, // root element
+        { NS_gnumeric_gnm, XML_Cells, NS_gnumeric_gnm, XML_Cell },
+        { NS_gnumeric_gnm, XML_Cols, NS_gnumeric_gnm, XML_ColInfo },
+        { NS_gnumeric_gnm, XML_Rows, NS_gnumeric_gnm, XML_RowInfo },
+        { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Cells },
+        { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Cols },
+        { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Filters },
+        { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_MergedRegions },
+        { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Name },
+        { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Names },
+        { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Rows },
+        { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Selections },
+        { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_SheetLayout },
+    };
+
+    init_element_validator(rules, std::size(rules));
+
     register_child(&m_cxt_cell);
     register_child(&m_cxt_filter);
 }
