@@ -153,9 +153,6 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
             case XML_RowInfo:
                 start_row(attrs);
                 break;
-            case XML_Filters:
-                // don't need any special handling
-                break;
             case XML_Condition:
             {
                 if (!m_region_data->contains_conditional_format)
