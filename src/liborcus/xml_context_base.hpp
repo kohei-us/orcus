@@ -122,6 +122,11 @@ protected:
     bool pop_stack(xmlns_id_t ns, xml_token_t name);
     xml_token_pair_t get_current_stack(xmlns_id_t ns, xml_token_t name);
     xml_token_pair_t get_current_element() const;
+
+    /**
+     * @warning Don't call this at the root element, or it will throw an
+     *          exception.
+     */
     const xml_token_pair_t& get_parent_element() const;
     void warn_unhandled() const;
     void warn_unexpected() const;

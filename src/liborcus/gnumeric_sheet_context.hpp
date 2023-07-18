@@ -63,12 +63,14 @@ private:
     void start_col(const xml_token_attrs_t& attrs);
     void start_row(const xml_token_attrs_t& attrs);
     void start_condition(const xml_token_attrs_t& attrs);
+    void start_name(const xml_token_attrs_t& attrs);
 
     void end_style(bool conditional_format);
     void end_font();
     void end_style_region();
     void end_condition();
     void end_expression();
+    void end_name();
 
 private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
@@ -85,6 +87,7 @@ private:
      * Used for temporary storage of characters
      */
     std::string_view m_chars;
+    std::string_view m_name;
 
     gnumeric_cell_context m_cxt_cell;
     gnumeric_filter_context m_cxt_filter;
