@@ -70,6 +70,7 @@ private:
     void end_style_region();
     void end_condition();
     void end_expression();
+    void end_merge();
     void end_name();
 
 private:
@@ -88,6 +89,7 @@ private:
      */
     std::string_view m_chars;
     std::string_view m_name;
+    std::string_view m_merge_area;
 
     gnumeric_cell_context m_cxt_cell;
     gnumeric_filter_context m_cxt_filter;

@@ -249,6 +249,47 @@ void test_gnumeric_hidden_rows_columns()
     assert(col_end == doc->get_sheet_size().columns); // non-inclusive
 }
 
+void test_gnumeric_merged_cells()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/merged-cells/input.gnumeric";
+    auto doc = load_doc(filepath);
+
+    const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
+    assert(sheet1);
+
+    spreadsheet::range_t merge_range = sheet1->get_merge_cell_range(0, 1);
+    assert(merge_range.first.column == 1);
+    assert(merge_range.last.column == 2);
+    assert(merge_range.first.row == 0);
+    assert(merge_range.last.row == 0);
+
+    merge_range = sheet1->get_merge_cell_range(0, 3);
+    assert(merge_range.first.column == 3);
+    assert(merge_range.last.column == 5);
+    assert(merge_range.first.row == 0);
+    assert(merge_range.last.row == 0);
+
+    merge_range = sheet1->get_merge_cell_range(1, 0);
+    assert(merge_range.first.column == 0);
+    assert(merge_range.last.column == 0);
+    assert(merge_range.first.row == 1);
+    assert(merge_range.last.row == 2);
+
+    merge_range = sheet1->get_merge_cell_range(3, 0);
+    assert(merge_range.first.column == 0);
+    assert(merge_range.last.column == 0);
+    assert(merge_range.first.row == 3);
+    assert(merge_range.last.row == 5);
+
+    merge_range = sheet1->get_merge_cell_range(2, 2);
+    assert(merge_range.first.column == 2);
+    assert(merge_range.last.column == 5);
+    assert(merge_range.first.row == 2);
+    assert(merge_range.last.row == 5);
+}
+
 }
 
 int main()
@@ -257,6 +298,7 @@ int main()
     test_gnumeric_column_widths_row_heights();
     test_gnumeric_auto_filter();
     test_gnumeric_hidden_rows_columns();
+    test_gnumeric_merged_cells();
 
     return EXIT_SUCCESS;
 }

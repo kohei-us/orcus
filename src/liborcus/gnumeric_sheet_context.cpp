@@ -143,6 +143,9 @@ void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, cons
             case XML_Font:
                 start_font(attrs);
                 break;
+            case XML_Merge:
+                m_merge_area = std::string_view{};
+                break;
             case XML_Name:
                 start_name(attrs);
                 break;
@@ -187,6 +190,9 @@ bool gnumeric_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
         {
             case XML_Font:
                 end_font();
+                break;
+            case XML_Merge:
+                end_merge();
                 break;
             case XML_Name:
                 end_name();
@@ -234,6 +240,11 @@ void gnumeric_sheet_context::characters(std::string_view str, bool transient)
     {
         switch (elem.second)
         {
+            case XML_Merge:
+            {
+                m_merge_area = transient ? intern(str) : str;
+                break;
+            }
             case XML_Name:
             {
                 m_name = transient ? intern(str) : str;
@@ -264,6 +275,7 @@ void gnumeric_sheet_context::reset(ss::sheet_t sheet_index)
 
     m_chars = std::string_view{};
     m_name = std::string_view{};
+    m_merge_area = std::string_view{};
 }
 
 void gnumeric_sheet_context::start_font(const xml_token_attrs_t& attrs)
@@ -694,6 +706,32 @@ void gnumeric_sheet_context::end_expression()
     {
         cond_format->set_formula(m_chars);
         cond_format->commit_condition();
+    }
+}
+
+void gnumeric_sheet_context::end_merge()
+{
+    if (!mp_sheet || m_merge_area.empty())
+        return;
+
+    auto* sp = mp_sheet->get_sheet_properties();
+    if (!sp)
+        return;
+
+    auto* resolver = mp_factory->get_reference_resolver(ss::formula_ref_context_t::global);
+    if (!resolver)
+        return;
+
+    try
+    {
+        ss::range_t range = to_rc_range(resolver->resolve_range(m_merge_area));
+        sp->set_merge_cell_range(range);
+    }
+    catch (const invalid_arg_error& e)
+    {
+        std::ostringstream os;
+        os << "failed to parse a merged area '" << m_merge_area << "': " << e.what();
+        warn(os.str());
     }
 }
 
