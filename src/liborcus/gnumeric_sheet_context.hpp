@@ -74,6 +74,7 @@ private:
     void end_expression();
     void end_merge();
     void end_name();
+    void end_names();
 
 private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;

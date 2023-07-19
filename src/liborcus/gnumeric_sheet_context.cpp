@@ -90,7 +90,6 @@ gnumeric_sheet_context::gnumeric_sheet_context(
         { NS_gnumeric_gnm, XML_Cells, NS_gnumeric_gnm, XML_Cell },
         { NS_gnumeric_gnm, XML_Cols, NS_gnumeric_gnm, XML_ColInfo },
         { NS_gnumeric_gnm, XML_MergedRegions, NS_gnumeric_gnm, XML_Merge },
-        { NS_gnumeric_gnm, XML_Names, NS_gnumeric_gnm, XML_Name },
         { NS_gnumeric_gnm, XML_Rows, NS_gnumeric_gnm, XML_RowInfo },
         { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Cells },
         { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Cols },
@@ -148,7 +147,7 @@ void gnumeric_sheet_context::end_child_context(xmlns_id_t ns, xml_token_t name, 
             case XML_Names:
             {
                 assert(child == &m_cxt_names);
-                warn("names done in sheet");
+                end_names();
                 break;
             }
         }
@@ -761,21 +760,37 @@ void gnumeric_sheet_context::end_name()
     if (m_name.empty())
         return;
 
-    const xml_token_pair_t& parent = get_parent_element();
-    if (parent.first == NS_gnumeric_gnm)
-    {
-        switch (parent.second)
-        {
-            case XML_Sheet:
-                mp_sheet = mp_factory->get_sheet(m_name);
-                break;
-            case XML_Names:
-                break;
-        }
-    }
-
+    mp_sheet = mp_factory->get_sheet(m_name);
     m_name = std::string_view{};
 }
 
+void gnumeric_sheet_context::end_names()
+{
+    if (!mp_sheet)
+        return;
+
+    ss::iface::import_named_expression* named_exp = mp_sheet->get_named_expression();
+    if (!named_exp)
+        return;
+
+    for (const auto& name : m_cxt_names.get_names())
+    {
+        try
+        {
+            named_exp->set_base_position(name.position);
+            named_exp->set_named_expression(name.name, name.value);
+            named_exp->commit();
+        }
+        catch (const std::exception& e)
+        {
+            std::ostringstream os;
+            os << "failed to commit a named expression named '" << name.name
+                << "': (reason='" << e.what() << "'; value='" << name.value << "')";
+            warn(os.str());
+        }
+    }
 }
+
+} // namespace orcus
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
