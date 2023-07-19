@@ -26,6 +26,18 @@ gnumeric_content_xml_context::gnumeric_content_xml_context(
     m_cxt_names(session_cxt, tokens, factory),
     m_cxt_sheet(session_cxt, tokens, factory)
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_gnumeric_gnm, XML_Workbook }, // root element
+        { NS_gnumeric_gnm, XML_SheetNameIndex, NS_gnumeric_gnm, XML_SheetName },
+        { NS_gnumeric_gnm, XML_Sheets, NS_gnumeric_gnm, XML_Sheet },
+        { NS_gnumeric_gnm, XML_Workbook, NS_gnumeric_gnm, XML_Names },
+        { NS_gnumeric_gnm, XML_Workbook, NS_gnumeric_gnm, XML_SheetNameIndex },
+        { NS_gnumeric_gnm, XML_Workbook, NS_gnumeric_gnm, XML_Sheets },
+    };
+
+    init_element_validator(rules, std::size(rules));
+
     register_child(&m_cxt_names);
     register_child(&m_cxt_sheet);
 }
