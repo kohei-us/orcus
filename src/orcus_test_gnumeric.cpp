@@ -29,6 +29,7 @@ std::vector<fs::path> dirs = {
     SRCDIR"/test/gnumeric/raw-values-1/",
     SRCDIR"/test/gnumeric/formula-cells/",
     SRCDIR"/test/gnumeric/named-expression/",
+    SRCDIR"/test/gnumeric/named-expression-sheet-local/",
 };
 
 std::unique_ptr<ss::document> load_doc(const fs::path& filepath)
