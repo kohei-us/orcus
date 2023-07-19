@@ -10,7 +10,9 @@
 
 #include "xml_context_base.hpp"
 #include "gnumeric_sheet_context.hpp"
-#include "orcus/spreadsheet/types.hpp"
+#include "gnumeric_names_context.hpp"
+
+#include <orcus/spreadsheet/types.hpp>
 
 #include <vector>
 
@@ -33,13 +35,18 @@ public:
     virtual ~gnumeric_content_xml_context() override;
 
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
+    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
+
+private:
+    void end_names();
 
 private:
     spreadsheet::iface::import_factory* mp_factory;
     spreadsheet::sheet_t m_sheet_count;
 
+    gnumeric_names_context m_cxt_names;
     gnumeric_sheet_context m_cxt_sheet;
 };
 

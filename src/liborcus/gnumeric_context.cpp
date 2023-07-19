@@ -15,6 +15,8 @@
 #include <fstream>
 #include <algorithm>
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus {
 
 gnumeric_content_xml_context::gnumeric_content_xml_context(
@@ -22,8 +24,10 @@ gnumeric_content_xml_context::gnumeric_content_xml_context(
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
     m_sheet_count(0),
+    m_cxt_names(session_cxt, tokens, factory),
     m_cxt_sheet(session_cxt, tokens, factory)
 {
+    register_child(&m_cxt_names);
     register_child(&m_cxt_sheet);
 }
 
@@ -31,13 +35,41 @@ gnumeric_content_xml_context::~gnumeric_content_xml_context() = default;
 
 xml_context_base* gnumeric_content_xml_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
-    if (ns == NS_gnumeric_gnm && name == XML_Sheet)
+    if (ns == NS_gnumeric_gnm)
     {
-        m_cxt_sheet.reset(m_sheet_count++);
-        return &m_cxt_sheet;
+        switch (name)
+        {
+            case XML_Sheet:
+            {
+                m_cxt_sheet.reset(m_sheet_count++);
+                return &m_cxt_sheet;
+            }
+            case XML_Names:
+            {
+                m_cxt_names.reset();
+                return &m_cxt_names;
+            }
+        }
     }
 
     return nullptr;
+}
+
+void gnumeric_content_xml_context::end_child_context(
+    xmlns_id_t ns, xml_token_t name, xml_context_base* child)
+{
+    if (ns == NS_gnumeric_gnm)
+    {
+        switch (name)
+        {
+            case XML_Names:
+            {
+                assert(child == &m_cxt_names);
+                end_names();
+                break;
+            }
+        }
+    }
 }
 
 void gnumeric_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& /*attrs*/)
@@ -51,6 +83,20 @@ bool gnumeric_content_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
+void gnumeric_content_xml_context::end_names()
+{
+    ss::iface::import_named_expression* named_exp = mp_factory->get_named_expression();
+    if (!named_exp)
+        return;
+
+    for (const auto& name : m_cxt_names.get_names())
+    {
+        named_exp->set_base_position(name.position);
+        named_exp->set_named_expression(name.name, name.value);
+        named_exp->commit();
+    }
 }
+
+} // namespace orcus
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

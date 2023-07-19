@@ -11,6 +11,7 @@
 #include "xml_context_base.hpp"
 #include "gnumeric_cell_context.hpp"
 #include "gnumeric_filter_context.hpp"
+#include "gnumeric_names_context.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
 
@@ -49,6 +50,7 @@ public:
     virtual ~gnumeric_sheet_context() override;
 
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
+    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child) override;
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
@@ -93,6 +95,7 @@ private:
 
     gnumeric_cell_context m_cxt_cell;
     gnumeric_filter_context m_cxt_filter;
+    gnumeric_names_context m_cxt_names;
 };
 
 } // namespace orcus

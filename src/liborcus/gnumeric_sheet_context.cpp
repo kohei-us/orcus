@@ -81,7 +81,8 @@ gnumeric_sheet_context::gnumeric_sheet_context(
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
     m_cxt_cell(session_cxt, tokens, factory),
-    m_cxt_filter(session_cxt, tokens, factory)
+    m_cxt_filter(session_cxt, tokens, factory),
+    m_cxt_names(session_cxt, tokens, factory)
 {
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
@@ -106,6 +107,7 @@ gnumeric_sheet_context::gnumeric_sheet_context(
 
     register_child(&m_cxt_cell);
     register_child(&m_cxt_filter);
+    register_child(&m_cxt_names);
 }
 
 gnumeric_sheet_context::~gnumeric_sheet_context() = default;
@@ -126,10 +128,31 @@ xml_context_base* gnumeric_sheet_context::create_child_context(xmlns_id_t ns, xm
                 m_cxt_filter.reset(mp_sheet);
                 return &m_cxt_filter;
             }
+            case XML_Names:
+            {
+                m_cxt_names.reset();
+                return &m_cxt_names;
+            }
         }
     }
 
     return nullptr;
+}
+
+void gnumeric_sheet_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child)
+{
+    if (ns == NS_gnumeric_gnm)
+    {
+        switch (name)
+        {
+            case XML_Names:
+            {
+                assert(child == &m_cxt_names);
+                warn("names done in sheet");
+                break;
+            }
+        }
+    }
 }
 
 void gnumeric_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
