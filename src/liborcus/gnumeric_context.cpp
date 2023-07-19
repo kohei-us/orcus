@@ -141,9 +141,19 @@ void gnumeric_content_xml_context::end_names()
 
     for (const auto& name : m_cxt_names.get_names())
     {
-        named_exp->set_base_position(name.position);
-        named_exp->set_named_expression(name.name, name.value);
-        named_exp->commit();
+        try
+        {
+            named_exp->set_base_position(name.position);
+            named_exp->set_named_expression(name.name, name.value);
+            named_exp->commit();
+        }
+        catch (const std::exception& e)
+        {
+            std::ostringstream os;
+            os << "failed to commit a named expression named '" << name.name
+                << "': (reason='" << e.what() << "'; value='" << name.value << "')";
+            warn(os.str());
+        }
     }
 }
 
