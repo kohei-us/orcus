@@ -71,10 +71,11 @@ private:
 class mock_factory : public import_factory
 {
 public:
-    virtual iface::import_sheet* append_sheet(sheet_t, std::string_view) override
+    virtual iface::import_sheet* get_sheet(std::string_view) override
     {
         return &m_mock_sheet;
     }
+
 private:
     mock_sheet m_mock_sheet;
 };
@@ -85,7 +86,7 @@ void test_column_width()
     session_context cxt;
 
     orcus::gnumeric_sheet_context context(cxt, orcus::gnumeric_tokens, &factory);
-    context.reset(0);
+    context.reset();
     orcus::xmlns_id_t ns = NS_gnumeric_gnm;
     orcus::xml_token_t parent = XML_Sheet;
     orcus::xml_token_attrs_t parent_attr;

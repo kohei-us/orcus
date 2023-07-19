@@ -11,7 +11,6 @@
 #include "gnumeric_sheet_context.hpp"
 #include "orcus/spreadsheet/import_interface.hpp"
 
-#include <iostream>
 #include <fstream>
 #include <algorithm>
 
@@ -41,7 +40,7 @@ xml_context_base* gnumeric_content_xml_context::create_child_context(xmlns_id_t 
         {
             case XML_Sheet:
             {
-                m_cxt_sheet.reset(m_sheet_count++);
+                m_cxt_sheet.reset();
                 return &m_cxt_sheet;
             }
             case XML_Names:
@@ -75,12 +74,51 @@ void gnumeric_content_xml_context::end_child_context(
 void gnumeric_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& /*attrs*/)
 {
     push_stack(ns, name);
-    warn_unhandled();
+
+    if (ns == NS_gnumeric_gnm)
+    {
+        switch (name)
+        {
+            case XML_SheetName:
+                break;
+            default:
+                warn_unhandled();
+        }
+    }
+    else
+        warn_unhandled();
 }
 
 bool gnumeric_content_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
     return pop_stack(ns, name);
+}
+
+void gnumeric_content_xml_context::characters(std::string_view str, bool /*transient*/)
+{
+    if (str.empty())
+        return;
+
+    auto current = get_current_element();
+
+    if (current.first == NS_gnumeric_gnm)
+    {
+        switch (current.second)
+        {
+            case XML_SheetName:
+            {
+                auto* p = mp_factory->append_sheet(m_sheet_count++, str);
+                if (!p)
+                {
+                    std::ostringstream os;
+                    os << "failed to append a new sheet named '" << str << "'";
+                    warn(os.str());
+                }
+
+                break;
+            }
+        }
+    }
 }
 
 void gnumeric_content_xml_context::end_names()

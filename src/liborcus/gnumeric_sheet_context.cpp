@@ -283,10 +283,8 @@ void gnumeric_sheet_context::characters(std::string_view str, bool transient)
     }
 }
 
-void gnumeric_sheet_context::reset(ss::sheet_t sheet_index)
+void gnumeric_sheet_context::reset()
 {
-    m_sheet_index = sheet_index;
-
     mp_sheet = nullptr;
     mp_xf = nullptr;
 
@@ -769,7 +767,7 @@ void gnumeric_sheet_context::end_name()
         switch (parent.second)
         {
             case XML_Sheet:
-                mp_sheet = mp_factory->append_sheet(m_sheet_index, m_name);
+                mp_sheet = mp_factory->get_sheet(m_name);
                 break;
             case XML_Names:
                 break;

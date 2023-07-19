@@ -56,7 +56,7 @@ public:
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
     virtual void characters(std::string_view str, bool transient) override;
 
-    void reset(spreadsheet::sheet_t sheet_index);
+    void reset();
 
 private:
     void start_style_region(const xml_token_attrs_t& attrs);
@@ -77,8 +77,6 @@ private:
 
 private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
-    spreadsheet::sheet_t m_sheet_index = -1;
-
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
     spreadsheet::iface::import_xf* mp_xf = nullptr;
 
