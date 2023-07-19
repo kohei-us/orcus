@@ -1,0 +1,12 @@
+Sheet1/0/0:numeric:1
+Sheet1/0/1:numeric:6
+Sheet1/1/0:numeric:2
+Sheet1/1/1:numeric:7
+Sheet1/2/0:numeric:3
+Sheet1/2/1:numeric:8
+Sheet1/3/0:numeric:4
+Sheet1/3/1:numeric:9
+Sheet1/4/0:numeric:5
+Sheet1/4/1:numeric:10
+Sheet1/6/0:formula:SUM(MyRange):15
+Sheet1/6/1:formula:SUM(MyRange2):55
