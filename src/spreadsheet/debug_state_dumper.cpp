@@ -12,6 +12,7 @@
 #include "ostream_utils.hpp"
 
 #include <ixion/formula_name_resolver.hpp>
+#include <ixion/named_expressions_iterator.hpp>
 
 #include <fstream>
 #include <algorithm>
@@ -19,6 +20,34 @@
 namespace fs = boost::filesystem;
 
 namespace orcus { namespace spreadsheet { namespace detail {
+
+namespace {
+
+void print_named_expressions(const ixion::model_context& cxt, ixion::named_expressions_iterator iter, std::ostream& os)
+{
+    auto resolver = ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &cxt);
+
+    if (!resolver)
+        return;
+
+    const ixion::abs_address_t origin{0, 0, 0};
+    ixion::print_config config;
+    config.display_sheet = ixion::display_sheet_t::always;
+
+    for (; iter.has(); iter.next())
+    {
+        auto name = iter.get();
+
+        std::string exp = ixion::print_formula_tokens(
+            config, cxt, origin, *resolver, name.expression->tokens);
+
+        os << "- name: " << *name.name << std::endl;
+        os << "  origin: " << resolver->get_name(name.expression->origin, origin, true) << std::endl;
+        os << "  expression: " << exp << std::endl;
+    }
+}
+
+} // anonymous namespace
 
 doc_debug_state_dumper::doc_debug_state_dumper(const document_impl& doc) : m_doc(doc)
 {
@@ -28,6 +57,7 @@ void doc_debug_state_dumper::dump(const fs::path& outdir) const
 {
     dump_properties(outdir);
     dump_styles(outdir);
+    dump_named_expressions(outdir);
 }
 
 void doc_debug_state_dumper::dump_properties(const fs::path& outdir) const
@@ -247,6 +277,16 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
     }
 }
 
+void doc_debug_state_dumper::dump_named_expressions(const boost::filesystem::path& outdir) const
+{
+    const fs::path outpath = outdir / "named-expressions.yaml";
+    std::ofstream of{outpath.native()};
+    if (!of)
+        return;
+
+    print_named_expressions(m_doc.context, m_doc.context.get_named_expressions_iterator(), of);
+}
+
 sheet_debug_state_dumper::sheet_debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name) :
     m_sheet(sheet), m_sheet_name(sheet_name) {}
 
@@ -259,6 +299,7 @@ void sheet_debug_state_dumper::dump(const fs::path& outdir) const
     dump_column_widths(outdir);
     dump_row_heights(outdir);
     dump_auto_filter(outdir);
+    dump_named_expressions(outdir);
 }
 
 void sheet_debug_state_dumper::dump_cell_values(const fs::path& outdir) const
@@ -403,6 +444,17 @@ void sheet_debug_state_dumper::dump_auto_filter(const boost::filesystem::path& o
         for (const auto& v : cdata.match_values)
             of << "  - " << v << std::endl;
     }
+}
+
+void sheet_debug_state_dumper::dump_named_expressions(const boost::filesystem::path& outdir) const
+{
+    const fs::path outpath = outdir / "named-expressions.yaml";
+    std::ofstream of{outpath.native()};
+    if (!of)
+        return;
+
+    const ixion::model_context& cxt = m_sheet.doc.get_model_context();
+    print_named_expressions(cxt, cxt.get_named_expressions_iterator(m_sheet.sheet_id), of);
 }
 
 }}}

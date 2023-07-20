@@ -31,6 +31,7 @@ public:
 private:
     void dump_properties(const boost::filesystem::path& outdir) const;
     void dump_styles(const boost::filesystem::path& outdir) const;
+    void dump_named_expressions(const boost::filesystem::path& outdir) const;
 };
 
 class sheet_debug_state_dumper
@@ -51,6 +52,7 @@ private:
     void dump_column_widths(const boost::filesystem::path& outdir) const;
     void dump_row_heights(const boost::filesystem::path& outdir) const;
     void dump_auto_filter(const boost::filesystem::path& outdir) const;
+    void dump_named_expressions(const boost::filesystem::path& outdir) const;
 };
 
 }}}
