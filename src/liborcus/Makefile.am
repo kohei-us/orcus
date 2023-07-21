@@ -296,6 +296,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	gnumeric_names_context.hpp \
 	gnumeric_sheet_context.cpp \
 	gnumeric_sheet_context.hpp \
+	gnumeric_styles_context.cpp \
+	gnumeric_styles_context.hpp \
 	gnumeric_token_constants.hpp \
 	gnumeric_token_constants.inl \
 	gnumeric_tokens.cpp \
@@ -350,6 +352,7 @@ gnumeric_sheet_context_test_SOURCES = \
 	gnumeric_names_context.cpp \
 	gnumeric_cell_context.cpp \
 	gnumeric_filter_context.cpp \
+	gnumeric_styles_context.cpp \
 	gnumeric_helper.cpp \
 	gnumeric_types.cpp \
 	xml_context_base.cpp \

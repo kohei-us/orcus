@@ -12,6 +12,7 @@
 #include "gnumeric_cell_context.hpp"
 #include "gnumeric_filter_context.hpp"
 #include "gnumeric_names_context.hpp"
+#include "gnumeric_styles_context.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
 
@@ -95,6 +96,7 @@ private:
     gnumeric_cell_context m_cxt_cell;
     gnumeric_filter_context m_cxt_filter;
     gnumeric_names_context m_cxt_names;
+    gnumeric_styles_context m_cxt_styles;
 };
 
 } // namespace orcus

@@ -102,6 +102,7 @@ list(APPEND _SOURCES
 #   gnumeric_handler.cpp
 #   gnumeric_helper.cpp
 #   gnumeric_sheet_context.cpp
+#   gnumeric_styles_context.cpp
 #   gnumeric_names_context.cpp
 #   gnumeric_tokens.cpp
 #   gnumeric_types.cpp

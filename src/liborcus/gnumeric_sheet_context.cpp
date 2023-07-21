@@ -82,7 +82,8 @@ gnumeric_sheet_context::gnumeric_sheet_context(
     mp_factory(factory),
     m_cxt_cell(session_cxt, tokens, factory),
     m_cxt_filter(session_cxt, tokens, factory),
-    m_cxt_names(session_cxt, tokens, factory)
+    m_cxt_names(session_cxt, tokens, factory),
+    m_cxt_styles(session_cxt, tokens, factory)
 {
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
@@ -100,6 +101,7 @@ gnumeric_sheet_context::gnumeric_sheet_context(
         { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Rows },
         { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Selections },
         { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_SheetLayout },
+        { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Styles },
     };
 
     init_element_validator(rules, std::size(rules));
@@ -107,6 +109,7 @@ gnumeric_sheet_context::gnumeric_sheet_context(
     register_child(&m_cxt_cell);
     register_child(&m_cxt_filter);
     register_child(&m_cxt_names);
+    register_child(&m_cxt_styles);
 }
 
 gnumeric_sheet_context::~gnumeric_sheet_context() = default;
@@ -131,6 +134,11 @@ xml_context_base* gnumeric_sheet_context::create_child_context(xmlns_id_t ns, xm
             {
                 m_cxt_names.reset();
                 return &m_cxt_names;
+            }
+            case XML_Styles:
+            {
+                m_cxt_styles.reset();
+                return &m_cxt_styles;
             }
         }
     }
