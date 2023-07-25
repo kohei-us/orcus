@@ -9,7 +9,10 @@
 #include "gnumeric_token_constants.hpp"
 #include "gnumeric_namespace_types.hpp"
 #include "gnumeric_sheet_context.hpp"
-#include "orcus/spreadsheet/import_interface.hpp"
+#include "impl_utils.hpp"
+
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_styles.hpp>
 
 #include <fstream>
 #include <algorithm>
@@ -185,12 +188,91 @@ void gnumeric_content_xml_context::end_sheet()
 
 void gnumeric_content_xml_context::end_sheets()
 {
+    import_styles();
+}
+
+void gnumeric_content_xml_context::import_styles()
+{
+    ss::iface::import_styles* istyles = mp_factory->get_styles();
+    if (!istyles)
+        return;
+
+    std::size_t xf_count = 1; // one for the default style
+    for (const auto& sheet_styles : m_styles)
+        xf_count += sheet_styles.size();
+
+    istyles->set_xf_count(ss::xf_category_t::cell, xf_count);
+
+    import_default_styles(istyles);
+    import_cell_styles(istyles);
+}
+
+void gnumeric_content_xml_context::import_default_styles(ss::iface::import_styles* istyles)
+{
+    assert(istyles);
+
+    ss::iface::import_font_style* ifont = istyles->start_font_style();
+    ENSURE_INTERFACE(ifont, imort_font_style);
+    std::size_t id = ifont->commit();
+    assert(id == 0);
+
+    ss::iface::import_fill_style* ifill = istyles->start_fill_style();
+    ENSURE_INTERFACE(ifill, imort_fill_style);
+    id = ifill->commit();
+    assert(id == 0);
+
+    ss::iface::import_border_style* iborder = istyles->start_border_style();
+    ENSURE_INTERFACE(iborder, imort_border_style);
+    id = iborder->commit();
+    assert(id == 0);
+
+    ss::iface::import_cell_protection* iprotection = istyles->start_cell_protection();
+    ENSURE_INTERFACE(iprotection, imort_cell_protection);
+    id = iprotection->commit();
+    assert(id == 0);
+
+    ss::iface::import_number_format* inumfmt = istyles->start_number_format();
+    ENSURE_INTERFACE(inumfmt, import_number_format);
+    id = inumfmt->commit();
+    assert(id == 0);
+
+    ss::iface::import_xf* ixf = istyles->start_xf(ss::xf_category_t::cell);
+    ENSURE_INTERFACE(ixf, import_xf);
+    id = ixf->commit();
+    assert(id == 0);
+
+    ss::iface::import_cell_style* xstyle = istyles->start_cell_style();
+    ENSURE_INTERFACE(xstyle, import_cell_style);
+    xstyle->set_xf(0);
+    xstyle->commit();
+}
+
+void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* istyles)
+{
+    assert(istyles);
+
     for (const auto& sheet_styles : m_styles)
     {
         for (const gnumeric_style& style : sheet_styles)
         {
-            // TODO : process each style here...
-            (void)style;
+            assert(style.valid()); // should be validated before insertion
+
+            ss::iface::import_sheet* isheet = mp_factory->get_sheet(style.sheet);
+            if (!isheet)
+                continue;
+
+            ss::iface::import_xf* ixf = istyles->start_xf(ss::xf_category_t::cell);
+            ENSURE_INTERFACE(ixf, import_xf);
+
+            ixf->set_apply_alignment(true);
+            ixf->set_horizontal_alignment(style.hor_align);
+            ixf->set_vertical_alignment(style.ver_align);
+
+            std::size_t xfid = ixf->commit();
+            isheet->set_format(
+                style.region.first.row, style.region.first.column,
+                style.region.last.row, style.region.last.column,
+                xfid);
         }
     }
 }

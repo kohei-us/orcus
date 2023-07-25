@@ -23,6 +23,7 @@ namespace spreadsheet { namespace iface {
 
 class import_factory;
 class import_sheet;
+class import_styles;
 
 }}
 
@@ -45,6 +46,10 @@ private:
     void end_names();
     void end_sheet();
     void end_sheets();
+
+    void import_styles();
+    void import_default_styles(spreadsheet::iface::import_styles* istyles);
+    void import_cell_styles(spreadsheet::iface::import_styles* istyles);
 
 private:
     spreadsheet::iface::import_factory* mp_factory;
