@@ -11,6 +11,7 @@
 #include "xml_context_base.hpp"
 #include "gnumeric_sheet_context.hpp"
 #include "gnumeric_names_context.hpp"
+#include "gnumeric_types.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
 
@@ -42,13 +43,17 @@ public:
 
 private:
     void end_names();
+    void end_sheet();
+    void end_sheets();
 
 private:
     spreadsheet::iface::import_factory* mp_factory;
-    spreadsheet::sheet_t m_sheet_count;
+    spreadsheet::sheet_t m_sheet_pos;
 
     gnumeric_names_context m_cxt_names;
     gnumeric_sheet_context m_cxt_sheet;
+
+    std::vector<std::vector<gnumeric_style>> m_styles;
 };
 
 }

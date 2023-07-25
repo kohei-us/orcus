@@ -22,6 +22,16 @@ struct gnumeric_named_exp
     void reset();
 };
 
+struct gnumeric_style
+{
+    spreadsheet::sheet_t sheet = -1;
+    spreadsheet::range_t region = {{-1, -1}, {-1, -1}};
+    spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
+    spreadsheet::ver_alignment_t ver_align = spreadsheet::ver_alignment_t::unknown;
+
+    bool valid() const;
+};
+
 } // namespace orcus
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

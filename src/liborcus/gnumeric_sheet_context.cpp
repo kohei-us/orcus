@@ -137,7 +137,7 @@ xml_context_base* gnumeric_sheet_context::create_child_context(xmlns_id_t ns, xm
             }
             case XML_Styles:
             {
-                m_cxt_styles.reset();
+                m_cxt_styles.reset(m_sheet);
                 return &m_cxt_styles;
             }
         }
@@ -156,6 +156,12 @@ void gnumeric_sheet_context::end_child_context(xmlns_id_t ns, xml_token_t name, 
             {
                 assert(child == &m_cxt_names);
                 end_names();
+                break;
+            }
+            case XML_Styles:
+            {
+                assert(child == &m_cxt_styles);
+                end_styles();
                 break;
             }
         }
@@ -290,10 +296,11 @@ void gnumeric_sheet_context::characters(std::string_view str, bool transient)
     }
 }
 
-void gnumeric_sheet_context::reset()
+void gnumeric_sheet_context::reset(ss::sheet_t sheet)
 {
     mp_sheet = nullptr;
     mp_xf = nullptr;
+    m_sheet = sheet;
 
     m_region_data.reset();
 
@@ -304,6 +311,11 @@ void gnumeric_sheet_context::reset()
     m_chars = std::string_view{};
     m_name = std::string_view{};
     m_merge_area = std::string_view{};
+}
+
+std::vector<gnumeric_style> gnumeric_sheet_context::pop_styles()
+{
+    return std::move(m_styles);
 }
 
 void gnumeric_sheet_context::start_font(const xml_token_attrs_t& attrs)
@@ -797,6 +809,11 @@ void gnumeric_sheet_context::end_names()
             warn(os.str());
         }
     }
+}
+
+void gnumeric_sheet_context::end_styles()
+{
+    m_styles = m_cxt_styles.pop_styles();
 }
 
 } // namespace orcus

@@ -13,6 +13,7 @@
 #include "gnumeric_filter_context.hpp"
 #include "gnumeric_names_context.hpp"
 #include "gnumeric_styles_context.hpp"
+#include "gnumeric_types.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
 
@@ -57,7 +58,9 @@ public:
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
     virtual void characters(std::string_view str, bool transient) override;
 
-    void reset();
+    void reset(spreadsheet::sheet_t sheet);
+
+    std::vector<gnumeric_style> pop_styles();
 
 private:
     void start_style_region(const xml_token_attrs_t& attrs);
@@ -76,11 +79,13 @@ private:
     void end_merge();
     void end_name();
     void end_names();
+    void end_styles();
 
 private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
     spreadsheet::iface::import_xf* mp_xf = nullptr;
+    spreadsheet::sheet_t m_sheet = -1;
 
     std::optional<style_region> m_region_data;
 
@@ -97,6 +102,8 @@ private:
     gnumeric_filter_context m_cxt_filter;
     gnumeric_names_context m_cxt_names;
     gnumeric_styles_context m_cxt_styles;
+
+    std::vector<gnumeric_style> m_styles;
 };
 
 } // namespace orcus

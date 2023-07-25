@@ -22,7 +22,7 @@ gnumeric_content_xml_context::gnumeric_content_xml_context(
     session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
-    m_sheet_count(0),
+    m_sheet_pos(0),
     m_cxt_names(session_cxt, tokens, factory),
     m_cxt_sheet(session_cxt, tokens, factory)
 {
@@ -52,7 +52,7 @@ xml_context_base* gnumeric_content_xml_context::create_child_context(xmlns_id_t 
         {
             case XML_Sheet:
             {
-                m_cxt_sheet.reset();
+                m_cxt_sheet.reset(m_sheet_pos++);
                 return &m_cxt_sheet;
             }
             case XML_Names:
@@ -73,6 +73,12 @@ void gnumeric_content_xml_context::end_child_context(
     {
         switch (name)
         {
+            case XML_Sheet:
+            {
+                assert(child == &m_cxt_sheet);
+                end_sheet();
+                break;
+            }
             case XML_Names:
             {
                 assert(child == &m_cxt_names);
@@ -91,7 +97,13 @@ void gnumeric_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name
     {
         switch (name)
         {
+            case XML_SheetNameIndex:
+                m_sheet_pos = 0;
+                break;
             case XML_SheetName:
+                break;
+            case XML_Sheets:
+                m_sheet_pos = 0;
                 break;
             default:
                 warn_unhandled();
@@ -103,6 +115,15 @@ void gnumeric_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name
 
 bool gnumeric_content_xml_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
+    if (ns == NS_gnumeric_gnm)
+    {
+        switch (name)
+        {
+            case XML_Sheets:
+                end_sheets();
+                break;
+        }
+    }
     return pop_stack(ns, name);
 }
 
@@ -119,7 +140,7 @@ void gnumeric_content_xml_context::characters(std::string_view str, bool /*trans
         {
             case XML_SheetName:
             {
-                auto* p = mp_factory->append_sheet(m_sheet_count++, str);
+                auto* p = mp_factory->append_sheet(m_sheet_pos++, str);
                 if (!p)
                 {
                     std::ostringstream os;
@@ -153,6 +174,23 @@ void gnumeric_content_xml_context::end_names()
             os << "failed to commit a named expression named '" << name.name
                 << "': (reason='" << e.what() << "'; value='" << name.value << "')";
             warn(os.str());
+        }
+    }
+}
+
+void gnumeric_content_xml_context::end_sheet()
+{
+    m_styles.push_back(m_cxt_sheet.pop_styles());
+}
+
+void gnumeric_content_xml_context::end_sheets()
+{
+    for (const auto& sheet_styles : m_styles)
+    {
+        for (const gnumeric_style& style : sheet_styles)
+        {
+            // TODO : process each style here...
+            (void)style;
         }
     }
 }

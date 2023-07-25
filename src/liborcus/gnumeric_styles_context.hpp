@@ -8,6 +8,7 @@
 #pragma once
 
 #include "xml_context_base.hpp"
+#include "gnumeric_types.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
 
@@ -21,15 +22,6 @@ class import_factory;
 
 class gnumeric_styles_context : public xml_context_base
 {
-    struct style
-    {
-        spreadsheet::range_t region = {{-1, -1}, {-1, -1}};
-        spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
-        spreadsheet::ver_alignment_t ver_align = spreadsheet::ver_alignment_t::unknown;
-
-        bool valid() const;
-    };
-
 public:
     gnumeric_styles_context(
         session_context& session_cxt, const tokens& tokens,
@@ -39,7 +31,9 @@ public:
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
 
-    void reset();
+    void reset(spreadsheet::sheet_t sheet);
+
+    std::vector<gnumeric_style> pop_styles();
 
 private:
     void start_style_region(const std::vector<xml_token_attr_t>& attrs);
@@ -49,9 +43,10 @@ private:
 
 private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
+    spreadsheet::sheet_t m_sheet = -1;
 
-    std::vector<style> m_styles;
-    style m_current_style;
+    std::vector<gnumeric_style> m_styles;
+    gnumeric_style m_current_style;
 };
 
 } // namespace orcus

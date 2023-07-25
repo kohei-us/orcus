@@ -16,6 +16,17 @@ void gnumeric_named_exp::reset()
     position = {0, 0, 0};
 }
 
+bool gnumeric_style::valid() const
+{
+    if (sheet < 0)
+        return false;
+
+    if (region.first.column < 0 || region.first.row < 0 || region.last.column < 0 || region.last.row < 0)
+        return false;
+
+    return true;
+}
+
 } // namespace orcus
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

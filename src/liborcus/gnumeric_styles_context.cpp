@@ -63,14 +63,6 @@ const map_type& get()
 
 } // anonymous namespace
 
-bool gnumeric_styles_context::style::valid() const
-{
-    if (region.first.column < 0 || region.first.row < 0 || region.last.column < 0 || region.last.row < 0)
-        return false;
-
-    return true;
-}
-
 gnumeric_styles_context::gnumeric_styles_context(
     session_context& session_cxt, const tokens& tokens,
     ss::iface::import_factory* factory) :
@@ -129,14 +121,22 @@ bool gnumeric_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void gnumeric_styles_context::reset()
+void gnumeric_styles_context::reset(ss::sheet_t sheet)
 {
+    m_sheet = sheet;
     m_styles.clear();
+    m_current_style = gnumeric_style{};
+}
+
+std::vector<gnumeric_style> gnumeric_styles_context::pop_styles()
+{
+    return std::move(m_styles);
 }
 
 void gnumeric_styles_context::start_style_region(const std::vector<xml_token_attr_t>& attrs)
 {
-    m_current_style = style{};
+    m_current_style = gnumeric_style{};
+    m_current_style.sheet = m_sheet;
 
     for (const auto& attr : attrs)
     {
