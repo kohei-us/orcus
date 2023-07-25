@@ -13,6 +13,7 @@
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
 #include <orcus/spreadsheet/auto_filter.hpp>
+#include <orcus/spreadsheet/styles.hpp>
 
 #include <ixion/address.hpp>
 #include <boost/filesystem/path.hpp>
@@ -292,6 +293,75 @@ void test_gnumeric_merged_cells()
     assert(merge_range.last.row == 5);
 }
 
+void test_gnumeric_text_alignment()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/text-alignment/input.gnumeric";
+    auto doc = load_doc(filepath);
+
+    ss::styles& styles = doc->get_styles();
+
+    ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        ss::row_t row;
+        ss::col_t col;
+        bool apply_align;
+        ss::hor_alignment_t hor_align;
+        ss::ver_alignment_t ver_align;
+    };
+
+    std::vector<check> checks =
+    {
+        {  1, 2,  true, ss::hor_alignment_t::unknown,     ss::ver_alignment_t::bottom      }, // C2
+        {  2, 2,  true, ss::hor_alignment_t::left,        ss::ver_alignment_t::bottom      }, // C3
+        {  3, 2,  true, ss::hor_alignment_t::center,      ss::ver_alignment_t::bottom      }, // C4
+        {  4, 2,  true, ss::hor_alignment_t::right,       ss::ver_alignment_t::bottom      }, // C5
+        {  5, 2,  true, ss::hor_alignment_t::left,        ss::ver_alignment_t::bottom      }, // C6
+        {  6, 2,  true, ss::hor_alignment_t::left,        ss::ver_alignment_t::bottom      }, // C7
+        {  7, 2,  true, ss::hor_alignment_t::right,       ss::ver_alignment_t::bottom      }, // C8
+        {  8, 2,  true, ss::hor_alignment_t::right,       ss::ver_alignment_t::bottom      }, // C9
+        {  9, 2,  true, ss::hor_alignment_t::unknown,     ss::ver_alignment_t::middle      }, // C10
+        { 10, 2,  true, ss::hor_alignment_t::left,        ss::ver_alignment_t::middle      }, // C11
+        { 11, 2,  true, ss::hor_alignment_t::center,      ss::ver_alignment_t::middle      }, // C12
+        { 12, 2,  true, ss::hor_alignment_t::right,       ss::ver_alignment_t::middle      }, // C13
+        { 13, 2,  true, ss::hor_alignment_t::left,        ss::ver_alignment_t::middle      }, // C14
+        { 14, 2,  true, ss::hor_alignment_t::left,        ss::ver_alignment_t::middle      }, // C15
+        { 15, 2,  true, ss::hor_alignment_t::right,       ss::ver_alignment_t::middle      }, // C16
+        { 16, 2,  true, ss::hor_alignment_t::right,       ss::ver_alignment_t::middle      }, // C17
+        { 17, 2,  true, ss::hor_alignment_t::unknown,     ss::ver_alignment_t::top         }, // C18
+        { 18, 2,  true, ss::hor_alignment_t::left,        ss::ver_alignment_t::top         }, // C19
+        { 19, 2,  true, ss::hor_alignment_t::center,      ss::ver_alignment_t::top         }, // C20
+        { 20, 2,  true, ss::hor_alignment_t::right,       ss::ver_alignment_t::top         }, // C21
+        { 21, 2,  true, ss::hor_alignment_t::left,        ss::ver_alignment_t::top         }, // C22
+        { 22, 2,  true, ss::hor_alignment_t::left,        ss::ver_alignment_t::top         }, // C23
+        { 23, 2,  true, ss::hor_alignment_t::right,       ss::ver_alignment_t::top         }, // C24
+        { 24, 2,  true, ss::hor_alignment_t::right,       ss::ver_alignment_t::top         }, // C25
+        { 25, 2,  true, ss::hor_alignment_t::unknown,     ss::ver_alignment_t::justified   }, // C26
+        { 26, 2,  true, ss::hor_alignment_t::justified,   ss::ver_alignment_t::bottom      }, // C27
+        { 27, 2,  true, ss::hor_alignment_t::distributed, ss::ver_alignment_t::distributed }, // C28
+    };
+
+    for (const check& c : checks)
+    {
+        std::cout << "row=" << c.row << "; col=" << c.col << std::endl;
+        size_t xf = sh->get_cell_format(c.row, c.col);
+
+        const ss::cell_format_t* cf = styles.get_cell_format(xf);
+        assert(cf);
+        assert(c.apply_align == cf->apply_alignment);
+
+        if (!cf->apply_alignment)
+            continue;
+
+        assert(c.hor_align == cf->hor_align);
+        assert(c.ver_align == cf->ver_align);
+    }
+}
+
 }
 
 int main()
@@ -301,6 +371,7 @@ int main()
     test_gnumeric_auto_filter();
     test_gnumeric_hidden_rows_columns();
     test_gnumeric_merged_cells();
+    test_gnumeric_text_alignment();
 
     return EXIT_SUCCESS;
 }
