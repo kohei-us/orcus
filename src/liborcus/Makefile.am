@@ -70,6 +70,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	orcus_xml_impl.cpp \
 	orcus_xml_map_def.cpp \
 	measurement.cpp \
+	number_utils.cpp \
+	number_utils.hpp \
 	xml_context_base.hpp \
 	xml_context_base.cpp \
 	xml_context_global.hpp \
@@ -355,6 +357,7 @@ gnumeric_sheet_context_test_SOURCES = \
 	gnumeric_styles_context.cpp \
 	gnumeric_helper.cpp \
 	gnumeric_types.cpp \
+	number_utils.cpp \
 	xml_context_base.cpp \
 	xml_element_types.cpp \
 	xml_element_validator.cpp \

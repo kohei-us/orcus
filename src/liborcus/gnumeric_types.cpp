@@ -6,6 +6,9 @@
  */
 
 #include "gnumeric_types.hpp"
+#include "number_utils.hpp"
+
+namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
@@ -25,6 +28,41 @@ bool gnumeric_style::valid() const
         return false;
 
     return true;
+}
+
+std::optional<spreadsheet::color_rgb_t> parse_gnumeric_rgb(std::string_view v)
+{
+    ss::color_rgb_t color;
+
+    auto pos = v.find(':');
+    if (pos == v.npos)
+        return {};
+
+    std::string_view seg = v.substr(0, pos);
+
+    std::optional<std::uint16_t> elem = hex_to_uint16(seg);
+    if (!elem)
+        return {};
+
+    color.red = *elem >> 8;  // 16-bit to 8-bit
+    v = v.substr(pos + 1);
+    pos = v.find(':');
+    if (pos == v.npos)
+        return {};
+
+    seg = v.substr(0, pos);
+    elem = hex_to_uint16(seg);
+    if (!elem)
+        return {};
+
+    color.green = *elem >> 8;
+    v = v.substr(pos + 1);
+    elem = hex_to_uint16(v);
+    if (!elem)
+        return {};
+
+    color.blue = *elem >> 8;
+    return color;
 }
 
 } // namespace orcus

@@ -31,8 +31,15 @@ struct gnumeric_style
     spreadsheet::ver_alignment_t ver_align = spreadsheet::ver_alignment_t::unknown;
     std::optional<bool> wrap_text;
 
+    std::optional<spreadsheet::color_rgb_t> fore;
+    std::optional<spreadsheet::color_rgb_t> back;
+    std::optional<spreadsheet::color_rgb_t> pattern_color;
+    spreadsheet::fill_pattern_t pattern = spreadsheet::fill_pattern_t::none;
+
     bool valid() const;
 };
+
+std::optional<spreadsheet::color_rgb_t> parse_gnumeric_rgb(std::string_view v);
 
 } // namespace orcus
 

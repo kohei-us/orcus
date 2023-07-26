@@ -61,6 +61,17 @@ const map_type& get()
 
 } // namespace ver_align
 
+ss::fill_pattern_t to_fill_pattern(std::size_t v)
+{
+    constexpr ss::fill_pattern_t patterns[] = {
+        ss::fill_pattern_t::none,
+        ss::fill_pattern_t::solid,
+        // TODO: add more as we establish more mapping rules
+    };
+
+    return (v < std::size(patterns)) ? patterns[v] : ss::fill_pattern_t::none;
+}
+
 } // anonymous namespace
 
 gnumeric_styles_context::gnumeric_styles_context(
@@ -172,6 +183,18 @@ void gnumeric_styles_context::start_style(const std::vector<xml_token_attr_t>& a
                 break;
             case XML_WrapText:
                 m_current_style.wrap_text = to_bool(attr.value);
+                break;
+            case XML_Fore:
+                m_current_style.fore = parse_gnumeric_rgb(attr.value);
+                break;
+            case XML_Back:
+                m_current_style.back = parse_gnumeric_rgb(attr.value);
+                break;
+            case XML_PatternColor:
+                m_current_style.pattern_color = parse_gnumeric_rgb(attr.value);
+                break;
+            case XML_Shade:
+                m_current_style.pattern = to_fill_pattern(to_long(attr.value));
                 break;
         }
     }

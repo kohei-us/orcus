@@ -261,8 +261,47 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
             if (!isheet)
                 continue;
 
+            ss::iface::import_font_style* ifont = istyles->start_font_style();
+            ENSURE_INTERFACE(ifont, import_font_style);
+
+            if (style.fore)
+                ifont->set_color(255, style.fore->red, style.fore->green, style.fore->blue);
+
+            std::size_t id_font = ifont->commit();
+
+            std::optional<std::size_t> id_fill;
+
+            if (style.pattern != ss::fill_pattern_t::none)
+            {
+                ss::iface::import_fill_style* ifill = istyles->start_fill_style();
+                ENSURE_INTERFACE(ifill, import_fill_style);
+
+                ifill->set_pattern_type(style.pattern);
+
+                if (style.back)
+                    ifill->set_fg_color(
+                        255,
+                        style.back->red,
+                        style.back->green,
+                        style.back->blue);
+
+                if (style.pattern_color)
+                    ifill->set_bg_color(
+                        255,
+                        style.pattern_color->red,
+                        style.pattern_color->green,
+                        style.pattern_color->blue);
+
+                id_fill = ifill->commit();
+            }
+
             ss::iface::import_xf* ixf = istyles->start_xf(ss::xf_category_t::cell);
             ENSURE_INTERFACE(ixf, import_xf);
+
+            ixf->set_font(id_font);
+
+            if (id_fill)
+                ixf->set_fill(*id_fill);
 
             bool apply_alignment =
                 style.hor_align != ss::hor_alignment_t::unknown ||
