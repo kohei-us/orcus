@@ -264,9 +264,18 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
             ss::iface::import_xf* ixf = istyles->start_xf(ss::xf_category_t::cell);
             ENSURE_INTERFACE(ixf, import_xf);
 
-            ixf->set_apply_alignment(true);
-            ixf->set_horizontal_alignment(style.hor_align);
-            ixf->set_vertical_alignment(style.ver_align);
+            bool apply_alignment =
+                style.hor_align != ss::hor_alignment_t::unknown ||
+                style.ver_align != ss::ver_alignment_t::unknown ||
+                style.wrap_text;
+
+            ixf->set_apply_alignment(apply_alignment);
+
+            if (style.hor_align != ss::hor_alignment_t::unknown)
+                ixf->set_horizontal_alignment(style.hor_align);
+
+            if (style.ver_align != ss::ver_alignment_t::unknown)
+                ixf->set_vertical_alignment(style.ver_align);
 
             if (style.wrap_text)
                 ixf->set_wrap_text(*style.wrap_text);
