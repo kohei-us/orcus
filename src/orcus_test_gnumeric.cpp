@@ -362,6 +362,46 @@ void test_gnumeric_text_alignment()
     }
 }
 
+void test_gnumeric_cell_properties_wrap_and_shrink()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    // NB : Gnumeric doesn't appear to support shrink-to-fit, so we only check
+    // wrap-text for now.  When Gnumeric supports shrink-to-fit, re-generate the
+    // test file from test/xls-xml/cell-properties/wrap-and-shrink.xml.
+
+    fs::path filepath = SRCDIR"/test/gnumeric/cell-properties/wrap-and-shrink.gnumeric";
+    auto doc = load_doc(filepath);
+
+    const ss::styles& styles = doc->get_styles();
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    std::size_t xfid = sh->get_cell_format(0, 1); // B1
+    const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(xf->wrap_text);
+    assert(!*xf->wrap_text);
+//  assert(xf->shrink_to_fit);
+//  assert(!*xf->shrink_to_fit);
+
+    xfid = sh->get_cell_format(1, 1); // B2
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(xf->wrap_text);
+    assert(*xf->wrap_text);
+//  assert(xf->shrink_to_fit);
+//  assert(!*xf->shrink_to_fit);
+
+    xfid = sh->get_cell_format(2, 1); // B3
+    xf = styles.get_cell_format(xfid);
+    assert(xf);
+    assert(xf->wrap_text);
+    assert(!*xf->wrap_text);
+//  assert(xf->shrink_to_fit);
+//  assert(*xf->shrink_to_fit);
+}
+
 }
 
 int main()
@@ -372,6 +412,7 @@ int main()
     test_gnumeric_hidden_rows_columns();
     test_gnumeric_merged_cells();
     test_gnumeric_text_alignment();
+    test_gnumeric_cell_properties_wrap_and_shrink();
 
     return EXIT_SUCCESS;
 }
