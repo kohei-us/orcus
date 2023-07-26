@@ -268,6 +268,9 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
             ixf->set_horizontal_alignment(style.hor_align);
             ixf->set_vertical_alignment(style.ver_align);
 
+            if (style.wrap_text)
+                ixf->set_wrap_text(*style.wrap_text);
+
             std::size_t xfid = ixf->commit();
             isheet->set_format(
                 style.region.first.row, style.region.first.column,

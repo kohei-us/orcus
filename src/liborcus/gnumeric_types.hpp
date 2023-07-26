@@ -10,6 +10,7 @@
 #include <orcus/spreadsheet/types.hpp>
 
 #include <string_view>
+#include <optional>
 
 namespace orcus {
 
@@ -28,6 +29,7 @@ struct gnumeric_style
     spreadsheet::range_t region = {{-1, -1}, {-1, -1}};
     spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
     spreadsheet::ver_alignment_t ver_align = spreadsheet::ver_alignment_t::unknown;
+    std::optional<bool> wrap_text;
 
     bool valid() const;
 };

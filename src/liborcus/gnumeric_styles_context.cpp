@@ -170,6 +170,9 @@ void gnumeric_styles_context::start_style(const std::vector<xml_token_attr_t>& a
             case XML_VAlign:
                 m_current_style.ver_align = ver_align::get().find(attr.value);
                 break;
+            case XML_WrapText:
+                m_current_style.wrap_text = to_bool(attr.value);
+                break;
         }
     }
 }
