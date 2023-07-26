@@ -13,6 +13,7 @@
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
 #include <orcus/spreadsheet/auto_filter.hpp>
+#include <orcus/spreadsheet/shared_strings.hpp>
 #include <orcus/spreadsheet/styles.hpp>
 
 #include <ixion/address.hpp>
@@ -458,6 +459,95 @@ void test_gnumeric_background_fill()
     }
 }
 
+void test_gnumeric_colored_text()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/colored-text/input.gnumeric";
+    auto doc = load_doc(filepath);
+
+    const spreadsheet::sheet* sheet1 = doc->get_sheet("ColoredText");
+    assert(sheet1);
+
+    const spreadsheet::shared_strings& ss = doc->get_shared_strings();
+
+    const spreadsheet::styles& styles = doc->get_styles();
+
+    // Column A contains colored cells.
+
+    struct check
+    {
+        spreadsheet::row_t row;
+        spreadsheet::color_elem_t red;
+        spreadsheet::color_elem_t green;
+        spreadsheet::color_elem_t blue;
+        std::string text;
+    };
+
+    std::vector<check> checks = {
+        {  1, 0xC0, 0x00, 0x00, "Dark Red"    },
+        {  2, 0xFF, 0x00, 0x00, "Red"         },
+        {  3, 0xFF, 0xC0, 0x00, "Orange"      },
+        {  4, 0xFF, 0xFF, 0x00, "Yellow"      },
+        {  5, 0x92, 0xD0, 0x50, "Light Green" },
+        {  6, 0x00, 0xB0, 0x50, "Green"       },
+        {  7, 0x00, 0xB0, 0xF0, "Light Blue"  },
+        {  8, 0x00, 0x70, 0xC0, "Blue"        },
+        {  9, 0x00, 0x20, 0x60, "Dark Blue"   },
+        { 10, 0x70, 0x30, 0xA0, "Purple"      },
+    };
+
+    for (const check& c : checks)
+    {
+        size_t xfi = sheet1->get_cell_format(c.row, 0);
+        const spreadsheet::cell_format_t* xf = styles.get_cell_format(xfi);
+        assert(xf);
+
+        const spreadsheet::font_t* font = styles.get_font(xf->font);
+        assert(font);
+        assert(font->color);
+        assert(font->color.value().red == c.red);
+        assert(font->color.value().green == c.green);
+        assert(font->color.value().blue == c.blue);
+
+        size_t si = sheet1->get_string_identifier(c.row, 0);
+        const std::string* s = ss.get_string(si);
+        assert(s);
+        assert(*s == c.text);
+    }
+
+    // Cell B2 contains mix-colored text.
+    size_t si = sheet1->get_string_identifier(1, 1);
+    const std::string* s = ss.get_string(si);
+    assert(s);
+    assert(*s == "Red and Blue");
+#if 0 // TODO : format runs are not yet implemented
+    const spreadsheet::format_runs_t* fmt_runs = ss.get_format_runs(si);
+    assert(fmt_runs);
+
+    // There should be 2 segments that are color-formatted.
+    assert(fmt_runs->size() == 2);
+
+    // The 'Red' segment should be in red color.
+    const spreadsheet::format_run* fmt = &fmt_runs->at(0);
+    assert(fmt->color.alpha == 0);
+    assert(fmt->color.red == 0xFF);
+    assert(fmt->color.green == 0);
+    assert(fmt->color.blue == 0);
+    assert(fmt->pos == 0);
+    assert(fmt->size == 3);
+
+    // The 'Blue' segment should be in blue color.
+    fmt = &fmt_runs->at(1);
+    assert(fmt->color.alpha == 0);
+    assert(fmt->color.red == 0);
+    assert(fmt->color.green == 0x70);
+    assert(fmt->color.blue == 0xC0);
+    assert(fmt->pos == 8);
+    assert(fmt->size == 4);
+#endif
+}
+
 }
 
 int main()
@@ -470,6 +560,7 @@ int main()
     test_gnumeric_text_alignment();
     test_gnumeric_cell_properties_wrap_and_shrink();
     test_gnumeric_background_fill();
+    test_gnumeric_colored_text();
 
     return EXIT_SUCCESS;
 }
