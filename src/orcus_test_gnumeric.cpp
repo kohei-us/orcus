@@ -402,6 +402,62 @@ void test_gnumeric_cell_properties_wrap_and_shrink()
 //  assert(*xf->shrink_to_fit);
 }
 
+void test_gnumeric_background_fill()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/background-color/standard.gnumeric";
+    auto doc = load_doc(filepath);
+
+    ss::styles& styles = doc->get_styles();
+
+    ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        ss::row_t row;
+        ss::col_t col;
+        ss::fill_pattern_t pattern_type;
+        ss::color_t fg_color;
+    };
+
+    std::vector<check> checks =
+    {
+        {  1, 0, ss::fill_pattern_t::solid, { 255, 192,   0,   0 } }, // A2  - dark red
+        {  2, 0, ss::fill_pattern_t::solid, { 255, 255,   0,   0 } }, // A3  - red
+        {  3, 0, ss::fill_pattern_t::solid, { 255, 255, 192,   0 } }, // A4  - orange
+        {  4, 0, ss::fill_pattern_t::solid, { 255, 255, 255,   0 } }, // A5  - yellow
+        {  5, 0, ss::fill_pattern_t::solid, { 255, 146, 208,  80 } }, // A6  - light green
+        {  6, 0, ss::fill_pattern_t::solid, { 255,   0, 176,  80 } }, // A7  - green
+        {  7, 0, ss::fill_pattern_t::solid, { 255,   0, 176, 240 } }, // A8  - light blue
+        {  8, 0, ss::fill_pattern_t::solid, { 255,   0, 112, 192 } }, // A9  - blue
+        {  9, 0, ss::fill_pattern_t::solid, { 255,   0,  32,  96 } }, // A10 - dark blue
+        { 10, 0, ss::fill_pattern_t::solid, { 255, 112,  48, 160 } }, // A11 - purple
+    };
+
+    ss::color_t color_white(255, 255, 255, 255);
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col);
+
+        const ss::cell_format_t* cf = styles.get_cell_format(xf);
+        assert(cf);
+
+        const ss::fill_t* fill_data = styles.get_fill(cf->fill);
+        assert(fill_data);
+        assert(fill_data->pattern_type == c.pattern_type);
+        assert(fill_data->fg_color == c.fg_color);
+
+        // The font colors are all white in the colored cells.
+        const ss::font_t* font_data = styles.get_font(cf->font);
+        assert(font_data);
+
+        assert(font_data->color == color_white);
+    }
+}
+
 }
 
 int main()
@@ -413,6 +469,7 @@ int main()
     test_gnumeric_merged_cells();
     test_gnumeric_text_alignment();
     test_gnumeric_cell_properties_wrap_and_shrink();
+    test_gnumeric_background_fill();
 
     return EXIT_SUCCESS;
 }
