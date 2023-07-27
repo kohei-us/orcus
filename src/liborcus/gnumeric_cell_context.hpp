@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_GNUMERIC_CELL_CONTEXT_HPP
 
 #include "xml_context_base.hpp"
+#include "gnumeric_types.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
 
@@ -30,17 +31,15 @@ class gnumeric_cell_context : public xml_context_base
     enum cell_type
     {
         cell_type_unknown,
-        cell_type_bool,
         cell_type_value,
-        cell_type_string,
         cell_type_formula,
         cell_type_shared_formula,
-        cell_type_array,
     };
 
     struct cell_data
     {
         cell_type type = cell_type_unknown;
+        std::optional<gnumeric_value_type> value_type;
         spreadsheet::row_t row = 0;
         spreadsheet::col_t col = 0;
         spreadsheet::row_t array_rows = 0;

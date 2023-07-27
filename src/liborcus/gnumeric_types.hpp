@@ -14,6 +14,20 @@
 
 namespace orcus {
 
+/**
+ * Values are as specified in the Gnumeric source code except for vt_unknown.
+ */
+enum gnumeric_value_type
+{
+    vt_empty = 10,
+    vt_boolean = 20,
+    vt_float = 40,
+    vt_error = 50,
+    vt_string = 60,
+    vt_cellrange = 70,
+    vt_array = 80
+};
+
 struct gnumeric_named_exp
 {
     std::string_view name;
