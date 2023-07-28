@@ -135,11 +135,11 @@ void gnumeric_content_xml_context::characters(std::string_view str, bool /*trans
     if (str.empty())
         return;
 
-    auto current = get_current_element();
+    const auto [ns, name] = get_current_element();
 
-    if (current.first == NS_gnumeric_gnm)
+    if (ns == NS_gnumeric_gnm)
     {
-        switch (current.second)
+        switch (name)
         {
             case XML_SheetName:
             {

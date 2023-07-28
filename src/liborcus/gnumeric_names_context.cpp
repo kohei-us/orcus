@@ -72,11 +72,11 @@ void gnumeric_names_context::characters(std::string_view str, bool transient)
     ss::iface::import_reference_resolver* resolver = mp_factory->get_reference_resolver(
         ss::formula_ref_context_t::global);
 
-    auto current = get_current_element();
+    const auto [ns, name] = get_current_element();
 
-    if (current.first == NS_gnumeric_gnm)
+    if (ns == NS_gnumeric_gnm)
     {
-        switch (current.second)
+        switch (name)
         {
             case XML_name:
                 m_current_name.name = transient ? intern(str) : str;
