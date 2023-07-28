@@ -109,6 +109,7 @@ void gnumeric_styles_context::start_element(
                 start_style(attrs);
                 break;
             case XML_Font:
+                start_font(attrs);
                 break;
             default:
                 warn_unhandled();
@@ -196,6 +197,34 @@ void gnumeric_styles_context::start_style(const std::vector<xml_token_attr_t>& a
             case XML_Shade:
                 m_current_style.pattern = to_fill_pattern(to_long(attr.value));
                 break;
+        }
+    }
+}
+
+void gnumeric_styles_context::start_font(const std::vector<xml_token_attr_t>& attrs)
+{
+    for (const auto& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_Bold:
+                m_current_style.bold = to_bool(attr.value);
+                break;
+            case XML_Italic:
+                m_current_style.italic = to_bool(attr.value);
+                break;
+            case XML_Underline:
+                m_current_style.underline = to_bool(attr.value);
+                break;
+            case XML_StrikeThrough:
+                m_current_style.strikethrough = to_bool(attr.value);
+                break;
+            case XML_Script:
+            {
+                auto v = to_long(attr.value);
+                m_current_style.script = static_cast<gnumeric_script_type>(v);
+                break;
+            }
         }
     }
 }

@@ -38,6 +38,7 @@ public:
 private:
     void start_style_region(const std::vector<xml_token_attr_t>& attrs);
     void start_style(const std::vector<xml_token_attr_t>& attrs);
+    void start_font(const std::vector<xml_token_attr_t>& attrs);
 
     void end_style_region();
 

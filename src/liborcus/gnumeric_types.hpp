@@ -28,6 +28,13 @@ enum gnumeric_value_type
     vt_array = 80
 };
 
+enum gnumeric_script_type
+{
+    gnm_script_none = 0,
+    gnm_script_super = 1,
+    gnm_script_sub = -1
+};
+
 struct gnumeric_named_exp
 {
     std::string_view name;
@@ -44,6 +51,11 @@ struct gnumeric_style
     spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
     spreadsheet::ver_alignment_t ver_align = spreadsheet::ver_alignment_t::unknown;
     std::optional<bool> wrap_text;
+    std::optional<bool> bold;
+    std::optional<bool> italic;
+    std::optional<bool> underline;
+    std::optional<bool> strikethrough;
+    std::optional<gnumeric_script_type> script; // TODO : not supported yet
 
     std::optional<spreadsheet::color_rgb_t> fore;
     std::optional<spreadsheet::color_rgb_t> back;

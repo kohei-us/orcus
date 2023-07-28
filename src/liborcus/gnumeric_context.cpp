@@ -264,6 +264,35 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
             ss::iface::import_font_style* ifont = istyles->start_font_style();
             ENSURE_INTERFACE(ifont, import_font_style);
 
+            if (style.bold)
+                ifont->set_bold(*style.bold);
+
+            if (style.italic)
+                ifont->set_italic(*style.italic);
+
+            if (style.underline)
+            {
+                if (*style.underline)
+                    ifont->set_underline(ss::underline_t::single_line);
+                else
+                    ifont->set_underline(ss::underline_t::none);
+            }
+
+            if (style.strikethrough)
+            {
+                if (*style.strikethrough)
+                {
+                    ifont->set_strikethrough_style(ss::strikethrough_style_t::solid);
+                    ifont->set_strikethrough_type(ss::strikethrough_type_t::single_type);
+                    ifont->set_strikethrough_width(ss::strikethrough_width_t::width_auto);
+                }
+                else
+                {
+                    ifont->set_strikethrough_style(ss::strikethrough_style_t::none);
+                    ifont->set_strikethrough_type(ss::strikethrough_type_t::none);
+                }
+            }
+
             if (style.fore)
                 ifont->set_color(255, style.fore->red, style.fore->green, style.fore->blue);
 
