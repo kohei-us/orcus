@@ -215,11 +215,9 @@ void gnumeric_cell_context::end_cell()
 
             xformula->set_position(row, col);
 
-            if (m_chars.empty() || m_chars[0] != '=')
-                // formula string should start with a '='
-                break;
+            if (!m_chars.empty() && m_chars[0] == '=')
+                xformula->set_formula(ss::formula_grammar_t::gnumeric, m_chars.substr(1));
 
-            xformula->set_formula(ss::formula_grammar_t::gnumeric, m_chars.substr(1));
             xformula->set_shared_formula_index(m_cell_data->shared_formula_id);
             xformula->commit();
             break;

@@ -742,7 +742,7 @@ public:
     virtual ~import_formula();
 
     /**
-     * Set the position of the cell.
+     * Set the position of a cell.
      *
      * @param row row position.
      * @param col column position.
@@ -750,7 +750,7 @@ public:
     virtual void set_position(row_t row, col_t col) = 0;
 
     /**
-     * Set formula string to the specified cell.
+     * Set formula string to a cell.
      *
      * @param grammar grammar to use to compile the formula string into
      *                tokens.
@@ -759,7 +759,13 @@ public:
     virtual void set_formula(formula_grammar_t grammar, std::string_view formula) = 0;
 
     /**
-     * Register the formula as a shared string, to be shared with other cells.
+     * Register the formula stored in a cell as a shared formula to be shared
+     * with other cells, if the cell contains a formula string.
+     *
+     * If a cell references a shared formula stored in another cell, only
+     * specify the index of that shared formula without specifying a formula
+     * string of its own.  In that case, it is expected that another formula
+     * cell registers its formula string for that index.
      *
      * @param index shared string index to register the formula with.
      */
