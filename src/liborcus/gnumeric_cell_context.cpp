@@ -125,6 +125,9 @@ void gnumeric_cell_context::end_cell()
     if (!m_cell_data)
         return;
 
+    if (!mp_sheet)
+        return;
+
     ss::col_t col = m_cell_data->col;
     ss::row_t row = m_cell_data->row;
 
