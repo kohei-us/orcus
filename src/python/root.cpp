@@ -34,7 +34,7 @@ PyObject* detect_format(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 
     try
     {
-        format_t ft = orcus::detect({p, n});
+        format_t ft = orcus::detect({p, (size_t)n});
 
         switch (ft)
         {
