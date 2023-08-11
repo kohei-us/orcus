@@ -7,6 +7,19 @@
 
 #include "orcus_test_global.hpp"
 
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
+
 #include <orcus/orcus_gnumeric.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/spreadsheet/factory.hpp>
@@ -23,7 +36,6 @@
 #include <sstream>
 
 using namespace orcus;
-namespace fs = boost::filesystem;
 namespace ss = orcus::spreadsheet;
 
 namespace {

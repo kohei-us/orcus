@@ -44,6 +44,16 @@ PKG_PROG_PKG_CONFIG([0.20])
 # =====================
 AC_CHECK_HEADERS([stdlib.h sys/time.h unistd.h])
 
+# ===================================
+# Check for filesystem implementation
+# ===================================
+AC_CHECK_HEADER([filesystem], [have_filesystem=yes], [have_filesystem=no], [])
+
+AC_CHECK_HEADER([experimental/filesystem], [have_experimental_filesystem=yes], [have_experimental_filesystem=no], [])
+
+AM_CONDITIONAL([HAVE_FILESYSTEM], [test "x$have_filesystem" = "xyes"])
+AM_CONDITIONAL([HAVE_EXPERIMENTAL_FILESYSTEM], [test "x$have_experimental_filesystem" = "xyes"])
+
 # =============================================================
 # Checks for typedefs, structures, and compiler characteristics
 # =============================================================
@@ -82,8 +92,10 @@ AC_SUBST(ORCUS_MINOR_VERSION)
 AC_SUBST(ORCUS_MICRO_VERSION)
 
 BOOST_REQUIRE([1.36])
-BOOST_FILESYSTEM
 BOOST_SYSTEM
+AS_IF([test "x$have_filesystem" != "xyes" -a "x$have_experimental_filesystem" != "xyes"], [
+    BOOST_FILESYSTEM
+])
 
 # =========================================================
 # Determine if we are going to build static lib (for MinGW)

@@ -16,11 +16,20 @@
 #include <sstream>
 #include <iterator>
 
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
 
 using namespace orcus;
-
-namespace fs = boost::filesystem;
 
 bool check_prop(const css_properties_t& props, std::string_view key, std::string_view val)
 {
@@ -93,7 +102,7 @@ void test_css_invalids()
         if (!fs::is_regular_file(path))
             continue;
 
-        if (fs::extension(path) != ".css")
+        if (path.extension().string() != ".css")
             continue;
 
         std::cout << "parsing invalid file " << path.filename().string() << "..." << std::endl;

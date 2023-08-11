@@ -17,7 +17,6 @@
 #include <orcus/string_pool.hpp>
 #include <orcus/types.hpp>
 
-#include <boost/filesystem.hpp>
 #include <ixion/config.hpp>
 #include <ixion/formula.hpp>
 #include <ixion/formula_name_resolver.hpp>

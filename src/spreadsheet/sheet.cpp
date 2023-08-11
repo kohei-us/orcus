@@ -29,12 +29,22 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/gregorian/greg_date.hpp>
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
 
 #define ORCUS_DEBUG_SHEET 0
 
 using namespace std;
-namespace fs = boost::filesystem;
 namespace gregorian = boost::gregorian;
 namespace posix_time = boost::posix_time;
 

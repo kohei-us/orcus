@@ -15,7 +15,6 @@
 #include <algorithm>
 
 using namespace std;
-namespace fs = boost::filesystem;
 
 namespace orcus { namespace spreadsheet {
 

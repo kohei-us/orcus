@@ -10,10 +10,20 @@
 #include <orcus/stream.hpp>
 
 #include <iostream>
-#include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
+#endif
+#endif
 
 void test_valid()
 {

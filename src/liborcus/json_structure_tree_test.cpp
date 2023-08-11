@@ -14,10 +14,20 @@
 #include <cassert>
 #include <unordered_set>
 
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
 
 using namespace orcus;
-namespace fs = boost::filesystem;
 
 std::vector<const char*> base_dirs = {
     SRCDIR"/test/json-structure/arrays-in-object/",
@@ -44,7 +54,7 @@ void test_no_value_nodes()
         if (!fs::is_regular_file(p))
             continue;
 
-        if (fs::extension(p) != ".json")
+        if (p.extension().string() != ".json")
             continue;
 
         file_content strm(p.string().data());

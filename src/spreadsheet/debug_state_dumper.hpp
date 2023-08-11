@@ -7,7 +7,19 @@
 
 #pragma once
 
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
+
 #include <string_view>
 
 namespace orcus { namespace spreadsheet {
@@ -26,12 +38,12 @@ class doc_debug_state_dumper
 public:
     doc_debug_state_dumper(const document_impl& doc);
 
-    void dump(const boost::filesystem::path& outdir) const;
+    void dump(const fs::path& outdir) const;
 
 private:
-    void dump_properties(const boost::filesystem::path& outdir) const;
-    void dump_styles(const boost::filesystem::path& outdir) const;
-    void dump_named_expressions(const boost::filesystem::path& outdir) const;
+    void dump_properties(const fs::path& outdir) const;
+    void dump_styles(const fs::path& outdir) const;
+    void dump_named_expressions(const fs::path& outdir) const;
 };
 
 class sheet_debug_state_dumper
@@ -42,17 +54,17 @@ class sheet_debug_state_dumper
 public:
     sheet_debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name);
 
-    void dump(const boost::filesystem::path& outdir) const;
+    void dump(const fs::path& outdir) const;
 
 private:
-    void dump_cell_values(const boost::filesystem::path& outdir) const;
-    void dump_cell_formats(const boost::filesystem::path& outdir) const;
-    void dump_column_formats(const boost::filesystem::path& outdir) const;
-    void dump_row_formats(const boost::filesystem::path& outdir) const;
-    void dump_column_widths(const boost::filesystem::path& outdir) const;
-    void dump_row_heights(const boost::filesystem::path& outdir) const;
-    void dump_auto_filter(const boost::filesystem::path& outdir) const;
-    void dump_named_expressions(const boost::filesystem::path& outdir) const;
+    void dump_cell_values(const fs::path& outdir) const;
+    void dump_cell_formats(const fs::path& outdir) const;
+    void dump_column_formats(const fs::path& outdir) const;
+    void dump_row_formats(const fs::path& outdir) const;
+    void dump_column_widths(const fs::path& outdir) const;
+    void dump_row_heights(const fs::path& outdir) const;
+    void dump_auto_filter(const fs::path& outdir) const;
+    void dump_named_expressions(const fs::path& outdir) const;
 };
 
 }}}

@@ -15,13 +15,24 @@
 #include <string>
 
 #include <boost/program_options.hpp>
+
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
 
 using namespace std;
 using namespace orcus;
 
 namespace po = boost::program_options;
-namespace fs = boost::filesystem;
 
 const char* help_program = "The FILE must specify a path to an existing file.";
 const char* err_no_input_file = "No input file.";

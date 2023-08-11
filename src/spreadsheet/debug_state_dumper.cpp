@@ -17,8 +17,6 @@
 #include <fstream>
 #include <algorithm>
 
-namespace fs = boost::filesystem;
-
 namespace orcus { namespace spreadsheet { namespace detail {
 
 namespace {
@@ -277,7 +275,7 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
     }
 }
 
-void doc_debug_state_dumper::dump_named_expressions(const boost::filesystem::path& outdir) const
+void doc_debug_state_dumper::dump_named_expressions(const fs::path& outdir) const
 {
     const fs::path outpath = outdir / "named-expressions.yaml";
     std::ofstream of{outpath.native()};
@@ -369,7 +367,7 @@ void sheet_debug_state_dumper::dump_row_formats(const fs::path& outdir) const
     }
 }
 
-void sheet_debug_state_dumper::dump_column_widths(const boost::filesystem::path& outdir) const
+void sheet_debug_state_dumper::dump_column_widths(const fs::path& outdir) const
 {
     fs::path outpath = outdir / "column-widths.yaml";
     std::ofstream of{outpath.native()};
@@ -390,7 +388,7 @@ void sheet_debug_state_dumper::dump_column_widths(const boost::filesystem::path&
     }
 }
 
-void sheet_debug_state_dumper::dump_row_heights(const boost::filesystem::path& outdir) const
+void sheet_debug_state_dumper::dump_row_heights(const fs::path& outdir) const
 {
     fs::path outpath = outdir / "row-heights.yaml";
     std::ofstream of{outpath.native()};
@@ -411,7 +409,7 @@ void sheet_debug_state_dumper::dump_row_heights(const boost::filesystem::path& o
     }
 }
 
-void sheet_debug_state_dumper::dump_auto_filter(const boost::filesystem::path& outdir) const
+void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
 {
     if (!m_sheet.auto_filter_data)
         return;
@@ -446,7 +444,7 @@ void sheet_debug_state_dumper::dump_auto_filter(const boost::filesystem::path& o
     }
 }
 
-void sheet_debug_state_dumper::dump_named_expressions(const boost::filesystem::path& outdir) const
+void sheet_debug_state_dumper::dump_named_expressions(const fs::path& outdir) const
 {
     const fs::path outpath = outdir / "named-expressions.yaml";
     std::ofstream of{outpath.native()};

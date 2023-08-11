@@ -22,7 +22,19 @@
 #include <sstream>
 #include <vector>
 
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
+
 #include <mdds/flat_segment_tree.hpp>
 
 using namespace orcus;
@@ -30,7 +42,6 @@ using namespace orcus::spreadsheet;
 
 namespace ss = orcus::spreadsheet;
 
-namespace fs = boost::filesystem;
 
 typedef mdds::flat_segment_tree<std::size_t, bool> bool_segment_type;
 

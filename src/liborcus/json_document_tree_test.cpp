@@ -14,15 +14,24 @@
 #include <orcus/xml_namespace.hpp>
 #include <orcus/dom_tree.hpp>
 
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
 
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
 #include <cstring>
-
-namespace fs = boost::filesystem;
 
 using namespace orcus;
 

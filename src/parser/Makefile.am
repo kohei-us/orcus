@@ -6,6 +6,14 @@ AM_CPPFLAGS = \
 	$(BOOST_CPPFLAGS) \
 	-D__ORCUS_PSR_BUILDING_DLL
 
+if HAVE_FILESYSTEM
+AM_CPPFLAGS += "-DHAVE_FILESYSTEM=1"
+endif
+
+if HAVE_EXPERIMENTAL_FILESYSTEM
+AM_CPPFLAGS += "-DHAVE_EXPERIMENTAL_FILESYSTEM=1"
+endif
+
 lib_LTLIBRARIES = liborcus-parser-@ORCUS_API_VERSION@.la
 liborcus_parser_@ORCUS_API_VERSION@_la_SOURCES = \
 	win_stdint.h \
@@ -39,13 +47,20 @@ liborcus_parser_@ORCUS_API_VERSION@_la_SOURCES = \
 
 liborcus_parser_@ORCUS_API_VERSION@_la_LDFLAGS = \
 	-no-undefined \
-	$(BOOST_SYSTEM_LDFLAGS) \
-	$(BOOST_FILESYSTEM_LDFLAGS)
+	$(BOOST_SYSTEM_LDFLAGS)
 
 liborcus_parser_@ORCUS_API_VERSION@_la_LIBADD = \
 	$(BOOST_SYSTEM_LIBS) \
-	$(BOOST_FILESYSTEM_LIBS) \
 	$(ZLIB_LIBS)
+
+if !HAVE_FILESYSTEM
+if HAVE_EXPERIMENTAL_FILESYSTEM
+liborcus_parser_@ORCUS_API_VERSION@_la_LDFLAGS += -lstdc++fs
+else
+liborcus_parser_@ORCUS_API_VERSION@_la_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
+liborcus_parser_@ORCUS_API_VERSION@_la_LIBADD += $(BOOST_FILESYSTEM_LIBS)
+endif
+endif
 
 EXTRA_PROGRAMS = \
 	css-parser-test \
@@ -77,7 +92,10 @@ parser_test_string_pool_SOURCES = \
 	string_pool.cpp \
 	string_pool_test.cpp
 
-parser_test_string_pool_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+parser_test_string_pool_LDADD = \
+    liborcus-parser-@ORCUS_API_VERSION@.la \
+	$(BOOST_SYSTEM_LIBS)
+
 parser_test_string_pool_CPPFLAGS = $(AM_CPPFLAGS)
 
 # parser-test-xml-namespace
@@ -88,7 +106,9 @@ parser_test_xml_namespace_SOURCES = \
 
 parser_test_xml_namespace_LDADD = \
 	liborcus-parser-@ORCUS_API_VERSION@.la \
-	../test/liborcus-test.a
+	../test/liborcus-test.a \
+	$(BOOST_SYSTEM_LIBS)
+
 parser_test_xml_namespace_CPPFLAGS = $(AM_CPPFLAGS)
 
 # parser-test-xml-validation
@@ -98,13 +118,20 @@ parser_test_xml_validation_SOURCES = \
 
 parser_test_xml_validation_CPPFLAGS = $(AM_CPPFLAGS)
 parser_test_xml_validation_LDFLAGS = \
-	$(BOOST_SYSTEM_LDFLAGS) \
-	$(BOOST_FILESYSTEM_LDFLAGS)
+	$(BOOST_SYSTEM_LDFLAGS)
 parser_test_xml_validation_LDADD = \
 	liborcus-parser-@ORCUS_API_VERSION@.la \
 	../test/liborcus-test.a \
-	$(BOOST_SYSTEM_LIBS) \
-	$(BOOST_FILESYSTEM_LIBS)
+	$(BOOST_SYSTEM_LIBS)
+
+if !HAVE_FILESYSTEM
+if HAVE_EXPERIMENTAL_FILESYSTEM
+parser_test_xml_validation_LDFLAGS += -lstdc++fs
+else
+parser_test_xml_validation_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
+parser_test_xml_validation_LDADD += $(BOOST_FILESYSTEM_LIBS)
+endif
+endif
 
 # parser-test-base64
 
@@ -207,11 +234,20 @@ parser_test_zip_archive_CPPFLAGS = $(AM_CPPFLAGS)
 parser_test_zip_archive_LDADD = \
 	liborcus-parser-@ORCUS_API_VERSION@.la \
 	../test/liborcus-test.a \
-	$(BOOST_SYSTEM_LIBS) \
-	$(BOOST_FILESYSTEM_LIBS)
+	$(BOOST_SYSTEM_LIBS)
 parser_test_zip_archive_LDFLAGS = \
-	$(BOOST_SYSTEM_LDFLAGS) \
-	$(BOOST_FILESYSTEM_LDFLAGS)
+	$(BOOST_SYSTEM_LDFLAGS)
+
+if !HAVE_FILESYSTEM
+if HAVE_EXPERIMENTAL_FILESYSTEM
+parser_test_zip_archive_LDFLAGS += -lstdc++fs
+else
+parser_test_zip_archive_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
+parser_test_zip_archive_LDADD += $(BOOST_FILESYSTEM_LIBS)
+endif
+endif
+
+
 
 # parser-test-base
 

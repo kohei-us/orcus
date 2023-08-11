@@ -11,16 +11,27 @@
 #include "orcus/spreadsheet/factory.hpp"
 
 #include <mdds/sorted_string_map.hpp>
-#include <boost/filesystem.hpp>
 #include <vector>
 #include <iostream>
 #include <fstream>
+
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
 
 using namespace std;
 using namespace orcus;
 
 namespace po = boost::program_options;
-namespace fs = boost::filesystem;
 
 namespace orcus {
 

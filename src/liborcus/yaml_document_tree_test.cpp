@@ -14,12 +14,21 @@
 #include <iostream>
 #include <cmath>
 
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
 
 using namespace orcus;
 using namespace std;
-
-namespace fs = boost::filesystem;
 
 bool string_expected(const yaml::const_node& node, const char* expected)
 {
@@ -83,7 +92,7 @@ void test_yaml_invalids()
         if (!fs::is_regular_file(path))
             continue;
 
-        if (fs::extension(path) != ".yaml")
+        if (path.extension().string() != ".yaml")
             continue;
 
         ++file_count;

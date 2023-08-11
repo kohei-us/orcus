@@ -13,7 +13,18 @@
 #include <orcus/zip_archive_stream.hpp>
 #include <orcus/zip_archive.hpp>
 
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
 
 #define ASSERT_THROW(expr) \
 try \
@@ -26,7 +37,6 @@ catch (...) \
 }
 
 using namespace orcus;
-namespace fs = boost::filesystem;
 
 void test_zip_archive_stream(zip_archive_stream* const strm, const unsigned char* const data, std::size_t const length)
 {

@@ -15,11 +15,22 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
 #include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+#endif
 
 using namespace std;
 using namespace orcus;
-namespace fs = boost::filesystem;
 
 const fs::path test_base_dir(SRCDIR"/test/xml-structure");
 

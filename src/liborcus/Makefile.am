@@ -28,15 +28,32 @@ else
 AM_CPPFLAGS += -D__ORCUS_BUILDING_DLL=1
 endif
 
+if HAVE_FILESYSTEM
+AM_CPPFLAGS += "-DHAVE_FILESYSTEM=1"
+endif
+
+if HAVE_EXPERIMENTAL_FILESYSTEM
+AM_CPPFLAGS += "-DHAVE_EXPERIMENTAL_FILESYSTEM=1"
+endif
+
 liborcus_@ORCUS_API_VERSION@_la_CXXFLAGS = \
 	$(ZLIB_CFLAGS)
 
 liborcus_@ORCUS_API_VERSION@_la_LDFLAGS = \
-	-no-undefined $(BOOST_SYSTEM_LDFLAGS) $(BOOST_FILESYSTEM_LDFLAGS)
+	-no-undefined $(BOOST_SYSTEM_LDFLAGS)
 
 liborcus_@ORCUS_API_VERSION@_la_LIBADD = \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	 $(BOOST_SYSTEM_LIBS) $(ZLIB_LIBS) $(BOOST_FILESYSTEM_LIBS)
+	 $(BOOST_SYSTEM_LIBS) $(ZLIB_LIBS)
+
+if !HAVE_FILESYSTEM
+if HAVE_EXPERIMENTAL_FILESYSTEM
+liborcus_@ORCUS_API_VERSION@_la_LDFLAGS += -lstdc++fs
+else
+liborcus_@ORCUS_API_VERSION@_la_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
+liborcus_@ORCUS_API_VERSION@_la_LIBADD += $(BOOST_FILESYSTEM_LIBS)
+endif
+endif
 
 AM_CPPFLAGS += -DSRCDIR=\""$(top_srcdir)"\"
 
@@ -408,7 +425,15 @@ css_document_tree_test_SOURCES = \
 css_document_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
+	$(BOOST_SYSTEM_LIBS)
+
+if !HAVE_FILESYSTEM
+if HAVE_EXPERIMENTAL_FILESYSTEM
+css_document_tree_test_LDADD += -lstdc++fs
+else
+css_document_tree_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
+endif
+endif
 
 # json-document-tree-test
 
@@ -421,7 +446,15 @@ json_document_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	../test/liborcus-test.a \
-	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
+	$(BOOST_SYSTEM_LIBS)
+
+if !HAVE_FILESYSTEM
+if HAVE_EXPERIMENTAL_FILESYSTEM
+json_document_tree_test_LDADD += -lstdc++fs
+else
+json_document_tree_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
+endif
+endif
 
 json_document_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -435,7 +468,15 @@ yaml_document_tree_test_SOURCES = \
 yaml_document_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
+	$(BOOST_SYSTEM_LIBS)
+
+if !HAVE_FILESYSTEM
+if HAVE_EXPERIMENTAL_FILESYSTEM
+yaml_document_tree_test_LDADD += -lstdc++fs
+else
+yaml_document_tree_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
+endif
+endif
 
 yaml_document_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -453,7 +494,8 @@ xml_map_tree_test_SOURCES = \
 xml_map_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	../test/liborcus-test.a
+	../test/liborcus-test.a \
+    $(BOOST_SYSTEM_LIBS)
 
 # xml-structure-tree-test
 
@@ -468,7 +510,15 @@ xml_structure_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(
 xml_structure_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
+	$(BOOST_SYSTEM_LIBS)
+
+if !HAVE_FILESYSTEM
+if HAVE_EXPERIMENTAL_FILESYSTEM
+xml_structure_tree_test_LDADD += -lstdc++fs
+else
+xml_structure_tree_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
+endif
+endif
 
 # common-test
 
@@ -502,7 +552,15 @@ json_structure_tree_test_SOURCES = json_structure_tree_test.cpp
 json_structure_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	$(BOOST_SYSTEM_LIBS) $(BOOST_FILESYSTEM_LIBS)
+	$(BOOST_SYSTEM_LIBS)
+
+if !HAVE_FILESYSTEM
+if HAVE_EXPERIMENTAL_FILESYSTEM
+json_structure_tree_test_LDADD += -lstdc++fs
+else
+json_structure_tree_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
+endif
+endif
 
 # json-map-tree-test
 
@@ -511,7 +569,8 @@ json_map_tree_test_SOURCES = json_map_tree_test.cpp \
 	spreadsheet_impl_types.cpp
 json_map_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	$(BOOST_SYSTEM_LIBS)
 
 # xpath-parser-test
 
@@ -520,7 +579,8 @@ xpath_parser_test_SOURCES = \
 	xpath_parser.cpp
 xpath_parser_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	$(BOOST_SYSTEM_LIBS)
 
 TESTS += \
 	css-document-tree-test \
