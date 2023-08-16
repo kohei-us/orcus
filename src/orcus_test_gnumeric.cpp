@@ -679,6 +679,39 @@ void test_gnumeric_text_formats()
     assert(runs->at(1).size == 6);
     assert(!runs->at(1).bold);
     assert(runs->at(1).italic);
+
+    // A6
+    row = 5;
+    assert(is_cell_text(*sheet1, row, col, "Bold base with non-bold part"));
+    assert(is_cell_bold(*sheet1, row, col, true));
+    assert(is_cell_italic(*sheet1, row, col, false));
+#if 0 // FIXME: see #183
+    si = sheet1->get_string_identifier(row, col);
+    runs = doc->get_shared_strings().get_format_runs(si);
+    assert(runs);
+    assert(runs->size() == 1u);
+#endif
+
+    // Rest of the cells are imported as unformatted for now, until we support
+    // more format properties. See #182.
+    row = 6;
+    assert(is_cell_text(*sheet1, row, col, "Only partially underlined"));
+    row = 7;
+    assert(is_cell_text(*sheet1, row, col, "All Underlined"));
+    row = 8;
+    assert(is_cell_text(*sheet1, row, col, "Bold and Underlined"));
+    row = 9;
+    assert(is_cell_text(*sheet1, row, col, "All Strikethrough"));
+    row = 10;
+    assert(is_cell_text(*sheet1, row, col, "Partial strikethrough"));
+    row = 11;
+    assert(is_cell_text(*sheet1, row, col, "Superscript"));
+    row = 12;
+    assert(is_cell_text(*sheet1, row, col, "Subscript"));
+    row = 13;
+    assert(is_cell_text(*sheet1, row, col, "x2 + y2 = 102"));
+    row = 14;
+    assert(is_cell_text(*sheet1, row, col, "xi = yi + zi"));
 }
 
 } // anonymous namespace
