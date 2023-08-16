@@ -8,9 +8,38 @@
 #include "gnumeric_types.hpp"
 #include "number_utils.hpp"
 
+#include <mdds/sorted_string_map.hpp>
+
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {
+
+namespace value_format_type {
+
+using map_type = mdds::sorted_string_map<gnumeric_value_format_type, mdds::string_view_map_entry>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] = {
+    { "bold", gnumeric_value_format_type::bold },
+    { "italic", gnumeric_value_format_type::italic },
+    { "strikethrough", gnumeric_value_format_type::strikethrough },
+    { "subscript", gnumeric_value_format_type::subscript },
+    { "superscript", gnumeric_value_format_type::superscript },
+    { "underline", gnumeric_value_format_type::underline },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), gnumeric_value_format_type::unknown);
+    return mt;
+}
+
+} // namespace value_format_type
+
+gnumeric_value_format_type to_gnumeric_value_format_type(std::string_view s)
+{
+    return value_format_type::get().find(s);
+}
 
 void gnumeric_named_exp::reset()
 {

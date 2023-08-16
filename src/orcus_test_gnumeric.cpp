@@ -661,11 +661,24 @@ void test_gnumeric_text_formats()
     assert(is_cell_bold(*sheet1, row, col, false));
     assert(is_cell_italic(*sheet1, row, col, false));
 
-#if 0 // TODO fix this
     std::size_t si = sheet1->get_string_identifier(row, col);
     const ss::format_runs_t* runs = doc->get_shared_strings().get_format_runs(si);
     assert(runs);
-#endif
+    assert(runs->size() == 2u);
+
+    // Bold and ...
+    // ^^^^
+    assert(runs->at(0).pos == 0);
+    assert(runs->at(0).size == 4);
+    assert(runs->at(0).bold);
+    assert(!runs->at(0).italic);
+
+    // Bold and Italic
+    //          ^^^^^^
+    assert(runs->at(1).pos == 9);
+    assert(runs->at(1).size == 6);
+    assert(!runs->at(1).bold);
+    assert(runs->at(1).italic);
 }
 
 } // anonymous namespace

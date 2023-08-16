@@ -28,6 +28,27 @@ enum gnumeric_value_type
     vt_array = 80
 };
 
+enum class gnumeric_value_format_type
+{
+    unknown,
+    bold,
+    italic,
+    underline,
+    strikethrough,
+    superscript,
+    subscript
+};
+
+gnumeric_value_format_type to_gnumeric_value_format_type(std::string_view s);
+
+struct gnumeric_value_format_segment
+{
+    gnumeric_value_format_type type = gnumeric_value_format_type::unknown;
+    std::string_view value;
+    std::size_t start = 0;
+    std::size_t end = 0;
+};
+
 enum gnumeric_script_type
 {
     gnm_script_none = 0,

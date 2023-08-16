@@ -307,6 +307,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	gnumeric_tokens.inl \
 	gnumeric_types.cpp \
 	gnumeric_types.hpp \
+	gnumeric_value_format_parser.cpp \
+	gnumeric_value_format_parser.hpp \
 	orcus_gnumeric.cpp
 
 liborcus_@ORCUS_API_VERSION@_la_LDFLAGS += \
@@ -323,9 +325,11 @@ EXTRA_PROGRAMS += \
 	gnumeric-helper-test
 
 gnumeric_cell_context_test_SOURCES = \
+	number_utils.cpp \
 	session_context.cpp \
 	gnumeric_cell_context_test.cpp \
 	gnumeric_cell_context.cpp \
+	gnumeric_value_format_parser.cpp \
 	xml_context_base.cpp \
 	xml_element_types.cpp \
 	xml_element_validator.cpp \
@@ -333,6 +337,7 @@ gnumeric_cell_context_test_SOURCES = \
 	xml_util.cpp \
 	gnumeric_namespace_types.cpp \
 	gnumeric_tokens.cpp \
+	gnumeric_types.cpp \
 	odf_namespace_types.cpp \
 	spreadsheet_interface.cpp
 
@@ -355,6 +360,7 @@ gnumeric_sheet_context_test_SOURCES = \
 	gnumeric_cell_context.cpp \
 	gnumeric_filter_context.cpp \
 	gnumeric_styles_context.cpp \
+	gnumeric_value_format_parser.cpp \
 	gnumeric_helper.cpp \
 	gnumeric_types.cpp \
 	number_utils.cpp \

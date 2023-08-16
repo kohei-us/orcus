@@ -8,6 +8,7 @@
 #include "gnumeric_token_constants.hpp"
 #include "gnumeric_namespace_types.hpp"
 #include "gnumeric_cell_context.hpp"
+#include "gnumeric_value_format_parser.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/measurement.hpp>
@@ -78,12 +79,14 @@ void gnumeric_cell_context::reset(ss::iface::import_sheet* sheet)
     m_cell_data.reset();
     m_chars = std::string_view{};
     mp_sheet = sheet;
+    m_pool.clear();
 }
 
 void gnumeric_cell_context::start_cell(const xml_token_attrs_t& attrs)
 {
     m_cell_data = cell_data{};
     m_cell_data->type = cell_type_formula;
+    m_format_segments.clear();
 
     for (const auto& attr : attrs)
     {
@@ -100,6 +103,29 @@ void gnumeric_cell_context::start_cell(const xml_token_attrs_t& attrs)
                 auto v = to_long(attr.value);
                 m_cell_data->type = cell_type_value;
                 m_cell_data->value_type = static_cast<gnumeric_value_type>(v);
+                break;
+            }
+            case XML_ValueFormat:
+            {
+                auto v = attr.value;
+                if (attr.transient)
+                    v = m_pool.intern(v).first;
+
+                gnumeric_value_format_parser parser(v);
+
+                try
+                {
+                    parser.parse();
+                }
+                catch (const parse_error& e)
+                {
+                    std::ostringstream os;
+                    os << "failed to parse a value format string: '" << v << "' (reason=" << e.what() << ")";
+                    warn(os.str());
+                    break;
+                }
+
+                m_format_segments = parser.pop_segments();
                 break;
             }
             case XML_ExprID:
@@ -154,12 +180,7 @@ void gnumeric_cell_context::end_cell()
                 }
                 case vt_string:
                 {
-                    ss::iface::import_shared_strings* shared_strings = mp_factory->get_shared_strings();
-                    if (!shared_strings)
-                        break;
-
-                    size_t id = shared_strings->add(m_chars);
-                    mp_sheet->set_string(row, col, id);
+                    push_string(row, col);
                     break;
                 }
                 case vt_array:
@@ -232,6 +253,65 @@ void gnumeric_cell_context::end_cell()
     }
 
     m_cell_data.reset();
+}
+
+void gnumeric_cell_context::push_string(ss::row_t row, ss::col_t col)
+{
+    ss::iface::import_shared_strings* shared_strings = mp_factory->get_shared_strings();
+    if (!shared_strings)
+        return;
+
+    if (m_format_segments.empty())
+    {
+        // unformatted text
+        std::size_t sid = shared_strings->add(m_chars);
+        mp_sheet->set_string(row, col, sid);
+        return;
+    }
+
+    // formatted text
+    using segments_type = mdds::flat_segment_tree<std::size_t, const gnumeric_value_format_segment*>;
+    segments_type segments(0, m_chars.size(), nullptr);
+
+    for (const auto& seg : m_format_segments)
+        segments.insert_back(seg.start, seg.end, &seg);
+
+    for (const auto& seg : segments.segment_range())
+    {
+        auto t = m_chars.substr(seg.start, seg.end - seg.start);
+
+        if (seg.value)
+        {
+            // we have format information
+            const gnumeric_value_format_segment& vfs = *seg.value;
+            switch (vfs.type)
+            {
+                case gnumeric_value_format_type::bold:
+                {
+                    bool v = to_bool(vfs.value);
+                    shared_strings->set_segment_bold(v);
+                    break;
+                }
+                case gnumeric_value_format_type::italic:
+                {
+                    bool v = to_bool(vfs.value);
+                    shared_strings->set_segment_italic(v);
+                    break;
+                }
+                default:
+                {
+                    std::ostringstream os;
+                    os << "unsupported format segment type (" << int(vfs.type) << ")";
+                    warn(os.str());
+                }
+            }
+        }
+
+        shared_strings->append_segment(t);
+    }
+
+    std::size_t sid = shared_strings->commit_segments();
+    mp_sheet->set_string(row, col, sid);
 }
 
 }

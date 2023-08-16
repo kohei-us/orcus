@@ -107,6 +107,7 @@ list(APPEND _SOURCES
 #   gnumeric_names_context.cpp
 #   gnumeric_tokens.cpp
 #   gnumeric_types.cpp
+#   gnumeric_value_format_parser.cpp
 #   orcus_gnumeric.cpp
 )
 
