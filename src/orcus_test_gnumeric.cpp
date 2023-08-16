@@ -520,7 +520,155 @@ void test_gnumeric_colored_text()
     }
 }
 
+void test_gnumeric_text_formats()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/text-formats/input.gnumeric";
+    auto doc = load_doc(filepath);
+    assert(doc);
+
+    auto is_cell_bold = [&doc](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    {
+        const auto& styles_pool = doc->get_styles();
+
+        std::size_t xf = sh.get_cell_format(row, col);
+
+        const ss::cell_format_t* cell_format = styles_pool.get_cell_format(xf);
+        assert(cell_format);
+
+        const ss::font_t* font = styles_pool.get_font(cell_format->font);
+        assert(font);
+
+        if (expected)
+        {
+            if (font->bold && *font->bold)
+                return true;
+
+            std::cerr << "expected to be bold but it is not "
+                << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+                << std::endl;
+
+            return false;
+        }
+        else
+        {
+            if (!font->bold || !*font->bold)
+                return true;
+
+            std::cerr << "expected to be non-bold but it is bold "
+                << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+                << std::endl;
+
+            return false;
+        }
+    };
+
+    auto is_cell_italic = [&doc](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    {
+        const auto& styles_pool = doc->get_styles();
+
+        std::size_t xf = sh.get_cell_format(row, col);
+
+        const ss::cell_format_t* cell_format = styles_pool.get_cell_format(xf);
+        assert(cell_format);
+
+        const ss::font_t* font = styles_pool.get_font(cell_format->font);
+        assert(font);
+
+        if (expected)
+        {
+            if (font->italic && *font->italic)
+                return true;
+
+            std::cerr << "expected to be italic but it is not "
+                << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+                << std::endl;
+
+            return false;
+        }
+        else
+        {
+            if (!font->italic || !*font->italic)
+                return true;
+
+            std::cerr << "expected to be non-italic but it is italic "
+                << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+                << std::endl;
+
+            return false;
+        }
+    };
+
+    auto is_cell_text = [&doc](const ss::sheet& sh, ss::row_t row, ss::col_t col, std::string_view expected)
+    {
+        const auto& sstrings = doc->get_shared_strings();
+
+        std::size_t si = sh.get_string_identifier(row, col);
+        const std::string* s = sstrings.get_string(si);
+        if (!s)
+        {
+            std::cerr << "expected='" << expected << "'; actual=<none> "
+                << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+                << std::endl;
+
+            return false;
+        }
+
+        if (*s == expected)
+            return true;
+
+        std::cerr << "expected='" << expected << "'; actual='" << *s << "' "
+            << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+            << std::endl;
+
+        return false;
+    };
+
+    const ss::sheet* sheet1 = doc->get_sheet("Text Properties");
+    assert(sheet1);
+
+    ss::row_t row = 0;
+    ss::col_t col = 0;
+
+    // A1 - unformatted
+    assert(is_cell_text(*sheet1, row, col, "Normal Text"));
+    assert(is_cell_bold(*sheet1, row, col, false));
+    assert(is_cell_italic(*sheet1, row, col, false));
+
+    // A2 - bold
+    row = 1;
+    assert(is_cell_text(*sheet1, row, col, "Bold Text"));
+    assert(is_cell_bold(*sheet1, row, col, true));
+    assert(is_cell_italic(*sheet1, row, col, false));
+
+    // A3 - italic
+    row = 2;
+    assert(is_cell_text(*sheet1, row, col, "Italic Text"));
+    assert(is_cell_bold(*sheet1, row, col, false));
+    assert(is_cell_italic(*sheet1, row, col, true));
+
+    // A4 - bold and italic
+    row = 3;
+    assert(is_cell_text(*sheet1, row, col, "Bold and Italic Text"));
+    assert(is_cell_bold(*sheet1, row, col, true));
+    assert(is_cell_italic(*sheet1, row, col, true));
+
+    // A5 - bold and italic mixed - base cell is unformatted and text contains
+    // format runs.
+    row = 4;
+    assert(is_cell_text(*sheet1, row, col, "Bold and Italic mixed"));
+    assert(is_cell_bold(*sheet1, row, col, false));
+    assert(is_cell_italic(*sheet1, row, col, false));
+
+#if 0 // TODO fix this
+    std::size_t si = sheet1->get_string_identifier(row, col);
+    const ss::format_runs_t* runs = doc->get_shared_strings().get_format_runs(si);
+    assert(runs);
+#endif
 }
+
+} // anonymous namespace
 
 int main()
 {
@@ -533,6 +681,7 @@ int main()
     test_gnumeric_cell_properties_wrap_and_shrink();
     test_gnumeric_background_fill();
     test_gnumeric_colored_text();
+    test_gnumeric_text_formats();
 
     return EXIT_SUCCESS;
 }
