@@ -528,10 +528,10 @@ void test_gnumeric_text_formats()
     auto doc = load_doc(filepath);
     assert(doc);
 
-    auto is_cell_bold = [&doc](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
-    {
-        const auto& styles_pool = doc->get_styles();
+    const auto& styles_pool = doc->get_styles();
 
+    auto is_cell_bold = [&styles_pool](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    {
         std::size_t xf = sh.get_cell_format(row, col);
 
         const ss::cell_format_t* cell_format = styles_pool.get_cell_format(xf);
@@ -564,10 +564,8 @@ void test_gnumeric_text_formats()
         }
     };
 
-    auto is_cell_italic = [&doc](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    auto is_cell_italic = [&styles_pool](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
     {
-        const auto& styles_pool = doc->get_styles();
-
         std::size_t xf = sh.get_cell_format(row, col);
 
         const ss::cell_format_t* cell_format = styles_pool.get_cell_format(xf);
@@ -712,6 +710,46 @@ void test_gnumeric_text_formats()
     assert(is_cell_text(*sheet1, row, col, "x2 + y2 = 102"));
     row = 14;
     assert(is_cell_text(*sheet1, row, col, "xi = yi + zi"));
+
+    {
+        const ss::sheet* sheet2 = doc->get_sheet("Fonts");
+        assert(sheet2);
+
+        struct check
+        {
+            ss::row_t row;
+            std::string_view font_name;
+            double font_unit;
+        };
+
+        check checks[] = {
+            { 0, "Sans", 12.0 },
+            { 1, "FreeSans", 18.0 },
+            { 2, "Serif", 14.0 },
+            { 3, "Monospace", 9.0 },
+            { 4, "DejaVu Sans Mono", 11.0 },
+        };
+
+        for (const auto& c : checks)
+        {
+            std::size_t xf = sheet2->get_cell_format(c.row, 0);
+            const ss::cell_format_t* cell_format = styles_pool.get_cell_format(xf);
+            assert(cell_format);
+            const ss::font_t* font = styles_pool.get_font(cell_format->font);
+            assert(font);
+            assert(font->name == c.font_name);
+            assert(font->size == c.font_unit);
+
+            // Columns A and B should have the same font.
+            xf = sheet2->get_cell_format(c.row, 1);
+            cell_format = styles_pool.get_cell_format(xf);
+            assert(cell_format);
+            font = styles_pool.get_font(cell_format->font);
+            assert(font);
+            assert(font->name == c.font_name);
+            assert(font->size == c.font_unit);
+        }
+    }
 }
 
 } // anonymous namespace

@@ -264,6 +264,12 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
             ss::iface::import_font_style* ifont = istyles->start_font_style();
             ENSURE_INTERFACE(ifont, import_font_style);
 
+            if (style.font_name)
+                ifont->set_name(*style.font_name);
+
+            if (style.font_unit)
+                ifont->set_size(*style.font_unit);
+
             if (style.bold)
                 ifont->set_bold(*style.bold);
 

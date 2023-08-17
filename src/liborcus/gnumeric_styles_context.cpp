@@ -133,6 +133,25 @@ bool gnumeric_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
+void gnumeric_styles_context::characters(std::string_view str, bool transient)
+{
+    const auto [ns, name] = get_current_element();
+
+    if (ns == NS_gnumeric_gnm)
+    {
+        switch (name)
+        {
+            case XML_Font:
+            {
+                if (transient)
+                    str = intern(str);
+                m_current_style.font_name = str;
+                break;
+            }
+        }
+    }
+}
+
 void gnumeric_styles_context::reset(ss::sheet_t sheet)
 {
     m_sheet = sheet;
@@ -207,6 +226,14 @@ void gnumeric_styles_context::start_font(const std::vector<xml_token_attr_t>& at
     {
         switch (attr.name)
         {
+            case XML_Unit:
+            {
+                const char* p_end = nullptr;
+                double v = to_double(attr.value, &p_end);
+                if (attr.value.data() < p_end)
+                    m_current_style.font_unit = v;
+                break;
+            }
             case XML_Bold:
                 m_current_style.bold = to_bool(attr.value);
                 break;

@@ -71,6 +71,10 @@ struct gnumeric_style
     spreadsheet::range_t region = {{-1, -1}, {-1, -1}};
     spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
     spreadsheet::ver_alignment_t ver_align = spreadsheet::ver_alignment_t::unknown;
+
+    std::optional<std::string_view> font_name;
+    std::optional<double> font_unit;
+
     std::optional<bool> wrap_text;
     std::optional<bool> bold;
     std::optional<bool> italic;
