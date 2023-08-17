@@ -9,7 +9,6 @@
 #include "gnumeric_cell_context.hpp"
 #include "gnumeric_token_constants.hpp"
 #include "gnumeric_namespace_types.hpp"
-#include "gnumeric_helper.hpp"
 #include "impl_utils.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
@@ -490,23 +489,22 @@ void gnumeric_sheet_context::start_style(const xml_token_attrs_t& attrs)
         {
             case XML_Fore:
             {
-                ss::color_elem_t red, green, blue;
-                gnumeric_helper::parse_RGB_color_attribute(red, green, blue, attr.value);
-                fill_style->set_fg_color(255, red, green, blue);
+                auto color = parse_gnumeric_rgb(attr.value);
+                if (!color)
+                    break;
 
+                fill_style->set_fg_color(255, color->red, color->green, color->blue);
                 fill_set = true;
-
-                m_front_color.red = red;
-                m_front_color.blue = blue;
-                m_front_color.green = green;
+                m_front_color = *color;
                 break;
             }
             case XML_Back:
             {
-                ss::color_elem_t red, green, blue;
-                gnumeric_helper::parse_RGB_color_attribute(red, green, blue, attr.value);
-                fill_style->set_bg_color(255, red, green, blue);
+                auto color = parse_gnumeric_rgb(attr.value);
+                if (!color)
+                    break;
 
+                fill_style->set_bg_color(255, color->red, color->green, color->blue);
                 fill_set = true;
                 break;
             }

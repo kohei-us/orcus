@@ -292,8 +292,6 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	gnumeric_filter_context.hpp \
 	gnumeric_handler.cpp \
 	gnumeric_handler.hpp \
-	gnumeric_helper.cpp \
-	gnumeric_helper.hpp \
 	gnumeric_names_context.cpp \
 	gnumeric_names_context.hpp \
 	gnumeric_sheet_context.cpp \
@@ -361,7 +359,6 @@ gnumeric_sheet_context_test_SOURCES = \
 	gnumeric_filter_context.cpp \
 	gnumeric_styles_context.cpp \
 	gnumeric_value_format_parser.cpp \
-	gnumeric_helper.cpp \
 	gnumeric_types.cpp \
 	number_utils.cpp \
 	xml_context_base.cpp \
@@ -383,21 +380,6 @@ gnumeric_sheet_context_test_LDADD = \
 gnumeric_sheet_context_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 TESTS += gnumeric-sheet-context-test
-
-# gnumeric-helper-test
-
-gnumeric_helper_test_SOURCES = \
-	gnumeric_helper_test.cpp \
-	string_helper.hpp \
-	string_helper.cpp
-
-gnumeric_helper_test_LDADD = \
-	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
-
-gnumeric_helper_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
-
-TESTS += gnumeric-helper-test
 
 endif # WITH_GNUMERIC_FILTER
 
