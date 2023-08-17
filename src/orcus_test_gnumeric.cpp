@@ -530,7 +530,7 @@ void test_gnumeric_text_formats()
 
     const auto& styles_pool = doc->get_styles();
 
-    auto check_cell_bold = [&styles_pool](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    auto get_font = [&styles_pool](const ss::sheet& sh, ss::row_t row, ss::col_t col)
     {
         std::size_t xf = sh.get_cell_format(row, col);
 
@@ -539,6 +539,13 @@ void test_gnumeric_text_formats()
 
         const ss::font_t* font = styles_pool.get_font(cell_format->font);
         assert(font);
+
+        return font;
+    };
+
+    auto check_cell_bold = [&get_font](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    {
+        const ss::font_t* font = get_font(sh, row, col);
 
         if (expected)
         {
@@ -564,15 +571,9 @@ void test_gnumeric_text_formats()
         }
     };
 
-    auto check_cell_italic = [&styles_pool](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    auto check_cell_italic = [&get_font](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
     {
-        std::size_t xf = sh.get_cell_format(row, col);
-
-        const ss::cell_format_t* cell_format = styles_pool.get_cell_format(xf);
-        assert(cell_format);
-
-        const ss::font_t* font = styles_pool.get_font(cell_format->font);
-        assert(font);
+        const ss::font_t* font = get_font(sh, row, col);
 
         if (expected)
         {
@@ -694,12 +695,39 @@ void test_gnumeric_text_formats()
     // more format properties. See #182.
     row = 6;
     assert(check_cell_text(*sheet1, row, col, "Only partially underlined"));
-    row = 7;
-    assert(check_cell_text(*sheet1, row, col, "All Underlined"));
-    row = 8;
-    assert(check_cell_text(*sheet1, row, col, "Bold and Underlined"));
-    row = 9;
-    assert(check_cell_text(*sheet1, row, col, "All Strikethrough"));
+
+    {
+        row = 7;
+        assert(check_cell_text(*sheet1, row, col, "All Underlined"));
+        const ss::font_t* font = get_font(*sheet1, row, col);
+        assert(font->underline_style);
+        assert(*font->underline_style == ss::underline_t::single_line);
+    }
+
+    {
+        row = 8;
+        assert(check_cell_text(*sheet1, row, col, "Bold and Underlined"));
+        const ss::font_t* font = get_font(*sheet1, row, col);
+        assert(font->underline_style);
+        assert(*font->underline_style == ss::underline_t::single_line);
+        assert(font->bold);
+        assert(*font->bold);
+    }
+
+    {
+        row = 9;
+        assert(check_cell_text(*sheet1, row, col, "All Strikethrough"));
+        const ss::font_t* font = get_font(*sheet1, row, col);
+        assert(font->strikethrough_style);
+        assert(*font->strikethrough_style == ss::strikethrough_style_t::solid);
+
+        assert(font->strikethrough_type);
+        assert(*font->strikethrough_type == ss::strikethrough_type_t::single_type);
+
+        assert(font->strikethrough_width);
+        assert(*font->strikethrough_width == ss::strikethrough_width_t::width_auto);
+    }
+
     row = 10;
     assert(check_cell_text(*sheet1, row, col, "Partial strikethrough"));
     row = 11;
