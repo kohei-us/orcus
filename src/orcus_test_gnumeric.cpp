@@ -530,7 +530,7 @@ void test_gnumeric_text_formats()
 
     const auto& styles_pool = doc->get_styles();
 
-    auto is_cell_bold = [&styles_pool](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    auto check_cell_bold = [&styles_pool](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
     {
         std::size_t xf = sh.get_cell_format(row, col);
 
@@ -564,7 +564,7 @@ void test_gnumeric_text_formats()
         }
     };
 
-    auto is_cell_italic = [&styles_pool](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    auto check_cell_italic = [&styles_pool](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
     {
         std::size_t xf = sh.get_cell_format(row, col);
 
@@ -598,7 +598,7 @@ void test_gnumeric_text_formats()
         }
     };
 
-    auto is_cell_text = [&doc](const ss::sheet& sh, ss::row_t row, ss::col_t col, std::string_view expected)
+    auto check_cell_text = [&doc](const ss::sheet& sh, ss::row_t row, ss::col_t col, std::string_view expected)
     {
         const auto& sstrings = doc->get_shared_strings();
 
@@ -630,34 +630,34 @@ void test_gnumeric_text_formats()
     ss::col_t col = 0;
 
     // A1 - unformatted
-    assert(is_cell_text(*sheet1, row, col, "Normal Text"));
-    assert(is_cell_bold(*sheet1, row, col, false));
-    assert(is_cell_italic(*sheet1, row, col, false));
+    assert(check_cell_text(*sheet1, row, col, "Normal Text"));
+    assert(check_cell_bold(*sheet1, row, col, false));
+    assert(check_cell_italic(*sheet1, row, col, false));
 
     // A2 - bold
     row = 1;
-    assert(is_cell_text(*sheet1, row, col, "Bold Text"));
-    assert(is_cell_bold(*sheet1, row, col, true));
-    assert(is_cell_italic(*sheet1, row, col, false));
+    assert(check_cell_text(*sheet1, row, col, "Bold Text"));
+    assert(check_cell_bold(*sheet1, row, col, true));
+    assert(check_cell_italic(*sheet1, row, col, false));
 
     // A3 - italic
     row = 2;
-    assert(is_cell_text(*sheet1, row, col, "Italic Text"));
-    assert(is_cell_bold(*sheet1, row, col, false));
-    assert(is_cell_italic(*sheet1, row, col, true));
+    assert(check_cell_text(*sheet1, row, col, "Italic Text"));
+    assert(check_cell_bold(*sheet1, row, col, false));
+    assert(check_cell_italic(*sheet1, row, col, true));
 
     // A4 - bold and italic
     row = 3;
-    assert(is_cell_text(*sheet1, row, col, "Bold and Italic Text"));
-    assert(is_cell_bold(*sheet1, row, col, true));
-    assert(is_cell_italic(*sheet1, row, col, true));
+    assert(check_cell_text(*sheet1, row, col, "Bold and Italic Text"));
+    assert(check_cell_bold(*sheet1, row, col, true));
+    assert(check_cell_italic(*sheet1, row, col, true));
 
     // A5 - bold and italic mixed - base cell is unformatted and text contains
     // format runs.
     row = 4;
-    assert(is_cell_text(*sheet1, row, col, "Bold and Italic mixed"));
-    assert(is_cell_bold(*sheet1, row, col, false));
-    assert(is_cell_italic(*sheet1, row, col, false));
+    assert(check_cell_text(*sheet1, row, col, "Bold and Italic mixed"));
+    assert(check_cell_bold(*sheet1, row, col, false));
+    assert(check_cell_italic(*sheet1, row, col, false));
 
     std::size_t si = sheet1->get_string_identifier(row, col);
     const ss::format_runs_t* runs = doc->get_shared_strings().get_format_runs(si);
@@ -680,9 +680,9 @@ void test_gnumeric_text_formats()
 
     // A6
     row = 5;
-    assert(is_cell_text(*sheet1, row, col, "Bold base with non-bold part"));
-    assert(is_cell_bold(*sheet1, row, col, true));
-    assert(is_cell_italic(*sheet1, row, col, false));
+    assert(check_cell_text(*sheet1, row, col, "Bold base with non-bold part"));
+    assert(check_cell_bold(*sheet1, row, col, true));
+    assert(check_cell_italic(*sheet1, row, col, false));
 #if 0 // FIXME: see #183
     si = sheet1->get_string_identifier(row, col);
     runs = doc->get_shared_strings().get_format_runs(si);
@@ -693,23 +693,23 @@ void test_gnumeric_text_formats()
     // Rest of the cells are imported as unformatted for now, until we support
     // more format properties. See #182.
     row = 6;
-    assert(is_cell_text(*sheet1, row, col, "Only partially underlined"));
+    assert(check_cell_text(*sheet1, row, col, "Only partially underlined"));
     row = 7;
-    assert(is_cell_text(*sheet1, row, col, "All Underlined"));
+    assert(check_cell_text(*sheet1, row, col, "All Underlined"));
     row = 8;
-    assert(is_cell_text(*sheet1, row, col, "Bold and Underlined"));
+    assert(check_cell_text(*sheet1, row, col, "Bold and Underlined"));
     row = 9;
-    assert(is_cell_text(*sheet1, row, col, "All Strikethrough"));
+    assert(check_cell_text(*sheet1, row, col, "All Strikethrough"));
     row = 10;
-    assert(is_cell_text(*sheet1, row, col, "Partial strikethrough"));
+    assert(check_cell_text(*sheet1, row, col, "Partial strikethrough"));
     row = 11;
-    assert(is_cell_text(*sheet1, row, col, "Superscript"));
+    assert(check_cell_text(*sheet1, row, col, "Superscript"));
     row = 12;
-    assert(is_cell_text(*sheet1, row, col, "Subscript"));
+    assert(check_cell_text(*sheet1, row, col, "Subscript"));
     row = 13;
-    assert(is_cell_text(*sheet1, row, col, "x2 + y2 = 102"));
+    assert(check_cell_text(*sheet1, row, col, "x2 + y2 = 102"));
     row = 14;
-    assert(is_cell_text(*sheet1, row, col, "xi = yi + zi"));
+    assert(check_cell_text(*sheet1, row, col, "xi = yi + zi"));
 
     {
         const ss::sheet* sheet2 = doc->get_sheet("Fonts");
