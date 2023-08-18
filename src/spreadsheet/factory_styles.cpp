@@ -9,6 +9,8 @@
 #include "orcus/spreadsheet/styles.hpp"
 #include "orcus/string_pool.hpp"
 
+#include <unordered_map>
+
 namespace orcus { namespace spreadsheet {
 
 namespace {
@@ -178,6 +180,7 @@ struct import_font_style::impl
     styles& styles_model;
     string_pool& str_pool;
 
+    std::unordered_map<font_t, std::size_t, font_t::hash> font_cache;
     font_t cur_font;
 
     impl(styles& _styles_model, string_pool& sp) :
@@ -189,9 +192,7 @@ import_font_style::import_font_style(styles& _styles_model, string_pool& sp) :
 {
 }
 
-import_font_style::~import_font_style()
-{
-}
+import_font_style::~import_font_style() = default;
 
 void import_font_style::set_bold(bool b)
 {
@@ -305,7 +306,12 @@ void import_font_style::set_strikethrough_text(strikethrough_text_t s)
 
 std::size_t import_font_style::commit()
 {
+    auto it = mp_impl->font_cache.find(mp_impl->cur_font);
+    if (it != mp_impl->font_cache.end())
+        return it->second;
+
     std::size_t font_id = mp_impl->styles_model.append_font(mp_impl->cur_font);
+    mp_impl->font_cache.insert({mp_impl->cur_font, font_id});
     mp_impl->cur_font.reset();
     return font_id;
 }

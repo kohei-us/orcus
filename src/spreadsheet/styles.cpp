@@ -10,6 +10,7 @@
 
 #include "ostream_utils.hpp"
 
+#include <functional>
 #include <algorithm>
 #include <cassert>
 #include <iomanip>
@@ -19,10 +20,109 @@
 namespace orcus { namespace spreadsheet {
 
 font_t::font_t() = default;
+font_t::font_t(const font_t& other) = default;
+font_t::~font_t() = default;
+
+font_t& font_t::operator=(const font_t& other) = default;
+
+bool font_t::operator==(const font_t& other) const
+{
+    if (name != other.name)
+        return false;
+
+    if (name_asian != other.name_asian)
+        return false;
+
+    if (name_complex != other.name_complex)
+        return false;
+
+    if (size != other.size)
+        return false;
+
+    if (size_asian != other.size_asian)
+        return false;
+
+    if (size_complex != other.size_complex)
+        return false;
+
+    if (bold != other.bold)
+        return false;
+
+    if (bold_asian != other.bold_asian)
+        return false;
+
+    if (bold_complex != other.bold_complex)
+        return false;
+
+    if (italic != other.italic)
+        return false;
+
+    if (italic_asian != other.italic_asian)
+        return false;
+
+    if (italic_complex != other.italic_complex)
+        return false;
+
+    if (underline_style != other.underline_style)
+        return false;
+
+    if (underline_width != other.underline_width)
+        return false;
+
+    if (underline_mode != other.underline_mode)
+        return false;
+
+    if (underline_type != other.underline_type)
+        return false;
+
+    if (underline_color != other.underline_color)
+        return false;
+
+    if (color != other.color)
+        return false;
+
+    if (strikethrough_style != other.strikethrough_style)
+        return false;
+
+    if (strikethrough_width != other.strikethrough_width)
+        return false;
+
+    if (strikethrough_type != other.strikethrough_type)
+        return false;
+
+    if (strikethrough_text != other.strikethrough_text)
+        return false;
+
+    return true;
+}
+
+bool font_t::operator!=(const font_t& other) const
+{
+    return !operator==(other);
+}
 
 void font_t::reset()
 {
     *this = font_t();
+}
+
+std::size_t font_t::hash::operator()(const font_t& v) const
+{
+    std::size_t hash_value = 0u;
+
+    if (v.name)
+        hash_value |= std::hash<std::string_view>{}(*v.name);
+
+    if (v.size)
+        hash_value |= std::hash<double>{}(*v.size);
+
+    if (v.bold)
+        hash_value |= std::hash<bool>{}(*v.bold);
+
+    if (v.italic)
+        hash_value |= std::hash<bool>{}(*v.italic);
+
+    return hash_value;
 }
 
 fill_t::fill_t() = default;

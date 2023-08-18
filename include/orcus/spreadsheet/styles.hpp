@@ -49,7 +49,20 @@ struct ORCUS_SPM_DLLPUBLIC font_t
     std::optional<strikethrough_text_t> strikethrough_text;
 
     font_t();
+    font_t(const font_t& other);
+    ~font_t();
+
+    font_t& operator=(const font_t& other);
+
+    bool operator==(const font_t& other) const;
+    bool operator!=(const font_t& other) const;
+
     void reset();
+
+    struct ORCUS_SPM_DLLPUBLIC hash
+    {
+        std::size_t operator()(const font_t& v) const;
+    };
 };
 
 /**
