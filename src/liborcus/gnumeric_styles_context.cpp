@@ -72,6 +72,38 @@ ss::fill_pattern_t to_fill_pattern(std::size_t v)
     return (v < std::size(patterns)) ? patterns[v] : ss::fill_pattern_t::none;
 }
 
+std::pair<std::optional<gnumeric_border_type>, std::optional<ss::color_rgb_t>> parse_border_attributes(
+    const xml_token_attrs_t& attrs)
+{
+    using ret_type = std::pair<std::optional<gnumeric_border_type>, std::optional<ss::color_rgb_t>>;
+    ret_type ret;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns == XMLNS_UNKNOWN_ID)
+        {
+            switch (attr.name)
+            {
+                case XML_Style:
+                {
+                    const char* p_end = nullptr;
+                    long v = to_long(attr.value, &p_end);
+                    if (attr.value.data() < p_end)
+                        ret.first = static_cast<gnumeric_border_type>(v);
+                    break;
+                }
+                case XML_Color:
+                {
+                    ret.second = parse_gnumeric_rgb(attr.value);
+                    break;
+                }
+            }
+        }
+    }
+
+    return ret;
+}
+
 } // anonymous namespace
 
 gnumeric_styles_context::gnumeric_styles_context(
@@ -83,9 +115,14 @@ gnumeric_styles_context::gnumeric_styles_context(
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
         { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_gnumeric_gnm, XML_Styles }, // root element
-        { NS_gnumeric_gnm, XML_Styles, NS_gnumeric_gnm, XML_StyleRegion },
-        { NS_gnumeric_gnm, XML_StyleRegion, NS_gnumeric_gnm, XML_Style },
         { NS_gnumeric_gnm, XML_Style, NS_gnumeric_gnm, XML_Font },
+        { NS_gnumeric_gnm, XML_Style, NS_gnumeric_gnm, XML_StyleBorder },
+        { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Bottom },
+        { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Left },
+        { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Right },
+        { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Top },
+        { NS_gnumeric_gnm, XML_StyleRegion, NS_gnumeric_gnm, XML_Style },
+        { NS_gnumeric_gnm, XML_Styles, NS_gnumeric_gnm, XML_StyleRegion },
     };
 
     init_element_validator(rules, std::size(rules));
@@ -105,9 +142,39 @@ void gnumeric_styles_context::start_element(
             case XML_StyleRegion:
                 start_style_region(attrs);
                 break;
+            case XML_StyleBorder:
+                break;
             case XML_Style:
                 start_style(attrs);
                 break;
+            case XML_Top:
+            {
+                auto [style, color] = parse_border_attributes(attrs);
+                m_current_style.border_top.style = style;
+                m_current_style.border_top.color = color;
+                break;
+            }
+            case XML_Bottom:
+            {
+                auto [style, color] = parse_border_attributes(attrs);
+                m_current_style.border_bottom.style = style;
+                m_current_style.border_bottom.color = color;
+                break;
+            }
+            case XML_Left:
+            {
+                auto [style, color] = parse_border_attributes(attrs);
+                m_current_style.border_left.style = style;
+                m_current_style.border_left.color = color;
+                break;
+            }
+            case XML_Right:
+            {
+                auto [style, color] = parse_border_attributes(attrs);
+                m_current_style.border_right.style = style;
+                m_current_style.border_right.color = color;
+                break;
+            }
             case XML_Font:
                 start_font(attrs);
                 break;

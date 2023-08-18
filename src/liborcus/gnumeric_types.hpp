@@ -15,7 +15,7 @@
 namespace orcus {
 
 /**
- * Values are as specified in the Gnumeric source code except for vt_unknown.
+ * Values are as specified in the Gnumeric source code.
  */
 enum gnumeric_value_type
 {
@@ -26,6 +26,28 @@ enum gnumeric_value_type
     vt_string = 60,
     vt_cellrange = 70,
     vt_array = 80
+};
+
+/**
+ * Values are as specified in the Gnumeric source code (see
+ * GnmStyleBorderType).
+ */
+enum class gnumeric_border_type
+{
+    border_none = 0x0,
+    border_thin = 0x1,
+    border_medium = 0x2,
+    border_dashed = 0x3,
+    border_dotted = 0x4,
+    border_thick = 0x5,
+    border_double = 0x6,
+    border_hair = 0x7,
+    border_medium_dash = 0x8,
+    border_dash_dot = 0x9,
+    border_medium_dash_dot = 0xA,
+    border_dash_dot_dot = 0xB,
+    border_medium_dash_dot_dot = 0xC,
+    border_slanted_dash_dot = 0xD,
 };
 
 enum class gnumeric_value_format_type
@@ -67,6 +89,12 @@ struct gnumeric_named_exp
 
 struct gnumeric_style
 {
+    struct border_type
+    {
+        std::optional<gnumeric_border_type> style;
+        std::optional<spreadsheet::color_rgb_t> color;
+    };
+
     spreadsheet::sheet_t sheet = -1;
     spreadsheet::range_t region = {{-1, -1}, {-1, -1}};
     spreadsheet::hor_alignment_t hor_align = spreadsheet::hor_alignment_t::unknown;
@@ -86,6 +114,11 @@ struct gnumeric_style
     std::optional<spreadsheet::color_rgb_t> back;
     std::optional<spreadsheet::color_rgb_t> pattern_color;
     spreadsheet::fill_pattern_t pattern = spreadsheet::fill_pattern_t::none;
+
+    border_type border_top;
+    border_type border_bottom;
+    border_type border_left;
+    border_type border_right;
 
     bool valid() const;
 };
