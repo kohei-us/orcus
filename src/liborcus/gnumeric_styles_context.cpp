@@ -72,11 +72,9 @@ ss::fill_pattern_t to_fill_pattern(std::size_t v)
     return (v < std::size(patterns)) ? patterns[v] : ss::fill_pattern_t::none;
 }
 
-std::pair<std::optional<gnumeric_border_type>, std::optional<ss::color_rgb_t>> parse_border_attributes(
-    const xml_token_attrs_t& attrs)
+gnumeric_style::border_type parse_border_attributes(const xml_token_attrs_t& attrs)
 {
-    using ret_type = std::pair<std::optional<gnumeric_border_type>, std::optional<ss::color_rgb_t>>;
-    ret_type ret;
+    gnumeric_style::border_type ret;
 
     for (const auto& attr : attrs)
     {
@@ -89,12 +87,12 @@ std::pair<std::optional<gnumeric_border_type>, std::optional<ss::color_rgb_t>> p
                     const char* p_end = nullptr;
                     long v = to_long(attr.value, &p_end);
                     if (attr.value.data() < p_end)
-                        ret.first = static_cast<gnumeric_border_type>(v);
+                        ret.style = static_cast<gnumeric_border_type>(v);
                     break;
                 }
                 case XML_Color:
                 {
-                    ret.second = parse_gnumeric_rgb(attr.value);
+                    ret.color = parse_gnumeric_rgb(attr.value);
                     break;
                 }
             }
@@ -149,30 +147,22 @@ void gnumeric_styles_context::start_element(
                 break;
             case XML_Top:
             {
-                auto [style, color] = parse_border_attributes(attrs);
-                m_current_style.border_top.style = style;
-                m_current_style.border_top.color = color;
+                m_current_style.border_top = parse_border_attributes(attrs);
                 break;
             }
             case XML_Bottom:
             {
-                auto [style, color] = parse_border_attributes(attrs);
-                m_current_style.border_bottom.style = style;
-                m_current_style.border_bottom.color = color;
+                m_current_style.border_bottom = parse_border_attributes(attrs);
                 break;
             }
             case XML_Left:
             {
-                auto [style, color] = parse_border_attributes(attrs);
-                m_current_style.border_left.style = style;
-                m_current_style.border_left.color = color;
+                m_current_style.border_left = parse_border_attributes(attrs);
                 break;
             }
             case XML_Right:
             {
-                auto [style, color] = parse_border_attributes(attrs);
-                m_current_style.border_right.style = style;
-                m_current_style.border_right.color = color;
+                m_current_style.border_right = parse_border_attributes(attrs);
                 break;
             }
             case XML_Font:
