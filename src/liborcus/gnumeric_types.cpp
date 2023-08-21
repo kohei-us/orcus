@@ -36,6 +36,43 @@ const map_type& get()
 
 } // namespace value_format_type
 
+ss::border_style_t to_standard_type(gnumeric_border_type v)
+{
+    switch (v)
+    {
+        case gnumeric_border_type::border_none:
+            return ss::border_style_t::none;
+        case gnumeric_border_type::border_thin:
+            return ss::border_style_t::thin;
+        case gnumeric_border_type::border_medium:
+            return ss::border_style_t::medium;
+        case gnumeric_border_type::border_dashed:
+            return ss::border_style_t::dashed;
+        case gnumeric_border_type::border_dotted:
+            return ss::border_style_t::dotted;
+        case gnumeric_border_type::border_thick:
+            return ss::border_style_t::thick;
+        case gnumeric_border_type::border_double:
+            return ss::border_style_t::double_border;
+        case gnumeric_border_type::border_hair:
+            return ss::border_style_t::hair;
+        case gnumeric_border_type::border_medium_dash:
+            return ss::border_style_t::medium_dashed;
+        case gnumeric_border_type::border_dash_dot:
+            return ss::border_style_t::dash_dot;
+        case gnumeric_border_type::border_medium_dash_dot:
+            return ss::border_style_t::medium_dash_dot;
+        case gnumeric_border_type::border_dash_dot_dot:
+            return ss::border_style_t::dash_dot_dot;
+        case gnumeric_border_type::border_medium_dash_dot_dot:
+            return ss::border_style_t::medium_dash_dot_dot;
+        case gnumeric_border_type::border_slanted_dash_dot:
+            return ss::border_style_t::slant_dash_dot;
+    }
+
+    return ss::border_style_t::unknown;
+}
+
 gnumeric_value_format_type to_gnumeric_value_format_type(std::string_view s)
 {
     return value_format_type::get().find(s);

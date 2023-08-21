@@ -69,8 +69,12 @@ std::size_t import_font_style(ss::iface::import_styles& istyles, const gnumeric_
     return ifont->commit();
 }
 
-std::size_t import_fill_style(ss::iface::import_styles& istyles, const gnumeric_style& style)
+std::optional<std::size_t> import_fill_style(
+    ss::iface::import_styles& istyles, const gnumeric_style& style)
 {
+    if (style.pattern == ss::fill_pattern_t::none)
+        return {};
+
     ss::iface::import_fill_style* ifill = istyles.start_fill_style();
     ENSURE_INTERFACE(ifill, import_fill_style);
 
@@ -91,6 +95,52 @@ std::size_t import_fill_style(ss::iface::import_styles& istyles, const gnumeric_
             style.pattern_color->blue);
 
     return ifill->commit();
+}
+
+std::optional<std::size_t> import_border_styles(
+    ss::iface::import_styles& istyles, const gnumeric_style& style)
+{
+    ss::iface::import_border_style* iborder = istyles.start_border_style();
+    ENSURE_INTERFACE(iborder, imort_border_style);
+
+    auto func_import_border = [&iborder](ss::border_direction_t dir, const gnumeric_style::border_type& border)
+    {
+        bool has_style = false;
+
+        if (border.style)
+        {
+            iborder->set_style(dir, to_standard_type(*border.style));
+            has_style = true;
+        }
+
+        if (border.color)
+        {
+            iborder->set_color(
+                dir, 255, border.color->red, border.color->green, border.color->blue);
+            has_style = true;
+        }
+
+        return has_style;
+    };
+
+    bool has_style = false;
+
+    if (func_import_border(ss::border_direction_t::top, style.border_top))
+        has_style = true;
+
+    if (func_import_border(ss::border_direction_t::bottom, style.border_bottom))
+        has_style = true;
+
+    if (func_import_border(ss::border_direction_t::left, style.border_left))
+        has_style = true;
+
+    if (func_import_border(ss::border_direction_t::right, style.border_right))
+        has_style = true;
+
+    if (!has_style)
+        return {};
+
+    return iborder->commit();
 }
 
 } // anonymous namespace
@@ -336,11 +386,8 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
                 continue;
 
             std::size_t id_font = import_font_style(*istyles, style);
-
-            std::optional<std::size_t> id_fill;
-
-            if (style.pattern != ss::fill_pattern_t::none)
-                id_fill = import_fill_style(*istyles, style);
+            auto id_fill = import_fill_style(*istyles, style);
+            auto id_border = import_border_styles(*istyles, style);
 
             ss::iface::import_xf* ixf = istyles->start_xf(ss::xf_category_t::cell);
             ENSURE_INTERFACE(ixf, import_xf);
@@ -349,6 +396,9 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
 
             if (id_fill)
                 ixf->set_fill(*id_fill);
+
+            if (id_border)
+                ixf->set_border(*id_border);
 
             bool apply_alignment =
                 style.hor_align != ss::hor_alignment_t::unknown ||

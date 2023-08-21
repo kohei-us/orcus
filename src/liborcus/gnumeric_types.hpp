@@ -50,6 +50,8 @@ enum class gnumeric_border_type
     border_slanted_dash_dot = 0xD,
 };
 
+spreadsheet::border_style_t to_standard_type(gnumeric_border_type v);
+
 enum class gnumeric_value_format_type
 {
     unknown,
