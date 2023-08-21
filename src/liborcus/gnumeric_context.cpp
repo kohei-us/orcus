@@ -137,6 +137,12 @@ std::optional<std::size_t> import_border_styles(
     if (func_import_border(ss::border_direction_t::right, style.border_right))
         has_style = true;
 
+    if (func_import_border(ss::border_direction_t::diagonal_bl_tr, style.border_bl_tr))
+        has_style = true;
+
+    if (func_import_border(ss::border_direction_t::diagonal_tl_br, style.border_br_tl))
+        has_style = true;
+
     if (!has_style)
         return {};
 

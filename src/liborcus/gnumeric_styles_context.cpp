@@ -116,7 +116,9 @@ gnumeric_styles_context::gnumeric_styles_context(
         { NS_gnumeric_gnm, XML_Style, NS_gnumeric_gnm, XML_Font },
         { NS_gnumeric_gnm, XML_Style, NS_gnumeric_gnm, XML_StyleBorder },
         { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Bottom },
+        { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Diagonal },
         { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Left },
+        { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Rev_Diagonal },
         { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Right },
         { NS_gnumeric_gnm, XML_StyleBorder, NS_gnumeric_gnm, XML_Top },
         { NS_gnumeric_gnm, XML_StyleRegion, NS_gnumeric_gnm, XML_Style },
@@ -163,6 +165,16 @@ void gnumeric_styles_context::start_element(
             case XML_Right:
             {
                 m_current_style.border_right = parse_border_attributes(attrs);
+                break;
+            }
+            case XML_Diagonal:
+            {
+                m_current_style.border_bl_tr = parse_border_attributes(attrs);
+                break;
+            }
+            case XML_Rev_Diagonal:
+            {
+                m_current_style.border_br_tl = parse_border_attributes(attrs);
                 break;
             }
             case XML_Font:

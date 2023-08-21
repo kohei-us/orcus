@@ -121,6 +121,8 @@ struct gnumeric_style
     border_type border_bottom;
     border_type border_left;
     border_type border_right;
+    border_type border_bl_tr; // bottom-left to top-right  (diagonal)
+    border_type border_br_tl; // top-left to bottom-right (rev-diagonal)
 
     bool valid() const;
 };
