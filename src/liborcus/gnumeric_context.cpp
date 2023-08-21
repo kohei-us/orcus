@@ -21,6 +21,80 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
+namespace {
+
+std::size_t import_font_style(ss::iface::import_styles& istyles, const gnumeric_style& style)
+{
+    ss::iface::import_font_style* ifont = istyles.start_font_style();
+    ENSURE_INTERFACE(ifont, import_font_style);
+
+    if (style.font_name)
+        ifont->set_name(*style.font_name);
+
+    if (style.font_unit)
+        ifont->set_size(*style.font_unit);
+
+    if (style.bold)
+        ifont->set_bold(*style.bold);
+
+    if (style.italic)
+        ifont->set_italic(*style.italic);
+
+    if (style.underline)
+    {
+        if (*style.underline)
+            ifont->set_underline(ss::underline_t::single_line);
+        else
+            ifont->set_underline(ss::underline_t::none);
+    }
+
+    if (style.strikethrough)
+    {
+        if (*style.strikethrough)
+        {
+            ifont->set_strikethrough_style(ss::strikethrough_style_t::solid);
+            ifont->set_strikethrough_type(ss::strikethrough_type_t::single_type);
+            ifont->set_strikethrough_width(ss::strikethrough_width_t::width_auto);
+        }
+        else
+        {
+            ifont->set_strikethrough_style(ss::strikethrough_style_t::none);
+            ifont->set_strikethrough_type(ss::strikethrough_type_t::none);
+        }
+    }
+
+    if (style.fore)
+        ifont->set_color(255, style.fore->red, style.fore->green, style.fore->blue);
+
+    return ifont->commit();
+}
+
+std::size_t import_fill_style(ss::iface::import_styles& istyles, const gnumeric_style& style)
+{
+    ss::iface::import_fill_style* ifill = istyles.start_fill_style();
+    ENSURE_INTERFACE(ifill, import_fill_style);
+
+    ifill->set_pattern_type(style.pattern);
+
+    if (style.back)
+        ifill->set_fg_color(
+            255,
+            style.back->red,
+            style.back->green,
+            style.back->blue);
+
+    if (style.pattern_color)
+        ifill->set_bg_color(
+            255,
+            style.pattern_color->red,
+            style.pattern_color->green,
+            style.pattern_color->blue);
+
+    return ifill->commit();
+}
+
+} // anonymous namespace
+
 gnumeric_content_xml_context::gnumeric_content_xml_context(
     session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
@@ -261,74 +335,12 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
             if (!isheet)
                 continue;
 
-            ss::iface::import_font_style* ifont = istyles->start_font_style();
-            ENSURE_INTERFACE(ifont, import_font_style);
-
-            if (style.font_name)
-                ifont->set_name(*style.font_name);
-
-            if (style.font_unit)
-                ifont->set_size(*style.font_unit);
-
-            if (style.bold)
-                ifont->set_bold(*style.bold);
-
-            if (style.italic)
-                ifont->set_italic(*style.italic);
-
-            if (style.underline)
-            {
-                if (*style.underline)
-                    ifont->set_underline(ss::underline_t::single_line);
-                else
-                    ifont->set_underline(ss::underline_t::none);
-            }
-
-            if (style.strikethrough)
-            {
-                if (*style.strikethrough)
-                {
-                    ifont->set_strikethrough_style(ss::strikethrough_style_t::solid);
-                    ifont->set_strikethrough_type(ss::strikethrough_type_t::single_type);
-                    ifont->set_strikethrough_width(ss::strikethrough_width_t::width_auto);
-                }
-                else
-                {
-                    ifont->set_strikethrough_style(ss::strikethrough_style_t::none);
-                    ifont->set_strikethrough_type(ss::strikethrough_type_t::none);
-                }
-            }
-
-            if (style.fore)
-                ifont->set_color(255, style.fore->red, style.fore->green, style.fore->blue);
-
-            std::size_t id_font = ifont->commit();
+            std::size_t id_font = import_font_style(*istyles, style);
 
             std::optional<std::size_t> id_fill;
 
             if (style.pattern != ss::fill_pattern_t::none)
-            {
-                ss::iface::import_fill_style* ifill = istyles->start_fill_style();
-                ENSURE_INTERFACE(ifill, import_fill_style);
-
-                ifill->set_pattern_type(style.pattern);
-
-                if (style.back)
-                    ifill->set_fg_color(
-                        255,
-                        style.back->red,
-                        style.back->green,
-                        style.back->blue);
-
-                if (style.pattern_color)
-                    ifill->set_bg_color(
-                        255,
-                        style.pattern_color->red,
-                        style.pattern_color->green,
-                        style.pattern_color->blue);
-
-                id_fill = ifill->commit();
-            }
+                id_fill = import_fill_style(*istyles, style);
 
             ss::iface::import_xf* ixf = istyles->start_xf(ss::xf_category_t::cell);
             ENSURE_INTERFACE(ixf, import_xf);
