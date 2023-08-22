@@ -184,10 +184,10 @@ void test_gnumeric_hidden_rows_columns()
     fs::path filepath = SRCDIR"/test/gnumeric/hidden-rows-columns/input.gnumeric";
     auto doc = load_doc(filepath);
 
-    spreadsheet::sheet* sh = doc->get_sheet("Hidden Rows");
+    ss::sheet* sh = doc->get_sheet("Hidden Rows");
     assert(sh);
 
-    spreadsheet::row_t row_start = -1, row_end = -1;
+    ss::row_t row_start = -1, row_end = -1;
 
     // Row 1 is visible.
     assert(!sh->is_row_hidden(0, &row_start, &row_end));
@@ -227,7 +227,7 @@ void test_gnumeric_hidden_rows_columns()
     sh = doc->get_sheet("Hidden Columns");
     assert(sh);
 
-    spreadsheet::col_t col_start = -1, col_end = -1;
+    ss::col_t col_start = -1, col_end = -1;
 
     // Columns A-B are visible.
     assert(!sh->is_col_hidden(0, &col_start, &col_end));
@@ -262,10 +262,10 @@ void test_gnumeric_merged_cells()
     fs::path filepath = SRCDIR"/test/gnumeric/merged-cells/input.gnumeric";
     auto doc = load_doc(filepath);
 
-    const spreadsheet::sheet* sheet1 = doc->get_sheet("Sheet1");
+    const ss::sheet* sheet1 = doc->get_sheet("Sheet1");
     assert(sheet1);
 
-    spreadsheet::range_t merge_range = sheet1->get_merge_cell_range(0, 1);
+    ss::range_t merge_range = sheet1->get_merge_cell_range(0, 1);
     assert(merge_range.first.column == 1);
     assert(merge_range.last.column == 2);
     assert(merge_range.first.row == 0);
@@ -470,21 +470,21 @@ void test_gnumeric_colored_text()
     fs::path filepath = SRCDIR"/test/gnumeric/colored-text/input.gnumeric";
     auto doc = load_doc(filepath);
 
-    const spreadsheet::sheet* sheet1 = doc->get_sheet("ColoredText");
+    const ss::sheet* sheet1 = doc->get_sheet("ColoredText");
     assert(sheet1);
 
-    const spreadsheet::shared_strings& ss = doc->get_shared_strings();
+    const ss::shared_strings& ss = doc->get_shared_strings();
 
-    const spreadsheet::styles& styles = doc->get_styles();
+    const ss::styles& styles = doc->get_styles();
 
     // Column A contains colored cells.
 
     struct check
     {
-        spreadsheet::row_t row;
-        spreadsheet::color_elem_t red;
-        spreadsheet::color_elem_t green;
-        spreadsheet::color_elem_t blue;
+        ss::row_t row;
+        ss::color_elem_t red;
+        ss::color_elem_t green;
+        ss::color_elem_t blue;
         std::string text;
     };
 
@@ -504,10 +504,10 @@ void test_gnumeric_colored_text()
     for (const check& c : checks)
     {
         size_t xfi = sheet1->get_cell_format(c.row, 0);
-        const spreadsheet::cell_format_t* xf = styles.get_cell_format(xfi);
+        const ss::cell_format_t* xf = styles.get_cell_format(xfi);
         assert(xf);
 
-        const spreadsheet::font_t* font = styles.get_font(xf->font);
+        const ss::font_t* font = styles.get_font(xf->font);
         assert(font);
         assert(font->color);
         assert(font->color.value().red == c.red);
@@ -789,44 +789,44 @@ void test_gnumeric_cell_borders_single_cells()
     auto doc = load_doc(filepath);
     assert(doc);
 
-    spreadsheet::styles& styles = doc->get_styles();
+    ss::styles& styles = doc->get_styles();
 
-    spreadsheet::sheet* sh = doc->get_sheet(0);
+    ss::sheet* sh = doc->get_sheet(0);
     assert(sh);
 
     struct check
     {
-        spreadsheet::row_t row;
-        spreadsheet::col_t col;
-        spreadsheet::border_style_t style;
+        ss::row_t row;
+        ss::col_t col;
+        ss::border_style_t style;
     };
 
     std::vector<check> checks =
     {
-        {  3, 1, spreadsheet::border_style_t::hair                },
-        {  5, 1, spreadsheet::border_style_t::dotted              },
-        {  7, 1, spreadsheet::border_style_t::dash_dot_dot        },
-        {  9, 1, spreadsheet::border_style_t::dash_dot            },
-        { 11, 1, spreadsheet::border_style_t::dashed              },
-        { 13, 1, spreadsheet::border_style_t::thin                },
-        {  1, 3, spreadsheet::border_style_t::medium_dash_dot_dot },
-        {  3, 3, spreadsheet::border_style_t::slant_dash_dot      },
-        {  5, 3, spreadsheet::border_style_t::medium_dash_dot     },
-        {  7, 3, spreadsheet::border_style_t::medium_dashed       },
-        {  9, 3, spreadsheet::border_style_t::medium              },
-        { 11, 3, spreadsheet::border_style_t::thick               },
-        { 13, 3, spreadsheet::border_style_t::double_border       },
+        {  3, 1, ss::border_style_t::hair                },
+        {  5, 1, ss::border_style_t::dotted              },
+        {  7, 1, ss::border_style_t::dash_dot_dot        },
+        {  9, 1, ss::border_style_t::dash_dot            },
+        { 11, 1, ss::border_style_t::dashed              },
+        { 13, 1, ss::border_style_t::thin                },
+        {  1, 3, ss::border_style_t::medium_dash_dot_dot },
+        {  3, 3, ss::border_style_t::slant_dash_dot      },
+        {  5, 3, ss::border_style_t::medium_dash_dot     },
+        {  7, 3, ss::border_style_t::medium_dashed       },
+        {  9, 3, ss::border_style_t::medium              },
+        { 11, 3, ss::border_style_t::thick               },
+        { 13, 3, ss::border_style_t::double_border       },
     };
 
     for (const check& c : checks)
     {
         std::cout << "(row: " << c.row << "; col: " << c.col << "; expected: " << int(c.style) << ")" << std::endl;
         size_t xf = sh->get_cell_format(c.row, c.col);
-        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
+        const ss::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
         assert(cf->apply_border);
 
-        const spreadsheet::border_t* border = styles.get_border(cf->border);
+        const ss::border_t* border = styles.get_border(cf->border);
         assert(border);
         assert(border->top.style    == c.style);
         assert(border->bottom.style == c.style);
@@ -843,16 +843,16 @@ void test_gnumeric_cell_borders_directions()
     auto doc = load_doc(filepath);
     assert(doc);
 
-    spreadsheet::styles& styles = doc->get_styles();
+    ss::styles& styles = doc->get_styles();
 
-    spreadsheet::sheet* sh = doc->get_sheet(0);
+    ss::sheet* sh = doc->get_sheet(0);
     assert(sh);
 
     struct check
     {
-        spreadsheet::row_t row;
-        spreadsheet::col_t col;
-        spreadsheet::border_direction_t dir;
+        ss::row_t row;
+        ss::col_t col;
+        ss::border_direction_t dir;
     };
 
     std::vector<check> checks =
@@ -980,7 +980,7 @@ void test_gnumeric_cell_borders_directions()
                 assert(!border->diagonal_tl_br.border_color);
                 assert(!border->diagonal_tl_br.border_width);
                 break;
-            case spreadsheet::border_direction_t::diagonal:
+            case ss::border_direction_t::diagonal:
                 assert(!border->top.style);
                 assert(!border->top.border_color);
                 assert(!border->top.border_width);
@@ -1007,7 +1007,7 @@ void test_gnumeric_cell_borders_directions()
                 assert(*border->diagonal_tl_br.border_color == black);
                 assert(!border->diagonal_tl_br.border_width);
                 break;
-            case spreadsheet::border_direction_t::diagonal_tl_br:
+            case ss::border_direction_t::diagonal_tl_br:
                 assert(!border->top.style);
                 assert(!border->top.border_color);
                 assert(!border->top.border_width);
@@ -1032,7 +1032,7 @@ void test_gnumeric_cell_borders_directions()
                 assert(*border->diagonal_tl_br.border_color == black);
                 assert(!border->diagonal_tl_br.border_width);
                 break;
-            case spreadsheet::border_direction_t::diagonal_bl_tr:
+            case ss::border_direction_t::diagonal_bl_tr:
                 assert(!border->top.style);
                 assert(!border->top.border_color);
                 assert(!border->top.border_width);
@@ -1067,22 +1067,22 @@ void test_gnumeric_cell_borders_colors()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    using spreadsheet::color_t;
-    using spreadsheet::border_style_t;
+    using ss::color_t;
+    using ss::border_style_t;
 
     fs::path filepath = SRCDIR"/test/gnumeric/borders/colors.gnumeric";
     auto doc = load_doc(filepath);
     assert(doc);
 
-    spreadsheet::styles& styles = doc->get_styles();
+    ss::styles& styles = doc->get_styles();
 
-    spreadsheet::sheet* sh = doc->get_sheet(0);
+    ss::sheet* sh = doc->get_sheet(0);
     assert(sh);
 
     struct check
     {
-        spreadsheet::row_t row;
-        spreadsheet::col_t col;
+        ss::row_t row;
+        ss::col_t col;
         color_t color;
     };
 
@@ -1097,11 +1097,11 @@ void test_gnumeric_cell_borders_colors()
     {
         size_t xf = sh->get_cell_format(c.row, c.col); // B3
 
-        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
+        const ss::cell_format_t* cf = styles.get_cell_format(xf);
         assert(cf);
         assert(cf->apply_border);
 
-        const spreadsheet::border_t* border = styles.get_border(cf->border);
+        const ss::border_t* border = styles.get_border(cf->border);
         assert(border);
 
         assert(!border->left.style);
@@ -1118,11 +1118,11 @@ void test_gnumeric_cell_borders_colors()
 
     size_t xf = sh->get_cell_format(6, 1); // B7
 
-    const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
+    const ss::cell_format_t* cf = styles.get_cell_format(xf);
     assert(cf);
     assert(cf->apply_border);
 
-    const spreadsheet::border_t* border = styles.get_border(cf->border);
+    const ss::border_t* border = styles.get_border(cf->border);
     assert(border);
 
     assert(border->left.style == border_style_t::thick);
