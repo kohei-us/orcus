@@ -17,6 +17,7 @@
 #include <orcus/spreadsheet/styles.hpp>
 
 #include <ixion/address.hpp>
+#include <ixion/model_context.hpp>
 #include <boost/filesystem/path.hpp>
 #include <iostream>
 #include <sstream>
@@ -780,6 +781,370 @@ void test_gnumeric_text_formats()
     }
 }
 
+void test_gnumeric_cell_borders_single_cells()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/borders/single-cells.gnumeric";
+    auto doc = load_doc(filepath);
+    assert(doc);
+
+    spreadsheet::styles& styles = doc->get_styles();
+
+    spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        spreadsheet::row_t row;
+        spreadsheet::col_t col;
+        spreadsheet::border_style_t style;
+    };
+
+    std::vector<check> checks =
+    {
+        {  3, 1, spreadsheet::border_style_t::hair                },
+        {  5, 1, spreadsheet::border_style_t::dotted              },
+        {  7, 1, spreadsheet::border_style_t::dash_dot_dot        },
+        {  9, 1, spreadsheet::border_style_t::dash_dot            },
+        { 11, 1, spreadsheet::border_style_t::dashed              },
+        { 13, 1, spreadsheet::border_style_t::thin                },
+        {  1, 3, spreadsheet::border_style_t::medium_dash_dot_dot },
+        {  3, 3, spreadsheet::border_style_t::slant_dash_dot      },
+        {  5, 3, spreadsheet::border_style_t::medium_dash_dot     },
+        {  7, 3, spreadsheet::border_style_t::medium_dashed       },
+        {  9, 3, spreadsheet::border_style_t::medium              },
+        { 11, 3, spreadsheet::border_style_t::thick               },
+        { 13, 3, spreadsheet::border_style_t::double_border       },
+    };
+
+    for (const check& c : checks)
+    {
+        std::cout << "(row: " << c.row << "; col: " << c.col << "; expected: " << int(c.style) << ")" << std::endl;
+        size_t xf = sh->get_cell_format(c.row, c.col);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
+        assert(cf);
+        assert(cf->apply_border);
+
+        const spreadsheet::border_t* border = styles.get_border(cf->border);
+        assert(border);
+        assert(border->top.style    == c.style);
+        assert(border->bottom.style == c.style);
+        assert(border->left.style   == c.style);
+        assert(border->right.style  == c.style);
+    }
+}
+
+void test_gnumeric_cell_borders_directions()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/borders/directions.gnumeric";
+    auto doc = load_doc(filepath);
+    assert(doc);
+
+    spreadsheet::styles& styles = doc->get_styles();
+
+    spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        spreadsheet::row_t row;
+        spreadsheet::col_t col;
+        spreadsheet::border_direction_t dir;
+    };
+
+    std::vector<check> checks =
+    {
+        {  1, 1, ss::border_direction_t::top            },
+        {  3, 1, ss::border_direction_t::left           },
+        {  5, 1, ss::border_direction_t::right          },
+        {  7, 1, ss::border_direction_t::bottom         },
+        {  9, 1, ss::border_direction_t::diagonal_tl_br },
+        { 11, 1, ss::border_direction_t::diagonal_bl_tr },
+        { 13, 1, ss::border_direction_t::diagonal       },
+    };
+
+    const ss::color_t black{255, 0, 0, 0};
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col);
+        const ss::cell_format_t* cf = styles.get_cell_format(xf);
+        assert(cf);
+        assert(cf->apply_border);
+
+        const ss::border_t* border = styles.get_border(cf->border);
+        assert(border);
+
+        switch (c.dir)
+        {
+            case ss::border_direction_t::top:
+                assert(border->top.style);
+                assert(*border->top.style == ss::border_style_t::thin);
+                assert(border->top.border_color);
+                assert(*border->top.border_color == black);
+                assert(!border->top.border_width);
+                assert(!border->bottom.style);
+                assert(!border->bottom.border_color);
+                assert(!border->bottom.border_width);
+                assert(!border->left.style);
+                assert(!border->left.border_color);
+                assert(!border->left.border_width);
+                assert(!border->right.style);
+                assert(!border->right.border_color);
+                assert(!border->right.border_width);
+                assert(!border->diagonal.style);
+                assert(!border->diagonal.border_color);
+                assert(!border->diagonal.border_width);
+                assert(!border->diagonal_bl_tr.style);
+                assert(!border->diagonal_bl_tr.border_color);
+                assert(!border->diagonal_bl_tr.border_width);
+                assert(!border->diagonal_tl_br.style);
+                assert(!border->diagonal_tl_br.border_color);
+                assert(!border->diagonal_tl_br.border_width);
+                break;
+            case ss::border_direction_t::left:
+                assert(!border->top.style);
+                assert(!border->top.border_color);
+                assert(!border->top.border_width);
+                assert(!border->bottom.style);
+                assert(!border->bottom.border_color);
+                assert(!border->bottom.border_width);
+                assert(border->left.style);
+                assert(*border->left.style == ss::border_style_t::thin);
+                assert(border->left.border_color);
+                assert(*border->left.border_color == black);
+                assert(!border->left.border_width);
+                assert(!border->right.style);
+                assert(!border->right.border_color);
+                assert(!border->right.border_width);
+                assert(!border->diagonal.style);
+                assert(!border->diagonal.border_color);
+                assert(!border->diagonal.border_width);
+                assert(!border->diagonal_bl_tr.style);
+                assert(!border->diagonal_bl_tr.border_color);
+                assert(!border->diagonal_bl_tr.border_width);
+                assert(!border->diagonal_tl_br.style);
+                assert(!border->diagonal_tl_br.border_color);
+                assert(!border->diagonal_tl_br.border_width);
+                break;
+            case ss::border_direction_t::right:
+                assert(!border->top.style);
+                assert(!border->top.border_color);
+                assert(!border->top.border_width);
+                assert(!border->bottom.style);
+                assert(!border->bottom.border_color);
+                assert(!border->bottom.border_width);
+                assert(!border->left.style);
+                assert(!border->left.border_color);
+                assert(!border->left.border_width);
+                assert(border->right.style);
+                assert(*border->right.style == ss::border_style_t::thin);
+                assert(border->right.border_color);
+                assert(*border->right.border_color == black);
+                assert(!border->right.border_width);
+                assert(!border->diagonal.style);
+                assert(!border->diagonal.border_color);
+                assert(!border->diagonal.border_width);
+                assert(!border->diagonal_bl_tr.style);
+                assert(!border->diagonal_bl_tr.border_color);
+                assert(!border->diagonal_bl_tr.border_width);
+                assert(!border->diagonal_tl_br.style);
+                assert(!border->diagonal_tl_br.border_color);
+                assert(!border->diagonal_tl_br.border_width);
+                break;
+            case ss::border_direction_t::bottom:
+                assert(!border->top.style);
+                assert(!border->top.border_color);
+                assert(!border->top.border_width);
+                assert(border->bottom.style);
+                assert(*border->bottom.style == ss::border_style_t::thin);
+                assert(border->bottom.border_color);
+                assert(*border->bottom.border_color == black);
+                assert(!border->bottom.border_width);
+                assert(!border->left.style);
+                assert(!border->left.border_color);
+                assert(!border->left.border_width);
+                assert(!border->right.style);
+                assert(!border->right.border_color);
+                assert(!border->right.border_width);
+                assert(!border->diagonal.style);
+                assert(!border->diagonal.border_color);
+                assert(!border->diagonal.border_width);
+                assert(!border->diagonal_bl_tr.style);
+                assert(!border->diagonal_bl_tr.border_color);
+                assert(!border->diagonal_bl_tr.border_width);
+                assert(!border->diagonal_tl_br.style);
+                assert(!border->diagonal_tl_br.border_color);
+                assert(!border->diagonal_tl_br.border_width);
+                break;
+            case spreadsheet::border_direction_t::diagonal:
+                assert(!border->top.style);
+                assert(!border->top.border_color);
+                assert(!border->top.border_width);
+                assert(!border->bottom.style);
+                assert(!border->bottom.border_color);
+                assert(!border->bottom.border_width);
+                assert(!border->left.style);
+                assert(!border->left.border_color);
+                assert(!border->left.border_width);
+                assert(!border->right.style);
+                assert(!border->right.border_color);
+                assert(!border->right.border_width);
+                assert(!border->diagonal.style);
+                assert(!border->diagonal.border_color);
+                assert(!border->diagonal.border_width);
+                assert(border->diagonal_bl_tr.style);
+                assert(*border->diagonal_bl_tr.style == ss::border_style_t::thin);
+                assert(border->diagonal_bl_tr.border_color);
+                assert(*border->diagonal_bl_tr.border_color == black);
+                assert(!border->diagonal_bl_tr.border_width);
+                assert(border->diagonal_tl_br.style);
+                assert(*border->diagonal_tl_br.style == ss::border_style_t::thin);
+                assert(border->diagonal_tl_br.border_color);
+                assert(*border->diagonal_tl_br.border_color == black);
+                assert(!border->diagonal_tl_br.border_width);
+                break;
+            case spreadsheet::border_direction_t::diagonal_tl_br:
+                assert(!border->top.style);
+                assert(!border->top.border_color);
+                assert(!border->top.border_width);
+                assert(!border->bottom.style);
+                assert(!border->bottom.border_color);
+                assert(!border->bottom.border_width);
+                assert(!border->left.style);
+                assert(!border->left.border_color);
+                assert(!border->left.border_width);
+                assert(!border->right.style);
+                assert(!border->right.border_color);
+                assert(!border->right.border_width);
+                assert(!border->diagonal.style);
+                assert(!border->diagonal.border_color);
+                assert(!border->diagonal.border_width);
+                assert(!border->diagonal_bl_tr.style);
+                assert(!border->diagonal_bl_tr.border_color);
+                assert(!border->diagonal_bl_tr.border_width);
+                assert(border->diagonal_tl_br.style);
+                assert(*border->diagonal_tl_br.style == ss::border_style_t::thin);
+                assert(border->diagonal_tl_br.border_color);
+                assert(*border->diagonal_tl_br.border_color == black);
+                assert(!border->diagonal_tl_br.border_width);
+                break;
+            case spreadsheet::border_direction_t::diagonal_bl_tr:
+                assert(!border->top.style);
+                assert(!border->top.border_color);
+                assert(!border->top.border_width);
+                assert(!border->bottom.style);
+                assert(!border->bottom.border_color);
+                assert(!border->bottom.border_width);
+                assert(!border->left.style);
+                assert(!border->left.border_color);
+                assert(!border->left.border_width);
+                assert(!border->right.style);
+                assert(!border->right.border_color);
+                assert(!border->right.border_width);
+                assert(!border->diagonal.style);
+                assert(!border->diagonal.border_color);
+                assert(!border->diagonal.border_width);
+                assert(border->diagonal_bl_tr.style);
+                assert(*border->diagonal_bl_tr.style == ss::border_style_t::thin);
+                assert(border->diagonal_bl_tr.border_color);
+                assert(*border->diagonal_bl_tr.border_color == black);
+                assert(!border->diagonal_bl_tr.border_width);
+                assert(!border->diagonal_tl_br.style);
+                assert(!border->diagonal_tl_br.border_color);
+                assert(!border->diagonal_tl_br.border_width);
+                break;
+            default:
+                assert(!"unhandled direction!");
+        }
+    }
+}
+
+void test_gnumeric_cell_borders_colors()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    using spreadsheet::color_t;
+    using spreadsheet::border_style_t;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/borders/colors.gnumeric";
+    auto doc = load_doc(filepath);
+    assert(doc);
+
+    spreadsheet::styles& styles = doc->get_styles();
+
+    spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        spreadsheet::row_t row;
+        spreadsheet::col_t col;
+        color_t color;
+    };
+
+    std::vector<check> checks =
+    {
+        { 2, 1, color_t(0xFF, 0xFF,    0,    0) }, // B3 - red
+        { 3, 1, color_t(0xFF,    0, 0x70, 0xC0) }, // B4 - blue
+        { 4, 1, color_t(0xFF,    0, 0xB0, 0x50) }, // B5 - green
+    };
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col); // B3
+
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
+        assert(cf);
+        assert(cf->apply_border);
+
+        const spreadsheet::border_t* border = styles.get_border(cf->border);
+        assert(border);
+
+        assert(!border->left.style);
+        assert(border->right.style);
+        assert(*border->right.style == border_style_t::thick);
+        assert(!border->top.style);
+        assert(!border->bottom.style);
+
+        assert(border->right.border_color == c.color);
+    }
+
+    // B7 contains yellow left border, purple right border, and light blue
+    // diagonal borders.
+
+    size_t xf = sh->get_cell_format(6, 1); // B7
+
+    const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
+    assert(cf);
+    assert(cf->apply_border);
+
+    const spreadsheet::border_t* border = styles.get_border(cf->border);
+    assert(border);
+
+    assert(border->left.style == border_style_t::thick);
+    assert(border->left.border_color == color_t(0xFF, 0xFF, 0xFF, 0)); // yellow
+
+    assert(border->right.style == border_style_t::thick);
+    assert(border->right.border_color == color_t(0xFF, 0x70, 0x30, 0xA0)); // purple
+
+    assert(border->diagonal_bl_tr.style == border_style_t::thick);
+    assert(border->diagonal_bl_tr.border_color == color_t(0xFF, 0x00, 0xB0, 0xF0)); // light blue
+
+    assert(border->diagonal_tl_br.style == border_style_t::thick);
+    assert(border->diagonal_tl_br.border_color == color_t(0xFF, 0x00, 0xB0, 0xF0)); // light blue
+
+    // B7 also contains multi-line string.  Test that as well.
+    ixion::model_context& model = doc->get_model_context();
+    ixion::string_id_t sid = model.get_string_identifier(ixion::abs_address_t(0,6,1));
+    const std::string* s = model.get_string(sid);
+    assert(s);
+    assert(*s == "<- Yellow\nPurple ->\nLight Blue \\");
+}
+
 } // anonymous namespace
 
 int main()
@@ -794,6 +1159,9 @@ int main()
     test_gnumeric_background_fill();
     test_gnumeric_colored_text();
     test_gnumeric_text_formats();
+    test_gnumeric_cell_borders_single_cells();
+    test_gnumeric_cell_borders_directions();
+    test_gnumeric_cell_borders_colors();
 
     return EXIT_SUCCESS;
 }
