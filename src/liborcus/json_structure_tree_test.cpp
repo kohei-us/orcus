@@ -8,24 +8,12 @@
 #include <orcus/json_structure_tree.hpp>
 #include <orcus/stream.hpp>
 #include "pstring.hpp"
+#include "filesystem_env.hpp"
 
 #include <vector>
 #include <sstream>
 #include <cassert>
 #include <unordered_set>
-
-#ifdef HAVE_FILESYSTEM
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
-#endif
 
 using namespace orcus;
 

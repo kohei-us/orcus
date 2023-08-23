@@ -19,18 +19,7 @@
 #include <codecvt>
 #include <iostream>
 
-#ifdef HAVE_FILESYSTEM
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
-#endif
+#include "filesystem_env.hpp"
 
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
