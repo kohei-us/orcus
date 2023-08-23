@@ -12,13 +12,23 @@
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/factory.hpp>
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <iostream>
 #include <sstream>
 
-using namespace orcus;
+#ifdef HAVE_FILESYSTEM
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
+#endif
+#endif
+
+using namespace orcus;
 namespace ss = orcus::spreadsheet;
 
 const fs::path BASIC_TEST_DOC_DIR = SRCDIR"/test/parquet/basic";
