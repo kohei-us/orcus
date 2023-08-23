@@ -9,24 +9,13 @@
 #include <ixion/cell.hpp>
 
 #include <iostream>
-#ifdef HAVE_FILESYSTEM
 #include <filesystem>
-namespace fs = std::filesystem;
-#else
-#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
-#endif
 
 using namespace orcus;
 
 int main()
 {
-    fs::path input_dir = std::getenv("INPUTDIR");
+    std::filesystem::path input_dir = std::getenv("INPUTDIR");
 
     // Instantiate a document, and wrap it with a factory.
     spreadsheet::range_size_t ss{1048576, 16384};

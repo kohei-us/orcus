@@ -13,6 +13,6 @@ build:
     - git clone https://gitlab.com/ixion/ixion.git /ixion && (cd /ixion && ./autogen.sh && make -j $(nproc) && make install)
     - ldconfig
   script:
-    - ./autogen.sh --enable-debug-utils
+    - ./autogen.sh --enable-debug-utils --with-doc-example
     - make -j $(nproc) check
     - make -j $(nproc) check-valgrind-memcheck

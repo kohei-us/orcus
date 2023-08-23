@@ -4,18 +4,7 @@
 
 #include <iostream>
 #include <memory>
-#ifdef HAVE_FILESYSTEM
 #include <filesystem>
-namespace fs = std::filesystem;
-#else
-#ifdef HAVE_EXPERIMENTAL_FILESYSTEM
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
-#endif
 
 //!code-start: cell_value
 namespace ss = orcus::spreadsheet;
@@ -123,7 +112,7 @@ public:
 
 int main()
 {
-    fs::path input_dir = std::getenv("INPUTDIR");
+    std::filesystem::path input_dir = std::getenv("INPUTDIR");
     auto filepath = input_dir / "multi-sheets.ods";
 
     my_import_factory factory;

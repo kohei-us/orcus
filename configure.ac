@@ -208,9 +208,9 @@ AC_ARG_WITH(benchmark,
 )
 
 AC_ARG_WITH(doc-example,
-        AS_HELP_STRING([--without-doc-example], [Disables building of example code used in documentation.]),
+        AS_HELP_STRING([--with-doc-example], [Enables building of example code used in documentation.]),
         [with_doc_example="$withval"],
-        [with_doc_example=yes]
+        [with_doc_example=no]
 )
 
 AM_CONDITIONAL([WITH_ODS_FILTER], [test "x$with_ods_filter" != "xno"])

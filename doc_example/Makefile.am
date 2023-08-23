@@ -4,14 +4,6 @@ AM_CPPFLAGS = \
 	$(LIBIXION_CFLAGS) \
 	-DSRCDIR=\""$(top_srcdir)"\"
 
-if HAVE_FILESYSTEM
-AM_CPPFLAGS += -DHAVE_FILESYSTEM=1
-endif
-
-if HAVE_EXPERIMENTAL_FILESYSTEM
-AM_CPPFLAGS += -DHAVE_EXPERIMENTAL_FILESYSTEM=1
-endif
-
 bin_PROGRAMS =
 
 EXTRA_PROGRAMS = \
@@ -98,24 +90,6 @@ spreadsheet_doc_2_sheets_with_formula_SOURCES = \
 spreadsheet_doc_2_sheets_with_formula_LDADD = \
 	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	../src/liborcus/liborcus-@ORCUS_API_VERSION@.la
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-spreadsheet_doc_1_LDADD += -lstdc++fs
-spreadsheet_doc_1_num_and_formula_LDADD += -lstdc++fs
-spreadsheet_doc_2_LDADD += -lstdc++fs
-spreadsheet_doc_2_sheets_no_string_pool_LDADD += -lstdc++fs
-spreadsheet_doc_2_sheets_with_string_pool_LDADD += -lstdc++fs
-spreadsheet_doc_2_sheets_with_formula_LDADD += -lstdc++fs
-else
-spreadsheet_doc_1_LDADD += $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
-spreadsheet_doc_1_num_and_formula_LDADD += $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
-spreadsheet_doc_2_LDADD += $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
-spreadsheet_doc_2_sheets_no_string_pool_LDADD += $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
-spreadsheet_doc_2_sheets_with_string_pool_LDADD += $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
-spreadsheet_doc_2_sheets_with_formula_LDADD += $(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS)
-endif
-endif
 
 AM_TESTS_ENVIRONMENT = \
 	INPUTDIR=$(srcdir)/files; export INPUTDIR;
