@@ -1592,6 +1592,92 @@ void test_xls_xml_styles_column_styles()
     }
 }
 
+void test_xls_xml_styles_data_offset()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    std::string path{SRCDIR"/test/xls-xml/styles/data-offset.xml"};
+    auto doc = load_doc_from_filepath(path, false, ss::formula_error_policy_t::fail);
+    assert(doc);
+
+    const ss::styles& styles = doc->get_styles();
+
+    const ss::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    auto check_font_style1 = [sh, &styles](ss::row_t row, ss::col_t col)
+    {
+        std::size_t xfid = sh->get_cell_format(row, col);
+        const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+        assert(xf);
+
+        const ss::font_t* font = styles.get_font(xf->font);
+        assert(font);
+        assert(font->bold);
+        assert(font->color);
+        assert(*font->color == ss::color_t(0xFF, 0x00, 0x80, 0x00));
+        const ss::number_format_t* numfmt = styles.get_number_format(xf->number_format);
+        assert(numfmt);
+        assert(numfmt->format_string);
+        assert(*numfmt->format_string == "0.00_ ;[Red]\\-0.00\\ ");
+    };
+
+    auto check_font_style2 = [sh, &styles](ss::row_t row, ss::col_t col)
+    {
+        const ss::color_t red{0xFF, 0xFF, 0x00, 0x00};
+
+        std::size_t xfid = sh->get_cell_format(row, col);
+        const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+        assert(xf);
+
+        const ss::font_t* font = styles.get_font(xf->font);
+        assert(font);
+        assert(font->color);
+        assert(*font->color == red);
+    };
+
+    auto check_font_style3 = [sh, &styles](ss::row_t row, ss::col_t col)
+    {
+        const ss::color_t blue{0xFF, 0x00, 0x00, 0xFF};
+
+        std::size_t xfid = sh->get_cell_format(row, col);
+        const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+        assert(xf);
+
+        const ss::font_t* font = styles.get_font(xf->font);
+        assert(font);
+        assert(font->color);
+        assert(*font->color == blue);
+
+        const ss::number_format_t* numfmt = styles.get_number_format(xf->number_format);
+        assert(numfmt);
+        assert(numfmt->format_string);
+        assert(*numfmt->format_string == "yyyy/mm\\-dd;@");
+    };
+
+    // Column B and row 2 should have font with bold, green-ish with number format applied
+    check_font_style1(0, 1);
+    check_font_style1(1, 1);
+    check_font_style1(2, 1);
+    check_font_style1(3, 1);
+
+    // row 2
+    check_font_style1(1, 0);
+    check_font_style1(1, 1);
+    check_font_style1(1, 2);
+    check_font_style1(1, 3);
+
+    // Column C should have red font (except for row 2)
+    check_font_style2(0, 2);
+    check_font_style2(2, 2);
+    check_font_style2(3, 2);
+
+    // Column D should have blue font with custom number format applied (except for row 2)
+    check_font_style3(0, 3);
+    check_font_style3(2, 3);
+    check_font_style3(3, 3);
+}
+
 void test_xls_xml_view_cursor_per_sheet()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -1946,6 +2032,7 @@ int main()
     test_xls_xml_cell_properties_locked_and_hidden();
     test_xls_xml_styles_direct_format();
     test_xls_xml_styles_column_styles();
+    test_xls_xml_styles_data_offset();
 
     // view import
     test_xls_xml_view_cursor_per_sheet();
