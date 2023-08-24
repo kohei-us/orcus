@@ -1489,9 +1489,14 @@ void xls_xml_context::start_element_column(const xml_token_attrs_t& attrs)
         switch (attr.name)
         {
             case XML_Index:
+            {
                 // Convert from 1-based to 0-based.
-                col_index = to_long(attr.value) - 1;
+                const char* p_end = nullptr;
+                long v = to_long(attr.value, &p_end);
+                if (attr.value.data() < p_end)
+                    col_index = m_table_props.pos.column + v - 1;
                 break;
+            }
             case XML_Width:
                 width = to_double(attr.value);
                 break;
@@ -1639,7 +1644,10 @@ void xls_xml_context::start_element_table(const xml_token_attrs_t& attrs)
     }
 
     if (col_index > 0)
+    {
         m_table_props.pos.column = col_index - 1;
+        m_cur_prop_col = m_table_props.pos.column;
+    }
 }
 
 void xls_xml_context::start_element_worksheet(const xml_token_attrs_t& attrs)
