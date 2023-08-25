@@ -30,8 +30,8 @@ class table_column_attr_parser
     string_pool* m_pool;
 
     long m_id;
-    pstring m_name;
-    pstring m_totals_row_label;
+    std::string_view m_name;
+    std::string_view m_totals_row_label;
     spreadsheet::totals_row_function_t m_totals_row_func;
 
 public:
@@ -67,8 +67,8 @@ public:
     }
 
     long get_id() const { return m_id; }
-    pstring get_name() const { return m_name; }
-    pstring get_totals_row_label() const { return m_totals_row_label; }
+    std::string_view get_name() const { return m_name; }
+    std::string_view get_totals_row_label() const { return m_totals_row_label; }
     spreadsheet::totals_row_function_t get_totals_row_function() const { return m_totals_row_func; }
 };
 

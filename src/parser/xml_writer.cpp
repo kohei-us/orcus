@@ -8,7 +8,6 @@
 #include <orcus/xml_writer.hpp>
 #include <orcus/xml_namespace.hpp>
 #include <orcus/string_pool.hpp>
-#include "pstring.hpp"
 
 #include <vector>
 

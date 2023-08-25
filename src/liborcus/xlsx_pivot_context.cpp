@@ -19,7 +19,8 @@
 #include <optional>
 #include <mdds/sorted_string_map.hpp>
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 namespace orcus {
 
@@ -77,8 +78,8 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         {
             xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
 
-            pstring refreshed_by;
-            pstring rid;
+            std::string_view refreshed_by;
+            std::string_view rid;
             long record_count = -1;
 
             for_each(attrs.begin(), attrs.end(),
@@ -139,7 +140,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheDefinition);
 
-            pstring source_type_s;
+            std::string_view source_type_s;
 
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
@@ -171,7 +172,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 throw xml_structure_error(
                     "worksheetSource element encountered while the source type is not worksheet.");
 
-            pstring ref, sheet_name, table_name;
+            std::string_view ref, sheet_name, table_name;
 
             for_each(attrs.begin(), attrs.end(),
                 [&](const xml_token_attr_t& attr)
@@ -228,7 +229,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheFields);
 
-            pstring field_name;
+            std::string_view field_name;
             long numfmt_id = -1;
 
             for_each(attrs.begin(), attrs.end(),
@@ -578,7 +579,7 @@ void xlsx_pivot_cache_def_context::start_element_s(
         return;
     }
 
-    pstring value;
+    std::string_view value;
 
     for_each(attrs.begin(), attrs.end(),
         [&](const xml_token_attr_t& attr)

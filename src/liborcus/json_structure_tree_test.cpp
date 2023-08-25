@@ -7,7 +7,7 @@
 
 #include <orcus/json_structure_tree.hpp>
 #include <orcus/stream.hpp>
-#include "pstring.hpp"
+#include <orcus/parser_global.hpp>
 #include "filesystem_env.hpp"
 
 #include <vector>
@@ -79,9 +79,9 @@ void test_basic()
         assert(!strm_check.empty());
 
         // They should be identical, plus or minus leading/trailing whitespaces.
-        pstring s1(data_content.data(), data_content.size());
-        pstring s2 = strm_check.str();
-        assert(s1.trim() == s2.trim());
+        std::string_view s1(data_content.data(), data_content.size());
+        std::string_view s2 = strm_check.str();
+        assert(trim(s1) == trim(s2));
     }
 }
 

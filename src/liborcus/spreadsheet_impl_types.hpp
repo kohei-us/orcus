@@ -8,7 +8,6 @@
 #ifndef INCLUDED_ORCUS_SPREADSHEET_IMPL_TYPES_HPP
 #define INCLUDED_ORCUS_SPREADSHEET_IMPL_TYPES_HPP
 
-#include "pstring.hpp"
 #include "orcus/spreadsheet/types.hpp"
 
 #include <iosfwd>
@@ -22,7 +21,7 @@ struct cell_position_t
     spreadsheet::col_t col;
 
     cell_position_t();
-    cell_position_t(const pstring& _sheet, spreadsheet::row_t _row, spreadsheet::col_t _col);
+    cell_position_t(std::string_view _sheet, spreadsheet::row_t _row, spreadsheet::col_t _col);
     cell_position_t(const cell_position_t& r);
 
     bool operator== (const cell_position_t& other) const;

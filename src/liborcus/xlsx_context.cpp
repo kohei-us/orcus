@@ -69,7 +69,7 @@ private:
 
 class color_attr_parser
 {
-    pstring m_rgb;
+    std::string_view m_rgb;
 public:
     void operator() (const xml_token_attr_t& attr)
     {
@@ -86,7 +86,7 @@ public:
         }
     }
 
-    pstring get_rgb() const { return m_rgb; }
+    std::string_view get_rgb() const { return m_rgb; }
 };
 
 }

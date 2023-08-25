@@ -303,7 +303,7 @@ bool xlsx_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
         }
     }
 
-    m_cur_str.clear();
+    m_cur_str = std::string_view{};
     return pop_stack(ns, name);
 }
 
@@ -702,7 +702,9 @@ void xlsx_sheet_context::end_element_cell()
             session_data.m_shared_formulas.push_back(
                 std::make_unique<xlsx_session_data::shared_formula>(
                     m_sheet_id, m_cur_row, m_cur_col, m_cur_formula.shared_id,
-                    m_cur_formula.str.str()));
+                    m_cur_formula.str
+                )
+            );
 
             xlsx_session_data::shared_formula& f = *session_data.m_shared_formulas.back();
             push_raw_cell_result(f.result, session_data);
@@ -712,7 +714,9 @@ void xlsx_sheet_context::end_element_cell()
             // array formula expression
             session_data.m_array_formulas.push_back(
                 std::make_unique<xlsx_session_data::array_formula>(
-                    m_sheet_id, m_cur_formula.ref, m_cur_formula.str.str()));
+                    m_sheet_id, m_cur_formula.ref, m_cur_formula.str
+                )
+            );
 
             xlsx_session_data::array_formula& af = *session_data.m_array_formulas.back();
             push_raw_cell_result(*af.results, 0, 0, session_data);
@@ -723,7 +727,9 @@ void xlsx_sheet_context::end_element_cell()
             // normal (non-shared) formula expression
             session_data.m_formulas.push_back(
                 std::make_unique<xlsx_session_data::formula>(
-                    m_sheet_id, m_cur_row, m_cur_col, m_cur_formula.str.str()));
+                    m_sheet_id, m_cur_row, m_cur_col, m_cur_formula.str
+                )
+            );
 
             xlsx_session_data::formula& f = *session_data.m_formulas.back();
             push_raw_cell_result(f.result, session_data);
@@ -786,7 +792,7 @@ void xlsx_sheet_context::end_element_cell()
         m_sheet.set_format(m_cur_row, m_cur_col, m_cur_cell_xf);
 
     // reset cell related parameters.
-    m_cur_value.clear();
+    m_cur_value = std::string_view{};
     m_cur_formula.reset();
     m_cur_cell_xf = 0;
     m_cur_cell_type = xlsx_ct_numeric;
@@ -862,7 +868,7 @@ void xlsx_sheet_context::push_raw_cell_result(formula_result& res, xlsx_session_
             break;
         case xlsx_ct_formula_string:
         {
-            pstring interned = session_data.m_formula_result_strings.intern(m_cur_value).first;
+            std::string_view interned = session_data.m_formula_result_strings.intern(m_cur_value).first;
             res.type = formula_result::result_type::string;
             res.value_string.p = interned.data();
             res.value_string.n = interned.size();
@@ -914,12 +920,12 @@ bool xlsx_sheet_context::handle_array_formula_result(xlsx_session_data& session_
     return false;
 }
 
-pstring xlsx_sheet_context::intern_in_context(const xml_token_attr_t& attr)
+std::string_view xlsx_sheet_context::intern_in_context(const xml_token_attr_t& attr)
 {
     return intern_in_context(attr.value, attr.transient);
 }
 
-pstring xlsx_sheet_context::intern_in_context(const pstring& str, bool transient)
+std::string_view xlsx_sheet_context::intern_in_context(const std::string_view& str, bool transient)
 {
     if (transient)
         return m_pool.intern(str).first;

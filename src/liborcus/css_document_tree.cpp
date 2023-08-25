@@ -8,7 +8,6 @@
 #include <orcus/css_document_tree.hpp>
 #include <orcus/css_parser.hpp>
 #include <orcus/string_pool.hpp>
-#include "pstring.hpp"
 
 #define ORCUS_DEBUG_CSS_DOCTREE 0
 
@@ -18,8 +17,6 @@
 #include <algorithm>
 #include <iterator>
 #include <string_view>
-
-using namespace std;
 
 namespace orcus {
 
@@ -350,8 +347,8 @@ void store_properties(
     css_properties_t::const_iterator it = props.begin(), ite = props.end();
     for (; it != ite; ++it)
     {
-        pstring key = sp.intern(it->first).first;
-        vector<css_property_value_t> vals;
+        std::string_view key = sp.intern(it->first).first;
+        std::vector<css_property_value_t> vals;
         for_each(it->second.begin(), it->second.end(), intern_inserter(sp, vals));
         prop_store[key] = vals;
     }
@@ -420,31 +417,31 @@ void dump_pseudo_elements(css::pseudo_element_t elem)
         return;
 
     if (elem & css::pseudo_element_after)
-        cout << "::after";
+        std::cout << "::after";
     if (elem & css::pseudo_element_before)
-        cout << "::before";
+        std::cout << "::before";
     if (elem & css::pseudo_element_first_letter)
-        cout << "::first-letter";
+        std::cout << "::first-letter";
     if (elem & css::pseudo_element_first_line)
-        cout << "::first-line";
+        std::cout << "::first-line";
     if (elem & css::pseudo_element_selection)
-        cout << "::selection";
+        std::cout << "::selection";
     if (elem & css::pseudo_element_backdrop)
-        cout << "::backdrop";
+        std::cout << "::backdrop";
 }
 
 void dump_properties(const css_properties_t& props)
 {
-    cout << '{' << endl;
+    std::cout << '{' << std::endl;
     css_properties_t::const_iterator it = props.begin(), ite = props.end();
     for (; it != ite; ++it)
     {
-        cout << "    * " << it->first << ": ";
-        const vector<css_property_value_t>& vals = it->second;
-        copy(vals.begin(), vals.end(), ostream_iterator<css_property_value_t>(cout, " "));
-        cout << ';' << endl;
+        std::cout << "    * " << it->first << ": ";
+        const std::vector<css_property_value_t>& vals = it->second;
+        std::copy(vals.begin(), vals.end(), std::ostream_iterator<css_property_value_t>(std::cout, " "));
+        std::cout << ';' << std::endl;
     }
-    cout << '}' << endl;
+    std::cout << '}' << std::endl;
 }
 
 void dump_all_properties(const css_selector_t& selector, const css_pseudo_element_properties_t& properties)
@@ -456,9 +453,9 @@ void dump_all_properties(const css_selector_t& selector, const css_pseudo_elemen
         if (prop.empty())
             continue;
 
-        cout << selector;
+        std::cout << selector;
         dump_pseudo_elements(it_prop->first);
-        cout << endl;
+        std::cout << std::endl;
         dump_properties(prop);
     }
 }
@@ -538,9 +535,7 @@ css_document_tree::css_document_tree(css_document_tree&& other) :
     other.mp_impl = std::make_unique<impl>();
 }
 
-css_document_tree::~css_document_tree()
-{
-}
+css_document_tree::~css_document_tree() = default;
 
 css_document_tree& css_document_tree::operator=(css_document_tree&& other)
 {

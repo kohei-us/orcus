@@ -19,8 +19,6 @@
 #include <iostream>
 #include <sstream>
 
-using namespace std;
-
 namespace orcus {
 
 namespace {
@@ -420,8 +418,8 @@ void orcus_json::read_map_definition(std::string_view stream)
             // Set cell links.
             for (const json::const_node& link_node : root.child("cells"))
             {
-                pstring path = link_node.child("path").string_value();
-                pstring sheet = link_node.child("sheet").string_value();
+                std::string_view path = link_node.child("path").string_value();
+                std::string_view sheet = link_node.child("sheet").string_value();
                 spreadsheet::row_t row = link_node.child("row").numeric_value();
                 spreadsheet::col_t col = link_node.child("column").numeric_value();
 
@@ -434,7 +432,7 @@ void orcus_json::read_map_definition(std::string_view stream)
             // Set range links.
             for (const json::const_node& link_node : root.child("ranges"))
             {
-                pstring sheet = link_node.child("sheet").string_value();
+                std::string_view sheet = link_node.child("sheet").string_value();
                 spreadsheet::row_t row = link_node.child("row").numeric_value();
                 spreadsheet::col_t col = link_node.child("column").numeric_value();
 
@@ -444,8 +442,8 @@ void orcus_json::read_map_definition(std::string_view stream)
 
                 for (const json::const_node& field_node : link_node.child("fields"))
                 {
-                    pstring path = field_node.child("path").string_value();
-                    pstring label;
+                    std::string_view path = field_node.child("path").string_value();
+                    std::string_view label;
                     if (field_node.has_key("label"))
                     {
                         json::const_node label_node = field_node.child("label");
@@ -458,7 +456,7 @@ void orcus_json::read_map_definition(std::string_view stream)
 
                 for (const json::const_node& rg_node : link_node.child("row-groups"))
                 {
-                    pstring path = rg_node.child("path").string_value();
+                    std::string_view path = rg_node.child("path").string_value();
                     set_range_row_group(path);
                 }
 
@@ -495,7 +493,7 @@ void orcus_json::detect_map_definition(std::string_view stream)
         start_range(sheet_name, 0, 0, true);
 
         for (const std::string& s : range.paths)
-            append_field_link(s, pstring());
+            append_field_link(s, std::string_view());
 
         for (const std::string& s : range.row_groups)
             set_range_row_group(s);

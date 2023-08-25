@@ -55,10 +55,10 @@ public:
         long number_columns_repeated;
         cell_value_type type;
         double value;
-        pstring date_value;
-        pstring style_name;
+        std::string_view date_value;
+        std::string_view style_name;
 
-        pstring formula;
+        std::string_view formula;
         spreadsheet::formula_grammar_t formula_grammar;
 
         cell_attr();

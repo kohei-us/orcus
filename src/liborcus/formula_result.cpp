@@ -6,7 +6,6 @@
  */
 
 #include "formula_result.hpp"
-#include "pstring.hpp"
 
 #include <ostream>
 
@@ -85,7 +84,7 @@ std::ostream& operator<< (std::ostream& os, const formula_result& v)
             os << v.value_boolean;
             break;
         case formula_result::result_type::string:
-            os << pstring(v.value_string.p, v.value_string.n);
+            os << std::string_view(v.value_string.p, v.value_string.n);
             break;
         case formula_result::result_type::empty:
             break;

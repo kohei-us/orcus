@@ -79,7 +79,7 @@ public:
      * @param path the path to the xml part.
      * @param type schema type.
      */
-    void read_part(const pstring& path, const schema_t type, opc_rel_extra* data);
+    void read_part(std::string_view path, const schema_t type, opc_rel_extra* data);
 
     /**
      * Check if a relation file exists for a given xml part, and if it does,

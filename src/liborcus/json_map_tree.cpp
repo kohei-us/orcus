@@ -17,7 +17,7 @@ constexpr json_map_tree::child_position_type json_map_tree::node_child_default_p
 
 namespace {
 
-void throw_path_error(const char* file, int line, const pstring& path)
+void throw_path_error(const char* file, int line, std::string_view path)
 {
     std::ostringstream os;
     os << file << "#" << line << ": failed to link this path '" << path << "'";
@@ -57,18 +57,18 @@ struct json_path_token_value_t
     }
 };
 
-pstring get_last_object_key(const std::vector<json_path_token_value_t>& stack)
+std::string_view get_last_object_key(const std::vector<json_path_token_value_t>& stack)
 {
     if (stack.size() < 2)
-        return pstring();
+        return std::string_view{};
 
     auto it = stack.rbegin();
     ++it;
     const json_path_token_value_t& t2 = *it;
     if (t2.type != json_path_token_t::object_key)
-        return pstring();
+        return std::string_view{};
 
-    return pstring(t2.value.str.p, t2.value.str.n);
+    return std::string_view{t2.value.str.p, t2.value.str.n};
 }
 
 class json_path_parser
@@ -78,7 +78,7 @@ class json_path_parser
 
 public:
 
-    json_path_parser(const pstring& path) :
+    json_path_parser(std::string_view path) :
         mp_cur(path.data()),
         mp_end(mp_cur + path.size())
     {
@@ -363,7 +363,7 @@ void json_map_tree::walker::set_object_key(const char* p, size_t n)
     if (cur_scope.p->type != map_node_type::object)
         return;
 
-    pstring pooled = m_parent.m_str_pool.intern({p, n}).first;
+    std::string_view pooled = m_parent.m_str_pool.intern({p, n}).first;
     cur_scope.array_position = reinterpret_cast<child_position_type>(pooled.data());
 }
 
@@ -425,7 +425,7 @@ void json_map_tree::commit_range()
     ref->row_header = m_current_range.row_header;
     spreadsheet::col_t column_pos = 0;
 
-    for (const pstring& path : m_current_range.row_groups)
+    for (std::string_view path : m_current_range.row_groups)
     {
         path_stack_type stack = get_or_create_destination_node(path);
         if (stack.node_stack.empty())
@@ -438,8 +438,8 @@ void json_map_tree::commit_range()
 
     for (const auto& field : m_current_range.fields)
     {
-        pstring path = field.first;
-        pstring label = field.second;
+        std::string_view path = field.first;
+        std::string_view label = field.second;
 
         path_stack_type stack = get_or_create_destination_node(path);
         if (stack.node_stack.empty() || stack.node_stack.back()->type != map_node_type::unknown)
@@ -504,7 +504,7 @@ json_map_tree::range_reference_type& json_map_tree::get_range_reference(const ce
     return it->second;
 }
 
-const json_map_tree::node* json_map_tree::get_destination_node(const pstring& path) const
+const json_map_tree::node* json_map_tree::get_destination_node(std::string_view path) const
 {
     if (!m_root)
         // The tree is empty.
@@ -560,7 +560,7 @@ const json_map_tree::node* json_map_tree::get_destination_node(const pstring& pa
     return nullptr;
 }
 
-json_map_tree::path_stack_type json_map_tree::get_or_create_destination_node(const pstring& path)
+json_map_tree::path_stack_type json_map_tree::get_or_create_destination_node(std::string_view path)
 {
     path_stack_type stack;
 
@@ -716,7 +716,7 @@ json_map_tree::path_stack_type json_map_tree::get_or_create_destination_node(con
 
 json_map_tree::child_position_type json_map_tree::to_key_position(const char* p, size_t n) const
 {
-    pstring pooled_key = m_str_pool.intern({p, n}).first;
+    std::string_view pooled_key = m_str_pool.intern({p, n}).first;
     child_position_type pos = reinterpret_cast<child_position_type>(pooled_key.data());
     return pos;
 }

@@ -13,7 +13,6 @@
 #include <orcus/spreadsheet/types.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
 #include <orcus/spreadsheet/document.hpp>
-#include "pstring.hpp"
 
 #include <ixion/model_context.hpp>
 #include <ixion/named_expressions_iterator.hpp>
@@ -299,7 +298,7 @@ void store_sheet(
 
     // Sheet name
     spreadsheet::sheet_t sid = orcus_sheet->get_index();
-    pstring sheet_name = doc->get_sheet_name(sid);
+    std::string_view sheet_name = doc->get_sheet_name(sid);
     pysheet->name = PyUnicode_FromStringAndSize(sheet_name.data(), sheet_name.size());
 
     // Data size - size of the data area.

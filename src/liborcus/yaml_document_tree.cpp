@@ -7,7 +7,6 @@
 
 #include "orcus/yaml_document_tree.hpp"
 #include "orcus/yaml_parser.hpp"
-#include "pstring.hpp"
 
 #include "json_util.hpp"
 

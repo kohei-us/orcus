@@ -10,7 +10,6 @@
 #include <orcus/xml_namespace.hpp>
 #include <orcus/sax_ns_parser.hpp>
 #include <orcus/string_pool.hpp>
-#include "pstring.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -19,8 +18,6 @@
 #include <vector>
 #include <algorithm>
 #include <deque>
-
-using namespace std;
 
 namespace orcus {
 
@@ -31,7 +28,7 @@ namespace {
 /**
  * Escape certain characters with backslash (\).
  */
-void escape(ostream& os, std::string_view val)
+void escape(std::ostream& os, std::string_view val)
 {
     if (val.empty())
         return;
@@ -59,9 +56,9 @@ struct attr
 
 struct entity_name_hash
 {
-    size_t operator()(const entity_name& v) const
+    std::size_t operator()(const entity_name& v) const
     {
-        return pstring::hash()(v.name) ^ reinterpret_cast<size_t>(v.ns);
+        return std::hash<std::string_view>{}(v.name) ^ reinterpret_cast<std::size_t>(v.ns);
     }
 };
 
@@ -107,9 +104,9 @@ struct element : public node
 
 struct content : public node
 {
-    pstring value;
+    std::string_view value;
 
-    content(const pstring& _value);
+    content(std::string_view _value);
     virtual void print(std::ostream& os, const xmlns_context& cxt) const;
     virtual ~content();
 };
@@ -141,23 +138,23 @@ node::~node() {}
 element::element(xmlns_id_t _ns, std::string_view _name) :
     node(node_type::element), name(_ns, _name) {}
 
-void element::print(ostream& os, const xmlns_context& cxt) const
+void element::print(std::ostream& os, const xmlns_context& cxt) const
 {
     dom::print(os, name, cxt);
 }
 
-element::~element() {}
+element::~element() = default;
 
-content::content(const pstring& _value) : node(node_type::content), value(_value) {}
+content::content(std::string_view _value) : node(node_type::content), value(_value) {}
 
-void content::print(ostream& os, const xmlns_context& /*cxt*/) const
+void content::print(std::ostream& os, const xmlns_context& /*cxt*/) const
 {
     os << '"';
     escape(os, value);
     os << '"';
 }
 
-content::~content() {}
+content::~content() = default;
 
 } // anonymous namespace
 
@@ -311,7 +308,7 @@ std::string_view const_node::attribute(const entity_name& name) const
             ;
     }
 
-    return pstring();
+    return std::string_view();
 }
 
 std::string_view const_node::attribute(std::string_view name) const
@@ -323,7 +320,7 @@ std::string_view const_node::attribute(std::string_view name) const
             const dom::declaration* p = mp_impl->value.decl;
             auto it = p->attr_map.find(name);
             if (it == p->attr_map.end())
-                return pstring();
+                return std::string_view();
 
             size_t pos = it->second;
             assert(pos < p->attrs.size());
@@ -419,7 +416,7 @@ struct document_tree::impl
 
     std::unique_ptr<sax::doctype_declaration> m_doctype;
 
-    pstring m_cur_decl_name;
+    std::string_view m_cur_decl_name;
     declarations_type m_decls;
     dom::attrs_type m_doc_attrs;
     dom::attrs_type m_cur_attrs;
@@ -429,18 +426,18 @@ struct document_tree::impl
 
     impl(xmlns_context& cxt) : m_ns_cxt(cxt) {}
 
-    void start_declaration(const pstring& name)
+    void start_declaration(std::string_view name)
     {
         m_cur_decl_name = name;
     }
 
-    void end_declaration(const pstring& name);
+    void end_declaration(std::string_view name);
     void start_element(const sax_ns_parser_element& elem);
     void end_element(const sax_ns_parser_element& elem);
-    void characters(const pstring& val, bool transient);
+    void characters(std::string_view val, bool transient);
     void doctype(const sax::doctype_declaration& dtd);
 
-    void attribute(const pstring& name, const pstring& val)
+    void attribute(std::string_view name, std::string_view val)
     {
         set_attribute(XMLNS_UNKNOWN_ID, name, val);
     }
@@ -450,10 +447,10 @@ struct document_tree::impl
         set_attribute(attr.ns, attr.name, attr.value);
     }
 
-    void set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val);
+    void set_attribute(xmlns_id_t ns, std::string_view name, std::string_view val);
 };
 
-void document_tree::impl::end_declaration(const pstring& name)
+void document_tree::impl::end_declaration(std::string_view name)
 {
     assert(m_cur_decl_name == name);
 
@@ -481,10 +478,10 @@ void document_tree::impl::end_declaration(const pstring& name)
 void document_tree::impl::start_element(const sax_ns_parser_element& elem)
 {
     xmlns_id_t ns = elem.ns;
-    const pstring& name = elem.name;
+    std::string_view name = elem.name;
 
     // These strings must be persistent.
-    pstring name_safe = m_pool.intern(name).first;
+    std::string_view name_safe = m_pool.intern(name).first;
 
     dom::element* p = nullptr;
     if (!m_root)
@@ -517,7 +514,7 @@ void document_tree::impl::start_element(const sax_ns_parser_element& elem)
 void document_tree::impl::end_element(const sax_ns_parser_element& elem)
 {
     xmlns_id_t ns = elem.ns;
-    const pstring& name = elem.name;
+    std::string_view name = elem.name;
 
     const dom::element* p = m_elem_stack.back();
     if (p->name.ns != ns || p->name.name != name)
@@ -526,13 +523,13 @@ void document_tree::impl::end_element(const sax_ns_parser_element& elem)
     m_elem_stack.pop_back();
 }
 
-void document_tree::impl::characters(const pstring& val, bool /*transient*/)
+void document_tree::impl::characters(std::string_view val, bool /*transient*/)
 {
     if (m_elem_stack.empty())
         // No root element has been encountered.  Ignore this.
         return;
 
-    pstring val2 = val.trim();
+    std::string_view val2 = trim(val);
     if (val2.empty())
         return;
 
@@ -543,11 +540,11 @@ void document_tree::impl::characters(const pstring& val, bool /*transient*/)
     p->child_nodes.push_back(std::move(child));
 }
 
-void document_tree::impl::set_attribute(xmlns_id_t ns, const pstring& name, const pstring& val)
+void document_tree::impl::set_attribute(xmlns_id_t ns, std::string_view name, std::string_view val)
 {
     // These strings must be persistent.
-    pstring name2 = m_pool.intern(name).first;
-    pstring val2 = m_pool.intern(val).first;
+    std::string_view name2 = m_pool.intern(name).first;
+    std::string_view val2 = m_pool.intern(val).first;
 
     size_t pos = m_cur_attrs.size();
     m_cur_attrs.push_back(dom::attr(ns, name2, val2));
@@ -617,26 +614,26 @@ namespace {
 struct scope
 {
     typedef std::vector<const dom::node*> nodes_type;
-    string name;
+    std::string name;
     nodes_type nodes;
     nodes_type::const_iterator current_pos;
 
     scope(const scope&) = delete;
     scope& operator=(const scope&) = delete;
 
-    scope(const string& _name, dom::node* _node) :
+    scope(const std::string& _name, dom::node* _node) :
         name(_name)
     {
         nodes.push_back(_node);
         current_pos = nodes.begin();
     }
 
-    scope(const string& _name) : name(_name) {}
+    scope(const std::string& _name) : name(_name) {}
 };
 
 typedef std::deque<scope> scopes_type;
 
-void print_scope(ostream& os, const scopes_type& scopes)
+void print_scope(std::ostream& os, const scopes_type& scopes)
 {
     if (scopes.empty())
         throw general_error("scope stack shouldn't be empty while dumping tree.");
@@ -649,7 +646,7 @@ void print_scope(ostream& os, const scopes_type& scopes)
 
 }
 
-void document_tree::dump_compact(ostream& os) const
+void document_tree::dump_compact(std::ostream& os) const
 {
     if (!mp_impl->m_root)
         return;
@@ -659,7 +656,7 @@ void document_tree::dump_compact(ostream& os) const
 
     scopes_type scopes;
 
-    scopes.emplace_back(string(), mp_impl->m_root.get());
+    scopes.emplace_back(std::string(), mp_impl->m_root.get());
     while (!scopes.empty())
     {
         bool new_scope = false;
@@ -675,7 +672,7 @@ void document_tree::dump_compact(ostream& os) const
             {
                 // This is a text content.
                 this_node->print(os, mp_impl->m_ns_cxt);
-                os << endl;
+                os << std::endl;
                 continue;
             }
 
@@ -683,7 +680,7 @@ void document_tree::dump_compact(ostream& os) const
             const dom::element* elem = static_cast<const dom::element*>(this_node);
             os << "/";
             elem->print(os, mp_impl->m_ns_cxt);
-            os << endl;
+            os << std::endl;
 
             {
                 // Dump attributes.
@@ -702,7 +699,7 @@ void document_tree::dump_compact(ostream& os) const
                     elem->print(os, mp_impl->m_ns_cxt);
                     os << "@";
                     dom::print(os, a, mp_impl->m_ns_cxt);
-                    os << endl;
+                    os << std::endl;
                 }
             }
 

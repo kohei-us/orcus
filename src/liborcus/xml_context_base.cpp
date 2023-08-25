@@ -32,7 +32,7 @@ void print_stack(const tokens& tokens, const xml_elem_stack_t& elem_stack, const
         xmlns_id_t ns = itr->first;
         if (ns_cxt)
         {
-            pstring alias = ns_cxt->get_alias(ns);
+            std::string_view alias = ns_cxt->get_alias(ns);
             if (!alias.empty())
                 cerr << alias << ":";
         }

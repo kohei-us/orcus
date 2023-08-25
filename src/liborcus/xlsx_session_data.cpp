@@ -11,7 +11,7 @@ namespace orcus {
 
 xlsx_session_data::formula::formula(
     spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-    const std::string& _exp) :
+    std::string_view _exp) :
     sheet(_sheet), exp(_exp)
 {
     ref.column = _column;
@@ -19,7 +19,7 @@ xlsx_session_data::formula::formula(
 }
 
 xlsx_session_data::array_formula::array_formula(
-    spreadsheet::sheet_t _sheet, const spreadsheet::range_t& _ref, const std::string& _exp) :
+    spreadsheet::sheet_t _sheet, const spreadsheet::range_t& _ref, std::string_view _exp) :
     sheet(_sheet),
     ref(_ref),
     exp(_exp),
@@ -36,13 +36,11 @@ xlsx_session_data::shared_formula::shared_formula(
 
 xlsx_session_data::shared_formula::shared_formula(
     spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-    size_t _identifier, const std::string& _formula) :
+    size_t _identifier, std::string_view _formula) :
     sheet(_sheet), row(_row), column(_column),
     identifier(_identifier), formula(_formula), master(true) {}
 
-xlsx_session_data::~xlsx_session_data()
-{
-}
+xlsx_session_data::~xlsx_session_data() = default;
 
 }
 

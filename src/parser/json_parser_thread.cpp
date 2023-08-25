@@ -9,7 +9,6 @@
 #include <orcus/json_parser.hpp>
 #include <orcus/string_pool.hpp>
 #include <orcus/detail/parser_token_buffer.hpp>
-#include "pstring.hpp"
 
 #include <sstream>
 #include <string_view>

@@ -2,7 +2,6 @@
 #include <orcus/dom_tree.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/xml_namespace.hpp>
-#include "pstring.hpp"
 #include <cassert>
 #include <iostream>
 
@@ -14,13 +13,13 @@ struct doctree
     orcus::xmlns_context cxt;
     orcus::dom::document_tree tree;
 
-    doctree(const orcus::pstring& content) : repo(), cxt(repo.create_context()), tree(cxt)
+    doctree(std::string_view content) : repo(), cxt(repo.create_context()), tree(cxt)
     {
         tree.load(content);
     }
 };
 
-std::unique_ptr<doctree> load_document_tree(const orcus::pstring& content)
+std::unique_ptr<doctree> load_document_tree(std::string_view content)
 {
     std::unique_ptr<doctree> ret = std::make_unique<doctree>(content);
     return ret;

@@ -18,8 +18,6 @@
 #include <iostream>
 #include <algorithm>
 
-using namespace std;
-
 namespace orcus {
 
 namespace {
@@ -49,29 +47,29 @@ public:
             m_content_type = to_content_type(attr.value);
     }
 
-    const pstring& get_name() const { return m_name; }
+    const std::string_view& get_name() const { return m_name; }
     content_type_t get_content_type() const { return m_content_type; }
 
 private:
-    content_type_t to_content_type(const pstring& p) const
+    content_type_t to_content_type(const std::string_view& p) const
     {
         opc_content_types_context::ct_cache_type::const_iterator itr =
             mp_ct_cache->find(p);
         if (itr == mp_ct_cache->end())
         {
             if (m_config->debug)
-                cout << "unknown content type: " << p << endl;
+                std::cout << "unknown content type: " << p << std::endl;
             return nullptr;
         }
-        const pstring& val = *itr;
-        return val.get();
+        std::string_view val = *itr;
+        return val.data();
     }
 
 private:
     const opc_content_types_context::ct_cache_type* mp_ct_cache;
     xml_token_t m_attr_name;
     const config* m_config;
-    pstring m_name;
+    std::string_view m_name;
     content_type_t m_content_type;
 };
 
@@ -82,7 +80,7 @@ opc_content_types_context::opc_content_types_context(session_context& session_cx
 {
     // build content type cache.
     for (const content_type_t* p = CT_all; *p; ++p)
-        m_ct_cache.insert(pstring(*p));
+        m_ct_cache.insert(std::string_view(*p));
 }
 
 opc_content_types_context::~opc_content_types_context()
@@ -119,7 +117,7 @@ void opc_content_types_context::start_element(xmlns_id_t ns, xml_token_t name, c
             // We need to use allocated strings for part names here because
             // the part names need to survive after the [Content_Types].xml
             // stream is destroyed.
-            pstring part_name = get_session_context().spool.intern(func.get_name()).first;
+            std::string_view part_name = get_session_context().spool.intern(func.get_name()).first;
             m_parts.push_back(
                 xml_part_t(part_name, func.get_content_type()));
         }
@@ -132,7 +130,7 @@ void opc_content_types_context::start_element(xmlns_id_t ns, xml_token_t name, c
 
             // Like the part names, we need to use allocated strings for
             // extension names.
-            pstring ext_name = get_session_context().spool.intern(func.get_name()).first;
+            std::string_view ext_name = get_session_context().spool.intern(func.get_name()).first;
             m_ext_defaults.push_back(
                 xml_part_t(ext_name, func.get_content_type()));
         }
@@ -151,12 +149,12 @@ void opc_content_types_context::characters(std::string_view /*str*/, bool /*tran
 {
 }
 
-void opc_content_types_context::pop_parts(vector<xml_part_t>& parts)
+void opc_content_types_context::pop_parts(std::vector<xml_part_t>& parts)
 {
     m_parts.swap(parts);
 }
 
-void opc_content_types_context::pop_ext_defaults(vector<xml_part_t>& ext_defaults)
+void opc_content_types_context::pop_ext_defaults(std::vector<xml_part_t>& ext_defaults)
 {
     m_ext_defaults.swap(ext_defaults);
 }
@@ -193,18 +191,18 @@ public:
     const opc_rel_t& get_rel() const { return m_rel; }
 
 private:
-    schema_t to_schema(const pstring& p) const
+    schema_t to_schema(const std::string_view& p) const
     {
         opc_relations_context::schema_cache_type::const_iterator itr =
             mp_schema_cache->find(p);
         if (itr == mp_schema_cache->end())
         {
             if (mp_config->debug)
-                cout << "unknown schema: " << p << endl;
+                std::cout << "unknown schema: " << p << std::endl;
             return nullptr;
         }
-        const pstring& val = *itr;
-        return val.get();
+        std::string_view val = *itr;
+        return val.data();
     }
 
 private:
@@ -221,10 +219,10 @@ struct compare_rels
 {
     bool operator() (const opc_rel_t& r1, const opc_rel_t& r2) const
     {
-        size_t n1 = r1.rid.size(), n2 = r2.rid.size();
-        size_t n = min(n1, n2);
-        const char *p1 = r1.rid.get(), *p2 = r2.rid.get();
-        for (size_t i = 0; i < n; ++i, ++p1, ++p2)
+        std::size_t n1 = r1.rid.size(), n2 = r2.rid.size();
+        std::size_t n = std::min(n1, n2);
+        const char *p1 = r1.rid.data(), *p2 = r2.rid.data();
+        for (std::size_t i = 0; i < n; ++i, ++p1, ++p2)
         {
             if (*p1 < *p2)
                 return true;
@@ -243,7 +241,7 @@ opc_relations_context::opc_relations_context(session_context& session_cxt, const
 {
     // build content type cache.
     for (schema_t* p = SCH_all; *p; ++p)
-        m_schema_cache.insert(pstring(*p));
+        m_schema_cache.insert(std::string_view(*p));
 }
 
 opc_relations_context::~opc_relations_context()
@@ -259,7 +257,8 @@ void opc_relations_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*n
 {
 }
 
-void opc_relations_context::start_element(xmlns_id_t ns, xml_token_t name, const vector<xml_token_attr_t> &attrs)
+void opc_relations_context::start_element(
+    xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t> &attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
     switch (name)
@@ -300,7 +299,7 @@ void opc_relations_context::init()
     m_rels.clear();
 }
 
-void opc_relations_context::pop_rels(vector<opc_rel_t>& rels)
+void opc_relations_context::pop_rels(std::vector<opc_rel_t>& rels)
 {
     // Sort by the rId.
     sort(m_rels.begin(), m_rels.end(), compare_rels());

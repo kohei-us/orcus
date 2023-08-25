@@ -36,7 +36,7 @@ struct xlsx_session_data : public session_context::custom_data
 
         formula(
             spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-            const std::string& _exp);
+            std::string_view _exp);
     };
 
     struct array_formula
@@ -49,7 +49,7 @@ struct xlsx_session_data : public session_context::custom_data
 
         array_formula(
             spreadsheet::sheet_t sheet, const spreadsheet::range_t& ref,
-            const std::string& exp);
+            std::string_view exp);
     };
 
     struct shared_formula
@@ -69,13 +69,13 @@ struct xlsx_session_data : public session_context::custom_data
 
         shared_formula(
             spreadsheet::sheet_t _sheet, spreadsheet::row_t _row, spreadsheet::col_t _column,
-            size_t _identifier, const std::string& _formula);
+            size_t _identifier, std::string_view _formula);
     };
 
     typedef std::vector<std::unique_ptr<formula>> formulas_type;
     typedef std::vector<std::unique_ptr<array_formula>> array_formulas_type;
     typedef std::vector<std::unique_ptr<shared_formula>> shared_formulas_type;
-    typedef std::unordered_map<pstring, spreadsheet::sheet_t, pstring::hash> sheet_name_map_type;
+    typedef std::unordered_map<std::string_view, spreadsheet::sheet_t> sheet_name_map_type;
 
     formulas_type m_formulas;
     array_formulas_type m_array_formulas;

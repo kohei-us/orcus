@@ -6,7 +6,6 @@
  */
 
 #include "orcus/orcus_xml.hpp"
-#include "pstring.hpp"
 #include "orcus/sax_parser_base.hpp"
 #include "orcus/sax_parser.hpp"
 #include "orcus/stream.hpp"
@@ -28,10 +27,10 @@ class xml_map_sax_handler
 {
     struct scope
     {
-        pstring ns;
-        pstring name;
+        std::string_view ns;
+        std::string_view name;
 
-        scope(const pstring& _ns, const pstring& _name) : ns(_ns), name(_name) {}
+        scope(std::string_view _ns, std::string_view _name) : ns(_ns), name(_name) {}
     };
 
     std::vector<sax::parser_attribute> m_attrs;
@@ -43,9 +42,9 @@ public:
     xml_map_sax_handler(orcus_xml& app) : m_app(app) {}
 
     void doctype(const sax::doctype_declaration&) {}
-    void start_declaration(const pstring& /*name*/) {}
+    void start_declaration(std::string_view /*name*/) {}
 
-    void end_declaration(const pstring& /*name*/)
+    void end_declaration(std::string_view /*name*/)
     {
         m_attrs.clear();
     }
@@ -70,7 +69,7 @@ public:
 
 void xml_map_sax_handler::start_element(const sax::parser_element& elem)
 {
-    pstring xpath, sheet, label;
+    std::string_view xpath, sheet, label;
     spreadsheet::row_t row = -1;
     spreadsheet::col_t col = -1;
 
@@ -91,7 +90,7 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
     if (elem.name == "ns")
     {
         // empty alias is associated with default namespace.
-        pstring alias, uri;
+        std::string_view alias, uri;
         bool default_ns = false;
 
         for (const sax::parser_attribute& attr : m_attrs)
@@ -164,7 +163,7 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
     }
     else if (elem.name == "sheet")
     {
-        pstring sheet_name;
+        std::string_view sheet_name;
         for (const sax::parser_attribute& attr : m_attrs)
         {
             if (attr.name == "name")
@@ -221,7 +220,7 @@ void orcus_xml::detect_map_definition(std::string_view stream)
         start_range(sheet_name, 0, 0);
 
         for (const auto& path : range.paths)
-            append_field_link(path, pstring());
+            append_field_link(path, std::string_view());
 
         for (const auto& row_group : range.row_groups)
             set_range_row_group(row_group);
@@ -238,7 +237,7 @@ void orcus_xml::detect_map_definition(std::string_view stream)
 
     // Register all namespace aliases first.
     for (const xmlns_id_t& ns : cxt.get_all_namespaces())
-        set_namespace_alias(cxt.get_short_name(ns), pstring(ns));
+        set_namespace_alias(cxt.get_short_name(ns), std::string_view(ns));
 
     structure.process_ranges(rh);
 }

@@ -7,12 +7,10 @@
 
 #include "xpath_parser.hpp"
 #include "orcus/xml_namespace.hpp"
-#include "pstring.hpp"
 
 #include <iostream>
 #include <cassert>
 
-using namespace std;
 using namespace orcus;
 
 void test_elements()
@@ -20,7 +18,7 @@ void test_elements()
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
 
-    pstring path("/A/B/C");
+    std::string_view path("/A/B/C");
 
     xpath_parser parser(cxt, path.data(), path.size(), XMLNS_UNKNOWN_ID);
     auto token = parser.next();
@@ -44,7 +42,7 @@ void test_attributes()
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
 
-    pstring path("/A/B/C/@foo");
+    std::string_view path("/A/B/C/@foo");
 
     xpath_parser parser(cxt, path.data(), path.size(), XMLNS_UNKNOWN_ID);
     auto token = parser.next();

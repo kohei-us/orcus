@@ -23,8 +23,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-
-using namespace std;
+#include <cstring>
 
 namespace orcus {
 
@@ -45,20 +44,20 @@ orcus_ods::orcus_ods(spreadsheet::iface::import_factory* factory) :
     mp_impl->ns_repo.add_predefined_values(NS_odf_all);
 }
 
-orcus_ods::~orcus_ods() {}
+orcus_ods::~orcus_ods() = default;
 
 void orcus_ods::list_content(const zip_archive& archive)
 {
     size_t num = archive.get_file_entry_count();
-    cout << "number of files this archive contains: " << num << endl;
+    std::cout << "number of files this archive contains: " << num << std::endl;
 
     for (size_t i = 0; i < num; ++i)
     {
-        pstring filename = archive.get_file_entry_name(i);
+        std::string_view filename = archive.get_file_entry_name(i);
         if (filename.empty())
-            cout << "(empty)" << endl;
+            std::cout << "(empty)" << std::endl;
         else
-            cout << filename << endl;
+            std::cout << filename << std::endl;
     }
 }
 
@@ -99,7 +98,7 @@ void orcus_ods::read_styles(const zip_archive& archive)
 
 void orcus_ods::read_content(const zip_archive& archive)
 {
-    vector<unsigned char> buf;
+    std::vector<unsigned char> buf;
 
     try
     {
@@ -166,7 +165,7 @@ bool orcus_ods::detect(const unsigned char* blob, size_t size)
             return false;
 
         const char* mimetype = "application/vnd.oasis.opendocument.spreadsheet";
-        size_t n = strlen(mimetype);
+        size_t n = std::strlen(mimetype);
         if (buf.size() < n)
             return false;
 

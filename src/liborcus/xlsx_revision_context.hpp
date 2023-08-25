@@ -30,7 +30,7 @@ public:
 class xlsx_revlog_context : public xml_context_base
 {
     double m_cur_value;
-    pstring m_cur_string;
+    std::string_view m_cur_string;
     xlsx_cell_t m_cur_cell_type;
 
     bool m_cur_formula;

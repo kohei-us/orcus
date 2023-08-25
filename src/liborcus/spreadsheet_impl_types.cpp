@@ -13,7 +13,7 @@ namespace orcus { namespace spreadsheet { namespace detail {
 
 cell_position_t::cell_position_t() : row(-1), col(-1) {}
 
-cell_position_t::cell_position_t(const pstring& _sheet, spreadsheet::row_t _row, spreadsheet::col_t _col) :
+cell_position_t::cell_position_t(std::string_view _sheet, spreadsheet::row_t _row, spreadsheet::col_t _col) :
     sheet(_sheet), row(_row), col(_col) {}
 
 cell_position_t::cell_position_t(const cell_position_t& r) : sheet(r.sheet), row(r.row), col(r.col) {}

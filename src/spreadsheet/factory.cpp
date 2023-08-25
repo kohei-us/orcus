@@ -14,7 +14,6 @@
 #include <orcus/spreadsheet/view.hpp>
 #include <orcus/exception.hpp>
 #include <orcus/string_pool.hpp>
-#include "pstring.hpp"
 
 #include "factory_pivot.hpp"
 #include "factory_shared_strings.hpp"

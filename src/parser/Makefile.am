@@ -28,7 +28,6 @@ liborcus_parser_@ORCUS_API_VERSION@_la_SOURCES = \
 	json_parser_thread.cpp \
 	parser_base.cpp \
 	parser_global.cpp \
-	pstring.cpp \
 	sax_parser_base.cpp \
 	sax_token_parser.cpp \
 	sax_token_parser_thread.cpp \

@@ -7,7 +7,6 @@
 
 #include "orcus/yaml_document_tree.hpp"
 #include "orcus/stream.hpp"
-#include "pstring.hpp"
 #include "orcus/yaml_parser_base.hpp"
 
 #include <cassert>

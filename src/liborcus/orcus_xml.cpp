@@ -11,7 +11,6 @@
 #include <orcus/spreadsheet/export_interface.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/string_pool.hpp>
-#include "pstring.hpp"
 
 #include "orcus_xml_impl.hpp"
 
@@ -23,8 +22,6 @@
 
 #include <vector>
 #include <fstream>
-
-using namespace std;
 
 namespace orcus {
 
@@ -310,7 +307,7 @@ struct scope
 typedef std::vector<std::unique_ptr<scope>> scopes_type;
 
 void write_opening_element(
-    ostream& os, const xml_map_tree::element& elem, const xml_map_tree::range_reference& ref,
+    std::ostream& os, const xml_map_tree::element& elem, const xml_map_tree::range_reference& ref,
     const spreadsheet::iface::export_sheet& sheet, spreadsheet::row_t current_row, bool self_close)
 {
     if (elem.attributes.empty())
@@ -343,7 +340,7 @@ void write_opening_element(
 }
 
 void write_opening_element(
-    ostream& os, const xml_map_tree::element& elem, const spreadsheet::iface::export_factory& fact, bool self_close)
+    std::ostream& os, const xml_map_tree::element& elem, const spreadsheet::iface::export_factory& fact, bool self_close)
 {
     os << '<' << elem;
     for (const auto& p_attr : elem.attributes)
@@ -381,7 +378,7 @@ void write_opening_element(
  * @param factory export factory instance.
  */
 void write_range_reference_group(
-   ostream& os, const xml_map_tree::element& root, const xml_map_tree::range_reference& ref,
+   std::ostream& os, const xml_map_tree::element& root, const xml_map_tree::range_reference& ref,
    const spreadsheet::iface::export_factory& factory)
 {
     const spreadsheet::iface::export_sheet* sheet = factory.get_sheet(ref.pos.sheet);
@@ -463,7 +460,7 @@ void write_range_reference_group(
  * @param os output stream
  * @param elem_top topmost element in the range reference sub-structure.
  */
-void write_range_reference(ostream& os, const xml_map_tree::element& elem_top, const spreadsheet::iface::export_factory& factory)
+void write_range_reference(std::ostream& os, const xml_map_tree::element& elem_top, const spreadsheet::iface::export_factory& factory)
 {
     // Top element is expected to have one or more child elements, and each
     // child element represents a separate database range.
@@ -507,13 +504,13 @@ void orcus_xml::set_namespace_alias(std::string_view alias, std::string_view uri
 
 void orcus_xml::set_cell_link(std::string_view xpath, std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col)
 {
-    pstring sheet_safe = mp_impl->map_tree.intern_string(sheet);
+    std::string_view sheet_safe = mp_impl->map_tree.intern_string(sheet);
     mp_impl->map_tree.set_cell_link(xpath, xml_map_tree::cell_position(sheet_safe, row, col));
 }
 
 void orcus_xml::start_range(std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col)
 {
-    pstring sheet_safe = mp_impl->map_tree.intern_string(sheet);
+    std::string_view sheet_safe = mp_impl->map_tree.intern_string(sheet);
     mp_impl->cur_range_ref = xml_map_tree::cell_position(sheet_safe, row, col);
     mp_impl->map_tree.start_range(mp_impl->cur_range_ref);
 }
@@ -647,7 +644,7 @@ void orcus_xml::write(std::string_view stream, std::ostream& out) const
             std::ptrdiff_t close_end   = elem.stream_pos.close_end;
 
             assert(open_begin > begin_pos);
-            out << pstring(p0+begin_pos, open_begin-begin_pos); // stream since last linked element.
+            out << std::string_view(p0+begin_pos, open_begin-begin_pos); // stream since last linked element.
 
             write_opening_element(out, elem, fact, false);
             sheet->write_string(out, pos.row, pos.col);

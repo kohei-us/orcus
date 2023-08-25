@@ -7,7 +7,6 @@
 
 #include <orcus/spreadsheet/types.hpp>
 #include <orcus/exception.hpp>
-#include "pstring.hpp"
 
 #include <limits>
 #include <sstream>

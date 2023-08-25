@@ -8,8 +8,6 @@
 #ifndef INCLUDED_ORCUS_OOXML_TYPES_HPP
 #define INCLUDED_ORCUS_OOXML_TYPES_HPP
 
-#include "pstring.hpp"
-
 #include <iostream>
 #include <memory>
 #include <unordered_map>
@@ -22,7 +20,7 @@ typedef const char* schema_t;
 /**
  * Part name (first) and content type (second).
  */
-typedef ::std::pair<pstring, content_type_t>    xml_part_t;
+typedef ::std::pair<std::string_view, content_type_t> xml_part_t;
 
 /**
  * Single OPC relationship that corresponds with a Relationship element in
@@ -30,12 +28,12 @@ typedef ::std::pair<pstring, content_type_t>    xml_part_t;
  */
 struct opc_rel_t
 {
-    pstring  rid;
-    pstring  target;
+    std::string_view  rid;
+    std::string_view  target;
     schema_t type;
 
     opc_rel_t() : type(nullptr) {}
-    opc_rel_t(const pstring& _rid, const pstring& _target, schema_t _type) :
+    opc_rel_t(std::string_view _rid, const std::string_view& _target, schema_t _type) :
         rid(_rid), target(_target), type(_type) {}
 };
 
@@ -50,7 +48,7 @@ struct opc_rel_extra
 
 struct opc_rel_extras_t
 {
-    typedef std::unordered_map<pstring, std::unique_ptr<opc_rel_extra>, pstring::hash> map_type;
+    typedef std::unordered_map<std::string_view, std::unique_ptr<opc_rel_extra>> map_type;
 
     /**
      * Key is a textual relation ID, while the value is an arbitrary data

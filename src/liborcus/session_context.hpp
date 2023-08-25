@@ -10,7 +10,6 @@
 
 #include <orcus/string_pool.hpp>
 #include <orcus/types.hpp>
-#include "pstring.hpp"
 
 #include <memory>
 

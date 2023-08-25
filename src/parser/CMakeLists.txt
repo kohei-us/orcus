@@ -11,7 +11,6 @@ add_library(orcus-parser-${ORCUS_API_VERSION} SHARED
     json_parser_thread.cpp
     parser_base.cpp
     parser_global.cpp
-    pstring.cpp
     sax_parser_base.cpp
     sax_token_parser.cpp
     sax_token_parser_thread.cpp

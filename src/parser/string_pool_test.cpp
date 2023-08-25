@@ -46,7 +46,7 @@ void test_basic()
     std::cout << "interned string: " << ret.first << std::endl;
     assert(pool.size() == 3);
 
-    // Interning an already-intern string should return a pstring with
+    // Interning an already-intern string should return a string_view with
     // identical memory address.
     std::string_view str = ret.first;
     std::string_view str2 = pool.intern(str).first;

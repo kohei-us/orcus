@@ -61,7 +61,7 @@ struct orcus_xls_xml::impl
         }
         catch (const parse_error& e)
         {
-            std::cerr << create_parse_error_output(pstring(content, len), e.offset()) << std::endl;
+            std::cerr << create_parse_error_output(std::string_view(content, len), e.offset()) << std::endl;
             std::cerr << e.what() << std::endl;
             return;
         }
@@ -77,7 +77,7 @@ orcus_xls_xml::orcus_xls_xml(spreadsheet::iface::import_factory* factory) :
     mp_impl->m_ns_repo.add_predefined_values(NS_xls_xml_all);
 }
 
-orcus_xls_xml::~orcus_xls_xml() {}
+orcus_xls_xml::~orcus_xls_xml() = default;
 
 bool orcus_xls_xml::detect(const unsigned char* buffer, size_t size)
 {

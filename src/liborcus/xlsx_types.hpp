@@ -21,7 +21,7 @@ class import_sheet;
 
 struct xlsx_rel_sheet_info : public opc_rel_extra
 {
-    pstring name;
+    std::string_view name;
     size_t  id;
 
     xlsx_rel_sheet_info() : id(0) {}

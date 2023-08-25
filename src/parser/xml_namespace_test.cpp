@@ -7,13 +7,11 @@
 
 #include "test_global.hpp"
 #include "orcus/xml_namespace.hpp"
-#include "pstring.hpp"
 
 #include <cstdlib>
 #include <vector>
 #include <algorithm>
 
-using namespace std;
 using namespace orcus;
 
 namespace {
@@ -22,14 +20,14 @@ void test_basic()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    pstring xmlns1("http://some.xmlns/");
-    pstring xmlns2("http://other.xmlns/");
+    std::string_view xmlns1("http://some.xmlns/");
+    std::string_view xmlns2("http://other.xmlns/");
 
     xmlns_repository repo;
     xmlns_context cxt1 = repo.create_context();
     xmlns_context cxt2 = repo.create_context();
 
-    pstring empty, myns("myns");
+    std::string_view empty, myns("myns");
     {
         // context 1
         xmlns_id_t test1 = cxt1.push(empty, xmlns1); // register default namespace.
@@ -57,8 +55,8 @@ void test_all_namespaces()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    pstring key1("a"), key2("b"), key3("c");
-    pstring ns1("foo"), ns2("baa"), ns3("hmm");
+    std::string_view key1("a"), key2("b"), key3("c");
+    std::string_view ns1("foo"), ns2("baa"), ns3("hmm");
 
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
@@ -71,7 +69,7 @@ void test_all_namespaces()
     ns = cxt.push(key3, ns3);
     assert(ns3 == ns);
 
-    vector<xmlns_id_t> all_ns = cxt.get_all_namespaces();
+    std::vector<xmlns_id_t> all_ns = cxt.get_all_namespaces();
     assert(all_ns.size() == 3);
     assert(ns1 == all_ns[0]);
     assert(ns2 == all_ns[1]);

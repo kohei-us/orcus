@@ -14,14 +14,11 @@
 #include <iostream>
 #include <sstream>
 
-using namespace std;
-
 namespace orcus {
 
 void print_opc_rel::operator() (const opc_rel_t& v) const
 {
-    using namespace std;
-    cout << v.rid << ": " << v.target << " (" << v.type << ")" << endl;
+    std::cout << v.rid << ": " << v.target << " (" << v.type << ")" << std::endl;
 }
 
 std::string resolve_file_path(const std::string& dir_path, const std::string& file_name)
@@ -36,7 +33,7 @@ std::string resolve_file_path(const std::string& dir_path, const std::string& fi
     if (has_root)
         ++p;
 
-    vector<pstring> dir_stack;
+    std::vector<std::string_view> dir_stack;
     const char* p_head = nullptr;
     for (; p != p_end; ++p)
     {
@@ -47,7 +44,7 @@ std::string resolve_file_path(const std::string& dir_path, const std::string& fi
                 return file_name;
 
             size_t len = p - p_head;
-            pstring dir(p_head, len);
+            std::string_view dir(p_head, len);
             if (dir == "..")
             {
                 if (dir_stack.empty())
@@ -75,13 +72,12 @@ std::string resolve_file_path(const std::string& dir_path, const std::string& fi
         return file_name;
     }
 
-    ostringstream full_path;
+    std::ostringstream full_path;
     if (has_root)
         full_path << '/';
 
-    vector<pstring>::const_iterator it = dir_stack.begin(), it_end = dir_stack.end();
-    for (; it != it_end; ++it)
-        full_path << *it << '/';
+    for (auto dir : dir_stack)
+        full_path << dir << '/';
 
     full_path << file_name;
 

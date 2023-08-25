@@ -16,8 +16,6 @@
 #include <iostream>
 #include <cassert>
 
-using namespace std;
-
 namespace orcus {
 
 text_para_context::text_para_context(
@@ -29,9 +27,7 @@ text_para_context::text_para_context(
 {
 }
 
-text_para_context::~text_para_context()
-{
-}
+text_para_context::~text_para_context() = default;
 
 xml_context_base* text_para_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
 {
@@ -144,7 +140,7 @@ void text_para_context::flush_segment()
     const odf_style* style = nullptr;
     if (!m_span_stack.empty())
     {
-        pstring style_name = m_span_stack.back();
+        std::string_view style_name = m_span_stack.back();
         auto it = m_styles.find(style_name);
         if (it != m_styles.end())
             style = it->second.get();
@@ -158,7 +154,7 @@ void text_para_context::flush_segment()
             mp_sstrings->set_segment_font(data.font);
         }
 
-        for (pstring ps : m_contents)
+        for (std::string_view ps : m_contents)
             mp_sstrings->append_segment(ps);
     }
 

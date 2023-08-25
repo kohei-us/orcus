@@ -12,7 +12,6 @@
 
 namespace orcus {
 
-class pstring;
 class range_formula_results;
 
 namespace spreadsheet {

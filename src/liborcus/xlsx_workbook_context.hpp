@@ -29,8 +29,7 @@ class import_named_expression;
 class xlsx_workbook_context : public xml_context_base
 {
 public:
-    typedef std::unordered_map<
-        pstring, xlsx_rel_sheet_info, pstring::hash> sheet_info_type;
+    typedef std::unordered_map<std::string_view, xlsx_rel_sheet_info> sheet_info_type;
 
     xlsx_workbook_context(
         session_context& session_cxt, const tokens& tokens,
@@ -52,8 +51,8 @@ private:
 
 private:
     opc_rel_extras_t m_workbook_info;
-    pstring m_defined_name;
-    pstring m_defined_name_exp;
+    std::string_view m_defined_name;
+    std::string_view m_defined_name_exp;
     spreadsheet::sheet_t m_defined_name_scope;
     size_t m_sheet_count;
     spreadsheet::iface::import_factory& m_factory;

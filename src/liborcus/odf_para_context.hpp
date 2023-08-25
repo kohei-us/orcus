@@ -11,7 +11,6 @@
 #include "xml_context_base.hpp"
 #include "odf_styles.hpp"
 
-#include "pstring.hpp"
 #include "orcus/string_pool.hpp"
 
 #include <vector>
@@ -51,8 +50,8 @@ private:
     odf_styles_map_type& m_styles;
 
     string_pool m_pool;
-    std::vector<pstring> m_span_stack; /// stack of text spans.
-    std::vector<pstring> m_contents;
+    std::vector<std::string_view> m_span_stack; /// stack of text spans.
+    std::vector<std::string_view> m_contents;
     size_t m_string_index;
     bool m_has_content;
 };

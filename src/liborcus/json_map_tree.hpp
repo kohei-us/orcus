@@ -74,7 +74,7 @@ public:
     {
         range_reference_type* ref;
         spreadsheet::col_t column_pos;
-        pstring label;
+        std::string_view label;
     };
 
     struct node
@@ -154,15 +154,15 @@ public:
 private:
     range_reference_type& get_range_reference(const cell_position_t& pos);
 
-    const node* get_destination_node(const pstring& path) const;
+    const node* get_destination_node(std::string_view path) const;
 
     struct path_stack_type
     {
         std::vector<node*> node_stack;
-        pstring dest_key; //< object key associated with the destination value (if applicable)
+        std::string_view dest_key; //< object key associated with the destination value (if applicable)
     };
 
-    path_stack_type get_or_create_destination_node(const pstring& path);
+    path_stack_type get_or_create_destination_node(std::string_view path);
 
     child_position_type to_key_position(const char* p, size_t n) const;
 
@@ -182,8 +182,8 @@ private:
     struct
     {
         cell_position_t pos;
-        std::vector<std::pair<pstring, pstring>> fields; // path, label
-        std::vector<pstring> row_groups;
+        std::vector<std::pair<std::string_view, std::string_view>> fields; // path, label
+        std::vector<std::string_view> row_groups;
         bool row_header;
 
     } m_current_range;

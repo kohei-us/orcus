@@ -5,5 +5,4 @@ EXTRA_DIST = \
 	mock_spreadsheet.hpp \
 	numeric_parser.hpp \
 	ostream_utils.hpp \
-	pstring.hpp \
 	test_global.hpp

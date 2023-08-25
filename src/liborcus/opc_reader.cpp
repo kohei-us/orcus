@@ -83,14 +83,14 @@ bool opc_reader::open_zip_stream(const string& path, vector<unsigned char>& buf)
     }
 }
 
-void opc_reader::read_part(const pstring& path, const schema_t type, opc_rel_extra* data)
+void opc_reader::read_part(std::string_view path, const schema_t type, opc_rel_extra* data)
 {
     assert(!m_dir_stack.empty());
 
     dir_stack_type dir_changed;
 
     // Change current directory and read the in-file.
-    const char* p = path.get();
+    const char* p = path.data();
     const char* p_name = nullptr;
     size_t name_len = 0;
     for (size_t i = 0, n = path.size(); i < n; ++i, ++p)
@@ -205,7 +205,7 @@ void opc_reader::list_content() const
 
     for (size_t i = 0; i < num; ++i)
     {
-        pstring filename = m_archive->get_file_entry_name(i);
+        std::string_view filename = m_archive->get_file_entry_name(i);
         cout << filename << endl;
     }
 }

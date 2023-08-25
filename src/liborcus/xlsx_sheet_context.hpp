@@ -44,9 +44,9 @@ public:
     {
         spreadsheet::formula_t type;
         spreadsheet::range_t ref; /// formula reference range
-        pstring str; /// formula expression string
-        pstring data_table_ref1;
-        pstring data_table_ref2;
+        std::string_view str; /// formula expression string
+        std::string_view data_table_ref1;
+        std::string_view data_table_ref2;
         int shared_id;
         bool data_table_2d:1;
         bool data_table_row_based:1;
@@ -102,13 +102,13 @@ private:
      * Potentially intern a transient attribute string value for the duration
      * of the current sheet context.
      */
-    pstring intern_in_context(const xml_token_attr_t& attr);
+    std::string_view intern_in_context(const xml_token_attr_t& attr);
 
     /**
      * Potentially intern a transient string value for the duration of the
      * current sheet context.
      */
-    pstring intern_in_context(const pstring& str, bool transient);
+    std::string_view intern_in_context(const std::string_view& str, bool transient);
 
 private:
     spreadsheet::iface::import_reference_resolver& m_resolver;
@@ -119,8 +119,8 @@ private:
     spreadsheet::col_t m_cur_col;
     xlsx_cell_t m_cur_cell_type;
     size_t       m_cur_cell_xf;
-    pstring      m_cur_str;
-    pstring      m_cur_value;
+    std::string_view m_cur_str;
+    std::string_view m_cur_value;
     formula m_cur_formula;
 
     array_formula_results_type m_array_formula_results;

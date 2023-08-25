@@ -50,7 +50,7 @@ private:
     spreadsheet::iface::import_shared_strings* mp_strings;
     string_pool m_pool;
     cell_buffer m_cell_buffer;
-    pstring m_cur_str;
+    std::string_view m_cur_str;
     bool m_in_segments;
 };
 

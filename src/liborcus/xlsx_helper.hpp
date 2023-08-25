@@ -6,11 +6,10 @@
  */
 
 #include <orcus/spreadsheet/types.hpp>
-#include "pstring.hpp"
 
 namespace orcus {
 
-bool to_rgb(const pstring& ps, spreadsheet::color_elem_t& alpha,
+bool to_rgb(std::string_view ps, spreadsheet::color_elem_t& alpha,
         spreadsheet::color_elem_t& red, spreadsheet::color_elem_t& gree,
         spreadsheet::color_elem_t& blue);
 

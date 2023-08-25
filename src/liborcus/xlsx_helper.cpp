@@ -10,7 +10,7 @@
 namespace orcus {
 
 bool to_rgb(
-    const pstring& ps, spreadsheet::color_elem_t& alpha,
+    std::string_view ps, spreadsheet::color_elem_t& alpha,
     spreadsheet::color_elem_t& red, spreadsheet::color_elem_t& green, spreadsheet::color_elem_t& blue)
 {
     // RGB string is a 8-character string representing 32-bit hexadecimal
@@ -19,7 +19,7 @@ bool to_rgb(
     if (n != 8)
         return false;
 
-    unsigned long v = strtoul(ps.get(), nullptr, 16);
+    unsigned long v = strtoul(ps.data(), nullptr, 16);
     blue  = (0x000000FF & v);
     green = (0x000000FF & (v >> 8));
     red   = (0x000000FF & (v >> 16));
