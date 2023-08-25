@@ -101,7 +101,7 @@ std::optional<std::size_t> import_border_styles(
     ss::iface::import_styles& istyles, const gnumeric_style& style)
 {
     ss::iface::import_border_style* iborder = istyles.start_border_style();
-    ENSURE_INTERFACE(iborder, imort_border_style);
+    ENSURE_INTERFACE(iborder, import_border_style);
 
     auto func_import_border = [&iborder](ss::border_direction_t dir, const gnumeric_style::border_type& border)
     {
@@ -147,6 +147,19 @@ std::optional<std::size_t> import_border_styles(
         return {};
 
     return iborder->commit();
+}
+
+std::optional<std::size_t> import_number_format(
+    ss::iface::import_styles& istyles, const gnumeric_style& style)
+{
+    if (!style.number_format)
+        return {};
+
+    ss::iface::import_number_format* inumfmt = istyles.start_number_format();
+    ENSURE_INTERFACE(inumfmt, import_number_format);
+
+    inumfmt->set_code(*style.number_format);
+    return inumfmt->commit();
 }
 
 } // anonymous namespace
@@ -394,6 +407,7 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
             std::size_t id_font = import_font_style(*istyles, style);
             auto id_fill = import_fill_style(*istyles, style);
             auto id_border = import_border_styles(*istyles, style);
+            auto id_numfmt = import_number_format(*istyles, style);
 
             ss::iface::import_xf* ixf = istyles->start_xf(ss::xf_category_t::cell);
             ENSURE_INTERFACE(ixf, import_xf);
@@ -405,6 +419,9 @@ void gnumeric_content_xml_context::import_cell_styles(ss::iface::import_styles* 
 
             if (id_border)
                 ixf->set_border(*id_border);
+
+            if (id_numfmt)
+                ixf->set_number_format(*id_numfmt);
 
             bool apply_alignment =
                 style.hor_align != ss::hor_alignment_t::unknown ||

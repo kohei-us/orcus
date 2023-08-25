@@ -117,6 +117,8 @@ struct gnumeric_style
     std::optional<spreadsheet::color_rgb_t> pattern_color;
     spreadsheet::fill_pattern_t pattern = spreadsheet::fill_pattern_t::none;
 
+    std::optional<std::string_view> number_format;
+
     border_type border_top;
     border_type border_bottom;
     border_type border_left;

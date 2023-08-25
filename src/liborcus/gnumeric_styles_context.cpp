@@ -285,6 +285,12 @@ void gnumeric_styles_context::start_style(const std::vector<xml_token_attr_t>& a
             case XML_Shade:
                 m_current_style.pattern = to_fill_pattern(to_long(attr.value));
                 break;
+            case XML_Format:
+            {
+                auto v = attr.transient ? intern(attr.value) : attr.value;
+                m_current_style.number_format = v;
+                break;
+            }
         }
     }
 }
