@@ -1144,6 +1144,48 @@ void test_gnumeric_cell_borders_colors()
     assert(*s == "<- Yellow\nPurple ->\nLight Blue \\");
 }
 
+void test_gnumeric_number_format()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/number-formats/input.gnumeric";
+    auto doc = load_doc(filepath);
+    assert(doc);
+
+    const spreadsheet::styles& styles = doc->get_styles();
+
+    const spreadsheet::sheet* sh = doc->get_sheet(0);
+    assert(sh);
+
+    struct check
+    {
+        ss::row_t row;
+        ss::col_t col;
+        std::string_view expected;
+    };
+
+    std::vector<check> checks =
+    {
+        { 1, 1, "[$-F800]dddd\\,\\ mmmm\\ dd\\,\\ yyyy" },
+        { 2, 1, "[$-409]mmmm\\ d\\,\\ yyyy;@" },
+        { 3, 1, "m/d/yy;@" },
+        { 4, 1, "m/d/yy h:mm" }, // General Date
+    };
+
+    for (const check& c : checks)
+    {
+        size_t xf = sh->get_cell_format(c.row, c.col);
+        const spreadsheet::cell_format_t* cf = styles.get_cell_format(xf);
+        assert(cf);
+
+        const spreadsheet::number_format_t* nf = styles.get_number_format(cf->number_format);
+        assert(nf);
+        std::cout << "row=" << c.row << "; col=" << c.col << "; expected='"
+            << c.expected << "'; actual='" << (nf->format_string ? *nf->format_string : "") << "'" << std::endl;
+        assert(nf->format_string == c.expected);
+    }
+}
+
 } // anonymous namespace
 
 int main()
@@ -1161,6 +1203,7 @@ int main()
     test_gnumeric_cell_borders_single_cells();
     test_gnumeric_cell_borders_directions();
     test_gnumeric_cell_borders_colors();
+    test_gnumeric_number_format();
 
     return EXIT_SUCCESS;
 }
