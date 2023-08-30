@@ -348,7 +348,7 @@ void xls_xml_data_context::end_element_data()
                         ss->set_segment_bold(sstr.format.bold);
                         ss->set_segment_italic(sstr.format.italic);
                         ss->set_segment_font_color(
-                            0,
+                            255,
                             sstr.format.color.red,
                             sstr.format.color.green,
                             sstr.format.color.blue);

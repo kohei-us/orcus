@@ -436,7 +436,7 @@ void test_xls_xml_colored_text()
 
     // The 'Red' segment should be in red color.
     const spreadsheet::format_run* fmt = &fmt_runs->at(0);
-    assert(fmt->color.alpha == 0);
+    assert(fmt->color.alpha == 0xFF);
     assert(fmt->color.red == 0xFF);
     assert(fmt->color.green == 0);
     assert(fmt->color.blue == 0);
@@ -445,7 +445,7 @@ void test_xls_xml_colored_text()
 
     // The 'Blue' segment should be in blue color.
     fmt = &fmt_runs->at(1);
-    assert(fmt->color.alpha == 0);
+    assert(fmt->color.alpha == 0xFF);
     assert(fmt->color.red == 0);
     assert(fmt->color.green == 0x70);
     assert(fmt->color.blue == 0xC0);
