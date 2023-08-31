@@ -462,8 +462,6 @@ void test_gnumeric_background_fill()
 
 void test_gnumeric_colored_text()
 {
-    // NB : Gnumeric doesn't support format runs, so no mixed-color text.
-
     ORCUS_TEST_FUNC_SCOPE;
 
     fs::path filepath = SRCDIR"/test/gnumeric/colored-text/input.gnumeric";
@@ -517,6 +515,67 @@ void test_gnumeric_colored_text()
         const std::string* s = ss.get_string(si);
         assert(s);
         assert(*s == c.text);
+    }
+
+    {
+        // Cell B2 contains mix-colored text.
+        size_t si = sheet1->get_string_identifier(1, 1);
+        const std::string* s = ss.get_string(si);
+        assert(s);
+        assert(*s == "Red and Blue");
+        const spreadsheet::format_runs_t* fmt_runs = ss.get_format_runs(si);
+        assert(fmt_runs);
+
+        // There should be 2 segments that are color-formatted.
+        assert(fmt_runs->size() == 2);
+
+        // The 'Red' segment should be in red color.
+        const spreadsheet::format_run* fmt = &fmt_runs->at(0);
+        assert(fmt->color.alpha == 0xFF);
+        assert(fmt->color.red == 0xFF);
+        assert(fmt->color.green == 0);
+        assert(fmt->color.blue == 0);
+        assert(fmt->pos == 0);
+        assert(fmt->size == 3);
+
+        // The 'Blue' segment should be in blue color.
+        fmt = &fmt_runs->at(1);
+        assert(fmt->color.alpha == 0xFF);
+        assert(fmt->color.red == 0);
+        assert(fmt->color.green == 0x00);
+        assert(fmt->color.blue == 0xFF);
+        assert(fmt->pos == 8);
+        assert(fmt->size == 4);
+    }
+
+    {
+        // Cell B3 too
+        size_t si = sheet1->get_string_identifier(2, 1);
+        const std::string* s = ss.get_string(si);
+        assert(s);
+        assert(*s == "Green and Orange");
+        const spreadsheet::format_runs_t* fmt_runs = ss.get_format_runs(si);
+        assert(fmt_runs);
+
+        assert(fmt_runs->size() == 2);
+
+        // 'Green' segment
+        const spreadsheet::format_run* fmt = &fmt_runs->at(0);
+        assert(fmt->color.alpha == 0xFF);
+        assert(fmt->color.red == 0);
+        assert(fmt->color.green == 0xFF);
+        assert(fmt->color.blue == 0);
+        assert(fmt->pos == 0);
+        assert(fmt->size == 5);
+
+        // 'Orange' segment
+        fmt = &fmt_runs->at(1);
+        assert(fmt->color.alpha == 0xFF);
+        assert(fmt->color.red == 0xFF);
+        assert(fmt->color.green == 0x99);
+        assert(fmt->color.blue == 0);
+        assert(fmt->pos == 10);
+        assert(fmt->size == 6);
     }
 }
 

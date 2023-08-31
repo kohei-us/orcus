@@ -298,6 +298,14 @@ void gnumeric_cell_context::push_string(ss::row_t row, ss::col_t col)
                     shared_strings->set_segment_italic(v);
                     break;
                 }
+                case gnumeric_value_format_type::color:
+                {
+                    // [red]x[green]x[blue]
+                    auto color = parse_gnumeric_rgb_8x(vfs.value);
+                    if (color)
+                        shared_strings->set_segment_font_color(255, color->red, color->green, color->blue);
+                    break;
+                }
                 default:
                 {
                     std::ostringstream os;

@@ -13,6 +13,8 @@
 
 namespace orcus {
 
+std::optional<std::uint8_t> hex_to_uint8(std::string_view s);
+
 std::optional<std::uint16_t> hex_to_uint16(std::string_view s);
 
 } // namespace orcus

@@ -21,6 +21,7 @@ using map_type = mdds::sorted_string_map<gnumeric_value_format_type, mdds::strin
 // Keys must be sorted.
 constexpr map_type::entry entries[] = {
     { "bold", gnumeric_value_format_type::bold },
+    { "color", gnumeric_value_format_type::color },
     { "italic", gnumeric_value_format_type::italic },
     { "strikethrough", gnumeric_value_format_type::strikethrough },
     { "subscript", gnumeric_value_format_type::subscript },
@@ -128,6 +129,41 @@ std::optional<spreadsheet::color_rgb_t> parse_gnumeric_rgb(std::string_view v)
         return {};
 
     color.blue = *elem >> 8;
+    return color;
+}
+
+std::optional<spreadsheet::color_rgb_t> parse_gnumeric_rgb_8x(std::string_view v)
+{
+    ss::color_rgb_t color;
+
+    auto pos = v.find('x');
+    if (pos == v.npos)
+        return {};
+
+    std::string_view seg = v.substr(0, pos);
+
+    std::optional<std::uint16_t> elem = hex_to_uint8(seg);
+    if (!elem)
+        return {};
+
+    color.red = *elem;
+    v = v.substr(pos + 1);
+    pos = v.find('x');
+    if (pos == v.npos)
+        return {};
+
+    seg = v.substr(0, pos);
+    elem = hex_to_uint8(seg);
+    if (!elem)
+        return {};
+
+    color.green = *elem;
+    v = v.substr(pos + 1);
+    elem = hex_to_uint8(v);
+    if (!elem)
+        return {};
+
+    color.blue = *elem;
     return color;
 }
 

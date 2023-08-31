@@ -56,6 +56,7 @@ enum class gnumeric_value_format_type
 {
     unknown,
     bold,
+    color,
     italic,
     underline,
     strikethrough,
@@ -129,7 +130,17 @@ struct gnumeric_style
     bool valid() const;
 };
 
+/**
+ * Parse an RGB color encoded as 'RRRR:GGGG:BBBB', each element being a 16-bit
+ * hex value.
+ */
 std::optional<spreadsheet::color_rgb_t> parse_gnumeric_rgb(std::string_view v);
+
+/**
+ * Parse an RGB color encoded as 'RRxGGxBB', each element being an 8-bit hex
+ * value.
+ */
+std::optional<spreadsheet::color_rgb_t> parse_gnumeric_rgb_8x(std::string_view v);
 
 } // namespace orcus
 
