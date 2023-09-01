@@ -67,6 +67,8 @@ private:
     void end_cell();
     void push_string(spreadsheet::row_t row, spreadsheet::col_t col);
 
+    std::vector<std::pair<std::size_t, std::size_t>> build_format_segment_ranges() const;
+
 private:
     spreadsheet::iface::import_factory* mp_factory;
     spreadsheet::iface::import_sheet* mp_sheet;

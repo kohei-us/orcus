@@ -13,7 +13,6 @@
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/measurement.hpp>
 
-#include <iostream>
 #include <fstream>
 #include <algorithm>
 
@@ -269,21 +268,22 @@ void gnumeric_cell_context::push_string(ss::row_t row, ss::col_t col)
         return;
     }
 
-    // formatted text
-    using segments_type = mdds::flat_segment_tree<std::size_t, const gnumeric_value_format_segment*>;
-    segments_type segments(0, m_chars.size(), nullptr);
-
-    for (const auto& seg : m_format_segments)
-        segments.insert_back(seg.start, seg.end, &seg);
-
-    for (const auto& seg : segments.segment_range())
+    for (const auto& [start, end] : build_format_segment_ranges())
     {
-        auto t = m_chars.substr(seg.start, seg.end - seg.start);
+        assert(start < end);
 
-        if (seg.value)
+        auto t = m_chars.substr(start, end - start);
+
+        // TODO: use segment tree to eliminate this inner loop
+        for (const gnumeric_value_format_segment& vfs : m_format_segments)
         {
+            if (vfs.value.empty())
+                continue;
+
+            if (start < vfs.start || vfs.end < end)
+                continue;
+
             // we have format information
-            const gnumeric_value_format_segment& vfs = *seg.value;
             switch (vfs.type)
             {
                 case gnumeric_value_format_type::bold:
@@ -338,6 +338,39 @@ void gnumeric_cell_context::push_string(ss::row_t row, ss::col_t col)
 
     std::size_t sid = shared_strings->commit_segments();
     mp_sheet->set_string(row, col, sid);
+}
+
+std::vector<std::pair<std::size_t, std::size_t>> gnumeric_cell_context::build_format_segment_ranges() const
+{
+    if (m_format_segments.empty())
+        return {};
+
+    std::vector<std::size_t> pts;
+    pts.push_back(0);
+    pts.push_back(m_chars.size());
+    for (const auto& seg : m_format_segments)
+    {
+        pts.push_back(seg.start);
+        pts.push_back(seg.end);
+    }
+
+    std::sort(pts.begin(), pts.end());
+    auto last = std::unique(pts.begin(), pts.end());
+    pts.erase(last, pts.end());
+    assert(pts.size() > 2u);
+
+    std::vector<std::pair<std::size_t, std::size_t>> ranges;
+
+    auto it = pts.begin();
+    auto start = *it;
+    for (++it; it != pts.end(); ++it)
+    {
+        auto end = *it;
+        ranges.emplace_back(start, end);
+        start = end;
+    }
+
+    return ranges;
 }
 
 }
