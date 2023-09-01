@@ -57,11 +57,13 @@ enum class gnumeric_value_format_type
     unknown,
     bold,
     color,
+    family,
     italic,
-    underline,
+    size,
     strikethrough,
+    subscript,
     superscript,
-    subscript
+    underline,
 };
 
 gnumeric_value_format_type to_gnumeric_value_format_type(std::string_view s);

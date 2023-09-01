@@ -22,7 +22,9 @@ using map_type = mdds::sorted_string_map<gnumeric_value_format_type, mdds::strin
 constexpr map_type::entry entries[] = {
     { "bold", gnumeric_value_format_type::bold },
     { "color", gnumeric_value_format_type::color },
+    { "family", gnumeric_value_format_type::family },
     { "italic", gnumeric_value_format_type::italic },
+    { "size", gnumeric_value_format_type::size },
     { "strikethrough", gnumeric_value_format_type::strikethrough },
     { "subscript", gnumeric_value_format_type::subscript },
     { "superscript", gnumeric_value_format_type::superscript },

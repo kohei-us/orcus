@@ -306,6 +306,24 @@ void gnumeric_cell_context::push_string(ss::row_t row, ss::col_t col)
                         shared_strings->set_segment_font_color(255, color->red, color->green, color->blue);
                     break;
                 }
+                case gnumeric_value_format_type::family:
+                {
+                    if (!vfs.value.empty())
+                        shared_strings->set_segment_font_name(vfs.value);
+                    break;
+                }
+                case gnumeric_value_format_type::size:
+                {
+                    const char* p_end = nullptr;
+                    double v = to_double(vfs.value, &p_end);
+                    if (p_end > vfs.value.data())
+                    {
+                        // font size here is stored in 1024ths of a point, likely coming from Pango
+                        v /= 1024.0;
+                        shared_strings->set_segment_font_size(v);
+                    }
+                    break;
+                }
                 default:
                 {
                     std::ostringstream os;
