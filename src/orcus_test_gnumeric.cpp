@@ -837,6 +837,90 @@ void test_gnumeric_text_formats()
             assert(font->size == c.font_unit);
         }
     }
+
+    {
+        const ss::sheet* sheet3 = doc->get_sheet("Mixed Fonts");
+        assert(sheet3);
+
+        // A1
+        row = 0;
+        col = 0;
+        assert(check_cell_text(*sheet3, row, col, "C++ has class and struct as keywords."));
+
+        // Base cell has Serif 12-pt font applied
+        auto xf = sheet3->get_cell_format(row, col);
+        const ss::cell_format_t* fmt = styles_pool.get_cell_format(xf);
+        assert(fmt);
+        const ss::font_t* font = styles_pool.get_font(fmt->font);
+        assert(font);
+        font->name == "Serif";
+        font->size == 12.0f;
+
+        // two segments where Monospace font is applied
+        si = sheet3->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 2u);
+
+        // C++ has class ...
+        //         ^^^^^
+        assert(runs->at(0).pos == 8);
+        assert(runs->at(0).size == 5);
+        assert(runs->at(0).font == "Monospace");
+
+        // ... and struct as ...
+        //         ^^^^^^
+        assert(runs->at(1).pos == 18);
+        assert(runs->at(1).size == 6);
+        assert(runs->at(1).font == "Monospace");
+
+        // A2
+        row = 1;
+        assert(check_cell_text(*sheet3, row, col, "Text with 12-point font, 24-point font, and 36-point font mixed."));
+        si = sheet3->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 6u);
+
+        // with 12-point font, ...
+        //      ^^
+        assert(runs->at(0).pos == 10);
+        assert(runs->at(0).size == 2);
+        assert(runs->at(0).font_size == 12.0f);
+        assert(runs->at(0).color == ss::color_t(0xFF, 0xFF, 0, 0)); // red
+
+        // with 12-point font, ...
+        //        ^^^^^^
+        assert(runs->at(1).pos == 12);
+        assert(runs->at(1).size == 6);
+        assert(runs->at(1).font_size == 12.0f);
+
+        // 24-point font,
+        // ^^
+        assert(runs->at(2).pos == 25);
+        assert(runs->at(2).size == 2);
+        assert(runs->at(2).font_size == 24.0f);
+        assert(runs->at(2).color == ss::color_t(0xFF, 0xFF, 0, 0)); // red
+
+        // 24-point font,
+        //   ^^^^^^
+        assert(runs->at(3).pos == 27);
+        assert(runs->at(3).size == 6);
+        assert(runs->at(3).font_size == 24.0f);
+
+        // and 36-point font
+        //     ^^
+        assert(runs->at(4).pos == 44);
+        assert(runs->at(4).size == 2);
+        assert(runs->at(4).font_size == 36.0f);
+        assert(runs->at(4).color == ss::color_t(0xFF, 0xFF, 0, 0)); // red
+
+        // and 36-point font
+        //       ^^^^^^
+        assert(runs->at(5).pos == 46);
+        assert(runs->at(5).size == 6);
+        assert(runs->at(5).font_size == 36.0f);
+    }
 }
 
 void test_gnumeric_cell_borders_single_cells()
