@@ -42,10 +42,10 @@ class xls_xml_data_context : public xml_context_base
 {
     struct format_type
     {
-        bool bold = false;
-        bool italic = false;
+        std::optional<bool> bold;
+        std::optional<bool> italic;
 
-        spreadsheet::color_rgb_t color;
+        std::optional<spreadsheet::color_rgb_t> color;
 
         void merge(const format_type& other);
         bool formatted() const;

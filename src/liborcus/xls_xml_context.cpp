@@ -55,27 +55,17 @@ ss::color_rgb_t to_rgb(std::string_view s)
 void xls_xml_data_context::format_type::merge(const format_type& fmt)
 {
     if (fmt.bold)
-        bold = true;
+        bold = fmt.bold;
     if (fmt.italic)
-        italic = true;
+        italic = fmt.italic;
 
-    if (fmt.color.red)
-        color.red = fmt.color.red;
-    if (fmt.color.green)
-        color.green = fmt.color.green;
-    if (fmt.color.blue)
-        color.blue = fmt.color.blue;
+    if (fmt.color)
+        color = fmt.color;
 }
 
 bool xls_xml_data_context::format_type::formatted() const
 {
-    if (bold || italic)
-        return true;
-
-    if (color.red || color.green || color.blue)
-        return true;
-
-    return false;
+    return bold || italic || color;
 }
 
 xls_xml_data_context::string_segment_type::string_segment_type(std::string_view _str) :
@@ -357,16 +347,18 @@ void xls_xml_data_context::end_element_data()
                 // Formatted string.
                 for (const string_segment_type& sstr : m_cell_string)
                 {
-                    if (sstr.formatted)
-                    {
-                        ss->set_segment_bold(sstr.format.bold);
-                        ss->set_segment_italic(sstr.format.italic);
+                    if (sstr.format.bold)
+                        ss->set_segment_bold(*sstr.format.bold);
+
+                    if (sstr.format.italic)
+                        ss->set_segment_italic(*sstr.format.italic);
+
+                    if (sstr.format.color)
                         ss->set_segment_font_color(
                             255,
-                            sstr.format.color.red,
-                            sstr.format.color.green,
-                            sstr.format.color.blue);
-                    }
+                            sstr.format.color->red,
+                            sstr.format.color->green,
+                            sstr.format.color->blue);
 
                     ss->append_segment(sstr.str);
                 }

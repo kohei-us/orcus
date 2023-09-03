@@ -347,10 +347,10 @@ void test_xls_xml_bold_and_italic()
     assert(sp);
     assert(*sp == "Bold and Italic mixed");
 
-    // The string contains 2 formatted segments.
+    // The string contains 4 formatted segments.
     const spreadsheet::format_runs_t* fmt_runs = ss.get_format_runs(si);
     assert(fmt_runs);
-    assert(fmt_runs->size() == 2);
+    assert(fmt_runs->size() == 4);
 
     // First formatted segment is bold.
     const spreadsheet::format_run* fmt_run = &fmt_runs->at(0);
@@ -359,8 +359,8 @@ void test_xls_xml_bold_and_italic()
     assert(fmt_run->bold);
     assert(!fmt_run->italic);
 
-    // Second formatted segment is italic.
-    fmt_run = &fmt_runs->at(1);
+    // Third formatted segment is italic.
+    fmt_run = &fmt_runs->at(2);
     assert(fmt_run->pos == 9);
     assert(fmt_run->size == 6);
     assert(!fmt_run->bold);
@@ -431,8 +431,8 @@ void test_xls_xml_colored_text()
     const spreadsheet::format_runs_t* fmt_runs = ss.get_format_runs(si);
     assert(fmt_runs);
 
-    // There should be 2 segments that are color-formatted.
-    assert(fmt_runs->size() == 2);
+    // There should be 2 segments that are color-formatted and one that is not.
+    assert(fmt_runs->size() == 3);
 
     // The 'Red' segment should be in red color.
     const spreadsheet::format_run* fmt = &fmt_runs->at(0);
@@ -444,7 +444,7 @@ void test_xls_xml_colored_text()
     assert(fmt->size == 3);
 
     // The 'Blue' segment should be in blue color.
-    fmt = &fmt_runs->at(1);
+    fmt = &fmt_runs->at(2);
     assert(fmt->color.alpha == 0xFF);
     assert(fmt->color.red == 0);
     assert(fmt->color.green == 0x70);
