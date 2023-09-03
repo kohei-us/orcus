@@ -47,26 +47,20 @@ void verify_content(
 void verify_value_to_decimals(
     const char* filename, size_t line_no, double expected, double actual, int decimals)
 {
+    double expected_f = expected;
+    double actual_f = actual;
+
     for (int i = 0; i < decimals; ++i)
     {
-        expected *= 10.0;
-        actual *= 10.0;
+        expected_f *= 10.0;
+        actual_f *= 10.0;
     }
 
-    long expected_i = std::lround(expected);
-    long actual_i = std::lround(actual);
+    long expected_i = std::lround(expected_f);
+    long actual_i = std::lround(actual_f);
 
     if (expected_i == actual_i)
         return;
-
-    expected = expected_i;
-    actual = actual_i;
-
-    for (int i = 0; i < decimals; ++i)
-    {
-        expected /= 10.0;
-        actual /= 10.0;
-    }
 
     std::ostringstream os;
     os << "value is not as expected: (expected: " << expected << "; actual: " << actual << ")";
