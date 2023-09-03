@@ -1,0 +1,246 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Kohei Yoshida</Author>
+  <LastAuthor>Kohei Yoshida</LastAuthor>
+  <Created>2023-09-03T16:52:11Z</Created>
+  <LastSaved>2023-09-03T18:04:40Z</LastSaved>
+  <Version>16.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>12315</WindowHeight>
+  <WindowWidth>28800</WindowWidth>
+  <WindowTopX>32767</WindowTopX>
+  <WindowTopY>32767</WindowTopY>
+  <Iteration/>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s62">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s63">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Italic="1"/>
+  </Style>
+  <Style ss:ID="s64">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1" ss:Italic="1"/>
+  </Style>
+  <Style ss:ID="s65">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s66">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Underline="Single"/>
+  </Style>
+  <Style ss:ID="s67">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:Bold="1" ss:Underline="Single"/>
+  </Style>
+  <Style ss:ID="s68">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:StrikeThrough="1"/>
+  </Style>
+  <Style ss:ID="s69">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:VerticalAlign="Superscript"/>
+  </Style>
+  <Style ss:ID="s70">
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
+    ss:VerticalAlign="Subscript"/>
+  </Style>
+  <Style ss:ID="s71">
+   <Font ss:FontName="Calibri Light" x:Family="Swiss" ss:Size="12"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s72">
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="18" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s73">
+   <Font ss:FontName="Times New Roman" x:Family="Roman" ss:Size="14"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s74">
+   <Font ss:FontName="Consolas" x:Family="Modern" ss:Size="9" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s75">
+   <Font ss:FontName="Bookman Old Style" x:Family="Roman" ss:Size="20"
+    ss:Color="#000000"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Text Properties">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="15" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:Width="142.5"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">Normal Text</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Bold Text</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Italic Text</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s64"><Data ss:Type="String">Bold and Italic Text</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s65"><ss:Data ss:Type="String"
+      xmlns="http://www.w3.org/TR/REC-html40"><B><Font html:Color="#000000">Bold</Font></B><Font
+       html:Color="#000000"> and </Font><I><Font html:Color="#000000">Italic</Font></I><Font
+       html:Color="#000000"> mixed</Font></ss:Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s62"><ss:Data ss:Type="String"
+      xmlns="http://www.w3.org/TR/REC-html40"><B><Font html:Color="#000000">Bold base with </Font></B><Font
+       html:Color="#000000">non-bold</Font><B><Font html:Color="#000000"> part</Font></B></ss:Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><Font
+       html:Color="#000000">Only partially </Font><U><Font html:Color="#000000">underlined</Font></U></ss:Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s66"><Data ss:Type="String">All Underlined</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s67"><Data ss:Type="String">Bold and underlined</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s68"><Data ss:Type="String">All Strikethrough</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><Font
+       html:Color="#000000">Partial </Font><S><Font html:Color="#000000">strikethrough</Font></S></ss:Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="17.25">
+    <Cell ss:StyleID="s69"><Data ss:Type="String">Superscript</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="18">
+    <Cell ss:StyleID="s70"><Data ss:Type="String">Subscript</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="17.25">
+    <Cell><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><Font
+       html:Color="#000000">x</Font><Sup><Font html:Color="#000000">2</Font></Sup><Font
+       html:Color="#000000"> + y</Font><Sup><Font html:Color="#000000">2</Font></Sup><Font
+       html:Color="#000000"> = 10</Font><Sup><Font html:Color="#000000">2</Font></Sup></ss:Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="18">
+    <Cell><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><Font
+       html:Color="#000000">x</Font><Sub><Font html:Color="#000000">i</Font></Sub><Font
+       html:Color="#000000"> = y</Font><Sub><Font html:Color="#000000">i</Font></Sub><Font
+       html:Color="#000000"> + z</Font><Sub><Font html:Color="#000000">i</Font></Sub></ss:Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Selected/>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Fonts">
+  <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="5" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:Width="240"/>
+   <Column ss:Width="117.75"/>
+   <Row ss:AutoFitHeight="0" ss:Height="15.75">
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Calibri Light  12</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Monterotondo</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="23.25">
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Arial 18</Data></Cell>
+    <Cell ss:StyleID="s72"><Data ss:Type="String">Ciayunan</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="18.75">
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Times New Roman 14</Data></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Gaoguan</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s74"><Data ss:Type="String">Consolas 9</Data></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">Gumdag</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="25.5">
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Bookman Old Style 20</Data></Cell>
+    <Cell ss:StyleID="s75"><Data ss:Type="String">Tornabous</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Mixed Fonts">
+  <Table ss:ExpandedColumnCount="1" ss:ExpandedRowCount="2" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:Width="467.25"/>
+   <Row ss:AutoFitHeight="0" ss:Height="15.75">
+    <Cell><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><Font
+       html:Color="#000000">C++ has </Font><Font html:Face="Liberation Mono"
+       x:Family="Swiss" html:Color="#000000">class</Font><Font html:Color="#000000"> and </Font><Font
+       html:Face="Liberation Mono" x:Family="Swiss" html:Color="#000000">struct</Font><Font
+       html:Color="#000000"> as keywords.</Font></ss:Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="46.5">
+    <Cell><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><Font
+       html:Color="#000000">Text with </Font><Font html:Size="12"
+       html:Color="#FF0000">12</Font><Font html:Size="12" html:Color="#000000">-point</Font><Font
+       html:Color="#000000"> font, </Font><Font html:Size="24" html:Color="#FF0000">24</Font><Font
+       html:Size="24" html:Color="#000000">-point font</Font><Font
+       html:Color="#000000">, and </Font><Font html:Size="36" html:Color="#FF0000">36</Font><Font
+       html:Size="36" html:Color="#000000">-point</Font><Font html:Color="#000000"> font mixed.</Font></ss:Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>3</ActiveRow>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>
