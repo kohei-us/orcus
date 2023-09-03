@@ -264,8 +264,7 @@ void xls_xml_data_context::characters(std::string_view str, bool transient)
         default:
         {
             std::ostringstream os;
-            os << "warning: unknown cell type '" << m_cell_type
-                << "': characters='" << str << "'";
+            os << "unknown cell type '" << m_cell_type << "': characters='" << str << "'";
             warn(os.str());
         }
     }
@@ -447,8 +446,11 @@ void xls_xml_data_context::end_element_data()
             break;
         }
         default:
-            if (get_config().debug)
-                std::cout << "warning: unknown cell type '" << m_cell_type << "': value not pushed." << std::endl;
+        {
+            std::ostringstream os;
+            os <<"unknown cell type '" << m_cell_type << "': value not pushed.";
+            warn(os.str());
+        }
     }
 
     m_cell_type = ct_unknown;
@@ -522,8 +524,11 @@ void xls_xml_data_context::push_array_result(
         case ct_datetime:
         case ct_string:
         default:
-            if (get_config().debug)
-                std::cout << "warning: unknown cell type '" << m_cell_type << "': value not pushed." << std::endl;
+        {
+            std::ostringstream os;
+            os << "unknown cell type '" << m_cell_type << "': value not pushed.";
+            warn(os.str());
+        }
     }
 }
 
