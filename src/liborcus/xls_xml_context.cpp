@@ -1711,16 +1711,13 @@ void xls_xml_context::start_element_table(const xml_token_attrs_t& attrs)
     // Convert 1-based indices to 0-based.
 
     if (row_index > 0)
-    {
         m_table_props.pos.row = row_index - 1;
-        m_cur_row = m_table_props.pos.row;
-    }
 
     if (col_index > 0)
-    {
         m_table_props.pos.column = col_index - 1;
-        m_cur_prop_col = m_table_props.pos.column;
-    }
+
+    m_cur_row = m_table_props.pos.row;
+    m_cur_prop_col = m_table_props.pos.column;
 }
 
 void xls_xml_context::start_element_worksheet(const xml_token_attrs_t& attrs)
