@@ -19,6 +19,7 @@
 #include <mdds/sorted_string_map.hpp>
 
 #include <iostream>
+#include <sstream>
 #include <limits>
 
 namespace ss = orcus::spreadsheet;
@@ -56,8 +57,21 @@ void xls_xml_data_context::format_type::merge(const format_type& fmt)
 {
     if (fmt.bold)
         bold = fmt.bold;
+
     if (fmt.italic)
         italic = fmt.italic;
+
+    if (fmt.underline)
+        underline = fmt.underline;
+
+    if (fmt.strikethrough)
+        strikethrough = fmt.strikethrough;
+
+    if (fmt.subscript)
+        subscript = fmt.subscript;
+
+    if (fmt.superscript)
+        superscript = fmt.superscript;
 
     if (fmt.color)
         color = fmt.color;
@@ -65,7 +79,7 @@ void xls_xml_data_context::format_type::merge(const format_type& fmt)
 
 bool xls_xml_data_context::format_type::formatted() const
 {
-    return bold || italic || color;
+    return bold || italic || underline || strikethrough || subscript || superscript || color;
 }
 
 xls_xml_data_context::string_segment_type::string_segment_type(std::string_view _str) :
@@ -145,6 +159,26 @@ void xls_xml_data_context::start_element(xmlns_id_t ns, xml_token_t name, const:
                 m_format_stack.back().italic = true;
                 update_current_format();
                 break;
+            case XML_U:
+                m_format_stack.emplace_back();
+                m_format_stack.back().underline = true;
+                update_current_format();
+                break;
+            case XML_S:
+                m_format_stack.emplace_back();
+                m_format_stack.back().strikethrough = true;
+                update_current_format();
+                break;
+            case XML_Sub:
+                m_format_stack.emplace_back();
+                m_format_stack.back().subscript = true;
+                update_current_format();
+                break;
+            case XML_Sup:
+                m_format_stack.emplace_back();
+                m_format_stack.back().superscript = true;
+                update_current_format();
+                break;
             case XML_Font:
             {
                 m_format_stack.emplace_back();
@@ -212,11 +246,12 @@ void xls_xml_data_context::characters(std::string_view str, bool transient)
             m_cell_datetime = date_time_t::from_chars(str);
             break;
         default:
-            if (get_config().debug)
-            {
-                std::cout << "warning: unknown cell type '" << m_cell_type
-                    << "': characters='" << str << "'" << std::endl;
-            }
+        {
+            std::ostringstream os;
+            os << "warning: unknown cell type '" << m_cell_type
+                << "': characters='" << str << "'";
+            warn(os.str());
+        }
     }
 }
 
@@ -239,6 +274,10 @@ bool xls_xml_data_context::end_element(xmlns_id_t ns, xml_token_t name)
         {
             case XML_B:
             case XML_I:
+            case XML_U:
+            case XML_S:
+            case XML_Sub:
+            case XML_Sup:
             case XML_Font:
                 assert(!m_format_stack.empty());
                 m_format_stack.pop_back();

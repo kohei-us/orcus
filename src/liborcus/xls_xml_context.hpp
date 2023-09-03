@@ -44,6 +44,10 @@ class xls_xml_data_context : public xml_context_base
     {
         std::optional<bool> bold;
         std::optional<bool> italic;
+        std::optional<bool> underline;
+        std::optional<bool> strikethrough;
+        std::optional<bool> subscript;
+        std::optional<bool> superscript;
 
         std::optional<spreadsheet::color_rgb_t> color;
 
