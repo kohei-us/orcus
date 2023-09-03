@@ -246,6 +246,8 @@ ExpandedRowCount
 ExternName
 ExtraLeftColumns
 ExtraRightColumns
+Face
+Family
 Family
 Field
 FieldLabelFormat

@@ -73,13 +73,21 @@ void xls_xml_data_context::format_type::merge(const format_type& fmt)
     if (fmt.superscript)
         superscript = fmt.superscript;
 
+    if (fmt.font_face)
+        font_face = fmt.font_face;
+
+    if (fmt.font_size)
+        font_size = fmt.font_size;
+
     if (fmt.color)
         color = fmt.color;
 }
 
 bool xls_xml_data_context::format_type::formatted() const
 {
-    return bold || italic || underline || strikethrough || subscript || superscript || color;
+    return bold || italic || underline || strikethrough
+        || subscript || superscript || font_face || font_size
+        || color;
 }
 
 xls_xml_data_context::string_segment_type::string_segment_type(std::string_view _str) :
@@ -186,20 +194,28 @@ void xls_xml_data_context::start_element(xmlns_id_t ns, xml_token_t name, const:
 
                 for (const xml_token_attr_t& attr : attrs)
                 {
-                    if (ns != NS_xls_xml_html)
-                        continue;
-
-                    switch (attr.name)
+                    if (ns == NS_xls_xml_html)
                     {
-                        case XML_Color:
-                            fmt.color = to_rgb(attr.value);
-                            break;
-                        default:
-                            ;
+                        switch (attr.name)
+                        {
+                            case XML_Color:
+                                fmt.color = to_rgb(attr.value);
+                                break;
+                            case XML_Face:
+                                fmt.font_face = attr.transient ? intern(attr.value) : attr.value;
+                                break;
+                            case XML_Size:
+                            {
+                                const char* p_end = nullptr;
+                                double v = to_double(attr.value, &p_end);
+                                if (attr.value.data() < p_end)
+                                    fmt.font_size = v;
+                                break;
+                            }
+                        }
                     }
                 }
 
-                // TODO : pick up the color.
                 update_current_format();
                 break;
             }
@@ -383,14 +399,26 @@ void xls_xml_data_context::end_element_data()
             }
             else
             {
-                // Formatted string.
+                // Formatted string. Note that an absence of a format type
+                // appears to mean its negative value is implied.
+
                 for (const string_segment_type& sstr : m_cell_string)
                 {
                     if (sstr.format.bold)
                         ss->set_segment_bold(*sstr.format.bold);
+                    else
+                        ss->set_segment_bold(false); // implied
 
                     if (sstr.format.italic)
                         ss->set_segment_italic(*sstr.format.italic);
+                    else
+                        ss->set_segment_italic(false); // implied
+
+                    if (sstr.format.font_face)
+                        ss->set_segment_font_name(*sstr.format.font_face);
+
+                    if (sstr.format.font_size)
+                        ss->set_segment_font_size(*sstr.format.font_size);
 
                     if (sstr.format.color)
                         ss->set_segment_font_color(

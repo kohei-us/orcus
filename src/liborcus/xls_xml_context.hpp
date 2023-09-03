@@ -49,6 +49,8 @@ class xls_xml_data_context : public xml_context_base
         std::optional<bool> subscript;
         std::optional<bool> superscript;
 
+        std::optional<std::string_view> font_face;
+        std::optional<double> font_size;
         std::optional<spreadsheet::color_rgb_t> color;
 
         void merge(const format_type& other);
