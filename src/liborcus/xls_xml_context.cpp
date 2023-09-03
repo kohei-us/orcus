@@ -92,10 +92,24 @@ xls_xml_data_context::xls_xml_data_context(
         // parent element -> child element
         { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_xls_xml_ss, XML_Data }, // root element
         { NS_xls_xml_html, XML_B, NS_xls_xml_html, XML_Font },
+        { NS_xls_xml_html, XML_Font, NS_xls_xml_html, XML_B },
+        { NS_xls_xml_html, XML_Font, NS_xls_xml_html, XML_I },
+        { NS_xls_xml_html, XML_Font, NS_xls_xml_html, XML_S },
+        { NS_xls_xml_html, XML_Font, NS_xls_xml_html, XML_Sub },
+        { NS_xls_xml_html, XML_Font, NS_xls_xml_html, XML_Sup },
+        { NS_xls_xml_html, XML_Font, NS_xls_xml_html, XML_U },
         { NS_xls_xml_html, XML_I, NS_xls_xml_html, XML_Font },
+        { NS_xls_xml_html, XML_S, NS_xls_xml_html, XML_Font },
+        { NS_xls_xml_html, XML_Sub, NS_xls_xml_html, XML_Font },
+        { NS_xls_xml_html, XML_Sup, NS_xls_xml_html, XML_Font },
+        { NS_xls_xml_html, XML_U, NS_xls_xml_html, XML_Font },
         { NS_xls_xml_ss, XML_Data, NS_xls_xml_html, XML_B },
         { NS_xls_xml_ss, XML_Data, NS_xls_xml_html, XML_Font },
         { NS_xls_xml_ss, XML_Data, NS_xls_xml_html, XML_I },
+        { NS_xls_xml_ss, XML_Data, NS_xls_xml_html, XML_S },
+        { NS_xls_xml_ss, XML_Data, NS_xls_xml_html, XML_Sub },
+        { NS_xls_xml_ss, XML_Data, NS_xls_xml_html, XML_Sup },
+        { NS_xls_xml_ss, XML_Data, NS_xls_xml_html, XML_U },
     };
 
     init_element_validator(rules, std::size(rules));
