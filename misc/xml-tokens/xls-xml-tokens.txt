@@ -571,6 +571,7 @@ RowNumbers
 Rule
 RuleType
 RuleV10
+S
 SOAPAction
 SQLType
 Scale
@@ -630,12 +631,14 @@ StrikeThrough
 Style
 StyleID
 Styles
+Sub
 SubType
 Subject
 Subtotal
 SubtotalFormat
 SubtotalHiddenPageItems
 SubtotalName
+Sup
 SupBook
 Synchronous
 Tab
@@ -665,6 +668,7 @@ TotalWidth
 TransitionExpressionEvaluation
 TransitionFormulaEntry
 Type
+U
 URLString
 Uncalced
 Underline

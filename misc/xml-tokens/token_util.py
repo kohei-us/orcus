@@ -1,3 +1,11 @@
+########################################################################
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+########################################################################
+
 import sys
 
 
@@ -29,28 +37,34 @@ def gen_token_list(filepath, tokens, ns_tokens):
 
 
 def get_auto_gen_warning():
-    return "// This file has been auto-generated.  Do not hand-edit this.\n\n"
+    return "// This file has been auto-generated.  Do not hand-edit this."
 
 
 def gen_token_constants(outfile, tokens):
 
-    outfile.write(get_auto_gen_warning())
+    with open(outfile, "w") as f:
+        print(get_auto_gen_warning(), file=f)
+        print(file=f)
 
-    for i, token in enumerate(tokens):
-        token = normalize_name(token)
-        outfile.write(f"const xml_token_t XML_{token} = {i+1};\n")
+        for i, token in enumerate(tokens):
+            token = normalize_name(token)
+            print(f"const xml_token_t XML_{token} = {i+1};", file=f)
 
 
 def gen_token_names(outfile, tokens):
 
-    outfile.write(get_auto_gen_warning())
-    outfile.write("const char* token_names[] = {\n")
-    outfile.write(f"    \"{unknown_token_name}\", // 0\n")
+    with open(outfile, "w") as f:
+        print(get_auto_gen_warning(), file=f)
+        print(file=f)
 
-    for i, token in enumerate(tokens):
-        s = ','
-        if i == len(tokens) - 1:
-            s = ' '
-        outfile.write(f"    \"{token}\"{s} // {i+1}\n")
-    outfile.write("};\n\n")
-    outfile.write(f"size_t token_name_count = {len(tokens)+1};")
+        print("const char* token_names[] = {", file=f)
+        print(f"    \"{unknown_token_name}\", // 0", file=f)
+
+        for i, token in enumerate(tokens):
+            s = ','
+            if i == len(tokens) - 1:
+                s = ' '
+            print(f"    \"{token}\"{s} // {i+1}", file=f)
+        print("};", file=f)
+        print(file=f)
+        print(f"size_t token_name_count = {len(tokens)+1};", file=f)
