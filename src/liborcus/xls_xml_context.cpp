@@ -1825,6 +1825,8 @@ void xls_xml_context::end_element_table()
     push_all_array_formulas();
     m_array_formulas.clear();
     m_table_props.reset();
+    m_cur_row = 0;
+    m_cur_prop_col = 0;
 }
 
 void xls_xml_context::end_element_worksheet()
