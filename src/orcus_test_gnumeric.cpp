@@ -853,8 +853,8 @@ void test_gnumeric_text_formats()
         assert(fmt);
         const ss::font_t* font = styles_pool.get_font(fmt->font);
         assert(font);
-        font->name == "Serif";
-        font->size == 12.0f;
+        assert(font->name == "Serif");
+        assert(font->size == 12.0f);
 
         // two segments where Monospace font is applied
         si = sheet3->get_string_identifier(row, col);

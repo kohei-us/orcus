@@ -453,6 +453,346 @@ void test_xls_xml_colored_text()
     assert(fmt->size == 4);
 }
 
+void test_xls_xml_formatted_text_basic()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/formatted-text/basic.xml");
+    const auto& styles_pool = doc->get_styles();
+
+    auto get_font = [&styles_pool](const ss::sheet& sh, ss::row_t row, ss::col_t col)
+    {
+        std::size_t xf = sh.get_cell_format(row, col);
+
+        const ss::cell_format_t* cell_format = styles_pool.get_cell_format(xf);
+        assert(cell_format);
+
+        const ss::font_t* font = styles_pool.get_font(cell_format->font);
+        assert(font);
+
+        return font;
+    };
+
+    auto check_cell_bold = [&get_font](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    {
+        const ss::font_t* font = get_font(sh, row, col);
+
+        if (expected)
+        {
+            if (font->bold && *font->bold)
+                return true;
+
+            std::cerr << "expected to be bold but it is not "
+                << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+                << std::endl;
+
+            return false;
+        }
+        else
+        {
+            if (!font->bold || !*font->bold)
+                return true;
+
+            std::cerr << "expected to be non-bold but it is bold "
+                << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+                << std::endl;
+
+            return false;
+        }
+    };
+
+    auto check_cell_italic = [&get_font](const ss::sheet& sh, ss::row_t row, ss::col_t col, bool expected)
+    {
+        const ss::font_t* font = get_font(sh, row, col);
+
+        if (expected)
+        {
+            if (font->italic && *font->italic)
+                return true;
+
+            std::cerr << "expected to be italic but it is not "
+                << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+                << std::endl;
+
+            return false;
+        }
+        else
+        {
+            if (!font->italic || !*font->italic)
+                return true;
+
+            std::cerr << "expected to be non-italic but it is italic "
+                << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+                << std::endl;
+
+            return false;
+        }
+    };
+
+    auto check_cell_text = [&doc](const ss::sheet& sh, ss::row_t row, ss::col_t col, std::string_view expected)
+    {
+        const auto& sstrings = doc->get_shared_strings();
+
+        std::size_t si = sh.get_string_identifier(row, col);
+        const std::string* s = sstrings.get_string(si);
+        if (!s)
+        {
+            std::cerr << "expected='" << expected << "'; actual=<none> "
+                << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+                << std::endl;
+
+            return false;
+        }
+
+        if (*s == expected)
+            return true;
+
+        std::cerr << "expected='" << expected << "'; actual='" << *s << "' "
+            << "(sheet=" << sh.get_index() << "; row=" << row << "; column=" << col << ")"
+            << std::endl;
+
+        return false;
+    };
+
+    {
+        const spreadsheet::sheet* sheet = doc->get_sheet("Text Properties");
+        assert(sheet);
+
+        ss::row_t row = 0;
+        ss::col_t col = 0;
+
+        // A1 - unformatted
+        assert(check_cell_text(*sheet, row, col, "Normal Text"));
+        assert(check_cell_bold(*sheet, row, col, false));
+        assert(check_cell_italic(*sheet, row, col, false));
+
+        // A2 - bold
+        row = 1;
+        assert(check_cell_text(*sheet, row, col, "Bold Text"));
+        assert(check_cell_bold(*sheet, row, col, true));
+        assert(check_cell_italic(*sheet, row, col, false));
+
+        // A3 - italic
+        row = 2;
+        assert(check_cell_text(*sheet, row, col, "Italic Text"));
+        assert(check_cell_bold(*sheet, row, col, false));
+        assert(check_cell_italic(*sheet, row, col, true));
+
+        // A4 - bold and italic
+        row = 3;
+        assert(check_cell_text(*sheet, row, col, "Bold and Italic Text"));
+        assert(check_cell_bold(*sheet, row, col, true));
+        assert(check_cell_italic(*sheet, row, col, true));
+
+        // A5 - bold and italic mixed. Excel creates format runs even for
+        // non-formatted segments.
+        row = 4;
+        assert(check_cell_text(*sheet, row, col, "Bold and Italic mixed"));
+
+        std::size_t si = sheet->get_string_identifier(row, col);
+        const ss::format_runs_t* runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 4u); // only 0 and 2 are formatted
+
+        // Bold and ...
+        // ^^^^
+        assert(runs->at(0).pos == 0);
+        assert(runs->at(0).size == 4);
+        assert(runs->at(0).bold);
+        assert(!runs->at(0).italic);
+
+        // Bold and Italic
+        //          ^^^^^^
+        assert(runs->at(2).pos == 9);
+        assert(runs->at(2).size == 6);
+        assert(!runs->at(2).bold);
+        assert(runs->at(2).italic);
+
+        // A6
+        row = 5;
+        assert(check_cell_text(*sheet, row, col, "Bold base with non-bold part"));
+        assert(check_cell_bold(*sheet, row, col, true));
+        assert(check_cell_italic(*sheet, row, col, false));
+
+        si = sheet->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 3u);
+
+        assert(runs->at(0).pos == 0);
+        assert(runs->at(0).size == 15);
+        assert(runs->at(0).bold);
+
+        assert(runs->at(1).pos == 15);
+        assert(runs->at(1).size == 8);
+        assert(!runs->at(1).bold);
+
+        assert(runs->at(2).pos == 23);
+        assert(runs->at(2).size == 5);
+        assert(runs->at(2).bold);
+
+        // A7 - TODO: check format
+        row = 6;
+        assert(check_cell_text(*sheet, row, col, "Only partially underlined"));
+
+        // A8
+        row = 7;
+        assert(check_cell_text(*sheet, row, col, "All Underlined"));
+        const ss::font_t* font = get_font(*sheet, row, col);
+        assert(font->underline_style);
+        assert(*font->underline_style == ss::underline_t::single_line);
+
+        // A9
+        row = 8;
+        assert(check_cell_text(*sheet, row, col, "Bold and underlined"));
+        assert(check_cell_bold(*sheet, row, col, true));
+        font = get_font(*sheet, row, col);
+        assert(font->underline_style);
+        assert(*font->underline_style == ss::underline_t::single_line);
+
+        row = 9;
+        assert(check_cell_text(*sheet, row, col, "All Strikethrough"));
+        // TODO: check for strikethrough in cell
+
+        // A11:A15 - TODO: check format
+        row = 10;
+        assert(check_cell_text(*sheet, row, col, "Partial strikethrough"));
+        row = 11;
+        assert(check_cell_text(*sheet, row, col, "Superscript"));
+        row = 12;
+        assert(check_cell_text(*sheet, row, col, "Subscript"));
+        row = 13;
+        assert(check_cell_text(*sheet, row, col, "x2 + y2 = 102"));
+        row = 14;
+        assert(check_cell_text(*sheet, row, col, "xi = yi + zi"));
+    }
+
+    {
+        const spreadsheet::sheet* sheet = doc->get_sheet("Fonts");
+        assert(sheet);
+
+        struct check
+        {
+            ss::row_t row;
+            std::string_view font_name;
+            double font_unit;
+        };
+
+        check checks[] = {
+            { 0, "Calibri Light", 12.0 },
+            { 1, "Arial", 18.0 },
+            { 2, "Times New Roman", 14.0 },
+            { 3, "Consolas", 9.0 },
+            { 4, "Bookman Old Style", 20.0 },
+        };
+
+        for (const auto& c : checks)
+        {
+            std::size_t xf = sheet->get_cell_format(c.row, 0);
+            const ss::cell_format_t* cell_format = styles_pool.get_cell_format(xf);
+            assert(cell_format);
+            const ss::font_t* font = styles_pool.get_font(cell_format->font);
+            assert(font);
+            assert(font->name == c.font_name);
+            assert(font->size == c.font_unit);
+
+            // Columns A and B should have the same font.
+            xf = sheet->get_cell_format(c.row, 1);
+            cell_format = styles_pool.get_cell_format(xf);
+            assert(cell_format);
+            font = styles_pool.get_font(cell_format->font);
+            assert(font);
+            assert(font->name == c.font_name);
+            assert(font->size == c.font_unit);
+        }
+    }
+
+    {
+        const spreadsheet::sheet* sheet = doc->get_sheet("Mixed Fonts");
+        assert(sheet);
+
+        // A1
+        ss::row_t row = 0;
+        ss::col_t col = 0;
+        assert(check_cell_text(*sheet, row, col, "C++ has class and struct as keywords."));
+
+        // Base cell has Serif 12-pt font applied
+        auto xf = sheet->get_cell_format(row, col);
+        const ss::cell_format_t* fmt = styles_pool.get_cell_format(xf);
+        assert(fmt);
+        const ss::font_t* font = styles_pool.get_font(fmt->font);
+        assert(font);
+        assert(font->name == "Calibri");
+        assert(font->size == 11.0);
+
+        // Two segments has Liberation Mono font applied (runs 1 and 3) whereas
+        // runs 0, 2 and 4 are unformatted.
+        std::size_t si = sheet->get_string_identifier(row, col);
+        const ss::format_runs_t* runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 5u);
+
+        // C++ has class ...
+        //         ^^^^^
+        assert(runs->at(1).pos == 8);
+        assert(runs->at(1).size == 5);
+        assert(runs->at(1).font == "Liberation Mono");
+
+        // ... and struct as ...
+        //         ^^^^^^
+        assert(runs->at(3).pos == 18);
+        assert(runs->at(3).size == 6);
+        assert(runs->at(3).font == "Liberation Mono");
+
+        // A2
+        row = 1;
+        assert(check_cell_text(*sheet, row, col, "Text with 12-point font, 24-point font, and 36-point font mixed."));
+        si = sheet->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 10u);
+
+        // with 12-point font, ...
+        //      ^^
+        assert(runs->at(1).pos == 10);
+        assert(runs->at(1).size == 2);
+        assert(runs->at(1).font_size == 12.0f);
+        assert(runs->at(1).color == ss::color_t(0xFF, 0xFF, 0, 0)); // red
+
+        // with 12-point font, ...
+        //        ^^^^^^
+        assert(runs->at(2).pos == 12);
+        assert(runs->at(2).size == 6);
+        assert(runs->at(2).font_size == 12.0f);
+
+        // 24-point font,
+        // ^^
+        assert(runs->at(4).pos == 25);
+        assert(runs->at(4).size == 2);
+        assert(runs->at(4).font_size == 24.0f);
+        assert(runs->at(4).color == ss::color_t(0xFF, 0xFF, 0, 0)); // red
+
+        // 24-point font,
+        //   ^^^^^^
+        assert(runs->at(5).pos == 27);
+        assert(runs->at(5).size == 6);
+        assert(runs->at(5).font_size == 24.0f);
+
+        // and 36-point font
+        //     ^^
+        assert(runs->at(7).pos == 44);
+        assert(runs->at(7).size == 2);
+        assert(runs->at(7).font_size == 36.0f);
+        assert(runs->at(7).color == ss::color_t(0xFF, 0xFF, 0, 0)); // red
+
+        // and 36-point font
+        //       ^^^^^^
+        assert(runs->at(8).pos == 46);
+        assert(runs->at(8).size == 6);
+        assert(runs->at(8).font_size == 36.0f);
+    }
+}
+
 void test_xls_xml_column_width_row_height()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -2052,6 +2392,7 @@ int main()
     test_xls_xml_date_time();
     test_xls_xml_bold_and_italic();
     test_xls_xml_colored_text();
+    test_xls_xml_formatted_text_basic();
     test_xls_xml_column_width_row_height();
     test_xls_xml_background_fill();
     test_xls_xml_named_colors();

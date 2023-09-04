@@ -141,6 +141,7 @@ class xls_xml_context : public xml_context_base
         std::string_view name;
         std::string_view family;
         std::optional<double> size;
+        std::optional<spreadsheet::underline_t> underline;
         bool bold = false;
         bool italic = false;
 

@@ -51,7 +51,148 @@ ss::color_rgb_t to_rgb(std::string_view s)
     }
 }
 
+namespace border_dir {
+
+using map_type = mdds::sorted_string_map<ss::border_direction_t, mdds::string_view_map_entry>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] = {
+    { "Bottom",        ss::border_direction_t::bottom         },
+    { "DiagonalLeft",  ss::border_direction_t::diagonal_tl_br },
+    { "DiagonalRight", ss::border_direction_t::diagonal_bl_tr },
+    { "Left",          ss::border_direction_t::left           },
+    { "Right",         ss::border_direction_t::right          },
+    { "Top",           ss::border_direction_t::top            },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::border_direction_t::unknown);
+    return mt;
 }
+
+} // namespace border_dir
+
+namespace border_style {
+
+using map_type = mdds::sorted_string_map<ss::border_style_t, mdds::string_view_map_entry>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] = {
+    { "Continuous",   ss::border_style_t::solid          },
+    { "Dash",         ss::border_style_t::dashed         },
+    { "DashDot",      ss::border_style_t::dash_dot       },
+    { "DashDotDot",   ss::border_style_t::dash_dot_dot   },
+    { "Dot",          ss::border_style_t::dotted         },
+    { "Double",       ss::border_style_t::double_border  },
+    { "SlantDashDot", ss::border_style_t::slant_dash_dot },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::border_style_t::unknown);
+    return mt;
+}
+
+}
+
+namespace hor_align {
+
+using map_type = mdds::sorted_string_map<ss::hor_alignment_t, mdds::string_view_map_entry>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] = {
+    { "Center",      ss::hor_alignment_t::center      },
+    { "Distributed", ss::hor_alignment_t::distributed },
+    { "Justify",     ss::hor_alignment_t::justified   },
+    { "Left",        ss::hor_alignment_t::left        },
+    { "Right",       ss::hor_alignment_t::right       },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::hor_alignment_t::unknown);
+    return mt;
+}
+
+}
+
+namespace ver_align {
+
+using map_type = mdds::sorted_string_map<ss::ver_alignment_t, mdds::string_view_map_entry>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] = {
+    { "Bottom",      ss::ver_alignment_t::bottom      },
+    { "Center",      ss::ver_alignment_t::middle      },
+    { "Distributed", ss::ver_alignment_t::distributed },
+    { "Justify",     ss::ver_alignment_t::justified   },
+    { "Top",         ss::ver_alignment_t::top         },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::ver_alignment_t::unknown);
+    return mt;
+}
+
+}
+
+namespace num_format {
+
+using map_type = mdds::sorted_string_map<std::string_view, mdds::string_view_map_entry>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] = {
+    { "Currency", "$#,##0.00_);[Red]($#,##0.00)" },
+    { "Euro Currency", "[$\xe2\x82\xac-x-euro2] #,##0.00_);[Red]([$\xe2\x82\xac-x-euro2] #,##0.00)" },
+    { "Fixed", "0.00" },
+    { "General Date", "m/d/yyyy h:mm" },
+    { "General Number", "General" },
+    { "Long Date", "d-mmm-yy" },
+    { "Long Time", "h:mm:ss AM/PM" },
+    { "Medium Date", "d-mmm-yy" },
+    { "Medium Time", "h:mm AM/PM" },
+    { "On/Off", "\"On\";\"On\";\"Off\"" },
+    { "Percent", "0.00%" },
+    { "Scientific", "0.00E+00" },
+    { "Short Date", "m/d/yyyy" },
+    { "Short Time", "h:mm" },
+    { "Standard", "#,##0.00" },
+    { "True/False", "\"True\";\"True\";\"False\"" },
+    { "Yes/No", "\"Yes\";\"Yes\";\"No\"" },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), std::string_view{});
+    return mt;
+}
+
+} // namespace num_format
+
+namespace underline {
+
+using map_type = mdds::sorted_string_map<ss::underline_t, mdds::string_view_map_entry>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] = {
+    { "Double", ss::underline_t::double_line },
+    { "DoubleAccounting", ss::underline_t::double_accounting },
+    { "None", ss::underline_t::none },
+    { "Single", ss::underline_t::single_line },
+    { "SingleAccounting", ss::underline_t::single_accounting },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::underline_t::none);
+    return mt;
+}
+
+} // namespace underline
+
+} // anonymous namespace
 
 void xls_xml_data_context::format_type::merge(const format_type& fmt)
 {
@@ -591,130 +732,6 @@ void xls_xml_data_context::update_current_format()
     );
 }
 
-namespace {
-
-namespace border_dir {
-
-using map_type = mdds::sorted_string_map<ss::border_direction_t, mdds::string_view_map_entry>;
-
-// Keys must be sorted.
-constexpr map_type::entry entries[] = {
-    { "Bottom",        ss::border_direction_t::bottom         },
-    { "DiagonalLeft",  ss::border_direction_t::diagonal_tl_br },
-    { "DiagonalRight", ss::border_direction_t::diagonal_bl_tr },
-    { "Left",          ss::border_direction_t::left           },
-    { "Right",         ss::border_direction_t::right          },
-    { "Top",           ss::border_direction_t::top            },
-};
-
-const map_type& get()
-{
-    static const map_type mt(entries, std::size(entries), ss::border_direction_t::unknown);
-    return mt;
-}
-
-} // namespace border_dir
-
-namespace border_style {
-
-using map_type = mdds::sorted_string_map<ss::border_style_t, mdds::string_view_map_entry>;
-
-// Keys must be sorted.
-constexpr map_type::entry entries[] = {
-    { "Continuous",   ss::border_style_t::solid          },
-    { "Dash",         ss::border_style_t::dashed         },
-    { "DashDot",      ss::border_style_t::dash_dot       },
-    { "DashDotDot",   ss::border_style_t::dash_dot_dot   },
-    { "Dot",          ss::border_style_t::dotted         },
-    { "Double",       ss::border_style_t::double_border  },
-    { "SlantDashDot", ss::border_style_t::slant_dash_dot },
-};
-
-const map_type& get()
-{
-    static const map_type mt(entries, std::size(entries), ss::border_style_t::unknown);
-    return mt;
-}
-
-}
-
-namespace hor_align {
-
-using map_type = mdds::sorted_string_map<ss::hor_alignment_t, mdds::string_view_map_entry>;
-
-// Keys must be sorted.
-constexpr map_type::entry entries[] = {
-    { "Center",      ss::hor_alignment_t::center      },
-    { "Distributed", ss::hor_alignment_t::distributed },
-    { "Justify",     ss::hor_alignment_t::justified   },
-    { "Left",        ss::hor_alignment_t::left        },
-    { "Right",       ss::hor_alignment_t::right       },
-};
-
-const map_type& get()
-{
-    static const map_type mt(entries, std::size(entries), ss::hor_alignment_t::unknown);
-    return mt;
-}
-
-}
-
-namespace ver_align {
-
-using map_type = mdds::sorted_string_map<ss::ver_alignment_t, mdds::string_view_map_entry>;
-
-// Keys must be sorted.
-constexpr map_type::entry entries[] = {
-    { "Bottom",      ss::ver_alignment_t::bottom      },
-    { "Center",      ss::ver_alignment_t::middle      },
-    { "Distributed", ss::ver_alignment_t::distributed },
-    { "Justify",     ss::ver_alignment_t::justified   },
-    { "Top",         ss::ver_alignment_t::top         },
-};
-
-const map_type& get()
-{
-    static const map_type mt(entries, std::size(entries), ss::ver_alignment_t::unknown);
-    return mt;
-}
-
-}
-
-namespace num_format {
-
-using map_type = mdds::sorted_string_map<std::string_view, mdds::string_view_map_entry>;
-
-// Keys must be sorted.
-constexpr map_type::entry entries[] = {
-    { "Currency", "$#,##0.00_);[Red]($#,##0.00)" },
-    { "Euro Currency", "[$\xe2\x82\xac-x-euro2] #,##0.00_);[Red]([$\xe2\x82\xac-x-euro2] #,##0.00)" },
-    { "Fixed", "0.00" },
-    { "General Date", "m/d/yyyy h:mm" },
-    { "General Number", "General" },
-    { "Long Date", "d-mmm-yy" },
-    { "Long Time", "h:mm:ss AM/PM" },
-    { "Medium Date", "d-mmm-yy" },
-    { "Medium Time", "h:mm AM/PM" },
-    { "On/Off", "\"On\";\"On\";\"Off\"" },
-    { "Percent", "0.00%" },
-    { "Scientific", "0.00E+00" },
-    { "Short Date", "m/d/yyyy" },
-    { "Short Time", "h:mm" },
-    { "Standard", "#,##0.00" },
-    { "True/False", "\"True\";\"True\";\"False\"" },
-    { "Yes/No", "\"Yes\";\"Yes\";\"No\"" },
-};
-
-const map_type& get()
-{
-    static const map_type mt(entries, std::size(entries), std::string_view{});
-    return mt;
-}
-
-} // namespace num_format
-
-} // anonymous namespace
-
 xls_xml_context::array_formula_type::array_formula_type(
     const ss::range_t& _range, std::string_view _formula) :
     formula(_formula),
@@ -1067,6 +1084,11 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_t
                         case XML_Size:
                         {
                             m_current_style->font.size = to_double(attr.value);
+                            break;
+                        }
+                        case XML_Underline:
+                        {
+                            m_current_style->font.underline = underline::get().find(attr.value);
                             break;
                         }
                     }
@@ -2001,6 +2023,9 @@ void xls_xml_context::commit_default_style()
         if (font.size)
             font_style->set_size(*font.size);
 
+        if (font.underline)
+            font_style->set_underline(*font.underline);
+
         font_style->set_bold(font.bold);
         font_style->set_italic(font.italic);
         font_style->set_color(255, font.color.red, font.color.green, font.color.blue);
@@ -2154,6 +2179,9 @@ void xls_xml_context::commit_styles()
 
         if (style->font.size)
             font_style->set_size(*style->font.size);
+
+        if (style->font.underline)
+            font_style->set_underline(*style->font.underline);
 
         font_style->set_bold(style->font.bold);
         font_style->set_italic(style->font.italic);
