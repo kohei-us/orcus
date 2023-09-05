@@ -28,7 +28,6 @@
 #include <cstdlib>
 #include <sstream>
 
-using namespace std;
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {
@@ -121,7 +120,7 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
             func = for_each(attrs.begin(), attrs.end(), func);
 
             if (get_config().debug)
-                cout << "count: " << func.get_count() << "  unique count: " << func.get_unique_count() << endl;
+                std::cout << "count: " << func.get_count() << "  unique count: " << func.get_unique_count() << std::endl;
         }
         break;
         case XML_si:
@@ -544,7 +543,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_u:
             {
                 assert(mp_font);
-                std::string_view ps = for_each(
+                std::string_view ps = std::for_each(
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
 
                 if (ps == "double")
