@@ -23,6 +23,7 @@ class import_font_style : public iface::import_font_style
 public:
     import_font_style() = delete;
     import_font_style(styles& _styles_model, string_pool& sp);
+    import_font_style(std::shared_ptr<import_factory_config> _config, styles& _styles_model, string_pool& sp);
     virtual ~import_font_style() override;
 
     virtual void set_bold(bool b) override;
@@ -177,6 +178,7 @@ public:
 
 struct import_font_style::impl
 {
+    std::shared_ptr<import_factory_config> config;
     styles& styles_model;
     string_pool& str_pool;
 
@@ -184,11 +186,22 @@ struct import_font_style::impl
     font_t cur_font;
 
     impl(styles& _styles_model, string_pool& sp) :
-        styles_model(_styles_model), str_pool(sp) {}
+        config(std::make_shared<import_factory_config>()),
+        styles_model(_styles_model),
+        str_pool(sp) {}
+
+    impl(std::shared_ptr<import_factory_config> _config, styles& _styles_model, string_pool& sp) :
+        config(_config), styles_model(_styles_model), str_pool(sp) {}
 };
 
 import_font_style::import_font_style(styles& _styles_model, string_pool& sp) :
     mp_impl(std::make_unique<impl>(_styles_model, sp))
+{
+}
+
+import_font_style::import_font_style(
+    std::shared_ptr<import_factory_config> _config, styles& _styles_model, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(_config, _styles_model, sp))
 {
 }
 
@@ -306,9 +319,12 @@ void import_font_style::set_strikethrough_text(strikethrough_text_t s)
 
 std::size_t import_font_style::commit()
 {
-    auto it = mp_impl->font_cache.find(mp_impl->cur_font);
-    if (it != mp_impl->font_cache.end())
-        return it->second;
+    if (mp_impl->config->enable_font_cache)
+    {
+        auto it = mp_impl->font_cache.find(mp_impl->cur_font);
+        if (it != mp_impl->font_cache.end())
+            return it->second;
+    }
 
     std::size_t font_id = mp_impl->styles_model.append_font(mp_impl->cur_font);
     mp_impl->font_cache.insert({mp_impl->cur_font, font_id});
@@ -742,12 +758,27 @@ struct import_styles::impl
         xf(_styles_model, sp),
         cell_style(_styles_model, sp)
     {}
+
+    impl(std::shared_ptr<import_factory_config> config, styles& _styles_model, string_pool& sp) :
+        styles_model(_styles_model),
+        str_pool(sp),
+        font_style(config, _styles_model, sp),
+        fill_style(_styles_model, sp),
+        border_style(_styles_model, sp),
+        cell_protection(_styles_model, sp),
+        number_format(_styles_model, sp),
+        xf(_styles_model, sp),
+        cell_style(_styles_model, sp)
+    {}
 };
 
 import_styles::import_styles(styles& styles_store, string_pool& sp) :
     mp_impl(std::make_unique<impl>(styles_store, sp)) {}
 
-import_styles::~import_styles() {}
+import_styles::import_styles(std::shared_ptr<import_factory_config> config, styles& styles_store, string_pool& sp) :
+    mp_impl(std::make_unique<impl>(config, styles_store, sp)) {}
+
+import_styles::~import_styles() = default;
 
 iface::import_font_style* import_styles::start_font_style()
 {

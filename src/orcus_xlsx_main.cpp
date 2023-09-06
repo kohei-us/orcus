@@ -24,6 +24,11 @@ int main(int argc, char** argv)
         spreadsheet::document doc{ss};
         spreadsheet::view view(doc);
         spreadsheet::import_factory fact(doc, view);
+
+        spreadsheet::import_factory_config config;
+        config.enable_font_cache = false;
+        fact.set_config(config);
+
         orcus_xlsx app(&fact);
 
         if (!parse_import_filter_args(argc, argv, fact, app, doc))

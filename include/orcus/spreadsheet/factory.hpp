@@ -25,6 +25,25 @@ class document;
 class view;
 class styles;
 
+struct ORCUS_SPM_DLLPUBLIC import_factory_config
+{
+    /**
+     * When the font cache is enabled, the import factory checks each incoming
+     * font entry against the pool of existing font entries and insert it only
+     * when an equal entry doesn't already exist in the pool.
+     *
+     * @note It should not be enabled for a file format that already has
+     * font entries normalized, such as xlsx.
+     */
+    bool enable_font_cache = true;
+
+    import_factory_config();
+    import_factory_config(const import_factory_config& other);
+    ~import_factory_config();
+
+    import_factory_config& operator=(const import_factory_config& other);
+};
+
 /**
  * Wraps @ref document and @ref view stores.  This is to be used by the import
  * filter to populate the document and view stores.
@@ -51,6 +70,8 @@ public:
     virtual iface::import_sheet* get_sheet(std::string_view name) override;
     virtual iface::import_sheet* get_sheet(sheet_t sheet_index) override;
     virtual void finalize() override;
+
+    void set_config(const import_factory_config& config);
 
     void set_default_row_size(row_t row_size);
     void set_default_column_size(col_t col_size);
@@ -80,6 +101,7 @@ class ORCUS_SPM_DLLPUBLIC import_styles : public iface::import_styles
     std::unique_ptr<impl> mp_impl;
 public:
     import_styles(styles& styles_store, string_pool& sp);
+    import_styles(std::shared_ptr<import_factory_config> config, styles& styles_store, string_pool& sp);
     virtual ~import_styles() override;
 
     virtual iface::import_font_style* start_font_style() override;

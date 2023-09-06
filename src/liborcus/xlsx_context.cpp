@@ -27,6 +27,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <sstream>
+#include <optional>
 
 namespace ss = orcus::spreadsheet;
 
@@ -344,6 +345,27 @@ const map_type& get()
 
 }
 
+namespace underline {
+
+using map_type = mdds::sorted_string_map<ss::underline_t, mdds::string_view_map_entry>;
+
+// Keys must be sorted.
+constexpr map_type::entry entries[] = {
+    { "double", ss::underline_t::double_line },
+    { "doubleAccounting", ss::underline_t::double_accounting },
+    { "none", ss::underline_t::none },
+    { "single", ss::underline_t::single_line },
+    { "singleAccounting", ss::underline_t::single_accounting },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::underline_t::none);
+    return mt;
+}
+
+} // namespace underline
+
 class border_attr_parser
 {
     ss::border_direction_t m_dir;
@@ -543,26 +565,44 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_u:
             {
                 assert(mp_font);
-                std::string_view ps = std::for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
+                ss::underline_t v = ss::underline_t::single_line; // default value
 
-                if (ps == "double")
-                    mp_font->set_underline(spreadsheet::underline_t::double_line);
-                else if (ps == "single")
-                    mp_font->set_underline(spreadsheet::underline_t::single_line);
-                else if (ps == "singleAccounting")
-                    mp_font->set_underline(spreadsheet::underline_t::single_accounting);
-                else if (ps == "doubleAccounting")
-                    mp_font->set_underline(spreadsheet::underline_t::double_accounting);
+                for (const auto& attr : attrs)
+                {
+                    switch (name)
+                    {
+                        case XML_val:
+                            v = underline::get().find(attr.value);
+                            break;
+                    }
+                }
+
+                mp_font->set_underline(v);
                 break;
             }
             case XML_sz:
             {
                 assert(mp_font);
-                std::string_view ps = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
-                double font_size = to_double(ps);
-                mp_font->set_size(font_size);
+                std::optional<double> font_size;
+
+                for (const auto& attr : attrs)
+                {
+                    switch (attr.name)
+                    {
+                        case XML_val:
+                        {
+                            const char* p_end = nullptr;
+                            double v = to_double(attr.value, &p_end);
+                            if (attr.value.data() < p_end)
+                                font_size = v;
+                            break;
+                        }
+                    }
+                }
+
+                if (font_size)
+                    mp_font->set_size(*font_size);
+
                 break;
             }
             case XML_color:

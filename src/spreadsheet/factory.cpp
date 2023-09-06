@@ -165,10 +165,17 @@ public:
 
 using sheet_ifaces_type = std::vector<std::unique_ptr<import_sheet>>;
 
-}
+} // anonymous namespace
+
+import_factory_config::import_factory_config() = default;
+import_factory_config::import_factory_config(const import_factory_config& other) = default;
+import_factory_config::~import_factory_config() = default;
+
+import_factory_config& import_factory_config::operator=(const import_factory_config& other) = default;
 
 struct import_factory::impl
 {
+    std::shared_ptr<import_factory_config> m_config;
     import_factory& m_envelope;
     document& m_doc;
     view* m_view;
@@ -188,6 +195,7 @@ struct import_factory::impl
     formula_error_policy_t m_error_policy;
 
     impl(import_factory& envelope, document& doc) :
+        m_config(std::make_shared<import_factory_config>()),
         m_envelope(envelope),
         m_doc(doc),
         m_view(nullptr),
@@ -197,7 +205,7 @@ struct import_factory::impl
         m_pc_records(doc),
         m_ref_resolver(doc),
         m_global_named_exp(doc),
-        m_styles(doc.get_styles(), doc.get_string_pool()),
+        m_styles(m_config, doc.get_styles(), doc.get_string_pool()),
         shared_strings(doc.get_string_pool(), doc.get_model_context(), doc.get_styles(), doc.get_shared_strings()),
         m_recalc_formula_cells(false),
         m_error_policy(formula_error_policy_t::fail)
@@ -308,6 +316,12 @@ void import_factory::finalize()
 
     if (mp_impl->m_recalc_formula_cells)
         mp_impl->m_doc.recalc_formula_cells();
+}
+
+void import_factory::set_config(const import_factory_config& config)
+{
+    // NB: update the object state.
+    *mp_impl->m_config = config;
 }
 
 void import_factory::set_default_row_size(row_t row_size)
