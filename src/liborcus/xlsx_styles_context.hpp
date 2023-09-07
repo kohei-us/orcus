@@ -69,7 +69,6 @@ private:
     bool m_diagonal_up;
     bool m_diagonal_down;
     spreadsheet::border_direction_t m_cur_border_dir;
-    bool m_cell_style_xf;
 
     std::vector<std::size_t> m_font_ids;
     std::vector<std::size_t> m_fill_ids;

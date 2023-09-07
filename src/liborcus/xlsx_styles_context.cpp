@@ -166,8 +166,7 @@ xlsx_styles_context::xlsx_styles_context(session_context& session_cxt, const tok
     xml_context_base(session_cxt, tokens),
     mp_styles(styles),
     m_diagonal_up(false), m_diagonal_down(false),
-    m_cur_border_dir(ss::border_direction_t::unknown),
-    m_cell_style_xf(false)
+    m_cur_border_dir(ss::border_direction_t::unknown)
 {
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
@@ -486,7 +485,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     m_cell_style_xf_ids.reserve(*count);
                 }
 
-                m_cell_style_xf = true;
                 mp_xf = mp_styles->start_xf(ss::xf_category_t::cell_style);
                 ENSURE_INTERFACE(mp_xf, import_xf);
                 m_xf_type = ss::xf_category_t::cell_style;
@@ -497,7 +495,6 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 if (std::optional<std::size_t> count = extract_count(attrs); count)
                     mp_styles->set_xf_count(ss::xf_category_t::cell, *count);
 
-                m_cell_style_xf = false;
                 mp_xf = mp_styles->start_xf(ss::xf_category_t::cell);
                 ENSURE_INTERFACE(mp_xf, import_xf);
                 m_xf_type = ss::xf_category_t::cell;
