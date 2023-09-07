@@ -135,6 +135,31 @@ public:
     }
 };
 
+std::optional<std::size_t> extract_count(const xml_token_attrs_t& attrs)
+{
+    std::optional<std::size_t> count;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_count:
+            {
+                const char* p_end = nullptr;
+                long v = to_long(attr.value, &p_end);
+                if (attr.value.data() < p_end && v >= 0)
+                    count = v;
+                break;
+            }
+        }
+    }
+
+    return count;
+}
+
 } // anonymous namespace
 
 xlsx_styles_context::xlsx_styles_context(session_context& session_cxt, const tokens& tokens, ss::iface::import_styles* styles) :
@@ -455,45 +480,43 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_cellStyleXfs:
             {
-                std::string_view ps = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
-                if (!ps.empty())
+                if (std::optional<std::size_t> count = extract_count(attrs); count)
                 {
-                    size_t n = strtoul(ps.data(), nullptr, 10);
-                    mp_styles->set_xf_count(ss::xf_category_t::cell_style, n);
+                    mp_styles->set_xf_count(ss::xf_category_t::cell_style, *count);
+                    m_cell_style_xf_ids.reserve(*count);
                 }
+
                 m_cell_style_xf = true;
                 mp_xf = mp_styles->start_xf(ss::xf_category_t::cell_style);
                 ENSURE_INTERFACE(mp_xf, import_xf);
+                m_xf_type = ss::xf_category_t::cell_style;
                 break;
             }
             case XML_cellXfs:
             {
-                // Collection of un-named cell formats used in the document.
-                std::string_view ps = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
-                if (!ps.empty())
+                if (std::optional<std::size_t> count = extract_count(attrs); count)
                 {
-                    size_t n = strtoul(ps.data(), nullptr, 10);
-                    mp_styles->set_xf_count(ss::xf_category_t::cell, n);
+                    mp_styles->set_xf_count(ss::xf_category_t::cell, *count);
+                    m_cell_xf_ids.reserve(*count);
                 }
+
                 m_cell_style_xf = false;
                 mp_xf = mp_styles->start_xf(ss::xf_category_t::cell);
                 ENSURE_INTERFACE(mp_xf, import_xf);
+                m_xf_type = ss::xf_category_t::cell;
                 break;
             }
             case XML_dxfs:
             {
-                // Collection of differential formats used in the document.
-                std::string_view ps = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
-                if (!ps.empty())
+                if (std::optional<std::size_t> count = extract_count(attrs); count)
                 {
-                    size_t n = strtoul(ps.data(), nullptr, 10);
-                    mp_styles->set_xf_count(ss::xf_category_t::differential, n);
+                    mp_styles->set_xf_count(ss::xf_category_t::differential, *count);
+                    m_dxf_ids.reserve(*count);
                 }
+
                 mp_xf = mp_styles->start_xf(ss::xf_category_t::differential);
                 ENSURE_INTERFACE(mp_xf, import_xf);
+                m_xf_type = ss::xf_category_t::differential;
                 break;
             }
             case XML_cellStyles:
@@ -690,12 +713,30 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
         case XML_dxfs:
             assert(mp_xf);
             mp_xf = nullptr;
+            m_xf_type = ss::xf_category_t::unknown;
             break;
         case XML_xf:
         case XML_dxf:
+        {
             assert(mp_xf);
-            mp_xf->commit();
+            std::size_t id = mp_xf->commit();
+            switch (m_xf_type)
+            {
+                case ss::xf_category_t::cell:
+                    m_cell_xf_ids.push_back(id);
+                    break;
+                case ss::xf_category_t::cell_style:
+                    m_cell_style_xf_ids.push_back(id);
+                    break;
+                case ss::xf_category_t::differential:
+                    m_dxf_ids.push_back(id);
+                    break;
+                case ss::xf_category_t::unknown:
+                    warn("xf entry committed while the current xf category is unknown");
+                    break;
+            }
             break;
+        }
         case XML_protection:
         {
             assert(mp_protection);

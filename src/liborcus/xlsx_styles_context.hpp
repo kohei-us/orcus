@@ -63,6 +63,7 @@ private:
     spreadsheet::iface::import_number_format* mp_numfmt = nullptr;
     spreadsheet::iface::import_xf* mp_xf = nullptr;
     spreadsheet::iface::import_cell_style* mp_cell_style = nullptr;
+    spreadsheet::xf_category_t m_xf_type = spreadsheet::xf_category_t::unknown;
 
     string_pool m_pool;
     bool m_diagonal_up;
@@ -73,6 +74,9 @@ private:
     std::vector<std::size_t> m_font_ids;
     std::vector<std::size_t> m_fill_ids;
     std::vector<std::size_t> m_border_ids;
+    std::vector<std::size_t> m_cell_style_xf_ids;
+    std::vector<std::size_t> m_cell_xf_ids;
+    std::vector<std::size_t> m_dxf_ids;
 };
 
 } // namespace orcus
