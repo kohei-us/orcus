@@ -75,8 +75,6 @@ private:
     std::vector<std::size_t> m_fill_ids;
     std::vector<std::size_t> m_border_ids;
     std::vector<std::size_t> m_cell_style_xf_ids;
-    std::vector<std::size_t> m_cell_xf_ids;
-    std::vector<std::size_t> m_dxf_ids;
 };
 
 } // namespace orcus

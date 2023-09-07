@@ -495,10 +495,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_cellXfs:
             {
                 if (std::optional<std::size_t> count = extract_count(attrs); count)
-                {
                     mp_styles->set_xf_count(ss::xf_category_t::cell, *count);
-                    m_cell_xf_ids.reserve(*count);
-                }
 
                 m_cell_style_xf = false;
                 mp_xf = mp_styles->start_xf(ss::xf_category_t::cell);
@@ -509,10 +506,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_dxfs:
             {
                 if (std::optional<std::size_t> count = extract_count(attrs); count)
-                {
                     mp_styles->set_xf_count(ss::xf_category_t::differential, *count);
-                    m_dxf_ids.reserve(*count);
-                }
 
                 mp_xf = mp_styles->start_xf(ss::xf_category_t::differential);
                 ENSURE_INTERFACE(mp_xf, import_xf);
@@ -734,14 +728,14 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
             std::size_t id = mp_xf->commit();
             switch (m_xf_type)
             {
-                case ss::xf_category_t::cell:
-                    m_cell_xf_ids.push_back(id);
                     break;
                 case ss::xf_category_t::cell_style:
+                    // only cell style xf ID is referenced.
                     m_cell_style_xf_ids.push_back(id);
                     break;
+                case ss::xf_category_t::cell:
                 case ss::xf_category_t::differential:
-                    m_dxf_ids.push_back(id);
+                    // not used
                     break;
                 case ss::xf_category_t::unknown:
                     warn("xf entry committed while the current xf category is unknown");
@@ -984,8 +978,20 @@ void xlsx_styles_context::start_xf(const xml_token_attrs_t& attrs)
             }
             case XML_xfId:
             {
-                size_t n = to_long(attr.value);
-                mp_xf->set_style_xf(n);
+                // reference ID to an xf entry in cellStyleXfs
+                const char* p_end = nullptr;
+                size_t n = to_long(attr.value, &p_end);
+                if (attr.value.data() < p_end)
+                {
+                    if (n < m_cell_style_xf_ids.size())
+                        mp_xf->set_style_xf(m_cell_style_xf_ids[n]);
+                    else
+                    {
+                        std::ostringstream os;
+                        os << "out-of-bound xf@xfId: id=" << n << "; count=" << m_cell_style_xf_ids.size();
+                        warn(os.str());
+                    }
+                }
                 break;
             }
             case XML_applyBorder:
