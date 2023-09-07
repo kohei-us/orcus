@@ -16,6 +16,7 @@
 #include "xlsx_types.hpp"
 #include "xlsx_handler.hpp"
 #include "xlsx_context.hpp"
+#include "xlsx_styles_context.hpp"
 #include "xlsx_workbook_context.hpp"
 #include "xlsx_revision_context.hpp"
 #include "ooxml_tokens.hpp"

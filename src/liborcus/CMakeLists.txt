@@ -65,6 +65,7 @@ list(APPEND _SOURCES
     xlsx_handler.cpp
     xlsx_helper.cpp
     xlsx_session_data.cpp
+    xlsx_styles_context.cpp
     xlsx_revision_context.cpp
     xlsx_pivot_context.cpp
     xlsx_sheet_context.cpp

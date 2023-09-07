@@ -178,6 +178,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	xlsx_pivot_context.hpp \
 	xlsx_sheet_context.cpp \
 	xlsx_sheet_context.hpp \
+	xlsx_styles_context.cpp \
+	xlsx_styles_context.hpp \
 	xlsx_conditional_format_context.cpp \
 	xlsx_conditional_format_context.hpp \
 	xlsx_table_context.cpp \
