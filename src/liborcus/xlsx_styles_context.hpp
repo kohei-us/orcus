@@ -12,6 +12,8 @@
 
 #include <orcus/string_pool.hpp>
 
+#include <vector>
+
 namespace orcus {
 
 namespace spreadsheet { namespace iface {
@@ -37,9 +39,6 @@ public:
         spreadsheet::iface::import_styles* import_styles);
     virtual ~xlsx_styles_context();
 
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
-
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
     virtual void characters(std::string_view str, bool transient);
@@ -51,6 +50,7 @@ private:
     void start_element_diagonal(const xml_token_attrs_t& attrs);
     void start_border_color(const xml_token_attrs_t& attrs);
     void start_font_color(const xml_token_attrs_t& attrs);
+    void start_xf(const xml_token_attrs_t& attrs);
 
     void end_element_number_format();
 
@@ -69,6 +69,8 @@ private:
     bool m_diagonal_down;
     spreadsheet::border_direction_t m_cur_border_dir;
     bool m_cell_style_xf;
+
+    std::vector<std::size_t> m_font_ids;
 };
 
 } // namespace orcus

@@ -202,16 +202,7 @@ xlsx_styles_context::xlsx_styles_context(session_context& session_cxt, const tok
     init_element_validator(rules, std::size(rules));
 }
 
-xlsx_styles_context::~xlsx_styles_context() {}
-
-xml_context_base* xlsx_styles_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
-{
-    return nullptr;
-}
-
-void xlsx_styles_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
-{
-}
+xlsx_styles_context::~xlsx_styles_context() = default;
 
 void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
@@ -234,6 +225,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 size_t font_count = to_long(ps);
                 mp_styles->set_font_count(font_count);
+                m_font_ids.reserve(font_count);
                 break;
             }
             case XML_font:
@@ -545,58 +537,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_xf:
             {
-                assert(mp_xf);
-                for (const xml_token_attr_t& attr : attrs)
-                {
-                    switch (attr.name)
-                    {
-                        case XML_borderId:
-                        {
-                            size_t n = to_long(attr.value);
-                            mp_xf->set_border(n);
-                            break;
-                        }
-                        case XML_fillId:
-                        {
-                            size_t n = to_long(attr.value);
-                            mp_xf->set_fill(n);
-                            break;
-                        }
-                        case XML_fontId:
-                        {
-                            size_t n = to_long(attr.value);
-                            mp_xf->set_font(n);
-                            break;
-                        }
-                        case XML_numFmtId:
-                        {
-                            size_t n = to_long(attr.value);
-                            mp_xf->set_number_format(n);
-                            break;
-                        }
-                        case XML_xfId:
-                        {
-                            size_t n = to_long(attr.value);
-                            mp_xf->set_style_xf(n);
-                            break;
-                        }
-                        case XML_applyBorder:
-                            break;
-                        case XML_applyFill:
-                            break;
-                        case XML_applyFont:
-                            break;
-                        case XML_applyNumberFormat:
-                            break;
-                        case XML_applyAlignment:
-                        {
-                            bool b = to_long(attr.value) != 0;
-                            mp_xf->set_apply_alignment(b);
-                            break;
-                        }
-                    }
-                }
-
+                start_xf(attrs);
                 break;
             }
             case XML_protection:
@@ -713,7 +654,8 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
         case XML_font:
         {
             assert(mp_font);
-            mp_font->commit();
+            std::size_t id = mp_font->commit();
+            m_font_ids.push_back(id);
             mp_font = nullptr;
             break;
         }
@@ -913,6 +855,73 @@ void xlsx_styles_context::start_font_color(const xml_token_attrs_t& attrs)
         ss::color_elem_t blue;
         if (to_rgb(*rgb, alpha, red, green, blue))
             mp_font->set_color(alpha, red, green, blue);
+    }
+}
+
+void xlsx_styles_context::start_xf(const xml_token_attrs_t& attrs)
+{
+    assert(mp_xf);
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        switch (attr.name)
+        {
+            case XML_borderId:
+            {
+                size_t n = to_long(attr.value);
+                mp_xf->set_border(n);
+                break;
+            }
+            case XML_fillId:
+            {
+                size_t n = to_long(attr.value);
+                mp_xf->set_fill(n);
+                break;
+            }
+            case XML_fontId:
+            {
+                const char* p_end = nullptr;
+                size_t n = to_long(attr.value, &p_end);
+                if (attr.value.data() < p_end)
+                {
+                    if (n < m_font_ids.size())
+                        mp_xf->set_font(m_font_ids[n]);
+                    else
+                    {
+                        std::ostringstream os;
+                        os << "out-of-bound fontId: id=" << n << "; count=" << m_font_ids.size();
+                        warn(os.str());
+                    }
+                }
+                break;
+            }
+            case XML_numFmtId:
+            {
+                size_t n = to_long(attr.value);
+                mp_xf->set_number_format(n);
+                break;
+            }
+            case XML_xfId:
+            {
+                size_t n = to_long(attr.value);
+                mp_xf->set_style_xf(n);
+                break;
+            }
+            case XML_applyBorder:
+                break;
+            case XML_applyFill:
+                break;
+            case XML_applyFont:
+                break;
+            case XML_applyNumberFormat:
+                break;
+            case XML_applyAlignment:
+            {
+                bool b = to_long(attr.value) != 0;
+                mp_xf->set_apply_alignment(b);
+                break;
+            }
+        }
     }
 }
 

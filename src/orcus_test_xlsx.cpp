@@ -47,10 +47,6 @@ std::unique_ptr<ss::document> load_doc(const std::string_view& path, bool recalc
     std::unique_ptr<ss::document> doc = std::make_unique<ss::document>(sheet_size);
     ss::import_factory factory(*doc);
 
-    ss::import_factory_config config;
-    config.enable_font_cache = false;
-    factory.set_config(config);
-
     orcus_xlsx app(&factory);
     app.read_file(std::string{path});
     app.set_config(test_config);
