@@ -29,29 +29,29 @@ namespace {
 
 namespace border_style {
 
-using map_type = mdds::sorted_string_map<spreadsheet::border_style_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::border_style_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] = {
-    { "dashDot",          spreadsheet::border_style_t::dash_dot            },
-    { "dashDotDot",       spreadsheet::border_style_t::dash_dot_dot        },
-    { "dashed",           spreadsheet::border_style_t::dashed              },
-    { "dotted",           spreadsheet::border_style_t::dotted              },
-    { "double",           spreadsheet::border_style_t::double_border       },
-    { "hair",             spreadsheet::border_style_t::hair                },
-    { "medium",           spreadsheet::border_style_t::medium              },
-    { "mediumDashDot",    spreadsheet::border_style_t::medium_dash_dot     },
-    { "mediumDashDotDot", spreadsheet::border_style_t::medium_dash_dot_dot },
-    { "mediumDashed",     spreadsheet::border_style_t::medium_dashed       },
-    { "none",             spreadsheet::border_style_t::none                },
-    { "slantDashDot",     spreadsheet::border_style_t::slant_dash_dot      },
-    { "thick",            spreadsheet::border_style_t::thick               },
-    { "thin",             spreadsheet::border_style_t::thin                }
+    { "dashDot",          ss::border_style_t::dash_dot            },
+    { "dashDotDot",       ss::border_style_t::dash_dot_dot        },
+    { "dashed",           ss::border_style_t::dashed              },
+    { "dotted",           ss::border_style_t::dotted              },
+    { "double",           ss::border_style_t::double_border       },
+    { "hair",             ss::border_style_t::hair                },
+    { "medium",           ss::border_style_t::medium              },
+    { "mediumDashDot",    ss::border_style_t::medium_dash_dot     },
+    { "mediumDashDotDot", ss::border_style_t::medium_dash_dot_dot },
+    { "mediumDashed",     ss::border_style_t::medium_dashed       },
+    { "none",             ss::border_style_t::none                },
+    { "slantDashDot",     ss::border_style_t::slant_dash_dot      },
+    { "thick",            ss::border_style_t::thick               },
+    { "thin",             ss::border_style_t::thin                }
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), spreadsheet::border_style_t::none);
+    static const map_type mt(entries, std::size(entries), ss::border_style_t::none);
     return mt;
 }
 
@@ -59,34 +59,34 @@ const map_type& get()
 
 namespace fill_pattern {
 
-using map_type = mdds::sorted_string_map<spreadsheet::fill_pattern_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::fill_pattern_t, mdds::string_view_map_entry>;
 
 // Keys must be sorted.
 constexpr map_type::entry entries[] = {
-    { "darkDown",        spreadsheet::fill_pattern_t::dark_down        },
-    { "darkGray",        spreadsheet::fill_pattern_t::dark_gray        },
-    { "darkGrid",        spreadsheet::fill_pattern_t::dark_grid        },
-    { "darkHorizontal",  spreadsheet::fill_pattern_t::dark_horizontal  },
-    { "darkTrellis",     spreadsheet::fill_pattern_t::dark_trellis     },
-    { "darkUp",          spreadsheet::fill_pattern_t::dark_up          },
-    { "darkVertical",    spreadsheet::fill_pattern_t::dark_vertical    },
-    { "gray0625",        spreadsheet::fill_pattern_t::gray_0625        },
-    { "gray125",         spreadsheet::fill_pattern_t::gray_125         },
-    { "lightDown",       spreadsheet::fill_pattern_t::light_down       },
-    { "lightGray",       spreadsheet::fill_pattern_t::light_gray       },
-    { "lightGrid",       spreadsheet::fill_pattern_t::light_grid       },
-    { "lightHorizontal", spreadsheet::fill_pattern_t::light_horizontal },
-    { "lightTrellis",    spreadsheet::fill_pattern_t::light_trellis    },
-    { "lightUp",         spreadsheet::fill_pattern_t::light_up         },
-    { "lightVertical",   spreadsheet::fill_pattern_t::light_vertical   },
-    { "mediumGray",      spreadsheet::fill_pattern_t::medium_gray      },
-    { "none",            spreadsheet::fill_pattern_t::none             },
-    { "solid",           spreadsheet::fill_pattern_t::solid            },
+    { "darkDown",        ss::fill_pattern_t::dark_down        },
+    { "darkGray",        ss::fill_pattern_t::dark_gray        },
+    { "darkGrid",        ss::fill_pattern_t::dark_grid        },
+    { "darkHorizontal",  ss::fill_pattern_t::dark_horizontal  },
+    { "darkTrellis",     ss::fill_pattern_t::dark_trellis     },
+    { "darkUp",          ss::fill_pattern_t::dark_up          },
+    { "darkVertical",    ss::fill_pattern_t::dark_vertical    },
+    { "gray0625",        ss::fill_pattern_t::gray_0625        },
+    { "gray125",         ss::fill_pattern_t::gray_125         },
+    { "lightDown",       ss::fill_pattern_t::light_down       },
+    { "lightGray",       ss::fill_pattern_t::light_gray       },
+    { "lightGrid",       ss::fill_pattern_t::light_grid       },
+    { "lightHorizontal", ss::fill_pattern_t::light_horizontal },
+    { "lightTrellis",    ss::fill_pattern_t::light_trellis    },
+    { "lightUp",         ss::fill_pattern_t::light_up         },
+    { "lightVertical",   ss::fill_pattern_t::light_vertical   },
+    { "mediumGray",      ss::fill_pattern_t::medium_gray      },
+    { "none",            ss::fill_pattern_t::none             },
+    { "solid",           ss::fill_pattern_t::solid            },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), spreadsheet::fill_pattern_t::none);
+    static const map_type mt(entries, std::size(entries), ss::fill_pattern_t::none);
     return mt;
 }
 
@@ -137,11 +137,11 @@ public:
 
 } // anonymous namespace
 
-xlsx_styles_context::xlsx_styles_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_styles* styles) :
+xlsx_styles_context::xlsx_styles_context(session_context& session_cxt, const tokens& tokens, ss::iface::import_styles* styles) :
     xml_context_base(session_cxt, tokens),
     mp_styles(styles),
     m_diagonal_up(false), m_diagonal_down(false),
-    m_cur_border_dir(spreadsheet::border_direction_t::unknown),
+    m_cur_border_dir(ss::border_direction_t::unknown),
     m_cell_style_xf(false)
 {
     static const xml_element_validator::rule rules[] = {
@@ -425,32 +425,32 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_top:
             {
                 assert(mp_border);
-                m_cur_border_dir = spreadsheet::border_direction_t::top;
-                border_attr_parser func(spreadsheet::border_direction_t::top, *mp_border);
+                m_cur_border_dir = ss::border_direction_t::top;
+                border_attr_parser func(ss::border_direction_t::top, *mp_border);
                 for_each(attrs.begin(), attrs.end(), func);
                 break;
             }
             case XML_bottom:
             {
                 assert(mp_border);
-                m_cur_border_dir = spreadsheet::border_direction_t::bottom;
-                border_attr_parser func(spreadsheet::border_direction_t::bottom, *mp_border);
+                m_cur_border_dir = ss::border_direction_t::bottom;
+                border_attr_parser func(ss::border_direction_t::bottom, *mp_border);
                 for_each(attrs.begin(), attrs.end(), func);
                 break;
             }
             case XML_left:
             {
                 assert(mp_border);
-                m_cur_border_dir = spreadsheet::border_direction_t::left;
-                border_attr_parser func(spreadsheet::border_direction_t::left, *mp_border);
+                m_cur_border_dir = ss::border_direction_t::left;
+                border_attr_parser func(ss::border_direction_t::left, *mp_border);
                 for_each(attrs.begin(), attrs.end(), func);
                 break;
             }
             case XML_right:
             {
                 assert(mp_border);
-                m_cur_border_dir = spreadsheet::border_direction_t::right;
-                border_attr_parser func(spreadsheet::border_direction_t::right, *mp_border);
+                m_cur_border_dir = ss::border_direction_t::right;
+                border_attr_parser func(ss::border_direction_t::right, *mp_border);
                 for_each(attrs.begin(), attrs.end(), func);
                 break;
             }
@@ -833,22 +833,22 @@ void xlsx_styles_context::start_element_diagonal(const xml_token_attrs_t& attrs)
 {
     assert(mp_border);
 
-    m_cur_border_dir = spreadsheet::border_direction_t::unknown;
+    m_cur_border_dir = ss::border_direction_t::unknown;
 
     if (m_diagonal_up)
     {
         m_cur_border_dir = m_diagonal_down ?
-            spreadsheet::border_direction_t::diagonal :
-            spreadsheet::border_direction_t::diagonal_bl_tr;
+            ss::border_direction_t::diagonal :
+            ss::border_direction_t::diagonal_bl_tr;
     }
     else
     {
         m_cur_border_dir = m_diagonal_down ?
-            spreadsheet::border_direction_t::diagonal_tl_br :
-            spreadsheet::border_direction_t::unknown;
+            ss::border_direction_t::diagonal_tl_br :
+            ss::border_direction_t::unknown;
     }
 
-    if (m_cur_border_dir == spreadsheet::border_direction_t::unknown)
+    if (m_cur_border_dir == ss::border_direction_t::unknown)
         return;
 
     border_attr_parser func(m_cur_border_dir, *mp_border);

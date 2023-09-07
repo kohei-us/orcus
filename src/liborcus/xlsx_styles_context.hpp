@@ -32,7 +32,9 @@ namespace spreadsheet { namespace iface {
 class xlsx_styles_context : public xml_context_base
 {
 public:
-    xlsx_styles_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_styles* import_styles);
+    xlsx_styles_context(
+        session_context& session_cxt, const tokens& tokens,
+        spreadsheet::iface::import_styles* import_styles);
     virtual ~xlsx_styles_context();
 
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
