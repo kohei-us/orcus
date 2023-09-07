@@ -546,8 +546,20 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                             break;
                         case XML_xfId:
                         {
-                            size_t n = to_long(attr.value);
-                            mp_cell_style->set_xf(n);
+                            // reference ID to an xf entry in cellStyleXfs
+                            const char* p_end = nullptr;
+                            size_t n = to_long(attr.value, &p_end);
+                            if (attr.value.data() < p_end)
+                            {
+                                if (n < m_cell_style_xf_ids.size())
+                                    mp_cell_style->set_xf(m_cell_style_xf_ids[n]);
+                                else
+                                {
+                                    std::ostringstream os;
+                                    os << "out-of-bound cellStyle@xfId: id=" << n << "; count=" << m_cell_style_xf_ids.size();
+                                    warn(os.str());
+                                }
+                            }
                             break;
                         }
                         case XML_builtinId:
