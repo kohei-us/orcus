@@ -72,6 +72,7 @@ private:
 
     std::vector<std::size_t> m_font_ids;
     std::vector<std::size_t> m_fill_ids;
+    std::vector<std::size_t> m_border_ids;
 };
 
 } // namespace orcus

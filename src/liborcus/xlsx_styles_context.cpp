@@ -404,6 +404,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 size_t border_count = to_long(ps);
                 mp_styles->set_border_count(border_count);
+                m_border_ids.reserve(border_count);
                 break;
             }
             case XML_border:
@@ -669,10 +670,13 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
             break;
         }
         case XML_border:
+        {
             assert(mp_border);
-            mp_border->commit();
+            std::size_t id = mp_border->commit();
+            m_border_ids.push_back(id);
             mp_border = nullptr;
             break;
+        }
         case XML_cellStyle:
             assert(mp_cell_style);
             mp_cell_style->commit();
@@ -870,8 +874,19 @@ void xlsx_styles_context::start_xf(const xml_token_attrs_t& attrs)
         {
             case XML_borderId:
             {
-                size_t n = to_long(attr.value);
-                mp_xf->set_border(n);
+                const char* p_end = nullptr;
+                size_t n = to_long(attr.value, &p_end);
+                if (attr.value.data() < p_end)
+                {
+                    if (n < m_border_ids.size())
+                        mp_xf->set_border(m_border_ids[n]);
+                    else
+                    {
+                        std::ostringstream os;
+                        os << "out-of-bound borderId: id=" << n << "; count=" << m_border_ids.size();
+                        warn(os.str());
+                    }
+                }
                 break;
             }
             case XML_fillId:
