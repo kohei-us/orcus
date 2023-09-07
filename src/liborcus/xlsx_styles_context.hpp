@@ -71,6 +71,7 @@ private:
     bool m_cell_style_xf;
 
     std::vector<std::size_t> m_font_ids;
+    std::vector<std::size_t> m_fill_ids;
 };
 
 } // namespace orcus

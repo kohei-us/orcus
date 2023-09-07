@@ -320,6 +320,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                     attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
                 size_t fill_count = to_long(ps);
                 mp_styles->set_fill_count(fill_count);
+                m_fill_ids.reserve(fill_count);
                 break;
             }
             case XML_fill:
@@ -662,7 +663,8 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
         case XML_fill:
         {
             assert(mp_fill);
-            mp_fill->commit();
+            std::size_t id = mp_fill->commit();
+            m_fill_ids.push_back(id);
             mp_fill = nullptr;
             break;
         }
@@ -874,8 +876,19 @@ void xlsx_styles_context::start_xf(const xml_token_attrs_t& attrs)
             }
             case XML_fillId:
             {
-                size_t n = to_long(attr.value);
-                mp_xf->set_fill(n);
+                const char* p_end = nullptr;
+                size_t n = to_long(attr.value, &p_end);
+                if (attr.value.data() < p_end)
+                {
+                    if (n < m_fill_ids.size())
+                        mp_xf->set_fill(m_fill_ids[n]);
+                    else
+                    {
+                        std::ostringstream os;
+                        os << "out-of-bound fillId: id=" << n << "; count=" << m_fill_ids.size();
+                        warn(os.str());
+                    }
+                }
                 break;
             }
             case XML_fontId:
