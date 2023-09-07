@@ -13,7 +13,6 @@
 
 #include "xlsx_types.hpp"
 #include "xlsx_handler.hpp"
-#include "xlsx_context.hpp"
 #include "ooxml_tokens.hpp"
 
 #include "xml_stream_parser.hpp"

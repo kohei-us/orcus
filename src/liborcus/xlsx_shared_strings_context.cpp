@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "xlsx_context.hpp"
+#include "xlsx_shared_strings_context.hpp"
 #include "ooxml_token_constants.hpp"
 #include "ooxml_namespace_types.hpp"
 #include "xlsx_helper.hpp"

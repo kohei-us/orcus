@@ -6,7 +6,6 @@
  */
 
 #include "xlsx_handler.hpp"
-#include "xlsx_context.hpp"
 #include "xlsx_sheet_context.hpp"
 #include "xlsx_table_context.hpp"
 #include "xlsx_pivot_context.hpp"

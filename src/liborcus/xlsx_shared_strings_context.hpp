@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_XLSX_CONTEXT_HPP
-#define INCLUDED_ORCUS_XLSX_CONTEXT_HPP
+#pragma once
 
 #include <orcus/spreadsheet/types.hpp>
 #include <orcus/string_pool.hpp>
@@ -45,7 +44,5 @@ private:
 };
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

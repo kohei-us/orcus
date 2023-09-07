@@ -60,7 +60,7 @@ list(APPEND _SOURCES
     opc_reader.cpp
     orcus_xlsx.cpp
     orcus_import_xlsx.cpp
-    xlsx_context.cpp
+    xlsx_shared_strings_context.cpp
     xlsx_drawing_context.cpp
     xlsx_handler.cpp
     xlsx_helper.cpp
