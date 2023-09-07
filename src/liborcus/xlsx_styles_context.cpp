@@ -665,7 +665,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 break;
             }
             case XML_numFmt:
-                start_element_number_format(attrs);
+                start_number_format(attrs);
                 break;
             default:
                 warn_unhandled();
@@ -749,7 +749,7 @@ bool xlsx_styles_context::end_element(xmlns_id_t ns, xml_token_t name)
             break;
         }
         case XML_numFmt:
-            end_element_number_format();
+            end_number_format();
             break;
     }
     return pop_stack(ns, name);
@@ -760,7 +760,7 @@ void xlsx_styles_context::characters(std::string_view /*str*/, bool /*transient*
     // not used in the styles.xml part.
 }
 
-void xlsx_styles_context::start_element_number_format(const xml_token_attrs_t& attrs)
+void xlsx_styles_context::start_number_format(const xml_token_attrs_t& attrs)
 {
     if (!mp_styles)
         return;
@@ -768,17 +768,24 @@ void xlsx_styles_context::start_element_number_format(const xml_token_attrs_t& a
     mp_numfmt = mp_styles->start_number_format();
     ENSURE_INTERFACE(mp_numfmt, import_number_format);
 
+    m_cur_numfmt_id.reset();
+
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
+        if (attr.ns)
             continue;
 
         switch (attr.name)
         {
             case XML_numFmtId:
             {
-                long id = to_long(attr.value);
-                mp_numfmt->set_identifier(id);
+                const char* p_end = nullptr;
+                long id = to_long(attr.value, &p_end);
+                if (attr.value.data() < p_end && id >= 0)
+                {
+                    mp_numfmt->set_identifier(id);
+                    m_cur_numfmt_id = id;
+                }
                 break;
             }
             case XML_formatCode:
@@ -969,8 +976,20 @@ void xlsx_styles_context::start_xf(const xml_token_attrs_t& attrs)
             }
             case XML_numFmtId:
             {
-                size_t n = to_long(attr.value);
-                mp_xf->set_number_format(n);
+                const char* p_end = nullptr;
+                long n = to_long(attr.value, &p_end);
+                if (attr.value.data() < p_end && n >= 0)
+                {
+                    auto it = m_numfmt_ids.find(n);
+                    if (it == m_numfmt_ids.end())
+                    {
+                        std::ostringstream os;
+                        os << "no entry for xf@numFmtId = " << n;
+                        warn(os.str());
+                    }
+                    else
+                        mp_xf->set_number_format(it->second);
+                }
                 break;
             }
             case XML_xfId:
@@ -1009,13 +1028,26 @@ void xlsx_styles_context::start_xf(const xml_token_attrs_t& attrs)
     }
 }
 
-void xlsx_styles_context::end_element_number_format()
+void xlsx_styles_context::end_number_format()
 {
     if (!mp_styles)
         return;
 
     assert(mp_numfmt);
-    mp_numfmt->commit();
+    std::size_t id = mp_numfmt->commit();
+    mp_numfmt = nullptr;
+
+    if (m_cur_numfmt_id)
+    {
+        auto res = m_numfmt_ids.insert_or_assign(*m_cur_numfmt_id, id);
+        if (!res.second)
+        {
+            // assigned to an existing key
+            std::ostringstream os;
+            os << "number format id of " << *m_cur_numfmt_id << " referenced multiple times";
+            warn(os.str());
+        }
+    }
 }
 
 } // namespace orcus

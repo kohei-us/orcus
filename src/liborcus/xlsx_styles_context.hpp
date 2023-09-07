@@ -13,6 +13,8 @@
 #include <orcus/string_pool.hpp>
 
 #include <vector>
+#include <unordered_map>
+#include <optional>
 
 namespace orcus {
 
@@ -44,7 +46,7 @@ public:
     virtual void characters(std::string_view str, bool transient);
 
 private:
-    void start_element_number_format(const xml_token_attrs_t& attrs);
+    void start_number_format(const xml_token_attrs_t& attrs);
 
     void start_element_border(const xml_token_attrs_t& attrs);
     void start_element_diagonal(const xml_token_attrs_t& attrs);
@@ -52,7 +54,7 @@ private:
     void start_font_color(const xml_token_attrs_t& attrs);
     void start_xf(const xml_token_attrs_t& attrs);
 
-    void end_element_number_format();
+    void end_number_format();
 
 private:
     spreadsheet::iface::import_styles* mp_styles = nullptr;
@@ -74,6 +76,9 @@ private:
     std::vector<std::size_t> m_fill_ids;
     std::vector<std::size_t> m_border_ids;
     std::vector<std::size_t> m_cell_style_xf_ids;
+    // numFmt@numFmtId values as keys
+    std::unordered_map<std::size_t, std::size_t> m_numfmt_ids;
+    std::optional<std::size_t> m_cur_numfmt_id;
 };
 
 } // namespace orcus
