@@ -1,4 +1,39 @@
-orcus <next release>
+orcus 0.19.0
+
+* general
+
+  * added support for allowing use of std::filesystem,
+    std::experimental::filesystem or boost::filesystem per build
+    configuration.
+
+* xlsx
+
+  * refactored styles import to use style indices returned by the document
+    model implementer rather than using the indices stored in the file.  This
+    allows the implementer to aggregate some style records and re-use the same
+    index for records that are stored as different records in the original
+    file.
+
+* xls-xml
+
+  * fixed a bug where column styles were not applied to the correct columns
+    when the starting column index was not 0.
+
+* gnumeric
+
+  * overhauled the Gnumeric import filter to fix many bugs and support many
+    missing features relative to the other filters included in orcus.  Most
+    notable mentions are:
+
+    * cell styles
+
+    * rich-text strings
+
+    * named ranges
+
+    * row heights and column widths
+
+    * merged cells
 
 * parquet
 
