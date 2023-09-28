@@ -23,148 +23,164 @@ pkgconfig_DATA = $(pcfiles)
 pkgconfigdir = $(libdir)/pkgconfig
 
 doc_data = \
-	doc/conf.py \
-	doc/doxygen.conf \
-	doc/cli/orcus_ods.rst \
-	doc/cli/orcus_yaml.rst \
-	doc/cli/orcus_xls_xml.rst \
-	doc/cli/orcus_csv.rst \
+	doc/_static/images/overview/doc-content.png \
+	doc/_static/images/overview/multi-sheets-sheet1.png \
+	doc/_static/images/overview/multi-sheets-sheet2.png \
 	doc/cli/index.rst \
-	doc/cli/orcus_json.rst \
+	doc/cli/orcus_csv.rst \
 	doc/cli/orcus_gnumeric.rst \
-	doc/cli/orcus_xml.rst \
+	doc/cli/orcus_json.rst \
+	doc/cli/orcus_ods.rst \
+	doc/cli/orcus_parquet.rst \
+	doc/cli/orcus_xls_xml.rst \
 	doc/cli/orcus_xlsx.rst \
-	doc/notes/json_map/index.rst \
-	doc/notes/index.rst \
-	doc/notes/xml_map/index.rst \
-	doc/index.rst \
-	doc/python/orcus/gnumeric/index.rst \
-	doc/python/orcus/xlsx/index.rst \
-	doc/python/orcus/tools/bugzilla.rst \
-	doc/python/orcus/tools/index.rst \
-	doc/python/orcus/tools/file_processor.rst \
-	doc/python/orcus/document.rst \
-	doc/python/orcus/xls_xml/index.rst \
-	doc/python/orcus/formula_token_type.rst \
-	doc/python/orcus/formula_token_op.rst \
-	doc/python/orcus/format_type.rst \
-	doc/python/orcus/index.rst \
-	doc/python/orcus/sheet.rst \
-	doc/python/orcus/sheet_rows.rst \
-	doc/python/orcus/cell_type.rst \
-	doc/python/orcus/named_expressions.rst \
-	doc/python/orcus/formula_tokens.rst \
-	doc/python/orcus/formula_token.rst \
-	doc/python/orcus/ods/index.rst \
-	doc/python/orcus/csv/index.rst \
-	doc/python/orcus/cell.rst \
-	doc/python/index.rst \
-	doc/overview/json.rst \
-	doc/overview/yaml.rst \
-	doc/overview/index.rst \
-	doc/overview/doc-user.rst \
-	doc/overview/doc-orcus.rst \
-	doc/cpp/spreadsheet-doc/types.rst \
-	doc/cpp/spreadsheet-doc/view.rst \
-	doc/cpp/spreadsheet-doc/pivot.rst \
-	doc/cpp/spreadsheet-doc/document.rst \
-	doc/cpp/spreadsheet-doc/shared-strings.rst \
-	doc/cpp/spreadsheet-doc/index.rst \
-	doc/cpp/spreadsheet-doc/sheet.rst \
-	doc/cpp/spreadsheet-doc/import-export.rst \
-	doc/cpp/spreadsheet-doc/table.rst \
-	doc/cpp/spreadsheet-doc/styles.rst \
-	doc/cpp/core/utils.rst \
-	doc/cpp/core/index.rst \
-	doc/cpp/core/import-filter/json.rst \
-	doc/cpp/core/import-filter/ods.rst \
-	doc/cpp/core/import-filter/xml.rst \
-	doc/cpp/core/import-filter/xls_xml.rst \
-	doc/cpp/core/import-filter/xlsx.rst \
-	doc/cpp/core/import-filter/gnumeric.rst \
-	doc/cpp/core/import-filter/index.rst \
+	doc/cli/orcus_xml.rst \
+	doc/cli/orcus_yaml.rst \
+	doc/conf.py \
+	doc/cpp/core/config.rst \
 	doc/cpp/core/import-filter/csv.rst \
 	doc/cpp/core/import-filter/detect.rst \
-	doc/cpp/core/tree-doc/json.rst \
-	doc/cpp/core/tree-doc/yaml.rst \
-	doc/cpp/core/tree-doc/index.rst \
-	doc/cpp/core/config.rst \
-	doc/cpp/core/types/view.rst \
-	doc/cpp/core/types/index.rst \
-	doc/cpp/core/types/core.rst \
+	doc/cpp/core/import-filter/gnumeric.rst \
+	doc/cpp/core/import-filter/index.rst \
+	doc/cpp/core/import-filter/json.rst \
+	doc/cpp/core/import-filter/ods.rst \
+	doc/cpp/core/import-filter/xls_xml.rst \
+	doc/cpp/core/import-filter/xlsx.rst \
+	doc/cpp/core/import-filter/xml.rst \
+	doc/cpp/core/index.rst \
+	doc/cpp/core/interface/global.rst \
 	doc/cpp/core/interface/index.rst \
-	doc/cpp/core/interface/spreadsheet/view.rst \
-	doc/cpp/core/interface/spreadsheet/pivot.rst \
 	doc/cpp/core/interface/spreadsheet/document.rst \
 	doc/cpp/core/interface/spreadsheet/document_export.rst \
 	doc/cpp/core/interface/spreadsheet/index.rst \
+	doc/cpp/core/interface/spreadsheet/pivot.rst \
 	doc/cpp/core/interface/spreadsheet/sheet.rst \
 	doc/cpp/core/interface/spreadsheet/styles.rst \
-	doc/cpp/core/interface/global.rst \
-	doc/cpp/parser/css.rst \
-	doc/cpp/parser/json.rst \
-	doc/cpp/parser/types.rst \
+	doc/cpp/core/interface/spreadsheet/view.rst \
+	doc/cpp/core/tree-doc/index.rst \
+	doc/cpp/core/tree-doc/json.rst \
+	doc/cpp/core/tree-doc/yaml.rst \
+	doc/cpp/core/types/core.rst \
+	doc/cpp/core/types/index.rst \
+	doc/cpp/core/types/view.rst \
+	doc/cpp/core/utils.rst \
+	doc/cpp/index.rst \
 	doc/cpp/parser/archive.rst \
 	doc/cpp/parser/base64.rst \
-	doc/cpp/parser/xml.rst \
-	doc/cpp/parser/yaml.rst \
-	doc/cpp/parser/xml_writer.rst \
-	doc/cpp/parser/index.rst \
+	doc/cpp/parser/css.rst \
 	doc/cpp/parser/csv.rst \
-	doc/cpp/parser/util.rst \
-	doc/cpp/parser/stream.rst \
 	doc/cpp/parser/exception.rst \
-	doc/cpp/index.rst
+	doc/cpp/parser/index.rst \
+	doc/cpp/parser/json.rst \
+	doc/cpp/parser/stream.rst \
+	doc/cpp/parser/types.rst \
+	doc/cpp/parser/util.rst \
+	doc/cpp/parser/xml.rst \
+	doc/cpp/parser/xml_writer.rst \
+	doc/cpp/parser/yaml.rst \
+	doc/cpp/spreadsheet-doc/document.rst \
+	doc/cpp/spreadsheet-doc/import-export.rst \
+	doc/cpp/spreadsheet-doc/index.rst \
+	doc/cpp/spreadsheet-doc/pivot.rst \
+	doc/cpp/spreadsheet-doc/shared-strings.rst \
+	doc/cpp/spreadsheet-doc/sheet.rst \
+	doc/cpp/spreadsheet-doc/styles.rst \
+	doc/cpp/spreadsheet-doc/table.rst \
+	doc/cpp/spreadsheet-doc/types.rst \
+	doc/cpp/spreadsheet-doc/view.rst \
+	doc/doxygen.conf \
+	doc/environment.yml \
+	doc/index.rst \
+	doc/notes/index.rst \
+	doc/notes/json_map/example.json \
+	doc/notes/json_map/index.rst \
+	doc/notes/xml_map/example.xml \
+	doc/notes/xml_map/index.rst \
+	doc/overview/doc-orcus.rst \
+	doc/overview/doc-user.rst \
+	doc/overview/index.rst \
+	doc/overview/json.rst \
+	doc/overview/yaml.rst \
+	doc/python/index.rst \
+	doc/python/orcus/cell.rst \
+	doc/python/orcus/cell_type.rst \
+	doc/python/orcus/csv/index.rst \
+	doc/python/orcus/document.rst \
+	doc/python/orcus/format_type.rst \
+	doc/python/orcus/formula_token.rst \
+	doc/python/orcus/formula_token_op.rst \
+	doc/python/orcus/formula_token_type.rst \
+	doc/python/orcus/formula_tokens.rst \
+	doc/python/orcus/gnumeric/index.rst \
+	doc/python/orcus/index.rst \
+	doc/python/orcus/named_expressions.rst \
+	doc/python/orcus/ods/index.rst \
+	doc/python/orcus/sheet.rst \
+	doc/python/orcus/sheet_rows.rst \
+	doc/python/orcus/tools/bugzilla.rst \
+	doc/python/orcus/tools/file_processor.rst \
+	doc/python/orcus/tools/index.rst \
+	doc/python/orcus/xls_xml/index.rst \
+	doc/python/orcus/xlsx/index.rst \
+	doc/requirements.txt
 
 doc_example_data = \
+	doc_example/Makefile.am \
 	doc_example/files/document.ods \
-	doc_example/files/multi-sheets.ods
+	doc_example/files/multi-sheets.ods \
+	doc_example/json_doc_1.cpp \
+	doc_example/json_doc_2.cpp \
+	doc_example/json_parser_1.cpp \
+	doc_example/spreadsheet_doc_1.cpp \
+	doc_example/spreadsheet_doc_1_num_and_formula.cpp \
+	doc_example/spreadsheet_doc_2.cpp \
+	doc_example/spreadsheet_doc_2_sheets_no_string_pool.cpp \
+	doc_example/spreadsheet_doc_2_sheets_with_formula.cpp \
+	doc_example/spreadsheet_doc_2_sheets_with_string_pool.cpp \
+	doc_example/xml_mapping_1.cpp
 
 bin_data = \
+	bin/build-extra-dist.sh \
 	bin/env-osx.sh \
-	bin/run-python.sh
+	bin/gen-cli-docs.py \
+	bin/gen-files.py \
+	bin/gen-gfm-release-table.sh \
+	bin/gen-test-json-structure-outputs.sh \
+	bin/gen-test-xml-outputs.sh \
+	bin/run-bulk-tests.py \
+	bin/run-python.sh \
+	bin/unpack-zipped-xml.sh
 
 misc_data = \
-	misc/xml-tokens/gen-gnumeric-tokens.py \
-	misc/xml-tokens/gen-ooxml-tokens.py \
-	misc/xml-tokens/gen-odf-tokens.py \
-	misc/xml-tokens/ooxml-extra-tokens.txt \
-	misc/xml-tokens/xls-xml-tokens.txt \
-	misc/xml-tokens/dump-xsd-keys.py \
-	misc/xml-tokens/gnumeric.xsd \
-	misc/xml-tokens/gen-tokens.py \
-	misc/xml-tokens/token_util.py \
+	misc/arrow-parquet/arrow-test.cpp \
+	misc/arrow-parquet/dump-parquet.py \
+	misc/arrow-parquet/gen-parquet-test-files.py \
+	misc/character-set/data.csv \
+	misc/character-set/gen-enum.py \
 	misc/file-processor-modules/preview.py \
 	misc/notes/column-width-and-row-height.txt \
-	misc/notes/zlib-in-memory-gzip.txt
+	misc/notes/zlib-in-memory-gzip.txt \
+	misc/xml-tokens/dump-xsd-keys.py \
+	misc/xml-tokens/gen-gnumeric-tokens.py \
+	misc/xml-tokens/gen-odf-tokens.py \
+	misc/xml-tokens/gen-ooxml-tokens.py \
+	misc/xml-tokens/gen-tokens.py \
+	misc/xml-tokens/gnumeric.xsd \
+	misc/xml-tokens/ooxml-extra-tokens.txt \
+	misc/xml-tokens/token_util.py \
+	misc/xml-tokens/xls-xml-tokens.txt
 
 slickedit_data = \
-	slickedit/sh.vpj \
-	slickedit/cpp.vpj \
-	slickedit/token-gen.vpj \
 	slickedit/cmake.vpj \
+	slickedit/cpp.vpj \
+	slickedit/doc.vpj \
 	slickedit/orcus.vpw \
-	slickedit/python.vpj
+	slickedit/orcus_cpp.h \
+	slickedit/python.vpj \
+	slickedit/sh.vpj \
+	slickedit/token-gen.vpj
 
 test_data = \
-	test/json-mapped/array-of-objects-basic/check.txt \
-	test/json-mapped/array-of-objects-basic/map.json \
-	test/json-mapped/array-of-objects-basic/input.json \
-	test/json-mapped/nested-repeats/check.txt \
-	test/json-mapped/nested-repeats/map.json \
-	test/json-mapped/nested-repeats/input.json \
-	test/json-mapped/nested-repeats-2/check.txt \
-	test/json-mapped/nested-repeats-2/map.json \
-	test/json-mapped/nested-repeats-2/input.json \
-	test/json-mapped/array-of-objects-header/check.txt \
-	test/json-mapped/array-of-objects-header/map.json \
-	test/json-mapped/array-of-objects-header/input.json \
-	test/json-mapped/array-of-arrays-basic/check.txt \
-	test/json-mapped/array-of-arrays-basic/map.json \
-	test/json-mapped/array-of-arrays-basic/input.json \
-	test/json-mapped/array-of-arrays-header/check.txt \
-	test/json-mapped/array-of-arrays-header/map.json \
-	test/json-mapped/array-of-arrays-header/input.json \
 	test/css/basic1.css \
 	test/css/basic10.css \
 	test/css/basic11.css \
@@ -187,212 +203,79 @@ test_data = \
 	test/css/invalids/1.css \
 	test/css/test.css \
 	test/css/utf8-1.css \
-	test/csv/quoted-with-delim/check.txt \
-	test/csv/quoted-with-delim/input.csv \
-	test/csv/split-sheet/check-2.txt \
-	test/csv/split-sheet/check-1.txt \
-	test/csv/split-sheet/input.csv \
-	test/csv/split-sheet/check-3.txt \
-	test/csv/simple-numbers/check.txt \
-	test/csv/simple-numbers/input.csv \
 	test/csv/double-quotes/check.txt \
 	test/csv/double-quotes/input.csv \
 	test/csv/normal-quotes/check.txt \
 	test/csv/normal-quotes/input.csv \
-	test/xml-structure/nested-repeat-1/check.txt \
-	test/xml-structure/nested-repeat-1/input.xml \
-	test/xml-structure/basic-3/check.txt \
-	test/xml-structure/basic-3/input.xml \
-	test/xml-structure/basic-1/check.txt \
-	test/xml-structure/basic-1/input.xml \
-	test/xml-structure/basic-2/check.txt \
-	test/xml-structure/basic-2/input.xml \
-	test/xml-structure/namespace-default/check.txt \
-	test/xml-structure/namespace-default/input.xml \
-	test/xml-structure/attribute-1/check.txt \
-	test/xml-structure/attribute-1/input.xml \
-	test/gnumeric/test.gnumeric \
-	test/gnumeric/raw-values-1/input.gnumeric \
+	test/csv/quoted-with-delim/check.txt \
+	test/csv/quoted-with-delim/input.csv \
+	test/csv/simple-numbers/check.txt \
+	test/csv/simple-numbers/input.csv \
+	test/csv/split-sheet/check-1.txt \
+	test/csv/split-sheet/check-2.txt \
+	test/csv/split-sheet/check-3.txt \
+	test/csv/split-sheet/input.csv \
+	test/gnumeric/background-color/standard.gnumeric \
+	test/gnumeric/borders/colors.gnumeric \
+	test/gnumeric/borders/directions.gnumeric \
+	test/gnumeric/borders/grid-box.gnumeric \
+	test/gnumeric/borders/single-cells.gnumeric \
+	test/gnumeric/cell-properties/wrap-and-shrink.gnumeric \
+	test/gnumeric/cell-value-types/check.txt \
+	test/gnumeric/cell-value-types/input.gnumeric \
+	test/gnumeric/colored-text/input.gnumeric \
+	test/gnumeric/column-width-row-height/input.gnumeric \
+	test/gnumeric/formula-cells/check.txt \
+	test/gnumeric/formula-cells/input.gnumeric \
+	test/gnumeric/hidden-rows-columns/input.gnumeric \
+	test/gnumeric/merged-cells/input.gnumeric \
+	test/gnumeric/named-expression-sheet-local/check.txt \
+	test/gnumeric/named-expression-sheet-local/input.gnumeric \
+	test/gnumeric/named-expression/check.txt \
+	test/gnumeric/named-expression/input.gnumeric \
+	test/gnumeric/number-formats/input.gnumeric \
 	test/gnumeric/raw-values-1/check.txt \
-	test/json-structure/multiple-ranges/check.txt \
-	test/json-structure/multiple-ranges/input.json \
-	test/json-structure/repeat-objects-2/check.txt \
-	test/json-structure/repeat-objects-2/input.json \
-	test/json-structure/nested-arrays/check.txt \
-	test/json-structure/nested-arrays/input.json \
-	test/json-structure/nested-arrays-mixed/check.txt \
-	test/json-structure/nested-arrays-mixed/input.json \
-	test/json-structure/no-value-nodes/03.json \
-	test/json-structure/no-value-nodes/01.json \
-	test/json-structure/no-value-nodes/04.json \
-	test/json-structure/no-value-nodes/02.json \
-	test/json-structure/nested-arrays-mixed-2/check.txt \
-	test/json-structure/nested-arrays-mixed-2/input.json \
-	test/json-structure/repeat-objects/check.txt \
-	test/json-structure/repeat-objects/input.json \
+	test/gnumeric/raw-values-1/input.gnumeric \
+	test/gnumeric/table/autofilter.gnumeric \
+	test/gnumeric/test.gnumeric \
+	test/gnumeric/text-alignment/input.gnumeric \
+	test/gnumeric/text-formats/input.gnumeric \
+	test/json-mapped/array-of-arrays-basic/check.txt \
+	test/json-mapped/array-of-arrays-basic/input.json \
+	test/json-mapped/array-of-arrays-basic/map.json \
+	test/json-mapped/array-of-arrays-header/check.txt \
+	test/json-mapped/array-of-arrays-header/input.json \
+	test/json-mapped/array-of-arrays-header/map.json \
+	test/json-mapped/array-of-objects-basic/check.txt \
+	test/json-mapped/array-of-objects-basic/input.json \
+	test/json-mapped/array-of-objects-basic/map.json \
+	test/json-mapped/array-of-objects-header/check.txt \
+	test/json-mapped/array-of-objects-header/input.json \
+	test/json-mapped/array-of-objects-header/map.json \
+	test/json-mapped/nested-repeats-2/check.txt \
+	test/json-mapped/nested-repeats-2/input.json \
+	test/json-mapped/nested-repeats-2/map.json \
+	test/json-mapped/nested-repeats/check.txt \
+	test/json-mapped/nested-repeats/input.json \
+	test/json-mapped/nested-repeats/map.json \
 	test/json-structure/arrays-in-object/check.txt \
 	test/json-structure/arrays-in-object/input.json \
-	test/xlsx/borders/directions.xlsx \
-	test/xlsx/borders/grid-box.xlsx \
-	test/xlsx/borders/single-cells.xlsx \
-	test/xlsx/borders/colors.xlsx \
-	test/xlsx/boolean-values/check.txt \
-	test/xlsx/boolean-values/input.xlsx \
-	test/xlsx/hidden-rows-columns/input.xlsx \
-	test/xlsx/raw-values-1/check.txt \
-	test/xlsx/raw-values-1/input.xlsx \
-	test/xlsx/revision/cell-change-basic.xlsx \
-	test/xlsx/styles/column-styles.xlsx \
-	test/xlsx/styles/direct-format.xlsx \
-	test/xlsx/formula-shared/check.txt \
-	test/xlsx/formula-shared/input.xlsx \
-	test/xlsx/text-alignment/input.xlsx \
-	test/xlsx/matrix-results/input.xlsx \
-	test/xlsx/named-expression/check.txt \
-	test/xlsx/named-expression/input.xlsx \
-	test/xlsx/formula-array-1/check.txt \
-	test/xlsx/formula-array-1/input.xlsx \
-	test/xlsx/test.xlsx \
-	test/xlsx/view/cursor-split-pane.xlsx \
-	test/xlsx/view/frozen-pane.xlsx \
-	test/xlsx/view/cursor-per-sheet.xlsx \
-	test/xlsx/formula-cells/check.txt \
-	test/xlsx/formula-cells/input.xlsx \
-	test/xlsx/cell-properties/wrap-and-shrink.xlsx \
-	test/xlsx/formula-with-string-results/check.txt \
-	test/xlsx/formula-with-string-results/input.xlsx \
-	test/xlsx/named-expression-relative/input.xlsx \
-	test/xlsx/data-table/one-variable.xlsx \
-	test/xlsx/data-table/multi-table.xlsx \
-	test/xlsx/number-format/date-time.xlsx \
-	test/xlsx/empty-shared-strings/check.txt \
-	test/xlsx/empty-shared-strings/input.xlsx \
-	test/xlsx/column-width-row-height/input.xlsx \
-	test/xlsx/merged-cells/simple.xlsx \
-	test/xlsx/date-time/input.xlsx \
-	test/xlsx/date-cell/input.xlsx \
-	test/xlsx/doc-structure/unordered-sheet-positions.xlsx \
-	test/xlsx/named-expression-sheet-local/check.txt \
-	test/xlsx/named-expression-sheet-local/input.xlsx \
-	test/xlsx/background-color/standard.xlsx \
-	test/xlsx/table/table-1.xlsx \
-	test/xlsx/table/table-2.xlsx \
-	test/xlsx/table/autofilter.xlsx \
-	test/xlsx/table/autofilter-text-filter-1.xlsx \
-	test/xlsx/formatted-text/colored-text.xlsx \
-	test/xlsx/formatted-text/bold-and-italic.xlsx \
-	test/xlsx/pivot-table/error-values.xlsx \
-	test/xlsx/pivot-table/chart-simple.xlsx \
-	test/xlsx/pivot-table/mixed-type-field.xlsx \
-	test/xlsx/pivot-table/group-field.xlsx \
-	test/xlsx/pivot-table/three-pivot-tables-on-one-sheet.xlsx \
-	test/xlsx/pivot-table/two-pivot-caches.xlsx \
-	test/xlsx/pivot-table/group-by-dates.xlsx \
-	test/xlsx/pivot-table/group-by-numbers.xlsx \
-	test/xlsx/pivot-table/two-tables-one-source.xlsx \
-	test/xlsx/pivot-table/many-fields.xlsx \
-	test/xlsx/formula-simple.xlsx \
-	test/xml-mapped/attribute-basic/input.xml \
-	test/xml-mapped/attribute-basic/check.txt \
-	test/xml-mapped/attribute-basic/map.xml \
-	test/xml-mapped/attribute-basic/check-nomap.txt \
-	test/xml-mapped/content-namespace-2/input.xml \
-	test/xml-mapped/content-namespace-2/check.txt \
-	test/xml-mapped/content-namespace-2/map.xml \
-	test/xml-mapped/content-namespace-2/check-nomap.txt \
-	test/xml-mapped/custom-labels-2/input.xml \
-	test/xml-mapped/custom-labels-2/check.txt \
-	test/xml-mapped/custom-labels-2/map.xml \
-	test/xml-mapped/content-one-column/input.xml \
-	test/xml-mapped/content-one-column/check-nomap.txt \
-	test/xml-mapped/content-namespace-3/input.xml \
-	test/xml-mapped/content-namespace-3/check.txt \
-	test/xml-mapped/content-namespace-3/map.xml \
-	test/xml-mapped/content-namespace-3/check-nomap.txt \
-	test/xml-mapped/attribute-single-element/input.xml \
-	test/xml-mapped/attribute-single-element/check.txt \
-	test/xml-mapped/attribute-single-element/map.xml \
-	test/xml-mapped/attribute-range-self-close/input.xml \
-	test/xml-mapped/attribute-range-self-close/check.txt \
-	test/xml-mapped/attribute-range-self-close/map.xml \
-	test/xml-mapped/attribute-range-self-close/check-nomap.txt \
-	test/xml-mapped/nested-repeats-3/input.xml \
-	test/xml-mapped/nested-repeats-3/check.txt \
-	test/xml-mapped/nested-repeats-3/map.xml \
-	test/xml-mapped/nested-repeats-3/check-nomap.txt \
-	test/xml-mapped/encoding/euc-jp.xml \
-	test/xml-mapped/encoding/gbk.xml \
-	test/xml-mapped/encoding/utf-8.xml \
-	test/xml-mapped/invalids/map-defs/non-leaf-element-linked.xml \
-	test/xml-mapped/invalids/map-defs/not-xml.xml \
-	test/xml-mapped/attribute-namespace-2/input.xml \
-	test/xml-mapped/attribute-namespace-2/check.txt \
-	test/xml-mapped/attribute-namespace-2/map.xml \
-	test/xml-mapped/attribute-namespace-2/check-nomap.txt \
-	test/xml-mapped/content-namespace/input.xml \
-	test/xml-mapped/content-namespace/check.txt \
-	test/xml-mapped/content-namespace/map.xml \
-	test/xml-mapped/content-namespace/check-nomap.txt \
-	test/xml-mapped/nested-repeats-4/input.xml \
-	test/xml-mapped/nested-repeats-4/check.txt \
-	test/xml-mapped/nested-repeats-4/map.xml \
-	test/xml-mapped/nested-repeats-4/check-nomap.txt \
-	test/xml-mapped/attribute-single-element-2/input.xml \
-	test/xml-mapped/attribute-single-element-2/check.txt \
-	test/xml-mapped/attribute-single-element-2/map.xml \
-	test/xml-mapped/nested-repeats/input.xml \
-	test/xml-mapped/nested-repeats/check.txt \
-	test/xml-mapped/nested-repeats/map.xml \
-	test/xml-mapped/nested-repeats/check-nomap.txt \
-	test/xml-mapped/fuel-economy/input.xml \
-	test/xml-mapped/fuel-economy/check.txt \
-	test/xml-mapped/fuel-economy/map.xml \
-	test/xml-mapped/fuel-economy/check-nomap.txt \
-	test/xml-mapped/content-basic/input.xml \
-	test/xml-mapped/content-basic/check.txt \
-	test/xml-mapped/content-basic/map.xml \
-	test/xml-mapped/content-basic/check-nomap.txt \
-	test/xml-mapped/nested-repeats-2/input.xml \
-	test/xml-mapped/nested-repeats-2/check.txt \
-	test/xml-mapped/nested-repeats-2/map.xml \
-	test/xml-mapped/nested-repeats-2/check-nomap.txt \
-	test/xml-mapped/custom-labels/input.xml \
-	test/xml-mapped/custom-labels/check.txt \
-	test/xml-mapped/custom-labels/map.xml \
-	test/xml-mapped/attribute-namespace/input.xml \
-	test/xml-mapped/attribute-namespace/check.txt \
-	test/xml-mapped/attribute-namespace/map.xml \
-	test/xml-mapped/attribute-namespace/check-nomap.txt \
-	test/xml/simple/check.txt \
-	test/xml/simple/input.xml \
-	test/xml/no-decl-1/check.txt \
-	test/xml/no-decl-1/input.xml \
-	test/xml/encoded-attrs/test1.xml \
-	test/xml/self-closing-root/check.txt \
-	test/xml/self-closing-root/input.xml \
-	test/xml/default-ns/check.txt \
-	test/xml/default-ns/input.xml \
-	test/xml/osm/street-in-aizu.osm \
-	test/xml/parse-only/rss/input.xml \
-	test/xml/cdata-1/check.txt \
-	test/xml/cdata-1/input.xml \
-	test/xml/custom-decl-1/check.txt \
-	test/xml/custom-decl-1/input.xml \
-	test/xml/single-quote/check.txt \
-	test/xml/single-quote/input.xml \
-	test/xml/encoded-char/check.txt \
-	test/xml/encoded-char/input.xml \
-	test/xml/ns-alias-1/check.txt \
-	test/xml/ns-alias-1/input.xml \
-	test/xml/doctype/html.xml \
-	test/xml/underscore-identifier/check.txt \
-	test/xml/underscore-identifier/input.xml \
-	test/xml/bom/check.txt \
-	test/xml/bom/input.xml \
-	test/xml/utf8-1/check.txt \
-	test/xml/utf8-1/input.xml \
-	test/xml/utf8-2/check.txt \
-	test/xml/utf8-2/input.xml \
+	test/json-structure/multiple-ranges/check.txt \
+	test/json-structure/multiple-ranges/input.json \
+	test/json-structure/nested-arrays-mixed-2/check.txt \
+	test/json-structure/nested-arrays-mixed-2/input.json \
+	test/json-structure/nested-arrays-mixed/check.txt \
+	test/json-structure/nested-arrays-mixed/input.json \
+	test/json-structure/nested-arrays/check.txt \
+	test/json-structure/nested-arrays/input.json \
+	test/json-structure/no-value-nodes/01.json \
+	test/json-structure/no-value-nodes/02.json \
+	test/json-structure/no-value-nodes/03.json \
+	test/json-structure/no-value-nodes/04.json \
+	test/json-structure/repeat-objects-2/check.txt \
+	test/json-structure/repeat-objects-2/input.json \
+	test/json-structure/repeat-objects/check.txt \
+	test/json-structure/repeat-objects/input.json \
 	test/json/basic1/check.txt \
 	test/json/basic1/input.json \
 	test/json/basic1/output.yaml \
@@ -426,6 +309,8 @@ test_data = \
 	test/json/to-yaml-1/check.txt \
 	test/json/to-yaml-1/input.json \
 	test/json/to-yaml-1/output.yaml \
+	test/json/validation/LICENSE \
+	test/json/validation/README \
 	test/json/validation/i_number_double_huge_neg_exp.json \
 	test/json/validation/i_number_huge_exp.json \
 	test/json/validation/i_number_neg_int_huge_exp.json \
@@ -439,6 +324,9 @@ test_data = \
 	test/json/validation/i_object_key_lone_2nd_surrogate.json \
 	test/json/validation/i_string_1st_surrogate_but_2nd_missing.json \
 	test/json/validation/i_string_1st_valid_surrogate_2nd_invalid.json \
+	test/json/validation/i_string_UTF-16LE_with_BOM.json \
+	test/json/validation/i_string_UTF-8_invalid_sequence.json \
+	test/json/validation/i_string_UTF8_surrogate_U+D800.json \
 	test/json/validation/i_string_incomplete_surrogate_and_escape_valid.json \
 	test/json/validation/i_string_incomplete_surrogate_pair.json \
 	test/json/validation/i_string_incomplete_surrogates_escape_valid.json \
@@ -456,12 +344,8 @@ test_data = \
 	test/json/validation/i_string_truncated-utf-8.json \
 	test/json/validation/i_string_utf16BE_no_BOM.json \
 	test/json/validation/i_string_utf16LE_no_BOM.json \
-	test/json/validation/i_string_UTF-16LE_with_BOM.json \
-	test/json/validation/i_string_UTF-8_invalid_sequence.json \
-	test/json/validation/i_string_UTF8_surrogate_U+D800.json \
 	test/json/validation/i_structure_500_nested_arrays.json \
 	test/json/validation/i_structure_UTF-8_BOM_empty_object.json \
-	test/json/validation/LICENSE \
 	test/json/validation/n_array_1_true_without_comma.json \
 	test/json/validation/n_array_a_invalid_utf8.json \
 	test/json/validation/n_array_colon_instead_of_comma.json \
@@ -471,8 +355,8 @@ test_data = \
 	test/json/validation/n_array_double_extra_comma.json \
 	test/json/validation/n_array_extra_close.json \
 	test/json/validation/n_array_extra_comma.json \
-	test/json/validation/n_array_incomplete_invalid_value.json \
 	test/json/validation/n_array_incomplete.json \
+	test/json/validation/n_array_incomplete_invalid_value.json \
 	test/json/validation/n_array_inner_array_no_comma.json \
 	test/json/validation/n_array_invalid_utf8.json \
 	test/json/validation/n_array_items_separated_by_semicolon.json \
@@ -492,46 +376,47 @@ test_data = \
 	test/json/validation/n_incomplete_null.json \
 	test/json/validation/n_incomplete_true.json \
 	test/json/validation/n_multidigit_number_then_00.json \
-	test/json/validation/n_number_0.1.2.json \
+	test/json/validation/n_number_++.json \
+	test/json/validation/n_number_+1.json \
+	test/json/validation/n_number_+Inf.json \
 	test/json/validation/n_number_-01.json \
+	test/json/validation/n_number_-1.0..json \
+	test/json/validation/n_number_-2..json \
+	test/json/validation/n_number_-NaN.json \
+	test/json/validation/n_number_.-1.json \
+	test/json/validation/n_number_.2e-3.json \
+	test/json/validation/n_number_0.1.2.json \
 	test/json/validation/n_number_0.3e+.json \
 	test/json/validation/n_number_0.3e.json \
+	test/json/validation/n_number_0.e1.json \
 	test/json/validation/n_number_0_capital_E+.json \
 	test/json/validation/n_number_0_capital_E.json \
-	test/json/validation/n_number_0.e1.json \
 	test/json/validation/n_number_0e+.json \
 	test/json/validation/n_number_0e.json \
-	test/json/validation/n_number_1_000.json \
 	test/json/validation/n_number_1.0e+.json \
 	test/json/validation/n_number_1.0e-.json \
 	test/json/validation/n_number_1.0e.json \
-	test/json/validation/n_number_-1.0..json \
+	test/json/validation/n_number_1_000.json \
 	test/json/validation/n_number_1eE2.json \
-	test/json/validation/n_number_+1.json \
-	test/json/validation/n_number_.-1.json \
 	test/json/validation/n_number_2.e+3.json \
 	test/json/validation/n_number_2.e-3.json \
 	test/json/validation/n_number_2.e3.json \
-	test/json/validation/n_number_.2e-3.json \
-	test/json/validation/n_number_-2..json \
 	test/json/validation/n_number_9.e+.json \
+	test/json/validation/n_number_Inf.json \
+	test/json/validation/n_number_NaN.json \
+	test/json/validation/n_number_U+FF11_fullwidth_digit_one.json \
 	test/json/validation/n_number_expression.json \
 	test/json/validation/n_number_hex_1_digit.json \
 	test/json/validation/n_number_hex_2_digits.json \
 	test/json/validation/n_number_infinity.json \
-	test/json/validation/n_number_+Inf.json \
-	test/json/validation/n_number_Inf.json \
 	test/json/validation/n_number_invalid+-.json \
 	test/json/validation/n_number_invalid-negative-real.json \
 	test/json/validation/n_number_invalid-utf-8-in-bigger-int.json \
 	test/json/validation/n_number_invalid-utf-8-in-exponent.json \
 	test/json/validation/n_number_invalid-utf-8-in-int.json \
-	test/json/validation/n_number_++.json \
 	test/json/validation/n_number_minus_infinity.json \
 	test/json/validation/n_number_minus_sign_with_trailing_garbage.json \
 	test/json/validation/n_number_minus_space_1.json \
-	test/json/validation/n_number_-NaN.json \
-	test/json/validation/n_number_NaN.json \
 	test/json/validation/n_number_neg_int_starting_with_zero.json \
 	test/json/validation/n_number_neg_real_without_int_part.json \
 	test/json/validation/n_number_neg_with_garbage_at_end.json \
@@ -539,9 +424,8 @@ test_data = \
 	test/json/validation/n_number_real_with_invalid_utf8_after_e.json \
 	test/json/validation/n_number_real_without_fractional_part.json \
 	test/json/validation/n_number_starting_with_dot.json \
-	test/json/validation/n_number_U+FF11_fullwidth_digit_one.json \
-	test/json/validation/n_number_with_alpha_char.json \
 	test/json/validation/n_number_with_alpha.json \
+	test/json/validation/n_number_with_alpha_char.json \
 	test/json/validation/n_number_with_leading_zero.json \
 	test/json/validation/n_object_bad_value.json \
 	test/json/validation/n_object_bracket_key.json \
@@ -556,16 +440,16 @@ test_data = \
 	test/json/validation/n_object_missing_semicolon.json \
 	test/json/validation/n_object_missing_value.json \
 	test/json/validation/n_object_no-colon.json \
-	test/json/validation/n_object_non_string_key_but_huge_number_instead.json \
 	test/json/validation/n_object_non_string_key.json \
+	test/json/validation/n_object_non_string_key_but_huge_number_instead.json \
 	test/json/validation/n_object_repeated_null_null.json \
 	test/json/validation/n_object_several_trailing_commas.json \
 	test/json/validation/n_object_single_quote.json \
 	test/json/validation/n_object_trailing_comma.json \
 	test/json/validation/n_object_trailing_comment.json \
 	test/json/validation/n_object_trailing_comment_open.json \
-	test/json/validation/n_object_trailing_comment_slash_open_incomplete.json \
 	test/json/validation/n_object_trailing_comment_slash_open.json \
+	test/json/validation/n_object_trailing_comment_slash_open_incomplete.json \
 	test/json/validation/n_object_two_commas_in_a_row.json \
 	test/json/validation/n_object_unquoted_key.json \
 	test/json/validation/n_object_unterminated-value.json \
@@ -573,23 +457,23 @@ test_data = \
 	test/json/validation/n_object_with_trailing_garbage.json \
 	test/json/validation/n_single_space.json \
 	test/json/validation/n_string_1_surrogate_then_escape.json \
+	test/json/validation/n_string_1_surrogate_then_escape_u.json \
 	test/json/validation/n_string_1_surrogate_then_escape_u1.json \
 	test/json/validation/n_string_1_surrogate_then_escape_u1x.json \
-	test/json/validation/n_string_1_surrogate_then_escape_u.json \
 	test/json/validation/n_string_accentuated_char_no_quotes.json \
 	test/json/validation/n_string_backslash_00.json \
+	test/json/validation/n_string_escape_x.json \
 	test/json/validation/n_string_escaped_backslash_bad.json \
 	test/json/validation/n_string_escaped_ctrl_char_tab.json \
 	test/json/validation/n_string_escaped_emoji.json \
-	test/json/validation/n_string_escape_x.json \
-	test/json/validation/n_string_incomplete_escaped_character.json \
 	test/json/validation/n_string_incomplete_escape.json \
-	test/json/validation/n_string_incomplete_surrogate_escape_invalid.json \
+	test/json/validation/n_string_incomplete_escaped_character.json \
 	test/json/validation/n_string_incomplete_surrogate.json \
+	test/json/validation/n_string_incomplete_surrogate_escape_invalid.json \
+	test/json/validation/n_string_invalid-utf-8-in-escape.json \
 	test/json/validation/n_string_invalid_backslash_esc.json \
 	test/json/validation/n_string_invalid_unicode_escape.json \
 	test/json/validation/n_string_invalid_utf8_after_escape.json \
-	test/json/validation/n_string_invalid-utf-8-in-escape.json \
 	test/json/validation/n_string_leading_uescaped_thinspace.json \
 	test/json/validation/n_string_no_quotes_with_bad_escape.json \
 	test/json/validation/n_string_single_doublequote.json \
@@ -602,6 +486,8 @@ test_data = \
 	test/json/validation/n_string_unicode_CapitalU.json \
 	test/json/validation/n_string_with_trailing_garbage.json \
 	test/json/validation/n_structure_100000_opening_arrays.json \
+	test/json/validation/n_structure_U+2060_word_joined.json \
+	test/json/validation/n_structure_UTF8_BOM_no_data.json \
 	test/json/validation/n_structure_angle_bracket_..json \
 	test/json/validation/n_structure_angle_bracket_null.json \
 	test/json/validation/n_structure_array_trailing_garbage.json \
@@ -629,9 +515,9 @@ test_data = \
 	test/json/validation/n_structure_open_array_open_object.json \
 	test/json/validation/n_structure_open_array_open_string.json \
 	test/json/validation/n_structure_open_array_string.json \
+	test/json/validation/n_structure_open_object.json \
 	test/json/validation/n_structure_open_object_close_array.json \
 	test/json/validation/n_structure_open_object_comma.json \
-	test/json/validation/n_structure_open_object.json \
 	test/json/validation/n_structure_open_object_open_array.json \
 	test/json/validation/n_structure_open_object_open_string.json \
 	test/json/validation/n_structure_open_object_string_with_apostrophes.json \
@@ -639,7 +525,6 @@ test_data = \
 	test/json/validation/n_structure_single_eacute.json \
 	test/json/validation/n_structure_single_star.json \
 	test/json/validation/n_structure_trailing_\#.json \
-	test/json/validation/n_structure_U+2060_word_joined.json \
 	test/json/validation/n_structure_uescaped_LF_before_string.json \
 	test/json/validation/n_structure_unclosed_array.json \
 	test/json/validation/n_structure_unclosed_array_partial_null.json \
@@ -647,13 +532,11 @@ test_data = \
 	test/json/validation/n_structure_unclosed_array_unfinished_true.json \
 	test/json/validation/n_structure_unclosed_object.json \
 	test/json/validation/n_structure_unicode-identifier.json \
-	test/json/validation/n_structure_UTF8_BOM_no_data.json \
-	test/json/validation/n_structure_whitespace_formfeed.json \
 	test/json/validation/n_structure_whitespace_U+2060_word_joiner.json \
-	test/json/validation/README \
+	test/json/validation/n_structure_whitespace_formfeed.json \
 	test/json/validation/y_array_arraysWithSpaces.json \
-	test/json/validation/y_array_empty.json \
 	test/json/validation/y_array_empty-string.json \
+	test/json/validation/y_array_empty.json \
 	test/json/validation/y_array_ending_with_newline.json \
 	test/json/validation/y_array_false.json \
 	test/json/validation/y_array_heterogeneous.json \
@@ -662,12 +545,12 @@ test_data = \
 	test/json/validation/y_array_with_leading_space.json \
 	test/json/validation/y_array_with_several_null.json \
 	test/json/validation/y_array_with_trailing_space.json \
+	test/json/validation/y_number.json \
 	test/json/validation/y_number_0e+1.json \
 	test/json/validation/y_number_0e1.json \
 	test/json/validation/y_number_after_space.json \
 	test/json/validation/y_number_double_close_to_zero.json \
 	test/json/validation/y_number_int_with_exp.json \
-	test/json/validation/y_number.json \
 	test/json/validation/y_number_minus_zero.json \
 	test/json/validation/y_number_negative_int.json \
 	test/json/validation/y_number_negative_one.json \
@@ -681,14 +564,14 @@ test_data = \
 	test/json/validation/y_number_real_pos_exponent.json \
 	test/json/validation/y_number_simple_int.json \
 	test/json/validation/y_number_simple_real.json \
+	test/json/validation/y_object.json \
 	test/json/validation/y_object_basic.json \
-	test/json/validation/y_object_duplicated_key_and_value.json \
 	test/json/validation/y_object_duplicated_key.json \
+	test/json/validation/y_object_duplicated_key_and_value.json \
 	test/json/validation/y_object_empty.json \
 	test/json/validation/y_object_empty_key.json \
 	test/json/validation/y_object_escaped_null_in_key.json \
 	test/json/validation/y_object_extreme_numbers.json \
-	test/json/validation/y_object.json \
 	test/json/validation/y_object_long_strings.json \
 	test/json/validation/y_object_simple.json \
 	test/json/validation/y_object_string_unicode.json \
@@ -721,19 +604,19 @@ test_data = \
 	test/json/validation/y_string_two-byte-utf-8.json \
 	test/json/validation/y_string_u+2028_line_sep.json \
 	test/json/validation/y_string_u+2029_par_sep.json \
-	test/json/validation/y_string_uescaped_newline.json \
 	test/json/validation/y_string_uEscape.json \
+	test/json/validation/y_string_uescaped_newline.json \
 	test/json/validation/y_string_unescaped_char_delete.json \
-	test/json/validation/y_string_unicode_2.json \
-	test/json/validation/y_string_unicodeEscapedBackslash.json \
-	test/json/validation/y_string_unicode_escaped_double_quote.json \
 	test/json/validation/y_string_unicode.json \
+	test/json/validation/y_string_unicodeEscapedBackslash.json \
+	test/json/validation/y_string_unicode_2.json \
 	test/json/validation/y_string_unicode_U+10FFFE_nonchar.json \
 	test/json/validation/y_string_unicode_U+1FFFE_nonchar.json \
 	test/json/validation/y_string_unicode_U+200B_ZERO_WIDTH_SPACE.json \
 	test/json/validation/y_string_unicode_U+2064_invisible_plus.json \
 	test/json/validation/y_string_unicode_U+FDD0_nonchar.json \
 	test/json/validation/y_string_unicode_U+FFFE_nonchar.json \
+	test/json/validation/y_string_unicode_escaped_double_quote.json \
 	test/json/validation/y_string_utf8.json \
 	test/json/validation/y_string_with_del_character.json \
 	test/json/validation/y_structure_lonely_false.json \
@@ -746,127 +629,322 @@ test_data = \
 	test/json/validation/y_structure_trailing_newline.json \
 	test/json/validation/y_structure_true_in_array.json \
 	test/json/validation/y_structure_whitespace_array.json \
+	test/ods/borders/grid-box.ods \
+	test/ods/borders/single-cells.ods \
+	test/ods/cell-properties/wrap-and-shrink.ods \
+	test/ods/column-width-row-height/input.ods \
+	test/ods/date-cell/input.ods \
+	test/ods/formatted-text/bold-and-italic.ods \
+	test/ods/formula-1/check.txt \
+	test/ods/formula-1/input.ods \
+	test/ods/formula-2/check.txt \
+	test/ods/formula-2/input.ods \
+	test/ods/import-styles/cell-protection.xml \
+	test/ods/import-styles/cell-styles.xml \
+	test/ods/import-styles/standard-styles.xml \
+	test/ods/japanese.ods \
+	test/ods/named-expression-sheet-local/check.txt \
+	test/ods/named-expression-sheet-local/input.ods \
+	test/ods/named-expression/check.txt \
+	test/ods/named-expression/input.ods \
+	test/ods/named-range/check.txt \
+	test/ods/named-range/input.ods \
+	test/ods/number-format/basic-set.ods \
+	test/ods/raw-values-1/check.txt \
+	test/ods/raw-values-1/input.ods \
+	test/ods/styles/asian-complex.ods \
+	test/ods/styles/column-styles.ods \
+	test/ods/styles/direct-format.ods \
+	test/ods/styles/text-underlines.ods \
+	test/ods/test.ods \
+	test/parquet/basic/basic-gzip.parquet \
+	test/parquet/basic/basic-gzip.parquet.check \
+	test/parquet/basic/basic-nocomp.parquet \
+	test/parquet/basic/basic-nocomp.parquet.check \
+	test/parquet/basic/basic-snappy.parquet \
+	test/parquet/basic/basic-snappy.parquet.check \
+	test/parquet/basic/basic-zstd.parquet \
+	test/parquet/basic/basic-zstd.parquet.check \
+	test/parquet/basic/float-with-nan.parquet \
+	test/parquet/basic/float-with-nan.parquet.check \
+	test/python/env.json.in \
 	test/python/file_load_common.py \
 	test/python/perf/test_json.py \
-	test/python/test_csv_export.py \
 	test/python/test_csv.py \
+	test/python/test_csv_export.py \
 	test/python/test_gnumeric.py \
 	test/python/test_json.py \
 	test/python/test_module.py \
 	test/python/test_ods.py \
 	test/python/test_xls_xml.py \
 	test/python/test_xlsx.py \
-	test/yaml/boolean/input.yaml \
-	test/yaml/basic2/input.yaml \
-	test/yaml/quoted-string/input.yaml \
-	test/yaml/map-key-1/input.yaml \
-	test/yaml/empty-value-sequence-1/input.yaml \
-	test/yaml/multi-line-1/input.yaml \
-	test/yaml/swagger/input.yaml \
-	test/yaml/empty-value-map-2/input.yaml \
-	test/yaml/null/input.yaml \
-	test/yaml/empty-value-map-1/input.yaml \
-	test/yaml/basic1/input.yaml \
-	test/yaml/literal-block-1/input.yaml \
-	test/yaml/empty-value-sequence-2/input.yaml \
-	test/yaml/basic3/input.yaml \
-	test/yaml/url/input.yaml \
-	test/yaml/multi-line-2/input.yaml \
-	test/yaml/invalids/3.yaml \
-	test/yaml/invalids/2.yaml \
-	test/yaml/invalids/1.yaml \
-	test/yaml/literal-block-2/input.yaml \
-	test/xls-xml/borders/colors.xml \
-	test/xls-xml/borders/single-cells.xml \
-	test/xls-xml/borders/grid-box.xml \
-	test/xls-xml/borders/directions.xml \
-	test/xls-xml/formula-cells-1/input.xml \
-	test/xls-xml/formula-cells-1/check.txt \
-	test/xls-xml/formula-cells-parse-error/input.xml \
-	test/xls-xml/colored-text/input.xml \
-	test/xls-xml/colored-text/check.txt \
-	test/xls-xml/hidden-rows-columns/input.xml \
-	test/xls-xml/raw-values-1/input.xml \
-	test/xls-xml/raw-values-1/check.txt \
-	test/xls-xml/styles/direct-format.xml \
-	test/xls-xml/styles/column-styles.xml \
-	test/xls-xml/invalid-sub-structure/input.xml \
-	test/xls-xml/invalid-sub-structure/check.txt \
-	test/xls-xml/basic-utf-16-be/input.xml \
-	test/xls-xml/basic-utf-16-be/check.txt \
-	test/xls-xml/text-alignment/input.xml \
-	test/xls-xml/matrix-results/input.xml \
-	test/xls-xml/named-expression/input.xml \
-	test/xls-xml/named-expression/check.txt \
-	test/xls-xml/formula-array-1/input.xml \
-	test/xls-xml/formula-array-1/check.txt \
-	test/xls-xml/empty-rows/input.xml \
-	test/xls-xml/empty-rows/check.txt \
-	test/xls-xml/basic/input.xml \
-	test/xls-xml/basic/check.txt \
-	test/xls-xml/view/cursor-per-sheet.xml \
-	test/xls-xml/view/frozen-pane.xml \
-	test/xls-xml/view/cursor-split-pane.xml \
-	test/xls-xml/bold-and-italic/input.xml \
-	test/xls-xml/bold-and-italic/check.txt \
-	test/xls-xml/cell-properties/locked-and-hidden.xml \
-	test/xls-xml/cell-properties/default-style.xml \
-	test/xls-xml/cell-properties/wrap-and-shrink.xml \
-	test/xls-xml/double-bom/input.xml \
-	test/xls-xml/named-colors/input.xml \
-	test/xls-xml/named-colors/input-upper.xml \
-	test/xls-xml/named-colors/saved-by-excel.xml \
-	test/xls-xml/named-colors/check.txt \
-	test/xls-xml/named-colors/run.py \
-	test/xls-xml/formula-cells-3/input.xml \
-	test/xls-xml/formula-cells-3/check.txt \
-	test/xls-xml/leading-whitespace/input.xml \
-	test/xls-xml/leading-whitespace/check.txt \
-	test/xls-xml/basic-utf-16-le/input.xml \
-	test/xls-xml/basic-utf-16-le/check.txt \
-	test/xls-xml/number-format/date-time.xml \
-	test/xls-xml/formula-cells-2/input.xml \
-	test/xls-xml/formula-cells-2/config.yaml \
-	test/xls-xml/formula-cells-2/check.txt \
-	test/xls-xml/table-offset/input.xml \
-	test/xls-xml/table-offset/check.txt \
-	test/xls-xml/column-width-row-height/input.xml \
-	test/xls-xml/character-set/input.xml \
-	test/xls-xml/merged-cells/input.xml \
-	test/xls-xml/merged-cells/check.txt \
-	test/xls-xml/date-time/input.xml \
-	test/xls-xml/named-expression-sheet-local/input.xml \
-	test/xls-xml/named-expression-sheet-local/check.txt \
 	test/xls-xml/background-color/standard.xml \
+	test/xls-xml/basic-utf-16-be/check.txt \
+	test/xls-xml/basic-utf-16-be/input.xml \
+	test/xls-xml/basic-utf-16-le/check.txt \
+	test/xls-xml/basic-utf-16-le/input.xml \
+	test/xls-xml/basic/check.txt \
+	test/xls-xml/basic/input.xml \
+	test/xls-xml/bold-and-italic/check.txt \
+	test/xls-xml/bold-and-italic/input.xml \
+	test/xls-xml/borders/colors.xml \
+	test/xls-xml/borders/directions.xml \
+	test/xls-xml/borders/grid-box.xml \
+	test/xls-xml/borders/single-cells.xml \
+	test/xls-xml/cell-properties/default-style.xml \
+	test/xls-xml/cell-properties/locked-and-hidden.xml \
+	test/xls-xml/cell-properties/wrap-and-shrink.xml \
+	test/xls-xml/character-set/input.xml \
+	test/xls-xml/colored-text/check.txt \
+	test/xls-xml/colored-text/input.xml \
+	test/xls-xml/column-width-row-height/input.xml \
+	test/xls-xml/date-time/input.xml \
+	test/xls-xml/double-bom/input.xml \
+	test/xls-xml/empty-rows/check.txt \
+	test/xls-xml/empty-rows/input.xml \
+	test/xls-xml/formatted-text/basic.xml \
+	test/xls-xml/formula-array-1/check.txt \
+	test/xls-xml/formula-array-1/input.xml \
+	test/xls-xml/formula-cells-1/check.txt \
+	test/xls-xml/formula-cells-1/input.xml \
+	test/xls-xml/formula-cells-2/check.txt \
+	test/xls-xml/formula-cells-2/config.yaml \
+	test/xls-xml/formula-cells-2/input.xml \
+	test/xls-xml/formula-cells-3/check.txt \
+	test/xls-xml/formula-cells-3/input.xml \
+	test/xls-xml/formula-cells-parse-error/input.xml \
+	test/xls-xml/hidden-rows-columns/input.xml \
+	test/xls-xml/invalid-sub-structure/check.txt \
+	test/xls-xml/invalid-sub-structure/input.xml \
+	test/xls-xml/leading-whitespace/check.txt \
+	test/xls-xml/leading-whitespace/input.xml \
+	test/xls-xml/matrix-results/input.xml \
+	test/xls-xml/merged-cells/check.txt \
+	test/xls-xml/merged-cells/input.xml \
+	test/xls-xml/named-colors/check.txt \
+	test/xls-xml/named-colors/input-upper.xml \
+	test/xls-xml/named-colors/input.xml \
+	test/xls-xml/named-colors/run.py \
+	test/xls-xml/named-colors/saved-by-excel.xml \
+	test/xls-xml/named-expression-sheet-local/check.txt \
+	test/xls-xml/named-expression-sheet-local/input.xml \
+	test/xls-xml/named-expression/check.txt \
+	test/xls-xml/named-expression/input.xml \
+	test/xls-xml/number-format/date-time.xml \
+	test/xls-xml/raw-values-1/check.txt \
+	test/xls-xml/raw-values-1/input.xml \
+	test/xls-xml/styles/column-styles.xml \
+	test/xls-xml/styles/data-offset.xml \
+	test/xls-xml/styles/direct-format.xml \
+	test/xls-xml/table-offset/check.txt \
+	test/xls-xml/table-offset/input.xml \
 	test/xls-xml/table/autofilter.xml \
-	test/ods/borders/grid-box.ods \
-	test/ods/borders/single-cells.ods \
-	test/ods/import-styles/cell-protection.xml \
-	test/ods/import-styles/standard-styles.xml \
-	test/ods/import-styles/cell-styles.xml \
-	test/ods/raw-values-1/check.txt \
-	test/ods/raw-values-1/input.ods \
-	test/ods/styles/text-underlines.ods \
-	test/ods/styles/column-styles.ods \
-	test/ods/styles/direct-format.ods \
-	test/ods/styles/asian-complex.ods \
-	test/ods/test.ods \
-	test/ods/named-expression/check.txt \
-	test/ods/named-expression/input.ods \
-	test/ods/formula-1/check.txt \
-	test/ods/formula-1/input.ods \
-	test/ods/cell-properties/wrap-and-shrink.ods \
-	test/ods/formula-2/check.txt \
-	test/ods/formula-2/input.ods \
-	test/ods/number-format/basic-set.ods \
-	test/ods/column-width-row-height/input.ods \
-	test/ods/date-cell/input.ods \
-	test/ods/japanese.ods \
-	test/ods/named-expression-sheet-local/check.txt \
-	test/ods/named-expression-sheet-local/input.ods \
-	test/ods/named-range/check.txt \
-	test/ods/named-range/input.ods \
-	test/ods/formatted-text/bold-and-italic.ods
+	test/xls-xml/text-alignment/input.xml \
+	test/xls-xml/view/cursor-per-sheet.xml \
+	test/xls-xml/view/cursor-split-pane.xml \
+	test/xls-xml/view/frozen-pane.xml \
+	test/xlsx/background-color/standard.xlsx \
+	test/xlsx/boolean-values/check.txt \
+	test/xlsx/boolean-values/input.xlsx \
+	test/xlsx/borders/colors.xlsx \
+	test/xlsx/borders/directions.xlsx \
+	test/xlsx/borders/grid-box.xlsx \
+	test/xlsx/borders/single-cells.xlsx \
+	test/xlsx/cell-properties/wrap-and-shrink.xlsx \
+	test/xlsx/column-width-row-height/input.xlsx \
+	test/xlsx/conditional-format/basic.xlsx \
+	test/xlsx/conditional-format/data-bars.xlsx \
+	test/xlsx/data-table/multi-table.xlsx \
+	test/xlsx/data-table/one-variable.xlsx \
+	test/xlsx/date-cell/input.xlsx \
+	test/xlsx/date-time/input.xlsx \
+	test/xlsx/doc-structure/unordered-sheet-positions.xlsx \
+	test/xlsx/empty-shared-strings/check.txt \
+	test/xlsx/empty-shared-strings/input.xlsx \
+	test/xlsx/formatted-text/basic.xlsx \
+	test/xlsx/formatted-text/bold-and-italic.xlsx \
+	test/xlsx/formatted-text/colored-text.xlsx \
+	test/xlsx/formula-array-1/check.txt \
+	test/xlsx/formula-array-1/input.xlsx \
+	test/xlsx/formula-cells/check.txt \
+	test/xlsx/formula-cells/input.xlsx \
+	test/xlsx/formula-shared/check.txt \
+	test/xlsx/formula-shared/input.xlsx \
+	test/xlsx/formula-simple.xlsx \
+	test/xlsx/formula-with-string-results/check.txt \
+	test/xlsx/formula-with-string-results/input.xlsx \
+	test/xlsx/hidden-rows-columns/input.xlsx \
+	test/xlsx/matrix-results/input.xlsx \
+	test/xlsx/merged-cells/simple.xlsx \
+	test/xlsx/named-expression-relative/input.xlsx \
+	test/xlsx/named-expression-sheet-local/check.txt \
+	test/xlsx/named-expression-sheet-local/input.xlsx \
+	test/xlsx/named-expression/check.txt \
+	test/xlsx/named-expression/input.xlsx \
+	test/xlsx/number-format/date-time.xlsx \
+	test/xlsx/pivot-table/chart-simple.xlsx \
+	test/xlsx/pivot-table/error-values.xlsx \
+	test/xlsx/pivot-table/group-by-dates.xlsx \
+	test/xlsx/pivot-table/group-by-numbers.xlsx \
+	test/xlsx/pivot-table/group-field.xlsx \
+	test/xlsx/pivot-table/many-fields.xlsx \
+	test/xlsx/pivot-table/mixed-type-field.xlsx \
+	test/xlsx/pivot-table/three-pivot-tables-on-one-sheet.xlsx \
+	test/xlsx/pivot-table/two-pivot-caches.xlsx \
+	test/xlsx/pivot-table/two-tables-one-source.xlsx \
+	test/xlsx/raw-values-1/check.txt \
+	test/xlsx/raw-values-1/input.xlsx \
+	test/xlsx/revision/cell-change-basic.xlsx \
+	test/xlsx/styles/column-styles.xlsx \
+	test/xlsx/styles/direct-format.xlsx \
+	test/xlsx/table/autofilter-text-filter-1.xlsx \
+	test/xlsx/table/autofilter.xlsx \
+	test/xlsx/table/table-1.xlsx \
+	test/xlsx/table/table-2.xlsx \
+	test/xlsx/test.xlsx \
+	test/xlsx/text-alignment/input.xlsx \
+	test/xlsx/view/cursor-per-sheet.xlsx \
+	test/xlsx/view/cursor-split-pane.xlsx \
+	test/xlsx/view/frozen-pane.xlsx \
+	test/xml-mapped/attribute-basic/check-nomap.txt \
+	test/xml-mapped/attribute-basic/check.txt \
+	test/xml-mapped/attribute-basic/input.xml \
+	test/xml-mapped/attribute-basic/map.xml \
+	test/xml-mapped/attribute-namespace-2/check-nomap.txt \
+	test/xml-mapped/attribute-namespace-2/check.txt \
+	test/xml-mapped/attribute-namespace-2/input.xml \
+	test/xml-mapped/attribute-namespace-2/map.xml \
+	test/xml-mapped/attribute-namespace/check-nomap.txt \
+	test/xml-mapped/attribute-namespace/check.txt \
+	test/xml-mapped/attribute-namespace/input.xml \
+	test/xml-mapped/attribute-namespace/map.xml \
+	test/xml-mapped/attribute-range-self-close/check-nomap.txt \
+	test/xml-mapped/attribute-range-self-close/check.txt \
+	test/xml-mapped/attribute-range-self-close/input.xml \
+	test/xml-mapped/attribute-range-self-close/map.xml \
+	test/xml-mapped/attribute-single-element-2/check.txt \
+	test/xml-mapped/attribute-single-element-2/input.xml \
+	test/xml-mapped/attribute-single-element-2/map.xml \
+	test/xml-mapped/attribute-single-element/check.txt \
+	test/xml-mapped/attribute-single-element/input.xml \
+	test/xml-mapped/attribute-single-element/map.xml \
+	test/xml-mapped/content-basic/check-nomap.txt \
+	test/xml-mapped/content-basic/check.txt \
+	test/xml-mapped/content-basic/input.xml \
+	test/xml-mapped/content-basic/map.xml \
+	test/xml-mapped/content-namespace-2/check-nomap.txt \
+	test/xml-mapped/content-namespace-2/check.txt \
+	test/xml-mapped/content-namespace-2/input.xml \
+	test/xml-mapped/content-namespace-2/map.xml \
+	test/xml-mapped/content-namespace-3/check-nomap.txt \
+	test/xml-mapped/content-namespace-3/check.txt \
+	test/xml-mapped/content-namespace-3/input.xml \
+	test/xml-mapped/content-namespace-3/map.xml \
+	test/xml-mapped/content-namespace/check-nomap.txt \
+	test/xml-mapped/content-namespace/check.txt \
+	test/xml-mapped/content-namespace/input.xml \
+	test/xml-mapped/content-namespace/map.xml \
+	test/xml-mapped/content-one-column/check-nomap.txt \
+	test/xml-mapped/content-one-column/input.xml \
+	test/xml-mapped/custom-labels-2/check.txt \
+	test/xml-mapped/custom-labels-2/input.xml \
+	test/xml-mapped/custom-labels-2/map.xml \
+	test/xml-mapped/custom-labels/check.txt \
+	test/xml-mapped/custom-labels/input.xml \
+	test/xml-mapped/custom-labels/map.xml \
+	test/xml-mapped/encoding/euc-jp.xml \
+	test/xml-mapped/encoding/gbk.xml \
+	test/xml-mapped/encoding/utf-8.xml \
+	test/xml-mapped/fuel-economy/check-nomap.txt \
+	test/xml-mapped/fuel-economy/check.txt \
+	test/xml-mapped/fuel-economy/input.xml \
+	test/xml-mapped/fuel-economy/map.xml \
+	test/xml-mapped/invalids/map-defs/non-leaf-element-linked.xml \
+	test/xml-mapped/invalids/map-defs/not-xml.xml \
+	test/xml-mapped/nested-repeats-2/check-nomap.txt \
+	test/xml-mapped/nested-repeats-2/check.txt \
+	test/xml-mapped/nested-repeats-2/input.xml \
+	test/xml-mapped/nested-repeats-2/map.xml \
+	test/xml-mapped/nested-repeats-3/check-nomap.txt \
+	test/xml-mapped/nested-repeats-3/check.txt \
+	test/xml-mapped/nested-repeats-3/input.xml \
+	test/xml-mapped/nested-repeats-3/map.xml \
+	test/xml-mapped/nested-repeats-4/check-nomap.txt \
+	test/xml-mapped/nested-repeats-4/check.txt \
+	test/xml-mapped/nested-repeats-4/input.xml \
+	test/xml-mapped/nested-repeats-4/map.xml \
+	test/xml-mapped/nested-repeats/check-nomap.txt \
+	test/xml-mapped/nested-repeats/check.txt \
+	test/xml-mapped/nested-repeats/input.xml \
+	test/xml-mapped/nested-repeats/map.xml \
+	test/xml-structure/attribute-1/check.txt \
+	test/xml-structure/attribute-1/input.xml \
+	test/xml-structure/basic-1/check.txt \
+	test/xml-structure/basic-1/input.xml \
+	test/xml-structure/basic-2/check.txt \
+	test/xml-structure/basic-2/input.xml \
+	test/xml-structure/basic-3/check.txt \
+	test/xml-structure/basic-3/input.xml \
+	test/xml-structure/namespace-default/check.txt \
+	test/xml-structure/namespace-default/input.xml \
+	test/xml-structure/nested-repeat-1/check.txt \
+	test/xml-structure/nested-repeat-1/input.xml \
+	test/xml/bom/check.txt \
+	test/xml/bom/input.xml \
+	test/xml/cdata-1/check.txt \
+	test/xml/cdata-1/input.xml \
+	test/xml/custom-decl-1/check.txt \
+	test/xml/custom-decl-1/input.xml \
+	test/xml/default-ns/check.txt \
+	test/xml/default-ns/input.xml \
+	test/xml/doctype/html.xml \
+	test/xml/encoded-attrs/test1.xml \
+	test/xml/encoded-char/check.txt \
+	test/xml/encoded-char/input.xml \
+	test/xml/invalids/double-boms-and-invalid-byte.xml \
+	test/xml/invalids/only-bom.xml \
+	test/xml/invalids/only-double-boms.xml \
+	test/xml/invalids/partial-attr-value-with-encoding-char.xml \
+	test/xml/invalids/partial-open-element.xml \
+	test/xml/no-decl-1/check.txt \
+	test/xml/no-decl-1/input.xml \
+	test/xml/ns-alias-1/check.txt \
+	test/xml/ns-alias-1/input.xml \
+	test/xml/osm/street-in-aizu.osm \
+	test/xml/parse-only/rss/input.xml \
+	test/xml/self-closing-root/check.txt \
+	test/xml/self-closing-root/input.xml \
+	test/xml/simple/check.txt \
+	test/xml/simple/input.xml \
+	test/xml/single-quote/check.txt \
+	test/xml/single-quote/input.xml \
+	test/xml/underscore-identifier/check.txt \
+	test/xml/underscore-identifier/input.xml \
+	test/xml/utf8-1/check.txt \
+	test/xml/utf8-1/input.xml \
+	test/xml/utf8-2/check.txt \
+	test/xml/utf8-2/input.xml \
+	test/xml/valids/double-boms.xml \
+	test/yaml/basic1/input.yaml \
+	test/yaml/basic2/input.yaml \
+	test/yaml/basic3/input.yaml \
+	test/yaml/boolean/input.yaml \
+	test/yaml/empty-value-map-1/input.yaml \
+	test/yaml/empty-value-map-2/input.yaml \
+	test/yaml/empty-value-sequence-1/input.yaml \
+	test/yaml/empty-value-sequence-2/input.yaml \
+	test/yaml/invalids/1.yaml \
+	test/yaml/invalids/2.yaml \
+	test/yaml/invalids/3.yaml \
+	test/yaml/literal-block-1/input.yaml \
+	test/yaml/literal-block-2/input.yaml \
+	test/yaml/map-key-1/input.yaml \
+	test/yaml/multi-line-1/input.yaml \
+	test/yaml/multi-line-2/input.yaml \
+	test/yaml/null/input.yaml \
+	test/yaml/quoted-string/input.yaml \
+	test/yaml/swagger/input.yaml \
+	test/yaml/url/input.yaml
 
 EXTRA_DIST = \
 	CHANGELOG \

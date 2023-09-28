@@ -338,8 +338,7 @@ liborcus_@ORCUS_API_VERSION@_la_LIBADD += \
 
 EXTRA_PROGRAMS += \
 	gnumeric-cell-context-test \
-	gnumeric-sheet-context-test \
-	gnumeric-helper-test
+	gnumeric-sheet-context-test
 
 gnumeric_cell_context_test_SOURCES = \
 	number_utils.cpp \

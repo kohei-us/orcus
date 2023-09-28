@@ -3,8 +3,6 @@
 # Script to build lists of extra dist files by category.
 # Output of this script should go into Makefile.am at the project root.
 
-PROGDIR=`dirname $0`
-
 function print_list()
 {
     local _DIR=$1
@@ -16,6 +14,9 @@ function print_list()
     $_BASE_CMD | sed -e 's/\#/\\\#/g' | tail -n 1 | sed -e 's/^/\t/g'
     echo ""
 }
+
+PROGDIR=`dirname $0`
+cd "../$PROGDIR"
 
 print_list doc
 print_list doc_example
