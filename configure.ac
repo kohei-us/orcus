@@ -190,7 +190,7 @@ AC_ARG_WITH(gnumeric-filter,
 # ======================
 AC_ARG_WITH(parquet-filter,
             AS_HELP_STRING([--with-parquet-filter],
-                           [Disables the parquet import filter. The parquet import filter depends on Apache Parquet.]),
+                           [Disables the parquet import filter. The parquet import filter depends on Apache Arrow.]),
         [with_parquet_filter="$withval"],
         [with_parquet_filter=no]
 )
