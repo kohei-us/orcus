@@ -539,7 +539,8 @@ orcus_test_ods_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
-	$(BOOST_SYSTEM_LIBS)
+	$(BOOST_SYSTEM_LIBS) \
+	./test/liborcus-test.a
 
 orcus_test_ods_LDFLAGS = \
 	$(BOOST_SYSTEM_LDFLAGS)

@@ -36,6 +36,7 @@
 #endif
 
 #include <orcus/format_detection.hpp>
+#include <orcus/orcus_csv.hpp>
 
 #if ODS_ENABLED
 #include <orcus/orcus_ods.hpp>
@@ -53,7 +54,9 @@
 #include <orcus/orcus_parquet.hpp>
 #endif
 
-#include <iostream>
+#include <stdexcept>
+
+namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
@@ -93,6 +96,40 @@ catch (...)
     return format_t::unknown;
 }
 
+std::shared_ptr<iface::import_filter> create_filter(format_t type, ss::iface::import_factory* factory)
+{
+    if (!factory)
+        throw std::invalid_argument("pointer to import factory instance must not be null");
+    switch (type)
+    {
+#if ODS_ENABLED
+        case format_t::ods:
+            return std::allocate_shared<orcus_ods>(std::allocator<orcus_ods>{}, factory);
+#endif
+#if XLSX_ENABLED
+        case format_t::xlsx:
+            return std::allocate_shared<orcus_xlsx>(std::allocator<orcus_xlsx>{}, factory);
+#endif
+#if GNUMERIC_ENABLED
+        case format_t::gnumeric:
+            return std::allocate_shared<orcus_gnumeric>(std::allocator<orcus_gnumeric>{}, factory);
+#endif
+#if XLS_XML_ENABLED
+        case format_t::xls_xml:
+            return std::allocate_shared<orcus_xls_xml>(std::allocator<orcus_xls_xml>{}, factory);
+#endif
+#if PARQUET_ENABLED
+        case format_t::parquet:
+            return std::allocate_shared<orcus_parquet>(std::allocator<orcus_parquet>{}, factory);
+#endif
+        case format_t::csv:
+            return std::allocate_shared<orcus_csv>(std::allocator<orcus_csv>{}, factory);
+        case format_t::unknown:
+        default:;
+    }
+    return {};
 }
+
+} // namespace orcus
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

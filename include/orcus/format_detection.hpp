@@ -8,12 +8,25 @@
 #ifndef ORCUS_FORMAT_DETECTION_HPP
 #define ORCUS_FORMAT_DETECTION_HPP
 
-#include "orcus/env.hpp"
-#include "orcus/types.hpp"
+#include <orcus/env.hpp>
+#include <orcus/types.hpp>
 
 #include <cstdlib>
+#include <memory>
 
 namespace orcus {
+
+namespace iface {
+
+class import_filter;
+
+}
+
+namespace spreadsheet { namespace iface {
+
+class import_factory;
+
+}}
 
 /**
  * Detect the format of a given document stream.
@@ -22,7 +35,18 @@ namespace orcus {
  */
 ORCUS_DLLPUBLIC format_t detect(std::string_view strm);
 
-}
+/**
+ * Create an instance of import_filter for a specified format.
+ *
+ * @param type Format type to create an instace of import_filter of.
+ * @param factory Pointer to an import factory instance.  It must not be null.
+ *
+ * @return Pointer to an instance of import_filter for specified format.
+ */
+ORCUS_DLLPUBLIC std::shared_ptr<iface::import_filter> create_filter(
+    format_t type, spreadsheet::iface::import_factory* factory);
+
+} // namespace orcus
 
 #endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

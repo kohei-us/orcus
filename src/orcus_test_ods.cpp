@@ -7,6 +7,7 @@
 
 #include "test_global.hpp"
 #include <orcus/orcus_ods.hpp>
+#include <orcus/format_detection.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/parser_global.hpp>
 #include <orcus/spreadsheet/factory.hpp>
@@ -56,8 +57,23 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/ods/named-expression-sheet-local/",
 };
 
+void test_ods_create_filter()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    ss::range_size_t ssize{1048576, 16384};
+    std::unique_ptr<ss::document> doc = std::make_unique<ss::document>(ssize);
+    ss::import_factory factory(*doc);
+
+    auto f = create_filter(format_t::ods, &factory);
+    assert(f);
+    assert(f->get_name() == "ods");
+}
+
 void test_ods_import_cell_values()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     for (const char* dir : dirs)
     {
         fs::path filepath{dir};
@@ -87,6 +103,8 @@ void test_ods_import_cell_values()
 
 void test_ods_import_column_widths_row_heights()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path filepath{SRCDIR"/test/ods/column-width-row-height/input.ods"};
     auto doc = load_doc(filepath);
     assert(doc);
@@ -116,6 +134,8 @@ void test_ods_import_column_widths_row_heights()
 
 void test_ods_import_formatted_text()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path filepath{SRCDIR"/test/ods/formatted-text/bold-and-italic.ods"};
     auto doc = load_doc(filepath);
     assert(doc);
@@ -268,6 +288,8 @@ void test_ods_import_formatted_text()
 
 void test_ods_import_number_formats()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path filepath{SRCDIR"/test/ods/number-format/basic-set.ods"};
 
     auto doc = load_doc(filepath);
@@ -329,6 +351,8 @@ void test_ods_import_number_formats()
 
 void test_ods_import_cell_properties()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path filepath{SRCDIR"/test/ods/cell-properties/wrap-and-shrink.ods"};
 
     auto doc = load_doc(filepath);
@@ -361,6 +385,8 @@ void test_ods_import_cell_properties()
 
 void test_ods_import_styles_direct_format()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path filepath{SRCDIR"/test/ods/styles/direct-format.ods"};
 
     auto doc = load_doc(filepath);
@@ -426,6 +452,8 @@ void test_ods_import_styles_direct_format()
 
 void test_ods_import_styles_column_styles()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path filepath{SRCDIR"/test/ods/styles/column-styles.ods"};
 
     auto doc = load_doc(filepath);
@@ -668,6 +696,8 @@ void test_ods_import_styles_column_styles()
 
 void test_ods_import_styles_asian_complex()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path filepath{SRCDIR"/test/ods/styles/asian-complex.ods"};
 
     auto doc = load_doc(filepath);
@@ -727,6 +757,8 @@ void test_ods_import_styles_asian_complex()
 
 void test_ods_import_styles_text_underlines()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path filepath{SRCDIR"/test/ods/styles/text-underlines.ods"};
 
     auto doc = load_doc(filepath);
@@ -893,6 +925,7 @@ void test_ods_import_styles_text_underlines()
 
 int main()
 {
+    test_ods_create_filter();
     test_ods_import_cell_values();
     test_ods_import_column_widths_row_heights();
     test_ods_import_formatted_text();

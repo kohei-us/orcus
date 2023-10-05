@@ -9,6 +9,7 @@
 #include "filesystem_env.hpp"
 
 #include <orcus/orcus_gnumeric.hpp>
+#include <orcus/format_detection.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/spreadsheet/factory.hpp>
 #include <orcus/spreadsheet/document.hpp>
@@ -47,6 +48,19 @@ std::unique_ptr<ss::document> load_doc(const fs::path& filepath)
     doc->recalc_formula_cells();
 
     return doc;
+}
+
+void test_gnumeric_create_filter()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    ss::range_size_t ssize{1048576, 16384};
+    std::unique_ptr<ss::document> doc = std::make_unique<ss::document>(ssize);
+    ss::import_factory factory(*doc);
+
+    auto f = create_filter(format_t::gnumeric, &factory);
+    assert(f);
+    assert(f->get_name() == "gnumeric");
 }
 
 void test_gnumeric_import()
@@ -1333,6 +1347,7 @@ void test_gnumeric_number_format()
 
 int main()
 {
+    test_gnumeric_create_filter();
     test_gnumeric_import();
     test_gnumeric_column_widths_row_heights();
     test_gnumeric_auto_filter();

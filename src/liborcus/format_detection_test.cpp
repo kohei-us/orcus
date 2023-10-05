@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include <orcus/format_detection.hpp>
 #include <orcus/stream.hpp>
 
@@ -56,10 +57,26 @@ void test_invalids()
     }
 }
 
+void test_create_filter()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    try
+    {
+        auto f = create_filter(orcus::format_t::csv, nullptr);
+        assert(!"create_filter should've return an emtpy instance when the factory pointer was null.");
+    }
+    catch (const std::invalid_argument&)
+    {
+        // expected
+    }
+}
+
 int main()
 {
     test_detect_formats();
     test_invalids();
+    test_create_filter();
 
     return EXIT_SUCCESS;
 }

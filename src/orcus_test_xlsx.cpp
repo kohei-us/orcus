@@ -7,6 +7,7 @@
 
 #include "test_global.hpp"
 #include <orcus/orcus_xlsx.hpp>
+#include <orcus/format_detection.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/config.hpp>
 #include <orcus/spreadsheet/factory.hpp>
@@ -101,6 +102,19 @@ std::vector<fs::path> dirs_non_recalc = {
     SRCDIR"/test/xlsx/formula-with-string-results",
 };
 
+void test_xlsx_create_filter()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    ss::range_size_t ss{1048576, 16384};
+    std::unique_ptr<ss::document> doc = std::make_unique<ss::document>(ss);
+    ss::import_factory factory(*doc);
+
+    auto f = create_filter(format_t::xlsx, &factory);
+    assert(f);
+    assert(f->get_name() == "xlsx");
+}
+
 /**
  * Semi-automated import test that goes through all specified directories,
  * and in each directory, reads the input.xlsx file, dumps its output and
@@ -108,7 +122,7 @@ std::vector<fs::path> dirs_non_recalc = {
  */
 void test_xlsx_import()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     auto run_check = [](const fs::path& dir, bool recalc)
     {
@@ -146,7 +160,7 @@ void test_xlsx_import()
 
 void test_xlsx_table_autofilter()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/table/autofilter.xlsx");
     spreadsheet::range_size_t ss{1048576, 16384};
@@ -183,7 +197,7 @@ void test_xlsx_table_autofilter()
 
 void test_xlsx_table()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/table/table-1.xlsx");
     ss::document doc{{1048576, 16384}};
@@ -251,7 +265,7 @@ void test_xlsx_table()
 
 void test_xlsx_merged_cells()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/merged-cells/simple.xlsx");
 
@@ -299,7 +313,7 @@ void test_xlsx_merged_cells()
 
 void test_xlsx_date_time()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/date-time/input.xlsx");
 
@@ -339,7 +353,7 @@ void test_xlsx_date_time()
 
 void test_xlsx_background_fill()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string_view path(SRCDIR"/test/xlsx/background-color/standard.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
@@ -387,7 +401,7 @@ void test_xlsx_background_fill()
 
 void test_xlsx_number_format()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string_view path(SRCDIR"/test/xlsx/number-format/date-time.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
@@ -432,7 +446,7 @@ void test_xlsx_number_format()
 
 void test_xlsx_text_alignment()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string_view path(SRCDIR"/test/xlsx/text-alignment/input.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
@@ -500,7 +514,7 @@ void test_xlsx_text_alignment()
 
 void test_xlsx_cell_borders_single_cells()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string_view path(SRCDIR"/test/xlsx/borders/single-cells.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
@@ -552,7 +566,7 @@ void test_xlsx_cell_borders_single_cells()
 
 void test_xlsx_cell_borders_directions()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string_view path(SRCDIR"/test/xlsx/borders/directions.xlsx");
     std::unique_ptr<ss::document> doc = load_doc(path);
@@ -670,7 +684,7 @@ void test_xlsx_cell_borders_directions()
 
 void test_xlsx_cell_borders_colors()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string_view path(SRCDIR"/test/xlsx/borders/colors.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
@@ -745,7 +759,7 @@ void test_xlsx_cell_borders_colors()
 
 void test_xlsx_hidden_rows_columns()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string_view path(SRCDIR"/test/xlsx/hidden-rows-columns/input.xlsx");
     std::unique_ptr<spreadsheet::document> doc = load_doc(path);
@@ -823,7 +837,7 @@ void test_xlsx_hidden_rows_columns()
 
 void test_xlsx_cell_properties()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     fs::path path{SRCDIR"/test/xlsx/cell-properties/wrap-and-shrink.xlsx"};
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.string());
@@ -857,7 +871,7 @@ void test_xlsx_cell_properties()
 
 void test_xlsx_styles_direct_format()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     fs::path path{SRCDIR"/test/xlsx/styles/direct-format.xlsx"};
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.string());
@@ -1003,7 +1017,7 @@ void test_xlsx_styles_direct_format()
 
 void test_xlsx_styles_column_styles()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     fs::path path{SRCDIR"/test/xlsx/styles/column-styles.xlsx"};
     std::unique_ptr<spreadsheet::document> doc = load_doc(path.string());
@@ -1466,7 +1480,7 @@ void test_xlsx_formatted_text_basic()
 
 void test_xlsx_pivot_two_pivot_caches()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/pivot-table/two-pivot-caches.xlsx");
 
@@ -1576,7 +1590,7 @@ void test_xlsx_pivot_two_pivot_caches()
 
 void test_xlsx_pivot_mixed_type_field()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/pivot-table/mixed-type-field.xlsx");
 
@@ -1704,7 +1718,7 @@ void test_xlsx_pivot_mixed_type_field()
 
 void test_xlsx_pivot_group_field()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/pivot-table/group-field.xlsx");
 
@@ -1799,7 +1813,7 @@ void test_xlsx_pivot_group_field()
 
 void test_xlsx_pivot_group_by_numbers()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/pivot-table/group-by-numbers.xlsx");
 
@@ -1882,7 +1896,7 @@ void test_xlsx_pivot_group_by_numbers()
 
 void test_xlsx_pivot_group_by_dates()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/pivot-table/group-by-dates.xlsx");
 
@@ -1995,7 +2009,7 @@ void test_xlsx_pivot_group_by_dates()
 
 void test_xlsx_pivot_error_values()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/pivot-table/error-values.xlsx");
 
@@ -2048,7 +2062,7 @@ void test_xlsx_pivot_error_values()
 
 void test_xlsx_view_cursor_per_sheet()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/view/cursor-per-sheet.xlsx");
 
@@ -2108,7 +2122,7 @@ struct expected_selection
 
 void test_xlsx_view_cursor_split_pane()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/view/cursor-split-pane.xlsx");
 
@@ -2246,7 +2260,7 @@ void test_xlsx_view_cursor_split_pane()
 
 void test_xlsx_view_frozen_pane()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string path(SRCDIR"/test/xlsx/view/frozen-pane.xlsx");
 
@@ -2304,7 +2318,7 @@ void test_xlsx_view_frozen_pane()
 
 void test_xlsx_doc_structure_unordered_sheet_positions()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string_view path(SRCDIR"/test/xlsx/doc-structure/unordered-sheet-positions.xlsx");
     std::unique_ptr<ss::document> doc = load_doc(path);
@@ -2331,6 +2345,7 @@ int main()
     test_config.debug = false;
     test_config.structure_check = true;
 
+    test_xlsx_create_filter();
     test_xlsx_import();
     test_xlsx_table_autofilter();
     test_xlsx_table();

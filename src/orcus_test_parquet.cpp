@@ -9,6 +9,7 @@
 
 #include <orcus/stream.hpp>
 #include <orcus/orcus_parquet.hpp>
+#include <orcus/format_detection.hpp>
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/factory.hpp>
 
@@ -48,6 +49,19 @@ struct doc_context
         return os.str();
     }
 };
+
+void test_parquet_create_filter()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    ss::range_size_t ssize{1048576, 16384};
+    std::unique_ptr<ss::document> doc = std::make_unique<ss::document>(ssize);
+    ss::import_factory factory(*doc);
+
+    auto f = create_filter(format_t::parquet, &factory);
+    assert(f);
+    assert(f->get_name() == "parquet");
+}
 
 void test_parquet_basic()
 {
@@ -103,6 +117,7 @@ int main()
 {
     try
     {
+        test_parquet_create_filter();
         test_parquet_basic();
         test_parquet_detection();
     }

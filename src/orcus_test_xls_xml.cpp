@@ -7,6 +7,7 @@
 
 #include "orcus_test_global.hpp"
 #include "orcus/orcus_xls_xml.hpp"
+#include <orcus/format_detection.hpp>
 #include "orcus/stream.hpp"
 #include "orcus/config.hpp"
 #include <orcus/parser_global.hpp>
@@ -150,6 +151,19 @@ void update_config(spreadsheet::document& doc, const std::string& path)
     {
         // Do nothing.
     }
+}
+
+void test_xls_xml_create_filter()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    ss::range_size_t ssize{1048576, 16384};
+    std::unique_ptr<ss::document> doc = std::make_unique<ss::document>(ssize);
+    ss::import_factory factory(*doc);
+
+    auto f = create_filter(format_t::xls_xml, &factory);
+    assert(f);
+    assert(f->get_name() == "xls-xml");
 }
 
 void test_xls_xml_import()
@@ -2387,6 +2401,7 @@ int main()
     test_config.debug = false;
     test_config.structure_check = true;
 
+    test_xls_xml_create_filter();
     test_xls_xml_import();
     test_xls_xml_merged_cells();
     test_xls_xml_date_time();
