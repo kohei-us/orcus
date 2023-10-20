@@ -81,10 +81,13 @@ orcus_xls_xml::~orcus_xls_xml() = default;
 
 bool orcus_xls_xml::detect(const unsigned char* buffer, size_t size)
 {
+    memory_content mem_content({reinterpret_cast<const char*>(buffer), size});
+    mem_content.convert_to_utf8();
+
     config opt(format_t::xls_xml);
     xmlns_repository ns_repo;
     ns_repo.add_predefined_values(NS_xls_xml_all);
-    xml_stream_parser parser(opt, ns_repo, xls_xml_tokens, reinterpret_cast<const char*>(buffer), size);
+    xml_stream_parser parser(opt, ns_repo, xls_xml_tokens, mem_content.data(), mem_content.size());
 
     session_context cxt;
     xls_xml_detection_handler handler(cxt, xls_xml_tokens);

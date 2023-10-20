@@ -17,6 +17,7 @@
 #include <orcus/spreadsheet/auto_filter.hpp>
 #include <orcus/spreadsheet/shared_strings.hpp>
 #include <orcus/spreadsheet/styles.hpp>
+#include <orcus/types.hpp>
 
 #include <ixion/address.hpp>
 #include <ixion/model_context.hpp>
@@ -48,6 +49,21 @@ std::unique_ptr<ss::document> load_doc(const fs::path& filepath)
     doc->recalc_formula_cells();
 
     return doc;
+}
+
+void test_gnumeric_detection()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    for (const auto& dir : dirs)
+    {
+        fs::path filepath = dir / "input.gnumeric";
+        file_content fc(filepath.string());
+        assert(!fc.empty());
+
+        format_t detected = detect(fc.str());
+        assert(detected == format_t::gnumeric);
+    }
 }
 
 void test_gnumeric_create_filter()
@@ -1347,6 +1363,7 @@ void test_gnumeric_number_format()
 
 int main()
 {
+    test_gnumeric_detection();
     test_gnumeric_create_filter();
     test_gnumeric_import();
     test_gnumeric_column_widths_row_heights();

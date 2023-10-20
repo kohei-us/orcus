@@ -6,6 +6,8 @@
  */
 
 #include "orcus_test_global.hpp"
+#include "filesystem_env.hpp"
+
 #include "orcus/orcus_xls_xml.hpp"
 #include <orcus/format_detection.hpp>
 #include "orcus/stream.hpp"
@@ -150,6 +152,21 @@ void update_config(spreadsheet::document& doc, const std::string& path)
     catch (const std::exception&)
     {
         // Do nothing.
+    }
+}
+
+void test_xls_xml_detection()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    for (const auto& dir : dirs)
+    {
+        fs::path filepath = fs::path{dir} / "input.xml";
+        file_content fc(filepath.string());
+        assert(!fc.empty());
+
+        format_t detected = detect(fc.str());
+        assert(detected == format_t::xls_xml);
     }
 }
 
@@ -2401,6 +2418,7 @@ int main()
     test_config.debug = false;
     test_config.structure_check = true;
 
+    test_xls_xml_detection();
     test_xls_xml_create_filter();
     test_xls_xml_import();
     test_xls_xml_merged_cells();
