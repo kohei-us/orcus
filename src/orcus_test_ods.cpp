@@ -48,7 +48,7 @@ std::unique_ptr<ss::document> load_doc(const fs::path& filepath)
     return doc;
 }
 
-std::vector<const char*> dirs = {
+std::vector<fs::path> dirs = {
     SRCDIR"/test/ods/raw-values-1/",
     SRCDIR"/test/ods/formula-1/",
     SRCDIR"/test/ods/formula-2/",
@@ -56,6 +56,21 @@ std::vector<const char*> dirs = {
     SRCDIR"/test/ods/named-expression/",
     SRCDIR"/test/ods/named-expression-sheet-local/",
 };
+
+void test_ods_detection()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    for (const auto& dir : dirs)
+    {
+        fs::path filepath = dir / "input.ods";
+        file_content fc(filepath.string());
+        assert(!fc.empty());
+
+        format_t detected = detect(fc.str());
+        assert(detected == format_t::ods);
+    }
+}
 
 void test_ods_create_filter()
 {
@@ -74,7 +89,7 @@ void test_ods_import_cell_values()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    for (const char* dir : dirs)
+    for (const auto& dir : dirs)
     {
         fs::path filepath{dir};
         filepath /= "input.ods";
@@ -925,6 +940,7 @@ void test_ods_import_styles_text_underlines()
 
 int main()
 {
+    test_ods_detection();
     test_ods_create_filter();
     test_ods_import_cell_values();
     test_ods_import_column_widths_row_heights();
