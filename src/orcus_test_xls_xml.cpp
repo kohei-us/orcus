@@ -40,7 +40,7 @@ namespace {
 
 config test_config(format_t::xls_xml);
 
-constexpr std::string_view dirs[] = {
+const std::vector<fs::path> dirs = {
     SRCDIR"/test/xls-xml/basic/",
     SRCDIR"/test/xls-xml/basic-utf-16-be/",
     SRCDIR"/test/xls-xml/basic-utf-16-le/",
@@ -161,7 +161,7 @@ void test_xls_xml_detection()
 
     for (const auto& dir : dirs)
     {
-        fs::path filepath = fs::path{dir} / "input.xml";
+        fs::path filepath = dir / "input.xml";
         file_content fc(filepath.string());
         assert(!fc.empty());
 
@@ -187,11 +187,10 @@ void test_xls_xml_import()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    auto verify = [](spreadsheet::document& doc, std::string_view dir)
+    auto verify = [](spreadsheet::document& doc, const fs::path& dir)
     {
-        std::string path{dir};
-        path.append("config.yaml");
-        update_config(doc, path);
+        auto path = dir / "config.yaml";
+        update_config(doc, path.string());
 
         // Dump the content of the model.
         std::ostringstream os;
@@ -199,9 +198,8 @@ void test_xls_xml_import()
         std::string check = os.str();
 
         // Check that against known control.
-        path = dir;
-        path.append("check.txt");
-        file_content control(path.data());
+        path = dir / "check.txt";
+        file_content control(path.string());
 
         assert(!check.empty());
         assert(!control.empty());
@@ -222,18 +220,16 @@ void test_xls_xml_import()
         }
     };
 
-    for (auto dir : dirs)
+    for (const auto& dir : dirs)
     {
         std::cout << dir << std::endl;
 
-        std::string path(dir);
-
         // Read the input.xml document.
-        path.append("input.xml");
-        std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(path);
+        fs::path filepath = dir / "input.xml";
+        std::unique_ptr<spreadsheet::document> doc = load_doc_from_filepath(filepath.string());
         verify(*doc, dir);
 
-        doc = load_doc_from_stream(path);
+        doc = load_doc_from_stream(filepath.string());
         verify(*doc, dir);
     }
 }
