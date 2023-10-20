@@ -1,3 +1,18 @@
+orcus 0.19.1
+
+* general
+
+  * implemented orcus::create_filter() which instantiates a filter object of
+    specified type.  The returned object is of type
+    orcus::iface::import_filter.
+
+  * moved test cases for format detection to the respective filter test files.
+
+* gnumeric
+
+  * fixed a bug where the import filter did not set the formula grammer prior
+    to importing.
+
 orcus 0.19.0
 
 * general
