@@ -102,6 +102,21 @@ std::vector<fs::path> dirs_non_recalc = {
     SRCDIR"/test/xlsx/formula-with-string-results",
 };
 
+void test_xlsx_detection()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    for (const auto& dir : dirs_recalc)
+    {
+        fs::path filepath = dir / "input.xlsx";
+        file_content fc(filepath.string());
+        assert(!fc.empty());
+
+        format_t detected = detect(fc.str());
+        assert(detected == format_t::xlsx);
+    }
+}
+
 void test_xlsx_create_filter()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -2345,6 +2360,7 @@ int main()
     test_config.debug = false;
     test_config.structure_check = true;
 
+    test_xlsx_detection();
     test_xlsx_create_filter();
     test_xlsx_import();
     test_xlsx_table_autofilter();
