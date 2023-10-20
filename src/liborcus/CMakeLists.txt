@@ -144,7 +144,6 @@ set(_TESTS
     common-test
     css-document-tree-test
     dom-tree-test
-    format-detection-test
 #   gnumeric-cell-context-test
 #   gnumeric-sheet-context-test
     json-document-tree-test

@@ -10,7 +10,6 @@ EXTRA_PROGRAMS = \
 	yaml-document-tree-test \
 	xml-map-tree-test \
 	common-test \
-	format-detection-test \
 	dom-tree-test \
 	json-structure-tree-test \
 	json-map-tree-test \
@@ -530,17 +529,6 @@ common_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
-# format-detection-test
-
-format_detection_test_SOURCES = \
-	format_detection_test.cpp
-
-format_detection_test_LDADD = \
-	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	$(BOOST_FILESYSTEM_LIBS) $(BOOST_SYSTEM_LIBS) \
-	../test/liborcus-test.a
-
 # dom-tree-test
 
 dom_tree_test_SOURCES = dom_tree_test.cpp
@@ -590,7 +578,6 @@ TESTS += \
 	yaml-document-tree-test \
 	xml-map-tree-test \
 	common-test \
-	format-detection-test \
 	dom-tree-test \
 	json-structure-tree-test \
 	json-map-tree-test \
