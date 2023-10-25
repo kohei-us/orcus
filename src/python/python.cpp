@@ -96,6 +96,7 @@ int orcus_clear(PyObject* m)
     return 0;
 }
 
+[[maybe_unused]]
 bool add_type_to_module(PyObject* m, PyTypeObject* typeobj, const char* type_name)
 {
     if (PyType_Ready(typeobj))

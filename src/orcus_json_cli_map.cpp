@@ -44,7 +44,7 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
 
 #else
 
-void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
+void map_to_sheets_and_dump(const file_content& /*content*/, cmd_params& /*params*/)
 {
     throw std::runtime_error(
         "map mode disabled as the spreadsheet model backend is not available.");
