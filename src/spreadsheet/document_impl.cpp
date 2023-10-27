@@ -7,6 +7,8 @@
 
 #include "document_impl.hpp"
 
+#include <algorithm>
+
 namespace orcus { namespace spreadsheet { namespace detail {
 
 namespace {
