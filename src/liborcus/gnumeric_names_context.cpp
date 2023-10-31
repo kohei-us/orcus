@@ -69,9 +69,6 @@ bool gnumeric_names_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void gnumeric_names_context::characters(std::string_view str, bool transient)
 {
-    ss::iface::import_reference_resolver* resolver = mp_factory->get_reference_resolver(
-        ss::formula_ref_context_t::global);
-
     const auto [ns, name] = get_current_element();
 
     if (ns == NS_gnumeric_gnm)
@@ -85,8 +82,15 @@ void gnumeric_names_context::characters(std::string_view str, bool transient)
                 m_current_name.value = transient ? intern(str) : str;
                 break;
             case XML_position:
-                m_current_name.position = resolver->resolve_address(str);
+            {
+                ss::iface::import_reference_resolver* resolver =
+                    mp_factory->get_reference_resolver(ss::formula_ref_context_t::global);
+
+                if (resolver)
+                    m_current_name.position = resolver->resolve_address(str);
+
                 break;
+            }
         }
     }
 }
