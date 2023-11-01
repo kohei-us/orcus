@@ -63,14 +63,13 @@ void test_mapped_xml_import()
         { SRCDIR"/test/xml-mapped/nested-repeats-4", false },
     };
 
-    auto dump_xml_structure = [](std::string& dump_content, std::string& /*strm*/, const char* filepath, xmlns_context& cxt)
+    auto dump_xml_structure = [](const file_content& content, xmlns_context& cxt)
     {
-        file_content content(filepath);
         dom::document_tree tree(cxt);
         tree.load(content.str());
         std::ostringstream os;
         tree.dump_compact(os);
-        dump_content = os.str();
+        return os.str();
     };
 
     const char* temp_output_xml = "out.xml";
@@ -142,10 +141,10 @@ void test_mapped_xml_import()
             // Compare the logical xml content of the output xml with the
             // input one. They should be identical.
 
-            std::string dump_input, dump_output;
-            std::string strm_data_file, strm_out_file; // Hold the stream content in memory while the namespace context is being used.
-            dump_xml_structure(dump_input, strm_data_file, data_file.string().data(), cxt);
-            dump_xml_structure(dump_output, strm_out_file, out_file.data(), cxt);
+            // Hold the stream content in memory while the namespace context is being used.
+            file_content strm_data_file(data_file.string()), strm_out_file(out_file);
+            std::string dump_input = dump_xml_structure(strm_data_file, cxt);
+            std::string dump_output = dump_xml_structure(strm_out_file, cxt);
             assert(!dump_input.empty() && !dump_output.empty());
 
             std::cout << dump_input << std::endl;
