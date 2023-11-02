@@ -2167,8 +2167,8 @@ void xls_xml_context::commit_styles()
                 os << "style inherits from a parent id of '" << style->parent_id << "' but no records for that id are found";
                 warn(os.str());
             }
-
-            xf->set_style_xf(it->second);
+            else
+                xf->set_style_xf(it->second);
         }
 
         auto* font_style = styles->start_font_style();
