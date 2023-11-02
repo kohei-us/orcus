@@ -2164,7 +2164,7 @@ void xls_xml_context::commit_styles()
             if (it == m_style_map_named_style.end())
             {
                 std::ostringstream os;
-                os << "style inherits from a parent id of '" << style->parent_id << "' but no records for that id are found";
+                os << "style '" << style->id << "' inherits from a parent style of '" << style->parent_id << "' but no record for the parent style exists";
                 warn(os.str());
             }
             else
