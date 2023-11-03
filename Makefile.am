@@ -740,6 +740,8 @@ test_data = \
 	test/xls-xml/table-offset/input.xml \
 	test/xls-xml/table/autofilter.xml \
 	test/xls-xml/text-alignment/input.xml \
+	test/xls-xml/unnamed-parent-styles/input.xml \
+	test/xls-xml/unnamed-parent-styles/check.txt \
 	test/xls-xml/view/cursor-per-sheet.xml \
 	test/xls-xml/view/cursor-split-pane.xml \
 	test/xls-xml/view/frozen-pane.xml \
