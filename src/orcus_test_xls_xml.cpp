@@ -59,6 +59,7 @@ const std::vector<fs::path> dirs = {
     SRCDIR"/test/xls-xml/named-expression-sheet-local/",
     SRCDIR"/test/xls-xml/raw-values-1/",
     SRCDIR"/test/xls-xml/table-offset/",
+    SRCDIR"/test/xls-xml/unnamed-parent-styles/",
 };
 
 std::unique_ptr<spreadsheet::document> load_doc_from_filepath(

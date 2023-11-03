@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http:www.w3.org/TR/REC-html40">
+  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+    <WindowHeight>600</WindowHeight>
+    <WindowWidth>800</WindowWidth>
+    <WindowTopX>0</WindowTopX>
+    <WindowTopY>0</WindowTopY>
+    <ProtectStructure>False</ProtectStructure>
+    <ProtectWindows>False</ProtectWindows>
+  </ExcelWorkbook>
+  <Styles>
+    <Style ss:ID="Default" ss:Name="Normal">
+      <Alignment ss:Horizontal="Left"/>
+      <Font ss:FontName="Arial" ss:Size="10" ss:Color="#000000"/>
+      <Borders>
+        <Border ss:Position="Left" ss:LineStyle="Continuous"/>
+        <Border ss:Position="Top" ss:LineStyle="Continuous"/>
+        <Border ss:Position="Right" ss:LineStyle="Continuous"/>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous"/>
+      </Borders>
+    </Style>
+    <Style ss:ID="d" ss:Parent="Default">
+      <NumberFormat ss:Format="dd/mm/yyyy"/>
+    </Style>
+    <Style ss:ID="s" ss:Parent="Default">
+      <Alignment ss:Horizontal="Left"/>
+    </Style>
+    <Style ss:ID="sb" ss:Parent="s">
+      <Font ss:Bold="1"/>
+    </Style>
+    <Style ss:ID="sgrey" ss:Parent="s">
+      <Interior ss:Color="#e4e4e4" ss:Pattern="Solid"/>
+    </Style>
+    <Style ss:ID="n" ss:Parent="Default">
+      <NumberFormat ss:Format="#,##0"/>
+      <Alignment ss:Horizontal="Right"/>
+      <Interior ss:Pattern="None"/>
+    </Style>
+    <Style ss:ID="n1" ss:Parent="n">
+      <NumberFormat ss:Format="#,##0.0"/>
+    </Style>
+    <Style ss:ID="n2" ss:Parent="n">
+      <NumberFormat ss:Format="#,##0.00"/>
+    </Style>
+    <Style ss:ID="h" ss:Parent="Default">
+      <Font ss:Bold="1" ss:Size="10"/>
+      <Borders>
+        <Border ss:Position="Left" ss:LineStyle="Continuous"/>
+        <Border ss:Position="Top" ss:LineStyle="Continuous"/>
+        <Border ss:Position="Right" ss:LineStyle="Continuous"/>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+      </Borders>
+    </Style>
+    <Style ss:ID="hc" ss:Parent="h">
+      <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+    </Style>
+    <Style ss:ID="hr" ss:Parent="h">
+      <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+    </Style>
+  </Styles>
+  <ss:Worksheet ss:Name="Sheet #1">
+    <Table>
+      <Column ss:Width="130.0000"/>
+      <Column ss:Width="118.0000"/>
+      <Column ss:Width="130.0000"/>
+      <Column ss:Width="88.0000"/>
+      <Column ss:Width="99.0000"/>
+      <Column ss:Width="97.0000"/>
+      <Column ss:Width="137.0000"/>
+      <Column ss:Width="93.0000"/>
+      <Column ss:Width="74.0000"/>
+      <Column ss:Width="50.0000"/>
+      <Row>
+        <Cell ss:StyleID="h">
+          <Data ss:Type="String">Date</Data>
+        </Cell>
+        <Cell ss:StyleID="h">
+          <Data ss:Type="String">Pinnacle Inlet</Data>
+        </Cell>
+        <Cell ss:StyleID="h">
+          <Data ss:Type="String">Pinnacle Sales</Data>
+        </Cell>
+        <Cell ss:StyleID="h">
+          <Data ss:Type="String">Cryo Inlet</Data>
+        </Cell>
+        <Cell ss:StyleID="h">
+          <Data ss:Type="String">Cryo Sales</Data>
+        </Cell>
+        <Cell ss:StyleID="h">
+          <Data ss:Type="String">NGL Sales</Data>
+        </Cell>
+        <Cell ss:StyleID="h">
+          <Data ss:Type="String">Anadarko Sales</Data>
+        </Cell>
+        <Cell ss:StyleID="h">
+          <Data ss:Type="String">Combined</Data>
+        </Cell>
+        <Cell ss:StyleID="h">
+          <Data ss:Type="String">Capitan</Data>
+        </Cell>
+        <Cell ss:StyleID="h">
+          <Data ss:Type="String">+ / -</Data>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell ss:StyleID="d">
+          <Data ss:Type="String">8/19/2021</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell ss:StyleID="d">
+          <Data ss:Type="String">8/20/2021</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell ss:StyleID="d">
+          <Data ss:Type="String">8/21/2021</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell ss:StyleID="d">
+          <Data ss:Type="String">8/22/2021</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell ss:StyleID="d">
+          <Data ss:Type="String">8/23/2021</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell ss:StyleID="d">
+          <Data ss:Type="String">8/24/2021</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell ss:StyleID="d">
+          <Data ss:Type="String">8/25/2021</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="String"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String">Aug-2021</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String"/>
+        </Cell>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String"/>
+        </Cell>
+      </Row>
+      <Row>
+        <Cell ss:StyleID="sb">
+          <Data ss:Type="String">Grand totals</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+        <Cell ss:StyleID="n1">
+          <Data ss:Type="Number">0.0</Data>
+        </Cell>
+      </Row>
+    </Table>
+    <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+      <Selected/>
+      <FreezePanes/>
+      <FrozenNoSplit/>
+      <SplitHorizontal>1</SplitHorizontal>
+      <TopRowBottomPane>1</TopRowBottomPane>
+      <ActivePane>2</ActivePane>
+      <Panes>
+        <Pane>
+          <Number>3</Number>
+        </Pane>
+        <Pane>
+          <Number>2</Number>
+          <ActiveRow>2</ActiveRow>
+        </Pane>
+      </Panes>
+      <ProtectObjects>False</ProtectObjects>
+      <ProtectScenarios>False</ProtectScenarios>
+    </WorksheetOptions>
+  </ss:Worksheet>
+</Workbook>
