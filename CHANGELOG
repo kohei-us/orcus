@@ -1,3 +1,27 @@
+orcus 0.19.2
+
+* general
+
+  * fixed a build issue with gcc 14 due to a missing include for std::find_if
+    and std::for_each.
+
+  * fixed a segmentation fault with the orcus-test-xml-mapped test which
+    manifested on hppa hardware, as originally reported on
+    https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1054376.
+
+* xls-xml
+
+  * fixed a crash when loading a document that includes a style record
+    referencing an unnamed style record as its parent.  In Excel-generated
+    documents, styles only reference named styles as their parents.  But in
+    3rd-party generated documents, styles referenceing unnamed styles as their
+    parents can occur.
+
+* gnumeric
+
+  * fixed a crash when the document model returned a null pointer when a
+    reference resolver interface was requested.
+
 orcus 0.19.1
 
 * general
