@@ -14,7 +14,7 @@ orcus 0.19.2
   * fixed a crash when loading a document that includes a style record
     referencing an unnamed style record as its parent.  In Excel-generated
     documents, styles only reference named styles as their parents.  But in
-    3rd-party generated documents, styles referenceing unnamed styles as their
+    3rd-party generated documents, styles referencing unnamed styles as their
     parents can occur.
 
 * gnumeric
