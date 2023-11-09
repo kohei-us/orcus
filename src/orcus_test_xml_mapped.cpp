@@ -72,7 +72,7 @@ void test_mapped_xml_import()
         return os.str();
     };
 
-    const char* temp_output_xml = "out.xml";
+    const fs::path temp_output_xml = fs::temp_directory_path() / "orcus-output.xml";
 
     std::string strm;
 
@@ -127,13 +127,12 @@ void test_mapped_xml_import()
         if (tc.output_equals_input)
         {
             // Output to xml file with the linked values coming from the document.
-            std::string out_file = temp_output_xml;
-            std::cout << "writing to " << out_file << std::endl;
+            std::cout << "writing to " << temp_output_xml << std::endl;
             {
                 // Create a duplicate source XML stream.
-                content.load(data_file.string().data());
+                content.load(data_file.string());
                 std::string data_strm_dup{content.str()};
-                std::ofstream file(out_file);
+                std::ofstream file(temp_output_xml.string(), std::ios::out | std::ios::trunc);
                 assert(file);
                 app.write(data_strm_dup, file);
             }
@@ -142,7 +141,8 @@ void test_mapped_xml_import()
             // input one. They should be identical.
 
             // Hold the stream content in memory while the namespace context is being used.
-            file_content strm_data_file(data_file.string()), strm_out_file(out_file);
+            file_content strm_data_file(data_file.string());
+            file_content strm_out_file(temp_output_xml.string());
             std::string dump_input = dump_xml_structure(strm_data_file, cxt);
             std::string dump_output = dump_xml_structure(strm_out_file, cxt);
             assert(!dump_input.empty() && !dump_output.empty());
@@ -151,11 +151,11 @@ void test_mapped_xml_import()
             std::cout << "--" << std::endl;
             std::cout << dump_output << std::endl;
             assert(dump_input == dump_output);
-
-            // Delete the temporary xml output.
-            fs::remove(out_file.c_str());
         }
     }
+
+    // Delete the temporary xml output.
+    fs::remove(temp_output_xml);
 }
 
 void test_mapped_xml_import_no_map_definition()
