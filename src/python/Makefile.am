@@ -29,7 +29,7 @@ _orcus_la_SOURCES = \
 	gnumeric.hpp \
 	gnumeric.cpp
 
-_orcus_la_LDFLAGS = -module -avoid-version -export-symbols-regex PyInit__orcus
+_orcus_la_LDFLAGS = -no-undefined -module -avoid-version -export-symbols-regex PyInit__orcus
 _orcus_la_LIBADD = \
 	../liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
@@ -64,7 +64,7 @@ endif # BUILD_SPREADSHEET_MODEL
 _orcus_json_la_SOURCES = \
 	json.cpp
 
-_orcus_json_la_LDFLAGS = -module -avoid-version -export-symbols-regex PyInit__orcus_json
+_orcus_json_la_LDFLAGS = -no-undefined -module -avoid-version -export-symbols-regex PyInit__orcus_json
 _orcus_json_la_LIBADD = \
 	../liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \

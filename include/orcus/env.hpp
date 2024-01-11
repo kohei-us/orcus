@@ -11,10 +11,7 @@
 // orcus
 
 #if defined _WIN32 || defined __CYGWIN__
-  #if defined __MINGW32__
-    #define ORCUS_DLLPUBLIC
-    #define ORCUS_DLLLOCAL
-  #elif defined __ORCUS_BUILDING_DLL
+  #if defined __ORCUS_BUILDING_DLL
     #ifdef __GNUC__
       #define ORCUS_DLLPUBLIC __attribute__ ((dllexport))
     #else
@@ -43,10 +40,7 @@
 // orcus-parser
 
 #if defined _WIN32 || defined __CYGWIN__
-  #if defined __MINGW32__
-    #define ORCUS_PSR_DLLPUBLIC
-    #define ORCUS_PSR_DLLLOCAL
-  #elif defined __ORCUS_PSR_BUILDING_DLL
+  #if defined __ORCUS_PSR_BUILDING_DLL
     #ifdef __GNUC__
       #define ORCUS_PSR_DLLPUBLIC __attribute__ ((dllexport))
     #else
@@ -75,10 +69,7 @@
 // orcus-spreadsheet-model
 
 #if defined _WIN32 || defined __CYGWIN__
-  #if defined __MINGW32__
-    #define ORCUS_SPM_DLLPUBLIC
-    #define ORCUS_SPM_DLLLOCAL
-  #elif defined __ORCUS_SPM_BUILDING_DLL
+  #if defined __ORCUS_SPM_BUILDING_DLL
     #ifdef __GNUC__
       #define ORCUS_SPM_DLLPUBLIC __attribute__ ((dllexport))
     #else
@@ -107,10 +98,7 @@
 // orcus-mso
 
 #if defined _WIN32 || defined __CYGWIN__
-  #if defined __MINGW32__
-    #define ORCUS_MSO_DLLPUBLIC
-    #define ORCUS_MSO_DLLLOCAL
-  #elif defined __ORCUS_MSO_BUILDING_DLL
+  #if defined __ORCUS_MSO_BUILDING_DLL
     #ifdef __GNUC__
       #define ORCUS_MSO_DLLPUBLIC __attribute__ ((dllexport))
     #else
