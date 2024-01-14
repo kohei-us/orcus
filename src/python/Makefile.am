@@ -100,6 +100,7 @@ EXTRA_DIST = \
 	./orcus/tools/file_processor.py
 
 AM_TESTS_ENVIRONMENT = \
+	LD_LIBRARY_PATH=$(top_srcdir)/src/liborcus/.libs:$(top_srcdir)/src/parser/.libs; export LD_LIBRARY_PATH; \
 	PYTHONPATH=$(top_srcdir)/src/python:.libs$${PYTHONPATH:+:$${PYTHONPATH}}; export PYTHONPATH; \
 	BUILDDIR=$(top_builddir); export BUILDDIR;
 
