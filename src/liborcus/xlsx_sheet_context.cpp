@@ -33,10 +33,10 @@ namespace {
 
 namespace sheet_pane {
 
-using map_type = mdds::sorted_string_map<ss::sheet_pane_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::sheet_pane_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "bottomLeft",  ss::sheet_pane_t::bottom_left  },
     { "bottomRight", ss::sheet_pane_t::bottom_right },
     { "topLeft",     ss::sheet_pane_t::top_left     },
@@ -53,10 +53,10 @@ const map_type& get()
 
 namespace pane_state {
 
-using map_type = mdds::sorted_string_map<ss::pane_state_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::pane_state_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "frozen",      ss::pane_state_t::frozen       },
     { "frozenSplit", ss::pane_state_t::frozen_split },
     { "split",       ss::pane_state_t::split        },
@@ -72,10 +72,10 @@ const map_type& get()
 
 namespace formula_type {
 
-using map_type = mdds::sorted_string_map<ss::formula_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::formula_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "array",     ss::formula_t::array      },
     { "dataTable", ss::formula_t::data_table },
     { "normal",    ss::formula_t::normal     },

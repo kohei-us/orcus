@@ -24,10 +24,10 @@ namespace {
 
 namespace pseudo_elem {
 
-using map_type = mdds::sorted_string_map<pseudo_element_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<pseudo_element_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "after",        pseudo_element_after        },
     { "backdrop",     pseudo_element_backdrop     },
     { "before",       pseudo_element_before       },
@@ -95,10 +95,10 @@ namespace {
 
 namespace pseudo_class {
 
-using map_type = mdds::sorted_string_map<pseudo_class_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<pseudo_class_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "active",           pseudo_class_active           },
     { "checked",          pseudo_class_checked          },
     { "default",          pseudo_class_default          },
@@ -159,8 +159,8 @@ std::string pseudo_class_to_string(pseudo_class_t val)
 {
     std::ostringstream os;
     std::size_t n = std::size(pseudo_class::entries);
-    const pseudo_class::map_type::entry* p = pseudo_class::entries;
-    const pseudo_class::map_type::entry* p_end = p + n;
+    const pseudo_class::map_type::entry_type* p = pseudo_class::entries;
+    const pseudo_class::map_type::entry_type* p_end = p + n;
     for (; p != p_end; ++p)
     {
         if (val & p->value)
@@ -172,25 +172,32 @@ std::string pseudo_class_to_string(pseudo_class_t val)
 
 namespace {
 
-typedef mdds::sorted_string_map<property_function_t> propfunc_map_type;
+namespace propfunc {
+
+using map_type = mdds::sorted_string_map<property_function_t>;
 
 // Keys must be sorted.
-propfunc_map_type::entry propfunc_type_entries[] = {
-    { MDDS_ASCII("hsl"),  property_function_t::hsl  },
-    { MDDS_ASCII("hsla"), property_function_t::hsla },
-    { MDDS_ASCII("rgb"),  property_function_t::rgb  },
-    { MDDS_ASCII("rgba"), property_function_t::rgba },
-    { MDDS_ASCII("url"),  property_function_t::url  }
+constexpr map_type::entry_type entries[] = {
+    { "hsl",  property_function_t::hsl  },
+    { "hsla", property_function_t::hsla },
+    { "rgb",  property_function_t::rgb  },
+    { "rgba", property_function_t::rgba },
+    { "url",  property_function_t::url  }
 };
+
+const map_type& get()
+{
+    static map_type map(entries, std::size(entries), property_function_t::unknown);
+    return map;
+}
+
+} // namespace propfunc
 
 }
 
 property_function_t to_property_function(std::string_view s)
 {
-    static propfunc_map_type propfunc_map(
-        propfunc_type_entries, std::size(propfunc_type_entries), property_function_t::unknown);
-
-    return propfunc_map.find(s.data(), s.size());
+    return propfunc::get().find(s.data(), s.size());
 }
 
 }}

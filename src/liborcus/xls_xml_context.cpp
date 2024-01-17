@@ -53,10 +53,10 @@ ss::color_rgb_t to_rgb(std::string_view s)
 
 namespace border_dir {
 
-using map_type = mdds::sorted_string_map<ss::border_direction_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::border_direction_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "Bottom",        ss::border_direction_t::bottom         },
     { "DiagonalLeft",  ss::border_direction_t::diagonal_tl_br },
     { "DiagonalRight", ss::border_direction_t::diagonal_bl_tr },
@@ -75,10 +75,10 @@ const map_type& get()
 
 namespace border_style {
 
-using map_type = mdds::sorted_string_map<ss::border_style_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::border_style_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "Continuous",   ss::border_style_t::solid          },
     { "Dash",         ss::border_style_t::dashed         },
     { "DashDot",      ss::border_style_t::dash_dot       },
@@ -98,10 +98,10 @@ const map_type& get()
 
 namespace hor_align {
 
-using map_type = mdds::sorted_string_map<ss::hor_alignment_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::hor_alignment_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "Center",      ss::hor_alignment_t::center      },
     { "Distributed", ss::hor_alignment_t::distributed },
     { "Justify",     ss::hor_alignment_t::justified   },
@@ -119,10 +119,10 @@ const map_type& get()
 
 namespace ver_align {
 
-using map_type = mdds::sorted_string_map<ss::ver_alignment_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::ver_alignment_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "Bottom",      ss::ver_alignment_t::bottom      },
     { "Center",      ss::ver_alignment_t::middle      },
     { "Distributed", ss::ver_alignment_t::distributed },
@@ -140,10 +140,10 @@ const map_type& get()
 
 namespace num_format {
 
-using map_type = mdds::sorted_string_map<std::string_view, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<std::string_view>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "Currency", "$#,##0.00_);[Red]($#,##0.00)" },
     { "Euro Currency", "[$\xe2\x82\xac-x-euro2] #,##0.00_);[Red]([$\xe2\x82\xac-x-euro2] #,##0.00)" },
     { "Fixed", "0.00" },
@@ -173,10 +173,10 @@ const map_type& get()
 
 namespace underline {
 
-using map_type = mdds::sorted_string_map<ss::underline_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::underline_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "Double", ss::underline_t::double_line },
     { "DoubleAccounting", ss::underline_t::double_accounting },
     { "None", ss::underline_t::none },

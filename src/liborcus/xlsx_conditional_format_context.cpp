@@ -93,67 +93,67 @@ typedef mdds::sorted_string_map<xlsx_cond_format_operator> cond_format_operator_
 
 typedef mdds::sorted_string_map<xlsx_cond_format_date> cond_format_date_map;
 
-cond_format_type_map::entry cond_format_type_entries[] =
+constexpr cond_format_type_map::entry_type cond_format_type_entries[] =
 {
-    { MDDS_ASCII("aboveAverage"), aboveAverage },
-    { MDDS_ASCII("beginsWith"), beginsWith },
-    { MDDS_ASCII("cellIs"), cellIs },
-    { MDDS_ASCII("colorScale"), colorScale },
-    { MDDS_ASCII("containsBlanks"), containsBlanks },
-    { MDDS_ASCII("containsErrors"), containsErrors },
-    { MDDS_ASCII("containsText"), containsText },
-    { MDDS_ASCII("dataBar"), dataBar },
-    { MDDS_ASCII("duplicateValues"), duplicateValues },
-    { MDDS_ASCII("endsWith"), endsWith },
-    { MDDS_ASCII("expression"), expression },
-    { MDDS_ASCII("iconSet"), iconSet },
-    { MDDS_ASCII("notContainsErrors"), notContainsErrors },
-    { MDDS_ASCII("notContainsText"), notContainsText },
-    { MDDS_ASCII("timePeriod"), timePeriod },
-    { MDDS_ASCII("top10"), top10 },
-    { MDDS_ASCII("uniqueValues"), uniqueValues }
+    { "aboveAverage", aboveAverage },
+    { "beginsWith", beginsWith },
+    { "cellIs", cellIs },
+    { "colorScale", colorScale },
+    { "containsBlanks", containsBlanks },
+    { "containsErrors", containsErrors },
+    { "containsText", containsText },
+    { "dataBar", dataBar },
+    { "duplicateValues", duplicateValues },
+    { "endsWith", endsWith },
+    { "expression", expression },
+    { "iconSet", iconSet },
+    { "notContainsErrors", notContainsErrors },
+    { "notContainsText", notContainsText },
+    { "timePeriod", timePeriod },
+    { "top10", top10 },
+    { "uniqueValues", uniqueValues }
 };
 
-cond_format_operator_map::entry cond_format_operator_entries[] =
+constexpr cond_format_operator_map::entry_type cond_format_operator_entries[] =
 {
-    { MDDS_ASCII("beginsWith"), operator_beginsWith },
-    { MDDS_ASCII("between"), operator_between },
-    { MDDS_ASCII("containsText"), operator_containsText },
-    { MDDS_ASCII("endsWith"), operator_endsWith },
-    { MDDS_ASCII("equal"), operator_equal },
-    { MDDS_ASCII("greaterThan"), operator_greaterThan },
-    { MDDS_ASCII("greaterThanOrEqual"), operator_greaterThanOrEqual },
-    { MDDS_ASCII("lessThan"), operator_lessThan },
-    { MDDS_ASCII("lessThanOrEqual"), operator_lessThanOrEqual },
-    { MDDS_ASCII("notBetween"), operator_notBetween },
-    { MDDS_ASCII("notContains"), operator_notContains },
-    { MDDS_ASCII("notEqual"), operator_notEqual }
+    { "beginsWith", operator_beginsWith },
+    { "between", operator_between },
+    { "containsText", operator_containsText },
+    { "endsWith", operator_endsWith },
+    { "equal", operator_equal },
+    { "greaterThan", operator_greaterThan },
+    { "greaterThanOrEqual", operator_greaterThanOrEqual },
+    { "lessThan", operator_lessThan },
+    { "lessThanOrEqual", operator_lessThanOrEqual },
+    { "notBetween", operator_notBetween },
+    { "notContains", operator_notContains },
+    { "notEqual", operator_notEqual }
 };
 
-cond_format_date_map::entry cond_format_date_entries[] =
+constexpr cond_format_date_map::entry_type cond_format_date_entries[] =
 {
-    { MDDS_ASCII("last7Days"), date_last7Days },
-    { MDDS_ASCII("lastMonth"), date_lastMonth },
-    { MDDS_ASCII("lastWeek"), date_lastWeek },
-    { MDDS_ASCII("nextMonth"), date_nextMonth },
-    { MDDS_ASCII("thisMonth"), date_thisMonth },
-    { MDDS_ASCII("thisWeek"), date_thisWeek },
-    { MDDS_ASCII("today"), date_today },
-    { MDDS_ASCII("tomorrow"), date_tomorrow },
-    { MDDS_ASCII("yesterday"), date_yesterday }
+    { "last7Days", date_last7Days },
+    { "lastMonth", date_lastMonth },
+    { "lastWeek", date_lastWeek },
+    { "nextMonth", date_nextMonth },
+    { "thisMonth", date_thisMonth },
+    { "thisWeek", date_thisWeek },
+    { "today", date_today },
+    { "tomorrow", date_tomorrow },
+    { "yesterday", date_yesterday }
 };
 
-cond_format_boolean_map::entry cond_format_boolean_entries[] =
+constexpr cond_format_boolean_map::entry_type cond_format_boolean_entries[] =
 {
-    { MDDS_ASCII("0"), boolean_false },
-    { MDDS_ASCII("1"), boolean_true },
-    { MDDS_ASCII("false"), boolean_true },
-    { MDDS_ASCII("true"), boolean_false }
+    { "0", boolean_false },
+    { "1", boolean_true },
+    { "false", boolean_true },
+    { "true", boolean_false }
 };
 
 bool parse_boolean_flag(const xml_token_attr_t& attr, bool default_value)
 {
-    static const cond_format_boolean_map boolean_map(cond_format_boolean_entries, sizeof(cond_format_boolean_entries)/sizeof(cond_format_boolean_entries[0]), boolean_default);    
+    static const cond_format_boolean_map boolean_map(cond_format_boolean_entries, sizeof(cond_format_boolean_entries)/sizeof(cond_format_boolean_entries[0]), boolean_default);
     xlsx_cond_format_boolean val = boolean_map.find(attr.value.data(), attr.value.size());
     switch (val)
     {
@@ -475,14 +475,14 @@ enum xlsx_cond_format_cfvo_type
 
 typedef mdds::sorted_string_map<xlsx_cond_format_cfvo_type> cond_format_cfvo_type_map;
 
-cond_format_cfvo_type_map::entry cond_format_cfvo_entries[] =
+constexpr cond_format_cfvo_type_map::entry_type cond_format_cfvo_entries[] =
 {
-    { MDDS_ASCII("num"), cfvo_num },
-    { MDDS_ASCII("percent"), cfvo_percent },
-    { MDDS_ASCII("max"), cfvo_max },
-    { MDDS_ASCII("min"), cfvo_min },
-    { MDDS_ASCII("formula"), cfvo_formula },
-    { MDDS_ASCII("percentile"), cfvo_percentile },
+    { "num", cfvo_num },
+    { "percent", cfvo_percent },
+    { "max", cfvo_max },
+    { "min", cfvo_min },
+    { "formula", cfvo_formula },
+    { "percentile", cfvo_percentile },
 };
 
 }

@@ -19,10 +19,10 @@ namespace {
 
 namespace trf {
 
-using map_type = mdds::sorted_string_map<totals_row_function_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<totals_row_function_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "average",   totals_row_function_t::average },
     { "count",     totals_row_function_t::count },
     { "countNums", totals_row_function_t::count_numbers },
@@ -45,10 +45,10 @@ const map_type& get()
 
 namespace pc_group_by {
 
-using map_type = mdds::sorted_string_map<pivot_cache_group_by_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<pivot_cache_group_by_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "days",     pivot_cache_group_by_t::days },
     { "hours",    pivot_cache_group_by_t::hours },
     { "minutes",  pivot_cache_group_by_t::minutes },
@@ -69,10 +69,10 @@ const map_type& get()
 
 namespace error_value {
 
-using map_type = mdds::sorted_string_map<error_value_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<error_value_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
     { "#DIV/0!", error_value_t::div0  },
     { "#N/A!",   error_value_t::na    },
@@ -93,9 +93,9 @@ const map_type& get()
 
 namespace named_colors {
 
-using map_type = mdds::sorted_string_map<color_rgb_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<color_rgb_t>;
 
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
     { "aliceblue", { 0xF0, 0xF8, 0xFF } },
     { "antiquewhite", { 0xFA, 0xEB, 0xD7 } },
@@ -247,10 +247,10 @@ const map_type& get()
 
 namespace formula_error_policy {
 
-using map_type = mdds::sorted_string_map<formula_error_policy_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<formula_error_policy_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "fail", formula_error_policy_t::fail },
     { "skip", formula_error_policy_t::skip },
 };

@@ -20,10 +20,10 @@ namespace {
 
 namespace hor_align {
 
-using map_type = mdds::sorted_string_map<ss::hor_alignment_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::hor_alignment_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "GNM_HALIGN_CENTER", ss::hor_alignment_t::center },
     { "GNM_HALIGN_DISTRIBUTED", ss::hor_alignment_t::distributed },
     { "GNM_HALIGN_GENERAL", ss::hor_alignment_t::unknown },
@@ -42,10 +42,10 @@ const map_type& get()
 
 namespace ver_align {
 
-using map_type = mdds::sorted_string_map<ss::ver_alignment_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::ver_alignment_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "GNM_VALIGN_BOTTOM", ss::ver_alignment_t::bottom },
     { "GNM_VALIGN_CENTER", ss::ver_alignment_t::middle },
     { "GNM_VALIGN_DISTRIBUTED", ss::ver_alignment_t::distributed },

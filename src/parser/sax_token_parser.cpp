@@ -19,10 +19,10 @@ enum class decl_attr_type { unknown, version, encoding, standalone };
 
 namespace decl_attr {
 
-using map_type = mdds::sorted_string_map<decl_attr_type, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<decl_attr_type>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "encoding",   decl_attr_type::encoding   },
     { "standalone", decl_attr_type::standalone },
     { "version",    decl_attr_type::version    },

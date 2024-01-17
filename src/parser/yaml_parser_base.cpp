@@ -304,9 +304,9 @@ namespace {
 
 namespace keyword {
 
-using map_type = mdds::sorted_string_map<detail::keyword_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<detail::keyword_t>;
 
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "FALSE", detail::keyword_t::boolean_false },
     { "False", detail::keyword_t::boolean_false },
     { "N",     detail::keyword_t::boolean_false },

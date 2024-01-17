@@ -21,10 +21,10 @@ namespace {
 
 namespace border_style {
 
-using map_type = mdds::sorted_string_map<spreadsheet::border_style_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<spreadsheet::border_style_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
     { "dash-dot", spreadsheet::border_style_t::dash_dot },
     { "dash-dot-dot", spreadsheet::border_style_t::dash_dot_dot },
@@ -46,10 +46,10 @@ const map_type& get()
 
 namespace underline_width {
 
-using map_type = mdds::sorted_string_map<spreadsheet::underline_width_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<spreadsheet::underline_width_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
     { "auto", ss::underline_width_t::automatic },
     { "bold", ss::underline_width_t::bold },
@@ -69,10 +69,10 @@ const map_type& get()
 
 namespace underline_style {
 
-using map_type = mdds::sorted_string_map<ss::underline_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::underline_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
     { "dash", ss::underline_t::dash },
     { "dot-dash", ss::underline_t::dot_dash },
@@ -94,10 +94,10 @@ const map_type& get()
 
 namespace hor_align {
 
-using map_type = mdds::sorted_string_map<spreadsheet::hor_alignment_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<spreadsheet::hor_alignment_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
     { "center", spreadsheet::hor_alignment_t::center },
     { "end", spreadsheet::hor_alignment_t::right },
@@ -115,10 +115,10 @@ const map_type& get()
 
 namespace ver_align {
 
-using map_type = mdds::sorted_string_map<spreadsheet::ver_alignment_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<spreadsheet::ver_alignment_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
     { "bottom", spreadsheet::ver_alignment_t::bottom },
     { "justified", spreadsheet::ver_alignment_t::justified },

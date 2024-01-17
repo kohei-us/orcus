@@ -17,10 +17,10 @@ constexpr std::string_view str_unknown = "unknown";
 
 namespace cell_type {
 
-using map_type = mdds::sorted_string_map<xlsx_cell_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<xlsx_cell_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "b", xlsx_ct_boolean },
     { "e", xlsx_ct_error },
     { "inlineStr", xlsx_ct_inline_string },
@@ -39,10 +39,10 @@ const map_type& get()
 
 namespace rca {
 
-using map_type = mdds::sorted_string_map<xlsx_rev_row_column_action_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<xlsx_rev_row_column_action_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "deleteCol", xlsx_rev_rca_delete_column },
     { "deleteRow", xlsx_rev_rca_delete_row    },
     { "insertCol", xlsx_rev_rca_insert_column },

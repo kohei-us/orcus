@@ -28,10 +28,10 @@ namespace {
 
 namespace pc_source {
 
-using map_type = mdds::sorted_string_map<xlsx_pivot_cache_def_context::source_type, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<xlsx_pivot_cache_def_context::source_type>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "consolidation", xlsx_pivot_cache_def_context::source_type::consolidation },
     { "external",      xlsx_pivot_cache_def_context::source_type::external      },
     { "scenario",      xlsx_pivot_cache_def_context::source_type::scenario      },

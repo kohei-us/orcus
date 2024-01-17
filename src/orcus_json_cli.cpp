@@ -49,10 +49,10 @@ namespace {
 
 namespace mode {
 
-using map_type = mdds::sorted_string_map<detail::mode_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<detail::mode_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
     { "convert",   detail::mode_t::convert   },
     { "map",       detail::mode_t::map       },

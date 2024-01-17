@@ -51,10 +51,10 @@ namespace {
 
 namespace length {
 
-using map_type = mdds::sorted_string_map<length_unit_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<length_unit_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
     { "cm", length_unit_t::centimeter },
     { "in", length_unit_t::inch },

@@ -29,10 +29,10 @@ namespace {
 
 namespace border_style {
 
-using map_type = mdds::sorted_string_map<ss::border_style_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::border_style_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "dashDot",          ss::border_style_t::dash_dot            },
     { "dashDotDot",       ss::border_style_t::dash_dot_dot        },
     { "dashed",           ss::border_style_t::dashed              },
@@ -59,10 +59,10 @@ const map_type& get()
 
 namespace fill_pattern {
 
-using map_type = mdds::sorted_string_map<ss::fill_pattern_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::fill_pattern_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "darkDown",        ss::fill_pattern_t::dark_down        },
     { "darkGray",        ss::fill_pattern_t::dark_gray        },
     { "darkGrid",        ss::fill_pattern_t::dark_grid        },
@@ -94,10 +94,10 @@ const map_type& get()
 
 namespace underline {
 
-using map_type = mdds::sorted_string_map<ss::underline_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<ss::underline_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "double", ss::underline_t::double_line },
     { "doubleAccounting", ss::underline_t::double_accounting },
     { "none", ss::underline_t::none },

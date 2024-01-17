@@ -43,10 +43,10 @@ enum class type {
     structure,
 };
 
-using map_type = mdds::sorted_string_map<type, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<type>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "dump",      type::dump          },
     { "map",       type::map           },
     { "map-gen",   type::map_gen       },
@@ -64,7 +64,7 @@ const map_type& get()
 
 std::string to_string(output_mode::type t)
 {
-    for (const output_mode::map_type::entry& e : output_mode::entries)
+    for (const output_mode::map_type::entry_type& e : output_mode::entries)
         if (t == e.value)
             return std::string(e.key);
 

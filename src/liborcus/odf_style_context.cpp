@@ -27,15 +27,15 @@ namespace style_family {
 
 using map_type = mdds::sorted_string_map<odf_style_family>;
 
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
-    { MDDS_ASCII("graphic"), style_family_graphic },
-    { MDDS_ASCII("paragraph"), style_family_paragraph },
-    { MDDS_ASCII("table"), style_family_table },
-    { MDDS_ASCII("table-cell"), style_family_table_cell },
-    { MDDS_ASCII("table-column"), style_family_table_column },
-    { MDDS_ASCII("table-row"), style_family_table_row },
-    { MDDS_ASCII("text"), style_family_text }
+    { "graphic", style_family_graphic },
+    { "paragraph", style_family_paragraph },
+    { "table", style_family_table },
+    { "table-cell", style_family_table_cell },
+    { "table-column", style_family_table_column },
+    { "table-row", style_family_table_row },
+    { "text", style_family_text }
 };
 
 const map_type& get()
@@ -53,15 +53,7 @@ odf_style_family to_style_family(std::string_view val)
 
 std::string_view to_string(odf_style_family family)
 {
-    static constexpr std::string_view unknown_str = "unknown";
-
-    for (const auto& entry : style_family::entries)
-    {
-        if (entry.value == family)
-            return {entry.key, entry.key_length};
-    }
-
-    return unknown_str;
+    return style_family::get().find_key(family);
 }
 
 namespace st_style {
@@ -69,16 +61,16 @@ namespace st_style {
 typedef mdds::sorted_string_map<ss::strikethrough_style_t> map_type;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] =
+constexpr map_type::entry_type entries[] =
 {
-    { MDDS_ASCII("dash"), ss::strikethrough_style_t::dash },
-    { MDDS_ASCII("dot-dash"), ss::strikethrough_style_t::dot_dash },
-    { MDDS_ASCII("dot-dot-dash"), ss::strikethrough_style_t::dot_dot_dash },
-    { MDDS_ASCII("dotted"), ss::strikethrough_style_t::dotted },
-    { MDDS_ASCII("long-dash"), ss::strikethrough_style_t::long_dash },
-    { MDDS_ASCII("none"), ss::strikethrough_style_t::none },
-    { MDDS_ASCII("solid"), ss::strikethrough_style_t::solid },
-    { MDDS_ASCII("wave"), ss::strikethrough_style_t::wave },
+    { "dash", ss::strikethrough_style_t::dash },
+    { "dot-dash", ss::strikethrough_style_t::dot_dash },
+    { "dot-dot-dash", ss::strikethrough_style_t::dot_dot_dash },
+    { "dotted", ss::strikethrough_style_t::dotted },
+    { "long-dash", ss::strikethrough_style_t::long_dash },
+    { "none", ss::strikethrough_style_t::none },
+    { "solid", ss::strikethrough_style_t::solid },
+    { "wave", ss::strikethrough_style_t::wave },
 };
 
 const map_type& get()

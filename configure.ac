@@ -256,7 +256,7 @@ AS_IF([test "x$with_tools" != "xno"], [
 # ============
 # mdds support
 # ============
-PKG_CHECK_MODULES([MDDS],[mdds-2.1 >= 2.1.1])
+PKG_CHECK_MODULES([MDDS],[mdds-3.0 >= 2.1.99])
 CXXFLAGS="$CXXFLAGS $MDDS_CFLAGS"
 
 # =================

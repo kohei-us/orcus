@@ -16,10 +16,10 @@ namespace orcus {
 
 namespace value_format_type {
 
-using map_type = mdds::sorted_string_map<gnumeric_value_format_type, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<gnumeric_value_format_type>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "bold", gnumeric_value_format_type::bold },
     { "color", gnumeric_value_format_type::color },
     { "family", gnumeric_value_format_type::family },

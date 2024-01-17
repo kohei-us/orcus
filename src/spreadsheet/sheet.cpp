@@ -263,7 +263,7 @@ void sheet::set_col_width(col_t col, col_t col_span, col_width_t width)
 col_width_t sheet::get_col_width(col_t col, col_t* col_start, col_t* col_end) const
 {
     detail::col_widths_store_type& col_widths = mp_impl->col_widths;
-    if (!col_widths.is_tree_valid())
+    if (!col_widths.valid_tree())
         col_widths.build_tree();
 
     col_width_t ret = 0;
@@ -282,7 +282,7 @@ void sheet::set_col_hidden(col_t col, col_t col_span, bool hidden)
 bool sheet::is_col_hidden(col_t col, col_t* col_start, col_t* col_end) const
 {
     detail::col_hidden_store_type& col_hidden = mp_impl->col_hidden;
-    if (!col_hidden.is_tree_valid())
+    if (!col_hidden.valid_tree())
         col_hidden.build_tree();
 
     bool hidden = false;
@@ -301,7 +301,7 @@ void sheet::set_row_height(row_t row, row_height_t height)
 row_height_t sheet::get_row_height(row_t row, row_t* row_start, row_t* row_end) const
 {
     detail::row_heights_store_type& row_heights = mp_impl->row_heights;
-    if (!row_heights.is_tree_valid())
+    if (!row_heights.valid_tree())
         row_heights.build_tree();
 
     row_height_t ret = 0;
@@ -320,7 +320,7 @@ void sheet::set_row_hidden(row_t row, bool hidden)
 bool sheet::is_row_hidden(row_t row, row_t* row_start, row_t* row_end) const
 {
     detail::row_hidden_store_type& row_hidden = mp_impl->row_hidden;
-    if (!row_hidden.is_tree_valid())
+    if (!row_hidden.valid_tree())
         row_hidden.build_tree();
 
     bool hidden = false;
@@ -486,10 +486,10 @@ void sheet::dump_check(ostream& os, std::string_view sheet_name) const
 
 void sheet::dump_html(std::ostream& os) const
 {
-    if (!mp_impl->col_widths.is_tree_valid())
+    if (!mp_impl->col_widths.valid_tree())
         mp_impl->col_widths.build_tree();
 
-    if (!mp_impl->row_heights.is_tree_valid())
+    if (!mp_impl->row_heights.valid_tree())
         mp_impl->row_heights.build_tree();
 
     detail::html_dumper dumper(mp_impl->doc, mp_impl->merge_ranges, mp_impl->sheet_id);
@@ -522,7 +522,7 @@ size_t sheet::get_cell_format(row_t row, col_t col) const
     if (it != mp_impl->cell_formats.end())
     {
         detail::segment_row_index_type& con = *it->second;
-        if (!con.is_tree_valid())
+        if (!con.valid_tree())
             con.build_tree();
 
         // Return only if the index is not a default index
@@ -532,7 +532,7 @@ size_t sheet::get_cell_format(row_t row, col_t col) const
     }
 
     // Not found in the cell format store. Check the row store.
-    if (!mp_impl->row_formats.is_tree_valid())
+    if (!mp_impl->row_formats.valid_tree())
         mp_impl->row_formats.build_tree();
 
     std::size_t index;
@@ -540,7 +540,7 @@ size_t sheet::get_cell_format(row_t row, col_t col) const
         return index;
 
     // Not found in the row store. Check the column store.
-    if (!mp_impl->column_formats.is_tree_valid())
+    if (!mp_impl->column_formats.valid_tree())
         mp_impl->column_formats.build_tree();
 
     if (mp_impl->column_formats.search_tree(col, index).second && index)

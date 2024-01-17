@@ -458,10 +458,10 @@ namespace {
 
 namespace dump_format {
 
-using map_type = mdds::sorted_string_map<dump_format_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<dump_format_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "check",       dump_format_t::check       },
     { "csv",         dump_format_t::csv         },
     { "debug-state", dump_format_t::debug_state },
@@ -483,10 +483,10 @@ const map_type& get()
 
 namespace charset {
 
-using map_type = mdds::sorted_string_map<character_set_t, mdds::string_view_map_entry>;
+using map_type = mdds::sorted_string_map<character_set_t>;
 
 // Keys must be sorted.
-constexpr map_type::entry entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "437", character_set_t::ibm437 },
     { "850", character_set_t::ibm850 },
     { "851", character_set_t::ibm851 },
