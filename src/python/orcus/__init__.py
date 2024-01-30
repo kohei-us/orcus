@@ -68,22 +68,26 @@ class FormulaTokenOp(Enum):
     STRING           = 5
     VALUE            = 6
     FUNCTION         = 7
-    PLUS             = 8
-    MINUS            = 9
-    DIVIDE           = 10
-    MULTIPLY         = 11
-    EXPONENT         = 12
-    CONCAT           = 13
-    EQUAL            = 14
-    NOT_EQUAL        = 15
-    LESS             = 16
-    GREATER          = 17
-    LESS_EQUAL       = 18
-    GREATER_EQUAL    = 19
-    OPEN             = 20
-    CLOSE            = 21
-    SEP              = 22
-    ERROR            = 23
+    ERROR            = 8
+    PLUS             = 9
+    MINUS            = 10
+    DIVIDE           = 11
+    MULTIPLY         = 12
+    EXPONENT         = 13
+    CONCAT           = 14
+    EQUAL            = 15
+    NOT_EQUAL        = 16
+    LESS             = 17
+    GREATER          = 18
+    LESS_EQUAL       = 19
+    GREATER_EQUAL    = 20
+    OPEN             = 21
+    CLOSE            = 22
+    SEP              = 23
+    ARRAY_ROW_SEP    = 24
+    ARRAY_OPEN       = 25
+    ARRAY_CLOSE      = 26
+    INVALID_FORMULA  = 27
 
 
 def get_document_loader_module(format_type):

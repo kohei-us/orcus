@@ -2373,7 +2373,7 @@ void test_xls_xml_skip_error_cells()
         if (tokens.empty())
             return false;
 
-        return tokens[0].opcode == ixion::fop_error;
+        return tokens[0].opcode == ixion::fop_invalid_formula;
     };
 
     // Make sure these two cells have been imported as formula cells with error.

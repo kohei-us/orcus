@@ -71,6 +71,7 @@ const char* to_formula_token_type(ixion::fopcode_t op)
         case ixion::fop_sep:
             return "OPERATOR";
         case ixion::fop_error:
+        case ixion::fop_invalid_formula:
             return "ERROR";
         case ixion::fop_unknown:
         default:
@@ -82,6 +83,8 @@ const char* to_formula_token_type(ixion::fopcode_t op)
 
 const char* to_formula_token_op(ixion::fopcode_t op)
 {
+    // NB: keep this in sync with the int values of ixion::fopcode_t.
+    // The name corresponds with the members of orcus.FormulaTokenOp enum class.
     const char* names[] = {
         "UNKNOWN",
         "SINGLE_REF",
@@ -91,6 +94,7 @@ const char* to_formula_token_op(ixion::fopcode_t op)
         "STRING",
         "VALUE",
         "FUNCTION",
+        "ERROR",
         "PLUS",
         "MINUS",
         "DIVIDE",
@@ -106,7 +110,10 @@ const char* to_formula_token_op(ixion::fopcode_t op)
         "OPEN",
         "CLOSE",
         "SEP",
-        "ERROR",
+        "ARRAY_ROW_SEP",
+        "ARRAY_OPEN",
+        "ARRAY_CLOSE",
+        "INVALID_FORMULA",
     };
 
     auto n_names = std::size(names);
