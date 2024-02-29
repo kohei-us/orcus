@@ -67,6 +67,10 @@ private:
     void end_cell();
     void push_string(spreadsheet::row_t row, spreadsheet::col_t col);
 
+    /**
+     * Build a sorted set of non-overlapping ranges where each range has uniform
+     * set of formats applied.
+     */
     std::vector<std::pair<std::size_t, std::size_t>> build_format_segment_ranges() const;
 
 private:
