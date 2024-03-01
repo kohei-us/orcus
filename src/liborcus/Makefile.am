@@ -61,6 +61,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	config.cpp \
 	css_document_tree.cpp \
 	css_selector.cpp \
+	debug_utils.hpp \
+	debug_utils.cpp \
 	detection_result.hpp \
 	detection_result.cpp \
 	dom_tree.cpp \
@@ -193,6 +195,7 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 # xlsx-sheet-context-test
 
 xlsx_sheet_context_test_SOURCES = \
+	debug_utils.cpp \
 	formula_result.cpp \
 	ooxml_global.cpp \
 	ooxml_namespace_types.cpp \
@@ -340,6 +343,7 @@ EXTRA_PROGRAMS += \
 	gnumeric-sheet-context-test
 
 gnumeric_cell_context_test_SOURCES = \
+	debug_utils.cpp \
 	number_utils.cpp \
 	session_context.cpp \
 	gnumeric_cell_context_test.cpp \
@@ -368,6 +372,7 @@ TESTS += gnumeric-cell-context-test
 # gnumeric-sheet-context-test
 
 gnumeric_sheet_context_test_SOURCES = \
+	debug_utils.cpp \
 	session_context.cpp \
 	gnumeric_sheet_context_test.cpp \
 	gnumeric_sheet_context.cpp \

@@ -7,6 +7,7 @@
 
 #include "xml_context_base.hpp"
 #include "session_context.hpp"
+#include "debug_utils.hpp"
 
 #include "orcus/exception.hpp"
 #include "orcus/tokens.hpp"
@@ -20,28 +21,28 @@ namespace orcus {
 
 namespace {
 
-void print_stack(const tokens& tokens, const xml_elem_stack_t& elem_stack, const xmlns_context* ns_cxt)
+void print_stack(std::ostream& os, const tokens& tokens, const xml_elem_stack_t& elem_stack, const xmlns_context* ns_cxt)
 {
-    cerr << "[ ";
+    os << "[ ";
     xml_elem_stack_t::const_iterator itr, itr_beg = elem_stack.begin(), itr_end = elem_stack.end();
     for (itr = itr_beg; itr != itr_end; ++itr)
     {
         if (itr != itr_beg)
-            cerr << " -> ";
+            os << " -> ";
 
         xmlns_id_t ns = itr->first;
         if (ns_cxt)
         {
             std::string_view alias = ns_cxt->get_alias(ns);
             if (!alias.empty())
-                cerr << alias << ":";
+                os << alias << ":";
         }
         else
-            cerr << ns << ":";
+            os << ns << ":";
 
-        cerr << tokens.get_token_name(itr->second);
+        os << tokens.get_token_name(itr->second);
     }
-    cerr << " ]";
+    os << " ]";
 }
 
 }
@@ -196,27 +197,23 @@ void xml_context_base::warn_unhandled() const
     if (!m_config.debug)
         return;
 
-    cerr << "warning: unhandled element ";
-    print_stack(m_tokens, m_stack, mp_ns_cxt);
-    cerr << endl;
+    std::ostringstream os;
+    os << "unhandled element ";
+    print_stack(os, m_tokens, m_stack, mp_ns_cxt);
+    orcus::warn(m_config, os.str());
 }
 
 void xml_context_base::warn_unexpected() const
 {
-    if (!m_config.debug)
-        return;
-
-    cerr << "warning: unexpected element ";
-    print_stack(m_tokens, m_stack, mp_ns_cxt);
-    cerr << endl;
+    std::ostringstream os;
+    os << "unexpected element ";
+    print_stack(os, m_tokens, m_stack, mp_ns_cxt);
+    orcus::warn(m_config, os.str());
 }
 
 void xml_context_base::warn(std::string_view msg) const
 {
-    if (!m_config.debug)
-        return;
-
-    cerr << "warning: " << msg << endl;
+    orcus::warn(m_config, msg);
 }
 
 void xml_context_base::xml_element_expected(

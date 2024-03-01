@@ -4,6 +4,7 @@ list(APPEND _SOURCES
     config.cpp
     css_document_tree.cpp
     css_selector.cpp
+    debug_utils.cpp
     detection_result.cpp
     dom_tree.cpp
     format_detection.cpp

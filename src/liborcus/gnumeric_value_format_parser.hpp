@@ -8,19 +8,22 @@
 #pragma once
 
 #include <string_view>
-#include <vector>
 
 #include "gnumeric_types.hpp"
 
 namespace orcus {
 
+struct config;
+
 class gnumeric_value_format_parser
 {
+    const config& m_config;
+
     const char* m_head = nullptr;
     const char* m_cur = nullptr;
     const char* m_end = nullptr;
 
-    std::vector<gnumeric_value_format_segment> m_segments;
+    value_format_segments_type m_segments;
 
 private:
     std::size_t get_pos() const;
@@ -34,11 +37,11 @@ public:
      * @param format Format string containing one or more format segments. Make
      *               sure the source of this string is persisent!
      */
-    gnumeric_value_format_parser(std::string_view format);
+    gnumeric_value_format_parser(const config& conf, std::string_view format);
 
     void parse();
 
-    std::vector<gnumeric_value_format_segment> pop_segments();
+    value_format_segments_type pop_segments();
 };
 
 } // namespace orcus

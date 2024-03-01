@@ -6,11 +6,15 @@
  */
 
 #include "gnumeric_value_format_parser.hpp"
+#include "debug_utils.hpp"
+
+#include <orcus/config.hpp>
 #include <orcus/exception.hpp>
 #include <orcus/measurement.hpp>
 
 #include <cassert>
 #include <sstream>
+#include <optional>
 
 #include <boost/numeric/conversion/cast.hpp>
 
@@ -28,10 +32,12 @@ void gnumeric_value_format_parser::segment()
     // segment: [type=value:start:end]
 
     assert(*m_cur == '[');
+    const char* const p_start = m_cur;
     const char* p0 = nullptr;
     std::size_t pos = 0;
 
     gnumeric_value_format_segment seg;
+    std::optional<std::size_t> start;
 
     for (++m_cur; m_cur != m_end; ++m_cur)
     {
@@ -50,8 +56,17 @@ void gnumeric_value_format_parser::segment()
                 if (s.empty())
                     throw parse_error("segment value is empty", get_pos());
 
-                seg.end = to_long(s);
-                m_segments.push_back(std::move(seg));
+                std::size_t end = to_long(s);
+                if (start && *start < end)
+                    m_segments.insert(*start, end, seg);
+                else
+                {
+                    std::ostringstream os;
+                    n = std::distance(p_start, m_cur);
+                    os << "skipping invalid segment '" << std::string_view{p_start, numeric_cast<std::size_t>(n)} << "'";
+                    warn(m_config, os.str());
+                }
+
                 return;
             }
             case '=':
@@ -80,7 +95,7 @@ void gnumeric_value_format_parser::segment()
                         seg.value = s;
                         break;
                     case 1:
-                        seg.start = to_long(s);
+                        start = to_long(s);
                         break;
                     default:
                         throw parse_error("too many value partitions", get_pos());
@@ -96,8 +111,8 @@ void gnumeric_value_format_parser::segment()
     throw parse_error("']' was never reached", get_pos());
 }
 
-gnumeric_value_format_parser::gnumeric_value_format_parser(std::string_view format) :
-    m_head(format.data()), m_cur(m_head), m_end(m_head + format.size())
+gnumeric_value_format_parser::gnumeric_value_format_parser(const config& conf, std::string_view format) :
+    m_config(conf), m_head(format.data()), m_cur(m_head), m_end(m_head + format.size())
 {
 }
 
@@ -121,7 +136,7 @@ void gnumeric_value_format_parser::parse()
     }
 }
 
-std::vector<gnumeric_value_format_segment> gnumeric_value_format_parser::pop_segments()
+value_format_segments_type gnumeric_value_format_parser::pop_segments()
 {
     return std::move(m_segments);
 }

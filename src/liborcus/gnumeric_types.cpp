@@ -81,6 +81,11 @@ gnumeric_value_format_type to_gnumeric_value_format_type(std::string_view s)
     return value_format_type::get().find(s);
 }
 
+bool gnumeric_value_format_segment::operator==(const gnumeric_value_format_segment& other) const
+{
+    return type == other.type && value == other.value;
+}
+
 void gnumeric_named_exp::reset()
 {
     name = std::string_view{};

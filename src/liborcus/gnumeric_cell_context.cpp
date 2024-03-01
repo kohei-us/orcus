@@ -110,7 +110,7 @@ void gnumeric_cell_context::start_cell(const xml_token_attrs_t& attrs)
                 if (attr.transient)
                     v = m_pool.intern(v).first;
 
-                gnumeric_value_format_parser parser(v);
+                gnumeric_value_format_parser parser(get_config(), v);
 
                 try
                 {
@@ -268,19 +268,18 @@ void gnumeric_cell_context::push_string(ss::row_t row, ss::col_t col)
         return;
     }
 
+    m_format_segments.build_tree();
+
     for (const auto& [start, end] : build_format_segment_ranges())
     {
         assert(start < end);
-
         auto t = m_chars.substr(start, end - start);
 
-        // TODO: use segment tree to eliminate this inner loop
-        for (const gnumeric_value_format_segment& vfs : m_format_segments)
+        for (const auto& segment : m_format_segments.search(start))
         {
-            if (vfs.value.empty())
-                continue;
+            const gnumeric_value_format_segment& vfs = segment.value;
 
-            if (start < vfs.start || vfs.end < end)
+            if (vfs.value.empty())
                 continue;
 
             // we have format information
@@ -345,30 +344,26 @@ std::vector<std::pair<std::size_t, std::size_t>> gnumeric_cell_context::build_fo
     if (m_format_segments.empty())
         return {};
 
-    std::vector<std::size_t> pts;
-    pts.push_back(0);
-    pts.push_back(m_chars.size());
-    for (const auto& seg : m_format_segments)
-    {
-        pts.push_back(seg.start);
-        pts.push_back(seg.end);
-    }
-
-    std::sort(pts.begin(), pts.end());
-    auto last = std::unique(pts.begin(), pts.end());
-    pts.erase(last, pts.end());
-    assert(pts.size() > 2u);
-
     std::vector<std::pair<std::size_t, std::size_t>> ranges;
 
+    std::vector<std::size_t> pts = m_format_segments.boundary_keys();
+    std::size_t start = 0;
     auto it = pts.begin();
-    auto start = *it;
+    if (*it == start)
+        ++it;
+
+    std::size_t end = *it;
+    ranges.emplace_back(start, end);
+
     for (++it; it != pts.end(); ++it)
     {
-        auto end = *it;
-        ranges.emplace_back(start, end);
         start = end;
+        end = *it;
+        ranges.emplace_back(start, end);
     }
+
+    if (end != m_chars.size())
+        ranges.emplace_back(end, m_chars.size());
 
     return ranges;
 }

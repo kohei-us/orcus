@@ -12,6 +12,8 @@
 #include <string_view>
 #include <optional>
 
+#include <mdds/segment_tree.hpp>
+
 namespace orcus {
 
 /**
@@ -72,9 +74,11 @@ struct gnumeric_value_format_segment
 {
     gnumeric_value_format_type type = gnumeric_value_format_type::unknown;
     std::string_view value;
-    std::size_t start = 0;
-    std::size_t end = 0;
+
+    bool operator==(const gnumeric_value_format_segment& other) const;
 };
+
+using value_format_segments_type = mdds::segment_tree<std::size_t, gnumeric_value_format_segment>;
 
 enum gnumeric_script_type
 {

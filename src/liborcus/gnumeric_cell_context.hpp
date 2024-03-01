@@ -77,7 +77,7 @@ private:
     spreadsheet::iface::import_factory* mp_factory;
     spreadsheet::iface::import_sheet* mp_sheet;
 
-    std::vector<gnumeric_value_format_segment> m_format_segments;
+    value_format_segments_type m_format_segments;
     std::optional<cell_data> m_cell_data;
     std::string_view m_chars;
     string_pool m_pool;
