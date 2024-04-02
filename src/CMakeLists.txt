@@ -77,50 +77,50 @@ target_link_libraries(orcus-env-dump orcus-parser-${ORCUS_API_VERSION} orcus-${O
 
 # test programs
 
-add_executable(orcus-test-csv EXCLUDE_FROM_ALL
-    orcus_test_csv.cpp
+add_executable(orcus-csv-test EXCLUDE_FROM_ALL
+    orcus_csv_test.cpp
     orcus_test_global.cpp
 )
 
-add_executable(orcus-test-ods EXCLUDE_FROM_ALL
-    orcus_test_ods.cpp
+add_executable(orcus-ods-test EXCLUDE_FROM_ALL
+    orcus_ods_test.cpp
 )
 
-add_executable(orcus-test-xls-xml EXCLUDE_FROM_ALL
-    orcus_test_xls_xml.cpp
+add_executable(orcus-xls-xml-test EXCLUDE_FROM_ALL
+    orcus_xls_xml_test.cpp
     orcus_test_global.cpp
 )
 
-add_executable(orcus-test-xlsx EXCLUDE_FROM_ALL
-    orcus_test_xlsx.cpp
+add_executable(orcus-xlsx-test EXCLUDE_FROM_ALL
+    orcus_xlsx_test.cpp
 )
 
-add_executable(orcus-test-xml EXCLUDE_FROM_ALL
-    orcus_test_xml.cpp
+add_executable(orcus-xml-test EXCLUDE_FROM_ALL
+    orcus_xml_test.cpp
 )
 
-add_executable(orcus-test-xml-mapped EXCLUDE_FROM_ALL
-    orcus_test_xml_mapped.cpp
+add_executable(orcus-xml-mapped-test EXCLUDE_FROM_ALL
+    orcus_xml_mapped_test.cpp
     orcus_test_global.cpp
 )
 
-add_executable(orcus-test-json-mapped EXCLUDE_FROM_ALL
-    orcus_test_json_mapped.cpp
+add_executable(orcus-json-mapped-test EXCLUDE_FROM_ALL
+    orcus_json_mapped_test.cpp
 )
 
-add_executable(orcus-test-import-ods EXCLUDE_FROM_ALL
-    orcus_test_import_ods.cpp
+add_executable(orcus-ods-import-test EXCLUDE_FROM_ALL
+    orcus_ods_import_test.cpp
 )
 
 list(APPEND _TESTS
-    orcus-test-csv
-    orcus-test-ods
-    orcus-test-xls-xml
-    orcus-test-xlsx
-    orcus-test-xml
-    orcus-test-xml-mapped
-    orcus-test-json-mapped
-    orcus-test-import-ods
+    orcus-csv-test
+    orcus-ods-test
+    orcus-xls-xml-test
+    orcus-xlsx-test
+    orcus-xml-test
+    orcus-xml-mapped-test
+    orcus-json-mapped-test
+    orcus-ods-import-test
 )
 
 list(APPEND _INSTALL_TARGETS
@@ -149,8 +149,8 @@ if(ORCUS_WITH_PARQUET)
     )
     list(APPEND _INSTALL_TARGETS orcus-parquet)
 
-    add_executable(orcus-test-parquet EXCLUDE_FROM_ALL orcus_test_parquet.cpp)
-    list(APPEND _TESTS orcus-test-parquet)
+    add_executable(orcus-parquet-test EXCLUDE_FROM_ALL orcus_parquet_test.cpp)
+    list(APPEND _TESTS orcus-parquet-test)
 endif()
 
 foreach(_TEST ${_TESTS})
