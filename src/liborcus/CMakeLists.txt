@@ -186,6 +186,7 @@ add_executable(odf-helper-test EXCLUDE_FROM_ALL
 )
 
 add_executable(xlsx-sheet-context-test EXCLUDE_FROM_ALL
+    debug_utils.cpp
     formula_result.cpp
     ooxml_global.cpp
     ooxml_namespace_types.cpp
