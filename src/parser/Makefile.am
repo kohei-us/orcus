@@ -62,84 +62,84 @@ endif
 endif
 
 EXTRA_PROGRAMS = \
+	base64-test \
 	css-parser-test \
 	csv-parser-test \
 	json-parser-test \
+	json-validation-test \
+	numeric-parser-test \
+	parser-base-test \
 	parser-global-test \
-	parser-test-base \
-	parser-test-base64 \
-	parser-test-json-validation \
-	parser-test-numeric \
-	parser-test-stream \
-	parser-test-string-pool \
-	parser-test-threaded-json-parser \
-	parser-test-threaded-sax-token-parser \
-	parser-test-xml-namespace \
-	parser-test-xml-validation \
-	parser-test-zip-archive \
 	sax-ns-parser-test \
 	sax-parser-test \
 	sax-token-parser-test \
+	stream-test \
+	string-pool-test \
+	threaded-json-parser-test \
+	threaded-sax-token-parser-test \
 	types-test \
 	utf8-test \
+	xml-namespace-test \
+	xml-validation-test \
+	xml-writer-test \
 	yaml-parser-test \
-	xml-writer-test
+	zip-archive-test
 
-# parser-test-string-pool
+# string-pool-test
 
-parser_test_string_pool_SOURCES = \
+string_pool_test_SOURCES = \
 	string_pool.cpp \
 	string_pool_test.cpp
 
-parser_test_string_pool_LDADD = \
+string_pool_test_LDADD = \
     liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS)
 
-parser_test_string_pool_CPPFLAGS = $(AM_CPPFLAGS)
+string_pool_test_CPPFLAGS = $(AM_CPPFLAGS)
 
-# parser-test-xml-namespace
+# xml-namespace-test
 
-parser_test_xml_namespace_SOURCES = \
+xml_namespace_test_SOURCES = \
 	xml_namespace.cpp \
 	xml_namespace_test.cpp
 
-parser_test_xml_namespace_LDADD = \
+xml_namespace_test_LDADD = \
 	liborcus-parser-@ORCUS_API_VERSION@.la \
 	../test/liborcus-test.a \
 	$(BOOST_SYSTEM_LIBS)
 
-parser_test_xml_namespace_CPPFLAGS = $(AM_CPPFLAGS)
+xml_namespace_test_CPPFLAGS = $(AM_CPPFLAGS)
 
-# parser-test-xml-validation
+# xml-validation-test
 
-parser_test_xml_validation_SOURCES = \
-	parser_test_xml_validation.cpp
+xml_validation_test_SOURCES = \
+	xml_validation_test.cpp
 
-parser_test_xml_validation_CPPFLAGS = $(AM_CPPFLAGS)
-parser_test_xml_validation_LDFLAGS = \
+xml_validation_test_CPPFLAGS = $(AM_CPPFLAGS)
+xml_validation_test_LDFLAGS = \
 	$(BOOST_SYSTEM_LDFLAGS)
-parser_test_xml_validation_LDADD = \
+xml_validation_test_LDADD = \
 	liborcus-parser-@ORCUS_API_VERSION@.la \
 	../test/liborcus-test.a \
 	$(BOOST_SYSTEM_LIBS)
 
 if !HAVE_FILESYSTEM
 if HAVE_EXPERIMENTAL_FILESYSTEM
-parser_test_xml_validation_LDFLAGS += -lstdc++fs
+xml_validation_test_LDFLAGS += -lstdc++fs
 else
-parser_test_xml_validation_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-parser_test_xml_validation_LDADD += $(BOOST_FILESYSTEM_LIBS)
+xml_validation_test_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
+xml_validation_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
 endif
 endif
 
-# parser-test-base64
+# base64-test
 
-parser_test_base64_SOURCES = \
+base64_test_SOURCES = \
 	base64.cpp \
 	base64_test.cpp
 
-parser_test_base64_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
-parser_test_base64_CPPFLAGS = $(AM_CPPFLAGS)
+base64_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+base64_test_CPPFLAGS = $(AM_CPPFLAGS)
 
 # css-parser-test
 
@@ -197,64 +197,64 @@ sax_token_parser_test_SOURCES = \
 sax_token_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 sax_token_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
 
-# parser-test-threaded-sax-token-parser
+# threaded-sax-token-parser-test
 
-parser_test_threaded_sax_token_parser_SOURCES = \
+threaded_sax_token_parser_test_SOURCES = \
 	threaded_sax_token_parser_test.cpp
 
-parser_test_threaded_sax_token_parser_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
-parser_test_threaded_sax_token_parser_CPPFLAGS = $(AM_CPPFLAGS)
+threaded_sax_token_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+threaded_sax_token_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
 
-# parser-test-threaded-json-parser
+# threaded-json-parser-test
 
-parser_test_threaded_json_parser_SOURCES = \
+threaded_json_parser_test_SOURCES = \
 	threaded_json_parser_test.cpp
 
-parser_test_threaded_json_parser_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
-parser_test_threaded_json_parser_LDFLAGS = -pthread
-parser_test_threaded_json_parser_CPPFLAGS = $(AM_CPPFLAGS)
+threaded_json_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+threaded_json_parser_test_LDFLAGS = -pthread
+threaded_json_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
 
-# parser-test-stream
+# stream-test
 
-parser_test_stream_SOURCES = \
+stream_test_SOURCES = \
 	stream_test.cpp
 
-parser_test_stream_LDADD = \
+stream_test_LDADD = \
 	liborcus-parser-@ORCUS_API_VERSION@.la \
 	../test/liborcus-test.a
-parser_test_stream_CPPFLAGS = $(AM_CPPFLAGS)
+stream_test_CPPFLAGS = $(AM_CPPFLAGS)
 
-# parser-test-zip-archive
+# zip-archive-test
 
-parser_test_zip_archive_SOURCES = \
+zip_archive_test_SOURCES = \
 	zip_archive_test.cpp
 
-parser_test_zip_archive_CPPFLAGS = $(AM_CPPFLAGS)
-parser_test_zip_archive_LDADD = \
+zip_archive_test_CPPFLAGS = $(AM_CPPFLAGS)
+zip_archive_test_LDADD = \
 	liborcus-parser-@ORCUS_API_VERSION@.la \
 	../test/liborcus-test.a \
 	$(BOOST_SYSTEM_LIBS)
-parser_test_zip_archive_LDFLAGS = \
+zip_archive_test_LDFLAGS = \
 	$(BOOST_SYSTEM_LDFLAGS)
 
 if !HAVE_FILESYSTEM
 if HAVE_EXPERIMENTAL_FILESYSTEM
-parser_test_zip_archive_LDFLAGS += -lstdc++fs
+zip_archive_test_LDFLAGS += -lstdc++fs
 else
-parser_test_zip_archive_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-parser_test_zip_archive_LDADD += $(BOOST_FILESYSTEM_LIBS)
+zip_archive_test_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
+zip_archive_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
 endif
 endif
 
 
 
-# parser-test-base
+# parser-base-test
 
-parser_test_base_SOURCES = \
+parser_base_test_SOURCES = \
 	parser_base_test.cpp
 
-parser_test_base_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
-parser_test_base_CPPFLAGS = $(AM_CPPFLAGS)
+parser_base_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+parser_base_test_CPPFLAGS = $(AM_CPPFLAGS)
 
 # parser-global-test
 
@@ -266,13 +266,13 @@ parser_global_test_LDADD = \
 	../test/liborcus-test.a
 parser_global_test_CPPFLAGS = $(AM_CPPFLAGS)
 
-# parser-test-json-validation
+# json-validation-test
 
-parser_test_json_validation_SOURCES = \
-	parser_test_json_validation.cpp
+json_validation_test_SOURCES = \
+	json_validation_test.cpp
 
-parser_test_json_validation_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
-parser_test_json_validation_CPPFLAGS = $(AM_CPPFLAGS)
+json_validation_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+json_validation_test_CPPFLAGS = $(AM_CPPFLAGS)
 
 # types-test
 
@@ -299,38 +299,38 @@ xml_writer_test_SOURCES = xml_writer_test.cpp
 xml_writer_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 xml_writer_test_CPPFLAGS = $(AM_CPPFLAGS)
 
-# parser-test-numeric
+# numeric-parser-test
 
-parser_test_numeric_SOURCES = \
-	parser_test_numeric.cpp
+numeric_parser_test_SOURCES = \
+	numeric_parser_test.cpp
 
-parser_test_numeric = liborcus-parser-@ORCUS_API_VERSION@.la
-parser_test_numeric_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
-parser_test_numeric_CPPFLAGS = $(AM_CPPFLAGS)
+numeric_parser_test = liborcus-parser-@ORCUS_API_VERSION@.la
+numeric_parser_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
+numeric_parser_test_CPPFLAGS = $(AM_CPPFLAGS)
 
 TESTS = \
+	base64-test \
 	css-parser-test \
 	csv-parser-test \
 	json-parser-test \
+	json-validation-test \
+	numeric-parser-test \
+	parser-base-test \
 	parser-global-test \
-	parser-test-base \
-	parser-test-base64 \
-	parser-test-json-validation \
-	parser-test-numeric \
-	parser-test-stream \
-	parser-test-string-pool \
-	parser-test-threaded-json-parser \
-	parser-test-threaded-sax-token-parser \
-	parser-test-xml-namespace \
-	parser-test-xml-validation \
-	parser-test-zip-archive \
 	sax-ns-parser-test \
 	sax-parser-test \
 	sax-token-parser-test \
+	stream-test \
+	string-pool-test \
+	threaded-json-parser-test \
+	threaded-sax-token-parser-test \
 	types-test \
 	utf8-test \
+	xml-namespace-test \
+	xml-validation-test \
+	xml-writer-test \
 	yaml-parser-test \
-	xml-writer-test
+	zip-archive-test
 
 distclean-local:
 	rm -rf $(TESTS)

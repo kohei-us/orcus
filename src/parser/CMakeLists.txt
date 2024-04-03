@@ -39,6 +39,8 @@ set(_TESTS
     css-parser-test
     csv-parser-test
     json-parser-test
+    json-validation-test
+    numeric-parser-test
     parser-base-test
     parser-global-test
     sax-ns-parser-test
@@ -50,6 +52,7 @@ set(_TESTS
     threaded-sax-token-parser-test
     types-test
     xml-namespace-test
+    xml-validation-test
     xml-writer-test
     yaml-parser-test
     zip-archive-test
