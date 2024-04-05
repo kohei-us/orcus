@@ -120,9 +120,10 @@ public:
         assert(hidden);
     }
 
-    void set_row_hidden(row_t row, bool hidden)
+    void set_row_hidden(row_t row, row_t row_span, bool hidden)
     {
         assert(row == 3);
+        assert(row_span == 1);
         assert(hidden);
     }
 };

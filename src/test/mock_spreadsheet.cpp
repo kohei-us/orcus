@@ -137,7 +137,7 @@ void import_sheet_properties::set_row_height(row_t, row_t, double, length_unit_t
     assert(false);
 }
 
-void import_sheet_properties::set_row_hidden(row_t, bool)
+void import_sheet_properties::set_row_hidden(row_t, row_t, bool)
 {
     assert(false);
 }

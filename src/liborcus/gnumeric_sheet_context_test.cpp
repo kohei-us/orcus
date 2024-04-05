@@ -45,7 +45,7 @@ public:
         assert(unit == length_unit_t::point);
     }
 
-    virtual void set_row_hidden(row_t, bool)
+    virtual void set_row_hidden(row_t, row_t, bool)
     {
     }
 };

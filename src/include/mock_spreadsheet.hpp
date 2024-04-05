@@ -70,7 +70,8 @@ public:
     virtual void set_row_height(
         orcus::spreadsheet::row_t row, orcus::spreadsheet::row_t row_span, double height, orcus::length_unit_t unit) override;
 
-    virtual void set_row_hidden(orcus::spreadsheet::row_t row, bool hidden) override;
+    virtual void set_row_hidden(
+        orcus::spreadsheet::row_t row, orcus::spreadsheet::row_t row_span, bool hidden) override;
 
     virtual void set_merge_cell_range(const range_t& range) override;
 };

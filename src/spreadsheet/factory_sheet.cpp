@@ -598,9 +598,9 @@ void import_sheet_properties::set_row_height(row_t row, row_t row_span, double h
     m_sheet.set_row_height(row, row_span, h);
 }
 
-void import_sheet_properties::set_row_hidden(row_t row, bool hidden)
+void import_sheet_properties::set_row_hidden(row_t row, row_t row_span, bool hidden)
 {
-    m_sheet.set_row_hidden(row, hidden);
+    m_sheet.set_row_hidden(row, row_span, hidden);
 }
 
 void import_sheet_properties::set_merge_cell_range(const range_t& range)

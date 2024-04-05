@@ -311,10 +311,10 @@ row_height_t sheet::get_row_height(row_t row, row_t* row_start, row_t* row_end) 
     return ret;
 }
 
-void sheet::set_row_hidden(row_t row, bool hidden)
+void sheet::set_row_hidden(row_t row, row_t row_span, bool hidden)
 {
     mp_impl->row_hidden_pos =
-        mp_impl->row_hidden.insert(mp_impl->row_hidden_pos, row, row+1, hidden).first;
+        mp_impl->row_hidden.insert(mp_impl->row_hidden_pos, row, row+row_span, hidden).first;
 }
 
 bool sheet::is_row_hidden(row_t row, row_t* row_start, row_t* row_end) const

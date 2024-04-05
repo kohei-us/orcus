@@ -1705,7 +1705,7 @@ void xls_xml_context::start_element_row(const xml_token_attrs_t& attrs)
             mp_sheet_props->set_row_height(m_cur_row, 1, height, length_unit_t::point);
 
         if (hidden)
-            mp_sheet_props->set_row_hidden(m_cur_row, true);
+            mp_sheet_props->set_row_hidden(m_cur_row, 1, true);
     }
 }
 

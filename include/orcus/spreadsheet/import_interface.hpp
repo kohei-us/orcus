@@ -214,11 +214,12 @@ public:
      * Set a row hidden flag to a specified row.
      *
      * @param row    0-based position of a row.
+     * @param row_span number of contiguous rows to apply the flag to.
      * @param hidden flag indicating whether or not the row is hidden.
      *
      * @todo Convert this to take a raw span.
      */
-    virtual void set_row_hidden(row_t row, bool hidden) = 0;
+    virtual void set_row_hidden(row_t row, row_t row_span, bool hidden) = 0;
 
     /**
      * Set a merged cell range.
