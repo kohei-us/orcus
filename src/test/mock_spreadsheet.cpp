@@ -132,7 +132,7 @@ void import_sheet_properties::set_column_hidden(col_t, col_t, bool)
     assert(false);
 }
 
-void import_sheet_properties::set_row_height(row_t, double, length_unit_t)
+void import_sheet_properties::set_row_height(row_t, row_t, double, length_unit_t)
 {
     assert(false);
 }

@@ -677,7 +677,7 @@ void xlsx_sheet_context::start_element_row(const xml_token_attrs_t& attrs)
     if (sheet_props)
     {
         if (height.unit != length_unit_t::unknown)
-            sheet_props->set_row_height(m_cur_row, height.value, height.unit);
+            sheet_props->set_row_height(m_cur_row, 1, height.value, height.unit);
 
         sheet_props->set_row_hidden(m_cur_row, hidden);
     }

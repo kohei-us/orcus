@@ -84,7 +84,7 @@ public:
     void set_col_hidden(col_t col, col_t col_span, bool hidden);
     bool is_col_hidden(col_t col, col_t* col_start, col_t* col_end) const;
 
-    void set_row_height(row_t row, row_height_t height);
+    void set_row_height(row_t row, row_t row_span, row_height_t height);
     row_height_t get_row_height(row_t row, row_t* row_start, row_t* row_end) const;
 
     void set_row_hidden(row_t row, bool hidden);

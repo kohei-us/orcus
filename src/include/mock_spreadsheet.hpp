@@ -67,7 +67,8 @@ public:
     virtual void set_column_hidden(
         orcus::spreadsheet::col_t col, orcus::spreadsheet::col_t col_span, bool hidden) override;
 
-    virtual void set_row_height(orcus::spreadsheet::row_t row, double height, orcus::length_unit_t unit) override;
+    virtual void set_row_height(
+        orcus::spreadsheet::row_t row, orcus::spreadsheet::row_t row_span, double height, orcus::length_unit_t unit) override;
 
     virtual void set_row_hidden(orcus::spreadsheet::row_t row, bool hidden) override;
 

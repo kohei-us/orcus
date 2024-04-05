@@ -592,10 +592,10 @@ void import_sheet_properties::set_column_hidden(col_t col, col_t col_span, bool 
     m_sheet.set_col_hidden(col, col_span, hidden);
 }
 
-void import_sheet_properties::set_row_height(row_t row, double height, orcus::length_unit_t unit)
+void import_sheet_properties::set_row_height(row_t row, row_t row_span, double height, orcus::length_unit_t unit)
 {
     row_height_t h = orcus::convert(height, unit, length_unit_t::twip);
-    m_sheet.set_row_height(row, h);
+    m_sheet.set_row_height(row, row_span, h);
 }
 
 void import_sheet_properties::set_row_hidden(row_t row, bool hidden)

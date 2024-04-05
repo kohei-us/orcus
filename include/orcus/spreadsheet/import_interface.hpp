@@ -202,12 +202,13 @@ public:
      * Set a row height to specified row.
      *
      * @param row 0-based position of a row.
+     * @param row_span number of contiguous rows to apply the height to.
      * @param height new row height value to set.
      * @param unit unit of the new row height value.
      *
      * @todo Convert this to take a raw span.
      */
-    virtual void set_row_height(row_t row, double height, orcus::length_unit_t unit) = 0;
+    virtual void set_row_height(row_t row, row_t row_span, double height, orcus::length_unit_t unit) = 0;
 
     /**
      * Set a row hidden flag to a specified row.

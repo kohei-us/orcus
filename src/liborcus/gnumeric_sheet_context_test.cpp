@@ -37,9 +37,10 @@ public:
     {
     }
 
-    virtual void set_row_height(row_t row, double size, length_unit_t unit)
+    virtual void set_row_height(row_t row, row_t row_span, double size, length_unit_t unit)
     {
         assert(row == 4);
+        assert(row_span == 1);
         assert(size == 7.3);
         assert(unit == length_unit_t::point);
     }

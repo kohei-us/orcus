@@ -292,10 +292,10 @@ bool sheet::is_col_hidden(col_t col, col_t* col_start, col_t* col_end) const
     return hidden;
 }
 
-void sheet::set_row_height(row_t row, row_height_t height)
+void sheet::set_row_height(row_t row, row_t row_span, row_height_t height)
 {
     mp_impl->row_height_pos =
-        mp_impl->row_heights.insert(mp_impl->row_height_pos, row, row+1, height).first;
+        mp_impl->row_heights.insert(mp_impl->row_height_pos, row, row+row_span, height).first;
 }
 
 row_height_t sheet::get_row_height(row_t row, row_t* row_start, row_t* row_end) const

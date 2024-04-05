@@ -455,11 +455,10 @@ void gnumeric_sheet_context::start_row(const xml_token_attrs_t& attrs)
         }
     }
 
+    sheet_props->set_row_height(row, row_span, row_height, length_unit_t::point);
+
     for (long i = 0; i < row_span; ++i)
-    {
-        sheet_props->set_row_height(row + i, row_height, length_unit_t::point);
         sheet_props->set_row_hidden(row + i, row_hidden);
-    }
 }
 
 void gnumeric_sheet_context::start_style(const xml_token_attrs_t& attrs)

@@ -511,7 +511,7 @@ void ods_content_xml_context::start_row(const xml_token_attrs_t& attrs)
             {
                 const auto& data = std::get<odf_style::row>(style.data);
                 if (data.height_set)
-                    sheet_props->set_row_height(m_row, data.height.value, data.height.unit);
+                    sheet_props->set_row_height(m_row, 1, data.height.value, data.height.unit);
             }
         }
     }
