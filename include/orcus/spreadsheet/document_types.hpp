@@ -50,11 +50,15 @@ struct ORCUS_SPM_DLLPUBLIC format_run_t
     /** Color of the section. */
     color_t color;
     /** Whether or not the font is bold. */
-    bool bold:1;
+    bool bold;
     /** Whether or not the font is italic. */
-    bool italic:1;
+    bool italic;
 
     format_run_t();
+    format_run_t(const format_run_t& other);
+    ~format_run_t();
+
+    format_run_t& operator=(const format_run_t& other);
 
     /**
      * Reset the properties to unformatted state.

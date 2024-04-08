@@ -44,6 +44,22 @@ format_run_t::format_run_t() :
     font_size(0),
     bold(false), italic(false) {}
 
+format_run_t::format_run_t(const format_run_t& other) = default;
+format_run_t::~format_run_t() = default;
+
+format_run_t& format_run_t::operator=(const format_run_t& other)
+{
+    pos = other.pos;
+    size = other.size;
+    font = other.font;
+    font_size = other.font_size;
+    color = other.color;
+    bold = other.bold;
+    italic = other.italic;
+
+    return *this;
+}
+
 void format_run_t::reset()
 {
     pos = 0;
