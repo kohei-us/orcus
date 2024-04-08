@@ -39,12 +39,12 @@ bool color_t::operator!=(const color_t& other) const
     return !operator==(other);
 }
 
-format_run::format_run() :
+format_run_t::format_run_t() :
     pos(0), size(0),
     font_size(0),
     bold(false), italic(false) {}
 
-void format_run::reset()
+void format_run_t::reset()
 {
     pos = 0;
     size = 0;
@@ -55,7 +55,7 @@ void format_run::reset()
     color = color_t();
 }
 
-bool format_run::formatted() const
+bool format_run_t::formatted() const
 {
     if (bold || italic)
         return true;

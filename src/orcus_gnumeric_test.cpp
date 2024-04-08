@@ -560,7 +560,7 @@ void test_gnumeric_colored_text()
         assert(fmt_runs->size() == 2);
 
         // The 'Red' segment should be in red color.
-        const spreadsheet::format_run* fmt = &fmt_runs->at(0);
+        const spreadsheet::format_run_t* fmt = &fmt_runs->at(0);
         assert(fmt->color.alpha == 0xFF);
         assert(fmt->color.red == 0xFF);
         assert(fmt->color.green == 0);
@@ -590,7 +590,7 @@ void test_gnumeric_colored_text()
         assert(fmt_runs->size() == 2);
 
         // 'Green' segment
-        const spreadsheet::format_run* fmt = &fmt_runs->at(0);
+        const spreadsheet::format_run_t* fmt = &fmt_runs->at(0);
         assert(fmt->color.alpha == 0xFF);
         assert(fmt->color.red == 0);
         assert(fmt->color.green == 0xFF);

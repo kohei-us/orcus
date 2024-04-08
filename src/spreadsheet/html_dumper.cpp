@@ -135,7 +135,7 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
     format_runs_t::const_iterator itr = formats.begin(), itr_end = formats.end();
     for (; itr != itr_end; ++itr)
     {
-        const format_run& run = *itr;
+        const format_run_t& run = *itr;
         if (pos < run.pos)
         {
             // flush unformatted text.

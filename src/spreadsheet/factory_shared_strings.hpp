@@ -37,7 +37,7 @@ class import_shared_strings : public iface::import_shared_strings
     shared_strings& m_ss_store;
 
     std::string m_cur_segment_string;
-    format_run m_cur_format;
+    format_run_t m_cur_format;
     std::unique_ptr<format_runs_t> mp_cur_format_runs;
 
 public:

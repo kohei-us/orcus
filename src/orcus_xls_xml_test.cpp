@@ -381,7 +381,7 @@ void test_xls_xml_bold_and_italic()
     assert(fmt_runs->size() == 4);
 
     // First formatted segment is bold.
-    const spreadsheet::format_run* fmt_run = &fmt_runs->at(0);
+    const spreadsheet::format_run_t* fmt_run = &fmt_runs->at(0);
     assert(fmt_run->pos == 0);
     assert(fmt_run->size == 4);
     assert(fmt_run->bold);
@@ -463,7 +463,7 @@ void test_xls_xml_colored_text()
     assert(fmt_runs->size() == 3);
 
     // The 'Red' segment should be in red color.
-    const spreadsheet::format_run* fmt = &fmt_runs->at(0);
+    const spreadsheet::format_run_t* fmt = &fmt_runs->at(0);
     assert(fmt->color.alpha == 0xFF);
     assert(fmt->color.red == 0xFF);
     assert(fmt->color.green == 0);
