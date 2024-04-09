@@ -777,12 +777,17 @@ void test_gnumeric_text_formats()
     assert(check_cell_text(*sheet1, row, col, "Bold base with non-bold part"));
     assert(check_cell_bold(*sheet1, row, col, true));
     assert(check_cell_italic(*sheet1, row, col, false));
-#if 0 // FIXME: see #183
+
     si = sheet1->get_string_identifier(row, col);
     runs = doc->get_shared_strings().get_format_runs(si);
     assert(runs);
     assert(runs->size() == 1u);
-#endif
+    // Bold base with non-bold part
+    //                ^^^^^^^^
+    assert(runs->at(0).pos == 15);
+    assert(runs->at(0).size == 8);
+    assert(runs->at(0).bold && !runs->at(0).bold.value()); // explicit non-bold segment
+    assert(!runs->at(0).italic);
 
     // Rest of the cells are imported as unformatted for now, until we support
     // more format properties. See #182.
