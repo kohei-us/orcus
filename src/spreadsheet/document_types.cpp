@@ -39,11 +39,7 @@ bool color_t::operator!=(const color_t& other) const
     return !operator==(other);
 }
 
-format_run_t::format_run_t() :
-    pos(0), size(0),
-    font_size(0),
-    bold(false), italic(false) {}
-
+format_run_t::format_run_t() = default;
 format_run_t::format_run_t(const format_run_t& other) = default;
 format_run_t::~format_run_t() = default;
 
@@ -64,28 +60,16 @@ void format_run_t::reset()
 {
     pos = 0;
     size = 0;
-    font = std::string_view{};
-    font_size = 0;
-    bold = false;
-    italic = false;
-    color = color_t();
+    font.reset();
+    font_size.reset();
+    color.reset();
+    bold.reset();
+    italic.reset();
 }
 
 bool format_run_t::formatted() const
 {
-    if (bold || italic)
-        return true;
-
-    if (font_size)
-        return true;
-
-    if (!font.empty())
-        return true;
-
-    if (color.alpha || color.red || color.green || color.blue)
-        return true;
-
-    return false;
+    return font.has_value() || font_size.has_value() || color.has_value() || bold.has_value() || italic.has_value();
 }
 
 }} // namespace orcus::spreadsheet

@@ -9,6 +9,7 @@
 
 #include "types.hpp"
 #include <vector>
+#include <optional>
 
 namespace orcus { namespace spreadsheet {
 
@@ -40,19 +41,19 @@ struct ORCUS_SPM_DLLPUBLIC color_t
 struct ORCUS_SPM_DLLPUBLIC format_run_t
 {
     /** Position of the section where the formatting starts. */
-    std::size_t pos;
+    std::size_t pos = 0;
     /** Length of the section. */
-    std::size_t size;
+    std::size_t size = 0;
     /** Name of the font. */
-    std::string_view font;
+    std::optional<std::string_view> font;
     /** Size of the font. */
-    double font_size;
+    std::optional<double> font_size;
     /** Color of the section. */
-    color_t color;
+    std::optional<color_t> color;
     /** Whether or not the font is bold. */
-    bool bold;
+    std::optional<bool> bold;
     /** Whether or not the font is italic. */
-    bool italic;
+    std::optional<bool> italic;
 
     format_run_t();
     format_run_t(const format_run_t& other);

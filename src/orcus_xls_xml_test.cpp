@@ -384,15 +384,15 @@ void test_xls_xml_bold_and_italic()
     const spreadsheet::format_run_t* fmt_run = &fmt_runs->at(0);
     assert(fmt_run->pos == 0);
     assert(fmt_run->size == 4);
-    assert(fmt_run->bold);
-    assert(!fmt_run->italic);
+    assert(fmt_run->bold && fmt_run->bold.value());
+    assert(!fmt_run->italic.has_value() || !fmt_run->italic.value());
 
     // Third formatted segment is italic.
     fmt_run = &fmt_runs->at(2);
     assert(fmt_run->pos == 9);
     assert(fmt_run->size == 6);
-    assert(!fmt_run->bold);
-    assert(fmt_run->italic);
+    assert(!fmt_run->bold.has_value() || !fmt_run->bold.value());
+    assert(fmt_run->italic && fmt_run->italic.value());
 }
 
 void test_xls_xml_colored_text()
@@ -464,19 +464,21 @@ void test_xls_xml_colored_text()
 
     // The 'Red' segment should be in red color.
     const spreadsheet::format_run_t* fmt = &fmt_runs->at(0);
-    assert(fmt->color.alpha == 0xFF);
-    assert(fmt->color.red == 0xFF);
-    assert(fmt->color.green == 0);
-    assert(fmt->color.blue == 0);
+    assert(fmt->color);
+    assert(fmt->color->alpha == 0xFF);
+    assert(fmt->color->red == 0xFF);
+    assert(fmt->color->green == 0);
+    assert(fmt->color->blue == 0);
     assert(fmt->pos == 0);
     assert(fmt->size == 3);
 
     // The 'Blue' segment should be in blue color.
     fmt = &fmt_runs->at(2);
-    assert(fmt->color.alpha == 0xFF);
-    assert(fmt->color.red == 0);
-    assert(fmt->color.green == 0x70);
-    assert(fmt->color.blue == 0xC0);
+    assert(fmt->color);
+    assert(fmt->color->alpha == 0xFF);
+    assert(fmt->color->red == 0);
+    assert(fmt->color->green == 0x70);
+    assert(fmt->color->blue == 0xC0);
     assert(fmt->pos == 8);
     assert(fmt->size == 4);
 }
@@ -627,14 +629,14 @@ void test_xls_xml_formatted_text_basic()
         assert(runs->at(0).pos == 0);
         assert(runs->at(0).size == 4);
         assert(runs->at(0).bold);
-        assert(!runs->at(0).italic);
+        assert(!runs->at(0).italic || !runs->at(0).italic.value());
 
         // Bold and Italic
         //          ^^^^^^
         assert(runs->at(2).pos == 9);
         assert(runs->at(2).size == 6);
-        assert(!runs->at(2).bold);
-        assert(runs->at(2).italic);
+        assert(!runs->at(2).bold || !runs->at(2).bold.value());
+        assert(runs->at(2).italic && runs->at(2).italic.value());
 
         // A6
         row = 5;
@@ -653,11 +655,11 @@ void test_xls_xml_formatted_text_basic()
 
         assert(runs->at(1).pos == 15);
         assert(runs->at(1).size == 8);
-        assert(!runs->at(1).bold);
+        assert(!runs->at(1).bold || !runs->at(1).bold.value());
 
         assert(runs->at(2).pos == 23);
         assert(runs->at(2).size == 5);
-        assert(runs->at(2).bold);
+        assert(runs->at(2).bold && runs->at(2).bold.value());
 
         // A7 - TODO: check format
         row = 6;

@@ -561,19 +561,21 @@ void test_gnumeric_colored_text()
 
         // The 'Red' segment should be in red color.
         const spreadsheet::format_run_t* fmt = &fmt_runs->at(0);
-        assert(fmt->color.alpha == 0xFF);
-        assert(fmt->color.red == 0xFF);
-        assert(fmt->color.green == 0);
-        assert(fmt->color.blue == 0);
+        assert(fmt->color);
+        assert(fmt->color->alpha == 0xFF);
+        assert(fmt->color->red == 0xFF);
+        assert(fmt->color->green == 0);
+        assert(fmt->color->blue == 0);
         assert(fmt->pos == 0);
         assert(fmt->size == 3);
 
         // The 'Blue' segment should be in blue color.
         fmt = &fmt_runs->at(1);
-        assert(fmt->color.alpha == 0xFF);
-        assert(fmt->color.red == 0);
-        assert(fmt->color.green == 0x00);
-        assert(fmt->color.blue == 0xFF);
+        assert(fmt->color);
+        assert(fmt->color->alpha == 0xFF);
+        assert(fmt->color->red == 0);
+        assert(fmt->color->green == 0x00);
+        assert(fmt->color->blue == 0xFF);
         assert(fmt->pos == 8);
         assert(fmt->size == 4);
     }
@@ -591,19 +593,21 @@ void test_gnumeric_colored_text()
 
         // 'Green' segment
         const spreadsheet::format_run_t* fmt = &fmt_runs->at(0);
-        assert(fmt->color.alpha == 0xFF);
-        assert(fmt->color.red == 0);
-        assert(fmt->color.green == 0xFF);
-        assert(fmt->color.blue == 0);
+        assert(fmt->color);
+        assert(fmt->color->alpha == 0xFF);
+        assert(fmt->color->red == 0);
+        assert(fmt->color->green == 0xFF);
+        assert(fmt->color->blue == 0);
         assert(fmt->pos == 0);
         assert(fmt->size == 5);
 
         // 'Orange' segment
         fmt = &fmt_runs->at(1);
-        assert(fmt->color.alpha == 0xFF);
-        assert(fmt->color.red == 0xFF);
-        assert(fmt->color.green == 0x99);
-        assert(fmt->color.blue == 0);
+        assert(fmt->color);
+        assert(fmt->color->alpha == 0xFF);
+        assert(fmt->color->red == 0xFF);
+        assert(fmt->color->green == 0x99);
+        assert(fmt->color->blue == 0);
         assert(fmt->pos == 10);
         assert(fmt->size == 6);
     }

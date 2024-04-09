@@ -242,7 +242,7 @@ void test_ods_import_formatted_text()
         for (size_t i = 0, n = fmt->size(); i < n; ++i)
         {
             format_run_t run = fmt->at(i);
-            bold_runs.insert_back(run.pos, run.pos+run.size, run.bold);
+            bold_runs.insert_back(run.pos, run.pos+run.size, run.bold.value_or(false));
         }
 
         bold_runs.build_tree();
@@ -271,7 +271,7 @@ void test_ods_import_formatted_text()
         for (size_t i = 0, n = fmt->size(); i < n; ++i)
         {
             format_run_t run = fmt->at(i);
-            italic_runs.insert_back(run.pos, run.pos+run.size, run.italic);
+            italic_runs.insert_back(run.pos, run.pos+run.size, run.italic.value_or(false));
         }
 
         italic_runs.build_tree();

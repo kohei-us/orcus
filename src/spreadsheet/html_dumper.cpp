@@ -131,11 +131,9 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
 
     const char* p_span = "span";
 
-    size_t pos = 0;
-    format_runs_t::const_iterator itr = formats.begin(), itr_end = formats.end();
-    for (; itr != itr_end; ++itr)
+    std::size_t pos = 0;
+    for (const format_run_t& run : formats)
     {
-        const format_run_t& run = *itr;
         if (pos < run.pos)
         {
             // flush unformatted text.
@@ -147,38 +145,41 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
             continue;
 
         std::string style = "";
-        if (run.bold)
+        if (run.bold && *run.bold)
             style += "font-weight: bold;";
         else
             style += "font-weight: normal;";
 
-        if (run.italic)
+        if (run.italic && *run.italic)
             style += "font-style: italic;";
         else
             style += "font-style: normal;";
 
-        if (!run.font.empty())
+        if (run.font)
         {
             style += "font-family: ";
-            style += run.font;
+            style += *run.font;
             style += ";";
         }
 
         if (run.font_size)
         {
             std::ostringstream os;
-            os << "font-size: " << run.font_size << "pt;";
+            os << "font-size: " << *run.font_size << "pt;";
             style += os.str();
         }
 
-        const color_t& col = run.color;
-        if (col.red || col.green || col.blue)
+        if (run.color)
         {
-            std::ostringstream os;
-            os << "color: ";
-            build_rgb_color(os, col);
-            os << ";";
-            style += os.str();
+            const color_t& col = *run.color;
+            if (col.red || col.green || col.blue)
+            {
+                std::ostringstream os;
+                os << "color: ";
+                build_rgb_color(os, col);
+                os << ";";
+                style += os.str();
+            }
         }
 
         if (style.empty())
