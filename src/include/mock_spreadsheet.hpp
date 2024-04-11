@@ -25,6 +25,8 @@ public:
     virtual void set_segment_font(size_t font_index) override;
     virtual void set_segment_bold(bool b) override;
     virtual void set_segment_italic(bool b) override;
+    virtual void set_segment_superscript(bool b) override;
+    virtual void set_segment_subscript(bool b) override;
     virtual void set_segment_font_name(std::string_view s) override;
     virtual void set_segment_font_size(double point) override;
     virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;

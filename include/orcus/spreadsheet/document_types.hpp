@@ -54,6 +54,10 @@ struct ORCUS_SPM_DLLPUBLIC format_run_t
     std::optional<bool> bold;
     /** Whether or not the font is italic. */
     std::optional<bool> italic;
+    /** Whether or not the font has superscript applied. */
+    std::optional<bool> superscript;
+    /** Whether or not the font has subscript applied. */
+    std::optional<bool> subscript;
 
     format_run_t();
     format_run_t(const format_run_t& other);

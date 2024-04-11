@@ -122,6 +122,20 @@ public:
     virtual void set_segment_italic(bool b) = 0;
 
     /**
+     * Set whether or not to apply superscript to the current segment.
+     *
+     * @param b True if superscript needs to be applied, false otherwise.
+     */
+    virtual void set_segment_superscript(bool b) = 0;
+
+    /**
+     * Set whether or not to apply subscript to the current segment.
+     *
+     * @param b True if subscript needs to be applied, false otherwise.
+     */
+    virtual void set_segment_subscript(bool b) = 0;
+
+    /**
      * Set the name of a font to the current segment.
      *
      * @param s font name.

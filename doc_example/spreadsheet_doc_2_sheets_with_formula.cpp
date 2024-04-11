@@ -223,6 +223,10 @@ public:
 
     virtual void set_segment_italic(bool) override {}
 
+    virtual void set_segment_superscript(bool) override {}
+
+    virtual void set_segment_subscript(bool) override {}
+
     virtual void append_segment(std::string_view s) override
     {
         m_current_string += s;

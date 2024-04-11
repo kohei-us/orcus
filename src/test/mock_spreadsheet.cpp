@@ -90,6 +90,15 @@ void import_shared_strings::set_segment_italic(bool)
     assert(false);
 }
 
+void import_shared_strings::set_segment_superscript(bool)
+{
+    assert(false);
+}
+void import_shared_strings::set_segment_subscript(bool)
+{
+    assert(false);
+}
+
 void import_shared_strings::set_segment_font_name(std::string_view)
 {
     assert(false);

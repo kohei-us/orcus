@@ -297,6 +297,18 @@ void gnumeric_cell_context::push_string(ss::row_t row, ss::col_t col)
                     shared_strings->set_segment_italic(v);
                     break;
                 }
+                case gnumeric_value_format_type::subscript:
+                {
+                    bool v = to_bool(vfs.value);
+                    shared_strings->set_segment_subscript(v);
+                    break;
+                }
+                case gnumeric_value_format_type::superscript:
+                {
+                    bool v = to_bool(vfs.value);
+                    shared_strings->set_segment_superscript(v);
+                    break;
+                }
                 case gnumeric_value_format_type::color:
                 {
                     // [red]x[green]x[blue]

@@ -52,6 +52,8 @@ format_run_t& format_run_t::operator=(const format_run_t& other)
     color = other.color;
     bold = other.bold;
     italic = other.italic;
+    superscript = other.superscript;
+    subscript = other.subscript;
 
     return *this;
 }
@@ -65,11 +67,15 @@ void format_run_t::reset()
     color.reset();
     bold.reset();
     italic.reset();
+    superscript.reset();
+    subscript.reset();
 }
 
 bool format_run_t::formatted() const
 {
-    return font.has_value() || font_size.has_value() || color.has_value() || bold.has_value() || italic.has_value();
+    return font.has_value() || font_size.has_value() || color.has_value()
+        || bold.has_value() || italic.has_value() || superscript.has_value()
+        || subscript.has_value();
 }
 
 }} // namespace orcus::spreadsheet

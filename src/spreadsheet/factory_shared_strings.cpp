@@ -64,6 +64,16 @@ void import_shared_strings::set_segment_italic(bool b)
     m_cur_format.italic = b;
 }
 
+void import_shared_strings::set_segment_superscript(bool b)
+{
+    m_cur_format.superscript = b;
+}
+
+void import_shared_strings::set_segment_subscript(bool b)
+{
+    m_cur_format.subscript = b;
+}
+
 void import_shared_strings::set_segment_font_name(std::string_view s)
 {
     m_cur_format.font = m_string_pool.intern(s).first;

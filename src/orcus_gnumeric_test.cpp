@@ -832,10 +832,42 @@ void test_gnumeric_text_formats()
     assert(check_cell_text(*sheet1, row, col, "Superscript"));
     row = 12;
     assert(check_cell_text(*sheet1, row, col, "Subscript"));
-    row = 13;
-    assert(check_cell_text(*sheet1, row, col, "x2 + y2 = 102"));
-    row = 14;
-    assert(check_cell_text(*sheet1, row, col, "xi = yi + zi"));
+
+    {
+        row = 13;
+        assert(check_cell_text(*sheet1, row, col, "x2 + y2 = 102"));
+        si = sheet1->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 3);
+        assert(runs->at(0).pos == 1);
+        assert(runs->at(0).size == 1);
+        assert(runs->at(0).superscript && *runs->at(0).superscript);
+        assert(runs->at(1).pos == 6);
+        assert(runs->at(1).size == 1);
+        assert(runs->at(1).superscript && *runs->at(0).superscript);
+        assert(runs->at(2).pos == 12);
+        assert(runs->at(2).size == 1);
+        assert(runs->at(2).superscript && *runs->at(0).superscript);
+    }
+
+    {
+        row = 14;
+        assert(check_cell_text(*sheet1, row, col, "xi = yi + zi"));
+        si = sheet1->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 3);
+        assert(runs->at(0).pos == 1);
+        assert(runs->at(0).size == 1);
+        assert(runs->at(0).subscript && *runs->at(0).subscript);
+        assert(runs->at(1).pos == 6);
+        assert(runs->at(1).size == 1);
+        assert(runs->at(1).subscript && *runs->at(0).subscript);
+        assert(runs->at(2).pos == 11);
+        assert(runs->at(2).size == 1);
+        assert(runs->at(2).subscript && *runs->at(0).subscript);
+    }
 
     {
         const ss::sheet* sheet2 = doc->get_sheet("Fonts");
