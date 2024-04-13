@@ -651,7 +651,7 @@ void test_xls_xml_formatted_text_basic()
 
         assert(runs->at(0).pos == 0);
         assert(runs->at(0).size == 15);
-        assert(runs->at(0).bold);
+        assert(runs->at(0).bold && runs->at(0).bold.value());
 
         assert(runs->at(1).pos == 15);
         assert(runs->at(1).size == 8);
@@ -693,8 +693,55 @@ void test_xls_xml_formatted_text_basic()
         assert(check_cell_text(*sheet, row, col, "Subscript"));
         row = 13;
         assert(check_cell_text(*sheet, row, col, "x2 + y2 = 102"));
+
+        si = sheet->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 6u);
+        assert(runs->at(0).pos == 0);
+        assert(runs->at(0).size == 1);
+        assert(!test::set(runs->at(0).superscript));
+        assert(runs->at(1).pos == 1);
+        assert(runs->at(1).size == 1);
+        assert(test::set(runs->at(1).superscript));
+        assert(runs->at(2).pos == 2);
+        assert(runs->at(2).size == 4);
+        assert(!test::set(runs->at(2).superscript));
+        assert(runs->at(3).pos == 6);
+        assert(runs->at(3).size == 1);
+        assert(test::set(runs->at(3).superscript));
+        assert(runs->at(4).pos == 7);
+        assert(runs->at(4).size == 5);
+        assert(!test::set(runs->at(4).superscript));
+        assert(runs->at(5).pos == 12);
+        assert(runs->at(5).size == 1);
+        assert(test::set(runs->at(5).superscript));
+
         row = 14;
         assert(check_cell_text(*sheet, row, col, "xi = yi + zi"));
+
+        si = sheet->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 6u);
+        assert(runs->at(0).pos == 0);
+        assert(runs->at(0).size == 1);
+        assert(!test::set(runs->at(0).subscript));
+        assert(runs->at(1).pos == 1);
+        assert(runs->at(1).size == 1);
+        assert(test::set(runs->at(1).subscript));
+        assert(runs->at(2).pos == 2);
+        assert(runs->at(2).size == 4);
+        assert(!test::set(runs->at(2).subscript));
+        assert(runs->at(3).pos == 6);
+        assert(runs->at(3).size == 1);
+        assert(test::set(runs->at(3).subscript));
+        assert(runs->at(4).pos == 7);
+        assert(runs->at(4).size == 4);
+        assert(!test::set(runs->at(4).subscript));
+        assert(runs->at(5).pos == 11);
+        assert(runs->at(5).size == 1);
+        assert(test::set(runs->at(5).subscript));
     }
 
     {

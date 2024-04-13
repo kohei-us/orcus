@@ -93,6 +93,11 @@ std::string prefix_multiline_string(std::string_view str, std::string_view prefi
     return os.str();
 }
 
+bool set(const std::optional<bool>& v)
+{
+    return v && v.value();
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

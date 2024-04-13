@@ -554,6 +554,12 @@ void xls_xml_data_context::end_element_data()
                     else
                         ss->set_segment_italic(false); // implied
 
+                    if (sstr.format.superscript)
+                        ss->set_segment_superscript(*sstr.format.superscript);
+
+                    if (sstr.format.subscript)
+                        ss->set_segment_subscript(*sstr.format.subscript);
+
                     if (sstr.format.font_face)
                         ss->set_segment_font_name(*sstr.format.font_face);
 

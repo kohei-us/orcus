@@ -12,6 +12,7 @@
 #include <orcus/spreadsheet/types.hpp>
 
 #include <string>
+#include <optional>
 
 namespace orcus {
 
@@ -34,6 +35,8 @@ void verify_value_to_decimals(
     const char* filename, size_t line_no, double expected, double actual, int decimals);
 
 std::string prefix_multiline_string(std::string_view str, std::string_view prefix);
+
+bool set(const std::optional<bool>& v);
 
 }}
 
