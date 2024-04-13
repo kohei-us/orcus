@@ -1097,6 +1097,11 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_t
                             m_current_style->font.underline = underline::get().find(attr.value);
                             break;
                         }
+                        case XML_StrikeThrough:
+                        {
+                            m_current_style->font.strikethrough = to_bool(attr.value);
+                            break;
+                        }
                     }
                 }
                 break;
@@ -2032,6 +2037,13 @@ void xls_xml_context::commit_default_style()
         if (font.underline)
             font_style->set_underline(*font.underline);
 
+        if (font.strikethrough && *font.strikethrough)
+        {
+            font_style->set_strikethrough_style(ss::strikethrough_style_t::solid);
+            font_style->set_strikethrough_type(ss::strikethrough_type_t::single_type);
+            font_style->set_strikethrough_width(ss::strikethrough_width_t::width_auto);
+        }
+
         font_style->set_bold(font.bold);
         font_style->set_italic(font.italic);
         font_style->set_color(255, font.color.red, font.color.green, font.color.blue);
@@ -2188,6 +2200,13 @@ void xls_xml_context::commit_styles()
 
         if (style->font.underline)
             font_style->set_underline(*style->font.underline);
+
+        if (style->font.strikethrough && *style->font.strikethrough)
+        {
+            font_style->set_strikethrough_style(ss::strikethrough_style_t::solid);
+            font_style->set_strikethrough_type(ss::strikethrough_type_t::single_type);
+            font_style->set_strikethrough_width(ss::strikethrough_width_t::width_auto);
+        }
 
         font_style->set_bold(style->font.bold);
         font_style->set_italic(style->font.italic);

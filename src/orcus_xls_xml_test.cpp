@@ -682,7 +682,10 @@ void test_xls_xml_formatted_text_basic()
 
         row = 9;
         assert(check_cell_text(*sheet, row, col, "All Strikethrough"));
-        // TODO: check for strikethrough in cell
+        font = get_font(*sheet, row, col);
+        assert(font->strikethrough_style == ss::strikethrough_style_t::solid);
+        assert(font->strikethrough_type == ss::strikethrough_type_t::single_type);
+        assert(font->strikethrough_width == ss::strikethrough_width_t::width_auto);
 
         // A11:A15 - TODO: check format
         row = 10;
