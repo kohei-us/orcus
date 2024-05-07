@@ -628,15 +628,15 @@ void test_xls_xml_formatted_text_basic()
         // ^^^^
         assert(runs->at(0).pos == 0);
         assert(runs->at(0).size == 4);
-        assert(runs->at(0).bold);
-        assert(!runs->at(0).italic || !runs->at(0).italic.value());
+        assert(test::set(runs->at(0).bold));
+        assert(!test::set(runs->at(0).italic));
 
         // Bold and Italic
         //          ^^^^^^
         assert(runs->at(2).pos == 9);
         assert(runs->at(2).size == 6);
-        assert(!runs->at(2).bold || !runs->at(2).bold.value());
-        assert(runs->at(2).italic && runs->at(2).italic.value());
+        assert(!test::set(runs->at(2).bold));
+        assert(test::set(runs->at(2).italic));
 
         // A6
         row = 5;
@@ -649,17 +649,23 @@ void test_xls_xml_formatted_text_basic()
         assert(runs);
         assert(runs->size() == 3u);
 
+        // Bold base with non-bold part
+        // ^^^^^^^^^^^^^^^
         assert(runs->at(0).pos == 0);
         assert(runs->at(0).size == 15);
-        assert(runs->at(0).bold && runs->at(0).bold.value());
+        assert(test::set(runs->at(0).bold));
 
+        // Bold base with non-bold part
+        //                ^^^^^^^^
         assert(runs->at(1).pos == 15);
         assert(runs->at(1).size == 8);
-        assert(!runs->at(1).bold || !runs->at(1).bold.value());
+        assert(!test::set(runs->at(1).bold));
 
+        // Bold base with non-bold part
+        //                        ^^^^^
         assert(runs->at(2).pos == 23);
         assert(runs->at(2).size == 5);
-        assert(runs->at(2).bold && runs->at(2).bold.value());
+        assert(test::set(runs->at(2).bold));
 
         // A7 - TODO: check format
         row = 6;
