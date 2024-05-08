@@ -602,7 +602,8 @@ EXTRA_PROGRAMS += \
 # orcus-xlsx-test
 
 orcus_xlsx_test_SOURCES = \
-	orcus_xlsx_test.cpp
+	orcus_xlsx_test.cpp \
+	orcus_test_global.cpp
 
 orcus_xlsx_test_LDFLAGS = \
 	$(BOOST_SYSTEM_LDFLAGS)

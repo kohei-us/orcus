@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "test_global.hpp"
+#include "orcus_test_global.hpp"
 #include <orcus/orcus_xlsx.hpp>
 #include <orcus/format_detection.hpp>
 #include <orcus/stream.hpp>
@@ -1288,15 +1288,15 @@ void test_xlsx_formatted_text_basic()
         // ^^^^
         assert(runs->at(0).pos == 0);
         assert(runs->at(0).size == 4);
-        assert(runs->at(0).bold);
-        assert(!runs->at(0).italic);
+        assert(test::set(runs->at(0).bold));
+        assert(!test::set(runs->at(0).italic));
 
         // Bold and Italic
         //          ^^^^^^
         assert(runs->at(2).pos == 9);
         assert(runs->at(2).size == 6);
-        assert(!runs->at(2).bold);
-        assert(runs->at(2).italic);
+        assert(!test::set(runs->at(2).bold));
+        assert(test::set(runs->at(2).italic));
 
         // A6 - xlsx stores 2 format runs; one for "non-bold" and one for " part"
         row = 5;
@@ -1309,13 +1309,17 @@ void test_xlsx_formatted_text_basic()
         assert(runs);
         assert(runs->size() == 2u);
 
+        // Bold base with non-bold part
+        //                ^^^^^^^^
         assert(runs->at(0).pos == 15);
         assert(runs->at(0).size == 8);
-        assert(!runs->at(0).bold);
+        assert(!test::set(runs->at(0).bold));
 
+        // Bold base with non-bold part
+        //                        ^^^^^
         assert(runs->at(1).pos == 23);
         assert(runs->at(1).size == 5);
-        assert(runs->at(1).bold);
+        assert(test::set(runs->at(1).bold));
 
         // A7 - TODO: check format
         row = 6;
