@@ -285,6 +285,49 @@ void build_border_style(std::ostringstream& os, const char* style_name, const bo
     os << "; ";
 }
 
+void build_text_decoration(std::ostringstream& os, const font_t& ft)
+{
+    if (ft.underline_style)
+    {
+        switch (*ft.underline_style)
+        {
+            case underline_t::none:
+                break;
+            case underline_t::single_line:
+            {
+                os << "text-decoration-line: underline;";
+                os << "text-decoration-style: solid;";
+                break;
+            }
+            case underline_t::double_line:
+            {
+                os << "text-decoration-line: underline;";
+                os << "text-decoration-style: double;";
+                break;
+            }
+            default:;
+                // TODO: support more styles
+        }
+    }
+
+    if (ft.strikethrough_style)
+    {
+        switch (*ft.strikethrough_style)
+        {
+            case strikethrough_style_t::none:
+                break;
+            case strikethrough_style_t::solid:
+            {
+                os << "text-decoration-line: line-through;";
+                os << "text-decoration-style: solid;";
+                break;
+            }
+            default:;
+                // TODO: support more styles
+        }
+    }
+}
+
 void build_style_string(std::string& str, const styles& styles, const cell_format_t& fmt)
 {
     std::ostringstream os;
@@ -312,6 +355,8 @@ void build_style_string(std::string& str, const styles& styles, const cell_forma
                     os << ";";
                 }
             }
+
+            build_text_decoration(os, *p);
         }
     }
 
