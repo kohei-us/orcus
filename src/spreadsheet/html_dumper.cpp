@@ -127,17 +127,13 @@ private:
 
 void print_formatted_text(std::ostream& strm, const std::string& text, const format_runs_t& formats)
 {
-    typedef html_elem elem;
-
-    const char* p_span = "span";
-
     std::size_t pos = 0;
     for (const format_run_t& run : formats)
     {
         if (pos < run.pos)
         {
             // flush unformatted text.
-            strm << std::string(&text[pos], run.pos-pos);
+            strm << std::string_view(&text[pos], run.pos - pos);
             pos = run.pos;
         }
 
@@ -155,6 +151,14 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
         else
             style += "font-style: normal;";
 
+        bool sup = run.superscript.value_or(false);
+        bool sub = run.subscript.value_or(false);
+
+        if (sup)
+            style += "vertical-align: super;";
+        else if (sub)
+            style += "vertical-align: sub;";
+
         if (run.font)
         {
             style += "font-family: ";
@@ -168,6 +172,8 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
             os << "font-size: " << *run.font_size << "pt;";
             style += os.str();
         }
+        else if (sup || sub)
+            style += "font-size: .60em;";
 
         if (run.color)
         {
@@ -183,11 +189,11 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
         }
 
         if (style.empty())
-            strm << std::string(&text[pos], run.size);
+            strm << std::string_view(&text[pos], run.size);
         else
         {
-            elem span(strm, p_span, style.c_str());
-            strm << std::string(&text[pos], run.size);
+            html_elem span(strm, "span", style.c_str());
+            strm << std::string_view(&text[pos], run.size);
         }
 
         pos += run.size;
@@ -196,7 +202,7 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
     if (pos < text.size())
     {
         // flush the remaining unformatted text.
-        strm << std::string(&text[pos], text.size() - pos);
+        strm << std::string_view(&text[pos], text.size() - pos);
     }
 }
 
