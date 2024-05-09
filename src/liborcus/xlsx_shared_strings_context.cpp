@@ -169,6 +169,21 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
             xml_element_expected(parent, expected);
             break;
         }
+        case XML_vertAlign:
+        {
+            xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
+            for (const auto& attr : attrs)
+            {
+                if (attr.name == XML_val)
+                {
+                    if (attr.value == "superscript")
+                        mp_strings->set_segment_superscript(true);
+                    else if (attr.value == "subscript")
+                        mp_strings->set_segment_subscript(true);
+                }
+            }
+            break;
+        }
         default:
             warn_unhandled();
     }

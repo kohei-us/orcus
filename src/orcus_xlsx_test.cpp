@@ -1344,17 +1344,79 @@ void test_xlsx_formatted_text_basic()
         assert(check_cell_text(*sheet, row, col, "All Strikethrough"));
         // TODO: check for strikethrough in cell
 
-        // A11:A15 - TODO: check format
+        // A11:A13 - TODO: check format
         row = 10;
         assert(check_cell_text(*sheet, row, col, "Partial strikethrough"));
         row = 11;
         assert(check_cell_text(*sheet, row, col, "Superscript"));
         row = 12;
         assert(check_cell_text(*sheet, row, col, "Subscript"));
+
+        // A14
         row = 13;
         assert(check_cell_text(*sheet, row, col, "x2 + y2 = 102"));
+        si = sheet->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 5); // 1st non-formatted segment is skipped
+        // x2 + y2 = 102
+        //  ^
+        assert(runs->at(0).pos == 1);
+        assert(runs->at(0).size == 1);
+        assert(test::set(runs->at(0).superscript));
+        // x2 + y2 = 102
+        //   ^^^^
+        assert(runs->at(1).pos == 2);
+        assert(runs->at(1).size == 4);
+        assert(!test::set(runs->at(1).superscript));
+        // x2 + y2 = 102
+        //       ^
+        assert(runs->at(2).pos == 6);
+        assert(runs->at(2).size == 1);
+        assert(test::set(runs->at(2).superscript));
+        // x2 + y2 = 102
+        //        ^^^^^
+        assert(runs->at(3).pos == 7);
+        assert(runs->at(3).size == 5);
+        assert(!test::set(runs->at(3).superscript));
+        // x2 + y2 = 102
+        //             ^
+        assert(runs->at(4).pos == 12);
+        assert(runs->at(4).size == 1);
+        assert(test::set(runs->at(4).superscript));
+
+        // A15
         row = 14;
         assert(check_cell_text(*sheet, row, col, "xi = yi + zi"));
+        si = sheet->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 5); // 1st non-formatted segment is skipped
+        // xi = yi + zi
+        //  ^
+        assert(runs->at(0).pos == 1);
+        assert(runs->at(0).size == 1);
+        assert(test::set(runs->at(0).subscript));
+        // xi = yi + zi
+        //   ^^^^
+        assert(runs->at(1).pos == 2);
+        assert(runs->at(1).size == 4);
+        assert(!test::set(runs->at(1).subscript));
+        // xi = yi + zi
+        //       ^
+        assert(runs->at(2).pos == 6);
+        assert(runs->at(2).size == 1);
+        assert(test::set(runs->at(2).subscript));
+        // xi = yi + zi
+        //        ^^^^
+        assert(runs->at(3).pos == 7);
+        assert(runs->at(3).size == 4);
+        assert(!test::set(runs->at(3).subscript));
+        // xi = yi + zi
+        //            ^
+        assert(runs->at(4).pos == 11);
+        assert(runs->at(4).size == 1);
+        assert(test::set(runs->at(4).subscript));
     }
 
     {

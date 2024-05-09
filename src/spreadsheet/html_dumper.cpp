@@ -166,14 +166,28 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
             style += ";";
         }
 
-        if (run.font_size)
         {
             std::ostringstream os;
-            os << "font-size: " << *run.font_size << "pt;";
+
+            if (sup || sub)
+            {
+                os << "font-size: ";
+
+                if (run.font_size)
+                {
+                    auto fs = *run.font_size * 0.6;
+                    os << fs << "pt;";
+                }
+                else
+                    os << ".60em;";
+            }
+            else if (run.font_size)
+            {
+                os << "font-size: " << *run.font_size << "pt;";
+            }
+
             style += os.str();
         }
-        else if (sup || sub)
-            style += "font-size: .60em;";
 
         if (run.color)
         {
