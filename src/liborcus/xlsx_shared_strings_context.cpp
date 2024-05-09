@@ -78,30 +78,30 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
 
             if (get_config().debug)
                 std::cout << "count: " << func.get_count() << "  unique count: " << func.get_unique_count() << std::endl;
+            break;
         }
-        break;
         case XML_si:
             // single shared string entry.
             m_in_segments = false;
             xml_element_expected(parent, NS_ooxml_xlsx, XML_sst);
-        break;
+            break;
         case XML_r:
             // rich text run
             m_in_segments = true;
             xml_element_expected(parent, NS_ooxml_xlsx, XML_si);
-        break;
+            break;
         case XML_rPr:
             // rich text run property
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
-        break;
+            break;
         case XML_b:
             // bold
             xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-        break;
+            break;
         case XML_i:
             // italic
             xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-        break;
+            break;
         case XML_sz:
         {
             // font size
@@ -109,8 +109,8 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
             std::string_view s = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
             double point = to_double(s);
             mp_strings->set_segment_font_size(point);
+            break;
         }
-        break;
         case XML_color:
         {
             // font color
@@ -140,24 +140,24 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
                 if (to_rgb(*rgb, alpha, red, green, blue))
                     mp_strings->set_segment_font_color(alpha, red, green, blue);
             }
+            break;
         }
-        break;
         case XML_rFont:
         {
             // font
             xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
             std::string_view font = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
             mp_strings->set_segment_font_name(font);
+            break;
         }
-        break;
         case XML_family:
             // font family
             xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-        break;
+            break;
         case XML_scheme:
             // font scheme
             xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-        break;
+            break;
         case XML_t:
         {
             // actual text stored as its content.
@@ -167,8 +167,8 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
                 { NS_ooxml_xlsx, XML_si },
             };
             xml_element_expected(parent, expected);
+            break;
         }
-        break;
         default:
             warn_unhandled();
     }
@@ -179,16 +179,16 @@ bool xlsx_shared_strings_context::end_element(xmlns_id_t ns, xml_token_t name)
     switch (name)
     {
         case XML_t:
-        break;
+            break;
         case XML_b:
             mp_strings->set_segment_bold(true);
-        break;
+            break;
         case XML_i:
             mp_strings->set_segment_italic(true);
-        break;
+            break;
         case XML_r:
             mp_strings->append_segment(m_cur_str);
-        break;
+            break;
         case XML_si:
         {
             if (m_in_segments)
@@ -199,8 +199,8 @@ bool xlsx_shared_strings_context::end_element(xmlns_id_t ns, xml_token_t name)
                 // unformatted text should only have one text segment.
                 mp_strings->append(m_cur_str);
             }
+            break;
         }
-        break;
     }
     return pop_stack(ns, name);
 }
