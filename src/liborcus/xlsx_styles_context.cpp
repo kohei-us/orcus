@@ -197,6 +197,7 @@ xlsx_styles_context::xlsx_styles_context(session_context& session_cxt, const tok
         { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_i },
         { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_name },
         { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_scheme },
+        { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_strike },
         { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_sz },
         { NS_ooxml_xlsx, XML_font, NS_ooxml_xlsx, XML_u },
         { NS_ooxml_xlsx, XML_fonts, NS_ooxml_xlsx, XML_font },
@@ -282,6 +283,14 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 }
 
                 mp_font->set_underline(v);
+                break;
+            }
+            case XML_strike:
+            {
+                assert(mp_font);
+                mp_font->set_strikethrough_style(ss::strikethrough_style_t::solid);
+                mp_font->set_strikethrough_type(ss::strikethrough_type_t::single_type);
+                mp_font->set_strikethrough_width(ss::strikethrough_width_t::width_auto);
                 break;
             }
             case XML_sz:

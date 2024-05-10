@@ -1340,9 +1340,18 @@ void test_xlsx_formatted_text_basic()
         assert(font->underline_style);
         assert(*font->underline_style == ss::underline_t::single_line);
 
+        // A10
         row = 9;
         assert(check_cell_text(*sheet, row, col, "All Strikethrough"));
-        // TODO: check for strikethrough in cell
+        font = get_font(*sheet, row, col);
+        assert(font->strikethrough_style);
+        assert(*font->strikethrough_style == ss::strikethrough_style_t::solid);
+
+        assert(font->strikethrough_type);
+        assert(*font->strikethrough_type == ss::strikethrough_type_t::single_type);
+
+        assert(font->strikethrough_width);
+        assert(*font->strikethrough_width == ss::strikethrough_width_t::width_auto);
 
         // A11:A13 - TODO: check format
         row = 10;
