@@ -499,7 +499,7 @@ void orcus_xlsx::read_shared_strings(const std::string& dir_path, const std::str
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
         reinterpret_cast<const char*>(&buffer[0]), buffer.size());
 
-    auto handler = std::make_unique<xml_simple_stream_handler>(
+    auto handler = std::make_unique<xml_stream_handler>(
         mp_impl->m_cxt, ooxml_tokens,
         std::make_unique<xlsx_shared_strings_context>(
             mp_impl->m_cxt, ooxml_tokens, mp_impl->mp_factory->get_shared_strings()));

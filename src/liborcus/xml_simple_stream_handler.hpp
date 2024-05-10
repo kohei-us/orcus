@@ -15,7 +15,10 @@ namespace orcus {
 class xml_context_base;
 
 /**
- * Simple stream handler that only uses a single context instance.
+ * Simple stream handler that only uses a single context instance.  Note that
+ * when using this handler, element validation rules are ignored.
+ *
+ * TODO: Phase out the use of this class.
  */
 class xml_simple_stream_handler : public xml_stream_handler
 {

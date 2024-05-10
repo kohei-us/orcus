@@ -20,203 +20,189 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
-namespace {
-
-class shared_strings_root_attr_parser
+xlsx_shared_strings_context::xlsx_shared_strings_context(
+    session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_shared_strings* strings) :
+    xml_context_base(session_cxt, tokens), mp_strings(strings), m_in_segments(false)
 {
-public:
-    shared_strings_root_attr_parser() : m_count(0), m_unique_count(0) {}
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_ooxml_xlsx, XML_sst }, // root element
+        { NS_ooxml_xlsx, XML_r, NS_ooxml_xlsx, XML_rPr },
+        { NS_ooxml_xlsx, XML_r, NS_ooxml_xlsx, XML_t },
+        { NS_ooxml_xlsx, XML_rPh, NS_ooxml_xlsx, XML_t },
+        { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_b },
+        { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_color },
+        { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_family },
+        { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_i },
+        { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_rFont },
+        { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_scheme },
+        { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_sz },
+        { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_vertAlign },
+        { NS_ooxml_xlsx, XML_si, NS_ooxml_xlsx, XML_r },
+        { NS_ooxml_xlsx, XML_si, NS_ooxml_xlsx, XML_t },
+        { NS_ooxml_xlsx, XML_sst, NS_ooxml_xlsx, XML_si },
+    };
 
-    void operator() (const xml_token_attr_t &attr)
-    {
-        switch (attr.name)
-        {
-            case XML_count:
-                m_count = to_long(attr.value);
-            break;
-            case XML_uniqueCount:
-                m_unique_count = to_long(attr.value);
-            break;
-        }
-    }
-
-    shared_strings_root_attr_parser& operator= (const shared_strings_root_attr_parser& r)
-    {
-        m_count = r.m_count;
-        m_unique_count = r.m_unique_count;
-        return *this;
-    }
-
-    size_t get_count() const { return m_count; }
-    size_t get_unique_count() const { return m_unique_count; }
-private:
-    size_t m_count;
-    size_t m_unique_count;
-};
-
+    init_element_validator(rules, std::size(rules));
 }
 
-xlsx_shared_strings_context::xlsx_shared_strings_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_shared_strings* strings) :
-    xml_context_base(session_cxt, tokens), mp_strings(strings), m_in_segments(false) {}
-
-xlsx_shared_strings_context::~xlsx_shared_strings_context() {}
+xlsx_shared_strings_context::~xlsx_shared_strings_context() = default;
 
 void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
-    switch (name)
+    push_stack(ns, name);
+
+    if (ns == NS_ooxml_xlsx)
     {
-        case XML_sst:
+        switch (name)
         {
-            // root element for the shared string part.
-            xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-            if (get_config().debug)
-                print_attrs(get_tokens(), attrs);
-
-            shared_strings_root_attr_parser func;
-            func = for_each(attrs.begin(), attrs.end(), func);
-
-            if (get_config().debug)
-                std::cout << "count: " << func.get_count() << "  unique count: " << func.get_unique_count() << std::endl;
-            break;
-        }
-        case XML_si:
-            // single shared string entry.
-            m_in_segments = false;
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_sst);
-            break;
-        case XML_r:
-            // rich text run
-            m_in_segments = true;
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_si);
-            break;
-        case XML_rPr:
-            // rich text run property
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
-            break;
-        case XML_b:
-            // bold
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-            break;
-        case XML_i:
-            // italic
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-            break;
-        case XML_sz:
-        {
-            // font size
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-            std::string_view s = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
-            double point = to_double(s);
-            mp_strings->set_segment_font_size(point);
-            break;
-        }
-        case XML_color:
-        {
-            // font color
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-
-            std::optional<std::string_view> rgb;
-
-            for (const xml_token_attr_t& attr : attrs)
+            case XML_sst:
             {
-                switch (attr.name)
+                // root element for the shared string part.
+                long count = -1;
+                long unique_count = -1;
+
+                for (const auto& attr : attrs)
                 {
-                    case XML_rgb:
-                        rgb = attr.value;
-                        break;
-                    case XML_theme:
-                        // TODO : handle this.
-                        break;
+                    switch (attr.name)
+                    {
+                        case XML_count:
+                            count = to_long(attr.value);
+                            break;
+                        case XML_uniqueCount:
+                            unique_count = to_long(attr.value);
+                            break;
+                    }
                 }
-            }
 
-            if (rgb)
-            {
-                ss::color_elem_t alpha;
-                ss::color_elem_t red;
-                ss::color_elem_t green;
-                ss::color_elem_t blue;
-                if (to_rgb(*rgb, alpha, red, green, blue))
-                    mp_strings->set_segment_font_color(alpha, red, green, blue);
+                if (get_config().debug)
+                    std::cout << "count: " << count << "  unique count: " << unique_count << std::endl;
+
+                break;
             }
-            break;
-        }
-        case XML_rFont:
-        {
-            // font
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-            std::string_view font = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
-            mp_strings->set_segment_font_name(font);
-            break;
-        }
-        case XML_family:
-            // font family
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-            break;
-        case XML_scheme:
-            // font scheme
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-            break;
-        case XML_t:
-        {
-            // actual text stored as its content.
-            const xml_elem_set_t expected = {
-                { NS_ooxml_xlsx, XML_r },
-                { NS_ooxml_xlsx, XML_rPh },
-                { NS_ooxml_xlsx, XML_si },
-            };
-            xml_element_expected(parent, expected);
-            break;
-        }
-        case XML_vertAlign:
-        {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_rPr);
-            for (const auto& attr : attrs)
+            case XML_si:
+                // single shared string entry.
+                m_in_segments = false;
+                break;
+            case XML_r:
+                // rich text run
+                m_in_segments = true;
+            case XML_rPr:
+                // rich text run property
+                break;
+            case XML_b:
+                // bold
+                break;
+            case XML_i:
+                // italic
+                break;
+            case XML_sz:
             {
-                if (attr.name == XML_val)
+                // font size
+                std::string_view s = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
+                double point = to_double(s);
+                mp_strings->set_segment_font_size(point);
+                break;
+            }
+            case XML_color:
+            {
+                // font color
+                std::optional<std::string_view> rgb;
+
+                for (const xml_token_attr_t& attr : attrs)
                 {
-                    if (attr.value == "superscript")
-                        mp_strings->set_segment_superscript(true);
-                    else if (attr.value == "subscript")
-                        mp_strings->set_segment_subscript(true);
+                    switch (attr.name)
+                    {
+                        case XML_rgb:
+                            rgb = attr.value;
+                            break;
+                        case XML_theme:
+                            // TODO : handle this.
+                            break;
+                    }
                 }
+
+                if (rgb)
+                {
+                    ss::color_elem_t alpha;
+                    ss::color_elem_t red;
+                    ss::color_elem_t green;
+                    ss::color_elem_t blue;
+                    if (to_rgb(*rgb, alpha, red, green, blue))
+                        mp_strings->set_segment_font_color(alpha, red, green, blue);
+                }
+                break;
             }
-            break;
+            case XML_rFont:
+            {
+                // font
+                std::string_view font = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
+                mp_strings->set_segment_font_name(font);
+                break;
+            }
+            case XML_family:
+                // font family
+                break;
+            case XML_scheme:
+                // font scheme
+                break;
+            case XML_t:
+            {
+                // actual text stored as its content.
+                break;
+            }
+            case XML_vertAlign:
+            {
+                for (const auto& attr : attrs)
+                {
+                    if (attr.name == XML_val)
+                    {
+                        if (attr.value == "superscript")
+                            mp_strings->set_segment_superscript(true);
+                        else if (attr.value == "subscript")
+                            mp_strings->set_segment_subscript(true);
+                    }
+                }
+                break;
+            }
+            default:
+                warn_unhandled();
         }
-        default:
-            warn_unhandled();
     }
 }
 
 bool xlsx_shared_strings_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
-    switch (name)
+    if (ns == NS_ooxml_xlsx)
     {
-        case XML_t:
-            break;
-        case XML_b:
-            mp_strings->set_segment_bold(true);
-            break;
-        case XML_i:
-            mp_strings->set_segment_italic(true);
-            break;
-        case XML_r:
-            mp_strings->append_segment(m_cur_str);
-            break;
-        case XML_si:
+        switch (name)
         {
-            if (m_in_segments)
-                // commit all formatted segments.
-                mp_strings->commit_segments();
-            else
+            case XML_t:
+                break;
+            case XML_b:
+                mp_strings->set_segment_bold(true);
+                break;
+            case XML_i:
+                mp_strings->set_segment_italic(true);
+                break;
+            case XML_r:
+                mp_strings->append_segment(m_cur_str);
+                break;
+            case XML_si:
             {
-                // unformatted text should only have one text segment.
-                mp_strings->append(m_cur_str);
+                if (m_in_segments)
+                    // commit all formatted segments.
+                    mp_strings->commit_segments();
+                else
+                {
+                    // unformatted text should only have one text segment.
+                    mp_strings->append(m_cur_str);
+                }
+                break;
             }
-            break;
         }
     }
+
     return pop_stack(ns, name);
 }
 
