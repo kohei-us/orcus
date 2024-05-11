@@ -15,6 +15,7 @@
 #include <orcus/tokens.hpp>
 #include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 
 #include <mdds/sorted_string_map.hpp>
 #include <mdds/global.hpp>
@@ -288,9 +289,12 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_strike:
             {
                 assert(mp_font);
-                mp_font->set_strikethrough_style(ss::strikethrough_style_t::solid);
-                mp_font->set_strikethrough_type(ss::strikethrough_type_t::single_type);
-                mp_font->set_strikethrough_width(ss::strikethrough_width_t::width_auto);
+                auto* st = mp_font->start_strikethrough();
+                ENSURE_INTERFACE(st, import_strikethrough);
+                st->set_style(ss::strikethrough_style_t::solid);
+                st->set_type(ss::strikethrough_type_t::single_type);
+                st->set_width(ss::strikethrough_width_t::width_auto);
+                st->commit();
                 break;
             }
             case XML_sz:

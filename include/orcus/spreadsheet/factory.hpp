@@ -10,6 +10,7 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 #include <orcus/spreadsheet/export_interface.hpp>
 #include <orcus/env.hpp>
 

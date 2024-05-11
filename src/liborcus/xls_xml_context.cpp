@@ -13,6 +13,7 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 #include <orcus/spreadsheet/import_interface_view.hpp>
 #include <orcus/measurement.hpp>
 
@@ -2039,9 +2040,13 @@ void xls_xml_context::commit_default_style()
 
         if (font.strikethrough && *font.strikethrough)
         {
-            font_style->set_strikethrough_style(ss::strikethrough_style_t::solid);
-            font_style->set_strikethrough_type(ss::strikethrough_type_t::single_type);
-            font_style->set_strikethrough_width(ss::strikethrough_width_t::width_auto);
+            auto* st = font_style->start_strikethrough();
+            ENSURE_INTERFACE(st, import_strikethrough);
+
+            st->set_style(ss::strikethrough_style_t::solid);
+            st->set_type(ss::strikethrough_type_t::single_type);
+            st->set_width(ss::strikethrough_width_t::width_auto);
+            st->commit();
         }
 
         font_style->set_bold(font.bold);
@@ -2203,9 +2208,13 @@ void xls_xml_context::commit_styles()
 
         if (style->font.strikethrough && *style->font.strikethrough)
         {
-            font_style->set_strikethrough_style(ss::strikethrough_style_t::solid);
-            font_style->set_strikethrough_type(ss::strikethrough_type_t::single_type);
-            font_style->set_strikethrough_width(ss::strikethrough_width_t::width_auto);
+            auto* st = font_style->start_strikethrough();
+            ENSURE_INTERFACE(st, import_strikethrough);
+
+            st->set_style(ss::strikethrough_style_t::solid);
+            st->set_type(ss::strikethrough_type_t::single_type);
+            st->set_width(ss::strikethrough_width_t::width_auto);
+            st->commit();
         }
 
         font_style->set_bold(style->font.bold);

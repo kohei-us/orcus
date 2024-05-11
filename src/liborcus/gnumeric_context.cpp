@@ -13,6 +13,7 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 
 #include <fstream>
 #include <algorithm>
@@ -50,17 +51,22 @@ std::size_t import_font_style(ss::iface::import_styles& istyles, const gnumeric_
 
     if (style.strikethrough)
     {
+        auto* st = ifont->start_strikethrough();
+        ENSURE_INTERFACE(st, import_strikethrough);
+
         if (*style.strikethrough)
         {
-            ifont->set_strikethrough_style(ss::strikethrough_style_t::solid);
-            ifont->set_strikethrough_type(ss::strikethrough_type_t::single_type);
-            ifont->set_strikethrough_width(ss::strikethrough_width_t::width_auto);
+            st->set_style(ss::strikethrough_style_t::solid);
+            st->set_type(ss::strikethrough_type_t::single_type);
+            st->set_width(ss::strikethrough_width_t::width_auto);
         }
         else
         {
-            ifont->set_strikethrough_style(ss::strikethrough_style_t::none);
-            ifont->set_strikethrough_type(ss::strikethrough_type_t::none);
+            st->set_style(ss::strikethrough_style_t::none);
+            st->set_type(ss::strikethrough_type_t::none);
         }
+
+        st->commit();
     }
 
     if (style.fore)

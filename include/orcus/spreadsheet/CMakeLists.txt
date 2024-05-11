@@ -8,6 +8,7 @@ list(APPEND _HEADERS
     factory.hpp
     import_interface.hpp
     import_interface_pivot.hpp
+    import_interface_strikethrough.hpp
     import_interface_styles.hpp
     import_interface_view.hpp
     pivot.hpp

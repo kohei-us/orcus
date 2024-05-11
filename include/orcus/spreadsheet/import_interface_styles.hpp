@@ -26,6 +26,7 @@ class import_cell_protection;
 class import_number_format;
 class import_xf;
 class import_cell_style;
+class import_strikethrough;
 
 /**
  * Interface for importing styles.  This one acts as an entry point and
@@ -351,35 +352,7 @@ public:
      */
     virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
 
-    /**
-     * Set the strikethrough style of a font.
-     *
-     * @param s strikethrough style of a font.
-     */
-    virtual void set_strikethrough_style(strikethrough_style_t s) = 0;
-
-    /**
-     * Set whether the strikethrough of a font consists of a single line or a
-     * double line.
-     *
-     * @param s whether the strikethrough of a font consists of a single line or
-     *          a double line.
-     */
-    virtual void set_strikethrough_type(strikethrough_type_t s) = 0;
-
-    /**
-     * Set the width of the strikethrough of a font.
-     *
-     * @param s the width of the strikethrough of a font.
-     */
-    virtual void set_strikethrough_width(strikethrough_width_t s) = 0;
-
-    /**
-     * Set the text to use as a strikethrough.
-     *
-     * @param s text to use as a strikethrough.
-     */
-    virtual void set_strikethrough_text(strikethrough_text_t s) = 0;
+    virtual import_strikethrough* start_strikethrough() = 0;
 
     /**
      * Commit the font style in the current buffer.

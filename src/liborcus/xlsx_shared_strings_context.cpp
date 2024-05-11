@@ -36,6 +36,7 @@ xlsx_shared_strings_context::xlsx_shared_strings_context(
         { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_i },
         { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_rFont },
         { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_scheme },
+        { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_strike },
         { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_sz },
         { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_vertAlign },
         { NS_ooxml_xlsx, XML_si, NS_ooxml_xlsx, XML_r },
@@ -96,6 +97,11 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
             case XML_i:
                 // italic
                 break;
+            case XML_strike:
+            {
+                // strikethrough (TODO: pick this up)
+                break;
+            }
             case XML_sz:
             {
                 // font size

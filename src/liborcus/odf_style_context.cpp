@@ -16,6 +16,7 @@
 #include <mdds/sorted_string_map.hpp>
 
 #include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 
 namespace ss = orcus::spreadsheet;
 
@@ -507,17 +508,22 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     if (underline_mode)
         font_style->set_underline_mode(*underline_mode);
 
+    auto* st = font_style->start_strikethrough();
+    ENSURE_INTERFACE(st, import_strikethrough);
+
     if (strikethrough_style)
-        font_style->set_strikethrough_style(*strikethrough_style);
+        st->set_style(*strikethrough_style);
 
     if (strikethrough_type)
-        font_style->set_strikethrough_type(*strikethrough_type);
+        st->set_type(*strikethrough_type);
 
     if (strikethrough_width)
-        font_style->set_strikethrough_width(*strikethrough_width);
+        st->set_width(*strikethrough_width);
 
     if (strikethrough_text)
-        font_style->set_strikethrough_text(*strikethrough_text);
+        st->set_text(*strikethrough_text);
+
+    st->commit();
 
     size_t font_id = font_style->commit();
 
