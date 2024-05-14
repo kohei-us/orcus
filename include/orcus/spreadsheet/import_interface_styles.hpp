@@ -352,7 +352,7 @@ public:
      */
     virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
 
-    virtual import_strikethrough* start_strikethrough() = 0;
+    virtual import_strikethrough* start_strikethrough();
 
     /**
      * Commit the font style in the current buffer.

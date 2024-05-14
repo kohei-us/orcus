@@ -114,6 +114,12 @@ void import_shared_strings::set_segment_font_color(color_elem_t, color_elem_t, c
     assert(false);
 }
 
+iface::import_strikethrough* import_shared_strings::start_strikethrough()
+{
+    assert(false);
+    return nullptr;
+}
+
 void import_shared_strings::append_segment(std::string_view)
 {
     assert(false);

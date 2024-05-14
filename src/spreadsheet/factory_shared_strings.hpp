@@ -12,6 +12,8 @@
 
 #include <memory>
 
+#include "factory_strikethrough.hpp"
+
 namespace ixion {
 
 class model_context;
@@ -40,6 +42,8 @@ class import_shared_strings : public iface::import_shared_strings
     format_run_t m_cur_format;
     std::unique_ptr<format_runs_t> mp_cur_format_runs;
 
+    detail::import_strikethrough m_strikethrough_import;
+
 public:
     import_shared_strings(
         string_pool& sp, ixion::model_context& cxt, styles& st,
@@ -57,6 +61,7 @@ public:
     virtual void set_segment_font_name(std::string_view s) override;
     virtual void set_segment_font_size(double point) override;
     virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+    virtual iface::import_strikethrough* start_strikethrough();
     virtual void append_segment(std::string_view s) override;
     virtual size_t commit_segments() override;
 };

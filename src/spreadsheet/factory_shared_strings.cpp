@@ -90,6 +90,12 @@ void import_shared_strings::set_segment_font_color(
     m_cur_format.color = color_t(alpha, red, green, blue);
 }
 
+iface::import_strikethrough* import_shared_strings::start_strikethrough()
+{
+    m_strikethrough_import.reset(&m_cur_format.strikethrough);
+    return &m_strikethrough_import;
+}
+
 void import_shared_strings::append_segment(std::string_view s)
 {
     if (s.empty())

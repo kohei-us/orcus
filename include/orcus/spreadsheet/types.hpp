@@ -17,7 +17,8 @@
 #include <string_view>
 #include <vector>
 
-// NB: This header should only define primitive data types, enums and structs.
+// NB: This header should only define primitive data types, enums and structs
+// that have linkage to liborcus.
 
 namespace orcus { namespace spreadsheet {
 

@@ -8,6 +8,7 @@
 #pragma once
 
 #include "../env.hpp"
+#include "types.hpp"
 
 namespace orcus { namespace spreadsheet { namespace iface {
 

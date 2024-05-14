@@ -42,6 +42,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	factory_shared_strings.cpp \
 	factory_sheet.hpp \
 	factory_sheet.cpp \
+	factory_strikethrough.hpp \
+	factory_strikethrough.cpp \
 	factory_styles.cpp \
 	factory_table.hpp \
 	factory_table.cpp \

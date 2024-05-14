@@ -24,11 +24,21 @@ import_pivot_cache_records::~import_pivot_cache_records() {}
 
 import_shared_strings::~import_shared_strings() {}
 
+import_strikethrough* import_shared_strings::start_strikethrough()
+{
+    return nullptr;
+}
+
 import_strikethrough::~import_strikethrough() = default;
 
 import_styles::~import_styles() {}
 
 import_font_style::~import_font_style() {}
+
+import_strikethrough* import_font_style::start_strikethrough()
+{
+    return nullptr;
+}
 
 import_fill_style::~import_fill_style() {}
 

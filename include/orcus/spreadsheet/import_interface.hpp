@@ -24,6 +24,7 @@ class import_styles;
 class import_pivot_cache_definition;
 class import_pivot_cache_records;
 class import_sheet_view;
+class import_strikethrough;
 
 /**
  * Interface for importing raw string values shared in string cells.  String
@@ -158,6 +159,8 @@ public:
      * @param blue blue component value (0-255).
      */
     virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+
+    virtual import_strikethrough* start_strikethrough();
 
     /**
      * Push the current string segment to the buffer. Any formatting attributes

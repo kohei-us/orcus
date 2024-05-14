@@ -508,22 +508,22 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     if (underline_mode)
         font_style->set_underline_mode(*underline_mode);
 
-    auto* st = font_style->start_strikethrough();
-    ENSURE_INTERFACE(st, import_strikethrough);
+    if (auto* st = font_style->start_strikethrough(); st)
+    {
+        if (strikethrough_style)
+            st->set_style(*strikethrough_style);
 
-    if (strikethrough_style)
-        st->set_style(*strikethrough_style);
+        if (strikethrough_type)
+            st->set_type(*strikethrough_type);
 
-    if (strikethrough_type)
-        st->set_type(*strikethrough_type);
+        if (strikethrough_width)
+            st->set_width(*strikethrough_width);
 
-    if (strikethrough_width)
-        st->set_width(*strikethrough_width);
+        if (strikethrough_text)
+            st->set_text(*strikethrough_text);
 
-    if (strikethrough_text)
-        st->set_text(*strikethrough_text);
-
-    st->commit();
+        st->commit();
+    }
 
     size_t font_id = font_style->commit();
 

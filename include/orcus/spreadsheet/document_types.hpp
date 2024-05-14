@@ -34,6 +34,27 @@ struct ORCUS_SPM_DLLPUBLIC color_t
     bool operator!=(const color_t& other) const;
 };
 
+struct ORCUS_SPM_DLLPUBLIC strikethrough_t
+{
+    std::optional<strikethrough_style_t> style;
+    std::optional<strikethrough_type_t> type;
+    std::optional<strikethrough_width_t> width;
+    std::optional<strikethrough_text_t> text;
+
+    strikethrough_t();
+    strikethrough_t(const strikethrough_t& other);
+    ~strikethrough_t();
+
+    strikethrough_t& operator=(const strikethrough_t& other);
+
+    bool operator==(const strikethrough_t& other) const;
+    bool operator!=(const strikethrough_t& other) const;
+
+    void reset();
+
+    bool has_value() const;
+};
+
 /**
  * Contains formatting properties of a section of a string.  This is used in
  * the storage of rich-text strings.
@@ -58,6 +79,8 @@ struct ORCUS_SPM_DLLPUBLIC format_run_t
     std::optional<bool> superscript;
     /** Whether or not the font has subscript applied. */
     std::optional<bool> subscript;
+    /** Strikethrough attributes. */
+    strikethrough_t strikethrough;
 
     format_run_t();
     format_run_t(const format_run_t& other);

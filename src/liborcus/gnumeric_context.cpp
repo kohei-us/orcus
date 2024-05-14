@@ -51,22 +51,22 @@ std::size_t import_font_style(ss::iface::import_styles& istyles, const gnumeric_
 
     if (style.strikethrough)
     {
-        auto* st = ifont->start_strikethrough();
-        ENSURE_INTERFACE(st, import_strikethrough);
-
-        if (*style.strikethrough)
+        if (auto* st = ifont->start_strikethrough(); st)
         {
-            st->set_style(ss::strikethrough_style_t::solid);
-            st->set_type(ss::strikethrough_type_t::single_type);
-            st->set_width(ss::strikethrough_width_t::width_auto);
-        }
-        else
-        {
-            st->set_style(ss::strikethrough_style_t::none);
-            st->set_type(ss::strikethrough_type_t::none);
-        }
+            if (*style.strikethrough)
+            {
+                st->set_style(ss::strikethrough_style_t::solid);
+                st->set_type(ss::strikethrough_type_t::single_type);
+                st->set_width(ss::strikethrough_width_t::width_auto);
+            }
+            else
+            {
+                st->set_style(ss::strikethrough_style_t::none);
+                st->set_type(ss::strikethrough_type_t::none);
+            }
 
-        st->commit();
+            st->commit();
+        }
     }
 
     if (style.fore)

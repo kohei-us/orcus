@@ -9,28 +9,14 @@
 #include "orcus/spreadsheet/styles.hpp"
 #include "orcus/string_pool.hpp"
 
+#include "factory_strikethrough.hpp"
+
 #include <unordered_map>
+#include <cassert>
 
 namespace orcus { namespace spreadsheet {
 
 namespace {
-
-class import_strikethrough : public iface::import_strikethrough
-{
-    struct impl;
-    std::unique_ptr<impl> mp_impl;
-
-public:
-    import_strikethrough(strikethrough_t& ref);
-
-    void reset();
-
-    virtual void set_style(strikethrough_style_t s) override;
-    virtual void set_type(strikethrough_type_t s) override;
-    virtual void set_width(strikethrough_width_t s) override;
-    virtual void set_text(strikethrough_text_t s) override;
-    virtual void commit() override;
-};
 
 class import_font_style : public iface::import_font_style
 {
@@ -65,7 +51,7 @@ public:
     virtual void set_underline_type(underline_type_t e) override;
     virtual void set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
     virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
-    virtual import_strikethrough* start_strikethrough() override;
+    virtual iface::import_strikethrough* start_strikethrough() override;
     virtual std::size_t commit() override;
 
     void reset();
@@ -190,54 +176,6 @@ public:
     void reset();
 };
 
-struct import_strikethrough::impl
-{
-    strikethrough_t& ref;
-    strikethrough_t buf;
-
-    std::optional<strikethrough_style_t> style;
-    std::optional<strikethrough_type_t> type;
-    std::optional<strikethrough_width_t> width;
-    std::optional<strikethrough_text_t> text;
-
-    impl(strikethrough_t& _ref) : ref(_ref) {}
-};
-
-import_strikethrough::import_strikethrough(strikethrough_t& ref) :
-    mp_impl(std::make_unique<impl>(ref))
-{
-}
-
-void import_strikethrough::reset()
-{
-    mp_impl->buf.reset();
-}
-
-void import_strikethrough::set_style(strikethrough_style_t s)
-{
-    mp_impl->buf.style = s;
-}
-
-void import_strikethrough::set_type(strikethrough_type_t s)
-{
-    mp_impl->buf.type = s;
-}
-
-void import_strikethrough::set_width(strikethrough_width_t s)
-{
-    mp_impl->buf.width = s;
-}
-
-void import_strikethrough::set_text(strikethrough_text_t s)
-{
-    mp_impl->buf.text = s;
-}
-
-void import_strikethrough::commit()
-{
-    mp_impl->ref = mp_impl->buf;
-}
-
 struct import_font_style::impl
 {
     std::shared_ptr<import_factory_config> config;
@@ -246,19 +184,19 @@ struct import_font_style::impl
 
     std::unordered_map<font_t, std::size_t, font_t::hash> font_cache;
     font_t cur_font;
-    import_strikethrough strikethrough_import;
+    detail::import_strikethrough strikethrough_import;
 
     impl(styles& _styles_model, string_pool& sp) :
         config(std::make_shared<import_factory_config>()),
         styles_model(_styles_model),
         str_pool(sp),
-        strikethrough_import(cur_font.strikethrough) {}
+        strikethrough_import() {}
 
     impl(std::shared_ptr<import_factory_config> _config, styles& _styles_model, string_pool& sp) :
         config(_config),
         styles_model(_styles_model),
         str_pool(sp),
-        strikethrough_import(cur_font.strikethrough) {}
+        strikethrough_import() {}
 };
 
 import_font_style::import_font_style(styles& _styles_model, string_pool& sp) :
@@ -364,9 +302,9 @@ void import_font_style::set_color(color_elem_t alpha, color_elem_t red, color_el
     mp_impl->cur_font.color = color_t(alpha, red, green, blue);
 }
 
-import_strikethrough* import_font_style::start_strikethrough()
+iface::import_strikethrough* import_font_style::start_strikethrough()
 {
-    mp_impl->strikethrough_import.reset();
+    mp_impl->strikethrough_import.reset(&mp_impl->cur_font.strikethrough);
     return &mp_impl->strikethrough_import;
 }
 

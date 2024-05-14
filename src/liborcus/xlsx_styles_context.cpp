@@ -289,12 +289,13 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_strike:
             {
                 assert(mp_font);
-                auto* st = mp_font->start_strikethrough();
-                ENSURE_INTERFACE(st, import_strikethrough);
-                st->set_style(ss::strikethrough_style_t::solid);
-                st->set_type(ss::strikethrough_type_t::single_type);
-                st->set_width(ss::strikethrough_width_t::width_auto);
-                st->commit();
+                if (auto* st = mp_font->start_strikethrough(); st)
+                {
+                    st->set_style(ss::strikethrough_style_t::solid);
+                    st->set_type(ss::strikethrough_type_t::single_type);
+                    st->set_width(ss::strikethrough_width_t::width_auto);
+                    st->commit();
+                }
                 break;
             }
             case XML_sz:

@@ -39,6 +39,43 @@ bool color_t::operator!=(const color_t& other) const
     return !operator==(other);
 }
 
+strikethrough_t::strikethrough_t() = default;
+strikethrough_t::strikethrough_t(const strikethrough_t& other) = default;
+strikethrough_t::~strikethrough_t() = default;
+
+strikethrough_t& strikethrough_t::operator=(const strikethrough_t& other)
+{
+    style = other.style;
+    type = other.type;
+    width = other.width;
+    text = other.text;
+
+    return *this;
+}
+
+bool strikethrough_t::operator==(const strikethrough_t& other) const
+{
+    return style == other.style && type == other.type && width == other.width && text == other.text;
+}
+
+bool strikethrough_t::operator!=(const strikethrough_t& other) const
+{
+    return !operator==(other);
+}
+
+void strikethrough_t::reset()
+{
+    style.reset();
+    type.reset();
+    width.reset();
+    text.reset();
+}
+
+bool strikethrough_t::has_value() const
+{
+    return style.has_value() || type.has_value() || width.has_value() || text.has_value();
+}
+
 format_run_t::format_run_t() = default;
 format_run_t::format_run_t(const format_run_t& other) = default;
 format_run_t::~format_run_t() = default;
@@ -54,6 +91,7 @@ format_run_t& format_run_t::operator=(const format_run_t& other)
     italic = other.italic;
     superscript = other.superscript;
     subscript = other.subscript;
+    strikethrough = other.strikethrough;
 
     return *this;
 }
@@ -69,13 +107,14 @@ void format_run_t::reset()
     italic.reset();
     superscript.reset();
     subscript.reset();
+    strikethrough.reset();
 }
 
 bool format_run_t::formatted() const
 {
     return font.has_value() || font_size.has_value() || color.has_value()
         || bold.has_value() || italic.has_value() || superscript.has_value()
-        || subscript.has_value();
+        || subscript.has_value() || strikethrough.has_value();
 }
 
 }} // namespace orcus::spreadsheet

@@ -2040,13 +2040,13 @@ void xls_xml_context::commit_default_style()
 
         if (font.strikethrough && *font.strikethrough)
         {
-            auto* st = font_style->start_strikethrough();
-            ENSURE_INTERFACE(st, import_strikethrough);
-
-            st->set_style(ss::strikethrough_style_t::solid);
-            st->set_type(ss::strikethrough_type_t::single_type);
-            st->set_width(ss::strikethrough_width_t::width_auto);
-            st->commit();
+            if (auto* st = font_style->start_strikethrough(); st)
+            {
+                st->set_style(ss::strikethrough_style_t::solid);
+                st->set_type(ss::strikethrough_type_t::single_type);
+                st->set_width(ss::strikethrough_width_t::width_auto);
+                st->commit();
+            }
         }
 
         font_style->set_bold(font.bold);
@@ -2208,13 +2208,13 @@ void xls_xml_context::commit_styles()
 
         if (style->font.strikethrough && *style->font.strikethrough)
         {
-            auto* st = font_style->start_strikethrough();
-            ENSURE_INTERFACE(st, import_strikethrough);
-
-            st->set_style(ss::strikethrough_style_t::solid);
-            st->set_type(ss::strikethrough_type_t::single_type);
-            st->set_width(ss::strikethrough_width_t::width_auto);
-            st->commit();
+            if (auto* st = font_style->start_strikethrough(); st)
+            {
+                st->set_style(ss::strikethrough_style_t::solid);
+                st->set_type(ss::strikethrough_type_t::single_type);
+                st->set_width(ss::strikethrough_width_t::width_auto);
+                st->commit();
+            }
         }
 
         font_style->set_bold(style->font.bold);
