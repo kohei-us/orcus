@@ -330,9 +330,9 @@ void build_text_decoration(std::ostringstream& os, const font_t& ft)
         }
     }
 
-    if (ft.strikethrough_style)
+    if (ft.strikethrough.style)
     {
-        switch (*ft.strikethrough_style)
+        switch (*ft.strikethrough.style)
         {
             case strikethrough_style_t::none:
                 break;

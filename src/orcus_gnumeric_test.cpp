@@ -816,14 +816,14 @@ void test_gnumeric_text_formats()
         row = 9;
         assert(check_cell_text(*sheet1, row, col, "All Strikethrough"));
         const ss::font_t* font = get_font(*sheet1, row, col);
-        assert(font->strikethrough_style);
-        assert(*font->strikethrough_style == ss::strikethrough_style_t::solid);
+        assert(font->strikethrough.style);
+        assert(*font->strikethrough.style == ss::strikethrough_style_t::solid);
 
-        assert(font->strikethrough_type);
-        assert(*font->strikethrough_type == ss::strikethrough_type_t::single_type);
+        assert(font->strikethrough.type);
+        assert(*font->strikethrough.type == ss::strikethrough_type_t::single_type);
 
-        assert(font->strikethrough_width);
-        assert(*font->strikethrough_width == ss::strikethrough_width_t::width_auto);
+        assert(font->strikethrough.width);
+        assert(*font->strikethrough.width == ss::strikethrough_width_t::width_auto);
     }
 
     row = 10;

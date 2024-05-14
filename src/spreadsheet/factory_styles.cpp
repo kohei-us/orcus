@@ -237,10 +237,10 @@ void import_strikethrough::set_text(strikethrough_text_t s)
 
 void import_strikethrough::commit()
 {
-    mp_impl->font.strikethrough_style = mp_impl->style;
-    mp_impl->font.strikethrough_type = mp_impl->type;
-    mp_impl->font.strikethrough_width = mp_impl->width;
-    mp_impl->font.strikethrough_text = mp_impl->text;
+    mp_impl->font.strikethrough.style = mp_impl->style;
+    mp_impl->font.strikethrough.type = mp_impl->type;
+    mp_impl->font.strikethrough.width = mp_impl->width;
+    mp_impl->font.strikethrough.text = mp_impl->text;
 }
 
 struct import_font_style::impl

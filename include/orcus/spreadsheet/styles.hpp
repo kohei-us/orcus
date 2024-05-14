@@ -20,6 +20,25 @@ namespace orcus { namespace spreadsheet {
 
 class document;
 
+struct ORCUS_SPM_DLLPUBLIC strikethrough_t
+{
+    std::optional<strikethrough_style_t> style;
+    std::optional<strikethrough_type_t> type;
+    std::optional<strikethrough_width_t> width;
+    std::optional<strikethrough_text_t> text;
+
+    strikethrough_t();
+    strikethrough_t(const strikethrough_t& other);
+    ~strikethrough_t();
+
+    strikethrough_t& operator=(const strikethrough_t& other);
+
+    bool operator==(const strikethrough_t& other) const;
+    bool operator!=(const strikethrough_t& other) const;
+
+    void reset();
+};
+
 /**
  * Font style record.
  */
@@ -43,10 +62,8 @@ struct ORCUS_SPM_DLLPUBLIC font_t
     std::optional<underline_type_t> underline_type;
     std::optional<color_t> underline_color;
     std::optional<color_t> color;
-    std::optional<strikethrough_style_t> strikethrough_style;
-    std::optional<strikethrough_width_t> strikethrough_width;
-    std::optional<strikethrough_type_t> strikethrough_type;
-    std::optional<strikethrough_text_t> strikethrough_text;
+
+    strikethrough_t strikethrough;
 
     font_t();
     font_t(const font_t& other);

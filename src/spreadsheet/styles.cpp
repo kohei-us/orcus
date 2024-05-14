@@ -19,6 +19,38 @@
 
 namespace orcus { namespace spreadsheet {
 
+strikethrough_t::strikethrough_t() = default;
+strikethrough_t::strikethrough_t(const strikethrough_t& other) = default;
+strikethrough_t::~strikethrough_t() = default;
+
+strikethrough_t& strikethrough_t::operator=(const strikethrough_t& other)
+{
+    style = other.style;
+    type = other.type;
+    width = other.width;
+    text = other.text;
+
+    return *this;
+}
+
+bool strikethrough_t::operator==(const strikethrough_t& other) const
+{
+    return style == other.style && type == other.type && width == other.width && text == other.text;
+}
+
+bool strikethrough_t::operator!=(const strikethrough_t& other) const
+{
+    return !operator==(other);
+}
+
+void strikethrough_t::reset()
+{
+    style.reset();
+    type.reset();
+    width.reset();
+    text.reset();
+}
+
 font_t::font_t() = default;
 font_t::font_t(const font_t& other) = default;
 font_t::~font_t() = default;
@@ -81,16 +113,7 @@ bool font_t::operator==(const font_t& other) const
     if (color != other.color)
         return false;
 
-    if (strikethrough_style != other.strikethrough_style)
-        return false;
-
-    if (strikethrough_width != other.strikethrough_width)
-        return false;
-
-    if (strikethrough_type != other.strikethrough_type)
-        return false;
-
-    if (strikethrough_text != other.strikethrough_text)
+    if (strikethrough != other.strikethrough)
         return false;
 
     return true;

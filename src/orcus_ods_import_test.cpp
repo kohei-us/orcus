@@ -173,49 +173,49 @@ bool verify_font_attrs(const ss::font_t& expected, const ss::font_t& actual)
         return false;
     }
 
-    if (expected.strikethrough_style != actual.strikethrough_style)
+    if (expected.strikethrough.style != actual.strikethrough.style)
     {
         std::cerr << "strikethrough_style states differ!" << std::endl;
         return false;
     }
 
-    if (expected.strikethrough_style && *expected.strikethrough_style != *actual.strikethrough_style)
+    if (expected.strikethrough.style && *expected.strikethrough.style != *actual.strikethrough.style)
     {
         std::cerr << "strikethrough_style values differ!" << std::endl;
         return false;
     }
 
-    if (expected.strikethrough_width != actual.strikethrough_width)
+    if (expected.strikethrough.width != actual.strikethrough.width)
     {
         std::cerr << "strikethrough_width states differ!" << std::endl;
         return false;
     }
 
-    if (expected.strikethrough_width && *expected.strikethrough_width != *actual.strikethrough_width)
+    if (expected.strikethrough.width && *expected.strikethrough.width != *actual.strikethrough.width)
     {
         std::cerr << "strikethrough_width values differ!" << std::endl;
         return false;
     }
 
-    if (expected.strikethrough_type != actual.strikethrough_type)
+    if (expected.strikethrough.type != actual.strikethrough.type)
     {
         std::cerr << "strikethrough_type states differ!" << std::endl;
         return false;
     }
 
-    if (expected.strikethrough_type && *expected.strikethrough_type != *actual.strikethrough_type)
+    if (expected.strikethrough.type && *expected.strikethrough.type != *actual.strikethrough.type)
     {
         std::cerr << "strikethrough_type values differ!" << std::endl;
         return false;
     }
 
-    if (expected.strikethrough_text != actual.strikethrough_text)
+    if (expected.strikethrough.text != actual.strikethrough.text)
     {
         std::cerr << "strikethrough_text states differ!" << std::endl;
         return false;
     }
 
-    if (expected.strikethrough_text && *expected.strikethrough_text != *actual.strikethrough_text)
+    if (expected.strikethrough.text && *expected.strikethrough.text != *actual.strikethrough.text)
     {
         std::cerr << "strikethrough_text values differ!" << std::endl;
         return false;
@@ -611,10 +611,10 @@ void test_odf_text_strikethrough(const ss::styles& styles)
     assert(cell_format);
 
     const ss::font_t* cell_font = styles.get_font(font);
-    assert(*cell_font->strikethrough_style == ss::strikethrough_style_t::solid);
-    assert(!cell_font->strikethrough_width); // not set
-    assert(*cell_font->strikethrough_type == ss::strikethrough_type_t::single_type);
-    assert(!cell_font->strikethrough_text); // not set
+    assert(*cell_font->strikethrough.style == ss::strikethrough_style_t::solid);
+    assert(!cell_font->strikethrough.width); // not set
+    assert(*cell_font->strikethrough.type == ss::strikethrough_type_t::single_type);
+    assert(!cell_font->strikethrough.text); // not set
 
     style = find_cell_style_by_name("Name21", styles);
     assert(style);
@@ -624,10 +624,10 @@ void test_odf_text_strikethrough(const ss::styles& styles)
     assert(cell_format);
 
     cell_font = styles.get_font(font);
-    assert(*cell_font->strikethrough_style == ss::strikethrough_style_t::solid);
-    assert(*cell_font->strikethrough_width == ss::strikethrough_width_t::bold);
-    assert(*cell_font->strikethrough_type == ss::strikethrough_type_t::single_type);
-    assert(!cell_font->strikethrough_text); // not set
+    assert(*cell_font->strikethrough.style == ss::strikethrough_style_t::solid);
+    assert(*cell_font->strikethrough.width == ss::strikethrough_width_t::bold);
+    assert(*cell_font->strikethrough.type == ss::strikethrough_type_t::single_type);
+    assert(!cell_font->strikethrough.text); // not set
 
     style = find_cell_style_by_name("Name22", styles);
     assert(style);
@@ -637,10 +637,10 @@ void test_odf_text_strikethrough(const ss::styles& styles)
     assert(cell_format);
 
     cell_font = styles.get_font(font);
-    assert(*cell_font->strikethrough_style == ss::strikethrough_style_t::solid);
-    assert(!cell_font->strikethrough_width); // not set
-    assert(*cell_font->strikethrough_type == ss::strikethrough_type_t::single_type);
-    assert(*cell_font->strikethrough_text == ss::strikethrough_text_t::slash);
+    assert(*cell_font->strikethrough.style == ss::strikethrough_style_t::solid);
+    assert(!cell_font->strikethrough.width); // not set
+    assert(*cell_font->strikethrough.type == ss::strikethrough_type_t::single_type);
+    assert(*cell_font->strikethrough.text == ss::strikethrough_text_t::slash);
 }
 
 void test_odf_text_alignment(const ss::styles& styles)
