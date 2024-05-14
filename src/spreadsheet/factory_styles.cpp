@@ -21,7 +21,7 @@ class import_strikethrough : public iface::import_strikethrough
     std::unique_ptr<impl> mp_impl;
 
 public:
-    import_strikethrough(font_t& font);
+    import_strikethrough(strikethrough_t& ref);
 
     void reset();
 
@@ -192,55 +192,50 @@ public:
 
 struct import_strikethrough::impl
 {
-    font_t& font;
+    strikethrough_t& ref;
+    strikethrough_t buf;
 
     std::optional<strikethrough_style_t> style;
     std::optional<strikethrough_type_t> type;
     std::optional<strikethrough_width_t> width;
     std::optional<strikethrough_text_t> text;
 
-    impl(font_t& _font) : font(_font) {}
+    impl(strikethrough_t& _ref) : ref(_ref) {}
 };
 
-import_strikethrough::import_strikethrough(font_t& font) :
-    mp_impl(std::make_unique<impl>(font))
+import_strikethrough::import_strikethrough(strikethrough_t& ref) :
+    mp_impl(std::make_unique<impl>(ref))
 {
 }
 
 void import_strikethrough::reset()
 {
-    mp_impl->style.reset();
-    mp_impl->type.reset();
-    mp_impl->width.reset();
-    mp_impl->text.reset();
+    mp_impl->buf.reset();
 }
 
 void import_strikethrough::set_style(strikethrough_style_t s)
 {
-    mp_impl->style = s;
+    mp_impl->buf.style = s;
 }
 
 void import_strikethrough::set_type(strikethrough_type_t s)
 {
-    mp_impl->type = s;
+    mp_impl->buf.type = s;
 }
 
 void import_strikethrough::set_width(strikethrough_width_t s)
 {
-    mp_impl->width = s;
+    mp_impl->buf.width = s;
 }
 
 void import_strikethrough::set_text(strikethrough_text_t s)
 {
-    mp_impl->text = s;
+    mp_impl->buf.text = s;
 }
 
 void import_strikethrough::commit()
 {
-    mp_impl->font.strikethrough.style = mp_impl->style;
-    mp_impl->font.strikethrough.type = mp_impl->type;
-    mp_impl->font.strikethrough.width = mp_impl->width;
-    mp_impl->font.strikethrough.text = mp_impl->text;
+    mp_impl->ref = mp_impl->buf;
 }
 
 struct import_font_style::impl
@@ -257,10 +252,13 @@ struct import_font_style::impl
         config(std::make_shared<import_factory_config>()),
         styles_model(_styles_model),
         str_pool(sp),
-        strikethrough_import(cur_font) {}
+        strikethrough_import(cur_font.strikethrough) {}
 
     impl(std::shared_ptr<import_factory_config> _config, styles& _styles_model, string_pool& sp) :
-        config(_config), styles_model(_styles_model), str_pool(sp), strikethrough_import(cur_font) {}
+        config(_config),
+        styles_model(_styles_model),
+        str_pool(sp),
+        strikethrough_import(cur_font.strikethrough) {}
 };
 
 import_font_style::import_font_style(styles& _styles_model, string_pool& sp) :
