@@ -185,12 +185,15 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
         case XML_tableColumns:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_table);
-            single_long_attr_getter func(NS_ooxml_xlsx, XML_count);
-            long column_count = for_each(attrs.begin(), attrs.end(), func).get_value();
-            if (get_config().debug)
-                std::cout << "  * column count: " << column_count << std::endl;
+            if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
+            {
+                if (get_config().debug)
+                    std::cout << "  * column count: " << *v << std::endl;
 
-            m_table.set_column_count(column_count);
+                m_table.set_column_count(*v);
+            }
+            else
+                throw xml_structure_error("failed to get a column count from tableColumns");
         }
         break;
         case XML_tableColumn:

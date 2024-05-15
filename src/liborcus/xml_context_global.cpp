@@ -13,31 +13,6 @@
 
 namespace orcus {
 
-single_long_attr_getter::single_long_attr_getter(xmlns_id_t ns, xml_token_t name) :
-    m_value(-1), m_ns(ns), m_name(name) {}
-
-void single_long_attr_getter::operator() (const xml_token_attr_t& attr)
-{
-    if (attr.name != m_name)
-        return;
-
-    if (attr.ns && attr.ns != m_ns)
-        return;
-
-    m_value = to_long(attr.value);
-}
-
-long single_long_attr_getter::get_value() const
-{
-    return m_value;
-}
-
-long single_long_attr_getter::get(const std::vector<xml_token_attr_t>& attrs, xmlns_id_t ns, xml_token_t name)
-{
-    single_long_attr_getter func(ns, name);
-    return std::for_each(attrs.begin(), attrs.end(), func).get_value();
-}
-
 single_double_attr_getter::single_double_attr_getter(xmlns_id_t ns, xml_token_t name) :
     m_value(-1.0), m_ns(ns), m_name(name) {}
 
@@ -82,6 +57,20 @@ std::string_view get_single_attr(
     }
 
     return value;
+}
+
+std::optional<long> get_single_long_attr(const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name)
+{
+    auto s = get_single_attr(attrs, ns, name);
+    if (s.empty())
+        return {};
+
+    const char* p_end = nullptr;
+    long v = to_long(s, &p_end);
+    if (s.data() == p_end)
+        return {}; // parsing failed
+
+    return v;
 }
 
 }

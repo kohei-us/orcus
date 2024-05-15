@@ -247,10 +247,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_fonts:
             {
-                auto ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_count, &m_pool);
-                size_t font_count = to_long(ps);
-                mp_styles->set_font_count(font_count);
-                m_font_ids.reserve(font_count);
+                if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
+                {
+                    mp_styles->set_font_count(*v);
+                    m_font_ids.reserve(*v);
+                }
                 break;
             }
             case XML_font:
@@ -352,10 +353,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_fills:
             {
-                std::string_view ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_count, &m_pool);
-                size_t fill_count = to_long(ps);
-                mp_styles->set_fill_count(fill_count);
-                m_fill_ids.reserve(fill_count);
+                if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
+                {
+                    mp_styles->set_fill_count(*v);
+                    m_fill_ids.reserve(*v);
+                }
                 break;
             }
             case XML_fill:
@@ -367,7 +369,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_patternFill:
             {
-                std::string_view ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_patternType, &m_pool);
+                std::string_view ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_patternType);
                 assert(mp_fill);
                 mp_fill->set_pattern_type(fill_pattern::get().find(ps.data(), ps.size()));
                 break;
@@ -434,10 +436,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_borders:
             {
-                std::string_view ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_count, &m_pool);
-                size_t border_count = to_long(ps);
-                mp_styles->set_border_count(border_count);
-                m_border_ids.reserve(border_count);
+                if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
+                {
+                    mp_styles->set_border_count(*v);
+                    m_border_ids.reserve(*v);
+                }
                 break;
             }
             case XML_border:
@@ -521,12 +524,9 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_cellStyles:
             {
-                if (auto ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_count, &m_pool); !ps.empty())
-                {
-                    const char* p_end = nullptr;
-                    if (size_t n = to_long(ps, &p_end); ps.data() < p_end)
-                        mp_styles->set_cell_style_count(n);
-                }
+                if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
+                    mp_styles->set_cell_style_count(*v);
+
                 mp_cell_style = mp_styles->start_cell_style();
                 ENSURE_INTERFACE(mp_cell_style, import_cell_style);
                 break;
@@ -661,12 +661,9 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_numFmts:
             {
-                if (auto val = get_single_attr(attrs, NS_ooxml_xlsx, XML_count); !val.empty())
-                {
-                    const char* p_end = nullptr;
-                    if (size_t n = to_long(val, &p_end); val.data() < p_end)
-                        mp_styles->set_number_format_count(n);
-                }
+                if (auto val = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); val)
+                    mp_styles->set_number_format_count(*val);
+
                 break;
             }
             case XML_numFmt:

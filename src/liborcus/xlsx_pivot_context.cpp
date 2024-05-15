@@ -213,16 +213,20 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         case XML_cacheFields:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheDefinition);
-            single_long_attr_getter func(NS_ooxml_xlsx, XML_count);
-            long field_count = for_each(attrs.begin(), attrs.end(), func).get_value();
+            long field_count = -1;
+            if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
+                field_count = *v;
+            else
+                throw xml_structure_error("failed to get a field count from cacheFields");
 
             if (get_config().debug)
-                cout << "field count: " << field_count << endl;
+                std::cout << "field count: " << field_count << std::endl;
 
             if (field_count < 0)
                 throw xml_structure_error("field count of a pivot cache must be positive.");
 
             m_pcache.set_field_count(field_count);
+
             break;
         }
         case XML_cacheField:
@@ -1020,15 +1024,17 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         case XML_pivotCacheRecords:
         {
             xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-            long count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
 
-            if (get_config().debug)
+            if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
             {
-                cout << "---" << endl;
-                cout << "pivot cache record (count: " << count << ")" << endl;
-            }
+                if (get_config().debug)
+                {
+                    cout << "---" << endl;
+                    cout << "pivot cache record (count: " << *count << ")" << endl;
+                }
 
-            m_pc_records.set_record_count(count);
+                m_pc_records.set_record_count(*count);
+            }
             break;
         }
         case XML_r: // record
@@ -1052,11 +1058,16 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         case XML_x: // shared item index
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
-            long v = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
-            if (get_config().debug)
-                cout << "  * x = " << v << endl;
+            if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_v); v)
+            {
+                if (get_config().debug)
+                    cout << "  * x = " << *v << endl;
 
-            m_pc_records.append_record_value_shared_item(v);
+                m_pc_records.append_record_value_shared_item(*v);
+            }
+            else
+                throw xml_structure_error("failed to get a record value shared item index");
+
             break;
         }
         case XML_n: // numeric
@@ -1296,9 +1307,11 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
                 // pivotFields and its child elements represent the visual
                 // appearances of the fields inside pivot table.
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-                size_t count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
-                if (get_config().debug)
-                    cout << "field count: " << count << endl;
+                if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
+                {
+                    if (get_config().debug)
+                        std::cout << "field count: " << *count << std::endl;
+                }
             }
             break;
             case XML_pivotField:
@@ -1356,9 +1369,11 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             case XML_items:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotField);
-                size_t count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
-                if (get_config().debug)
-                    cout << "  * item count: " << count << endl;
+                if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
+                {
+                    if (get_config().debug)
+                        cout << "  * item count: " << *count << endl;
+                }
             }
             break;
             case XML_item:
@@ -1398,33 +1413,39 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             case XML_rowFields:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-                size_t count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
-                if (get_config().debug)
+                if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
-                    cout << "---" << endl;
-                    cout << "row field count: " << count << endl;
+                    if (get_config().debug)
+                    {
+                        std::cout << "---" << std::endl;
+                        std::cout << "row field count: " << *count << std::endl;
+                    }
                 }
             }
             break;
             case XML_colFields:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-                size_t count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
-                if (get_config().debug)
+                if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
-                    cout << "---" << endl;
-                    cout << "column field count: " << count << endl;
+                    if (get_config().debug)
+                    {
+                        std::cout << "---" << std::endl;
+                        std::cout << "column field count: " << *count << std::endl;
+                    }
                 }
             }
             break;
             case XML_pageFields:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-                size_t count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
-                if (get_config().debug)
+                if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
-                    cout << "---" << endl;
-                    cout << "page field count: " << count << endl;
+                    if (get_config().debug)
+                    {
+                        std::cout << "---" << std::endl;
+                        std::cout << "page field count: " << *count << std::endl;
+                    }
                 }
             }
             break;
@@ -1486,19 +1507,23 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
                 // of -2 represents a special field that displays the list of
                 // data fields when the pivot table contains more than one
                 // data field.
-                long idx = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_x);
-                if (get_config().debug)
-                    cout << "  * x = " << idx << endl;
+                if (auto idx = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_x); idx)
+                {
+                    if (get_config().debug)
+                        std::cout << "  * x = " << *idx << std::endl;
+                }
             }
             break;
             case XML_dataFields:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-                size_t count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
-                if (get_config().debug)
+                if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
-                    cout << "---" << endl;
-                    cout << "data field count: " << count << endl;
+                    if (get_config().debug)
+                    {
+                        cout << "---" << endl;
+                        cout << "data field count: " << *count << endl;
+                    }
                 }
             }
             break;
@@ -1564,22 +1589,26 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
                 // cells in the row field area.  Each <i> child element
                 // represents a single row.
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-                size_t count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
-                if (get_config().debug)
+                if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
-                    cout << "---" << endl;
-                    cout << "row item count: " << count << endl;
+                    if (get_config().debug)
+                    {
+                        std::cout << "---" << std::endl;
+                        std::cout << "row item count: " << *count << std::endl;
+                    }
                 }
             }
             break;
             case XML_colItems:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-                size_t count = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
-                if (get_config().debug)
+                if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
-                    cout << "---" << endl;
-                    cout << "column item count: " << count << endl;
+                    if (get_config().debug)
+                    {
+                        std::cout << "---" << std::endl;
+                        std::cout << "column item count: " << *count << std::endl;
+                    }
                 }
             }
             break;
@@ -1642,7 +1671,10 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
 
                 if (parent.second == XML_i)
                 {
-                    long idx = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
+                    long idx = 0;
+                    if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_v); v)
+                        idx = *v;
+
                     if (idx < 0)
                         // 0 is default when not set.
                         idx = 0;

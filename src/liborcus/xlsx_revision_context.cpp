@@ -191,17 +191,15 @@ void xlsx_revheaders_context::start_element(xmlns_id_t ns, xml_token_t name, con
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_header);
                 m_cur_sheet_ids.clear();
-                long n = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_count);
-                if (n > 0)
-                    m_cur_sheet_ids.reserve(n);
+                if (auto n = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); n && *n > 0)
+                    m_cur_sheet_ids.reserve(*n);
             }
             break;
             case XML_sheetId:
             {
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_sheetIdMap);
-                long val = single_long_attr_getter::get(attrs, NS_ooxml_xlsx, XML_val);
-                if (val > 0)
-                    m_cur_sheet_ids.push_back(val-1); // convert from 1-based to 0-based.
+                if (auto val = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_val); val && *val > 0)
+                    m_cur_sheet_ids.push_back(*val - 1); // convert from 1-based to 0-based.
             }
             break;
             default:

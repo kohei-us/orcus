@@ -12,10 +12,6 @@
 
 #include "orcus/spreadsheet/import_interface.hpp"
 
-#include <iostream>
-
-using namespace std;
-
 namespace orcus {
 
 xlsx_autofilter_context::xlsx_autofilter_context(
@@ -25,17 +21,7 @@ xlsx_autofilter_context::xlsx_autofilter_context(
     m_resolver(resolver),
     m_cur_col(-1) {}
 
-xlsx_autofilter_context::~xlsx_autofilter_context() {}
-
-xml_context_base* xlsx_autofilter_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
-{
-    return nullptr;
-}
-
-void xlsx_autofilter_context::end_child_context(
-    xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
-{
-}
+xlsx_autofilter_context::~xlsx_autofilter_context() = default;
 
 void xlsx_autofilter_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
@@ -55,9 +41,12 @@ void xlsx_autofilter_context::start_element(xmlns_id_t ns, xml_token_t name, con
         case XML_filterColumn:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_autoFilter);
-            m_cur_col = for_each(
-                attrs.begin(), attrs.end(),
-                single_long_attr_getter(NS_ooxml_xlsx, XML_colId)).get_value();
+            m_cur_col = -1;
+            if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_colId); v)
+                m_cur_col = *v;
+            else
+                throw xml_structure_error("failed to parse a column id (colId) from filterColumn");
+
             break;
         }
         case XML_filters:
