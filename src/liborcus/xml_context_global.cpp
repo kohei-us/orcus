@@ -13,31 +13,6 @@
 
 namespace orcus {
 
-single_double_attr_getter::single_double_attr_getter(xmlns_id_t ns, xml_token_t name) :
-    m_value(-1.0), m_ns(ns), m_name(name) {}
-
-void single_double_attr_getter::operator() (const xml_token_attr_t& attr)
-{
-    if (attr.name != m_name)
-        return;
-
-    if (attr.ns && attr.ns != m_ns)
-        return;
-
-    m_value = to_double(attr.value);
-}
-
-double single_double_attr_getter::get_value() const
-{
-    return m_value;
-}
-
-double single_double_attr_getter::get(const std::vector<xml_token_attr_t>& attrs, xmlns_id_t ns, xml_token_t name)
-{
-    single_double_attr_getter func(ns, name);
-    return std::for_each(attrs.begin(), attrs.end(), func).get_value();
-}
-
 std::string_view get_single_attr(
     const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name, string_pool* pool)
 {
@@ -67,6 +42,20 @@ std::optional<long> get_single_long_attr(const xml_token_attrs_t& attrs, xmlns_i
 
     const char* p_end = nullptr;
     long v = to_long(s, &p_end);
+    if (s.data() == p_end)
+        return {}; // parsing failed
+
+    return v;
+}
+
+std::optional<double> get_single_double_attr(const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name)
+{
+    auto s = get_single_attr(attrs, ns, name);
+    if (s.empty())
+        return {};
+
+    const char* p_end = nullptr;
+    double v = to_double(s, &p_end);
     if (s.data() == p_end)
         return {}; // parsing failed
 

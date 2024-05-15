@@ -17,24 +17,14 @@ namespace orcus {
 
 class string_pool;
 
-class single_double_attr_getter
-{
-    double m_value;
-    xmlns_id_t m_ns;
-    xml_token_t m_name;
-
-public:
-    single_double_attr_getter(xmlns_id_t ns, xml_token_t name);
-    void operator() (const xml_token_attr_t& attr);
-    double get_value() const;
-
-    static double get(const std::vector<xml_token_attr_t>& attrs, xmlns_id_t ns, xml_token_t name);
-};
-
 std::string_view get_single_attr(
     const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name, string_pool* pool = nullptr);
 
-std::optional<long> get_single_long_attr(const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name);
+std::optional<long> get_single_long_attr(
+    const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name);
+
+std::optional<double> get_single_double_attr(
+    const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name);
 
 }
 

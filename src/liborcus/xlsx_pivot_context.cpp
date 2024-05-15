@@ -1073,11 +1073,14 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         case XML_n: // numeric
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
-            double val = single_double_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
-            if (get_config().debug)
-                cout << "  * n = " << val << endl;
+            auto val = get_single_double_attr(attrs, NS_ooxml_xlsx, XML_v);
+            if (!val)
+                throw xml_structure_error("failed to get a numeric record value in pivot cache record");
 
-            m_pc_records.append_record_value_numeric(val);
+            if (get_config().debug)
+                cout << "  * n = " << *val << endl;
+
+            m_pc_records.append_record_value_numeric(*val);
             break;
         }
         case XML_e: // error value
