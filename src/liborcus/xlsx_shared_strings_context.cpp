@@ -105,7 +105,7 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
             case XML_sz:
             {
                 // font size
-                std::string_view s = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
+                std::string_view s = get_single_attr(attrs, NS_ooxml_xlsx, XML_val);
                 double point = to_double(s);
                 mp_strings->set_segment_font_size(point);
                 break;
@@ -142,7 +142,7 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
             case XML_rFont:
             {
                 // font
-                std::string_view font = for_each(attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
+                std::string_view font = get_single_attr(attrs, NS_ooxml_xlsx, XML_val, &m_pool);
                 mp_strings->set_segment_font_name(font);
                 break;
             }

@@ -13,44 +13,6 @@
 
 namespace orcus {
 
-single_attr_getter::single_attr_getter(string_pool& pool, xmlns_id_t ns, xml_token_t name) :
-    m_pool(&pool), m_ns(ns), m_name(name) {}
-
-single_attr_getter::single_attr_getter(xmlns_id_t ns, xml_token_t name) :
-    m_pool(nullptr), m_ns(ns), m_name(name) {}
-
-void single_attr_getter::operator() (const xml_token_attr_t& attr)
-{
-    if (attr.name != m_name)
-        return;
-
-    if (attr.ns && attr.ns != m_ns)
-        return;
-
-    m_value = attr.value;
-    if (attr.transient && m_pool)
-        m_value = m_pool->intern(m_value).first;
-}
-
-std::string_view single_attr_getter::get_value() const
-{
-    return m_value;
-}
-
-std::string_view single_attr_getter::get(
-    const std::vector<xml_token_attr_t>& attrs, xmlns_id_t ns, xml_token_t name)
-{
-    single_attr_getter func(ns, name);
-    return std::for_each(attrs.begin(), attrs.end(), func).get_value();
-}
-
-std::string_view single_attr_getter::get(
-    const std::vector<xml_token_attr_t>& attrs, string_pool& pool, xmlns_id_t ns, xml_token_t name)
-{
-    single_attr_getter func(pool, ns, name);
-    return std::for_each(attrs.begin(), attrs.end(), func).get_value();
-}
-
 single_long_attr_getter::single_long_attr_getter(xmlns_id_t ns, xml_token_t name) :
     m_value(-1), m_ns(ns), m_name(name) {}
 
@@ -99,6 +61,27 @@ double single_double_attr_getter::get(const std::vector<xml_token_attr_t>& attrs
 {
     single_double_attr_getter func(ns, name);
     return std::for_each(attrs.begin(), attrs.end(), func).get_value();
+}
+
+std::string_view get_single_attr(
+    const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name, string_pool* pool)
+{
+    std::string_view value;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.name != name)
+            continue;
+
+        if (attr.ns && attr.ns != ns)
+            continue;
+
+        value = attr.value;
+        if (attr.transient && pool)
+            value = pool->intern(value).first;
+    }
+
+    return value;
 }
 
 }

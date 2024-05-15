@@ -247,8 +247,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_fonts:
             {
-                std::string_view ps = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
+                auto ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_count, &m_pool);
                 size_t font_count = to_long(ps);
                 mp_styles->set_font_count(font_count);
                 m_font_ids.reserve(font_count);
@@ -347,15 +346,13 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_name:
             {
-                std::string_view ps = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
+                std::string_view ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_val, &m_pool);
                 mp_font->set_name(ps);
                 break;
             }
             case XML_fills:
             {
-                std::string_view ps = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
+                std::string_view ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_count, &m_pool);
                 size_t fill_count = to_long(ps);
                 mp_styles->set_fill_count(fill_count);
                 m_fill_ids.reserve(fill_count);
@@ -370,8 +367,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_patternFill:
             {
-                std::string_view ps = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_patternType)).get_value();
+                std::string_view ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_patternType, &m_pool);
                 assert(mp_fill);
                 mp_fill->set_pattern_type(fill_pattern::get().find(ps.data(), ps.size()));
                 break;
@@ -438,8 +434,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_borders:
             {
-                std::string_view ps = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
+                std::string_view ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_count, &m_pool);
                 size_t border_count = to_long(ps);
                 mp_styles->set_border_count(border_count);
                 m_border_ids.reserve(border_count);
@@ -526,12 +521,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_cellStyles:
             {
-                std::string_view ps = for_each(
-                    attrs.begin(), attrs.end(), single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
-                if (!ps.empty())
+                if (auto ps = get_single_attr(attrs, NS_ooxml_xlsx, XML_count, &m_pool); !ps.empty())
                 {
-                    size_t n = strtoul(ps.data(), nullptr, 10);
-                    mp_styles->set_cell_style_count(n);
+                    const char* p_end = nullptr;
+                    if (size_t n = to_long(ps, &p_end); ps.data() < p_end)
+                        mp_styles->set_cell_style_count(n);
                 }
                 mp_cell_style = mp_styles->start_cell_style();
                 ENSURE_INTERFACE(mp_cell_style, import_cell_style);
@@ -667,14 +661,11 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             }
             case XML_numFmts:
             {
-                std::string_view val =
-                    for_each(
-                        attrs.begin(), attrs.end(),
-                        single_attr_getter(m_pool, NS_ooxml_xlsx, XML_count)).get_value();
-                if (!val.empty())
+                if (auto val = get_single_attr(attrs, NS_ooxml_xlsx, XML_count); !val.empty())
                 {
-                    size_t n = to_long(val);
-                    mp_styles->set_number_format_count(n);
+                    const char* p_end = nullptr;
+                    if (size_t n = to_long(val, &p_end); val.data() < p_end)
+                        mp_styles->set_number_format_count(n);
                 }
                 break;
             }

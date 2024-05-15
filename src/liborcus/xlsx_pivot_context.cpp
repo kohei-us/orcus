@@ -1041,7 +1041,7 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
 
-            std::string_view cv = single_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
+            std::string_view cv = get_single_attr(attrs, NS_ooxml_xlsx, XML_v);
 
             if (get_config().debug)
                 cout << "  * s = '" << cv << "'" << endl;
@@ -1071,7 +1071,7 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_e: // error value
         {
-            std::string_view cv = single_attr_getter::get(attrs, NS_ooxml_xlsx, XML_v);
+            std::string_view cv = get_single_attr(attrs, NS_ooxml_xlsx, XML_v);
 
             if (get_config().debug)
                 cout << "  * e = " << cv << endl;

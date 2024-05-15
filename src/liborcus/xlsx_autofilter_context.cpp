@@ -49,32 +49,27 @@ void xlsx_autofilter_context::start_element(xmlns_id_t ns, xml_token_t name, con
         case XML_autoFilter:
         {
             xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-            m_ref_range = for_each(
-                attrs.begin(), attrs.end(),
-                single_attr_getter(m_pool, NS_ooxml_xlsx, XML_ref)).get_value();
+            m_ref_range = get_single_attr(attrs, NS_ooxml_xlsx, XML_ref, &m_pool);
+            break;
         }
-        break;
         case XML_filterColumn:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_autoFilter);
             m_cur_col = for_each(
                 attrs.begin(), attrs.end(),
                 single_long_attr_getter(NS_ooxml_xlsx, XML_colId)).get_value();
+            break;
         }
-        break;
         case XML_filters:
             xml_element_expected(parent, NS_ooxml_xlsx, XML_filterColumn);
-        break;
+            break;
         case XML_filter:
         {
             xml_element_expected(parent, NS_ooxml_xlsx, XML_filters);
-            std::string_view val = for_each(
-                attrs.begin(), attrs.end(),
-                single_attr_getter(m_pool, NS_ooxml_xlsx, XML_val)).get_value();
-            if (!val.empty())
+            if (std::string_view val = get_single_attr(attrs, NS_ooxml_xlsx, XML_val, &m_pool); !val.empty())
                 m_cur_match_values.push_back(val);
+            break;
         }
-        break;
         default:
             warn_unhandled();
     }
