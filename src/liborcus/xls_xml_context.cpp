@@ -561,6 +561,17 @@ void xls_xml_data_context::end_element_data()
                     if (sstr.format.subscript)
                         ss->set_segment_subscript(*sstr.format.subscript);
 
+                    if (sstr.format.strikethrough && *sstr.format.strikethrough)
+                    {
+                        if (auto* st = ss->start_strikethrough(); st)
+                        {
+                            st->set_style(ss::strikethrough_style_t::solid);
+                            st->set_type(ss::strikethrough_type_t::single_type);
+                            st->set_width(ss::strikethrough_width_t::width_auto);
+                            st->commit();
+                        }
+                    }
+
                     if (sstr.format.font_face)
                         ss->set_segment_font_name(*sstr.format.font_face);
 

@@ -9,7 +9,7 @@
 #define INCLUDED_ORCUS_ORCUS_TEST_GLOBAL_HPP
 
 #include "test_global.hpp"
-#include <orcus/spreadsheet/types.hpp>
+#include <orcus/spreadsheet/document_types.hpp>
 
 #include <string>
 #include <optional>
@@ -37,6 +37,14 @@ void verify_value_to_decimals(
 std::string prefix_multiline_string(std::string_view str, std::string_view prefix);
 
 bool set(const std::optional<bool>& v);
+
+/**
+ * Check if we can consider the strikethrough attribute to be "set" given the
+ * mapping we do between Excel's and Gnumeric's attribute, which is just
+ * boolean, and how we internally store, which consists of 4 separate
+ * attributes.
+ */
+bool strikethrough_set(const spreadsheet::strikethrough_t& st);
 
 }}
 

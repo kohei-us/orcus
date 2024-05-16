@@ -17,6 +17,8 @@
 #include <iostream>
 #include <chrono>
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus { namespace test {
 
 std::string get_content_check(const spreadsheet::document& doc)
@@ -96,6 +98,29 @@ std::string prefix_multiline_string(std::string_view str, std::string_view prefi
 bool set(const std::optional<bool>& v)
 {
     return v && v.value();
+}
+
+bool strikethrough_set(const ss::strikethrough_t& st)
+{
+    if (!st.style)
+        return false;
+
+    if (*st.style != ss::strikethrough_style_t::solid)
+        return false;
+
+    if (!st.type)
+        return false;
+
+    if (*st.type != ss::strikethrough_type_t::single_type)
+        return false;
+
+    if (!st.width)
+        return false;
+
+    if (*st.width != ss::strikethrough_width_t::width_auto)
+        return false;
+
+    return true;
 }
 
 }}

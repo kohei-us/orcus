@@ -58,34 +58,6 @@ std::unique_ptr<ss::document> load_doc(const std::string_view& path, bool recalc
 }
 
 /**
- * Check if we can consider the strikethrough attribute to be "set" given the
- * mapping we do between Excel's attribute, which is just boolean,
- * and how we internally store, which consists of 4 separate attributes.
- */
-bool strikethrough_set(const ss::strikethrough_t& st)
-{
-    if (!st.style)
-        return false;
-
-    if (*st.style != ss::strikethrough_style_t::solid)
-        return false;
-
-    if (!st.type)
-        return false;
-
-    if (*st.type != ss::strikethrough_type_t::single_type)
-        return false;
-
-    if (!st.width)
-        return false;
-
-    if (*st.width != ss::strikethrough_width_t::width_auto)
-        return false;
-
-    return true;
-}
-
-/**
  * Convenience function to retrieve a pivot cache instance from textural
  * sheet name and range name.
  */
@@ -1372,7 +1344,7 @@ void test_xlsx_formatted_text_basic()
         row = 9;
         assert(check_cell_text(*sheet, row, col, "All Strikethrough"));
         font = get_font(*sheet, row, col);
-        assert(strikethrough_set(font->strikethrough));
+        assert(test::strikethrough_set(font->strikethrough));
 
         // A11
         row = 10;
@@ -1385,7 +1357,7 @@ void test_xlsx_formatted_text_basic()
         //         ^^^^^^^^^^^^^
         assert(runs->at(0).pos == 8);
         assert(runs->at(0).size == 13);
-        assert(strikethrough_set(runs->at(0).strikethrough));
+        assert(test::strikethrough_set(runs->at(0).strikethrough));
 
         // A12:A13 - TODO: check format
         row = 11;

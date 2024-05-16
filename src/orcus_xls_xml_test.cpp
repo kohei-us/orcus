@@ -689,13 +689,28 @@ void test_xls_xml_formatted_text_basic()
         row = 9;
         assert(check_cell_text(*sheet, row, col, "All Strikethrough"));
         font = get_font(*sheet, row, col);
-        assert(font->strikethrough.style == ss::strikethrough_style_t::solid);
-        assert(font->strikethrough.type == ss::strikethrough_type_t::single_type);
-        assert(font->strikethrough.width == ss::strikethrough_width_t::width_auto);
+        assert(test::strikethrough_set(font->strikethrough));
 
-        // A11:A15 - TODO: check format
+        // A11
         row = 10;
         assert(check_cell_text(*sheet, row, col, "Partial strikethrough"));
+        si = sheet->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 2u);
+        // Partial strikethrough
+        // ^^^^^^^^
+        assert(runs->at(0).pos == 0);
+        assert(runs->at(0).size == 8);
+        assert(!test::strikethrough_set(runs->at(0).strikethrough));
+
+        // Partial strikethrough
+        //         ^^^^^^^^^^^^^
+        assert(runs->at(1).pos == 8);
+        assert(runs->at(1).size == 13);
+        assert(test::strikethrough_set(runs->at(1).strikethrough));
+
+        // A12:A15 - TODO: check format
         row = 11;
         assert(check_cell_text(*sheet, row, col, "Superscript"));
         row = 12;
