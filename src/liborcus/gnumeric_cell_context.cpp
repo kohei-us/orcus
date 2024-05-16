@@ -11,6 +11,7 @@
 #include "gnumeric_value_format_parser.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 #include <orcus/measurement.hpp>
 
 #include <fstream>
@@ -301,6 +302,19 @@ void gnumeric_cell_context::push_string(ss::row_t row, ss::col_t col)
                 {
                     bool v = to_bool(vfs.value);
                     shared_strings->set_segment_subscript(v);
+                    break;
+                }
+                case gnumeric_value_format_type::strikethrough:
+                {
+                    bool v = to_bool(vfs.value);
+                    if (auto* st = shared_strings->start_strikethrough(); st && v)
+                    {
+                        st->set_style(ss::strikethrough_style_t::solid);
+                        st->set_type(ss::strikethrough_type_t::single_type);
+                        st->set_width(ss::strikethrough_width_t::width_auto);
+                        st->commit();
+                    }
+
                     break;
                 }
                 case gnumeric_value_format_type::superscript:
