@@ -36,6 +36,9 @@ public:
     virtual void characters(std::string_view str, bool transient);
 
 private:
+    void start_strike(const xml_token_attrs_t& attrs);
+
+private:
     spreadsheet::iface::import_shared_strings* mp_strings = nullptr;
     string_pool m_pool;
     cell_buffer m_cell_buffer;

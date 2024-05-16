@@ -12,6 +12,7 @@
 #include "xml_context_global.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 #include <orcus/measurement.hpp>
 
 #include <optional>
@@ -99,7 +100,8 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
                 break;
             case XML_strike:
             {
-                // strikethrough (TODO: pick this up)
+                // strikethrough
+                start_strike(attrs);
                 break;
             }
             case XML_sz:
@@ -253,6 +255,18 @@ void xlsx_shared_strings_context::characters(std::string_view str, bool transien
         if (transient)
             m_cur_str = m_pool.intern(m_cur_str).first;
     }
+}
+
+void xlsx_shared_strings_context::start_strike(const xml_token_attrs_t& /*attrs*/)
+{
+    auto* st = mp_strings->start_strikethrough();
+    if (!st)
+        return;
+
+    st->set_style(ss::strikethrough_style_t::solid);
+    st->set_type(ss::strikethrough_type_t::single_type);
+    st->set_width(ss::strikethrough_width_t::width_auto);
+    st->commit();
 }
 
 }

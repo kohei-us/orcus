@@ -59,6 +59,26 @@ void build_rgb_color(std::ostringstream& os, const color_t& color_value)
         << static_cast<short>(color_value.blue) << ")";
 }
 
+void build_strikethrough_style(std::ostringstream& os, const strikethrough_t& strike)
+{
+    if (strike.style)
+    {
+        switch (*strike.style)
+        {
+            case strikethrough_style_t::none:
+                break;
+            case strikethrough_style_t::solid:
+            {
+                os << "text-decoration-line: line-through;";
+                os << "text-decoration-style: solid;";
+                break;
+            }
+            default:;
+                // TODO: support more styles
+        }
+    }
+}
+
 const char* css_style_global =
 "table, td { "
     "border-collapse : collapse; "
@@ -164,6 +184,12 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
             style += "font-family: ";
             style += *run.font;
             style += ";";
+        }
+
+        {
+            std::ostringstream os;
+            build_strikethrough_style(os, run.strikethrough);
+            style += os.str();
         }
 
         {
@@ -330,22 +356,7 @@ void build_text_decoration(std::ostringstream& os, const font_t& ft)
         }
     }
 
-    if (ft.strikethrough.style)
-    {
-        switch (*ft.strikethrough.style)
-        {
-            case strikethrough_style_t::none:
-                break;
-            case strikethrough_style_t::solid:
-            {
-                os << "text-decoration-line: line-through;";
-                os << "text-decoration-style: solid;";
-                break;
-            }
-            default:;
-                // TODO: support more styles
-        }
-    }
+    build_strikethrough_style(os, ft.strikethrough);
 }
 
 void build_style_string(std::string& str, const styles& styles, const cell_format_t& fmt)
