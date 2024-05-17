@@ -256,15 +256,14 @@ void opc_reader::read_content_types()
         m_config, m_ns_repo, opc_tokens,
         reinterpret_cast<const char*>(&buffer[0]), buffer.size());
 
-    auto handler = std::make_unique<xml_simple_stream_handler>(
+    auto handler = std::make_unique<xml_stream_handler>(
         m_session_cxt, opc_tokens,
         std::make_unique<opc_content_types_context>(m_session_cxt, opc_tokens));
 
     parser.set_handler(handler.get());
     parser.parse();
 
-    opc_content_types_context& context =
-        static_cast<opc_content_types_context&>(handler->get_context());
+    auto& context = static_cast<opc_content_types_context&>(handler->get_root_context());
     context.pop_parts(m_parts);
     context.pop_ext_defaults(m_ext_defaults);
 }

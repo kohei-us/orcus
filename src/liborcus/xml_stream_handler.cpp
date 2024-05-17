@@ -117,17 +117,17 @@ void xml_stream_handler::set_config(const config& opt)
     mp_invalid_context->set_config(m_config);
 }
 
+xml_context_base& xml_stream_handler::get_root_context()
+{
+    return *mp_root_context;
+}
+
 xml_context_base& xml_stream_handler::get_current_context()
 {
     if (m_context_stack.empty())
         return *mp_root_context;
 
     return *m_context_stack.back();
-}
-
-xml_context_base& xml_stream_handler::get_root_context()
-{
-    return *mp_root_context;
 }
 
 xml_context_base& xml_stream_handler::get_invalid_context()

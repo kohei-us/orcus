@@ -54,9 +54,10 @@ public:
     void set_ns_context(const xmlns_context* p);
     void set_config(const config& opt);
 
+    xml_context_base& get_root_context();
+
 protected:
     xml_context_base& get_current_context();
-    xml_context_base& get_root_context();
     xml_context_base& get_invalid_context();
 };
 
