@@ -21,12 +21,12 @@ void print_opc_rel::operator() (const opc_rel_t& v) const
     std::cout << v.rid << ": " << v.target << " (" << v.type << ")" << std::endl;
 }
 
-std::string resolve_file_path(const std::string& dir_path, const std::string& file_name)
+std::string resolve_file_path(std::string_view dir_path, std::string_view file_name)
 {
     if (dir_path.empty())
-        return file_name;
+        return std::string{file_name};
 
-    const char* p = &dir_path[0];
+    const char* p = dir_path.data();
     const char* p_end = p + dir_path.size();
 
     bool has_root = *p == '/';
@@ -41,7 +41,7 @@ std::string resolve_file_path(const std::string& dir_path, const std::string& fi
         {
             if (!p_head)
                 // invalid directory path.
-                return file_name;
+                return std::string{file_name};
 
             size_t len = p - p_head;
             std::string_view dir(p_head, len);
@@ -49,7 +49,7 @@ std::string resolve_file_path(const std::string& dir_path, const std::string& fi
             {
                 if (dir_stack.empty())
                     // invalid directory path.
-                    return file_name;
+                    return std::string{file_name};
 
                 dir_stack.pop_back();
             }
@@ -69,7 +69,7 @@ std::string resolve_file_path(const std::string& dir_path, const std::string& fi
     if (p_head)
     {
         // directory path must end with '/'.  This one doesn't.
-        return file_name;
+        return std::string{file_name};
     }
 
     std::ostringstream full_path;

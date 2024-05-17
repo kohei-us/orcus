@@ -38,7 +38,7 @@ struct print_opc_rel
  *
  * @return full file path.
  */
-std::string resolve_file_path(const std::string& dir_path, const std::string& file_name);
+std::string resolve_file_path(std::string_view dir_path, std::string_view file_name);
 
 void init_ooxml_context(xml_context_base& cxt);
 

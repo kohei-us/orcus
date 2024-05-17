@@ -280,10 +280,10 @@ void opc_reader::read_relations(const char* path, std::vector<opc_rel_t>& rels)
         return;
 
     xml_stream_parser parser(
-        m_config, m_ns_repo, opc_tokens, reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        m_config, m_ns_repo, opc_tokens,
+        reinterpret_cast<const char*>(buffer.data()), buffer.size());
 
-    opc_relations_context& context =
-        static_cast<opc_relations_context&>(m_opc_rel_handler.get_context());
+    auto& context = static_cast<opc_relations_context&>(m_opc_rel_handler.get_context());
     context.init();
     parser.set_handler(&m_opc_rel_handler);
     parser.parse();
@@ -292,10 +292,10 @@ void opc_reader::read_relations(const char* path, std::vector<opc_rel_t>& rels)
 
 std::string opc_reader::get_current_dir() const
 {
-    std::string pwd;
+    std::ostringstream os;
     for (const auto& dir : m_dir_stack)
-        pwd += dir;
-    return pwd;
+        os << dir;
+    return os.str();
 }
 
 }
