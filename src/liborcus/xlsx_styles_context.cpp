@@ -271,18 +271,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             case XML_u:
             {
                 assert(mp_font);
-                ss::underline_t v = ss::underline_t::single_line; // default value
-
-                for (const auto& attr : attrs)
-                {
-                    switch (name)
-                    {
-                        case XML_val:
-                            v = underline::get().find(attr.value);
-                            break;
-                    }
-                }
-
+                auto s = get_single_attr(attrs, nullptr, XML_val);
+                ss::underline_t v = s.empty() ? ss::underline_t::single_line : underline::get().find(s);
                 mp_font->set_underline(v);
                 break;
             }
