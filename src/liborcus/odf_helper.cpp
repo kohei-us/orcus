@@ -46,22 +46,22 @@ const map_type& get()
 
 namespace underline_width {
 
-using map_type = mdds::sorted_string_map<spreadsheet::underline_width_t>;
+using map_type = mdds::sorted_string_map<spreadsheet::underline_thickness_t>;
 
 // Keys must be sorted.
 constexpr map_type::entry_type entries[] =
 {
-    { "auto", ss::underline_width_t::automatic },
-    { "bold", ss::underline_width_t::bold },
-    { "dash", ss::underline_width_t::dash },
-    { "medium", ss::underline_width_t::medium },
-    { "thick", ss::underline_width_t::thick },
-    { "thin", ss::underline_width_t::thin },
+    { "auto", ss::underline_thickness_t::automatic },
+    { "bold", ss::underline_thickness_t::bold },
+    { "dash", ss::underline_thickness_t::dash },
+    { "medium", ss::underline_thickness_t::medium },
+    { "thick", ss::underline_thickness_t::thick },
+    { "thin", ss::underline_thickness_t::thin },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::underline_width_t::none);
+    static const map_type mt(entries, std::size(entries), ss::underline_thickness_t::none);
     return mt;
 }
 
@@ -229,7 +229,7 @@ orcus::odf::border_details_t odf::extract_border_details(std::string_view value)
     return border_details;
 }
 
-ss::underline_width_t odf::extract_underline_width(std::string_view value)
+ss::underline_thickness_t odf::extract_underline_width(std::string_view value)
 {
     // TODO: style:text-underline-width also allows:
     // * percent value

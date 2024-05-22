@@ -40,7 +40,7 @@ std::optional<spreadsheet::color_rgb_t> convert_fo_color(std::string_view value)
  */
 border_details_t extract_border_details(std::string_view value);
 
-spreadsheet::underline_width_t extract_underline_width(std::string_view value);
+spreadsheet::underline_thickness_t extract_underline_width(std::string_view value);
 
 spreadsheet::underline_t extract_underline_style(std::string_view value);
 

@@ -604,7 +604,7 @@ std::ostream& operator<< (std::ostream& os, underline_t uline)
     return write_name_for_pos(os, names, std::size(names), uline);
 }
 
-std::ostream& operator<< (std::ostream& os, underline_width_t ulwidth)
+std::ostream& operator<< (std::ostream& os, underline_thickness_t ulwidth)
 {
     static constexpr std::string_view names[] = {
         "none",

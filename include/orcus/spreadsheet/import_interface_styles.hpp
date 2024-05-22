@@ -308,7 +308,7 @@ public:
      *
      * @param e width of the underline of a font.
      */
-    virtual void set_underline_width(underline_width_t e) = 0;
+    virtual void set_underline_width(underline_thickness_t e) = 0;
 
     /**
      * Set whether the underline of a font is continuous over the gaps, or skip

@@ -327,14 +327,16 @@ enum class underline_t
 };
 
 /**
- * Underline width types, specific to ODF.  When the enum value is either
- * percent, positive_integer, or positive_length, the actual value should be
- * given separately.
+ * Thickness of an underline.  When the enum value is either percent,
+ * positive_integer, or positive_length, the actual value should be given
+ * separately.
  *
- * @note The automatic enum value corresponds with the "auto" text value,
- * which could not be used since it's a keyword in C++.
+ * @note For now ODS is the only format that makes use of this attribute
+ * type.  In ODS, the corresponding attribute is referred to as "width".  The
+ * automatic enum member corresponds with the "auto" text value, which could
+ * not be used since it's a keyword in C++.
  */
-enum class underline_width_t
+enum class underline_thickness_t
 {
     none = 0,
     automatic,
@@ -742,7 +744,7 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, error_value_t ev);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, border_style_t border);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_t uline);
-ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_width_t ulwidth);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_thickness_t ulwidth);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_spacing_t ulmode);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_count_t ultype);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, hor_alignment_t halign);

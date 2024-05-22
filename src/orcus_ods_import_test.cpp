@@ -573,7 +573,7 @@ void test_odf_font(const ss::styles& styles)
     assert(*cell_font->bold == true);
     assert(*cell_font->italic == true);
     assert(*cell_font->underline_style == ss::underline_t::single_line);
-    assert(*cell_font->underline_width == ss::underline_width_t::thick);
+    assert(*cell_font->underline_width == ss::underline_thickness_t::thick);
     assert(!cell_font->underline_mode); // not set
     assert(!cell_font->underline_type); // not set
     assert(cell_font->color->red == (int)0x80);
@@ -593,7 +593,7 @@ void test_odf_font(const ss::styles& styles)
     assert(*cell_font->bold == true);
     assert(!cell_font->italic);
     assert(*cell_font->underline_style == ss::underline_t::dash);
-    assert(*cell_font->underline_width == ss::underline_width_t::bold);
+    assert(*cell_font->underline_width == ss::underline_thickness_t::bold);
     assert(!cell_font->underline_mode); // not set
     assert(!cell_font->underline_type); // not set
     assert(cell_font->underline_color->red == (int)0x18);
@@ -799,7 +799,7 @@ void test_standard_styles()
 
         // style:text-underline-width="auto"
         assert(actual->underline_width);
-        assert(*actual->underline_width == ss::underline_width_t::automatic);
+        assert(*actual->underline_width == ss::underline_thickness_t::automatic);
 
         // style:text-underline-color="font-color" (use the same color as the font)
         assert(!actual->underline_color); // this implies the same color as the font
