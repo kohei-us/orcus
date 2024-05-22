@@ -613,7 +613,7 @@ void test_ods_import_styles_column_styles()
     assert(font->underline_style);
     assert(*font->underline_style == ss::underline_t::single_line);
     assert(font->underline_type);
-    assert(*font->underline_type == ss::underline_type_t::double_type);
+    assert(*font->underline_type == ss::underline_count_t::double_count);
     assert(!font->underline_color); // implies the same as font color
 
     // Column F has "Default" style plus solid light purple background and bold font on top
@@ -804,7 +804,7 @@ void test_ods_import_styles_text_underlines()
     assert(font->underline_style);
     assert(*font->underline_style == ss::underline_t::single_line); // solid
     assert(font->underline_type);
-    assert(*font->underline_type == ss::underline_type_t::double_type);
+    assert(*font->underline_type == ss::underline_count_t::double_count);
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_width_t::automatic);
     assert(!font->underline_color); // same as the font color
@@ -928,7 +928,7 @@ void test_ods_import_styles_text_underlines()
     assert(font->underline_style);
     assert(*font->underline_style == ss::underline_t::wave);
     assert(font->underline_type);
-    assert(*font->underline_type == ss::underline_type_t::double_type);
+    assert(*font->underline_type == ss::underline_count_t::double_count);
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_width_t::automatic);
     assert(!font->underline_color); // same as the font color

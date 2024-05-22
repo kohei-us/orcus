@@ -322,7 +322,7 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
 
     std::optional<ss::color_rgb_t> underline_color;
     std::optional<ss::underline_t> underline_style;
-    std::optional<ss::underline_type_t> underline_type;
+    std::optional<ss::underline_count_t> underline_type;
     std::optional<ss::underline_width_t> underline_width;
     std::optional<ss::underline_mode_t> underline_mode;
 
@@ -387,11 +387,11 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
                 case XML_text_underline_type:
                 {
                     if (attr.value == "none")
-                        underline_type = ss::underline_type_t::none;
+                        underline_type = ss::underline_count_t::none;
                     else if (attr.value == "single")
-                        underline_type = ss::underline_type_t::single_type;
+                        underline_type = ss::underline_count_t::single_count;
                     else if (attr.value == "double")
-                        underline_type = ss::underline_type_t::double_type;
+                        underline_type = ss::underline_count_t::double_count;
                     break;
                 }
                 case XML_text_line_through_style:

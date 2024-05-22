@@ -328,7 +328,7 @@ public:
      *
      * @todo Look into merging this with set_underline().
      */
-    virtual void set_underline_type(underline_type_t e) = 0;
+    virtual void set_underline_type(underline_count_t e) = 0;
 
     /**
      * Specify the color of an underline in ARGB format.

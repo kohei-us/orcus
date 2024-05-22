@@ -363,17 +363,16 @@ enum class underline_mode_t
 };
 
 /**
- * Whether a single line or a double line is used as an underline.
- *
- * @todo Perhaps we should merge this with underline_t.
+ * Underline style related to the number of vertically-stacked lines in an
+ * underline.
  */
-enum class underline_type_t
+enum class underline_count_t
 {
     none = 0,
-    /** A single line is used as an underline. */
-    single_type,
-    /** A double line is used as an underline. */
-    double_type
+    /** Only one line is used to form an underline. */
+    single_count,
+    /** Two vertically-stacked lines are used in an underline. */
+    double_count
 };
 
 /**
@@ -735,7 +734,7 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, formula_grammar_t gr
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_t uline);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_width_t ulwidth);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_mode_t ulmode);
-ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_type_t ultype);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_count_t ultype);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, hor_alignment_t halign);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, ver_alignment_t valign);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_rgb_t& color);
