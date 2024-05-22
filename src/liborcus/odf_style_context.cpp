@@ -324,7 +324,7 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     std::optional<ss::underline_t> underline_style;
     std::optional<ss::underline_count_t> underline_type;
     std::optional<ss::underline_width_t> underline_width;
-    std::optional<ss::underline_mode_t> underline_mode;
+    std::optional<ss::underline_spacing_t> underline_mode;
 
     std::optional<ss::strikethrough_style_t> strikethrough_style;
     std::optional<ss::strikethrough_type_t> strikethrough_type;
@@ -370,9 +370,9 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
                     break;
                 case XML_text_underline_mode:
                     if (attr.value == "skip-white-space")
-                        underline_mode = ss::underline_mode_t::skip_white_space;
+                        underline_mode = ss::underline_spacing_t::skip_white_space;
                     else
-                        underline_mode = ss::underline_mode_t::continuous;
+                        underline_mode = ss::underline_spacing_t::continuous;
                     break;
                 case XML_text_underline_width:
                 {

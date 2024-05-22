@@ -47,7 +47,7 @@ public:
 
     virtual void set_underline(underline_t e) override;
     virtual void set_underline_width(underline_width_t e) override;
-    virtual void set_underline_mode(underline_mode_t e) override;
+    virtual void set_underline_mode(underline_spacing_t e) override;
     virtual void set_underline_type(underline_count_t e) override;
     virtual void set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
     virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
@@ -282,7 +282,7 @@ void import_font_style::set_underline_width(underline_width_t e)
     mp_impl->cur_font.underline_width = e;
 }
 
-void import_font_style::set_underline_mode(underline_mode_t e)
+void import_font_style::set_underline_mode(underline_spacing_t e)
 {
     mp_impl->cur_font.underline_mode = e;
 }

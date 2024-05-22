@@ -317,7 +317,7 @@ public:
      * @param e whether the underline of a font is continuous over the gaps or
      *          skip the gaps.
      */
-    virtual void set_underline_mode(underline_mode_t e) = 0;
+    virtual void set_underline_mode(underline_spacing_t e) = 0;
 
     /**
      * Set whether the underline of a font consists of a single line, or a

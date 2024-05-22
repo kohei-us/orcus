@@ -349,17 +349,27 @@ enum class underline_width_t
 };
 
 /**
- * Underline mode that determines whether an underline is applied to both
- * words and spaces, or words only.
+ * Underline style related to how it is applied in relation to the spacing of
+ * the text and the field it is in.
  *
- * @note This is specific to ODS format.
+ * @note ODS format makes extensive use of this attribute type.
  */
-enum class underline_mode_t
+enum class underline_spacing_t
 {
     /** Underline is applied to both words and spaces. */
     continuous = 0,
-    /** Underline is applied only to words. */
-    skip_white_space
+    /**
+     * Underline is applied only to words, and not to the spaces between
+     * them.
+     */
+    skip_white_space,
+    /**
+     * Underline is applied to the entire width of a field that houses the text.
+     *
+     * @note For now this is specific to Excel, and is referred to as
+     *       "accounting" in Excel.
+     */
+    continuous_over_field,
 };
 
 /**
@@ -733,7 +743,7 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, border_style_t borde
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_t uline);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_width_t ulwidth);
-ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_mode_t ulmode);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_spacing_t ulmode);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_count_t ultype);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, hor_alignment_t halign);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, ver_alignment_t valign);

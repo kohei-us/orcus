@@ -39,7 +39,7 @@ struct ORCUS_SPM_DLLPUBLIC font_t
     std::optional<bool> italic_complex;
     std::optional<underline_t> underline_style;
     std::optional<underline_width_t> underline_width;
-    std::optional<underline_mode_t> underline_mode;
+    std::optional<underline_spacing_t> underline_mode;
     std::optional<underline_count_t> underline_type;
     std::optional<color_t> underline_color;
     std::optional<color_t> color;

@@ -933,7 +933,7 @@ void test_ods_import_styles_text_underlines()
     assert(*font->underline_width == ss::underline_width_t::automatic);
     assert(!font->underline_color); // same as the font color
     assert(font->underline_mode);
-    assert(*font->underline_mode == ss::underline_mode_t::skip_white_space);
+    assert(*font->underline_mode == ss::underline_spacing_t::skip_white_space);
 }
 
 } // anonymous namespace

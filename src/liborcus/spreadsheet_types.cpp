@@ -622,7 +622,7 @@ std::ostream& operator<< (std::ostream& os, underline_width_t ulwidth)
     return write_name_for_pos(os, names, std::size(names), ulwidth);
 }
 
-std::ostream& operator<< (std::ostream& os, underline_mode_t ulmode)
+std::ostream& operator<< (std::ostream& os, underline_spacing_t ulmode)
 {
     static constexpr std::string_view names[] = {
         "continuous",
