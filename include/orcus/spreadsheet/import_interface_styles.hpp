@@ -297,38 +297,33 @@ public:
     virtual void set_size_complex(double point) = 0;
 
     /**
-     * Set the underline type of a font.
+     * Set the style of an underline.
      *
-     * @param e underline type of a font.
+     * @param e underline style of a font.
      */
-    virtual void set_underline(underline_style_t e) = 0;
+    virtual void set_underline_style(underline_style_t e) = 0;
 
     /**
-     * Set the width of the underline of a font.
+     * Set the thickness of an underline.
      *
-     * @param e width of the underline of a font.
+     * @param e Thickness of the underline.
      */
-    virtual void set_underline_width(underline_thickness_t e) = 0;
+    virtual void set_underline_thickness(underline_thickness_t e) = 0;
 
     /**
-     * Set whether the underline of a font is continuous over the gaps, or skip
-     * the gaps.
+     * Set the spacing of an underline with respect to the text it is applied
+     * to.
      *
-     * @param e whether the underline of a font is continuous over the gaps or
-     *          skip the gaps.
+     * @param e Spacing of an underline.
      */
-    virtual void set_underline_mode(underline_spacing_t e) = 0;
+    virtual void set_underline_spacing(underline_spacing_t e) = 0;
 
     /**
-     * Set whether the underline of a font consists of a single line, or a
-     * double line.
+     * Set the number of vertically-stacked lines in an underline.
      *
-     * @param e whether the underline of a font consists of a single line, or a
-     *          double line.
-     *
-     * @todo Look into merging this with set_underline().
+     * @param e Number of vertically-stacked lines in an underline.
      */
-    virtual void set_underline_type(underline_count_t e) = 0;
+    virtual void set_underline_count(underline_count_t e) = 0;
 
     /**
      * Specify the color of an underline in ARGB format.

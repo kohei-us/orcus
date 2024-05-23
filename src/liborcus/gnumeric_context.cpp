@@ -44,9 +44,9 @@ std::size_t import_font_style(ss::iface::import_styles& istyles, const gnumeric_
     if (style.underline)
     {
         if (*style.underline)
-            ifont->set_underline(ss::underline_style_t::single_line);
+            ifont->set_underline_style(ss::underline_style_t::single_line);
         else
-            ifont->set_underline(ss::underline_style_t::none);
+            ifont->set_underline_style(ss::underline_style_t::none);
     }
 
     if (style.strikethrough)

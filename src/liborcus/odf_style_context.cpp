@@ -497,16 +497,16 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
         font_style->set_underline_color(255, underline_color->red, underline_color->green, underline_color->blue);
 
     if (underline_width)
-        font_style->set_underline_width(*underline_width);
+        font_style->set_underline_thickness(*underline_width);
 
     if (underline_style)
-        font_style->set_underline(*underline_style);
+        font_style->set_underline_style(*underline_style);
 
     if (underline_type)
-        font_style->set_underline_type(*underline_type);
+        font_style->set_underline_count(*underline_type);
 
     if (underline_mode)
-        font_style->set_underline_mode(*underline_mode);
+        font_style->set_underline_spacing(*underline_mode);
 
     if (auto* st = font_style->start_strikethrough(); st)
     {

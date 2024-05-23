@@ -2047,7 +2047,7 @@ void xls_xml_context::commit_default_style()
             font_style->set_size(*font.size);
 
         if (font.underline)
-            font_style->set_underline(*font.underline);
+            font_style->set_underline_style(*font.underline);
 
         if (font.strikethrough && *font.strikethrough)
         {
@@ -2215,7 +2215,7 @@ void xls_xml_context::commit_styles()
             font_style->set_size(*style->font.size);
 
         if (style->font.underline)
-            font_style->set_underline(*style->font.underline);
+            font_style->set_underline_style(*style->font.underline);
 
         if (style->font.strikethrough && *style->font.strikethrough)
         {

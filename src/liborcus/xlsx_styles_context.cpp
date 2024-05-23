@@ -273,7 +273,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
                 assert(mp_font);
                 auto s = get_single_attr(attrs, nullptr, XML_val);
                 ss::underline_style_t v = s.empty() ? ss::underline_style_t::single_line : underline::get().find(s);
-                mp_font->set_underline(v);
+                mp_font->set_underline_style(v);
                 break;
             }
             case XML_strike:

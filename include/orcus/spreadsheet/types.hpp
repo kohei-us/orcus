@@ -296,6 +296,8 @@ enum class underline_style_t
 {
     /** Underline is absent. */
     none = 0,
+    /** Line is continuous. */
+    solid,
     /** Underline consists of a single line. */
     single_line,
     /**
