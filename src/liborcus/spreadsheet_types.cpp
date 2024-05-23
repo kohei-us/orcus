@@ -585,7 +585,7 @@ std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar)
     return write_name_for_pos(os, names, std::size(names), grammar);
 }
 
-std::ostream& operator<< (std::ostream& os, underline_t uline)
+std::ostream& operator<< (std::ostream& os, underline_style_t uline)
 {
     static constexpr std::string_view names[] = {
         "none",

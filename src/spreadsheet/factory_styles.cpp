@@ -45,7 +45,7 @@ public:
     virtual void set_size_asian(double point) override;
     virtual void set_size_complex(double point) override;
 
-    virtual void set_underline(underline_t e) override;
+    virtual void set_underline(underline_style_t e) override;
     virtual void set_underline_width(underline_thickness_t e) override;
     virtual void set_underline_mode(underline_spacing_t e) override;
     virtual void set_underline_type(underline_count_t e) override;
@@ -272,7 +272,7 @@ void import_font_style::set_size_complex(double point)
     mp_impl->cur_font.size_complex = point;
 }
 
-void import_font_style::set_underline(underline_t e)
+void import_font_style::set_underline(underline_style_t e)
 {
     mp_impl->cur_font.underline_style = e;
 }

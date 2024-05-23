@@ -69,24 +69,24 @@ const map_type& get()
 
 namespace underline_style {
 
-using map_type = mdds::sorted_string_map<ss::underline_t>;
+using map_type = mdds::sorted_string_map<ss::underline_style_t>;
 
 // Keys must be sorted.
 constexpr map_type::entry_type entries[] =
 {
-    { "dash", ss::underline_t::dash },
-    { "dot-dash", ss::underline_t::dot_dash },
-    { "dot-dot-dash", ss::underline_t::dot_dot_dash },
-    { "dotted", ss::underline_t::dotted },
-    { "long-dash", ss::underline_t::long_dash },
-    { "none", ss::underline_t::none },
-    { "solid", ss::underline_t::single_line },
-    { "wave", ss::underline_t::wave }
+    { "dash", ss::underline_style_t::dash },
+    { "dot-dash", ss::underline_style_t::dot_dash },
+    { "dot-dot-dash", ss::underline_style_t::dot_dot_dash },
+    { "dotted", ss::underline_style_t::dotted },
+    { "long-dash", ss::underline_style_t::long_dash },
+    { "none", ss::underline_style_t::none },
+    { "solid", ss::underline_style_t::single_line },
+    { "wave", ss::underline_style_t::wave }
 };
 
 const map_type& get()
 {
-    static map_type mt(entries, std::size(entries), ss::underline_t::none);
+    static map_type mt(entries, std::size(entries), ss::underline_style_t::none);
     return mt;
 }
 
@@ -240,7 +240,7 @@ ss::underline_thickness_t odf::extract_underline_width(std::string_view value)
     return underline_width::get().find(value);
 }
 
-orcus::spreadsheet::underline_t odf::extract_underline_style(std::string_view value)
+orcus::spreadsheet::underline_style_t odf::extract_underline_style(std::string_view value)
 {
     return underline_style::get().find(value);
 }

@@ -422,7 +422,7 @@ void test_ods_import_styles_direct_format()
     assert(font->bold);
     assert(*font->bold);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::single_line);
+    assert(*font->underline_style == ss::underline_style_t::single_line);
 
     // B4 - yellow background and right-aligned
     xfid = sh->get_cell_format(3, 1);
@@ -611,7 +611,7 @@ void test_ods_import_styles_column_styles()
     assert(*font->color == ss::color_t(0xFF, 0xFF, 0x00, 0x00));
     // double underline is stored as single-line double-type?
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::single_line);
+    assert(*font->underline_style == ss::underline_style_t::single_line);
     assert(font->underline_type);
     assert(*font->underline_type == ss::underline_count_t::double_count);
     assert(!font->underline_color); // implies the same as font color
@@ -790,7 +790,7 @@ void test_ods_import_styles_text_underlines()
     const ss::font_t* font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::single_line); // solid
+    assert(*font->underline_style == ss::underline_style_t::single_line); // solid
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_thickness_t::automatic);
     assert(!font->underline_color); // same as the font color
@@ -802,7 +802,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::single_line); // solid
+    assert(*font->underline_style == ss::underline_style_t::single_line); // solid
     assert(font->underline_type);
     assert(*font->underline_type == ss::underline_count_t::double_count);
     assert(font->underline_width);
@@ -816,7 +816,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::single_line); // solid
+    assert(*font->underline_style == ss::underline_style_t::single_line); // solid
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_thickness_t::bold);
     assert(!font->underline_color); // same as the font color
@@ -828,7 +828,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::dotted);
+    assert(*font->underline_style == ss::underline_style_t::dotted);
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_thickness_t::automatic);
     assert(!font->underline_color); // same as the font color
@@ -840,7 +840,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::dotted);
+    assert(*font->underline_style == ss::underline_style_t::dotted);
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_thickness_t::bold);
     assert(!font->underline_color); // same as the font color
@@ -852,7 +852,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::dash);
+    assert(*font->underline_style == ss::underline_style_t::dash);
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_thickness_t::automatic);
     assert(font->underline_color);
@@ -865,7 +865,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::long_dash);
+    assert(*font->underline_style == ss::underline_style_t::long_dash);
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_thickness_t::automatic);
     assert(!font->underline_color); // same as the font color
@@ -877,7 +877,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::dot_dash);
+    assert(*font->underline_style == ss::underline_style_t::dot_dash);
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_thickness_t::automatic);
     assert(!font->underline_color); // same as the font color
@@ -889,7 +889,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::dot_dot_dash);
+    assert(*font->underline_style == ss::underline_style_t::dot_dot_dash);
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_thickness_t::automatic);
     assert(!font->underline_color); // same as the font color
@@ -901,7 +901,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::wave);
+    assert(*font->underline_style == ss::underline_style_t::wave);
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_thickness_t::automatic);
     assert(!font->underline_color); // same as the font color
@@ -913,7 +913,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::wave);
+    assert(*font->underline_style == ss::underline_style_t::wave);
     assert(font->underline_width);
     assert(*font->underline_width == ss::underline_thickness_t::automatic);
     assert(font->underline_color);
@@ -926,7 +926,7 @@ void test_ods_import_styles_text_underlines()
     font = styles.get_font(xf->font);
     assert(font);
     assert(font->underline_style);
-    assert(*font->underline_style == ss::underline_t::wave);
+    assert(*font->underline_style == ss::underline_style_t::wave);
     assert(font->underline_type);
     assert(*font->underline_type == ss::underline_count_t::double_count);
     assert(font->underline_width);

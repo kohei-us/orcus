@@ -95,20 +95,20 @@ const map_type& get()
 
 namespace underline {
 
-using map_type = mdds::sorted_string_map<ss::underline_t>;
+using map_type = mdds::sorted_string_map<ss::underline_style_t>;
 
 // Keys must be sorted.
 constexpr map_type::entry_type entries[] = {
-    { "double", ss::underline_t::double_line },
-    { "doubleAccounting", ss::underline_t::double_accounting },
-    { "none", ss::underline_t::none },
-    { "single", ss::underline_t::single_line },
-    { "singleAccounting", ss::underline_t::single_accounting },
+    { "double", ss::underline_style_t::double_line },
+    { "doubleAccounting", ss::underline_style_t::double_accounting },
+    { "none", ss::underline_style_t::none },
+    { "single", ss::underline_style_t::single_line },
+    { "singleAccounting", ss::underline_style_t::single_accounting },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::underline_t::none);
+    static const map_type mt(entries, std::size(entries), ss::underline_style_t::none);
     return mt;
 }
 
@@ -272,7 +272,7 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             {
                 assert(mp_font);
                 auto s = get_single_attr(attrs, nullptr, XML_val);
-                ss::underline_t v = s.empty() ? ss::underline_t::single_line : underline::get().find(s);
+                ss::underline_style_t v = s.empty() ? ss::underline_style_t::single_line : underline::get().find(s);
                 mp_font->set_underline(v);
                 break;
             }

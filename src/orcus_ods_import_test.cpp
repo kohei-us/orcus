@@ -572,7 +572,7 @@ void test_odf_font(const ss::styles& styles)
     assert(*cell_font->size == 24);
     assert(*cell_font->bold == true);
     assert(*cell_font->italic == true);
-    assert(*cell_font->underline_style == ss::underline_t::single_line);
+    assert(*cell_font->underline_style == ss::underline_style_t::single_line);
     assert(*cell_font->underline_width == ss::underline_thickness_t::thick);
     assert(!cell_font->underline_mode); // not set
     assert(!cell_font->underline_type); // not set
@@ -592,7 +592,7 @@ void test_odf_font(const ss::styles& styles)
     assert(*cell_font->size == 00);
     assert(*cell_font->bold == true);
     assert(!cell_font->italic);
-    assert(*cell_font->underline_style == ss::underline_t::dash);
+    assert(*cell_font->underline_style == ss::underline_style_t::dash);
     assert(*cell_font->underline_width == ss::underline_thickness_t::bold);
     assert(!cell_font->underline_mode); // not set
     assert(!cell_font->underline_type); // not set
@@ -795,7 +795,7 @@ void test_standard_styles()
 
         // style:text-underline-style="solid"
         assert(actual->underline_style);
-        assert(*actual->underline_style == ss::underline_t::single_line); // solid
+        assert(*actual->underline_style == ss::underline_style_t::single_line); // solid
 
         // style:text-underline-width="auto"
         assert(actual->underline_width);
@@ -975,7 +975,7 @@ void test_standard_styles()
         ss::font_t expected;
         expected.bold = true;
         expected.italic = true;
-        expected.underline_style = ss::underline_t::single_line;
+        expected.underline_style = ss::underline_style_t::single_line;
 
         const ss::font_t* actual = model.styles.get_font(cell_format->font);
         assert(actual);

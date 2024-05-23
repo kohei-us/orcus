@@ -174,20 +174,20 @@ const map_type& get()
 
 namespace underline {
 
-using map_type = mdds::sorted_string_map<ss::underline_t>;
+using map_type = mdds::sorted_string_map<ss::underline_style_t>;
 
 // Keys must be sorted.
 constexpr map_type::entry_type entries[] = {
-    { "Double", ss::underline_t::double_line },
-    { "DoubleAccounting", ss::underline_t::double_accounting },
-    { "None", ss::underline_t::none },
-    { "Single", ss::underline_t::single_line },
-    { "SingleAccounting", ss::underline_t::single_accounting },
+    { "Double", ss::underline_style_t::double_line },
+    { "DoubleAccounting", ss::underline_style_t::double_accounting },
+    { "None", ss::underline_style_t::none },
+    { "Single", ss::underline_style_t::single_line },
+    { "SingleAccounting", ss::underline_style_t::single_accounting },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::underline_t::none);
+    static const map_type mt(entries, std::size(entries), ss::underline_style_t::none);
     return mt;
 }
 

@@ -799,7 +799,7 @@ void test_gnumeric_text_formats()
         assert(check_cell_text(*sheet1, row, col, "All Underlined"));
         const ss::font_t* font = get_font(*sheet1, row, col);
         assert(font->underline_style);
-        assert(*font->underline_style == ss::underline_t::single_line);
+        assert(*font->underline_style == ss::underline_style_t::single_line);
     }
 
     {
@@ -807,7 +807,7 @@ void test_gnumeric_text_formats()
         assert(check_cell_text(*sheet1, row, col, "Bold and Underlined"));
         const ss::font_t* font = get_font(*sheet1, row, col);
         assert(font->underline_style);
-        assert(*font->underline_style == ss::underline_t::single_line);
+        assert(*font->underline_style == ss::underline_style_t::single_line);
         assert(font->bold);
         assert(*font->bold);
     }

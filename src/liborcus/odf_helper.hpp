@@ -42,7 +42,7 @@ border_details_t extract_border_details(std::string_view value);
 
 spreadsheet::underline_thickness_t extract_underline_width(std::string_view value);
 
-spreadsheet::underline_t extract_underline_style(std::string_view value);
+spreadsheet::underline_style_t extract_underline_style(std::string_view value);
 
 spreadsheet::hor_alignment_t extract_hor_alignment_style(std::string_view value);
 

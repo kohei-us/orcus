@@ -337,17 +337,17 @@ void build_text_decoration(std::ostringstream& os, const font_t& ft)
     {
         switch (*ft.underline_style)
         {
-            case underline_t::none:
+            case underline_style_t::none:
                 break;
-            case underline_t::single_line:
-            case underline_t::single_accounting:
+            case underline_style_t::single_line:
+            case underline_style_t::single_accounting:
             {
                 os << "text-decoration-line: underline;";
                 os << "text-decoration-style: solid;";
                 break;
             }
-            case underline_t::double_line:
-            case underline_t::double_accounting:
+            case underline_style_t::double_line:
+            case underline_style_t::double_accounting:
             {
                 os << "text-decoration-line: underline;";
                 os << "text-decoration-style: double;";

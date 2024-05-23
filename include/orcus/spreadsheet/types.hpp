@@ -290,9 +290,9 @@ enum class formula_error_policy_t
 };
 
 /**
- * Underline type for a cell value.
+ * Style of an underline applied to a cell value.
  */
-enum class underline_t
+enum class underline_style_t
 {
     /** Underline is absent. */
     none = 0,
@@ -743,7 +743,7 @@ ORCUS_DLLPUBLIC formula_error_policy_t to_formula_error_policy(std::string_view 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, error_value_t ev);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, border_style_t border);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar);
-ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_t uline);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_style_t uline);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_thickness_t ulwidth);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_spacing_t ulmode);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_count_t ultype);

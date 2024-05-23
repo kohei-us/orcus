@@ -354,13 +354,13 @@ void gnumeric_sheet_context::start_font(const xml_token_attrs_t& attrs)
                 switch (n)
                 {
                     case 0:
-                        font_style->set_underline(ss::underline_t::none);
+                        font_style->set_underline(ss::underline_style_t::none);
                         break;
                     case 1:
-                        font_style->set_underline(ss::underline_t::single_line);
+                        font_style->set_underline(ss::underline_style_t::single_line);
                         break;
                     case 2:
-                        font_style->set_underline(ss::underline_t::double_line);
+                        font_style->set_underline(ss::underline_style_t::double_line);
                         break;
                 }
                 break;

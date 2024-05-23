@@ -301,7 +301,7 @@ public:
      *
      * @param e underline type of a font.
      */
-    virtual void set_underline(underline_t e) = 0;
+    virtual void set_underline(underline_style_t e) = 0;
 
     /**
      * Set the width of the underline of a font.

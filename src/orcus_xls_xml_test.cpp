@@ -676,7 +676,7 @@ void test_xls_xml_formatted_text_basic()
         assert(check_cell_text(*sheet, row, col, "All Underlined"));
         const ss::font_t* font = get_font(*sheet, row, col);
         assert(font->underline_style);
-        assert(*font->underline_style == ss::underline_t::single_line);
+        assert(*font->underline_style == ss::underline_style_t::single_line);
 
         // A9
         row = 8;
@@ -684,7 +684,7 @@ void test_xls_xml_formatted_text_basic()
         assert(check_cell_bold(*sheet, row, col, true));
         font = get_font(*sheet, row, col);
         assert(font->underline_style);
-        assert(*font->underline_style == ss::underline_t::single_line);
+        assert(*font->underline_style == ss::underline_style_t::single_line);
 
         row = 9;
         assert(check_cell_text(*sheet, row, col, "All Strikethrough"));

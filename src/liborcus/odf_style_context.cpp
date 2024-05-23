@@ -321,7 +321,7 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     std::optional<ss::color_rgb_t> color;
 
     std::optional<ss::color_rgb_t> underline_color;
-    std::optional<ss::underline_t> underline_style;
+    std::optional<ss::underline_style_t> underline_style;
     std::optional<ss::underline_count_t> underline_type;
     std::optional<ss::underline_thickness_t> underline_width;
     std::optional<ss::underline_spacing_t> underline_mode;
