@@ -11,6 +11,7 @@
 #include "ooxml_token_constants.hpp"
 #include "xlsx_helper.hpp"
 #include "xml_context_global.hpp"
+#include "xls_types.hpp"
 
 #include <orcus/tokens.hpp>
 #include <orcus/measurement.hpp>
@@ -95,20 +96,20 @@ const map_type& get()
 
 namespace underline {
 
-using map_type = mdds::sorted_string_map<ss::underline_style_t>;
+using map_type = mdds::sorted_string_map<detail::xls_underline_t>;
 
 // Keys must be sorted.
 constexpr map_type::entry_type entries[] = {
-    { "double", ss::underline_style_t::double_line },
-    { "doubleAccounting", ss::underline_style_t::double_accounting },
-    { "none", ss::underline_style_t::none },
-    { "single", ss::underline_style_t::single_line },
-    { "singleAccounting", ss::underline_style_t::single_accounting },
+    { "double", detail::xls_underline_t::double_normal },
+    { "doubleAccounting", detail::xls_underline_t::double_accounting },
+    { "none", detail::xls_underline_t::none },
+    { "single", detail::xls_underline_t::single_normal },
+    { "singleAccounting", detail::xls_underline_t::single_accounting },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::underline_style_t::none);
+    static const map_type mt(entries, std::size(entries), detail::xls_underline_t::none);
     return mt;
 }
 
@@ -272,8 +273,8 @@ void xlsx_styles_context::start_element(xmlns_id_t ns, xml_token_t name, const x
             {
                 assert(mp_font);
                 auto s = get_single_attr(attrs, nullptr, XML_val);
-                ss::underline_style_t v = s.empty() ? ss::underline_style_t::single_line : underline::get().find(s);
-                mp_font->set_underline_style(v);
+                auto v = s.empty() ? detail::xls_underline_t::single_normal : underline::get().find(s);
+                push_to_font_style(v, *mp_font);
                 break;
             }
             case XML_strike:

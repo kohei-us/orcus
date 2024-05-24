@@ -44,6 +44,7 @@ list(APPEND _SOURCES
     odf_namespace_types.hpp
     odf_namespace_types.cpp
     gnumeric_namespace_types.cpp
+    xls_types.cpp
     xls_xml_namespace_types.cpp
     session_context.cpp
     spreadsheet_interface.cpp

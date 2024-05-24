@@ -298,22 +298,6 @@ enum class underline_style_t
     none = 0,
     /** Line is continuous. */
     solid,
-    /** Underline consists of a single line. */
-    single_line,
-    /**
-     * Single line for accounting format.
-     *
-     * @note This is unique to xlsx format.
-     */
-    single_accounting,
-    /** Underline consists of a double line. */
-    double_line,
-    /**
-     * Double line for accounting format.
-     *
-     * @note This is unique to xlsx format.
-     */
-    double_accounting,
     /** Underline is dotted. */
     dotted,
     /** Underline is dashed. */

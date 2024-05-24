@@ -333,30 +333,17 @@ void build_border_style(std::ostringstream& os, const char* style_name, const bo
 
 void build_text_decoration(std::ostringstream& os, const font_t& ft)
 {
-    if (ft.underline_style)
+    if (ft.underline_style.value_or(underline_style_t::none) == underline_style_t::solid)
     {
-        switch (*ft.underline_style)
-        {
-            case underline_style_t::none:
-                break;
-            case underline_style_t::single_line:
-            case underline_style_t::single_accounting:
-            {
-                os << "text-decoration-line: underline;";
-                os << "text-decoration-style: solid;";
-                break;
-            }
-            case underline_style_t::double_line:
-            case underline_style_t::double_accounting:
-            {
-                os << "text-decoration-line: underline;";
-                os << "text-decoration-style: double;";
-                break;
-            }
-            default:;
-                // TODO: support more styles
-        }
+        os << "text-decoration-line: underline;";
+
+        if (ft.underline_count.value_or(underline_count_t::single_count) == underline_count_t::double_count)
+            os << "text-decoration-style: double;";
+        else
+            os << "text-decoration-style: solid;";
     }
+
+    // TODO: support more underline styles
 
     build_strikethrough_style(os, ft.strikethrough);
 }

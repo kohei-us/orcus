@@ -124,6 +124,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	gnumeric_namespace_types.cpp \
 	xls_xml_namespace_types.hpp \
 	xls_xml_namespace_types.cpp \
+	xls_types.hpp \
+	xls_types.cpp \
 	session_context.hpp \
 	session_context.cpp \
 	spreadsheet_impl_types.hpp \

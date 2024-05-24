@@ -14,6 +14,7 @@
 #include "orcus/string_pool.hpp"
 
 #include "formula_result.hpp"
+#include "xls_types.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -141,7 +142,7 @@ class xls_xml_context : public xml_context_base
         std::string_view name;
         std::string_view family;
         std::optional<double> size;
-        std::optional<spreadsheet::underline_style_t> underline;
+        std::optional<detail::xls_underline_t> underline;
         std::optional<bool> strikethrough;
         bool bold = false;
         bool italic = false;

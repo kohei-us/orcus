@@ -174,20 +174,20 @@ const map_type& get()
 
 namespace underline {
 
-using map_type = mdds::sorted_string_map<ss::underline_style_t>;
+using map_type = mdds::sorted_string_map<detail::xls_underline_t>;
 
 // Keys must be sorted.
 constexpr map_type::entry_type entries[] = {
-    { "Double", ss::underline_style_t::double_line },
-    { "DoubleAccounting", ss::underline_style_t::double_accounting },
-    { "None", ss::underline_style_t::none },
-    { "Single", ss::underline_style_t::single_line },
-    { "SingleAccounting", ss::underline_style_t::single_accounting },
+    { "Double", detail::xls_underline_t::double_normal },
+    { "DoubleAccounting", detail::xls_underline_t::double_accounting },
+    { "None", detail::xls_underline_t::none },
+    { "Single", detail::xls_underline_t::single_normal },
+    { "SingleAccounting", detail::xls_underline_t::single_accounting },
 };
 
 const map_type& get()
 {
-    static const map_type mt(entries, std::size(entries), ss::underline_style_t::none);
+    static const map_type mt(entries, std::size(entries), detail::xls_underline_t::none);
     return mt;
 }
 
@@ -2047,7 +2047,7 @@ void xls_xml_context::commit_default_style()
             font_style->set_size(*font.size);
 
         if (font.underline)
-            font_style->set_underline_style(*font.underline);
+            push_to_font_style(*font.underline, *font_style);
 
         if (font.strikethrough && *font.strikethrough)
         {
@@ -2215,7 +2215,7 @@ void xls_xml_context::commit_styles()
             font_style->set_size(*style->font.size);
 
         if (style->font.underline)
-            font_style->set_underline_style(*style->font.underline);
+            push_to_font_style(*style->font.underline, *font_style);
 
         if (style->font.strikethrough && *style->font.strikethrough)
         {

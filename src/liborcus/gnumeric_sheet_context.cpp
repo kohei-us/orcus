@@ -357,11 +357,17 @@ void gnumeric_sheet_context::start_font(const xml_token_attrs_t& attrs)
                         font_style->set_underline_style(ss::underline_style_t::none);
                         break;
                     case 1:
-                        font_style->set_underline_style(ss::underline_style_t::single_line);
+                    {
+                        font_style->set_underline_style(ss::underline_style_t::solid);
+                        font_style->set_underline_count(ss::underline_count_t::single_count);
                         break;
+                    }
                     case 2:
-                        font_style->set_underline_style(ss::underline_style_t::double_line);
+                    {
+                        font_style->set_underline_style(ss::underline_style_t::solid);
+                        font_style->set_underline_count(ss::underline_count_t::double_count);
                         break;
+                    }
                 }
                 break;
             }

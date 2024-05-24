@@ -80,7 +80,7 @@ constexpr map_type::entry_type entries[] =
     { "dotted", ss::underline_style_t::dotted },
     { "long-dash", ss::underline_style_t::long_dash },
     { "none", ss::underline_style_t::none },
-    { "solid", ss::underline_style_t::single_line },
+    { "solid", ss::underline_style_t::solid },
     { "wave", ss::underline_style_t::wave }
 };
 

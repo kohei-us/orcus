@@ -1330,7 +1330,9 @@ void test_xlsx_formatted_text_basic()
         assert(check_cell_text(*sheet, row, col, "All Underlined"));
         const ss::font_t* font = get_font(*sheet, row, col);
         assert(font->underline_style);
-        assert(*font->underline_style == ss::underline_style_t::single_line);
+        assert(*font->underline_style == ss::underline_style_t::solid);
+        assert(font->underline_count);
+        assert(*font->underline_count == ss::underline_count_t::single_count);
 
         // A9
         row = 8;
@@ -1338,7 +1340,9 @@ void test_xlsx_formatted_text_basic()
         assert(check_cell_bold(*sheet, row, col, true));
         font = get_font(*sheet, row, col);
         assert(font->underline_style);
-        assert(*font->underline_style == ss::underline_style_t::single_line);
+        assert(*font->underline_style == ss::underline_style_t::solid);
+        assert(font->underline_count);
+        assert(*font->underline_count == ss::underline_count_t::single_count);
 
         // A10
         row = 9;
