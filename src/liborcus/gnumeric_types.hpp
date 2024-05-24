@@ -16,6 +16,12 @@
 
 namespace orcus {
 
+namespace spreadsheet { namespace iface {
+
+class import_underline;
+
+}}
+
 /**
  * Values are as specified in the Gnumeric source code.
  */
@@ -115,7 +121,7 @@ struct gnumeric_style
     std::optional<bool> wrap_text;
     std::optional<bool> bold;
     std::optional<bool> italic;
-    std::optional<bool> underline;
+    std::optional<long> underline;
     std::optional<bool> strikethrough;
     std::optional<gnumeric_script_type> script; // TODO : not supported yet
 
@@ -147,6 +153,17 @@ std::optional<spreadsheet::color_rgb_t> parse_gnumeric_rgb(std::string_view v);
  * value.
  */
 std::optional<spreadsheet::color_rgb_t> parse_gnumeric_rgb_8x(std::string_view v);
+
+/**
+ * Push a numeric underline value to the import interface.
+ *
+ * @param v  Numeric value representing the underline type.
+ * @param ul Import interface for underline attributes.
+ *
+ * @return Warning message in case the import attempt has failed.
+ *         If successful an empty string gets returned.
+ */
+std::string push_underline(long v, spreadsheet::iface::import_underline* ul);
 
 } // namespace orcus
 

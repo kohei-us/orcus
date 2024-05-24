@@ -617,7 +617,7 @@ void test_gnumeric_text_formats()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    fs::path filepath = SRCDIR"/test/gnumeric/text-formats/input.gnumeric";
+    fs::path filepath = SRCDIR"/test/gnumeric/text-formats/basic.gnumeric";
     auto doc = load_doc(filepath);
     assert(doc);
 
@@ -798,18 +798,18 @@ void test_gnumeric_text_formats()
         row = 7;
         assert(check_cell_text(*sheet1, row, col, "All Underlined"));
         const ss::font_t* font = get_font(*sheet1, row, col);
-        assert(font->underline_style);
-        assert(*font->underline_style == ss::underline_style_t::solid);
-        assert(*font->underline_count == ss::underline_count_t::single_count);
+        assert(font->underline.style);
+        assert(*font->underline.style == ss::underline_style_t::solid);
+        assert(*font->underline.count == ss::underline_count_t::single_count);
     }
 
     {
         row = 8;
         assert(check_cell_text(*sheet1, row, col, "Bold and Underlined"));
         const ss::font_t* font = get_font(*sheet1, row, col);
-        assert(font->underline_style);
-        assert(*font->underline_style == ss::underline_style_t::solid);
-        assert(*font->underline_count == ss::underline_count_t::single_count);
+        assert(font->underline.style);
+        assert(*font->underline.style == ss::underline_style_t::solid);
+        assert(*font->underline.count == ss::underline_count_t::single_count);
         assert(font->bold);
         assert(*font->bold);
     }

@@ -63,22 +63,10 @@ bool font_t::operator==(const font_t& other) const
     if (italic_complex != other.italic_complex)
         return false;
 
-    if (underline_style != other.underline_style)
-        return false;
-
-    if (underline_thickness != other.underline_thickness)
-        return false;
-
-    if (underline_spacing != other.underline_spacing)
-        return false;
-
-    if (underline_count != other.underline_count)
-        return false;
-
-    if (underline_color != other.underline_color)
-        return false;
-
     if (color != other.color)
+        return false;
+
+    if (underline != other.underline)
         return false;
 
     if (strikethrough != other.strikethrough)

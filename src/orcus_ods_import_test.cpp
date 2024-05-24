@@ -101,63 +101,63 @@ bool verify_font_attrs(const ss::font_t& expected, const ss::font_t& actual)
         return false;
     }
 
-    if (expected.underline_style != actual.underline_style)
+    if (expected.underline.style != actual.underline.style)
     {
-        std::cerr << "underline_style states differ!" << std::endl;
+        std::cerr << "underline style states differ!" << std::endl;
         return false;
     }
 
-    if (expected.underline_style && *expected.underline_style != *actual.underline_style)
+    if (expected.underline.style && *expected.underline.style != *actual.underline.style)
     {
-        std::cerr << "underline_style values differ!" << std::endl;
+        std::cerr << "underline style values differ!" << std::endl;
         return false;
     }
 
-    if (expected.underline_thickness != actual.underline_thickness)
+    if (expected.underline.thickness != actual.underline.thickness)
     {
-        std::cerr << "underline_width states differ!" << std::endl;
+        std::cerr << "underline thickness states differ!" << std::endl;
         return false;
     }
 
-    if (expected.underline_thickness && *expected.underline_thickness != *actual.underline_thickness)
+    if (expected.underline.thickness && *expected.underline.thickness != *actual.underline.thickness)
     {
-        std::cerr << "underline_width values differ!" << std::endl;
+        std::cerr << "underline thickness values differ!" << std::endl;
         return false;
     }
 
-    if (expected.underline_spacing != actual.underline_spacing)
+    if (expected.underline.spacing != actual.underline.spacing)
     {
-        std::cerr << "underline_mode states differ!" << std::endl;
+        std::cerr << "underline spacing states differ!" << std::endl;
         return false;
     }
 
-    if (expected.underline_spacing && *expected.underline_spacing != *actual.underline_spacing)
+    if (expected.underline.spacing && *expected.underline.spacing != *actual.underline.spacing)
     {
-        std::cerr << "underline_mode values differ!" << std::endl;
+        std::cerr << "underline spacing values differ!" << std::endl;
         return false;
     }
 
-    if (expected.underline_count != actual.underline_count)
+    if (expected.underline.count != actual.underline.count)
     {
-        std::cerr << "underline_type states differ!" << std::endl;
+        std::cerr << "underline count states differ!" << std::endl;
         return false;
     }
 
-    if (expected.underline_count && *expected.underline_count != *actual.underline_count)
+    if (expected.underline.count && *expected.underline.count != *actual.underline.count)
     {
-        std::cerr << "underline_type values differ!" << std::endl;
+        std::cerr << "underline count values differ!" << std::endl;
         return false;
     }
 
-    if (expected.underline_color != actual.underline_color)
+    if (expected.underline.color != actual.underline.color)
     {
-        std::cerr << "underline_color states differ!" << std::endl;
+        std::cerr << "underline color states differ!" << std::endl;
         return false;
     }
 
-    if (expected.underline_color && *expected.underline_color != *actual.underline_color)
+    if (expected.underline.color && *expected.underline.color != *actual.underline.color)
     {
-        std::cerr << "underline_color values differ!" << std::endl;
+        std::cerr << "underline color values differ!" << std::endl;
         return false;
     }
 
@@ -572,10 +572,10 @@ void test_odf_font(const ss::styles& styles)
     assert(*cell_font->size == 24);
     assert(*cell_font->bold == true);
     assert(*cell_font->italic == true);
-    assert(*cell_font->underline_style == ss::underline_style_t::solid);
-    assert(*cell_font->underline_thickness == ss::underline_thickness_t::thick);
-    assert(!cell_font->underline_spacing); // not set
-    assert(!cell_font->underline_count);
+    assert(*cell_font->underline.style == ss::underline_style_t::solid);
+    assert(*cell_font->underline.thickness == ss::underline_thickness_t::thick);
+    assert(!cell_font->underline.spacing); // not set
+    assert(!cell_font->underline.count);
     assert(cell_font->color->red == (int)0x80);
     assert(cell_font->color->green == (int)0x80);
     assert(cell_font->color->blue == (int)0x80);
@@ -592,13 +592,13 @@ void test_odf_font(const ss::styles& styles)
     assert(*cell_font->size == 00);
     assert(*cell_font->bold == true);
     assert(!cell_font->italic);
-    assert(*cell_font->underline_style == ss::underline_style_t::dash);
-    assert(*cell_font->underline_thickness == ss::underline_thickness_t::bold);
-    assert(!cell_font->underline_spacing); // not set
-    assert(!cell_font->underline_count); // not set
-    assert(cell_font->underline_color->red == (int)0x18);
-    assert(cell_font->underline_color->green == (int)0x56);
-    assert(cell_font->underline_color->blue == (int)0xff);
+    assert(*cell_font->underline.style == ss::underline_style_t::dash);
+    assert(*cell_font->underline.thickness == ss::underline_thickness_t::bold);
+    assert(!cell_font->underline.spacing); // not set
+    assert(!cell_font->underline.count); // not set
+    assert(cell_font->underline.color->red == (int)0x18);
+    assert(cell_font->underline.color->green == (int)0x56);
+    assert(cell_font->underline.color->blue == (int)0xff);
 }
 
 void test_odf_text_strikethrough(const ss::styles& styles)
@@ -794,15 +794,15 @@ void test_standard_styles()
         assert(*actual->color == ss::color_t(0x00, 0x00, 0xee));
 
         // style:text-underline-style="solid"
-        assert(actual->underline_style);
-        assert(*actual->underline_style == ss::underline_style_t::solid);
+        assert(actual->underline.style);
+        assert(*actual->underline.style == ss::underline_style_t::solid);
 
         // style:text-underline-width="auto"
-        assert(actual->underline_thickness);
-        assert(*actual->underline_thickness == ss::underline_thickness_t::automatic);
+        assert(actual->underline.thickness);
+        assert(*actual->underline.thickness == ss::underline_thickness_t::automatic);
 
         // style:text-underline-color="font-color" (use the same color as the font)
-        assert(!actual->underline_color); // this implies the same color as the font
+        assert(!actual->underline.color); // this implies the same color as the font
     }
 
     {
@@ -975,7 +975,7 @@ void test_standard_styles()
         ss::font_t expected;
         expected.bold = true;
         expected.italic = true;
-        expected.underline_style = ss::underline_style_t::solid;
+        expected.underline.style = ss::underline_style_t::solid;
 
         const ss::font_t* actual = model.styles.get_font(cell_format->font);
         assert(actual);

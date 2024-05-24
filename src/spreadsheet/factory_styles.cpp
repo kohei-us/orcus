@@ -10,6 +10,7 @@
 #include "orcus/string_pool.hpp"
 
 #include "factory_strikethrough.hpp"
+#include "factory_underline.hpp"
 
 #include <unordered_map>
 #include <cassert>
@@ -45,12 +46,9 @@ public:
     virtual void set_size_asian(double point) override;
     virtual void set_size_complex(double point) override;
 
-    virtual void set_underline_style(underline_style_t e) override;
-    virtual void set_underline_thickness(underline_thickness_t e) override;
-    virtual void set_underline_spacing(underline_spacing_t e) override;
-    virtual void set_underline_count(underline_count_t e) override;
-    virtual void set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
     virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
+
+    virtual iface::import_underline* start_underline() override;
     virtual iface::import_strikethrough* start_strikethrough() override;
     virtual std::size_t commit() override;
 
@@ -184,6 +182,7 @@ struct import_font_style::impl
 
     std::unordered_map<font_t, std::size_t, font_t::hash> font_cache;
     font_t cur_font;
+    detail::import_underline underline_import;
     detail::import_strikethrough strikethrough_import;
 
     impl(styles& _styles_model, string_pool& sp) :
@@ -272,34 +271,15 @@ void import_font_style::set_size_complex(double point)
     mp_impl->cur_font.size_complex = point;
 }
 
-void import_font_style::set_underline_style(underline_style_t e)
-{
-    mp_impl->cur_font.underline_style = e;
-}
-
-void import_font_style::set_underline_thickness(underline_thickness_t e)
-{
-    mp_impl->cur_font.underline_thickness = e;
-}
-
-void import_font_style::set_underline_spacing(underline_spacing_t e)
-{
-    mp_impl->cur_font.underline_spacing = e;
-}
-
-void import_font_style::set_underline_count(underline_count_t e)
-{
-    mp_impl->cur_font.underline_count = e;
-}
-
-void import_font_style::set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
-{
-    mp_impl->cur_font.underline_color = color_t(alpha, red, green, blue);
-}
-
 void import_font_style::set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue)
 {
     mp_impl->cur_font.color = color_t(alpha, red, green, blue);
+}
+
+iface::import_underline* import_font_style::start_underline()
+{
+    mp_impl->underline_import.reset(&mp_impl->cur_font.underline);
+    return &mp_impl->underline_import;
 }
 
 iface::import_strikethrough* import_font_style::start_strikethrough()

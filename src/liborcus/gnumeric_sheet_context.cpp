@@ -13,6 +13,7 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
+#include <orcus/spreadsheet/import_interface_underline.hpp>
 #include <orcus/measurement.hpp>
 
 namespace ss = orcus::spreadsheet;
@@ -350,25 +351,10 @@ void gnumeric_sheet_context::start_font(const xml_token_attrs_t& attrs)
             }
             case XML_Underline:
             {
-                int n = atoi(attr.value.data());
-                switch (n)
-                {
-                    case 0:
-                        font_style->set_underline_style(ss::underline_style_t::none);
-                        break;
-                    case 1:
-                    {
-                        font_style->set_underline_style(ss::underline_style_t::solid);
-                        font_style->set_underline_count(ss::underline_count_t::single_count);
-                        break;
-                    }
-                    case 2:
-                    {
-                        font_style->set_underline_style(ss::underline_style_t::solid);
-                        font_style->set_underline_count(ss::underline_count_t::double_count);
-                        break;
-                    }
-                }
+                auto err = push_underline(to_long(attr.value), font_style->start_underline());
+                if (!err.empty())
+                    warn(err);
+
                 break;
             }
         }

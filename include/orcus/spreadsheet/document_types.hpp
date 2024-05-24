@@ -55,6 +55,28 @@ struct ORCUS_SPM_DLLPUBLIC strikethrough_t
     bool has_value() const;
 };
 
+struct ORCUS_SPM_DLLPUBLIC underline_t
+{
+    std::optional<underline_style_t> style;
+    std::optional<underline_thickness_t> thickness;
+    std::optional<underline_spacing_t> spacing;
+    std::optional<underline_count_t> count;
+    std::optional<color_t> color;
+
+    underline_t();
+    underline_t(const underline_t& other);
+    ~underline_t();
+
+    underline_t& operator=(const underline_t& other);
+
+    bool operator==(const underline_t& other) const;
+    bool operator!=(const underline_t& other) const;
+
+    void reset();
+
+    bool has_value() const;
+};
+
 /**
  * Contains formatting properties of a section of a string.  This is used in
  * the storage of rich-text strings.
@@ -81,6 +103,7 @@ struct ORCUS_SPM_DLLPUBLIC format_run_t
     std::optional<bool> subscript;
     /** Strikethrough attributes. */
     strikethrough_t strikethrough;
+    underline_t underline;
 
     format_run_t();
     format_run_t(const format_run_t& other);

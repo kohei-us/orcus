@@ -6,9 +6,10 @@
  */
 
 #include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_pivot.hpp>
 #include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
-#include <orcus/spreadsheet/import_interface_pivot.hpp>
+#include <orcus/spreadsheet/import_interface_underline.hpp>
 #include <orcus/spreadsheet/import_interface_view.hpp>
 #include <orcus/spreadsheet/export_interface.hpp>
 
@@ -24,6 +25,11 @@ import_pivot_cache_records::~import_pivot_cache_records() {}
 
 import_shared_strings::~import_shared_strings() {}
 
+import_underline* import_shared_strings::start_underline()
+{
+    return nullptr;
+}
+
 import_strikethrough* import_shared_strings::start_strikethrough()
 {
     return nullptr;
@@ -31,9 +37,16 @@ import_strikethrough* import_shared_strings::start_strikethrough()
 
 import_strikethrough::~import_strikethrough() = default;
 
+import_underline::~import_underline() = default;
+
 import_styles::~import_styles() {}
 
 import_font_style::~import_font_style() {}
+
+import_underline* import_font_style::start_underline()
+{
+    return nullptr;
+}
 
 import_strikethrough* import_font_style::start_strikethrough()
 {

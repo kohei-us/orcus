@@ -675,20 +675,20 @@ void test_xls_xml_formatted_text_basic()
         row = 7;
         assert(check_cell_text(*sheet, row, col, "All Underlined"));
         const ss::font_t* font = get_font(*sheet, row, col);
-        assert(font->underline_style);
-        assert(*font->underline_style == ss::underline_style_t::solid);
-        assert(font->underline_count);
-        assert(*font->underline_count == ss::underline_count_t::single_count);
+        assert(font->underline.style);
+        assert(*font->underline.style == ss::underline_style_t::solid);
+        assert(font->underline.count);
+        assert(*font->underline.count == ss::underline_count_t::single_count);
 
         // A9
         row = 8;
         assert(check_cell_text(*sheet, row, col, "Bold and underlined"));
         assert(check_cell_bold(*sheet, row, col, true));
         font = get_font(*sheet, row, col);
-        assert(font->underline_style);
-        assert(*font->underline_style == ss::underline_style_t::solid);
-        assert(font->underline_count);
-        assert(*font->underline_count == ss::underline_count_t::single_count);
+        assert(font->underline.style);
+        assert(*font->underline.style == ss::underline_style_t::solid);
+        assert(font->underline.count);
+        assert(*font->underline.count == ss::underline_count_t::single_count);
 
         row = 9;
         assert(check_cell_text(*sheet, row, col, "All Strikethrough"));

@@ -8,6 +8,7 @@ liborcus_HEADERS = \
 	import_interface_pivot.hpp \
 	import_interface_strikethrough.hpp \
 	import_interface_styles.hpp \
+	import_interface_underline.hpp \
 	import_interface_view.hpp
 
 if BUILD_SPREADSHEET_MODEL

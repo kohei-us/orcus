@@ -27,6 +27,7 @@ class import_number_format;
 class import_xf;
 class import_cell_style;
 class import_strikethrough;
+class import_underline;
 
 /**
  * Interface for importing styles.  This one acts as an entry point and
@@ -297,47 +298,6 @@ public:
     virtual void set_size_complex(double point) = 0;
 
     /**
-     * Set the style of an underline.
-     *
-     * @param e underline style of a font.
-     */
-    virtual void set_underline_style(underline_style_t e) = 0;
-
-    /**
-     * Set the thickness of an underline.
-     *
-     * @param e Thickness of the underline.
-     */
-    virtual void set_underline_thickness(underline_thickness_t e) = 0;
-
-    /**
-     * Set the spacing of an underline with respect to the text it is applied
-     * to.
-     *
-     * @param e Spacing of an underline.
-     */
-    virtual void set_underline_spacing(underline_spacing_t e) = 0;
-
-    /**
-     * Set the number of vertically-stacked lines in an underline.
-     *
-     * @param e Number of vertically-stacked lines in an underline.
-     */
-    virtual void set_underline_count(underline_count_t e) = 0;
-
-    /**
-     * Specify the color of an underline in ARGB format.
-     *
-     * @param alpha alpha component of the color.
-     * @param red red component of the color.
-     * @param green green component of the color.
-     * @param blue blue component of the color.
-     *
-     * @note If this value is not explicitly set, the font color should be used.
-     */
-    virtual void set_underline_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
-
-    /**
      * Specify the color of font in ARGB format.
      *
      * @param alpha alpha component of the color.
@@ -346,6 +306,8 @@ public:
      * @param blue blue component of the color.
      */
     virtual void set_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
+
+    virtual import_underline* start_underline();
 
     virtual import_strikethrough* start_strikethrough();
 

@@ -316,7 +316,7 @@ void gnumeric_styles_context::start_font(const std::vector<xml_token_attr_t>& at
                 m_current_style.italic = to_bool(attr.value);
                 break;
             case XML_Underline:
-                m_current_style.underline = to_bool(attr.value);
+                m_current_style.underline = to_long(attr.value);
                 break;
             case XML_StrikeThrough:
                 m_current_style.strikethrough = to_bool(attr.value);

@@ -76,6 +76,47 @@ bool strikethrough_t::has_value() const
     return style.has_value() || type.has_value() || width.has_value() || text.has_value();
 }
 
+underline_t::underline_t() = default;
+underline_t::underline_t(const underline_t& other) = default;
+underline_t::~underline_t() = default;
+
+underline_t& underline_t::operator=(const underline_t& other)
+{
+    style = other.style;
+    thickness = other.thickness;
+    spacing = other.spacing;
+    count = other.count;
+    color = other.color;
+
+    return *this;
+}
+
+bool underline_t::operator==(const underline_t& other) const
+{
+    return style == other.style && thickness == other.thickness &&
+        spacing == other.spacing && count == other.count && color == other.color;
+}
+
+bool underline_t::operator!=(const underline_t& other) const
+{
+    return !operator==(other);
+}
+
+void underline_t::reset()
+{
+    style.reset();
+    thickness.reset();
+    spacing.reset();
+    count.reset();
+    color.reset();
+}
+
+bool underline_t::has_value() const
+{
+    return style.has_value() || thickness.has_value() || spacing.has_value() ||
+        count.has_value() || color.has_value();
+}
+
 format_run_t::format_run_t() = default;
 format_run_t::format_run_t(const format_run_t& other) = default;
 format_run_t::~format_run_t() = default;
@@ -92,6 +133,7 @@ format_run_t& format_run_t::operator=(const format_run_t& other)
     superscript = other.superscript;
     subscript = other.subscript;
     strikethrough = other.strikethrough;
+    underline = other.underline;
 
     return *this;
 }
@@ -108,13 +150,14 @@ void format_run_t::reset()
     superscript.reset();
     subscript.reset();
     strikethrough.reset();
+    underline.reset();
 }
 
 bool format_run_t::formatted() const
 {
     return font.has_value() || font_size.has_value() || color.has_value()
         || bold.has_value() || italic.has_value() || superscript.has_value()
-        || subscript.has_value() || strikethrough.has_value();
+        || subscript.has_value() || strikethrough.has_value() || underline.has_value();
 }
 
 }} // namespace orcus::spreadsheet

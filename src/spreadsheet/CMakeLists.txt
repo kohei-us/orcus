@@ -16,6 +16,7 @@ add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     factory_strikethrough.cpp
     factory_styles.cpp
     factory_table.cpp
+    factory_underline.cpp
     flat_dumper.cpp
     formula_global.cpp
     global_settings.cpp

@@ -12,6 +12,7 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_strikethrough.hpp>
+#include <orcus/spreadsheet/import_interface_underline.hpp>
 #include <orcus/measurement.hpp>
 
 #include <fstream>
@@ -346,6 +347,34 @@ void gnumeric_cell_context::push_string(ss::row_t row, ss::col_t col)
                         // font size here is stored in 1024ths of a point, likely coming from Pango
                         v /= 1024.0;
                         shared_strings->set_segment_font_size(v);
+                    }
+                    break;
+                }
+                case gnumeric_value_format_type::underline:
+                {
+                    if (vfs.value == "single")
+                    {
+                        if (auto* ul = shared_strings->start_underline(); ul)
+                        {
+                            ul->set_style(ss::underline_style_t::solid);
+                            ul->set_count(ss::underline_count_t::single_count);
+                            ul->commit();
+                        }
+                    }
+                    else if (vfs.value == "double")
+                    {
+                        if (auto* ul = shared_strings->start_underline(); ul)
+                        {
+                            ul->set_style(ss::underline_style_t::solid);
+                            ul->set_count(ss::underline_count_t::double_count);
+                            ul->commit();
+                        }
+                    }
+                    else
+                    {
+                        std::ostringstream os;
+                        os << "unhandled underline type: '" << vfs.value << "'";
+                        warn(os.str());
                     }
                     break;
                 }

@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "factory_strikethrough.hpp"
+#include "factory_underline.hpp"
 
 namespace ixion {
 
@@ -43,6 +44,7 @@ class import_shared_strings : public iface::import_shared_strings
     std::unique_ptr<format_runs_t> mp_cur_format_runs;
 
     detail::import_strikethrough m_strikethrough_import;
+    detail::import_underline m_underline_import;
 
 public:
     import_shared_strings(
@@ -61,7 +63,8 @@ public:
     virtual void set_segment_font_name(std::string_view s) override;
     virtual void set_segment_font_size(double point) override;
     virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) override;
-    virtual iface::import_strikethrough* start_strikethrough();
+    virtual iface::import_strikethrough* start_strikethrough() override;
+    virtual iface::import_underline* start_underline() override;
     virtual void append_segment(std::string_view s) override;
     virtual size_t commit_segments() override;
 };

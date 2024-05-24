@@ -35,7 +35,7 @@ public:
      * Constructor.
      *
      * @param format Format string containing one or more format segments. Make
-     *               sure the source of this string is persisent!
+     *               sure the source of this string is persistent!
      */
     gnumeric_value_format_parser(const config& conf, std::string_view format);
 

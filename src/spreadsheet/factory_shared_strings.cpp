@@ -96,6 +96,12 @@ iface::import_strikethrough* import_shared_strings::start_strikethrough()
     return &m_strikethrough_import;
 }
 
+iface::import_underline* import_shared_strings::start_underline()
+{
+    m_underline_import.reset(&m_cur_format.underline);
+    return &m_underline_import;
+}
+
 void import_shared_strings::append_segment(std::string_view s)
 {
     if (s.empty())

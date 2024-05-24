@@ -8,6 +8,8 @@
 #include "gnumeric_types.hpp"
 #include "number_utils.hpp"
 
+#include <orcus/spreadsheet/import_interface_underline.hpp>
+
 #include <mdds/sorted_string_map.hpp>
 
 namespace ss = orcus::spreadsheet;
@@ -172,6 +174,57 @@ std::optional<spreadsheet::color_rgb_t> parse_gnumeric_rgb_8x(std::string_view v
 
     color.blue = *elem;
     return color;
+}
+
+std::string push_underline(long v, ss::iface::import_underline* ul)
+{
+    if (!ul)
+        return {};
+
+    switch (v)
+    {
+        case 0:
+            ul->set_style(ss::underline_style_t::none);
+            break;
+        case 1:
+        {
+            ul->set_style(ss::underline_style_t::solid);
+            ul->set_count(ss::underline_count_t::single_count);
+            break;
+        }
+        case 2:
+        {
+            ul->set_style(ss::underline_style_t::solid);
+            ul->set_count(ss::underline_count_t::double_count);
+            break;
+        }
+        case 3:
+        {
+            // single low underline (same as single accounting in excel?)
+            ul->set_style(ss::underline_style_t::solid);
+            ul->set_count(ss::underline_count_t::single_count);
+            ul->set_spacing(ss::underline_spacing_t::continuous_over_field);
+            break;
+        }
+        case 4:
+        {
+            // double low underline (same as double accounting in excel?)
+            ul->set_style(ss::underline_style_t::solid);
+            ul->set_count(ss::underline_count_t::double_count);
+            ul->set_spacing(ss::underline_spacing_t::continuous_over_field);
+            break;
+        }
+        default:
+        {
+            std::ostringstream os;
+            os << "unhandled underline enum value: " << v;
+            return os.str();
+        }
+    }
+
+    ul->commit();
+
+    return {};
 }
 
 } // namespace orcus

@@ -198,11 +198,11 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         optional_value("italic", font->italic, 2);
         optional_value("italic-asian", font->italic_asian, 2);
         optional_value("italic-complex", font->italic_complex, 2);
-        optional_value("underline-style", font->underline_style, 2);
-        optional_value("underline-width", font->underline_thickness, 2);
-        optional_value("underline-mode", font->underline_spacing, 2);
-        optional_value("underline-type", font->underline_count, 2);
-        optional_value("underline-color", font->underline_color, 2);
+        optional_value("underline-style", font->underline.style, 2);
+        optional_value("underline-width", font->underline.thickness, 2);
+        optional_value("underline-mode", font->underline.spacing, 2);
+        optional_value("underline-type", font->underline.count, 2);
+        optional_value("underline-color", font->underline.color, 2);
         optional_value("color", font->color, 2);
         optional_value("strikethrough-style", font->strikethrough.style, 2);
         optional_value("strikethrough-width", font->strikethrough.width, 2);

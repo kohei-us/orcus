@@ -10,6 +10,7 @@ list(APPEND _HEADERS
     import_interface_pivot.hpp
     import_interface_strikethrough.hpp
     import_interface_styles.hpp
+    import_interface_underline.hpp
     import_interface_view.hpp
     pivot.hpp
     shared_strings.hpp

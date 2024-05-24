@@ -14,6 +14,7 @@
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
 #include <orcus/spreadsheet/import_interface_strikethrough.hpp>
+#include <orcus/spreadsheet/import_interface_underline.hpp>
 
 #include <fstream>
 #include <algorithm>
@@ -42,15 +43,7 @@ std::size_t import_font_style(ss::iface::import_styles& istyles, const gnumeric_
         ifont->set_italic(*style.italic);
 
     if (style.underline)
-    {
-        if (*style.underline)
-        {
-            ifont->set_underline_style(ss::underline_style_t::solid);
-            ifont->set_underline_count(ss::underline_count_t::single_count);
-        }
-        else
-            ifont->set_underline_style(ss::underline_style_t::none);
-    }
+        push_underline(*style.underline, ifont->start_underline());
 
     if (style.strikethrough)
     {

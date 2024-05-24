@@ -79,6 +79,21 @@ void build_strikethrough_style(std::ostringstream& os, const strikethrough_t& st
     }
 }
 
+void build_underline_style(std::ostringstream& os, const underline_t& ul)
+{
+    if (ul.style.value_or(underline_style_t::none) == underline_style_t::solid)
+    {
+        os << "text-decoration-line: underline;";
+
+        if (ul.count.value_or(underline_count_t::single_count) == underline_count_t::double_count)
+            os << "text-decoration-style: double;";
+        else
+            os << "text-decoration-style: solid;";
+    }
+
+    // TODO: support more underline styles
+}
+
 const char* css_style_global =
 "table, td { "
     "border-collapse : collapse; "
@@ -188,6 +203,7 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
 
         {
             std::ostringstream os;
+            build_underline_style(os, run.underline);
             build_strikethrough_style(os, run.strikethrough);
             style += os.str();
         }
@@ -333,18 +349,7 @@ void build_border_style(std::ostringstream& os, const char* style_name, const bo
 
 void build_text_decoration(std::ostringstream& os, const font_t& ft)
 {
-    if (ft.underline_style.value_or(underline_style_t::none) == underline_style_t::solid)
-    {
-        os << "text-decoration-line: underline;";
-
-        if (ft.underline_count.value_or(underline_count_t::single_count) == underline_count_t::double_count)
-            os << "text-decoration-style: double;";
-        else
-            os << "text-decoration-style: solid;";
-    }
-
-    // TODO: support more underline styles
-
+    build_underline_style(os, ft.underline);
     build_strikethrough_style(os, ft.strikethrough);
 }
 

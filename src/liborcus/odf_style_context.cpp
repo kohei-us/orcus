@@ -17,6 +17,7 @@
 
 #include <orcus/spreadsheet/import_interface_styles.hpp>
 #include <orcus/spreadsheet/import_interface_strikethrough.hpp>
+#include <orcus/spreadsheet/import_interface_underline.hpp>
 
 namespace ss = orcus::spreadsheet;
 
@@ -322,9 +323,9 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
 
     std::optional<ss::color_rgb_t> underline_color;
     std::optional<ss::underline_style_t> underline_style;
-    std::optional<ss::underline_count_t> underline_type;
-    std::optional<ss::underline_thickness_t> underline_width;
-    std::optional<ss::underline_spacing_t> underline_mode;
+    std::optional<ss::underline_count_t> underline_count;
+    std::optional<ss::underline_thickness_t> underline_thickness;
+    std::optional<ss::underline_spacing_t> underline_spacing;
 
     std::optional<ss::strikethrough_style_t> strikethrough_style;
     std::optional<ss::strikethrough_type_t> strikethrough_type;
@@ -370,13 +371,13 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
                     break;
                 case XML_text_underline_mode:
                     if (attr.value == "skip-white-space")
-                        underline_mode = ss::underline_spacing_t::skip_white_space;
+                        underline_spacing = ss::underline_spacing_t::skip_white_space;
                     else
-                        underline_mode = ss::underline_spacing_t::continuous;
+                        underline_spacing = ss::underline_spacing_t::continuous;
                     break;
                 case XML_text_underline_width:
                 {
-                    underline_width = odf::extract_underline_width(attr.value);
+                    underline_thickness = odf::extract_underline_width(attr.value);
                     break;
                 }
                 case XML_text_underline_style:
@@ -387,11 +388,11 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
                 case XML_text_underline_type:
                 {
                     if (attr.value == "none")
-                        underline_type = ss::underline_count_t::none;
+                        underline_count = ss::underline_count_t::none;
                     else if (attr.value == "single")
-                        underline_type = ss::underline_count_t::single_count;
+                        underline_count = ss::underline_count_t::single_count;
                     else if (attr.value == "double")
-                        underline_type = ss::underline_count_t::double_count;
+                        underline_count = ss::underline_count_t::double_count;
                     break;
                 }
                 case XML_text_line_through_style:
@@ -492,21 +493,26 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     if (color)
         font_style->set_color(255, color->red, color->green, color->blue);
 
-    if (underline_color)
-        // Separate underline color is specified.
-        font_style->set_underline_color(255, underline_color->red, underline_color->green, underline_color->blue);
+    if (auto* ul = font_style->start_underline(); ul)
+    {
+        if (underline_color)
+            // Separate underline color is specified.
+            ul->set_color(255, underline_color->red, underline_color->green, underline_color->blue);
 
-    if (underline_width)
-        font_style->set_underline_thickness(*underline_width);
+        if (underline_thickness)
+            ul->set_thickness(*underline_thickness);
 
-    if (underline_style)
-        font_style->set_underline_style(*underline_style);
+        if (underline_style)
+            ul->set_style(*underline_style);
 
-    if (underline_type)
-        font_style->set_underline_count(*underline_type);
+        if (underline_count)
+            ul->set_count(*underline_count);
 
-    if (underline_mode)
-        font_style->set_underline_spacing(*underline_mode);
+        if (underline_spacing)
+            ul->set_spacing(*underline_spacing);
+
+        ul->commit();
+    }
 
     if (auto* st = font_style->start_strikethrough(); st)
     {

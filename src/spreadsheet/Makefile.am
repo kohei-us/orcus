@@ -47,6 +47,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	factory_styles.cpp \
 	factory_table.hpp \
 	factory_table.cpp \
+	factory_underline.hpp \
+	factory_underline.cpp \
 	flat_dumper.hpp \
 	flat_dumper.cpp \
 	formula_global.hpp \
