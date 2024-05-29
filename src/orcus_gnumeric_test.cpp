@@ -789,10 +789,18 @@ void test_gnumeric_text_formats()
     assert(runs->at(0).bold && !runs->at(0).bold.value()); // explicit non-bold segment
     assert(!runs->at(0).italic);
 
-    // Rest of the cells are imported as unformatted for now, until we support
-    // more format properties. See #182.
     row = 6;
     assert(check_cell_text(*sheet1, row, col, "Only partially underlined"));
+    si = sheet1->get_string_identifier(row, col);
+    runs = doc->get_shared_strings().get_format_runs(si);
+    assert(runs);
+    assert(runs->size() == 1u);
+    // Only partially underlined
+    //                ^^^^^^^^^^
+    assert(runs->at(0).pos == 15);
+    assert(runs->at(0).size == 10);
+    assert(runs->at(0).underline.style == ss::underline_style_t::solid);
+    assert(runs->at(0).underline.count == ss::underline_count_t::single_count);
 
     {
         row = 7;
