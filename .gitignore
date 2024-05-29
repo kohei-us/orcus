@@ -53,3 +53,4 @@ doc_example/xml-mapping-1
 src/parser/*-parser-test
 src/parser/xml-writer-test
 test/python/env.json
+*~
