@@ -19,6 +19,7 @@ namespace orcus {
 namespace spreadsheet {
 
 class document;
+struct font_t;
 
 }
 
@@ -45,6 +46,16 @@ bool set(const std::optional<bool>& v);
  * attributes.
  */
 bool strikethrough_set(const spreadsheet::strikethrough_t& st);
+
+const spreadsheet::font_t* get_font(
+    const spreadsheet::document& doc, spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t col);
+
+bool check_cell_text(
+    const spreadsheet::document& doc, spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t col,
+    std::string_view expected);
+
+const spreadsheet::format_runs_t* get_format_runs(
+    const spreadsheet::document& doc, spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t col);
 
 }}
 

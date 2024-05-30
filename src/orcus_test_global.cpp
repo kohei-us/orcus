@@ -9,6 +9,8 @@
 
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
+#include <orcus/spreadsheet/styles.hpp>
+#include <orcus/spreadsheet/shared_strings.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/parser_global.hpp>
 
@@ -121,6 +123,74 @@ bool strikethrough_set(const ss::strikethrough_t& st)
         return false;
 
     return true;
+}
+
+const ss::font_t* get_font(const ss::document& doc, ss::sheet_t sheet, ss::row_t row, ss::col_t col)
+{
+    const ss::sheet* sh = doc.get_sheet(sheet);
+    if (!sh)
+    {
+        std::cerr << "Failed to get a sheet at the sheet index of " << sheet << std::endl;
+        return nullptr;
+    }
+
+    std::size_t xf = sh->get_cell_format(row, col);
+
+    const auto& styles = doc.get_styles();
+
+    const ss::cell_format_t* cell_format = styles.get_cell_format(xf);
+    if (!cell_format)
+    {
+        std::cerr << "Failed to get a cell format buffer at row " << row << " and column " << col << std::endl;
+        return nullptr;
+    }
+
+    return styles.get_font(cell_format->font);
+};
+
+bool check_cell_text(const ss::document& doc, ss::sheet_t sheet, ss::row_t row, ss::col_t col, std::string_view expected)
+{
+    const auto& sstrings = doc.get_shared_strings();
+    const ss::sheet* sh = doc.get_sheet(sheet);
+    if (!sh)
+    {
+        std::cerr << "Failed to get a sheet at the sheet index of " << sheet << std::endl;
+        return false;
+    }
+
+    std::size_t si = sh->get_string_identifier(row, col);
+    const std::string* s = sstrings.get_string(si);
+    if (!s)
+    {
+        std::cerr << "expected='" << expected << "'; actual=<none> "
+            << "(sheet=" << sh->get_index() << "; row=" << row << "; column=" << col << ")"
+            << std::endl;
+
+        return false;
+    }
+
+    if (*s == expected)
+        return true;
+
+    std::cerr << "expected='" << expected << "'; actual='" << *s << "' "
+        << "(sheet=" << sh->get_index() << "; row=" << row << "; column=" << col << ")"
+        << std::endl;
+
+    return false;
+};
+
+const ss::format_runs_t* get_format_runs(
+    const ss::document& doc, ss::sheet_t sheet, ss::row_t row, ss::col_t col)
+{
+    const ss::sheet* sh = doc.get_sheet(sheet);
+    if (!sh)
+    {
+        std::cerr << "Failed to get a sheet at the sheet index of " << sheet << std::endl;
+        return nullptr;
+    }
+
+    auto si = sh->get_string_identifier(row, col);
+    return doc.get_shared_strings().get_format_runs(si);
 }
 
 }}
