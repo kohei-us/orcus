@@ -37,6 +37,7 @@ public:
 
 private:
     void start_strike(const xml_token_attrs_t& attrs);
+    void start_underline(const xml_token_attrs_t& attrs);
 
 private:
     spreadsheet::iface::import_shared_strings* mp_strings = nullptr;

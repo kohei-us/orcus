@@ -13,6 +13,7 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_strikethrough.hpp>
+#include <orcus/spreadsheet/import_interface_underline.hpp>
 #include <orcus/measurement.hpp>
 
 #include <optional>
@@ -39,6 +40,7 @@ xlsx_shared_strings_context::xlsx_shared_strings_context(
         { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_scheme },
         { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_strike },
         { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_sz },
+        { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_u },
         { NS_ooxml_xlsx, XML_rPr, NS_ooxml_xlsx, XML_vertAlign },
         { NS_ooxml_xlsx, XML_si, NS_ooxml_xlsx, XML_r },
         { NS_ooxml_xlsx, XML_si, NS_ooxml_xlsx, XML_t },
@@ -102,6 +104,12 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
             {
                 // strikethrough
                 start_strike(attrs);
+                break;
+            }
+            case XML_u:
+            {
+                // underline
+                start_underline(attrs);
                 break;
             }
             case XML_sz:
@@ -267,6 +275,20 @@ void xlsx_shared_strings_context::start_strike(const xml_token_attrs_t& /*attrs*
     st->set_type(ss::strikethrough_type_t::single_type);
     st->set_width(ss::strikethrough_width_t::width_auto);
     st->commit();
+}
+
+void xlsx_shared_strings_context::start_underline(const xml_token_attrs_t& attrs)
+{
+    auto* ul = mp_strings->start_underline();
+    if (!ul)
+        return;
+
+    auto v = get_single_attr(attrs, nullptr, XML_val);
+    auto c = (v == "double") ? ss::underline_count_t::double_count : ss::underline_count_t::single_count;
+
+    ul->set_style(ss::underline_style_t::solid);
+    ul->set_count(c);
+    ul->commit();
 }
 
 }
