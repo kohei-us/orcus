@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Kohei Yoshida</Author>
+  <LastAuthor>Kohei Yoshida</LastAuthor>
+  <Created>2024-05-17T01:41:18Z</Created>
+  <LastSaved>2024-05-17T01:58:10Z</LastSaved>
+  <Version>16.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>15990</WindowHeight>
+  <WindowWidth>29040</WindowWidth>
+  <WindowTopX>32767</WindowTopX>
+  <WindowTopY>32767</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Aptos Narrow" x:Family="Swiss" ss:Size="11"
+    ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s16">
+   <Font ss:FontName="Aptos Narrow" x:Family="Swiss" ss:Size="11"
+    ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s17">
+   <Font ss:FontName="Aptos Narrow" x:Family="Swiss" ss:Size="11"
+    ss:Color="#000000" ss:Underline="Single"/>
+  </Style>
+  <Style ss:ID="s18">
+   <Font ss:FontName="Aptos Narrow" x:Family="Swiss" ss:Size="11"
+    ss:Color="#000000" ss:Underline="Double"/>
+  </Style>
+  <Style ss:ID="s19">
+   <Font ss:FontName="Aptos Narrow" x:Family="Swiss" ss:Size="11"
+    ss:Color="#000000" ss:Underline="SingleAccounting"/>
+  </Style>
+  <Style ss:ID="s20">
+   <Font ss:FontName="Aptos Narrow" x:Family="Swiss" ss:Size="11"
+    ss:Color="#000000" ss:Underline="DoubleAccounting"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Underline">
+  <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="8" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="99.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="63.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="197.25"/>
+   <Row>
+    <Cell ss:StyleID="s16"><Data ss:Type="String">Type</Data></Cell>
+    <Cell ss:StyleID="s16"><Data ss:Type="String">Applied to</Data></Cell>
+    <Cell ss:StyleID="s16"><Data ss:Type="String">Text</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">single</Data></Cell>
+    <Cell><Data ss:Type="String">cell</Data></Cell>
+    <Cell ss:StyleID="s17"><Data ss:Type="String">The cat chased the butterfly.</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">double</Data></Cell>
+    <Cell><Data ss:Type="String">cell</Data></Cell>
+    <Cell ss:StyleID="s18"><Data ss:Type="String">She loves to paint landscapes.</Data></Cell>
+   </Row>
+   <Row ss:Height="17.25">
+    <Cell><Data ss:Type="String">single accounting</Data></Cell>
+    <Cell><Data ss:Type="String">cell</Data></Cell>
+    <Cell ss:StyleID="s19"><Data ss:Type="String">He laughed at the funny joke.</Data></Cell>
+   </Row>
+   <Row ss:Height="17.25">
+    <Cell><Data ss:Type="String">double accounting</Data></Cell>
+    <Cell><Data ss:Type="String">cell</Data></Cell>
+    <Cell ss:StyleID="s20"><Data ss:Type="String">The car stopped at the red light.</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">single</Data></Cell>
+    <Cell><Data ss:Type="String">text</Data></Cell>
+    <Cell><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><Font
+       html:Color="#000000">The </Font><U><Font html:Color="#000000">sun set</Font></U><Font
+       html:Color="#000000"> behind the </Font><U><Font html:Color="#000000">mountains</Font></U><Font
+       html:Color="#000000">.</Font></ss:Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">double</Data></Cell>
+    <Cell><Data ss:Type="String">text</Data></Cell>
+    <Cell><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><Font
+       html:Color="#000000">He </Font><U html:Style="text-underline:double"><Font
+        html:Color="#000000">forgot</Font></U><Font html:Color="#000000"> his </Font><U
+       html:Style="text-underline:double"><Font html:Color="#000000">umbrella</Font></U><Font
+       html:Color="#000000"> again.</Font></ss:Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">single, double</Data></Cell>
+    <Cell><Data ss:Type="String">text</Data></Cell>
+    <Cell><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><Font
+       html:Color="#000000">They </Font><U><Font html:Color="#000000">danced</Font></U><Font
+       html:Color="#000000"> under the </Font><U html:Style="text-underline:double"><Font
+        html:Color="#000000">stars</Font></U><Font html:Color="#000000">.</Font></ss:Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <VerticalResolution>0</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>8</ActiveRow>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>
