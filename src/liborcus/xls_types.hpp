@@ -12,6 +12,7 @@ namespace orcus {
 namespace spreadsheet { namespace iface {
 
 class import_font_style;
+class import_underline;
 
 }}
 
@@ -30,6 +31,8 @@ enum class xls_underline_t
 };
 
 void push_to_font_style(detail::xls_underline_t v, spreadsheet::iface::import_font_style& istyle);
+
+void push_to_import_underline(detail::xls_underline_t v, spreadsheet::iface::import_underline& ul);
 
 }}
 

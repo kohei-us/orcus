@@ -45,10 +45,10 @@ class xls_xml_data_context : public xml_context_base
     {
         std::optional<bool> bold;
         std::optional<bool> italic;
-        std::optional<bool> underline;
         std::optional<bool> strikethrough;
         std::optional<bool> subscript;
         std::optional<bool> superscript;
+        std::optional<detail::xls_underline_t> underline;
 
         std::optional<std::string_view> font_face;
         std::optional<double> font_size;
@@ -98,8 +98,9 @@ public:
     void reset();
 
 private:
+    void start_underline(const xml_token_attrs_t& attrs);
 
-    void start_element_data(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_element_data(const xml_token_attrs_t& attrs);
     void end_element_data();
 
     bool handle_array_formula_result();

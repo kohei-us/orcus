@@ -667,9 +667,25 @@ void test_xls_xml_formatted_text_basic()
         assert(runs->at(2).size == 5);
         assert(test::set(runs->at(2).bold));
 
-        // A7 - TODO: check format
+        // A7
         row = 6;
         assert(check_cell_text(*sheet, row, col, "Only partially underlined"));
+        si = sheet->get_string_identifier(row, col);
+        runs = doc->get_shared_strings().get_format_runs(si);
+        assert(runs);
+        assert(runs->size() == 2u);
+        // Only partially underlined
+        // ^^^^^^^^^^^^^^^
+        assert(runs->at(0).pos == 0);
+        assert(runs->at(0).size == 15);
+        // Only partially underlined
+        //                ^^^^^^^^^^
+        assert(runs->at(1).pos == 15);
+        assert(runs->at(1).size == 10);
+        assert(runs->at(1).underline.style);
+        assert(*runs->at(1).underline.style == ss::underline_style_t::solid);
+        assert(runs->at(1).underline.count);
+        assert(*runs->at(1).underline.count == ss::underline_count_t::single_count);
 
         // A8
         row = 7;
@@ -896,6 +912,177 @@ void test_xls_xml_formatted_text_basic()
         assert(runs->at(8).size == 6);
         assert(runs->at(8).font_size == 36.0f);
     }
+}
+
+void test_xls_xml_formatted_text_underline()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/formatted-text/underline.xml");
+    assert(doc);
+
+    const ss::sheet_t sheet = 0;
+    ss::row_t row = 1;
+    ss::col_t col = 2;
+
+    // C2 (single underline applied to cell)
+    assert(test::check_cell_text(*doc, sheet, row, col, "The cat chased the butterfly."));
+    const ss::font_t* font = test::get_font(*doc, sheet, row, col);
+    assert(font);
+    assert(font->underline.style);
+    assert(*font->underline.style == ss::underline_style_t::solid);
+    assert(font->underline.count);
+    assert(*font->underline.count == ss::underline_count_t::single_count);
+
+    // C3 (double underline applied to cell)
+    row = 2;
+    assert(test::check_cell_text(*doc, sheet, row, col, "She loves to paint landscapes."));
+    font = test::get_font(*doc, sheet, row, col);
+    assert(font);
+    assert(font->underline.style);
+    assert(*font->underline.style == ss::underline_style_t::solid);
+    assert(font->underline.count);
+    assert(*font->underline.count == ss::underline_count_t::double_count);
+
+    // C4 (single "accounting" underline applied to cell)
+    row = 3;
+    assert(test::check_cell_text(*doc, sheet, row, col, "He laughed at the funny joke."));
+    font = test::get_font(*doc, sheet, row, col);
+    assert(font);
+    assert(font->underline.style);
+    assert(*font->underline.style == ss::underline_style_t::solid);
+    assert(font->underline.count);
+    assert(*font->underline.count == ss::underline_count_t::single_count);
+    assert(font->underline.spacing);
+    assert(*font->underline.spacing == ss::underline_spacing_t::continuous_over_field);
+
+    // C5 (double "accounting" underline applied to cell)
+    row = 4;
+    assert(test::check_cell_text(*doc, sheet, row, col, "The car stopped at the red light."));
+    font = test::get_font(*doc, sheet, row, col);
+    assert(font);
+    assert(font->underline.style);
+    assert(*font->underline.style == ss::underline_style_t::solid);
+    assert(font->underline.count);
+    assert(*font->underline.count == ss::underline_count_t::double_count);
+    assert(font->underline.spacing);
+    assert(*font->underline.spacing == ss::underline_spacing_t::continuous_over_field);
+
+    // C6 (two single underlines applied to text segments)
+    row = 5;
+    assert(test::check_cell_text(*doc, sheet, row, col, "The sun set behind the mountains."));
+    auto* runs = test::get_format_runs(*doc, sheet, row, col);
+    assert(runs);
+    assert(runs->size() == 5);
+    // The sun set behind the mountains.
+    // ^^^^
+    // (no formats applied)
+    assert(runs->at(0).pos == 0);
+    assert(runs->at(0).size == 4);
+    // The sun set behind the mountains.
+    //     ^^^^^^^
+    assert(runs->at(1).pos == 4);
+    assert(runs->at(1).size == 7);
+    assert(runs->at(1).underline.style);
+    assert(*runs->at(1).underline.style == ss::underline_style_t::solid);
+    assert(runs->at(1).underline.count);
+    assert(*runs->at(1).underline.count == ss::underline_count_t::single_count);
+    // The sun set behind the mountains.
+    //            ^^^^^^^^^^^^
+    // (no formats applied)
+    assert(runs->at(2).pos == 11);
+    assert(runs->at(2).size == 12);
+    // The sun set behind the mountains.
+    //                        ^^^^^^^^^
+    assert(runs->at(3).pos == 23);
+    assert(runs->at(3).size == 9);
+    assert(runs->at(3).underline.style);
+    assert(*runs->at(3).underline.style == ss::underline_style_t::solid);
+    assert(runs->at(3).underline.count);
+    assert(*runs->at(3).underline.count == ss::underline_count_t::single_count);
+    // The sun set behind the mountains.
+    //                                 ^
+    // (no formats applied)
+    assert(runs->at(4).pos == 32);
+    assert(runs->at(4).size == 1);
+
+    // C7 (two double underlines applied to text segments)
+    row = 6;
+    assert(test::check_cell_text(*doc, sheet, row, col, "He forgot his umbrella again."));
+    runs = test::get_format_runs(*doc, sheet, row, col);
+    assert(runs);
+    assert(runs->size() == 5);
+    // He forgot his umbrella again.
+    // ^^^
+    // (no formats applied)
+    assert(runs->at(0).pos == 0);
+    assert(runs->at(0).size == 3);
+    // He forgot his umbrella again.
+    //    ^^^^^^
+    assert(runs->at(1).pos == 3);
+    assert(runs->at(1).size == 6);
+    assert(runs->at(1).underline.style);
+    assert(*runs->at(1).underline.style == ss::underline_style_t::solid);
+    assert(runs->at(1).underline.count);
+    assert(*runs->at(1).underline.count == ss::underline_count_t::double_count);
+    // He forgot his umbrella again.
+    //          ^^^^^
+    // (no formats applied)
+    assert(runs->at(2).pos == 9);
+    assert(runs->at(2).size == 5);
+    // He forgot his umbrella again.
+    //               ^^^^^^^^
+    assert(runs->at(3).pos == 14);
+    assert(runs->at(3).size == 8);
+    assert(runs->at(3).underline.style);
+    assert(*runs->at(3).underline.style == ss::underline_style_t::solid);
+    assert(runs->at(3).underline.count);
+    assert(*runs->at(3).underline.count == ss::underline_count_t::double_count);
+    // He forgot his umbrella again.
+    //                       ^^^^^^^
+    // (no formats applied)
+    assert(runs->at(4).pos == 22);
+    assert(runs->at(4).size == 7);
+
+    // C8 (single and double underlines applied to text segments)
+    row = 7;
+    assert(test::check_cell_text(*doc, sheet, row, col, "They danced under the stars."));
+    runs = test::get_format_runs(*doc, sheet, row, col);
+    assert(runs);
+    assert(runs->size() == 5);
+    // They danced under the stars.
+    // ^^^^^
+    // (no formats applied)
+    assert(runs->at(0).pos == 0);
+    assert(runs->at(0).size == 5);
+    // They danced under the stars.
+    //      ^^^^^^
+    // (single underline)
+    assert(runs->at(1).pos == 5);
+    assert(runs->at(1).size == 6);
+    assert(runs->at(1).underline.style);
+    assert(*runs->at(1).underline.style == ss::underline_style_t::solid);
+    assert(runs->at(1).underline.count);
+    assert(*runs->at(1).underline.count == ss::underline_count_t::single_count);
+    // They danced under the stars.
+    //            ^^^^^^^^^^^
+    // (no formats applied)
+    assert(runs->at(2).pos == 11);
+    assert(runs->at(2).size == 11);
+    // They danced under the stars.
+    //                       ^^^^^
+    // (double underline)
+    assert(runs->at(3).pos == 22);
+    assert(runs->at(3).size == 5);
+    assert(runs->at(3).underline.style);
+    assert(*runs->at(3).underline.style == ss::underline_style_t::solid);
+    assert(runs->at(3).underline.count);
+    assert(*runs->at(3).underline.count == ss::underline_count_t::double_count);
+    // They danced under the stars.
+    //                            ^
+    // (no formats applied)
+    assert(runs->at(4).pos == 27);
+    assert(runs->at(4).size == 1);
 }
 
 void test_xls_xml_column_width_row_height()
@@ -2500,6 +2687,7 @@ int main()
     test_xls_xml_bold_and_italic();
     test_xls_xml_colored_text();
     test_xls_xml_formatted_text_basic();
+    test_xls_xml_formatted_text_underline();
     test_xls_xml_column_width_row_height();
     test_xls_xml_background_fill();
     test_xls_xml_named_colors();

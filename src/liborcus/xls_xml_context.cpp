@@ -8,6 +8,7 @@
 #include "xls_xml_context.hpp"
 #include "xls_xml_namespace_types.hpp"
 #include "xls_xml_token_constants.hpp"
+#include "xml_context_global.hpp"
 #include "spreadsheet_iface_util.hpp"
 #include "impl_utils.hpp"
 
@@ -282,14 +283,14 @@ void xls_xml_data_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*na
 
 void xls_xml_data_context::start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
+    push_stack(ns, name);
 
     if (ns == NS_xls_xml_ss)
     {
         switch (name)
         {
             case XML_Data:
-                start_element_data(parent, attrs);
+                start_element_data(attrs);
                 break;
             default:
                 warn_unhandled();
@@ -310,9 +311,7 @@ void xls_xml_data_context::start_element(xmlns_id_t ns, xml_token_t name, const:
                 update_current_format();
                 break;
             case XML_U:
-                m_format_stack.emplace_back();
-                m_format_stack.back().underline = true;
-                update_current_format();
+                start_underline(attrs);
                 break;
             case XML_S:
                 m_format_stack.emplace_back();
@@ -461,8 +460,18 @@ void xls_xml_data_context::reset()
     m_cell_datetime = date_time_t();
 }
 
-void xls_xml_data_context::start_element_data(
-    const xml_token_pair_t& /*parent*/, const xml_token_attrs_t& attrs)
+void xls_xml_data_context::start_underline(const xml_token_attrs_t& attrs)
+{
+    auto v = detail::xls_underline_t::single_normal;
+    if (get_single_attr(attrs, NS_xls_xml_html, XML_Style) == "text-underline:double")
+        v = detail::xls_underline_t::double_normal;
+
+    m_format_stack.emplace_back();
+    m_format_stack.back().underline = v;
+    update_current_format();
+}
+
+void xls_xml_data_context::start_element_data(const xml_token_attrs_t& attrs)
 {
     m_cell_type = ct_unknown;
     m_cell_string.clear();
@@ -560,6 +569,12 @@ void xls_xml_data_context::end_element_data()
 
                     if (sstr.format.subscript)
                         ss->set_segment_subscript(*sstr.format.subscript);
+
+                    if (sstr.format.underline)
+                    {
+                        if (auto* ul = ss->start_underline(); ul)
+                            detail::push_to_import_underline(*sstr.format.underline, *ul);
+                    }
 
                     if (sstr.format.strikethrough && *sstr.format.strikethrough)
                     {
@@ -2047,7 +2062,7 @@ void xls_xml_context::commit_default_style()
             font_style->set_size(*font.size);
 
         if (font.underline)
-            push_to_font_style(*font.underline, *font_style);
+            detail::push_to_font_style(*font.underline, *font_style);
 
         if (font.strikethrough && *font.strikethrough)
         {
@@ -2215,7 +2230,7 @@ void xls_xml_context::commit_styles()
             font_style->set_size(*style->font.size);
 
         if (style->font.underline)
-            push_to_font_style(*style->font.underline, *font_style);
+            detail::push_to_font_style(*style->font.underline, *font_style);
 
         if (style->font.strikethrough && *style->font.strikethrough)
         {

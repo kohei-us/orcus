@@ -20,39 +20,44 @@ void push_to_font_style(detail::xls_underline_t v, ss::iface::import_font_style&
     if (!ul)
         return;
 
+    push_to_import_underline(v, *ul);
+}
+
+void push_to_import_underline(detail::xls_underline_t v, ss::iface::import_underline& ul)
+{
     switch (v)
     {
         case detail::xls_underline_t::single_normal:
         {
-            ul->set_style(ss::underline_style_t::solid);
-            ul->set_count(ss::underline_count_t::single_count);
+            ul.set_style(ss::underline_style_t::solid);
+            ul.set_count(ss::underline_count_t::single_count);
             break;
         }
         case detail::xls_underline_t::single_accounting:
         {
-            ul->set_style(ss::underline_style_t::solid);
-            ul->set_count(ss::underline_count_t::single_count);
-            ul->set_spacing(ss::underline_spacing_t::continuous_over_field);
+            ul.set_style(ss::underline_style_t::solid);
+            ul.set_count(ss::underline_count_t::single_count);
+            ul.set_spacing(ss::underline_spacing_t::continuous_over_field);
             break;
         }
         case detail::xls_underline_t::double_normal:
         {
-            ul->set_style(ss::underline_style_t::solid);
-            ul->set_count(ss::underline_count_t::double_count);
+            ul.set_style(ss::underline_style_t::solid);
+            ul.set_count(ss::underline_count_t::double_count);
             break;
         }
         case detail::xls_underline_t::double_accounting:
         {
-            ul->set_style(ss::underline_style_t::solid);
-            ul->set_count(ss::underline_count_t::double_count);
-            ul->set_spacing(ss::underline_spacing_t::continuous_over_field);
+            ul.set_style(ss::underline_style_t::solid);
+            ul.set_count(ss::underline_count_t::double_count);
+            ul.set_spacing(ss::underline_spacing_t::continuous_over_field);
             break;
         }
         case detail::xls_underline_t::none:
             break;
     }
 
-    ul->commit();
+    ul.commit();
 }
 
 }}
