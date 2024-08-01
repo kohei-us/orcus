@@ -12,6 +12,9 @@
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
+/**
+ * Interface for importing strikethrough attributes of a text.
+ */
 class ORCUS_DLLPUBLIC import_strikethrough
 {
 public:

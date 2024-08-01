@@ -161,13 +161,29 @@ public:
      */
     virtual void set_segment_font_color(color_elem_t alpha, color_elem_t red, color_elem_t green, color_elem_t blue) = 0;
 
+    /**
+     * Get an interface for importing the underline attributes and applying them
+     * to the current segment.
+     *
+     * @return Pointer to an interface for applying the underline-related
+     *         attributes to the current segment.  The implementer may return
+     *         @p nullptr if the implementation does not support it.
+     */
     virtual import_underline* start_underline();
 
+    /**
+     * Get an interface for importing the strikethrough attributes and applying
+     * them to the current segment.
+     *
+     * @return Pointer to an interface for applying the strikethrough-related
+     *         attributes to the current segment.  The implementer may return
+     *         @p nullptr if the implementation does not support it.
+     */
     virtual import_strikethrough* start_strikethrough();
 
     /**
      * Push the current string segment to the buffer. Any formatting attributes
-     * defined so far will be applied to this segment.
+     * set so far will be applied to this segment.
      *
      * @param s string value for the segment.
      */

@@ -12,6 +12,9 @@
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
+/**
+ * Interface for importing underline attributes of a text.
+ */
 class ORCUS_DLLPUBLIC import_underline
 {
 public:

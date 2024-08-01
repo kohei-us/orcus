@@ -2,6 +2,8 @@
 Core types
 ==========
 
+Types in this section are available through the ``orcus`` core module.
+
 Integral types
 --------------
 
@@ -51,10 +53,10 @@ Enums
 .. doxygenenum:: orcus::spreadsheet::formula_t
 .. doxygenenum:: orcus::spreadsheet::formula_ref_context_t
 .. doxygenenum:: orcus::spreadsheet::formula_error_policy_t
-.. doxygenenum:: orcus::spreadsheet::underline_t
-.. doxygenenum:: orcus::spreadsheet::underline_width_t
-.. doxygenenum:: orcus::spreadsheet::underline_mode_t
-.. doxygenenum:: orcus::spreadsheet::underline_type_t
+.. doxygenenum:: orcus::spreadsheet::underline_style_t
+.. doxygenenum:: orcus::spreadsheet::underline_thickness_t
+.. doxygenenum:: orcus::spreadsheet::underline_spacing_t
+.. doxygenenum:: orcus::spreadsheet::underline_count_t
 .. doxygenenum:: orcus::spreadsheet::hor_alignment_t
 .. doxygenenum:: orcus::spreadsheet::ver_alignment_t
 .. doxygenenum:: orcus::spreadsheet::xf_category_t

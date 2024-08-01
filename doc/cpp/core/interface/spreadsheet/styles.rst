@@ -28,3 +28,9 @@ formatting styles.
 
 .. doxygenclass:: orcus::spreadsheet::iface::import_cell_style
    :members:
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_underline
+   :members:
+
+.. doxygenclass:: orcus::spreadsheet::iface::import_strikethrough
+   :members:
