@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <orcus/spreadsheet/auto_filter.hpp>
+#include <orcus/spreadsheet/table.hpp>
 #include <orcus/spreadsheet/config.hpp>
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/pivot.hpp>

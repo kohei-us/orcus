@@ -23,6 +23,7 @@ liborcus_HEADERS += \
 	shared_strings.hpp \
 	sheet.hpp \
 	styles.hpp \
+	table.hpp \
 	view.hpp
 
 endif

@@ -16,6 +16,7 @@ list(APPEND _HEADERS
     shared_strings.hpp
     sheet.hpp
     styles.hpp
+    table.hpp
     types.hpp
     view.hpp
     view_types.hpp

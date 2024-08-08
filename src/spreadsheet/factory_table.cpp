@@ -8,10 +8,10 @@
 #include "factory_table.hpp"
 #include "formula_global.hpp"
 
-#include "orcus/string_pool.hpp"
-#include "orcus/spreadsheet/document.hpp"
-#include "orcus/spreadsheet/sheet.hpp"
-#include "orcus/spreadsheet/auto_filter.hpp"
+#include <orcus/string_pool.hpp>
+#include <orcus/spreadsheet/document.hpp>
+#include <orcus/spreadsheet/sheet.hpp>
+#include <orcus/spreadsheet/table.hpp>
 
 #include <ixion/formula_name_resolver.hpp>
 
