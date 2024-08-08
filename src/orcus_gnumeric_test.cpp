@@ -183,7 +183,7 @@ void test_gnumeric_auto_filter()
     const ss::sheet* sh = doc->get_sheet(0);
     assert(sh);
 
-    const ss::auto_filter_t* af = sh->get_auto_filter_data();
+    const ss::old::auto_filter_t* af = sh->get_auto_filter_data();
     assert(af);
     ixion::abs_range_t b2_c11{0, 1, 1, 10, 2};
     assert(af->range == b2_c11);
@@ -192,7 +192,7 @@ void test_gnumeric_auto_filter()
     auto it = af->columns.begin();
     assert(it->first == 0);
     {
-        const ss::auto_filter_column_t& afc = it->second;
+        const ss::old::auto_filter_column_t& afc = it->second;
         assert(afc.match_values.size() == 1);
         assert(*afc.match_values.begin() == "A");
     }
@@ -200,7 +200,7 @@ void test_gnumeric_auto_filter()
     ++it;
     assert(it->first == 1);
     {
-        const ss::auto_filter_column_t& afc = it->second;
+        const ss::old::auto_filter_column_t& afc = it->second;
         assert(afc.match_values.size() == 1);
         assert(*afc.match_values.begin() == "1");
     }

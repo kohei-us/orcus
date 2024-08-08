@@ -9,6 +9,8 @@
 
 namespace orcus { namespace spreadsheet {
 
+namespace old {
+
 auto_filter_column_t::auto_filter_column_t() = default;
 auto_filter_column_t::auto_filter_column_t(const auto_filter_column_t& other) = default;
 auto_filter_column_t::auto_filter_column_t(auto_filter_column_t&& other) = default;
@@ -55,6 +57,8 @@ void auto_filter_t::commit_column(col_t col, auto_filter_column_t data)
 
     columns.insert_or_assign(col, std::move(data));
 }
+
+} // namespace old
 
 }}
 

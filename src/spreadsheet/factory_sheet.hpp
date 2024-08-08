@@ -97,9 +97,9 @@ class import_auto_filter : public orcus::spreadsheet::iface::import_auto_filter
 {
     sheet& m_sheet;
     string_pool& m_string_pool;
-    std::unique_ptr<auto_filter_t> mp_data;
+    std::unique_ptr<old::auto_filter_t> mp_data;
     col_t m_cur_col;
-    auto_filter_column_t m_cur_col_data;
+    old::auto_filter_column_t m_cur_col_data;
 
 public:
     import_auto_filter(sheet& sh, string_pool& sp);

@@ -24,10 +24,10 @@ class table_auto_filter : public iface::import_auto_filter
     string_pool& m_pool;
     sheet_t m_sheet_pos;
     col_t m_cur_col;
-    auto_filter_column_t m_cur_col_data;
-    auto_filter_t m_filter_data;
+    old::auto_filter_column_t m_cur_col_data;
+    old::auto_filter_t m_filter_data;
 
-    auto_filter_t* mp_data;
+    old::auto_filter_t* mp_data;
 
 public:
     table_auto_filter(document& doc, sheet& sh) :
@@ -36,7 +36,7 @@ public:
         m_cur_col(-1),
         mp_data(nullptr) {}
 
-    void reset(auto_filter_t* data)
+    void reset(old::auto_filter_t* data)
     {
         mp_data = data;
         m_cur_col = -1;

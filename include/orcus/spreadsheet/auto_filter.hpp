@@ -18,6 +18,8 @@
 
 namespace orcus { namespace spreadsheet {
 
+namespace old {
+
 /**
  * Data for a single column inside autofilter range.
  */
@@ -69,6 +71,8 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
      */
     void commit_column(col_t col, auto_filter_column_t data);
 };
+
+} // namespace old
 
 }}
 

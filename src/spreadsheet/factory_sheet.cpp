@@ -100,7 +100,7 @@ import_auto_filter::import_auto_filter(sheet& sh, string_pool& sp) :
 
 void import_auto_filter::reset()
 {
-    mp_data.reset(new auto_filter_t);
+    mp_data.reset(new old::auto_filter_t);
     m_cur_col = -1;
     m_cur_col_data.reset();
 }

@@ -390,17 +390,17 @@ size_t sheet::get_string_identifier(row_t row, col_t col) const
     return cxt.get_string_identifier(ixion::abs_address_t(mp_impl->sheet_id, row, col));
 }
 
-auto_filter_t* sheet::get_auto_filter_data()
+old::auto_filter_t* sheet::get_auto_filter_data()
 {
     return mp_impl->auto_filter_data.get();
 }
 
-const auto_filter_t* sheet::get_auto_filter_data() const
+const old::auto_filter_t* sheet::get_auto_filter_data() const
 {
     return mp_impl->auto_filter_data.get();
 }
 
-void sheet::set_auto_filter_data(auto_filter_t* p)
+void sheet::set_auto_filter_data(old::auto_filter_t* p)
 {
     mp_impl->auto_filter_data.reset(p);
 }

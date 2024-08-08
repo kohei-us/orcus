@@ -187,7 +187,7 @@ void test_xlsx_table_autofilter()
     const ss::sheet* sh = doc.get_sheet(0);
     assert(sh);
 #if 0 // FIXME
-    const ss::auto_filter_t* af = sh->get_auto_filter_data();
+    const ss::old::auto_filter_t* af = sh->get_auto_filter_data();
     assert(af);
 
     // Autofilter is over B2:C11.
@@ -200,7 +200,7 @@ void test_xlsx_table_autofilter()
     auto it = af->columns.find(0);
     assert(it != af->columns.end());
 
-    const ss::auto_filter_column_t* afc = &it->second;
+    const ss::old::auto_filter_column_t* afc = &it->second;
     assert(afc->match_values.count("A") > 0);
     assert(afc->match_values.count("C") > 0);
 
@@ -264,7 +264,7 @@ void test_xlsx_table()
     assert(filter.range == range);
 
     assert(filter.columns.size() == 1);
-    const ss::auto_filter_column_t& afc = filter.columns.begin()->second;
+    const ss::old::auto_filter_column_t& afc = filter.columns.begin()->second;
     assert(afc.match_values.size() == 4);
     assert(afc.match_values.count("A") > 0);
     assert(afc.match_values.count("C") > 0);

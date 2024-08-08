@@ -419,7 +419,7 @@ void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
     if (!of)
         return;
 
-    const auto_filter_t& data = *m_sheet.auto_filter_data;
+    const old::auto_filter_t& data = *m_sheet.auto_filter_data;
 
     auto resolver = ixion::formula_name_resolver::get(
         ixion::formula_name_resolver_t::excel_a1, nullptr);
