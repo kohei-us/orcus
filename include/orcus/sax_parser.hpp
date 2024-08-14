@@ -11,6 +11,7 @@
 #include "sax_parser_base.hpp"
 
 #include <string_view>
+#include <cstdint>
 
 namespace orcus {
 

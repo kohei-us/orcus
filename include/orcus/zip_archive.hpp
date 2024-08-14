@@ -15,6 +15,7 @@
 #include <vector>
 #include <memory>
 #include <ostream>
+#include <cstdint>
 
 namespace orcus {
 
