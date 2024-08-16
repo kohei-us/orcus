@@ -157,7 +157,7 @@ void xlsx_table_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_
     {
         assert(child == &m_cxt_autofilter);
 
-        spreadsheet::iface::import_auto_filter* af = m_table.get_auto_filter();
+        spreadsheet::iface::old::import_auto_filter* af = m_table.get_auto_filter();
         if (!af)
             return;
 

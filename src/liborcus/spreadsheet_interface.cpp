@@ -6,6 +6,7 @@
  */
 
 #include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_autofilter.hpp>
 #include <orcus/spreadsheet/import_interface_pivot.hpp>
 #include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
@@ -71,13 +72,17 @@ import_named_expression::~import_named_expression() {}
 
 import_data_table::~import_data_table() {}
 
+namespace old {
+
 import_auto_filter::~import_auto_filter() {}
+
+}
 
 import_table::~import_table() {}
 
 import_conditional_format::~import_conditional_format() {}
 
-import_auto_filter* import_table::get_auto_filter()
+old::import_auto_filter* import_table::get_auto_filter()
 {
     return nullptr;
 }
@@ -103,7 +108,7 @@ import_data_table* import_sheet::get_data_table()
     return nullptr;
 }
 
-import_auto_filter* import_sheet::get_auto_filter()
+old::import_auto_filter* import_sheet::get_auto_filter()
 {
     return nullptr;
 }

@@ -160,7 +160,7 @@ void xlsx_sheet_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_
 
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
     {
-        ss::iface::import_auto_filter* af = m_sheet.get_auto_filter();
+        auto* af = m_sheet.get_auto_filter();
         if (!af)
             return;
 

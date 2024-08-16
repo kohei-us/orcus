@@ -19,7 +19,7 @@ namespace orcus {
 
 namespace spreadsheet { namespace iface {
 
-class import_auto_filter;
+namespace old { class import_auto_filter; }
 class import_reference_resolver;
 
 }}
@@ -39,7 +39,7 @@ public:
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
     virtual void characters(std::string_view str, bool transient);
 
-    void push_to_model(spreadsheet::iface::import_auto_filter& af) const;
+    void push_to_model(spreadsheet::iface::old::import_auto_filter& af) const;
 
     void reset();
 

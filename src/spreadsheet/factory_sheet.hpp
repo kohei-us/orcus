@@ -10,6 +10,7 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_view.hpp>
+#include <orcus/spreadsheet/import_interface_autofilter.hpp>
 #include <orcus/spreadsheet/auto_filter.hpp>
 
 #include <orcus/spreadsheet/export_interface.hpp>
@@ -93,7 +94,7 @@ public:
     virtual void commit() override;
 };
 
-class import_auto_filter : public orcus::spreadsheet::iface::import_auto_filter
+class import_auto_filter : public orcus::spreadsheet::iface::old::import_auto_filter
 {
     sheet& m_sheet;
     string_pool& m_string_pool;
@@ -210,7 +211,7 @@ public:
     virtual ~import_sheet() override;
 
     virtual iface::import_sheet_view* get_sheet_view() override;
-    virtual iface::import_auto_filter* get_auto_filter() override;
+    virtual iface::old::import_auto_filter* get_auto_filter() override;
     virtual iface::import_conditional_format* get_conditional_format() override;
     virtual iface::import_data_table* get_data_table() override;
     virtual iface::import_named_expression* get_named_expression() override;

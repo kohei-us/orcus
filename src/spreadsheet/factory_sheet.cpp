@@ -412,7 +412,7 @@ iface::import_sheet_view* import_sheet::get_sheet_view()
     return m_sheet_view.get();
 }
 
-iface::import_auto_filter* import_sheet::get_auto_filter()
+iface::old::import_auto_filter* import_sheet::get_auto_filter()
 {
     m_auto_filter.reset();
     return &m_auto_filter;

@@ -10,7 +10,8 @@
 #include "ooxml_namespace_types.hpp"
 #include "ooxml_token_constants.hpp"
 
-#include "orcus/spreadsheet/import_interface.hpp"
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_autofilter.hpp>
 
 namespace orcus {
 
@@ -92,7 +93,7 @@ void xlsx_autofilter_context::characters(std::string_view /*str*/, bool /*transi
 {
 }
 
-void xlsx_autofilter_context::push_to_model(spreadsheet::iface::import_auto_filter& af) const
+void xlsx_autofilter_context::push_to_model(spreadsheet::iface::old::import_auto_filter& af) const
 {
     spreadsheet::src_range_t range = m_resolver.resolve_range(m_ref_range);
     af.set_range(to_rc_range(range));

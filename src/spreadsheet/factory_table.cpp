@@ -12,6 +12,7 @@
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
 #include <orcus/spreadsheet/table.hpp>
+#include <orcus/spreadsheet/import_interface_autofilter.hpp>
 
 #include <ixion/formula_name_resolver.hpp>
 
@@ -19,7 +20,7 @@ namespace orcus { namespace spreadsheet {
 
 namespace {
 
-class table_auto_filter : public iface::import_auto_filter
+class table_auto_filter : public iface::old::import_auto_filter
 {
     string_pool& m_pool;
     sheet_t m_sheet_pos;
@@ -99,7 +100,7 @@ import_table::import_table(document& doc, sheet& sh) : mp_impl(std::make_unique<
 
 import_table::~import_table() {}
 
-iface::import_auto_filter* import_table::get_auto_filter()
+iface::old::import_auto_filter* import_table::get_auto_filter()
 {
     mp_impl->m_auto_filter.reset(&mp_impl->mp_data->filter);
     return &mp_impl->m_auto_filter;
