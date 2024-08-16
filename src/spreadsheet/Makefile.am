@@ -7,6 +7,12 @@ AM_CPPFLAGS = \
 
 AM_CPPFLAGS += $(BOOST_CPPFLAGS) $(LIBIXION_CFLAGS)
 
+EXTRA_PROGRAMS = \
+	auto-filter-test
+
+TESTS = \
+	auto-filter-test
+
 if HAVE_FILESYSTEM
 AM_CPPFLAGS += "-DHAVE_FILESYSTEM=1"
 endif
@@ -92,4 +98,15 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_LIBADD += $(BOOST_FILESYSTEM_L
 endif
 endif
 
-endif
+# auto-filter-test
+
+auto_filter_test_SOURCES = \
+	auto_filter_test.cpp \
+	auto_filter.cpp
+
+auto_filter_test_LDADD = \
+	$(LIBIXION_LIBS) \
+	../test/liborcus-test.a \
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+
+endif # BUILD_SPREADSHEET_MODEL

@@ -12,11 +12,152 @@
 #include "../env.hpp"
 
 #include <map>
+#include <deque>
+#include <memory>
+#include <variant>
 #include <unordered_set>
+#include <unordered_map>
 
 #include <ixion/address.hpp>
 
 namespace orcus { namespace spreadsheet {
+
+/**
+ * Represents a single value associated with a filtering criterion.
+ * It can store either a numeric value, a string value, or an empty state.
+ */
+class ORCUS_SPM_DLLPUBLIC filter_value_t
+{
+    using store_type = std::variant<std::monostate, double, std::string_view>;
+    store_type m_store;
+
+public:
+    enum class value_type { empty, numeric, string };
+
+    filter_value_t();
+    filter_value_t(double v);
+    filter_value_t(std::string_view v);
+    filter_value_t(const filter_value_t& other);
+    ~filter_value_t();
+
+    bool operator==(const filter_value_t& other) const;
+    bool operator!=(const filter_value_t& other) const;
+
+    filter_value_t& operator=(const filter_value_t& other);
+
+    value_type type() const noexcept;
+
+    double numeric() const;
+
+    std::string_view string() const;
+
+    void swap(filter_value_t& other) noexcept;
+};
+
+struct ORCUS_SPM_DLLPUBLIC filterable
+{
+    virtual ~filterable();
+};
+
+/**
+ * Represents a single filtering criterion for a field.  A field may consist
+ * of more than one filtering criteria chained with boolean operators.
+ */
+struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
+{
+    enum class op_type
+    {
+        equal,
+        not_equal,
+        contain,
+        not_contain,
+        begin_with,
+        not_begin_with,
+        end_with,
+        not_end_with,
+        greater,
+        greater_equal,
+        less,
+        less_equal,
+        top,
+        bottom,
+        top_percent,
+        bottom_percent,
+        top_percent_range,
+        bottom_percent_range,
+    };
+
+    op_type op;
+    filter_value_t value;
+
+    filter_item_t() = delete;
+    filter_item_t(op_type _op);
+    filter_item_t(op_type _op, double v);
+    filter_item_t(op_type _op, std::string_view v);
+    filter_item_t(const filter_item_t& other);
+    ~filter_item_t() override;
+
+    filter_item_t& operator=(const filter_item_t& other);
+
+    void swap(filter_item_t& other) noexcept;
+};
+
+/**
+ * Represents a single node in a boolean tree of filtering criteria connected
+ * with boolean operators.
+ */
+struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
+{
+    enum op_type
+    {
+        op_and,
+        op_or
+    };
+
+    using children_type = std::deque<filterable>;
+
+    op_type op;
+    children_type children;
+
+    filter_node_t() = delete;
+    filter_node_t(op_type _op);
+
+    filter_node_t(const filter_node_t& other);
+    filter_node_t(filter_node_t&& other);
+    ~filter_node_t() override;
+
+    filter_node_t& operator=(const filter_node_t& other);
+    filter_node_t& operator=(filter_node_t&& other);
+
+    void swap(filter_node_t& other) noexcept;
+};
+
+/**
+ * Data for a single auto-filter entry.  An auto-filter can belong to either a
+ * sheet or a table.
+ *
+ * The filter definitions for the columns are stored in a sequence,
+ * and the position of each element is its offset from the left column
+ * position of the filtered range.
+ */
+struct ORCUS_SPM_DLLPUBLIC auto_filter_t
+{
+    using columns_type = std::deque<filter_node_t>;
+
+    ixion::abs_range_t range;
+    columns_type columns;
+
+    auto_filter_t();
+    auto_filter_t(const auto_filter_t& other);
+    auto_filter_t(auto_filter_t&& other);
+    ~auto_filter_t();
+
+    auto_filter_t& operator=(const auto_filter_t& other);
+    auto_filter_t& operator=(auto_filter_t&& other);
+
+    void reset();
+    void swap(auto_filter_t& r);
+};
 
 namespace old {
 
