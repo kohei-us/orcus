@@ -5,6 +5,7 @@ liborcus_HEADERS = \
 	view_types.hpp \
 	export_interface.hpp \
 	import_interface.hpp \
+	import_interface_auto_filter.hpp \
 	import_interface_pivot.hpp \
 	import_interface_strikethrough.hpp \
 	import_interface_styles.hpp \

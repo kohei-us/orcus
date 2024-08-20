@@ -27,6 +27,7 @@ namespace spreadsheet {
 class document;
 
 namespace old { struct auto_filter_t; }
+struct auto_filter_range_t;
 
 namespace detail {
 
@@ -110,6 +111,8 @@ public:
     old::auto_filter_t* get_auto_filter_data();
     const old::auto_filter_t* get_auto_filter_data() const;
     void set_auto_filter_data(old::auto_filter_t* p);
+
+    void set_auto_filter(std::unique_ptr<auto_filter_range_t> filter);
 
     // Sheet dimension methods
 

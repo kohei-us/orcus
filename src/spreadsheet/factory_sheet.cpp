@@ -400,7 +400,7 @@ import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_named_exp(doc, sh.get_index()),
     m_sheet_properties(doc, sh),
     m_data_table(sh),
-    m_auto_filter(sh, doc.get_string_pool()),
+    m_auto_filter_old(sh, doc.get_string_pool()),
     m_table(doc, sh),
     m_charset(character_set_t::unspecified),
     m_fill_missing_formula_results(false)
@@ -418,7 +418,23 @@ iface::import_sheet_view* import_sheet::get_sheet_view()
 
 iface::old::import_auto_filter* import_sheet::get_auto_filter()
 {
-    m_auto_filter.reset();
+    m_auto_filter_old.reset();
+    return &m_auto_filter_old;
+}
+
+iface::import_auto_filter* import_sheet::start_auto_filter(const range_t& range)
+{
+    auto& dest = m_sheet;
+
+    import_auto_filter::commit_func_type func = [&range, &dest](auto_filter_t&& filter)
+    {
+        auto filter_range = std::make_unique<auto_filter_range_t>();
+        filter_range->range = to_abs_range(range, dest.get_index());
+        filter_range->filter = std::move(filter);
+        dest.set_auto_filter(std::move(filter_range));
+    };
+
+    m_auto_filter.reset(std::move(func));
     return &m_auto_filter;
 }
 

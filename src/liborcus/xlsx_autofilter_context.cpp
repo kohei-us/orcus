@@ -11,7 +11,7 @@
 #include "ooxml_token_constants.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
-#include <orcus/spreadsheet/import_interface_autofilter.hpp>
+#include <orcus/spreadsheet/import_interface_auto_filter.hpp>
 
 namespace orcus {
 

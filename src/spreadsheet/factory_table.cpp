@@ -12,7 +12,7 @@
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
 #include <orcus/spreadsheet/table.hpp>
-#include <orcus/spreadsheet/import_interface_autofilter.hpp>
+#include <orcus/spreadsheet/import_interface_auto_filter.hpp>
 
 #include <ixion/formula_name_resolver.hpp>
 

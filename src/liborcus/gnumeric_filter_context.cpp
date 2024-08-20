@@ -10,7 +10,7 @@
 #include "gnumeric_namespace_types.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
-#include <orcus/spreadsheet/import_interface_autofilter.hpp>
+#include <orcus/spreadsheet/import_interface_auto_filter.hpp>
 #include <orcus/measurement.hpp>
 
 #include <iostream>

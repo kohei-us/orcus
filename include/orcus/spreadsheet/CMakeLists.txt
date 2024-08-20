@@ -7,6 +7,7 @@ list(APPEND _HEADERS
     export_interface.hpp
     factory.hpp
     import_interface.hpp
+    import_interface_auto_filter.hpp
     import_interface_pivot.hpp
     import_interface_strikethrough.hpp
     import_interface_styles.hpp

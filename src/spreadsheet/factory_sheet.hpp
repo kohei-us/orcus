@@ -10,12 +10,13 @@
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_view.hpp>
-#include <orcus/spreadsheet/import_interface_autofilter.hpp>
+#include <orcus/spreadsheet/import_interface_auto_filter.hpp>
 #include <orcus/spreadsheet/auto_filter.hpp>
 
 #include <orcus/spreadsheet/export_interface.hpp>
 
 #include "factory_table.hpp"
+#include "factory_auto_filter.hpp"
 #include "shared_formula.hpp"
 
 #include <memory>
@@ -202,7 +203,8 @@ class import_sheet : public iface::import_sheet
     import_sheet_named_exp m_named_exp;
     import_sheet_properties m_sheet_properties;
     import_data_table m_data_table;
-    old::import_auto_filter m_auto_filter;
+    old::import_auto_filter m_auto_filter_old;
+    import_auto_filter m_auto_filter;
     import_table m_table;
     character_set_t m_charset;
 
@@ -216,6 +218,7 @@ public:
 
     virtual iface::import_sheet_view* get_sheet_view() override;
     virtual iface::old::import_auto_filter* get_auto_filter() override;
+    virtual iface::import_auto_filter* start_auto_filter(const range_t& range) override;
     virtual iface::import_conditional_format* get_conditional_format() override;
     virtual iface::import_data_table* get_data_table() override;
     virtual iface::import_named_expression* get_named_expression() override;

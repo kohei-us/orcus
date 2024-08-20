@@ -48,7 +48,7 @@ public:
      * @note Note that the import_auto_filter implementer <i>must</i> return a
      * non-null pointer.
      */
-    virtual import_auto_filter_node* start_column(col_t col, auto_filter_node_op_t op) = 0;
+    virtual iface::import_auto_filter_node* start_column(col_t col, auto_filter_node_op_t op) = 0;
 
     /**
      * Commit all the auto filter data stored in the buffer so far to the
