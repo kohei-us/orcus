@@ -115,7 +115,7 @@ void filter_node_t::swap(filter_node_t& other) noexcept
     std::swap(children, other.children);
 }
 
-auto_filter_t::auto_filter_t() : range(ixion::abs_range_t::invalid) {}
+auto_filter_t::auto_filter_t() = default;
 auto_filter_t::auto_filter_t(const auto_filter_t& other) = default;
 auto_filter_t::auto_filter_t(auto_filter_t&& other) = default;
 auto_filter_t::~auto_filter_t() = default;
@@ -125,14 +125,32 @@ auto_filter_t& auto_filter_t::operator=(auto_filter_t&& other) = default;
 
 void auto_filter_t::reset()
 {
-    range = ixion::abs_range_t(ixion::abs_range_t::invalid);
     columns.clear();
 }
 
-void auto_filter_t::swap(auto_filter_t& r)
+void auto_filter_t::swap(auto_filter_t& other)
 {
-    std::swap(range, r.range);
-    columns.swap(r.columns);
+    columns.swap(other.columns);
+}
+
+auto_filter_range_t::auto_filter_range_t() : range(ixion::abs_range_t::invalid) {}
+auto_filter_range_t::auto_filter_range_t(const auto_filter_range_t& other) = default;
+auto_filter_range_t::auto_filter_range_t(auto_filter_range_t&& other) = default;
+auto_filter_range_t::~auto_filter_range_t() = default;
+
+auto_filter_range_t& auto_filter_range_t::operator=(const auto_filter_range_t& other) = default;
+auto_filter_range_t& auto_filter_range_t::operator=(auto_filter_range_t&& other) = default;
+
+void auto_filter_range_t::reset()
+{
+    range = ixion::abs_range_t(ixion::abs_range_t::invalid);
+    filter.reset();
+}
+
+void auto_filter_range_t::swap(auto_filter_range_t& other)
+{
+    std::swap(range, other.range);
+    filter.swap(other.filter);
 }
 
 namespace old {

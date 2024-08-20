@@ -21,6 +21,7 @@
 namespace orcus { namespace spreadsheet { namespace iface {
 
 namespace old { class import_auto_filter; }
+class import_auto_filter;
 class import_styles;
 class import_pivot_cache_definition;
 class import_pivot_cache_records;
@@ -567,6 +568,8 @@ public:
      */
     virtual old::import_auto_filter* get_auto_filter();
 
+    virtual import_auto_filter* start_auto_filter();
+
     /**
      * Set an integral identifier unique to the table.
      *
@@ -881,6 +884,8 @@ public:
      *         the implementor doesn't support it.
      */
     virtual old::import_auto_filter* get_auto_filter();
+
+    virtual import_auto_filter* start_auto_filter(const range_t& range);
 
     /**
      * Get an interface for importing tables.

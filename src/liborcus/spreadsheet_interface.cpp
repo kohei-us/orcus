@@ -72,6 +72,10 @@ import_named_expression::~import_named_expression() {}
 
 import_data_table::~import_data_table() {}
 
+import_auto_filter_node::~import_auto_filter_node() = default;
+
+import_auto_filter::~import_auto_filter() = default;
+
 namespace old {
 
 import_auto_filter::~import_auto_filter() {}
@@ -83,6 +87,11 @@ import_table::~import_table() {}
 import_conditional_format::~import_conditional_format() {}
 
 old::import_auto_filter* import_table::get_auto_filter()
+{
+    return nullptr;
+}
+
+import_auto_filter* import_table::start_auto_filter()
 {
     return nullptr;
 }
@@ -109,6 +118,11 @@ import_data_table* import_sheet::get_data_table()
 }
 
 old::import_auto_filter* import_sheet::get_auto_filter()
+{
+    return nullptr;
+}
+
+import_auto_filter* import_sheet::start_auto_filter(const range_t& /*range*/)
 {
     return nullptr;
 }

@@ -102,7 +102,7 @@ import_table::~import_table() {}
 
 iface::old::import_auto_filter* import_table::get_auto_filter()
 {
-    mp_impl->m_auto_filter.reset(&mp_impl->mp_data->filter);
+    mp_impl->m_auto_filter.reset(&mp_impl->mp_data->filter_old);
     return &mp_impl->m_auto_filter;
 }
 

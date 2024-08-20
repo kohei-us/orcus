@@ -257,7 +257,7 @@ void test_xlsx_table()
     assert(tcol->totals_row_label.empty());
     assert(tcol->totals_row_function == ss::totals_row_function_t::sum);
 
-    const auto& filter = p->filter;
+    const auto& filter = p->filter_old;
 
     // Auto filter range is C3:D8.
     range.last.row = 7;

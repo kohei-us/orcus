@@ -144,7 +144,6 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
 {
     using columns_type = std::deque<filter_node_t>;
 
-    ixion::abs_range_t range;
     columns_type columns;
 
     auto_filter_t();
@@ -156,7 +155,24 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
     auto_filter_t& operator=(auto_filter_t&& other);
 
     void reset();
-    void swap(auto_filter_t& r);
+    void swap(auto_filter_t& other);
+};
+
+struct ORCUS_SPM_DLLPUBLIC auto_filter_range_t
+{
+    ixion::abs_range_t range;
+    auto_filter_t filter;
+
+    auto_filter_range_t();
+    auto_filter_range_t(const auto_filter_range_t& other);
+    auto_filter_range_t(auto_filter_range_t&& other);
+    ~auto_filter_range_t();
+
+    auto_filter_range_t& operator=(const auto_filter_range_t& other);
+    auto_filter_range_t& operator=(auto_filter_range_t&& other);
+
+    void reset();
+    void swap(auto_filter_range_t& other);
 };
 
 namespace old {

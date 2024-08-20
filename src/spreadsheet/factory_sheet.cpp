@@ -93,6 +93,8 @@ void import_data_table::commit()
 {
 }
 
+namespace old {
+
 import_auto_filter::import_auto_filter(sheet& sh, string_pool& sp) :
     m_sheet(sh),
     m_string_pool(sp),
@@ -134,6 +136,8 @@ void import_auto_filter::commit_column()
 void import_auto_filter::commit()
 {
     m_sheet.set_auto_filter_data(mp_data.release());
+}
+
 }
 
 import_array_formula::import_array_formula(document& doc, sheet& sheet) :

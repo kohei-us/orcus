@@ -94,6 +94,8 @@ public:
     virtual void commit() override;
 };
 
+namespace old {
+
 class import_auto_filter : public orcus::spreadsheet::iface::old::import_auto_filter
 {
     sheet& m_sheet;
@@ -117,6 +119,8 @@ public:
 
     virtual void commit() override;
 };
+
+}
 
 class import_array_formula : public iface::import_array_formula
 {
@@ -198,7 +202,7 @@ class import_sheet : public iface::import_sheet
     import_sheet_named_exp m_named_exp;
     import_sheet_properties m_sheet_properties;
     import_data_table m_data_table;
-    import_auto_filter m_auto_filter;
+    old::import_auto_filter m_auto_filter;
     import_table m_table;
     character_set_t m_charset;
 

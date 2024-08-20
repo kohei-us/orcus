@@ -444,6 +444,36 @@ enum class totals_row_function_t
     custom
 };
 
+enum class auto_filter_node_op_t
+{
+    unspecified,
+    op_and,
+    op_or
+};
+
+enum class auto_filter_op_t
+{
+    unspecified,
+    equal,
+    not_equal,
+    contain,
+    not_contain,
+    begin_with,
+    not_begin_with,
+    end_with,
+    not_end_with,
+    greater,
+    greater_equal,
+    less,
+    less_equal,
+    top,
+    bottom,
+    top_percent,
+    bottom_percent,
+    top_percent_range,
+    bottom_percent_range,
+};
+
 /**
  * Type of conditional format.
  */

@@ -47,6 +47,7 @@ struct sheet_impl
     detail::col_merge_size_type merge_ranges; /// 2-dimensional merged cell ranges.
 
     std::unique_ptr<old::auto_filter_t> auto_filter_data;
+    std::unique_ptr<auto_filter_range_t> auto_filter_range;
 
     cell_format_type cell_formats;
     segment_col_index_type column_formats;

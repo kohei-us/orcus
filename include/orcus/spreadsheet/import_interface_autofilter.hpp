@@ -17,6 +17,46 @@
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
+class ORCUS_DLLPUBLIC import_auto_filter_node
+{
+public:
+    virtual ~import_auto_filter_node();
+
+    virtual void append_item(auto_filter_op_t op, double value) = 0;
+    virtual void append_item(auto_filter_op_t op, std::string_view value) = 0;
+    virtual import_auto_filter_node* append_item(auto_filter_node_op_t op) = 0;
+
+    virtual void commit() = 0;
+};
+
+class ORCUS_DLLPUBLIC import_auto_filter
+{
+public:
+    virtual ~import_auto_filter();
+
+    /**
+     * Signal the start of the iport of a set of auto-filter rules associated
+     * with a single column.
+     *
+     * @param col    0-based offset position of the field relative to the
+     *               left-most column of the filtered range.
+     * @param op     Boolean operator connecting the multiple filter rules at
+     *               the root level of the filter rules tree.
+     *
+     * @return Interface
+     *
+     * @note Note that the import_auto_filter implementer <i>must</i> return a
+     * non-null pointer.
+     */
+    virtual import_auto_filter_node* start_column(col_t col, auto_filter_node_op_t op) = 0;
+
+    /**
+     * Commit all the auto filter data stored in the buffer so far to the
+     * destination store.
+     */
+    virtual void commit() = 0;
+};
+
 namespace old {
 
 /**
