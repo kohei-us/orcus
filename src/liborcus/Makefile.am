@@ -245,6 +245,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	xls_xml_detection_handler.cpp \
 	xls_xml_handler.hpp \
 	xls_xml_handler.cpp \
+	xls_xml_auto_filter_context.hpp \
+	xls_xml_auto_filter_context.cpp \
 	xls_xml_context.hpp \
 	xls_xml_context.cpp
 

@@ -852,9 +852,11 @@ xls_xml_context::xls_xml_context(session_context& session_cxt, const tokens& tok
     m_cur_row(0), m_cur_col(0),
     m_cur_prop_col(0),
     m_cur_merge_down(0), m_cur_merge_across(0),
-    m_cc_data(session_cxt, tokens, *this)
+    m_cc_data(session_cxt, tokens, *this),
+    m_cc_autofilter(session_cxt, tokens, factory)
 {
     register_child(&m_cc_data);
+    register_child(&m_cc_autofilter);
 
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
@@ -972,6 +974,17 @@ xml_context_base* xls_xml_context::create_child_context(xmlns_id_t ns, xml_token
                 ;
         }
     }
+    else if (ns == NS_xls_xml_x)
+    {
+        switch (name)
+        {
+            case XML_AutoFilter:
+            {
+                m_cc_autofilter.reset(mp_cur_sheet);
+                return &m_cc_autofilter;
+            }
+        }
+    }
     return nullptr;
 }
 
@@ -1006,6 +1019,9 @@ void xls_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_t
                 break;
             case XML_Column:
                 start_element_column(attrs);
+                break;
+            case XML_NamedCell:
+                // contains the name of a named range this cell is part of.  Ignore it for now.
                 break;
             case XML_Names:
                 break;

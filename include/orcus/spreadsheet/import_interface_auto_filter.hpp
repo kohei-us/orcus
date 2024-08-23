@@ -35,7 +35,7 @@ public:
     virtual ~import_auto_filter();
 
     /**
-     * Signal the start of the iport of a set of auto-filter rules associated
+     * Signal the start of the import of a set of auto-filter rules associated
      * with a single column.
      *
      * @param col    0-based offset position of the field relative to the

@@ -9,6 +9,7 @@
 #define INCLUDED_ORCUS_XLS_XML_CONTEXT_HPP
 
 #include "xml_context_base.hpp"
+#include "xls_xml_auto_filter_context.hpp"
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/spreadsheet/view_types.hpp"
 #include "orcus/string_pool.hpp"
@@ -329,6 +330,7 @@ private:
     style_id_xf_map_type m_style_map_named_style;
 
     xls_xml_data_context m_cc_data;
+    xls_xml_auto_filter_context m_cc_autofilter;
 };
 
 }

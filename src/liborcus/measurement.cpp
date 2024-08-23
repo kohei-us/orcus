@@ -37,6 +37,16 @@ long to_long(std::string_view s, const char** p_parse_ended)
     return value;
 }
 
+std::optional<long> to_long_checked(std::string_view s)
+{
+    const char* p_end = nullptr;
+    long v = to_long(s, &p_end);
+    if (p_end == s.data())
+        return {};
+
+    return v;
+}
+
 bool to_bool(std::string_view s)
 {
     size_t n = s.size();

@@ -81,6 +81,7 @@ list(APPEND _SOURCES
     orcus_xls_xml.cpp
     xls_xml_detection_handler.cpp
     xls_xml_handler.cpp
+    xls_xml_auto_filter_context.cpp
     xls_xml_context.cpp
 # ods filter
     odf_document_styles_context.cpp
