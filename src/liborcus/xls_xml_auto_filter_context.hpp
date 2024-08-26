@@ -12,12 +12,14 @@
 #include <orcus/spreadsheet/types.hpp>
 
 #include <optional>
+#include <vector>
 
 namespace orcus {
 
 namespace spreadsheet { namespace iface {
 
 class import_auto_filter;
+class import_auto_filter_node;
 class import_factory;
 class import_sheet;
 
@@ -51,8 +53,11 @@ public:
 
 private:
     void start_auto_filter(const xml_token_attrs_t& attrs);
+    void end_auto_filter();
     void start_column(const xml_token_attrs_t& attrs);
     void end_column();
+    void start_condition(const xml_token_attrs_t& attrs);
+    void end_condition();
 
 private:
 
@@ -71,6 +76,8 @@ private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
     spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
+
+    std::vector<spreadsheet::iface::import_auto_filter_node*> m_column_filter_stack;
 
     column_attrs m_column;
 };

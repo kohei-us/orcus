@@ -401,6 +401,7 @@ import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_sheet_properties(doc, sh),
     m_data_table(sh),
     m_auto_filter_old(sh, doc.get_string_pool()),
+    m_auto_filter(doc.get_string_pool()),
     m_table(doc, sh),
     m_charset(character_set_t::unspecified),
     m_fill_missing_formula_results(false)

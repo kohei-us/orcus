@@ -66,9 +66,10 @@ void filter_value_t::swap(filter_value_t& other) noexcept
 
 filterable::~filterable() = default;
 
-filter_item_t::filter_item_t(op_type _op) : op(_op) {}
-filter_item_t::filter_item_t(op_type _op, double v) : op(_op), value(v) {}
-filter_item_t::filter_item_t(op_type _op, std::string_view v) : op(_op), value(v) {}
+filter_item_t::filter_item_t() : op(auto_filter_op_t::unspecified) {}
+filter_item_t::filter_item_t(auto_filter_op_t _op) : op(_op) {}
+filter_item_t::filter_item_t(auto_filter_op_t _op, double v) : op(_op), value(v) {}
+filter_item_t::filter_item_t(auto_filter_op_t _op, std::string_view v) : op(_op), value(v) {}
 filter_item_t::filter_item_t(const filter_item_t& other) = default;
 filter_item_t::~filter_item_t() = default;
 
@@ -86,7 +87,8 @@ void filter_item_t::swap(filter_item_t& other) noexcept
     value.swap(other.value);
 }
 
-filter_node_t::filter_node_t(op_type _op) : op(_op) {}
+filter_node_t::filter_node_t() : op(auto_filter_node_op_t::unspecified) {}
+filter_node_t::filter_node_t(auto_filter_node_op_t _op) : op(_op) {}
 filter_node_t::filter_node_t(const filter_node_t& other) :
     op(other.op), children(other.children) {}
 filter_node_t::filter_node_t(filter_node_t&& other) :
@@ -109,6 +111,12 @@ filter_node_t& filter_node_t::operator=(filter_node_t&& other)
     return *this;
 }
 
+void filter_node_t::reset()
+{
+    op = auto_filter_node_op_t::unspecified;
+    children.clear();
+}
+
 void filter_node_t::swap(filter_node_t& other) noexcept
 {
     std::swap(op, other.op);
@@ -126,11 +134,15 @@ auto_filter_t& auto_filter_t::operator=(auto_filter_t&& other) = default;
 void auto_filter_t::reset()
 {
     columns.clear();
+    node_store.clear();
+    item_store.clear();
 }
 
 void auto_filter_t::swap(auto_filter_t& other)
 {
     columns.swap(other.columns);
+    node_store.swap(other.node_store);
+    item_store.swap(other.item_store);
 }
 
 auto_filter_range_t::auto_filter_range_t() : range(ixion::abs_range_t::invalid) {}

@@ -43,17 +43,28 @@ void test_filter_node()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    ss::filter_node_t root{ss::filter_node_t::op_or};
+    ss::auto_filter_t filter;
+    ss::filter_node_t root{ss::auto_filter_node_op_t::op_or};
 
     // x > 40 or x < 5 or (12 <= x <= 24)
 
-    root.children.emplace_back(ss::filter_item_t{ss::filter_item_t::op_type::greater, 40.0});
-    root.children.emplace_back(ss::filter_item_t{ss::filter_item_t::op_type::less, 5.0});
+    filter.item_store.emplace_back(ss::auto_filter_op_t::greater, 40.0);
+    root.children.push_back(&filter.item_store.back());
+
+    filter.item_store.emplace_back(ss::auto_filter_op_t::less, 5.0);
+    root.children.push_back(&filter.item_store.back());
+
     {
-        ss::filter_node_t node{ss::filter_node_t::op_and};
-        node.children.emplace_back(ss::filter_item_t{ss::filter_item_t::op_type::greater_equal, 12.0});
-        node.children.emplace_back(ss::filter_item_t{ss::filter_item_t::op_type::less_equal, 24.0});
-        root.children.push_back(std::move(node));
+        filter.node_store.emplace_back(ss::auto_filter_node_op_t::op_and);
+        auto& node = filter.node_store.back();
+
+        filter.item_store.emplace_back(ss::auto_filter_op_t::greater_equal, 12.0);
+        node.children.push_back(&filter.item_store.back());
+
+        filter.item_store.emplace_back(ss::auto_filter_op_t::less_equal, 24.0);
+        node.children.emplace_back(&filter.item_store.back());
+
+        root.children.push_back(&node);
     }
 }
 

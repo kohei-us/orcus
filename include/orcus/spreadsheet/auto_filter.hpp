@@ -65,35 +65,13 @@ struct ORCUS_SPM_DLLPUBLIC filterable
  */
 struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
 {
-    enum class op_type
-    {
-        equal,
-        not_equal,
-        contain,
-        not_contain,
-        begin_with,
-        not_begin_with,
-        end_with,
-        not_end_with,
-        greater,
-        greater_equal,
-        less,
-        less_equal,
-        top,
-        bottom,
-        top_percent,
-        bottom_percent,
-        top_percent_range,
-        bottom_percent_range,
-    };
-
-    op_type op;
+    auto_filter_op_t op;
     filter_value_t value;
 
-    filter_item_t() = delete;
-    filter_item_t(op_type _op);
-    filter_item_t(op_type _op, double v);
-    filter_item_t(op_type _op, std::string_view v);
+    filter_item_t();
+    filter_item_t(auto_filter_op_t _op);
+    filter_item_t(auto_filter_op_t _op, double v);
+    filter_item_t(auto_filter_op_t _op, std::string_view v);
     filter_item_t(const filter_item_t& other);
     ~filter_item_t() override;
 
@@ -108,19 +86,13 @@ struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
  */
 struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
 {
-    enum op_type
-    {
-        op_and,
-        op_or
-    };
+    using children_type = std::deque<filterable*>;
 
-    using children_type = std::deque<filterable>;
-
-    op_type op;
+    auto_filter_node_op_t op;
     children_type children;
 
-    filter_node_t() = delete;
-    filter_node_t(op_type _op);
+    filter_node_t();
+    filter_node_t(auto_filter_node_op_t _op);
 
     filter_node_t(const filter_node_t& other);
     filter_node_t(filter_node_t&& other);
@@ -129,6 +101,7 @@ struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
     filter_node_t& operator=(const filter_node_t& other);
     filter_node_t& operator=(filter_node_t&& other);
 
+    void reset();
     void swap(filter_node_t& other) noexcept;
 };
 
@@ -136,15 +109,19 @@ struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
  * Data for a single auto-filter entry.  An auto-filter can belong to either a
  * sheet or a table.
  *
- * The filter definitions for the columns are stored in a sequence,
- * and the position of each element is its offset from the left column
- * position of the filtered range.
+ * The filter definitions for the columns are associated with their respective
+ * offset positions which from the left-most column position of the filtered
+ * range.
  */
 struct ORCUS_SPM_DLLPUBLIC auto_filter_t
 {
-    using columns_type = std::deque<filter_node_t>;
+    using columns_type = std::map<col_t, filter_node_t>;
+    using node_store_type = std::deque<filter_node_t>;
+    using item_store_type = std::deque<filter_item_t>;
 
     columns_type columns;
+    node_store_type node_store;
+    item_store_type item_store;
 
     auto_filter_t();
     auto_filter_t(const auto_filter_t& other);

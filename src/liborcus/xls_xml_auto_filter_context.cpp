@@ -10,6 +10,7 @@
 #include "xls_xml_token_constants.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_auto_filter.hpp>
 #include <orcus/measurement.hpp>
 
 #include <mdds/sorted_string_map.hpp>
@@ -86,6 +87,9 @@ void xls_xml_auto_filter_context::start_element(xmlns_id_t ns, xml_token_t name,
             case XML_AutoFilterColumn:
                 start_column(attrs);
                 break;
+            case XML_AutoFilterCondition:
+                start_condition(attrs);
+                break;
             default:
                 warn_unhandled();
         }
@@ -100,8 +104,14 @@ bool xls_xml_auto_filter_context::end_element(xmlns_id_t ns, xml_token_t name)
     {
         switch (name)
         {
+            case XML_AutoFilter:
+                end_auto_filter();
+                break;
             case XML_AutoFilterColumn:
                 end_column();
+                break;
+            case XML_AutoFilterCondition:
+                end_condition();
                 break;
         }
     }
@@ -148,9 +158,17 @@ void xls_xml_auto_filter_context::start_auto_filter(const xml_token_attrs_t& att
         warn("range value did not get picked up in auto-filter context, skipping import");
 }
 
+void xls_xml_auto_filter_context::end_auto_filter()
+{
+    if (!mp_auto_filter)
+        return;
+
+    mp_auto_filter->commit();
+}
+
 void xls_xml_auto_filter_context::start_column(const xml_token_attrs_t& attrs)
 {
-    if (!mp_sheet)
+    if (!mp_auto_filter)
         return;
 
     m_column.index = 0; // column offset from the left-most column, defaults to 1
@@ -180,7 +198,19 @@ void xls_xml_auto_filter_context::start_column(const xml_token_attrs_t& attrs)
 
 void xls_xml_auto_filter_context::end_column()
 {
+    if (!mp_auto_filter)
+        return;
+
     m_column.reset();
+}
+
+void xls_xml_auto_filter_context::start_condition(const xml_token_attrs_t& attrs)
+{
+    (void)attrs;
+}
+
+void xls_xml_auto_filter_context::end_condition()
+{
 }
 
 } // namespace orcus

@@ -10,32 +10,69 @@
 
 #include <orcus/spreadsheet/auto_filter.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
+#include <orcus/string_pool.hpp>
 
 namespace orcus { namespace spreadsheet {
 
+import_auto_filter_node::import_auto_filter_node(string_pool& sp) : m_pool(sp) {}
+
+import_auto_filter_node::import_auto_filter_node(string_pool& sp, auto_filter_node_op_t op, commit_func_type func) :
+    m_pool(sp), m_node(op), m_func_commit(std::move(func)) {}
+
+import_auto_filter_node::~import_auto_filter_node() = default;
+
 void import_auto_filter_node::append_item(auto_filter_op_t op, std::string_view value)
 {
-    (void)op;
-    (void)value;
+    assert(mp_parent);
+    auto interned = m_pool.intern(value).first;
+    mp_parent->item_store.emplace_back(op, interned);
+    m_node.children.push_back(&mp_parent->item_store.back());
 }
 
 void import_auto_filter_node::append_item(auto_filter_op_t op, double value)
 {
-    (void)op;
-    (void)value;
+    assert(mp_parent);
+
+    mp_parent->item_store.emplace_back(op, value);
+    m_node.children.push_back(&mp_parent->item_store.back());
 }
 
-void import_auto_filter_node::commit() {}
+import_auto_filter_node* import_auto_filter_node::append_item(auto_filter_node_op_t op)
+{
+    (void)op;
+    return nullptr;
+}
 
-import_auto_filter::import_auto_filter() {}
+void import_auto_filter_node::commit()
+{
+    m_func_commit(std::move(m_node));
+}
+
+void import_auto_filter_node::reset(
+    auto_filter_t* parent, auto_filter_node_op_t op, commit_func_type func)
+{
+    assert(parent);
+
+    m_node = filter_node_t{op};
+    m_func_commit = std::move(func);
+
+    mp_parent = parent;
+}
+
+import_auto_filter::import_auto_filter(string_pool& sp) : m_pool(sp), m_import_column_node(sp) {}
 import_auto_filter::~import_auto_filter() = default;
 
-iface::import_auto_filter_node* import_auto_filter::start_column(col_t col, auto_filter_node_op_t op)
+iface::import_auto_filter_node* import_auto_filter::start_column(col_t col_offset, auto_filter_node_op_t op)
 {
-    (void)col;
-    (void)op;
+    auto& filter = m_filter;
 
-    return nullptr;
+    import_auto_filter_node::commit_func_type func = [&filter, col_offset](filter_node_t&& node)
+    {
+        filter.columns.insert_or_assign(col_offset, std::move(node));
+    };
+
+    m_import_column_node.reset(&m_filter, op, std::move(func));
+    return &m_import_column_node;
 }
 
 void import_auto_filter::commit()

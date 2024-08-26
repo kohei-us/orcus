@@ -13,16 +13,39 @@
 #include <memory>
 #include <functional>
 
-namespace orcus { namespace spreadsheet {
+namespace orcus {
+
+class string_pool;
+
+namespace spreadsheet {
 
 class sheet;
 
 class import_auto_filter_node : public orcus::spreadsheet::iface::import_auto_filter_node
 {
 public:
+    using commit_func_type = std::function<void(filter_node_t&&)>;
+
+    import_auto_filter_node(string_pool& sp);
+    import_auto_filter_node(const import_auto_filter_node&) = delete;
+    import_auto_filter_node(string_pool& sp, auto_filter_node_op_t op, commit_func_type func);
+    ~import_auto_filter_node();
+
     virtual void append_item(auto_filter_op_t op, std::string_view value) override;
     virtual void append_item(auto_filter_op_t op, double value) override;
+    virtual import_auto_filter_node* append_item(auto_filter_node_op_t op) override;
     virtual void commit() override;
+
+    void reset(auto_filter_t* parent, auto_filter_node_op_t op, commit_func_type func);
+
+private:
+    string_pool& m_pool;
+
+    filter_node_t m_node;
+    commit_func_type m_func_commit;
+
+    auto_filter_t* mp_parent = nullptr;
+    std::unique_ptr<import_auto_filter_node> m_child;
 };
 
 class import_auto_filter : public orcus::spreadsheet::iface::import_auto_filter
@@ -30,15 +53,19 @@ class import_auto_filter : public orcus::spreadsheet::iface::import_auto_filter
 public:
     using commit_func_type = std::function<void(auto_filter_t&&)>;
 
-    import_auto_filter();
+    import_auto_filter(string_pool& sp);
+    import_auto_filter(const import_auto_filter&) = delete;
     ~import_auto_filter();
 
-    virtual iface::import_auto_filter_node* start_column(col_t col, auto_filter_node_op_t op) override;
+    virtual iface::import_auto_filter_node* start_column(col_t col_offset, auto_filter_node_op_t op) override;
     virtual void commit() override;
 
     void reset(commit_func_type func);
 
 private:
+    string_pool& m_pool;
+    import_auto_filter_node m_import_column_node;
+
     auto_filter_t m_filter;
     commit_func_type m_func_commit;
 };
