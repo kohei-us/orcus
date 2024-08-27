@@ -115,12 +115,16 @@ void filter_node_t::reset()
 {
     op = auto_filter_node_op_t::unspecified;
     children.clear();
+    node_store.clear();
+    item_store.clear();
 }
 
 void filter_node_t::swap(filter_node_t& other) noexcept
 {
     std::swap(op, other.op);
     std::swap(children, other.children);
+    std::swap(node_store, other.node_store);
+    std::swap(item_store, other.item_store);
 }
 
 auto_filter_t::auto_filter_t() = default;
@@ -134,15 +138,11 @@ auto_filter_t& auto_filter_t::operator=(auto_filter_t&& other) = default;
 void auto_filter_t::reset()
 {
     columns.clear();
-    node_store.clear();
-    item_store.clear();
 }
 
 void auto_filter_t::swap(auto_filter_t& other)
 {
     columns.swap(other.columns);
-    node_store.swap(other.node_store);
-    item_store.swap(other.item_store);
 }
 
 auto_filter_range_t::auto_filter_range_t() : range(ixion::abs_range_t::invalid) {}

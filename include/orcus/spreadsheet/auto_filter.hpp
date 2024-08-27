@@ -87,9 +87,13 @@ struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
 struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
 {
     using children_type = std::deque<filterable*>;
+    using node_store_type = std::deque<filter_node_t>;
+    using item_store_type = std::deque<filter_item_t>;
 
     auto_filter_node_op_t op;
     children_type children;
+    node_store_type node_store;
+    item_store_type item_store;
 
     filter_node_t();
     filter_node_t(auto_filter_node_op_t _op);
@@ -116,12 +120,8 @@ struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
 struct ORCUS_SPM_DLLPUBLIC auto_filter_t
 {
     using columns_type = std::map<col_t, filter_node_t>;
-    using node_store_type = std::deque<filter_node_t>;
-    using item_store_type = std::deque<filter_item_t>;
 
     columns_type columns;
-    node_store_type node_store;
-    item_store_type item_store;
 
     auto_filter_t();
     auto_filter_t(const auto_filter_t& other);

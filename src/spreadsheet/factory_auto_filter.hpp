@@ -33,10 +33,10 @@ public:
 
     virtual void append_item(auto_filter_op_t op, std::string_view value) override;
     virtual void append_item(auto_filter_op_t op, double value) override;
-    virtual import_auto_filter_node* append_item(auto_filter_node_op_t op) override;
+    virtual import_auto_filter_node* start_node(auto_filter_node_op_t op) override;
     virtual void commit() override;
 
-    void reset(auto_filter_t* parent, auto_filter_node_op_t op, commit_func_type func);
+    void reset(auto_filter_node_op_t op, commit_func_type func);
 
 private:
     string_pool& m_pool;
@@ -44,8 +44,7 @@ private:
     filter_node_t m_node;
     commit_func_type m_func_commit;
 
-    auto_filter_t* mp_parent = nullptr;
-    std::unique_ptr<import_auto_filter_node> m_child;
+    std::unique_ptr<import_auto_filter_node> mp_child;
 };
 
 class import_auto_filter : public orcus::spreadsheet::iface::import_auto_filter

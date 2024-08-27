@@ -22,10 +22,45 @@ class ORCUS_DLLPUBLIC import_auto_filter_node
 public:
     virtual ~import_auto_filter_node();
 
+    /**
+     * Append to this node a new filter item with a numeric value.
+     *
+     * @param op     Operator for the filter item.
+     * @param value  Numeric value associated with the operator for the filter
+     *               item.
+     */
     virtual void append_item(auto_filter_op_t op, double value) = 0;
-    virtual void append_item(auto_filter_op_t op, std::string_view value) = 0;
-    virtual import_auto_filter_node* append_item(auto_filter_node_op_t op) = 0;
 
+    /**
+     * Append to this node a new filter item with a string value.
+     *
+     * Note that the the life cycle of the string value passed to this call is
+     * only guaranteed to persist during the call.
+     *
+     * @param op     Operator for the filter item.
+     * @param value  String value associated with the operator for the filter
+     *               item.
+     */
+    virtual void append_item(auto_filter_op_t op, std::string_view value) = 0;
+
+    /**
+     * Start a new node of filter rules as a filter item to this node. The new
+     * node should be appended to this node as new filter item when it is
+     * committed.
+     *
+     * @param op Operator to use to link the items stored in the new node.
+     *
+     * @return Interface for importing the filter rules for the new node.
+     *
+     * @note Note that the import_auto_filter_node implementer
+     *       <i>must</i> return a non-null pointer.
+     */
+    virtual import_auto_filter_node* start_node(auto_filter_node_op_t op) = 0;
+
+    /**
+     * Commit the filter node data stored in the buffer to the destination
+     * store.
+     */
     virtual void commit() = 0;
 };
 
@@ -43,7 +78,8 @@ public:
      * @param op         Boolean operator connecting the multiple filter rules
      *                   at the root level of the filter rules tree.
      *
-     * @return Interface
+     * @return Interface for importing the root node of the auto-filter rules
+     *         for a column.
      *
      * @note Note that the import_auto_filter implementer <i>must</i> return a
      * non-null pointer.

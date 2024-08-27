@@ -23,24 +23,27 @@ import_auto_filter_node::~import_auto_filter_node() = default;
 
 void import_auto_filter_node::append_item(auto_filter_op_t op, std::string_view value)
 {
-    assert(mp_parent);
     auto interned = m_pool.intern(value).first;
-    mp_parent->item_store.emplace_back(op, interned);
-    m_node.children.push_back(&mp_parent->item_store.back());
+    m_node.item_store.emplace_back(op, interned);
+    m_node.children.push_back(&m_node.item_store.back());
 }
 
 void import_auto_filter_node::append_item(auto_filter_op_t op, double value)
 {
-    assert(mp_parent);
-
-    mp_parent->item_store.emplace_back(op, value);
-    m_node.children.push_back(&mp_parent->item_store.back());
+    m_node.item_store.emplace_back(op, value);
+    m_node.children.push_back(&m_node.item_store.back());
 }
 
-import_auto_filter_node* import_auto_filter_node::append_item(auto_filter_node_op_t op)
+import_auto_filter_node* import_auto_filter_node::start_node(auto_filter_node_op_t op)
 {
-    (void)op;
-    return nullptr;
+    commit_func_type func = [this](filter_node_t&& node)
+    {
+        m_node.node_store.push_back(std::move(node));
+        m_node.children.push_back(&m_node.node_store.back());
+    };
+
+    mp_child = std::make_unique<import_auto_filter_node>(m_pool, op, std::move(func));
+    return mp_child.get();
 }
 
 void import_auto_filter_node::commit()
@@ -48,15 +51,10 @@ void import_auto_filter_node::commit()
     m_func_commit(std::move(m_node));
 }
 
-void import_auto_filter_node::reset(
-    auto_filter_t* parent, auto_filter_node_op_t op, commit_func_type func)
+void import_auto_filter_node::reset(auto_filter_node_op_t op, commit_func_type func)
 {
-    assert(parent);
-
     m_node = filter_node_t{op};
     m_func_commit = std::move(func);
-
-    mp_parent = parent;
 }
 
 import_auto_filter::import_auto_filter(string_pool& sp) : m_pool(sp), m_import_column_node(sp) {}
@@ -71,7 +69,7 @@ iface::import_auto_filter_node* import_auto_filter::start_column(col_t col_offse
         filter.columns.insert_or_assign(col_offset, std::move(node));
     };
 
-    m_import_column_node.reset(&m_filter, op, std::move(func));
+    m_import_column_node.reset(op, std::move(func));
     return &m_import_column_node;
 }
 
