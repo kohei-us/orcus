@@ -57,25 +57,31 @@ private:
     void start_column(const xml_token_attrs_t& attrs);
     void end_column();
     void start_condition(const xml_token_attrs_t& attrs);
-    void end_condition();
+    void start_and(const xml_token_attrs_t& attrs);
+    void end_and();
+    void start_or(const xml_token_attrs_t& attrs);
+    void end_or();
 
 private:
 
     struct column_attrs
     {
-        std::optional<spreadsheet::col_t> index;
-        std::optional<filter_column_type> type;
+        spreadsheet::col_t index = 0;
+        filter_column_type type = filter_column_type::all;
+        spreadsheet::auto_filter_node_op_t node_op = spreadsheet::auto_filter_node_op_t::unspecified;
 
         void reset()
         {
-            index.reset();
-            type.reset();
+            index = 0;
+            type = filter_column_type::all;
+            node_op = spreadsheet::auto_filter_node_op_t::unspecified;
         }
     };
 
     spreadsheet::iface::import_factory* mp_factory = nullptr;
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
     spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
+    spreadsheet::iface::import_auto_filter_node* mp_filter_node = nullptr;
 
     std::vector<spreadsheet::iface::import_auto_filter_node*> m_column_filter_stack;
 

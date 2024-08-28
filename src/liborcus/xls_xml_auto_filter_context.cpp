@@ -48,7 +48,29 @@ const map_type& get()
 
 } // namespace column_type
 
+namespace op_type {
+
+using map_type = mdds::sorted_string_map<ss::auto_filter_op_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry_type entries[] = {
+    { "DoesNotEqual", ss::auto_filter_op_t::not_equal },
+    { "Equals", ss::auto_filter_op_t::equal },
+    { "GreaterThan", ss::auto_filter_op_t::greater },
+    { "GreaterThanOrEqual", ss::auto_filter_op_t::greater_equal },
+    { "LessThan", ss::auto_filter_op_t::less },
+    { "LessThanOrEqual", ss::auto_filter_op_t::less_equal },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::auto_filter_op_t::unspecified);
+    return mt;
 }
+
+} // namespace op_type
+
+} // anonymous namespace
 
 xls_xml_auto_filter_context::xls_xml_auto_filter_context(
     session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
@@ -90,6 +112,12 @@ void xls_xml_auto_filter_context::start_element(xmlns_id_t ns, xml_token_t name,
             case XML_AutoFilterCondition:
                 start_condition(attrs);
                 break;
+            case XML_AutoFilterAnd:
+                start_and(attrs);
+                break;
+            case XML_AutoFilterOr:
+                start_or(attrs);
+                break;
             default:
                 warn_unhandled();
         }
@@ -110,8 +138,11 @@ bool xls_xml_auto_filter_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_AutoFilterColumn:
                 end_column();
                 break;
-            case XML_AutoFilterCondition:
-                end_condition();
+            case XML_AutoFilterAnd:
+                end_and();
+                break;
+            case XML_AutoFilterOr:
+                end_or();
                 break;
         }
     }
@@ -123,6 +154,7 @@ void xls_xml_auto_filter_context::reset(spreadsheet::iface::import_sheet* parent
 {
     mp_sheet = parent_sheet;
     mp_auto_filter = nullptr;
+    mp_filter_node = nullptr;
 }
 
 void xls_xml_auto_filter_context::start_auto_filter(const xml_token_attrs_t& attrs)
@@ -171,8 +203,7 @@ void xls_xml_auto_filter_context::start_column(const xml_token_attrs_t& attrs)
     if (!mp_auto_filter)
         return;
 
-    m_column.index = 0; // column offset from the left-most column, defaults to 1
-    m_column.type = filter_column_type::all;
+    m_column.reset();
 
     for (const auto& attr : attrs)
     {
@@ -201,16 +232,127 @@ void xls_xml_auto_filter_context::end_column()
     if (!mp_auto_filter)
         return;
 
+    if (mp_filter_node)
+    {
+        mp_filter_node->commit();
+        mp_filter_node = nullptr;
+    }
+
     m_column.reset();
 }
 
 void xls_xml_auto_filter_context::start_condition(const xml_token_attrs_t& attrs)
 {
-    (void)attrs;
+    if (!mp_auto_filter)
+        return;
+
+    if (m_column.node_op == ss::auto_filter_node_op_t::unspecified)
+    {
+        // if not explicitly under <x:AutoFilterAnd> or <x:AutoFilterOr>, it's
+        // equivalent of being under <x:AutoFilterAnd>
+        m_column.node_op = ss::auto_filter_node_op_t::op_and;
+
+        assert(!mp_filter_node);
+        mp_filter_node = mp_auto_filter->start_column(m_column.index, m_column.node_op);
+    }
+
+    std::optional<ss::auto_filter_op_t> op;
+    std::optional<std::string_view> value;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns == NS_xls_xml_x)
+        {
+            switch (attr.name)
+            {
+                case XML_Operator:
+                {
+                    op = op_type::get().find(attr.value);
+                    break;
+                }
+                case XML_Value:
+                {
+                    value = attr.value;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!op || !value)
+    {
+        warn("either the x:Operator or x:Value attribute is missing, or both");
+        return;
+    }
+
+    switch (*op)
+    {
+        case ss::auto_filter_op_t::equal:
+            warn("TODO");
+            break;
+        case ss::auto_filter_op_t::not_equal:
+            warn("TODO");
+            break;
+        case ss::auto_filter_op_t::greater:
+        case ss::auto_filter_op_t::greater_equal:
+        case ss::auto_filter_op_t::less:
+        case ss::auto_filter_op_t::less_equal:
+        {
+            // these operators expect a numeric rhs operand
+            auto v = to_double_checked(*value);
+            if (!v)
+            {
+                std::ostringstream os;
+                os << "numeric value was expected for operator '" << op_type::get().find_key(*op) << "', but '"
+                    << *value << "' cannot be interpreted as numeric";
+                warn(os.str());
+                return;
+            }
+
+            mp_filter_node->append_item(*op, *v);
+            break;
+        }
+        default:
+        {
+            std::ostringstream os;
+            os << "unexpected auto-filter condition operator '" << op_type::get().find_key(*op) << "'";
+            warn(os.str());
+        }
+    }
 }
 
-void xls_xml_auto_filter_context::end_condition()
+void xls_xml_auto_filter_context::start_and(const xml_token_attrs_t&)
 {
+    m_column.node_op = ss::auto_filter_node_op_t::op_and;
+
+    assert(!mp_filter_node);
+    mp_filter_node = mp_auto_filter->start_column(m_column.index, m_column.node_op);
+}
+
+void xls_xml_auto_filter_context::end_and()
+{
+    if (mp_filter_node)
+    {
+        mp_filter_node->commit();
+        mp_filter_node = nullptr;
+    }
+}
+
+void xls_xml_auto_filter_context::start_or(const xml_token_attrs_t&)
+{
+    m_column.node_op = ss::auto_filter_node_op_t::op_or;
+
+    assert(!mp_filter_node);
+    mp_filter_node = mp_auto_filter->start_column(m_column.index, m_column.node_op);
+}
+
+void xls_xml_auto_filter_context::end_or()
+{
+    if (mp_filter_node)
+    {
+        mp_filter_node->commit();
+        mp_filter_node = nullptr;
+    }
 }
 
 } // namespace orcus

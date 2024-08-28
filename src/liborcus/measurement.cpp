@@ -27,6 +27,16 @@ double to_double(std::string_view s, const char** p_parse_ended)
     return value;
 }
 
+std::optional<double> to_double_checked(std::string_view s)
+{
+    const char* p_end = nullptr;
+    double v = to_double(s, &p_end);
+    if (p_end == s.data())
+        return {};
+
+    return v;
+}
+
 long to_long(std::string_view s, const char** p_parse_ended)
 {
     long value;
