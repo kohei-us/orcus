@@ -113,10 +113,10 @@ void xls_xml_auto_filter_context::start_element(xmlns_id_t ns, xml_token_t name,
                 start_condition(attrs);
                 break;
             case XML_AutoFilterAnd:
-                start_and(attrs);
+                start_filter_node(ss::auto_filter_node_op_t::op_and);
                 break;
             case XML_AutoFilterOr:
-                start_or(attrs);
+                start_filter_node(ss::auto_filter_node_op_t::op_or);
                 break;
             default:
                 warn_unhandled();
@@ -139,10 +139,8 @@ bool xls_xml_auto_filter_context::end_element(xmlns_id_t ns, xml_token_t name)
                 end_column();
                 break;
             case XML_AutoFilterAnd:
-                end_and();
-                break;
             case XML_AutoFilterOr:
-                end_or();
+                end_filter_node();
                 break;
         }
     }
@@ -232,12 +230,7 @@ void xls_xml_auto_filter_context::end_column()
     if (!mp_auto_filter)
         return;
 
-    if (mp_filter_node)
-    {
-        mp_filter_node->commit();
-        mp_filter_node = nullptr;
-    }
-
+    end_filter_node();
     m_column.reset();
 }
 
@@ -250,10 +243,7 @@ void xls_xml_auto_filter_context::start_condition(const xml_token_attrs_t& attrs
     {
         // if not explicitly under <x:AutoFilterAnd> or <x:AutoFilterOr>, it's
         // equivalent of being under <x:AutoFilterAnd>
-        m_column.node_op = ss::auto_filter_node_op_t::op_and;
-
-        assert(!mp_filter_node);
-        mp_filter_node = mp_auto_filter->start_column(m_column.index, m_column.node_op);
+        start_filter_node(ss::auto_filter_node_op_t::op_and);
     }
 
     std::optional<ss::auto_filter_op_t> op;
@@ -321,32 +311,15 @@ void xls_xml_auto_filter_context::start_condition(const xml_token_attrs_t& attrs
     }
 }
 
-void xls_xml_auto_filter_context::start_and(const xml_token_attrs_t&)
+void xls_xml_auto_filter_context::start_filter_node(ss::auto_filter_node_op_t op)
 {
-    m_column.node_op = ss::auto_filter_node_op_t::op_and;
+    m_column.node_op = op;
 
     assert(!mp_filter_node);
     mp_filter_node = mp_auto_filter->start_column(m_column.index, m_column.node_op);
 }
 
-void xls_xml_auto_filter_context::end_and()
-{
-    if (mp_filter_node)
-    {
-        mp_filter_node->commit();
-        mp_filter_node = nullptr;
-    }
-}
-
-void xls_xml_auto_filter_context::start_or(const xml_token_attrs_t&)
-{
-    m_column.node_op = ss::auto_filter_node_op_t::op_or;
-
-    assert(!mp_filter_node);
-    mp_filter_node = mp_auto_filter->start_column(m_column.index, m_column.node_op);
-}
-
-void xls_xml_auto_filter_context::end_or()
+void xls_xml_auto_filter_context::end_filter_node()
 {
     if (mp_filter_node)
     {

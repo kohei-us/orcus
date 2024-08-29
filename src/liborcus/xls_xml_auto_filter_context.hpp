@@ -57,10 +57,8 @@ private:
     void start_column(const xml_token_attrs_t& attrs);
     void end_column();
     void start_condition(const xml_token_attrs_t& attrs);
-    void start_and(const xml_token_attrs_t& attrs);
-    void end_and();
-    void start_or(const xml_token_attrs_t& attrs);
-    void end_or();
+    void start_filter_node(spreadsheet::auto_filter_node_op_t os);
+    void end_filter_node();
 
 private:
 
