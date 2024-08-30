@@ -278,11 +278,18 @@ void xls_xml_auto_filter_context::start_condition(const xml_token_attrs_t& attrs
     switch (*op)
     {
         case ss::auto_filter_op_t::equal:
-            warn("TODO");
-            break;
         case ss::auto_filter_op_t::not_equal:
-            warn("TODO");
+        {
+            // since the value type is not specified, try converting it to a numeric
+            // value and if that succeeds, import it as a numeric value.
+
+            if (auto v = to_double_checked(*value); v)
+                mp_filter_node->append_item(*op, *v); // numeric
+            else
+                mp_filter_node->append_item(*op, *value); // text
+
             break;
+        }
         case ss::auto_filter_op_t::greater:
         case ss::auto_filter_op_t::greater_equal:
         case ss::auto_filter_op_t::less:
