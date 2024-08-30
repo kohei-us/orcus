@@ -220,6 +220,18 @@ void xls_xml_auto_filter_context::start_column(const xml_token_attrs_t& attrs)
                     m_column.type = column_type::get().find(attr.value);
                     break;
                 }
+                case XML_Value:
+                {
+                    auto v = to_double_checked(attr.value);
+                    if (v)
+                        m_column.value = *v;
+                    else
+                    {
+                        std::ostringstream os;
+                        os << "failed to convert '" << attr.value << "' to a double for a column filter rule";
+                        warn(os.str());
+                    }
+                }
             }
         }
     }
@@ -230,7 +242,51 @@ void xls_xml_auto_filter_context::end_column()
     if (!mp_auto_filter)
         return;
 
-    end_filter_node();
+    auto to_dest_type = [](filter_column_type src) -> std::optional<ss::auto_filter_op_t>
+    {
+        switch (src)
+        {
+            case filter_column_type::blanks:
+                return ss::auto_filter_op_t::empty;
+            case filter_column_type::non_blanks:
+                return ss::auto_filter_op_t::not_empty;
+            case filter_column_type::top:
+                return ss::auto_filter_op_t::top;
+            case filter_column_type::top_percent:
+                return ss::auto_filter_op_t::top_percent;
+            case filter_column_type::bottom:
+                return ss::auto_filter_op_t::bottom;
+            case filter_column_type::bottom_percent:
+                return ss::auto_filter_op_t::bottom_percent;
+            default:;
+        }
+        return {};
+    };
+
+    switch (m_column.type)
+    {
+        case filter_column_type::all:
+            // nothing to filter
+            break;
+        case filter_column_type::blanks:
+        case filter_column_type::non_blanks:
+        case filter_column_type::top:
+        case filter_column_type::top_percent:
+        case filter_column_type::bottom:
+        case filter_column_type::bottom_percent:
+        {
+            auto op = to_dest_type(m_column.type);
+            assert(op.has_value());
+            auto* node = mp_auto_filter->start_column(m_column.index, ss::auto_filter_node_op_t::op_and);
+            node->append_item(*op, m_column.value);
+            node->commit();
+            break;
+        }
+        case filter_column_type::custom:
+            end_filter_node();
+            break;
+    }
+
     m_column.reset();
 }
 

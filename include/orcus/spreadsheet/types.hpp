@@ -454,6 +454,8 @@ enum class auto_filter_node_op_t
 enum class auto_filter_op_t
 {
     unspecified,
+    empty,
+    not_empty,
     equal,
     not_equal,
     contain,

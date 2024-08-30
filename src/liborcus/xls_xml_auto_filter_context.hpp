@@ -67,12 +67,11 @@ private:
         spreadsheet::col_t index = 0;
         filter_column_type type = filter_column_type::all;
         spreadsheet::auto_filter_node_op_t node_op = spreadsheet::auto_filter_node_op_t::unspecified;
+        double value = 0.0;
 
         void reset()
         {
-            index = 0;
-            type = filter_column_type::all;
-            node_op = spreadsheet::auto_filter_node_op_t::unspecified;
+            *this = column_attrs{};
         }
     };
 
