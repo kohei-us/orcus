@@ -93,6 +93,7 @@ add_executable(orcus-xls-xml-test EXCLUDE_FROM_ALL
 
 add_executable(orcus-xlsx-test EXCLUDE_FROM_ALL
     orcus_xlsx_test.cpp
+    orcus_test_global.cpp
 )
 
 add_executable(orcus-xml-test EXCLUDE_FROM_ALL
