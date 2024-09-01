@@ -174,8 +174,7 @@ void xls_xml_auto_filter_context::start_auto_filter(const xml_token_attrs_t& att
             {
                 case XML_Range:
                 {
-                    if (resolver)
-                        range = to_rc_range(resolver->resolve_range(attr.value));
+                    range = to_rc_range(resolver->resolve_range(attr.value));
                     break;
                 }
             }

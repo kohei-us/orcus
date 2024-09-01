@@ -112,10 +112,6 @@ struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
 /**
  * Data for a single auto-filter entry.  An auto-filter can belong to either a
  * sheet or a table.
- *
- * The filter definitions for the columns are associated with their respective
- * offset positions which from the left-most column position of the filtered
- * range.
  */
 struct ORCUS_SPM_DLLPUBLIC auto_filter_t
 {

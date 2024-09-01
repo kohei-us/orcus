@@ -427,7 +427,7 @@ iface::import_auto_filter* import_sheet::start_auto_filter(const range_t& range)
 {
     auto& dest = m_sheet;
 
-    import_auto_filter::commit_func_type func = [&range, &dest](auto_filter_t&& filter)
+    import_auto_filter::commit_func_type func = [range, &dest](auto_filter_t&& filter)
     {
         auto filter_range = std::make_unique<auto_filter_range_t>();
         filter_range->range = to_abs_range(range, dest.get_index());

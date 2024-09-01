@@ -1373,7 +1373,9 @@ constexpr map_type::entry_type entries[] = {
     { "x0208", character_set_t::jis_c6226_1983 },
     { "x0212", character_set_t::jis_x0212_1990 },
     { "yu", character_set_t::jus_i_b1_002 },
-};const map_type& get()
+};
+
+const map_type& get()
 {
     static map_type mt(entries, std::size(entries), character_set_t::unspecified);
     return mt;

@@ -21,6 +21,8 @@ namespace orcus { namespace spreadsheet { namespace detail {
 
 namespace {
 
+constexpr const char* indent_unit_s = "  ";
+
 void print_named_expressions(const ixion::model_context& cxt, ixion::named_expressions_iterator iter, std::ostream& os)
 {
     auto resolver = ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &cxt);
@@ -43,6 +45,63 @@ void print_named_expressions(const ixion::model_context& cxt, ixion::named_expre
         os << "  origin: " << resolver->get_name(name.expression->origin, origin, true) << std::endl;
         os << "  expression: " << exp << std::endl;
     }
+}
+
+void print_auto_filter(const auto_filter_t& filter, std::ostream& os)
+{
+    using print_node_type = std::function<void(const filter_node_t& node, int level)>;
+
+    print_node_type _print_node = [&_print_node, &os](const filter_node_t& node, int level)
+    {
+        std::string base_indent;
+        for (int i = 0; i < level; ++i)
+            base_indent.append(indent_unit_s);
+
+        os << base_indent << indent_unit_s << "operator: " << node.op << "\n";
+
+        if (!node.children.empty())
+        {
+            os << base_indent << indent_unit_s << "children:\n";
+            std::string bullet = indent_unit_s;
+            bullet[0] = '-';
+            std::string indent = base_indent + indent_unit_s + indent_unit_s;
+
+            for (const filterable* child : node.children)
+            {
+                if (auto* child_node = dynamic_cast<const filter_node_t*>(child); child_node)
+                {
+                    os << indent << bullet << "type: filter-node\n";
+                    _print_node(*child_node, level + 2);
+                }
+                else if (auto* item = dynamic_cast<const filter_item_t*>(child); item)
+                {
+                    os << indent << bullet << "type: filter-item\n";
+                    os << indent << indent_unit_s << "field: " << item->field << "\n";
+                    os << indent << indent_unit_s << "operator: " << item->op << "\n";
+                    os << indent << indent_unit_s << "value:\n";
+
+                    const filter_value_t& v = item->value;
+                    switch (v.type())
+                    {
+                        case filter_value_t::value_type::empty:
+                            os << indent << indent_unit_s << indent_unit_s<< "type: empty\n";
+                            break;
+                        case filter_value_t::value_type::numeric:
+                            os << indent << indent_unit_s << indent_unit_s<< "type: numeric\n";
+                            os << indent << indent_unit_s << indent_unit_s<< "value: " << v.numeric() << "\n";
+                            break;
+                        case filter_value_t::value_type::string:
+                            os << indent << indent_unit_s << indent_unit_s<< "type: string\n";
+                            os << indent << indent_unit_s << indent_unit_s<< "value: " << v.string() << "\n";
+                            break;
+                    }
+                }
+            }
+        }
+    };
+
+    os << "filter-root:\n";
+    _print_node(filter.root, 0);
 }
 
 } // anonymous namespace
@@ -113,7 +172,6 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
         // v is of type std::optional<T>.
 
         constexpr char q = '"';
-        constexpr const char* indent_unit_s = "  ";
 
         std::string indent = indent_unit_s;
         for (int i = 0; i < level - 1; ++i)
@@ -411,7 +469,7 @@ void sheet_debug_state_dumper::dump_row_heights(const fs::path& outdir) const
 
 void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
 {
-    if (!m_sheet.auto_filter_data)
+    if (!m_sheet.auto_filter_range)
         return;
 
     fs::path outpath = outdir / "auto-filter.yaml";
@@ -419,7 +477,7 @@ void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
     if (!of)
         return;
 
-    const old::auto_filter_t& data = *m_sheet.auto_filter_data;
+    const auto& filter_range = *m_sheet.auto_filter_range;
 
     auto resolver = ixion::formula_name_resolver::get(
         ixion::formula_name_resolver_t::excel_a1, nullptr);
@@ -428,20 +486,11 @@ void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
         return;
 
     ixion::abs_address_t origin;
-    ixion::range_t name{data.range};
+    ixion::range_t name{filter_range.range};
     name.set_absolute(false);
 
     of << "range: " << resolver->get_name(name, origin, false) << "\n";
-    of << "columns:\n";
-
-    for (const auto& [col, cdata] : data.columns)
-    {
-        of << "- column: " << col << "\n";
-        of << "  match-values:\n";
-
-        for (const auto& v : cdata.match_values)
-            of << "  - " << v << std::endl;
-    }
+    print_auto_filter(filter_range.filter, of);
 }
 
 void sheet_debug_state_dumper::dump_named_expressions(const fs::path& outdir) const

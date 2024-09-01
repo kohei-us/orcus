@@ -767,6 +767,8 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_spacing_t 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, underline_count_t ultype);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, hor_alignment_t halign);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, ver_alignment_t valign);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, auto_filter_node_op_t op);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, auto_filter_op_t op);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const color_rgb_t& color);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const fill_pattern_t& fill);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const strikethrough_style_t& ss);

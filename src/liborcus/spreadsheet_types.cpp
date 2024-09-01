@@ -552,21 +552,21 @@ std::ostream& operator<< (std::ostream& os, border_style_t border)
         "unknown",
         "none",
         "solid",
-        "dash_dot",
-        "dash_dot_dot",
+        "dash-dot",
+        "dash-dot-dot",
         "dashed",
         "dotted",
-        "double_border",
+        "double-border",
         "hair",
         "medium",
-        "medium_dash_dot",
-        "medium_dash_dot_dot",
-        "medium_dashed",
-        "slant_dash_dot",
+        "medium-dash-dot",
+        "medium-dash-dot-dot",
+        "medium-dashed",
+        "slant-dash-dot",
         "thick",
         "thin",
-        "double_thin",
-        "fine_dashed",
+        "double-thin",
+        "fine-dashed",
     };
 
     return write_name_for_pos(os, names, std::size(names), border);
@@ -576,7 +576,7 @@ std::ostream& operator<< (std::ostream& os, formula_grammar_t grammar)
 {
     static constexpr std::string_view names[] = {
         "unknown",
-        "xls_xml",
+        "xls-xml",
         "xlsx",
         "ods",
         "gnumeric"
@@ -589,15 +589,15 @@ std::ostream& operator<< (std::ostream& os, underline_style_t uline)
 {
     static constexpr std::string_view names[] = {
         "none",
-        "single_line",
-        "single_accounting",
-        "double_line",
-        "double_accounting",
+        "single-line",
+        "single-accounting",
+        "double-line",
+        "double-accounting",
         "dotted",
         "dash",
-        "long_dash",
-        "dot_dash",
-        "dot_dot_dash",
+        "long-dash",
+        "dot-dash",
+        "dot-dot-dash",
         "wave",
     };
 
@@ -615,8 +615,8 @@ std::ostream& operator<< (std::ostream& os, underline_thickness_t ulwidth)
         "thick",
         "thin",
         "percent",
-        "positive_integer",
-        "positive_length",
+        "positive-integer",
+        "positive-length",
     };
 
     return write_name_for_pos(os, names, std::size(names), ulwidth);
@@ -626,7 +626,7 @@ std::ostream& operator<< (std::ostream& os, underline_spacing_t ulmode)
 {
     static constexpr std::string_view names[] = {
         "continuous",
-        "skip_white_space",
+        "skip-white-space",
     };
 
     return write_name_for_pos(os, names, std::size(names), ulmode);
@@ -636,8 +636,8 @@ std::ostream& operator<< (std::ostream& os, underline_count_t ultype)
 {
     static constexpr std::string_view names[] = {
         "none",
-        "single_type",
-        "double_type",
+        "single-type",
+        "double-type",
     };
 
     return write_name_for_pos(os, names, std::size(names), ultype);
@@ -672,6 +672,46 @@ std::ostream& operator<< (std::ostream& os, ver_alignment_t valign)
     return write_name_for_pos(os, names, std::size(names), valign);
 }
 
+std::ostream& operator<< (std::ostream& os, auto_filter_node_op_t op)
+{
+    static constexpr std::string_view names[] = {
+        "unspecified",
+        "and",
+        "or",
+    };
+
+    return write_name_for_pos(os, names, std::size(names), op);
+}
+
+std::ostream& operator<< (std::ostream& os, auto_filter_op_t op)
+{
+    static constexpr std::string_view names[] = {
+        "unspecified",
+        "empty",
+        "not-empty",
+        "equal",
+        "not-equal",
+        "contain",
+        "not-contain",
+        "begin-with",
+        "not-begin-with",
+        "end-with",
+        "not-end-with",
+        "greater",
+        "greater-equal",
+        "less",
+        "less-equal",
+        "top",
+        "bottom",
+        "top-percent",
+        "bottom-percent",
+        "top-percent-range",
+        "bottom-percent-range",
+    };
+
+    return write_name_for_pos(os, names, std::size(names), op);
+}
+
 std::ostream& operator<< (std::ostream& os, const color_rgb_t& color)
 {
     os << "(r=" << (int)color.red << ",g=" << (int)color.green << ",b=" << (int)color.blue << ")";
@@ -683,23 +723,23 @@ std::ostream& operator<< (std::ostream& os, const fill_pattern_t& fill)
     static constexpr std::string_view names[] = {
         "none",
         "solid",
-        "dark_down",
-        "dark_gray",
-        "dark_grid",
-        "dark_horizontal",
-        "dark_trellis",
-        "dark_up",
-        "dark_vertical",
-        "gray_0625",
-        "gray_125",
-        "light_down",
-        "light_gray",
-        "light_grid",
-        "light_horizontal",
-        "light_trellis",
-        "light_up",
-        "light_vertical",
-        "medium_gray",
+        "dark-down",
+        "dark-gray",
+        "dark-grid",
+        "dark-horizontal",
+        "dark-trellis",
+        "dark-up",
+        "dark-vertical",
+        "gray-0625",
+        "gray-125",
+        "light-down",
+        "light-gray",
+        "light-grid",
+        "light-horizontal",
+        "light-trellis",
+        "light-up",
+        "light-vertical",
+        "medium-gray",
     };
 
     return write_name_for_pos(os, names, std::size(names), fill);
@@ -711,10 +751,10 @@ std::ostream& operator<< (std::ostream& os, const strikethrough_style_t& ss)
         "none",
         "solid",
         "dash",
-        "dot_dash",
-        "dot_dot_dash",
+        "dot-dash",
+        "dot-dot-dash",
         "dotted",
-        "long_dash",
+        "long-dash",
         "wave",
     };
 
@@ -726,8 +766,8 @@ std::ostream& operator<< (std::ostream& os, const strikethrough_type_t& st)
     static constexpr std::string_view names[] = {
         "unknown",
         "none",
-        "single_type",
-        "double_type",
+        "single-type",
+        "double-type",
     };
 
     return write_name_for_pos(os, names, std::size(names), st);
@@ -737,7 +777,7 @@ std::ostream& operator<< (std::ostream& os, const strikethrough_width_t& sw)
 {
     static constexpr std::string_view names[] = {
         "unknown",
-        "width_auto",
+        "width-auto",
         "thin",
         "medium",
         "thick",
