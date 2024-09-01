@@ -47,20 +47,21 @@ void test_filter_node()
 
     // x > 40 or x < 5 or (12 <= x <= 24)
 
-    root.item_store.emplace_back(ss::auto_filter_op_t::greater, 40.0);
+    ss::col_t field = 1;
+    root.item_store.emplace_back(field, ss::auto_filter_op_t::greater, 40.0);
     root.children.push_back(&root.item_store.back());
 
-    root.item_store.emplace_back(ss::auto_filter_op_t::less, 5.0);
+    root.item_store.emplace_back(field, ss::auto_filter_op_t::less, 5.0);
     root.children.push_back(&root.item_store.back());
 
     {
         root.node_store.emplace_back(ss::auto_filter_node_op_t::op_and);
         auto& node = root.node_store.back();
 
-        node.item_store.emplace_back(ss::auto_filter_op_t::greater_equal, 12.0);
+        node.item_store.emplace_back(field, ss::auto_filter_op_t::greater_equal, 12.0);
         node.children.push_back(&node.item_store.back());
 
-        node.item_store.emplace_back(ss::auto_filter_op_t::less_equal, 24.0);
+        node.item_store.emplace_back(field, ss::auto_filter_op_t::less_equal, 24.0);
         node.children.emplace_back(&node.item_store.back());
 
         root.children.push_back(&node);

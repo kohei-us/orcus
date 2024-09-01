@@ -31,8 +31,8 @@ public:
     import_auto_filter_node(string_pool& sp, auto_filter_node_op_t op, commit_func_type func);
     ~import_auto_filter_node();
 
-    virtual void append_item(auto_filter_op_t op, std::string_view value) override;
-    virtual void append_item(auto_filter_op_t op, double value) override;
+    virtual void append_item(col_t field, auto_filter_op_t op, std::string_view value) override;
+    virtual void append_item(col_t field, auto_filter_op_t op, double value) override;
     virtual import_auto_filter_node* start_node(auto_filter_node_op_t op) override;
     virtual void commit() override;
 
@@ -56,14 +56,14 @@ public:
     import_auto_filter(const import_auto_filter&) = delete;
     ~import_auto_filter();
 
-    virtual iface::import_auto_filter_node* start_column(col_t col_offset, auto_filter_node_op_t op) override;
+    virtual iface::import_auto_filter_node* start_node(auto_filter_node_op_t op) override;
     virtual void commit() override;
 
     void reset(commit_func_type func);
 
 private:
     string_pool& m_pool;
-    import_auto_filter_node m_import_column_node;
+    import_auto_filter_node m_import_root_node;
 
     auto_filter_t m_filter;
     commit_func_type m_func_commit;

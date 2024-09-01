@@ -152,7 +152,7 @@ void xls_xml_auto_filter_context::reset(spreadsheet::iface::import_sheet* parent
 {
     mp_sheet = parent_sheet;
     mp_auto_filter = nullptr;
-    mp_filter_node = nullptr;
+    m_filter_node_stack.clear();
 }
 
 void xls_xml_auto_filter_context::start_auto_filter(const xml_token_attrs_t& attrs)
@@ -193,6 +193,9 @@ void xls_xml_auto_filter_context::end_auto_filter()
     if (!mp_auto_filter)
         return;
 
+    assert(m_filter_node_stack.size() == 1u); // root node
+    m_filter_node_stack.back()->commit();
+    m_filter_node_stack.pop_back();
     mp_auto_filter->commit();
 }
 
@@ -234,6 +237,13 @@ void xls_xml_auto_filter_context::start_column(const xml_token_attrs_t& attrs)
                 }
             }
         }
+    }
+
+    if (m_filter_node_stack.empty())
+    {
+        // create a root node before the first field
+        auto* root = mp_auto_filter->start_node(ss::auto_filter_node_op_t::op_and);
+        m_filter_node_stack.push_back(root);
     }
 }
 
@@ -277,16 +287,21 @@ void xls_xml_auto_filter_context::end_column()
         {
             auto op = to_dest_type(m_column.type);
             assert(op.has_value());
-            auto* node = mp_auto_filter->start_column(m_column.index, ss::auto_filter_node_op_t::op_and);
-            node->append_item(*op, m_column.value);
+            assert(m_filter_node_stack.size() == 1u);
+            auto* node = m_filter_node_stack.back()->start_node(ss::auto_filter_node_op_t::op_and);
+            node->append_item(m_column.index, *op, m_column.value);
             node->commit();
             break;
         }
         case filter_column_type::custom:
-            end_filter_node();
+        {
+            if (m_filter_node_stack.size() == 2u)
+                end_filter_node();
             break;
+        }
     }
 
+    assert(m_filter_node_stack.size() == 1u); // root node should still exist
     m_column.reset();
 }
 
@@ -339,10 +354,12 @@ void xls_xml_auto_filter_context::start_condition(const xml_token_attrs_t& attrs
             // since the value type is not specified, try converting it to a numeric
             // value and if that succeeds, import it as a numeric value.
 
+            assert(!m_filter_node_stack.empty());
+            auto* node = m_filter_node_stack.back();
             if (auto v = to_double_checked(*value); v)
-                mp_filter_node->append_item(*op, *v); // numeric
+                node->append_item(m_column.index, *op, *v); // numeric
             else
-                mp_filter_node->append_item(*op, *value); // text
+                node->append_item(m_column.index, *op, *value); // text
 
             break;
         }
@@ -362,7 +379,9 @@ void xls_xml_auto_filter_context::start_condition(const xml_token_attrs_t& attrs
                 return;
             }
 
-            mp_filter_node->append_item(*op, *v);
+            assert(!m_filter_node_stack.empty());
+            auto* node = m_filter_node_stack.back();
+            node->append_item(m_column.index, *op, *v);
             break;
         }
         default:
@@ -378,17 +397,16 @@ void xls_xml_auto_filter_context::start_filter_node(ss::auto_filter_node_op_t op
 {
     m_column.node_op = op;
 
-    assert(!mp_filter_node);
-    mp_filter_node = mp_auto_filter->start_column(m_column.index, m_column.node_op);
+    assert(!m_filter_node_stack.empty());
+    auto* node = m_filter_node_stack.back()->start_node(m_column.node_op);
+    m_filter_node_stack.push_back(node);
 }
 
 void xls_xml_auto_filter_context::end_filter_node()
 {
-    if (mp_filter_node)
-    {
-        mp_filter_node->commit();
-        mp_filter_node = nullptr;
-    }
+    assert(!m_filter_node_stack.empty());
+    m_filter_node_stack.back()->commit();
+    m_filter_node_stack.pop_back();
 }
 
 } // namespace orcus

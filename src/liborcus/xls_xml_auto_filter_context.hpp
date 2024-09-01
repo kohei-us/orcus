@@ -78,9 +78,7 @@ private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
     spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
-    spreadsheet::iface::import_auto_filter_node* mp_filter_node = nullptr;
-
-    std::vector<spreadsheet::iface::import_auto_filter_node*> m_column_filter_stack;
+    std::vector<spreadsheet::iface::import_auto_filter_node*> m_filter_node_stack;
 
     column_attrs m_column;
 };

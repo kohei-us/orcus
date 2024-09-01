@@ -67,9 +67,12 @@ void filter_value_t::swap(filter_value_t& other) noexcept
 filterable::~filterable() = default;
 
 filter_item_t::filter_item_t() : op(auto_filter_op_t::unspecified) {}
-filter_item_t::filter_item_t(auto_filter_op_t _op) : op(_op) {}
-filter_item_t::filter_item_t(auto_filter_op_t _op, double v) : op(_op), value(v) {}
-filter_item_t::filter_item_t(auto_filter_op_t _op, std::string_view v) : op(_op), value(v) {}
+filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op) :
+    field(_field), op(_op) {}
+filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op, double v) :
+    field(_field), op(_op), value(v) {}
+filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op, std::string_view v) :
+    field(_field), op(_op), value(v) {}
 filter_item_t::filter_item_t(const filter_item_t& other) = default;
 filter_item_t::~filter_item_t() = default;
 
@@ -83,6 +86,7 @@ filter_item_t& filter_item_t::operator=(const filter_item_t& other)
 
 void filter_item_t::swap(filter_item_t& other) noexcept
 {
+    std::swap(field, other.field);
     std::swap(op, other.op);
     value.swap(other.value);
 }
@@ -137,12 +141,12 @@ auto_filter_t& auto_filter_t::operator=(auto_filter_t&& other) = default;
 
 void auto_filter_t::reset()
 {
-    columns.clear();
+    root.reset();
 }
 
 void auto_filter_t::swap(auto_filter_t& other)
 {
-    columns.swap(other.columns);
+    root.swap(other.root);
 }
 
 auto_filter_range_t::auto_filter_range_t() : range(ixion::abs_range_t::invalid) {}

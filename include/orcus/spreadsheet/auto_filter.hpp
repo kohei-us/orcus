@@ -60,18 +60,18 @@ struct ORCUS_SPM_DLLPUBLIC filterable
 };
 
 /**
- * Represents a single filtering criterion for a field.  A field may consist
- * of more than one filtering criteria chained with boolean operators.
+ * Represents a single filtering criterion for a field.
  */
 struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
 {
-    auto_filter_op_t op;
+    col_t field = -1;
+    auto_filter_op_t op = auto_filter_op_t::unspecified;
     filter_value_t value;
 
     filter_item_t();
-    filter_item_t(auto_filter_op_t _op);
-    filter_item_t(auto_filter_op_t _op, double v);
-    filter_item_t(auto_filter_op_t _op, std::string_view v);
+    filter_item_t(col_t _field, auto_filter_op_t _op);
+    filter_item_t(col_t _field, auto_filter_op_t _op, double v);
+    filter_item_t(col_t _field, auto_filter_op_t _op, std::string_view v);
     filter_item_t(const filter_item_t& other);
     ~filter_item_t() override;
 
@@ -119,9 +119,7 @@ struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
  */
 struct ORCUS_SPM_DLLPUBLIC auto_filter_t
 {
-    using columns_type = std::map<col_t, filter_node_t>;
-
-    columns_type columns;
+    filter_node_t root;
 
     auto_filter_t();
     auto_filter_t(const auto_filter_t& other);

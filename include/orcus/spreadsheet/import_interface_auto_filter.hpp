@@ -25,11 +25,13 @@ public:
     /**
      * Append to this node a new filter item with a numeric value.
      *
+     * @param field  0-based field index which is the offset from the left-most
+     *               column of the filtered range.
      * @param op     Operator for the filter item.
      * @param value  Numeric value associated with the operator for the filter
      *               item.
      */
-    virtual void append_item(auto_filter_op_t op, double value) = 0;
+    virtual void append_item(col_t field, auto_filter_op_t op, double value) = 0;
 
     /**
      * Append to this node a new filter item with a string value.
@@ -37,11 +39,13 @@ public:
      * Note that the the life cycle of the string value passed to this call is
      * only guaranteed to persist during the call.
      *
+     * @param field  0-based field index which is the offset from the left-most
+     *               column of the filtered range.
      * @param op     Operator for the filter item.
      * @param value  String value associated with the operator for the filter
      *               item.
      */
-    virtual void append_item(auto_filter_op_t op, std::string_view value) = 0;
+    virtual void append_item(col_t field, auto_filter_op_t op, std::string_view value) = 0;
 
     /**
      * Start a new node of filter rules as a filter item to this node. The new
@@ -84,7 +88,7 @@ public:
      * @note Note that the import_auto_filter implementer <i>must</i> return a
      * non-null pointer.
      */
-    virtual iface::import_auto_filter_node* start_column(col_t col_offset, auto_filter_node_op_t op) = 0;
+    virtual iface::import_auto_filter_node* start_node(auto_filter_node_op_t op) = 0;
 
     /**
      * Commit all the auto filter data stored in the buffer so far to the
