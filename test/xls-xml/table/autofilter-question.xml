@@ -1,0 +1,272 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Kohei Yoshida</Author>
+  <LastAuthor>Kohei Yoshida</LastAuthor>
+  <Created>2024-09-01T21:50:05Z</Created>
+  <Version>16.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>11865</WindowHeight>
+  <WindowWidth>28800</WindowWidth>
+  <WindowTopX>32767</WindowTopX>
+  <WindowTopY>32767</WindowTopY>
+  <ActiveSheet>1</ActiveSheet>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Aptos Narrow" x:Family="Swiss" ss:Size="11"
+    ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Ends With">
+  <Names>
+   <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="='Ends With'!R3C2:R23C2"
+    ss:Hidden="1"/>
+  </Names>
+  <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="23" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:Index="2" ss:Width="391.5"/>
+   <Row ss:Index="3">
+    <Cell ss:Index="2"><Data ss:Type="String">Sentences</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">The stars seemed brighter than ever in the clear night sky.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">Why does the wind howl through the trees like a whispering voice?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">A gentle rain began to fall, drenching the earth in a soothing rhythm.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">Did you hear the melody drifting from the old, forgotten piano?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">The cat watched curiously as the butterfly flitted around the garden.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">How many mysteries does the ocean hold beneath its surface?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">The scent of fresh bread filled the entire street, drawing in passersby.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">Could there be a way to solve the puzzle that has baffled everyone?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">She found a faded photograph hidden in an old book.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">The train rumbled past, leaving a trail of smoke and memories.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">Do you believe that dreams can tell us secrets about ourselves?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">The sun dipped below the horizon, painting the sky in shades of pink and gold.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">He wondered if there was a hidden meaning behind the cryptic message.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">Have you ever seen such a magnificent view from the top of a mountain?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">The old clock tower struck midnight, its chimes echoing through the empty streets.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">Why do some places feel like home even when you've never been there before?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">She smiled as she watched the children play in the autumn leaves.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">Can you imagine a world without colors or sounds?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">The ancient ruins stood silently, whispering secrets of the past.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">What lies beyond the farthest star in the galaxy?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <FilterOn/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>4</ActiveRow>
+     <ActiveCol>1</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+  <AutoFilter x:Range="R3C2:R23C2"
+   xmlns="urn:schemas-microsoft-com:office:excel">
+   <AutoFilterColumn x:Type="Custom">
+    <AutoFilterCondition x:Operator="Equals" x:Value="*~?"/>
+   </AutoFilterColumn>
+  </AutoFilter>
+ </Worksheet>
+ <Worksheet ss:Name="Does Not Contain">
+  <Names>
+   <NamedRange ss:Name="_FilterDatabase"
+    ss:RefersTo="='Does Not Contain'!R3C2:R23C2" ss:Hidden="1"/>
+  </Names>
+  <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="23" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:Index="2" ss:Width="391.5"/>
+   <Row ss:Index="3">
+    <Cell ss:Index="2"><Data ss:Type="String">Sentences</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">The stars seemed brighter than ever in the clear night sky.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">Why does the wind howl through the trees like a whispering voice?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">A gentle rain began to fall, drenching the earth in a soothing rhythm.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">Did you hear the melody drifting from the old, forgotten piano?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">The cat watched curiously as the butterfly flitted around the garden.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">How many mysteries does the ocean hold beneath its surface?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">The scent of fresh bread filled the entire street, drawing in passersby.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">Could there be a way to solve the puzzle that has baffled everyone?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">She found a faded photograph hidden in an old book.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">The train rumbled past, leaving a trail of smoke and memories.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">Do you believe that dreams can tell us secrets about ourselves?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">The sun dipped below the horizon, painting the sky in shades of pink and gold.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">He wondered if there was a hidden meaning behind the cryptic message.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">Have you ever seen such a magnificent view from the top of a mountain?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">The old clock tower struck midnight, its chimes echoing through the empty streets.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">Why do some places feel like home even when you've never been there before?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">She smiled as she watched the children play in the autumn leaves.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">Can you imagine a world without colors or sounds?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2"><Data ss:Type="String">The ancient ruins stood silently, whispering secrets of the past.</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+   <Row ss:Hidden="1">
+    <Cell ss:Index="2"><Data ss:Type="String">What lies beyond the farthest star in the galaxy?</Data><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Selected/>
+   <FilterOn/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>2</ActiveRow>
+     <ActiveCol>1</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+  <AutoFilter x:Range="R3C2:R23C2"
+   xmlns="urn:schemas-microsoft-com:office:excel">
+   <AutoFilterColumn x:Type="Custom">
+    <AutoFilterCondition x:Operator="DoesNotEqual" x:Value="*~?*"/>
+   </AutoFilterColumn>
+  </AutoFilter>
+ </Worksheet>
+</Workbook>
