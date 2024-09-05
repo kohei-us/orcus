@@ -15,11 +15,23 @@
   <AllowPNG/>
  </OfficeDocumentSettings>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <SupBook>
+   <Path>Book1</Path>
+   <SheetName>Wildcard-1</SheetName>
+   <SheetName>Wildcard-2</SheetName>
+   <Xct>
+    <Count>0</Count>
+    <SheetIndex>0</SheetIndex>
+   </Xct>
+   <Xct>
+    <Count>0</Count>
+    <SheetIndex>1</SheetIndex>
+   </Xct>
+  </SupBook>
   <WindowHeight>11865</WindowHeight>
   <WindowWidth>28800</WindowWidth>
   <WindowTopX>32767</WindowTopX>
   <WindowTopY>32767</WindowTopY>
-  <ActiveSheet>3</ActiveSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -42,87 +54,88 @@
   <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="23" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
    <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="80.25"/>
-   <Row ss:Index="3">
+   <Row ss:AutoFitHeight="0"/>
+   <Row ss:Index="3" ss:AutoFitHeight="0">
     <Cell ss:Index="3"><Data ss:Type="String">Words</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Meadow</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Whisper</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Lantern</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="3"><Data ss:Type="String">Quiver*</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Galaxy</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Velvet</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Echo</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Frost</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="3"><Data ss:Type="String">Compass*</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Cascade</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Phoenix</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Thunder</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Serene</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Mosaic</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="3"><Data ss:Type="String">Ember*</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Drift</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Mirage</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Horizon</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Spiral</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="3"><Data ss:Type="String">Prism</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
@@ -133,17 +146,19 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
+   <Unsynced/>
    <Print>
     <ValidPrinterInfo/>
     <HorizontalResolution>600</HorizontalResolution>
     <VerticalResolution>600</VerticalResolution>
    </Print>
+   <Selected/>
    <FilterOn/>
    <Panes>
     <Pane>
      <Number>3</Number>
      <ActiveRow>2</ActiveRow>
-     <ActiveCol>2</ActiveCol>
+     <ActiveCol>6</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -164,87 +179,88 @@
   <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="22" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
    <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="69.75"/>
-   <Row ss:Index="2">
+   <Row ss:AutoFitHeight="0"/>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Words</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Meadow</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">*Whisper</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Lantern</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Quiver</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Galaxy</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Velvet</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Echo</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Frost</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">*Compass</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Cascade</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Phoenix</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Thunder</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Serene</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Mosaic</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Ember</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">*Drift</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Mirage</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Horizon</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Spiral</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Prism</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
@@ -255,6 +271,7 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
+   <Unsynced/>
    <FilterOn/>
    <Panes>
     <Pane>
@@ -280,87 +297,88 @@
   </Names>
   <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="25" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Row ss:Index="5">
+   <Row ss:AutoFitHeight="0"/>
+   <Row ss:Index="5" ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Words</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Meadow</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Whisper</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Lantern</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Quiver</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Gal*xy</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Velvet</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Echo</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Frost</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Compass</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Cascade</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Phoen*x</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Thunder</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Serene</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Mosaic</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Ember</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Drift</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Mi*age</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Horizon</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Spiral</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Prism</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
@@ -371,6 +389,7 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
+   <Unsynced/>
    <FilterOn/>
    <Panes>
     <Pane>
@@ -396,87 +415,88 @@
   </Names>
   <Table ss:ExpandedColumnCount="2" ss:ExpandedRowCount="25" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Row ss:Index="5">
+   <Row ss:AutoFitHeight="0"/>
+   <Row ss:Index="5" ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Words</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Meadow</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Whisper</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Lantern</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Quiver</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Gal*xy</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Velvet</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Echo</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Frost</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Compass</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Cascade</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Phoen*x</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Thunder</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Serene</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Mosaic</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Ember</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Drift</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row ss:Hidden="1">
+   <Row ss:AutoFitHeight="0" ss:Hidden="1">
     <Cell ss:Index="2"><Data ss:Type="String">Mi*age</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Horizon</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Spiral</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
-   <Row>
+   <Row ss:AutoFitHeight="0">
     <Cell ss:Index="2"><Data ss:Type="String">Prism</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
    </Row>
@@ -487,7 +507,7 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
-   <Selected/>
+   <Unsynced/>
    <FilterOn/>
    <Panes>
     <Pane>
