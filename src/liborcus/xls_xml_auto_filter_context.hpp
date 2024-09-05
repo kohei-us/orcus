@@ -8,6 +8,7 @@
 #pragma once
 
 #include "xml_context_base.hpp"
+#include "xls_filter_utils.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
 
@@ -57,8 +58,10 @@ private:
     void start_column(const xml_token_attrs_t& attrs);
     void end_column();
     void start_condition(const xml_token_attrs_t& attrs);
-    void start_filter_node(spreadsheet::auto_filter_node_op_t os);
+    void start_filter_node(spreadsheet::auto_filter_node_op_t op);
     void end_filter_node();
+
+    void append_equal_item(spreadsheet::auto_filter_op_t op, std::string_view value);
 
 private:
 
@@ -81,6 +84,7 @@ private:
     std::vector<spreadsheet::iface::import_auto_filter_node*> m_filter_node_stack;
 
     column_attrs m_column;
+    detail::xls_filter_value_parser m_value_parser;
 };
 
 }

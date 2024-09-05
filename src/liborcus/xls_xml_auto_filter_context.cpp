@@ -350,16 +350,7 @@ void xls_xml_auto_filter_context::start_condition(const xml_token_attrs_t& attrs
         case ss::auto_filter_op_t::equal:
         case ss::auto_filter_op_t::not_equal:
         {
-            // since the value type is not specified, try converting it to a numeric
-            // value and if that succeeds, import it as a numeric value.
-
-            assert(!m_filter_node_stack.empty());
-            auto* node = m_filter_node_stack.back();
-            if (auto v = to_double_checked(*value); v)
-                node->append_item(m_column.index, *op, *v); // numeric
-            else
-                node->append_item(m_column.index, *op, *value); // text
-
+            append_equal_item(*op, *value);
             break;
         }
         case ss::auto_filter_op_t::greater:
@@ -406,6 +397,18 @@ void xls_xml_auto_filter_context::end_filter_node()
     assert(!m_filter_node_stack.empty());
     m_filter_node_stack.back()->commit();
     m_filter_node_stack.pop_back();
+}
+
+void xls_xml_auto_filter_context::append_equal_item(ss::auto_filter_op_t op, std::string_view value)
+{
+    // In Excel 2003 XML format, filter condition with equality operator always
+    // treats the rhs value as text.
+
+    assert(!m_filter_node_stack.empty());
+    auto* node = m_filter_node_stack.back();
+
+    auto res = m_value_parser.parse(op, value);
+    node->append_item(m_column.index, res.op, res.value);
 }
 
 } // namespace orcus

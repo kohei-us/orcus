@@ -44,6 +44,7 @@ list(APPEND _SOURCES
     odf_namespace_types.hpp
     odf_namespace_types.cpp
     gnumeric_namespace_types.cpp
+    xls_filter_utils.cpp
     xls_types.cpp
     xls_xml_namespace_types.cpp
     session_context.cpp
@@ -229,6 +230,11 @@ add_executable(xpath-parser-test EXCLUDE_FROM_ALL
     xpath_parser.cpp
 )
 
+add_executable(xls-filter-utils-test EXCLUDE_FROM_ALL
+    xls_filter_utils_test.cpp
+    xls_filter_utils.cpp
+)
+
 target_compile_definitions(xlsx-sheet-context-test PRIVATE
     __ORCUS_STATIC_LIB
 )
@@ -238,9 +244,11 @@ target_link_libraries(xlsx-sheet-context-test orcus-${ORCUS_API_VERSION} orcus-p
 target_link_libraries(xml-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 target_link_libraries(json-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(xpath-parser-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
+target_link_libraries(xls-filter-utils-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 add_test(odf-helper-test odf-helper-test)
 add_test(xlsx-sheet-context-test xlsx-sheet-context-test)
 add_test(xml-map-tree-test xml-map-tree-test)
+add_test(xls-filter-utils-test xls-filter-utils-test)
 
 add_dependencies(check
     ${_TESTS}
@@ -249,6 +257,7 @@ add_dependencies(check
     xml-map-tree-test
     json-map-tree-test
     xpath-parser-test
+    xls-filter-utils-test
 )
 
 install(

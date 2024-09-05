@@ -14,7 +14,8 @@ EXTRA_PROGRAMS = \
 	json-structure-tree-test \
 	json-map-tree-test \
 	xml-structure-tree-test \
-	xpath-parser-test
+	xpath-parser-test \
+	xls-filter-utils-test
 
 TESTS =
 
@@ -126,6 +127,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	xls_xml_namespace_types.cpp \
 	xls_types.hpp \
 	xls_types.cpp \
+	xls_filter_utils.hpp \
+	xls_filter_utils.cpp \
 	session_context.hpp \
 	session_context.cpp \
 	spreadsheet_impl_types.hpp \
@@ -502,8 +505,8 @@ xml_map_tree_test_SOURCES = \
 
 xml_map_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	../test/liborcus-test.a \
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
     $(BOOST_SYSTEM_LIBS)
 
 # xml-structure-tree-test
@@ -581,6 +584,17 @@ xpath_parser_test_LDADD = \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS)
 
+# xls-filter-utils-test
+
+xls_filter_utils_test_SOURCES = \
+	xls_filter_utils_test.cpp \
+	xls_filter_utils.cpp
+xls_filter_utils_test_LDADD = \
+	liborcus-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a \
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	$(BOOST_SYSTEM_LIBS)
+
 TESTS += \
 	css-document-tree-test \
 	json-document-tree-test \
@@ -591,7 +605,8 @@ TESTS += \
 	json-structure-tree-test \
 	json-map-tree-test \
 	xml-structure-tree-test \
-	xpath-parser-test
+	xpath-parser-test \
+	xls-filter-utils-test
 
 distclean-local:
 	rm -rf $(TESTS)
