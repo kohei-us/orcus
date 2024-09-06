@@ -486,7 +486,11 @@ void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
         return;
 
     ixion::abs_address_t origin;
-    ixion::range_t name{filter_range.range};
+    ixion::range_t name;
+    name.first.row = filter_range.range.first.row;
+    name.first.column = filter_range.range.first.column;
+    name.last.row = filter_range.range.last.row;
+    name.last.column = filter_range.range.last.column;
     name.set_absolute(false);
 
     of << "range: " << resolver->get_name(name, origin, false) << "\n";

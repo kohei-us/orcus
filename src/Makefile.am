@@ -641,7 +641,9 @@ EXTRA_PROGRAMS += orcus-xls-xml-test
 # orcus-xls-xml-test
 
 orcus_xls_xml_test_SOURCES = \
+	orcus_xls_xml_test.hpp \
 	orcus_xls_xml_test.cpp \
+	orcus_xls_xml_test_table.cpp \
 	orcus_test_global.cpp
 
 orcus_xls_xml_test_LDADD = \

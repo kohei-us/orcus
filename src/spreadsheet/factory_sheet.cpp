@@ -432,7 +432,7 @@ iface::import_auto_filter* import_sheet::start_auto_filter(const range_t& range)
         auto filter_range = std::make_unique<auto_filter_range_t>();
         filter_range->range = to_abs_range(range, dest.get_index());
         filter_range->filter = std::move(filter);
-        dest.set_auto_filter(std::move(filter_range));
+        dest.set_auto_filter_range(std::move(filter_range));
     };
 
     m_auto_filter.reset(std::move(func));

@@ -405,9 +405,14 @@ void sheet::set_auto_filter_data(old::auto_filter_t* p)
     mp_impl->auto_filter_data.reset(p);
 }
 
-void sheet::set_auto_filter(std::unique_ptr<auto_filter_range_t> filter)
+void sheet::set_auto_filter_range(std::unique_ptr<auto_filter_range_t> filter)
 {
     mp_impl->auto_filter_range = std::move(filter);
+}
+
+const auto_filter_range_t* sheet::get_auto_filter_range() const
+{
+    return mp_impl->auto_filter_range.get();
 }
 
 ixion::abs_range_t sheet::get_data_range() const

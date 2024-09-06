@@ -5,26 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus_test_global.hpp"
-#include "filesystem_env.hpp"
-
-#include "orcus/orcus_xls_xml.hpp"
-#include <orcus/format_detection.hpp>
-#include "orcus/stream.hpp"
-#include "orcus/config.hpp"
-#include <orcus/parser_global.hpp>
-#include "orcus/yaml_document_tree.hpp"
-#include "orcus/spreadsheet/factory.hpp"
-#include "orcus/spreadsheet/document.hpp"
-#include "orcus/spreadsheet/view.hpp"
-#include "orcus/spreadsheet/sheet.hpp"
-#include "orcus/spreadsheet/shared_strings.hpp"
-#include "orcus/spreadsheet/styles.hpp"
-#include "orcus/spreadsheet/config.hpp"
-
-#include <ixion/model_context.hpp>
-#include <ixion/address.hpp>
-#include <ixion/cell.hpp>
+#include "orcus_xls_xml_test.hpp"
 
 #include <string>
 #include <sstream>
@@ -36,8 +17,14 @@
 using namespace orcus;
 namespace ss = orcus::spreadsheet;
 
-namespace {
+orcus::config get_test_config()
+{
+    auto c = orcus::config(format_t::xls_xml);
+    c.debug = false;
+    c.structure_check = true;
 
+    return c;
+}
 config test_config(format_t::xls_xml);
 
 const std::vector<fs::path> dirs = {
@@ -63,9 +50,7 @@ const std::vector<fs::path> dirs = {
 };
 
 std::unique_ptr<spreadsheet::document> load_doc_from_filepath(
-    const std::string& path,
-    bool recalc=true,
-    ss::formula_error_policy_t error_policy=ss::formula_error_policy_t::fail)
+    const std::string& path, bool recalc, ss::formula_error_policy_t error_policy)
 {
     std::cout << path << std::endl;
 
@@ -75,7 +60,7 @@ std::unique_ptr<spreadsheet::document> load_doc_from_filepath(
     factory.set_recalc_formula_cells(recalc);
     factory.set_formula_error_policy(error_policy);
     orcus_xls_xml app(&factory);
-    app.set_config(test_config);
+    app.set_config(get_test_config());
     app.read_file(path.c_str());
 
     return doc;
@@ -2356,7 +2341,7 @@ void test_xls_xml_view_cursor_per_sheet()
     spreadsheet::view view(doc);
     spreadsheet::import_factory factory(doc, view);
     orcus_xls_xml app(&factory);
-    app.set_config(test_config);
+    app.set_config(get_test_config());
 
     app.read_file(path.c_str());
 
@@ -2418,7 +2403,7 @@ void test_xls_xml_view_cursor_split_pane()
     spreadsheet::view view(doc);
     spreadsheet::import_factory factory(doc, view);
     orcus_xls_xml app(&factory);
-    app.set_config(test_config);
+    app.set_config(get_test_config());
 
     app.read_file(path.c_str());
 
@@ -2558,7 +2543,7 @@ void test_xls_xml_view_frozen_pane()
     spreadsheet::view view(doc);
     spreadsheet::import_factory factory(doc, view);
     orcus_xls_xml app(&factory);
-    app.set_config(test_config);
+    app.set_config(get_test_config());
 
     app.read_file(path.c_str());
 
@@ -2672,13 +2657,8 @@ void test_xls_xml_double_bom()
     assert(doc->get_sheet_name(4) == "Distributions");
 }
 
-} // anonymous namespace
-
 int main()
 {
-    test_config.debug = false;
-    test_config.structure_check = true;
-
     test_xls_xml_detection();
     test_xls_xml_create_filter();
     test_xls_xml_import();
@@ -2712,6 +2692,8 @@ int main()
 
     test_xls_xml_skip_error_cells();
     test_xls_xml_double_bom();
+
+    test_xls_xml_auto_filter_number();
 
     return EXIT_SUCCESS;
 }

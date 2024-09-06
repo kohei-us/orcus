@@ -159,7 +159,7 @@ auto_filter_range_t& auto_filter_range_t::operator=(auto_filter_range_t&& other)
 
 void auto_filter_range_t::reset()
 {
-    range = ixion::abs_range_t(ixion::abs_range_t::invalid);
+    range = ixion::abs_rc_range_t(ixion::abs_range_t::invalid);
     filter.reset();
 }
 

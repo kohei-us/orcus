@@ -131,7 +131,7 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
 
 struct ORCUS_SPM_DLLPUBLIC auto_filter_range_t
 {
-    ixion::abs_range_t range;
+    ixion::abs_rc_range_t range;
     auto_filter_t filter;
 
     auto_filter_range_t();
