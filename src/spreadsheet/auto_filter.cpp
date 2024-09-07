@@ -93,10 +93,8 @@ void filter_item_t::swap(filter_item_t& other) noexcept
 
 filter_node_t::filter_node_t() : op(auto_filter_node_op_t::unspecified) {}
 filter_node_t::filter_node_t(auto_filter_node_op_t _op) : op(_op) {}
-filter_node_t::filter_node_t(const filter_node_t& other) :
-    op(other.op), children(other.children) {}
-filter_node_t::filter_node_t(filter_node_t&& other) :
-    op(other.op), children(std::move(other.children)) {}
+filter_node_t::filter_node_t(const filter_node_t& other) = default;
+filter_node_t::filter_node_t(filter_node_t&& other) = default;
 filter_node_t::~filter_node_t() = default;
 
 filter_node_t& filter_node_t::operator=(const filter_node_t& other)
