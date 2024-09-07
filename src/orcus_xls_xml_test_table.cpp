@@ -33,7 +33,7 @@ void test_xls_xml_auto_filter_number()
         range_expected.last.column = 6;
         assert(filter->range == range_expected);
 
-        // 1: filter-rule: > 20; field: 2
+        // 1: filter-rule: v > 20; field: 2
 
         // The root node should have one child node per filtered field,
         // connected by the 'and' operator.  In this case there is only one
@@ -51,6 +51,271 @@ void test_xls_xml_auto_filter_number()
         assert(item->op == ss::auto_filter_op_t::greater);
         assert(item->value.type() == ss::filter_value_t::value_type::numeric);
         assert(item->value.numeric() == 20);
+    }
+
+    {
+        auto* sh = doc->get_sheet("Greater Than Equal");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+
+        // R3C2:R96C7
+        ixion::abs_rc_range_t range_expected;
+        range_expected.first.row = 2;
+        range_expected.first.column = 1;
+        range_expected.last.row = 95;
+        range_expected.last.column = 6;
+        assert(filter->range == range_expected);
+
+        // 1: filter-rule: v >= 20; field: 2
+
+        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
+        assert(filter->filter.root.children.size() == 1);
+        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
+        assert(field);
+
+        assert(field->children.size() == 1);
+        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
+        assert(item);
+
+        assert(item->field == 2);
+        assert(item->op == ss::auto_filter_op_t::greater_equal);
+        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
+        assert(item->value.numeric() == 20);
+    }
+
+    {
+        auto* sh = doc->get_sheet("Less Than");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+
+        // R3C2:R96C7
+        ixion::abs_rc_range_t range_expected;
+        range_expected.first.row = 2;
+        range_expected.first.column = 1;
+        range_expected.last.row = 95;
+        range_expected.last.column = 6;
+        assert(filter->range == range_expected);
+
+        // 1: filter-rule: v < 5; field: 0
+
+        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
+        assert(filter->filter.root.children.size() == 1);
+        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
+        assert(field);
+
+        assert(field->children.size() == 1);
+        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
+        assert(item);
+
+        assert(item->field == 0);
+        assert(item->op == ss::auto_filter_op_t::less);
+        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
+        assert(item->value.numeric() == 5);
+    }
+
+    {
+        auto* sh = doc->get_sheet("Less Than Equal");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+
+        // R3C2:R96C7
+        ixion::abs_rc_range_t range_expected;
+        range_expected.first.row = 2;
+        range_expected.first.column = 1;
+        range_expected.last.row = 95;
+        range_expected.last.column = 6;
+        assert(filter->range == range_expected);
+
+        // 1: filter-rule: v <= 10; field: 0
+
+        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
+        assert(filter->filter.root.children.size() == 1);
+        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
+        assert(field);
+
+        assert(field->children.size() == 1);
+        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
+        assert(item);
+
+        assert(item->field == 0);
+        assert(item->op == ss::auto_filter_op_t::less_equal);
+        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
+        assert(item->value.numeric() == 10);
+    }
+
+    {
+        auto* sh = doc->get_sheet("Between");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+
+        // R3C2:R96C7
+        ixion::abs_rc_range_t range_expected;
+        range_expected.first.row = 2;
+        range_expected.first.column = 1;
+        range_expected.last.row = 95;
+        range_expected.last.column = 6;
+        assert(filter->range == range_expected);
+
+        // 1: filter-rule: v >= 10; field: 0
+        // 2: filter-rule: v <= 20; field: 0
+        // connector: AND
+
+        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
+        assert(filter->filter.root.children.size() == 1);
+        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
+        assert(field);
+
+        assert(field->op == ss::auto_filter_node_op_t::op_and);
+        assert(field->children.size() == 2);
+        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
+        assert(item);
+
+        assert(item->field == 0);
+        assert(item->op == ss::auto_filter_op_t::greater_equal);
+        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
+        assert(item->value.numeric() == 10);
+
+        item = dynamic_cast<const ss::filter_item_t*>(field->children[1]);
+        assert(item->field == 0);
+        assert(item->op == ss::auto_filter_op_t::less_equal);
+        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
+        assert(item->value.numeric() == 20);
+    }
+
+    {
+        auto* sh = doc->get_sheet("Top 10");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+
+        // R4C2:R18C5
+        ixion::abs_rc_range_t range_expected;
+        range_expected.first.row = 3;
+        range_expected.first.column = 1;
+        range_expected.last.row = 17;
+        range_expected.last.column = 4;
+        assert(filter->range == range_expected);
+
+        // 1: filter-rule: top 5; field: 2
+
+        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
+        assert(filter->filter.root.children.size() == 1);
+        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
+        assert(field);
+
+        assert(field->children.size() == 1);
+        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
+        assert(item);
+
+        assert(item->field == 2);
+        assert(item->op == ss::auto_filter_op_t::top);
+        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
+        assert(item->value.numeric() == 5);
+    }
+
+    {
+        auto* sh = doc->get_sheet("Bottom 10");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+
+        // R4C2:R18C5
+        ixion::abs_rc_range_t range_expected;
+        range_expected.first.row = 3;
+        range_expected.first.column = 1;
+        range_expected.last.row = 17;
+        range_expected.last.column = 4;
+        assert(filter->range == range_expected);
+
+        // 1: filter-rule: bottom 3; field: 2
+
+        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
+        assert(filter->filter.root.children.size() == 1);
+        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
+        assert(field);
+
+        assert(field->children.size() == 1);
+        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
+        assert(item);
+
+        assert(item->field == 2);
+        assert(item->op == ss::auto_filter_op_t::bottom);
+        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
+        assert(item->value.numeric() == 3);
+    }
+
+    {
+        auto* sh = doc->get_sheet("Above Average");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+
+        // R4C2:R18C5
+        ixion::abs_rc_range_t range_expected;
+        range_expected.first.row = 3;
+        range_expected.first.column = 1;
+        range_expected.last.row = 17;
+        range_expected.last.column = 4;
+        assert(filter->range == range_expected);
+
+        // 1: filter-rule: v >= 150547; field: 2
+
+        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
+        assert(filter->filter.root.children.size() == 1);
+        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
+        assert(field);
+
+        assert(field->children.size() == 1);
+        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
+        assert(item);
+
+        assert(item->field == 2);
+        assert(item->op == ss::auto_filter_op_t::greater);
+        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
+        assert(item->value.numeric() == 150547);
+    }
+
+    {
+        auto* sh = doc->get_sheet("Below Average");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+
+        // R4C2:R18C5
+        ixion::abs_rc_range_t range_expected;
+        range_expected.first.row = 3;
+        range_expected.first.column = 1;
+        range_expected.last.row = 17;
+        range_expected.last.column = 4;
+        assert(filter->range == range_expected);
+
+        // 1: filter-rule: v >= 150547; field: 2
+
+        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
+        assert(filter->filter.root.children.size() == 1);
+        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
+        assert(field);
+
+        assert(field->children.size() == 1);
+        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
+        assert(item);
+
+        assert(item->field == 2);
+        assert(item->op == ss::auto_filter_op_t::less);
+        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
+        assert(item->value.numeric() == 150547);
     }
 }
 
