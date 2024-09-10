@@ -25,6 +25,24 @@ bool filter_value_t::operator!=(const filter_value_t& other) const
     return !operator==(other);
 }
 
+bool filter_value_t::operator<(const filter_value_t& other) const
+{
+    auto index = m_store.index();
+    if (index != other.m_store.index())
+        return index < other.m_store.index();
+
+    switch (index)
+    {
+        case 0:
+            return true;
+        case 1:
+            return numeric() < other.numeric();
+        case 2:
+            return string() < other.string();
+    }
+
+    return false; // invalid value type
+}
 
 filter_value_t& filter_value_t::operator=(const filter_value_t& other)
 {
@@ -89,6 +107,35 @@ void filter_item_t::swap(filter_item_t& other) noexcept
     std::swap(field, other.field);
     std::swap(op, other.op);
     value.swap(other.value);
+}
+
+bool filter_item_t::operator==(const filter_item_t& other) const
+{
+    if (field != other.field)
+        return false;
+
+    if (op != other.op)
+        return false;
+
+    return value == other.value;
+}
+
+bool filter_item_t::operator!=(const filter_item_t& other) const
+{
+    return !operator==(other);
+}
+
+bool filter_item_t::operator<(const filter_item_t& other) const
+{
+    if (field != other.field)
+        return field < other.field;
+
+    using utype = std::underlying_type<auto_filter_op_t>::type;
+
+    if (op != other.op)
+        return static_cast<utype>(op) < static_cast<utype>(other.op);
+
+    return value < other.value;
 }
 
 filter_node_t::filter_node_t() : op(auto_filter_node_op_t::unspecified) {}

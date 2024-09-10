@@ -8,8 +8,66 @@
 #include "orcus_xls_xml_test.hpp"
 
 #include <orcus/spreadsheet/auto_filter.hpp>
+#include <ixion/formula_name_resolver.hpp>
+
+#include <set>
 
 namespace ss = orcus::spreadsheet;
+
+namespace {
+
+ixion::abs_rc_range_t make_range(std::string_view r1c1)
+{
+    static auto resolver = ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_r1c1, nullptr);
+    assert(resolver);
+
+    ixion::abs_address_t origin{};
+    ixion::formula_name_t result = resolver->resolve(r1c1, origin);
+    assert(result.type == ixion::formula_name_t::name_type::range_reference);
+
+    auto r = std::get<ixion::range_t>(result.value).to_abs(origin);
+    return ixion::abs_rc_range_t{r};
+}
+
+struct filter_items
+{
+    std::set<ss::filter_item_t> items;
+    ss::auto_filter_node_op_t connector;
+};
+
+filter_items get_filter_items_for_field(
+    const ss::auto_filter_t& filter, ss::col_t field_index)
+{
+    // The root node should have one child node per filtered field,
+    // connected by the 'and' operator.
+    if (filter.root.op != ss::auto_filter_node_op_t::op_and)
+        assert(!"the node operator in the root node should be AND");
+
+    filter_items items;
+
+    for (const auto* field_node : filter.root.children)
+    {
+        const auto* field = dynamic_cast<const ss::filter_node_t*>(field_node);
+        if (!field)
+            assert(!"child of the root node should be a field");
+
+        items.connector = field->op;
+
+        for (const auto* item_node : field->children)
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(item_node);
+            if (!item)
+                assert(!"child of a field node should be a filter item");
+
+            if (item->field == field_index)
+                items.items.insert(*item); // copy
+        }
+    }
+
+    return items;
+}
+
+}
 
 void test_xls_xml_auto_filter_number()
 {
@@ -24,33 +82,15 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter_range();
         assert(filter);
-
-        // R3C2:R96C7
-        ixion::abs_rc_range_t range_expected;
-        range_expected.first.row = 2;
-        range_expected.first.column = 1;
-        range_expected.last.row = 95;
-        range_expected.last.column = 6;
-        assert(filter->range == range_expected);
+        assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: v > 20; field: 2
 
-        // The root node should have one child node per filtered field,
-        // connected by the 'and' operator.  In this case there is only one
-        // filtered field so there should only be one child node.
-        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
-        assert(filter->filter.root.children.size() == 1);
-        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
-        assert(field);
+        auto items = get_filter_items_for_field(filter->filter, 2);
+        assert(items.items.size() == 1u);
 
-        assert(field->children.size() == 1);
-        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
-        assert(item);
-
-        assert(item->field == 2);
-        assert(item->op == ss::auto_filter_op_t::greater);
-        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
-        assert(item->value.numeric() == 20);
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 20};
+        assert(items.items.count(expected) > 0);
     }
 
     {
@@ -59,30 +99,15 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter_range();
         assert(filter);
-
-        // R3C2:R96C7
-        ixion::abs_rc_range_t range_expected;
-        range_expected.first.row = 2;
-        range_expected.first.column = 1;
-        range_expected.last.row = 95;
-        range_expected.last.column = 6;
-        assert(filter->range == range_expected);
+        assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: v >= 20; field: 2
 
-        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
-        assert(filter->filter.root.children.size() == 1);
-        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
-        assert(field);
+        auto items = get_filter_items_for_field(filter->filter, 2);
+        assert(items.items.size() == 1u);
 
-        assert(field->children.size() == 1);
-        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
-        assert(item);
-
-        assert(item->field == 2);
-        assert(item->op == ss::auto_filter_op_t::greater_equal);
-        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
-        assert(item->value.numeric() == 20);
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::greater_equal, 20};
+        assert(items.items.count(expected) > 0);
     }
 
     {
@@ -91,30 +116,15 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter_range();
         assert(filter);
-
-        // R3C2:R96C7
-        ixion::abs_rc_range_t range_expected;
-        range_expected.first.row = 2;
-        range_expected.first.column = 1;
-        range_expected.last.row = 95;
-        range_expected.last.column = 6;
-        assert(filter->range == range_expected);
+        assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: v < 5; field: 0
 
-        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
-        assert(filter->filter.root.children.size() == 1);
-        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
-        assert(field);
+        auto items = get_filter_items_for_field(filter->filter, 0);
+        assert(items.items.size() == 1u);
 
-        assert(field->children.size() == 1);
-        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
-        assert(item);
-
-        assert(item->field == 0);
-        assert(item->op == ss::auto_filter_op_t::less);
-        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
-        assert(item->value.numeric() == 5);
+        ss::filter_item_t expected{0, ss::auto_filter_op_t::less, 5};
+        assert(items.items.count(expected) > 0);
     }
 
     {
@@ -123,30 +133,15 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter_range();
         assert(filter);
-
-        // R3C2:R96C7
-        ixion::abs_rc_range_t range_expected;
-        range_expected.first.row = 2;
-        range_expected.first.column = 1;
-        range_expected.last.row = 95;
-        range_expected.last.column = 6;
-        assert(filter->range == range_expected);
+        assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: v <= 10; field: 0
 
-        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
-        assert(filter->filter.root.children.size() == 1);
-        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
-        assert(field);
+        auto items = get_filter_items_for_field(filter->filter, 0);
+        assert(items.items.size() == 1u);
 
-        assert(field->children.size() == 1);
-        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
-        assert(item);
-
-        assert(item->field == 0);
-        assert(item->op == ss::auto_filter_op_t::less_equal);
-        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
-        assert(item->value.numeric() == 10);
+        ss::filter_item_t expected{0, ss::auto_filter_op_t::less_equal, 10};
+        assert(items.items.count(expected) > 0);
     }
 
     {
@@ -155,39 +150,20 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter_range();
         assert(filter);
-
-        // R3C2:R96C7
-        ixion::abs_rc_range_t range_expected;
-        range_expected.first.row = 2;
-        range_expected.first.column = 1;
-        range_expected.last.row = 95;
-        range_expected.last.column = 6;
-        assert(filter->range == range_expected);
+        assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: v >= 10; field: 0
         // 2: filter-rule: v <= 20; field: 0
         // connector: AND
 
-        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
-        assert(filter->filter.root.children.size() == 1);
-        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
-        assert(field);
+        auto items = get_filter_items_for_field(filter->filter, 0);
+        assert(items.items.size() == 2u);
+        assert(items.connector == ss::auto_filter_node_op_t::op_and);
 
-        assert(field->op == ss::auto_filter_node_op_t::op_and);
-        assert(field->children.size() == 2);
-        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
-        assert(item);
-
-        assert(item->field == 0);
-        assert(item->op == ss::auto_filter_op_t::greater_equal);
-        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
-        assert(item->value.numeric() == 10);
-
-        item = dynamic_cast<const ss::filter_item_t*>(field->children[1]);
-        assert(item->field == 0);
-        assert(item->op == ss::auto_filter_op_t::less_equal);
-        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
-        assert(item->value.numeric() == 20);
+        ss::filter_item_t expected1{0, ss::auto_filter_op_t::greater_equal, 10};
+        ss::filter_item_t expected2{0, ss::auto_filter_op_t::less_equal, 20};
+        assert(items.items.count(expected1) > 0);
+        assert(items.items.count(expected2) > 0);
     }
 
     {
@@ -196,30 +172,15 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter_range();
         assert(filter);
-
-        // R4C2:R18C5
-        ixion::abs_rc_range_t range_expected;
-        range_expected.first.row = 3;
-        range_expected.first.column = 1;
-        range_expected.last.row = 17;
-        range_expected.last.column = 4;
-        assert(filter->range == range_expected);
+        assert(filter->range == make_range("R4C2:R18C5"));
 
         // 1: filter-rule: top 5; field: 2
 
-        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
-        assert(filter->filter.root.children.size() == 1);
-        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
-        assert(field);
+        auto items = get_filter_items_for_field(filter->filter, 2);
+        assert(items.items.size() == 1u);
 
-        assert(field->children.size() == 1);
-        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
-        assert(item);
-
-        assert(item->field == 2);
-        assert(item->op == ss::auto_filter_op_t::top);
-        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
-        assert(item->value.numeric() == 5);
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::top, 5};
+        assert(items.items.count(expected) > 0);
     }
 
     {
@@ -228,30 +189,15 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter_range();
         assert(filter);
-
-        // R4C2:R18C5
-        ixion::abs_rc_range_t range_expected;
-        range_expected.first.row = 3;
-        range_expected.first.column = 1;
-        range_expected.last.row = 17;
-        range_expected.last.column = 4;
-        assert(filter->range == range_expected);
+        assert(filter->range == make_range("R4C2:R18C5"));
 
         // 1: filter-rule: bottom 3; field: 2
 
-        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
-        assert(filter->filter.root.children.size() == 1);
-        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
-        assert(field);
+        auto items = get_filter_items_for_field(filter->filter, 2);
+        assert(items.items.size() == 1u);
 
-        assert(field->children.size() == 1);
-        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
-        assert(item);
-
-        assert(item->field == 2);
-        assert(item->op == ss::auto_filter_op_t::bottom);
-        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
-        assert(item->value.numeric() == 3);
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::bottom, 3};
+        assert(items.items.count(expected) > 0);
     }
 
     {
@@ -260,30 +206,15 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter_range();
         assert(filter);
+        assert(filter->range == make_range("R4C2:R18C5"));
 
-        // R4C2:R18C5
-        ixion::abs_rc_range_t range_expected;
-        range_expected.first.row = 3;
-        range_expected.first.column = 1;
-        range_expected.last.row = 17;
-        range_expected.last.column = 4;
-        assert(filter->range == range_expected);
+        // 1: filter-rule: v > 150547; field: 2
 
-        // 1: filter-rule: v >= 150547; field: 2
+        auto items = get_filter_items_for_field(filter->filter, 2);
+        assert(items.items.size() == 1u);
 
-        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
-        assert(filter->filter.root.children.size() == 1);
-        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
-        assert(field);
-
-        assert(field->children.size() == 1);
-        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
-        assert(item);
-
-        assert(item->field == 2);
-        assert(item->op == ss::auto_filter_op_t::greater);
-        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
-        assert(item->value.numeric() == 150547);
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 150547};
+        assert(items.items.count(expected) > 0);
     }
 
     {
@@ -292,31 +223,26 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter_range();
         assert(filter);
+        assert(filter->range == make_range("R4C2:R18C5"));
 
-        // R4C2:R18C5
-        ixion::abs_rc_range_t range_expected;
-        range_expected.first.row = 3;
-        range_expected.first.column = 1;
-        range_expected.last.row = 17;
-        range_expected.last.column = 4;
-        assert(filter->range == range_expected);
+        // 1: filter-rule: v < 150547; field: 2
 
-        // 1: filter-rule: v >= 150547; field: 2
+        auto items = get_filter_items_for_field(filter->filter, 2);
+        assert(items.items.size() == 1u);
 
-        assert(filter->filter.root.op == ss::auto_filter_node_op_t::op_and);
-        assert(filter->filter.root.children.size() == 1);
-        auto* field = dynamic_cast<const ss::filter_node_t*>(filter->filter.root.children[0]);
-        assert(field);
-
-        assert(field->children.size() == 1);
-        auto* item = dynamic_cast<const ss::filter_item_t*>(field->children[0]);
-        assert(item);
-
-        assert(item->field == 2);
-        assert(item->op == ss::auto_filter_op_t::less);
-        assert(item->value.type() == ss::filter_value_t::value_type::numeric);
-        assert(item->value.numeric() == 150547);
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::less, 150547};
+        assert(items.items.count(expected) > 0);
     }
+}
+
+void test_xls_xml_auto_filter_text()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/table/autofilter-text.xml");
+    assert(doc);
+
+    // TODO: continue testing this document...
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

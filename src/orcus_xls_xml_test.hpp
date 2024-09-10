@@ -73,5 +73,6 @@ void test_xls_xml_skip_error_cells();
 void test_xls_xml_double_bom();
 
 void test_xls_xml_auto_filter_number();
+void test_xls_xml_auto_filter_text();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -52,7 +52,7 @@ const std::vector<fs::path> dirs = {
 std::unique_ptr<spreadsheet::document> load_doc_from_filepath(
     const std::string& path, bool recalc, ss::formula_error_policy_t error_policy)
 {
-    std::cout << path << std::endl;
+    std::cout << "loading document form '" << path << "'..." << std::endl;
 
     spreadsheet::range_size_t ss{1048576, 16384};
     std::unique_ptr<spreadsheet::document> doc = std::make_unique<spreadsheet::document>(ss);
@@ -2694,6 +2694,7 @@ int main()
     test_xls_xml_double_bom();
 
     test_xls_xml_auto_filter_number();
+    test_xls_xml_auto_filter_text();
 
     return EXIT_SUCCESS;
 }

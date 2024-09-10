@@ -42,6 +42,7 @@ public:
 
     bool operator==(const filter_value_t& other) const;
     bool operator!=(const filter_value_t& other) const;
+    bool operator<(const filter_value_t& other) const;
 
     filter_value_t& operator=(const filter_value_t& other);
 
@@ -78,6 +79,10 @@ struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
     filter_item_t& operator=(const filter_item_t& other);
 
     void swap(filter_item_t& other) noexcept;
+
+    bool operator==(const filter_item_t& other) const;
+    bool operator!=(const filter_item_t& other) const;
+    bool operator<(const filter_item_t& other) const;
 };
 
 /**
