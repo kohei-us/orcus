@@ -33,6 +33,16 @@ struct filter_items
 {
     std::set<ss::filter_item_t> items;
     ss::auto_filter_node_op_t connector;
+
+    bool contains(const ss::filter_item_t& expected) const
+    {
+        return items.count(expected) > 0;
+    }
+
+    std::size_t size() const
+    {
+        return items.size();
+    }
 };
 
 filter_items get_filter_items_for_field(
@@ -87,10 +97,10 @@ void test_xls_xml_auto_filter_number()
         // 1: filter-rule: v > 20; field: 2
 
         auto items = get_filter_items_for_field(filter->filter, 2);
-        assert(items.items.size() == 1u);
+        assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 20};
-        assert(items.items.count(expected) > 0);
+        assert(items.contains(expected));
     }
 
     {
@@ -104,10 +114,10 @@ void test_xls_xml_auto_filter_number()
         // 1: filter-rule: v >= 20; field: 2
 
         auto items = get_filter_items_for_field(filter->filter, 2);
-        assert(items.items.size() == 1u);
+        assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater_equal, 20};
-        assert(items.items.count(expected) > 0);
+        assert(items.contains(expected));
     }
 
     {
@@ -121,10 +131,10 @@ void test_xls_xml_auto_filter_number()
         // 1: filter-rule: v < 5; field: 0
 
         auto items = get_filter_items_for_field(filter->filter, 0);
-        assert(items.items.size() == 1u);
+        assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::less, 5};
-        assert(items.items.count(expected) > 0);
+        assert(items.contains(expected));
     }
 
     {
@@ -138,10 +148,10 @@ void test_xls_xml_auto_filter_number()
         // 1: filter-rule: v <= 10; field: 0
 
         auto items = get_filter_items_for_field(filter->filter, 0);
-        assert(items.items.size() == 1u);
+        assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::less_equal, 10};
-        assert(items.items.count(expected) > 0);
+        assert(items.contains(expected));
     }
 
     {
@@ -157,13 +167,13 @@ void test_xls_xml_auto_filter_number()
         // connector: AND
 
         auto items = get_filter_items_for_field(filter->filter, 0);
-        assert(items.items.size() == 2u);
+        assert(items.size() == 2u);
         assert(items.connector == ss::auto_filter_node_op_t::op_and);
 
         ss::filter_item_t expected1{0, ss::auto_filter_op_t::greater_equal, 10};
         ss::filter_item_t expected2{0, ss::auto_filter_op_t::less_equal, 20};
-        assert(items.items.count(expected1) > 0);
-        assert(items.items.count(expected2) > 0);
+        assert(items.contains(expected1));
+        assert(items.contains(expected2));
     }
 
     {
@@ -177,10 +187,10 @@ void test_xls_xml_auto_filter_number()
         // 1: filter-rule: top 5; field: 2
 
         auto items = get_filter_items_for_field(filter->filter, 2);
-        assert(items.items.size() == 1u);
+        assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::top, 5};
-        assert(items.items.count(expected) > 0);
+        assert(items.contains(expected));
     }
 
     {
@@ -194,10 +204,10 @@ void test_xls_xml_auto_filter_number()
         // 1: filter-rule: bottom 3; field: 2
 
         auto items = get_filter_items_for_field(filter->filter, 2);
-        assert(items.items.size() == 1u);
+        assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::bottom, 3};
-        assert(items.items.count(expected) > 0);
+        assert(items.contains(expected));
     }
 
     {
@@ -211,10 +221,10 @@ void test_xls_xml_auto_filter_number()
         // 1: filter-rule: v > 150547; field: 2
 
         auto items = get_filter_items_for_field(filter->filter, 2);
-        assert(items.items.size() == 1u);
+        assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 150547};
-        assert(items.items.count(expected) > 0);
+        assert(items.contains(expected));
     }
 
     {
@@ -228,10 +238,10 @@ void test_xls_xml_auto_filter_number()
         // 1: filter-rule: v < 150547; field: 2
 
         auto items = get_filter_items_for_field(filter->filter, 2);
-        assert(items.items.size() == 1u);
+        assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::less, 150547};
-        assert(items.items.count(expected) > 0);
+        assert(items.contains(expected));
     }
 }
 
@@ -242,7 +252,73 @@ void test_xls_xml_auto_filter_text()
     auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/table/autofilter-text.xml");
     assert(doc);
 
-    // TODO: continue testing this document...
+    {
+        auto* sh = doc->get_sheet("Begins With");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+        assert(filter->range == make_range("R3C2:R96C7"));
+
+        // 1: filter-rule: begin-with 'Be'; field: 1
+
+        auto items = get_filter_items_for_field(filter->filter, 1);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{1, ss::auto_filter_op_t::begin_with, "Be"};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Ends With");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+        assert(filter->range == make_range("R3C2:R96C7"));
+
+        // 1: filter-rule: end-with 'lic'; field: 1
+
+        auto items = get_filter_items_for_field(filter->filter, 1);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{1, ss::auto_filter_op_t::end_with, "lic"};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Contains");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+        assert(filter->range == make_range("R4C2:R18C5"));
+
+        // 1: filter-rule: contain 'ing'; field: 0
+
+        auto items = get_filter_items_for_field(filter->filter, 0);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{0, ss::auto_filter_op_t::contain, "ing"};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Does Not Contain");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+        assert(filter->range == make_range("R4C2:R18C5"));
+
+        // 1: filter-rule: not-contain 'an'; field: 0
+
+        auto items = get_filter_items_for_field(filter->filter, 0);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{0, ss::auto_filter_op_t::not_contain, "an"};
+        assert(items.contains(expected));
+    }
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
