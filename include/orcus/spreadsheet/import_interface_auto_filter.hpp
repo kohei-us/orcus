@@ -44,8 +44,10 @@ public:
      * @param op     Operator for the filter item.
      * @param value  String value associated with the operator for the filter
      *               item.
+     * @param regex  Whether or not the string value should be interpreted as a
+     *               regular expression.
      */
-    virtual void append_item(col_t field, auto_filter_op_t op, std::string_view value) = 0;
+    virtual void append_item(col_t field, auto_filter_op_t op, std::string_view value, bool regex) = 0;
 
     /**
      * Start a new node of filter rules as a filter item to this node. The new

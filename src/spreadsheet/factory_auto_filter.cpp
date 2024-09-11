@@ -21,10 +21,10 @@ import_auto_filter_node::import_auto_filter_node(string_pool& sp, auto_filter_no
 
 import_auto_filter_node::~import_auto_filter_node() = default;
 
-void import_auto_filter_node::append_item(col_t field, auto_filter_op_t op, std::string_view value)
+void import_auto_filter_node::append_item(col_t field, auto_filter_op_t op, std::string_view value, bool regex)
 {
     auto interned = m_pool.intern(value).first;
-    m_node.item_store.emplace_back(field, op, interned);
+    m_node.item_store.emplace_back(field, op, interned, regex);
     m_node.children.push_back(&m_node.item_store.back());
 }
 

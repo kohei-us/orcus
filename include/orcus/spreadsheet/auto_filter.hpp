@@ -68,11 +68,13 @@ struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
     col_t field = -1;
     auto_filter_op_t op = auto_filter_op_t::unspecified;
     filter_value_t value;
+    bool regex = false;
 
     filter_item_t();
     filter_item_t(col_t _field, auto_filter_op_t _op);
     filter_item_t(col_t _field, auto_filter_op_t _op, double v);
     filter_item_t(col_t _field, auto_filter_op_t _op, std::string_view v);
+    filter_item_t(col_t _field, auto_filter_op_t _op, std::string_view v, bool _regex);
     filter_item_t(const filter_item_t& other);
     ~filter_item_t() override;
 

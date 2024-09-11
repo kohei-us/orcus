@@ -78,6 +78,7 @@ void print_auto_filter(const auto_filter_t& filter, std::ostream& os)
                     os << indent << bullet << "type: filter-item\n";
                     os << indent << indent_unit_s << "field: " << item->field << "\n";
                     os << indent << indent_unit_s << "operator: " << item->op << "\n";
+                    os << indent << indent_unit_s << "regex: " << item->regex << "\n";
                     os << indent << indent_unit_s << "value:\n";
 
                     const filter_value_t& v = item->value;

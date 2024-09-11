@@ -408,7 +408,7 @@ void xls_xml_auto_filter_context::append_equal_item(ss::auto_filter_op_t op, std
     auto* node = m_filter_node_stack.back();
 
     auto res = m_value_parser.parse(op, value);
-    node->append_item(m_column.index, res.op, res.value);
+    node->append_item(m_column.index, res.op, res.value, res.regex);
 }
 
 } // namespace orcus

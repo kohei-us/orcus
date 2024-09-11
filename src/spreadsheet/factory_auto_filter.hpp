@@ -31,7 +31,7 @@ public:
     import_auto_filter_node(string_pool& sp, auto_filter_node_op_t op, commit_func_type func);
     ~import_auto_filter_node();
 
-    virtual void append_item(col_t field, auto_filter_op_t op, std::string_view value) override;
+    virtual void append_item(col_t field, auto_filter_op_t op, std::string_view value, bool regex) override;
     virtual void append_item(col_t field, auto_filter_op_t op, double value) override;
     virtual import_auto_filter_node* start_node(auto_filter_node_op_t op) override;
     virtual void commit() override;

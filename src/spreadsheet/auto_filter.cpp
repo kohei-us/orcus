@@ -91,6 +91,8 @@ filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op, double v) :
     field(_field), op(_op), value(v) {}
 filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op, std::string_view v) :
     field(_field), op(_op), value(v) {}
+filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op, std::string_view v, bool _regex) :
+    field(_field), op(_op), value(v), regex(_regex) {}
 filter_item_t::filter_item_t(const filter_item_t& other) = default;
 filter_item_t::~filter_item_t() = default;
 
@@ -106,6 +108,7 @@ void filter_item_t::swap(filter_item_t& other) noexcept
 {
     std::swap(field, other.field);
     std::swap(op, other.op);
+    std::swap(regex, other.regex);
     value.swap(other.value);
 }
 
@@ -115,6 +118,9 @@ bool filter_item_t::operator==(const filter_item_t& other) const
         return false;
 
     if (op != other.op)
+        return false;
+
+    if (regex != other.regex)
         return false;
 
     return value == other.value;
@@ -134,6 +140,9 @@ bool filter_item_t::operator<(const filter_item_t& other) const
 
     if (op != other.op)
         return static_cast<utype>(op) < static_cast<utype>(other.op);
+
+    if (regex != other.regex)
+        return regex < other.regex;
 
     return value < other.value;
 }

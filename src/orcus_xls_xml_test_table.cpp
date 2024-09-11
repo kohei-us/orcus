@@ -321,4 +321,56 @@ void test_xls_xml_auto_filter_text()
     }
 }
 
+void test_xls_xml_auto_filter_wildcard()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/table/autofilter-wildcard.xml");
+    assert(doc);
+
+    {
+        auto* sh = doc->get_sheet("Wildcard-1");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+        assert(filter->range == make_range("R3C2:R23C2"));
+
+        // 1: filter-rule: equal 'W*nd'; field: 0
+        // 2: filter-rule: equal 'Q*r'; field: 0
+        // connector: OR
+
+        auto items = get_filter_items_for_field(filter->filter, 0);
+        assert(items.size() == 2u);
+        assert(items.connector == ss::auto_filter_node_op_t::op_or);
+
+        ss::filter_item_t expected1{0, ss::auto_filter_op_t::equal, "W.*nd", true};
+        ss::filter_item_t expected2{0, ss::auto_filter_op_t::equal, "Q.*r", true};
+        assert(items.contains(expected1));
+        assert(items.contains(expected2));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Wildcard-2");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+        assert(filter->range == make_range("R4C2:R24C2"));
+
+        // 1: filter-rule: equal 'Ca????d'; field: 0
+        // 2: filter-rule: equal 'A????'; field: 0
+        // connector: OR
+
+        auto items = get_filter_items_for_field(filter->filter, 0);
+        assert(items.size() == 2u);
+        assert(items.connector == ss::auto_filter_node_op_t::op_or);
+
+        ss::filter_item_t expected1{0, ss::auto_filter_op_t::equal, "Ca....d", true};
+        ss::filter_item_t expected2{0, ss::auto_filter_op_t::equal, "A....", true};
+        assert(items.contains(expected1));
+        assert(items.contains(expected2));
+    }
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
