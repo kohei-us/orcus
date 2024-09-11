@@ -451,4 +451,47 @@ void test_xls_xml_auto_filter_asterisk()
     }
 }
 
+void test_xls_xml_auto_filter_question()
+{
+    // NB: Similar to the asterisk test case, Excel escapes a literal '?' with '~'.
+    ORCUS_TEST_FUNC_SCOPE;
+
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/table/autofilter-question.xml");
+    assert(doc);
+
+    {
+        auto* sh = doc->get_sheet("Ends With");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+        assert(filter->range == make_range("R3C2:R23C2"));
+
+        // 1: filter-rule: equal '*~?'; field: 0
+
+        auto items = get_filter_items_for_field(filter->filter, 0);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{0, ss::auto_filter_op_t::end_with, "?"};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Does Not Contain");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter_range();
+        assert(filter);
+        assert(filter->range == make_range("R3C2:R23C2"));
+
+        // 1: filter-rule: not-equal '*~?*'; field: 0
+
+        auto items = get_filter_items_for_field(filter->filter, 0);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{0, ss::auto_filter_op_t::not_contain, "?"};
+        assert(items.contains(expected));
+    }
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
