@@ -33,11 +33,11 @@ public:
     xlsx_autofilter_context(
         session_context& session_cxt, const tokens& tokens,
         spreadsheet::iface::import_reference_resolver& resolver);
-    virtual ~xlsx_autofilter_context();
+    virtual ~xlsx_autofilter_context() override;
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
-    virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(std::string_view str, bool transient);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
+    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
+    virtual void characters(std::string_view str, bool transient) override;
 
     void push_to_model(spreadsheet::iface::old::import_auto_filter& af) const;
 
