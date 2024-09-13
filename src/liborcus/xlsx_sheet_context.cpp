@@ -134,15 +134,19 @@ xlsx_sheet_context::xlsx_sheet_context(
     init_ooxml_context(*this);
 }
 
-xlsx_sheet_context::~xlsx_sheet_context()
-{
-}
+xlsx_sheet_context::~xlsx_sheet_context() = default;
 
 xml_context_base* xlsx_sheet_context::create_child_context(xmlns_id_t ns, xml_token_t name)
 {
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
     {
-        m_cxt_autofilter.reset();
+        auto& sh = m_sheet;
+        xlsx_autofilter_context::iface_factory_type func = [&sh](const ss::range_t& range)
+        {
+            return sh.start_auto_filter(range);
+        };
+
+        m_cxt_autofilter.reset(std::move(func));
         return &m_cxt_autofilter;
     }
     else if (ns == NS_ooxml_xlsx && name == XML_conditionalFormatting)
@@ -151,22 +155,6 @@ xml_context_base* xlsx_sheet_context::create_child_context(xmlns_id_t ns, xml_to
         return &m_cxt_cond_format;
     }
     return nullptr;
-}
-
-void xlsx_sheet_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child)
-{
-    if (!child)
-        return;
-
-    if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
-    {
-        auto* af = m_sheet.get_auto_filter();
-        if (!af)
-            return;
-
-        const xlsx_autofilter_context& cxt = static_cast<const xlsx_autofilter_context&>(*child);
-        cxt.push_to_model(*af);
-    }
 }
 
 void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)

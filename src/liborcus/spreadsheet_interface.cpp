@@ -91,7 +91,7 @@ old::import_auto_filter* import_table::get_auto_filter()
     return nullptr;
 }
 
-import_auto_filter* import_table::start_auto_filter()
+import_auto_filter* import_table::start_auto_filter(const range_t& /*range*/)
 {
     return nullptr;
 }

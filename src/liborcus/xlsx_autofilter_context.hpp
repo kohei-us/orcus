@@ -9,17 +9,22 @@
 #define ORCUS_XLSX_AUTOFILTER_CONTEXT_HPP
 
 #include "xml_context_base.hpp"
-#include "orcus/string_pool.hpp"
-#include "orcus/spreadsheet/types.hpp"
+#include "xls_filter_utils.hpp"
+#include <orcus/string_pool.hpp>
+#include <orcus/spreadsheet/types.hpp>
 
 #include <vector>
 #include <map>
+#include <functional>
 
 namespace orcus {
 
 namespace spreadsheet { namespace iface {
 
 namespace old { class import_auto_filter; }
+
+class import_auto_filter;
+class import_auto_filter_node;
 class import_reference_resolver;
 
 }}
@@ -30,6 +35,8 @@ public:
     typedef std::vector<std::string_view> match_values_type;
     typedef std::map<spreadsheet::col_t, match_values_type> column_filters_type;
 
+    using iface_factory_type = std::function<spreadsheet::iface::import_auto_filter*(const spreadsheet::range_t&)>;
+
     xlsx_autofilter_context(
         session_context& session_cxt, const tokens& tokens,
         spreadsheet::iface::import_reference_resolver& resolver);
@@ -37,21 +44,30 @@ public:
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
-    virtual void characters(std::string_view str, bool transient) override;
 
     void push_to_model(spreadsheet::iface::old::import_auto_filter& af) const;
 
-    void reset();
+    void reset(iface_factory_type factory);
+
+private:
+    void start_auto_filter(const xml_token_attrs_t& attrs);
+    void end_auto_filter();
+    void start_custom_filters(const xml_token_attrs_t& attrs);
+    void end_custom_filters();
+    void start_custom_filter(const xml_token_attrs_t& attrs);
+    void end_custom_filter();
+    void start_filter_column(const xml_token_attrs_t& attrs);
+    void end_filter_column();
 
 private:
     spreadsheet::iface::import_reference_resolver& m_resolver;
-
-    string_pool m_pool;
-
-    std::string_view m_ref_range;
+    spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
     spreadsheet::col_t m_cur_col;
-    match_values_type m_cur_match_values;
-    column_filters_type m_column_filters;
+
+    iface_factory_type m_factory;
+
+    std::vector<spreadsheet::iface::import_auto_filter_node*> m_node_stack;
+    detail::xls_filter_value_parser m_value_parser;
 };
 
 }

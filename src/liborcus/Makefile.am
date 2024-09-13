@@ -216,6 +216,7 @@ xlsx_sheet_context_test_SOURCES = \
 	xlsx_sheet_context.cpp \
 	xlsx_sheet_context_test.cpp \
 	xlsx_types.cpp \
+	xls_filter_utils.cpp \
 	xml_context_base.cpp \
 	xml_context_global.cpp \
 	xml_element_types.cpp \

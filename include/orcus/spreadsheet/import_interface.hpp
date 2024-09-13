@@ -568,7 +568,7 @@ public:
      */
     virtual old::import_auto_filter* get_auto_filter();
 
-    virtual import_auto_filter* start_auto_filter();
+    virtual import_auto_filter* start_auto_filter(const range_t& range);
 
     /**
      * Set an integral identifier unique to the table.

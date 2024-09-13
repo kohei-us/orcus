@@ -29,11 +29,10 @@ public:
         spreadsheet::iface::import_reference_resolver& resolver);
     virtual ~xlsx_table_context();
 
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
+    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
-    virtual bool end_element(xmlns_id_t ns, xml_token_t name);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
+    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
 
 private:
     void start_element_table(const xml_token_attrs_t& attrs);

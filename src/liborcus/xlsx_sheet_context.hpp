@@ -67,12 +67,11 @@ public:
         spreadsheet::iface::import_sheet& sheet);
     virtual ~xlsx_sheet_context();
 
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
+    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name) override;
 
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
-    virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(std::string_view str, bool transient);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
+    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
+    virtual void characters(std::string_view str, bool transient) override;
 
     void pop_rel_extras(opc_rel_extras_t& other);
 
