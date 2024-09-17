@@ -8,6 +8,7 @@
 #include "xls_xml_auto_filter_context.hpp"
 #include "xls_xml_namespace_types.hpp"
 #include "xls_xml_token_constants.hpp"
+#include "impl_utils.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_auto_filter.hpp>
@@ -288,6 +289,7 @@ void xls_xml_auto_filter_context::end_column()
             assert(op.has_value());
             assert(m_filter_node_stack.size() == 1u);
             auto* node = m_filter_node_stack.back()->start_node(ss::auto_filter_node_op_t::op_and);
+            ENSURE_INTERFACE(node, import_auto_filter_node);
             node->append_item(m_column.index, *op, m_column.value);
             node->commit();
             break;
@@ -389,6 +391,7 @@ void xls_xml_auto_filter_context::start_filter_node(ss::auto_filter_node_op_t op
 
     assert(!m_filter_node_stack.empty());
     auto* node = m_filter_node_stack.back()->start_node(m_column.node_op);
+    ENSURE_INTERFACE(node, import_auto_filter_node);
     m_filter_node_stack.push_back(node);
 }
 

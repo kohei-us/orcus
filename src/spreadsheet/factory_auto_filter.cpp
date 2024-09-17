@@ -14,10 +14,30 @@
 
 namespace orcus { namespace spreadsheet {
 
-import_auto_filter_node::import_auto_filter_node(string_pool& sp) : m_pool(sp) {}
+import_auto_filter_multi_values::import_auto_filter_multi_values(string_pool& sp) : m_pool(sp) {}
+import_auto_filter_multi_values::~import_auto_filter_multi_values() = default;
+
+void import_auto_filter_multi_values::add_value(std::string_view value)
+{
+    m_set.values.insert(value);
+}
+
+void import_auto_filter_multi_values::commit()
+{
+    m_func_commit(std::move(m_set));
+}
+
+void import_auto_filter_multi_values::reset(col_t field, commit_func_type func)
+{
+    m_set = filter_item_set_t{field};
+    m_func_commit = std::move(func);
+}
+
+import_auto_filter_node::import_auto_filter_node(string_pool& sp) :
+    m_pool(sp), m_import_multi_values(sp) {}
 
 import_auto_filter_node::import_auto_filter_node(string_pool& sp, auto_filter_node_op_t op, commit_func_type func) :
-    m_pool(sp), m_node(op), m_func_commit(std::move(func)) {}
+    m_pool(sp), m_node(op), m_func_commit(std::move(func)), m_import_multi_values(sp) {}
 
 import_auto_filter_node::~import_auto_filter_node() = default;
 
@@ -34,7 +54,7 @@ void import_auto_filter_node::append_item(col_t field, auto_filter_op_t op, doub
     m_node.children.push_back(&m_node.item_store.back());
 }
 
-import_auto_filter_node* import_auto_filter_node::start_node(auto_filter_node_op_t op)
+iface::import_auto_filter_node* import_auto_filter_node::start_node(auto_filter_node_op_t op)
 {
     commit_func_type func = [this](filter_node_t&& node)
     {
@@ -44,6 +64,18 @@ import_auto_filter_node* import_auto_filter_node::start_node(auto_filter_node_op
 
     mp_child = std::make_unique<import_auto_filter_node>(m_pool, op, std::move(func));
     return mp_child.get();
+}
+
+iface::import_auto_filter_multi_values* import_auto_filter_node::start_multi_values(col_t field)
+{
+    import_auto_filter_multi_values::commit_func_type func = [this](filter_item_set_t&& item_set)
+    {
+        m_node.item_set_store.push_back(std::move(item_set));
+        m_node.children.push_back(&m_node.item_set_store.back());
+    };
+
+    m_import_multi_values.reset(field, std::move(func));
+    return &m_import_multi_values;
 }
 
 void import_auto_filter_node::commit()

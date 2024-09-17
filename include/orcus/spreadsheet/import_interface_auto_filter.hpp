@@ -17,6 +17,32 @@
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
+/**
+ * Interface for importing a set of multiple filter values.
+ */
+class ORCUS_DLLPUBLIC import_auto_filter_multi_values
+{
+public:
+    virtual ~import_auto_filter_multi_values();
+
+    /**
+     * Add a single filter value to the current buffer.
+     *
+     * @param value Filter value to add to the current buffer.
+     */
+    virtual void add_value(std::string_view value) = 0;
+
+    /**
+     * Commit the values stored in the current buffer to the destination store.
+                                                                                */
+    virtual void commit() = 0;
+};
+
+/**
+ * Interface for importing a single node in a larger auto-filter structure.
+ *
+ * Note that one auto-filter structure may consist of nested filter nodes.
+ */
 class ORCUS_DLLPUBLIC import_auto_filter_node
 {
 public:
@@ -64,12 +90,28 @@ public:
     virtual import_auto_filter_node* start_node(auto_filter_node_op_t op) = 0;
 
     /**
+     * Start importing a set of multiple filter values.  Note that a set of
+     * multiple filter values and individual filter items cannot co-exist in the
+     * same filter node.
+     *
+     * @return Interface for importing a set of multiple filter values for the
+     *         current filter node.
+     *
+     * @note Note that the import_auto_filter_node implementer
+     *       <i>must</i> return a non-null pointer.
+     */
+    virtual import_auto_filter_multi_values* start_multi_values(col_t field) = 0;
+
+    /**
      * Commit the filter node data stored in the buffer to the destination
      * store.
      */
     virtual void commit() = 0;
 };
 
+/**
+ * Interface for importing auto filters.
+ */
 class ORCUS_DLLPUBLIC import_auto_filter
 {
 public:

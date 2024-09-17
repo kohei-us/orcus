@@ -87,6 +87,24 @@ struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
     bool operator<(const filter_item_t& other) const;
 };
 
+struct ORCUS_SPM_DLLPUBLIC filter_item_set_t : filterable
+{
+    col_t field = -1;
+    std::unordered_set<std::string_view> values;
+
+    filter_item_set_t();
+    filter_item_set_t(col_t _field);
+    filter_item_set_t(const filter_item_set_t& other);
+    filter_item_set_t(filter_item_set_t&& other);
+    ~filter_item_set_t() override;
+
+    filter_item_set_t& operator=(const filter_item_set_t& other);
+    filter_item_set_t& operator=(filter_item_set_t&& other);
+
+    void reset();
+    void swap(filter_item_set_t& other) noexcept;
+};
+
 /**
  * Represents a single node in a boolean tree of filtering criteria connected
  * with boolean operators.
@@ -96,11 +114,13 @@ struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
     using children_type = std::deque<filterable*>;
     using node_store_type = std::deque<filter_node_t>;
     using item_store_type = std::deque<filter_item_t>;
+    using item_set_store_type = std::deque<filter_item_set_t>;
 
     auto_filter_node_op_t op;
     children_type children;
     node_store_type node_store;
     item_store_type item_store;
+    item_set_store_type item_set_store;
 
     filter_node_t();
     filter_node_t(auto_filter_node_op_t _op);

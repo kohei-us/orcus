@@ -72,6 +72,8 @@ import_named_expression::~import_named_expression() {}
 
 import_data_table::~import_data_table() {}
 
+import_auto_filter_multi_values::~import_auto_filter_multi_values() = default;
+
 import_auto_filter_node::~import_auto_filter_node() = default;
 
 import_auto_filter::~import_auto_filter() = default;

@@ -21,6 +21,27 @@ namespace spreadsheet {
 
 class sheet;
 
+class import_auto_filter_multi_values : public orcus::spreadsheet::iface::import_auto_filter_multi_values
+{
+public:
+    using commit_func_type = std::function<void(filter_item_set_t&&)>;
+
+    import_auto_filter_multi_values(string_pool& sp);
+    import_auto_filter_multi_values(const import_auto_filter_multi_values&) = delete;
+    ~import_auto_filter_multi_values();
+
+    virtual void add_value(std::string_view value) override;
+    virtual void commit() override;
+
+    void reset(col_t field, commit_func_type func);
+
+private:
+    string_pool& m_pool;
+
+    filter_item_set_t m_set;
+    commit_func_type m_func_commit;
+};
+
 class import_auto_filter_node : public orcus::spreadsheet::iface::import_auto_filter_node
 {
 public:
@@ -33,7 +54,8 @@ public:
 
     virtual void append_item(col_t field, auto_filter_op_t op, std::string_view value, bool regex) override;
     virtual void append_item(col_t field, auto_filter_op_t op, double value) override;
-    virtual import_auto_filter_node* start_node(auto_filter_node_op_t op) override;
+    virtual iface::import_auto_filter_node* start_node(auto_filter_node_op_t op) override;
+    virtual iface::import_auto_filter_multi_values* start_multi_values(col_t field) override;
     virtual void commit() override;
 
     void reset(auto_filter_node_op_t op, commit_func_type func);
@@ -44,6 +66,7 @@ private:
     filter_node_t m_node;
     commit_func_type m_func_commit;
 
+    import_auto_filter_multi_values m_import_multi_values;
     std::unique_ptr<import_auto_filter_node> mp_child;
 };
 

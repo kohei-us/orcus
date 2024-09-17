@@ -9,6 +9,7 @@
 #include "xml_context_global.hpp"
 #include "ooxml_namespace_types.hpp"
 #include "ooxml_token_constants.hpp"
+#include "impl_utils.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_auto_filter.hpp>
@@ -225,6 +226,7 @@ void xlsx_autofilter_context::start_custom_filters(const xml_token_attrs_t& attr
     }
 
     auto* node = m_node_stack.back()->start_node(node_op);
+    ENSURE_INTERFACE(node, import_auto_filter_node);
     m_node_stack.push_back(node);
 }
 
