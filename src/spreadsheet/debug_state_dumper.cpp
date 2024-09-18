@@ -97,6 +97,15 @@ void print_auto_filter(const auto_filter_t& filter, std::ostream& os)
                             break;
                     }
                 }
+                else if (auto* item_set = dynamic_cast<const filter_item_set_t*>(child); item_set)
+                {
+                    os << indent << bullet << "type: filter-item-set\n";
+                    os << indent << indent_unit_s << "field: " << item_set->field << "\n";
+                    os << indent << indent_unit_s << "values:\n";
+
+                    for (const auto& value : item_set->values)
+                        os << indent << indent_unit_s << indent_unit_s << bullet << value << "\n";
+                }
             }
         }
     };

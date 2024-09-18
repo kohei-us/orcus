@@ -19,6 +19,7 @@ import_auto_filter_multi_values::~import_auto_filter_multi_values() = default;
 
 void import_auto_filter_multi_values::add_value(std::string_view value)
 {
+    value = m_pool.intern(value).first;
     m_set.values.insert(value);
 }
 

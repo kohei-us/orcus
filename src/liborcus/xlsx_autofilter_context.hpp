@@ -25,6 +25,7 @@ namespace old { class import_auto_filter; }
 
 class import_auto_filter;
 class import_auto_filter_node;
+class import_auto_filter_multi_values;
 class import_reference_resolver;
 
 }}
@@ -56,12 +57,16 @@ private:
     void end_custom_filters();
     void start_custom_filter(const xml_token_attrs_t& attrs);
     void end_custom_filter();
+    void start_filters(const xml_token_attrs_t& attrs);
+    void end_filters();
+    void start_filter(const xml_token_attrs_t& attrs);
     void start_filter_column(const xml_token_attrs_t& attrs);
     void end_filter_column();
 
 private:
     spreadsheet::iface::import_reference_resolver& m_resolver;
     spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
+    spreadsheet::iface::import_auto_filter_multi_values* mp_multi_values = nullptr;
     spreadsheet::col_t m_cur_col;
 
     iface_factory_type m_factory;

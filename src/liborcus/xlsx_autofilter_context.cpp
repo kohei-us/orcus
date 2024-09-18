@@ -103,11 +103,11 @@ void xlsx_autofilter_context::start_element(xmlns_id_t ns, xml_token_t name, con
             break;
         }
         case XML_filters:
-            // ignore this
+            start_filters(attrs);
             break;
         case XML_filter:
         {
-            warn("TODO: handle this");
+            start_filter(attrs);
             break;
         }
         default:
@@ -141,6 +141,11 @@ bool xlsx_autofilter_context::end_element(xmlns_id_t ns, xml_token_t name)
                 end_custom_filter();
                 break;
             }
+            case XML_filters:
+            {
+                end_filters();
+                break;
+            }
             default:
                 ;
         }
@@ -152,6 +157,7 @@ void xlsx_autofilter_context::reset(iface_factory_type factory)
 {
     m_factory = std::move(factory);
     mp_auto_filter = nullptr;
+    mp_multi_values = nullptr;
 
     m_node_stack.clear();
     m_cur_col = -1;
@@ -314,6 +320,42 @@ void xlsx_autofilter_context::end_custom_filter()
 
     if (m_node_stack.empty())
         return;
+}
+
+void xlsx_autofilter_context::start_filters(const xml_token_attrs_t& /*attrs*/)
+{
+    if (m_node_stack.empty())
+        return;
+
+    mp_multi_values = m_node_stack.back()->start_multi_values(m_cur_col);
+    ENSURE_INTERFACE(mp_multi_values, import_auto_filter_multi_values);
+}
+
+void xlsx_autofilter_context::end_filters()
+{
+    if (!mp_multi_values)
+        return;
+
+    mp_multi_values->commit();
+}
+
+void xlsx_autofilter_context::start_filter(const xml_token_attrs_t& attrs)
+{
+    if (!mp_multi_values)
+        return;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_val:
+                mp_multi_values->add_value(attr.value);
+                break;
+        }
+    }
 }
 
 void xlsx_autofilter_context::start_filter_column(const xml_token_attrs_t& attrs)
