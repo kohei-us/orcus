@@ -90,13 +90,13 @@ void test_xls_xml_auto_filter_number()
         auto* sh = doc->get_sheet("Greater Than");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: v > 20; field: 2
 
-        auto items = get_filter_items_for_field(filter->filter, 2);
+        auto items = get_filter_items_for_field(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 20};
@@ -107,13 +107,13 @@ void test_xls_xml_auto_filter_number()
         auto* sh = doc->get_sheet("Greater Than Equal");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: v >= 20; field: 2
 
-        auto items = get_filter_items_for_field(filter->filter, 2);
+        auto items = get_filter_items_for_field(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater_equal, 20};
@@ -124,13 +124,13 @@ void test_xls_xml_auto_filter_number()
         auto* sh = doc->get_sheet("Less Than");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: v < 5; field: 0
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::less, 5};
@@ -141,13 +141,13 @@ void test_xls_xml_auto_filter_number()
         auto* sh = doc->get_sheet("Less Than Equal");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: v <= 10; field: 0
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::less_equal, 10};
@@ -158,7 +158,7 @@ void test_xls_xml_auto_filter_number()
         auto* sh = doc->get_sheet("Between");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C2:R96C7"));
 
@@ -166,7 +166,7 @@ void test_xls_xml_auto_filter_number()
         // 2: filter-rule: v <= 20; field: 0
         // connector: AND
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 2u);
         assert(items.connector == ss::auto_filter_node_op_t::op_and);
 
@@ -180,13 +180,13 @@ void test_xls_xml_auto_filter_number()
         auto* sh = doc->get_sheet("Top 10");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R4C2:R18C5"));
 
         // 1: filter-rule: top 5; field: 2
 
-        auto items = get_filter_items_for_field(filter->filter, 2);
+        auto items = get_filter_items_for_field(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::top, 5};
@@ -197,13 +197,13 @@ void test_xls_xml_auto_filter_number()
         auto* sh = doc->get_sheet("Bottom 10");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R4C2:R18C5"));
 
         // 1: filter-rule: bottom 3; field: 2
 
-        auto items = get_filter_items_for_field(filter->filter, 2);
+        auto items = get_filter_items_for_field(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::bottom, 3};
@@ -214,13 +214,13 @@ void test_xls_xml_auto_filter_number()
         auto* sh = doc->get_sheet("Above Average");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R4C2:R18C5"));
 
         // 1: filter-rule: v > 150547; field: 2
 
-        auto items = get_filter_items_for_field(filter->filter, 2);
+        auto items = get_filter_items_for_field(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 150547};
@@ -231,13 +231,13 @@ void test_xls_xml_auto_filter_number()
         auto* sh = doc->get_sheet("Below Average");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R4C2:R18C5"));
 
         // 1: filter-rule: v < 150547; field: 2
 
-        auto items = get_filter_items_for_field(filter->filter, 2);
+        auto items = get_filter_items_for_field(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::less, 150547};
@@ -256,13 +256,13 @@ void test_xls_xml_auto_filter_text()
         auto* sh = doc->get_sheet("Begins With");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: begin-with 'Be'; field: 1
 
-        auto items = get_filter_items_for_field(filter->filter, 1);
+        auto items = get_filter_items_for_field(*filter, 1);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{1, ss::auto_filter_op_t::begin_with, "Be"};
@@ -273,13 +273,13 @@ void test_xls_xml_auto_filter_text()
         auto* sh = doc->get_sheet("Ends With");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C2:R96C7"));
 
         // 1: filter-rule: end-with 'lic'; field: 1
 
-        auto items = get_filter_items_for_field(filter->filter, 1);
+        auto items = get_filter_items_for_field(*filter, 1);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{1, ss::auto_filter_op_t::end_with, "lic"};
@@ -290,13 +290,13 @@ void test_xls_xml_auto_filter_text()
         auto* sh = doc->get_sheet("Contains");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R4C2:R18C5"));
 
         // 1: filter-rule: contain 'ing'; field: 0
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::contain, "ing"};
@@ -307,13 +307,13 @@ void test_xls_xml_auto_filter_text()
         auto* sh = doc->get_sheet("Does Not Contain");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R4C2:R18C5"));
 
         // 1: filter-rule: not-contain 'an'; field: 0
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::not_contain, "an"};
@@ -332,7 +332,7 @@ void test_xls_xml_auto_filter_wildcard()
         auto* sh = doc->get_sheet("Wildcard-1");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C2:R23C2"));
 
@@ -340,7 +340,7 @@ void test_xls_xml_auto_filter_wildcard()
         // 2: filter-rule: equal 'Q*r'; field: 0
         // connector: OR
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 2u);
         assert(items.connector == ss::auto_filter_node_op_t::op_or);
 
@@ -354,7 +354,7 @@ void test_xls_xml_auto_filter_wildcard()
         auto* sh = doc->get_sheet("Wildcard-2");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R4C2:R24C2"));
 
@@ -362,7 +362,7 @@ void test_xls_xml_auto_filter_wildcard()
         // 2: filter-rule: equal 'A????'; field: 0
         // connector: OR
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 2u);
         assert(items.connector == ss::auto_filter_node_op_t::op_or);
 
@@ -386,13 +386,13 @@ void test_xls_xml_auto_filter_asterisk()
         auto* sh = doc->get_sheet("Ends With");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C3:R23C3"));
 
         // 1: filter-rule: equal '*~*'; field: 0
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::end_with, "*"};
@@ -403,13 +403,13 @@ void test_xls_xml_auto_filter_asterisk()
         auto* sh = doc->get_sheet("Begins With");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R2C2:R22C2"));
 
         // 1: filter-rule: equal '~**'; field: 0
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::begin_with, "*"};
@@ -420,13 +420,13 @@ void test_xls_xml_auto_filter_asterisk()
         auto* sh = doc->get_sheet("Contains");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R5C2:R25C2"));
 
         // 1: filter-rule: equal '*~**'; field: 0
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::contain, "*"};
@@ -437,13 +437,13 @@ void test_xls_xml_auto_filter_asterisk()
         auto* sh = doc->get_sheet("Does Not Contain");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R5C2:R25C2"));
 
         // 1: filter-rule: not-equal '*~**'; field: 0
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::not_contain, "*"};
@@ -463,13 +463,13 @@ void test_xls_xml_auto_filter_question()
         auto* sh = doc->get_sheet("Ends With");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C2:R23C2"));
 
         // 1: filter-rule: equal '*~?'; field: 0
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::end_with, "?"};
@@ -480,13 +480,13 @@ void test_xls_xml_auto_filter_question()
         auto* sh = doc->get_sheet("Does Not Contain");
         assert(sh);
 
-        auto* filter = sh->get_auto_filter_range();
+        auto* filter = sh->get_auto_filter();
         assert(filter);
         assert(filter->range == make_range("R3C2:R23C2"));
 
         // 1: filter-rule: not-equal '*~?*'; field: 0
 
-        auto items = get_filter_items_for_field(filter->filter, 0);
+        auto items = get_filter_items_for_field(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::not_contain, "?"};

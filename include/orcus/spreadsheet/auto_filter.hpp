@@ -142,6 +142,7 @@ struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
  */
 struct ORCUS_SPM_DLLPUBLIC auto_filter_t
 {
+    ixion::abs_rc_range_t range;
     filter_node_t root;
 
     auto_filter_t();
@@ -154,23 +155,6 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
 
     void reset();
     void swap(auto_filter_t& other);
-};
-
-struct ORCUS_SPM_DLLPUBLIC auto_filter_range_t
-{
-    ixion::abs_rc_range_t range;
-    auto_filter_t filter;
-
-    auto_filter_range_t();
-    auto_filter_range_t(const auto_filter_range_t& other);
-    auto_filter_range_t(auto_filter_range_t&& other);
-    ~auto_filter_range_t();
-
-    auto_filter_range_t& operator=(const auto_filter_range_t& other);
-    auto_filter_range_t& operator=(auto_filter_range_t&& other);
-
-    void reset();
-    void swap(auto_filter_range_t& other);
 };
 
 namespace old {

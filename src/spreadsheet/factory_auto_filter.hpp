@@ -82,7 +82,7 @@ public:
     virtual iface::import_auto_filter_node* start_node(auto_filter_node_op_t op) override;
     virtual void commit() override;
 
-    void reset(commit_func_type func);
+    void reset(commit_func_type func, const ixion::abs_range_t& range);
 
 private:
     string_pool& m_pool;

@@ -479,7 +479,7 @@ void sheet_debug_state_dumper::dump_row_heights(const fs::path& outdir) const
 
 void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
 {
-    if (!m_sheet.auto_filter_range)
+    if (!m_sheet.auto_filter)
         return;
 
     fs::path outpath = outdir / "auto-filter.yaml";
@@ -487,7 +487,7 @@ void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
     if (!of)
         return;
 
-    const auto& filter_range = *m_sheet.auto_filter_range;
+    const auto& filter = *m_sheet.auto_filter;
 
     auto resolver = ixion::formula_name_resolver::get(
         ixion::formula_name_resolver_t::excel_a1, nullptr);
@@ -497,14 +497,14 @@ void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
 
     ixion::abs_address_t origin;
     ixion::range_t name;
-    name.first.row = filter_range.range.first.row;
-    name.first.column = filter_range.range.first.column;
-    name.last.row = filter_range.range.last.row;
-    name.last.column = filter_range.range.last.column;
+    name.first.row = filter.range.first.row;
+    name.first.column = filter.range.first.column;
+    name.last.row = filter.range.last.row;
+    name.last.column = filter.range.last.column;
     name.set_absolute(false);
 
     of << "range: " << resolver->get_name(name, origin, false) << "\n";
-    print_auto_filter(filter_range.filter, of);
+    print_auto_filter(filter, of);
 }
 
 void sheet_debug_state_dumper::dump_named_expressions(const fs::path& outdir) const
