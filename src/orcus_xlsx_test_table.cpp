@@ -9,6 +9,22 @@
 
 namespace ss = orcus::spreadsheet;
 
+namespace {
+
+ixion::abs_rc_range_t to_range(std::string_view address_a1)
+{
+    static auto resolver = ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, nullptr);
+
+    ixion::abs_address_t origin; // A1
+    ixion::formula_name_t name = resolver->resolve(address_a1, origin);
+    assert(name.type == ixion::formula_name_t::range_reference);
+    auto range = std::get<ixion::range_t>(name.value).to_abs(origin);
+
+    return ixion::abs_rc_range_t(range);
+}
+
+} // anonymous namespace
+
 void test_xlsx_table_autofilter()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -43,6 +59,23 @@ void test_xlsx_table_autofilter()
     afc = &it->second;
     assert(afc->match_values.count("1") > 0);
 #endif
+}
+
+void test_xlsx_table_autofilter_basic_number()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    std::string_view path(SRCDIR"/test/xlsx/table/autofilter-basic-number.xlsx");
+    std::unique_ptr<ss::document> doc = load_doc(path);
+
+    const ss::sheet* sh = doc->get_sheet("Greater Than");
+    assert(sh);
+
+    const ss::auto_filter_t* af = sh->get_auto_filter();
+    assert(af);
+    assert(af->range == to_range("B3:G96"));
+
+    // TODO : continue on ...
 }
 
 void test_xlsx_table()
