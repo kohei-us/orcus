@@ -602,7 +602,9 @@ EXTRA_PROGRAMS += \
 # orcus-xlsx-test
 
 orcus_xlsx_test_SOURCES = \
+	orcus_xlsx_test.hpp \
 	orcus_xlsx_test.cpp \
+	orcus_xlsx_test_table.cpp \
 	orcus_test_global.cpp
 
 orcus_xlsx_test_LDFLAGS = \

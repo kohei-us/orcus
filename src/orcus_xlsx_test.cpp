@@ -5,20 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus_test_global.hpp"
-#include <orcus/orcus_xlsx.hpp>
-#include <orcus/format_detection.hpp>
-#include <orcus/stream.hpp>
-#include <orcus/config.hpp>
-#include <orcus/spreadsheet/factory.hpp>
-#include <orcus/spreadsheet/document.hpp>
-#include <orcus/spreadsheet/view.hpp>
-#include <orcus/spreadsheet/sheet.hpp>
-#include <orcus/spreadsheet/table.hpp>
-#include <orcus/spreadsheet/pivot.hpp>
-#include <orcus/spreadsheet/styles.hpp>
-#include <orcus/spreadsheet/shared_strings.hpp>
-#include <orcus/parser_global.hpp>
+#include "orcus_xlsx_test.hpp"
 
 #include <cstdlib>
 #include <cassert>
@@ -29,20 +16,14 @@
 #include <vector>
 #include <iostream>
 
-#include <ixion/model_context.hpp>
-#include <ixion/address.hpp>
-#include <ixion/formula_name_resolver.hpp>
-
 #include "filesystem_env.hpp"
 
 using namespace orcus;
 namespace ss = orcus::spreadsheet;
 
-namespace {
-
 config test_config(format_t::xlsx);
 
-std::unique_ptr<ss::document> load_doc(std::string_view path, bool recalc = true)
+std::unique_ptr<ss::document> load_doc(std::string_view path, bool recalc)
 {
     ss::range_size_t sheet_size{1048576, 16384};
     std::unique_ptr<ss::document> doc = std::make_unique<ss::document>(sheet_size);
@@ -171,115 +152,6 @@ void test_xlsx_import()
     {
         run_check(dir, false);
     }
-}
-
-void test_xlsx_table_autofilter()
-{
-    ORCUS_TEST_FUNC_SCOPE;
-
-    std::string path(SRCDIR"/test/xlsx/table/autofilter.xlsx");
-    spreadsheet::range_size_t ss{1048576, 16384};
-    ss::document doc{ss};
-    ss::import_factory factory(doc);
-    orcus_xlsx app(&factory);
-    app.read_file(path.c_str());
-
-    const ss::sheet* sh = doc.get_sheet(0);
-    assert(sh);
-#if 0 // FIXME
-    const ss::old::auto_filter_t* af = sh->get_auto_filter_data();
-    assert(af);
-
-    // Autofilter is over B2:C11.
-    assert(af->range.first.column == 1);
-    assert(af->range.first.row == 1);
-    assert(af->range.last.column == 2);
-    assert(af->range.last.row == 10);
-
-    // Check the match values of the 1st column filter criterion.
-    auto it = af->columns.find(0);
-    assert(it != af->columns.end());
-
-    const ss::old::auto_filter_column_t* afc = &it->second;
-    assert(afc->match_values.count("A") > 0);
-    assert(afc->match_values.count("C") > 0);
-
-    // And the 2nd column.
-    it = af->columns.find(1);
-    assert(it != af->columns.end());
-    afc = &it->second;
-    assert(afc->match_values.count("1") > 0);
-#endif
-}
-
-void test_xlsx_table()
-{
-    ORCUS_TEST_FUNC_SCOPE;
-
-    std::string path(SRCDIR"/test/xlsx/table/table-1.xlsx");
-    ss::document doc{{1048576, 16384}};
-    ss::import_factory factory(doc);
-    orcus_xlsx app(&factory);
-    app.read_file(path.c_str());
-
-    std::string_view name("Table1");
-    const ss::table_t* p = doc.get_table(name);
-    assert(p);
-    assert(p->identifier == 1);
-    assert(p->name == name);
-    assert(p->display_name == name);
-    assert(p->totals_row_count == 1);
-
-    // Table range is C3:D9.
-    ixion::abs_range_t range;
-    range.first.column = 2;
-    range.first.row = 2;
-    range.first.sheet = 0;
-    range.last.column = 3;
-    range.last.row = 8;
-    range.last.sheet = 0;
-    assert(p->range == range);
-
-    // Table1 has 2 table columns.
-    assert(p->columns.size() == 2);
-
-    const ss::table_column_t* tcol = &p->columns[0];
-    assert(tcol);
-    assert(tcol->identifier == 1);
-    assert(tcol->name == "Category");
-    assert(tcol->totals_row_label == "Total");
-    assert(tcol->totals_row_function == ss::totals_row_function_t::none);
-
-    tcol = &p->columns[1];
-    assert(tcol);
-    assert(tcol->identifier == 2);
-    assert(tcol->name == "Value");
-    assert(tcol->totals_row_label.empty());
-    assert(tcol->totals_row_function == ss::totals_row_function_t::sum);
-
-#if 0 // FIXME
-    const auto& filter = p->filter_old;
-
-    // Auto filter range is C3:D8.
-    range.last.row = 7;
-    assert(filter.range == range);
-
-    assert(filter.columns.size() == 1);
-    const ss::old::auto_filter_column_t& afc = filter.columns.begin()->second;
-    assert(afc.match_values.size() == 4);
-    assert(afc.match_values.count("A") > 0);
-    assert(afc.match_values.count("C") > 0);
-    assert(afc.match_values.count("D") > 0);
-    assert(afc.match_values.count("E") > 0);
-#endif
-
-    // Check table style.
-    const ss::table_style_t& style = p->style;
-    assert(style.name == "TableStyleLight9");
-    assert(style.show_first_column == false);
-    assert(style.show_last_column == false);
-    assert(style.show_row_stripes == true);
-    assert(style.show_column_stripes == false);
 }
 
 void test_xlsx_merged_cells()
@@ -2608,8 +2480,6 @@ void test_xlsx_doc_structure_unordered_sheet_positions()
     }
 }
 
-}
-
 int main()
 {
     test_config.debug = false;
@@ -2618,8 +2488,6 @@ int main()
     test_xlsx_detection();
     test_xlsx_create_filter();
     test_xlsx_import();
-    test_xlsx_table_autofilter();
-    test_xlsx_table();
     test_xlsx_merged_cells();
     test_xlsx_date_time();
     test_xlsx_background_fill();
@@ -2642,6 +2510,10 @@ int main()
     test_xlsx_pivot_group_by_numbers();
     test_xlsx_pivot_group_by_dates();
     test_xlsx_pivot_error_values();
+
+    // table / auto filter
+    test_xlsx_table_autofilter();
+    test_xlsx_table();
 
     // view import
     test_xlsx_view_cursor_per_sheet();
