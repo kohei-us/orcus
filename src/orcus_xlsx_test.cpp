@@ -42,7 +42,7 @@ namespace {
 
 config test_config(format_t::xlsx);
 
-std::unique_ptr<ss::document> load_doc(const std::string_view& path, bool recalc = true)
+std::unique_ptr<ss::document> load_doc(std::string_view path, bool recalc = true)
 {
     ss::range_size_t sheet_size{1048576, 16384};
     std::unique_ptr<ss::document> doc = std::make_unique<ss::document>(sheet_size);
@@ -62,7 +62,7 @@ std::unique_ptr<ss::document> load_doc(const std::string_view& path, bool recalc
  * sheet name and range name.
  */
 const ss::pivot_cache* get_pivot_cache(
-    const ss::pivot_collection& pc, const std::string_view& sheet_name, std::string_view range_name)
+    const ss::pivot_collection& pc, std::string_view sheet_name, std::string_view range_name)
 {
     std::unique_ptr<ixion::formula_name_resolver> resolver =
         ixion::formula_name_resolver::get(
