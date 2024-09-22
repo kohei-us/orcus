@@ -10,10 +10,12 @@
 
 #include "test_global.hpp"
 #include <orcus/spreadsheet/document_types.hpp>
+#include <orcus/spreadsheet/auto_filter.hpp>
 #include <ixion/formula_name_resolver.hpp>
 
 #include <string>
 #include <optional>
+#include <set>
 
 namespace orcus {
 
@@ -66,6 +68,18 @@ public:
     explicit rc_range_resolver(ixion::formula_name_resolver_t type);
 
     ixion::abs_rc_range_t operator()(std::string_view addr) const;
+};
+
+struct excel_field_filter_items
+{
+    std::set<spreadsheet::filter_item_t> items;
+    spreadsheet::auto_filter_node_op_t connector;
+
+    bool contains(const spreadsheet::filter_item_t& expected) const;
+    std::size_t size() const;
+
+    static excel_field_filter_items get(
+        const spreadsheet::auto_filter_t& filter, spreadsheet::col_t field_index);
 };
 
 }}

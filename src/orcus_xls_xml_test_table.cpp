@@ -19,54 +19,6 @@ namespace {
 
 test::rc_range_resolver to_range(ixion::formula_name_resolver_t::excel_r1c1);
 
-struct filter_items
-{
-    std::set<ss::filter_item_t> items;
-    ss::auto_filter_node_op_t connector;
-
-    bool contains(const ss::filter_item_t& expected) const
-    {
-        return items.count(expected) > 0;
-    }
-
-    std::size_t size() const
-    {
-        return items.size();
-    }
-};
-
-filter_items get_filter_items_for_field(
-    const ss::auto_filter_t& filter, ss::col_t field_index)
-{
-    // The root node should have one child node per filtered field,
-    // connected by the 'and' operator.
-    if (filter.root.op != ss::auto_filter_node_op_t::op_and)
-        assert(!"the node operator in the root node should be AND");
-
-    filter_items items;
-
-    for (const auto* field_node : filter.root.children)
-    {
-        const auto* field = dynamic_cast<const ss::filter_node_t*>(field_node);
-        if (!field)
-            assert(!"child of the root node should be a field");
-
-        items.connector = field->op;
-
-        for (const auto* item_node : field->children)
-        {
-            const auto* item = dynamic_cast<const ss::filter_item_t*>(item_node);
-            if (!item)
-                assert(!"child of a field node should be a filter item");
-
-            if (item->field == field_index)
-                items.items.insert(*item); // copy
-        }
-    }
-
-    return items;
-}
-
 }
 
 void test_xls_xml_auto_filter_number()
@@ -86,7 +38,7 @@ void test_xls_xml_auto_filter_number()
 
         // 1: filter-rule: v > 20; field: 2
 
-        auto items = get_filter_items_for_field(*filter, 2);
+        auto items = test::excel_field_filter_items::get(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 20};
@@ -103,7 +55,7 @@ void test_xls_xml_auto_filter_number()
 
         // 1: filter-rule: v >= 20; field: 2
 
-        auto items = get_filter_items_for_field(*filter, 2);
+        auto items = test::excel_field_filter_items::get(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater_equal, 20};
@@ -120,7 +72,7 @@ void test_xls_xml_auto_filter_number()
 
         // 1: filter-rule: v < 5; field: 0
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::less, 5};
@@ -137,7 +89,7 @@ void test_xls_xml_auto_filter_number()
 
         // 1: filter-rule: v <= 10; field: 0
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::less_equal, 10};
@@ -156,7 +108,7 @@ void test_xls_xml_auto_filter_number()
         // 2: filter-rule: v <= 20; field: 0
         // connector: AND
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 2u);
         assert(items.connector == ss::auto_filter_node_op_t::op_and);
 
@@ -176,7 +128,7 @@ void test_xls_xml_auto_filter_number()
 
         // 1: filter-rule: top 5; field: 2
 
-        auto items = get_filter_items_for_field(*filter, 2);
+        auto items = test::excel_field_filter_items::get(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::top, 5};
@@ -193,7 +145,7 @@ void test_xls_xml_auto_filter_number()
 
         // 1: filter-rule: bottom 3; field: 2
 
-        auto items = get_filter_items_for_field(*filter, 2);
+        auto items = test::excel_field_filter_items::get(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::bottom, 3};
@@ -210,7 +162,7 @@ void test_xls_xml_auto_filter_number()
 
         // 1: filter-rule: v > 150547; field: 2
 
-        auto items = get_filter_items_for_field(*filter, 2);
+        auto items = test::excel_field_filter_items::get(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 150547};
@@ -227,7 +179,7 @@ void test_xls_xml_auto_filter_number()
 
         // 1: filter-rule: v < 150547; field: 2
 
-        auto items = get_filter_items_for_field(*filter, 2);
+        auto items = test::excel_field_filter_items::get(*filter, 2);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::less, 150547};
@@ -252,7 +204,7 @@ void test_xls_xml_auto_filter_text()
 
         // 1: filter-rule: begin-with 'Be'; field: 1
 
-        auto items = get_filter_items_for_field(*filter, 1);
+        auto items = test::excel_field_filter_items::get(*filter, 1);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{1, ss::auto_filter_op_t::begin_with, "Be"};
@@ -269,7 +221,7 @@ void test_xls_xml_auto_filter_text()
 
         // 1: filter-rule: end-with 'lic'; field: 1
 
-        auto items = get_filter_items_for_field(*filter, 1);
+        auto items = test::excel_field_filter_items::get(*filter, 1);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{1, ss::auto_filter_op_t::end_with, "lic"};
@@ -286,7 +238,7 @@ void test_xls_xml_auto_filter_text()
 
         // 1: filter-rule: contain 'ing'; field: 0
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::contain, "ing"};
@@ -303,7 +255,7 @@ void test_xls_xml_auto_filter_text()
 
         // 1: filter-rule: not-contain 'an'; field: 0
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::not_contain, "an"};
@@ -330,7 +282,7 @@ void test_xls_xml_auto_filter_wildcard()
         // 2: filter-rule: equal 'Q*r'; field: 0
         // connector: OR
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 2u);
         assert(items.connector == ss::auto_filter_node_op_t::op_or);
 
@@ -352,7 +304,7 @@ void test_xls_xml_auto_filter_wildcard()
         // 2: filter-rule: equal 'A????'; field: 0
         // connector: OR
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 2u);
         assert(items.connector == ss::auto_filter_node_op_t::op_or);
 
@@ -382,7 +334,7 @@ void test_xls_xml_auto_filter_asterisk()
 
         // 1: filter-rule: equal '*~*'; field: 0
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::end_with, "*"};
@@ -399,7 +351,7 @@ void test_xls_xml_auto_filter_asterisk()
 
         // 1: filter-rule: equal '~**'; field: 0
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::begin_with, "*"};
@@ -416,7 +368,7 @@ void test_xls_xml_auto_filter_asterisk()
 
         // 1: filter-rule: equal '*~**'; field: 0
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::contain, "*"};
@@ -433,7 +385,7 @@ void test_xls_xml_auto_filter_asterisk()
 
         // 1: filter-rule: not-equal '*~**'; field: 0
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::not_contain, "*"};
@@ -459,7 +411,7 @@ void test_xls_xml_auto_filter_question()
 
         // 1: filter-rule: equal '*~?'; field: 0
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::end_with, "?"};
@@ -476,7 +428,7 @@ void test_xls_xml_auto_filter_question()
 
         // 1: filter-rule: not-equal '*~?*'; field: 0
 
-        auto items = get_filter_items_for_field(*filter, 0);
+        auto items = test::excel_field_filter_items::get(*filter, 0);
         assert(items.size() == 1u);
 
         ss::filter_item_t expected{0, ss::auto_filter_op_t::not_contain, "?"};
