@@ -13,21 +13,11 @@
 #include <set>
 
 namespace ss = orcus::spreadsheet;
+namespace test = orcus::test;
 
 namespace {
 
-ixion::abs_rc_range_t make_range(std::string_view r1c1)
-{
-    static auto resolver = ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_r1c1, nullptr);
-    assert(resolver);
-
-    ixion::abs_address_t origin{};
-    ixion::formula_name_t result = resolver->resolve(r1c1, origin);
-    assert(result.type == ixion::formula_name_t::name_type::range_reference);
-
-    auto r = std::get<ixion::range_t>(result.value).to_abs(origin);
-    return ixion::abs_rc_range_t{r};
-}
+test::rc_range_resolver to_range(ixion::formula_name_resolver_t::excel_r1c1);
 
 struct filter_items
 {
@@ -92,7 +82,7 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C2:R96C7"));
+        assert(filter->range == to_range("R3C2:R96C7"));
 
         // 1: filter-rule: v > 20; field: 2
 
@@ -109,7 +99,7 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C2:R96C7"));
+        assert(filter->range == to_range("R3C2:R96C7"));
 
         // 1: filter-rule: v >= 20; field: 2
 
@@ -126,7 +116,7 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C2:R96C7"));
+        assert(filter->range == to_range("R3C2:R96C7"));
 
         // 1: filter-rule: v < 5; field: 0
 
@@ -143,7 +133,7 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C2:R96C7"));
+        assert(filter->range == to_range("R3C2:R96C7"));
 
         // 1: filter-rule: v <= 10; field: 0
 
@@ -160,7 +150,7 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C2:R96C7"));
+        assert(filter->range == to_range("R3C2:R96C7"));
 
         // 1: filter-rule: v >= 10; field: 0
         // 2: filter-rule: v <= 20; field: 0
@@ -182,7 +172,7 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R4C2:R18C5"));
+        assert(filter->range == to_range("R4C2:R18C5"));
 
         // 1: filter-rule: top 5; field: 2
 
@@ -199,7 +189,7 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R4C2:R18C5"));
+        assert(filter->range == to_range("R4C2:R18C5"));
 
         // 1: filter-rule: bottom 3; field: 2
 
@@ -216,7 +206,7 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R4C2:R18C5"));
+        assert(filter->range == to_range("R4C2:R18C5"));
 
         // 1: filter-rule: v > 150547; field: 2
 
@@ -233,7 +223,7 @@ void test_xls_xml_auto_filter_number()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R4C2:R18C5"));
+        assert(filter->range == to_range("R4C2:R18C5"));
 
         // 1: filter-rule: v < 150547; field: 2
 
@@ -258,7 +248,7 @@ void test_xls_xml_auto_filter_text()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C2:R96C7"));
+        assert(filter->range == to_range("R3C2:R96C7"));
 
         // 1: filter-rule: begin-with 'Be'; field: 1
 
@@ -275,7 +265,7 @@ void test_xls_xml_auto_filter_text()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C2:R96C7"));
+        assert(filter->range == to_range("R3C2:R96C7"));
 
         // 1: filter-rule: end-with 'lic'; field: 1
 
@@ -292,7 +282,7 @@ void test_xls_xml_auto_filter_text()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R4C2:R18C5"));
+        assert(filter->range == to_range("R4C2:R18C5"));
 
         // 1: filter-rule: contain 'ing'; field: 0
 
@@ -309,7 +299,7 @@ void test_xls_xml_auto_filter_text()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R4C2:R18C5"));
+        assert(filter->range == to_range("R4C2:R18C5"));
 
         // 1: filter-rule: not-contain 'an'; field: 0
 
@@ -334,7 +324,7 @@ void test_xls_xml_auto_filter_wildcard()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C2:R23C2"));
+        assert(filter->range == to_range("R3C2:R23C2"));
 
         // 1: filter-rule: equal 'W*nd'; field: 0
         // 2: filter-rule: equal 'Q*r'; field: 0
@@ -356,7 +346,7 @@ void test_xls_xml_auto_filter_wildcard()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R4C2:R24C2"));
+        assert(filter->range == to_range("R4C2:R24C2"));
 
         // 1: filter-rule: equal 'Ca????d'; field: 0
         // 2: filter-rule: equal 'A????'; field: 0
@@ -388,7 +378,7 @@ void test_xls_xml_auto_filter_asterisk()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C3:R23C3"));
+        assert(filter->range == to_range("R3C3:R23C3"));
 
         // 1: filter-rule: equal '*~*'; field: 0
 
@@ -405,7 +395,7 @@ void test_xls_xml_auto_filter_asterisk()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R2C2:R22C2"));
+        assert(filter->range == to_range("R2C2:R22C2"));
 
         // 1: filter-rule: equal '~**'; field: 0
 
@@ -422,7 +412,7 @@ void test_xls_xml_auto_filter_asterisk()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R5C2:R25C2"));
+        assert(filter->range == to_range("R5C2:R25C2"));
 
         // 1: filter-rule: equal '*~**'; field: 0
 
@@ -439,7 +429,7 @@ void test_xls_xml_auto_filter_asterisk()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R5C2:R25C2"));
+        assert(filter->range == to_range("R5C2:R25C2"));
 
         // 1: filter-rule: not-equal '*~**'; field: 0
 
@@ -465,7 +455,7 @@ void test_xls_xml_auto_filter_question()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C2:R23C2"));
+        assert(filter->range == to_range("R3C2:R23C2"));
 
         // 1: filter-rule: equal '*~?'; field: 0
 
@@ -482,7 +472,7 @@ void test_xls_xml_auto_filter_question()
 
         auto* filter = sh->get_auto_filter();
         assert(filter);
-        assert(filter->range == make_range("R3C2:R23C2"));
+        assert(filter->range == to_range("R3C2:R23C2"));
 
         // 1: filter-rule: not-equal '*~?*'; field: 0
 

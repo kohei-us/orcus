@@ -8,20 +8,11 @@
 #include "orcus_xlsx_test.hpp"
 
 namespace ss = orcus::spreadsheet;
+namespace test = orcus::test;
 
 namespace {
 
-ixion::abs_rc_range_t to_range(std::string_view address_a1)
-{
-    static auto resolver = ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, nullptr);
-
-    ixion::abs_address_t origin; // A1
-    ixion::formula_name_t name = resolver->resolve(address_a1, origin);
-    assert(name.type == ixion::formula_name_t::range_reference);
-    auto range = std::get<ixion::range_t>(name.value).to_abs(origin);
-
-    return ixion::abs_rc_range_t(range);
-}
+test::rc_range_resolver to_range(ixion::formula_name_resolver_t::excel_a1);
 
 } // anonymous namespace
 

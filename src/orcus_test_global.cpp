@@ -193,6 +193,27 @@ const ss::format_runs_t* get_format_runs(
     return doc.get_shared_strings().get_format_runs(si);
 }
 
+rc_range_resolver::rc_range_resolver(ixion::formula_name_resolver_t type) :
+    m_resolver(ixion::formula_name_resolver::get(type, nullptr))
+{
+    if (!m_resolver)
+        throw std::runtime_error("failed to instantiate formula name resolver");
+}
+
+ixion::abs_rc_range_t rc_range_resolver::operator()(std::string_view addr) const
+{
+    ixion::abs_address_t origin{};
+    ixion::formula_name_t result = m_resolver->resolve(addr, origin);
+    if (result.type != ixion::formula_name_t::name_type::range_reference)
+    {
+        std::cerr << "'" << addr << "' could not be converted to a 2D range reference" << std::endl;
+        return ixion::abs_rc_range_t{};
+    }
+
+    auto r = std::get<ixion::range_t>(result.value).to_abs(origin);
+    return ixion::abs_rc_range_t{r};
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

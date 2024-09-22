@@ -463,7 +463,8 @@ orcus_csv_test_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	./test/liborcus-test.a \
-	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	@LIBIXION_LIBS@
 
 orcus_csv_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS) -DSRCDIR=\""$(top_srcdir)"\"
 
@@ -482,6 +483,7 @@ orcus_xml_mapped_test_LDADD = \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	./test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	@LIBIXION_LIBS@ \
 	$(BOOST_SYSTEM_LIBS)
 
 if !HAVE_FILESYSTEM

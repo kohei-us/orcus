@@ -10,6 +10,7 @@
 
 #include "test_global.hpp"
 #include <orcus/spreadsheet/document_types.hpp>
+#include <ixion/formula_name_resolver.hpp>
 
 #include <string>
 #include <optional>
@@ -56,6 +57,16 @@ bool check_cell_text(
 
 const spreadsheet::format_runs_t* get_format_runs(
     const spreadsheet::document& doc, spreadsheet::sheet_t sheet, spreadsheet::row_t row, spreadsheet::col_t col);
+
+class rc_range_resolver
+{
+    std::unique_ptr<ixion::formula_name_resolver> m_resolver;
+
+public:
+    explicit rc_range_resolver(ixion::formula_name_resolver_t type);
+
+    ixion::abs_rc_range_t operator()(std::string_view addr) const;
+};
 
 }}
 
