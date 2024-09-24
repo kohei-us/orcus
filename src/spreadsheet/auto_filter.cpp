@@ -215,19 +215,26 @@ void filter_item_set_t::swap(filter_item_set_t& other) noexcept
     m_values.swap(other.m_values);
 }
 
-filter_node_t::filter_node_t() : m_op(auto_filter_node_op_t::unspecified) {}
-filter_node_t::filter_node_t(auto_filter_node_op_t _op) : m_op(_op) {}
-filter_node_t::filter_node_t(const filter_node_t& other) = default;
+struct filter_node_t::impl
+{
+    using node_store_type = std::deque<filter_node_t>;
+    using item_store_type = std::deque<filter_item_t>;
+    using item_set_store_type = std::deque<filter_item_set_t>;
+
+    auto_filter_node_op_t op;
+    filter_node_t::children_type children;
+    node_store_type node_store;
+    item_store_type item_store;
+    item_set_store_type item_set_store;
+
+    impl() : op(auto_filter_node_op_t::unspecified) {}
+    impl(auto_filter_node_op_t _op) : op(_op) {}
+};
+
+filter_node_t::filter_node_t() : m_impl(std::make_unique<impl>()) {}
+filter_node_t::filter_node_t(auto_filter_node_op_t _op) : m_impl(std::make_unique<impl>(_op)) {}
 filter_node_t::filter_node_t(filter_node_t&& other) = default;
 filter_node_t::~filter_node_t() = default;
-
-filter_node_t& filter_node_t::operator=(const filter_node_t& other)
-{
-    filter_node_t temp(other);
-    swap(temp);
-
-    return *this;
-}
 
 filter_node_t& filter_node_t::operator=(filter_node_t&& other)
 {
@@ -239,56 +246,46 @@ filter_node_t& filter_node_t::operator=(filter_node_t&& other)
 
 auto_filter_node_op_t filter_node_t::op() const
 {
-    return m_op;
+    return m_impl->op;
 }
 
 auto filter_node_t::children() const -> const children_type&
 {
-    return m_children;
+    return m_impl->children;
 }
 
 void filter_node_t::append(filter_node_t child)
 {
-    m_node_store.push_back(std::move(child));
-    m_children.push_back(&m_node_store.back());
+    m_impl->node_store.push_back(std::move(child));
+    m_impl->children.push_back(&m_impl->node_store.back());
 }
 
 void filter_node_t::append(filter_item_t child)
 {
-    m_item_store.push_back(std::move(child));
-    m_children.push_back(&m_item_store.back());
+    m_impl->item_store.push_back(std::move(child));
+    m_impl->children.push_back(&m_impl->item_store.back());
 }
 
 void filter_node_t::append(filter_item_set_t child)
 {
-    m_item_set_store.push_back(std::move(child));
-    m_children.push_back(&m_item_set_store.back());
+    m_impl->item_set_store.push_back(std::move(child));
+    m_impl->children.push_back(&m_impl->item_set_store.back());
 }
 
 void filter_node_t::reset()
 {
-    m_op = auto_filter_node_op_t::unspecified;
-    m_children.clear();
-    m_node_store.clear();
-    m_item_store.clear();
-    m_item_set_store.clear();
+    m_impl = std::make_unique<impl>();
 }
 
 void filter_node_t::swap(filter_node_t& other) noexcept
 {
-    std::swap(m_op, other.m_op);
-    std::swap(m_children, other.m_children);
-    std::swap(m_node_store, other.m_node_store);
-    std::swap(m_item_store, other.m_item_store);
-    std::swap(m_item_set_store, other.m_item_set_store);
+    std::swap(m_impl, other.m_impl);
 }
 
 auto_filter_t::auto_filter_t() = default;
-auto_filter_t::auto_filter_t(const auto_filter_t& other) = default;
 auto_filter_t::auto_filter_t(auto_filter_t&& other) = default;
 auto_filter_t::~auto_filter_t() = default;
 
-auto_filter_t& auto_filter_t::operator=(const auto_filter_t& other) = default;
 auto_filter_t& auto_filter_t::operator=(auto_filter_t&& other) = default;
 
 void auto_filter_t::reset()

@@ -78,11 +78,11 @@ struct ORCUS_SPM_DLLPUBLIC table_t
     table_style_t style;
 
     table_t();
-    table_t(const table_t& other);
+    table_t(const table_t& other) = delete;
     table_t(table_t&& other);
     ~table_t();
 
-    table_t& operator=(const table_t& other);
+    table_t& operator=(const table_t& other) = delete;
     table_t& operator=(table_t&& other);
 
     void reset();

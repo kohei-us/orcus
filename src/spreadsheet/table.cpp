@@ -45,11 +45,9 @@ void table_style_t::reset()
 }
 
 table_t::table_t() : identifier(0), range(ixion::abs_range_t::invalid), totals_row_count(0) {}
-table_t::table_t(const table_t& other) = default;
 table_t::table_t(table_t&& other) = default;
 table_t::~table_t() = default;
 
-table_t& table_t::operator=(const table_t& other) = default;
 table_t& table_t::operator=(table_t&& other) = default;
 
 void table_t::reset()

@@ -123,29 +123,20 @@ public:
  */
 class ORCUS_SPM_DLLPUBLIC filter_node_t : public filterable
 {
+    struct impl;
+    std::unique_ptr<impl> m_impl;
+
 public:
     using children_type = std::deque<filterable*>;
 
-private:
-    using node_store_type = std::deque<filter_node_t>;
-    using item_store_type = std::deque<filter_item_t>;
-    using item_set_store_type = std::deque<filter_item_set_t>;
-
-    auto_filter_node_op_t m_op;
-    children_type m_children;
-    node_store_type m_node_store;
-    item_store_type m_item_store;
-    item_set_store_type m_item_set_store;
-
-public:
     filter_node_t();
     filter_node_t(auto_filter_node_op_t _op);
 
-    filter_node_t(const filter_node_t& other);
+    filter_node_t(const filter_node_t& other) = delete;
     filter_node_t(filter_node_t&& other);
     ~filter_node_t() override;
 
-    filter_node_t& operator=(const filter_node_t& other);
+    filter_node_t& operator=(const filter_node_t& other) = delete;
     filter_node_t& operator=(filter_node_t&& other);
 
     auto_filter_node_op_t op() const;
@@ -169,11 +160,11 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
     filter_node_t root;
 
     auto_filter_t();
-    auto_filter_t(const auto_filter_t& other);
+    auto_filter_t(const auto_filter_t& other) = delete;
     auto_filter_t(auto_filter_t&& other);
     ~auto_filter_t();
 
-    auto_filter_t& operator=(const auto_filter_t& other);
+    auto_filter_t& operator=(const auto_filter_t& other) = delete;
     auto_filter_t& operator=(auto_filter_t&& other);
 
     void reset();
