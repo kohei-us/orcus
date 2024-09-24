@@ -70,6 +70,9 @@ public:
     ixion::abs_rc_range_t operator()(std::string_view addr) const;
 };
 
+/**
+ * Stores individual filter items for a single field in an Excel document.
+ */
 struct excel_field_filter_items
 {
     std::set<spreadsheet::filter_item_t> items;
@@ -78,6 +81,12 @@ struct excel_field_filter_items
     bool contains(const spreadsheet::filter_item_t& expected) const;
     std::size_t size() const;
 
+    /**
+     * Fetch the filter items stored for a specified field.
+     *
+     * @param filter      Parent auto-filter instance.
+     * @param field_index Index of the field to fetch the filter items for.
+     */
     static excel_field_filter_items get(
         const spreadsheet::auto_filter_t& filter, spreadsheet::col_t field_index);
 };

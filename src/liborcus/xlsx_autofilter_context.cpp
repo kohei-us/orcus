@@ -110,6 +110,11 @@ void xlsx_autofilter_context::start_element(xmlns_id_t ns, xml_token_t name, con
             start_filter(attrs);
             break;
         }
+        case XML_top10:
+        {
+            start_top10(attrs);
+            break;
+        }
         default:
             warn_unhandled();
     }
@@ -185,6 +190,7 @@ void xlsx_autofilter_context::start_auto_filter(const xml_token_attrs_t& attrs)
         return;
 
     auto* node = mp_auto_filter->start_node(ss::auto_filter_node_op_t::op_and);
+    ENSURE_INTERFACE(node, import_auto_filter_node);
     m_node_stack.push_back(node);
 }
 
@@ -356,6 +362,70 @@ void xlsx_autofilter_context::start_filter(const xml_token_attrs_t& attrs)
                 break;
         }
     }
+}
+
+void xlsx_autofilter_context::start_top10(const xml_token_attrs_t& attrs)
+{
+    if (!mp_auto_filter)
+        return;
+
+    if (m_node_stack.empty())
+        return;
+
+    bool top = true;
+    bool percent = false;
+    std::optional<double> val;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_percent:
+                percent = to_bool(attr.value);
+                break;
+            case XML_top:
+                top = to_bool(attr.value);
+            case XML_val:
+            {
+                val = to_double_checked(attr.value);
+                if (!val)
+                {
+                    std::ostringstream os;
+                    os << "failed to parse the 'val' attribute of 'top10' as numeric value: s='" << attr.value << "'";
+                    warn(os.str());
+                }
+                break;
+            }
+            case XML_filterVal:
+                // ignore this
+                break;
+        }
+    }
+
+    if (!val)
+    {
+        std::ostringstream os;
+        os << "valid 'val' attribute value is required for top10 element type";
+        warn(os.str());
+        return;
+    }
+
+    auto op = ss::auto_filter_op_t::unspecified;
+
+    if (top)
+        op = percent ? ss::auto_filter_op_t::top_percent : ss::auto_filter_op_t::top;
+    else
+        op = percent ? ss::auto_filter_op_t::bottom_percent : ss::auto_filter_op_t::bottom;
+
+    // top10 filter item is the only filter criterion in a field; we import it
+    // in its own filter node
+    auto* node = m_node_stack.back()->start_node(ss::auto_filter_node_op_t::op_and);
+    ENSURE_INTERFACE(node, import_auto_filter_node);
+    node->append_item(m_cur_col, op, *val);;
+    node->commit();
 }
 
 void xlsx_autofilter_context::start_filter_column(const xml_token_attrs_t& attrs)

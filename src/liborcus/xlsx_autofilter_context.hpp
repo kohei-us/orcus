@@ -60,6 +60,7 @@ private:
     void start_filters(const xml_token_attrs_t& attrs);
     void end_filters();
     void start_filter(const xml_token_attrs_t& attrs);
+    void start_top10(const xml_token_attrs_t& attrs);
     void start_filter_column(const xml_token_attrs_t& attrs);
     void end_filter_column();
 

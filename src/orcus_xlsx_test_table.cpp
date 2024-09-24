@@ -59,12 +59,129 @@ void test_xlsx_table_autofilter_basic_number()
     std::string_view path(SRCDIR"/test/xlsx/table/autofilter-basic-number.xlsx");
     std::unique_ptr<ss::document> doc = load_doc(path);
 
-    const ss::sheet* sh = doc->get_sheet("Greater Than");
-    assert(sh);
+    {
+        const ss::sheet* sh = doc->get_sheet("Greater Than");
+        assert(sh);
 
-    const ss::auto_filter_t* af = sh->get_auto_filter();
-    assert(af);
-    assert(af->range == to_range("B3:G96"));
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+        assert(af->range == to_range("B3:G96"));
+
+        // 1: filter-rule: v > 20; field: 2
+
+        auto items = test::excel_field_filter_items::get(*af, 2);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 20};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Greater Than Equal");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B3:G96"));
+
+        // 1: filter-rule: v >= 20; field: 2
+
+        auto items = test::excel_field_filter_items::get(*filter, 2);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::greater_equal, 20};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Less Than");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B3:G96"));
+
+        // 1: filter-rule: v < 5; field: 0
+
+        auto items = test::excel_field_filter_items::get(*filter, 0);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{0, ss::auto_filter_op_t::less, 5};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Less Than Equal");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B3:G96"));
+
+        // 1: filter-rule: v <= 10; field: 0
+
+        auto items = test::excel_field_filter_items::get(*filter, 0);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{0, ss::auto_filter_op_t::less_equal, 10};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Between");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B3:G96"));
+
+        // 1: filter-rule: v >= 10; field: 0
+        // 2: filter-rule: v <= 20; field: 0
+        // connector: AND
+
+        auto items = test::excel_field_filter_items::get(*filter, 0);
+        assert(items.size() == 2u);
+        assert(items.connector == ss::auto_filter_node_op_t::op_and);
+
+        ss::filter_item_t expected1{0, ss::auto_filter_op_t::greater_equal, 10};
+        ss::filter_item_t expected2{0, ss::auto_filter_op_t::less_equal, 20};
+        assert(items.contains(expected1));
+        assert(items.contains(expected2));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Top 10");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B4:E18"));
+
+        // 1: filter-rule: top 5; field: 2
+
+        auto items = test::excel_field_filter_items::get(*filter, 2);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::top, 5};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Bottom 10");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B4:E18"));
+
+        // 1: filter-rule: bottom 3; field: 2
+
+        auto items = test::excel_field_filter_items::get(*filter, 2);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::bottom, 3};
+        assert(items.contains(expected));
+    }
 
     // TODO : continue on ...
 }
