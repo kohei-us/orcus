@@ -10,6 +10,7 @@
 #include "ooxml_namespace_types.hpp"
 #include "ooxml_token_constants.hpp"
 #include "impl_utils.hpp"
+#include "xlsx_types.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_auto_filter.hpp>
@@ -46,6 +47,57 @@ const map_type& get()
 }
 
 } // namespace filterop
+
+namespace dynfilter {
+
+using map_type = mdds::sorted_string_map<xlsx_dynamic_filter_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry_type entries[] = {
+    { "M1", xlsx_dynamic_filter_t::m1 },
+    { "M10", xlsx_dynamic_filter_t::m10 },
+    { "M11", xlsx_dynamic_filter_t::m11 },
+    { "M12", xlsx_dynamic_filter_t::m12 },
+    { "M2", xlsx_dynamic_filter_t::m2 },
+    { "M3", xlsx_dynamic_filter_t::m3 },
+    { "M4", xlsx_dynamic_filter_t::m4 },
+    { "M5", xlsx_dynamic_filter_t::m5 },
+    { "M6", xlsx_dynamic_filter_t::m6 },
+    { "M7", xlsx_dynamic_filter_t::m7 },
+    { "M8", xlsx_dynamic_filter_t::m8 },
+    { "M9", xlsx_dynamic_filter_t::m9 },
+    { "Q1", xlsx_dynamic_filter_t::q1 },
+    { "Q2", xlsx_dynamic_filter_t::q2 },
+    { "Q3", xlsx_dynamic_filter_t::q3 },
+    { "Q4", xlsx_dynamic_filter_t::q4 },
+    { "aboveAverage", xlsx_dynamic_filter_t::above_average },
+    { "belowAverage", xlsx_dynamic_filter_t::below_average },
+    { "lastMonth", xlsx_dynamic_filter_t::last_month },
+    { "lastQuarter", xlsx_dynamic_filter_t::last_quarter },
+    { "lastWeek", xlsx_dynamic_filter_t::last_week },
+    { "lastYear", xlsx_dynamic_filter_t::last_year },
+    { "nextMonth", xlsx_dynamic_filter_t::next_month },
+    { "nextQuarter", xlsx_dynamic_filter_t::next_quarter },
+    { "nextWeek", xlsx_dynamic_filter_t::next_week },
+    { "nextYear", xlsx_dynamic_filter_t::next_year },
+    { "null", xlsx_dynamic_filter_t::null },
+    { "thisMonth", xlsx_dynamic_filter_t::this_month },
+    { "thisQuarter", xlsx_dynamic_filter_t::this_quarter },
+    { "thisWeek", xlsx_dynamic_filter_t::this_week },
+    { "thisYear", xlsx_dynamic_filter_t::this_year },
+    { "today", xlsx_dynamic_filter_t::today },
+    { "tomorrow", xlsx_dynamic_filter_t::tomorrow },
+    { "yearToDate", xlsx_dynamic_filter_t::year_to_date },
+    { "yesterday", xlsx_dynamic_filter_t::yesterday },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), xlsx_dynamic_filter_t::unknown);
+    return mt;
+}
+
+} // namespace dynfilter
 
 }
 
@@ -113,6 +165,11 @@ void xlsx_autofilter_context::start_element(xmlns_id_t ns, xml_token_t name, con
         case XML_top10:
         {
             start_top10(attrs);
+            break;
+        }
+        case XML_dynamicFilter:
+        {
+            start_dynamic_filter(attrs);
             break;
         }
         default:
@@ -422,10 +479,75 @@ void xlsx_autofilter_context::start_top10(const xml_token_attrs_t& attrs)
 
     // top10 filter item is the only filter criterion in a field; we import it
     // in its own filter node
-    auto* node = m_node_stack.back()->start_node(ss::auto_filter_node_op_t::op_and);
-    ENSURE_INTERFACE(node, import_auto_filter_node);
-    node->append_item(m_cur_col, op, *val);;
-    node->commit();
+    push_single_filter_item(op, *val);
+}
+
+void xlsx_autofilter_context::start_dynamic_filter(const xml_token_attrs_t& attrs)
+{
+    if (!mp_auto_filter)
+        return;
+
+    if (m_node_stack.empty())
+        return;
+
+    std::optional<xlsx_dynamic_filter_t> type;
+    std::optional<double> val;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_type:
+            {
+                type = dynfilter::get().find(attr.value);
+                break;
+            }
+            case XML_val:
+            {
+                val = to_double_checked(attr.value);
+                break;
+            }
+        }
+    }
+
+    if (!type)
+    {
+        warn("'type' attribute is not available in <dynamicFilter>");
+        return;
+    }
+
+    // import this as a static filter item for now
+
+    switch (*type)
+    {
+        case xlsx_dynamic_filter_t::above_average:
+        {
+            if (val)
+                push_single_filter_item(ss::auto_filter_op_t::greater, *val);
+            else
+                warn("'val' attribute was expected for the above-average dynamic filter type, but is not given");
+
+            break;
+        }
+        case xlsx_dynamic_filter_t::below_average:
+        {
+            if (val)
+                push_single_filter_item(ss::auto_filter_op_t::less, *val);
+            else
+                warn("'val' attribute was expected for the below-average dynamic filter type, but is not given");
+
+            break;
+        }
+        default:
+        {
+            std::ostringstream os;
+            os << "unhandled dynamic filter type '" << dynfilter::get().find_key(*type) << "'";
+            warn(os.str());
+        }
+    }
 }
 
 void xlsx_autofilter_context::start_filter_column(const xml_token_attrs_t& attrs)
@@ -460,6 +582,14 @@ void xlsx_autofilter_context::end_filter_column()
         return;
 
     m_cur_col = -1;
+}
+
+void xlsx_autofilter_context::push_single_filter_item(spreadsheet::auto_filter_op_t op, double val)
+{
+    auto* node = m_node_stack.back()->start_node(ss::auto_filter_node_op_t::op_and);
+    ENSURE_INTERFACE(node, import_auto_filter_node);
+    node->append_item(m_cur_col, op, val);
+    node->commit();
 }
 
 }

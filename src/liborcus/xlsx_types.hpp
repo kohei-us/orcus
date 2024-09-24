@@ -87,6 +87,46 @@ xlsx_rev_row_column_action_t to_xlsx_rev_row_column_action_type(std::string_view
 
 std::string_view to_string(xlsx_rev_row_column_action_t type);
 
+enum class xlsx_dynamic_filter_t
+{
+    unknown,
+    above_average,
+    below_average,
+    last_month,
+    last_quarter,
+    last_week,
+    last_year,
+    m1,
+    m10,
+    m11,
+    m12,
+    m2,
+    m3,
+    m4,
+    m5,
+    m6,
+    m7,
+    m8,
+    m9,
+    next_month,
+    next_quarter,
+    next_week,
+    next_year,
+    null,
+    q1,
+    q2,
+    q3,
+    q4,
+    this_month,
+    this_quarter,
+    this_week,
+    this_year,
+    today,
+    tomorrow,
+    year_to_date,
+    yesterday,
+};
+
 }
 
 #endif

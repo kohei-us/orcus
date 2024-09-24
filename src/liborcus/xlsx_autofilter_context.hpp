@@ -61,8 +61,11 @@ private:
     void end_filters();
     void start_filter(const xml_token_attrs_t& attrs);
     void start_top10(const xml_token_attrs_t& attrs);
+    void start_dynamic_filter(const xml_token_attrs_t& attrs);
     void start_filter_column(const xml_token_attrs_t& attrs);
     void end_filter_column();
+
+    void push_single_filter_item(spreadsheet::auto_filter_op_t op, double val);
 
 private:
     spreadsheet::iface::import_reference_resolver& m_resolver;

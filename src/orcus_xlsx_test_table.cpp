@@ -183,7 +183,39 @@ void test_xlsx_table_autofilter_basic_number()
         assert(items.contains(expected));
     }
 
-    // TODO : continue on ...
+    {
+        auto* sh = doc->get_sheet("Above Average");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B4:E18"));
+
+        // 1: filter-rule: v > 150547; field: 2
+
+        auto items = test::excel_field_filter_items::get(*filter, 2);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 150547};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Below Average");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B4:E18"));
+
+        // 1: filter-rule: v < 150547; field: 2
+
+        auto items = test::excel_field_filter_items::get(*filter, 2);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::less, 150547};
+        assert(items.contains(expected));
+    }
 }
 
 void test_xlsx_table()
