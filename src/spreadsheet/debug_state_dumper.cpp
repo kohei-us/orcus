@@ -57,16 +57,16 @@ void print_auto_filter(const auto_filter_t& filter, std::ostream& os)
         for (int i = 0; i < level; ++i)
             base_indent.append(indent_unit_s);
 
-        os << base_indent << indent_unit_s << "operator: " << node.op << "\n";
+        os << base_indent << indent_unit_s << "operator: " << node.op() << "\n";
 
-        if (!node.children.empty())
+        if (!node.children().empty())
         {
             os << base_indent << indent_unit_s << "children:\n";
             std::string bullet = indent_unit_s;
             bullet[0] = '-';
             std::string indent = base_indent + indent_unit_s + indent_unit_s;
 
-            for (const filterable* child : node.children)
+            for (const filterable* child : node.children())
             {
                 if (auto* child_node = dynamic_cast<const filter_node_t*>(child); child_node)
                 {
@@ -76,12 +76,12 @@ void print_auto_filter(const auto_filter_t& filter, std::ostream& os)
                 else if (auto* item = dynamic_cast<const filter_item_t*>(child); item)
                 {
                     os << indent << bullet << "type: filter-item\n";
-                    os << indent << indent_unit_s << "field: " << item->field << "\n";
-                    os << indent << indent_unit_s << "operator: " << item->op << "\n";
-                    os << indent << indent_unit_s << "regex: " << item->regex << "\n";
+                    os << indent << indent_unit_s << "field: " << item->field() << "\n";
+                    os << indent << indent_unit_s << "operator: " << item->op() << "\n";
+                    os << indent << indent_unit_s << "regex: " << item->regex() << "\n";
                     os << indent << indent_unit_s << "value:\n";
 
-                    const filter_value_t& v = item->value;
+                    filter_value_t v = item->value();
                     switch (v.type())
                     {
                         case filter_value_t::value_type::empty:
@@ -100,10 +100,10 @@ void print_auto_filter(const auto_filter_t& filter, std::ostream& os)
                 else if (auto* item_set = dynamic_cast<const filter_item_set_t*>(child); item_set)
                 {
                     os << indent << bullet << "type: filter-item-set\n";
-                    os << indent << indent_unit_s << "field: " << item_set->field << "\n";
+                    os << indent << indent_unit_s << "field: " << item_set->field() << "\n";
                     os << indent << indent_unit_s << "values:\n";
 
-                    for (const auto& value : item_set->values)
+                    for (const auto& value : item_set->values())
                         os << indent << indent_unit_s << indent_unit_s << bullet << value << "\n";
                 }
             }

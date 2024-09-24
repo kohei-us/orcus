@@ -84,17 +84,37 @@ void filter_value_t::swap(filter_value_t& other) noexcept
 
 filterable::~filterable() = default;
 
-filter_item_t::filter_item_t() : op(auto_filter_op_t::unspecified) {}
+filter_item_t::filter_item_t() : m_op(auto_filter_op_t::unspecified) {}
 filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op) :
-    field(_field), op(_op) {}
+    m_field(_field), m_op(_op) {}
 filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op, double v) :
-    field(_field), op(_op), value(v) {}
+    m_field(_field), m_op(_op), m_value(v) {}
 filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op, std::string_view v) :
-    field(_field), op(_op), value(v) {}
+    m_field(_field), m_op(_op), m_value(v) {}
 filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op, std::string_view v, bool _regex) :
-    field(_field), op(_op), value(v), regex(_regex) {}
+    m_field(_field), m_op(_op), m_value(v), m_regex(_regex) {}
 filter_item_t::filter_item_t(const filter_item_t& other) = default;
 filter_item_t::~filter_item_t() = default;
+
+col_t filter_item_t::field() const
+{
+    return m_field;
+}
+
+auto_filter_op_t filter_item_t::op() const
+{
+    return m_op;
+}
+
+filter_value_t filter_item_t::value() const
+{
+    return m_value;
+}
+
+bool filter_item_t::regex() const
+{
+    return m_regex;
+}
 
 filter_item_t& filter_item_t::operator=(const filter_item_t& other)
 {
@@ -106,24 +126,24 @@ filter_item_t& filter_item_t::operator=(const filter_item_t& other)
 
 void filter_item_t::swap(filter_item_t& other) noexcept
 {
-    std::swap(field, other.field);
-    std::swap(op, other.op);
-    std::swap(regex, other.regex);
-    value.swap(other.value);
+    std::swap(m_field, other.m_field);
+    std::swap(m_op, other.m_op);
+    std::swap(m_regex, other.m_regex);
+    m_value.swap(other.m_value);
 }
 
 bool filter_item_t::operator==(const filter_item_t& other) const
 {
-    if (field != other.field)
+    if (m_field != other.m_field)
         return false;
 
-    if (op != other.op)
+    if (m_op != other.m_op)
         return false;
 
-    if (regex != other.regex)
+    if (m_regex != other.m_regex)
         return false;
 
-    return value == other.value;
+    return m_value == other.m_value;
 }
 
 bool filter_item_t::operator!=(const filter_item_t& other) const
@@ -133,25 +153,40 @@ bool filter_item_t::operator!=(const filter_item_t& other) const
 
 bool filter_item_t::operator<(const filter_item_t& other) const
 {
-    if (field != other.field)
-        return field < other.field;
+    if (m_field != other.m_field)
+        return m_field < other.m_field;
 
     using utype = std::underlying_type<auto_filter_op_t>::type;
 
-    if (op != other.op)
-        return static_cast<utype>(op) < static_cast<utype>(other.op);
+    if (m_op != other.m_op)
+        return static_cast<utype>(m_op) < static_cast<utype>(other.m_op);
 
-    if (regex != other.regex)
-        return regex < other.regex;
+    if (m_regex != other.m_regex)
+        return m_regex < other.m_regex;
 
-    return value < other.value;
+    return m_value < other.m_value;
 }
 
 filter_item_set_t::filter_item_set_t() = default;
-filter_item_set_t::filter_item_set_t(col_t _field) : field(_field) {}
+filter_item_set_t::filter_item_set_t(col_t _field) : m_field(_field) {}
 filter_item_set_t::filter_item_set_t(const filter_item_set_t& other) = default;
 filter_item_set_t::filter_item_set_t(filter_item_set_t&& other) = default;
 filter_item_set_t::~filter_item_set_t() = default;
+
+const std::unordered_set<std::string_view>& filter_item_set_t::values() const
+{
+    return m_values;
+}
+
+col_t filter_item_set_t::field() const
+{
+    return m_field;
+}
+
+void filter_item_set_t::insert(std::string_view value)
+{
+    m_values.insert(value);
+}
 
 filter_item_set_t& filter_item_set_t::operator=(const filter_item_set_t& other)
 {
@@ -170,18 +205,18 @@ filter_item_set_t& filter_item_set_t::operator=(filter_item_set_t&& other)
 
 void filter_item_set_t::reset()
 {
-    field = -1;
-    values.clear();
+    m_field = -1;
+    m_values.clear();
 }
 
 void filter_item_set_t::swap(filter_item_set_t& other) noexcept
 {
-    std::swap(field, other.field);
-    values.swap(other.values);
+    std::swap(m_field, other.m_field);
+    m_values.swap(other.m_values);
 }
 
-filter_node_t::filter_node_t() : op(auto_filter_node_op_t::unspecified) {}
-filter_node_t::filter_node_t(auto_filter_node_op_t _op) : op(_op) {}
+filter_node_t::filter_node_t() : m_op(auto_filter_node_op_t::unspecified) {}
+filter_node_t::filter_node_t(auto_filter_node_op_t _op) : m_op(_op) {}
 filter_node_t::filter_node_t(const filter_node_t& other) = default;
 filter_node_t::filter_node_t(filter_node_t&& other) = default;
 filter_node_t::~filter_node_t() = default;
@@ -202,22 +237,50 @@ filter_node_t& filter_node_t::operator=(filter_node_t&& other)
     return *this;
 }
 
+auto_filter_node_op_t filter_node_t::op() const
+{
+    return m_op;
+}
+
+auto filter_node_t::children() const -> const children_type&
+{
+    return m_children;
+}
+
+void filter_node_t::append(filter_node_t child)
+{
+    m_node_store.push_back(std::move(child));
+    m_children.push_back(&m_node_store.back());
+}
+
+void filter_node_t::append(filter_item_t child)
+{
+    m_item_store.push_back(std::move(child));
+    m_children.push_back(&m_item_store.back());
+}
+
+void filter_node_t::append(filter_item_set_t child)
+{
+    m_item_set_store.push_back(std::move(child));
+    m_children.push_back(&m_item_set_store.back());
+}
+
 void filter_node_t::reset()
 {
-    op = auto_filter_node_op_t::unspecified;
-    children.clear();
-    node_store.clear();
-    item_store.clear();
-    item_set_store.clear();
+    m_op = auto_filter_node_op_t::unspecified;
+    m_children.clear();
+    m_node_store.clear();
+    m_item_store.clear();
+    m_item_set_store.clear();
 }
 
 void filter_node_t::swap(filter_node_t& other) noexcept
 {
-    std::swap(op, other.op);
-    std::swap(children, other.children);
-    std::swap(node_store, other.node_store);
-    std::swap(item_store, other.item_store);
-    std::swap(item_set_store, other.item_set_store);
+    std::swap(m_op, other.m_op);
+    std::swap(m_children, other.m_children);
+    std::swap(m_node_store, other.m_node_store);
+    std::swap(m_item_store, other.m_item_store);
+    std::swap(m_item_set_store, other.m_item_set_store);
 }
 
 auto_filter_t::auto_filter_t() = default;

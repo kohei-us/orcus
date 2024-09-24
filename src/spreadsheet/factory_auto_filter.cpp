@@ -20,7 +20,7 @@ import_auto_filter_multi_values::~import_auto_filter_multi_values() = default;
 void import_auto_filter_multi_values::add_value(std::string_view value)
 {
     value = m_pool.intern(value).first;
-    m_set.values.insert(value);
+    m_set.insert(value);
 }
 
 void import_auto_filter_multi_values::commit()
@@ -45,22 +45,19 @@ import_auto_filter_node::~import_auto_filter_node() = default;
 void import_auto_filter_node::append_item(col_t field, auto_filter_op_t op, std::string_view value, bool regex)
 {
     auto interned = m_pool.intern(value).first;
-    m_node.item_store.emplace_back(field, op, interned, regex);
-    m_node.children.push_back(&m_node.item_store.back());
+    m_node.append(filter_item_t{field, op, interned, regex});
 }
 
 void import_auto_filter_node::append_item(col_t field, auto_filter_op_t op, double value)
 {
-    m_node.item_store.emplace_back(field, op, value);
-    m_node.children.push_back(&m_node.item_store.back());
+    m_node.append(filter_item_t{field, op, value});
 }
 
 iface::import_auto_filter_node* import_auto_filter_node::start_node(auto_filter_node_op_t op)
 {
     commit_func_type func = [this](filter_node_t&& node)
     {
-        m_node.node_store.push_back(std::move(node));
-        m_node.children.push_back(&m_node.node_store.back());
+        m_node.append(std::move(node));
     };
 
     mp_child = std::make_unique<import_auto_filter_node>(m_pool, op, std::move(func));
@@ -71,8 +68,7 @@ iface::import_auto_filter_multi_values* import_auto_filter_node::start_multi_val
 {
     import_auto_filter_multi_values::commit_func_type func = [this](filter_item_set_t&& item_set)
     {
-        m_node.item_set_store.push_back(std::move(item_set));
-        m_node.children.push_back(&m_node.item_set_store.back());
+        m_node.append(std::move(item_set));
     };
 
     m_import_multi_values.reset(field, std::move(func));

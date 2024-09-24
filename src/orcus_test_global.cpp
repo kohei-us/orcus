@@ -229,26 +229,26 @@ excel_field_filter_items excel_field_filter_items::get(
 {
     // The root node should have one child node per filtered field,
     // connected by the 'and' operator.
-    if (filter.root.op != ss::auto_filter_node_op_t::op_and)
+    if (filter.root.op() != ss::auto_filter_node_op_t::op_and)
         assert(!"the node operator in the root node should be AND");
 
     excel_field_filter_items items;
 
-    for (const auto* field_node : filter.root.children)
+    for (const auto* field_node : filter.root.children())
     {
         const auto* field = dynamic_cast<const ss::filter_node_t*>(field_node);
         if (!field)
             assert(!"child of the root node should be a field");
 
-        items.connector = field->op;
+        items.connector = field->op();
 
-        for (const auto* item_node : field->children)
+        for (const auto* item_node : field->children())
         {
             const auto* item = dynamic_cast<const ss::filter_item_t*>(item_node);
             if (!item)
                 assert(!"child of a field node should be a filter item");
 
-            if (item->field == field_index)
+            if (item->field() == field_index)
                 items.items.insert(*item); // copy
         }
     }

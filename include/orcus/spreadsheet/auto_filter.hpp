@@ -55,21 +55,23 @@ public:
     void swap(filter_value_t& other) noexcept;
 };
 
-struct ORCUS_SPM_DLLPUBLIC filterable
+class ORCUS_SPM_DLLPUBLIC filterable
 {
+public:
     virtual ~filterable();
 };
 
 /**
  * Represents a single filtering criterion for a field.
  */
-struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
+class ORCUS_SPM_DLLPUBLIC filter_item_t : public filterable
 {
-    col_t field = -1;
-    auto_filter_op_t op = auto_filter_op_t::unspecified;
-    filter_value_t value;
-    bool regex = false;
+    col_t m_field = -1;
+    auto_filter_op_t m_op = auto_filter_op_t::unspecified;
+    filter_value_t m_value;
+    bool m_regex = false;
 
+public:
     filter_item_t();
     filter_item_t(col_t _field, auto_filter_op_t _op);
     filter_item_t(col_t _field, auto_filter_op_t _op, double v);
@@ -77,6 +79,11 @@ struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
     filter_item_t(col_t _field, auto_filter_op_t _op, std::string_view v, bool _regex);
     filter_item_t(const filter_item_t& other);
     ~filter_item_t() override;
+
+    col_t field() const;
+    auto_filter_op_t op() const;
+    filter_value_t value() const;
+    bool regex() const;
 
     filter_item_t& operator=(const filter_item_t& other);
 
@@ -87,16 +94,21 @@ struct ORCUS_SPM_DLLPUBLIC filter_item_t : filterable
     bool operator<(const filter_item_t& other) const;
 };
 
-struct ORCUS_SPM_DLLPUBLIC filter_item_set_t : filterable
+class ORCUS_SPM_DLLPUBLIC filter_item_set_t : public filterable
 {
-    col_t field = -1;
-    std::unordered_set<std::string_view> values;
+    col_t m_field = -1;
+    std::unordered_set<std::string_view> m_values;
 
+public:
     filter_item_set_t();
     filter_item_set_t(col_t _field);
     filter_item_set_t(const filter_item_set_t& other);
     filter_item_set_t(filter_item_set_t&& other);
     ~filter_item_set_t() override;
+
+    col_t field() const;
+    const std::unordered_set<std::string_view>& values() const;
+    void insert(std::string_view value);
 
     filter_item_set_t& operator=(const filter_item_set_t& other);
     filter_item_set_t& operator=(filter_item_set_t&& other);
@@ -109,19 +121,23 @@ struct ORCUS_SPM_DLLPUBLIC filter_item_set_t : filterable
  * Represents a single node in a boolean tree of filtering criteria connected
  * with boolean operators.
  */
-struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
+class ORCUS_SPM_DLLPUBLIC filter_node_t : public filterable
 {
+public:
     using children_type = std::deque<filterable*>;
+
+private:
     using node_store_type = std::deque<filter_node_t>;
     using item_store_type = std::deque<filter_item_t>;
     using item_set_store_type = std::deque<filter_item_set_t>;
 
-    auto_filter_node_op_t op;
-    children_type children;
-    node_store_type node_store;
-    item_store_type item_store;
-    item_set_store_type item_set_store;
+    auto_filter_node_op_t m_op;
+    children_type m_children;
+    node_store_type m_node_store;
+    item_store_type m_item_store;
+    item_set_store_type m_item_set_store;
 
+public:
     filter_node_t();
     filter_node_t(auto_filter_node_op_t _op);
 
@@ -131,6 +147,13 @@ struct ORCUS_SPM_DLLPUBLIC filter_node_t : filterable
 
     filter_node_t& operator=(const filter_node_t& other);
     filter_node_t& operator=(filter_node_t&& other);
+
+    auto_filter_node_op_t op() const;
+    const children_type& children() const;
+
+    void append(filter_node_t child);
+    void append(filter_item_t child);
+    void append(filter_item_set_t child);
 
     void reset();
     void swap(filter_node_t& other) noexcept;
