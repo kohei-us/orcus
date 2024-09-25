@@ -131,8 +131,6 @@ class ORCUS_SPM_DLLPUBLIC filter_node_t : public filterable
     std::unique_ptr<impl> m_impl;
 
 public:
-    using children_type = std::deque<filterable*>;
-
     filter_node_t();
     filter_node_t(auto_filter_node_op_t _op);
 
@@ -143,8 +141,19 @@ public:
     filter_node_t& operator=(const filter_node_t& other) = delete;
     filter_node_t& operator=(filter_node_t&& other);
 
-    auto_filter_node_op_t op() const;
-    const children_type& children() const;
+    auto_filter_node_op_t op() const noexcept;
+
+    /**
+     * Returns the number of child filterables.
+     */
+    std::size_t size() const noexcept;
+
+    bool empty() const noexcept;
+
+    /**
+     * Returns the pointer to a child filterable at specified position.
+     */
+    const filterable* at(std::size_t pos) const;
 
     void append(filter_node_t child);
     void append(filter_item_t child);

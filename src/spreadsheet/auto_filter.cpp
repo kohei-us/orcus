@@ -233,12 +233,13 @@ bool filter_item_set_t::operator!=(const filter_item_set_t& other) const
 
 struct filter_node_t::impl
 {
+    using children_type = std::deque<filterable*>;
     using node_store_type = std::deque<filter_node_t>;
     using item_store_type = std::deque<filter_item_t>;
     using item_set_store_type = std::deque<filter_item_set_t>;
 
     auto_filter_node_op_t op;
-    filter_node_t::children_type children;
+    children_type children;
     node_store_type node_store;
     item_store_type item_store;
     item_set_store_type item_set_store;
@@ -260,14 +261,24 @@ filter_node_t& filter_node_t::operator=(filter_node_t&& other)
     return *this;
 }
 
-auto_filter_node_op_t filter_node_t::op() const
+auto_filter_node_op_t filter_node_t::op() const noexcept
 {
     return m_impl->op;
 }
 
-auto filter_node_t::children() const -> const children_type&
+std::size_t filter_node_t::size() const noexcept
 {
-    return m_impl->children;
+    return m_impl->children.size();
+}
+
+bool filter_node_t::empty() const noexcept
+{
+    return m_impl->children.empty();
+}
+
+const filterable* filter_node_t::at(std::size_t pos) const
+{
+    return m_impl->children.at(pos);
 }
 
 void filter_node_t::append(filter_node_t child)

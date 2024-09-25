@@ -162,8 +162,8 @@ void test_xlsx_table_autofilter_basic_number()
         //  +- item {field 2; top 5}
 
         assert(filter->root.op() == ss::auto_filter_node_op_t::op_and);
-        assert(filter->root.children().size() == 1u);
-        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.children()[0]);
+        assert(filter->root.size() == 1u);
+        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.at(0));
         assert(p);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::top, 5};
@@ -183,8 +183,8 @@ void test_xlsx_table_autofilter_basic_number()
         //  +- item {field 2; bottom 3}
 
         assert(filter->root.op() == ss::auto_filter_node_op_t::op_and);
-        assert(filter->root.children().size() == 1u);
-        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.children()[0]);
+        assert(filter->root.size() == 1u);
+        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.at(0));
         assert(p);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::bottom, 3};
@@ -204,8 +204,8 @@ void test_xlsx_table_autofilter_basic_number()
         //  +- item {field 2; v > 150547}
 
         assert(filter->root.op() == ss::auto_filter_node_op_t::op_and);
-        assert(filter->root.children().size() == 1u);
-        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.children()[0]);
+        assert(filter->root.size() == 1u);
+        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.at(0));
         assert(p);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 150547};
@@ -225,8 +225,8 @@ void test_xlsx_table_autofilter_basic_number()
         //  +- item {field 2; v < 150547}
 
         assert(filter->root.op() == ss::auto_filter_node_op_t::op_and);
-        assert(filter->root.children().size() == 1u);
-        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.children()[0]);
+        assert(filter->root.size() == 1u);
+        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.at(0));
         assert(p);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::less, 150547};
@@ -254,8 +254,8 @@ void test_xlsx_table_autofilter_basic_text()
         //  +- item-set {field: 1; values: Japan or China}
 
         assert(filter->root.op() == ss::auto_filter_node_op_t::op_and);
-        assert(filter->root.children().size() == 1u);
-        auto* p = dynamic_cast<const ss::filter_item_set_t*>(filter->root.children()[0]);
+        assert(filter->root.size() == 1u);
+        auto* p = dynamic_cast<const ss::filter_item_set_t*>(filter->root.at(0));
         assert(p);
 
         ss::filter_item_set_t expected{1, {"Japan", "China"}};

@@ -234,16 +234,18 @@ excel_field_filter_items excel_field_filter_items::get(
 
     excel_field_filter_items items;
 
-    for (const auto* field_node : filter.root.children())
+    for (std::size_t i = 0; i < filter.root.size(); ++i)
     {
+        const auto* field_node = filter.root.at(i);
         const auto* field = dynamic_cast<const ss::filter_node_t*>(field_node);
         if (!field)
             assert(!"child of the root node should be a field");
 
         items.connector = field->op();
 
-        for (const auto* item_node : field->children())
+        for (std::size_t j = 0; j < field->size(); ++j)
         {
+            const auto* item_node = field->at(j);
             const auto* item = dynamic_cast<const ss::filter_item_t*>(item_node);
             if (!item)
                 assert(!"child of a field node should be a filter item");

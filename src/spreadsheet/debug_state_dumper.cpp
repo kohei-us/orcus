@@ -59,15 +59,17 @@ void print_auto_filter(const auto_filter_t& filter, std::ostream& os)
 
         os << base_indent << indent_unit_s << "operator: " << node.op() << "\n";
 
-        if (!node.children().empty())
+        if (!node.empty())
         {
             os << base_indent << indent_unit_s << "children:\n";
             std::string bullet = indent_unit_s;
             bullet[0] = '-';
             std::string indent = base_indent + indent_unit_s + indent_unit_s;
 
-            for (const filterable* child : node.children())
+            for (std::size_t pos = 0; pos < node.size(); ++pos)
             {
+                const filterable* child = node.at(pos);
+
                 if (auto* child_node = dynamic_cast<const filter_node_t*>(child); child_node)
                 {
                     os << indent << bullet << "type: filter-node\n";
