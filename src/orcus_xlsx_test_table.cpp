@@ -157,13 +157,17 @@ void test_xlsx_table_autofilter_basic_number()
         assert(filter);
         assert(filter->range == to_range("B4:E18"));
 
-        // 1: filter-rule: top 5; field: 2
+        // root
+        //  |
+        //  +- item {field 2; top 5}
 
-        auto items = test::excel_field_filter_items::get(*filter, 2);
-        assert(items.size() == 1u);
+        assert(filter->root.op() == ss::auto_filter_node_op_t::op_and);
+        assert(filter->root.children().size() == 1u);
+        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.children()[0]);
+        assert(p);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::top, 5};
-        assert(items.contains(expected));
+        assert(*p == expected);
     }
 
     {
@@ -174,13 +178,17 @@ void test_xlsx_table_autofilter_basic_number()
         assert(filter);
         assert(filter->range == to_range("B4:E18"));
 
-        // 1: filter-rule: bottom 3; field: 2
+        // root
+        //  |
+        //  +- item {field 2; bottom 3}
 
-        auto items = test::excel_field_filter_items::get(*filter, 2);
-        assert(items.size() == 1u);
+        assert(filter->root.op() == ss::auto_filter_node_op_t::op_and);
+        assert(filter->root.children().size() == 1u);
+        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.children()[0]);
+        assert(p);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::bottom, 3};
-        assert(items.contains(expected));
+        assert(*p == expected);
     }
 
     {
@@ -191,13 +199,17 @@ void test_xlsx_table_autofilter_basic_number()
         assert(filter);
         assert(filter->range == to_range("B4:E18"));
 
-        // 1: filter-rule: v > 150547; field: 2
+        // root
+        //  |
+        //  +- item {field 2; v > 150547}
 
-        auto items = test::excel_field_filter_items::get(*filter, 2);
-        assert(items.size() == 1u);
+        assert(filter->root.op() == ss::auto_filter_node_op_t::op_and);
+        assert(filter->root.children().size() == 1u);
+        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.children()[0]);
+        assert(p);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 150547};
-        assert(items.contains(expected));
+        assert(*p == expected);
     }
 
     {
@@ -208,13 +220,17 @@ void test_xlsx_table_autofilter_basic_number()
         assert(filter);
         assert(filter->range == to_range("B4:E18"));
 
-        // 1: filter-rule: v < 150547; field: 2
+        // root
+        //  |
+        //  +- item {field 2; v < 150547}
 
-        auto items = test::excel_field_filter_items::get(*filter, 2);
-        assert(items.size() == 1u);
+        assert(filter->root.op() == ss::auto_filter_node_op_t::op_and);
+        assert(filter->root.children().size() == 1u);
+        auto* p = dynamic_cast<const ss::filter_item_t*>(filter->root.children()[0]);
+        assert(p);
 
         ss::filter_item_t expected{2, ss::auto_filter_op_t::less, 150547};
-        assert(items.contains(expected));
+        assert(*p == expected);
     }
 }
 

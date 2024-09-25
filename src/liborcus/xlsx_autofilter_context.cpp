@@ -477,9 +477,7 @@ void xlsx_autofilter_context::start_top10(const xml_token_attrs_t& attrs)
     else
         op = percent ? ss::auto_filter_op_t::bottom_percent : ss::auto_filter_op_t::bottom;
 
-    // top10 filter item is the only filter criterion in a field; we import it
-    // in its own filter node
-    push_single_filter_item(op, *val);
+    m_node_stack.back()->append_item(m_cur_col, op, *val);
 }
 
 void xlsx_autofilter_context::start_dynamic_filter(const xml_token_attrs_t& attrs)
@@ -526,7 +524,7 @@ void xlsx_autofilter_context::start_dynamic_filter(const xml_token_attrs_t& attr
         case xlsx_dynamic_filter_t::above_average:
         {
             if (val)
-                push_single_filter_item(ss::auto_filter_op_t::greater, *val);
+                m_node_stack.back()->append_item(m_cur_col, ss::auto_filter_op_t::greater, *val);
             else
                 warn("'val' attribute was expected for the above-average dynamic filter type, but is not given");
 
@@ -535,7 +533,7 @@ void xlsx_autofilter_context::start_dynamic_filter(const xml_token_attrs_t& attr
         case xlsx_dynamic_filter_t::below_average:
         {
             if (val)
-                push_single_filter_item(ss::auto_filter_op_t::less, *val);
+                m_node_stack.back()->append_item(m_cur_col, ss::auto_filter_op_t::less, *val);
             else
                 warn("'val' attribute was expected for the below-average dynamic filter type, but is not given");
 
@@ -582,14 +580,6 @@ void xlsx_autofilter_context::end_filter_column()
         return;
 
     m_cur_col = -1;
-}
-
-void xlsx_autofilter_context::push_single_filter_item(spreadsheet::auto_filter_op_t op, double val)
-{
-    auto* node = m_node_stack.back()->start_node(ss::auto_filter_node_op_t::op_and);
-    ENSURE_INTERFACE(node, import_auto_filter_node);
-    node->append_item(m_cur_col, op, val);
-    node->commit();
 }
 
 }

@@ -65,8 +65,6 @@ private:
     void start_filter_column(const xml_token_attrs_t& attrs);
     void end_filter_column();
 
-    void push_single_filter_item(spreadsheet::auto_filter_op_t op, double val);
-
 private:
     spreadsheet::iface::import_reference_resolver& m_resolver;
     spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
