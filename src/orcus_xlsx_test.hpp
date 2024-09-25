@@ -58,6 +58,7 @@ void test_xlsx_pivot_error_values();
 // table / auto filter
 void test_xlsx_table_autofilter();
 void test_xlsx_table_autofilter_basic_number();
+void test_xlsx_table_autofilter_basic_text();
 void test_xlsx_table();
 
 // view import

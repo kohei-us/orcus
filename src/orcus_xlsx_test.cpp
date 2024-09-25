@@ -2514,6 +2514,7 @@ int main()
     // table / auto filter
     test_xlsx_table_autofilter();
     test_xlsx_table_autofilter_basic_number();
+    test_xlsx_table_autofilter_basic_text();
     test_xlsx_table();
 
     // view import

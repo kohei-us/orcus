@@ -169,6 +169,9 @@ bool filter_item_t::operator<(const filter_item_t& other) const
 
 filter_item_set_t::filter_item_set_t() = default;
 filter_item_set_t::filter_item_set_t(col_t _field) : m_field(_field) {}
+filter_item_set_t::filter_item_set_t(col_t field, std::initializer_list<std::string_view> values) :
+    m_field(field), m_values(values) {}
+
 filter_item_set_t::filter_item_set_t(const filter_item_set_t& other) = default;
 filter_item_set_t::filter_item_set_t(filter_item_set_t&& other) = default;
 filter_item_set_t::~filter_item_set_t() = default;
@@ -213,6 +216,19 @@ void filter_item_set_t::swap(filter_item_set_t& other) noexcept
 {
     std::swap(m_field, other.m_field);
     m_values.swap(other.m_values);
+}
+
+bool filter_item_set_t::operator==(const filter_item_set_t& other) const
+{
+    if (m_field != other.m_field)
+        return false;
+
+    return m_values == other.m_values;
+}
+
+bool filter_item_set_t::operator!=(const filter_item_set_t& other) const
+{
+    return !operator==(other);
 }
 
 struct filter_node_t::impl

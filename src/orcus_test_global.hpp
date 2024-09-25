@@ -72,6 +72,11 @@ public:
 
 /**
  * Stores individual filter items for a single field in an Excel document.
+ *
+ * Note that this can only be used when the filter items for the field is
+ * imported as a filter node with filter items as its children.  Some single
+ * rule item such as top10, dynamic filter and multi-match value set are
+ * not imported as a filter node with children.
  */
 struct excel_field_filter_items
 {

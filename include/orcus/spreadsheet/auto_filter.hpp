@@ -102,6 +102,7 @@ class ORCUS_SPM_DLLPUBLIC filter_item_set_t : public filterable
 public:
     filter_item_set_t();
     filter_item_set_t(col_t _field);
+    filter_item_set_t(col_t field, std::initializer_list<std::string_view> values);
     filter_item_set_t(const filter_item_set_t& other);
     filter_item_set_t(filter_item_set_t&& other);
     ~filter_item_set_t() override;
@@ -115,6 +116,9 @@ public:
 
     void reset();
     void swap(filter_item_set_t& other) noexcept;
+
+    bool operator==(const filter_item_set_t& other) const;
+    bool operator!=(const filter_item_set_t& other) const;
 };
 
 /**

@@ -218,6 +218,35 @@ void test_xlsx_table_autofilter_basic_number()
     }
 }
 
+void test_xlsx_table_autofilter_basic_text()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    std::string_view path(SRCDIR"/test/xlsx/table/autofilter-basic-text.xlsx");
+    std::unique_ptr<ss::document> doc = load_doc(path);
+
+    {
+        auto* sh = doc->get_sheet("Equals");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B3:G96"));
+
+        // root
+        //  |
+        //  +- item-set {field: 1; values: Japan or China}
+
+        assert(filter->root.op() == ss::auto_filter_node_op_t::op_and);
+        assert(filter->root.children().size() == 1u);
+        auto* p = dynamic_cast<const ss::filter_item_set_t*>(filter->root.children()[0]);
+        assert(p);
+
+        ss::filter_item_set_t expected{1, {"Japan", "China"}};
+        assert(*p == expected);
+    }
+}
+
 void test_xlsx_table()
 {
     ORCUS_TEST_FUNC_SCOPE;
