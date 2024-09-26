@@ -261,6 +261,32 @@ void test_xlsx_table_autofilter_basic_text()
         ss::filter_item_set_t expected{1, {"Japan", "China"}};
         assert(*p == expected);
     }
+
+    {
+        auto* sh = doc->get_sheet("Does Not Equal");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B4:E18"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 1; v != NV}
+        //       |
+        //       +- item {field: 1; v != FL}
+
+        auto items = test::excel_field_filter_items::get(*filter, 1);
+        assert(items.size() == 2u);
+        assert(items.connector == ss::auto_filter_node_op_t::op_and);
+
+        ss::filter_item_t expected1{1, ss::auto_filter_op_t::not_equal, "NV"};
+        ss::filter_item_t expected2{1, ss::auto_filter_op_t::not_equal, "FL"};
+        assert(items.contains(expected1));
+        assert(items.contains(expected2));
+    }
 }
 
 void test_xlsx_table()

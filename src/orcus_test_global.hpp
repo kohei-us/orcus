@@ -80,7 +80,14 @@ public:
  */
 struct excel_field_filter_items
 {
+    /**
+     * Filter items that belong to a specified field.
+     */
     std::set<spreadsheet::filter_item_t> items;
+
+    /**
+     * Connector used for the filter items within the field.
+     */
     spreadsheet::auto_filter_node_op_t connector;
 
     bool contains(const spreadsheet::filter_item_t& expected) const;
