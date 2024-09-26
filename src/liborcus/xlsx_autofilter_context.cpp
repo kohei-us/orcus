@@ -319,7 +319,7 @@ void xlsx_autofilter_context::start_custom_filter(const xml_token_attrs_t& attrs
     if (m_node_stack.empty())
         return;
 
-    auto op = ss::auto_filter_op_t::unspecified;
+    auto op = ss::auto_filter_op_t::equal; // appears to default to equal by heuristic
     std::string_view val;
 
     for (const auto& attr : attrs)

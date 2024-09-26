@@ -287,6 +287,48 @@ void test_xlsx_table_autofilter_basic_text()
         assert(items.contains(expected1));
         assert(items.contains(expected2));
     }
+
+    {
+        auto* sh = doc->get_sheet("Begins With");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B3:G96"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 1; begins with 'Be'}
+
+        auto items = test::excel_field_filter_items::get(*filter, 1);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{1, ss::auto_filter_op_t::begin_with, "Be"};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto* sh = doc->get_sheet("Ends With");
+        assert(sh);
+
+        auto* filter = sh->get_auto_filter();
+        assert(filter);
+        assert(filter->range == to_range("B3:G96"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 1; ends with 'lic'}
+
+        auto items = test::excel_field_filter_items::get(*filter, 1);
+        assert(items.size() == 1u);
+
+        ss::filter_item_t expected{1, ss::auto_filter_op_t::end_with, "lic"};
+        assert(items.contains(expected));
+    }
 }
 
 void test_xlsx_table()
