@@ -134,8 +134,16 @@ xlsx_table_context::xlsx_table_context(
     xml_context_base(session_cxt, tokens), m_table(table), m_resolver(resolver),
     m_cxt_autofilter(session_cxt, tokens, resolver)
 {
-    register_child(&m_cxt_autofilter);
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_ooxml_xlsx, XML_table }, // root element
+        { NS_ooxml_xlsx, XML_table, NS_ooxml_xlsx, XML_tableColumns },
+        { NS_ooxml_xlsx, XML_table, NS_ooxml_xlsx, XML_tableStyleInfo },
+        { NS_ooxml_xlsx, XML_tableColumns, NS_ooxml_xlsx, XML_tableColumn },
+    };
 
+    init_element_validator(rules, std::size(rules));
+    register_child(&m_cxt_autofilter);
     init_ooxml_context(*this);
 }
 
@@ -158,7 +166,8 @@ xml_context_base* xlsx_table_context::create_child_context(xmlns_id_t ns, xml_to
 
 void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
+    push_stack(ns, name);
+
     if (ns != NS_ooxml_xlsx)
         return;
 
@@ -168,13 +177,11 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
     {
         case XML_table:
         {
-            xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
             start_element_table(attrs);
             break;
         }
         case XML_tableColumns:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_table);
             if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
             {
                 if (get_config().debug)
@@ -184,11 +191,11 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             }
             else
                 throw xml_structure_error("failed to get a column count from tableColumns");
+
+            break;
         }
-        break;
         case XML_tableColumn:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_tableColumns);
             table_column_attr_parser func(&get_session_context().spool);
             func = for_each(attrs.begin(), attrs.end(), func);
             if (get_config().debug)
@@ -204,15 +211,14 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             str = func.get_totals_row_label();
             m_table.set_column_totals_row_label(str);
             m_table.set_column_totals_row_function(func.get_totals_row_function());
+            break;
         }
-        break;
         case XML_tableStyleInfo:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_table);
             table_style_info_attr_parser func(&m_table, get_config().debug);
             for_each(attrs.begin(), attrs.end(), func);
+            break;
         }
-        break;
         default:
             warn_unhandled();
     }
