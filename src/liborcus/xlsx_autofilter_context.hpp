@@ -36,6 +36,10 @@ public:
     typedef std::vector<std::string_view> match_values_type;
     typedef std::map<spreadsheet::col_t, match_values_type> column_filters_type;
 
+    /**
+     * Function that 'starts' an auto filter import and returns an
+     * import_auto_filter interface.
+     */
     using iface_factory_type = std::function<spreadsheet::iface::import_auto_filter*(const spreadsheet::range_t&)>;
 
     xlsx_autofilter_context(

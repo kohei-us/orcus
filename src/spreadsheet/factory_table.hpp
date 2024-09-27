@@ -26,7 +26,7 @@ public:
     import_table(document& doc, sheet& sh);
     ~import_table();
 
-    virtual iface::old::import_auto_filter* get_auto_filter() override;
+    virtual iface::import_auto_filter* start_auto_filter(const range_t& range) override;
 
     virtual void set_range(const range_t& range) override;
     virtual void set_identifier(size_t id) override;

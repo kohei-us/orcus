@@ -33,6 +33,7 @@ xlsx_table_context::xlsx_table_context(
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
         { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_ooxml_xlsx, XML_table }, // root element
+        { NS_ooxml_xlsx, XML_table, NS_ooxml_xlsx, XML_autoFilter },
         { NS_ooxml_xlsx, XML_table, NS_ooxml_xlsx, XML_tableColumns },
         { NS_ooxml_xlsx, XML_table, NS_ooxml_xlsx, XML_tableStyleInfo },
         { NS_ooxml_xlsx, XML_tableColumns, NS_ooxml_xlsx, XML_tableColumn },
@@ -49,9 +50,10 @@ xml_context_base* xlsx_table_context::create_child_context(xmlns_id_t ns, xml_to
 {
     if (ns == NS_ooxml_xlsx && name == XML_autoFilter)
     {
-        xlsx_autofilter_context::iface_factory_type func = [](const ss::range_t& range)
+        auto& table = m_table;
+        xlsx_autofilter_context::iface_factory_type func = [&table](const ss::range_t& range)
         {
-            return nullptr;
+            return table.start_auto_filter(range);
         };
 
         m_cxt_autofilter.reset(std::move(func));
