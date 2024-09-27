@@ -23,110 +23,6 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
-namespace {
-
-class table_column_attr_parser
-{
-    string_pool* m_pool;
-
-    long m_id;
-    std::string_view m_name;
-    std::string_view m_totals_row_label;
-    spreadsheet::totals_row_function_t m_totals_row_func;
-
-public:
-    table_column_attr_parser(string_pool* pool) :
-        m_pool(pool), m_id(-1), m_totals_row_func(spreadsheet::totals_row_function_t::none) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
-            return;
-
-        switch (attr.name)
-        {
-            case XML_id:
-                m_id = to_long(attr.value);
-                break;
-            case XML_name:
-                m_name = attr.value;
-                if (attr.transient)
-                    m_name = m_pool->intern(m_name).first;
-                break;
-            case XML_totalsRowLabel:
-                m_totals_row_label = attr.value;
-                if (attr.transient)
-                    m_totals_row_label = m_pool->intern(m_totals_row_label).first;
-                break;
-            case XML_totalsRowFunction:
-                m_totals_row_func = spreadsheet::to_totals_row_function_enum(attr.value);
-                break;
-            default:
-                ;
-        }
-    }
-
-    long get_id() const { return m_id; }
-    std::string_view get_name() const { return m_name; }
-    std::string_view get_totals_row_label() const { return m_totals_row_label; }
-    spreadsheet::totals_row_function_t get_totals_row_function() const { return m_totals_row_func; }
-};
-
-class table_style_info_attr_parser
-{
-    spreadsheet::iface::import_table* mp_table;
-    bool m_debug;
-
-public:
-    table_style_info_attr_parser(spreadsheet::iface::import_table* table, bool debug) :
-        mp_table(table), m_debug(debug) {}
-
-    void operator() (const xml_token_attr_t& attr)
-    {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
-            return;
-
-        bool b = false;
-
-        switch (attr.name)
-        {
-            case XML_name:
-                mp_table->set_style_name(attr.value);
-                if (m_debug)
-                    std::cout << "  * table style info (name=" << attr.value << ")" << std::endl;
-            break;
-            case XML_showFirstColumn:
-                b = to_bool(attr.value);
-                mp_table->set_style_show_first_column(b);
-                if (m_debug)
-                    std::cout << "    * show first column: " << b << std::endl;
-            break;
-            case XML_showLastColumn:
-                b = to_bool(attr.value);
-                mp_table->set_style_show_last_column(b);
-                if (m_debug)
-                    std::cout << "    * show last column: " << b << std::endl;
-            break;
-            case XML_showRowStripes:
-                b = to_bool(attr.value);
-                mp_table->set_style_show_row_stripes(b);
-                if (m_debug)
-                    std::cout << "    * show row stripes: " << b << std::endl;
-            break;
-            case XML_showColumnStripes:
-                b = to_bool(attr.value);
-                mp_table->set_style_show_column_stripes(b);
-                if (m_debug)
-                    std::cout << "    * show column stripes: " << b << std::endl;
-            break;
-            default:
-                ;
-        }
-    }
-};
-
-}
-
 xlsx_table_context::xlsx_table_context(
     session_context& session_cxt, const tokens& tokens,
     spreadsheet::iface::import_table& table,
@@ -171,52 +67,26 @@ void xlsx_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
     if (ns != NS_ooxml_xlsx)
         return;
 
-    std::string_view str;
-
     switch (name)
     {
         case XML_table:
         {
-            start_element_table(attrs);
+            start_table(attrs);
             break;
         }
         case XML_tableColumns:
         {
-            if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
-            {
-                if (get_config().debug)
-                    std::cout << "  * column count: " << *v << std::endl;
-
-                m_table.set_column_count(*v);
-            }
-            else
-                throw xml_structure_error("failed to get a column count from tableColumns");
-
+            start_table_columns(attrs);
             break;
         }
         case XML_tableColumn:
         {
-            table_column_attr_parser func(&get_session_context().spool);
-            func = for_each(attrs.begin(), attrs.end(), func);
-            if (get_config().debug)
-            {
-                std::cout << "  * table column (id=" << func.get_id() << "; name=" << func.get_name() << ")" << std::endl;
-                std::cout << "    * totals row label: " << func.get_totals_row_label() << std::endl;
-                std::cout << "    * totals func: " << static_cast<int>(func.get_totals_row_function()) << std::endl;
-            }
-
-            m_table.set_column_identifier(func.get_id());
-            str = func.get_name();
-            m_table.set_column_name(str);
-            str = func.get_totals_row_label();
-            m_table.set_column_totals_row_label(str);
-            m_table.set_column_totals_row_function(func.get_totals_row_function());
+            start_table_column(attrs);
             break;
         }
         case XML_tableStyleInfo:
         {
-            table_style_info_attr_parser func(&m_table, get_config().debug);
-            for_each(attrs.begin(), attrs.end(), func);
+            start_table_style_info(attrs);
             break;
         }
         default:
@@ -245,7 +115,7 @@ bool xlsx_table_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xlsx_table_context::start_element_table(const xml_token_attrs_t& attrs)
+void xlsx_table_context::start_table(const xml_token_attrs_t& attrs)
 {
     long id = -1;
     long totals_row_count = -1;
@@ -311,6 +181,115 @@ void xlsx_table_context::start_element_table(const xml_token_attrs_t& attrs)
 
     if (totals_row_count >= 0)
         m_table.set_totals_row_count(totals_row_count);
+}
+
+void xlsx_table_context::start_table_columns(const xml_token_attrs_t& attrs)
+{
+    if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
+    {
+        if (get_config().debug)
+            std::cout << "  * column count: " << *v << std::endl;
+
+        m_table.set_column_count(*v);
+    }
+    else
+        throw xml_structure_error("failed to get a column count from tableColumns");
+}
+
+void xlsx_table_context::start_table_column(const xml_token_attrs_t& attrs)
+{
+    long col_id = -1;
+    std::string_view name;
+    std::string_view totals_row_label;
+    auto totals_row_func = spreadsheet::totals_row_function_t::none;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_id:
+                col_id = to_long(attr.value);
+                break;
+            case XML_name:
+                name = attr.value;
+                break;
+            case XML_totalsRowLabel:
+                totals_row_label = attr.value;
+                break;
+            case XML_totalsRowFunction:
+                totals_row_func = spreadsheet::to_totals_row_function_enum(attr.value);
+                break;
+        }
+    }
+
+    if (get_config().debug)
+    {
+        std::cout << "  * table column (id=" << col_id << "; name=" << name << ")" << std::endl;
+        std::cout << "    * totals row label: " << totals_row_label << std::endl;
+        std::cout << "    * totals func: " << int(totals_row_func) << std::endl;
+    }
+
+    m_table.set_column_identifier(col_id);
+    m_table.set_column_name(name);
+    m_table.set_column_totals_row_label(totals_row_label);
+    m_table.set_column_totals_row_function(totals_row_func);
+}
+
+void xlsx_table_context::start_table_style_info(const xml_token_attrs_t& attrs)
+{
+    bool debug = get_config().debug;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_name:
+            {
+                m_table.set_style_name(attr.value);
+                if (debug)
+                    std::cout << "  * table style info (name=" << attr.value << ")" << std::endl;
+                break;
+            }
+            case XML_showFirstColumn:
+            {
+                bool b = to_bool(attr.value);
+                m_table.set_style_show_first_column(b);
+                if (debug)
+                    std::cout << "    * show first column: " << b << std::endl;
+                break;
+            }
+            case XML_showLastColumn:
+            {
+                bool b = to_bool(attr.value);
+                m_table.set_style_show_last_column(b);
+                if (debug)
+                    std::cout << "    * show last column: " << b << std::endl;
+                break;
+            }
+            case XML_showRowStripes:
+            {
+                bool b = to_bool(attr.value);
+                m_table.set_style_show_row_stripes(b);
+                if (debug)
+                    std::cout << "    * show row stripes: " << b << std::endl;
+                break;
+            }
+            case XML_showColumnStripes:
+            {
+                bool b = to_bool(attr.value);
+                m_table.set_style_show_column_stripes(b);
+                if (debug)
+                    std::cout << "    * show column stripes: " << b << std::endl;
+                break;
+            }
+        }
+    }
 }
 
 }
