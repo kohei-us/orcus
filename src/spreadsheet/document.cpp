@@ -100,13 +100,13 @@ const string_pool& document::get_string_pool() const
     return mp_impl->string_pool_store;
 }
 
-void document::insert_table(table_t* p)
+void document::insert_table(std::unique_ptr<table_t> p)
 {
     if (!p)
         return;
 
     std::string_view name = p->name;
-    mp_impl->tables.emplace(name, std::unique_ptr<table_t>(p));
+    mp_impl->tables.emplace(name, std::move(p));
 }
 
 const table_t* document::get_table(std::string_view name) const

@@ -144,13 +144,12 @@ void import_table::set_style_show_column_stripes(bool b)
 
 void import_table::commit()
 {
-    mp_impl->doc.insert_table(mp_impl->table.release());
-    mp_impl->table.reset(new table_t);
+    mp_impl->doc.insert_table(std::move(mp_impl->table));
 }
 
 void import_table::reset()
 {
-    mp_impl->table.reset(new table_t);
+    mp_impl->table = std::make_unique<table_t>();
     mp_impl->column.reset();
 }
 

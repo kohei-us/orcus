@@ -127,14 +127,11 @@ public:
     const string_pool& get_string_pool() const;
 
     /**
-     * Insert a new table object into the document.  The document will take
-     * ownership of the inserted object after the call.  The object will get
-     * inserted only when there is no pre-existing table object of the same
-     * name.  The object not being inserted will be deleted.
+     * Insert a new table object into the document.
      *
-     * @param p table object to insert.
+     * @param p Table instance to insert.
      */
-    void insert_table(table_t* p);
+    void insert_table(std::unique_ptr<table_t> p);
 
     /**
      * Get a structure containing properties of a named table.
