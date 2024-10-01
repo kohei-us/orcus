@@ -18,6 +18,7 @@ list(APPEND _HEADERS
     sheet.hpp
     styles.hpp
     table.hpp
+    tables.hpp
     types.hpp
     view.hpp
     view_types.hpp

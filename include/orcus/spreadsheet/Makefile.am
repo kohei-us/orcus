@@ -25,6 +25,7 @@ liborcus_HEADERS += \
 	sheet.hpp \
 	styles.hpp \
 	table.hpp \
+	tables.hpp \
 	view.hpp
 
 endif

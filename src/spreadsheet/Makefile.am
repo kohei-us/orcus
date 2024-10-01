@@ -79,6 +79,7 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	sheet_impl.cpp \
 	styles.cpp \
 	table.cpp \
+	tables.cpp \
 	view.cpp \
 	global_settings.hpp \
 	global_settings.cpp

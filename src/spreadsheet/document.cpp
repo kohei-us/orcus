@@ -33,7 +33,8 @@ public:
 
 }
 
-document::document(const range_size_t& sheet_size) : mp_impl(std::make_unique<detail::document_impl>(*this, sheet_size)) {}
+document::document(const range_size_t& sheet_size) :
+    mp_impl(std::make_unique<detail::document_impl>(*this, sheet_size)) {}
 
 document::~document() {}
 
@@ -102,17 +103,12 @@ const string_pool& document::get_string_pool() const
 
 void document::insert_table(std::unique_ptr<table_t> p)
 {
-    if (!p)
-        return;
-
-    std::string_view name = p->name;
-    mp_impl->tables.emplace(name, std::move(p));
+    mp_impl->table_store.insert(std::move(p));
 }
 
 const table_t* document::get_table(std::string_view name) const
 {
-    auto it = mp_impl->tables.find(name);
-    return it == mp_impl->tables.end() ? nullptr : it->second.get();
+    return mp_impl->table_store.get(name);
 }
 
 void document::finalize_import()

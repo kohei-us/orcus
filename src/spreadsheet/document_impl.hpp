@@ -8,6 +8,7 @@
 #pragma once
 
 #include <orcus/spreadsheet/table.hpp>
+#include <orcus/spreadsheet/tables.hpp>
 #include <orcus/spreadsheet/config.hpp>
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/pivot.hpp>
@@ -43,33 +44,6 @@ struct sheet_item
 typedef std::map<std::string_view, std::unique_ptr<table_t>> table_store_type;
 typedef std::vector<std::unique_ptr<sheet_item>> sheet_items_type;
 
-class ixion_table_handler : public ixion::iface::table_handler
-{
-    const ixion::model_context& m_context;
-    const table_store_type& m_tables;
-
-    const table_t* find_table(const ixion::abs_address_t& pos) const;
-
-    std::string_view get_string(ixion::string_id_t sid) const;
-
-    col_t find_column(const table_t& tab, std::string_view name, size_t offset) const;
-
-    ixion::abs_range_t get_range_from_table(
-        const table_t& tab, ixion::string_id_t column_first, ixion::string_id_t column_last,
-        ixion::table_areas_t areas) const;
-
-public:
-    ixion_table_handler(const ixion::model_context& cxt, const table_store_type& tables);
-
-    virtual ixion::abs_range_t get_range(
-        const ixion::abs_address_t& pos, ixion::string_id_t column_first, ixion::string_id_t column_last,
-        ixion::table_areas_t areas) const override;
-
-    virtual ixion::abs_range_t get_range(
-        ixion::string_id_t table, ixion::string_id_t column_first, ixion::string_id_t column_last,
-        ixion::table_areas_t areas) const override;
-};
-
 struct document_impl
 {
     document_impl(const document_impl&) = delete;
@@ -93,8 +67,7 @@ struct document_impl
     std::unique_ptr<ixion::formula_name_resolver> name_resolver_named_range;
     formula_grammar_t grammar;
 
-    table_store_type tables;
-    ixion_table_handler table_handler;
+    tables table_store;
 
     document_impl(document& _doc, const range_size_t& sheet_size);
 };

@@ -31,6 +31,7 @@ add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     sheet_impl.cpp
     styles.cpp
     table.cpp
+    tables.cpp
     view.cpp
 )
 
