@@ -18,6 +18,7 @@
 #include <orcus/spreadsheet/view.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
 #include <orcus/spreadsheet/table.hpp>
+#include <orcus/spreadsheet/tables.hpp>
 #include <orcus/spreadsheet/pivot.hpp>
 #include <orcus/spreadsheet/styles.hpp>
 #include <orcus/spreadsheet/shared_strings.hpp>

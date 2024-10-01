@@ -32,6 +32,7 @@ namespace spreadsheet {
 
 class shared_strings;
 class styles;
+class tables;
 class pivot_collection;
 class sheet;
 class import_factory;
@@ -126,22 +127,8 @@ public:
     string_pool& get_string_pool();
     const string_pool& get_string_pool() const;
 
-    /**
-     * Insert a new table object into the document.
-     *
-     * @param p Table instance to insert.
-     */
-    void insert_table(std::unique_ptr<table_t> p);
-
-    /**
-     * Get a structure containing properties of a named table.
-     *
-     * @param name Name of the table.
-     *
-     * @return Pointer to the structure containing the properties of a named
-     *         table, or @p nullptr if no such table exists for the given name.
-     */
-    const table_t* get_table(std::string_view name) const;
+    tables& get_tables();
+    const tables& get_tables() const;
 
 private:
     void dump_flat(const std::string& outdir) const;

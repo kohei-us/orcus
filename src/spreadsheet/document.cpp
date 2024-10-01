@@ -101,14 +101,14 @@ const string_pool& document::get_string_pool() const
     return mp_impl->string_pool_store;
 }
 
-void document::insert_table(std::unique_ptr<table_t> p)
+tables& document::get_tables()
 {
-    mp_impl->table_store.insert(std::move(p));
+    return mp_impl->table_store;
 }
 
-const table_t* document::get_table(std::string_view name) const
+const tables& document::get_tables() const
 {
-    return mp_impl->table_store.get(name);
+    return mp_impl->table_store;
 }
 
 void document::finalize_import()

@@ -13,6 +13,7 @@
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
 #include <orcus/spreadsheet/table.hpp>
+#include <orcus/spreadsheet/tables.hpp>
 #include <orcus/spreadsheet/import_interface_auto_filter.hpp>
 
 #include <ixion/formula_name_resolver.hpp>
@@ -144,7 +145,7 @@ void import_table::set_style_show_column_stripes(bool b)
 
 void import_table::commit()
 {
-    mp_impl->doc.insert_table(std::move(mp_impl->table));
+    mp_impl->doc.get_tables().insert(std::move(mp_impl->table));
 }
 
 void import_table::reset()
