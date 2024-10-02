@@ -23,8 +23,54 @@ void test_xlsx_table_autofilter()
     std::string_view path(SRCDIR"/test/xlsx/table/autofilter.xlsx");
     std::unique_ptr<ss::document> doc = load_doc(path);
 
-    const ss::sheet* sh = doc->get_sheet(0);
-    assert(sh);
+    {
+        const ss::sheet* sh = doc->get_sheet("Multi-Select");
+        assert(sh);
+
+        auto tabs = doc->get_tables().get_by_sheet(sh->get_index());
+        assert(tabs.size() == 2);
+
+        {
+            auto it = tabs.find("Table4");
+            assert(it != tabs.end());
+
+            auto tab = it->second.lock();
+            assert(tab);
+
+            assert(tab->filter.range == to_range("B5:C14"));
+            assert(tab->filter.root.size() == 2);
+            assert(tab->filter.root.op() == ss::auto_filter_node_op_t::op_and);
+
+            // field1 equals either 'A' or 'C'
+            auto* f1 = dynamic_cast<const ss::filter_item_set_t*>(tab->filter.root.at(0));
+            assert(f1);
+            ss::filter_item_set_t expected1{0, {"A", "C"}};
+            assert(*f1 == expected1);
+
+            // field2 equals '1'
+            auto* f2 = dynamic_cast<const ss::filter_item_set_t*>(tab->filter.root.at(1));
+            assert(f2);
+            ss::filter_item_set_t expected2{1, {"1",}};
+            assert(*f2 == expected2);
+        }
+
+        {
+            auto it = tabs.find("Table1");
+            assert(it != tabs.end());
+
+            auto tab = it->second.lock();
+            assert(tab);
+
+            assert(tab->filter.range == to_range("B17:B37"));
+            assert(tab->filter.root.size() == 1);
+
+            // field1 equals either 'Tokyo', 'Paris' or 'New York'
+            auto* f1 = dynamic_cast<const ss::filter_item_set_t*>(tab->filter.root.at(0));
+            assert(f1);
+            ss::filter_item_set_t expected{0, {"Tokyo", "Paris", "New York"}};
+            assert(*f1 == expected);
+        }
+    }
 
 #if 0 // FIXME
     const ss::old::auto_filter_t* af = sh->get_auto_filter_data();

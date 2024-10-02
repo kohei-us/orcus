@@ -14,24 +14,13 @@
 #include <ixion/interface/table_handler.hpp>
 
 #include <map>
+#include <sstream>
 
 namespace orcus { namespace spreadsheet {
 
 namespace {
 
-using table_store_type = std::map<std::string_view, std::unique_ptr<table_t>>;
-
-class find_column_by_name
-{
-    std::string_view m_name;
-public:
-    find_column_by_name(std::string_view name) : m_name(name) {}
-
-    bool operator() (const table_column_t& col) const
-    {
-        return col.name == m_name;
-    }
-};
+using table_store_type = std::map<std::string_view, std::shared_ptr<table_t>>;
 
 void adjust_row_range(ixion::abs_range_t& range, const table_t& tab, ixion::table_areas_t areas)
 {
@@ -134,12 +123,14 @@ class ixion_table_handler : public ixion::iface::table_handler
         if (offset >= tab.columns.size())
             return -1;
 
-        table_t::columns_type::const_iterator it_beg = tab.columns.begin();
-        table_t::columns_type::const_iterator it_end = tab.columns.end();
+        auto it_beg = tab.columns.cbegin();
+        auto it_end = tab.columns.cend();
 
         std::advance(it_beg, offset);
-        table_t::columns_type::const_iterator it =
-            std::find_if(it_beg, it_end, find_column_by_name(name));
+        auto it = std::find_if(it_beg, it_end, [name](const table_column_t& col)
+        {
+            return col.name == name;
+        });
 
         if (it == it_end)
             // not found.
@@ -165,8 +156,7 @@ class ixion_table_handler : public ixion::iface::table_handler
 
             if (column_last != ixion::empty_string_id)
             {
-                std::string_view col2_name = get_string(column_last);
-                if (!col2_name.empty())
+                if (std::string_view col2_name = get_string(column_last); !col2_name.empty())
                 {
                     // column range table reference.
                     col_t col2_index = find_column(tab, col2_name, col1_index);
@@ -250,7 +240,17 @@ tables::~tables() = default;
 void tables::insert(std::unique_ptr<table_t> p)
 {
     if (!p)
-        return;
+        throw std::invalid_argument("null table_t instance is not allowed");
+
+    if (!p->range.valid())
+    {
+        std::ostringstream os;
+        os << "table range is invalid: " << p->range;
+        throw std::invalid_argument(os.str());
+    }
+
+    if (p->range.first.sheet != p->range.last.sheet)
+        throw std::invalid_argument("one table can only belong to one sheet only");
 
     std::string_view name = p->name;
     mp_impl->store.emplace(name, std::move(p));
@@ -260,6 +260,22 @@ const table_t* tables::get(std::string_view name) const
 {
     auto it = mp_impl->store.find(name);
     return it == mp_impl->store.end() ? nullptr : it->second.get();
+}
+
+std::map<std::string_view, std::weak_ptr<const table_t>> tables::get_by_sheet(sheet_t pos) const
+{
+    std::map<std::string_view, std::weak_ptr<const table_t>> ret;
+
+    for (const auto& [name, tab] : mp_impl->store)
+    {
+        if (tab->range.first.sheet != pos)
+            continue;
+
+        std::weak_ptr<const table_t> p(tab);
+        ret.insert_or_assign(name, std::move(p));
+    }
+
+    return ret;
 }
 
 }}

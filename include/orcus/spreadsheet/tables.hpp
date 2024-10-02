@@ -6,9 +6,11 @@
  */
 
 #include "../env.hpp"
+#include "types.hpp"
 
 #include <memory>
 #include <string_view>
+#include <map>
 
 namespace ixion {
 
@@ -55,6 +57,16 @@ public:
      *         table, or @p nullptr if no such table exists for the given name.
      */
     const table_t* get(std::string_view name) const;
+
+    /**
+     * Get all tables belonging to a certain sheet by sheet index.
+     *
+     * @param pos 0-based sheet index.
+     *
+     * @return Map containing pointers to all table instances belonging to
+     *         specified sheet and their respective names as keys.
+     */
+    std::map<std::string_view, std::weak_ptr<const table_t>> get_by_sheet(sheet_t pos) const;
 
 private:
     struct impl;
