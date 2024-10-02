@@ -72,7 +72,6 @@ struct ORCUS_SPM_DLLPUBLIC table_t
 
     size_t totals_row_count;
 
-    old::auto_filter_t filter_old;
     auto_filter_t filter;
     columns_type columns;
     table_style_t style;

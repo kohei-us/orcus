@@ -72,30 +72,7 @@ void test_xlsx_table_autofilter()
         }
     }
 
-#if 0 // FIXME
-    const ss::old::auto_filter_t* af = sh->get_auto_filter_data();
-    assert(af);
-
-    // Autofilter is over B2:C11.
-    assert(af->range.first.column == 1);
-    assert(af->range.first.row == 1);
-    assert(af->range.last.column == 2);
-    assert(af->range.last.row == 10);
-
-    // Check the match values of the 1st column filter criterion.
-    auto it = af->columns.find(0);
-    assert(it != af->columns.end());
-
-    const ss::old::auto_filter_column_t* afc = &it->second;
-    assert(afc->match_values.count("A") > 0);
-    assert(afc->match_values.count("C") > 0);
-
-    // And the 2nd column.
-    it = af->columns.find(1);
-    assert(it != af->columns.end());
-    afc = &it->second;
-    assert(afc->match_values.count("1") > 0);
-#endif
+    // TODO : continue on
 }
 
 void test_xlsx_table_autofilter_basic_number()
@@ -460,22 +437,6 @@ void test_xlsx_table()
     assert(tcol->name == "Value");
     assert(tcol->totals_row_label.empty());
     assert(tcol->totals_row_function == ss::totals_row_function_t::sum);
-
-#if 0 // FIXME
-    const auto& filter = p->filter_old;
-
-    // Auto filter range is C3:D8.
-    range.last.row = 7;
-    assert(filter.range == range);
-
-    assert(filter.columns.size() == 1);
-    const ss::old::auto_filter_column_t& afc = filter.columns.begin()->second;
-    assert(afc.match_values.size() == 4);
-    assert(afc.match_values.count("A") > 0);
-    assert(afc.match_values.count("C") > 0);
-    assert(afc.match_values.count("D") > 0);
-    assert(afc.match_values.count("E") > 0);
-#endif
 
     // Check table style.
     const ss::table_style_t& style = p->style;

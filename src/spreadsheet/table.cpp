@@ -57,7 +57,6 @@ void table_t::reset()
     display_name = std::string_view{};
     range = ixion::abs_range_t(ixion::abs_range_t::invalid);
     totals_row_count = 0;
-    filter_old.reset();
     filter.reset();
     columns.clear();
     style.reset();
