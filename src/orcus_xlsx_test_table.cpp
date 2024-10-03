@@ -24,134 +24,102 @@ void test_xlsx_table_autofilter()
     std::unique_ptr<ss::document> doc = load_doc(path);
 
     {
-        const ss::sheet* sh = doc->get_sheet("Multi-Select");
-        assert(sh);
+        auto tab = test::get_table_from_sheet(*doc, "Multi-Select", "Table4");
+        assert(tab);
+        assert(tab->filter.range == to_range("B5:C14"));
+        assert(tab->filter.root.size() == 2);
+        assert(tab->filter.root.op() == ss::auto_filter_node_op_t::op_and);
 
-        auto tabs = doc->get_tables().get_by_sheet(sh->get_index());
-        assert(tabs.size() == 2);
+        // field1 equals either 'A' or 'C'
+        auto* f1 = dynamic_cast<const ss::filter_item_set_t*>(tab->filter.root.at(0));
+        assert(f1);
+        ss::filter_item_set_t expected1{0, {"A", "C"}};
+        assert(*f1 == expected1);
 
-        {
-            auto it = tabs.find("Table4");
-            assert(it != tabs.end());
-
-            auto tab = it->second.lock();
-            assert(tab);
-
-            assert(tab->filter.range == to_range("B5:C14"));
-            assert(tab->filter.root.size() == 2);
-            assert(tab->filter.root.op() == ss::auto_filter_node_op_t::op_and);
-
-            // field1 equals either 'A' or 'C'
-            auto* f1 = dynamic_cast<const ss::filter_item_set_t*>(tab->filter.root.at(0));
-            assert(f1);
-            ss::filter_item_set_t expected1{0, {"A", "C"}};
-            assert(*f1 == expected1);
-
-            // field2 equals '1'
-            auto* f2 = dynamic_cast<const ss::filter_item_set_t*>(tab->filter.root.at(1));
-            assert(f2);
-            ss::filter_item_set_t expected2{1, {"1",}};
-            assert(*f2 == expected2);
-        }
-
-        {
-            auto it = tabs.find("Table1");
-            assert(it != tabs.end());
-
-            auto tab = it->second.lock();
-            assert(tab);
-
-            assert(tab->filter.range == to_range("B17:B37"));
-            assert(tab->filter.root.size() == 1);
-
-            // field1 equals either 'Tokyo', 'Paris' or 'New York'
-            auto* f1 = dynamic_cast<const ss::filter_item_set_t*>(tab->filter.root.at(0));
-            assert(f1);
-            ss::filter_item_set_t expected{0, {"Tokyo", "Paris", "New York"}};
-            assert(*f1 == expected);
-        }
+        // field2 equals '1'
+        auto* f2 = dynamic_cast<const ss::filter_item_set_t*>(tab->filter.root.at(1));
+        assert(f2);
+        ss::filter_item_set_t expected2{1, {"1",}};
+        assert(*f2 == expected2);
     }
 
     {
-        const ss::sheet* sh = doc->get_sheet("Does Not Equal");
-        assert(sh);
+        auto tab = test::get_table_from_sheet(*doc, "Multi-Select", "Table1");
+        assert(tab);
+        assert(tab->filter.range == to_range("B17:B37"));
+        assert(tab->filter.root.size() == 1);
 
-        auto tabs = doc->get_tables().get_by_sheet(sh->get_index());
-        assert(tabs.size() == 2);
+        // field1 equals either 'Tokyo', 'Paris' or 'New York'
+        auto* f1 = dynamic_cast<const ss::filter_item_set_t*>(tab->filter.root.at(0));
+        assert(f1);
+        ss::filter_item_set_t expected{0, {"Tokyo", "Paris", "New York"}};
+        assert(*f1 == expected);
+    }
 
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Does Not Equal", "Table2");
+        assert(tab);
+        assert(tab->filter.range == to_range("B4:C24"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 0; v != Houston}
+        //       |
+        //       +- item {field: 0; v != Chicago}
+
+        auto items = test::excel_field_filter_items::get(tab->filter, 0);
+        assert(items.size() == 2);
+        assert(items.connector == ss::auto_filter_node_op_t::op_and);
+
+        ss::filter_item_t expected1{0, ss::auto_filter_op_t::not_equal, "Houston"};
+        ss::filter_item_t expected2{0, ss::auto_filter_op_t::not_equal, "Chicago"};
+        assert(items.contains(expected1));
+        assert(items.contains(expected2));
+    }
+
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Does Not Equal", "Table3");
+        assert(tab);
+        assert(tab->filter.range == to_range("B27:G120"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //  |    |
+        //  |    +- item {field: 2; v != 1}
+        //  |    |
+        //  |    +- item {field: 2; v != 0}
+        //  |
+        //  +- field {and}
+        //  |    |
+        //  |    +- item {field: 3; v != 1}
+        //  |    |
+        //  |    +- item {field: 3; v != 0}
+        //  |
+        //  +- field {and}
+        //  |    |
+        //  |    +- item {field: 4; v != 1}
+        //  |    |
+        //  |    +- item {field: 4; v != 0}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 5; v != 1}
+        //       |
+        //       +- item {field: 5; v != 0}
+
+        for (ss::col_t field = 2; field <= 4; ++field)
         {
-            auto it = tabs.find("Table2");
-            assert(it != tabs.end());
-
-            auto tab = it->second.lock();
-            assert(tab);
-
-            assert(tab->filter.range == to_range("B4:C24"));
-
-            // root {and}
-            //  |
-            //  +- field {and}
-            //       |
-            //       +- item {field: 0; v != Houston}
-            //       |
-            //       +- item {field: 0; v != Chicago}
-
-            auto items = test::excel_field_filter_items::get(tab->filter, 0);
+            auto items = test::excel_field_filter_items::get(tab->filter, field);
             assert(items.size() == 2);
             assert(items.connector == ss::auto_filter_node_op_t::op_and);
 
-            ss::filter_item_t expected1{0, ss::auto_filter_op_t::not_equal, "Houston"};
-            ss::filter_item_t expected2{0, ss::auto_filter_op_t::not_equal, "Chicago"};
+            ss::filter_item_t expected1{field, ss::auto_filter_op_t::not_equal, "1"};
+            ss::filter_item_t expected2{field, ss::auto_filter_op_t::not_equal, "0"};
             assert(items.contains(expected1));
             assert(items.contains(expected2));
-        }
-
-        {
-            auto it = tabs.find("Table3");
-            assert(it != tabs.end());
-
-            auto tab = it->second.lock();
-            assert(tab);
-
-            assert(tab->filter.range == to_range("B27:G120"));
-
-            // root {and}
-            //  |
-            //  +- field {and}
-            //  |    |
-            //  |    +- item {field: 2; v != 1}
-            //  |    |
-            //  |    +- item {field: 2; v != 0}
-            //  |
-            //  +- field {and}
-            //  |    |
-            //  |    +- item {field: 3; v != 1}
-            //  |    |
-            //  |    +- item {field: 3; v != 0}
-            //  |
-            //  +- field {and}
-            //  |    |
-            //  |    +- item {field: 4; v != 1}
-            //  |    |
-            //  |    +- item {field: 4; v != 0}
-            //  |
-            //  +- field {and}
-            //       |
-            //       +- item {field: 5; v != 1}
-            //       |
-            //       +- item {field: 5; v != 0}
-
-            for (ss::col_t field = 2; field <= 4; ++field)
-            {
-                auto items = test::excel_field_filter_items::get(tab->filter, field);
-                assert(items.size() == 2);
-                assert(items.connector == ss::auto_filter_node_op_t::op_and);
-
-                ss::filter_item_t expected1{field, ss::auto_filter_op_t::not_equal, "1"};
-                ss::filter_item_t expected2{field, ss::auto_filter_op_t::not_equal, "0"};
-                assert(items.contains(expected1));
-                assert(items.contains(expected2));
-            }
         }
     }
 
