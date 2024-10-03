@@ -123,6 +123,42 @@ void test_xlsx_table_autofilter()
         }
     }
 
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Begins With | Ends With", "Table5");
+        assert(tab);
+        assert(tab->filter.range == to_range("C4:H97"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 1; begins with 'Ja'}
+
+        auto items = test::excel_field_filter_items::get(tab->filter, 1);
+        assert(items.size() == 1);
+
+        ss::filter_item_t expected{1, ss::auto_filter_op_t::begin_with, "Ja"};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Begins With | Ends With", "Table6");
+        assert(tab);
+        assert(tab->filter.range == to_range("C102:H195"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 1; ends with 'land'}
+
+        auto items = test::excel_field_filter_items::get(tab->filter, 1);
+        assert(items.size() == 1);
+
+        ss::filter_item_t expected{1, ss::auto_filter_op_t::end_with, "land"};
+        assert(items.contains(expected));
+    }
+
     // TODO : continue on
 }
 
