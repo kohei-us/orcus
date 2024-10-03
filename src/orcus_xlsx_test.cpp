@@ -25,6 +25,8 @@ config test_config(format_t::xlsx);
 
 std::unique_ptr<ss::document> load_doc(std::string_view path, bool recalc)
 {
+    std::cout << "loading document " << path << std::endl;
+
     ss::range_size_t sheet_size{1048576, 16384};
     std::unique_ptr<ss::document> doc = std::make_unique<ss::document>(sheet_size);
     ss::import_factory factory(*doc);

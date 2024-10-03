@@ -72,6 +72,89 @@ void test_xlsx_table_autofilter()
         }
     }
 
+    {
+        const ss::sheet* sh = doc->get_sheet("Does Not Equal");
+        assert(sh);
+
+        auto tabs = doc->get_tables().get_by_sheet(sh->get_index());
+        assert(tabs.size() == 2);
+
+        {
+            auto it = tabs.find("Table2");
+            assert(it != tabs.end());
+
+            auto tab = it->second.lock();
+            assert(tab);
+
+            assert(tab->filter.range == to_range("B4:C24"));
+
+            // root {and}
+            //  |
+            //  +- field {and}
+            //       |
+            //       +- item {field: 0; v != Houston}
+            //       |
+            //       +- item {field: 0; v != Chicago}
+
+            auto items = test::excel_field_filter_items::get(tab->filter, 0);
+            assert(items.size() == 2);
+            assert(items.connector == ss::auto_filter_node_op_t::op_and);
+
+            ss::filter_item_t expected1{0, ss::auto_filter_op_t::not_equal, "Houston"};
+            ss::filter_item_t expected2{0, ss::auto_filter_op_t::not_equal, "Chicago"};
+            assert(items.contains(expected1));
+            assert(items.contains(expected2));
+        }
+
+        {
+            auto it = tabs.find("Table3");
+            assert(it != tabs.end());
+
+            auto tab = it->second.lock();
+            assert(tab);
+
+            assert(tab->filter.range == to_range("B27:G120"));
+
+            // root {and}
+            //  |
+            //  +- field {and}
+            //  |    |
+            //  |    +- item {field: 2; v != 1}
+            //  |    |
+            //  |    +- item {field: 2; v != 0}
+            //  |
+            //  +- field {and}
+            //  |    |
+            //  |    +- item {field: 3; v != 1}
+            //  |    |
+            //  |    +- item {field: 3; v != 0}
+            //  |
+            //  +- field {and}
+            //  |    |
+            //  |    +- item {field: 4; v != 1}
+            //  |    |
+            //  |    +- item {field: 4; v != 0}
+            //  |
+            //  +- field {and}
+            //       |
+            //       +- item {field: 5; v != 1}
+            //       |
+            //       +- item {field: 5; v != 0}
+
+            for (ss::col_t field = 2; field <= 4; ++field)
+            {
+                auto items = test::excel_field_filter_items::get(tab->filter, field);
+                assert(items.size() == 2);
+                assert(items.connector == ss::auto_filter_node_op_t::op_and);
+
+                ss::filter_item_t expected1{field, ss::auto_filter_op_t::not_equal, "1"};
+                ss::filter_item_t expected2{field, ss::auto_filter_op_t::not_equal, "0"};
+                assert(items.contains(expected1));
+                assert(items.contains(expected2));
+            }
+        }
+    }
+
     // TODO : continue on
 }
 
