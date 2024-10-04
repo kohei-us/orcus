@@ -256,10 +256,13 @@ void tables::insert(std::unique_ptr<table_t> p)
     mp_impl->store.emplace(name, std::move(p));
 }
 
-const table_t* tables::get(std::string_view name) const
+std::weak_ptr<const table_t> tables::get(std::string_view name) const
 {
     auto it = mp_impl->store.find(name);
-    return it == mp_impl->store.end() ? nullptr : it->second.get();
+    if (it == mp_impl->store.end())
+        return {};
+
+    return it->second;
 }
 
 std::map<std::string_view, std::weak_ptr<const table_t>> tables::get_by_sheet(sheet_t pos) const

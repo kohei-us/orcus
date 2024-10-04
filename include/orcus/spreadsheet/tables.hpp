@@ -53,10 +53,11 @@ public:
      *
      * @param name Name of the table.
      *
-     * @return Pointer to the structure containing the properties of a named
-     *         table, or @p nullptr if no such table exists for the given name.
+     * @return Weak pointer to the structure containing the properties of a
+     *         named table, or an empty pointer if no such table exists for the
+     *         given name.
      */
-    const table_t* get(std::string_view name) const;
+    std::weak_ptr<const table_t> get(std::string_view name) const;
 
     /**
      * Get all tables belonging to a certain sheet by sheet index.

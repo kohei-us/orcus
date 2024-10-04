@@ -654,7 +654,7 @@ void test_xlsx_table()
     std::unique_ptr<ss::document> doc = load_doc(path);
 
     std::string_view name("Table1");
-    const ss::table_t* p = doc->get_tables().get(name);
+    auto p = doc->get_tables().get(name).lock();
     assert(p);
     assert(p->identifier == 1);
     assert(p->name == name);
