@@ -15,6 +15,7 @@
 
 #include <map>
 #include <sstream>
+#include <algorithm>
 
 namespace orcus { namespace spreadsheet {
 
