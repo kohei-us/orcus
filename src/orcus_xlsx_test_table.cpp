@@ -159,7 +159,170 @@ void test_xlsx_table_autofilter()
         assert(items.contains(expected));
     }
 
-    // TODO : continue on
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Greater Than", "Table9");
+        assert(tab);
+        assert(tab->filter.range == to_range("B6:G99"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 2; v > 20}
+
+        auto items = test::excel_field_filter_items::get(tab->filter, 2);
+        assert(items.size() == 1);
+
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 20};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Greater Than", "Table911");
+        assert(tab);
+        assert(tab->filter.range == to_range("B104:G197"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 2; v >= 20}
+
+        auto items = test::excel_field_filter_items::get(tab->filter, 2);
+        assert(items.size() == 1);
+
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::greater_equal, 20};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Less Than | Between", "Table912");
+        assert(tab);
+        assert(tab->filter.range == to_range("B4:G97"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 0; v < 5}
+
+        auto items = test::excel_field_filter_items::get(tab->filter, 0);
+        assert(items.size() == 1);
+
+        ss::filter_item_t expected{0, ss::auto_filter_op_t::less, 5};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Less Than | Between", "Table91113");
+        assert(tab);
+        assert(tab->filter.range == to_range("B100:G193"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 0; v <= 10}
+
+        auto items = test::excel_field_filter_items::get(tab->filter, 0);
+        assert(items.size() == 1);
+
+        ss::filter_item_t expected{0, ss::auto_filter_op_t::less_equal, 10};
+        assert(items.contains(expected));
+    }
+
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Less Than | Between", "Table13");
+        assert(tab);
+        assert(tab->filter.range == to_range("B196:G289"));
+
+        // root {and}
+        //  |
+        //  +- field {and}
+        //       |
+        //       +- item {field: 0; v >= 10}
+        //       |
+        //       +- item {field: 0; v <= 20}
+
+        auto items = test::excel_field_filter_items::get(tab->filter, 0);
+        assert(items.size() == 2);
+        assert(items.connector == ss::auto_filter_node_op_t::op_and);
+
+        ss::filter_item_t expected1{0, ss::auto_filter_op_t::greater_equal, 10};
+        ss::filter_item_t expected2{0, ss::auto_filter_op_t::less_equal, 20};
+        assert(items.contains(expected1));
+        assert(items.contains(expected2));
+    }
+
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Top 10 | Above Average", "Table16");
+        assert(tab);
+        assert(tab->filter.range == to_range("C3:F17"));
+
+        // root {and}
+        //  |
+        //  +- item {field: 2; top 5}
+
+        assert(tab->filter.root.size() == 1);
+        auto* f = dynamic_cast<const ss::filter_item_t*>(tab->filter.root.at(0));
+        assert(f);
+
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::top, 5};
+        assert(*f == expected);
+    }
+
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Top 10 | Above Average", "Table1616");
+        assert(tab);
+        assert(tab->filter.range == to_range("C21:F35"));
+
+        // root {and}
+        //  |
+        //  +- item {field: 2; bottom 3}
+
+        assert(tab->filter.root.size() == 1);
+        auto* f = dynamic_cast<const ss::filter_item_t*>(tab->filter.root.at(0));
+        assert(f);
+
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::bottom, 3};
+        assert(*f == expected);
+    }
+
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Top 10 | Above Average", "Table17");
+        assert(tab);
+        assert(tab->filter.range == to_range("C39:F53"));
+
+        // root {and}
+        //  |
+        //  +- item {field: 2; above average; v > 150547}
+
+        assert(tab->filter.root.size() == 1);
+        auto* f = dynamic_cast<const ss::filter_item_t*>(tab->filter.root.at(0));
+        assert(f);
+
+        // We don't support dynamic filter yet; so treat it as a static one for now
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 150547};
+        assert(*f == expected);
+    }
+
+    {
+        auto tab = test::get_table_from_sheet(*doc, "Top 10 | Above Average", "Table18");
+        assert(tab);
+        assert(tab->filter.range == to_range("C57:F71"));
+
+        // root {and}
+        //  |
+        //  +- item {field: 2; below average; v < 150547}
+
+        assert(tab->filter.root.size() == 1);
+        auto* f = dynamic_cast<const ss::filter_item_t*>(tab->filter.root.at(0));
+        assert(f);
+
+        // We don't support dynamic filter yet; so treat it as a static one for now
+        ss::filter_item_t expected{2, ss::auto_filter_op_t::less, 150547};
+        assert(*f == expected);
+    }
 }
 
 void test_xlsx_table_autofilter_basic_number()
