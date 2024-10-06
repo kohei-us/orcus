@@ -169,7 +169,7 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
     gnumeric_filter_field_type_t filter_field_type = gnumeric_filter_field_type_t::invalid;
     ss::auto_filter_op_t filter_op = ss::auto_filter_op_t::unspecified;
 
-    ss::col_t col = -1;
+    ss::col_t field = -1;
     // NB: due to a bug in gnumeric, value and value type attributes are swapped
     std::optional<long> filter_value_type;
     std::string_view filter_value;
@@ -180,7 +180,7 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
         {
             case XML_Index:
             {
-                col = to_long(attr.value.data());
+                field = to_long(attr.value.data());
                 break;
             }
             case XML_Type:
@@ -225,7 +225,7 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
         }
     }
 
-    if (col < 0)
+    if (field < 0)
     {
         warn("valid field index value was not found in the 'Index' attribute of 'Filter' element");
         return;
@@ -242,64 +242,14 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
         case gnumeric_filter_field_type_t::expr:
         {
             // see GnmValueType in gnumeric code for these magic values
-
-            switch (*filter_value_type)
-            {
-                case 10:
-                    // empty
-                    warn("empty filter value type is not yet handled");
-                    break;
-                case 20:
-                {
-                    // boolean
-                    bool v = to_bool(filter_value);
-                    mp_node->append_item(col, filter_op, v ? 1 : 0);
-                    break;
-                }
-                case 40:
-                {
-                    // float
-                    auto v = to_double_checked(filter_value);
-                    if (!v)
-                    {
-                        std::ostringstream os;
-                        os << "numeric filter value was expected but failed to convert to numeric value: " << filter_value;
-                        warn(os.str());
-                        break;
-                    }
-                    mp_node->append_item(col, filter_op, *v);
-                    break;
-                }
-                case 50:
-                    // error
-                    warn("error filter value type is not yet handled");
-                    break;
-                case 60:
-                    // string
-                    mp_node->append_item(col, filter_op, filter_value, false);
-                    break;
-                case 70:
-                    // cell range
-                    warn("cell-range filter value type is not yet handled");
-                    break;
-                case 80:
-                    // array
-                    warn("array filter value type is not yet handled");
-                    break;
-                default:
-                {
-                    std::ostringstream os;
-                    os << "unhandled fitler value type (" << *filter_value_type << ")";
-                    warn(os.str());
-                }
-            }
+            push_field_expression(field, filter_op, *filter_value_type, filter_value);
             break;
         }
         case gnumeric_filter_field_type_t::blanks:
-            mp_node->append_item(col, ss::auto_filter_op_t::empty, 0);
+            mp_node->append_item(field, ss::auto_filter_op_t::empty, 0);
             break;
         case gnumeric_filter_field_type_t::noblanks:
-            mp_node->append_item(col, ss::auto_filter_op_t::not_empty, 0);
+            mp_node->append_item(field, ss::auto_filter_op_t::not_empty, 0);
             break;
         case gnumeric_filter_field_type_t::bucket:
             warn("bucket filter field type is not yet handled");
@@ -325,6 +275,61 @@ void gnumeric_filter_context::end_filter()
 
 void gnumeric_filter_context::end_field()
 {
+}
+
+void gnumeric_filter_context::push_field_expression(
+    ss::col_t field, ss::auto_filter_op_t op, long value_type, std::string_view value)
+{
+    switch (value_type)
+    {
+        case 10:
+            // empty
+            warn("empty filter value type is not yet handled");
+            break;
+        case 20:
+        {
+            // boolean
+            bool v = to_bool(value);
+            mp_node->append_item(field, op, v ? 1 : 0);
+            break;
+        }
+        case 40:
+        {
+            // float
+            auto v = to_double_checked(value);
+            if (!v)
+            {
+                std::ostringstream os;
+                os << "numeric filter value was expected but failed to convert to numeric value: " << value;
+                warn(os.str());
+                break;
+            }
+            mp_node->append_item(field, op, *v);
+            break;
+        }
+        case 50:
+            // error
+            warn("error filter value type is not yet handled");
+            break;
+        case 60:
+            // string
+            mp_node->append_item(field, op, value, false);
+            break;
+        case 70:
+            // cell range
+            warn("cell-range filter value type is not yet handled");
+            break;
+        case 80:
+            // array
+            warn("array filter value type is not yet handled");
+            break;
+        default:
+        {
+            std::ostringstream os;
+            os << "unhandled fitler value type (" << value_type << ")";
+            warn(os.str());
+        }
+    }
 }
 
 }

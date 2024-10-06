@@ -43,6 +43,11 @@ private:
     void end_filter();
     void end_field();
 
+    void push_field_expression(
+        spreadsheet::col_t field,
+        spreadsheet::auto_filter_op_t op,
+        long value_type,
+        std::string_view value);
 
 private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
