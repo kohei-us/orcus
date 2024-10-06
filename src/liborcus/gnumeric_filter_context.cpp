@@ -8,6 +8,7 @@
 #include "gnumeric_filter_context.hpp"
 #include "gnumeric_token_constants.hpp"
 #include "gnumeric_namespace_types.hpp"
+#include "impl_utils.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_auto_filter.hpp>
@@ -21,17 +22,6 @@ namespace ss = orcus::spreadsheet;
 namespace orcus {
 
 namespace {
-
-enum gnumeric_filter_field_op_t
-{
-    filter_equal,
-    filter_greaterThan,
-    filter_lessThan,
-    filter_greaterThanEqual,
-    filter_lessThanEqual,
-    filter_notEqual,
-    filter_op_invalid
-};
 
 enum gnumeric_filter_field_type_t
 {
@@ -109,6 +99,7 @@ void gnumeric_filter_context::reset(spreadsheet::iface::import_sheet* sheet)
 {
     mp_sheet = sheet;
     mp_auto_filter = nullptr;
+    mp_node = nullptr;
 }
 
 void gnumeric_filter_context::start_filter(const xml_token_attrs_t& attrs)
@@ -120,10 +111,6 @@ void gnumeric_filter_context::start_filter(const xml_token_attrs_t& attrs)
         mp_factory->get_reference_resolver(ss::formula_ref_context_t::global);
 
     if (!resolver)
-        return;
-
-    mp_auto_filter = mp_sheet->get_auto_filter();
-    if (!mp_auto_filter)
         return;
 
     std::optional<spreadsheet::range_t> area;
@@ -141,24 +128,27 @@ void gnumeric_filter_context::start_filter(const xml_token_attrs_t& attrs)
     }
 
     if (!area)
-    {
-        mp_auto_filter = nullptr;
         return;
-    }
 
-    mp_auto_filter->set_range(*area);
+    mp_auto_filter = mp_sheet->start_auto_filter(*area);
+    if (!mp_auto_filter)
+        return;
+
+    mp_node = mp_auto_filter->start_node(ss::auto_filter_node_op_t::op_and);
+    ENSURE_INTERFACE(mp_node, import_auto_filter_node);
 }
 
 void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
 {
-    if (!mp_auto_filter)
+    if (!mp_node)
         return;
 
     gnumeric_filter_field_type_t filter_field_type = filter_type_invalid;
-    gnumeric_filter_field_op_t filter_op = filter_op_invalid;
+    ss::auto_filter_op_t filter_op = ss::auto_filter_op_t::unspecified;
 
     ss::col_t col = -1;
-    std::string_view filter_value_type;
+    // NB: due to a bug in gnumeric, value and value type attributes are swapped
+    std::optional<long> filter_value_type;
     std::string_view filter_value;
 
     for (const xml_token_attr_t& attr : attrs)
@@ -183,22 +173,22 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
             case XML_Op0:
             {
                 if (attr.value == "eq")
-                    filter_op = filter_equal;
+                    filter_op = ss::auto_filter_op_t::equal;
                 else if (attr.value == "gt")
-                    filter_op = filter_greaterThan;
+                    filter_op = ss::auto_filter_op_t::greater;
                 else if (attr.value == "lt")
-                    filter_op = filter_lessThan;
+                    filter_op = ss::auto_filter_op_t::less;
                 else if (attr.value == "gte")
-                    filter_op = filter_greaterThanEqual;
+                    filter_op = ss::auto_filter_op_t::greater_equal;
                 else if (attr.value == "lte")
-                    filter_op = filter_lessThanEqual;
+                    filter_op = ss::auto_filter_op_t::less_equal;
                 else if (attr.value == "ne")
-                    filter_op = filter_notEqual;
+                    filter_op = ss::auto_filter_op_t::not_equal;
                 break;
             }
             case XML_Value0:
             {
-                filter_value_type = attr.value;
+                filter_value_type = to_long_checked(attr.value);
                 break;
             }
             case XML_ValueType0:
@@ -210,30 +200,80 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
     }
 
     if (col < 0)
+    {
+        warn("valid field index value was not found in the 'Index' attribute of 'Filter' element");
         return;
+    }
 
-    mp_auto_filter->set_column(col);
+    if (!filter_value_type)
+    {
+        warn("valid filter value type was not found");
+        return;
+    }
 
     switch (filter_field_type)
     {
         case filter_expr:
         {
-            // only equal supported in API yet
-            if (filter_op != filter_equal)
-                return;
+            // see GnmValueType in gnumeric code for these magic values
 
-            // import condition for integer (30), double(40) and string (60)
-            if (filter_value_type == "30" ||
-                filter_value_type == "40" ||
-                filter_value_type == "60" )
+            switch (*filter_value_type)
             {
-                mp_auto_filter->append_column_match_value(filter_value);
+                case 10:
+                    // empty
+                    warn("empty filter value type is not yet handled");
+                    break;
+                case 20:
+                {
+                    // boolean
+                    bool v = to_bool(filter_value);
+                    mp_node->append_item(col, filter_op, v ? 1 : 0);
+                    break;
+                }
+                case 40:
+                {
+                    // float
+                    auto v = to_double_checked(filter_value);
+                    if (!v)
+                    {
+                        std::ostringstream os;
+                        os << "numeric filter value was expected but failed to convert to numeric value: " << filter_value;
+                        warn(os.str());
+                        break;
+                    }
+                    mp_node->append_item(col, filter_op, *v);
+                    break;
+                }
+                case 50:
+                    // error
+                    warn("error filter value type is not yet handled");
+                    break;
+                case 60:
+                    // string
+                    mp_node->append_item(col, filter_op, filter_value, false);
+                    break;
+                case 70:
+                    // cell range
+                    warn("cell-range filter value type is not yet handled");
+                    break;
+                case 80:
+                    // array
+                    warn("array filter value type is not yet handled");
+                    break;
+                default:
+                {
+                    std::ostringstream os;
+                    os << "unhandled fitler value type (" << *filter_value_type << ")";
+                    warn(os.str());
+                }
             }
             break;
         }
         case filter_blanks:
+            mp_node->append_item(col, ss::auto_filter_op_t::empty, 0);
             break;
         case filter_nonblanks:
+            mp_node->append_item(col, ss::auto_filter_op_t::not_empty, 0);
             break;
         case filter_type_invalid:
             break;
@@ -242,14 +282,19 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
 
 void gnumeric_filter_context::end_filter()
 {
+    if (mp_node)
+        mp_node->commit();
+
+    mp_node = nullptr;
+
     if (mp_auto_filter)
         mp_auto_filter->commit();
+
+    mp_auto_filter = nullptr;
 }
 
 void gnumeric_filter_context::end_field()
 {
-    if (mp_auto_filter)
-        mp_auto_filter->commit_column();
 }
 
 }

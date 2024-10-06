@@ -17,7 +17,8 @@ namespace spreadsheet { namespace iface {
 
 class import_factory;
 class import_sheet;
-namespace old { class import_auto_filter; }
+class import_auto_filter;
+class import_auto_filter_node;
 
 }}
 
@@ -46,7 +47,8 @@ private:
 private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
-    spreadsheet::iface::old::import_auto_filter* mp_auto_filter = nullptr;
+    spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
+    spreadsheet::iface::import_auto_filter_node* mp_node = nullptr;
 };
 
 }

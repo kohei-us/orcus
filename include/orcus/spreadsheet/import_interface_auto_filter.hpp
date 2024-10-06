@@ -55,7 +55,7 @@ public:
      *               column of the filtered range.
      * @param op     Operator for the filter item.
      * @param value  Numeric value associated with the operator for the filter
-     *               item.
+     *               item.  Note that some operators may not require a value.
      */
     virtual void append_item(col_t field, auto_filter_op_t op, double value) = 0;
 
@@ -69,7 +69,7 @@ public:
      *               column of the filtered range.
      * @param op     Operator for the filter item.
      * @param value  String value associated with the operator for the filter
-     *               item.
+     *               item.  Note that some operators may not require a value.
      * @param regex  Whether or not the string value should be interpreted as a
      *               regular expression.
      */
