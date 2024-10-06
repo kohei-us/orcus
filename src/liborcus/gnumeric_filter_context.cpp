@@ -14,6 +14,8 @@
 #include <orcus/spreadsheet/import_interface_auto_filter.hpp>
 #include <orcus/measurement.hpp>
 
+#include <mdds/sorted_string_map.hpp>
+
 #include <iostream>
 #include <optional>
 
@@ -23,13 +25,34 @@ namespace orcus {
 
 namespace {
 
-enum gnumeric_filter_field_type_t
+enum class gnumeric_filter_field_type_t
 {
-    filter_expr,
-    filter_blanks,
-    filter_nonblanks,
-    filter_type_invalid
+    invalid,
+    expr,
+    blanks,
+    noblanks,
+    bucket,
 };
+
+namespace field_type {
+
+using map_type = mdds::sorted_string_map<gnumeric_filter_field_type_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry_type entries[] = {
+    { "blanks", gnumeric_filter_field_type_t::blanks },
+    { "bucket", gnumeric_filter_field_type_t::bucket },
+    { "expr", gnumeric_filter_field_type_t::expr },
+    { "noblanks", gnumeric_filter_field_type_t::noblanks },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), gnumeric_filter_field_type_t::invalid);
+    return mt;
+}
+
+} // field_type namespace
 
 } // anonymous namespace
 
@@ -143,7 +166,7 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
     if (!mp_node)
         return;
 
-    gnumeric_filter_field_type_t filter_field_type = filter_type_invalid;
+    gnumeric_filter_field_type_t filter_field_type = gnumeric_filter_field_type_t::invalid;
     ss::auto_filter_op_t filter_op = ss::auto_filter_op_t::unspecified;
 
     ss::col_t col = -1;
@@ -162,12 +185,15 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
             }
             case XML_Type:
             {
-                if (attr.value == "expr")
-                    filter_field_type = filter_expr;
-                else if (attr.value == "blanks")
-                    filter_field_type = filter_blanks;
-                else if (attr.value == "nonblanks")
-                    filter_field_type = filter_nonblanks;
+                filter_field_type = field_type::get().find(attr.value);
+
+                if (filter_field_type == gnumeric_filter_field_type_t::invalid)
+                {
+                    std::ostringstream os;
+                    os << "invalid filter field type: " << attr.value;
+                    warn(os.str());
+                    return;
+                }
                 break;
             }
             case XML_Op0:
@@ -213,7 +239,7 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
 
     switch (filter_field_type)
     {
-        case filter_expr:
+        case gnumeric_filter_field_type_t::expr:
         {
             // see GnmValueType in gnumeric code for these magic values
 
@@ -269,13 +295,17 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
             }
             break;
         }
-        case filter_blanks:
+        case gnumeric_filter_field_type_t::blanks:
             mp_node->append_item(col, ss::auto_filter_op_t::empty, 0);
             break;
-        case filter_nonblanks:
+        case gnumeric_filter_field_type_t::noblanks:
             mp_node->append_item(col, ss::auto_filter_op_t::not_empty, 0);
             break;
-        case filter_type_invalid:
+        case gnumeric_filter_field_type_t::bucket:
+            warn("bucket filter field type is not yet handled");
+            break;
+        case gnumeric_filter_field_type_t::invalid:
+            warn("filter field type is invalid without early bail-out");
             break;
     }
 }
