@@ -405,6 +405,8 @@ void gnumeric_filter_context::push_field_rule(
     spreadsheet::col_t field, spreadsheet::auto_filter_op_t op, long value_type,
     std::string_view value)
 {
+    assert(!m_node_stack.empty());
+
     switch (value_type)
     {
         case 10:
