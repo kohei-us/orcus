@@ -26,7 +26,6 @@ namespace spreadsheet {
 
 class document;
 
-namespace old { struct auto_filter_t; }
 struct auto_filter_t;
 
 namespace detail {
@@ -107,10 +106,6 @@ public:
     range_t get_merge_cell_range(row_t row, col_t col) const;
 
     size_t get_string_identifier(row_t row, col_t col) const;
-
-    old::auto_filter_t* get_auto_filter_data();
-    const old::auto_filter_t* get_auto_filter_data() const;
-    void set_auto_filter_data(old::auto_filter_t* p);
 
     void set_auto_filter(std::unique_ptr<auto_filter_t> filter);
     const auto_filter_t* get_auto_filter() const;

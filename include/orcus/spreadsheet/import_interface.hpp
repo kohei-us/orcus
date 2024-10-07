@@ -20,7 +20,6 @@
 
 namespace orcus { namespace spreadsheet { namespace iface {
 
-namespace old { class import_auto_filter; }
 class import_auto_filter;
 class import_styles;
 class import_pivot_cache_definition;
@@ -560,14 +559,14 @@ public:
      * Get an optional interface for importing auto filter data stored as part
      * of a table.
      *
-     * The implementor should initialize the internal state of the temporary
-     * auto filter object when this method is called.
+     * The implementor should initialize the internal buffer to store the auto
+     * filter data when this method is called.
      *
-     * @return pointer to the auto filter interface object, or a @p nullptr if
+     * @param range Filtered range.
+     *
+     * @return Pointer to an auto filter interface object, or a @p nullptr if
      *         the implementor doesn't support it.
      */
-    virtual old::import_auto_filter* get_auto_filter();
-
     virtual import_auto_filter* start_auto_filter(const range_t& range);
 
     /**
@@ -875,16 +874,16 @@ public:
     virtual import_data_table* get_data_table();
 
     /**
-     * Get an optional interface for importing auto filter ranges.
+     * Get an optional interface for importing auto filter data.
      *
-     * The implementor should initialize the internal state of the temporary
-     * auto filter object when this method is called.
+     * The implementor should initialize the internal buffer to store the auto
+     * filter data when this method is called.
      *
-     * @return pointer to the auto filter interface object, or a @p nullptr if
+     * @param range Filtered range.
+     *
+     * @return Pointer to an auto filter interface object, or a @p nullptr if
      *         the implementor doesn't support it.
      */
-    virtual old::import_auto_filter* get_auto_filter();
-
     virtual import_auto_filter* start_auto_filter(const range_t& range);
 
     /**

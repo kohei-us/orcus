@@ -95,34 +95,6 @@ public:
     virtual void commit() override;
 };
 
-namespace old {
-
-class import_auto_filter : public orcus::spreadsheet::iface::old::import_auto_filter
-{
-    sheet& m_sheet;
-    string_pool& m_string_pool;
-    std::unique_ptr<old::auto_filter_t> mp_data;
-    col_t m_cur_col;
-    old::auto_filter_column_t m_cur_col_data;
-
-public:
-    import_auto_filter(sheet& sh, string_pool& sp);
-
-    void reset();
-
-    virtual void set_range(const range_t& range) override;
-
-    virtual void set_column(col_t col) override;
-
-    virtual void append_column_match_value(std::string_view value) override;
-
-    virtual void commit_column() override;
-
-    virtual void commit() override;
-};
-
-}
-
 class import_array_formula : public iface::import_array_formula
 {
     document& m_doc;
@@ -203,7 +175,6 @@ class import_sheet : public iface::import_sheet
     import_sheet_named_exp m_named_exp;
     import_sheet_properties m_sheet_properties;
     import_data_table m_data_table;
-    old::import_auto_filter m_auto_filter_old;
     import_auto_filter m_auto_filter;
     import_table m_table;
     character_set_t m_charset;
@@ -217,7 +188,6 @@ public:
     virtual ~import_sheet() override;
 
     virtual iface::import_sheet_view* get_sheet_view() override;
-    virtual iface::old::import_auto_filter* get_auto_filter() override;
     virtual iface::import_auto_filter* start_auto_filter(const range_t& range) override;
     virtual iface::import_conditional_format* get_conditional_format() override;
     virtual iface::import_data_table* get_data_table() override;

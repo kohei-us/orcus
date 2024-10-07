@@ -93,53 +93,6 @@ void import_data_table::commit()
 {
 }
 
-namespace old {
-
-import_auto_filter::import_auto_filter(sheet& sh, string_pool& sp) :
-    m_sheet(sh),
-    m_string_pool(sp),
-    m_cur_col(-1) {}
-
-void import_auto_filter::reset()
-{
-    mp_data.reset(new old::auto_filter_t);
-    m_cur_col = -1;
-    m_cur_col_data.reset();
-}
-
-void import_auto_filter::set_range(const range_t& range)
-{
-    mp_data->range = to_abs_range(range, m_sheet.get_index());
-}
-
-void import_auto_filter::set_column(col_t col)
-{
-    m_cur_col = col;
-}
-
-void import_auto_filter::append_column_match_value(std::string_view value)
-{
-    // The string pool belongs to the document.
-    value = m_string_pool.intern(value).first;
-    m_cur_col_data.match_values.insert(value);
-}
-
-void import_auto_filter::commit_column()
-{
-    if (!mp_data)
-        return;
-
-    mp_data->commit_column(m_cur_col, m_cur_col_data);
-    m_cur_col_data.reset();
-}
-
-void import_auto_filter::commit()
-{
-    m_sheet.set_auto_filter_data(mp_data.release());
-}
-
-}
-
 import_array_formula::import_array_formula(document& doc, sheet& sheet) :
     m_doc(doc), m_sheet(sheet), m_missing_formula_result(), m_error_policy(formula_error_policy_t::fail)
 {
@@ -400,7 +353,6 @@ import_sheet::import_sheet(document& doc, sheet& sh, sheet_view* view) :
     m_named_exp(doc, sh.get_index()),
     m_sheet_properties(doc, sh),
     m_data_table(sh),
-    m_auto_filter_old(sh, doc.get_string_pool()),
     m_auto_filter(doc.get_string_pool()),
     m_table(doc, sh),
     m_charset(character_set_t::unspecified),
@@ -415,12 +367,6 @@ import_sheet::~import_sheet() {}
 iface::import_sheet_view* import_sheet::get_sheet_view()
 {
     return m_sheet_view.get();
-}
-
-iface::old::import_auto_filter* import_sheet::get_auto_filter()
-{
-    m_auto_filter_old.reset();
-    return &m_auto_filter_old;
 }
 
 iface::import_auto_filter* import_sheet::start_auto_filter(const range_t& range)

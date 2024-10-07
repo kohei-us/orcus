@@ -21,8 +21,6 @@ namespace orcus {
 
 namespace spreadsheet { namespace iface {
 
-namespace old { class import_auto_filter; }
-
 class import_auto_filter;
 class import_auto_filter_node;
 class import_auto_filter_multi_values;
@@ -49,8 +47,6 @@ public:
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
-
-    void push_to_model(spreadsheet::iface::old::import_auto_filter& af) const;
 
     void reset(iface_factory_type factory);
 
