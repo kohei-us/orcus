@@ -90,6 +90,7 @@ gnumeric_sheet_context::gnumeric_sheet_context(
         { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_gnumeric_gnm, XML_Sheet }, // root element
         { NS_gnumeric_gnm, XML_Cells, NS_gnumeric_gnm, XML_Cell },
         { NS_gnumeric_gnm, XML_Cols, NS_gnumeric_gnm, XML_ColInfo },
+        { NS_gnumeric_gnm, XML_Filters, NS_gnumeric_gnm, XML_Filter },
         { NS_gnumeric_gnm, XML_MergedRegions, NS_gnumeric_gnm, XML_Merge },
         { NS_gnumeric_gnm, XML_Rows, NS_gnumeric_gnm, XML_RowInfo },
         { NS_gnumeric_gnm, XML_Sheet, NS_gnumeric_gnm, XML_Cells },

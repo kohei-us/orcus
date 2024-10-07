@@ -54,6 +54,51 @@ const map_type& get()
 
 } // field_type namespace
 
+namespace op {
+
+using map_type = mdds::sorted_string_map<ss::auto_filter_op_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry_type entries[] = {
+    { "eq", ss::auto_filter_op_t::equal },
+    { "gt", ss::auto_filter_op_t::greater },
+    { "gte", ss::auto_filter_op_t::greater_equal },
+    { "lt", ss::auto_filter_op_t::less },
+    { "lte", ss::auto_filter_op_t::less_equal },
+    { "ne", ss::auto_filter_op_t::not_equal },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::auto_filter_op_t::unspecified);
+    return mt;
+}
+
+} // op namespace
+
+class scoped_child_node
+{
+    std::vector<ss::iface::import_auto_filter_node*>& m_node_stack;
+
+public:
+    scoped_child_node(
+        std::vector<ss::iface::import_auto_filter_node*>& node_stack,
+        ss::auto_filter_node_op_t connector) :
+        m_node_stack(node_stack)
+    {
+        auto* node = m_node_stack.back()->start_node(connector);
+        ENSURE_INTERFACE(node, import_auto_filter_node);
+        m_node_stack.push_back(node);
+    }
+
+    ~scoped_child_node()
+    {
+        assert(!m_node_stack.empty());
+        m_node_stack.back()->commit();
+        m_node_stack.pop_back();
+    }
+};
+
 } // anonymous namespace
 
 gnumeric_filter_context::gnumeric_filter_context(
@@ -122,7 +167,7 @@ void gnumeric_filter_context::reset(spreadsheet::iface::import_sheet* sheet)
 {
     mp_sheet = sheet;
     mp_auto_filter = nullptr;
-    mp_node = nullptr;
+    m_node_stack.clear();
 }
 
 void gnumeric_filter_context::start_filter(const xml_token_attrs_t& attrs)
@@ -157,22 +202,30 @@ void gnumeric_filter_context::start_filter(const xml_token_attrs_t& attrs)
     if (!mp_auto_filter)
         return;
 
-    mp_node = mp_auto_filter->start_node(ss::auto_filter_node_op_t::op_and);
-    ENSURE_INTERFACE(mp_node, import_auto_filter_node);
+    auto node = mp_auto_filter->start_node(ss::auto_filter_node_op_t::op_and);
+    ENSURE_INTERFACE(node, import_auto_filter_node);
+    m_node_stack.push_back(node);
 }
 
 void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
 {
-    if (!mp_node)
+    if (m_node_stack.empty())
         return;
 
     gnumeric_filter_field_type_t filter_field_type = gnumeric_filter_field_type_t::invalid;
-    ss::auto_filter_op_t filter_op = ss::auto_filter_op_t::unspecified;
 
     ss::col_t field = -1;
+
     // NB: due to a bug in gnumeric, value and value type attributes are swapped
-    std::optional<long> filter_value_type;
-    std::string_view filter_value;
+    std::optional<long> filter_value_type0;
+    std::string_view filter_value0;
+    ss::auto_filter_op_t filter_op0 = ss::auto_filter_op_t::unspecified;
+
+    std::optional<long> filter_value_type1;
+    std::string_view filter_value1;
+    ss::auto_filter_op_t filter_op1 = ss::auto_filter_op_t::unspecified;
+
+    std::optional<ss::auto_filter_node_op_t> connector;
 
     for (const xml_token_attr_t& attr : attrs)
     {
@@ -198,28 +251,52 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
             }
             case XML_Op0:
             {
-                if (attr.value == "eq")
-                    filter_op = ss::auto_filter_op_t::equal;
-                else if (attr.value == "gt")
-                    filter_op = ss::auto_filter_op_t::greater;
-                else if (attr.value == "lt")
-                    filter_op = ss::auto_filter_op_t::less;
-                else if (attr.value == "gte")
-                    filter_op = ss::auto_filter_op_t::greater_equal;
-                else if (attr.value == "lte")
-                    filter_op = ss::auto_filter_op_t::less_equal;
-                else if (attr.value == "ne")
-                    filter_op = ss::auto_filter_op_t::not_equal;
+                filter_op0 = op::get().find(attr.value);
+                if (filter_op0 == ss::auto_filter_op_t::unspecified)
+                {
+                    std::ostringstream os;
+                    os << "invalid filter operator: '" << attr.value << "'";
+                    warn(os.str());
+                    return;
+                }
+                break;
+            }
+            case XML_Op1:
+            {
+                filter_op1 = op::get().find(attr.value);
+                if (filter_op1 == ss::auto_filter_op_t::unspecified)
+                {
+                    std::ostringstream os;
+                    os << "invalid filter operator: '" << attr.value << "'";
+                    warn(os.str());
+                    return;
+                }
                 break;
             }
             case XML_Value0:
             {
-                filter_value_type = to_long_checked(attr.value);
+                filter_value_type0 = to_long_checked(attr.value);
+                break;
+            }
+            case XML_Value1:
+            {
+                filter_value_type1 = to_long_checked(attr.value);
                 break;
             }
             case XML_ValueType0:
             {
-                filter_value = attr.value;
+                filter_value0 = attr.value;
+                break;
+            }
+            case XML_ValueType1:
+            {
+                filter_value1 = attr.value;
+                break;
+            }
+            case XML_IsAnd:
+            {
+                bool b = to_bool(attr.value);
+                connector = b ? ss::auto_filter_node_op_t::op_and : ss::auto_filter_node_op_t::op_or;
                 break;
             }
         }
@@ -231,25 +308,21 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
         return;
     }
 
-    if (!filter_value_type)
-    {
-        warn("valid filter value type was not found");
-        return;
-    }
-
     switch (filter_field_type)
     {
         case gnumeric_filter_field_type_t::expr:
         {
             // see GnmValueType in gnumeric code for these magic values
-            push_field_expression(field, filter_op, *filter_value_type, filter_value);
+            push_expression_field(
+                field, filter_op0, filter_value_type0, filter_value0, filter_op1,
+                filter_value_type1, filter_value1, connector);
             break;
         }
         case gnumeric_filter_field_type_t::blanks:
-            mp_node->append_item(field, ss::auto_filter_op_t::empty, 0);
+            m_node_stack.back()->append_item(field, ss::auto_filter_op_t::empty, 0);
             break;
         case gnumeric_filter_field_type_t::noblanks:
-            mp_node->append_item(field, ss::auto_filter_op_t::not_empty, 0);
+            m_node_stack.back()->append_item(field, ss::auto_filter_op_t::not_empty, 0);
             break;
         case gnumeric_filter_field_type_t::bucket:
             warn("bucket filter field type is not yet handled");
@@ -262,10 +335,14 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
 
 void gnumeric_filter_context::end_filter()
 {
-    if (mp_node)
-        mp_node->commit();
+    if (!m_node_stack.empty())
+    {
+        m_node_stack.back()->commit();
+        m_node_stack.pop_back();
+    }
 
-    mp_node = nullptr;
+    if (!m_node_stack.empty())
+        warn("node stack was expected to be empty when the Filter scope ends, but it isn't");
 
     if (mp_auto_filter)
         mp_auto_filter->commit();
@@ -277,8 +354,56 @@ void gnumeric_filter_context::end_field()
 {
 }
 
-void gnumeric_filter_context::push_field_expression(
-    ss::col_t field, ss::auto_filter_op_t op, long value_type, std::string_view value)
+void gnumeric_filter_context::push_expression_field(
+    ss::col_t field, ss::auto_filter_op_t op0, std::optional<long> value_type0,
+    std::string_view value0, ss::auto_filter_op_t op1, std::optional<long> value_type1,
+    std::string_view value1, std::optional<ss::auto_filter_node_op_t> connector)
+{
+    assert(field >= 0);
+    assert(!m_node_stack.empty());
+
+    if (op0 == ss::auto_filter_op_t::unspecified)
+    {
+        warn("no valid operator found in rule 1");
+        return;
+    }
+
+    if (!value_type0)
+    {
+        warn("no valid value type found in rule 1");
+        return;
+    }
+
+    if (!connector)
+    {
+        // this is a single-rule field
+        push_field_rule(field, op0, *value_type0, value0);
+        return;
+    }
+
+    // This is a compound rule.  Import it as a node with two child rules.
+    scoped_child_node node_pop(m_node_stack, *connector);
+
+    push_field_rule(field, op0, *value_type0, value0);
+
+    if (op1 == ss::auto_filter_op_t::unspecified)
+    {
+        warn("no valid operator found in rule 2");
+        return;
+    }
+
+    if (!value_type1)
+    {
+        warn("no valid value type found in rule 2");
+        return;
+    }
+
+    push_field_rule(field, op1, *value_type1, value1);
+}
+
+void gnumeric_filter_context::push_field_rule(
+    spreadsheet::col_t field, spreadsheet::auto_filter_op_t op, long value_type,
+    std::string_view value)
 {
     switch (value_type)
     {
@@ -290,7 +415,7 @@ void gnumeric_filter_context::push_field_expression(
         {
             // boolean
             bool v = to_bool(value);
-            mp_node->append_item(field, op, v ? 1 : 0);
+            m_node_stack.back()->append_item(field, op, v ? 1 : 0);
             break;
         }
         case 40:
@@ -304,7 +429,7 @@ void gnumeric_filter_context::push_field_expression(
                 warn(os.str());
                 break;
             }
-            mp_node->append_item(field, op, *v);
+            m_node_stack.back()->append_item(field, op, *v);
             break;
         }
         case 50:
@@ -313,7 +438,7 @@ void gnumeric_filter_context::push_field_expression(
             break;
         case 60:
             // string
-            mp_node->append_item(field, op, value, false);
+            m_node_stack.back()->append_item(field, op, value, false);
             break;
         case 70:
             // cell range
@@ -326,7 +451,7 @@ void gnumeric_filter_context::push_field_expression(
         default:
         {
             std::ostringstream os;
-            os << "unhandled fitler value type (" << value_type << ")";
+            os << "unhandled filter value type (" << value_type << ")";
             warn(os.str());
         }
     }

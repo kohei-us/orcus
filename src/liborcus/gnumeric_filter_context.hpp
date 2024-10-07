@@ -10,6 +10,8 @@
 #include "xml_context_base.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
+#include <optional>
+#include <vector>
 
 namespace orcus {
 
@@ -43,17 +45,23 @@ private:
     void end_filter();
     void end_field();
 
-    void push_field_expression(
-        spreadsheet::col_t field,
-        spreadsheet::auto_filter_op_t op,
-        long value_type,
+    void push_expression_field(
+        spreadsheet::col_t field, spreadsheet::auto_filter_op_t op0, std::optional<long> value_type0,
+        std::string_view value0, spreadsheet::auto_filter_op_t op1, std::optional<long> value_type1,
+        std::string_view value1, std::optional<spreadsheet::auto_filter_node_op_t> connector);
+
+    /**
+     * Append a single field rule to the current import filter node.
+     */
+    void push_field_rule(
+        spreadsheet::col_t field, spreadsheet::auto_filter_op_t op, long value_type,
         std::string_view value);
 
 private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
     spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
-    spreadsheet::iface::import_auto_filter_node* mp_node = nullptr;
+    std::vector<spreadsheet::iface::import_auto_filter_node*> m_node_stack;
 };
 
 }

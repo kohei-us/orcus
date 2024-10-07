@@ -28,6 +28,9 @@
 
 import xml.parsers.expat, sys
 import token_util
+import argparse
+from pathlib import Path
+
 
 class XMLParser:
 
@@ -38,7 +41,7 @@ class XMLParser:
 
     def start_element(self, name, attrs):
         self.__elem = name
-        if name in ['xs:element', 'xs:attribute', 'xsd:element', 'xsd:attribute'] and attrs.has_key('name'):
+        if name in ['xs:element', 'xs:attribute', 'xsd:element', 'xsd:attribute'] and "name" in attrs:
             token = attrs['name']
             if len(token) > 0:
                 self.tokens.append(token)
@@ -57,25 +60,46 @@ class XMLParser:
         p.Parse(self.__strm, 1)
 
 
-def parse_file(filename):
-    file = open(filename, 'r')
-    chars = file.read()
-    file.close()
+def gen_tokens_from_schema(schema_file, extra_tokens):
+    chars = schema_file.read_text()
 
     parser = XMLParser(chars)
     parser.parse()
     tokens = {}
     for token in parser.tokens:
         tokens[token] = True
-    keys = tokens.keys()
-    keys.sort()
+    keys = list(tokens.keys())
+    keys.extend(extra_tokens)
+    keys = set(keys)  # remove potential duplicates
+    keys = sorted(keys)
     return keys
 
 
 def main ():
-    tokens = parse_file(sys.argv[1])
-    token_util.gen_token_constants(sys.argv[2], tokens)
-    token_util.gen_token_names(sys.argv[3], tokens)
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--schema", type=Path, required=True,
+        help="Path to Gnumeric's schema file, located in its repository and is named 'gnumeric.xsd'."
+    )
+    parser.add_argument(
+        "--extra-tokens", type=Path, default="./gnumeric-extra-tokens.txt",
+        help="File containing extra tokens to add with one token per line."
+    )
+    parser.add_argument(
+        "--output-token-constants", type=Path, default="../../src/liborcus/gnumeric_token_constants.inl",
+        help="Path to output file where token consant values are to be written."
+    )
+    parser.add_argument(
+        "--output-tokens", type=Path, default="../../src/liborcus/gnumeric_tokens.inl",
+        help="Path to output file where token consant values are to be written."
+    )
+    args = parser.parse_args()
+
+    extra_tokens = args.extra_tokens.read_text().strip().split('\n')
+    tokens = gen_tokens_from_schema(args.schema, extra_tokens)
+    token_util.gen_token_constants(args.output_token_constants, tokens)
+    token_util.gen_token_names(args.output_tokens, tokens)
+
 
 if __name__ == '__main__':
     main()
