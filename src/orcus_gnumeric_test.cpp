@@ -5,24 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus_test_global.hpp"
-#include "filesystem_env.hpp"
-
-#include <orcus/orcus_gnumeric.hpp>
-#include <orcus/format_detection.hpp>
-#include <orcus/stream.hpp>
-#include <orcus/spreadsheet/factory.hpp>
-#include <orcus/spreadsheet/document.hpp>
-#include <orcus/spreadsheet/sheet.hpp>
-#include <orcus/spreadsheet/auto_filter.hpp>
-#include <orcus/spreadsheet/shared_strings.hpp>
-#include <orcus/spreadsheet/styles.hpp>
-#include <orcus/types.hpp>
-
-#include <ixion/address.hpp>
-#include <ixion/model_context.hpp>
-#include <iostream>
-#include <sstream>
+#include "orcus_gnumeric_test.hpp"
 
 using namespace orcus;
 namespace ss = orcus::spreadsheet;
@@ -36,6 +19,8 @@ std::vector<fs::path> dirs = {
     SRCDIR"/test/gnumeric/named-expression/",
     SRCDIR"/test/gnumeric/named-expression-sheet-local/",
 };
+
+} // anonymous namespace
 
 std::unique_ptr<ss::document> load_doc(const fs::path& filepath)
 {
@@ -170,41 +155,6 @@ void test_gnumeric_column_widths_row_heights()
             assert(span == span_expected);
         }
     }
-}
-
-void test_gnumeric_auto_filter()
-{
-    ORCUS_TEST_FUNC_SCOPE;
-#if 0 // TODO: fix this
-    fs::path filepath = SRCDIR"/test/gnumeric/table/autofilter.gnumeric";
-    auto doc = load_doc(filepath);
-
-    assert(doc->get_sheet_count() == 1);
-    const ss::sheet* sh = doc->get_sheet(0);
-    assert(sh);
-
-    const ss::old::auto_filter_t* af = sh->get_auto_filter_data();
-    assert(af);
-    ixion::abs_range_t b2_c11{0, 1, 1, 10, 2};
-    assert(af->range == b2_c11);
-    assert(af->columns.size() == 2);
-
-    auto it = af->columns.begin();
-    assert(it->first == 0);
-    {
-        const ss::old::auto_filter_column_t& afc = it->second;
-        assert(afc.match_values.size() == 1);
-        assert(*afc.match_values.begin() == "A");
-    }
-
-    ++it;
-    assert(it->first == 1);
-    {
-        const ss::old::auto_filter_column_t& afc = it->second;
-        assert(afc.match_values.size() == 1);
-        assert(*afc.match_values.begin() == "1");
-    }
-#endif
 }
 
 void test_gnumeric_hidden_rows_columns()
@@ -1574,15 +1524,12 @@ void test_gnumeric_number_format()
     }
 }
 
-} // anonymous namespace
-
 int main()
 {
     test_gnumeric_detection();
     test_gnumeric_create_filter();
     test_gnumeric_import();
     test_gnumeric_column_widths_row_heights();
-    test_gnumeric_auto_filter();
     test_gnumeric_hidden_rows_columns();
     test_gnumeric_merged_cells();
     test_gnumeric_text_alignment();
@@ -1595,6 +1542,8 @@ int main()
     test_gnumeric_cell_borders_directions();
     test_gnumeric_cell_borders_colors();
     test_gnumeric_number_format();
+
+    test_gnumeric_auto_filter();
 
     return EXIT_SUCCESS;
 }

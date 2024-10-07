@@ -671,7 +671,9 @@ if WITH_GNUMERIC_FILTER
 EXTRA_PROGRAMS += orcus-gnumeric-test
 
 orcus_gnumeric_test_SOURCES = \
+	orcus_gnumeric_test.hpp \
 	orcus_gnumeric_test.cpp \
+	orcus_gnumeric_test_table.cpp \
 	orcus_test_global.cpp
 
 orcus_gnumeric_test_LDADD = \
