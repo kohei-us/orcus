@@ -26,6 +26,8 @@
 #include <iostream>
 #include <sstream>
 
+std::unique_ptr<orcus::spreadsheet::document> load_doc(const fs::path& filepath);
+
 void test_gnumeric_detection();
 void test_gnumeric_create_filter();
 void test_gnumeric_import();
@@ -43,6 +45,6 @@ void test_gnumeric_cell_borders_directions();
 void test_gnumeric_cell_borders_colors();
 void test_gnumeric_number_format();
 
-void test_gnumeric_auto_filter();
+void test_gnumeric_auto_filter_multi_rules();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

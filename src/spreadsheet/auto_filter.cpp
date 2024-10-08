@@ -327,6 +327,32 @@ void auto_filter_t::swap(auto_filter_t& other)
     root.swap(other.root);
 }
 
+std::ostream& operator<<(std::ostream& os, const filter_item_t& v)
+{
+    auto value = v.value();
+
+    os << "filter-item(field=" << v.field()
+        << "; op=" << v.op()
+        << "; value=";
+
+    switch (value.type())
+    {
+        case filter_value_t::value_type::numeric:
+            os << value.numeric();
+            break;
+        case filter_value_t::value_type::string:
+            os << "'" << value.string() << "'";
+            break;
+        case filter_value_t::value_type::empty:
+            os << "<empty>";
+            break;
+    }
+
+    os << "; regex=" << std::boolalpha << v.regex() << ")";
+
+    return os;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

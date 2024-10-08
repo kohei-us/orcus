@@ -7,39 +7,121 @@
 
 #include "orcus_gnumeric_test.hpp"
 
-void test_gnumeric_auto_filter()
+namespace ss = orcus::spreadsheet;
+namespace test = orcus::test;
+
+namespace {
+
+test::rc_range_resolver to_range(ixion::formula_name_resolver_t::excel_a1);
+
+} // anonymous namespace
+
+void test_gnumeric_auto_filter_multi_rules()
 {
     ORCUS_TEST_FUNC_SCOPE;
-#if 0 // TODO: fix this
-    fs::path filepath = SRCDIR"/test/gnumeric/table/autofilter.gnumeric";
+
+    fs::path filepath = SRCDIR"/test/gnumeric/table/autofilter-multi-rules.gnumeric";
     auto doc = load_doc(filepath);
 
-    assert(doc->get_sheet_count() == 1);
-    const ss::sheet* sh = doc->get_sheet(0);
-    assert(sh);
-
-    const ss::old::auto_filter_t* af = sh->get_auto_filter_data();
-    assert(af);
-    ixion::abs_range_t b2_c11{0, 1, 1, 10, 2};
-    assert(af->range == b2_c11);
-    assert(af->columns.size() == 2);
-
-    auto it = af->columns.begin();
-    assert(it->first == 0);
     {
-        const ss::old::auto_filter_column_t& afc = it->second;
-        assert(afc.match_values.size() == 1);
-        assert(*afc.match_values.begin() == "A");
+        const ss::sheet* sh = doc->get_sheet("Single");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 0, v == 'A'}
+        //  |
+        //  +- item {field: 1, v == 1}
+        //  |
+        //  +- item {field: 2, v == 1}  boolean 'true' imported as numeric 1
+
+        assert(af->range == to_range("B4:D10"));
+        assert(af->root.size() == 3);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        // same order as they appear in the source file
+        const ss::filter_item_t expected[3] = {
+            {2, ss::auto_filter_op_t::equal, 1},
+            {1, ss::auto_filter_op_t::equal, 1},
+            {0, ss::auto_filter_op_t::equal, "A"},
+        };
+
+        for (std::size_t i = 0; i < 3; ++i)
+        {
+            auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(i));
+            assert(item);
+            assert(*item == expected[i]);
+        }
     }
 
-    ++it;
-    assert(it->first == 1);
     {
-        const ss::old::auto_filter_column_t& afc = it->second;
-        assert(afc.match_values.size() == 1);
-        assert(*afc.match_values.begin() == "1");
+        const ss::sheet* sh = doc->get_sheet("Multi");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // same order as they appear in the source file
+        //
+        // root {and}
+        //  |
+        //  +- node {and}
+        //  |   |
+        //  |   +- item{field: 1, v >= 3}
+        //  |   |
+        //  |   +- item{field: 1, v <= 22}
+        //  |
+        //  +- node {or}
+        //      |
+        //      +- item{field: 0, v == 'E'}
+        //      |
+        //      +- item{field: 0, v == 'P'}
+
+        assert(af->range == to_range("B6:C32"));
+        assert(af->root.size() == 2);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        {
+            auto* node = dynamic_cast<const ss::filter_node_t*>(af->root.at(0));
+            assert(node);
+            assert(node->op() == ss::auto_filter_node_op_t::op_and);
+            assert(node->size() == 2);
+
+            const ss::filter_item_t expected[2] = {
+                {1, ss::auto_filter_op_t::greater_equal, 3},
+                {1, ss::auto_filter_op_t::less_equal, 22},
+            };
+
+            for (std::size_t i = 0; i < 2; ++i)
+            {
+                auto* item = dynamic_cast<const ss::filter_item_t*>(node->at(i));
+                assert(item);
+                assert(*item == expected[i]);
+            }
+        }
+
+        {
+            auto* node = dynamic_cast<const ss::filter_node_t*>(af->root.at(1));
+            assert(node);
+            assert(node->op() == ss::auto_filter_node_op_t::op_or);
+            assert(node->size() == 2);
+
+            const ss::filter_item_t expected[2] = {
+                {0, ss::auto_filter_op_t::equal, "E"},
+                {0, ss::auto_filter_op_t::equal, "P"},
+            };
+
+            for (std::size_t i = 0; i < 2; ++i)
+            {
+                auto* item = dynamic_cast<const ss::filter_item_t*>(node->at(i));
+                assert(item);
+                assert(*item == expected[i]);
+            }
+        }
     }
-#endif
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -1543,7 +1543,7 @@ int main()
     test_gnumeric_cell_borders_colors();
     test_gnumeric_number_format();
 
-    test_gnumeric_auto_filter();
+    test_gnumeric_auto_filter_multi_rules();
 
     return EXIT_SUCCESS;
 }

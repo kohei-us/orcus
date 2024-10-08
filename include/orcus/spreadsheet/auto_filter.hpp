@@ -184,6 +184,8 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
     void swap(auto_filter_t& other);
 };
 
+ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const filter_item_t& v);
+
 }}
 
 #endif

@@ -110,6 +110,7 @@ auto_filter_test_SOURCES = \
 auto_filter_test_LDADD = \
 	$(LIBIXION_LIBS) \
 	../test/liborcus-test.a \
-	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../liborcus/liborcus-@ORCUS_API_VERSION@.la
 
 endif # BUILD_SPREADSHEET_MODEL
