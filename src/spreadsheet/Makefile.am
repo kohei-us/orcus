@@ -2,8 +2,7 @@ if BUILD_SPREADSHEET_MODEL
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
-	-I$(top_srcdir)/src/include \
-	-D__ORCUS_SPM_BUILDING_DLL
+	-I$(top_srcdir)/src/include
 
 AM_CPPFLAGS += $(BOOST_CPPFLAGS) $(LIBIXION_CFLAGS)
 
@@ -25,6 +24,8 @@ COMMON_CPPFLAGS = $(AM_CPPFLAGS)
 
 if HAVE_STATIC_LIB
 AM_CPPFLAGS += -D__ORCUS_STATIC_LIB=1
+else
+AM_CPPFLAGS += -D__ORCUS_SPM_BUILDING_DLL=1
 endif
 
 lib_LTLIBRARIES = liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la
@@ -107,10 +108,11 @@ auto_filter_test_SOURCES = \
 	auto_filter_test.cpp \
 	auto_filter.cpp
 
+auto_filter_test_LDFLAGS = -no-undefined
 auto_filter_test_LDADD = \
-	$(LIBIXION_LIBS) \
 	../test/liborcus-test.a \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	../liborcus/liborcus-@ORCUS_API_VERSION@.la
+	../liborcus/liborcus-@ORCUS_API_VERSION@.la \
+	$(LIBIXION_LIBS)
 
 endif # BUILD_SPREADSHEET_MODEL
