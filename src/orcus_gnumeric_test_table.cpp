@@ -22,6 +22,7 @@ void test_gnumeric_auto_filter_multi_rules()
 
     fs::path filepath = SRCDIR"/test/gnumeric/table/autofilter-multi-rules.gnumeric";
     auto doc = load_doc(filepath);
+    assert(doc);
 
     {
         const ss::sheet* sh = doc->get_sheet("Single");
@@ -121,6 +122,163 @@ void test_gnumeric_auto_filter_multi_rules()
                 assert(*item == expected[i]);
             }
         }
+    }
+}
+
+void test_gnumeric_auto_filter_number()
+{
+    fs::path filepath = SRCDIR"/test/gnumeric/table/autofilter-number.gnumeric";
+    auto doc = load_doc(filepath);
+    assert(doc);
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Greater Than");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 2, v > 20}
+
+        assert(af->range == to_range("B3:G96"));
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{2, ss::auto_filter_op_t::greater, 20};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Greater Than Equal");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 2, v >= 20}
+
+        assert(af->range == to_range("B3:G96"));
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{2, ss::auto_filter_op_t::greater_equal, 20};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Less Than");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 0, v < 5}
+
+        assert(af->range == to_range("B3:G96"));
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{0, ss::auto_filter_op_t::less, 5};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Less Than Equal");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 0, v <= 10}
+
+        assert(af->range == to_range("B3:G96"));
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{0, ss::auto_filter_op_t::less_equal, 10};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Between");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- node {and}
+        //  |   |
+        //  |   +- item{field: 0, v >= 10}
+        //  |   |
+        //  |   +- item{field: 0, v <= 20}
+
+        assert(af->range == to_range("B3:G96"));
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* node = dynamic_cast<const ss::filter_node_t*>(af->root.at(0));
+        assert(node);
+        assert(node->op() == ss::auto_filter_node_op_t::op_and);
+        assert(node->size() == 2);
+
+        const ss::filter_item_t expected[2] = {
+            {0, ss::auto_filter_op_t::greater_equal, 10},
+            {0, ss::auto_filter_op_t::less_equal, 20},
+        };
+
+        for (std::size_t i = 0; i < std::size(expected); ++i)
+        {
+            auto* item = dynamic_cast<const ss::filter_item_t*>(node->at(i));
+            assert(item);
+            assert(*item == expected[i]);
+        }
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Top 10");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 2, top 5}
+
+        assert(af->range == to_range("B3:E17"));
+
+#if 0 // FIXME
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{2, ss::auto_filter_op_t::top, 5};
+        assert(*item == expected);
+#endif
     }
 }
 

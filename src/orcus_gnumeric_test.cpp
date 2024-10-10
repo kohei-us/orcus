@@ -1544,6 +1544,7 @@ int main()
     test_gnumeric_number_format();
 
     test_gnumeric_auto_filter_multi_rules();
+    test_gnumeric_auto_filter_number();
 
     return EXIT_SUCCESS;
 }
