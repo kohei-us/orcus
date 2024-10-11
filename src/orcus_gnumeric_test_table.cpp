@@ -279,6 +279,29 @@ void test_gnumeric_auto_filter_number()
         assert(*item == expected);
     }
 
+    {
+        const ss::sheet* sh = doc->get_sheet("Bottom 10");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 2, bottom 3}
+
+        assert(af->range == to_range("B3:E17"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{2, ss::auto_filter_op_t::bottom, 3};
+        assert(*item == expected);
+    }
+
     // TODO: continue on
 }
 

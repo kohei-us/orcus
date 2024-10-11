@@ -514,7 +514,8 @@ void gnumeric_filter_context::push_bucket_field(
     if (items && *items)
     {
         // top N items
-        m_node_stack.back()->append_item(field, ss::auto_filter_op_t::top, *count);
+        m_node_stack.back()->append_item(
+            field, *top ? ss::auto_filter_op_t::top : ss::auto_filter_op_t::bottom, *count);
         return;
     }
 
