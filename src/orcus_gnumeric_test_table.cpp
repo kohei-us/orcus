@@ -269,7 +269,6 @@ void test_gnumeric_auto_filter_number()
 
         assert(af->range == to_range("B3:E17"));
 
-#if 0 // FIXME
         assert(af->root.size() == 1);
         assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
 
@@ -278,8 +277,9 @@ void test_gnumeric_auto_filter_number()
 
         const ss::filter_item_t expected{2, ss::auto_filter_op_t::top, 5};
         assert(*item == expected);
-#endif
     }
+
+    // TODO: continue on
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

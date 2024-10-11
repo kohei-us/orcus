@@ -227,6 +227,11 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
 
     std::optional<ss::auto_filter_node_op_t> connector;
 
+    std::optional<bool> top;
+    std::optional<bool> items;
+    std::optional<bool> rel_range;
+    std::optional<double> count;
+
     for (const xml_token_attr_t& attr : attrs)
     {
         switch (attr.name)
@@ -299,6 +304,26 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
                 connector = b ? ss::auto_filter_node_op_t::op_and : ss::auto_filter_node_op_t::op_or;
                 break;
             }
+            case XML_top:
+            {
+                top = to_bool(attr.value);
+                break;
+            }
+            case XML_items:
+            {
+                items = to_bool(attr.value);
+                break;
+            }
+            case XML_rel_range:
+            {
+                rel_range = to_bool(attr.value);
+                break;
+            }
+            case XML_count:
+            {
+                count = to_double_checked(attr.value);
+                break;
+            }
         }
     }
 
@@ -325,8 +350,10 @@ void gnumeric_filter_context::start_field(const xml_token_attrs_t& attrs)
             m_node_stack.back()->append_item(field, ss::auto_filter_op_t::not_empty, 0);
             break;
         case gnumeric_filter_field_type_t::bucket:
-            warn("bucket filter field type is not yet handled");
+        {
+            push_bucket_field(field, top, rel_range, items, count);
             break;
+        }
         case gnumeric_filter_field_type_t::invalid:
             warn("filter field type is invalid without early bail-out");
             break;
@@ -457,6 +484,42 @@ void gnumeric_filter_context::push_field_rule(
             warn(os.str());
         }
     }
+}
+
+void gnumeric_filter_context::push_bucket_field(
+    ss::col_t field, std::optional<bool> top, std::optional<bool> rel_range,
+    std::optional<bool> items, std::optional<double> count)
+{
+    assert(field >= 0);
+    assert(!m_node_stack.empty());
+
+    if (!top)
+    {
+        warn("bucket filter type with no 'top' boolean attribute given");
+        return;
+    }
+
+    if (!count)
+    {
+        warn("bucket filter type with no 'count' numeric attribute given");
+        return;
+    }
+
+    //  items | rel_range | interpretation
+    // -------+-----------+----------------------
+    //  true  | -         | top N items
+    //  false | true      | top N% of data range
+    //  false | false     | top N% of all items
+
+    if (items && *items)
+    {
+        // top N items
+        m_node_stack.back()->append_item(field, ss::auto_filter_op_t::top, *count);
+        return;
+    }
+
+    warn("top N% bucket filter type not yet handled");
+    (void)rel_range;
 }
 
 }
