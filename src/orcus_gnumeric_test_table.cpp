@@ -302,7 +302,97 @@ void test_gnumeric_auto_filter_number()
         assert(*item == expected);
     }
 
-    // TODO: continue on
+    {
+        const ss::sheet* sh = doc->get_sheet("Top %");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 4, top 20% of items}
+
+        assert(af->range == to_range("B3:H50"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{4, ss::auto_filter_op_t::top_percent, 20};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Top %Range");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 4, top 20% of data range}
+
+        assert(af->range == to_range("B3:H50"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{4, ss::auto_filter_op_t::top_percent_range, 20};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Bottom %");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 4, bottom 5% of items}
+
+        assert(af->range == to_range("B3:H50"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{4, ss::auto_filter_op_t::bottom_percent, 5};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Bottom %Range");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 4, bottom 5% of data range}
+
+        assert(af->range == to_range("B3:H50"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{4, ss::auto_filter_op_t::bottom_percent_range, 5};
+        assert(*item == expected);
+    }
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -519,8 +519,19 @@ void gnumeric_filter_context::push_bucket_field(
         return;
     }
 
-    warn("top N% bucket filter type not yet handled");
-    (void)rel_range;
+    if (rel_range && *rel_range)
+    {
+        // top N% of data range
+        m_node_stack.back()->append_item(
+            field,
+            *top ? ss::auto_filter_op_t::top_percent_range : ss::auto_filter_op_t::bottom_percent_range,
+            *count);
+        return;
+    }
+
+    // top N% of items
+    m_node_stack.back()->append_item(
+        field, *top ? ss::auto_filter_op_t::top_percent : ss::auto_filter_op_t::bottom_percent, *count);
 }
 
 }
