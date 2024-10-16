@@ -127,6 +127,8 @@ void test_gnumeric_auto_filter_multi_rules()
 
 void test_gnumeric_auto_filter_number()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path filepath = SRCDIR"/test/gnumeric/table/autofilter-number.gnumeric";
     auto doc = load_doc(filepath);
     assert(doc);
@@ -391,6 +393,206 @@ void test_gnumeric_auto_filter_number()
         assert(item);
 
         const ss::filter_item_t expected{4, ss::auto_filter_op_t::bottom_percent_range, 5};
+        assert(*item == expected);
+    }
+}
+
+void test_gnumeric_auto_filter_text()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    fs::path filepath = SRCDIR"/test/gnumeric/table/autofilter-text.gnumeric";
+    auto doc = load_doc(filepath);
+    assert(doc);
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Select One");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 1, v == 'FL'}
+
+        assert(af->range == to_range("B3:E17"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{1, ss::auto_filter_op_t::equal, "FL"};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Equals");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- node {or}
+        //  |   |
+        //  |   +- item{field: 1, v == "Japan"}
+        //  |   |
+        //  |   +- item{field: 1, v == "China"}
+
+        assert(af->range == to_range("B3:G96"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* node = dynamic_cast<const ss::filter_node_t*>(af->root.at(0));
+        assert(node);
+        assert(node->op() == ss::auto_filter_node_op_t::op_or);
+        assert(node->size() == 2);
+
+        const ss::filter_item_t expected[2] = {
+            {1, ss::auto_filter_op_t::equal, "Japan"},
+            {1, ss::auto_filter_op_t::equal, "China"},
+        };
+
+        for (std::size_t i = 0; i < std::size(expected); ++i)
+        {
+            auto* item = dynamic_cast<const ss::filter_item_t*>(node->at(i));
+            assert(item);
+            assert(*item == expected[i]);
+        }
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Does Not Equal");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- node {and}
+        //  |   |
+        //  |   +- item{field: 1, v != "NV"}
+        //  |   |
+        //  |   +- item{field: 1, v != "FL"}
+
+        assert(af->range == to_range("B3:E17"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* node = dynamic_cast<const ss::filter_node_t*>(af->root.at(0));
+        assert(node);
+        assert(node->op() == ss::auto_filter_node_op_t::op_and);
+        assert(node->size() == 2);
+
+        const ss::filter_item_t expected[2] = {
+            {1, ss::auto_filter_op_t::not_equal, "NV"},
+            {1, ss::auto_filter_op_t::not_equal, "FL"},
+        };
+
+        for (std::size_t i = 0; i < std::size(expected); ++i)
+        {
+            auto* item = dynamic_cast<const ss::filter_item_t*>(node->at(i));
+            assert(item);
+            assert(*item == expected[i]);
+        }
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Begins With");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 1, begins with 'Be'}
+
+        assert(af->range == to_range("B3:G96"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{1, ss::auto_filter_op_t::begin_with, "Be"};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Ends With");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 1, ends with 'lic'}
+
+        assert(af->range == to_range("B3:G96"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{1, ss::auto_filter_op_t::end_with, "lic"};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Contains");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 0, contains 'ing'}
+
+        assert(af->range == to_range("B3:E17"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{0, ss::auto_filter_op_t::contain, "ing"};
+        assert(*item == expected);
+    }
+
+    {
+        const ss::sheet* sh = doc->get_sheet("Does Not Contain");
+        assert(sh);
+
+        const ss::auto_filter_t* af = sh->get_auto_filter();
+        assert(af);
+
+        // root {and}
+        //  |
+        //  +- item {field: 0, not-contain 'an'}
+
+        assert(af->range == to_range("B3:E17"));
+
+        assert(af->root.size() == 1);
+        assert(af->root.op() == ss::auto_filter_node_op_t::op_and);
+
+        auto* item = dynamic_cast<const ss::filter_item_t*>(af->root.at(0));
+        assert(item);
+
+        const ss::filter_item_t expected{0, ss::auto_filter_op_t::not_contain, "an"};
         assert(*item == expected);
     }
 }

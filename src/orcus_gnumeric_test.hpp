@@ -47,5 +47,6 @@ void test_gnumeric_number_format();
 
 void test_gnumeric_auto_filter_multi_rules();
 void test_gnumeric_auto_filter_number();
+void test_gnumeric_auto_filter_text();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

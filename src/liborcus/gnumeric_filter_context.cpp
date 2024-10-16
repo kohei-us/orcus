@@ -466,9 +466,12 @@ void gnumeric_filter_context::push_field_rule(
             warn("error filter value type is not yet handled");
             break;
         case 60:
+        {
             // string
-            m_node_stack.back()->append_item(field, op, value, false);
+            auto res = m_value_parser.parse(op, value);
+            m_node_stack.back()->append_item(field, res.op, res.value, res.regex);
             break;
+        }
         case 70:
             // cell range
             warn("cell-range filter value type is not yet handled");

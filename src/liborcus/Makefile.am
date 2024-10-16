@@ -391,6 +391,7 @@ gnumeric_sheet_context_test_SOURCES = \
 	gnumeric_value_format_parser.cpp \
 	gnumeric_types.cpp \
 	number_utils.cpp \
+	xls_filter_utils.cpp \
 	xml_context_base.cpp \
 	xml_element_types.cpp \
 	xml_element_validator.cpp \

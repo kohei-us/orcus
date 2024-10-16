@@ -8,6 +8,7 @@
 #pragma once
 
 #include "xml_context_base.hpp"
+#include "xls_filter_utils.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
 #include <optional>
@@ -66,6 +67,8 @@ private:
     spreadsheet::iface::import_sheet* mp_sheet = nullptr;
     spreadsheet::iface::import_auto_filter* mp_auto_filter = nullptr;
     std::vector<spreadsheet::iface::import_auto_filter_node*> m_node_stack;
+
+    detail::xls_filter_value_parser m_value_parser;
 };
 
 }
