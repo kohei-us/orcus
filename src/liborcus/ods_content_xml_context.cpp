@@ -224,7 +224,7 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
 
 void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
+    push_stack(ns, name);
 
     if (ns == NS_odf_office)
     {
@@ -248,7 +248,7 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
                 start_null_date(attrs);
                 break;
             case XML_table:
-                start_table(parent, attrs);
+                start_table(attrs);
                 break;
             case XML_table_column:
             {
@@ -347,32 +347,24 @@ void ods_content_xml_context::start_null_date(const xml_token_attrs_t& attrs)
     gs->set_origin_date(val.year, val.month, val.day);
 }
 
-void ods_content_xml_context::start_table(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
+void ods_content_xml_context::start_table(const xml_token_attrs_t& attrs)
 {
-    if (parent == xml_token_pair_t(NS_odf_office, XML_spreadsheet))
+    std::string_view name;
+
+    for (const xml_token_attr_t& attr : attrs)
     {
-        std::string_view name;
-
-        for (const xml_token_attr_t& attr : attrs)
-        {
-            if (attr.ns == NS_odf_table && attr.name == XML_name)
-                name = attr.value;
-        }
-
-        m_tables.push_back(mp_factory->append_sheet(m_tables.size(), name));
-        m_cur_sheet.sheet = m_tables.back();
-        m_cur_sheet.index = m_tables.size() - 1;
-
-        if (get_config().debug)
-            cout << "start table " << name << endl;
-
-        m_row = m_col = 0;
+        if (attr.ns == NS_odf_table && attr.name == XML_name)
+            name = attr.value;
     }
-    else if (parent == xml_token_pair_t(NS_odf_table, XML_dde_link))
-    {
-        if (get_config().debug)
-            cout << "start table (DDE link)" << endl;
-    }
+
+    m_tables.push_back(mp_factory->append_sheet(m_tables.size(), name));
+    m_cur_sheet.sheet = m_tables.back();
+    m_cur_sheet.index = m_tables.size() - 1;
+
+    if (get_config().debug)
+        cout << "start table " << name << endl;
+
+    m_row = m_col = 0;
 }
 
 void ods_content_xml_context::end_table()
