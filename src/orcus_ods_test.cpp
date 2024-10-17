@@ -112,7 +112,15 @@ void test_ods_import_cell_values()
         assert(!check.empty());
         assert(!control.empty());
 
-        assert(trim(check) == trim(control.str()));
+        auto check_trimmed = trim(check);
+        auto control_trimmed = trim(control.str());
+
+        if (check_trimmed != control_trimmed)
+        {
+            auto pos = orcus::locate_first_different_char(check_trimmed, control_trimmed);
+            std::cerr << orcus::create_parse_error_output(check_trimmed, pos) << std::endl;
+            assert(!"check output does not match the control output");
+        }
     }
 }
 

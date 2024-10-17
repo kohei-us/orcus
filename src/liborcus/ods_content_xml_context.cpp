@@ -126,6 +126,35 @@ ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, c
     register_child(&m_child_para);
     register_child(&m_child_dde_links);
 
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_office, XML_document_content }, // root element
+        { NS_odf_office, XML_body, NS_odf_office, XML_spreadsheet },
+        { NS_odf_office, XML_document_content, NS_odf_office, XML_automatic_styles },
+        { NS_odf_office, XML_document_content, NS_odf_office, XML_body },
+        { NS_odf_office, XML_document_content, NS_odf_office, XML_font_face_decls },
+        { NS_odf_office, XML_document_content, NS_odf_office, XML_scripts },
+        { NS_odf_office, XML_font_face_decls, NS_odf_style, XML_font_face },
+        { NS_odf_office, XML_spreadsheet, NS_odf_table, XML_calculation_settings },
+        { NS_odf_office, XML_spreadsheet, NS_odf_table, XML_dde_links },
+        { NS_odf_office, XML_spreadsheet, NS_odf_table, XML_named_expressions },
+        { NS_odf_office, XML_spreadsheet, NS_odf_table, XML_table },
+        { NS_odf_table, XML_calculation_settings, NS_odf_table, XML_null_date },
+        { NS_odf_table, XML_named_expressions, NS_odf_table, XML_named_expression },
+        { NS_odf_table, XML_named_expressions, NS_odf_table, XML_named_range },
+        { NS_odf_table, XML_table, NS_odf_table, XML_named_expressions },
+        { NS_odf_table, XML_table, NS_odf_table, XML_table_column },
+        { NS_odf_table, XML_table, NS_odf_table, XML_table_row },
+        { NS_odf_table, XML_table_column_group, NS_odf_table, XML_table_column },
+        { NS_odf_table, XML_table_columns, NS_odf_table, XML_table_column },
+        { NS_odf_table, XML_table_header_columns, NS_odf_table, XML_table_column },
+        { NS_odf_table, XML_table_header_rows, NS_odf_table, XML_table_row },
+        { NS_odf_table, XML_table_row, NS_odf_table, XML_table_cell },
+        { NS_odf_table, XML_table_row_group, NS_odf_table, XML_table_row },
+    };
+
+    init_element_validator(rules, std::size(rules));
+
     spreadsheet::iface::import_global_settings* gs = mp_factory->get_global_settings();
     if (gs)
     {
@@ -216,7 +245,6 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
             case XML_calculation_settings:
                 break;
             case XML_null_date:
-                xml_element_expected(parent, NS_odf_table, XML_calculation_settings);
                 start_null_date(attrs);
                 break;
             case XML_table:
@@ -224,51 +252,24 @@ void ods_content_xml_context::start_element(xmlns_id_t ns, xml_token_t name, con
                 break;
             case XML_table_column:
             {
-                static const xml_elem_set_t expected = {
-                    { NS_odf_table, XML_table },
-                    { NS_odf_table, XML_table_column_group },
-                    { NS_odf_table, XML_table_columns },
-                    { NS_odf_table, XML_table_header_columns }
-                };
-                xml_element_expected(parent, expected);
                 start_column(attrs);
                 break;
             }
             case XML_table_row:
             {
-                static const xml_elem_set_t expected = {
-                    { NS_odf_table, XML_table },
-                    { NS_odf_table, XML_table_header_rows },
-                    { NS_odf_table, XML_table_row_group },
-                };
-                xml_element_expected(parent, expected);
                 start_row(attrs);
                 break;
             }
             case XML_table_cell:
-                xml_element_expected(parent, NS_odf_table, XML_table_row);
                 start_cell(attrs);
                 break;
-            case XML_dde_links:
-                xml_element_expected(parent, NS_odf_office, XML_spreadsheet);
-                break;
-            case XML_dde_link:
-                xml_element_expected(parent, NS_odf_table, XML_dde_links);
-                break;
             case XML_named_expressions:
-            {
-                static const xml_elem_set_t expected = {
-                    { NS_odf_office, XML_spreadsheet },
-                    { NS_odf_table, XML_table },
-                };
-                xml_element_expected(parent, expected);
                 break;
-            }
             case XML_named_range:
-                start_named_range(parent, attrs);
+                start_named_range(attrs);
                 break;
             case XML_named_expression:
-                start_named_expression(parent, attrs);
+                start_named_expression(attrs);
                 break;
             default:
                 warn_unhandled();
@@ -348,12 +349,6 @@ void ods_content_xml_context::start_null_date(const xml_token_attrs_t& attrs)
 
 void ods_content_xml_context::start_table(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
-    static const xml_elem_set_t expected = {
-        { NS_odf_office, XML_spreadsheet },
-        { NS_odf_table, XML_dde_link },
-    };
-    xml_element_expected(parent, expected);
-
     if (parent == xml_token_pair_t(NS_odf_office, XML_spreadsheet))
     {
         std::string_view name;
@@ -391,10 +386,8 @@ void ods_content_xml_context::end_table()
     }
 }
 
-void ods_content_xml_context::start_named_range(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
+void ods_content_xml_context::start_named_range(const xml_token_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_odf_table, XML_named_expressions);
-
     pick_up_named_range_or_expression(
         get_session_context(), attrs, NS_odf_table, XML_cell_range_address,
         ods_session_data::ne_range, m_cur_sheet.index);
@@ -404,10 +397,8 @@ void ods_content_xml_context::end_named_range()
 {
 }
 
-void ods_content_xml_context::start_named_expression(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
+void ods_content_xml_context::start_named_expression(const xml_token_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_odf_table, XML_named_expressions);
-
     pick_up_named_range_or_expression(
         get_session_context(), attrs, NS_odf_table, XML_expression,
         ods_session_data::ne_expression, m_cur_sheet.index);

@@ -79,10 +79,10 @@ private:
     void start_table(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
     void end_table();
 
-    void start_named_range(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_named_range(const xml_token_attrs_t& attrs);
     void end_named_range();
 
-    void start_named_expression(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_named_expression(const xml_token_attrs_t& attrs);
     void end_named_expression();
 
     void start_column(const xml_token_attrs_t& attrs);

@@ -389,7 +389,7 @@ line_with_offset locate_line_with_offset(std::string_view strm, std::ptrdiff_t o
     return line_with_offset(std::string{line}, line_num, offset_on_line);
 }
 
-size_t locate_first_different_char(std::string_view left, std::string_view right)
+std::size_t locate_first_different_char(std::string_view left, std::string_view right)
 {
     if (left.empty() || right.empty())
         // If one of them is empty, then the first characters are considered

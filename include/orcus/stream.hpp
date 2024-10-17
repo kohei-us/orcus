@@ -171,7 +171,7 @@ ORCUS_PSR_DLLPUBLIC line_with_offset locate_line_with_offset(std::string_view st
  * @return position of the first character that is different between the two
  *         compared strings.
  */
-ORCUS_PSR_DLLPUBLIC size_t locate_first_different_char(std::string_view left, std::string_view right);
+ORCUS_PSR_DLLPUBLIC std::size_t locate_first_different_char(std::string_view left, std::string_view right);
 
 /**
  * Calculate the logical length of a UTF-8 encoded string.
