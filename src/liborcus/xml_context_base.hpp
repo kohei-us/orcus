@@ -78,7 +78,7 @@ public:
      * @param name element name
      * @param attrs attributes
      */
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs) = 0;
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) = 0;
 
     /**
      * Called on the closing of each element.

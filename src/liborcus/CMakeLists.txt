@@ -93,6 +93,7 @@ list(APPEND _SOURCES
     odf_number_format_context.cpp
     odf_tokens.cpp
     ods_content_xml_context.cpp
+    ods_database_ranges_context.cpp
     ods_dde_links_context.cpp
     ods_session_data.cpp
     odf_helper.cpp

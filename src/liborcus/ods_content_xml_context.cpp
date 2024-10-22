@@ -120,11 +120,13 @@ ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, c
     m_styles(),
     m_child_styles(session_cxt, tokens, mp_factory->get_styles()),
     m_child_para(session_cxt, tokens, factory->get_shared_strings(), m_styles),
-    m_child_dde_links(session_cxt, tokens)
+    m_child_dde_links(session_cxt, tokens),
+    m_child_dbranges(session_cxt, tokens)
 {
     register_child(&m_child_styles);
     register_child(&m_child_para);
     register_child(&m_child_dde_links);
+    register_child(&m_child_dbranges);
 
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
@@ -136,6 +138,7 @@ ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, c
         { NS_odf_office, XML_document_content, NS_odf_office, XML_scripts },
         { NS_odf_office, XML_font_face_decls, NS_odf_style, XML_font_face },
         { NS_odf_office, XML_spreadsheet, NS_odf_table, XML_calculation_settings },
+        { NS_odf_office, XML_spreadsheet, NS_odf_table, XML_database_ranges },
         { NS_odf_office, XML_spreadsheet, NS_odf_table, XML_dde_links },
         { NS_odf_office, XML_spreadsheet, NS_odf_table, XML_named_expressions },
         { NS_odf_office, XML_spreadsheet, NS_odf_table, XML_table },
@@ -179,10 +182,21 @@ xml_context_base* ods_content_xml_context::create_child_context(xmlns_id_t ns, x
         return &m_child_styles;
     }
 
-    if (ns == NS_odf_table && name == XML_dde_links)
+    if (ns == NS_odf_table)
     {
-        m_child_dde_links.reset();
-        return &m_child_dde_links;
+        switch (name)
+        {
+            case XML_dde_links:
+            {
+                m_child_dde_links.reset();
+                return &m_child_dde_links;
+            }
+            case XML_database_ranges:
+            {
+                m_child_dbranges.reset();
+                return &m_child_dbranges;
+            }
+        }
     }
 
     return nullptr;

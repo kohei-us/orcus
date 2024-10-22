@@ -11,6 +11,7 @@
 #include "xml_context_base.hpp"
 #include "odf_para_context.hpp"
 #include "ods_dde_links_context.hpp"
+#include "ods_database_ranges_context.hpp"
 #include "odf_styles.hpp"
 #include "odf_styles_context.hpp"
 #include "orcus/spreadsheet/types.hpp"
@@ -130,6 +131,7 @@ private:
     styles_context m_child_styles;
     text_para_context m_child_para;
     ods_dde_links_context m_child_dde_links;
+    ods_database_ranges_context m_child_dbranges;
 };
 
 }

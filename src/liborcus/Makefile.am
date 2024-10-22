@@ -278,6 +278,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	odf_tokens.cpp \
 	ods_content_xml_context.hpp \
 	ods_content_xml_context.cpp \
+	ods_database_ranges_context.hpp \
+	ods_database_ranges_context.cpp \
 	ods_dde_links_context.hpp \
 	ods_dde_links_context.cpp \
 	ods_session_data.hpp \
