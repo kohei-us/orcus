@@ -148,6 +148,7 @@ ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, c
         { NS_odf_table, XML_table, NS_odf_table, XML_named_expressions },
         { NS_odf_table, XML_table, NS_odf_table, XML_table_column },
         { NS_odf_table, XML_table, NS_odf_table, XML_table_row },
+        { NS_odf_table, XML_table_cell, NS_odf_text, XML_p },
         { NS_odf_table, XML_table_column_group, NS_odf_table, XML_table_column },
         { NS_odf_table, XML_table_columns, NS_odf_table, XML_table_column },
         { NS_odf_table, XML_table_header_columns, NS_odf_table, XML_table_column },
