@@ -459,7 +459,8 @@ void ods_content_xml_context::start_column(const xml_token_attrs_t& attrs)
             std::get<odf_style::column>(style.data).width.unit);
     }
 
-    push_default_column_cell_style(default_cell_style_name, m_col_repeated);
+    if (!default_cell_style_name.empty())
+        push_default_column_cell_style(default_cell_style_name, m_col_repeated);
 }
 
 void ods_content_xml_context::end_column()
@@ -659,19 +660,34 @@ std::optional<std::size_t> ods_content_xml_context::push_named_cell_style(std::s
 {
     ss::iface::import_styles* xstyles = mp_factory->get_styles();
     if (!xstyles)
+    {
+        warn("failed to get an import_styles instance");
         return {};
+    }
 
     const ods_session_data& ods_data = get_session_context().get_data<ods_session_data>();
 
     auto it = ods_data.styles_map.find(style_name);
     if (it == ods_data.styles_map.end())
+    {
+        std::ostringstream os;
+        os << "style named '" << style_name << "' does not exist in styles map in session data";
+        warn(os.str());
         return {};
+    }
 
     // found in the named styles store.
     const odf_style& style = *it->second;
     if (style.family != style_family_table_cell)
+    {
         // it's a named style but not a cell style
+        std::ostringstream os;
+        os << "style named '" << style_name
+            << "' exists in styles map in session data, but it's not a cell style ("
+            << int(style.family) << ")";
+        warn(os.str());
         return {};
+    }
 
     // It references a named style. Create a direct cell (aka automatic) style
     // that references this named style, and set that as the cell format since
@@ -725,6 +741,9 @@ void ods_content_xml_context::push_default_column_cell_style(
 void ods_content_xml_context::push_cell_format()
 {
     if (!m_cur_sheet.sheet)
+        return;
+
+    if (m_cell_attr.style_name.empty())
         return;
 
     if (auto it = m_cell_format_map.find(m_cell_attr.style_name); it != m_cell_format_map.end())
