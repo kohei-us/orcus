@@ -193,7 +193,7 @@ public:
     virtual iface::import_data_table* get_data_table() override;
     virtual iface::import_named_expression* get_named_expression() override;
     virtual iface::import_sheet_properties* get_sheet_properties() override;
-    virtual iface::import_table* get_table() override;
+    virtual iface::import_table* start_table() override;
     virtual iface::import_formula* get_formula() override;
     virtual iface::import_array_formula* get_array_formula() override;
     virtual void set_auto(row_t row, col_t col, std::string_view s) override;

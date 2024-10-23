@@ -892,10 +892,10 @@ public:
      * The implementor should initialize the internal state of the temporary
      * table object when this method is called.
      *
-     * @return pointer to the table interface object, or @p nullptr if the
+     * @return pointer to a table interface object, or @p nullptr if the
      *         implementer doesn't support importing of tables.
      */
-    virtual import_table* get_table();
+    virtual import_table* start_table();
 
     /**
      * Get an optional interface for importing conditional formats.

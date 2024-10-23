@@ -121,7 +121,7 @@ ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, c
     m_child_styles(session_cxt, tokens, mp_factory->get_styles()),
     m_child_para(session_cxt, tokens, factory->get_shared_strings(), m_styles),
     m_child_dde_links(session_cxt, tokens),
-    m_child_dbranges(session_cxt, tokens)
+    m_child_dbranges(session_cxt, tokens, mp_factory)
 {
     register_child(&m_child_styles);
     register_child(&m_child_para);

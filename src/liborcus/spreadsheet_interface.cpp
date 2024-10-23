@@ -113,7 +113,7 @@ import_auto_filter* import_sheet::start_auto_filter(const range_t& /*range*/)
     return nullptr;
 }
 
-import_table* import_sheet::get_table()
+import_table* import_sheet::start_table()
 {
     return nullptr;
 }

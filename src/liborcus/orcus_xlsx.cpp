@@ -545,7 +545,7 @@ void orcus_xlsx::read_table(const std::string& dir_path, const std::string& file
     if (!data || !data->sheet_interface)
         return;
 
-    spreadsheet::iface::import_table* table = data->sheet_interface->get_table();
+    spreadsheet::iface::import_table* table = data->sheet_interface->start_table();
     if (!table)
         // Client code doesn't support tables. No point going further.
         return;

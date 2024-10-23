@@ -11,16 +11,28 @@
 
 namespace orcus {
 
+namespace spreadsheet { namespace iface {
+
+class import_factory;
+
+}}
+
 class ods_database_ranges_context : public xml_context_base
 {
 public:
-    ods_database_ranges_context(session_context& session_cxt, const tokens& tokens);
+    ods_database_ranges_context(
+        session_context& session_cxt, const tokens& tokens,
+        spreadsheet::iface::import_factory* factory);
+
     virtual ~ods_database_ranges_context() override;
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
 
     void reset();
+
+private:
+    spreadsheet::iface::import_factory* mp_factory = nullptr;
 };
 
 }

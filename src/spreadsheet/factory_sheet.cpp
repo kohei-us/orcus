@@ -402,7 +402,7 @@ iface::import_sheet_properties* import_sheet::get_sheet_properties()
     return &m_sheet_properties;
 }
 
-iface::import_table* import_sheet::get_table()
+iface::import_table* import_sheet::start_table()
 {
     m_table.reset();
     return &m_table;
