@@ -271,9 +271,16 @@ enum class formula_ref_context_t
 
     /**
      * Named range is a special case of named expression where the expression
-     * consists of only one range token.
+     * consists of only one range token.  Only ODS uses a different syntax in
+     * this context.
      */
     named_range,
+
+    /**
+     * Range of a table, or a database range as it's called in ODS.  Only ODS
+     * uses a different syntax in this context.
+     */
+    table_range,
 };
 
 /**

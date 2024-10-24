@@ -430,56 +430,67 @@ void document::set_formula_grammar(formula_grammar_t grammar)
 
     mp_impl->grammar = grammar;
 
-    ixion::formula_name_resolver_t resolver_type_global = ixion::formula_name_resolver_t::unknown;
-    ixion::formula_name_resolver_t resolver_type_named_exp_base = ixion::formula_name_resolver_t::unknown;
-    ixion::formula_name_resolver_t resolver_type_named_range = ixion::formula_name_resolver_t::unknown;
     char arg_sep = 0;
+
+    mp_impl->formula_context_to_resolver.clear();
 
     switch (mp_impl->grammar)
     {
         case formula_grammar_t::xls_xml:
-            resolver_type_global = ixion::formula_name_resolver_t::excel_r1c1;
+        {
+            mp_impl->formula_context_to_resolver = {
+                { formula_ref_context_t::global, ixion::formula_name_resolver_t::excel_r1c1 },
+                { formula_ref_context_t::named_expression_base, ixion::formula_name_resolver_t::excel_r1c1 },
+                { formula_ref_context_t::named_range, ixion::formula_name_resolver_t::excel_r1c1 },
+                { formula_ref_context_t::table_range, ixion::formula_name_resolver_t::excel_r1c1 },
+            };
+
             arg_sep = ',';
             break;
+        }
         case formula_grammar_t::xlsx:
-            resolver_type_global = ixion::formula_name_resolver_t::excel_a1;
+        {
+            mp_impl->formula_context_to_resolver = {
+                { formula_ref_context_t::global, ixion::formula_name_resolver_t::excel_a1 },
+                { formula_ref_context_t::named_expression_base, ixion::formula_name_resolver_t::excel_a1 },
+                { formula_ref_context_t::named_range, ixion::formula_name_resolver_t::excel_a1 },
+                { formula_ref_context_t::table_range, ixion::formula_name_resolver_t::excel_a1 },
+            };
+
             arg_sep = ',';
             break;
+        }
         case formula_grammar_t::ods:
-            resolver_type_global = ixion::formula_name_resolver_t::odff;
-            resolver_type_named_exp_base = ixion::formula_name_resolver_t::calc_a1;
-            resolver_type_named_range = ixion::formula_name_resolver_t::odf_cra;
+        {
+            mp_impl->formula_context_to_resolver = {
+                { formula_ref_context_t::global, ixion::formula_name_resolver_t::odff },
+                { formula_ref_context_t::named_expression_base, ixion::formula_name_resolver_t::calc_a1 },
+                { formula_ref_context_t::named_range, ixion::formula_name_resolver_t::odf_cra },
+                { formula_ref_context_t::table_range, ixion::formula_name_resolver_t::odf_cra },
+            };
+
             arg_sep = ';';
             break;
+        }
         case formula_grammar_t::gnumeric:
+        {
             // TODO : Use Excel A1 name resolver for now.
-            resolver_type_global = ixion::formula_name_resolver_t::excel_a1;
+            mp_impl->formula_context_to_resolver = {
+                { formula_ref_context_t::global, ixion::formula_name_resolver_t::excel_a1 },
+                { formula_ref_context_t::named_expression_base, ixion::formula_name_resolver_t::excel_a1 },
+                { formula_ref_context_t::named_range, ixion::formula_name_resolver_t::excel_a1 },
+                { formula_ref_context_t::table_range, ixion::formula_name_resolver_t::excel_a1 },
+            };
+
             arg_sep = ',';
             break;
+        }
         default:
             ;
     }
 
-    mp_impl->name_resolver_global.reset();
-    mp_impl->name_resolver_named_exp_base.reset();
-
-    if (resolver_type_global != ixion::formula_name_resolver_t::unknown)
+    if (arg_sep)
     {
-        mp_impl->name_resolver_global =
-            ixion::formula_name_resolver::get(resolver_type_global, &mp_impl->context);
-
-        if (resolver_type_named_exp_base != ixion::formula_name_resolver_t::unknown)
-        {
-            mp_impl->name_resolver_named_exp_base =
-                ixion::formula_name_resolver::get(resolver_type_named_exp_base, &mp_impl->context);
-        }
-
-        if (resolver_type_named_range != ixion::formula_name_resolver_t::unknown)
-        {
-            mp_impl->name_resolver_named_range =
-                ixion::formula_name_resolver::get(resolver_type_named_range, &mp_impl->context);
-        }
-
         ixion::config cfg = mp_impl->context.get_config();
         cfg.sep_function_arg = arg_sep;
         cfg.output_precision = mp_impl->doc_config.output_precision;
@@ -494,23 +505,28 @@ formula_grammar_t document::get_formula_grammar() const
 
 const ixion::formula_name_resolver* document::get_formula_name_resolver(formula_ref_context_t cxt) const
 {
-    switch (cxt)
+    ixion::formula_name_resolver_t resolver_type = ixion::formula_name_resolver_t::unknown;
+
     {
-        case formula_ref_context_t::global:
-            return mp_impl->name_resolver_global.get();
-        case formula_ref_context_t::named_expression_base:
-            if (mp_impl->name_resolver_named_exp_base)
-                return mp_impl->name_resolver_named_exp_base.get();
-            break;
-        case formula_ref_context_t::named_range:
-            if (mp_impl->name_resolver_named_range)
-                return mp_impl->name_resolver_named_range.get();
-            break;
-        default:
-            ;
+        // Find the corresponding ixion's resolver type.
+        auto it = mp_impl->formula_context_to_resolver.find(cxt);
+        if (it != mp_impl->formula_context_to_resolver.end())
+            resolver_type = it->second;
     }
 
-    return mp_impl->name_resolver_global.get();
+    if (resolver_type == ixion::formula_name_resolver_t::unknown)
+        return nullptr;
+
+    auto it = mp_impl->name_resolver_store.find(resolver_type);
+    if (it == mp_impl->name_resolver_store.end())
+    {
+        auto res = mp_impl->name_resolver_store.insert_or_assign(
+            resolver_type, ixion::formula_name_resolver::get(resolver_type, &mp_impl->context));
+
+        it = res.first;
+    }
+
+    return it->second.get();
 }
 
 void document::insert_dirty_cell(const ixion::abs_address_t& pos)

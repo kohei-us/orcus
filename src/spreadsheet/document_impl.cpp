@@ -20,7 +20,7 @@ document_impl::document_impl(document& _doc, const range_size_t& sheet_size) :
     styles_store(),
     ss_store(context),
     pivots(doc),
-    name_resolver_global(ixion::formula_name_resolver::get(ixion::formula_name_resolver_t::excel_a1, &context)),
+    formula_context_to_resolver({{formula_ref_context_t::global, ixion::formula_name_resolver_t::excel_a1}}),
     grammar(formula_grammar_t::xlsx),
     table_store(string_pool_store, context)
 {

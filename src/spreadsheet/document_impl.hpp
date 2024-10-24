@@ -44,6 +44,12 @@ struct sheet_item
 typedef std::map<std::string_view, std::unique_ptr<table_t>> table_store_type;
 typedef std::vector<std::unique_ptr<sheet_item>> sheet_items_type;
 
+using formula_context_to_resolver_type =
+    std::map<formula_ref_context_t, ixion::formula_name_resolver_t>;
+
+using name_resolver_store_type =
+    std::map<ixion::formula_name_resolver_t, std::unique_ptr<ixion::formula_name_resolver>>;
+
 struct document_impl
 {
     document_impl(const document_impl&) = delete;
@@ -62,9 +68,8 @@ struct document_impl
 
     pivot_collection pivots;
 
-    std::unique_ptr<ixion::formula_name_resolver> name_resolver_global;
-    std::unique_ptr<ixion::formula_name_resolver> name_resolver_named_exp_base;
-    std::unique_ptr<ixion::formula_name_resolver> name_resolver_named_range;
+    formula_context_to_resolver_type formula_context_to_resolver;
+    name_resolver_store_type name_resolver_store;
     formula_grammar_t grammar;
 
     tables table_store;
