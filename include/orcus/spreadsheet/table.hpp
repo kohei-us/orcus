@@ -63,14 +63,14 @@ struct ORCUS_SPM_DLLPUBLIC table_t
 {
     typedef std::vector<table_column_t> columns_type;
 
-    size_t identifier;
+    std::size_t identifier;
 
     std::string_view name;
     std::string_view display_name;
 
     ixion::abs_range_t range;
 
-    size_t totals_row_count;
+    std::size_t totals_row_count;
 
     auto_filter_t filter;
     columns_type columns;

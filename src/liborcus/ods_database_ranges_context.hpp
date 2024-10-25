@@ -8,12 +8,17 @@
 #pragma once
 
 #include "xml_context_base.hpp"
+#include <orcus/spreadsheet/types.hpp>
+
+#include <optional>
 
 namespace orcus {
 
 namespace spreadsheet { namespace iface {
 
 class import_factory;
+class import_table;
+class import_auto_filter;
 
 }}
 
@@ -32,7 +37,18 @@ public:
     void reset();
 
 private:
+    void start_database_range(const xml_token_attrs_t& attrs);
+    void end_database_range();
+
+    void start_filter(const xml_token_attrs_t& attrs);
+    void end_filter();
+
+private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
+    spreadsheet::iface::import_table* mp_table = nullptr;
+    spreadsheet::iface::import_auto_filter* mp_filter = nullptr;
+
+    std::optional<spreadsheet::range_t> m_target_range;
 };
 
 }

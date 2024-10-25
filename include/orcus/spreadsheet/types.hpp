@@ -692,6 +692,7 @@ ORCUS_DLLPUBLIC range_t& operator-= (range_t& left, const address_t& right);
 
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const address_t& v);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const src_address_t& v);
+ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const src_range_t& v);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const range_t& v);
 
 /**

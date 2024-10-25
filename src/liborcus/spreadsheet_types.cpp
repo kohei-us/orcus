@@ -411,6 +411,12 @@ std::ostream& operator<< (std::ostream& os, const src_address_t& v)
     return os;
 }
 
+std::ostream& operator<< (std::ostream& os, const src_range_t& v)
+{
+    os << v.first << "->" << v.last;
+    return os;
+}
+
 std::ostream& operator<< (std::ostream& os, const range_t& v)
 {
     os << v.first << "-" << v.last;
