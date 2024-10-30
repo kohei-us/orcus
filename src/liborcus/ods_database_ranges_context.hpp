@@ -19,6 +19,7 @@ namespace spreadsheet { namespace iface {
 class import_factory;
 class import_table;
 class import_auto_filter;
+class import_auto_filter_node;
 
 }}
 
@@ -43,10 +44,16 @@ private:
     void start_filter(const xml_token_attrs_t& attrs);
     void end_filter();
 
+    void start_filter_condition(const xml_token_attrs_t& attrs);
+
+    void start_filter_node(spreadsheet::auto_filter_node_op_t node_op);
+    void end_filter_node();
+
 private:
     spreadsheet::iface::import_factory* mp_factory = nullptr;
     spreadsheet::iface::import_table* mp_table = nullptr;
     spreadsheet::iface::import_auto_filter* mp_filter = nullptr;
+    std::vector<spreadsheet::iface::import_auto_filter_node*> m_filter_node_stack;
 
     std::optional<spreadsheet::range_t> m_target_range;
 };

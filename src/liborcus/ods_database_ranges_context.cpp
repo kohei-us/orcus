@@ -8,15 +8,56 @@
 #include "ods_database_ranges_context.hpp"
 #include "odf_token_constants.hpp"
 #include "odf_namespace_types.hpp"
+#include "impl_utils.hpp"
 
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_auto_filter.hpp>
+#include <orcus/measurement.hpp>
+#include <mdds/sorted_string_map.hpp>
 
 #include <sstream>
 
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {
+
+namespace {
+
+namespace field_op {
+
+using map_type = mdds::sorted_string_map<ss::auto_filter_op_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry_type entries[] = {
+    { "!=", ss::auto_filter_op_t::not_equal },
+    { "!begins", ss::auto_filter_op_t::not_begin_with },
+    { "!contains", ss::auto_filter_op_t::not_contain },
+    { "!empty", ss::auto_filter_op_t::not_empty },
+    { "!ends", ss::auto_filter_op_t::not_end_with },
+    { "<", ss::auto_filter_op_t::less },
+    { "<=", ss::auto_filter_op_t::less_equal },
+    { "=", ss::auto_filter_op_t::equal },
+    { ">", ss::auto_filter_op_t::greater },
+    { ">=", ss::auto_filter_op_t::greater },
+    { "begins", ss::auto_filter_op_t::begin_with },
+    { "bottom percent", ss::auto_filter_op_t::bottom_percent },
+    { "bottom values", ss::auto_filter_op_t::bottom },
+    { "contains", ss::auto_filter_op_t::contain },
+    { "empty", ss::auto_filter_op_t::empty },
+    { "ends", ss::auto_filter_op_t::end_with },
+    { "top percent", ss::auto_filter_op_t::top_percent },
+    { "top values", ss::auto_filter_op_t::top },
+};
+
+const map_type& get()
+{
+    static const map_type mt(entries, std::size(entries), ss::auto_filter_op_t::unspecified);
+    return mt;
+}
+
+} // namespace field_op
+
+} // anonymous namespace
 
 ods_database_ranges_context::ods_database_ranges_context(
     session_context& session_cxt, const tokens& tokens, ss::iface::import_factory* factory) :
@@ -60,13 +101,13 @@ void ods_database_ranges_context::start_element(
             start_filter(attrs);
             break;
         case XML_filter_or:
-            warn_unhandled();
+            start_filter_node(ss::auto_filter_node_op_t::op_or);
             break;
         case XML_filter_and:
-            warn_unhandled();
+            start_filter_node(ss::auto_filter_node_op_t::op_and);
             break;
         case XML_filter_condition:
-            warn_unhandled();
+            start_filter_condition(attrs);
             break;
         default:
             warn_unexpected();
@@ -85,6 +126,12 @@ bool ods_database_ranges_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_filter:
                 end_filter();
                 break;
+            case XML_filter_or:
+                end_filter_node();
+                break;
+            case XML_filter_and:
+                end_filter_node();
+                break;
         }
     }
     return pop_stack(ns, name);
@@ -96,6 +143,7 @@ void ods_database_ranges_context::reset()
     mp_filter = nullptr;
 
     m_target_range.reset();
+    m_filter_node_stack.clear();
 }
 
 void ods_database_ranges_context::start_database_range(const xml_token_attrs_t& attrs)
@@ -172,8 +220,142 @@ void ods_database_ranges_context::start_filter(const xml_token_attrs_t& /*attrs*
 
 void ods_database_ranges_context::end_filter()
 {
+    if (!mp_filter)
+        return;
+
+    assert(m_filter_node_stack.empty());
     mp_filter->commit();
     mp_filter = nullptr;
+}
+
+void ods_database_ranges_context::start_filter_condition(const xml_token_attrs_t& attrs)
+{
+    if (!mp_filter || m_filter_node_stack.empty())
+        return;
+
+    auto* node = m_filter_node_stack.back();
+
+    bool numeric_value = true; // probably numeric by default if not specified (?)
+    std::string_view value;
+    ss::auto_filter_op_t op = ss::auto_filter_op_t::unspecified;
+    std::optional<ss::col_t> field;
+
+    for (const auto& attr : attrs)
+    {
+        if (attr.ns != NS_odf_table)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_data_type:
+            {
+                if (attr.value == "number")
+                    numeric_value = true;
+                else if (attr.value == "text")
+                    numeric_value = false;
+                else
+                {
+                    std::ostringstream os;
+                    os << "invalid value in 'table:data-type': " << attr.value;
+                    warn(os.str());
+                }
+                break;
+            }
+            case XML_value:
+            {
+                value = attr.value;
+                break;
+            }
+            case XML_operator:
+            {
+                op = field_op::get().find(attr.value);
+
+                if (op == ss::auto_filter_op_t::unspecified)
+                {
+                    std::ostringstream os;
+                    os << "invalid field operator value '" << attr.value << "'";
+                    warn(os.str());
+                    return;
+                }
+                break;
+            }
+            case XML_field_number:
+            {
+                field = to_long_checked(attr.value);
+                if (!field)
+                {
+                    std::ostringstream os;
+                    os << "invalid field value '" << attr.value << "'";
+                    warn(os.str());
+                    return;
+                }
+                break;
+            }
+        }
+    }
+
+    if (!field)
+    {
+        warn("required 'field' attribute was not provided");
+        return;
+    }
+
+    if (numeric_value)
+
+    assert(op != ss::auto_filter_op_t::unspecified);
+
+    switch (op)
+    {
+        case ss::auto_filter_op_t::greater:
+        case ss::auto_filter_op_t::greater_equal:
+        case ss::auto_filter_op_t::less:
+        case ss::auto_filter_op_t::less_equal:
+        {
+            if (!numeric_value)
+            {
+                warn("field operator requires numeric value, but the value is not numeric");
+                return;
+            }
+
+            auto v = to_double_checked(value);
+            if (!v)
+            {
+                std::ostringstream os;
+                os << "failed to convert field value to a numeric value: '" << value << "'";
+                warn(os.str());
+                return;
+            }
+
+            node->append_item(*field, op, *v);
+            break;
+        }
+        default:
+            warn("TODO: handle this");
+    }
+}
+
+void ods_database_ranges_context::start_filter_node(ss::auto_filter_node_op_t node_op)
+{
+    if (!mp_filter)
+        return;
+
+    ss::iface::import_auto_filter_node* node = nullptr;
+
+    if (m_filter_node_stack.empty())
+        node = mp_filter->start_node(node_op);
+    else
+        node = m_filter_node_stack.back()->start_node(node_op);
+
+    ENSURE_INTERFACE(node, import_auto_filter_node);
+    m_filter_node_stack.push_back(node);
+}
+
+void ods_database_ranges_context::end_filter_node()
+{
+    if (!mp_filter || m_filter_node_stack.empty())
+        return;
+
+    m_filter_node_stack.pop_back();
 }
 
 }
