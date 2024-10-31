@@ -535,14 +535,18 @@ EXTRA_PROGRAMS += \
 # orcus-ods-test
 
 orcus_ods_test_SOURCES = \
-	orcus_ods_test.cpp
+	orcus_ods_test.hpp \
+	orcus_ods_test.cpp \
+	orcus_ods_test_autofilter.cpp \
+	orcus_test_global.cpp
 
 orcus_ods_test_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	./test/liborcus-test.a \
 	$(BOOST_SYSTEM_LIBS) \
-	./test/liborcus-test.a
+	@LIBIXION_LIBS@
 
 orcus_ods_test_LDFLAGS = \
 	$(BOOST_SYSTEM_LDFLAGS)

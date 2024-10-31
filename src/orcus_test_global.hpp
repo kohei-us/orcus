@@ -71,6 +71,16 @@ public:
     ixion::abs_rc_range_t operator()(std::string_view addr) const;
 };
 
+class range_resolver
+{
+    std::unique_ptr<ixion::formula_name_resolver> m_resolver;
+
+public:
+    explicit range_resolver(ixion::formula_name_resolver_t type, const ixion::model_context& cxt);
+
+    ixion::abs_range_t operator()(std::string_view addr) const;
+};
+
 /**
  * Stores individual filter items for a single field in an Excel document.
  *

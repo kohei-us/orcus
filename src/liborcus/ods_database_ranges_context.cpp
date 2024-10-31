@@ -352,9 +352,10 @@ void ods_database_ranges_context::start_filter_node(ss::auto_filter_node_op_t no
 
 void ods_database_ranges_context::end_filter_node()
 {
-    if (!mp_filter || m_filter_node_stack.empty())
+    if (m_filter_node_stack.empty())
         return;
 
+    m_filter_node_stack.back()->commit();
     m_filter_node_stack.pop_back();
 }
 

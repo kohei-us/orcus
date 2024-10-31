@@ -5,26 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "test_global.hpp"
-#include <orcus/orcus_ods.hpp>
-#include <orcus/format_detection.hpp>
-#include <orcus/stream.hpp>
-#include <orcus/parser_global.hpp>
-#include <orcus/spreadsheet/factory.hpp>
-#include <orcus/spreadsheet/document.hpp>
-#include <orcus/spreadsheet/sheet.hpp>
-#include <orcus/spreadsheet/shared_strings.hpp>
-#include <orcus/spreadsheet/styles.hpp>
-
-#include <cstdlib>
-#include <cassert>
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <vector>
-
-#include "filesystem_env.hpp"
-
+#include "orcus_ods_test.hpp"
 #include <mdds/flat_segment_tree.hpp>
 
 using namespace orcus;
@@ -32,10 +13,7 @@ using namespace orcus::spreadsheet;
 
 namespace ss = orcus::spreadsheet;
 
-
 typedef mdds::flat_segment_tree<std::size_t, bool> bool_segment_type;
-
-namespace {
 
 std::unique_ptr<ss::document> load_doc(const fs::path& filepath)
 {
@@ -944,8 +922,6 @@ void test_ods_import_styles_text_underlines()
     assert(*font->underline.spacing == ss::underline_spacing_t::skip_white_space);
 }
 
-} // anonymous namespace
-
 int main()
 {
     test_ods_detection();
@@ -959,6 +935,8 @@ int main()
     test_ods_import_styles_column_styles();
     test_ods_import_styles_asian_complex();
     test_ods_import_styles_text_underlines();
+
+    test_ods_autofilter_multi_conditions();
 
     return EXIT_SUCCESS;
 }
