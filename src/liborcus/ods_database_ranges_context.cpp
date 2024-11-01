@@ -38,7 +38,7 @@ constexpr map_type::entry_type entries[] = {
     { "<=", ss::auto_filter_op_t::less_equal },
     { "=", ss::auto_filter_op_t::equal },
     { ">", ss::auto_filter_op_t::greater },
-    { ">=", ss::auto_filter_op_t::greater },
+    { ">=", ss::auto_filter_op_t::greater_equal },
     { "begins", ss::auto_filter_op_t::begin_with },
     { "bottom percent", ss::auto_filter_op_t::bottom_percent },
     { "bottom values", ss::auto_filter_op_t::bottom },
@@ -299,8 +299,6 @@ void ods_database_ranges_context::start_filter_condition(const xml_token_attrs_t
         warn("required 'field' attribute was not provided");
         return;
     }
-
-    if (numeric_value)
 
     assert(op != ss::auto_filter_op_t::unspecified);
 
