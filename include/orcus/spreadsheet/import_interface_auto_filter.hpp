@@ -76,6 +76,15 @@ public:
     virtual void append_item(col_t field, auto_filter_op_t op, std::string_view value, bool regex) = 0;
 
     /**
+     * Append to this node a new filter item with no associated value.
+     *
+     * @param field  0-based field index which is the offset from the left-most
+     *               column of the filtered range.
+     * @param op     Operator for the filter item.
+     */
+    virtual void append_item(col_t field, auto_filter_op_t op) = 0;
+
+    /**
      * Start a new node of filter rules as a filter item to this node. The new
      * node should be appended to this node as new filter item when it is
      * committed.

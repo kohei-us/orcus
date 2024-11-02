@@ -40,11 +40,14 @@ constexpr map_type::entry_type entries[] = {
     { ">", ss::auto_filter_op_t::greater },
     { ">=", ss::auto_filter_op_t::greater_equal },
     { "begins", ss::auto_filter_op_t::begin_with },
+    { "begins-with", ss::auto_filter_op_t::begin_with },
     { "bottom percent", ss::auto_filter_op_t::bottom_percent },
     { "bottom values", ss::auto_filter_op_t::bottom },
     { "contains", ss::auto_filter_op_t::contain },
+    { "does-not-contain", ss::auto_filter_op_t::not_contain },
     { "empty", ss::auto_filter_op_t::empty },
     { "ends", ss::auto_filter_op_t::end_with },
+    { "ends-with", ss::auto_filter_op_t::end_with },
     { "top percent", ss::auto_filter_op_t::top_percent },
     { "top values", ss::auto_filter_op_t::top },
 };
@@ -235,7 +238,7 @@ void ods_database_ranges_context::start_filter_condition(const xml_token_attrs_t
 
     auto* node = m_filter_node_stack.back();
 
-    bool numeric_value = true; // probably numeric by default if not specified (?)
+    std::optional<bool> numeric_value;
     std::string_view value;
     ss::auto_filter_op_t op = ss::auto_filter_op_t::unspecified;
     std::optional<ss::col_t> field;
@@ -300,7 +303,11 @@ void ods_database_ranges_context::start_filter_condition(const xml_token_attrs_t
         return;
     }
 
-    assert(op != ss::auto_filter_op_t::unspecified);
+    if (op == ss::auto_filter_op_t::unspecified)
+    {
+        warn("required 'operator' attribute was not provided");
+        return;
+    }
 
     switch (op)
     {
@@ -309,9 +316,11 @@ void ods_database_ranges_context::start_filter_condition(const xml_token_attrs_t
         case ss::auto_filter_op_t::less:
         case ss::auto_filter_op_t::less_equal:
         {
-            if (!numeric_value)
+            if (numeric_value && !*numeric_value)
             {
-                warn("field operator requires numeric value, but the value is not numeric");
+                std::ostringstream os;
+                os << "field operator '" << op << "' requires a numeric value, but the value is not numeric";
+                warn(os.str());
                 return;
             }
 
@@ -327,8 +336,34 @@ void ods_database_ranges_context::start_filter_condition(const xml_token_attrs_t
             node->append_item(*field, op, *v);
             break;
         }
+        case ss::auto_filter_op_t::contain:
+        case ss::auto_filter_op_t::not_contain:
+        case ss::auto_filter_op_t::begin_with:
+        case ss::auto_filter_op_t::end_with:
+        {
+            if (numeric_value && *numeric_value)
+            {
+                std::ostringstream os;
+                os << "field operator '" << op << "' requires a text value, but the value is numeric";
+                warn(os.str());
+                return;
+            }
+
+            node->append_item(*field, op, value, false);
+            break;
+        }
+        case ss::auto_filter_op_t::empty:
+        case ss::auto_filter_op_t::not_empty:
+        {
+            node->append_item(*field, op);
+            break;
+        }
         default:
-            warn("TODO: handle this");
+        {
+            std::ostringstream os;
+            os << "TODO: unhandled operator '" << op << "'";
+            warn(os.str());
+        }
     }
 }
 

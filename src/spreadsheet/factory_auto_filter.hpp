@@ -54,6 +54,7 @@ public:
 
     virtual void append_item(col_t field, auto_filter_op_t op, std::string_view value, bool regex) override;
     virtual void append_item(col_t field, auto_filter_op_t op, double value) override;
+    virtual void append_item(col_t field, auto_filter_op_t op) override;
     virtual iface::import_auto_filter_node* start_node(auto_filter_node_op_t op) override;
     virtual iface::import_auto_filter_multi_values* start_multi_values(col_t field) override;
     virtual void commit() override;

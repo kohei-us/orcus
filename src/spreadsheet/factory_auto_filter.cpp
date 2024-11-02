@@ -53,6 +53,11 @@ void import_auto_filter_node::append_item(col_t field, auto_filter_op_t op, doub
     m_node.append(filter_item_t{field, op, value});
 }
 
+void import_auto_filter_node::append_item(col_t field, auto_filter_op_t op)
+{
+    m_node.append(filter_item_t{field, op});
+}
+
 iface::import_auto_filter_node* import_auto_filter_node::start_node(auto_filter_node_op_t op)
 {
     commit_func_type func = [this](filter_node_t&& node)
