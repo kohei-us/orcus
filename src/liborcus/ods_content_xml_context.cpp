@@ -376,21 +376,13 @@ void ods_content_xml_context::start_table(const xml_token_attrs_t& attrs)
     m_cur_sheet.sheet = m_tables.back();
     m_cur_sheet.index = m_tables.size() - 1;
 
-    if (get_config().debug)
-        cout << "start table " << name << endl;
-
     m_row = m_col = 0;
 }
 
 void ods_content_xml_context::end_table()
 {
     if (m_cur_sheet.sheet)
-    {
-        if (get_config().debug)
-            cout << "end table" << endl;
-
         m_cur_sheet.reset();
-    }
 }
 
 void ods_content_xml_context::start_named_range(const xml_token_attrs_t& attrs)
@@ -490,9 +482,6 @@ void ods_content_xml_context::start_row(const xml_token_attrs_t& attrs)
             }
         }
     }
-
-    if (get_config().debug)
-        std::cout << "row: (style='" << style_name << "')" << std::endl;
 
     if (!m_cur_sheet.sheet)
         return;
