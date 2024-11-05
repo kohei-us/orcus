@@ -44,6 +44,7 @@ void test_ods_import_styles_text_underlines();
 
 void test_ods_autofilter_multi_conditions();
 void test_ods_autofilter_text_comparisons();
+void test_ods_autofilter_largest_smallest();
 
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

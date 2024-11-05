@@ -315,6 +315,10 @@ void ods_database_ranges_context::start_filter_condition(const xml_token_attrs_t
         case ss::auto_filter_op_t::greater_equal:
         case ss::auto_filter_op_t::less:
         case ss::auto_filter_op_t::less_equal:
+        case ss::auto_filter_op_t::top:
+        case ss::auto_filter_op_t::top_percent:
+        case ss::auto_filter_op_t::bottom:
+        case ss::auto_filter_op_t::bottom_percent:
         {
             if (numeric_value && !*numeric_value)
             {

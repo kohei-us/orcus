@@ -286,5 +286,84 @@ void test_ods_autofilter_text_comparisons()
     }
 }
 
+void test_ods_autofilter_largest_smallest()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    auto doc = load_doc(SRCDIR"/test/ods/autofilter/largest-smallest.ods");
+    assert(doc);
+
+    test::range_resolver to_range(ixion::formula_name_resolver_t::odf_cra, doc->get_model_context());
+
+    const ss::tables& t = doc->get_tables();
+
+    {
+        auto table = t.get("Largest").lock();
+        assert(table);
+        assert(table->range == to_range("Largest.B3:Largest.I13"));
+
+        const ss::auto_filter_t& filter = table->filter;
+        assert(filter.range == ixion::abs_rc_range_t(table->range));
+
+        // root {or}
+        //   |
+        //   +- item {field: 2; top 3}
+        //   |
+        //   +- item {field: 6; top 50%}
+
+        assert(filter.root.op() == ss::auto_filter_node_op_t::op_or);
+        assert(filter.root.size() == 2);
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(0));
+            assert(item);
+            assert(item->field() == 2);
+            assert(item->op() == ss::auto_filter_op_t::top);
+            assert(item->value() == ss::filter_value_t(3.0));
+        }
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(1));
+            assert(item);
+            assert(item->field() == 6);
+            assert(item->op() == ss::auto_filter_op_t::top_percent);
+            assert(item->value() == ss::filter_value_t(50.0));
+        }
+    }
+
+    {
+        auto table = t.get("Smallest").lock();
+        assert(table);
+        assert(table->range == to_range("Smallest.B3:Smallest.I13"));
+
+        const ss::auto_filter_t& filter = table->filter;
+        assert(filter.range == ixion::abs_rc_range_t(table->range));
+
+        // root {or}
+        //   |
+        //   +- item {field: 2; bottom 50%}
+        //   |
+        //   +- item {field: 5; bottom 3}
+
+        assert(filter.root.op() == ss::auto_filter_node_op_t::op_or);
+        assert(filter.root.size() == 2);
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(0));
+            assert(item);
+            assert(item->field() == 2);
+            assert(item->op() == ss::auto_filter_op_t::bottom_percent);
+            assert(item->value() == ss::filter_value_t(50.0));
+        }
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(1));
+            assert(item);
+            assert(item->field() == 5);
+            assert(item->op() == ss::auto_filter_op_t::bottom);
+            assert(item->value() == ss::filter_value_t(3.0));
+        }
+    }
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

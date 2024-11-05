@@ -938,6 +938,7 @@ int main()
 
     test_ods_autofilter_multi_conditions();
     test_ods_autofilter_text_comparisons();
+    test_ods_autofilter_largest_smallest();
 
     return EXIT_SUCCESS;
 }
