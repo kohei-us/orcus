@@ -17,7 +17,6 @@ void test_ods_autofilter_multi_conditions()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-
     auto doc = load_doc(SRCDIR"/test/ods/autofilter/multi-conditions.ods");
     assert(doc);
 
@@ -147,6 +146,142 @@ void test_ods_autofilter_multi_conditions()
                 assert(item->op() == ss::auto_filter_op_t::greater_equal);
                 assert(item->value() == ss::filter_value_t(20.0));
             }
+        }
+    }
+}
+
+void test_ods_autofilter_text_comparisons()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    auto doc = load_doc(SRCDIR"/test/ods/autofilter/text-comparisons.ods");
+    assert(doc);
+
+    test::range_resolver to_range(ixion::formula_name_resolver_t::odf_cra, doc->get_model_context());
+
+    const ss::tables& t = doc->get_tables();
+
+    {
+        auto table = t.get("__Anonymous_Sheet_DB__0").lock();
+        assert(table);
+        assert(table->range == to_range("Table1.B3:Table1.E13"));
+
+        const ss::auto_filter_t& filter = table->filter;
+        assert(filter.range == ixion::abs_rc_range_t(table->range));
+
+        // root {and}
+        //   |
+        //   +- item {field: 2; ends-with 'USA'}
+
+        assert(filter.root.op() == ss::auto_filter_node_op_t::op_and);
+        assert(filter.root.size() == 1);
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(0));
+            assert(item);
+            assert(item->field() == 2);
+            assert(item->op() == ss::auto_filter_op_t::end_with);
+            assert(item->value() == ss::filter_value_t("USA"));
+        }
+    }
+
+    {
+        auto table = t.get("__Anonymous_Sheet_DB__1").lock();
+        assert(table);
+        assert(table->range == to_range("Table2.B3:Table2.E13"));
+
+        const ss::auto_filter_t& filter = table->filter;
+        assert(filter.range == ixion::abs_rc_range_t(table->range));
+
+        // root {and}
+        //   |
+        //   +- item {field: 2; does-not-contain 'USA'}
+        //   |
+        //   +- item {field: 0; begins-with 'Ancient'}
+
+        assert(filter.root.op() == ss::auto_filter_node_op_t::op_and);
+        assert(filter.root.size() == 2);
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(0));
+            assert(item);
+            assert(item->field() == 2);
+            assert(item->op() == ss::auto_filter_op_t::not_contain);
+            assert(item->value() == ss::filter_value_t("USA"));
+        }
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(1));
+            assert(item);
+            assert(item->field() == 0);
+            assert(item->op() == ss::auto_filter_op_t::begin_with);
+            assert(item->value() == ss::filter_value_t("Ancient"));
+        }
+    }
+
+    {
+        auto table = t.get("__Anonymous_Sheet_DB__2").lock();
+        assert(table);
+        assert(table->range == to_range("Table3.B3:Table3.C23"));
+
+        const ss::auto_filter_t& filter = table->filter;
+        assert(filter.range == ixion::abs_rc_range_t(table->range));
+
+        // root {or}
+        //   |
+        //   +- item {field: 1; not-empty}
+        //   |
+        //   +- item {field: 0; ends-with 'Kim'}
+
+        assert(filter.root.op() == ss::auto_filter_node_op_t::op_or);
+        assert(filter.root.size() == 2);
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(0));
+            assert(item);
+            assert(item->field() == 1);
+            assert(item->op() == ss::auto_filter_op_t::not_empty);
+        }
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(1));
+            assert(item);
+            assert(item->field() == 0);
+            assert(item->op() == ss::auto_filter_op_t::end_with);
+            assert(item->value() == ss::filter_value_t("Kim"));
+        }
+    }
+
+    {
+        auto table = t.get("__Anonymous_Sheet_DB__3").lock();
+        assert(table);
+        assert(table->range == to_range("Table4.B3:Table4.C23"));
+
+        const ss::auto_filter_t& filter = table->filter;
+        assert(filter.range == ixion::abs_rc_range_t(table->range));
+
+        // root {or}
+        //   |
+        //   +- item {field: 1; empty}
+        //   |
+        //   +- item {field: 0; begins-with 'A'}
+
+        assert(filter.root.op() == ss::auto_filter_node_op_t::op_or);
+        assert(filter.root.size() == 2);
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(0));
+            assert(item);
+            assert(item->field() == 1);
+            assert(item->op() == ss::auto_filter_op_t::empty);
+        }
+
+        {
+            const auto* item = dynamic_cast<const ss::filter_item_t*>(filter.root.at(1));
+            assert(item);
+            assert(item->field() == 0);
+            assert(item->op() == ss::auto_filter_op_t::begin_with);
+            assert(item->value() == ss::filter_value_t("A"));
         }
     }
 }

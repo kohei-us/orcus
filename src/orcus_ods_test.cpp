@@ -937,6 +937,7 @@ int main()
     test_ods_import_styles_text_underlines();
 
     test_ods_autofilter_multi_conditions();
+    test_ods_autofilter_text_comparisons();
 
     return EXIT_SUCCESS;
 }
