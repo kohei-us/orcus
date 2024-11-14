@@ -431,6 +431,11 @@ class yaml_dumper
             switch (c)
             {
                 case '#':
+                case '\b':
+                case '\f':
+                case '\n':
+                case '\r':
+                case '\t':
                     return true;
                 case ' ':
                     if (c_prev == ':')
@@ -482,7 +487,29 @@ private:
         if (quote_value)
             os << '"';
 
-        os << s;
+        for (char c : s)
+        {
+            switch (c)
+            {
+                case '\b':
+                    os << "\\b";
+                    break;
+                case '\f':
+                    os << "\\f";
+                    break;
+                case '\n':
+                    os << "\\n";
+                    break;
+                case '\r':
+                    os << "\\r";
+                    break;
+                case '\t':
+                    os << "\\t";
+                    break;
+                default:
+                    os << c;
+            }
+        }
 
         if (quote_value)
             os << '"';

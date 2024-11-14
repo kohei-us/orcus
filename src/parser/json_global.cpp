@@ -14,7 +14,7 @@ namespace orcus { namespace json {
 
 namespace {
 
-const char backslash = '\\';
+constexpr char backslash = '\\';
 
 }
 
@@ -25,17 +25,33 @@ std::string escape_string(const std::string& input)
     for (auto it = input.begin(), ite = input.end(); it != ite; ++it)
     {
         char c = *it;
-        if (c == '"')
-            // Escape double quote, but not forward slash.
-            os << backslash;
-        else if (c == backslash)
+        switch (c)
         {
-            // Escape a '\' if and only if the next character is not one of control characters.
-            auto itnext = it + 1;
-            if (itnext == ite || get_string_escape_char_type(*itnext) != string_escape_char_t::control_char)
-                os << backslash;
+            case '"':
+                // Escape double quote, but not forward slash.
+                os << backslash << c;
+                break;
+            case backslash:
+                os << backslash << backslash;
+                break;
+            case '\b':
+                os << "\\b";
+                break;
+            case '\f':
+                os << "\\f";
+                break;
+            case '\n':
+                os << "\\n";
+                break;
+            case '\r':
+                os << "\\r";
+                break;
+            case '\t':
+                os << "\\t";
+                break;
+            default:
+                os << c;
         }
-        os << c;
     }
 
     return os.str();

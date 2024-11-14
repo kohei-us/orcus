@@ -289,14 +289,14 @@ void test_json_traverse_basic2()
         assert(string_expected(node.child(2), ""));
         assert(string_expected(node.child(3), "\\"));
         assert(string_expected(node.child(4), "/"));
-        assert(string_expected(node.child(5), "\\b"));
-        assert(string_expected(node.child(6), "\\f"));
-        assert(string_expected(node.child(7), "\\n"));
-        assert(string_expected(node.child(8), "\\r"));
-        assert(string_expected(node.child(9), "\\t"));
+        assert(string_expected(node.child(5), "\b"));
+        assert(string_expected(node.child(6), "\f"));
+        assert(string_expected(node.child(7), "\n"));
+        assert(string_expected(node.child(8), "\r"));
+        assert(string_expected(node.child(9), "\t"));
         assert(string_expected(node.child(10), "\"quoted\""));
         assert(string_expected(node.child(11), "http://www.google.com"));
-        assert(string_expected(node.child(12), "one \\n two \\n three"));
+        assert(string_expected(node.child(12), "one \n two \n three"));
         assert(string_expected(node.child(13), "front segment 'single quote' and \"double quote\" end segment"));
     };
 

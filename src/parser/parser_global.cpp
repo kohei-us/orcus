@@ -120,6 +120,29 @@ string_escape_char_t get_string_escape_char_type(char c)
     return string_escape_char_t::invalid;
 }
 
+/**
+ * Given the literal character immediately following the '\', convert it to an
+ * escaped character.
+ */
+char to_escaped_char(char c)
+{
+    switch (c)
+    {
+        case 'b': // backspace
+            return '\b';
+        case 'f': // formfeed
+            return '\f';
+        case 'n': // newline
+            return '\n';
+        case 'r': // carriage return
+            return '\r';
+        case 't': // horizontal tab
+            return '\t';
+    }
+
+    return c;
+}
+
 namespace {
 
 parse_quoted_string_state parse_string_with_escaped_char(
@@ -138,6 +161,7 @@ parse_quoted_string_state parse_string_with_escaped_char(
     buffer.reset();
     if (p_parsed && n_parsed)
         buffer.append(p_parsed, n_parsed);
+    escaped_char = to_escaped_char(escaped_char);
     buffer.append(&escaped_char, 1);
 
     ++p;
@@ -162,15 +186,16 @@ parse_quoted_string_state parse_string_with_escaped_char(
             switch (get_string_escape_char_type(c))
             {
                 case string_escape_char_t::regular_char:
+                case string_escape_char_t::control_char:
+                {
+                    c = to_escaped_char(c);
                     buffer.append(p_head, len-1);
                     buffer.append(&c, 1);
                     ++p;
                     len = 0;
                     p_head = p;
                     break;
-                case string_escape_char_t::control_char:
-                    // do nothing on control characters.
-                    break;
+                }
                 case string_escape_char_t::invalid:
                 default:
                     ret.length = parse_quoted_string_state::error_illegal_escape_char;
@@ -407,10 +432,8 @@ parse_quoted_string_state parse_double_quoted_string(
             switch (get_string_escape_char_type(c))
             {
                 case string_escape_char_t::regular_char:
-                    return parse_string_with_escaped_char(p, max_length, ret.str, ret.length-1, c, buffer);
                 case string_escape_char_t::control_char:
-                    // do nothing on control characters.
-                    break;
+                    return parse_string_with_escaped_char(p, max_length, ret.str, ret.length-1, c, buffer);
                 case string_escape_char_t::unicode:
                 {
                     // TODO: extract the 4 hex digits and convert it to utf-8 chars

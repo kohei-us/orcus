@@ -37,12 +37,32 @@ void escape(std::ostream& os, std::string_view val)
     const char* p_end = p + val.size();
     for (; p != p_end; ++p)
     {
-        if (*p == '"')
-            os << "\\\"";
-        else if (*p == '\\')
-            os << "\\\\";
-        else
-            os << *p;
+        switch (*p)
+        {
+            case '"':
+                os << "\\\"";
+                break;
+            case '\\':
+                os << "\\\\";
+                break;
+            case '\b':
+                os << "\\b";
+                break;
+            case '\f':
+                os << "\\f";
+                break;
+            case '\n':
+                os << "\\n";
+                break;
+            case '\r':
+                os << "\\r";
+                break;
+            case '\t':
+                os << "\\t";
+                break;
+            default:
+                os << *p;
+        }
     }
 }
 

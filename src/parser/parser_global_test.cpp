@@ -18,7 +18,7 @@ namespace {
 
 void test_parse_numbers()
 {
-    orcus::test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     struct test_case
     {
@@ -59,7 +59,7 @@ void test_parse_numbers()
 
 void test_parse_integers()
 {
-    orcus::test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string_view test_str = "-100";
 
@@ -103,7 +103,7 @@ void test_parse_integers()
 
 void test_parse_double_quoted_strings()
 {
-    orcus::test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     struct test_case
     {
@@ -116,11 +116,23 @@ void test_parse_double_quoted_strings()
         { "\"", nullptr, orcus::parse_quoted_string_state::error_no_closing_quote },
         { "\"\"", "", 0 },
         { "\"a\"", "a", 1 },
-
+        // literal "abc\"def" should be parsed as 'abc"def'
+        { "\"abc\\\"def\"", "abc\"def", 7 },
+        // literal "\\" should be parsed as a single backslash '\'
+        { "\" \\\\ \"", " \\ ", 3 },
+        { "\" \\\\\\\\ \"", " \\\\ ", 4 },
+        // literal "line\nbreak" with '\n' to be converted to an ordinal 10
+        { "\"line\\nbreak\"", "line\nbreak", 10 },
+        { "\"more\\nline\\nbreak\"", "more\nline\nbreak", 15 },
+        // test all the other valid control characters
+        { "\"\\t\\t\\t\"", "\t\t\t", 3 },
+        { "\"\\b\\f\\n\\r\\t\"", "\b\f\n\r\t", 5 },
     };
 
     for (const test_case& tc : test_cases)
     {
+        std::cout << "---" << std::endl;
+        std::cout << "input: '" << tc.input << "'" << std::endl;
         orcus::cell_buffer buf;
         const char* p = tc.input.data();
         size_t n = tc.input.size();
@@ -129,6 +141,22 @@ void test_parse_double_quoted_strings()
         if (tc.expected_p)
         {
             std::string expected(tc.expected_p, tc.expected_n);
+            std::cout << "expected:";
+
+            for (char c : expected)
+            {
+                std::cout << ' ';
+
+                if (std::isprint(c))
+                    std::cout << '\'' << c << '\'';
+                else
+                    std::cout << "<c>";
+
+                std::cout << '(' << int(c) << ')';
+            }
+
+            std::cout << std::endl;
+
             std::string actual(ret.str, ret.length);
             assert(expected == actual);
         }
@@ -143,6 +171,8 @@ void test_parse_double_quoted_strings()
 
 void test_trim()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     // test for trimming.
     std::string s1("test"), s2("  test"), s3("   test  "), s4("test   ");
     std::string_view sv1(s1), sv2(s2), sv3(s3), sv4(s4);

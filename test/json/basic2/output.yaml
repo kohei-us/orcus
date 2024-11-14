@@ -4,12 +4,12 @@
 - 
 - \
 - /
-- \b
-- \f
-- \n
-- \r
-- \t
+- "\b"
+- "\f"
+- "\n"
+- "\r"
+- "\t"
 - "quoted"
 - http://www.google.com
-- one \n two \n three
+- "one \n two \n three"
 - front segment 'single quote' and "double quote" end segment
