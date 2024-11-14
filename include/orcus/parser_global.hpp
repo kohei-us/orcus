@@ -16,11 +16,18 @@ namespace orcus {
 
 class cell_buffer;
 
+/**
+ * Type of character immediately following an escape character '\'.
+ */
 enum class string_escape_char_t
 {
     invalid,
-    valid,
-    control_char
+    /** Regular character such as '"' and '\' */
+    regular_char,
+    /** Character such as 't' for tab, 'n' for line break etc. */
+    control_char,
+    /** 'u' which is followed by 4 hexadecimal digits. */
+    unicode,
 };
 
 /**
@@ -31,11 +38,11 @@ enum class string_escape_char_t
  */
 struct parse_quoted_string_state
 {
-    ORCUS_PSR_DLLPUBLIC static const size_t error_no_closing_quote;
-    ORCUS_PSR_DLLPUBLIC static const size_t error_illegal_escape_char;
+    static constexpr std::size_t error_no_closing_quote = 1;
+    static constexpr std::size_t error_illegal_escape_char = 2;
 
     const char* str;
-    size_t length;
+    std::size_t length;
 
     /**
      * When true, the str pointer points to the temporary buffer storage
@@ -101,7 +108,7 @@ ORCUS_PSR_DLLPUBLIC const char* parse_integer(const char* p, const char* p_end, 
  * Two single-quote characters ('') represent one single-quote character.
  */
 ORCUS_PSR_DLLPUBLIC parse_quoted_string_state parse_single_quoted_string(
-    const char*& p, size_t max_length, cell_buffer& buffer);
+    const char*& p, std::size_t max_length, cell_buffer& buffer);
 
 /**
  * Starting from the opening single quote position, parse string all the way
@@ -115,10 +122,10 @@ ORCUS_PSR_DLLPUBLIC parse_quoted_string_state parse_single_quoted_string(
  *         nullptr in case no closing quote is found.
  */
 ORCUS_PSR_DLLPUBLIC const char* parse_to_closing_single_quote(
-    const char* p, size_t max_length);
+    const char* p, std::size_t max_length);
 
 ORCUS_PSR_DLLPUBLIC parse_quoted_string_state parse_double_quoted_string(
-    const char*& p, size_t max_length, cell_buffer& buffer);
+    const char*& p, std::size_t max_length, cell_buffer& buffer);
 
 /**
  * Starting from the opening double quote position, parse string all the way
@@ -132,7 +139,7 @@ ORCUS_PSR_DLLPUBLIC parse_quoted_string_state parse_double_quoted_string(
  *         nullptr in case no closing quote is found.
  */
 ORCUS_PSR_DLLPUBLIC const char* parse_to_closing_double_quote(
-    const char* p, size_t max_length);
+    const char* p, std::size_t max_length);
 
 /**
  * Given a character that occurs immediately after the escape character '\',

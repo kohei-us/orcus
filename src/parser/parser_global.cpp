@@ -20,9 +20,6 @@
 
 namespace orcus {
 
-const size_t parse_quoted_string_state::error_no_closing_quote = 1;
-const size_t parse_quoted_string_state::error_illegal_escape_char = 2;
-
 bool is_blank(char c)
 {
     return is_in(c, " \t\n\r");
@@ -109,15 +106,15 @@ string_escape_char_t get_string_escape_char_type(char c)
         case '"':
         case '\\':
         case '/':
-            return string_escape_char_t::valid;
+            return string_escape_char_t::regular_char;
         case 'b': // backspace
         case 'f': // formfeed
         case 'n': // newline
         case 'r': // carriage return
         case 't': // horizontal tab
             return string_escape_char_t::control_char;
-        default:
-            ;
+        case 'u':
+            return string_escape_char_t::unicode;
     }
 
     return string_escape_char_t::invalid;
@@ -126,7 +123,7 @@ string_escape_char_t get_string_escape_char_type(char c)
 namespace {
 
 parse_quoted_string_state parse_string_with_escaped_char(
-    const char*& p, size_t max_length, const char* p_parsed, size_t n_parsed, char c,
+    const char*& p, size_t max_length, const char* p_parsed, size_t n_parsed, char escaped_char,
     cell_buffer& buffer)
 {
     const char* p_end = p + max_length;
@@ -141,7 +138,7 @@ parse_quoted_string_state parse_string_with_escaped_char(
     buffer.reset();
     if (p_parsed && n_parsed)
         buffer.append(p_parsed, n_parsed);
-    buffer.append(&c, 1);
+    buffer.append(&escaped_char, 1);
 
     ++p;
     if (p == p_end)
@@ -156,7 +153,7 @@ parse_quoted_string_state parse_string_with_escaped_char(
 
     for (; p != p_end; ++p, ++len)
     {
-        c = *p;
+        char c = *p;
 
         if (escape)
         {
@@ -164,16 +161,16 @@ parse_quoted_string_state parse_string_with_escaped_char(
 
             switch (get_string_escape_char_type(c))
             {
-                case string_escape_char_t::valid:
+                case string_escape_char_t::regular_char:
                     buffer.append(p_head, len-1);
                     buffer.append(&c, 1);
                     ++p;
                     len = 0;
                     p_head = p;
-                break;
+                    break;
                 case string_escape_char_t::control_char:
                     // do nothing on control characters.
-                break;
+                    break;
                 case string_escape_char_t::invalid:
                 default:
                     ret.length = parse_quoted_string_state::error_illegal_escape_char;
@@ -270,7 +267,7 @@ parse_quoted_string_state parse_single_quoted_string_buffered(
     return ret;
 }
 
-}
+} // anonymous namespace
 
 parse_quoted_string_state parse_single_quoted_string(
     const char*& p, size_t max_length, cell_buffer& buffer)
@@ -409,13 +406,19 @@ parse_quoted_string_state parse_double_quoted_string(
 
             switch (get_string_escape_char_type(c))
             {
-                case string_escape_char_t::valid:
+                case string_escape_char_t::regular_char:
                     return parse_string_with_escaped_char(p, max_length, ret.str, ret.length-1, c, buffer);
                 case string_escape_char_t::control_char:
                     // do nothing on control characters.
-                break;
+                    break;
+                case string_escape_char_t::unicode:
+                {
+                    // TODO: extract the 4 hex digits and convert it to utf-8 chars
+                    ret.str = nullptr;
+                    ret.length = parse_quoted_string_state::error_illegal_escape_char;
+                    return ret;
+                }
                 case string_escape_char_t::invalid:
-                default:
                     ret.str = nullptr;
                     ret.length = parse_quoted_string_state::error_illegal_escape_char;
                     return ret;
