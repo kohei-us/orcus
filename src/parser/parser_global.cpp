@@ -145,26 +145,14 @@ char to_escaped_char(char c)
 
 namespace {
 
-parse_quoted_string_state parse_string_with_escaped_char(
-    const char*& p, size_t max_length, const char* p_parsed, size_t n_parsed, char escaped_char,
-    cell_buffer& buffer)
+parse_quoted_string_state parse_string_with_buffer(cell_buffer& buffer, const char*& p, const char* p_end)
 {
-    const char* p_end = p + max_length;
-
     parse_quoted_string_state ret;
     ret.str = nullptr;
     ret.length = 0;
     ret.transient = true;
     ret.has_control_character = false;
 
-    // Start the buffer with the string we've parsed so far.
-    buffer.reset();
-    if (p_parsed && n_parsed)
-        buffer.append(p_parsed, n_parsed);
-    escaped_char = to_escaped_char(escaped_char);
-    buffer.append(&escaped_char, 1);
-
-    ++p;
     if (p == p_end)
     {
         ret.length = parse_quoted_string_state::error_no_closing_quote;
@@ -433,7 +421,19 @@ parse_quoted_string_state parse_double_quoted_string(
             {
                 case string_escape_char_t::regular_char:
                 case string_escape_char_t::control_char:
-                    return parse_string_with_escaped_char(p, max_length, ret.str, ret.length-1, c, buffer);
+                {
+                    // Start the buffer with the string we've parsed so far.
+                    buffer.reset();
+                    if (ret.str && ret.length > 1)
+                        buffer.append(ret.str, ret.length-1);
+
+                    // add the escaped char to the buffer too
+                    c = to_escaped_char(c);
+                    buffer.append(&c, 1);
+
+                    ++p; // skip the escaped char
+                    return parse_string_with_buffer(buffer, p, p_end);
+                }
                 case string_escape_char_t::unicode:
                 {
                     // TODO: extract the 4 hex digits and convert it to utf-8 chars
