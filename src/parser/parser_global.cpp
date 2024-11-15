@@ -63,7 +63,7 @@ const char* parse_integer(const char* p, const char* p_end, long& value)
     if (p >= p_end)
         return p;
 
-    long result = 0.0;
+    long result = 0;
     bool negative_sign = false;
 
     // Check for presence of a sign.

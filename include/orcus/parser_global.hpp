@@ -91,7 +91,7 @@ ORCUS_PSR_DLLPUBLIC bool is_in(char c, std::string_view allowed);
 ORCUS_PSR_DLLPUBLIC const char* parse_numeric(const char* p, const char* p_end, double& value);
 
 /**
- * Parse a sequence of characters into an integer value.
+ * Parse a decimal number string into a signed integer value.
  *
  * @param p pointer to the first character to start parsing from.
  * @param p_end pointer to the first character not allowed to parse.
