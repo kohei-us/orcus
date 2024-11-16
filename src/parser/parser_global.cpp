@@ -10,6 +10,7 @@
 #include <orcus/exception.hpp>
 
 #include "numeric_parser.hpp"
+#include "utf8.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -145,7 +146,14 @@ char to_escaped_char(char c)
 
 namespace {
 
-parse_quoted_string_state parse_string_with_buffer(cell_buffer& buffer, const char*& p, const char* p_end)
+enum class double_quoted_string_parse_mode_t
+{
+    unspecified,
+    escaped,
+    hex_digit,
+};
+
+parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& buffer, const char*& p, const char* p_end)
 {
     parse_quoted_string_state ret;
     ret.str = nullptr;
@@ -407,58 +415,105 @@ parse_quoted_string_state parse_double_quoted_string(
         return ret;
     }
 
-    bool escape = false;
+    double_quoted_string_parse_mode_t mode = double_quoted_string_parse_mode_t::unspecified;
+    const char* p_head = nullptr;
 
     for (; p != p_end; ++p, ++ret.length)
     {
         char c = *p;
 
-        if (escape)
+        switch (mode)
         {
-            escape = false;
-
-            switch (get_string_escape_char_type(c))
+            case double_quoted_string_parse_mode_t::escaped:
             {
-                case string_escape_char_t::regular_char:
-                case string_escape_char_t::control_char:
+                switch (get_string_escape_char_type(c))
                 {
-                    // Start the buffer with the string we've parsed so far.
-                    buffer.reset();
-                    if (ret.str && ret.length > 1)
-                        buffer.append(ret.str, ret.length-1);
+                    case string_escape_char_t::regular_char:
+                    case string_escape_char_t::control_char:
+                    {
+                        // Start the buffer with the string we've parsed so far.
+                        buffer.reset();
+                        if (ret.str && ret.length > 1)
+                            buffer.append(ret.str, ret.length-1);
 
-                    // add the escaped char to the buffer too
-                    c = to_escaped_char(c);
-                    buffer.append(&c, 1);
+                        // add the escaped char to the buffer too
+                        c = to_escaped_char(c);
+                        buffer.append(&c, 1);
 
-                    ++p; // skip the escaped char
-                    return parse_string_with_buffer(buffer, p, p_end);
+                        ++p; // skip the escaped char
+                        return parse_double_quoted_string_with_buffer(buffer, p, p_end);
+                    }
+                    case string_escape_char_t::unicode:
+                    {
+                        mode = double_quoted_string_parse_mode_t::hex_digit;
+                        break;
+                    }
+                    case string_escape_char_t::invalid:
+                        ret.str = nullptr;
+                        ret.length = parse_quoted_string_state::error_illegal_escape_char;
+                        return ret;
                 }
-                case string_escape_char_t::unicode:
-                {
-                    // TODO: extract the 4 hex digits and convert it to utf-8 chars
-                    ret.str = nullptr;
-                    ret.length = parse_quoted_string_state::error_illegal_escape_char;
-                    return ret;
-                }
-                case string_escape_char_t::invalid:
-                    ret.str = nullptr;
-                    ret.length = parse_quoted_string_state::error_illegal_escape_char;
-                    return ret;
+
+                break;
             }
+            case double_quoted_string_parse_mode_t::hex_digit:
+            {
+                if (!p_head)
+                    p_head = p;
+
+                if (!std::isxdigit(c))
+                {
+                    std::size_t n_digits = std::distance(p_head, p);
+                    if (n_digits != 4)
+                    {
+                        ret.str = nullptr;
+                        ret.length = parse_quoted_string_state::error_invalid_hex_digits;
+                        return ret;
+                    }
+
+                    std::stringstream ss;
+                    uint32_t cp;
+                    ss << std::string_view{p_head, n_digits};
+                    ss >> std::hex >> cp;
+
+                    // Start the buffer with the parsed segment prior to '\u'
+                    buffer.reset();
+                    if (ret.str && ret.length > 6)
+                        buffer.append(ret.str, ret.length-6);
+
+                    auto encoded = encode_utf8(cp);
+                    if (encoded.empty())
+                    {
+                        // failed to encode it as utf-8
+                        ret.str = nullptr;
+                        ret.length = parse_quoted_string_state::error_invalid_hex_digits;
+                        return ret;
+                    }
+
+                    buffer.append(encoded.data(), encoded.size());
+
+                    return parse_double_quoted_string_with_buffer(buffer, p, p_end);
+                }
+                break;
+            }
+            case double_quoted_string_parse_mode_t::unspecified:
+                break;
         }
 
         switch (*p)
         {
             case '"':
             {
-                // closing quote.
+                // closing quote
+                assert (mode == double_quoted_string_parse_mode_t::unspecified);
                 ++p; // skip the quote.
                 return ret;
             }
             case '\\':
             {
-                escape = true;
+                // escape character
+                assert (mode == double_quoted_string_parse_mode_t::unspecified);
+                mode = double_quoted_string_parse_mode_t::escaped;
                 continue;
             }
             default:

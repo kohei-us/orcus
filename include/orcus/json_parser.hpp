@@ -387,12 +387,24 @@ void json_parser<_Handler>::string()
     }
 
     // Parsing was unsuccessful.
-    if (res.length == parse_quoted_string_state::error_no_closing_quote)
-        throw parse_error("string: stream ended prematurely before reaching the closing quote.", offset());
-    else if (res.length == parse_quoted_string_state::error_illegal_escape_char)
-        parse_error::throw_with("string: illegal escape character '", cur_char(), "'.", offset());
-    else
-        throw parse_error("string: unknown error.", offset());
+    switch (res.length)
+    {
+        case parse_quoted_string_state::error_no_closing_quote:
+            throw parse_error("string: stream ended prematurely before reaching the closing quote", offset());
+            break;
+        case parse_quoted_string_state::error_illegal_escape_char:
+            parse_error::throw_with("string: illegal escape character '", cur_char(), "'", offset());
+            break;
+        case parse_quoted_string_state::error_invalid_hex_digits:
+            throw parse_error("string: invalid hex digits for unicode", offset());
+            break;
+        default:
+        {
+            std::ostringstream os;
+            os << "string: unknown error (code=" << res.length << ")";
+            throw parse_error(os.str(), offset());
+        }
+    }
 }
 
 }

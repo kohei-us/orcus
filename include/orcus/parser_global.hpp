@@ -40,6 +40,7 @@ struct parse_quoted_string_state
 {
     static constexpr std::size_t error_no_closing_quote = 1;
     static constexpr std::size_t error_illegal_escape_char = 2;
+    static constexpr std::size_t error_invalid_hex_digits = 3;
 
     const char* str;
     std::size_t length;
