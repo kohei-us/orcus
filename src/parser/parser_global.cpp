@@ -167,57 +167,120 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
         return ret;
     }
 
-    size_t len = 0;
-    const char* p_head = p;
-    bool escape = false;
+    std::size_t len = 0;
+    const char* p_head = nullptr;
+    double_quoted_string_parse_mode_t mode = double_quoted_string_parse_mode_t::unspecified;
 
     for (; p != p_end; ++p, ++len)
     {
         char c = *p;
 
-        if (escape)
+        if (!p_head)
         {
-            escape = false;
-
-            switch (get_string_escape_char_type(c))
-            {
-                case string_escape_char_t::regular_char:
-                case string_escape_char_t::control_char:
-                {
-                    c = to_escaped_char(c);
-                    buffer.append(p_head, len-1);
-                    buffer.append(&c, 1);
-                    ++p;
-                    len = 0;
-                    p_head = p;
-                    break;
-                }
-                case string_escape_char_t::invalid:
-                default:
-                    ret.length = parse_quoted_string_state::error_illegal_escape_char;
-                    return ret;
-            }
+            p_head = p;
+            len = 0;
         }
 
-        switch (*p)
+        switch (mode)
         {
-            case '"':
+            case double_quoted_string_parse_mode_t::escaped:
             {
-                // closing quote.
-                buffer.append(p_head, len);
-                ++p; // skip the quote.
-                std::string_view s = buffer.str();
-                ret.str = s.data();
-                ret.length = s.size();
-                return ret;
+                mode = double_quoted_string_parse_mode_t::unspecified;
+
+                switch (get_string_escape_char_type(c))
+                {
+                    case string_escape_char_t::regular_char:
+                    case string_escape_char_t::control_char:
+                    {
+                        c = to_escaped_char(c);
+                        if (p_head && len > 1)
+                            buffer.append(p_head, len-1);
+                        buffer.append(&c, 1);
+                        p_head = nullptr;
+                        continue;
+                        break;
+                    }
+                    case string_escape_char_t::unicode:
+                    {
+                        mode = double_quoted_string_parse_mode_t::hex_digit;
+                        p_head = nullptr;
+                        break;
+                    }
+                    case string_escape_char_t::invalid:
+                    default:
+                        ret.length = parse_quoted_string_state::error_illegal_escape_char;
+                        return ret;
+                }
+                break;
             }
-            case '\\':
+            case double_quoted_string_parse_mode_t::hex_digit:
             {
-                escape = true;
-                continue;
+                if (!std::isxdigit(c))
+                {
+                    if (len != 4)
+                    {
+                        ret.length = parse_quoted_string_state::error_invalid_hex_digits;
+                        return ret;
+                    }
+
+                    std::stringstream ss;
+                    uint32_t cp;
+                    ss << std::string_view{p_head, len};
+                    ss >> std::hex >> cp;
+
+                    auto encoded = encode_utf8(cp);
+                    if (encoded.empty())
+                    {
+                        // failed to encode it as utf-8
+                        ret.length = parse_quoted_string_state::error_invalid_hex_digits;
+                        return ret;
+                    }
+
+                    buffer.append(encoded.data(), encoded.size());
+                    p_head = nullptr;
+                    mode = double_quoted_string_parse_mode_t::unspecified;
+
+                    switch (c)
+                    {
+                        case '"': // closing quote
+                        {
+                            ++p; // skip the quote
+                            std::string_view s = buffer.str();
+                            ret.str = s.data();
+                            ret.length = s.size();
+                            return ret;
+                        }
+                        case '\\': // escape char
+                        {
+                            mode = double_quoted_string_parse_mode_t::escaped;
+                            break;
+                        }
+                    }
+                }
+                break;
             }
-            default:
-                ;
+            case double_quoted_string_parse_mode_t::unspecified:
+            {
+                switch (*p)
+                {
+                    case '"':
+                    {
+                        // closing quote.
+                        buffer.append(p_head, len);
+                        ++p; // skip the quote.
+                        std::string_view s = buffer.str();
+                        ret.str = s.data();
+                        ret.length = s.size();
+                        return ret;
+                    }
+                    case '\\':
+                    {
+                        mode = double_quoted_string_parse_mode_t::escaped;
+                        continue;
+                    }
+                }
+                break;
+            }
         }
     }
 
@@ -497,33 +560,31 @@ parse_quoted_string_state parse_double_quoted_string(
                 break;
             }
             case double_quoted_string_parse_mode_t::unspecified:
+            {
+                switch (*p)
+                {
+                    case '"':
+                    {
+                        // closing quote
+                        ++p; // skip the quote.
+                        return ret;
+                    }
+                    case '\\':
+                    {
+                        // escape character
+                        mode = double_quoted_string_parse_mode_t::escaped;
+                        continue;
+                    }
+                }
+
+                if (0x00 <= c && c <= 0x1F)
+                {
+                    // This is an unescaped control character.
+                    ret.has_control_character = true;
+                }
+
                 break;
-        }
-
-        switch (*p)
-        {
-            case '"':
-            {
-                // closing quote
-                assert (mode == double_quoted_string_parse_mode_t::unspecified);
-                ++p; // skip the quote.
-                return ret;
             }
-            case '\\':
-            {
-                // escape character
-                assert (mode == double_quoted_string_parse_mode_t::unspecified);
-                mode = double_quoted_string_parse_mode_t::escaped;
-                continue;
-            }
-            default:
-                ;
-        }
-
-        if (0x00 <= c && c <= 0x1F)
-        {
-            // This is an unescaped control character.
-            ret.has_control_character = true;
         }
     }
 
