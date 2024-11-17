@@ -153,6 +153,15 @@ enum class double_quoted_string_parse_mode_t
     hex_digit,
 };
 
+uint32_t hex_string_to_int32(std::string_view sv)
+{
+    std::stringstream ss;
+    uint32_t cp;
+    ss << sv;
+    ss >> std::hex >> cp;
+    return cp;
+}
+
 parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& buffer, const char*& p, const char* p_end)
 {
     parse_quoted_string_state ret;
@@ -224,11 +233,7 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                         return ret;
                     }
 
-                    std::stringstream ss;
-                    uint32_t cp;
-                    ss << std::string_view{p_head, n};
-                    ss >> std::hex >> cp;
-
+                    uint32_t cp = hex_string_to_int32(std::string_view{p_head, n});
                     auto encoded = encode_utf8(cp);
                     if (encoded.empty())
                     {
@@ -539,16 +544,12 @@ parse_quoted_string_state parse_double_quoted_string(
                         return ret;
                     }
 
-                    std::stringstream ss;
-                    uint32_t cp;
-                    ss << std::string_view{p_head, n_digits};
-                    ss >> std::hex >> cp;
-
                     // Start the buffer with the parsed segment prior to '\u'
                     buffer.reset();
                     if (ret.str && ret.length > 6)
                         buffer.append(ret.str, ret.length-6);
 
+                    uint32_t cp = hex_string_to_int32(std::string_view{p_head, n_digits});
                     auto encoded = encode_utf8(cp);
                     if (encoded.empty())
                     {
