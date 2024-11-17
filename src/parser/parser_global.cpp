@@ -167,19 +167,15 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
         return ret;
     }
 
-    std::size_t len = 0;
     const char* p_head = nullptr;
     double_quoted_string_parse_mode_t mode = double_quoted_string_parse_mode_t::unspecified;
 
-    for (; p != p_end; ++p, ++len)
+    for (; p != p_end; ++p)
     {
         char c = *p;
 
         if (!p_head)
-        {
             p_head = p;
-            len = 0;
-        }
 
         switch (mode)
         {
@@ -193,8 +189,12 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                     case string_escape_char_t::control_char:
                     {
                         c = to_escaped_char(c);
-                        if (p_head && len > 1)
-                            buffer.append(p_head, len-1);
+                        if (p_head)
+                        {
+                            std::size_t n = std::distance(p_head, p);
+                            if (n > 1)
+                                buffer.append(p_head, n-1);
+                        }
                         buffer.append(&c, 1);
                         p_head = nullptr;
                         continue;
@@ -217,7 +217,8 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
             {
                 if (!std::isxdigit(c))
                 {
-                    if (len != 4)
+                    std::size_t n = std::distance(p_head, p);
+                    if (n != 4)
                     {
                         ret.length = parse_quoted_string_state::error_invalid_hex_digits;
                         return ret;
@@ -225,7 +226,7 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
 
                     std::stringstream ss;
                     uint32_t cp;
-                    ss << std::string_view{p_head, len};
+                    ss << std::string_view{p_head, n};
                     ss >> std::hex >> cp;
 
                     auto encoded = encode_utf8(cp);
@@ -266,7 +267,11 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                     case '"':
                     {
                         // closing quote.
-                        buffer.append(p_head, len);
+                        if (p_head)
+                        {
+                            auto n = std::distance(p_head, p);
+                            buffer.append(p_head, n);
+                        }
                         ++p; // skip the quote.
                         std::string_view s = buffer.str();
                         ret.str = s.data();
