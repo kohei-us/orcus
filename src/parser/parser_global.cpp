@@ -286,7 +286,15 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                     case '\\':
                     {
                         mode = double_quoted_string_parse_mode_t::escaped;
-                        continue;
+                        break;
+                    }
+                    default:
+                    {
+                        if (0x00 <= c && c <= 0x1F)
+                        {
+                            // This is an unescaped control character.
+                            ret.has_control_character = true;
+                        }
                     }
                 }
                 break;
@@ -579,16 +587,17 @@ parse_quoted_string_state parse_double_quoted_string(
                     {
                         // escape character
                         mode = double_quoted_string_parse_mode_t::escaped;
-                        continue;
+                        break;
+                    }
+                    default:
+                    {
+                        if (0x00 <= c && c <= 0x1F)
+                        {
+                            // This is an unescaped control character.
+                            ret.has_control_character = true;
+                        }
                     }
                 }
-
-                if (0x00 <= c && c <= 0x1F)
-                {
-                    // This is an unescaped control character.
-                    ret.has_control_character = true;
-                }
-
                 break;
             }
         }
