@@ -24,7 +24,7 @@
 
 using namespace orcus;
 
-fs::path json_test_dirs[] = {
+const fs::path json_test_dirs[] = {
     SRCDIR"/test/json/basic1",
     SRCDIR"/test/json/basic2",
     SRCDIR"/test/json/basic3",
@@ -36,9 +36,12 @@ fs::path json_test_dirs[] = {
     SRCDIR"/test/json/nested2",
     SRCDIR"/test/json/swagger",
     SRCDIR"/test/json/to-yaml-1",
+    SRCDIR"/test/json/escape-control",
+    SRCDIR"/test/json/escape-surrogate/one-char",
+    SRCDIR"/test/json/escape-surrogate/two-chars",
 };
 
-fs::path json_test_refs_dirs[] = {
+const fs::path json_test_refs_dirs[] = {
     SRCDIR"/test/json/refs1",
 };
 
@@ -117,16 +120,21 @@ bool compare_check_contents(const file_content& expected, const std::string& act
 
 void verify_input(json_config& test_config, const fs::path& basedir)
 {
+    std::cout << "---" << std::endl;
+    std::cout << "test directory: " << basedir << std::endl;
+
     fs::path json_file = basedir / "input.json";
     test_config.input_path = json_file.string();
 
-    std::cout << "* verify input: " << json_file << std::endl;
+    std::cout << "input: " << json_file << std::endl;
 
     file_content content(json_file.string());
     json::document_tree doc;
     doc.load(content.str(), test_config);
 
     fs::path check_file = basedir / "check.txt";
+    std::cout << "check: " << check_file << std::endl;
+
     file_content check_master(check_file.string());
     std::string check_doc = dump_check_content(doc);
 
@@ -136,7 +144,7 @@ void verify_input(json_config& test_config, const fs::path& basedir)
     if (fs::path outpath = basedir / "output.yaml"; fs::is_regular_file(outpath))
     {
         // Test the yaml output.
-        std::cout << "  * yaml output: " << outpath << std::endl;
+        std::cout << "yaml output: " << outpath << std::endl;
 
         file_content expected(outpath.string());
         std::string actual = doc.dump_yaml();
@@ -147,17 +155,18 @@ void verify_input(json_config& test_config, const fs::path& basedir)
 
 void test_json_parse()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json_config test_config;
 
-    for (std::size_t i = 0; i < std::size(json_test_dirs); ++i)
-    {
-        fs::path basedir = json_test_dirs[i];
+    for (const auto& basedir : json_test_dirs)
         verify_input(test_config, basedir);
-    }
 }
 
 void test_json_resolve_refs()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json_config test_config;
     test_config.resolve_references = true;
 
@@ -170,6 +179,8 @@ void test_json_resolve_refs()
 
 void test_json_parse_empty()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json_config test_config;
 
     const char* tests[] = {
@@ -198,6 +209,8 @@ void test_json_parse_empty()
 
 void test_json_parse_invalid()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json_config test_config;
 
     const char* invalids[] = {
@@ -257,6 +270,8 @@ void dump_and_load(
 
 void test_json_traverse_basic1()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto test_func = [](json::const_node node)
     {
         assert(node.type() == json::node_t::array);
@@ -279,6 +294,8 @@ void test_json_traverse_basic1()
 
 void test_json_traverse_basic2()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto test_func = [](json::const_node node)
     {
         assert(node.type() == json::node_t::array);
@@ -309,6 +326,8 @@ void test_json_traverse_basic2()
 
 void test_json_traverse_basic3()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto test_func = [](json::const_node node)
     {
         assert(node.type() == json::node_t::array);
@@ -334,6 +353,8 @@ void test_json_traverse_basic3()
 
 void test_json_traverse_basic4()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto test_func = [](json::const_node node)
     {
         assert(node.type() == json::node_t::object);
@@ -363,6 +384,8 @@ void test_json_traverse_basic4()
 
 void test_json_traverse_nested1()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto test_func = [](json::const_node node)
     {
         uintptr_t root_id = node.identity();
@@ -391,6 +414,8 @@ void test_json_traverse_nested1()
 
 void test_json_traverse_nested2()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     auto test_func = [](json::const_node node)
     {
         assert(node.type() == json::node_t::array);
@@ -421,6 +446,8 @@ void test_json_traverse_nested2()
 
 void test_json_init_list_flat1()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json::document_tree doc = { 1.0, 2.0, 3.0, 4.0 };
     json::const_node node = doc.get_document_root();
     assert(node.type() == json::node_t::array);
@@ -510,6 +537,8 @@ void test_json_init_list_flat1()
 
 void test_json_init_list_nested1()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json::document_tree doc = {
         { true, false, nullptr },
         { 1.1, 2.2, "text" }
@@ -540,6 +569,8 @@ void test_json_init_list_nested1()
 
 void test_json_init_list_object1()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json::document_tree doc = {
         { "key1", 1.2 },
         { "key2", "some text" },
@@ -563,6 +594,8 @@ void test_json_init_list_object1()
 
 void test_json_init_list_object2()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     // nested objects.
     json::document_tree doc = {
         { "parent1",
@@ -602,6 +635,8 @@ void test_json_init_list_object2()
 
 void test_json_init_list_explicit_array()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     try
     {
         // This structure is too ambiguous and cannot be implicitly
@@ -660,6 +695,8 @@ void test_json_init_list_explicit_array()
 
 void test_json_init_list_explicit_object()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json::document_tree doc = json::object();
     json::node node = doc.get_document_root();
     assert(node.type() == json::node_t::object);
@@ -687,6 +724,8 @@ void test_json_init_list_explicit_object()
 
 void test_json_init_root_object_add_child()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json::document_tree doc = json::object();
     json::node node = doc.get_document_root();
     assert(node.type() == json::node_t::object);
@@ -786,6 +825,8 @@ void test_json_init_root_object_add_child()
 
 void test_json_init_empty_array()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json::document_tree doc = json::array();
     json::node node = doc.get_document_root();
     assert(node.type() == json::node_t::array);
@@ -805,6 +846,8 @@ void test_json_init_empty_array()
 
 void test_json_dynamic_object_keys()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json::document_tree doc = json::object();
     json::node root = doc.get_document_root();
 

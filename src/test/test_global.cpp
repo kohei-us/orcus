@@ -15,14 +15,14 @@ namespace orcus { namespace test {
 stack_printer::stack_printer(const char* msg) :
     m_msg(msg)
 {
-    std::cerr << m_msg << ": --begin" << std::endl;
+    std::cout << m_msg << ": --begin" << std::endl;
     m_start_time = get_time();
 }
 
 stack_printer::~stack_printer()
 {
     double end_time = get_time();
-    std::cerr << m_msg << ": --end (duration: " << (end_time-m_start_time) << " sec)" << std::endl;
+    std::cout << m_msg << ": --end (duration: " << (end_time-m_start_time) << " sec)" << std::endl;
 }
 
 double stack_printer::get_time() const

@@ -1,0 +1,6 @@
+ns0="http://schemas.kohei.us/orcus/2015/json"
+/ns0:object
+/ns0:object/ns0:item
+/ns0:object/ns0:item@name="test"
+/ns0:object/ns0:item/ns0:string
+/ns0:object/ns0:item/ns0:string@value="//"
