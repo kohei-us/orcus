@@ -304,7 +304,7 @@ std::vector<const char*> test_files_pass = {
     "y_string_comments.json",
     "y_string_double_escape_a.json",
     "y_string_double_escape_n.json",
-    // "y_string_escaped_control_character.json",
+    "y_string_escaped_control_character.json",
     // "y_string_escaped_noncharacter.json",
     "y_string_in_array.json",
     "y_string_in_array_with_leading_space.json",
