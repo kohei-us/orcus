@@ -39,6 +39,7 @@ const fs::path json_test_dirs[] = {
     SRCDIR"/test/json/escape-control/printable",
     SRCDIR"/test/json/escape-control/not-printable",
     SRCDIR"/test/json/escape-surrogate/one-char",
+    SRCDIR"/test/json/escape-surrogate/one-char-nbsp",
     SRCDIR"/test/json/escape-surrogate/one-char-with-ba",
     SRCDIR"/test/json/escape-surrogate/two-chars",
 };

@@ -5,11 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/json_global.hpp"
-#include "orcus/parser_global.hpp"
+#include <orcus/json_global.hpp>
+#include <orcus/parser_global.hpp>
+
+#include "utf8.hpp"
 
 #include <sstream>
 #include <iomanip>
+#include <cassert>
 
 namespace orcus { namespace json {
 
@@ -23,8 +26,24 @@ std::string escape_string(std::string_view input)
 {
     std::ostringstream os;
 
-    for (char c : input)
+    const char* p = input.data();
+    const char* p_end = p + input.size();
+
+    while (p < p_end)
     {
+        char c = *p;
+        auto n = calc_utf8_byte_length(c);
+        if (n > 1)
+        {
+            // utf-8 character
+            std::string_view sub{p, n};
+            os << sub;
+            p += n;
+            continue;
+        }
+
+        assert(n == 1);
+
         switch (c)
         {
             case '"':
@@ -60,6 +79,7 @@ std::string escape_string(std::string_view input)
                 os << c;
             }
         }
+        ++p;
     }
 
     return os.str();

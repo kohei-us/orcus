@@ -309,7 +309,7 @@ std::vector<const char*> test_files_pass = {
     "y_string_in_array.json",
     "y_string_in_array_with_leading_space.json",
     // "y_string_last_surrogates_1_and_2.json",
-    // "y_string_nbsp_uescaped.json",
+    "y_string_nbsp_uescaped.json",
     "y_string_nonCharacterInUTF-8_U+10FFFF.json",
     "y_string_nonCharacterInUTF-8_U+FFFF.json",
     // "y_string_null_escape.json",
