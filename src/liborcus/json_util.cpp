@@ -17,7 +17,7 @@ const char quote = '"';
 
 }
 
-void dump_string(std::ostringstream& os, const std::string& s)
+void dump_string(std::ostringstream& os, std::string_view s)
 {
     os << quote << escape_string(s) << quote;
 }

@@ -194,7 +194,10 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const st
     dump_repeat(os, tab, level);
 
     if (key)
-        os << quote << *key << quote << ": ";
+    {
+        json::dump_string(os, *key);
+        os << ": ";
+    }
 
     switch (v->type)
     {
@@ -209,20 +212,20 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const st
 
             dump_repeat(os, tab, level);
             os << "]";
+            break;
         }
-        break;
         case detail::node_t::boolean_false:
             os << "false";
-        break;
+            break;
         case detail::node_t::boolean_true:
             os << "true";
-        break;
+            break;
         case detail::node_t::null:
             os << "null";
-        break;
+            break;
         case detail::node_t::number:
             os << v->value.numeric;
-        break;
+            break;
         case detail::node_t::object:
         {
             const std::vector<std::string_view>& key_order = v->value.object->key_order;
@@ -258,13 +261,12 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const st
 
             dump_repeat(os, tab, level);
             os << "}";
+
+            break;
         }
-        break;
         case detail::node_t::string:
-            json::dump_string(
-                os,
-                std::string(v->value.str.p, v->value.str.n));
-        break;
+            json::dump_string(os, {v->value.str.p, v->value.str.n});
+            break;
         case detail::node_t::unset:
         default:
             ;
@@ -293,30 +295,35 @@ std::string dump_json_tree(const json_value* root)
 
 void dump_string_xml(std::ostringstream& os, std::string_view s)
 {
-    const char* p = s.data();
-    const char* p_end = p + s.size();
-    for (; p != p_end; ++p)
+    for (char c : s)
     {
-        char c = *p;
         switch (c)
         {
             case '"':
                 os << "&quot;";
-            break;
+                break;
             case '<':
                 os << "&lt;";
-            break;
+                break;
             case '>':
                 os << "&gt;";
-            break;
+                break;
             case '&':
                 os << "&amp;";
-            break;
+                break;
             case '\'':
                 os << "&apos;";
-            break;
+                break;
             default:
+            {
+                if (std::iscntrl(c))
+                {
+                    os << "&#x" << std::setw(4) << std::setfill('0') << std::hex << short(c) << ';';
+                    break;
+                }
+
                 os << c;
+            }
         }
     }
 }

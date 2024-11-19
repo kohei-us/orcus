@@ -21,7 +21,7 @@ namespace orcus { namespace json {
  *
  * @return escaped string value.
  */
-ORCUS_PSR_DLLPUBLIC std::string escape_string(const std::string& input);
+ORCUS_PSR_DLLPUBLIC std::string escape_string(std::string_view input);
 
 }}
 

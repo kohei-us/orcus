@@ -319,13 +319,19 @@ void json_parser<_Handler>::object()
         if (!res.str)
         {
             // Parsing was unsuccessful.
-            if (res.length == parse_quoted_string_state::error_no_closing_quote)
-                throw parse_error("object: stream ended prematurely before reaching the closing quote of a key.", offset());
-            else if (res.length == parse_quoted_string_state::error_illegal_escape_char)
-                parse_error::throw_with(
-                    "object: illegal escape character '", cur_char(), "' in key value.", offset());
-            else
-                throw parse_error("object: unknown error while parsing a key value.", offset());
+            switch (res.length)
+            {
+                case parse_quoted_string_state::error_no_closing_quote:
+                    throw parse_error("object: stream ended prematurely before reaching the closing quote of a key", offset());
+                case parse_quoted_string_state::error_illegal_escape_char:
+                    parse_error::throw_with(
+                        "object: illegal escape character '", cur_char(), "' in key value", offset());
+                    break;
+                case parse_quoted_string_state::error_invalid_hex_digits:
+                    throw parse_error("object: hex digits in escaped surrogate is invalid", offset());
+                default:
+                    throw parse_error("object: unknown error while parsing a key value", offset());
+            }
         }
 
         m_handler.object_key({res.str, res.length}, res.transient);

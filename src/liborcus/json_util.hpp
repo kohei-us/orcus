@@ -9,10 +9,11 @@
 #define INCLUDED_ORCUS_JSON_UTIL_HPP
 
 #include <sstream>
+#include <string_view>
 
 namespace orcus { namespace json {
 
-void dump_string(std::ostringstream& os, const std::string& s);
+void dump_string(std::ostringstream& os, std::string_view s);
 
 }}
 

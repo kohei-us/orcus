@@ -288,7 +288,7 @@ std::vector<const char*> test_files_pass = {
     "y_object_duplicated_key.json",
     "y_object_empty.json",
     "y_object_empty_key.json",
-    // "y_object_escaped_null_in_key.json",
+    "y_object_escaped_null_in_key.json",
     "y_object_extreme_numbers.json",
     "y_object.json",
     "y_object_long_strings.json",
@@ -349,7 +349,7 @@ std::vector<const char*> test_files_pass = {
     "y_structure_true_in_array.json",
     "y_structure_whitespace_array.json",
 };
- 
+
 std::string load_file(const std::string& file_name)
 {
     std::string file_path = std::string(SRCDIR) + "/test/json/validation/" + file_name;

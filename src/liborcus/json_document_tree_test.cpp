@@ -38,6 +38,7 @@ const fs::path json_test_dirs[] = {
     SRCDIR"/test/json/to-yaml-1",
     SRCDIR"/test/json/escape-control",
     SRCDIR"/test/json/escape-surrogate/one-char",
+    SRCDIR"/test/json/escape-surrogate/one-char-with-ba",
     SRCDIR"/test/json/escape-surrogate/two-chars",
 };
 
@@ -132,14 +133,27 @@ void verify_input(json_config& test_config, const fs::path& basedir)
     json::document_tree doc;
     doc.load(content.str(), test_config);
 
-    fs::path check_file = basedir / "check.txt";
-    std::cout << "check: " << check_file << std::endl;
+    if (fs::path check_file = basedir / "check.txt"; fs::is_regular_file(check_file))
+    {
+        std::cout << "check: " << check_file << std::endl;
 
-    file_content check_master(check_file.string());
-    std::string check_doc = dump_check_content(doc);
+        file_content check_master(check_file.string());
+        std::string check_doc = dump_check_content(doc);
 
-    bool result = compare_check_contents(check_master, check_doc);
-    assert(result);
+        bool result = compare_check_contents(check_master, check_doc);
+        assert(result);
+    }
+
+    if (fs::path outpath = basedir / "output.json"; fs::is_regular_file(outpath))
+    {
+        // Test the json output.
+        std::cout << "json output: " << outpath << std::endl;
+
+        file_content expected(outpath.string());
+        std::string actual = doc.dump();
+
+        test::verify_content(__FILE__, __LINE__, expected.str(), actual);
+    }
 
     if (fs::path outpath = basedir / "output.yaml"; fs::is_regular_file(outpath))
     {

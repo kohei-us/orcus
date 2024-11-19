@@ -9,6 +9,7 @@
 #include "orcus/parser_global.hpp"
 
 #include <sstream>
+#include <iomanip>
 
 namespace orcus { namespace json {
 
@@ -18,13 +19,12 @@ constexpr char backslash = '\\';
 
 }
 
-std::string escape_string(const std::string& input)
+std::string escape_string(std::string_view input)
 {
     std::ostringstream os;
 
-    for (auto it = input.begin(), ite = input.end(); it != ite; ++it)
+    for (char c : input)
     {
-        char c = *it;
         switch (c)
         {
             case '"':
@@ -50,7 +50,15 @@ std::string escape_string(const std::string& input)
                 os << "\\t";
                 break;
             default:
+            {
+                if (std::iscntrl(c))
+                {
+                    os << "\\u" << std::setw(4) << std::setfill('0') << std::hex << short(c);
+                    break;
+                }
+
                 os << c;
+            }
         }
     }
 

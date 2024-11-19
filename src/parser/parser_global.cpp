@@ -542,36 +542,41 @@ parse_quoted_string_state parse_double_quoted_string(
                 if (!p_head)
                     p_head = p;
 
-                if (!std::isxdigit(c))
+                std::size_t n_digits = std::distance(p_head, p);
+
+                if (std::isxdigit(c))
                 {
-                    std::size_t n_digits = std::distance(p_head, p);
                     if (n_digits != 4)
-                    {
-                        ret.str = nullptr;
-                        ret.length = parse_quoted_string_state::error_invalid_hex_digits;
-                        return ret;
-                    }
-
-                    // Start the buffer with the parsed segment prior to '\u'
-                    buffer.reset();
-                    if (ret.str && ret.length > 6)
-                        buffer.append(ret.str, ret.length-6);
-
-                    uint32_t cp = hex_string_to_int32(std::string_view{p_head, n_digits});
-                    auto encoded = encode_utf8(cp);
-                    if (encoded.empty())
-                    {
-                        // failed to encode it as utf-8
-                        ret.str = nullptr;
-                        ret.length = parse_quoted_string_state::error_invalid_hex_digits;
-                        return ret;
-                    }
-
-                    buffer.append(encoded.data(), encoded.size());
-
-                    return parse_double_quoted_string_with_buffer(buffer, p, p_end);
+                        break; // need more digits - keep parsing
                 }
-                break;
+                else if (n_digits != 4)
+                {
+                    // not enough digits to be a valid code point
+                    ret.str = nullptr;
+                    ret.length = parse_quoted_string_state::error_invalid_hex_digits;
+                    return ret;
+                }
+
+                assert(n_digits == 4);
+
+                // Start the buffer with the parsed segment prior to '\u'
+                buffer.reset();
+                if (ret.str && ret.length > 6)
+                    buffer.append(ret.str, ret.length-6);
+
+                uint32_t cp = hex_string_to_int32(std::string_view{p_head, n_digits});
+                auto encoded = encode_utf8(cp);
+                if (encoded.empty())
+                {
+                    // failed to encode it as utf-8
+                    ret.str = nullptr;
+                    ret.length = parse_quoted_string_state::error_invalid_hex_digits;
+                    return ret;
+                }
+
+                buffer.append(encoded.data(), encoded.size());
+
+                return parse_double_quoted_string_with_buffer(buffer, p, p_end);
             }
             case double_quoted_string_parse_mode_t::unspecified:
             {
