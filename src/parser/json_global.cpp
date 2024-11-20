@@ -36,6 +36,14 @@ std::string escape_string(std::string_view input)
         if (n > 1)
         {
             // utf-8 character
+            if (std::next(p, n) > p_end)
+            {
+                std::ostringstream err;
+                err << __FILE__ << ':' << __LINE__ << ": utf-8 bytes of length "
+                    << n << " was expected, but the string does not have enough bytes left";
+                throw std::runtime_error(err.str());
+            }
+
             std::string_view sub{p, n};
             os << sub;
             p += n;
