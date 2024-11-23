@@ -23,6 +23,7 @@ enum class mode_t
 {
     unknown,
     convert,
+    lint,
     map,
     map_gen,
     structure

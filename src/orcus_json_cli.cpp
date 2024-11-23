@@ -55,6 +55,7 @@ using map_type = mdds::sorted_string_map<detail::mode_t>;
 constexpr map_type::entry_type entries[] =
 {
     { "convert",   detail::mode_t::convert   },
+    { "lint",      detail::mode_t::lint      },
     { "map",       detail::mode_t::map       },
     { "map-gen",   detail::mode_t::map_gen   },
     { "structure", detail::mode_t::structure },
@@ -264,6 +265,9 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         case detail::mode_t::map:
             parse_args_for_map(params, desc, vm);
             break;
+        case detail::mode_t::lint:
+            params.os = std::make_unique<output_stream>(vm);
+            break;
         default:
             assert(!"This should not happen since the mode check is done way earlier.");
     }
@@ -418,6 +422,13 @@ int main(int argc, char** argv)
             case detail::mode_t::convert:
             {
                 build_doc_and_dump(content, params);
+                break;
+            }
+            case detail::mode_t::lint:
+            {
+                auto doc = load_doc(content, *params.config);
+                std::ostream& os = params.os->get();
+                os << doc->dump();
                 break;
             }
             default:
