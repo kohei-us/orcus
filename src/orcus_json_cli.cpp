@@ -88,6 +88,11 @@ const char* help_json_map =
 "required for map mode."
 ;
 
+const char* help_indent =
+"Number of whitespace characters to use for one indent level.  This is applicable "
+"when the command generates output in JSON format."
+;
+
 const char* err_no_input_file = "No input file.";
 
 void print_json_usage(std::ostream& os, const po::options_description& desc)
@@ -116,6 +121,9 @@ std::string build_mode_help_text()
 void parse_args_for_convert(
     detail::cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
 {
+    if (vm.count("indent"))
+        params.indent = vm["indent"].as<std::size_t>();
+
     if (vm.count("resolve-refs"))
         params.config->resolve_references = true;
 
@@ -138,6 +146,13 @@ void parse_args_for_convert(
         params.config.reset();
         return;
     }
+}
+
+void parse_args_for_lint(
+    detail::cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
+{
+    if (vm.count("indent"))
+        params.indent = vm["indent"].as<std::size_t>();
 }
 
 /**
@@ -182,6 +197,7 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         ("output,o", po::value<std::string>(), help_json_output)
         ("output-format,f", po::value<std::string>(), help_json_output_format)
         ("map,m", po::value<std::string>(), help_json_map)
+        ("indent,i", po::value<std::size_t>(), help_indent)
     ;
 
     po::options_description hidden("Hidden options");
@@ -266,6 +282,7 @@ detail::cmd_params parse_json_args(int argc, char** argv)
             break;
         case detail::mode_t::lint:
             params.os = std::make_unique<output_stream>(vm);
+            parse_args_for_lint(params, desc, vm);
             break;
         default:
             assert(!"This should not happen since the mode check is done way earlier.");
@@ -295,7 +312,7 @@ void build_doc_and_dump(const orcus::file_content& content, detail::cmd_params& 
         }
         case dump_format_t::json:
         {
-            os << doc->dump(4);
+            os << doc->dump(params.indent);
             break;
         }
         case dump_format_t::yaml:
@@ -427,7 +444,7 @@ int main(int argc, char** argv)
             {
                 auto doc = load_doc(content, *params.config);
                 std::ostream& os = params.os->get();
-                os << doc->dump(4);
+                os << doc->dump(params.indent);
                 break;
             }
             default:

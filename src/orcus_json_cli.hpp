@@ -35,6 +35,7 @@ struct cmd_params
     std::unique_ptr<output_stream> os;
     mode_t mode = mode_t::convert;
     file_content map_file;
+    std::size_t indent = 4;
 
     cmd_params(const cmd_params&) = delete;
     cmd_params& operator= (const cmd_params&) = delete;
