@@ -13,7 +13,7 @@ void example_root_list()
         1.0, 2.0, "string value", false, nullptr
     };
 
-    std::cout << doc.dump() << std::endl;
+    std::cout << doc.dump(4) << std::endl;
     //!code-end: root list
 }
 
@@ -25,7 +25,7 @@ void example_list_nested()
         { 1.1, 2.2, "text" }
     };
 
-    std::cout << doc.dump() << std::endl;
+    std::cout << doc.dump(4) << std::endl;
     //!code-end: list nested
 }
 
@@ -37,7 +37,7 @@ void example_list_object()
         { "key2", "some text" },
     };
 
-    std::cout << doc.dump() << std::endl;
+    std::cout << doc.dump(4) << std::endl;
     //!code-end: list object
 }
 
@@ -54,7 +54,7 @@ void example_list_object_2()
         { "parent2", "not-nested" },
     };
 
-    std::cout << doc.dump() << std::endl;
+    std::cout << doc.dump(4) << std::endl;
     //!code-end: list object 2
 }
 
@@ -76,7 +76,7 @@ void example_array_explicit()
         { "array", json::array({ "one", 987.0 }) }
     };
 
-    std::cout << doc.dump() << std::endl;
+    std::cout << doc.dump(4) << std::endl;
     //!code-end: array explicit
 }
 
@@ -107,7 +107,7 @@ void example_object_explicit_1()
 
     json::document_tree doc = json::object();
 
-    std::cout << doc.dump() << std::endl;
+    std::cout << doc.dump(4) << std::endl;
     //!code-end: object explicit 1
 }
 
@@ -122,7 +122,7 @@ void example_object_explicit_2()
         json::object()
     };
 
-    std::cout << doc.dump() << std::endl;
+    std::cout << doc.dump(4) << std::endl;
     //!code-end: object explicit 2
 }
 
@@ -148,7 +148,7 @@ void example_root_object_add_child()
 
     root["child array"] = json::array({ 1.1, 1.2, true }); // explicit array
 
-    std::cout << doc.dump() << std::endl;
+    std::cout << doc.dump(4) << std::endl;
     //!code-end: root object add child
 }
 
@@ -172,7 +172,7 @@ void example_root_array_add_child()
     // You can append an object to the array via push_back() as well.
     root.push_back({{"key1", 1.1}, {"key2", 1.2}});
 
-    std::cout << doc.dump() << std::endl;
+    std::cout << doc.dump(4) << std::endl;
     //!code-end: root array add child
 }
 

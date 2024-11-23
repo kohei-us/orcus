@@ -295,7 +295,7 @@ void build_doc_and_dump(const orcus::file_content& content, detail::cmd_params& 
         }
         case dump_format_t::json:
         {
-            os << doc->dump();
+            os << doc->dump(4);
             break;
         }
         case dump_format_t::yaml:
@@ -379,7 +379,7 @@ void parse_and_write_map_file(const orcus::file_content& content, detail::cmd_pa
     }
 
     std::ostream& os = params.os->get();
-    os << map_doc.dump();
+    os << map_doc.dump(4);
 }
 
 } // anonymous namespace
@@ -427,7 +427,7 @@ int main(int argc, char** argv)
             {
                 auto doc = load_doc(content, *params.config);
                 std::ostream& os = params.os->get();
-                os << doc->dump();
+                os << doc->dump(4);
                 break;
             }
             default:

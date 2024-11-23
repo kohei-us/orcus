@@ -470,9 +470,12 @@ public:
     /**
      * Dump the JSON document tree to string.
      *
+     * @param indent Number of whitespace characters to use for one indent
+     *               level.
+     *
      * @return a string representation of the JSON document tree.
      */
-    std::string dump() const;
+    std::string dump(std::size_t indent) const;
 
     /**
      * Dump the JSON document tree to an XML structure.

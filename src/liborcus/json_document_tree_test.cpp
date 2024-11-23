@@ -152,7 +152,7 @@ void verify_input(json_config& test_config, const fs::path& basedir)
         std::cout << "json output: " << outpath << std::endl;
 
         file_content expected(outpath.string());
-        std::string actual = doc.dump();
+        std::string actual = doc.dump(4);
 
         test::verify_content(__FILE__, __LINE__, expected.str(), actual);
     }
@@ -276,7 +276,7 @@ void dump_and_load(
     const json::document_tree& doc, const std::function<void(json::const_node)>& test_func)
 {
     json::document_tree doc2;
-    std::string dumped = doc.dump();
+    std::string dumped = doc.dump(4);
     std::cout << "--- dumped" << std::endl;
     std::cout << dumped << std::endl;
     doc2.load(dumped, json_config());
@@ -874,7 +874,7 @@ void test_json_dynamic_object_keys()
     node.push_back(1.3);
 
     // Dump the doc as a string and reload it.
-    doc.load(doc.dump(), json_config());
+    doc.load(doc.dump(4), json_config());
     root = doc.get_document_root();
     assert(root.type() == json::node_t::object);
     node = root["test"];

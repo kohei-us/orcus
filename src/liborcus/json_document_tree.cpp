@@ -151,9 +151,6 @@ struct json_value final
 
 namespace {
 
-const char* tab = "    ";
-const char quote = '"';
-
 const xmlns_id_t NS_orcus_json_xml = "http://schemas.kohei.us/orcus/2015/json";
 
 struct json_value_array
@@ -179,7 +176,7 @@ struct json_value_object
     }
 };
 
-void dump_repeat(std::ostringstream& os, const char* s, int repeat)
+void dump_repeat(std::ostringstream& os, std::string_view s, int repeat)
 {
     for (int i = 0; i < repeat; ++i)
         os << s;
@@ -187,11 +184,13 @@ void dump_repeat(std::ostringstream& os, const char* s, int repeat)
 
 void dump_item(
     std::ostringstream& os, const std::string_view* key, const json_value* val,
-    int level, bool sep);
+    int indent, int level, bool sep);
 
-void dump_value(std::ostringstream& os, const json_value* v, int level, const std::string_view* key = nullptr)
+void dump_value(
+    std::ostringstream& os, const json_value* v, std::size_t indent, int level, const std::string_view* key = nullptr)
 {
-    dump_repeat(os, tab, level);
+    const std::string indent_s(indent, ' ');
+    dump_repeat(os, indent_s, level);
 
     if (key)
     {
@@ -208,9 +207,9 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const st
             size_t n = vals.size();
             size_t pos = 0;
             for (auto it = vals.begin(), ite = vals.end(); it != ite; ++it, ++pos)
-                dump_item(os, nullptr, *it, level, pos < (n-1));
+                dump_item(os, nullptr, *it, indent, level, pos < (n-1));
 
-            dump_repeat(os, tab, level);
+            dump_repeat(os, indent_s, level);
             os << "]";
             break;
         }
@@ -242,7 +241,7 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const st
                     std::string_view this_key = it->first;
                     auto& this_val = it->second;
 
-                    dump_item(os, &this_key, this_val, level, pos < (n-1));
+                    dump_item(os, &this_key, this_val, indent, level, pos < (n-1));
                 }
             }
             else
@@ -255,11 +254,11 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const st
                     auto val_pos = vals.find(this_key);
                     assert(val_pos != vals.end());
 
-                    dump_item(os, &this_key, val_pos->second, level, pos < (n-1));
+                    dump_item(os, &this_key, val_pos->second, indent, level, pos < (n-1));
                 }
             }
 
-            dump_repeat(os, tab, level);
+            dump_repeat(os, indent_s, level);
             os << "}";
 
             break;
@@ -275,21 +274,21 @@ void dump_value(std::ostringstream& os, const json_value* v, int level, const st
 
 void dump_item(
     std::ostringstream& os, const std::string_view* key, const json_value* val,
-    int level, bool sep)
+    int indent, int level, bool sep)
 {
-    dump_value(os, val, level+1, key);
+    dump_value(os, val, indent, level+1, key);
     if (sep)
         os << ",";
     os << std::endl;
 }
 
-std::string dump_json_tree(const json_value* root)
+std::string dump_json_tree(const json_value* root, std::size_t indent)
 {
     if (root->type == detail::node_t::unset)
         return std::string();
 
     std::ostringstream os;
-    dump_value(os, root, 0);
+    dump_value(os, root, indent, 0);
     return os.str();
 }
 
@@ -1779,12 +1778,12 @@ json::node document_tree::get_document_root()
     return json::node(this, p);
 }
 
-std::string document_tree::dump() const
+std::string document_tree::dump(std::size_t indent) const
 {
     if (!mp_impl->m_root)
         return std::string();
 
-    return json::dump_json_tree(mp_impl->m_root);
+    return json::dump_json_tree(mp_impl->m_root, indent);
 }
 
 std::string document_tree::dump_xml() const
