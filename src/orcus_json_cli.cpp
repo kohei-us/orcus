@@ -25,7 +25,6 @@
 
 #include "filesystem_env.hpp"
 
-using namespace std;
 using namespace orcus;
 namespace po = boost::program_options;
 
@@ -93,8 +92,8 @@ const char* err_no_input_file = "No input file.";
 
 void print_json_usage(std::ostream& os, const po::options_description& desc)
 {
-    os << "Usage: orcus-json [options] FILE" << endl << endl;
-    os << help_program << endl << endl << desc;
+    os << "Usage: orcus-json [options] FILE\n\n";
+    os << help_program << "\n\n" << desc;
 }
 
 std::string build_mode_help_text()
@@ -122,20 +121,20 @@ void parse_args_for_convert(
 
     if (vm.count("output-format"))
     {
-        std::string s = vm["output-format"].as<string>();
+        std::string s = vm["output-format"].as<std::string>();
         params.config->output_format = to_dump_format_enum(s);
 
         if (params.config->output_format == dump_format_t::unknown)
         {
-            cerr << "Unknown output format type '" << s << "'." << endl;
+            std::cerr << "Unknown output format type '" << s << "'." << std::endl;
             params.config.reset();
             return;
         }
     }
     else
     {
-        cerr << "Output format is not specified." << endl;
-        print_json_usage(cerr, desc);
+        std::cerr << "Output format is not specified." << std::endl;
+        print_json_usage(std::cerr, desc);
         params.config.reset();
         return;
     }
@@ -152,7 +151,7 @@ void parse_args_for_map(
         fs::path map_path = vm["map"].as<std::string>();
         if (!fs::is_regular_file(map_path))
         {
-            cerr << map_path.string() << " is not a valid file." << endl;
+            std::cerr << map_path.string() << " is not a valid file." << std::endl;
             params.config.reset();
             return;
         }
@@ -180,14 +179,14 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         ("help,h", "Print this help.")
         ("mode", po::value<std::string>(), build_mode_help_text().data())
         ("resolve-refs", "Resolve JSON references to external files.")
-        ("output,o", po::value<string>(), help_json_output)
-        ("output-format,f", po::value<string>(), help_json_output_format)
-        ("map,m", po::value<string>(), help_json_map)
+        ("output,o", po::value<std::string>(), help_json_output)
+        ("output-format,f", po::value<std::string>(), help_json_output_format)
+        ("map,m", po::value<std::string>(), help_json_map)
     ;
 
     po::options_description hidden("Hidden options");
     hidden.add_options()
-        ("input", po::value<string>(), "input file");
+        ("input", po::value<std::string>(), "input file");
 
     po::options_description cmd_opt;
     cmd_opt.add(desc).add(hidden);
@@ -202,17 +201,17 @@ detail::cmd_params parse_json_args(int argc, char** argv)
             po::command_line_parser(argc, argv).options(cmd_opt).positional(po_desc).run(), vm);
         po::notify(vm);
     }
-    catch (const exception& e)
+    catch (const std::exception& e)
     {
         // Unknown options.
-        cerr << e.what() << endl;
-        print_json_usage(cerr, desc);
+        std::cerr << e.what() << std::endl;
+        print_json_usage(std::cerr, desc);
         return params;
     }
 
     if (vm.count("help"))
     {
-        print_json_usage(cout, desc);
+        print_json_usage(std::cout, desc);
         return params;
     }
 
@@ -222,7 +221,7 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         params.mode = mode::get().find(s);
         if (params.mode == detail::mode_t::unknown)
         {
-            cerr << "Unknown mode string '" << s << "'." << endl;
+            std::cerr << "Unknown mode string '" << s << "'." << std::endl;
             return params;
         }
     }
@@ -230,26 +229,26 @@ detail::cmd_params parse_json_args(int argc, char** argv)
     params.config = std::make_unique<json_config>();
 
     if (vm.count("input"))
-        params.config->input_path = vm["input"].as<string>();
+        params.config->input_path = vm["input"].as<std::string>();
 
     if (params.config->input_path.empty())
     {
         // No input file is given.
-        cerr << err_no_input_file << endl;
-        print_json_usage(cerr, desc);
+        std::cerr << err_no_input_file << std::endl;
+        print_json_usage(std::cerr, desc);
         params.config.reset();
         return params;
     }
 
     if (!fs::exists(params.config->input_path))
     {
-        cerr << "Input file does not exist: " << params.config->input_path << endl;
+        std::cerr << "Input file does not exist: " << params.config->input_path << std::endl;
         params.config.reset();
         return params;
     }
 
     if (vm.count("output"))
-        params.config->output_path = vm["output"].as<string>();
+        params.config->output_path = vm["output"].as<std::string>();
 
     switch (params.mode)
     {
@@ -306,7 +305,7 @@ void build_doc_and_dump(const orcus::file_content& content, detail::cmd_params& 
         }
         case dump_format_t::check:
         {
-            string xml_strm = doc->dump_xml();
+            std::string xml_strm = doc->dump_xml();
             xmlns_repository repo;
             xmlns_context ns_cxt = repo.create_context();
             dom::document_tree dom(ns_cxt);
@@ -432,19 +431,19 @@ int main(int argc, char** argv)
                 break;
             }
             default:
-                cerr << "Unkonwn mode has been given." << endl;
+                std::cerr << "Unkonwn mode has been given." << std::endl;
                 return EXIT_FAILURE;
         }
     }
     catch (const parse_error& e)
     {
-        cerr << create_parse_error_output(content.str(), e.offset()) << endl;
-        cerr << e.what() << endl;
+        std::cerr << create_parse_error_output(content.str(), e.offset()) << std::endl;
+        std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
     catch (const std::exception& e)
     {
-        cerr << e.what() << endl;
+        std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 
