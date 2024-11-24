@@ -27,10 +27,10 @@ and YAML.
 
 You can also "convert" a JSON document to JSON as well.  This may seem
 pointless, but may be useful when the source JSON document contains JSON
-references you want resolved by specifying the ``--resolve-refs`` option.  Note,
-however, that this command currently only supports resolving references to
-external files via relative paths.  References to other resource types may be
-added in the future.
+references, and you want to resolve them by specifying the ``--resolve-refs``
+option.  Note, however, that this command currently only supports resolving
+references to external files via relative paths.  References to other resource
+types may be added in the future.
 
 lint
 ^^^^
@@ -77,3 +77,17 @@ indent level of 2:
 The command writes the output to standard output by default, or you can specify
 the ``--output`` option to have it written to a local file instead.  If you
 don't specify the ``--indent`` option, it defaults to the indent level of 4.
+
+Convert JSON document to YAML
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To convert a JSON document to YAML, use the ``convert`` mode and specify the
+output format to ``yaml`` in the ``--output-format`` option or simply ``-f``:
+
+.. code-block:: none
+
+   orcus-json --mode convert -f yaml path/to/input.json
+
+The command then writes the converted document to standard output.  If you wish
+to write it to a local file, use the ``--output`` option to specify the path to
+output file the command can write to.
