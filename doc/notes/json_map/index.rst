@@ -1,3 +1,4 @@
+.. _map-json-to-spreadsheet:
 
 Mapping JSON to spreadsheet
 ===========================
