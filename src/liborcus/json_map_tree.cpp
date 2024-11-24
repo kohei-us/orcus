@@ -425,7 +425,7 @@ void json_map_tree::commit_range()
     ref->row_header = m_current_range.row_header;
     spreadsheet::col_t column_pos = 0;
 
-    for (std::string_view path : m_current_range.row_groups)
+    for (const auto& path : m_current_range.row_groups)
     {
         path_stack_type stack = get_or_create_destination_node(path);
         if (stack.node_stack.empty())
@@ -436,11 +436,8 @@ void json_map_tree::commit_range()
 
     long unlabeled_field_count = 0;
 
-    for (const auto& field : m_current_range.fields)
+    for (const auto& [path, label] : m_current_range.fields)
     {
-        std::string_view path = field.first;
-        std::string_view label = field.second;
-
         path_stack_type stack = get_or_create_destination_node(path);
         if (stack.node_stack.empty() || stack.node_stack.back()->type != map_node_type::unknown)
             throw_path_error(__FILE__, __LINE__, path);
@@ -469,7 +466,7 @@ void json_map_tree::commit_range()
 
         ref->fields.push_back(p->value.range_field_ref);
 
-        // Find the first row group node ancountered going up from the field
+        // Find the first row group node encountered going up from the field
         // node, and anchor itself to it.
         for (auto it = stack.node_stack.rbegin(); it != stack.node_stack.rend(); ++it)
         {
