@@ -30,17 +30,9 @@ namespace po = boost::program_options;
 
 namespace orcus { namespace detail {
 
-cmd_params::cmd_params() {}
-
-cmd_params::cmd_params(cmd_params&& other) :
-    config(std::move(other.config)),
-    os(std::move(other.os)),
-    mode(other.mode),
-    map_file(std::move(other.map_file))
-{
-}
-
-cmd_params::~cmd_params() {}
+cmd_params::cmd_params() = default;
+cmd_params::cmd_params(cmd_params&& other) = default;
+cmd_params::~cmd_params() = default;
 
 }}
 
