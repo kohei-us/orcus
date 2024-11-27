@@ -26,6 +26,9 @@ Document tree
 .. doxygenenum:: orcus::json::node_t
    :project: orcus
 
+.. doxygenclass:: orcus::json::const_node_iterator
+   :members:
+
 Exceptions
 ----------
 

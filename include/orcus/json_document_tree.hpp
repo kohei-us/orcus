@@ -263,7 +263,26 @@ public:
      */
     uintptr_t identity() const;
 
+    /**
+     * Get an iterator pointing to the first value of an array if the array is
+     * not empty.  If the array is empty the iterator equals the end iterator as
+     * returned by the end() method.
+     *
+     * @exception document_error If this method is called on a non-array node.
+     *
+     * @return Iterator pointing to the first value of an array or the end
+     *         iterator if the array is empty.
+     */
     const_node_iterator begin() const;
+
+    /**
+     * Get an end iterator for an array node.  Use it in conjunction with an
+     * iterator returned by the begin() method.
+     *
+     * @exception document_error If this method is called on a non-array node.
+     *
+     * @return End iterator for an array node.
+     */
     const_node_iterator end() const;
 };
 
