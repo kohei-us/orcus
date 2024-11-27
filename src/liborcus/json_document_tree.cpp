@@ -72,9 +72,9 @@ enum class node_t : int
 
 std::ostream& operator<< (std::ostream& os, node_t nt)
 {
-    static const char* unknown = "???";
+    constexpr std::string_view unknown = "???";
 
-    static std::vector<const char*> values =
+    constexpr std::string_view values[] =
     {
         "unset",          // 0
         "string",         // 1
@@ -90,9 +90,9 @@ std::ostream& operator<< (std::ostream& os, node_t nt)
         "array_implicit", // 11
     };
 
-    size_t nt_value = size_t(nt);
+    auto nt_value = std::size_t(nt);
 
-    if (nt_value < values.size())
+    if (nt_value < std::size(values))
         os << values[nt_value];
     else
         os << unknown;
@@ -114,8 +114,8 @@ key_value_error::~key_value_error() = default;
 
 struct json_value final
 {
-    detail::node_t type;
-    json_value* parent;
+    detail::node_t type = detail::node_t::unset;
+    json_value* parent = nullptr;
 
     union
     {
@@ -144,9 +144,9 @@ struct json_value final
     json_value(const json_value&) = delete;
     json_value& operator= (const json_value&) = delete;
 
-    json_value() : type(detail::node_t::unset), parent(nullptr) {}
-    json_value(detail::node_t _type) : type(_type), parent(nullptr) {}
-    ~json_value() {}
+    json_value() = default;
+    json_value(detail::node_t _type) : type(_type) {}
+    ~json_value() = default;
 };
 
 namespace {
