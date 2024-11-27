@@ -1,0 +1,71 @@
+{
+  "id": "12345",
+  "name": "John Doe",
+  "email": "johndoe@example.com",
+  "roles": ["admin", "editor"],
+  "isActive": true,
+  "profile": {
+    "age": 34,
+    "gender": "male",
+    "address": {
+      "street": "123 Elm Street",
+      "city": "Springfield",
+      "state": "IL",
+      "zipCode": "62704"
+    },
+    "phoneNumbers": [
+      {
+        "type": "home",
+        "number": "555-1234"
+      },
+      {
+        "type": "work",
+        "number": "555-5678"
+      }
+    ]
+  },
+  "preferences": {
+    "notifications": {
+      "email": true,
+      "sms": false,
+      "push": true
+    },
+    "theme": "dark",
+    "language": "en-US"
+  },
+  "lastLogin": "2024-11-25T13:45:30Z",
+  "purchaseHistory": [
+    {
+      "orderId": "A1001",
+      "date": "2024-01-15T10:00:00Z",
+      "total": 249.99,
+      "items": [
+        {
+          "productId": "P123",
+          "name": "Wireless Mouse",
+          "quantity": 1,
+          "price": 49.99
+        },
+        {
+          "productId": "P124",
+          "name": "Mechanical Keyboard",
+          "quantity": 1,
+          "price": 200.00
+        }
+      ]
+    },
+    {
+      "orderId": "A1002",
+      "date": "2024-06-10T14:20:00Z",
+      "total": 119.99,
+      "items": [
+        {
+          "productId": "P125",
+          "name": "Noise Cancelling Headphones",
+          "quantity": 1,
+          "price": 119.99
+        }
+      ]
+    }
+  ]
+}

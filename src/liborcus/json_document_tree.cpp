@@ -846,8 +846,8 @@ public:
 
 struct const_node::impl
 {
-    const document_tree* m_doc;
-    json_value* m_node;
+    const document_tree* m_doc = nullptr;
+    json_value* m_node = nullptr;
 
     impl(const document_tree* doc, json_value* jv) : m_doc(doc), m_node(jv) {}
     impl(const impl& other) : m_doc(other.m_doc), m_node(other.m_node) {}
@@ -897,6 +897,14 @@ const_node_iterator const_node::end() const
         throw document_error("const_node::end: this method only supports array nodes.");
 
     return const_node_iterator(mp_impl->m_doc, *this, false);
+}
+
+std::string const_node::dump(std::size_t indent) const
+{
+    if (!mp_impl->m_node)
+        return {};
+
+    return json::dump_json_tree(mp_impl->m_node, indent);
 }
 
 node_t const_node::type() const

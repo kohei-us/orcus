@@ -284,6 +284,17 @@ public:
      * @return End iterator for an array node.
      */
     const_node_iterator end() const;
+
+    /**
+     * Dump the subtree below this node to a string.
+     *
+     * @param indent Number of whitespace characters to use for one indent
+     *               level.
+     *
+     * @return a string representation of the subtree with this node as the root
+     *         node.
+     */
+    std::string dump(std::size_t indent) const;
 };
 
 /**

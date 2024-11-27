@@ -104,21 +104,20 @@ std::string dump_check_content(const json::document_tree& doc)
     return os.str();
 }
 
-bool compare_check_contents(const file_content& expected, const std::string& actual)
+bool compare_check_contents(const file_content& expected, std::string_view actual)
 {
     std::string_view _expected(expected.data(), expected.size());
-    std::string_view _actual(actual.data(), actual.size());
     _expected = trim(_expected);
-    _actual = trim(_actual);
+    actual = trim(actual);
 
-    if (_expected != _actual)
+    if (_expected != actual)
     {
-        std::size_t pos = locate_first_different_char(_expected, _actual);
+        std::size_t pos = locate_first_different_char(_expected, actual);
         std::cout << create_parse_error_output(_expected, pos) << std::endl;
-        std::cout << create_parse_error_output(_actual, pos) << std::endl;
+        std::cout << create_parse_error_output(actual, pos) << std::endl;
     }
 
-    return _expected == _actual;
+    return _expected == actual;
 }
 
 void verify_input(json_config& test_config, const fs::path& basedir)
@@ -884,6 +883,56 @@ void test_json_dynamic_object_keys()
     assert(node.child(1).numeric_value() == 1.3);
 }
 
+void test_json_dump_subtree()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    file_content input_json(SRCDIR"/test/json/medium1/input.json");
+
+    json_config test_config;
+
+    json::document_tree doc;
+    doc.load(input_json.str(), test_config);
+
+    auto node = doc.get_document_root();
+    node = node.child("profile");
+
+    {
+        file_content expected(SRCDIR"/test/json/medium1/profile-indent2.json");
+        bool result = compare_check_contents(expected, node.dump(2));
+        assert(result);
+    }
+
+    node = node.child("phoneNumbers");
+
+    {
+        file_content expected(SRCDIR"/test/json/medium1/profile.phoneNumbers-indent3.json");
+        bool result = compare_check_contents(expected, node.dump(3));
+        assert(result);
+    }
+
+    node = node.child(0);
+
+    {
+        file_content expected(SRCDIR"/test/json/medium1/profile.phoneNumbers.0-indent1.json");
+        bool result = compare_check_contents(expected, node.dump(1));
+        assert(result);
+    }
+
+    // check single values
+    node = doc.get_document_root().child("isActive");
+    assert(node.dump(0) == "true");
+
+    node = doc.get_document_root().child("email");
+    assert(node.dump(0) == R"("johndoe@example.com")"); // NB: note the double quotes!
+
+    node = doc.get_document_root().child("profile").child("age");
+    assert(node.dump(0) == "34");
+
+    node = doc.get_document_root().child("preferences").child("notifications").child("sms");
+    assert(node.dump(0) == "false");
+}
+
 int main()
 {
     try
@@ -908,6 +957,7 @@ int main()
         test_json_init_root_object_add_child();
         test_json_init_empty_array();
         test_json_dynamic_object_keys();
+        test_json_dump_subtree();
     }
     catch (const orcus::general_error& e)
     {

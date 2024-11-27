@@ -1,0 +1,20 @@
+{
+  "age": 34,
+  "gender": "male",
+  "address": {
+    "street": "123 Elm Street",
+    "city": "Springfield",
+    "state": "IL",
+    "zipCode": "62704"
+  },
+  "phoneNumbers": [
+    {
+      "type": "home",
+      "number": "555-1234"
+    },
+    {
+      "type": "work",
+      "number": "555-5678"
+    }
+  ]
+}
