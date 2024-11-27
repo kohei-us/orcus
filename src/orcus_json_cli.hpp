@@ -8,7 +8,8 @@
 #ifndef INCLUDED_ORCUS_ORCUS_JSON_CLI_HPP
 #define INCLUDED_ORCUS_ORCUS_JSON_CLI_HPP
 
-#include "orcus/stream.hpp"
+#include <orcus/stream.hpp>
+#include <orcus/types.hpp>
 #include "cli_global.hpp"
 
 #include <ostream>
@@ -32,6 +33,8 @@ enum class mode_t
 struct cmd_params
 {
     std::unique_ptr<json_config> config; //< json parser configuration.
+    dump_format_t output_format = dump_format_t::none;
+    std::string output_path;
     std::unique_ptr<output_stream> os;
     mode_t mode = mode_t::convert;
     file_content map_file;

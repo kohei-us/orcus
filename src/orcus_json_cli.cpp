@@ -122,9 +122,9 @@ void parse_args_for_convert(
     if (vm.count("output-format"))
     {
         std::string s = vm["output-format"].as<std::string>();
-        params.config->output_format = to_dump_format_enum(s);
+        params.output_format = to_dump_format_enum(s);
 
-        if (params.config->output_format == dump_format_t::unknown)
+        if (params.output_format == dump_format_t::unknown)
         {
             std::cerr << "Unknown output format type '" << s << "'." << std::endl;
             params.config.reset();
@@ -256,7 +256,7 @@ detail::cmd_params parse_json_args(int argc, char** argv)
     }
 
     if (vm.count("output"))
-        params.config->output_path = vm["output"].as<std::string>();
+        params.output_path = vm["output"].as<std::string>();
 
     switch (params.mode)
     {
@@ -295,7 +295,7 @@ void build_doc_and_dump(const orcus::file_content& content, detail::cmd_params& 
     std::unique_ptr<json::document_tree> doc = load_doc(content, *params.config);
     std::ostream& os = params.os->get();
 
-    switch (params.config->output_format)
+    switch (params.output_format)
     {
         case dump_format_t::xml:
         {

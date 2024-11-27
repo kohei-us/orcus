@@ -66,28 +66,17 @@ struct ORCUS_DLLPUBLIC json_config
     std::string input_path;
 
     /**
-     * Path of the file to which output is written to.  Used only from the
-     * orcus-json command line tool.
-     */
-    std::string output_path;
-
-    /**
-     * Output format type.  Used only from the orcus-json command line tool.
-     */
-    dump_format_t output_format;
-
-    /**
      * Control whether or not to preserve the order of object's child
      * name/value pairs.  By definition, JSON's object is an unordered set of
      * name/value pairs, but in some cases preserving the original order may
      * be desirable.
      */
-    bool preserve_object_order;
+    bool preserve_object_order = true;
 
     /**
      * Control whether or not to resolve JSON references to external files.
      */
-    bool resolve_references;
+    bool resolve_references = false;
 
     /**
      * When true, the document tree should allocate memory and hold copies of
@@ -99,7 +88,7 @@ struct ORCUS_DLLPUBLIC json_config
      * ensure that the json string stream instance stays alive for the entire
      * life cycle of the document tree.
      */
-    bool persistent_string_values;
+    bool persistent_string_values = true;
 
     json_config();
     ~json_config();

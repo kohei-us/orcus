@@ -36,13 +36,8 @@ config::config(format_t input) :
     }
 }
 
-json_config::json_config() :
-    output_format(dump_format_t::none),
-    preserve_object_order(true),
-    resolve_references(false),
-    persistent_string_values(true) {}
-
-json_config::~json_config() {}
+json_config::json_config() = default;
+json_config::~json_config() = default;
 
 yaml_config::yaml_config() :
     output_format(output_format_type::none) {}

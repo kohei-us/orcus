@@ -39,7 +39,7 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params)
         app.read_map_definition(params.map_file.str());
 
     app.read_stream(content.str());
-    doc.dump(params.config->output_format, params.config->output_path);
+    doc.dump(params.output_format, params.output_path);
 }
 
 #else
