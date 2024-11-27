@@ -289,7 +289,8 @@ public:
      * Dump the subtree below this node to a string.
      *
      * @param indent Number of whitespace characters to use for one indent
-     *               level.
+     *               level.  Note that specifying the indent value of 0 will
+     *               generate output without line breaks.
      *
      * @return a string representation of the subtree with this node as the root
      *         node.
@@ -501,7 +502,8 @@ public:
      * Dump the JSON document tree to string.
      *
      * @param indent Number of whitespace characters to use for one indent
-     *               level.
+     *               level.  Note that specifying the indent value of 0 will
+     *               generate output without line breaks.
      *
      * @return a string representation of the JSON document tree.
      */

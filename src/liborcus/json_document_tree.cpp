@@ -176,6 +176,19 @@ struct json_value_object
     }
 };
 
+struct dump_context
+{
+    const std::string indent;
+    const char* end;
+    const char* sep;
+
+    dump_context(std::size_t indent_size) :
+        indent(indent_size, ' '),
+        end(indent_size > 0 ? "\n" : ""),
+        sep(indent_size > 0 ? "," : ", ")
+    {}
+};
+
 void dump_repeat(std::ostringstream& os, std::string_view s, int repeat)
 {
     for (int i = 0; i < repeat; ++i)
@@ -183,14 +196,14 @@ void dump_repeat(std::ostringstream& os, std::string_view s, int repeat)
 }
 
 void dump_item(
-    std::ostringstream& os, const std::string_view* key, const json_value* val,
+    std::ostringstream& os, const dump_context& cxt, const std::string_view* key, const json_value* val,
     int indent, int level, bool sep);
 
 void dump_value(
-    std::ostringstream& os, const json_value* v, std::size_t indent, int level, const std::string_view* key = nullptr)
+    std::ostringstream& os, const dump_context& cxt,
+    const json_value* v, std::size_t indent, int level, const std::string_view* key = nullptr)
 {
-    const std::string indent_s(indent, ' ');
-    dump_repeat(os, indent_s, level);
+    dump_repeat(os, cxt.indent, level);
 
     if (key)
     {
@@ -203,13 +216,13 @@ void dump_value(
         case detail::node_t::array:
         {
             auto& vals = v->value.array->value_array;
-            os << "[" << std::endl;
+            os << "[" << cxt.end;
             size_t n = vals.size();
             size_t pos = 0;
             for (auto it = vals.begin(), ite = vals.end(); it != ite; ++it, ++pos)
-                dump_item(os, nullptr, *it, indent, level, pos < (n-1));
+                dump_item(os, cxt, nullptr, *it, indent, level, pos < (n-1));
 
-            dump_repeat(os, indent_s, level);
+            dump_repeat(os, cxt.indent, level);
             os << "]";
             break;
         }
@@ -229,7 +242,7 @@ void dump_value(
         {
             const std::vector<std::string_view>& key_order = v->value.object->key_order;
             auto& vals = v->value.object->value_object;
-            os << "{" << std::endl;
+            os << "{" << cxt.end;
             size_t n = vals.size();
 
             if (key_order.empty())
@@ -241,7 +254,7 @@ void dump_value(
                     std::string_view this_key = it->first;
                     auto& this_val = it->second;
 
-                    dump_item(os, &this_key, this_val, indent, level, pos < (n-1));
+                    dump_item(os, cxt, &this_key, this_val, indent, level, pos < (n-1));
                 }
             }
             else
@@ -254,11 +267,11 @@ void dump_value(
                     auto val_pos = vals.find(this_key);
                     assert(val_pos != vals.end());
 
-                    dump_item(os, &this_key, val_pos->second, indent, level, pos < (n-1));
+                    dump_item(os, cxt, &this_key, val_pos->second, indent, level, pos < (n-1));
                 }
             }
 
-            dump_repeat(os, indent_s, level);
+            dump_repeat(os, cxt.indent, level);
             os << "}";
 
             break;
@@ -273,22 +286,22 @@ void dump_value(
 }
 
 void dump_item(
-    std::ostringstream& os, const std::string_view* key, const json_value* val,
+    std::ostringstream& os, const dump_context& cxt, const std::string_view* key, const json_value* val,
     int indent, int level, bool sep)
 {
-    dump_value(os, val, indent, level+1, key);
+    dump_value(os, cxt, val, indent, level+1, key);
     if (sep)
-        os << ",";
-    os << std::endl;
+        os << cxt.sep;
+    os << cxt.end;
 }
 
-std::string dump_json_tree(const json_value* root, std::size_t indent)
+std::string dump_json_tree(const dump_context cxt, const json_value* root, std::size_t indent)
 {
     if (root->type == detail::node_t::unset)
         return std::string();
 
     std::ostringstream os;
-    dump_value(os, root, indent, 0);
+    dump_value(os, cxt, root, indent, 0);
     return os.str();
 }
 
@@ -904,7 +917,8 @@ std::string const_node::dump(std::size_t indent) const
     if (!mp_impl->m_node)
         return {};
 
-    return json::dump_json_tree(mp_impl->m_node, indent);
+    dump_context cxt(indent);
+    return json::dump_json_tree(cxt, mp_impl->m_node, indent);
 }
 
 node_t const_node::type() const
@@ -1791,7 +1805,8 @@ std::string document_tree::dump(std::size_t indent) const
     if (!mp_impl->m_root)
         return std::string();
 
-    return json::dump_json_tree(mp_impl->m_root, indent);
+    dump_context cxt(indent);
+    return json::dump_json_tree(cxt, mp_impl->m_root, indent);
 }
 
 std::string document_tree::dump_xml() const

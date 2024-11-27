@@ -178,6 +178,30 @@ void test_json_parse()
         verify_input(test_config, basedir);
 }
 
+void test_json_dump_indent_0()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    json_config conf;
+    json::document_tree doc;
+
+    {
+        file_content content(SRCDIR"/test/json/basic1/input.json");
+        doc.load(content.str(), conf);
+
+        auto dumped = doc.dump(0);
+        assert(dumped == "[true, false, null]");
+    }
+
+    {
+        file_content content(SRCDIR"/test/json/basic4/input.json");
+        doc.load(content.str(), conf);
+
+        auto dumped = doc.dump(0);
+        assert(dumped == R"({"int": 12, "float": 0.125, "string": "blah..."})");
+    }
+}
+
 void test_json_resolve_refs()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -938,6 +962,7 @@ int main()
     try
     {
         test_json_parse();
+        test_json_dump_indent_0();
         test_json_resolve_refs();
         test_json_parse_empty();
         test_json_parse_invalid();
