@@ -48,6 +48,19 @@ std::size_t json_path_part_t::array_index() const
     return std::get<std::size_t>(m_value);
 }
 
+bool json_path_part_t::operator==(const json_path_part_t& other) const
+{
+    if (m_type != other.m_type)
+        return false;
+
+    return m_value == other.m_value;
+}
+
+bool json_path_part_t::operator!=(const json_path_part_t& other) const
+{
+    return !operator==(other);
+}
+
 void json_path_parser::object_key()
 {
     // Parse until it encounters either '.' or '[', or the stream ends.  When
@@ -179,7 +192,7 @@ void json_path_parser::parse(std::string_view expression)
     }
 }
 
-std::vector<json_path_part_t> json_path_parser::pop_parts()
+json_path_parts_t json_path_parser::pop_parts()
 {
     return std::move(m_parts);
 }

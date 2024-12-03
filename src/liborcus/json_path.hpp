@@ -37,14 +37,19 @@ public:
     json_path_t type() const;
     std::string_view object_key() const;
     std::size_t array_index() const;
+
+    bool operator==(const json_path_part_t& other) const;
+    bool operator!=(const json_path_part_t& other) const;
 };
+
+using json_path_parts_t = std::vector<json_path_part_t>;
 
 class json_path_parser
 {
     const char* mp = nullptr;
     const char* mp_end = nullptr;
 
-    std::vector<json_path_part_t> m_parts;
+    json_path_parts_t m_parts;
 
     void object_key();
     void array_index();
@@ -52,7 +57,7 @@ class json_path_parser
 public:
     void parse(std::string_view exp);
 
-    [[nodiscard]] std::vector<json_path_part_t> pop_parts();
+    [[nodiscard]] json_path_parts_t pop_parts();
 };
 
 } // namespace orcus

@@ -13,7 +13,7 @@
 
 namespace {
 
-std::vector<orcus::json_path_part_t> parse_json_path(std::string_view exp)
+orcus::json_path_parts_t parse_json_path(std::string_view exp)
 {
     std::cout << "expression: '" << exp << "'" << std::endl;
 
@@ -37,8 +37,12 @@ void test_root()
     ORCUS_TEST_FUNC_SCOPE;
 
     auto tokens = parse_json_path("$");
-    assert(tokens.size() == 1);
-    assert(tokens[0].type() == orcus::json_path_t::root);
+
+    orcus::json_path_parts_t expected = {
+        { orcus::json_path_t::root }
+    };
+
+    assert(tokens == expected);
 }
 
 void test_object_key()
@@ -48,21 +52,24 @@ void test_object_key()
     {
         auto tokens = parse_json_path("$.key");
 
-        assert(tokens.size() == 2);
-        assert(tokens[0].type() == orcus::json_path_t::root);
-        assert(tokens[1].type() == orcus::json_path_t::object_key);
-        assert(tokens[1].object_key() == "key");
+        orcus::json_path_parts_t expected = {
+            { orcus::json_path_t::root },
+            { "key" },
+        };
+
+        assert(tokens == expected);
     }
 
     {
         auto tokens = parse_json_path("$.key1.key2");
 
-        assert(tokens.size() == 3);
-        assert(tokens[0].type() == orcus::json_path_t::root);
-        assert(tokens[1].type() == orcus::json_path_t::object_key);
-        assert(tokens[1].object_key() == "key1");
-        assert(tokens[2].type() == orcus::json_path_t::object_key);
-        assert(tokens[2].object_key() == "key2");
+        orcus::json_path_parts_t expected = {
+            { orcus::json_path_t::root },
+            { "key1" },
+            { "key2" },
+        };
+
+        assert(tokens == expected);
     }
 }
 
@@ -73,34 +80,37 @@ void test_array_index()
     {
         auto tokens = parse_json_path("$[0]");
 
-        assert(tokens.size() == 2);
-        assert(tokens[0].type() == orcus::json_path_t::root);
-        assert(tokens[1].type() == orcus::json_path_t::array_index);
-        assert(tokens[1].array_index() == 0);
+        orcus::json_path_parts_t expected = {
+            { orcus::json_path_t::root },
+            { 0 },
+        };
+
+        assert(tokens == expected);
     }
 
     {
         auto tokens = parse_json_path("$[0][2]");
 
-        assert(tokens.size() == 3);
-        assert(tokens[0].type() == orcus::json_path_t::root);
-        assert(tokens[1].type() == orcus::json_path_t::array_index);
-        assert(tokens[1].array_index() == 0);
-        assert(tokens[2].type() == orcus::json_path_t::array_index);
-        assert(tokens[2].array_index() == 2);
+        orcus::json_path_parts_t expected = {
+            { orcus::json_path_t::root },
+            { 0 },
+            { 2 },
+        };
+
+        assert(tokens == expected);
     }
 
     {
         auto tokens = parse_json_path("$[0][2][12]");
 
-        assert(tokens.size() == 4);
-        assert(tokens[0].type() == orcus::json_path_t::root);
-        assert(tokens[1].type() == orcus::json_path_t::array_index);
-        assert(tokens[1].array_index() == 0);
-        assert(tokens[2].type() == orcus::json_path_t::array_index);
-        assert(tokens[2].array_index() == 2);
-        assert(tokens[3].type() == orcus::json_path_t::array_index);
-        assert(tokens[3].array_index() == 12);
+        orcus::json_path_parts_t expected = {
+            { orcus::json_path_t::root },
+            { 0 },
+            { 2 },
+            { 12 },
+        };
+
+        assert(tokens == expected);
     }
 }
 
