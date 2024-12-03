@@ -7,6 +7,7 @@ AM_CPPFLAGS = \
 EXTRA_PROGRAMS = \
 	css-document-tree-test \
 	json-document-tree-test \
+	json-path-test \
 	yaml-document-tree-test \
 	xml-map-tree-test \
 	common-test \
@@ -76,6 +77,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	json_document_tree.cpp \
 	json_map_tree.hpp \
 	json_map_tree.cpp \
+	json_path.hpp \
+	json_path.cpp \
 	json_structure_mapper.hpp \
 	json_structure_mapper.cpp \
 	json_structure_tree.cpp \
@@ -474,6 +477,17 @@ endif
 
 json_document_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
+# json-path-test
+
+json_path_test_SOURCES = \
+	json_path.cpp \
+	json_path_test.cpp
+
+json_path_test_LDADD = \
+	liborcus-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a \
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la
+
 # yaml-document-tree-test
 
 yaml_document_tree_test_SOURCES = \
@@ -602,6 +616,7 @@ xls_filter_utils_test_LDADD = \
 TESTS += \
 	css-document-tree-test \
 	json-document-tree-test \
+	json-path-test \
 	yaml-document-tree-test \
 	xml-map-tree-test \
 	common-test \
