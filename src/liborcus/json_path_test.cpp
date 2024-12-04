@@ -8,6 +8,8 @@
 #include "test_global.hpp"
 #include "json_path.hpp"
 
+#include <orcus/exception.hpp>
+
 #include <iostream>
 #include <cassert>
 
@@ -238,6 +240,39 @@ void test_no_root()
     }
 }
 
+void test_invalids()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    std::vector<std::string_view> invalids = {
+        "$.",
+        "$.key.",
+        "$.key..",
+        "$[",
+        "$[]",
+        "$]",
+        "$a",
+        "$.key['another key",
+        "$.key['another key'[0]",
+        ".",
+        ".key",
+    };
+
+    for (const auto& invalid : invalids)
+    {
+        try
+        {
+            [[maybe_unused]] auto tokens = parse_json_path(invalid);
+            assert(!"an exception was expected but was not thrown");
+        }
+        catch (const orcus::invalid_arg_error& e)
+        {
+            // good
+            std::cout << "exception: '" << e.what() << "'" << std::endl;
+        }
+    }
+}
+
 int main()
 {
     test_empty();
@@ -247,6 +282,7 @@ int main()
     test_array_index();
     test_mix();
     test_no_root();
+    test_invalids();
 
     return EXIT_SUCCESS;
 }

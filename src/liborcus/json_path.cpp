@@ -124,7 +124,7 @@ void json_path_parser::object_key_in_brackets()
         }
     }
 
-    throw std::runtime_error("object key in bracket notation ended prematurely");
+    throw invalid_arg_error("object key in bracket notation ended prematurely");
 }
 
 void json_path_parser::bracket()
@@ -184,10 +184,7 @@ void json_path_parser::bracket()
         }
     }
 
-    std::ostringstream os;
-    std::size_t n = std::distance(p_head, mp);
-    os << "stream ended prematurely while parsing array index: segment='" << std::string_view(p_head, n) << "'";
-    throw invalid_arg_error(os.str());
+    throw invalid_arg_error("no closing bracket ']' was encountered after opening bracket '['");
 }
 
 void json_path_parser::parse(std::string_view expression)
@@ -237,7 +234,7 @@ void json_path_parser::parse(std::string_view expression)
             default:
             {
                 std::ostringstream os;
-                os << "unknown character '" << *mp << "'";
+                os << "unexpected character '" << *mp << "'";
                 throw invalid_arg_error(os.str());
             }
         }
