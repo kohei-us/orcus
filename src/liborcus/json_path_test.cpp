@@ -158,6 +158,43 @@ void test_mix()
     }
 }
 
+void test_no_root()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    {
+        auto tokens = parse_json_path("key1");
+
+        orcus::json_path_parts_t expected = {
+            { "key1" },
+        };
+
+        assert(tokens == expected);
+    }
+
+    {
+        auto tokens = parse_json_path("key1.key2");
+
+        orcus::json_path_parts_t expected = {
+            { "key1" },
+            { "key2" },
+        };
+
+        assert(tokens == expected);
+    }
+
+    {
+        auto tokens = parse_json_path("[2].key");
+
+        orcus::json_path_parts_t expected = {
+            { 2 },
+            { "key" },
+        };
+
+        assert(tokens == expected);
+    }
+}
+
 int main()
 {
     test_empty();
@@ -165,6 +202,7 @@ int main()
     test_object_key();
     test_array_index();
     test_mix();
+    test_no_root();
 
     return EXIT_SUCCESS;
 }

@@ -163,16 +163,22 @@ void json_path_parser::parse(std::string_view expression)
 
     assert(mp < mp_end);
 
-    char c = *mp;
-
-    if (c == '$')
+    switch (*mp)
     {
-        m_parts.emplace_back(json_path_t::root);
-        ++mp;
-    }
-    else
-    {
-        object_key();
+        case '$':
+        {
+            m_parts.emplace_back(json_path_t::root);
+            ++mp;
+            break;
+        }
+        case '[':
+        {
+            ++mp;
+            array_index();
+            break;
+        }
+        default:
+            object_key();
     }
 
     while (mp != mp_end)
