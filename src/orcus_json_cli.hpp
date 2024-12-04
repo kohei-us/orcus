@@ -27,7 +27,8 @@ enum class mode_t
     lint,
     map,
     map_gen,
-    structure
+    structure,
+    subtree,
 };
 
 struct cmd_params
@@ -39,6 +40,7 @@ struct cmd_params
     mode_t mode = mode_t::convert;
     file_content map_file;
     std::size_t indent = 4;
+    std::string json_path;
 
     cmd_params(const cmd_params&) = delete;
     cmd_params& operator= (const cmd_params&) = delete;

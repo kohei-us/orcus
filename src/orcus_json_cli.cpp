@@ -50,6 +50,7 @@ constexpr map_type::entry_type entries[] =
     { "map",       detail::mode_t::map       },
     { "map-gen",   detail::mode_t::map_gen   },
     { "structure", detail::mode_t::structure },
+    { "subtree",   detail::mode_t::subtree   },
 };
 
 const map_type& get()
@@ -76,13 +77,18 @@ const char* help_json_output_format =
 "  * no output (none)";
 
 const char* help_json_map =
-"Path to a map file.  This parameter is only used for map mode, and it is "
-"required for map mode."
+"Path to a map file.  This parameter is only used in map mode, and it is "
+"required in that mode."
 ;
 
 const char* help_indent =
 "Number of whitespace characters to use for one indent level.  This is applicable "
 "when the command generates output in JSON format."
+;
+
+const char* help_json_path =
+"JSONPath expression specifying the root of a subtree to extract.  It is only used "
+"in subtree mode."
 ;
 
 const char* err_no_input_file = "No input file.";
@@ -147,6 +153,16 @@ void parse_args_for_lint(
         params.indent = vm["indent"].as<std::size_t>();
 }
 
+void parse_args_for_subtree(
+    detail::cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
+{
+    if (vm.count("indent"))
+        params.indent = vm["indent"].as<std::size_t>();
+
+    if (vm.count("path"))
+        params.json_path = vm["path"].as<std::string>();
+}
+
 /**
  * Reset params.config in case of failure.
  */
@@ -190,6 +206,7 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         ("output-format,f", po::value<std::string>(), help_json_output_format)
         ("map,m", po::value<std::string>(), help_json_map)
         ("indent,i", po::value<std::size_t>(), help_indent)
+        ("path,p", po::value<std::string>(), help_json_path)
     ;
 
     po::options_description hidden("Hidden options");
@@ -275,6 +292,10 @@ detail::cmd_params parse_json_args(int argc, char** argv)
         case detail::mode_t::lint:
             params.os = std::make_unique<output_stream>(vm);
             parse_args_for_lint(params, desc, vm);
+            break;
+        case detail::mode_t::subtree:
+            params.os = std::make_unique<output_stream>(vm);
+            parse_args_for_subtree(params, desc, vm);
             break;
         default:
             assert(!"This should not happen since the mode check is done way earlier.");
@@ -437,6 +458,14 @@ int main(int argc, char** argv)
                 auto doc = load_doc(content, *params.config);
                 std::ostream& os = params.os->get();
                 os << doc->dump(params.indent);
+                break;
+            }
+            case detail::mode_t::subtree:
+            {
+                auto doc = load_doc(content, *params.config);
+                std::ostream& os = params.os->get();
+                (void)os;
+                throw std::runtime_error("TODO: implement this");
                 break;
             }
             default:
