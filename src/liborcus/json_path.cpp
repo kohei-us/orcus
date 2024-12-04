@@ -114,22 +114,31 @@ void json_path_parser::array_index()
             {
                 std::size_t n = std::distance(p_head, mp);
                 std::string_view s{p_head, n};
-                auto v = to_long_checked(s);
-                if (!v)
+
+                if (s == "*")
                 {
-                    std::ostringstream os;
-                    os << "failed to convert to integer: '" << s << "'";
-                    throw invalid_arg_error(os.str());
+                    m_parts.emplace_back(json_path_t::array_all);
+                }
+                else
+                {
+                    auto v = to_long_checked(s);
+                    if (!v)
+                    {
+                        std::ostringstream os;
+                        os << "failed to convert to integer: '" << s << "'";
+                        throw invalid_arg_error(os.str());
+                    }
+
+                    if (*v < 0)
+                    {
+                        std::ostringstream os;
+                        os << "array index must be positive (" << *v << ")";
+                        throw invalid_arg_error(os.str());
+                    }
+
+                    m_parts.emplace_back(std::size_t(*v));
                 }
 
-                if (*v < 0)
-                {
-                    std::ostringstream os;
-                    os << "array index must be positive (" << *v << ")";
-                    throw invalid_arg_error(os.str());
-                }
-
-                m_parts.emplace_back(std::size_t(*v));
                 ++mp; // skip ']'
                 return;
             }

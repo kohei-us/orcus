@@ -112,6 +112,17 @@ void test_array_index()
 
         assert(tokens == expected);
     }
+
+    {
+        auto tokens = parse_json_path("$[*]");
+
+        orcus::json_path_parts_t expected = {
+            { orcus::json_path_t::root },
+            { orcus::json_path_t::array_all },
+        };
+
+        assert(tokens == expected);
+    }
 }
 
 int main()
