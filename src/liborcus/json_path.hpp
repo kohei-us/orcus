@@ -52,7 +52,8 @@ class json_path_parser
     json_path_parts_t m_parts;
 
     void object_key();
-    void array_index();
+    void object_key_in_brackets();
+    void bracket();
 
 public:
     void parse(std::string_view exp);

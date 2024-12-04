@@ -61,23 +61,27 @@ bool json_path_part_t::operator!=(const json_path_part_t& other) const
     return !operator==(other);
 }
 
+namespace {
+
+std::string_view to_object_key(const char* p_key, const char* p_key_end)
+{
+    auto key_length = std::distance(p_key, p_key_end);
+    if (!key_length)
+        throw invalid_arg_error("empty object key");
+
+    std::string_view key(p_key, key_length);
+    return key;
+}
+
+} // anonymous namespace
+
 void json_path_parser::object_key()
 {
+    // It should point to the first char after '.' or the end position.
+
     // Parse until it encounters either '.' or '[', or the stream ends.  When
     // successful, it should point to the character past the last char of the
     // key.
-
-    assert(mp < mp_end);
-
-    auto to_key = [](const char* p_key, const char* p_key_end)
-    {
-        auto key_length = std::distance(p_key, p_key_end);
-        if (!key_length)
-            throw invalid_arg_error("empty object key");
-
-        std::string_view key(p_key, key_length);
-        return key;
-    };
 
     const char* p_head = mp;
 
@@ -88,23 +92,58 @@ void json_path_parser::object_key()
             case '.':
             case '[':
             {
-                m_parts.emplace_back(to_key(p_head, mp));
+                m_parts.emplace_back(to_object_key(p_head, mp));
                 return;
             }
         }
     }
 
-    m_parts.emplace_back(to_key(p_head, mp));
+    m_parts.emplace_back(to_object_key(p_head, mp));
 }
 
-void json_path_parser::array_index()
+void json_path_parser::object_key_in_brackets()
+{
+    // Parse until it counters the closing quote (') followed by a ']'.
+    assert(mp != mp_end);
+    assert(*mp == '\'');
+
+    ++mp; // skip the opening quote
+    const char* p_head = mp;
+
+    for (; mp != mp_end; ++mp)
+    {
+        if (*mp == '\'')
+        {
+            m_parts.emplace_back(to_object_key(p_head, mp));
+            ++mp; // skip the closing quote
+            if (mp == mp_end || *mp != ']')
+                throw invalid_arg_error("closing quote in object key in bracket notation must be followed by ']'");
+
+            ++mp; // skip the closing bracket
+            return;
+        }
+    }
+
+    throw std::runtime_error("object key in bracket notation ended prematurely");
+}
+
+void json_path_parser::bracket()
 {
     // Parse until it encounters ']'. When successful, it should point to the
     // next char after the ']'.
 
-    assert(mp < mp_end);
+    assert(mp != mp_end);
+    assert(*mp == '[');
+
+    ++mp;
 
     const char* p_head = mp;
+
+    if (mp != mp_end && *mp == '\'')
+    {
+        object_key_in_brackets();
+        return;
+    }
 
     for (; mp != mp_end; ++mp)
     {
@@ -173,8 +212,7 @@ void json_path_parser::parse(std::string_view expression)
         }
         case '[':
         {
-            ++mp;
-            array_index();
+            bracket();
             break;
         }
         default:
@@ -193,8 +231,7 @@ void json_path_parser::parse(std::string_view expression)
             }
             case '[':
             {
-                ++mp;
-                array_index();
+                bracket();
                 break;
             }
             default:
