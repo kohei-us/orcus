@@ -8,7 +8,7 @@
 #pragma once
 
 #include <variant>
-#include <vector>
+#include <deque>
 #include <string_view>
 
 namespace orcus {
@@ -42,7 +42,7 @@ public:
     bool operator!=(const json_path_part_t& other) const;
 };
 
-using json_path_parts_t = std::vector<json_path_part_t>;
+using json_path_parts_t = std::deque<json_path_part_t>;
 
 class json_path_parser
 {

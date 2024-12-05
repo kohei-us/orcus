@@ -121,6 +121,9 @@ class ORCUS_DLLPUBLIC const_node
 {
     friend class document_tree;
     friend class const_node_iterator;
+    friend class subtree;
+
+    json_value* get_json_value();
 
 protected:
     struct impl;
@@ -531,6 +534,34 @@ public:
      * @param other document instance to swap the content with.
      */
     void swap(document_tree& other);
+};
+
+/**
+ * @note Instance of this class can only reference the source document; it
+ *       becomes invalid when the source document is modified.
+ */
+class ORCUS_DLLPUBLIC subtree
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+public:
+
+    subtree();
+    subtree(const document_tree& src, std::string_view path);
+    subtree(const subtree&) = delete;
+    subtree(subtree&& other);
+    ~subtree();
+
+    /**
+     * Dump the subtree to a string.
+     *
+     * @param indent Number of whitespace characters to use for one indent
+     *               level.  Note that specifying the indent value of 0 will
+     *               generate output without line breaks.
+     *
+     * @return String representation of the subtree.
+     */
+    std::string dump(std::size_t indent) const;
 };
 
 }}

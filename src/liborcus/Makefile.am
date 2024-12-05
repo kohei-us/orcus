@@ -458,6 +458,7 @@ endif
 
 json_document_tree_test_SOURCES = \
 	json_document_tree.cpp \
+	json_path.cpp \
 	json_util.cpp \
 	json_document_tree_test.cpp
 

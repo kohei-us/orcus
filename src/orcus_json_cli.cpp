@@ -464,8 +464,8 @@ int main(int argc, char** argv)
             {
                 auto doc = load_doc(content, *params.config);
                 std::ostream& os = params.os->get();
-                (void)os;
-                throw std::runtime_error("TODO: implement this");
+                auto sub = json::subtree(*doc, params.json_path);
+                os << sub.dump(params.indent);
                 break;
             }
             default:

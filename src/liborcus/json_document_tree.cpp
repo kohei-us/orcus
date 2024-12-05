@@ -12,6 +12,7 @@
 #include <orcus/string_pool.hpp>
 
 #include "json_util.hpp"
+#include "json_path.hpp"
 
 #include <string>
 #include <vector>
@@ -865,6 +866,11 @@ struct const_node::impl
     impl(const document_tree* doc, json_value* jv) : m_doc(doc), m_node(jv) {}
     impl(const impl& other) : m_doc(other.m_doc), m_node(other.m_node) {}
 };
+
+json_value* const_node::get_json_value()
+{
+    return mp_impl->m_node;
+}
 
 const_node::const_node(const document_tree* doc, json_value* jv) : mp_impl(std::make_unique<impl>(doc, jv)) {}
 const_node::const_node(std::unique_ptr<impl>&& p) : mp_impl(std::move(p)) {}
@@ -1826,6 +1832,137 @@ std::string document_tree::dump_yaml() const
 void document_tree::swap(document_tree& other)
 {
     std::swap(mp_impl, other.mp_impl);
+}
+
+struct subtree::impl
+{
+    document_resource res;
+    json_value* root = nullptr;
+};
+
+subtree::subtree() : mp_impl(std::make_unique<impl>()) {}
+
+namespace {
+
+struct path_scope
+{
+    const_node node; // node corresponding to the current scope
+    json_value* array = nullptr;
+    json_value* value = nullptr; // value passed up from the lower scope
+
+    path_scope(const_node _node) : node(std::move(_node)) {}
+};
+
+} // anonymous namespace
+
+subtree::subtree(const document_tree& src, std::string_view path) :
+    mp_impl(std::make_unique<impl>())
+{
+    if (path.empty())
+        throw document_error("path cannot be empty");
+
+    json_path_parser parser;
+
+    try
+    {
+        parser.parse(path);
+    }
+    catch (const std::exception& e)
+    {
+        std::ostringstream os;
+        os << "failed to parse the specified path '" << path << "': " << e.what();
+        throw document_error(os.str());
+    }
+
+    auto parts = parser.pop_parts();
+    if (parts.empty())
+    {
+        std::ostringstream os;
+        os << "parsed result of the specified path '" << path << "' is empty";
+        throw document_error(os.str());
+    }
+
+    if (parts.front().type() != json_path_t::root)
+        parts.emplace_front(json_path_t::root);
+
+    std::vector<path_scope> path_stack;
+
+    auto it = parts.begin(), it_end = parts.end();
+    assert(it != it_end);
+
+    bool up = true;
+
+    while (true)
+    {
+        if (up)
+        {
+            const json_path_part_t& part = *it;
+
+            switch (part.type())
+            {
+                case json_path_t::root:
+                {
+                    path_stack.emplace_back(src.get_document_root());
+                    break;
+                }
+                case json_path_t::array_index:
+                {
+                    assert(!path_stack.empty());
+                    auto& parent = path_stack.back().node;
+                    path_stack.emplace_back(parent.child(part.array_index()));
+                    break;
+                }
+                case json_path_t::object_key:
+                {
+                    assert(!path_stack.empty());
+                    auto& parent = path_stack.back().node;
+                    path_stack.emplace_back(parent.child(part.object_key()));
+                    break;
+                }
+                case json_path_t::array_all:
+                    throw std::runtime_error("TODO: not implemented yet");
+                case json_path_t::unknown:
+                    throw document_error("unknown path type encountered");
+            }
+
+            if (++it == it_end)
+            {
+                // reached the path destination - turn around
+                json_value* jv = path_stack.back().node.get_json_value();
+                path_stack.back().value = jv;
+                up = false;
+            }
+        }
+        else
+        {
+            --it;
+
+            json_value* jv = path_stack.back().value;
+            path_stack.pop_back();
+
+            if (!path_stack.empty())
+                path_stack.back().value = jv; // pass the value up to the higher scope
+
+            if (it == parts.begin())
+            {
+                assert(path_stack.empty());
+                mp_impl->root = jv;
+                break; // end the loop
+            }
+        }
+    }
+}
+
+subtree::subtree(subtree&& other) : mp_impl(std::move(other.mp_impl)) {}
+subtree::~subtree() = default;
+
+std::string subtree::dump(std::size_t indent) const
+{
+    if (!mp_impl->root)
+        return {};
+
+    dump_context cxt(indent);
+    return json::dump_json_tree(cxt, mp_impl->root, indent);
 }
 
 }}
