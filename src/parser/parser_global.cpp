@@ -224,45 +224,54 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
             }
             case double_quoted_string_parse_mode_t::hex_digit:
             {
-                if (!std::isxdigit(c))
+                std::size_t n = std::distance(p_head, p);
+
+                if (n < 4)
                 {
-                    std::size_t n = std::distance(p_head, p);
-                    if (n != 4)
+                    if (!std::isxdigit(c))
                     {
+                        // not enough hex digits - invalid
                         ret.length = parse_quoted_string_state::error_invalid_hex_digits;
                         return ret;
                     }
 
-                    uint32_t cp = hex_string_to_int32(std::string_view{p_head, n});
-                    auto encoded = encode_utf8(cp);
-                    if (encoded.empty())
-                    {
-                        // failed to encode it as utf-8
-                        ret.length = parse_quoted_string_state::error_invalid_hex_digits;
-                        return ret;
-                    }
-
-                    buffer.append(encoded.data(), encoded.size());
-                    p_head = nullptr;
-                    mode = double_quoted_string_parse_mode_t::unspecified;
-
-                    switch (c)
-                    {
-                        case '"': // closing quote
-                        {
-                            ++p; // skip the quote
-                            std::string_view s = buffer.str();
-                            ret.str = s.data();
-                            ret.length = s.size();
-                            return ret;
-                        }
-                        case '\\': // escape char
-                        {
-                            mode = double_quoted_string_parse_mode_t::escaped;
-                            break;
-                        }
-                    }
+                    break; // keep parsing for more hex digits
                 }
+
+                assert(n == 4);
+
+                uint32_t cp = hex_string_to_int32(std::string_view{p_head, n});
+                auto encoded = encode_utf8(cp);
+                if (encoded.empty())
+                {
+                    // failed to encode it as utf-8
+                    ret.length = parse_quoted_string_state::error_invalid_hex_digits;
+                    return ret;
+                }
+
+                buffer.append(encoded.data(), encoded.size());
+                mode = double_quoted_string_parse_mode_t::unspecified;
+
+                switch (c)
+                {
+                    case '"': // closing quote
+                    {
+                        ++p; // skip the quote
+                        std::string_view s = buffer.str();
+                        ret.str = s.data();
+                        ret.length = s.size();
+                        return ret;
+                    }
+                    case '\\': // escape char
+                    {
+                        mode = double_quoted_string_parse_mode_t::escaped;
+                        p_head = nullptr;
+                        break;
+                    }
+                    default:
+                        p_head = p;
+                }
+
                 break;
             }
             case double_quoted_string_parse_mode_t::unspecified:
