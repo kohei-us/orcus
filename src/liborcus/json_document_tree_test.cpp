@@ -43,6 +43,7 @@ const fs::path json_test_dirs[] = {
     SRCDIR"/test/json/escape-surrogate/one-char-with-ba",
     SRCDIR"/test/json/escape-surrogate/two-chars",
     SRCDIR"/test/json/escape-surrogate/two-chars-with-bc",
+    SRCDIR"/test/json/escape-surrogate/mix",
 };
 
 const fs::path json_test_refs_dirs[] = {

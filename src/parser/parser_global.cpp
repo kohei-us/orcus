@@ -285,6 +285,7 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                         {
                             auto n = std::distance(p_head, p);
                             buffer.append(p_head, n);
+                            p_head = nullptr;
                         }
                         ++p; // skip the quote.
                         std::string_view s = buffer.str();
@@ -295,6 +296,12 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                     case '\\':
                     {
                         mode = double_quoted_string_parse_mode_t::escaped;
+                        if (p_head)
+                        {
+                            auto n = std::distance(p_head, p);
+                            buffer.append(p_head, n);
+                            p_head = nullptr;
+                        }
                         break;
                     }
                     default:
