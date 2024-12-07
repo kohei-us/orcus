@@ -958,7 +958,7 @@ void test_json_dump_subtree()
     assert(node.dump(0) == "false");
 }
 
-void test_json_subtree()
+void test_json_subtree_medium1()
 {
     // same test cases as in test_json_dump_subtree
 
@@ -1026,6 +1026,40 @@ void test_json_subtree()
     }
 }
 
+void test_json_subtree_medium2()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    file_content input_json(SRCDIR"/test/json/medium2/input.json");
+
+    json_config test_config;
+
+    json::document_tree doc;
+    doc.load(input_json.str(), test_config);
+
+    {
+        json::subtree st(doc, "$.store.fruits[1]");
+        assert(st.dump(0) == R"({"name": "banana", "color": "yellow", "price": 0.5})");
+    }
+
+    {
+        json::subtree st(doc, "$.store.fruits[4]['name']");
+        assert(st.dump(0) == R"("elderberry")");
+    }
+
+    {
+        json::subtree st(doc, "$.store.vegetables[2].color");
+        assert(st.dump(0) == R"("green")");
+    }
+
+    {
+        json::subtree st(doc, "$.store.vegetables");
+        file_content expected(SRCDIR"/test/json/medium2/store.vegetables-indent2.json");
+        bool result = compare_check_contents(expected, st.dump(2));
+        assert(result);
+    }
+}
+
 int main()
 {
     try
@@ -1052,7 +1086,8 @@ int main()
         test_json_init_empty_array();
         test_json_dynamic_object_keys();
         test_json_dump_subtree();
-        test_json_subtree();
+        test_json_subtree_medium1();
+        test_json_subtree_medium2();
     }
     catch (const orcus::general_error& e)
     {
