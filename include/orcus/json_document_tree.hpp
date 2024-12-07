@@ -552,6 +552,8 @@ public:
     subtree(subtree&& other);
     ~subtree();
 
+    subtree& operator=(subtree&& other);
+
     /**
      * Dump the subtree to a string.
      *

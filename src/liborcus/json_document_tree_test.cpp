@@ -42,6 +42,7 @@ const fs::path json_test_dirs[] = {
     SRCDIR"/test/json/escape-surrogate/one-char-nbsp",
     SRCDIR"/test/json/escape-surrogate/one-char-with-ba",
     SRCDIR"/test/json/escape-surrogate/two-chars",
+    SRCDIR"/test/json/escape-surrogate/two-chars-with-bc",
 };
 
 const fs::path json_test_refs_dirs[] = {
@@ -988,6 +989,17 @@ void test_json_subtree()
         json::subtree st(doc, "$.profile.phoneNumbers[0]");
         file_content expected(SRCDIR"/test/json/medium1/profile.phoneNumbers.0-indent1.json");
         bool result = compare_check_contents(expected, st.dump(1));
+        assert(result);
+
+        // test the move constructor
+        json::subtree st_moved(std::move(st));
+        result = compare_check_contents(expected, st_moved.dump(1));
+        assert(result);
+
+        // test the move assignment
+        json::subtree st_assigned;
+        st_assigned = std::move(st_moved);
+        result = compare_check_contents(expected, st_assigned.dump(1));
         assert(result);
     }
 

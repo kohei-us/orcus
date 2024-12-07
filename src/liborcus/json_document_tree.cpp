@@ -1707,7 +1707,7 @@ document_tree::document_tree(object /*obj*/) : mp_impl(std::make_unique<impl>())
     mp_impl->m_root->value.object = mp_impl->m_res.obj_pool_jvo.construct();
 }
 
-document_tree::~document_tree() {}
+document_tree::~document_tree() = default;
 
 document_tree& document_tree::operator= (std::initializer_list<detail::init::node> vs)
 {
@@ -1955,6 +1955,12 @@ subtree::subtree(const document_tree& src, std::string_view path) :
 
 subtree::subtree(subtree&& other) : mp_impl(std::move(other.mp_impl)) {}
 subtree::~subtree() = default;
+
+subtree& subtree::operator=(subtree&& other)
+{
+    mp_impl = std::move(other.mp_impl);
+    return *this;
+}
 
 std::string subtree::dump(std::size_t indent) const
 {
