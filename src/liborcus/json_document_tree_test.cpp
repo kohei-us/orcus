@@ -957,6 +957,63 @@ void test_json_dump_subtree()
     assert(node.dump(0) == "false");
 }
 
+void test_json_subtree()
+{
+    // same test cases as in test_json_dump_subtree
+
+    ORCUS_TEST_FUNC_SCOPE;
+
+    file_content input_json(SRCDIR"/test/json/medium1/input.json");
+
+    json_config test_config;
+
+    json::document_tree doc;
+    doc.load(input_json.str(), test_config);
+
+    {
+        json::subtree st(doc, "$.profile");
+        file_content expected(SRCDIR"/test/json/medium1/profile-indent2.json");
+        bool result = compare_check_contents(expected, st.dump(2));
+        assert(result);
+    }
+
+    {
+        json::subtree st(doc, "$.profile.phoneNumbers");
+        file_content expected(SRCDIR"/test/json/medium1/profile.phoneNumbers-indent3.json");
+        bool result = compare_check_contents(expected, st.dump(3));
+        assert(result);
+    }
+
+    {
+        json::subtree st(doc, "$.profile.phoneNumbers[0]");
+        file_content expected(SRCDIR"/test/json/medium1/profile.phoneNumbers.0-indent1.json");
+        bool result = compare_check_contents(expected, st.dump(1));
+        assert(result);
+    }
+
+    // check single values
+
+    {
+        json::subtree st(doc, "$.isActive");
+        assert(st.dump(0) == "true");
+    }
+
+    {
+        json::subtree st(doc, "$.email");
+        assert(st.dump(0) == R"("johndoe@example.com")"); // NB: note the double quotes!
+    }
+
+    {
+        json::subtree st(doc, "$.profile.age");
+        assert(st.dump(0) == "34");
+    }
+
+    {
+        json::subtree st(doc, "$.preferences.notifications.sms");
+        assert(st.dump(0) == "false");
+    }
+}
+
 int main()
 {
     try
@@ -983,6 +1040,7 @@ int main()
         test_json_init_empty_array();
         test_json_dynamic_object_keys();
         test_json_dump_subtree();
+        test_json_subtree();
     }
     catch (const orcus::general_error& e)
     {
