@@ -860,17 +860,17 @@ public:
 
 struct const_node::impl
 {
-    const document_tree* m_doc = nullptr;
-    json_value* m_node = nullptr;
+    const document_tree* doc = nullptr;
+    json_value* node = nullptr;
 
     impl() = default;
-    impl(const document_tree* doc, json_value* jv) : m_doc(doc), m_node(jv) {}
-    impl(const impl& other) : m_doc(other.m_doc), m_node(other.m_node) {}
+    impl(const document_tree* _doc, json_value* jv) : doc(_doc), node(jv) {}
+    impl(const impl& other) : doc(other.doc), node(other.node) {}
 };
 
 json_value* const_node::get_json_value()
 {
-    return mp_impl->m_node;
+    return mp_impl->node;
 }
 
 const_node::const_node(const document_tree* doc, json_value* jv) : mp_impl(std::make_unique<impl>(doc, jv)) {}
@@ -878,7 +878,7 @@ const_node::const_node(std::unique_ptr<impl>&& p) : mp_impl(std::move(p)) {}
 const_node::const_node() : mp_impl(std::make_unique<impl>()) {}
 const_node::const_node(const const_node& other) : mp_impl(std::make_unique<impl>(*other.mp_impl)) {}
 const_node::const_node(const_node&& rhs) : mp_impl(std::move(rhs.mp_impl)) {}
-const_node::~const_node() {}
+const_node::~const_node() = default;
 
 const_node& const_node::operator=(const const_node& other)
 {
@@ -901,51 +901,51 @@ const_node& const_node::operator=(const_node&& other)
 
 uintptr_t const_node::identity() const
 {
-    return reinterpret_cast<uintptr_t>(mp_impl->m_node);
+    return reinterpret_cast<uintptr_t>(mp_impl->node);
 }
 
 const_node_iterator const_node::begin() const
 {
-    if (mp_impl->m_node->type != detail::node_t::array)
+    if (mp_impl->node->type != detail::node_t::array)
         throw document_error("const_node::begin: this method only supports array nodes.");
 
-    return const_node_iterator(mp_impl->m_doc, *this, true);
+    return const_node_iterator(mp_impl->doc, *this, true);
 }
 
 const_node_iterator const_node::end() const
 {
-    if (mp_impl->m_node->type != detail::node_t::array)
+    if (mp_impl->node->type != detail::node_t::array)
         throw document_error("const_node::end: this method only supports array nodes.");
 
-    return const_node_iterator(mp_impl->m_doc, *this, false);
+    return const_node_iterator(mp_impl->doc, *this, false);
 }
 
 std::string const_node::dump(std::size_t indent) const
 {
-    if (!mp_impl->m_node)
+    if (!mp_impl->node)
         return {};
 
     dump_context cxt(indent);
-    return json::dump_json_tree(cxt, mp_impl->m_node, indent);
+    return json::dump_json_tree(cxt, mp_impl->node, indent);
 }
 
 node_t const_node::type() const
 {
-    if (!mp_impl->m_node)
+    if (!mp_impl->node)
         return node_t::unset;
 
     // Convert it back to the public enum type.
-    return static_cast<node_t>(mp_impl->m_node->type);
+    return static_cast<node_t>(mp_impl->node->type);
 }
 
 size_t const_node::child_count() const
 {
-    switch (mp_impl->m_node->type)
+    switch (mp_impl->node->type)
     {
         case detail::node_t::object:
-            return mp_impl->m_node->value.object->value_object.size();
+            return mp_impl->node->value.object->value_object.size();
         case detail::node_t::array:
-            return mp_impl->m_node->value.array->value_array.size();
+            return mp_impl->node->value.array->value_array.size();
         case detail::node_t::string:
         case detail::node_t::number:
         case detail::node_t::boolean_true:
@@ -960,10 +960,10 @@ size_t const_node::child_count() const
 
 std::vector<std::string_view> const_node::keys() const
 {
-    if (mp_impl->m_node->type != detail::node_t::object)
+    if (mp_impl->node->type != detail::node_t::object)
         throw document_error("node::keys: this node is not of object type.");
 
-    const json_value_object* jvo = mp_impl->m_node->value.object;
+    const json_value_object* jvo = mp_impl->node->value.object;
     if (!jvo->key_order.empty())
         // Prefer to use key_order when it's populated.
         return jvo->key_order;
@@ -978,10 +978,10 @@ std::vector<std::string_view> const_node::keys() const
 
 std::string_view const_node::key(size_t index) const
 {
-    if (mp_impl->m_node->type != detail::node_t::object)
+    if (mp_impl->node->type != detail::node_t::object)
         throw document_error("node::key: this node is not of object type.");
 
-    const json_value_object* jvo = mp_impl->m_node->value.object;
+    const json_value_object* jvo = mp_impl->node->value.object;
     if (index >= jvo->key_order.size())
         throw std::out_of_range("node::key: index is out-of-range.");
 
@@ -990,10 +990,10 @@ std::string_view const_node::key(size_t index) const
 
 bool const_node::has_key(std::string_view key) const
 {
-    if (mp_impl->m_node->type != detail::node_t::object)
+    if (mp_impl->node->type != detail::node_t::object)
         return false;
 
-    const json_value_object* jvo = mp_impl->m_node->value.object;
+    const json_value_object* jvo = mp_impl->node->value.object;
     const json_value_object::object_type& children = jvo->value_object;
 
     return children.count(key) != 0;
@@ -1001,28 +1001,28 @@ bool const_node::has_key(std::string_view key) const
 
 const_node const_node::child(size_t index) const
 {
-    switch (mp_impl->m_node->type)
+    switch (mp_impl->node->type)
     {
         case detail::node_t::object:
         {
             // This works only when the key order is preserved.
-            const json_value_object* jvo = mp_impl->m_node->value.object;
+            const json_value_object* jvo = mp_impl->node->value.object;
             if (index >= jvo->key_order.size())
                 throw std::out_of_range("node::child: index is out-of-range");
 
             std::string_view key = jvo->key_order[index];
             auto it = jvo->value_object.find(key);
             assert(it != jvo->value_object.end());
-            return const_node(mp_impl->m_doc, it->second);
+            return const_node(mp_impl->doc, it->second);
         }
         break;
         case detail::node_t::array:
         {
-            const json_value_array* jva = mp_impl->m_node->value.array;
+            const json_value_array* jva = mp_impl->node->value.array;
             if (index >= jva->value_array.size())
                 throw std::out_of_range("node::child: index is out-of-range");
 
-            return const_node(mp_impl->m_doc, jva->value_array[index]);
+            return const_node(mp_impl->doc, jva->value_array[index]);
         }
         break;
         case detail::node_t::string:
@@ -1038,10 +1038,10 @@ const_node const_node::child(size_t index) const
 
 const_node const_node::child(std::string_view key) const
 {
-    if (mp_impl->m_node->type != detail::node_t::object)
+    if (mp_impl->node->type != detail::node_t::object)
         throw document_error("node::child: this node is not of object type.");
 
-    const json_value_object* jvo = mp_impl->m_node->value.object;
+    const json_value_object* jvo = mp_impl->node->value.object;
     auto it = jvo->value_object.find(key);
     if (it == jvo->value_object.end())
     {
@@ -1050,43 +1050,43 @@ const_node const_node::child(std::string_view key) const
         throw document_error(os.str());
     }
 
-    return const_node(mp_impl->m_doc, it->second);
+    return const_node(mp_impl->doc, it->second);
 }
 
 const_node const_node::parent() const
 {
-    if (!mp_impl->m_node->parent)
+    if (!mp_impl->node->parent)
         throw document_error("node::parent: this node has no parent.");
 
-    return const_node(mp_impl->m_doc, mp_impl->m_node->parent);
+    return const_node(mp_impl->doc, mp_impl->node->parent);
 }
 
 const_node const_node::back() const
 {
-    if (mp_impl->m_node->type != detail::node_t::array)
+    if (mp_impl->node->type != detail::node_t::array)
         throw document_error("const_node::child: this node is not of array type.");
 
-    const json_value_array* jva = mp_impl->m_node->value.array;
+    const json_value_array* jva = mp_impl->node->value.array;
     if (jva->value_array.empty())
         throw document_error("const_node::child: this node has no children.");
 
-    return const_node(mp_impl->m_doc, jva->value_array.back());
+    return const_node(mp_impl->doc, jva->value_array.back());
 }
 
 std::string_view const_node::string_value() const
 {
-    if (mp_impl->m_node->type != detail::node_t::string)
+    if (mp_impl->node->type != detail::node_t::string)
         throw document_error("node::key: current node is not of string type.");
 
-    return std::string_view(mp_impl->m_node->value.str.p, mp_impl->m_node->value.str.n);
+    return std::string_view(mp_impl->node->value.str.p, mp_impl->node->value.str.n);
 }
 
 double const_node::numeric_value() const
 {
-    if (mp_impl->m_node->type != detail::node_t::number)
+    if (mp_impl->node->type != detail::node_t::number)
         throw document_error("node::key: current node is not of numeric type.");
 
-    return mp_impl->m_node->value.numeric;
+    return mp_impl->node->value.numeric;
 }
 
 node::node(const document_tree* doc, json_value* jv) : const_node(doc, jv) {}
@@ -1108,33 +1108,33 @@ node& node::operator=(const node& other)
 node& node::operator=(const detail::init::node& v)
 {
     document_resource& res =
-        const_cast<document_resource&>(mp_impl->m_doc->get_resource());
+        const_cast<document_resource&>(mp_impl->doc->get_resource());
 
-    v.store_to_node(res, mp_impl->m_node);
+    v.store_to_node(res, mp_impl->node);
 
     return *this;
 }
 
 node node::operator[](std::string_view key)
 {
-    if (mp_impl->m_node->type != detail::node_t::object)
+    if (mp_impl->node->type != detail::node_t::object)
         throw document_error("node::operator[]: the node must be of object type.");
 
-    json_value_object* jvo = const_cast<json_value_object*>(mp_impl->m_node->value.object);
+    json_value_object* jvo = const_cast<json_value_object*>(mp_impl->node->value.object);
     auto it = jvo->value_object.find(key);
     if (it == jvo->value_object.end())
     {
         // This object doesn't have the specified key. Create a new empty node
         // on the fly.
         document_resource& res =
-            const_cast<document_resource&>(mp_impl->m_doc->get_resource());
+            const_cast<document_resource&>(mp_impl->doc->get_resource());
         json_value* jv = res.obj_pool.construct(detail::node_t::unset);
-        jv->parent = mp_impl->m_node;
+        jv->parent = mp_impl->node;
         auto r = jvo->value_object.insert(std::make_pair(key, jv));
         it = r.first;
     }
 
-    return node(mp_impl->m_doc, it->second);
+    return node(mp_impl->doc, it->second);
 }
 
 node node::child(size_t index)
@@ -1163,47 +1163,47 @@ node node::back()
 
 void node::push_back(const detail::init::node& v)
 {
-    if (mp_impl->m_node->type != detail::node_t::array)
+    if (mp_impl->node->type != detail::node_t::array)
     {
         std::ostringstream os;
-        os << "node::push_back: the node must be of array type, but the value of this node type is '" << mp_impl->m_node->type << "'.";
+        os << "node::push_back: the node must be of array type, but the value of this node type is '" << mp_impl->node->type << "'.";
         throw document_error(os.str());
     }
 
-    json_value_array* jva = mp_impl->m_node->value.array;
-    const document_resource& res = mp_impl->m_doc->get_resource();
+    json_value_array* jva = mp_impl->node->value.array;
+    const document_resource& res = mp_impl->doc->get_resource();
     jva->value_array.push_back(v.to_json_value(const_cast<document_resource&>(res)));
 }
 
 struct const_node_iterator::impl
 {
-    const document_tree* m_doc;
-    std::vector<json_value*>::const_iterator m_pos;
-    std::vector<json_value*>::const_iterator m_end;
-    const_node m_current_node;
+    const document_tree* doc;
+    std::vector<json_value*>::const_iterator pos;
+    std::vector<json_value*>::const_iterator end;
+    const_node current_node;
 
-    impl() : m_doc(nullptr), m_current_node(nullptr, nullptr) {}
+    impl() : doc(nullptr), current_node(nullptr, nullptr) {}
 
     impl(const impl& other) :
-        m_doc(other.m_doc),
-        m_pos(other.m_pos),
-        m_end(other.m_end),
-        m_current_node(other.m_current_node) {}
+        doc(other.doc),
+        pos(other.pos),
+        end(other.end),
+        current_node(other.current_node) {}
 
-    impl(const document_tree* doc, const const_node& v, bool begin) :
-        m_doc(doc), m_current_node(nullptr, nullptr)
+    impl(const document_tree* _doc, const const_node& v, bool begin) :
+        doc(_doc), current_node(nullptr, nullptr)
     {
-        const json_value_array* jva = v.mp_impl->m_node->value.array;
-        m_pos = begin ? jva->value_array.cbegin() : jva->value_array.cend();
-        m_end = jva->value_array.cend();
+        const json_value_array* jva = v.mp_impl->node->value.array;
+        pos = begin ? jva->value_array.cbegin() : jva->value_array.cend();
+        end = jva->value_array.cend();
 
-        if (m_pos != m_end)
-            m_current_node = const_node(m_doc, *m_pos);
+        if (pos != end)
+            current_node = const_node(doc, *pos);
     }
 
     void update_current()
     {
-        m_current_node = const_node(m_doc, m_pos == m_end ? nullptr : *m_pos);
+        current_node = const_node(doc, pos == end ? nullptr : *pos);
     }
 };
 
@@ -1220,17 +1220,17 @@ const_node_iterator::~const_node_iterator() {}
 
 const const_node& const_node_iterator::operator*() const
 {
-    return mp_impl->m_current_node;
+    return mp_impl->current_node;
 }
 
 const const_node* const_node_iterator::operator->() const
 {
-    return &mp_impl->m_current_node;
+    return &mp_impl->current_node;
 }
 
 const_node_iterator& const_node_iterator::operator++()
 {
-    ++mp_impl->m_pos;
+    ++mp_impl->pos;
     mp_impl->update_current();
     return *this;
 }
@@ -1238,14 +1238,14 @@ const_node_iterator& const_node_iterator::operator++()
 const_node_iterator const_node_iterator::operator++(int)
 {
     const_node_iterator tmp(*this);
-    ++mp_impl->m_pos;
+    ++mp_impl->pos;
     mp_impl->update_current();
     return tmp;
 }
 
 const_node_iterator& const_node_iterator::operator--()
 {
-    --mp_impl->m_pos;
+    --mp_impl->pos;
     mp_impl->update_current();
     return *this;
 }
@@ -1253,14 +1253,14 @@ const_node_iterator& const_node_iterator::operator--()
 const_node_iterator const_node_iterator::operator--(int)
 {
     const_node_iterator tmp(*this);
-    --mp_impl->m_pos;
+    --mp_impl->pos;
     mp_impl->update_current();
     return tmp;
 }
 
 bool const_node_iterator::operator== (const const_node_iterator& other) const
 {
-    return mp_impl->m_pos == other.mp_impl->m_pos && mp_impl->m_end == other.mp_impl->m_end;
+    return mp_impl->pos == other.mp_impl->pos && mp_impl->end == other.mp_impl->end;
 }
 
 bool const_node_iterator::operator!= (const const_node_iterator& other) const
@@ -1270,9 +1270,9 @@ bool const_node_iterator::operator!= (const const_node_iterator& other) const
 
 const_node_iterator& const_node_iterator::operator= (const const_node_iterator& other)
 {
-    mp_impl->m_doc = other.mp_impl->m_doc;
-    mp_impl->m_pos = other.mp_impl->m_pos;
-    mp_impl->m_end = other.mp_impl->m_end;
+    mp_impl->doc = other.mp_impl->doc;
+    mp_impl->pos = other.mp_impl->pos;
+    mp_impl->end = other.mp_impl->end;
     mp_impl->update_current();
 
     return *this;
@@ -1286,11 +1286,11 @@ array::array(std::initializer_list<detail::init::node> vs)
         m_vs.push_back(std::move(const_cast<detail::init::node&>(v)));
 }
 
-array::~array() {}
+array::~array() = default;
 
-object::object() {}
-object::object(object&& /*other*/) {}
-object::~object() {}
+object::object() = default;
+object::object(object&& /*other*/) = default;
+object::~object() = default;
 
 namespace {
 
@@ -1420,48 +1420,48 @@ namespace detail { namespace init {
 
 struct node::impl
 {
-    detail::node_t m_type;
+    detail::node_t type;
 
     union
     {
-        double m_value_number;
-        const char* m_value_string;
+        double value_number;
+        const char* value_string;
     };
 
-    std::vector<detail::init::node> m_value_array;
+    std::vector<detail::init::node> value_array;
 
-    impl() : m_type(detail::node_t::unset) {}
-    impl(double v) : m_type(detail::node_t::number), m_value_number(v) {}
-    impl(int v) : m_type(detail::node_t::number), m_value_number(v) {}
-    impl(bool b) : m_type(b ? detail::node_t::boolean_true : detail::node_t::boolean_false) {}
-    impl(decltype(nullptr)) : m_type(detail::node_t::null) {}
-    impl(const char* p) : m_type(detail::node_t::string), m_value_string(p) {}
-    impl(const std::string& s) : m_type(detail::node_t::string), m_value_string(s.data()) {}
+    impl() : type(detail::node_t::unset) {}
+    impl(double v) : type(detail::node_t::number), value_number(v) {}
+    impl(int v) : type(detail::node_t::number), value_number(v) {}
+    impl(bool b) : type(b ? detail::node_t::boolean_true : detail::node_t::boolean_false) {}
+    impl(decltype(nullptr)) : type(detail::node_t::null) {}
+    impl(const char* p) : type(detail::node_t::string), value_string(p) {}
+    impl(const std::string& s) : type(detail::node_t::string), value_string(s.data()) {}
 
     impl(std::initializer_list<detail::init::node> vs) :
-        m_type(detail::node_t::array_implicit)
+        type(detail::node_t::array_implicit)
     {
         for (const detail::init::node& v : vs)
-            m_value_array.push_back(std::move(const_cast<detail::init::node&>(v)));
+            value_array.push_back(std::move(const_cast<detail::init::node&>(v)));
 
         // If the list has two elements, and the first element is of type string,
         // we treat this as object's key-value pair.
 
-        if (m_value_array.size() != 2)
+        if (value_array.size() != 2)
             return;
 
-        const detail::init::node& v0 = *m_value_array.begin();
-        if (v0.mp_impl->m_type == detail::node_t::string)
-            m_type = detail::node_t::key_value;
+        const detail::init::node& v0 = *value_array.begin();
+        if (v0.mp_impl->type == detail::node_t::string)
+            type = detail::node_t::key_value;
     }
 
     impl(json::array array) :
-        m_type(detail::node_t::array),
-        m_value_array(std::move(array.m_vs))
+        type(detail::node_t::array),
+        value_array(std::move(array.m_vs))
     {}
 
     impl(json::object /*obj*/) :
-        m_type(detail::node_t::object) {}
+        type(detail::node_t::object) {}
 };
 
 node::node(double v) : mp_impl(std::make_unique<impl>(v)) {}
@@ -1475,35 +1475,35 @@ node::node(json::array array) : mp_impl(std::make_unique<impl>(std::move(array))
 node::node(json::object obj) : mp_impl(std::make_unique<impl>(std::move(obj))) {}
 
 node::node(node&& other) : mp_impl(std::move(other.mp_impl)) {}
-node::~node() {}
+node::~node() = default;
 
 json::node_t node::type() const
 {
-    return static_cast<json::node_t>(mp_impl->m_type);
+    return static_cast<json::node_t>(mp_impl->type);
 }
 
 json_value* node::to_json_value(document_resource& res) const
 {
     json_value* jv = nullptr;
 
-    switch (mp_impl->m_type)
+    switch (mp_impl->type)
     {
         case detail::node_t::key_value:
         {
-            assert(mp_impl->m_value_array.size() == 2);
-            auto it = mp_impl->m_value_array.begin();
+            assert(mp_impl->value_array.size() == 2);
+            auto it = mp_impl->value_array.begin();
             const detail::init::node& key_node = *it;
-            assert(key_node.mp_impl->m_type == detail::node_t::string);
-            std::string_view key = res.str_pool.intern(key_node.mp_impl->m_value_string).first;
+            assert(key_node.mp_impl->type == detail::node_t::string);
+            std::string_view key = res.str_pool.intern(key_node.mp_impl->value_string).first;
             ++it;
             json_value* value = it->to_json_value(res);
             if (value->type == detail::node_t::key_value)
                 throw key_value_error("nested key-value pairs are not allowed.");
 
             ++it;
-            assert(it == mp_impl->m_value_array.end());
+            assert(it == mp_impl->value_array.end());
 
-            jv = res.obj_pool.construct(mp_impl->m_type);
+            jv = res.obj_pool.construct(mp_impl->type);
             jv->value.kvp.key = key.data();
             jv->value.kvp.n_key = key.size();
             jv->value.kvp.value = value;
@@ -1512,7 +1512,7 @@ json_value* node::to_json_value(document_resource& res) const
         case detail::node_t::array:
         {
             std::vector<json_value*> nodes;
-            for (const detail::init::node& v2 : mp_impl->m_value_array)
+            for (const detail::init::node& v2 : mp_impl->value_array)
             {
                 json_value* r = v2.to_json_value(res);
                 nodes.push_back(r);
@@ -1527,8 +1527,8 @@ json_value* node::to_json_value(document_resource& res) const
         case detail::node_t::array_implicit:
         {
             std::vector<json_value*> nodes;
-            bool object = !mp_impl->m_value_array.empty();
-            for (const detail::init::node& v2 : mp_impl->m_value_array)
+            bool object = !mp_impl->value_array.empty();
+            for (const detail::init::node& v2 : mp_impl->value_array)
             {
                 json_value* r = v2.to_json_value(res);
                 if (r->type != detail::node_t::key_value)
@@ -1545,33 +1545,33 @@ json_value* node::to_json_value(document_resource& res) const
         case detail::node_t::object:
         {
             // Currently only empty object instance is allowed.
-            assert(mp_impl->m_value_array.size() == 0);
-            jv = res.obj_pool.construct(mp_impl->m_type);
+            assert(mp_impl->value_array.size() == 0);
+            jv = res.obj_pool.construct(mp_impl->type);
             jv->value.object = res.obj_pool_jvo.construct();
             break;
         }
         case detail::node_t::string:
         {
-            std::string_view s = res.str_pool.intern(mp_impl->m_value_string).first;
-            jv = res.obj_pool.construct(mp_impl->m_type);
+            std::string_view s = res.str_pool.intern(mp_impl->value_string).first;
+            jv = res.obj_pool.construct(mp_impl->type);
             jv->value.str.p = s.data();
             jv->value.str.n = s.size();
             break;
         }
         case detail::node_t::number:
-            jv = res.obj_pool.construct(mp_impl->m_type);
-            jv->value.numeric = mp_impl->m_value_number;
+            jv = res.obj_pool.construct(mp_impl->type);
+            jv->value.numeric = mp_impl->value_number;
             break;
         case detail::node_t::boolean_true:
         case detail::node_t::boolean_false:
         case detail::node_t::null:
-            jv = res.obj_pool.construct(mp_impl->m_type);
+            jv = res.obj_pool.construct(mp_impl->type);
             break;
         case detail::node_t::unset:
         default:
         {
             std::ostringstream os;
-            os << "unknown node type (type=" << int(mp_impl->m_type) << ")";
+            os << "unknown node type (type=" << int(mp_impl->type) << ")";
             throw document_error(os.str());
         }
     }
@@ -1581,26 +1581,26 @@ json_value* node::to_json_value(document_resource& res) const
 
 void node::store_to_node(document_resource& res, json_value* parent) const
 {
-    parent->type = mp_impl->m_type;
+    parent->type = mp_impl->type;
 
-    switch (mp_impl->m_type)
+    switch (mp_impl->type)
     {
         case detail::node_t::unset:
             throw document_error("node type is unset.");
         case detail::node_t::string:
         {
-            std::string_view s = res.str_pool.intern(mp_impl->m_value_string).first;
+            std::string_view s = res.str_pool.intern(mp_impl->value_string).first;
             parent->value.str.p = s.data();
             parent->value.str.n = s.size();
             break;
         }
         case detail::node_t::number:
-            parent->value.numeric = mp_impl->m_value_number;
+            parent->value.numeric = mp_impl->value_number;
             break;
         case detail::node_t::object:
         {
             // Currently only empty object instance is allowed.
-            assert(mp_impl->m_value_array.size() == 0);
+            assert(mp_impl->value_array.size() == 0);
             parent->value.object = res.obj_pool_jvo.construct();
             break;
         }
@@ -1608,7 +1608,7 @@ void node::store_to_node(document_resource& res, json_value* parent) const
         {
             std::vector<json_value*> nodes;
             bool object = true;
-            for (const detail::init::node& v2 : mp_impl->m_value_array)
+            for (const detail::init::node& v2 : mp_impl->value_array)
             {
                 json_value* r = v2.to_json_value(res);
                 if (r->type != detail::node_t::key_value)
@@ -1632,7 +1632,7 @@ void node::store_to_node(document_resource& res, json_value* parent) const
         case detail::node_t::array:
         {
             std::vector<json_value*> nodes;
-            for (const detail::init::node& v2 : mp_impl->m_value_array)
+            for (const detail::init::node& v2 : mp_impl->value_array)
             {
                 json_value* r = v2.to_json_value(res);
                 nodes.push_back(r);
@@ -1650,7 +1650,7 @@ void node::store_to_node(document_resource& res, json_value* parent) const
         default:
         {
             std::ostringstream os;
-            os << "unknown node type (" << (int)mp_impl->m_type << ")";
+            os << "unknown node type (" << (int)mp_impl->type << ")";
             throw document_error(os.str());
         }
     }
@@ -1660,17 +1660,17 @@ void node::store_to_node(document_resource& res, json_value* parent) const
 
 struct document_tree::impl
 {
-    json::json_value* m_root;
-    std::unique_ptr<document_resource> m_own_res;
-    document_resource& m_res;
+    json::json_value* root;
+    std::unique_ptr<document_resource> own_res;
+    document_resource& res;
 
-    impl() : m_root(nullptr), m_own_res(std::make_unique<document_resource>()), m_res(*m_own_res) {}
-    impl(document_resource& res) : m_root(nullptr), m_res(res) {}
+    impl() : root(nullptr), own_res(std::make_unique<document_resource>()), res(*own_res) {}
+    impl(document_resource& _res) : root(nullptr), res(_res) {}
 };
 
 const document_resource& document_tree::get_resource() const
 {
-    return mp_impl->m_res;
+    return mp_impl->res;
 }
 
 document_tree::document_tree() : mp_impl(std::make_unique<impl>()) {}
@@ -1684,32 +1684,32 @@ document_tree::document_tree(std::initializer_list<detail::init::node> vs) :
     bool object = true;
     for (const detail::init::node& v : vs)
     {
-        json_value* r = v.to_json_value(mp_impl->m_res);
+        json_value* r = v.to_json_value(mp_impl->res);
         if (r->type != detail::node_t::key_value)
             object = false;
         nodes.push_back(r);
     }
 
-    mp_impl->m_root = aggregate_nodes(mp_impl->m_res, std::move(nodes), object);
+    mp_impl->root = aggregate_nodes(mp_impl->res, std::move(nodes), object);
 }
 
 document_tree::document_tree(array vs) : mp_impl(std::make_unique<impl>())
 {
-    json_value_array* jva = mp_impl->m_res.obj_pool_jva.construct();
-    mp_impl->m_root = mp_impl->m_res.obj_pool.construct(detail::node_t::array);
-    mp_impl->m_root->value.array = jva;
+    json_value_array* jva = mp_impl->res.obj_pool_jva.construct();
+    mp_impl->root = mp_impl->res.obj_pool.construct(detail::node_t::array);
+    mp_impl->root->value.array = jva;
 
     for (const detail::init::node& v : vs.m_vs)
     {
-        json_value* r = v.to_json_value(mp_impl->m_res);
+        json_value* r = v.to_json_value(mp_impl->res);
         jva->value_array.push_back(r);
     }
 }
 
 document_tree::document_tree(object /*obj*/) : mp_impl(std::make_unique<impl>())
 {
-    mp_impl->m_root = mp_impl->m_res.obj_pool.construct(detail::node_t::object);
-    mp_impl->m_root->value.object = mp_impl->m_res.obj_pool_jvo.construct();
+    mp_impl->root = mp_impl->res.obj_pool.construct(detail::node_t::object);
+    mp_impl->root->value.object = mp_impl->res.obj_pool_jvo.construct();
 }
 
 document_tree::~document_tree() = default;
@@ -1737,10 +1737,10 @@ document_tree& document_tree::operator= (object obj)
 
 void document_tree::load(std::string_view stream, const json_config& config)
 {
-    json::parser_handler hdl(config, mp_impl->m_res);
+    json::parser_handler hdl(config, mp_impl->res);
     json_parser<json::parser_handler> parser(stream, hdl);
     parser.parse();
-    mp_impl->m_root = hdl.get_root();
+    mp_impl->root = hdl.get_root();
 
     auto& external_refs = hdl.get_external_refs();
 
@@ -1760,7 +1760,7 @@ void document_tree::load(std::string_view stream, const json_config& config)
         file_content ext_content(extpath.string().data());
 
         ext_config.input_path = extpath.string();
-        document_tree doc(mp_impl->m_res);
+        document_tree doc(mp_impl->res);
         try
         {
             doc.load(ext_content.str(), ext_config);
@@ -1777,7 +1777,7 @@ void document_tree::load(std::string_view stream, const json_config& config)
             throw general_error(os.str());
         }
 
-        json::json_value* root = doc.mp_impl->m_root;
+        json::json_value* root = doc.mp_impl->root;
         if (root->type == detail::node_t::object)
         {
             json::json_value_object* jvo_src = root->value.object;
@@ -1795,7 +1795,7 @@ void document_tree::load(std::string_view stream, const json_config& config)
 
 json::const_node document_tree::get_document_root() const
 {
-    json::json_value* p = mp_impl->m_root;
+    json::json_value* p = mp_impl->root;
     if (!p)
         throw document_error("document tree is empty");
 
@@ -1804,7 +1804,7 @@ json::const_node document_tree::get_document_root() const
 
 json::node document_tree::get_document_root()
 {
-    json::json_value* p = mp_impl->m_root;
+    json::json_value* p = mp_impl->root;
     if (!p)
         throw document_error("document tree is empty");
 
@@ -1813,25 +1813,25 @@ json::node document_tree::get_document_root()
 
 std::string document_tree::dump(std::size_t indent) const
 {
-    if (!mp_impl->m_root)
+    if (!mp_impl->root)
         return std::string();
 
     dump_context cxt(indent);
-    return json::dump_json_tree(cxt, mp_impl->m_root, indent);
+    return json::dump_json_tree(cxt, mp_impl->root, indent);
 }
 
 std::string document_tree::dump_xml() const
 {
-    if (!mp_impl->m_root)
+    if (!mp_impl->root)
         return std::string();
 
-    return json::dump_xml_tree(mp_impl->m_root);
+    return json::dump_xml_tree(mp_impl->root);
 }
 
 std::string document_tree::dump_yaml() const
 {
     json::yaml_dumper dumper;
-    return dumper.dump(mp_impl->m_root);
+    return dumper.dump(mp_impl->root);
 }
 
 void document_tree::swap(document_tree& other)
