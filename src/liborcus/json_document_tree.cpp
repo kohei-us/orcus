@@ -1960,7 +1960,7 @@ subtree::subtree(const document_tree& src, std::string_view path) :
         }
         else
         {
-            --it;
+            --it;  // move down
 
             json_value* jv = path_stack.back().value;
             path_stack.pop_back();
@@ -1979,6 +1979,7 @@ subtree::subtree(const document_tree& src, std::string_view path) :
 
                     if (jva->value_array.size() < cur_stack.node.child_count())
                     {
+                        // this array still has un-visited elements - move back up
                         up = true;
                         continue;
                     }
