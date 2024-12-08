@@ -1895,11 +1895,11 @@ subtree::subtree(const document_tree& src, std::string_view path) :
     auto it = parts.begin(), it_end = parts.end();
     assert(it != it_end);
 
-    bool up = true;
+    bool down = true; // down - to child scope; up - to parent scope
 
     while (true)
     {
-        if (up)
+        if (down)
         {
             const json_path_part_t& part = *it;
 
@@ -1955,12 +1955,12 @@ subtree::subtree(const document_tree& src, std::string_view path) :
                 // reached the path destination - turn around
                 json_value* jv = path_stack.back().node.get_json_value();
                 path_stack.back().value = jv;
-                up = false;
+                down = false;
             }
         }
         else
         {
-            --it;  // move down
+            --it;  // move up
 
             json_value* jv = path_stack.back().value;
             path_stack.pop_back();
@@ -1979,15 +1979,15 @@ subtree::subtree(const document_tree& src, std::string_view path) :
 
                     if (jva->value_array.size() < cur_stack.node.child_count())
                     {
-                        // this array still has un-visited elements - move back up
-                        up = true;
+                        // this array still has un-visited elements - move back down
+                        down = true;
                         continue;
                     }
 
                     jv = cur_stack.array;
                 }
 
-                cur_stack.value = jv; // pass the value up to the higher scope
+                cur_stack.value = jv; // pass the value up to the parent scope
             }
 
             if (it == parts.begin())
