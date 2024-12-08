@@ -863,6 +863,7 @@ struct const_node::impl
     const document_tree* m_doc = nullptr;
     json_value* m_node = nullptr;
 
+    impl() = default;
     impl(const document_tree* doc, json_value* jv) : m_doc(doc), m_node(jv) {}
     impl(const impl& other) : m_doc(other.m_doc), m_node(other.m_node) {}
 };
@@ -874,6 +875,7 @@ json_value* const_node::get_json_value()
 
 const_node::const_node(const document_tree* doc, json_value* jv) : mp_impl(std::make_unique<impl>(doc, jv)) {}
 const_node::const_node(std::unique_ptr<impl>&& p) : mp_impl(std::move(p)) {}
+const_node::const_node() : mp_impl(std::make_unique<impl>()) {}
 const_node::const_node(const const_node& other) : mp_impl(std::make_unique<impl>(*other.mp_impl)) {}
 const_node::const_node(const_node&& rhs) : mp_impl(std::move(rhs.mp_impl)) {}
 const_node::~const_node() {}
@@ -929,6 +931,9 @@ std::string const_node::dump(std::size_t indent) const
 
 node_t const_node::type() const
 {
+    if (!mp_impl->m_node)
+        return node_t::unset;
+
     // Convert it back to the public enum type.
     return static_cast<node_t>(mp_impl->m_node->type);
 }
@@ -1920,7 +1925,27 @@ subtree::subtree(const document_tree& src, std::string_view path) :
                     break;
                 }
                 case json_path_t::array_all:
-                    throw std::runtime_error("TODO: not implemented yet");
+                {
+                    assert(!path_stack.empty());
+                    auto& cur_stack = path_stack.back();
+                    std::size_t pos = 0;
+
+                    if (cur_stack.array)
+                    {
+                        json_value_array* jva = cur_stack.array->value.array;
+                        pos = jva->value_array.size();
+                    }
+                    else
+                    {
+                        json_value* jv = mp_impl->res.obj_pool.construct(detail::node_t::array);
+                        jv->value.array = mp_impl->res.obj_pool_jva.construct();
+                        cur_stack.array = jv;
+                    }
+
+                    auto& parent = cur_stack.node;
+                    path_stack.emplace_back(parent.child(pos));
+                    break;
+                }
                 case json_path_t::unknown:
                     throw document_error("unknown path type encountered");
             }
@@ -1941,7 +1966,28 @@ subtree::subtree(const document_tree& src, std::string_view path) :
             path_stack.pop_back();
 
             if (!path_stack.empty())
-                path_stack.back().value = jv; // pass the value up to the higher scope
+            {
+                auto& cur_stack = path_stack.back();
+
+                if (cur_stack.array)
+                {
+                    assert(it->type() == json_path_t::array_all);
+                    assert(cur_stack.array->type == detail::node_t::array);
+
+                    json_value_array* jva = cur_stack.array->value.array;
+                    jva->value_array.push_back(jv);
+
+                    if (jva->value_array.size() < cur_stack.node.child_count())
+                    {
+                        up = true;
+                        continue;
+                    }
+
+                    jv = cur_stack.array;
+                }
+
+                cur_stack.value = jv; // pass the value up to the higher scope
+            }
 
             if (it == parts.begin())
             {

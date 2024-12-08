@@ -132,8 +132,7 @@ protected:
     const_node(const document_tree* doc, json_value* jv);
     const_node(std::unique_ptr<impl>&& p);
 public:
-    const_node() = delete;
-
+    const_node();
     const_node(const const_node& other);
     const_node(const_node&& rhs);
     ~const_node();

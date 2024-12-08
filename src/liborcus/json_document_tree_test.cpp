@@ -309,6 +309,14 @@ void dump_and_load(
     test_func(node);
 }
 
+void test_json_const_node_unset()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    json::const_node node; // default constructor
+    assert(node.type() == json::node_t::unset);
+}
+
 void test_json_traverse_basic1()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -1070,6 +1078,7 @@ int main()
         test_json_resolve_refs();
         test_json_parse_empty();
         test_json_parse_invalid();
+        test_json_const_node_unset();
         test_json_traverse_basic1();
         test_json_traverse_basic2();
         test_json_traverse_basic3();
