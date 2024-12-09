@@ -13,6 +13,7 @@
 #include <orcus/config.hpp>
 #include <orcus/xml_namespace.hpp>
 #include <orcus/dom_tree.hpp>
+#include <orcus/measurement.hpp>
 
 #include "filesystem_env.hpp"
 
@@ -21,6 +22,7 @@
 #include <iostream>
 #include <cmath>
 #include <cstring>
+#include <unordered_set>
 
 using namespace orcus;
 
@@ -921,7 +923,7 @@ void test_json_dump_subtree()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    file_content input_json(SRCDIR"/test/json/medium1/input.json");
+    file_content input_json(SRCDIR"/test/json/subtree/medium1/input.json");
 
     json_config test_config;
 
@@ -932,7 +934,7 @@ void test_json_dump_subtree()
     node = node.child("profile");
 
     {
-        file_content expected(SRCDIR"/test/json/medium1/profile-indent2.json");
+        file_content expected(SRCDIR"/test/json/subtree/medium1/$.profile.json.2");
         bool result = compare_check_contents(expected, node.dump(2));
         assert(result);
     }
@@ -940,7 +942,7 @@ void test_json_dump_subtree()
     node = node.child("phoneNumbers");
 
     {
-        file_content expected(SRCDIR"/test/json/medium1/profile.phoneNumbers-indent3.json");
+        file_content expected(SRCDIR"/test/json/subtree/medium1/$.profile.phoneNumbers.json.3");
         bool result = compare_check_contents(expected, node.dump(3));
         assert(result);
     }
@@ -948,7 +950,7 @@ void test_json_dump_subtree()
     node = node.child(0);
 
     {
-        file_content expected(SRCDIR"/test/json/medium1/profile.phoneNumbers.0-indent1.json");
+        file_content expected(SRCDIR"/test/json/subtree/medium1/$.profile.phoneNumbers[0].json.1");
         bool result = compare_check_contents(expected, node.dump(1));
         assert(result);
     }
@@ -967,105 +969,73 @@ void test_json_dump_subtree()
     assert(node.dump(0) == "false");
 }
 
-void test_json_subtree_medium1()
-{
-    // same test cases as in test_json_dump_subtree
-
-    ORCUS_TEST_FUNC_SCOPE;
-
-    file_content input_json(SRCDIR"/test/json/medium1/input.json");
-
-    json_config test_config;
-
-    json::document_tree doc;
-    doc.load(input_json.str(), test_config);
-
-    {
-        json::subtree st(doc, "$.profile");
-        file_content expected(SRCDIR"/test/json/medium1/profile-indent2.json");
-        bool result = compare_check_contents(expected, st.dump(2));
-        assert(result);
-    }
-
-    {
-        json::subtree st(doc, "$.profile.phoneNumbers");
-        file_content expected(SRCDIR"/test/json/medium1/profile.phoneNumbers-indent3.json");
-        bool result = compare_check_contents(expected, st.dump(3));
-        assert(result);
-    }
-
-    {
-        json::subtree st(doc, "$.profile.phoneNumbers[0]");
-        file_content expected(SRCDIR"/test/json/medium1/profile.phoneNumbers.0-indent1.json");
-        bool result = compare_check_contents(expected, st.dump(1));
-        assert(result);
-
-        // test the move constructor
-        json::subtree st_moved(std::move(st));
-        result = compare_check_contents(expected, st_moved.dump(1));
-        assert(result);
-
-        // test the move assignment
-        json::subtree st_assigned;
-        st_assigned = std::move(st_moved);
-        result = compare_check_contents(expected, st_assigned.dump(1));
-        assert(result);
-    }
-
-    // check single values
-
-    {
-        json::subtree st(doc, "$.isActive");
-        assert(st.dump(0) == "true");
-    }
-
-    {
-        json::subtree st(doc, "$.email");
-        assert(st.dump(0) == R"("johndoe@example.com")"); // NB: note the double quotes!
-    }
-
-    {
-        json::subtree st(doc, "$.profile.age");
-        assert(st.dump(0) == "34");
-    }
-
-    {
-        json::subtree st(doc, "$.preferences.notifications.sms");
-        assert(st.dump(0) == "false");
-    }
-}
-
-void test_json_subtree_medium2()
+void test_json_subtree()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    file_content input_json(SRCDIR"/test/json/medium2/input.json");
+    const fs::path test_dirs[] = {
+        SRCDIR"/test/json/subtree/one-array",
+        SRCDIR"/test/json/subtree/array-of-objects",
+        SRCDIR"/test/json/subtree/medium1",
+        SRCDIR"/test/json/subtree/medium2",
+    };
+
+    auto to_indent = [](const fs::path& p)
+    {
+        auto ext = p.extension().string();
+        assert(!ext.empty());
+        assert(ext[0] == '.');
+
+        // remove the first dot
+        auto it = ext.begin();
+        ext.assign(++it, ext.end());
+        return to_long(ext);
+    };
 
     json_config test_config;
 
-    json::document_tree doc;
-    doc.load(input_json.str(), test_config);
-
+    for (const auto& dir : test_dirs)
     {
-        json::subtree st(doc, "$.store.fruits[1]");
-        assert(st.dump(0) == R"({"name": "banana", "color": "yellow", "price": 0.5})");
-    }
+        std::unordered_set<fs::path> path_outputs;
+        fs::path input;
 
-    {
-        json::subtree st(doc, "$.store.fruits[4]['name']");
-        assert(st.dump(0) == R"("elderberry")");
-    }
+        for (const auto& entry : fs::directory_iterator(dir))
+        {
+            if (!fs::is_regular_file(entry.path()))
+                continue;
 
-    {
-        json::subtree st(doc, "$.store.vegetables[2].color");
-        assert(st.dump(0) == R"("green")");
-    }
+            if (entry.path().filename() == "input.json")
+                input = entry.path();
+            else
+                path_outputs.insert(entry.path());
+        }
 
-    {
-        json::subtree st(doc, "$.store.vegetables");
-        file_content expected(SRCDIR"/test/json/medium2/store.vegetables-indent2.json");
-        bool result = compare_check_contents(expected, st.dump(2));
-        assert(result);
+        assert(fs::is_regular_file(input));
+
+        std::cout << "- input: " << input << std::endl;
+
+        file_content input_json(input.string());
+
+        json::document_tree doc;
+        doc.load(input_json.str(), test_config);
+
+        for (const auto& output : path_outputs)
+        {
+            // path output file should be named <path>.json.<indent>
+            file_content expected(output.string());
+            auto path = output.stem().stem().string();
+            auto indent = to_indent(output);
+
+            std::cout
+                << "  - output: " << output << "\n"
+                << "    path: " << path << "\n"
+                << "    indent: " << indent << std::endl;
+
+            json::subtree st(doc, path);
+
+            bool result = compare_check_contents(expected, st.dump(indent));
+            assert(result);
+        }
     }
 }
 
@@ -1096,8 +1066,8 @@ int main()
         test_json_init_empty_array();
         test_json_dynamic_object_keys();
         test_json_dump_subtree();
-        test_json_subtree_medium1();
-        test_json_subtree_medium2();
+
+        test_json_subtree();
     }
     catch (const orcus::general_error& e)
     {

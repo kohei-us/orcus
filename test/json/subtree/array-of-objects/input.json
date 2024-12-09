@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "title": "Sales Data",
+    "created_at": "2024-12-08",
+    "author": "John Doe"
+  },
+  "columns": [
+    "Date",
+    "Product",
+    "Region",
+    "Sales",
+    "Profit"
+  ],
+  "rows": [
+    {
+      "Date": "2024-12-01",
+      "Product": "Widget A",
+      "Region": "North",
+      "Sales": 1500,
+      "Profit": 300
+    },
+    {
+      "Date": "2024-12-01",
+      "Product": "Widget B",
+      "Region": "North",
+      "Sales": 1200,
+      "Profit": 250
+    },
+    {
+      "Date": "2024-12-02",
+      "Product": "Widget A",
+      "Region": "South",
+      "Sales": 1800,
+      "Profit": 400
+    },
+    {
+      "Date": "2024-12-02",
+      "Product": "Widget B",
+      "Region": "South",
+      "Sales": 1100,
+      "Profit": 200
+    }
+  ]
+}
+
