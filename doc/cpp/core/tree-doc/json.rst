@@ -8,6 +8,9 @@ Document tree
 .. doxygenclass:: orcus::json::document_tree
    :members:
 
+.. doxygenclass:: orcus::json::subtree
+   :members:
+
 .. doxygenclass:: orcus::json::const_node
    :members:
 
