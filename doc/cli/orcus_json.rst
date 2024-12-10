@@ -1,8 +1,8 @@
 orcus-json
 ==========
 
-Help
-----
+Help output
+-----------
 
 .. literalinclude:: ../_static/cli/orcus-json-help.txt
    :language: none

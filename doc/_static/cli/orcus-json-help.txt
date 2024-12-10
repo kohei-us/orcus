@@ -4,24 +4,24 @@ The FILE must specify the path to an existing file.
 
 Options:
   -h [ --help ]              Print this help.
-  --mode arg                 Mode of operation. Select one of the following
-                             options: convert, lint, map, map-gen, structure,
+  --mode arg                 Mode of operation. Select one of the following 
+                             options: convert, lint, map, map-gen, structure, 
                              or subtree.
   --resolve-refs             Resolve JSON references to external files.
   -o [ --output ] arg        Output file path.
-  -f [ --output-format ] arg Specify the format of output file.  Supported
+  -f [ --output-format ] arg Specify the format of output file.  Supported 
                              format types are:
-
+                             
                                * XML (xml)
                                * JSON (json)
                                * YAML (yaml)
                                * flat tree dump (check)
                                * no output (none)
-  -m [ --map ] arg           Path to a map file.  This parameter is only used
+  -m [ --map ] arg           Path to a map file.  This parameter is only used 
                              in map mode, and it is required in that mode.
-  -i [ --indent ] arg        Number of whitespace characters to use for one
+  -i [ --indent ] arg        Number of whitespace characters to use for one 
                              indent level.  This is applicable when the command
                              generates output in JSON format.
-  -p [ --path ] arg          JSONPath expression specifying the root of a
-                             subtree to extract.  It is only used in subtree
+  -p [ --path ] arg          JSONPath expression specifying the root of a 
+                             subtree to extract.  It is only used in subtree 
                              mode.
