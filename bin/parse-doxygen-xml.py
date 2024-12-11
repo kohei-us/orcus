@@ -113,9 +113,29 @@ class SymbolTree:
                 for symbol in symbols["struct"]:
                     print(f"    - {symbol}")
 
+    def walk(self, func):
+        self._scope = list()
+        self._walk(self._root, 0, func)
 
-def dump_symbols(rootdir):
+    def _walk(self, node, level, func):
+        indent = " " * level * 2
+        keys = sorted(node.keys())
+        has_symbols = "_store" in keys
+        if has_symbols:
+            symbols = node["_store"]
+            keys.remove("_store")
+            func(self._scope, keys, symbols)
+        else:
+            func(self._scope, keys, {})
 
+        for key in keys:
+            child = node[key]
+            self._scope.append(key)
+            self._walk(child, level + 1, func)
+            self._scope.pop()
+
+
+def build_symbol_tree(rootdir):
     all_symbols = list()
     type_scope = set()
 
@@ -169,19 +189,200 @@ def dump_symbols(rootdir):
 
         symbol_tree.add(scope, type, name)
 
+    return symbol_tree
+
+
+def dump_symbols(rootdir):
+    symbol_tree = build_symbol_tree(rootdir)
     symbol_tree.dump()
 
 
+def generate_rst(scope, child_scopes, symbols):
+    if scope:
+        ns = "::".join(scope)
+        title = "namespace " + ns
+    else:
+        title = "C++ API Reference"
+
+    buf = [
+        "",
+        title,
+        '=' * len(title),
+        "",
+    ]
+
+    if "enum" in symbols:
+        this_buf = [
+            "Enum",
+            "----",
+            ""
+        ]
+
+        for name in symbols["enum"]:
+            full_name = f"{ns}::{name}"
+            block = [
+                name,
+                "^" * len(name),
+                f".. doxygenenum:: {full_name}",
+                "",
+            ]
+            this_buf.extend(block)
+
+        this_buf.append("")
+        buf.extend(this_buf)
+
+    if "typedef" in symbols:
+        this_buf = [
+            "Type aliases",
+            "------------",
+            ""
+        ]
+
+        for name in symbols["typedef"]:
+            full_name = f"{ns}::{name}"
+            block = [
+                name,
+                "^" * len(name),
+                f".. doxygentypedef:: {full_name}",
+                "",
+            ]
+            this_buf.extend(block)
+
+        this_buf.append("")
+        buf.extend(this_buf)
+
+    if "variable" in symbols:
+        this_buf = [
+            "Constants",
+            "---------",
+            ""
+        ]
+
+        for name in symbols["variable"]:
+            full_name = f"{ns}::{name}"
+            block = [
+                name,
+                "^" * len(name),
+                f".. doxygenvariable:: {full_name}",
+                "",
+            ]
+            this_buf.extend(block)
+
+        this_buf.append("")
+        buf.extend(this_buf)
+
+    if "function" in symbols:
+        this_buf = [
+            "Functions",
+            "---------",
+            ""
+        ]
+
+        for name in symbols["function"]:
+            full_name = f"{ns}::{name}"
+            block = [
+                f"{name}",
+                "^" * len(name),
+                f".. doxygenfunction:: {full_name}",
+                "",
+            ]
+            this_buf.extend(block)
+
+        this_buf.append("")
+        buf.extend(this_buf)
+
+    if "struct" in symbols:
+        this_buf = [
+            "Struct",
+            "------",
+            ""
+        ]
+
+        for name in symbols["struct"]:
+            full_name = f"{ns}::{name}"
+            block = [
+                name,
+                "^" * len(name),
+                f".. doxygenstruct:: {full_name}",
+                f"   :members:",
+                "",
+            ]
+            this_buf.extend(block)
+
+        this_buf.append("")
+        buf.extend(this_buf)
+
+    if "class" in symbols:
+        this_buf = [
+            "Classes",
+            "-------",
+            ""
+        ]
+
+        for name in symbols["class"]:
+            full_name = f"{ns}::{name}"
+            block = [
+                name,
+                "^" * len(name),
+                f".. doxygenclass:: {full_name}",
+                f"   :members:",
+                "",
+            ]
+            this_buf.extend(block)
+
+        this_buf.append("")
+        buf.extend(this_buf)
+
+    if child_scopes:
+        toctree = [
+            "Child namespaces",
+            "----------------",
+            ""
+            ".. toctree::",
+            "   :maxdepth: 1",
+            "",
+        ]
+
+        for cs in child_scopes:
+            p = f"{cs}/index.rst"
+            toctree.append(f"   {p}")
+
+        buf.extend(toctree)
+
+    return '\n'.join(buf)
+
+
+def generate_doctree(rootdir, outdir):
+    symbol_tree = build_symbol_tree(rootdir)
+
+    def _func(scope, child_scopes, symbols):
+        thisdir = outdir.joinpath(*scope)
+        index_file = thisdir / "index.rst"
+        print(index_file)
+        thisdir.mkdir(parents=True, exist_ok=True)
+        index_file.write_text(generate_rst(scope, child_scopes, symbols))
+
+    symbol_tree.walk(_func)
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Paser and analyze XML outputs from doxygen.")
+    parser = argparse.ArgumentParser(
+        description="Parse doxygen XML outputs and perform actions.",
+        epilog="""To re-generate the C++ API Reference, run this script with
+        --mode doctree and specify the output directory to ./doc/cpp.
+        """
+    )
     parser.add_argument("--mode", type=str, required=True, help="Type of action to perform.")
-    parser.add_argument("rootdir", type=Path)
+    parser.add_argument("--output", "-o", type=Path, help="Output directory path.")
+    parser.add_argument("rootdir", type=Path, help="Directory where the doxygen XML files are found.")
     args = parser.parse_args()
 
     if args.mode == "kinds":
         list_kinds(args.rootdir)
     elif args.mode == "symbols":
         dump_symbols(args.rootdir)
+    elif args.mode == "doctree":
+        generate_doctree(args.rootdir, args.output)
     else:
         print(f"unknown mode: {args.mode}", file=sys.stderr)
 

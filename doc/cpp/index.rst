@@ -1,10 +1,10 @@
 
-C++ API reference
+C++ API Reference
 =================
 
+Child namespaces
+----------------
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   parser/index.rst
-   core/index.rst
-   spreadsheet-doc/index.rst
+   orcus/index.rst
