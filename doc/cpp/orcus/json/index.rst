@@ -1,3 +1,4 @@
+.. _ns-orcus-json:
 
 namespace orcus::json
 =====================

@@ -1,3 +1,4 @@
+.. _ns-orcus-detail:
 
 namespace orcus::detail
 =======================

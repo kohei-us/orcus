@@ -1,3 +1,4 @@
+.. _ns-orcus-csv:
 
 namespace orcus::csv
 ====================

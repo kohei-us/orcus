@@ -1,3 +1,4 @@
+.. _ns-orcus-spreadsheet-iface:
 
 namespace orcus::spreadsheet::iface
 ===================================

@@ -1,3 +1,4 @@
+.. _ns-orcus-dom:
 
 namespace orcus::dom
 ====================

@@ -1,3 +1,4 @@
+.. _cpp-api:
 
 C++ API Reference
 =================

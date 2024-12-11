@@ -201,10 +201,13 @@ def generate_rst(scope, child_scopes, symbols):
     if scope:
         ns = "::".join(scope)
         title = "namespace " + ns
+        ref_anchor = "ns-" + '-'.join(scope)
     else:
+        ref_anchor = "cpp-api"
         title = "C++ API Reference"
 
     buf = [
+        f".. _{ref_anchor}:",
         "",
         title,
         '=' * len(title),

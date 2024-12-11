@@ -1,3 +1,4 @@
+.. _ns-orcus-yaml-detail:
 
 namespace orcus::yaml::detail
 =============================

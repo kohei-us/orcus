@@ -1,3 +1,4 @@
+.. _ns-orcus-json-detail-init:
 
 namespace orcus::json::detail::init
 ===================================

@@ -1,3 +1,4 @@
+.. _ns-orcus-detail-thread:
 
 namespace orcus::detail::thread
 ===============================

@@ -1,3 +1,4 @@
+.. _ns-orcus-iface:
 
 namespace orcus::iface
 ======================

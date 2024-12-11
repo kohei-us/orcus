@@ -1,3 +1,4 @@
+.. _ns-orcus-css:
 
 namespace orcus::css
 ====================

@@ -1,3 +1,4 @@
+.. _ns-orcus-sax-detail:
 
 namespace orcus::sax::detail
 ============================

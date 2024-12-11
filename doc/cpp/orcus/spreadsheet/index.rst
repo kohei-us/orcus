@@ -1,3 +1,4 @@
+.. _ns-orcus-spreadsheet:
 
 namespace orcus::spreadsheet
 ============================
