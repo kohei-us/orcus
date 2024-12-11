@@ -17,6 +17,7 @@ This command supports the following modes:
 * map
 * map-gen
 * structure
+* subtree
 
 convert
 ^^^^^^^
@@ -58,6 +59,16 @@ output.  Each path is expressed in a JSONPath-like format.  Refer to the
 :ref:`map-json-to-spreadsheet` section for the detailed description of this
 format.
 
+subtree
+^^^^^^^
+
+the ``subtree`` mode allows you to extract a subtree structure from a JSON
+document using a `JSONPath
+<https://www.ietf.org/archive/id/draft-ietf-jsonpath-base-01.html>`_ expression
+to specify the root of the subtree.  Note that this mode only supports a limited
+subset of the full JSONPath expression syntax.  Both the dot notation and the
+bracket notation are supported, as well as the wildcard symbol.
+
 
 Example usage
 -------------
@@ -77,6 +88,32 @@ indent level of 2:
 The command writes the output to standard output by default, or you can specify
 the ``--output`` option to have it written to a local file instead.  If you
 don't specify the ``--indent`` option, it defaults to the indent level of 4.
+
+Extract subtree from JSON document
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To extract a subtree structure from a JSON document, use the ``subtree`` mode with
+the root of a desired subtree to extract:
+
+.. code-block:: none
+
+   orcus-json --mode subtree -p "$.store.fruits[3]" -i 2 path/to/source.json
+
+This command traverses the original JSON document by following the ``store`` and ``fruits``
+object keys and taking the 4th element of an array as the new root of the tree, and
+writes it to stdout with the indent level of 2.
+
+You can also use the wildcard expression to select all elements of an array, as
+in the following example:
+
+.. code-block:: none
+
+   orcus-json --mode subtree -p "$.store.fruits[*].name" -i 2 path/to/source.json
+
+This command traverses the original JSON document through the ``store`` and
+``fruits`` objects keys as in the previous example, but selects all elements of
+the array, and in each element only grabs the ``name`` key of the object below
+it.
 
 Convert JSON document to YAML
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
