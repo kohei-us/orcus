@@ -935,7 +935,7 @@ void test_json_dump_subtree()
     node = node.child("profile");
 
     {
-        file_content expected(SRCDIR"/test/json/subtree/medium1/output-4.json");
+        file_content expected(SRCDIR"/test/json/subtree/medium1/profile.i4.json");
         bool result = compare_check_contents(expected, node.dump(2));
         assert(result);
     }
@@ -943,7 +943,7 @@ void test_json_dump_subtree()
     node = node.child("phoneNumbers");
 
     {
-        file_content expected(SRCDIR"/test/json/subtree/medium1/output-6.json");
+        file_content expected(SRCDIR"/test/json/subtree/medium1/profile-phoneNumbers.i3.json");
         bool result = compare_check_contents(expected, node.dump(3));
         assert(result);
     }
@@ -951,7 +951,7 @@ void test_json_dump_subtree()
     node = node.child(0);
 
     {
-        file_content expected(SRCDIR"/test/json/subtree/medium1/output-5.json");
+        file_content expected(SRCDIR"/test/json/subtree/medium1/profile-phoneNumbers-0.i1.json");
         bool result = compare_check_contents(expected, node.dump(1));
         assert(result);
     }
