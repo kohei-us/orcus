@@ -23,6 +23,7 @@
 #include <cmath>
 #include <cstring>
 #include <unordered_set>
+#include <algorithm>
 
 using namespace orcus;
 
