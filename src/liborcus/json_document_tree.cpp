@@ -22,6 +22,7 @@
 #include <limits>
 #include <iostream>
 #include <deque>
+#include <iomanip>
 
 #include <boost/current_function.hpp>
 #include <boost/pool/object_pool.hpp>
