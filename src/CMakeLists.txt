@@ -84,6 +84,8 @@ add_executable(orcus-csv-test EXCLUDE_FROM_ALL
 
 add_executable(orcus-ods-test EXCLUDE_FROM_ALL
     orcus_ods_test.cpp
+    orcus_ods_test_autofilter.cpp
+    orcus_test_global.cpp
 )
 
 add_executable(orcus-xls-xml-test EXCLUDE_FROM_ALL

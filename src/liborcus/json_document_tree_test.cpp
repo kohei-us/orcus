@@ -992,7 +992,10 @@ void test_json_subtree()
         auto root = spec_doc.get_document_root();
         std::string path{root.child("path").string_value()};
         int indent = root.child("indent").numeric_value();
-        auto output = p.parent_path() / root.child("output").string_value();
+        // constructing path from std::string_view is coming in later version of
+        // boost. See
+        // https://github.com/boostorg/filesystem/commit/b219d9fb8af760b54b014d1223ebd5d43b4d07b5
+        auto output = p.parent_path() / std::string{root.child("output").string_value()};
 
         return std::make_tuple(path, indent, output);
     };
