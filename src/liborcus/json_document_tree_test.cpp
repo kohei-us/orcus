@@ -934,7 +934,7 @@ void test_json_dump_subtree()
     node = node.child("profile");
 
     {
-        file_content expected(SRCDIR"/test/json/subtree/medium1/$.profile.json.2");
+        file_content expected(SRCDIR"/test/json/subtree/medium1/output-4.json");
         bool result = compare_check_contents(expected, node.dump(2));
         assert(result);
     }
@@ -942,7 +942,7 @@ void test_json_dump_subtree()
     node = node.child("phoneNumbers");
 
     {
-        file_content expected(SRCDIR"/test/json/subtree/medium1/$.profile.phoneNumbers.json.3");
+        file_content expected(SRCDIR"/test/json/subtree/medium1/output-6.json");
         bool result = compare_check_contents(expected, node.dump(3));
         assert(result);
     }
@@ -950,7 +950,7 @@ void test_json_dump_subtree()
     node = node.child(0);
 
     {
-        file_content expected(SRCDIR"/test/json/subtree/medium1/$.profile.phoneNumbers[0].json.1");
+        file_content expected(SRCDIR"/test/json/subtree/medium1/output-5.json");
         bool result = compare_check_contents(expected, node.dump(1));
         assert(result);
     }
@@ -973,6 +973,8 @@ void test_json_subtree()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
+    json_config test_config;
+
     const fs::path test_dirs[] = {
         SRCDIR"/test/json/subtree/one-array",
         SRCDIR"/test/json/subtree/array-of-objects",
@@ -980,23 +982,23 @@ void test_json_subtree()
         SRCDIR"/test/json/subtree/medium2",
     };
 
-    auto to_indent = [](const fs::path& p)
+    auto extract_spec = [&test_config](const fs::path& p)
     {
-        auto ext = p.extension().string();
-        assert(!ext.empty());
-        assert(ext[0] == '.');
+        file_content spec(p.string());
+        json::document_tree spec_doc;
+        spec_doc.load(spec.str(), test_config);
 
-        // remove the first dot
-        auto it = ext.begin();
-        ext.assign(++it, ext.end());
-        return to_long(ext);
+        auto root = spec_doc.get_document_root();
+        std::string path{root.child("path").string_value()};
+        int indent = root.child("indent").numeric_value();
+        auto output = p.parent_path() / root.child("output").string_value();
+
+        return std::make_tuple(path, indent, output);
     };
-
-    json_config test_config;
 
     for (const auto& dir : test_dirs)
     {
-        std::unordered_set<fs::path> path_outputs;
+        std::vector<fs::path> path_output_specs;
         fs::path input;
 
         for (const auto& entry : fs::directory_iterator(dir))
@@ -1004,12 +1006,15 @@ void test_json_subtree()
             if (!fs::is_regular_file(entry.path()))
                 continue;
 
-            if (entry.path().filename() == "input.json")
+            auto filename = entry.path().filename().string();
+            if (filename == "input.json")
                 input = entry.path();
-            else
-                path_outputs.insert(entry.path());
+            else if (filename.find("output-spec") == 0)
+                // filename starts with 'output-spec'
+                path_output_specs.push_back(entry.path());
         }
 
+        std::sort(path_output_specs.begin(), path_output_specs.end());
         assert(fs::is_regular_file(input));
 
         std::cout << "- input: " << input << std::endl;
@@ -1019,22 +1024,21 @@ void test_json_subtree()
         json::document_tree doc;
         doc.load(input_json.str(), test_config);
 
-        for (const auto& output : path_outputs)
+        for (const auto& output_spec : path_output_specs)
         {
-            // path output file should be named <path>.json.<indent>
-            file_content expected(output.string());
-            auto path = output.stem().stem().string();
-            auto indent = to_indent(output);
+            auto [path, indent, output_path] = extract_spec(output_spec);
+            file_content expected(output_path.string());
 
             std::cout
-                << "  - output: " << output << "\n"
-                << "    path: " << path << "\n"
+                << "  - output: " << output_path << "\n"
+                << "    path: '" << path << "'\n"
                 << "    indent: " << indent << std::endl;
 
             json::subtree st(doc, path);
 
             bool result = compare_check_contents(expected, st.dump(indent));
             assert(result);
+            continue;
         }
     }
 }

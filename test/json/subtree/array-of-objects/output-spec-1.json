@@ -1,0 +1,1 @@
+{"path": "$.rows[*].Date", "indent": 3, "output": "output-1.json"}
