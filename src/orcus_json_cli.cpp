@@ -147,14 +147,14 @@ void parse_args_for_convert(
 }
 
 void parse_args_for_lint(
-    detail::cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
+    detail::cmd_params& params, const po::options_description& /*desc*/, const po::variables_map& vm)
 {
     if (vm.count("indent"))
         params.indent = vm["indent"].as<std::size_t>();
 }
 
 void parse_args_for_subtree(
-    detail::cmd_params& params, const po::options_description& desc, const po::variables_map& vm)
+    detail::cmd_params& params, const po::options_description& /*desc*/, const po::variables_map& vm)
 {
     if (vm.count("indent"))
         params.indent = vm["indent"].as<std::size_t>();
