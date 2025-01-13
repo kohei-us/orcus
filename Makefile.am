@@ -170,16 +170,6 @@ misc_data = \
 	misc/xml-tokens/token_util.py \
 	misc/xml-tokens/xls-xml-tokens.txt
 
-slickedit_data = \
-	slickedit/cmake.vpj \
-	slickedit/cpp.vpj \
-	slickedit/doc.vpj \
-	slickedit/orcus.vpw \
-	slickedit/orcus_cpp.h \
-	slickedit/python.vpj \
-	slickedit/sh.vpj \
-	slickedit/token-gen.vpj
-
 test_data = \
 	test/css/basic1.css \
 	test/css/basic10.css \
@@ -958,7 +948,6 @@ EXTRA_DIST = \
 	$(doc_data) \
 	$(doc_example_data) \
 	$(misc_data) \
-	$(slickedit_data) \
 	$(test_data)
 
 .PHONY: distclean-local dist-hook doc-doxygen doc-sphinx doc

@@ -22,5 +22,4 @@ print_list doc
 print_list doc_example
 print_list bin
 print_list misc
-print_list slickedit
 print_list test
