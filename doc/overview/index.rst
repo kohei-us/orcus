@@ -91,5 +91,5 @@ these types of documents.
 .. toctree::
    :maxdepth: 1
 
-   json.rst
-   yaml.rst
+   json/index.rst
+   yaml/index.rst
