@@ -10,6 +10,7 @@ EXTRA_PROGRAMS = \
 	json-doc-1 \
 	json-doc-2 \
 	json-parser-1 \
+	json-subtree-1 \
 	xml-mapping-1 \
 	spreadsheet-doc-1 \
 	spreadsheet-doc-1-num-and-formula \
@@ -36,6 +37,13 @@ json_parser_1_SOURCES = \
 	json_parser_1.cpp
 
 json_parser_1_LDADD = \
+	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la
+
+json_subtree_1_SOURCES = \
+	json_subtree_1.cpp
+
+json_subtree_1_LDADD = \
+	../src/liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
 xml_mapping_1_SOURCES = \
@@ -98,6 +106,7 @@ TESTS = \
 	json-doc-1 \
 	json-doc-2 \
 	json-parser-1 \
+	json-subtree-1 \
 	xml-mapping-1 \
 	spreadsheet-doc-1 \
 	spreadsheet-doc-1-num-and-formula \

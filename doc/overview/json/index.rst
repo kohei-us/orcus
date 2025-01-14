@@ -32,3 +32,4 @@ Contents:
    doctree.rst
    parser.rst
    doctree-direct.rst
+   subtree.rst
