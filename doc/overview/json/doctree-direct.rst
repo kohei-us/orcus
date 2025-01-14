@@ -14,6 +14,7 @@ The first example shows how to initialize the tree with a simple array:
    :language: C++
    :start-after: //!code-start: root list
    :end-before: //!code-end: root list
+   :dedent: 4
 
 You can simply specify the content of the array via initialization list and
 assign it to the document.  The :cpp:func:`~orcus::json::document_tree::dump()`
@@ -36,6 +37,7 @@ If you need to build a array of arrays, do like the following:
    :language: C++
    :start-after: //!code-start: list nested
    :end-before: //!code-end: list nested
+   :dedent: 4
 
 This will create an array of two nested child arrays with three values each.
 Dumping the content of the tree as a JSON string will produce something like
@@ -64,6 +66,7 @@ braces.  For example, the following code:
    :language: C++
    :start-after: //!code-start: list object
    :end-before: //!code-end: list object
+   :dedent: 4
 
 produces the following output:
 
@@ -89,6 +92,7 @@ As with arrays, nesting of objects is also supported.  The following code:
    :language: C++
    :start-after: //!code-start: list object 2
    :end-before: //!code-end: list object 2
+   :dedent: 4
 
 creates a root object having two key-value pairs one of which contains
 another object having three key-value pairs, as evident in the following output
@@ -115,6 +119,7 @@ For instance, this code:
    :language: C++
    :start-after: //!code-start: array ambiguous
    :end-before: //!code-end: array ambiguous
+   :dedent: 4
 
 is intended to be an object containing an array.  However, because the supposed
 inner array contains exactly two values and the first value is a string
@@ -129,6 +134,7 @@ explicit by using an :cpp:class:`~orcus::json::array` instance:
    :language: C++
    :start-after: //!code-start: array explicit
    :end-before: //!code-end: array explicit
+   :dedent: 4
 
 This code now correctly generates a root object containing one key-value pair
 whose value is an array:
@@ -150,6 +156,7 @@ this:
    :language: C++
    :start-after: //!code-start: object ambiguous a
    :end-before: //!code-end: object ambiguous a
+   :dedent: 4
 
 However, this will result in leaving the tree entirely unpopulated i.e. the
 tree will not even have a root node!  If you continue on and try to get a root
@@ -160,6 +167,7 @@ thrown as a result.  If you inspect the error message stored in the exception:
    :language: C++
    :start-after: //!code-start: object ambiguous b
    :end-before: //!code-end: object ambiguous b
+   :dedent: 4
 
 you will get
 
@@ -176,6 +184,7 @@ following code:
    :language: C++
    :start-after: //!code-start: object explicit 1
    :end-before: //!code-end: object explicit 1
+   :dedent: 4
 
 will therefore generate
 
@@ -191,6 +200,7 @@ indicate empty objects anythere in the tree.  For instance, this code:
    :language: C++
    :start-after: //!code-start: object explicit 2
    :end-before: //!code-end: object explicit 2
+   :dedent: 4
 
 is intended to create an array containing three empty objects as its elements,
 and that's exactly what it does:
@@ -215,6 +225,7 @@ been initialized.
    :language: C++
    :start-after: //!code-start: root object add child
    :end-before: //!code-end: root object add child
+   :dedent: 4
 
 This code first initializes the tree with an empty object, then retrieves the
 root empty object and assigns several key-value pairs to it.  When converting
@@ -248,6 +259,7 @@ tree has been constructed.  Let's take a look at the code:
    :language: C++
    :start-after: //!code-start: root array add child
    :end-before: //!code-end: root array add child
+   :dedent: 4
 
 Like the previous example, this code first initializes the tree but this time
 with an empty array as its root, retrieves the root array, then appends
