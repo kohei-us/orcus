@@ -10,6 +10,7 @@
 import sys
 import xml.etree.ElementTree as ET
 import argparse
+from dataclasses import dataclass
 from pathlib import Path
 
 
@@ -41,12 +42,19 @@ def list_kinds(rootdir):
         print(f"  - {k}")
 
 
+@dataclass
+class FuncProps:
+    """Extra properties of a function symbol."""
+    argsstring: str = None
+
+
 class SymbolTree:
+    """Tree of namespaces."""
 
     def __init__(self):
         self._root = dict()
 
-    def add(self, ns, type, name):
+    def add(self, ns, type, name, props):
         ns_parts = ns.split("::")
         node = self._root
         for part in ns_parts:
@@ -60,7 +68,8 @@ class SymbolTree:
         store = node["_store"]
         if type not in store:
             store[type] = list()
-        store[type].append(name)
+
+        store[type].append((name, props))
 
     def _dump_recurse(self, node):
         for scope, child in node.items():
@@ -85,32 +94,33 @@ class SymbolTree:
             symbols = self._symbols[scope]
             if "enum" in symbols:
                 print("  enum:")
-                for symbol in symbols["enum"]:
+                for symbol, props in symbols["enum"]:
                     print(f"    - {symbol}")
 
             if "typedef" in symbols:
                 print("  typedef:")
-                for symbol in symbols["typedef"]:
+                for symbol, props in symbols["typedef"]:
                     print(f"    - {symbol}")
 
             if "variable" in symbols:
                 print("  variable:")
-                for symbol in symbols["variable"]:
+                for symbol, props in symbols["variable"]:
                     print(f"    - {symbol}")
 
             if "function" in symbols:
                 print("  function:")
-                for symbol in symbols["function"]:
-                    print(f"    - {symbol}")
+                for symbol, props in symbols["function"]:
+                    print(f"    - name: {symbol}")
+                    print(f"    - argsstring: {props.argsstring}")
 
             if "class" in symbols:
                 print("  class:")
-                for symbol in symbols["class"]:
+                for symbol, props in symbols["class"]:
                     print(f"    - {symbol}")
 
             if "struct" in symbols:
                 print("  struct:")
-                for symbol in symbols["struct"]:
+                for symbol, props in symbols["struct"]:
                     print(f"    - {symbol}")
 
     def walk(self, func):
@@ -147,33 +157,35 @@ def build_symbol_tree(rootdir):
             ns_name = ns_elem.findtext("compoundname")
             for elem in ns_elem.findall(".//memberdef[@kind='enum']"):
                 name = elem.findtext("name")
-                all_symbols.append((ns_name, "enum", name))
+                all_symbols.append((ns_name, "enum", name, None))
 
             for elem in ns_elem.findall(".//memberdef[@kind='typedef']"):
                 name = elem.findtext("name")
-                all_symbols.append((ns_name, "typedef", name))
+                all_symbols.append((ns_name, "typedef", name, None))
 
             for elem in ns_elem.findall(".//memberdef[@kind='function']"):
                 name = elem.findtext("name")
                 if name.startswith("operator"):
                     continue
-                all_symbols.append((ns_name, "function", name))
+                props = FuncProps()
+                props.argsstring = elem.findtext("argsstring")
+                all_symbols.append((ns_name, "function", name, props))
 
             for elem in ns_elem.findall(".//memberdef[@kind='variable']"):
                 name = elem.findtext("name")
-                all_symbols.append((ns_name, "variable", name))
+                all_symbols.append((ns_name, "variable", name, None))
 
         for elem in root.findall(".//compounddef[@kind='class']"):
             name = elem.findtext("compoundname")
             ns, name = name.rsplit('::', maxsplit=1)
-            all_symbols.append((ns, "class", name))
+            all_symbols.append((ns, "class", name, None))
 
             type_scope.add(f"{ns}::{name}")
 
         for elem in root.findall(".//compounddef[@kind='struct']"):
             name = elem.findtext("compoundname")
             ns, name = name.rsplit('::', maxsplit=1)
-            all_symbols.append((ns, "struct", name))
+            all_symbols.append((ns, "struct", name, None))
 
             type_scope.add(f"{ns}::{name}")
 
@@ -182,12 +194,12 @@ def build_symbol_tree(rootdir):
 
     symbol_tree = SymbolTree()
 
-    for scope, type, name in sorted(all_symbols, key=_to_key):
+    for scope, type, name, props in sorted(all_symbols, key=_to_key):
         if scope in type_scope:
             # this is a nested inner type - skip it
             continue
 
-        symbol_tree.add(scope, type, name)
+        symbol_tree.add(scope, type, name, props)
 
     return symbol_tree
 
@@ -221,7 +233,7 @@ def generate_rst(scope, child_scopes, symbols):
             ""
         ]
 
-        for name in symbols["enum"]:
+        for name, props in symbols["enum"]:
             full_name = f"{ns}::{name}"
             block = [
                 name,
@@ -241,7 +253,7 @@ def generate_rst(scope, child_scopes, symbols):
             ""
         ]
 
-        for name in symbols["typedef"]:
+        for name, props in symbols["typedef"]:
             full_name = f"{ns}::{name}"
             block = [
                 name,
@@ -261,7 +273,7 @@ def generate_rst(scope, child_scopes, symbols):
             ""
         ]
 
-        for name in symbols["variable"]:
+        for name, props in symbols["variable"]:
             full_name = f"{ns}::{name}"
             block = [
                 name,
@@ -281,8 +293,8 @@ def generate_rst(scope, child_scopes, symbols):
             ""
         ]
 
-        for name in symbols["function"]:
-            full_name = f"{ns}::{name}"
+        for name, props in symbols["function"]:
+            full_name = f"{ns}::{name}{props.argsstring}"
             block = [
                 f"{name}",
                 "^" * len(name),
@@ -301,7 +313,7 @@ def generate_rst(scope, child_scopes, symbols):
             ""
         ]
 
-        for name in symbols["struct"]:
+        for name, props in symbols["struct"]:
             full_name = f"{ns}::{name}"
             block = [
                 name,
@@ -322,7 +334,7 @@ def generate_rst(scope, child_scopes, symbols):
             ""
         ]
 
-        for name in symbols["class"]:
+        for name, props in symbols["class"]:
             full_name = f"{ns}::{name}"
             block = [
                 name,
