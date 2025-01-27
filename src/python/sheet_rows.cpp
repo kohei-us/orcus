@@ -104,22 +104,22 @@ PyObject* sheet_rows_iternext(PyObject* self)
         PyObject* obj = nullptr;
         switch (cell.type)
         {
-            case ixion::celltype_t::empty:
+            case ixion::cell_t::empty:
             {
                 obj = create_cell_object_empty();
                 break;
             }
-            case ixion::celltype_t::boolean:
+            case ixion::cell_t::boolean:
             {
                 obj = create_cell_object_boolean(std::get<bool>(cell.value));
                 break;
             }
-            case ixion::celltype_t::numeric:
+            case ixion::cell_t::numeric:
             {
                 obj = create_cell_object_numeric(std::get<double>(cell.value));
                 break;
             }
-            case ixion::celltype_t::string:
+            case ixion::cell_t::string:
             {
                 ixion::string_id_t sid = std::get<ixion::string_id_t>(cell.value);
                 const ixion::model_context& cxt = data->m_doc->get_model_context();
@@ -127,14 +127,14 @@ PyObject* sheet_rows_iternext(PyObject* self)
                 obj = create_cell_object_string(ps);
                 break;
             }
-            case ixion::celltype_t::formula:
+            case ixion::cell_t::formula:
             {
                 const ixion::formula_cell* fc = std::get<const ixion::formula_cell*>(cell.value);
                 ixion::abs_address_t pos(data->m_sheet->get_index(), cell.row, cell.col);
                 obj = create_cell_object_formula(*data->m_doc, pos, fc);
                 break;
             }
-            case ixion::celltype_t::unknown:
+            case ixion::cell_t::unknown:
                 break;
         }
 

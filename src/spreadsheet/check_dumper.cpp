@@ -79,7 +79,7 @@ void check_dumper::dump_cell_values(std::ostream& os) const
             ixion::abs_address_t pos(m_sheet.sheet_id, row, col);
             switch (cxt.get_celltype(pos))
             {
-                case ixion::celltype_t::string:
+                case ixion::cell_t::string:
                 {
                     write_cell_position(os, m_sheet_name, row, col);
                     size_t sindex = cxt.get_string_identifier(pos);
@@ -88,7 +88,7 @@ void check_dumper::dump_cell_values(std::ostream& os) const
                     os << "string:\"" << escape_chars(*p) << '"' << std::endl;
                     break;
                 }
-                case ixion::celltype_t::numeric:
+                case ixion::cell_t::numeric:
                 {
                     write_cell_position(os, m_sheet_name, row, col);
                     os << "numeric:";
@@ -96,13 +96,13 @@ void check_dumper::dump_cell_values(std::ostream& os) const
                     os << std::endl;
                     break;
                 }
-                case ixion::celltype_t::boolean:
+                case ixion::cell_t::boolean:
                 {
                     write_cell_position(os, m_sheet_name, row, col);
                     os << "boolean:" << (cxt.get_boolean_value(pos) ? "true" : "false") << std::endl;
                     break;
                 }
-                case ixion::celltype_t::formula:
+                case ixion::cell_t::formula:
                 {
                     write_cell_position(os, m_sheet_name, row, col);
                     os << "formula";

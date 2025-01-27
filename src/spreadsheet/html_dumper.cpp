@@ -605,8 +605,8 @@ void html_dumper::dump(std::ostream& os) const
                         build_style_string(style, styles, *fmt);
                 }
 
-                ixion::celltype_t ct = cxt.get_celltype(pos);
-                if (ct == ixion::celltype_t::empty)
+                ixion::cell_t ct = cxt.get_celltype(pos);
+                if (ct == ixion::cell_t::empty)
                 {
                     html_elem::attrs_type attrs;
                     build_html_elem_attributes(attrs, style, p_merge_size);
@@ -622,7 +622,7 @@ void html_dumper::dump(std::ostream& os) const
 
                 switch (ct)
                 {
-                    case ixion::celltype_t::string:
+                    case ixion::cell_t::string:
                     {
                         size_t sindex = cxt.get_string_identifier(pos);
                         const std::string* p = cxt.get_string(sindex);
@@ -635,13 +635,13 @@ void html_dumper::dump(std::ostream& os) const
 
                         break;
                     }
-                    case ixion::celltype_t::numeric:
+                    case ixion::cell_t::numeric:
                         format_to_file_output(os, cxt.get_numeric_value(pos));
                         break;
-                    case ixion::celltype_t::boolean:
+                    case ixion::cell_t::boolean:
                         os << (cxt.get_boolean_value(pos) ? "true" : "false");
                         break;
-                    case ixion::celltype_t::formula:
+                    case ixion::cell_t::formula:
                     {
                         // print the formula and the formula result.
                         const ixion::formula_cell* cell = cxt.get_formula_cell(pos);

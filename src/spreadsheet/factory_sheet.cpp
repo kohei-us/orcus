@@ -582,7 +582,7 @@ void export_sheet::write_string(std::ostream& os, row_t row, col_t col) const
 
     switch (cxt.get_celltype(pos))
     {
-        case ixion::celltype_t::string:
+        case ixion::cell_t::string:
         {
             size_t str_id = cxt.get_string_identifier(pos);
             const std::string* p = cxt.get_string(str_id);
@@ -590,7 +590,7 @@ void export_sheet::write_string(std::ostream& os, row_t row, col_t col) const
                 os << *p;
         }
         break;
-        case ixion::celltype_t::numeric:
+        case ixion::cell_t::numeric:
             os << cxt.get_numeric_value(pos);
         break;
         default:
