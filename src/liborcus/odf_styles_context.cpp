@@ -154,7 +154,7 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
         assert(child == &m_cxt_style);
         std::unique_ptr<odf_style> current_style = m_cxt_style.pop_style();
 
-        std::optional<std::size_t> parent_xfid = query_parent_style_xfid(current_style->parent_name);
+        std::optional<std::size_t> parent_xfid = query_parent_style_xfid(*current_style);
 
         if (mp_styles && current_style->family == style_family_table_cell)
         {
@@ -226,7 +226,8 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
         }
 
         std::string_view style_name = get_session_context().intern(current_style->name);
-        m_styles.emplace(style_name, std::move(current_style));
+        odf_style_key key{current_style->family, style_name};
+        m_styles.emplace(key, std::move(current_style));
     }
 }
 
@@ -362,20 +363,20 @@ void styles_context::push_number_style(std::unique_ptr<odf_number_format> num_st
     }
 }
 
-std::optional<std::size_t> styles_context::query_parent_style_xfid(std::string_view parent_name) const
+std::optional<std::size_t> styles_context::query_parent_style_xfid(const odf_style& style) const
 {
     std::optional<std::size_t> parent_xfid;
 
-    if (parent_name.empty())
+    if (style.family == style_family_unknown || style.parent_name.empty())
         return parent_xfid;
 
     const ods_session_data& ods_data = get_session_context().get_data<ods_session_data>();
 
-    auto it = ods_data.styles_map.find(parent_name);
+    auto it = ods_data.styles_map.find({style.family, style.parent_name});
     if (it == ods_data.styles_map.end())
     {
         // Not found in the session store. Check the current styles map too.
-        auto it2 = m_styles.find(parent_name);
+        auto it2 = m_styles.find({style.family, style.parent_name});
         if (it2 != m_styles.end())
         {
             const odf_style& s = *it2->second;

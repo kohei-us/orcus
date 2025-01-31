@@ -49,7 +49,7 @@ void text_para_context::start_element(xmlns_id_t ns, xml_token_t name, const xml
             case XML_p:
                 // paragraph
                 xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-            break;
+                break;
             case XML_span:
             {
                 // text span.
@@ -57,12 +57,11 @@ void text_para_context::start_element(xmlns_id_t ns, xml_token_t name, const xml
                 flush_segment();
                 std::string_view style_name = get_single_attr(attrs, NS_odf_text, XML_style_name, &m_pool);
                 m_span_stack.push_back(style_name);
-
+                break;
             }
-            break;
             case XML_s:
                 // control character.  ignored for now.
-            break;
+                break;
             default:
                 warn_unhandled();
         }
@@ -83,8 +82,8 @@ bool text_para_context::end_element(xmlns_id_t ns, xml_token_t name)
                 flush_segment();
                 if (mp_sstrings)
                     m_string_index = mp_sstrings->commit_segments();
+                break;
             }
-            break;
             case XML_span:
             {
                 // text span.
@@ -93,8 +92,8 @@ bool text_para_context::end_element(xmlns_id_t ns, xml_token_t name)
 
                 flush_segment();
                 m_span_stack.pop_back();
+                break;
             }
-            break;
             default:
                 ;
         }
@@ -140,7 +139,7 @@ void text_para_context::flush_segment()
     if (!m_span_stack.empty())
     {
         std::string_view style_name = m_span_stack.back();
-        auto it = m_styles.find(style_name);
+        auto it = m_styles.find({style_family_text, style_name});
         if (it != m_styles.end())
             style = it->second.get();
     }

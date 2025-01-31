@@ -223,14 +223,14 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
         spreadsheet::iface::import_styles* xstyles = mp_factory->get_styles();
         if (xstyles)
         {
-            for (const auto& [style_name, style_value] : m_styles)
+            for (const auto& [style_key, style_value] : m_styles)
             {
                 if (style_value->family == style_family_table_cell)
                 {
                     // TODO: Actually we need a boolean flag to see if it is an automatic style or a real style
                     //  currently we have no way to set a real style to a cell anyway
                     const auto& cell = std::get<odf_style::cell>(style_value->data);
-                    m_cell_format_map.insert(name2id_type::value_type(style_name, cell.xf));
+                    m_cell_format_map.insert(name2id_type::value_type(style_key.name, cell.xf));
                 }
             }
         }
@@ -441,7 +441,7 @@ void ods_content_xml_context::start_column(const xml_token_attrs_t& attrs)
         }
     }
 
-    if (auto it = m_styles.find(style_name); it != m_styles.end())
+    if (auto it = m_styles.find({style_family_table_column, style_name}); it != m_styles.end())
     {
         const odf_style& style = *it->second;
 
@@ -492,7 +492,7 @@ void ods_content_xml_context::start_row(const xml_token_attrs_t& attrs)
 
     if (sheet_props)
     {
-        if (auto it = m_styles.find(style_name); it != m_styles.end())
+        if (auto it = m_styles.find({style_family_table_row, style_name}); it != m_styles.end())
         {
             const odf_style& style = *it->second;
             if (style.family == style_family_table_row)
@@ -656,7 +656,7 @@ std::optional<std::size_t> ods_content_xml_context::push_named_cell_style(std::s
 
     const ods_session_data& ods_data = get_session_context().get_data<ods_session_data>();
 
-    auto it = ods_data.styles_map.find(style_name);
+    auto it = ods_data.styles_map.find({style_family_table_cell, style_name});
     if (it == ods_data.styles_map.end())
     {
         std::ostringstream os;

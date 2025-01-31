@@ -54,6 +54,14 @@ odf_number_format::odf_number_format(std::string_view _name, bool _is_volatile):
 {
 }
 
+bool odf_style_key::operator<(const odf_style_key other) const
+{
+    if (family != other.family)
+        return family < other.family;
+
+    return name < other.name;
+}
+
 void merge(odf_styles_map_type& dst, odf_styles_map_type& src)
 {
     for (auto& [name, style] : src)
@@ -103,6 +111,31 @@ void dump_state(const odf_styles_map_type& styles_map, std::ostream& os)
 
         os << " ]\n";
     }
+}
+
+std::ostream& operator<<(std::ostream& os, odf_style_family family)
+{
+    // NB: ensure the ordering of the names and the enum members are in sync
+    static constexpr std::string_view names[] = {
+        "unknown",      // style_family_unknown
+        "table-column", // style_family_table_column
+        "table-row",    // style_family_table_row
+        "table-cell",   // style_family_table_cell
+        "table",        // style_family_table
+        "graphic",      // style_family_graphic
+        "paragraph",    // style_family_paragraph
+        "text",         // style_family_text
+    };
+
+    auto pos = static_cast<int>(family);
+    os << names[pos];
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, odf_style_key key)
+{
+    os << key.family << ':' << key.name;
+    return os;
 }
 
 } // namespace orcus

@@ -107,7 +107,15 @@ struct odf_number_format
     odf_number_format(std::string_view _name, bool _is_volatile);
 };
 
-using odf_styles_map_type = std::map<std::string_view, std::unique_ptr<odf_style>>;
+struct odf_style_key
+{
+    odf_style_family family = style_family_unknown;
+    std::string_view name;
+
+    bool operator<(const odf_style_key other) const;
+};
+
+using odf_styles_map_type = std::map<odf_style_key, std::unique_ptr<odf_style>>;
 
 /**
  * Merge two styles collections into one.
@@ -120,6 +128,9 @@ using odf_styles_map_type = std::map<std::string_view, std::unique_ptr<odf_style
 void merge(odf_styles_map_type& dst, odf_styles_map_type& src);
 
 void dump_state(const odf_styles_map_type& styles_map, std::ostream& os);
+
+std::ostream& operator<<(std::ostream& os, odf_style_family family);
+std::ostream& operator<<(std::ostream& os, odf_style_key key);
 
 }
 
