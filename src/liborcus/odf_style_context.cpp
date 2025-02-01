@@ -89,11 +89,25 @@ style_context::style_context(session_context& session_cxt, const tokens& tk, ss:
     xml_context_base(session_cxt, tk),
     mp_styles(iface_styles)
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_style, XML_style }, // root element
+        { NS_odf_style, XML_style, NS_odf_style, XML_paragraph_properties },
+        { NS_odf_style, XML_style, NS_odf_style, XML_table_cell_properties },
+        { NS_odf_style, XML_style, NS_odf_style, XML_table_column_properties },
+        { NS_odf_style, XML_style, NS_odf_style, XML_table_properties },
+        { NS_odf_style, XML_style, NS_odf_style, XML_table_row_properties },
+        { NS_odf_style, XML_style, NS_odf_style, XML_text_properties },
+        { NS_odf_text, XML_list_level_style_bullet, NS_odf_style, XML_text_properties },
+        { NS_odf_text, XML_list_level_style_number, NS_odf_style, XML_text_properties },
+    };
+
+    init_element_validator(rules, std::size(rules));
 }
 
 void style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::vector<xml_token_attr_t>& attrs)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
+    push_stack(ns, name);
 
     if (ns == NS_odf_style)
     {
@@ -101,8 +115,6 @@ void style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::ve
         {
             case XML_style:
             {
-                xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-
                 std::string_view style_name;
                 std::string_view display_style_name;
                 std::string_view parent_style_name;
@@ -162,7 +174,6 @@ void style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::ve
             }
             case XML_table_column_properties:
             {
-                xml_element_expected(parent, NS_odf_style, XML_style);
                 assert(m_current_style->family == style_family_table_column);
 
                 for (const xml_token_attr_t& attr: attrs)
@@ -184,7 +195,6 @@ void style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::ve
             }
             case XML_table_row_properties:
             {
-                xml_element_expected(parent, NS_odf_style, XML_style);
                 assert(m_current_style->family == style_family_table_row);
 
                 for (const xml_token_attr_t& attr : attrs)
@@ -207,16 +217,15 @@ void style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::ve
                 break;
             }
             case XML_table_properties:
-                xml_element_expected(parent, NS_odf_style, XML_style);
                 break;
             case XML_paragraph_properties:
-                start_paragraph_properties(parent, attrs);
+                start_paragraph_properties(attrs);
                 break;
             case XML_text_properties:
-                start_text_properties(parent, attrs);
+                start_text_properties(attrs);
                 break;
             case XML_table_cell_properties:
-                start_table_cell_properties(parent, attrs);
+                start_table_cell_properties(attrs);
                 break;
             default:
                 warn_unhandled();
@@ -245,10 +254,8 @@ void style_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
 }
 
-void style_context::start_paragraph_properties(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
+void style_context::start_paragraph_properties(const xml_token_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_odf_style, XML_style);
-
     for (const xml_token_attr_t& attr : attrs)
     {
         if (attr.ns == NS_odf_fo)
@@ -292,19 +299,8 @@ void style_context::start_paragraph_properties(const xml_token_pair_t& parent, c
     }
 }
 
-void style_context::start_text_properties(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
+void style_context::start_text_properties(const xml_token_attrs_t& attrs)
 {
-    static const xml_elem_set_t expected = {
-        { NS_odf_style, XML_style },
-        { NS_odf_text, XML_list_level_style_number },
-        { NS_odf_text, XML_list_level_style_bullet },
-    };
-    xml_element_expected(parent, expected);
-
-    if (parent != xml_token_pair_t(NS_odf_style, XML_style))
-        // TODO : handle this properly in the future.
-        return;
-
     // NB: no need to intern the font names since they are consumed at the end
     // of this function.
     std::optional<std::string_view> font_name;
@@ -552,10 +548,8 @@ void style_context::start_text_properties(const xml_token_pair_t& parent, const 
     }
 }
 
-void style_context::start_table_cell_properties(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
+void style_context::start_table_cell_properties(const xml_token_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_odf_style, XML_style);
-
     if (m_current_style->family != style_family_table_cell)
         throw xml_structure_error("expected table_cell family style in cell_properties element");
 
