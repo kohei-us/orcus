@@ -47,11 +47,12 @@ private:
     std::optional<std::size_t> query_parent_style_xfid(const odf_style& style) const;
 
 private:
-    spreadsheet::iface::import_styles* mp_styles;
+    spreadsheet::iface::import_styles* mp_styles = nullptr;
     odf_styles_map_type m_styles;
 
     // an automatic style corresponds to a cell format and not a real style
-    bool m_automatic_styles;
+    bool m_automatic_styles = false;
+    bool m_commit_defaults = true;
 
     style_context m_cxt_style;
     number_style_context m_cxt_number_style;

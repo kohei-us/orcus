@@ -23,7 +23,6 @@ styles_context::styles_context(
     spreadsheet::iface::import_styles* iface_styles) :
     xml_context_base(session_cxt, tk),
     mp_styles(iface_styles),
-    m_automatic_styles(false),
     m_cxt_style(session_cxt, tk, mp_styles),
     m_cxt_number_style(session_cxt, tk),
     m_cxt_currency_style(session_cxt, tk),
@@ -41,8 +40,6 @@ styles_context::styles_context(
     register_child(&m_cxt_percentage_style);
     register_child(&m_cxt_date_style);
     register_child(&m_cxt_time_style);
-
-    commit_default_styles();
 }
 
 xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_t name)
@@ -89,10 +86,27 @@ xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_
         }
     }
 
-    if (ns == NS_odf_style && name == XML_style)
+    if (ns == NS_odf_style)
     {
-        m_cxt_style.reset();
-        return &m_cxt_style;
+        if (name != XML_default_style)
+        {
+            // <office:styles> structure always starts with N number of default styles.
+            // Commit those default styles once the default styles section ends.
+            if (m_commit_defaults && !m_automatic_styles)
+            {
+                commit_default_styles();
+                m_commit_defaults = false;
+            }
+        }
+
+        switch (name)
+        {
+            case XML_style:
+            {
+                m_cxt_style.reset();
+                return &m_cxt_style;
+            }
+        }
     }
 
     return nullptr;
@@ -265,6 +279,8 @@ void styles_context::characters(std::string_view /*str*/, bool /*transient*/)
 void styles_context::reset()
 {
     m_styles.clear();
+    m_automatic_styles = false;
+    m_commit_defaults = true;
 }
 
 odf_styles_map_type styles_context::pop_styles()
