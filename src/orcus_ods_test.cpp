@@ -397,13 +397,25 @@ void test_ods_import_styles_direct_format()
     const ss::sheet* sh = doc->get_sheet(0);
     assert(sh);
 
+    // default cell format - always at index of 0
+    const ss::cell_format_t* xf = styles.get_cell_format(0);
+    assert(xf);
+    const ss::font_t* font = styles.get_font(xf->font);
+    assert(font);
+    assert(font->name == "Liberation Sans");
+    assert(font->size == 10.0);
+    assert(font->name_asian == "Noto Sans CJK JP");
+    assert(font->size_asian == 10.0);
+    assert(font->name_complex == "Lohit Devanagari");
+    assert(font->size_complex == 10.0);
+
     // B2 - horizontally center, bold and underlined
     std::size_t xfid = sh->get_cell_format(1, 1);
-    const ss::cell_format_t* xf = styles.get_cell_format(xfid);
+    xf = styles.get_cell_format(xfid);
     assert(xf);
     assert(xf->hor_align == ss::hor_alignment_t::center);
 
-    const ss::font_t* font = styles.get_font(xf->font);
+    font = styles.get_font(xf->font);
     assert(font);
     assert(font->bold);
     assert(*font->bold);
