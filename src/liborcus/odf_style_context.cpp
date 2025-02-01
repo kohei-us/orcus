@@ -91,7 +91,16 @@ style_context::style_context(session_context& session_cxt, const tokens& tk, ss:
 {
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_style, XML_default_style }, // root element
         { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_style, XML_style }, // root element
+        { NS_odf_style, XML_default_style, NS_odf_style, XML_graphic_properties },
+        { NS_odf_style, XML_default_style, NS_odf_style, XML_paragraph_properties },
+        { NS_odf_style, XML_default_style, NS_odf_style, XML_table_cell_properties },
+        { NS_odf_style, XML_default_style, NS_odf_style, XML_table_column_properties },
+        { NS_odf_style, XML_default_style, NS_odf_style, XML_table_properties },
+        { NS_odf_style, XML_default_style, NS_odf_style, XML_table_row_properties },
+        { NS_odf_style, XML_default_style, NS_odf_style, XML_text_properties },
+        { NS_odf_style, XML_style, NS_odf_style, XML_graphic_properties },
         { NS_odf_style, XML_style, NS_odf_style, XML_paragraph_properties },
         { NS_odf_style, XML_style, NS_odf_style, XML_table_cell_properties },
         { NS_odf_style, XML_style, NS_odf_style, XML_table_column_properties },
@@ -113,6 +122,7 @@ void style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::ve
     {
         switch (name)
         {
+            case XML_default_style:
             case XML_style:
             {
                 std::string_view style_name;

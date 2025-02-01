@@ -49,6 +49,7 @@ private:
 private:
     spreadsheet::iface::import_styles* mp_styles = nullptr;
     odf_styles_map_type m_styles;
+    odf_styles_map_type m_default_styles;
 
     // an automatic style corresponds to a cell format and not a real style
     bool m_automatic_styles = false;

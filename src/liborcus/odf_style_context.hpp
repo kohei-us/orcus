@@ -19,7 +19,7 @@ namespace spreadsheet { namespace iface {
 }}
 
 /**
- * Context for <style:style> element scope.
+ * Context for <style:style> or <style:default-style> element scope.
  *
  * This context populates one odf_style instance that represents a single set
  * of style properties.

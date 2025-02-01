@@ -18,6 +18,28 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus {
 
+namespace {
+
+void push_style_to_interface(const odf_style::cell& cell, ss::iface::import_xf* xf)
+{
+    xf->set_font(cell.font);
+    xf->set_fill(cell.fill);
+    xf->set_border(cell.border);
+    xf->set_protection(cell.protection);
+    xf->set_number_format(cell.number_format);
+
+    if (cell.hor_align != ss::hor_alignment_t::unknown)
+        xf->set_horizontal_alignment(cell.hor_align);
+    if (cell.ver_align != ss::ver_alignment_t::unknown)
+        xf->set_vertical_alignment(cell.ver_align);
+    if (cell.wrap_text)
+        xf->set_wrap_text(*cell.wrap_text);
+    if (cell.shrink_to_fit)
+        xf->set_shrink_to_fit(*cell.shrink_to_fit);
+}
+
+} // anonymous namespace
+
 styles_context::styles_context(
     session_context& session_cxt, const tokens& tk,
     spreadsheet::iface::import_styles* iface_styles) :
@@ -101,6 +123,7 @@ xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_
 
         switch (name)
         {
+            case XML_default_style:
             case XML_style:
             {
                 m_cxt_style.reset();
@@ -163,85 +186,78 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
             default:;
         }
     }
-    else if (ns == NS_odf_style && name == XML_style)
+    else if (ns == NS_odf_style)
     {
-        assert(child == &m_cxt_style);
-        std::unique_ptr<odf_style> current_style = m_cxt_style.pop_style();
-
-        std::optional<std::size_t> parent_xfid = query_parent_style_xfid(*current_style);
-
-        if (mp_styles && current_style->family == style_family_table_cell)
+        switch (name)
         {
-            auto& cell = std::get<odf_style::cell>(current_style->data);
-
-            if (m_automatic_styles)
+            case XML_default_style:
             {
-                // Import it into the direct cell style store
-                auto* xf = mp_styles->start_xf(ss::xf_category_t::cell);
-                ENSURE_INTERFACE(xf, import_xf);
-                xf->set_font(cell.font);
-                xf->set_fill(cell.fill);
-                xf->set_border(cell.border);
-                xf->set_protection(cell.protection);
-                xf->set_number_format(cell.number_format);
+                assert(child == &m_cxt_style);
 
-                if (cell.hor_align != ss::hor_alignment_t::unknown)
-                    xf->set_horizontal_alignment(cell.hor_align);
-                if (cell.ver_align != ss::ver_alignment_t::unknown)
-                    xf->set_vertical_alignment(cell.ver_align);
-                if (cell.wrap_text)
-                    xf->set_wrap_text(*cell.wrap_text);
-                if (cell.shrink_to_fit)
-                    xf->set_shrink_to_fit(*cell.shrink_to_fit);
-
-                if (parent_xfid)
-                    xf->set_style_xf(*parent_xfid);
-
-                cell.xf = xf->commit();
+                if (std::unique_ptr<odf_style> current_style = m_cxt_style.pop_style(); current_style)
+                {
+                    odf_style_key key{current_style->family, ""}; // default style is unnamed
+                    m_default_styles.emplace(key, std::move(current_style));
+                }
+                break;
             }
-            else
+            case XML_style:
             {
-                // Import it into the cell style xf store, and reference
-                // its index in the cell style name store.
-                auto* xf = mp_styles->start_xf(ss::xf_category_t::cell_style);
-                ENSURE_INTERFACE(xf, import_xf);
-                xf->set_font(cell.font);
-                xf->set_fill(cell.fill);
-                xf->set_border(cell.border);
-                xf->set_protection(cell.protection);
-                xf->set_number_format(cell.number_format);
+                assert(child == &m_cxt_style);
+                std::unique_ptr<odf_style> current_style = m_cxt_style.pop_style();
 
-                if (cell.hor_align != ss::hor_alignment_t::unknown)
-                    xf->set_horizontal_alignment(cell.hor_align);
-                if (cell.ver_align != ss::ver_alignment_t::unknown)
-                    xf->set_vertical_alignment(cell.ver_align);
-                if (cell.wrap_text)
-                    xf->set_wrap_text(*cell.wrap_text);
-                if (cell.shrink_to_fit)
-                    xf->set_shrink_to_fit(*cell.shrink_to_fit);
+                std::optional<std::size_t> parent_xfid = query_parent_style_xfid(*current_style);
 
-                if (parent_xfid)
-                    xf->set_style_xf(*parent_xfid);
+                if (mp_styles && current_style->family == style_family_table_cell)
+                {
+                    auto& cell = std::get<odf_style::cell>(current_style->data);
 
-                size_t style_xf_id = xf->commit();
-                cell.xf = style_xf_id;
+                    if (m_automatic_styles)
+                    {
+                        // Import it into the direct cell style store
+                        auto* xf = mp_styles->start_xf(ss::xf_category_t::cell);
+                        ENSURE_INTERFACE(xf, import_xf);
+                        push_style_to_interface(cell, xf);
 
-                auto* cell_style = mp_styles->start_cell_style();
-                ENSURE_INTERFACE(cell_style, import_cell_style);
+                        if (parent_xfid)
+                            xf->set_style_xf(*parent_xfid);
 
-                if (!current_style->display_name.empty())
-                    cell_style->set_display_name(current_style->display_name);
+                        cell.xf = xf->commit();
+                    }
+                    else
+                    {
+                        // Import it into the cell style xf store, and reference
+                        // its index in the cell style name store.
+                        auto* xf = mp_styles->start_xf(ss::xf_category_t::cell_style);
+                        ENSURE_INTERFACE(xf, import_xf);
+                        push_style_to_interface(cell, xf);
 
-                cell_style->set_name(current_style->name);
-                cell_style->set_xf(style_xf_id);
-                cell_style->set_parent_name(current_style->parent_name);
-                cell_style->commit();
+                        if (parent_xfid)
+                            xf->set_style_xf(*parent_xfid);
+
+                        size_t style_xf_id = xf->commit();
+                        cell.xf = style_xf_id;
+
+                        auto* cell_style = mp_styles->start_cell_style();
+                        ENSURE_INTERFACE(cell_style, import_cell_style);
+
+                        if (!current_style->display_name.empty())
+                            cell_style->set_display_name(current_style->display_name);
+
+                        cell_style->set_name(current_style->name);
+                        cell_style->set_xf(style_xf_id);
+                        cell_style->set_parent_name(current_style->parent_name);
+                        cell_style->commit();
+                    }
+                }
+
+                std::string_view style_name = get_session_context().intern(current_style->name);
+                odf_style_key key{current_style->family, style_name};
+                m_styles.emplace(key, std::move(current_style));
+
+                break;
             }
         }
-
-        std::string_view style_name = get_session_context().intern(current_style->name);
-        odf_style_key key{current_style->family, style_name};
-        m_styles.emplace(key, std::move(current_style));
     }
 }
 
@@ -318,6 +334,13 @@ void styles_context::commit_default_styles()
 
     auto* xf = mp_styles->start_xf(ss::xf_category_t::cell);
     ENSURE_INTERFACE(xf, import_xf);
+
+    if (auto it = m_default_styles.find({style_family_table_cell, ""}); it != m_default_styles.end())
+    {
+        auto& cell = std::get<odf_style::cell>(it->second->data);
+        push_style_to_interface(cell, xf);
+    }
+
     xf->commit();
 
     xf = mp_styles->start_xf(ss::xf_category_t::cell_style);
