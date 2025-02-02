@@ -182,6 +182,7 @@ void parse_element_text_properties(const std::vector<xml_token_attr_t>& attrs, o
                         color = "MAGENTA";
                     if (attr.value == "#ffffff")
                         color = "WHITE";
+                    break;
                 }
             }
         }
