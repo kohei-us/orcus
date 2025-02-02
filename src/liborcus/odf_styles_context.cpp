@@ -62,6 +62,14 @@ styles_context::styles_context(
     register_child(&m_cxt_percentage_style);
     register_child(&m_cxt_date_style);
     register_child(&m_cxt_time_style);
+
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_office, XML_automatic_styles }, // root element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_office, XML_styles }, // root element
+    };
+
+    init_element_validator(rules, std::size(rules));
 }
 
 xml_context_base* styles_context::create_child_context(xmlns_id_t ns, xml_token_t name)
@@ -263,13 +271,12 @@ void styles_context::end_child_context(xmlns_id_t ns, xml_token_t name, xml_cont
 
 void styles_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& /*attrs*/)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
+    push_stack(ns, name);
     if (ns == NS_odf_office)
     {
         switch (name)
         {
             case XML_automatic_styles:
-                xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
                 m_automatic_styles = true;
                 break;
             case XML_styles:
