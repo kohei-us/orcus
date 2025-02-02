@@ -124,108 +124,14 @@ void style_context::start_element(xmlns_id_t ns, xml_token_t name, const std::ve
         {
             case XML_default_style:
             case XML_style:
-            {
-                std::string_view style_name;
-                std::string_view display_style_name;
-                std::string_view parent_style_name;
-                std::optional<std::string_view> data_style_name;
-                odf_style_family family = style_family_unknown;
-
-                for (const xml_token_attr_t& attr : attrs)
-                {
-                    if (attr.ns == NS_odf_style)
-                    {
-                        switch (attr.name)
-                        {
-                            case XML_name:
-                                style_name = intern(attr.value);
-                                break;
-                            case XML_display_name:
-                                display_style_name = intern(attr.value);
-                                break;
-                            case XML_family:
-                                family = to_style_family(attr.value);
-                                break;
-                            case XML_parent_style_name:
-                                parent_style_name = intern(attr.value);
-                                break;
-                            case XML_data_style_name:
-                                data_style_name = attr.value; // no need to intern
-                                break;
-                        }
-                    }
-                }
-
-                m_current_style = std::make_unique<odf_style>(
-                    style_name, display_style_name, family, parent_style_name);
-
-                if (data_style_name && family == style_family_table_cell)
-                {
-                    const auto& ods_data = get_session_context().get_data<ods_session_data>();
-                    const auto& numfmt_name2id = ods_data.number_formats.name2id_map;
-
-                    if (auto it = numfmt_name2id.find(*data_style_name); it != numfmt_name2id.end())
-                    {
-                        // record the number format id associated with the name.
-                        auto& data = std::get<odf_style::cell>(m_current_style->data);
-                        data.number_format = it->second;
-                    }
-                    else
-                    {
-                        if (get_config().debug)
-                        {
-                            std::ostringstream os;
-                            os << "no number style found for the data style name of '" << *data_style_name << "'";
-                            warn(os.str());
-                        }
-                    }
-                }
+                start_style(attrs);
                 break;
-            }
             case XML_table_column_properties:
-            {
-                assert(m_current_style->family == style_family_table_column);
-
-                for (const xml_token_attr_t& attr: attrs)
-                {
-                    if (attr.ns == NS_odf_style)
-                    {
-                        switch (attr.name)
-                        {
-                            case XML_column_width:
-                            {
-                                std::get<odf_style::column>(m_current_style->data).width = to_length(attr.value);
-                                break;
-                            }
-                        }
-                    }
-                }
-
+                start_table_column_properties(attrs);
                 break;
-            }
             case XML_table_row_properties:
-            {
-                assert(m_current_style->family == style_family_table_row);
-
-                for (const xml_token_attr_t& attr : attrs)
-                {
-                    if (attr.ns == NS_odf_style)
-                    {
-                        switch (attr.name)
-                        {
-                            case XML_row_height:
-                            {
-                                auto& data = std::get<odf_style::row>(m_current_style->data);
-                                data.height = to_length(attr.value);
-                                data.height_set = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
+                start_table_row_properties(attrs);
                 break;
-            }
             case XML_table_properties:
                 break;
             case XML_paragraph_properties:
@@ -262,6 +168,107 @@ std::unique_ptr<odf_style> style_context::pop_style()
 
 void style_context::characters(std::string_view /*str*/, bool /*transient*/)
 {
+}
+
+void style_context::start_style(const xml_token_attrs_t& attrs)
+{
+    std::string_view style_name;
+    std::string_view display_style_name;
+    std::string_view parent_style_name;
+    std::optional<std::string_view> data_style_name;
+    odf_style_family family = style_family_unknown;
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns == NS_odf_style)
+        {
+            switch (attr.name)
+            {
+                case XML_name:
+                    style_name = intern(attr.value);
+                    break;
+                case XML_display_name:
+                    display_style_name = intern(attr.value);
+                    break;
+                case XML_family:
+                    family = to_style_family(attr.value);
+                    break;
+                case XML_parent_style_name:
+                    parent_style_name = intern(attr.value);
+                    break;
+                case XML_data_style_name:
+                    data_style_name = attr.value; // no need to intern
+                    break;
+            }
+        }
+    }
+
+    m_current_style = std::make_unique<odf_style>(
+        style_name, display_style_name, family, parent_style_name);
+
+    if (data_style_name && family == style_family_table_cell)
+    {
+        const auto& ods_data = get_session_context().get_data<ods_session_data>();
+        const auto& numfmt_name2id = ods_data.number_formats.name2id_map;
+
+        if (auto it = numfmt_name2id.find(*data_style_name); it != numfmt_name2id.end())
+        {
+            // record the number format id associated with the name.
+            auto& data = std::get<odf_style::cell>(m_current_style->data);
+            data.number_format = it->second;
+        }
+        else
+        {
+            if (get_config().debug)
+            {
+                std::ostringstream os;
+                os << "no number style found for the data style name of '" << *data_style_name << "'";
+                warn(os.str());
+            }
+        }
+    }
+}
+
+void style_context::start_table_column_properties(const xml_token_attrs_t& attrs)
+{
+    assert(m_current_style->family == style_family_table_column);
+
+    for (const xml_token_attr_t& attr: attrs)
+    {
+        if (attr.ns == NS_odf_style)
+        {
+            switch (attr.name)
+            {
+                case XML_column_width:
+                {
+                    std::get<odf_style::column>(m_current_style->data).width = to_length(attr.value);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void style_context::start_table_row_properties(const xml_token_attrs_t& attrs)
+{
+    assert(m_current_style->family == style_family_table_row);
+
+    for (const xml_token_attr_t& attr : attrs)
+    {
+        if (attr.ns == NS_odf_style)
+        {
+            switch (attr.name)
+            {
+                case XML_row_height:
+                {
+                    auto& data = std::get<odf_style::row>(m_current_style->data);
+                    data.height = to_length(attr.value);
+                    data.height_set = true;
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void style_context::start_paragraph_properties(const xml_token_attrs_t& attrs)
