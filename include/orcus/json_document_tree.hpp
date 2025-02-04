@@ -452,6 +452,8 @@ private:
 
 /**
  * This class stores a parsed JSON document tree structure.
+ *
+ * @note Instance of this class is movable but not copyable.
  */
 class ORCUS_DLLPUBLIC document_tree
 {
@@ -536,8 +538,12 @@ public:
 };
 
 /**
+ * References a subtree structure of an existing document_tree instance.
+ *
+ * @note Instance of this class is movable but not copyable.
+ *
  * @note Instance of this class can only reference the source document; it
- *       becomes invalid when the source document is modified.
+ *       becomes invalid when the source document is modified or destroyed.
  */
 class ORCUS_DLLPUBLIC subtree
 {
@@ -546,6 +552,14 @@ class ORCUS_DLLPUBLIC subtree
 public:
 
     subtree();
+
+    /**
+     * Creates a subtree reference of a source document.
+     *
+     * @param src    Source document instance.
+     * @param path   JSONPath expression referencing the root of a subtree in
+     *               the source document.
+     */
     subtree(const document_tree& src, std::string_view path);
     subtree(const subtree&) = delete;
     subtree(subtree&& other);
