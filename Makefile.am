@@ -22,7 +22,19 @@ endif
 pkgconfig_DATA = $(pcfiles)
 pkgconfigdir = $(libdir)/pkgconfig
 
+# use this command to help generate the file lists below:
+# git ls-tree -r --name-only HEAD -- {path} | sed -e 's/^/\t/g' -e 's/$/\ \\/g' -e 's/#/\\#/g'
+
 doc_data = \
+	doc/_static/cli/orcus-csv-help.txt \
+	doc/_static/cli/orcus-gnumeric-help.txt \
+	doc/_static/cli/orcus-json-help.txt \
+	doc/_static/cli/orcus-ods-help.txt \
+	doc/_static/cli/orcus-parquet-help.txt \
+	doc/_static/cli/orcus-xls-xml-help.txt \
+	doc/_static/cli/orcus-xlsx-help.txt \
+	doc/_static/cli/orcus-xml-help.txt \
+	doc/_static/cli/orcus-yaml-help.txt \
 	doc/_static/images/overview/doc-content.png \
 	doc/_static/images/overview/multi-sheets-sheet1.png \
 	doc/_static/images/overview/multi-sheets-sheet2.png \
@@ -37,57 +49,23 @@ doc_data = \
 	doc/cli/orcus_xml.rst \
 	doc/cli/orcus_yaml.rst \
 	doc/conf.py \
-	doc/cpp/core/config.rst \
-	doc/cpp/core/import-filter/csv.rst \
-	doc/cpp/core/import-filter/detect.rst \
-	doc/cpp/core/import-filter/gnumeric.rst \
-	doc/cpp/core/import-filter/index.rst \
-	doc/cpp/core/import-filter/json.rst \
-	doc/cpp/core/import-filter/ods.rst \
-	doc/cpp/core/import-filter/xls_xml.rst \
-	doc/cpp/core/import-filter/xlsx.rst \
-	doc/cpp/core/import-filter/xml.rst \
-	doc/cpp/core/index.rst \
-	doc/cpp/core/interface/global.rst \
-	doc/cpp/core/interface/index.rst \
-	doc/cpp/core/interface/spreadsheet/document.rst \
-	doc/cpp/core/interface/spreadsheet/document_export.rst \
-	doc/cpp/core/interface/spreadsheet/index.rst \
-	doc/cpp/core/interface/spreadsheet/pivot.rst \
-	doc/cpp/core/interface/spreadsheet/sheet.rst \
-	doc/cpp/core/interface/spreadsheet/styles.rst \
-	doc/cpp/core/interface/spreadsheet/view.rst \
-	doc/cpp/core/tree-doc/index.rst \
-	doc/cpp/core/tree-doc/json.rst \
-	doc/cpp/core/tree-doc/yaml.rst \
-	doc/cpp/core/types/core.rst \
-	doc/cpp/core/types/index.rst \
-	doc/cpp/core/types/view.rst \
-	doc/cpp/core/utils.rst \
 	doc/cpp/index.rst \
-	doc/cpp/parser/archive.rst \
-	doc/cpp/parser/base64.rst \
-	doc/cpp/parser/css.rst \
-	doc/cpp/parser/csv.rst \
-	doc/cpp/parser/exception.rst \
-	doc/cpp/parser/index.rst \
-	doc/cpp/parser/json.rst \
-	doc/cpp/parser/stream.rst \
-	doc/cpp/parser/types.rst \
-	doc/cpp/parser/util.rst \
-	doc/cpp/parser/xml.rst \
-	doc/cpp/parser/xml_writer.rst \
-	doc/cpp/parser/yaml.rst \
-	doc/cpp/spreadsheet-doc/document.rst \
-	doc/cpp/spreadsheet-doc/import-export.rst \
-	doc/cpp/spreadsheet-doc/index.rst \
-	doc/cpp/spreadsheet-doc/pivot.rst \
-	doc/cpp/spreadsheet-doc/shared-strings.rst \
-	doc/cpp/spreadsheet-doc/sheet.rst \
-	doc/cpp/spreadsheet-doc/styles.rst \
-	doc/cpp/spreadsheet-doc/table.rst \
-	doc/cpp/spreadsheet-doc/types.rst \
-	doc/cpp/spreadsheet-doc/view.rst \
+	doc/cpp/orcus/css/index.rst \
+	doc/cpp/orcus/csv/index.rst \
+	doc/cpp/orcus/detail/index.rst \
+	doc/cpp/orcus/detail/thread/index.rst \
+	doc/cpp/orcus/dom/index.rst \
+	doc/cpp/orcus/iface/index.rst \
+	doc/cpp/orcus/index.rst \
+	doc/cpp/orcus/json/detail/index.rst \
+	doc/cpp/orcus/json/detail/init/index.rst \
+	doc/cpp/orcus/json/index.rst \
+	doc/cpp/orcus/sax/detail/index.rst \
+	doc/cpp/orcus/sax/index.rst \
+	doc/cpp/orcus/spreadsheet/iface/index.rst \
+	doc/cpp/orcus/spreadsheet/index.rst \
+	doc/cpp/orcus/yaml/detail/index.rst \
+	doc/cpp/orcus/yaml/index.rst \
 	doc/doxygen.conf \
 	doc/environment.yml \
 	doc/index.rst \
@@ -99,8 +77,12 @@ doc_data = \
 	doc/overview/doc-orcus.rst \
 	doc/overview/doc-user.rst \
 	doc/overview/index.rst \
-	doc/overview/json.rst \
-	doc/overview/yaml.rst \
+	doc/overview/json/doctree-direct.rst \
+	doc/overview/json/doctree.rst \
+	doc/overview/json/index.rst \
+	doc/overview/json/parser.rst \
+	doc/overview/json/subtree.rst \
+	doc/overview/yaml/index.rst \
 	doc/python/index.rst \
 	doc/python/orcus/cell.rst \
 	doc/python/orcus/cell_type.rst \
@@ -131,6 +113,7 @@ doc_example_data = \
 	doc_example/json_doc_1.cpp \
 	doc_example/json_doc_2.cpp \
 	doc_example/json_parser_1.cpp \
+	doc_example/json_subtree_1.cpp \
 	doc_example/spreadsheet_doc_1.cpp \
 	doc_example/spreadsheet_doc_1_num_and_formula.cpp \
 	doc_example/spreadsheet_doc_2.cpp \
@@ -142,11 +125,13 @@ doc_example_data = \
 bin_data = \
 	bin/build-extra-dist.sh \
 	bin/env-osx.sh \
-	bin/gen-cli-docs.py \
+	bin/env.sh \
+	bin/gen-cli-help.sh \
 	bin/gen-files.py \
 	bin/gen-gfm-release-table.sh \
 	bin/gen-test-json-structure-outputs.sh \
 	bin/gen-test-xml-outputs.sh \
+	bin/parse-doxygen-xml.py \
 	bin/run-bulk-tests.py \
 	bin/run-python.sh \
 	bin/unpack-zipped-xml.sh
@@ -165,7 +150,7 @@ misc_data = \
 	misc/xml-tokens/gen-odf-tokens.py \
 	misc/xml-tokens/gen-ooxml-tokens.py \
 	misc/xml-tokens/gen-tokens.py \
-	misc/xml-tokens/gnumeric.xsd \
+	misc/xml-tokens/gnumeric-extra-tokens.txt \
 	misc/xml-tokens/ooxml-extra-tokens.txt \
 	misc/xml-tokens/token_util.py \
 	misc/xml-tokens/xls-xml-tokens.txt
@@ -226,10 +211,13 @@ test_data = \
 	test/gnumeric/number-formats/input.gnumeric \
 	test/gnumeric/raw-values-1/check.txt \
 	test/gnumeric/raw-values-1/input.gnumeric \
-	test/gnumeric/table/autofilter.gnumeric \
+	test/gnumeric/table/autofilter-multi-rules.gnumeric \
+	test/gnumeric/table/autofilter-number.gnumeric \
+	test/gnumeric/table/autofilter-text.gnumeric \
 	test/gnumeric/test.gnumeric \
 	test/gnumeric/text-alignment/input.gnumeric \
-	test/gnumeric/text-formats/input.gnumeric \
+	test/gnumeric/text-formats/basic.gnumeric \
+	test/gnumeric/text-formats/underline.gnumeric \
 	test/json-mapped/array-of-arrays-basic/check.txt \
 	test/json-mapped/array-of-arrays-basic/input.json \
 	test/json-mapped/array-of-arrays-basic/map.json \
@@ -284,6 +272,22 @@ test_data = \
 	test/json/empty-array-2/input.json \
 	test/json/empty-array-3/check.txt \
 	test/json/empty-array-3/input.json \
+	test/json/escape-control/not-printable/input.json \
+	test/json/escape-control/not-printable/output.json \
+	test/json/escape-control/printable/check.txt \
+	test/json/escape-control/printable/input.json \
+	test/json/escape-surrogate/mix/input.json \
+	test/json/escape-surrogate/mix/output.json \
+	test/json/escape-surrogate/one-char-nbsp/input.json \
+	test/json/escape-surrogate/one-char-nbsp/output.json \
+	test/json/escape-surrogate/one-char-with-ba/input.json \
+	test/json/escape-surrogate/one-char-with-ba/output.json \
+	test/json/escape-surrogate/one-char/check.txt \
+	test/json/escape-surrogate/one-char/input.json \
+	test/json/escape-surrogate/two-chars-with-bc/input.json \
+	test/json/escape-surrogate/two-chars-with-bc/output.json \
+	test/json/escape-surrogate/two-chars/check.txt \
+	test/json/escape-surrogate/two-chars/input.json \
 	test/json/nested1/check.txt \
 	test/json/nested1/input.json \
 	test/json/nested1/output.yaml \
@@ -293,6 +297,46 @@ test_data = \
 	test/json/refs1/check.txt \
 	test/json/refs1/input.json \
 	test/json/refs1/ref.json \
+	test/json/subtree/array-of-objects/input.json \
+	test/json/subtree/array-of-objects/output-0.json \
+	test/json/subtree/array-of-objects/output-1.json \
+	test/json/subtree/array-of-objects/output-3.json \
+	test/json/subtree/array-of-objects/output-spec-0.json \
+	test/json/subtree/array-of-objects/output-spec-1.json \
+	test/json/subtree/array-of-objects/output-spec-2.json \
+	test/json/subtree/medium1/input.json \
+	test/json/subtree/medium1/output-0.json \
+	test/json/subtree/medium1/output-1.json \
+	test/json/subtree/medium1/output-2.json \
+	test/json/subtree/medium1/output-3.json \
+	test/json/subtree/medium1/output-spec-0.json \
+	test/json/subtree/medium1/output-spec-1.json \
+	test/json/subtree/medium1/output-spec-2.json \
+	test/json/subtree/medium1/output-spec-3.json \
+	test/json/subtree/medium1/output-spec-4.json \
+	test/json/subtree/medium1/output-spec-5.json \
+	test/json/subtree/medium1/output-spec-6.json \
+	test/json/subtree/medium1/profile-phoneNumbers-0.i1.json \
+	test/json/subtree/medium1/profile-phoneNumbers.i3.json \
+	test/json/subtree/medium1/profile.i4.json \
+	test/json/subtree/medium2/input.json \
+	test/json/subtree/medium2/output-0.json \
+	test/json/subtree/medium2/output-1.json \
+	test/json/subtree/medium2/output-2.json \
+	test/json/subtree/medium2/output-3.json \
+	test/json/subtree/medium2/output-spec-0.json \
+	test/json/subtree/medium2/output-spec-1.json \
+	test/json/subtree/medium2/output-spec-2.json \
+	test/json/subtree/medium2/output-spec-3.json \
+	test/json/subtree/one-array/0.json \
+	test/json/subtree/one-array/1.json \
+	test/json/subtree/one-array/2.json \
+	test/json/subtree/one-array/all.json \
+	test/json/subtree/one-array/input.json \
+	test/json/subtree/one-array/output-spec-0.json \
+	test/json/subtree/one-array/output-spec-1.json \
+	test/json/subtree/one-array/output-spec-2.json \
+	test/json/subtree/one-array/output-spec-3.json \
 	test/json/swagger/check.txt \
 	test/json/swagger/input.json \
 	test/json/swagger/output.yaml \
@@ -619,6 +663,9 @@ test_data = \
 	test/json/validation/y_structure_trailing_newline.json \
 	test/json/validation/y_structure_true_in_array.json \
 	test/json/validation/y_structure_whitespace_array.json \
+	test/ods/autofilter/largest-smallest.ods \
+	test/ods/autofilter/multi-conditions.ods \
+	test/ods/autofilter/text-comparisons.ods \
 	test/ods/borders/grid-box.ods \
 	test/ods/borders/single-cells.ods \
 	test/ods/cell-properties/wrap-and-shrink.ods \
@@ -693,6 +740,7 @@ test_data = \
 	test/xls-xml/empty-rows/check.txt \
 	test/xls-xml/empty-rows/input.xml \
 	test/xls-xml/formatted-text/basic.xml \
+	test/xls-xml/formatted-text/underline.xml \
 	test/xls-xml/formula-array-1/check.txt \
 	test/xls-xml/formula-array-1/input.xml \
 	test/xls-xml/formula-cells-1/check.txt \
@@ -728,10 +776,14 @@ test_data = \
 	test/xls-xml/styles/direct-format.xml \
 	test/xls-xml/table-offset/check.txt \
 	test/xls-xml/table-offset/input.xml \
-	test/xls-xml/table/autofilter.xml \
+	test/xls-xml/table/autofilter-asterisk.xml \
+	test/xls-xml/table/autofilter-number.xml \
+	test/xls-xml/table/autofilter-question.xml \
+	test/xls-xml/table/autofilter-text.xml \
+	test/xls-xml/table/autofilter-wildcard.xml \
 	test/xls-xml/text-alignment/input.xml \
-	test/xls-xml/unnamed-parent-styles/input.xml \
 	test/xls-xml/unnamed-parent-styles/check.txt \
+	test/xls-xml/unnamed-parent-styles/input.xml \
 	test/xls-xml/view/cursor-per-sheet.xml \
 	test/xls-xml/view/cursor-split-pane.xml \
 	test/xls-xml/view/frozen-pane.xml \
@@ -756,6 +808,7 @@ test_data = \
 	test/xlsx/formatted-text/basic.xlsx \
 	test/xlsx/formatted-text/bold-and-italic.xlsx \
 	test/xlsx/formatted-text/colored-text.xlsx \
+	test/xlsx/formatted-text/underline.xlsx \
 	test/xlsx/formula-array-1/check.txt \
 	test/xlsx/formula-array-1/input.xlsx \
 	test/xlsx/formula-cells/check.txt \
@@ -789,7 +842,8 @@ test_data = \
 	test/xlsx/revision/cell-change-basic.xlsx \
 	test/xlsx/styles/column-styles.xlsx \
 	test/xlsx/styles/direct-format.xlsx \
-	test/xlsx/table/autofilter-text-filter-1.xlsx \
+	test/xlsx/table/autofilter-basic-number.xlsx \
+	test/xlsx/table/autofilter-basic-text.xlsx \
 	test/xlsx/table/autofilter.xlsx \
 	test/xlsx/table/table-1.xlsx \
 	test/xlsx/table/table-2.xlsx \

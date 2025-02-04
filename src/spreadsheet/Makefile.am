@@ -115,4 +115,9 @@ auto_filter_test_LDADD = \
 	../liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	$(LIBIXION_LIBS)
 
+distclean-local:
+	rm -rf $(TESTS)
+
+@VALGRIND_CHECK_RULES@
+
 endif # BUILD_SPREADSHEET_MODEL
