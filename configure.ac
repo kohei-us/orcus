@@ -5,8 +5,8 @@
 # Version information
 # ===================
 m4_define([orcus_major_version], [0])
-m4_define([orcus_minor_version], [19])
-m4_define([orcus_micro_version], [99])
+m4_define([orcus_minor_version], [20])
+m4_define([orcus_micro_version], [0])
 m4_define([orcus_version], [orcus_major_version.orcus_minor_version.orcus_micro_version])
 
 # ===============
@@ -256,7 +256,7 @@ AS_IF([test "x$with_tools" != "xno"], [
 # ============
 # mdds support
 # ============
-PKG_CHECK_MODULES([MDDS],[mdds-3.0 >= 2.1.99])
+PKG_CHECK_MODULES([MDDS],[mdds-3.0 >= 3.0.0])
 CXXFLAGS="$CXXFLAGS $MDDS_CFLAGS"
 
 # =================
