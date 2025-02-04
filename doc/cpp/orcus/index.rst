@@ -72,135 +72,135 @@ Functions
 
 calc_logical_string_length
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::calc_logical_string_length
+.. doxygenfunction:: orcus::calc_logical_string_length(std::string_view s)
 
 convert
 ^^^^^^^
-.. doxygenfunction:: orcus::convert
+.. doxygenfunction:: orcus::convert(double value, length_unit_t unit_from, length_unit_t unit_to)
 
 create_filter
 ^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::create_filter
+.. doxygenfunction:: orcus::create_filter(format_t type, spreadsheet::iface::import_factory *factory)
 
 create_parse_error_output
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::create_parse_error_output
+.. doxygenfunction:: orcus::create_parse_error_output(std::string_view strm, std::ptrdiff_t offset)
 
 decode_from_base64
 ^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::decode_from_base64
+.. doxygenfunction:: orcus::decode_from_base64(std::string_view base64)
 
 detect
 ^^^^^^
-.. doxygenfunction:: orcus::detect
+.. doxygenfunction:: orcus::detect(std::string_view strm)
 
 encode_to_base64
 ^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::encode_to_base64
+.. doxygenfunction:: orcus::encode_to_base64(const std::vector< uint8_t > &input)
 
 get_dump_format_entries
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::get_dump_format_entries
+.. doxygenfunction:: orcus::get_dump_format_entries()
 
 get_string_escape_char_type
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::get_string_escape_char_type
+.. doxygenfunction:: orcus::get_string_escape_char_type(char c)
 
 get_version_major
 ^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::get_version_major
+.. doxygenfunction:: orcus::get_version_major()
 
 get_version_micro
 ^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::get_version_micro
+.. doxygenfunction:: orcus::get_version_micro()
 
 get_version_minor
 ^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::get_version_minor
+.. doxygenfunction:: orcus::get_version_minor()
 
 is_alpha
 ^^^^^^^^
-.. doxygenfunction:: orcus::is_alpha
+.. doxygenfunction:: orcus::is_alpha(char c)
 
 is_blank
 ^^^^^^^^
-.. doxygenfunction:: orcus::is_blank
+.. doxygenfunction:: orcus::is_blank(char c)
 
 is_in
 ^^^^^
-.. doxygenfunction:: orcus::is_in
+.. doxygenfunction:: orcus::is_in(char c, std::string_view allowed)
 
 is_numeric
 ^^^^^^^^^^
-.. doxygenfunction:: orcus::is_numeric
+.. doxygenfunction:: orcus::is_numeric(char c)
 
 locate_first_different_char
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::locate_first_different_char
+.. doxygenfunction:: orcus::locate_first_different_char(std::string_view left, std::string_view right)
 
 locate_line_with_offset
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::locate_line_with_offset
+.. doxygenfunction:: orcus::locate_line_with_offset(std::string_view strm, std::ptrdiff_t offset)
 
 parse_double_quoted_string
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::parse_double_quoted_string
+.. doxygenfunction:: orcus::parse_double_quoted_string(const char *&p, std::size_t max_length, cell_buffer &buffer)
 
 parse_integer
 ^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::parse_integer
+.. doxygenfunction:: orcus::parse_integer(const char *p, const char *p_end, long &value)
 
 parse_numeric
 ^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::parse_numeric
+.. doxygenfunction:: orcus::parse_numeric(const char *p, const char *p_end, double &value)
 
 parse_single_quoted_string
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::parse_single_quoted_string
+.. doxygenfunction:: orcus::parse_single_quoted_string(const char *&p, std::size_t max_length, cell_buffer &buffer)
 
 parse_to_closing_double_quote
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::parse_to_closing_double_quote
+.. doxygenfunction:: orcus::parse_to_closing_double_quote(const char *p, std::size_t max_length)
 
 parse_to_closing_single_quote
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::parse_to_closing_single_quote
+.. doxygenfunction:: orcus::parse_to_closing_single_quote(const char *p, std::size_t max_length)
 
 to_bool
 ^^^^^^^
-.. doxygenfunction:: orcus::to_bool
+.. doxygenfunction:: orcus::to_bool(std::string_view s)
 
 to_character_set
 ^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::to_character_set
+.. doxygenfunction:: orcus::to_character_set(std::string_view s)
 
 to_double
 ^^^^^^^^^
-.. doxygenfunction:: orcus::to_double
+.. doxygenfunction:: orcus::to_double(std::string_view s, const char **p_parse_ended=nullptr)
 
 to_double_checked
 ^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::to_double_checked
+.. doxygenfunction:: orcus::to_double_checked(std::string_view s)
 
 to_dump_format_enum
 ^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::to_dump_format_enum
+.. doxygenfunction:: orcus::to_dump_format_enum(std::string_view s)
 
 to_length
 ^^^^^^^^^
-.. doxygenfunction:: orcus::to_length
+.. doxygenfunction:: orcus::to_length(std::string_view str)
 
 to_long
 ^^^^^^^
-.. doxygenfunction:: orcus::to_long
+.. doxygenfunction:: orcus::to_long(std::string_view s, const char **p_parse_ended=nullptr)
 
 to_long_checked
 ^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::to_long_checked
+.. doxygenfunction:: orcus::to_long_checked(std::string_view s)
 
 trim
 ^^^^
-.. doxygenfunction:: orcus::trim
+.. doxygenfunction:: orcus::trim(std::string_view str)
 
 
 Struct

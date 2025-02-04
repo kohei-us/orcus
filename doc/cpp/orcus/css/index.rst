@@ -220,19 +220,19 @@ Functions
 
 pseudo_class_to_string
 ^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::css::pseudo_class_to_string
+.. doxygenfunction:: orcus::css::pseudo_class_to_string(pseudo_class_t val)
 
 to_property_function
 ^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::css::to_property_function
+.. doxygenfunction:: orcus::css::to_property_function(std::string_view s)
 
 to_pseudo_class
 ^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::css::to_pseudo_class
+.. doxygenfunction:: orcus::css::to_pseudo_class(std::string_view s)
 
 to_pseudo_element
 ^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::css::to_pseudo_element
+.. doxygenfunction:: orcus::css::to_pseudo_element(std::string_view s)
 
 
 Struct
