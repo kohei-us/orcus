@@ -1,3 +1,64 @@
+orcus 0.20.0
+
+* import filters
+
+  * added support for more format types in formatted strings in xlsx, xls-xml
+    and gnumeric filters.  The following format types are now supported:
+
+    * superscript
+
+    * subscript
+
+    * strikethrough
+
+    * underline
+
+  * strikethrough format applied to cells are now supported in xlsx and xls-xml.
+
+  * importing of underline format applied to cells in gnumeric have been revised
+    to fix issues.
+
+  * interface for autofilter import has been revamped to properly import
+    autofilter properties from xlsx, xls-xml, gnumeric and ods.
+
+  * import_sheet_properties::set_row_height() now takes a row span as opposed to
+    a single row position.
+
+  * fixed a bug in the ods filter to properly separate styles in different style
+    families.  Previously, all styles were stored without style-family
+    segregation which resulted in collision of styles with the same name.
+
+* document model
+
+  * format run storage in orcus::spreadsheet::format_run now correctly
+    differentiates a format not being applied from a negative format being
+    applied.  For instance, the previous storage could not differentiate the
+    state of a bold format not being specified from a non-bold state being
+    intentionally applied.
+
+* json
+
+  * added support for custom indent when formatting JSON document.
+    orcus::json::document_tree::dump() now takes an additional indent parameter
+    to control the amount of indentation in the output.
+
+  * orcus::json::subtree class has been added to allow referencing of subtree in
+    an existing document_tree instance.
+
+  * parser has been revised to properly handle escaped unicode characters.  The
+    parser now propertly converts escaped unicode characters to proper UTF-8
+    characters.
+
+* tools
+
+  * orcus-json now has a new subtree mode to allow extraction of subtree from an
+    existing JSON document.  The root of a subtree is to be specified as a
+    subset of JSONPath expression.  Both bracket notation and dot notation are
+    supported.  Wildcard selector is also supported.
+
+  * orcus-json now has a lint mode to allow reformatting of a JSON document with
+    custom indent length via --indent option.
+
 orcus 0.19.2
 
 * general
