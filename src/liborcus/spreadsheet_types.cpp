@@ -595,10 +595,7 @@ std::ostream& operator<< (std::ostream& os, underline_style_t uline)
 {
     static constexpr std::string_view names[] = {
         "none",
-        "single-line",
-        "single-accounting",
-        "double-line",
-        "double-accounting",
+        "solid",
         "dotted",
         "dash",
         "long-dash",
@@ -633,6 +630,7 @@ std::ostream& operator<< (std::ostream& os, underline_spacing_t ulmode)
     static constexpr std::string_view names[] = {
         "continuous",
         "skip-white-space",
+        "continuous-over-field",
     };
 
     return write_name_for_pos(os, names, std::size(names), ulmode);
@@ -642,8 +640,8 @@ std::ostream& operator<< (std::ostream& os, underline_count_t ultype)
 {
     static constexpr std::string_view names[] = {
         "none",
-        "single-type",
-        "double-type",
+        "single-count",
+        "double-count",
     };
 
     return write_name_for_pos(os, names, std::size(names), ultype);
