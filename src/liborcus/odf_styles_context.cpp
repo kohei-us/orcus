@@ -67,6 +67,24 @@ styles_context::styles_context(
         // parent element -> child element
         { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_office, XML_automatic_styles }, // root element
         { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_office, XML_styles }, // root element
+        { NS_odf_office, XML_automatic_styles, NS_odf_number, XML_boolean_style },
+        { NS_odf_office, XML_automatic_styles, NS_odf_number, XML_currency_style },
+        { NS_odf_office, XML_automatic_styles, NS_odf_number, XML_date_style },
+        { NS_odf_office, XML_automatic_styles, NS_odf_number, XML_number_style },
+        { NS_odf_office, XML_automatic_styles, NS_odf_number, XML_percentage_style },
+        { NS_odf_office, XML_automatic_styles, NS_odf_number, XML_text_style },
+        { NS_odf_office, XML_automatic_styles, NS_odf_number, XML_time_style },
+        { NS_odf_office, XML_automatic_styles, NS_odf_style, XML_default_style },
+        { NS_odf_office, XML_automatic_styles, NS_odf_style, XML_style },
+        { NS_odf_office, XML_styles, NS_odf_number, XML_boolean_style },
+        { NS_odf_office, XML_styles, NS_odf_number, XML_currency_style },
+        { NS_odf_office, XML_styles, NS_odf_number, XML_date_style },
+        { NS_odf_office, XML_styles, NS_odf_number, XML_number_style },
+        { NS_odf_office, XML_styles, NS_odf_number, XML_percentage_style },
+        { NS_odf_office, XML_styles, NS_odf_number, XML_text_style },
+        { NS_odf_office, XML_styles, NS_odf_number, XML_time_style },
+        { NS_odf_office, XML_styles, NS_odf_style, XML_default_style },
+        { NS_odf_office, XML_styles, NS_odf_style, XML_style },
     };
 
     init_element_validator(rules, std::size(rules));
