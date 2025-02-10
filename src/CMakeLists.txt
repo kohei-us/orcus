@@ -60,7 +60,7 @@ add_executable(orcus-xls-xml
 target_link_libraries(orcus-detect orcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-css-dump orcus-parser-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-zip-dump orcus-parser-${ORCUS_API_VERSION})
-target_link_libraries(orcus-json orcus-parser-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-json orcus-parser-${ORCUS_API_VERSION} orcus-spreadsheet-model-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-yaml orcus-parser-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-csv orcus-parser-${ORCUS_API_VERSION} orcus-spreadsheet-model-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-xml orcus-parser-${ORCUS_API_VERSION} orcus-spreadsheet-model-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})

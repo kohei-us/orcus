@@ -49,6 +49,7 @@ endif(MSVC)
 
 add_definitions(
     ${Boost_LIB_DIAGNOSTIC_DEFINITIONS}
+    -D__ORCUS_SPREADSHEET_MODEL
 )
 
 if(ORCUS_WITH_CPU_FEATURES)
