@@ -10,7 +10,8 @@
 import sys
 import xml.etree.ElementTree as ET
 import argparse
-from dataclasses import dataclass
+import io
+from dataclasses import dataclass, field
 from pathlib import Path
 
 
@@ -46,6 +47,15 @@ def list_kinds(rootdir):
 class FuncProps:
     """Extra properties of a function symbol."""
     argsstring: str = None
+
+
+@dataclass
+class EnumProps:
+    """Extra properties of a enum symbol."""
+
+    location: str = field(default=str)
+    members: list[str] = field(default_factory=list)
+    """List of enum members."""
 
 
 class SymbolTree:
@@ -84,7 +94,6 @@ class SymbolTree:
             self._scope.pop()
 
     def dump(self):
-        from pprint import pprint
         self._scope = []
         self._symbols = dict()
         self._dump_recurse(self._root)
@@ -95,7 +104,12 @@ class SymbolTree:
             if "enum" in symbols:
                 print("  enum:")
                 for symbol, props in symbols["enum"]:
-                    print(f"    - {symbol}")
+                    print(f"    - name: {symbol}")
+                    print(f"      location: {props.location}")
+                    print(f"      members:")
+                    for member in props.members:
+                        print(f"        - {member}")
+
 
             if "typedef" in symbols:
                 print("  typedef:")
@@ -111,7 +125,7 @@ class SymbolTree:
                 print("  function:")
                 for symbol, props in symbols["function"]:
                     print(f"    - name: {symbol}")
-                    print(f"    - argsstring: {props.argsstring}")
+                    print(f"      argsstring: {props.argsstring}")
 
             if "class" in symbols:
                 print("  class:")
@@ -157,7 +171,10 @@ def build_symbol_tree(rootdir):
             ns_name = ns_elem.findtext("compoundname")
             for elem in ns_elem.findall(".//memberdef[@kind='enum']"):
                 name = elem.findtext("name")
-                all_symbols.append((ns_name, "enum", name, None))
+                location = elem.find(".//location").attrib["file"]
+                members = [elem_value.findtext("name") for elem_value in elem.findall(".//enumvalue")]
+                props = EnumProps(members=members, location=location)
+                all_symbols.append((ns_name, "enum", name, props))
 
             for elem in ns_elem.findall(".//memberdef[@kind='typedef']"):
                 name = elem.findtext("name")
@@ -207,6 +224,118 @@ def build_symbol_tree(rootdir):
 def dump_symbols(rootdir):
     symbol_tree = build_symbol_tree(rootdir)
     symbol_tree.dump()
+
+
+def find_parent_dir(path: Path, name: str):
+    p = path
+    while p.name != name:
+        p = p.parent
+    return p
+
+
+def create_enum_stream_test(rootdir, output_dir):
+    symbol_tree = build_symbol_tree(rootdir)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    headers = set()
+    func_bodies = dict()
+
+    # grow this list
+    included_symbols = set([
+        "orcus::format_t",
+        "orcus::spreadsheet::auto_filter_node_op_t",
+        "orcus::spreadsheet::auto_filter_op_t",
+        "orcus::spreadsheet::border_style_t",
+        "orcus::spreadsheet::border_style_t",
+        "orcus::spreadsheet::formula_grammar_t",
+        "orcus::spreadsheet::hor_alignment_t",
+        "orcus::spreadsheet::strikethrough_style_t",
+        "orcus::spreadsheet::strikethrough_text_t",
+        "orcus::spreadsheet::strikethrough_type_t",
+        "orcus::spreadsheet::strikethrough_width_t",
+        "orcus::spreadsheet::underline_count_t",
+        "orcus::spreadsheet::underline_spacing_t",
+        "orcus::spreadsheet::underline_style_t",
+        "orcus::spreadsheet::underline_thickness_t",
+        "orcus::spreadsheet::ver_alignment_t",
+    ])
+
+    # either not worth testing or cannot be tested for reasons
+    skipped_symbols = set([
+        "orcus::string_escape_char_t",
+        "orcus::spreadsheet::error_value_t", # non-standard labels
+        "orcus::yaml::detail::keyword_t",
+        "orcus::yaml::detail::parse_token_t",
+        "orcus::yaml::detail::scope_t",
+        "orcus::yaml::node_t",
+    ])
+
+    def _func(scope, b, symbols):
+        ns = "::".join(scope)
+        enums = symbols.get("enum", [])
+        for enum, props in enums:
+            type_symbol = f"{ns}::{enum}"
+            if type_symbol in skipped_symbols:
+                continue
+
+            disabled = type_symbol not in included_symbols
+            print(f"\u274c {type_symbol}" if disabled else f"\u2705 {type_symbol}")
+            header_path = Path(props.location)
+            include_dir = find_parent_dir(header_path, "include")
+            header_path = header_path.relative_to(include_dir)
+            headers.add(header_path)
+
+            strm = io.StringIO()
+            # generate unit test code
+            def _print(*args):
+                print(*args, file=strm)
+
+            func_name = "test_" + type_symbol.replace("::", "_")
+            _print(f"void {func_name}()")
+            _print("{")
+            if disabled:
+                _print("#if 0")
+            _print("    ORCUS_TEST_FUNC_SCOPE;")
+            _print()
+            for m in props.members:
+                mem_type = f"{type_symbol}::{m}"
+                mem_value = m.replace('_', '-')
+                _print(f'    {{ bool result = verify_stream_value({mem_type}, "{mem_value}"); assert(result); }}')
+
+            if disabled:
+                _print("#endif")
+            _print("}")
+
+            strm.seek(0)
+            func_bodies[func_name] = strm.getvalue()
+
+    symbol_tree.walk(_func)
+
+    test_file = output_dir / "enum_stream_test.cpp"
+    with test_file.open("w") as f:
+        def _print(*args):
+            print(*args, file=f)
+        _print(f"// auto-generated by {Path(__file__).name}")
+        _print('#include "test_global.hpp"')
+        for header in sorted(headers):
+            _print(f"#include <{header}>")
+
+        _print()
+        _print("using orcus::test::verify_stream_value;")
+        _print()
+        for func_name in sorted(func_bodies.keys()):
+            func_body = func_bodies[func_name]
+            _print(func_body)
+
+        _print()
+        _print("int main()")
+        _print("{")
+        for func_name in sorted(func_bodies.keys()):
+            _print(f"    {func_name}();")
+        _print()
+        _print("    return EXIT_SUCCESS;")
+        _print("}")
 
 
 def generate_rst(scope, child_scopes, symbols):
@@ -384,7 +513,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Parse doxygen XML outputs and perform actions.",
         epilog="""To re-generate the C++ API Reference, run this script with
-        --mode doctree and specify the output directory to ./doc/cpp.
+        --mode doctree and specify the output directory to ./doc/cpp.  To re-generate
+        the enum-stream-test code, run this script with --mode enum-test and specify
+        the output directory to ./src.
         """
     )
     parser.add_argument("--mode", type=str, required=True, help="Type of action to perform.")
@@ -392,14 +523,20 @@ def main():
     parser.add_argument("rootdir", type=Path, help="Directory where the doxygen XML files are found.")
     args = parser.parse_args()
 
-    if args.mode == "kinds":
-        list_kinds(args.rootdir)
-    elif args.mode == "symbols":
-        dump_symbols(args.rootdir)
-    elif args.mode == "doctree":
-        generate_doctree(args.rootdir, args.output)
-    else:
+    actions = {
+        "kinds": (list_kinds, (args.rootdir,)),
+        "symbols": (dump_symbols, (args.rootdir,)),
+        "enum-test": (create_enum_stream_test, (args.rootdir, args.output)),
+        "doctree": (generate_doctree, (args.rootdir, args.output))
+    }
+
+    action = actions.get(args.mode)
+    if not action:
         print(f"unknown mode: {args.mode}", file=sys.stderr)
+        sys.exit(1)
+
+    func, args = action
+    func(*args)
 
 
 if __name__ == "__main__":

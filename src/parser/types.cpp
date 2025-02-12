@@ -1433,7 +1433,8 @@ std::ostream& operator<< (std::ostream& os, format_t v)
         "xlsx",
         "gnumeric",
         "xls-xml",
-        "csv"
+        "csv",
+        "parquet",
     };
 
     size_t vi = static_cast<std::underlying_type_t<format_t>>(v);

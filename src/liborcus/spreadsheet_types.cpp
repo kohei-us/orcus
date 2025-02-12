@@ -680,8 +680,8 @@ std::ostream& operator<< (std::ostream& os, auto_filter_node_op_t op)
 {
     static constexpr std::string_view names[] = {
         "unspecified",
-        "and",
-        "or",
+        "op-and",
+        "op-or",
     };
 
     return write_name_for_pos(os, names, std::size(names), op);

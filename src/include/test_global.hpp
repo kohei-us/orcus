@@ -18,6 +18,7 @@
 #endif
 
 #include <iostream>
+#include <sstream>
 #include <chrono>
 
 namespace orcus { namespace test {
@@ -47,6 +48,14 @@ public:
 
 void verify_content(
     const char* filename, size_t line_no, std::string_view expected, const std::string& actual);
+
+template<typename EnumT>
+bool verify_stream_value(EnumT v, std::string_view expected)
+{
+    std::ostringstream os;
+    os << v;
+    return os.str() == expected;
+}
 
 }} // namespace orcus::test
 
