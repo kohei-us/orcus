@@ -159,32 +159,32 @@ pivot_cache::~pivot_cache() {}
 
 void pivot_cache::insert_fields(fields_type fields)
 {
-    mp_impl->m_fields = std::move(fields);
+    mp_impl->fields = std::move(fields);
 }
 
 void pivot_cache::insert_records(records_type records)
 {
-    mp_impl->m_records = std::move(records);
+    mp_impl->records = std::move(records);
 }
 
 size_t pivot_cache::get_field_count() const
 {
-    return mp_impl->m_fields.size();
+    return mp_impl->fields.size();
 }
 
 const pivot_cache_field_t* pivot_cache::get_field(size_t index) const
 {
-    return index < mp_impl->m_fields.size() ? &mp_impl->m_fields[index] : nullptr;
+    return index < mp_impl->fields.size() ? &mp_impl->fields[index] : nullptr;
 }
 
 pivot_cache_id_t pivot_cache::get_id() const
 {
-    return mp_impl->m_cache_id;
+    return mp_impl->cache_id;
 }
 
 const pivot_cache::records_type& pivot_cache::get_all_records() const
 {
-    return mp_impl->m_records;
+    return mp_impl->records;
 }
 
 void pivot_cache::dump_debug_state(std::string_view outdir) const
@@ -210,17 +210,17 @@ void pivot_collection::insert_worksheet_cache(
 
     // Check and see if there is already a cache for this location.  If yes,
     // overwrite the existing cache.
-    mp_impl->m_caches[cache_id] = std::move(cache);
+    mp_impl->caches[cache_id] = std::move(cache);
 
     detail::worksheet_range key(sheet_name, range);
 
-    auto& range_map = mp_impl->m_worksheet_range_map;
+    auto& range_map = mp_impl->worksheet_range_map;
     auto it = range_map.find(key);
 
     if (it == range_map.end())
     {
         // sheet name must be interned with the document it belongs to.
-        key.sheet = mp_impl->m_doc.get_string_pool().intern(key.sheet).first;
+        key.sheet = mp_impl->doc.get_string_pool().intern(key.sheet).first;
         range_map.insert(detail::range_map_type::value_type(std::move(key), {cache_id}));
         return;
     }
@@ -236,16 +236,16 @@ void pivot_collection::insert_worksheet_cache(
     pivot_cache_id_t cache_id = cache->get_id();
     mp_impl->ensure_unique_cache(cache_id);
 
-    mp_impl->m_caches[cache_id] = std::move(cache);
+    mp_impl->caches[cache_id] = std::move(cache);
 
-    auto& name_map = mp_impl->m_table_map;
+    auto& name_map = mp_impl->table_map;
     auto it = name_map.find(table_name);
 
     if (it == name_map.end())
     {
         // First cache to be associated with this name.
         std::string_view table_name_interned =
-            mp_impl->m_doc.get_string_pool().intern(table_name).first;
+            mp_impl->doc.get_string_pool().intern(table_name).first;
         name_map.insert(detail::name_map_type::value_type(table_name_interned, {cache_id}));
         return;
     }
@@ -256,7 +256,7 @@ void pivot_collection::insert_worksheet_cache(
 
 size_t pivot_collection::get_cache_count() const
 {
-    return mp_impl->m_caches.size();
+    return mp_impl->caches.size();
 }
 
 const pivot_cache* pivot_collection::get_cache(
@@ -264,14 +264,14 @@ const pivot_cache* pivot_collection::get_cache(
 {
     detail::worksheet_range wr(sheet_name, range);
 
-    auto it = mp_impl->m_worksheet_range_map.find(wr);
-    if (it == mp_impl->m_worksheet_range_map.end())
+    auto it = mp_impl->worksheet_range_map.find(wr);
+    if (it == mp_impl->worksheet_range_map.end())
         return nullptr;
 
     // Pick the first cache ID.
     assert(!it->second.empty());
     pivot_cache_id_t cache_id = *it->second.cbegin();
-    return mp_impl->m_caches[cache_id].get();
+    return mp_impl->caches[cache_id].get();
 }
 
 namespace {
@@ -287,12 +287,12 @@ _CacheT* get_cache_impl(_CachesT& caches, pivot_cache_id_t cache_id)
 
 pivot_cache* pivot_collection::get_cache(pivot_cache_id_t cache_id)
 {
-    return get_cache_impl<detail::caches_type, pivot_cache>(mp_impl->m_caches, cache_id);
+    return get_cache_impl<detail::caches_type, pivot_cache>(mp_impl->caches, cache_id);
 }
 
 const pivot_cache* pivot_collection::get_cache(pivot_cache_id_t cache_id) const
 {
-    return get_cache_impl<const detail::caches_type, const pivot_cache>(mp_impl->m_caches, cache_id);
+    return get_cache_impl<const detail::caches_type, const pivot_cache>(mp_impl->caches, cache_id);
 }
 
 void pivot_collection::dump_debug_state(std::string_view outdir) const
@@ -300,7 +300,7 @@ void pivot_collection::dump_debug_state(std::string_view outdir) const
     fs::path output_dir{outdir};
     output_dir /= "pivot";
 
-    for (const auto& [id, cache] : mp_impl->m_caches)
+    for (const auto& [id, cache] : mp_impl->caches)
         cache->dump_debug_state(output_dir.string());
 }
 

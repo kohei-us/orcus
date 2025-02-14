@@ -25,14 +25,14 @@ std::size_t worksheet_range::hash::operator()(const worksheet_range& v) const
 
 } // namespace detail
 
-pivot_cache::impl::impl(pivot_cache_id_t cache_id, string_pool& sp) :
-    m_cache_id(cache_id), m_string_pool(sp) {}
+pivot_cache::impl::impl(pivot_cache_id_t _cache_id, string_pool& sp) :
+    cache_id(_cache_id), str_pool(sp) {}
 
-pivot_collection::impl::impl(document& doc) : m_doc(doc) {}
+pivot_collection::impl::impl(document& _doc) : doc(_doc) {}
 
 void pivot_collection::impl::ensure_unique_cache(pivot_cache_id_t cache_id)
 {
-    if (m_caches.count(cache_id) > 0)
+    if (caches.count(cache_id) > 0)
     {
         std::ostringstream os;
         os << "Pivot cache with the ID of " << cache_id << " already exists.";

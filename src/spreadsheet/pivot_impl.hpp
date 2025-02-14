@@ -53,27 +53,23 @@ using caches_type = std::unordered_map<pivot_cache_id_t, std::unique_ptr<pivot_c
 
 struct pivot_cache::impl
 {
-    pivot_cache_id_t m_cache_id;
+    pivot_cache_id_t cache_id;
+    string_pool& str_pool;
+    pivot_cache::fields_type fields;
+    pivot_cache::records_type records;
 
-    string_pool& m_string_pool;
-
-    std::string_view m_src_sheet_name;
-
-    pivot_cache::fields_type m_fields;
-    pivot_cache::records_type m_records;
-
-    impl(pivot_cache_id_t cache_id, string_pool& sp);
+    impl(pivot_cache_id_t _cache_id, string_pool& sp);
 };
 
 struct pivot_collection::impl
 {
-    document& m_doc;
+    document& doc;
 
-    detail::range_map_type m_worksheet_range_map; /// mapping of sheet name & range pair to cache ID.
-    detail::name_map_type m_table_map; /// mapping of table name to cache ID.
-    detail::caches_type m_caches;
+    detail::range_map_type worksheet_range_map; /// mapping of sheet name & range pair to cache ID.
+    detail::name_map_type table_map; /// mapping of table name to cache ID.
+    detail::caches_type caches;
 
-    impl(document& doc);
+    impl(document& _doc);
 
     void ensure_unique_cache(pivot_cache_id_t cache_id);
 };

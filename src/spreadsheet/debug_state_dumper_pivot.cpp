@@ -23,11 +23,11 @@ void debug_state_dumper_pivot_cache::dump(const fs::path& outdir) const
     fs::create_directories(outdir);
 
     std::ostringstream os;
-    os << "cache-" << m_store.m_cache_id << ".yaml";
+    os << "cache-" << m_store.cache_id << ".yaml";
     fs::path outpath = outdir / os.str();
     std::ofstream of{outpath.native()};
 
-    of << "id: " << m_store.m_cache_id << std::endl;
+    of << "id: " << m_store.cache_id << std::endl;
 }
 
 }}}
