@@ -24,7 +24,9 @@ class import_pivot_cache_records;
 
 /**
  * Base context for pivotCacheDefinition[n].xml part, which defines the
- * structure of a pivot cache.
+ * high-level structure of a pivot cache with individual item values of string
+ * fields. Individual values of numeric fields are not stored here;
+ * they are stored in the pivotCacheRecords part.
  */
 class xlsx_pivot_cache_def_context : public xml_context_base
 {
@@ -54,31 +56,32 @@ public:
 
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
     virtual void characters(std::string_view str, bool transient);
 
     opc_rel_extras_t pop_rel_extras();
 
 private:
-    void start_element_s(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs);
+    void start_element_s(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
     void end_element_s();
 
-    void start_element_n(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs);
+    void start_element_n(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
     void end_element_n();
 
-    void start_element_d(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs);
+    void start_element_d(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
     void end_element_d();
 
-    void start_element_e(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs);
+    void start_element_e(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
     void end_element_e();
 
-    void start_element_shared_items(const xml_token_pair_t& parent, const std::vector<xml_token_attr_t>& attrs);
+    void start_element_shared_items(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
 };
 
 /**
- * Context for pivotCacheRecords[n].xml part, which contains the records in
- * a pivot cache.
+ * Context for pivotCacheRecords[n].xml part, which stores the records in
+ * a pivot cache.  Each record consists of string value indices into the
+ * pivotCacheDefinition part and numeric values.
  */
 class xlsx_pivot_cache_rec_context : public xml_context_base
 {
@@ -91,7 +94,7 @@ public:
 
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
 };
 
@@ -106,7 +109,7 @@ public:
 
     virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
     virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const::std::vector<xml_token_attr_t>& attrs);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
     virtual bool end_element(xmlns_id_t ns, xml_token_t name);
     virtual void characters(std::string_view str, bool transient);
 };
