@@ -5,6 +5,7 @@ add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     config.cpp
     csv_dumper.cpp
     debug_state_dumper.cpp
+    debug_state_dumper_pivot.cpp
     document.cpp
     document_impl.cpp
     document_types.cpp
@@ -25,6 +26,7 @@ add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     json_dumper.cpp
     number_format.cpp
     pivot.cpp
+    pivot_impl.cpp
     shared_formula.cpp
     shared_strings.cpp
     sheet.cpp

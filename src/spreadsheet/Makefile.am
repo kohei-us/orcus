@@ -36,6 +36,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	config.cpp \
 	debug_state_dumper.hpp \
 	debug_state_dumper.cpp \
+	debug_state_dumper_pivot.hpp \
+	debug_state_dumper_pivot.cpp \
 	document.cpp \
 	document_impl.hpp \
 	document_impl.cpp \
@@ -72,6 +74,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	number_format.hpp \
 	number_format.cpp \
 	pivot.cpp \
+	pivot_impl.hpp \
+	pivot_impl.cpp \
 	shared_formula.hpp \
 	shared_formula.cpp \
 	shared_strings.cpp \

@@ -32,6 +32,8 @@ namespace spreadsheet {
 
 class document;
 
+namespace detail { class debug_state_dumper_pivot_cache; }
+
 using pivot_cache_indices_t = std::vector<size_t>;
 
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_record_value_t
@@ -167,6 +169,8 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
 
 class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
+    friend class detail::debug_state_dumper_pivot_cache;
+
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
@@ -202,6 +206,8 @@ public:
     pivot_cache_id_t get_id() const;
 
     const records_type& get_all_records() const;
+
+    void dump_debug_state(std::string_view outdir) const;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_collection
@@ -245,6 +251,8 @@ public:
     pivot_cache* get_cache(pivot_cache_id_t cache_id);
 
     const pivot_cache* get_cache(pivot_cache_id_t cache_id) const;
+
+    void dump_debug_state(std::string_view outdir) const;
 };
 
 }}

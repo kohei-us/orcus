@@ -9,11 +9,14 @@
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/string_pool.hpp"
 
-#include <ixion/address.hpp>
+#include "filesystem_env.hpp"
+#include "pivot_impl.hpp"
+#include "debug_state_dumper_pivot.hpp"
 
 #include <unordered_map>
 #include <cassert>
 #include <sstream>
+#include <iostream>
 
 namespace orcus { namespace spreadsheet {
 
@@ -149,22 +152,6 @@ pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
     other.name = std::string_view{};
 }
 
-struct pivot_cache::impl
-{
-    pivot_cache_id_t m_cache_id;
-
-    string_pool& m_string_pool;
-
-    std::string_view m_src_sheet_name;
-
-    pivot_cache::fields_type m_fields;
-
-    pivot_cache::records_type m_records;
-
-    impl(pivot_cache_id_t cache_id, string_pool& sp) :
-        m_cache_id(cache_id), m_string_pool(sp) {}
-};
-
 pivot_cache::pivot_cache(pivot_cache_id_t cache_id, string_pool& sp) :
     mp_impl(std::make_unique<impl>(cache_id, sp)) {}
 
@@ -200,72 +187,14 @@ const pivot_cache::records_type& pivot_cache::get_all_records() const
     return mp_impl->m_records;
 }
 
-namespace {
-
-constexpr const ixion::sheet_t ignored_sheet = -1;
-
-struct worksheet_range
+void pivot_cache::dump_debug_state(std::string_view outdir) const
 {
-    std::string_view sheet; /// it must be an interned string with the document.
-    ixion::abs_range_t range; /// sheet indices are ignored.
+    fs::path output_dir{outdir};
+    fs::create_directories(output_dir);
 
-    worksheet_range(std::string_view _sheet, ixion::abs_range_t _range) :
-        sheet(std::move(_sheet)), range(std::move(_range))
-    {
-        range.first.sheet = ignored_sheet;
-        range.last.sheet = ignored_sheet;
-    }
-
-    bool operator== (const worksheet_range& other) const
-    {
-        return sheet == other.sheet && range == other.range;
-    }
-
-    struct hash
-    {
-        std::hash<std::string_view> ps_hasher;
-        ixion::abs_range_t::hash range_hasher;
-
-        size_t operator() (const worksheet_range& v) const
-        {
-            assert(v.range.first.sheet == ignored_sheet);
-            assert(v.range.last.sheet == ignored_sheet);
-
-            size_t n = ps_hasher(v.sheet);
-            n ^= range_hasher(v.range);
-            return n;
-        }
-    };
-};
-
-using range_map_type = std::unordered_map<worksheet_range, std::unordered_set<pivot_cache_id_t>, worksheet_range::hash>;
-using name_map_type = std::unordered_map<std::string_view, std::unordered_set<pivot_cache_id_t>>;
-
-using caches_type = std::unordered_map<pivot_cache_id_t, std::unique_ptr<pivot_cache>>;
-
+    detail::debug_state_dumper_pivot_cache dumper(*mp_impl);
+    dumper.dump(output_dir);
 }
-
-struct pivot_collection::impl
-{
-    document& m_doc;
-
-    range_map_type m_worksheet_range_map; /// mapping of sheet name & range pair to cache ID.
-    name_map_type m_table_map; /// mapping of table name to cache ID.
-
-    caches_type m_caches;
-
-    impl(document& doc) : m_doc(doc) {}
-
-    void ensure_unique_cache(pivot_cache_id_t cache_id)
-    {
-        if (m_caches.count(cache_id) > 0)
-        {
-            std::ostringstream os;
-            os << "Pivot cache with the ID of " << cache_id << " already exists.";
-            throw std::invalid_argument(os.str());
-        }
-    }
-};
 
 pivot_collection::pivot_collection(document& doc) : mp_impl(std::make_unique<impl>(doc)) {}
 
@@ -283,16 +212,16 @@ void pivot_collection::insert_worksheet_cache(
     // overwrite the existing cache.
     mp_impl->m_caches[cache_id] = std::move(cache);
 
-    worksheet_range key(sheet_name, range);
+    detail::worksheet_range key(sheet_name, range);
 
-    range_map_type& range_map = mp_impl->m_worksheet_range_map;
+    auto& range_map = mp_impl->m_worksheet_range_map;
     auto it = range_map.find(key);
 
     if (it == range_map.end())
     {
         // sheet name must be interned with the document it belongs to.
         key.sheet = mp_impl->m_doc.get_string_pool().intern(key.sheet).first;
-        range_map.insert(range_map_type::value_type(std::move(key), {cache_id}));
+        range_map.insert(detail::range_map_type::value_type(std::move(key), {cache_id}));
         return;
     }
 
@@ -309,7 +238,7 @@ void pivot_collection::insert_worksheet_cache(
 
     mp_impl->m_caches[cache_id] = std::move(cache);
 
-    name_map_type& name_map = mp_impl->m_table_map;
+    auto& name_map = mp_impl->m_table_map;
     auto it = name_map.find(table_name);
 
     if (it == name_map.end())
@@ -317,7 +246,7 @@ void pivot_collection::insert_worksheet_cache(
         // First cache to be associated with this name.
         std::string_view table_name_interned =
             mp_impl->m_doc.get_string_pool().intern(table_name).first;
-        name_map.insert(name_map_type::value_type(table_name_interned, {cache_id}));
+        name_map.insert(detail::name_map_type::value_type(table_name_interned, {cache_id}));
         return;
     }
 
@@ -333,7 +262,7 @@ size_t pivot_collection::get_cache_count() const
 const pivot_cache* pivot_collection::get_cache(
     std::string_view sheet_name, const ixion::abs_range_t& range) const
 {
-    worksheet_range wr(sheet_name, range);
+    detail::worksheet_range wr(sheet_name, range);
 
     auto it = mp_impl->m_worksheet_range_map.find(wr);
     if (it == mp_impl->m_worksheet_range_map.end())
@@ -358,12 +287,21 @@ _CacheT* get_cache_impl(_CachesT& caches, pivot_cache_id_t cache_id)
 
 pivot_cache* pivot_collection::get_cache(pivot_cache_id_t cache_id)
 {
-    return get_cache_impl<caches_type, pivot_cache>(mp_impl->m_caches, cache_id);
+    return get_cache_impl<detail::caches_type, pivot_cache>(mp_impl->m_caches, cache_id);
 }
 
 const pivot_cache* pivot_collection::get_cache(pivot_cache_id_t cache_id) const
 {
-    return get_cache_impl<const caches_type, const pivot_cache>(mp_impl->m_caches, cache_id);
+    return get_cache_impl<const detail::caches_type, const pivot_cache>(mp_impl->m_caches, cache_id);
+}
+
+void pivot_collection::dump_debug_state(std::string_view outdir) const
+{
+    fs::path output_dir{outdir};
+    output_dir /= "pivot";
+
+    for (const auto& [id, cache] : mp_impl->m_caches)
+        cache->dump_debug_state(output_dir.string());
 }
 
 }}

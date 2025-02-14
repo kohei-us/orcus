@@ -356,6 +356,8 @@ void document::dump_debug_state(const std::string& outdir) const
         fs::create_directories(outpath);
         sheet->data.dump_debug_state(outpath.string(), sheet->name);
     }
+
+    mp_impl->pivots.dump_debug_state(outdir);
 }
 
 sheet_t document::get_sheet_index(std::string_view name) const
