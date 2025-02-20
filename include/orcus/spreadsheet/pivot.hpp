@@ -118,8 +118,8 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_group_data_t
         date_time_t start_date;
         date_time_t end_date;
 
-        range_grouping_type() = default;
-        range_grouping_type(const range_grouping_type& other) = default;
+        range_grouping_type();
+        range_grouping_type(const range_grouping_type& other);
     };
 
     /**

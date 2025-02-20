@@ -113,6 +113,9 @@ void pivot_cache_item_t::swap(pivot_cache_item_t& other)
     std::swap(value, other.value);
 }
 
+pivot_cache_group_data_t::range_grouping_type::range_grouping_type() = default;
+pivot_cache_group_data_t::range_grouping_type::range_grouping_type(const range_grouping_type& other) = default;
+
 pivot_cache_group_data_t::pivot_cache_group_data_t(size_t _base_field) :
     base_field(_base_field) {}
 
