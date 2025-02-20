@@ -17,6 +17,7 @@
 #include <cassert>
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 
 namespace orcus { namespace spreadsheet {
 
@@ -150,6 +151,25 @@ pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
     group_data(std::move(other.group_data))
 {
     other.name = std::string_view{};
+}
+
+pivot_cache_field_t& pivot_cache_field_t::operator=(pivot_cache_field_t other)
+{
+    pivot_cache_field_t tmp(std::move(other));
+    swap(tmp);
+
+    return *this;
+}
+
+void pivot_cache_field_t::swap(pivot_cache_field_t& other) noexcept
+{
+    name.swap(other.name);
+    items.swap(other.items);
+    min_value.swap(other.min_value);
+    max_value.swap(other.max_value);
+    min_date.swap(other.min_date);
+    max_date.swap(other.max_date);
+    group_data.swap(other.group_data);
 }
 
 pivot_cache::pivot_cache(pivot_cache_id_t cache_id, string_pool& sp) :
@@ -302,6 +322,36 @@ void pivot_collection::dump_debug_state(std::string_view outdir) const
 
     for (const auto& [id, cache] : mp_impl->caches)
         cache->dump_debug_state(output_dir.string());
+}
+
+std::ostream& operator<<(std::ostream& os, const pivot_cache_item_t& item)
+{
+    switch (item.type)
+    {
+        case pivot_cache_item_t::item_type::unknown:
+            os << "(unknown)";
+            break;
+        case pivot_cache_item_t::item_type::boolean:
+            os << std::boolalpha << std::get<bool>(item.value);
+            break;
+        case pivot_cache_item_t::item_type::date_time:
+            os << std::get<date_time_t>(item.value).to_string();
+            break;
+        case pivot_cache_item_t::item_type::character:
+            os << std::get<std::string_view>(item.value);
+            break;
+        case pivot_cache_item_t::item_type::numeric:
+            os << std::get<double>(item.value);
+            break;
+        case pivot_cache_item_t::item_type::blank:
+            os << "(blank)";
+            break;
+        case pivot_cache_item_t::item_type::error:
+            os << std::get<error_value_t>(item.value);
+            break;
+    }
+
+    return os;
 }
 
 }}

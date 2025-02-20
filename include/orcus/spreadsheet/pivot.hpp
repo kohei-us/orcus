@@ -17,6 +17,7 @@
 #include <limits>
 #include <variant>
 #include <optional>
+#include <ostream>
 
 namespace ixion {
 
@@ -165,6 +166,10 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
     pivot_cache_field_t(std::string_view _name);
     pivot_cache_field_t(const pivot_cache_field_t& other);
     pivot_cache_field_t(pivot_cache_field_t&& other);
+
+    pivot_cache_field_t& operator=(pivot_cache_field_t other);
+
+    void swap(pivot_cache_field_t& other) noexcept;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_cache
@@ -254,6 +259,8 @@ public:
 
     void dump_debug_state(std::string_view outdir) const;
 };
+
+ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const pivot_cache_item_t& item);
 
 }}
 

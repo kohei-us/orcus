@@ -802,6 +802,28 @@ std::ostream& operator<< (std::ostream& os, const strikethrough_text_t& st)
     return write_name_for_pos(os, names, std::size(names), st);
 }
 
+std::ostream& operator<<(std::ostream& os, pivot_cache_group_by_t v)
+{
+    constexpr std::string_view values[] = {
+        "unknown",
+        "days",
+        "hours",
+        "minutes",
+        "months",
+        "quarters",
+        "range",
+        "seconds",
+        "years",
+    };
+
+    if (auto pos = std::size_t(v); pos < std::size(values))
+        os << values[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

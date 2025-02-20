@@ -783,6 +783,7 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const strikethrough_
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const strikethrough_type_t& st);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const strikethrough_width_t& sw);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const strikethrough_text_t& st);
+ORCUS_DLLPUBLIC std::ostream& operator<<(std::ostream& os, pivot_cache_group_by_t v);
 
 }}
 

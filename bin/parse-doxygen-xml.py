@@ -250,6 +250,7 @@ def create_enum_stream_test(rootdir, output_dir):
         "orcus::spreadsheet::border_style_t",
         "orcus::spreadsheet::formula_grammar_t",
         "orcus::spreadsheet::hor_alignment_t",
+        "orcus::spreadsheet::pivot_cache_group_by_t",
         "orcus::spreadsheet::strikethrough_style_t",
         "orcus::spreadsheet::strikethrough_text_t",
         "orcus::spreadsheet::strikethrough_type_t",

@@ -202,6 +202,7 @@ void import_pivot_cache_def::set_field_max_date(const date_time_t& dt)
 void import_pivot_cache_def::commit_field()
 {
     m_current_fields.push_back(std::move(m_current_field));
+    m_current_field = pivot_cache_field_t();
 }
 
 void import_pivot_cache_def::set_field_item_string(std::string_view value)
@@ -231,6 +232,7 @@ void import_pivot_cache_def::set_field_item_error(error_value_t ev)
 void import_pivot_cache_def::commit_field_item()
 {
     m_current_field.items.push_back(std::move(m_current_field_item));
+    m_current_field_item = pivot_cache_item_t();
 }
 
 void import_pivot_cache_def::commit()

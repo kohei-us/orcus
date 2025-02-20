@@ -712,7 +712,6 @@ void test_orcus_spreadsheet_pane_state_t()
 
 void test_orcus_spreadsheet_pivot_cache_group_by_t()
 {
-#if 0
     ORCUS_TEST_FUNC_SCOPE;
 
     { bool result = verify_stream_value(orcus::spreadsheet::pivot_cache_group_by_t::unknown, "unknown"); assert(result); }
@@ -724,7 +723,6 @@ void test_orcus_spreadsheet_pivot_cache_group_by_t()
     { bool result = verify_stream_value(orcus::spreadsheet::pivot_cache_group_by_t::range, "range"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::pivot_cache_group_by_t::seconds, "seconds"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::pivot_cache_group_by_t::years, "years"); assert(result); }
-#endif
 }
 
 void test_orcus_spreadsheet_sheet_pane_t()
