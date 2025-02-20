@@ -57,13 +57,27 @@ void debug_state_dumper_pivot_cache::dump(const fs::path& outdir) const
         {
             const pivot_cache_group_data_t& data = *field.group_data;
             of << "    group:\n";
-            of << "      base field index: " << data.base_field << std::endl;
+            of << "      base field:\n";
+            of << "        index: " << data.base_field << std::endl;
+
+            const pivot_cache_field_t* base_field = nullptr;
+
+            if (data.base_field < m_store.fields.size())
+            {
+                base_field = &m_store.fields[data.base_field];
+                of << "        name: " << base_field->name << std::endl;
+            }
 
             if (!data.base_to_group_indices.empty())
             {
-                of << "      base item indices:" << std::endl;
+                of << "      base item references:" << std::endl;
                 for (auto v : data.base_to_group_indices)
-                    of << "        - " << v << std::endl;
+                {
+                    of << "        - index: " << v << std::endl;
+
+                    if (base_field && v < base_field->items.size())
+                        of << "          item: " << base_field->items[v] << std::endl;
+                }
             }
 
             if (!data.items.empty())
