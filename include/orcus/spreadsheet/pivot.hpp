@@ -39,7 +39,7 @@ using pivot_cache_indices_t = std::vector<size_t>;
 
 struct ORCUS_SPM_DLLPUBLIC pivot_cache_record_value_t
 {
-    using value_type = std::variant<bool, double, std::size_t, std::string_view, date_time_t>;
+    using value_type = std::variant<bool, double, std::size_t, std::string_view, date_time_t, error_value_t>;
 
     enum class record_type
     {
@@ -261,6 +261,7 @@ public:
 };
 
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const pivot_cache_item_t& item);
+ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const pivot_cache_record_value_t& v);
 
 }}
 

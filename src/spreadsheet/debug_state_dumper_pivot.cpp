@@ -73,10 +73,12 @@ void debug_state_dumper_pivot_cache::dump(const fs::path& outdir) const
                 of << "      base item references:" << std::endl;
                 for (auto v : data.base_to_group_indices)
                 {
-                    of << "        - index: " << v << std::endl;
+                    of << "        - (" << v << ")";
 
                     if (base_field && v < base_field->items.size())
-                        of << "          item: " << base_field->items[v] << std::endl;
+                        of << " -> '" << base_field->items[v] << "'";
+
+                    of << std::endl;
                 }
             }
 
@@ -100,6 +102,31 @@ void debug_state_dumper_pivot_cache::dump(const fs::path& outdir) const
                 of << "        start date: " << rg.start_date.to_string() << "\n";
                 of << "        end date: " << rg.end_date.to_string() << std::endl;
             }
+        }
+    }
+
+    of << "records:" << std::endl;
+
+    for (const auto& record : m_store.records)
+    {
+        for (std::size_t i = 0; i < record.size(); ++i)
+        {
+            if (i == 0)
+                of << "  - ";
+            else
+                of << "    ";
+
+            const auto& v = record[i];
+            of << "- " << v;
+
+            if (v.type == pivot_cache_record_value_t::record_type::shared_item_index && i < m_store.fields.size())
+            {
+                auto sii = std::get<std::size_t>(v.value);
+                if (sii < m_store.fields[i].items.size())
+                    of << " -> '" << m_store.fields[i].items[sii] << "'";
+            }
+
+            of << std::endl;
         }
     }
 }

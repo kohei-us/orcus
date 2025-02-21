@@ -357,6 +357,55 @@ std::ostream& operator<<(std::ostream& os, const pivot_cache_item_t& item)
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const pivot_cache_record_value_t& v)
+{
+
+    switch (v.type)
+    {
+        case pivot_cache_record_value_t::record_type::unknown:
+        {
+            os << "(unknown)";
+            break;
+        }
+        case pivot_cache_record_value_t::record_type::boolean:
+        {
+            os << std::boolalpha << std::get<bool>(v.value);
+            break;
+        }
+        case pivot_cache_record_value_t::record_type::date_time:
+        {
+            os << std::get<date_time_t>(v.value).to_string();
+            break;
+        }
+        case pivot_cache_record_value_t::record_type::character:
+        {
+            os << std::get<std::string_view>(v.value);
+            break;
+        }
+        case pivot_cache_record_value_t::record_type::numeric:
+        {
+            os << std::get<double>(v.value);
+            break;
+        }
+        case pivot_cache_record_value_t::record_type::blank:
+        {
+            os << "(blank)";
+            break;
+        }
+        case pivot_cache_record_value_t::record_type::error:
+        {
+            os << std::get<error_value_t>(v.value);
+            break;
+        }
+        case pivot_cache_record_value_t::record_type::shared_item_index:
+        {
+            os << '(' << std::get<std::size_t>(v.value) << ')';
+            break;
+        }
+    }
+    return os;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
