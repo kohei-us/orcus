@@ -77,5 +77,6 @@ void test_xls_xml_auto_filter_text();
 void test_xls_xml_auto_filter_wildcard();
 void test_xls_xml_auto_filter_asterisk();
 void test_xls_xml_auto_filter_question();
+void test_xls_xml_auto_filter_nofilter();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

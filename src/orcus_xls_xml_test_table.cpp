@@ -436,4 +436,23 @@ void test_xls_xml_auto_filter_question()
     }
 }
 
+void test_xls_xml_auto_filter_nofilter()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    auto doc = load_doc_from_filepath(SRCDIR"/test/xls-xml/table/autofilter-nofilter.xml");
+    assert(doc);
+
+    auto* sh = doc->get_sheet("Sheet1");
+    assert(sh);
+
+    auto* filter = sh->get_auto_filter();
+    assert(filter);
+    assert(filter->range == to_range("R3C2:R4C4"));
+
+    // no filter is applied to this range
+    assert(filter->root.op() == ss::auto_filter_node_op_t::unspecified);
+    assert(filter->root.empty());
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
