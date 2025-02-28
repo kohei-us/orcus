@@ -2697,6 +2697,7 @@ int main()
     test_xls_xml_auto_filter_text();
     test_xls_xml_auto_filter_wildcard();
     test_xls_xml_auto_filter_asterisk();
+    test_xls_xml_auto_filter_question();
 
     return EXIT_SUCCESS;
 }
