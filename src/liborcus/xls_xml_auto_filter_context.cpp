@@ -193,9 +193,12 @@ void xls_xml_auto_filter_context::end_auto_filter()
     if (!mp_auto_filter)
         return;
 
-    assert(m_filter_node_stack.size() == 1u); // root node
-    m_filter_node_stack.back()->commit();
-    m_filter_node_stack.pop_back();
+    if (!m_filter_node_stack.empty())
+    {
+        assert(m_filter_node_stack.size() == 1u); // root node
+        m_filter_node_stack.back()->commit();
+        m_filter_node_stack.pop_back();
+    }
     mp_auto_filter->commit();
 }
 
