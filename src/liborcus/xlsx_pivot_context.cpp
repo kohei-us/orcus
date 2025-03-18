@@ -1084,7 +1084,34 @@ bool xlsx_pivot_cache_rec_context::end_element(xmlns_id_t ns, xml_token_t name)
 }
 
 xlsx_pivot_table_context::xlsx_pivot_table_context(session_context& cxt, const tokens& tokens) :
-    xml_context_base(cxt, tokens) {}
+    xml_context_base(cxt, tokens)
+{
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_ooxml_xlsx, XML_pivotTableDefinition }, // root element
+        { NS_ooxml_xlsx, XML_colFields, NS_ooxml_xlsx, XML_field },
+        { NS_ooxml_xlsx, XML_colItems, NS_ooxml_xlsx, XML_i },
+        { NS_ooxml_xlsx, XML_dataFields, NS_ooxml_xlsx, XML_dataField },
+        { NS_ooxml_xlsx, XML_i, NS_ooxml_xlsx, XML_x },
+        { NS_ooxml_xlsx, XML_items, NS_ooxml_xlsx, XML_item },
+        { NS_ooxml_xlsx, XML_pageFields, NS_ooxml_xlsx, XML_pageField },
+        { NS_ooxml_xlsx, XML_pivotField, NS_ooxml_xlsx, XML_items },
+        { NS_ooxml_xlsx, XML_pivotFields, NS_ooxml_xlsx, XML_pivotField },
+        { NS_ooxml_xlsx, XML_pivotTableDefinition, NS_ooxml_xlsx, XML_colFields },
+        { NS_ooxml_xlsx, XML_pivotTableDefinition, NS_ooxml_xlsx, XML_colItems },
+        { NS_ooxml_xlsx, XML_pivotTableDefinition, NS_ooxml_xlsx, XML_dataFields },
+        { NS_ooxml_xlsx, XML_pivotTableDefinition, NS_ooxml_xlsx, XML_location },
+        { NS_ooxml_xlsx, XML_pivotTableDefinition, NS_ooxml_xlsx, XML_pageFields },
+        { NS_ooxml_xlsx, XML_pivotTableDefinition, NS_ooxml_xlsx, XML_pivotFields },
+        { NS_ooxml_xlsx, XML_pivotTableDefinition, NS_ooxml_xlsx, XML_pivotTableStyleInfo },
+        { NS_ooxml_xlsx, XML_pivotTableDefinition, NS_ooxml_xlsx, XML_rowFields },
+        { NS_ooxml_xlsx, XML_pivotTableDefinition, NS_ooxml_xlsx, XML_rowItems },
+        { NS_ooxml_xlsx, XML_rowFields, NS_ooxml_xlsx, XML_field },
+        { NS_ooxml_xlsx, XML_rowItems, NS_ooxml_xlsx, XML_i },
+    };
+
+    init_element_validator(rules, std::size(rules));
+}
 
 void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
@@ -1095,7 +1122,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
         {
             case XML_pivotTableDefinition:
             {
-                xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
                 if (get_config().debug)
                     std::cout << "---" << std::endl;
                 for (const xml_token_attr_t& attr : attrs)
@@ -1224,8 +1250,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_location:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-
                 for (const xml_token_attr_t& attr : attrs)
                 {
                     if (attr.ns && attr.ns != NS_ooxml_xlsx)
@@ -1263,7 +1287,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             {
                 // pivotFields and its child elements represent the visual
                 // appearances of the fields inside pivot table.
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
                 if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
                     if (get_config().debug)
@@ -1273,8 +1296,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_pivotField:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotFields);
-
                 if (get_config().debug)
                     std::cout << "---" << std::endl;
 
@@ -1325,7 +1346,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_items:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotField);
                 if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
                     if (get_config().debug)
@@ -1335,8 +1355,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_item:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_items);
-
                 for (const xml_token_attr_t& attr : attrs)
                 {
                     if (attr.ns && attr.ns != NS_ooxml_xlsx)
@@ -1369,7 +1387,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_rowFields:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
                 if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
                     if (get_config().debug)
@@ -1382,7 +1399,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_colFields:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
                 if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
                     if (get_config().debug)
@@ -1395,7 +1411,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_pageFields:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
                 if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
                     if (get_config().debug)
@@ -1408,8 +1423,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_pageField:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pageFields);
-
                 if (get_config().debug)
                     std::cout << "  * page field:";
 
@@ -1453,12 +1466,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             }
             case XML_field:
             {
-                xml_elem_stack_t expected;
-                expected.reserve(3);
-                expected.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_rowFields));
-                expected.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_colFields));
-                xml_element_expected(parent, expected);
-
                 // Index into the list of <pivotField> collection which is
                 // given earlier under the <pivotFields> element.  The value
                 // of -2 represents a special field that displays the list of
@@ -1473,7 +1480,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_dataFields:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
                 if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
                     if (get_config().debug)
@@ -1486,8 +1492,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_dataField:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_dataFields);
-
                 if (get_config().debug)
                     std::cout << "  * data field: ";
 
@@ -1545,7 +1549,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
                 // <rowItems> structure describes the displayed content of
                 // cells in the row field area.  Each <i> child element
                 // represents a single row.
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
                 if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
                     if (get_config().debug)
@@ -1558,7 +1561,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_colItems:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
                 if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
                 {
                     if (get_config().debug)
@@ -1571,12 +1573,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_i:
             {
-                xml_elem_stack_t expected;
-                expected.reserve(2);
-                expected.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_rowItems));
-                expected.push_back(xml_token_pair_t(NS_ooxml_xlsx, XML_colItems));
-                xml_element_expected(parent, expected);
-
                 if (get_config().debug)
                     std::cout << "---" << std::endl;
 
@@ -1620,12 +1616,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
             break;
             case XML_x:
             {
-                if (parent.first != NS_ooxml_xlsx)
-                {
-                    warn_unhandled();
-                    break;
-                }
-
                 if (parent.second == XML_i)
                 {
                     long idx = 0;
@@ -1640,14 +1630,10 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
                         std::cout << "  * v = " << idx << std::endl;
                     break;
                 }
-
-                warn_unhandled();
             }
             break;
             case XML_pivotTableStyleInfo:
             {
-                xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotTableDefinition);
-
                 if (get_config().debug)
                 {
                     std::cout << "---" << std::endl;
