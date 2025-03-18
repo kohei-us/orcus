@@ -56,15 +56,6 @@ xlsx_pivot_cache_def_context::xlsx_pivot_cache_def_context(
     ss::pivot_cache_id_t pcache_id) :
     xml_context_base(cxt, tokens), m_pcache(pcache), m_pcache_id(pcache_id) {}
 
-xml_context_base* xlsx_pivot_cache_def_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
-{
-    return nullptr;
-}
-
-void xlsx_pivot_cache_def_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
-{
-}
-
 void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
@@ -564,10 +555,6 @@ bool xlsx_pivot_cache_def_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-void xlsx_pivot_cache_def_context::characters(std::string_view /*str*/, bool /*transient*/)
-{
-}
-
 opc_rel_extras_t xlsx_pivot_cache_def_context::pop_rel_extras()
 {
     return std::move(m_pcache_info);
@@ -1002,15 +989,6 @@ xlsx_pivot_cache_rec_context::xlsx_pivot_cache_rec_context(
     xml_context_base(cxt, tokens),
     m_pc_records(pc_records) {}
 
-xml_context_base* xlsx_pivot_cache_rec_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
-{
-    return nullptr;
-}
-
-void xlsx_pivot_cache_rec_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
-{
-}
-
 void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
@@ -1121,15 +1099,6 @@ bool xlsx_pivot_cache_rec_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 xlsx_pivot_table_context::xlsx_pivot_table_context(session_context& cxt, const tokens& tokens) :
     xml_context_base(cxt, tokens) {}
-
-xml_context_base* xlsx_pivot_table_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
-{
-    return nullptr;
-}
-
-void xlsx_pivot_table_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
-{
-}
 
 void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
@@ -1757,10 +1726,6 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
 bool xlsx_pivot_table_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
     return pop_stack(ns, name);
-}
-
-void xlsx_pivot_table_context::characters(std::string_view /*str*/, bool /*transient*/)
-{
 }
 
 }

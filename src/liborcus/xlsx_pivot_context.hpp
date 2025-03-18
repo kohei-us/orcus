@@ -54,11 +54,8 @@ public:
         spreadsheet::iface::import_pivot_cache_definition& pcache,
         spreadsheet::pivot_cache_id_t pcache_id);
 
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
-    virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(std::string_view str, bool transient);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
+    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
 
     opc_rel_extras_t pop_rel_extras();
 
@@ -92,10 +89,8 @@ public:
         session_context& cxt, const tokens& tokens,
         spreadsheet::iface::import_pivot_cache_records& pc_records);
 
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
-    virtual bool end_element(xmlns_id_t ns, xml_token_t name);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
+    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
 };
 
 /**
@@ -107,11 +102,8 @@ class xlsx_pivot_table_context : public xml_context_base
 public:
     xlsx_pivot_table_context(session_context& cxt, const tokens& tokens);
 
-    virtual xml_context_base* create_child_context(xmlns_id_t ns, xml_token_t name);
-    virtual void end_child_context(xmlns_id_t ns, xml_token_t name, xml_context_base* child);
-    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
-    virtual bool end_element(xmlns_id_t ns, xml_token_t name);
-    virtual void characters(std::string_view str, bool transient);
+    virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
+    virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
 };
 
 }
