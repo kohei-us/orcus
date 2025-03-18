@@ -54,7 +54,31 @@ xlsx_pivot_cache_def_context::xlsx_pivot_cache_def_context(
     session_context& cxt, const tokens& tokens,
     ss::iface::import_pivot_cache_definition& pcache,
     ss::pivot_cache_id_t pcache_id) :
-    xml_context_base(cxt, tokens), m_pcache(pcache), m_pcache_id(pcache_id) {}
+    xml_context_base(cxt, tokens), m_pcache(pcache), m_pcache_id(pcache_id)
+{
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_ooxml_xlsx, XML_pivotCacheDefinition }, // root element
+        { NS_ooxml_xlsx, XML_cacheField, NS_ooxml_xlsx, XML_fieldGroup },
+        { NS_ooxml_xlsx, XML_cacheField, NS_ooxml_xlsx, XML_sharedItems },
+        { NS_ooxml_xlsx, XML_cacheFields, NS_ooxml_xlsx, XML_cacheField },
+        { NS_ooxml_xlsx, XML_cacheSource, NS_ooxml_xlsx, XML_worksheetSource },
+        { NS_ooxml_xlsx, XML_discretePr, NS_ooxml_xlsx, XML_x, },
+        { NS_ooxml_xlsx, XML_fieldGroup, NS_ooxml_xlsx, XML_discretePr },
+        { NS_ooxml_xlsx, XML_fieldGroup, NS_ooxml_xlsx, XML_groupItems },
+        { NS_ooxml_xlsx, XML_fieldGroup, NS_ooxml_xlsx, XML_rangePr },
+        { NS_ooxml_xlsx, XML_groupItems, NS_ooxml_xlsx, XML_s },
+        { NS_ooxml_xlsx, XML_pivotCacheDefinition, NS_ooxml_xlsx, XML_cacheFields },
+        { NS_ooxml_xlsx, XML_pivotCacheDefinition, NS_ooxml_xlsx, XML_cacheSource },
+        { NS_ooxml_xlsx, XML_reference, NS_ooxml_xlsx, XML_x },
+        { NS_ooxml_xlsx, XML_sharedItems, NS_ooxml_xlsx, XML_d },
+        { NS_ooxml_xlsx, XML_sharedItems, NS_ooxml_xlsx, XML_e },
+        { NS_ooxml_xlsx, XML_sharedItems, NS_ooxml_xlsx, XML_n },
+        { NS_ooxml_xlsx, XML_sharedItems, NS_ooxml_xlsx, XML_s },
+    };
+
+    init_element_validator(rules, std::size(rules));
+}
 
 void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
@@ -66,8 +90,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
     {
         case XML_pivotCacheDefinition:
         {
-            xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-
             std::string_view refreshed_by;
             std::string_view rid;
             long record_count = -1;
@@ -128,8 +150,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_cacheSource:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheDefinition);
-
             std::string_view source_type_s;
 
             for_each(attrs.begin(), attrs.end(),
@@ -157,7 +177,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_worksheetSource:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheSource);
             if (m_source_type != source_type::worksheet)
                 throw xml_structure_error(
                     "worksheetSource element encountered while the source type is not worksheet.");
@@ -202,7 +221,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_cacheFields:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheDefinition);
             long field_count = -1;
             if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); v)
                 field_count = *v;
@@ -221,8 +239,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_cacheField:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheFields);
-
             std::string_view field_name;
             long numfmt_id = -1;
 
@@ -258,7 +274,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_fieldGroup:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheField);
             long group_parent = -1;
             long group_base = -1;
 
@@ -299,8 +314,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_discretePr:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_fieldGroup);
-
             long count = -1;
 
             for_each(attrs.begin(), attrs.end(),
@@ -327,8 +340,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_rangePr:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_fieldGroup);
-
             bool auto_start = true;
             bool auto_end = true;
             double start = 0.0;
@@ -419,8 +430,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_groupItems:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_fieldGroup);
-
             long count = -1;
 
             for_each(attrs.begin(), attrs.end(),
@@ -467,12 +476,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_x:
         {
-            const xml_elem_set_t expected = {
-                { NS_ooxml_xlsx, XML_discretePr },
-                { NS_ooxml_xlsx, XML_reference },
-            };
-            xml_element_expected(parent, expected);
-
             long index = -1;
 
             for_each(attrs.begin(), attrs.end(),
@@ -563,12 +566,6 @@ opc_rel_extras_t xlsx_pivot_cache_def_context::pop_rel_extras()
 void xlsx_pivot_cache_def_context::start_element_s(
     const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
-    if (parent.first != NS_ooxml_xlsx)
-    {
-        warn_unhandled();
-        return;
-    }
-
     std::string_view value;
 
     for_each(attrs.begin(), attrs.end(),
@@ -646,12 +643,6 @@ void xlsx_pivot_cache_def_context::end_element_s()
 void xlsx_pivot_cache_def_context::start_element_n(
     const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
-    if (parent.first != NS_ooxml_xlsx)
-    {
-        warn_unhandled();
-        return;
-    }
-
     switch (parent.second)
     {
         case XML_sharedItems:
@@ -721,12 +712,6 @@ void xlsx_pivot_cache_def_context::end_element_n()
 void xlsx_pivot_cache_def_context::start_element_d(
     const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
-    if (parent.first != NS_ooxml_xlsx)
-    {
-        warn_unhandled();
-        return;
-    }
-
     switch (parent.second)
     {
         case XML_sharedItems:
@@ -796,12 +781,6 @@ void xlsx_pivot_cache_def_context::end_element_d()
 void xlsx_pivot_cache_def_context::start_element_e(
     const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
-    if (parent.first != NS_ooxml_xlsx)
-    {
-        warn_unhandled();
-        return;
-    }
-
     switch (parent.second)
     {
         case XML_sharedItems:
@@ -870,8 +849,6 @@ void xlsx_pivot_cache_def_context::end_element_e()
 void xlsx_pivot_cache_def_context::start_element_shared_items(
     const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
 {
-    xml_element_expected(parent, NS_ooxml_xlsx, XML_cacheField);
-
     // If "semi-mixed types" is set, the field contains text values and at
     // least one other type.
     bool semi_mixed_types = true;
