@@ -964,11 +964,27 @@ xlsx_pivot_cache_rec_context::xlsx_pivot_cache_rec_context(
     session_context& cxt, const tokens& tokens,
     ss::iface::import_pivot_cache_records& pc_records) :
     xml_context_base(cxt, tokens),
-    m_pc_records(pc_records) {}
+    m_pc_records(pc_records)
+{
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_ooxml_xlsx, XML_pivotCacheRecords }, // root element
+        { NS_ooxml_xlsx, XML_pivotCacheRecords, NS_ooxml_xlsx, XML_r },
+        { NS_ooxml_xlsx, XML_r, NS_ooxml_xlsx, XML_b },
+        { NS_ooxml_xlsx, XML_r, NS_ooxml_xlsx, XML_d },
+        { NS_ooxml_xlsx, XML_r, NS_ooxml_xlsx, XML_e },
+        { NS_ooxml_xlsx, XML_r, NS_ooxml_xlsx, XML_m },
+        { NS_ooxml_xlsx, XML_r, NS_ooxml_xlsx, XML_n },
+        { NS_ooxml_xlsx, XML_r, NS_ooxml_xlsx, XML_s },
+        { NS_ooxml_xlsx, XML_r, NS_ooxml_xlsx, XML_x },
+    };
+
+    init_element_validator(rules, std::size(rules));
+}
 
 void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
+    push_stack(ns, name);
 
     if (ns != NS_ooxml_xlsx)
         return;
@@ -977,8 +993,6 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
     {
         case XML_pivotCacheRecords:
         {
-            xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
-
             if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
             {
                 if (get_config().debug)
@@ -992,15 +1006,12 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
             break;
         }
         case XML_r: // record
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_pivotCacheRecords);
             if (get_config().debug)
                 std::cout << "* record" << std::endl;
 
             break;
         case XML_s: // character value
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
-
             std::string_view cv = get_single_attr(attrs, NS_ooxml_xlsx, XML_v);
 
             if (get_config().debug)
@@ -1011,7 +1022,6 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_x: // shared item index
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
             if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_v); v)
             {
                 if (get_config().debug)
@@ -1026,7 +1036,6 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_n: // numeric
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_r);
             auto val = get_single_double_attr(attrs, NS_ooxml_xlsx, XML_v);
             if (!val)
                 throw xml_structure_error("failed to get a numeric record value in pivot cache record");
