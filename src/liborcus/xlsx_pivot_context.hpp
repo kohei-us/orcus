@@ -104,6 +104,26 @@ public:
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;
+
+private:
+    void start_pivot_table_definition(const xml_token_attrs_t& attrs);
+    void start_location(const xml_token_attrs_t& attrs);
+    void start_pivot_fields(const xml_token_attrs_t& attrs);
+    void start_pivot_field(const xml_token_attrs_t& attrs);
+    void start_items(const xml_token_attrs_t& attrs);
+    void start_item(const xml_token_attrs_t& attrs);
+    void start_row_fields(const xml_token_attrs_t& attrs);
+    void start_col_fields(const xml_token_attrs_t& attrs);
+    void start_page_fields(const xml_token_attrs_t& attrs);
+    void start_page_field(const xml_token_attrs_t& attrs);
+    void start_field(const xml_token_attrs_t& attrs);
+    void start_data_fields(const xml_token_attrs_t& attrs);
+    void start_data_field(const xml_token_attrs_t& attrs);
+    void start_row_items(const xml_token_attrs_t& attrs);
+    void start_col_items(const xml_token_attrs_t& attrs);
+    void start_i(const xml_token_attrs_t& attrs);
+    void start_x(const xml_token_attrs_t& attrs, const xml_token_pair_t& parent);
+    void start_pivot_table_style_info(const xml_token_attrs_t& attrs);
 };
 
 }

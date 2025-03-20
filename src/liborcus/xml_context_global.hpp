@@ -17,12 +17,27 @@ namespace orcus {
 
 class string_pool;
 
+/**
+ * @warning It does not handle the namespace of the target attribute
+ *             correctly; it ignores it if the attribute in the parent tag
+ *             does not have an explicit namespace.
+ */
 std::string_view get_single_attr(
     const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name, string_pool* pool = nullptr);
 
+/**
+ * @warning It does not handle the namespace of the target attribute
+ *             correctly; it ignores it if the attribute in the parent tag
+ *             does not have an explicit namespace.
+ */
 std::optional<long> get_single_long_attr(
     const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name);
 
+/**
+ * @warning It does not handle the namespace of the target attribute
+ *             correctly; it ignores it if the attribute in the parent tag
+ *             does not have an explicit namespace.
+ */
 std::optional<double> get_single_double_attr(
     const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name);
 
