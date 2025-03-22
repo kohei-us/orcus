@@ -24,6 +24,7 @@ class import_auto_filter;
 class import_styles;
 class import_pivot_cache_definition;
 class import_pivot_cache_records;
+class import_pivot_table_definition;
 class import_sheet_view;
 class import_strikethrough;
 class import_underline;
@@ -1243,6 +1244,8 @@ public:
      */
     virtual import_pivot_cache_records* create_pivot_cache_records(
         pivot_cache_id_t cache_id);
+
+    virtual import_pivot_table_definition* create_pivot_table_definition();
 
     /**
      * Append a sheet with a specified sheet position index and name and return

@@ -8,6 +8,7 @@
 #include <orcus/spreadsheet/import_interface.hpp>
 #include <orcus/spreadsheet/import_interface_auto_filter.hpp>
 #include <orcus/spreadsheet/import_interface_pivot.hpp>
+#include <orcus/spreadsheet/import_interface_pivot_table_def.hpp>
 #include <orcus/spreadsheet/import_interface_strikethrough.hpp>
 #include <orcus/spreadsheet/import_interface_styles.hpp>
 #include <orcus/spreadsheet/import_interface_underline.hpp>
@@ -23,6 +24,24 @@ import_pivot_cache_definition::~import_pivot_cache_definition() {}
 import_pivot_cache_field_group::~import_pivot_cache_field_group() {}
 
 import_pivot_cache_records::~import_pivot_cache_records() {}
+
+import_pivot_rc_fields::~import_pivot_rc_fields() = default;
+
+import_pivot_fields::~import_pivot_fields() = default;
+
+import_pivot_field::~import_pivot_field() = default;
+
+import_pivot_page_field::~import_pivot_page_field() = default;
+
+import_pivot_page_fields::~import_pivot_page_fields() = default;
+
+import_pivot_data_field::~import_pivot_data_field() = default;
+
+import_pivot_data_fields::~import_pivot_data_fields() = default;
+
+import_pivot_rc_items::~import_pivot_rc_items() = default;
+
+import_pivot_table_definition::~import_pivot_table_definition() = default;
 
 import_shared_strings::~import_shared_strings() {}
 
@@ -177,6 +196,11 @@ import_pivot_cache_definition* import_factory::create_pivot_cache_definition(
 
 import_pivot_cache_records* import_factory::create_pivot_cache_records(
         orcus::spreadsheet::pivot_cache_id_t /*cache_id*/)
+{
+    return nullptr;
+}
+
+import_pivot_table_definition* import_factory::create_pivot_table_definition()
 {
     return nullptr;
 }

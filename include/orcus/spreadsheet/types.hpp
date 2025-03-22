@@ -611,6 +611,26 @@ enum class pivot_cache_group_by_t
     years
 };
 
+enum class pivot_field_item_t
+{
+    unknown = 0,
+    average,
+    blank_line,
+    count,
+    count_numbers,
+    data,
+    subtotal_default,
+    grand_total,
+    max,
+    min,
+    product,
+    stddev,
+    stddevp,
+    sum,
+    var,
+    varp,
+};
+
 /**
  * Stores a 2-dimensional cell address.
  */
