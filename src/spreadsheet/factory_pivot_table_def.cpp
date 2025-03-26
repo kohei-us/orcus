@@ -1,0 +1,111 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#include "factory_pivot_table_def.hpp"
+
+namespace orcus { namespace spreadsheet {
+
+void import_pivot_field::set_item_count(std::size_t count) {}
+
+void import_pivot_field::append_item(std::size_t index) {}
+
+void import_pivot_field::append_item(pivot_field_item_t type) {}
+
+void import_pivot_field::commit() {}
+
+void import_pivot_fields::set_count(std::size_t count) {}
+
+iface::import_pivot_field* import_pivot_fields::start_pivot_field()
+{
+    return &m_field;
+}
+
+void import_pivot_fields::commit() {}
+
+void import_pivot_rc_fields::set_count(std::size_t count) {}
+
+void import_pivot_rc_fields::append_field(std::size_t index) {}
+
+void import_pivot_rc_fields::commit() {}
+
+void import_pivot_page_field::set_field(std::size_t index) {}
+
+void import_pivot_page_field::commit() {}
+
+iface::import_pivot_page_field* import_pivot_page_fields::start_page_field()
+{
+    return &m_field;
+}
+
+void import_pivot_page_fields::commit() {}
+
+void import_pivot_data_field::set_field(std::size_t index) {}
+
+void import_pivot_data_field::commit() {}
+
+iface::import_pivot_data_field* import_pivot_data_fields::start_data_field()
+{
+    return &m_field;
+}
+
+void import_pivot_data_fields::commit() {}
+
+void import_pivot_rc_item::append_index(std::size_t index) {}
+
+void import_pivot_rc_item::commit() {}
+
+iface::import_pivot_rc_item* import_pivot_rc_items::start_item()
+{
+    return &m_item;
+}
+
+void import_pivot_rc_items::commit() {}
+
+void import_pivot_table_def::set_name(std::string_view name) {}
+
+void import_pivot_table_def::set_cache_id(pivot_cache_id_t cache_id) {}
+
+void import_pivot_table_def::set_range(const range_t& ref) {}
+
+iface::import_pivot_fields* import_pivot_table_def::start_pivot_fields()
+{
+    return nullptr;
+}
+
+iface::import_pivot_rc_fields* import_pivot_table_def::start_row_fields()
+{
+    return &m_rc_fields;
+}
+
+iface::import_pivot_rc_fields* import_pivot_table_def::start_col_fields()
+{
+    return &m_rc_fields;
+}
+
+iface::import_pivot_page_fields* import_pivot_table_def::start_page_fields()
+{
+    return &m_page_fields;
+}
+
+iface::import_pivot_data_fields* import_pivot_table_def::start_data_fields()
+{
+    return &m_data_fields;
+}
+
+iface::import_pivot_rc_items* import_pivot_table_def::start_row_items()
+{
+    return &m_rc_items;
+}
+
+iface::import_pivot_rc_items* import_pivot_table_def::start_col_items()
+{
+    return &m_rc_items;
+}
+
+}}
+
+/* vim:set shiftwidth=4 softtabstop=4 expandtab: */

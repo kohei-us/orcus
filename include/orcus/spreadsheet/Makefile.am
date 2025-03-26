@@ -7,6 +7,7 @@ liborcus_HEADERS = \
 	import_interface.hpp \
 	import_interface_auto_filter.hpp \
 	import_interface_pivot.hpp \
+	import_interface_pivot_table_def.hpp \
 	import_interface_strikethrough.hpp \
 	import_interface_styles.hpp \
 	import_interface_underline.hpp \

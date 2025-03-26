@@ -49,6 +49,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	factory_auto_filter.cpp \
 	factory_pivot.hpp \
 	factory_pivot.cpp \
+	factory_pivot_table_def.hpp \
+	factory_pivot_table_def.cpp \
 	factory_shared_strings.hpp \
 	factory_shared_strings.cpp \
 	factory_sheet.hpp \

@@ -16,6 +16,7 @@
 #include <orcus/string_pool.hpp>
 
 #include "factory_pivot.hpp"
+#include "factory_pivot_table_def.hpp"
 #include "factory_shared_strings.hpp"
 #include "factory_sheet.hpp"
 #include "global_settings.hpp"
@@ -184,6 +185,7 @@ struct import_factory::impl
     import_global_settings m_global_settings;
     import_pivot_cache_def m_pc_def;
     import_pivot_cache_records m_pc_records;
+    import_pivot_table_def m_pivot_table_def;
     import_ref_resolver m_ref_resolver;
     import_global_named_exp m_global_named_exp;
     import_styles m_styles;
@@ -268,6 +270,11 @@ iface::import_pivot_cache_records* import_factory::create_pivot_cache_records(
 
     mp_impl->m_pc_records.set_cache(pc);
     return &mp_impl->m_pc_records;
+}
+
+iface::import_pivot_table_definition* import_factory::create_pivot_table_definition()
+{
+    return &mp_impl->m_pivot_table_def;
 }
 
 iface::import_sheet* import_factory::append_sheet(sheet_t sheet_index, std::string_view name)

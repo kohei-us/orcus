@@ -13,6 +13,7 @@ add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     factory.cpp
     factory_auto_filter.cpp
     factory_pivot.cpp
+    factory_pivot_table_def.cpp
     factory_shared_strings.cpp
     factory_sheet.cpp
     factory_strikethrough.cpp
