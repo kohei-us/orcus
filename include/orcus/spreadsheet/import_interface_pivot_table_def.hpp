@@ -109,10 +109,39 @@ public:
     virtual void commit() = 0;
 };
 
+/**
+ * Interface for importing a single row or column item.
+ *
+ * A single row or column item includes a row of labels displayed in a pivot
+ * table output. The labels are represented by their respective indexes into
+ * the corresponding shared items in pivot cache definition.  The number of
+ * indexes stored in one item is equal to the number of the corresponding row
+ * or column fields.
+ */
+class ORCUS_DLLPUBLIC import_pivot_rc_item
+{
+public:
+    virtual ~import_pivot_rc_item();
+
+    /**
+     * Append the index of a label to the item.
+     *
+     * @param index Index of a label.
+     */
+    virtual void append_index(std::size_t index) = 0;
+
+    virtual void commit() = 0;
+};
+
+/**
+ * Interface for importing a series of row or column items.
+ */
 class ORCUS_DLLPUBLIC import_pivot_rc_items
 {
 public:
     virtual ~import_pivot_rc_items();
+
+    virtual import_pivot_rc_item* start_item() = 0;
 
     virtual void commit() = 0;
 };

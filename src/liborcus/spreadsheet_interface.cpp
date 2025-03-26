@@ -39,6 +39,8 @@ import_pivot_data_field::~import_pivot_data_field() = default;
 
 import_pivot_data_fields::~import_pivot_data_fields() = default;
 
+import_pivot_rc_item::~import_pivot_rc_item() = default;
+
 import_pivot_rc_items::~import_pivot_rc_items() = default;
 
 import_pivot_table_definition::~import_pivot_table_definition() = default;
