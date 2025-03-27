@@ -15,7 +15,6 @@
 #include "orcus/measurement.hpp"
 #include "orcus/spreadsheet/import_interface_pivot.hpp"
 
-#include <iostream>
 #include <optional>
 #include <mdds/sorted_string_map.hpp>
 
@@ -126,15 +125,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 }
             );
 
-            if (get_config().debug)
-            {
-                std::cout << "---" << std::endl;
-                std::cout << "pivot cache definition" << std::endl;
-                std::cout << "refreshed by: " << refreshed_by << std::endl;
-                std::cout << "record count: " << record_count << std::endl;
-                std::cout << "rid: " << rid << std::endl;
-            }
-
             if (!rid.empty())
             {
                 // The rid string here must be persistent beyond the current
@@ -170,9 +160,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 }
             );
 
-            if (get_config().debug)
-                std::cout << "type: " << source_type_s << std::endl;
-
             break;
         }
         case XML_worksheetSource:
@@ -206,13 +193,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 }
             );
 
-            if (get_config().debug)
-            {
-                std::cout << "table: " << table_name << std::endl;
-                std::cout << "ref: " << ref << std::endl;
-                std::cout << "sheet: " << sheet_name << std::endl;
-            }
-
             if (!table_name.empty())
                 m_pcache.set_worksheet_source(table_name);
             else
@@ -226,9 +206,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                 field_count = *v;
             else
                 throw xml_structure_error("failed to get a field count from cacheFields");
-
-            if (get_config().debug)
-                std::cout << "field count: " << field_count << std::endl;
 
             if (field_count < 0)
                 throw xml_structure_error("field count of a pivot cache must be positive.");
@@ -264,12 +241,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
 
             // TODO : Handle number format ID here.
             m_pcache.set_field_name(field_name);
-
-            if (get_config().debug)
-            {
-                std::cout << "* name: " << field_name << std::endl;
-                std::cout << "  number format id: " << numfmt_id << std::endl;
-            }
             break;
         }
         case XML_fieldGroup:
@@ -296,14 +267,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     }
                 }
             );
-
-            if (get_config().debug)
-            {
-                if (group_parent >= 0)
-                    std::cout << "  * group parent index: " << group_parent << std::endl;
-                if (group_base >= 0)
-                    std::cout << "  * group base index: " << group_base << std::endl;
-            }
 
             if (group_base >= 0)
             {
@@ -332,9 +295,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     }
                 }
             );
-
-            if (get_config().debug)
-                std::cout << "  * group child member count: " << count << std::endl;
 
             break;
         }
@@ -407,20 +367,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     m_pcache_field_group->set_range_end_date(*end_date);
             }
 
-            if (get_config().debug)
-            {
-                std::cout << "  auto start: " << auto_start << std::endl;
-                std::cout << "  auto end: " << auto_end << std::endl;
-                std::cout << "  start: " << start << std::endl;
-                std::cout << "  end: " << end << std::endl;
-                std::cout << "  interval: " << interval << std::endl;
-
-                if (start_date)
-                    std::cout << "start date: " << *start_date << std::endl;
-                if (end_date)
-                    std::cout << "end date: " << *end_date << std::endl;
-            }
-
             break;
         }
         case XML_sharedItems:
@@ -448,9 +394,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
                     }
                 }
             );
-
-            if (get_config().debug)
-                std::cout << "  * group member count: " << count << std::endl;
 
             break;
         }
@@ -497,9 +440,6 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
 
             if (index < 0)
                 throw xml_structure_error("element 'x' without a required attribute 'v'.");
-
-            if (get_config().debug)
-                std::cout << "    * index = " << index << std::endl;
 
             if (m_pcache_field_group)
                 m_pcache_field_group->link_base_to_group_items(index);
@@ -591,9 +531,6 @@ void xlsx_pivot_cache_def_context::start_element_s(
         {
             // regular (non-group) field member name.
 
-            if (get_config().debug)
-                std::cout << "    * field member: " << value << std::endl;
-
             m_field_item_used = true;
             m_pcache.set_field_item_string(value);
             break;
@@ -601,9 +538,6 @@ void xlsx_pivot_cache_def_context::start_element_s(
         case XML_groupItems:
         {
             // group field member name.
-
-            if (get_config().debug)
-                std::cout << "    * group field member: " << value << std::endl;
 
             m_field_item_used = true;
             if (m_pcache_field_group)
@@ -671,15 +605,6 @@ void xlsx_pivot_cache_def_context::start_element_n(
                 }
             );
 
-            if (get_config().debug)
-            {
-                std::cout << "  * n: " << value;
-                if (!m_field_item_used)
-                    std::cout << " (unused)";
-                std::cout << std::endl;
-
-            }
-
             if (m_field_item_used)
                 m_pcache.set_field_item_numeric(value);
 
@@ -739,15 +664,6 @@ void xlsx_pivot_cache_def_context::start_element_d(
                     }
                 }
             );
-
-            if (get_config().debug)
-            {
-                std::cout << "  * d: " << dt;
-                if (!m_field_item_used)
-                    std::cout << " (unused)";
-                std::cout << std::endl;
-
-            }
 
             if (m_field_item_used)
                 m_pcache.set_field_item_date_time(dt);
@@ -809,14 +725,6 @@ void xlsx_pivot_cache_def_context::start_element_e(
                 }
             );
 
-            if (get_config().debug)
-            {
-                std::cout << "  * e: " << ev;
-                if (!m_field_item_used)
-                    std::cout << " (unused)";
-                std::cout << std::endl;
-            }
-
             if (m_field_item_used)
                 m_pcache.set_field_item_error(ev);
 
@@ -854,7 +762,6 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
     bool semi_mixed_types = true;
 
     bool has_non_date = true;
-    bool has_date = false;
     bool has_string = true;
     bool has_blank = false;
 
@@ -935,29 +842,6 @@ void xlsx_pivot_cache_def_context::start_element_shared_items(
 
     if (max_date)
         m_pcache.set_field_max_date(*max_date);
-
-    if (get_config().debug)
-    {
-        std::cout << "  contains semi-mixed types: " << semi_mixed_types << std::endl;
-        std::cout << "  contains non-date: " << has_non_date << std::endl;
-        std::cout << "  contains date: " << has_date << std::endl;
-        std::cout << "  contains string: " << has_string << std::endl;
-        std::cout << "  contains blank: " << has_blank << std::endl;
-        std::cout << "  contains mixed types: " << mixed_types << std::endl;
-        std::cout << "  contains number: " << has_number << std::endl;
-        std::cout << "  contains integer: " << has_integer << std::endl;
-        std::cout << "  contains long text: " << has_long_text << std::endl;
-        std::cout << "  count: " << count << std::endl;
-
-        if (min_value)
-            std::cout << "  min value: " << *min_value << std::endl;
-        if (max_value)
-            std::cout << "  max value: " << *max_value << std::endl;
-        if (min_date)
-            std::cout << "  min date: " << *min_date << std::endl;
-        if (max_date)
-            std::cout << "  max date: " << *max_date << std::endl;
-    }
 }
 
 xlsx_pivot_cache_rec_context::xlsx_pivot_cache_rec_context(
@@ -994,41 +878,21 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
         case XML_pivotCacheRecords:
         {
             if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
-            {
-                if (get_config().debug)
-                {
-                    std::cout << "---" << std::endl;
-                    std::cout << "pivot cache record (count: " << *count << ")" << std::endl;
-                }
-
                 m_pc_records.set_record_count(*count);
-            }
             break;
         }
         case XML_r: // record
-            if (get_config().debug)
-                std::cout << "* record" << std::endl;
-
             break;
         case XML_s: // character value
         {
             std::string_view cv = get_single_attr(attrs, NS_ooxml_xlsx, XML_v);
-
-            if (get_config().debug)
-                std::cout << "  * s = '" << cv << "'" << std::endl;
-
             m_pc_records.append_record_value_character(cv);
             break;
         }
         case XML_x: // shared item index
         {
             if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_v); v)
-            {
-                if (get_config().debug)
-                    std::cout << "  * x = " << *v << std::endl;
-
                 m_pc_records.append_record_value_shared_item(*v);
-            }
             else
                 throw xml_structure_error("failed to get a record value shared item index");
 
@@ -1040,19 +904,13 @@ void xlsx_pivot_cache_rec_context::start_element(xmlns_id_t ns, xml_token_t name
             if (!val)
                 throw xml_structure_error("failed to get a numeric record value in pivot cache record");
 
-            if (get_config().debug)
-                std::cout << "  * n = " << *val << std::endl;
-
             m_pc_records.append_record_value_numeric(*val);
             break;
         }
         case XML_e: // error value
         {
             std::string_view cv = get_single_attr(attrs, NS_ooxml_xlsx, XML_v);
-
-            if (get_config().debug)
-                std::cout << "  * e = " << cv << std::endl;
-
+            (void)cv;
             break;
         }
         case XML_b: // boolean
@@ -1225,126 +1083,56 @@ bool xlsx_pivot_table_context::end_element(xmlns_id_t ns, xml_token_t name)
 
 void xlsx_pivot_table_context::start_pivot_table_definition(const xml_token_attrs_t& attrs)
 {
-    if (get_config().debug)
-        std::cout << "---" << std::endl;
-
     for (const xml_token_attr_t& attr : attrs)
     {
         if (attr.ns && attr.ns != NS_ooxml_xlsx)
             continue;
 
-        long v = 0;
-        bool b = false;
-
         switch (attr.name)
         {
             case XML_name:
-                if (get_config().debug)
-                    std::cout << "name: " << attr.value << std::endl;
                 break;
             case XML_cacheId:
-                v = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "cache ID: " << v << std::endl;
                 break;
             case XML_applyNumberFormats:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "apply number formats: " << b << std::endl;
                 break;
             case XML_applyBorderFormats:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "apply border formats: " << b << std::endl;
                 break;
             case XML_applyFontFormats:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "apply font formats: " << b << std::endl;
                 break;
             case XML_applyPatternFormats:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "apply pattern formats: " << b << std::endl;
                 break;
             case XML_applyAlignmentFormats:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "apply alignment formats: " << b << std::endl;
                 break;
             case XML_applyWidthHeightFormats:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "apply width/height formats: " << b << std::endl;
                 break;
             case XML_dataCaption:
-                if (get_config().debug)
-                    std::cout << "data caption: " << attr.value << std::endl;
                 break;
             case XML_updatedVersion:
-                v = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "updated version: " << v << std::endl;
                 break;
             case XML_minRefreshableVersion:
-                v = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "minimum refreshable version: " << v << std::endl;
                 break;
             case XML_showCalcMbrs:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "show calc members (?): " << b << std::endl;
                 break;
             case XML_useAutoFormatting:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "use auto formatting: " << b << std::endl;
                 break;
             case XML_itemPrintTitles:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "item print titles (?): " << b << std::endl;
                 break;
             case XML_createdVersion:
-                v = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "created version: " << v << std::endl;
                 break;
             case XML_indent:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "indent: " << b << std::endl;
                 break;
             case XML_compact:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "compact: " << b << std::endl;
                 break;
             case XML_compactData:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "compact data: " << b << std::endl;
                 break;
             case XML_outline:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "outline: " << b << std::endl;
                 break;
             case XML_outlineData:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "outline data: " << b << std::endl;
                 break;
             case XML_gridDropZones:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "grid drop zones: " << b << std::endl;
                 break;
             case XML_multipleFieldFilters:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "multiple field filters: " << b << std::endl;
                 break;
         }
     }
@@ -1357,27 +1145,15 @@ void xlsx_pivot_table_context::start_location(const xml_token_attrs_t& attrs)
         if (attr.ns && attr.ns != NS_ooxml_xlsx)
             continue;
 
-        long v = -1;
         switch (attr.name)
         {
             case XML_ref:
-                if (get_config().debug)
-                    std::cout << "ref: " << attr.value << std::endl;
                 break;
             case XML_firstHeaderRow:
-                v = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "first header row: " << v << std::endl;
                 break;
             case XML_firstDataRow:
-                v = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "first data row: " << v << std::endl;
                 break;
             case XML_firstDataCol:
-                v = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "first data column: " << v << std::endl;
                 break;
         }
     }
@@ -1389,16 +1165,11 @@ void xlsx_pivot_table_context::start_pivot_fields(const xml_token_attrs_t& attrs
     // appearances of the fields inside pivot table.
     if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
     {
-        if (get_config().debug)
-            std::cout << "field count: " << *count << std::endl;
     }
 }
 
 void xlsx_pivot_table_context::start_pivot_field(const xml_token_attrs_t& attrs)
 {
-    if (get_config().debug)
-        std::cout << "---" << std::endl;
-
     for (const xml_token_attr_t& attr : attrs)
     {
         if (attr.ns && attr.ns != NS_ooxml_xlsx)
@@ -1407,37 +1178,15 @@ void xlsx_pivot_table_context::start_pivot_field(const xml_token_attrs_t& attrs)
         switch (attr.name)
         {
             case XML_axis:
-                if (get_config().debug)
-                    std::cout << "  * axis: " << attr.value << std::endl;
                 break;
             case XML_compact:
-            {
-                bool b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "  * compact: " << b << std::endl;
                 break;
-            }
             case XML_outline:
-            {
-                bool b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "  * outline: " << b << std::endl;
                 break;
-            }
             case XML_showAll:
-            {
-                bool b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "  * show all: " << b << std::endl;
                 break;
-            }
             case XML_dataField:
-            {
-                bool b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "  * data field: " << b << std::endl;
                 break;
-            }
         }
     }
 }
@@ -1446,8 +1195,6 @@ void xlsx_pivot_table_context::start_items(const xml_token_attrs_t& attrs)
 {
     if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
     {
-        if (get_config().debug)
-            std::cout << "  * item count: " << *count << std::endl;
     }
 }
 
@@ -1463,9 +1210,6 @@ void xlsx_pivot_table_context::start_item(const xml_token_attrs_t& attrs)
             case XML_x:
             {
                 // field item index as defined in the pivot cache.
-                long idx = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "    * x = " << idx << std::endl;
                 break;
             }
             case XML_t:
@@ -1473,8 +1217,6 @@ void xlsx_pivot_table_context::start_item(const xml_token_attrs_t& attrs)
                 // When the <item> element has attribute 't', it's subtotal or
                 // some sort of function item.  See 3.18.45 ST_ItemType
                 // (PivotItem Type) for possible values.
-                if (get_config().debug)
-                    std::cout << "    * type = " << attr.value << std::endl;
                 break;
             }
         }
@@ -1485,11 +1227,6 @@ void xlsx_pivot_table_context::start_row_fields(const xml_token_attrs_t& attrs)
 {
     if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
     {
-        if (get_config().debug)
-        {
-            std::cout << "---" << std::endl;
-            std::cout << "row field count: " << *count << std::endl;
-        }
     }
 }
 
@@ -1497,11 +1234,6 @@ void xlsx_pivot_table_context::start_col_fields(const xml_token_attrs_t& attrs)
 {
     if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
     {
-        if (get_config().debug)
-        {
-            std::cout << "---" << std::endl;
-            std::cout << "column field count: " << *count << std::endl;
-        }
     }
 }
 
@@ -1509,19 +1241,11 @@ void xlsx_pivot_table_context::start_page_fields(const xml_token_attrs_t& attrs)
 {
     if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
     {
-        if (get_config().debug)
-        {
-            std::cout << "---" << std::endl;
-            std::cout << "page field count: " << *count << std::endl;
-        }
     }
 }
 
 void xlsx_pivot_table_context::start_page_field(const xml_token_attrs_t& attrs)
 {
-    if (get_config().debug)
-        std::cout << "  * page field:";
-
     for (const xml_token_attr_t& attr : attrs)
     {
         if (attr.ns && attr.ns != NS_ooxml_xlsx)
@@ -1532,32 +1256,26 @@ void xlsx_pivot_table_context::start_page_field(const xml_token_attrs_t& attrs)
             case XML_fld:
             {
                 long fld = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "field index = " << fld << "; ";
+                (void)fld;
                 break;
             }
             case XML_item:
             {
                 long item = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "item index = " << item << "; ";
+                (void)item;
                 break;
             }
             case XML_hier:
             {
                 long hier = to_long(attr.value);
                 // -1 if not applicable.
-                if (get_config().debug)
-                    std::cout << "OLAP hierarchy index = " << hier << "; ";
+                (void)hier;
                 break;
             }
             default:
                 ;
         }
     }
-
-    if (get_config().debug)
-        std::cout << std::endl;
 }
 
 void xlsx_pivot_table_context::start_field(const xml_token_attrs_t& attrs)
@@ -1569,8 +1287,7 @@ void xlsx_pivot_table_context::start_field(const xml_token_attrs_t& attrs)
     // data field.
     if (auto idx = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_x); idx)
     {
-        if (get_config().debug)
-            std::cout << "  * x = " << *idx << std::endl;
+        (void)idx;
     }
 }
 
@@ -1578,19 +1295,11 @@ void xlsx_pivot_table_context::start_data_fields(const xml_token_attrs_t& attrs)
 {
     if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
     {
-        if (get_config().debug)
-        {
-            std::cout << "---" << std::endl;
-            std::cout << "data field count: " << *count << std::endl;
-        }
     }
 }
 
 void xlsx_pivot_table_context::start_data_field(const xml_token_attrs_t& attrs)
 {
-    if (get_config().debug)
-        std::cout << "  * data field: ";
-
     for (const xml_token_attr_t& attr : attrs)
     {
         if (attr.ns && attr.ns != NS_ooxml_xlsx)
@@ -1599,45 +1308,33 @@ void xlsx_pivot_table_context::start_data_field(const xml_token_attrs_t& attrs)
         switch (attr.name)
         {
             case XML_name:
-            {
-                if (get_config().debug)
-                    std::cout << "name = " << attr.value << "; ";
                 break;
-            }
             case XML_fld:
             {
                 long fld = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "field = " << fld << "; ";
+                (void)fld;
                 break;
             }
             case XML_baseField:
             {
                 long fld = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "base field = " << fld << "; ";
+                (void)fld;
                 break;
             }
             case XML_baseItem:
             {
                 long fld = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "base item = " << fld << "; ";
+                (void)fld;
                 break;
             }
             case XML_subtotal:
             {
-                if (get_config().debug)
-                    std::cout << "subtotal = " << attr.value << "; ";
                 break;
             }
             default:
                 ;
         }
     }
-
-    if (get_config().debug)
-        std::cout << std::endl;
 }
 
 void xlsx_pivot_table_context::start_row_items(const xml_token_attrs_t& attrs)
@@ -1647,11 +1344,6 @@ void xlsx_pivot_table_context::start_row_items(const xml_token_attrs_t& attrs)
     // represents a single row.
     if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
     {
-        if (get_config().debug)
-        {
-            std::cout << "---" << std::endl;
-            std::cout << "row item count: " << *count << std::endl;
-        }
     }
 }
 
@@ -1659,19 +1351,11 @@ void xlsx_pivot_table_context::start_col_items(const xml_token_attrs_t& attrs)
 {
     if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
     {
-        if (get_config().debug)
-        {
-            std::cout << "---" << std::endl;
-            std::cout << "column item count: " << *count << std::endl;
-        }
     }
 }
 
 void xlsx_pivot_table_context::start_i(const xml_token_attrs_t& attrs)
 {
-    if (get_config().debug)
-        std::cout << "---" << std::endl;
-
     for (const xml_token_attr_t& attr : attrs)
     {
         if (attr.ns && attr.ns != NS_ooxml_xlsx)
@@ -1682,30 +1366,24 @@ void xlsx_pivot_table_context::start_i(const xml_token_attrs_t& attrs)
             case XML_t:
             {
                 // total or subtotal function type.
-                if (get_config().debug)
-                    std::cout << "  * type = " << attr.value << std::endl;
+                break;
             }
-            break;
             case XML_r:
             {
                 // "repeated item count" which basically is the number of
-                // blank cells that occur after the preivous non-empty cell on
+                // blank cells that occur after the previous non-empty cell on
                 // the same row (in the classic layout mode).
                 long v = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "  * repeat item count = " << v << std::endl;
+                (void)v;
+                break;
             }
-            break;
             case XML_i:
             {
                 // zero-based data field index in case of multiple data fields.
                 long v = to_long(attr.value);
-                if (get_config().debug)
-                    std::cout << "  * data field index = " << v << std::endl;
+                (void)v;
+                break;
             }
-            break;
-            default:
-                ;
         }
     }
 }
@@ -1721,65 +1399,32 @@ void xlsx_pivot_table_context::start_x(const xml_token_attrs_t& attrs, const xml
         if (idx < 0)
             // 0 is default when not set.
             idx = 0;
-
-        if (get_config().debug)
-            std::cout << "  * v = " << idx << std::endl;
     }
 }
 
 void xlsx_pivot_table_context::start_pivot_table_style_info(const xml_token_attrs_t& attrs)
 {
-    if (get_config().debug)
-    {
-        std::cout << "---" << std::endl;
-        std::cout << "* style info: ";
-    }
-
     for (const xml_token_attr_t& attr : attrs)
     {
         if (attr.ns && attr.ns != NS_ooxml_xlsx)
             continue;
 
-        bool b = false;
-
         switch (attr.name)
         {
             case XML_name:
-                if (get_config().debug)
-                    std::cout << "name='" << attr.value << "'; ";
                 break;
             case XML_showRowHeaders:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "show row headers=" << b << "; ";
                 break;
             case XML_showColHeaders:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "show column headers=" << b << "; ";
-            break;
+                break;
             case XML_showRowStripes:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "show row stripes=" << b << "; ";
-            break;
+                break;
             case XML_showColStripes:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "show column stripes=" << b << "; ";
-            break;
+                break;
             case XML_showLastColumn:
-                b = to_bool(attr.value);
-                if (get_config().debug)
-                    std::cout << "show last column=" << b << "; ";
-            break;
-            default:
-                ;
+                break;
         }
     }
-
-    if (get_config().debug)
-        std::cout << std::endl;
 }
 
 }
