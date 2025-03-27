@@ -38,8 +38,6 @@
 #include <cstring>
 #include <sstream>
 
-using namespace std;
-
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {
@@ -337,18 +335,18 @@ size_t get_schema_rank(const schema_t sch)
     }
 
     auto it = rank_map.find(sch);
-    return it == rank_map.end() ? numeric_limits<size_t>::max() : it->second;
+    return it == rank_map.end() ? std::numeric_limits<size_t>::max() : it->second;
 }
 
 }
 
-void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
+void orcus_xlsx::read_workbook(const std::string& dir_path, const std::string& file_name)
 {
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
-        cout << "read_workbook: file path = " << filepath << endl;
+        std::cout << "read_workbook: file path = " << filepath << std::endl;
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
         return;
 
@@ -379,7 +377,7 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
 
                 if (info)
                 {
-                    cout << "relationship id: " << v.first << "; sheet name: " << info->name << "; sheet id: " << info->id << endl;
+                    std::cout << "relationship id: " << v.first << "; sheet name: " << info->name << "; sheet id: " << info->id << std::endl;
                 }
 
                 const xlsx_rel_pivot_cache_info* info_pc =
@@ -387,7 +385,7 @@ void orcus_xlsx::read_workbook(const string& dir_path, const string& file_name)
 
                 if (info_pc)
                 {
-                    cout << "relationship id: " << v.first << "; pivot cache id: " << info_pc->id << endl;
+                    std::cout << "relationship id: " << v.first << "; pivot cache id: " << info_pc->id << std::endl;
                 }
             }
         );
@@ -432,11 +430,11 @@ void orcus_xlsx::read_sheet(
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
-        cout << "---" << endl;
-        cout << "read_sheet: file path = " << filepath << endl;
+        std::cout << "---" << std::endl;
+        std::cout << "read_sheet: file path = " << filepath << std::endl;
     }
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
         return;
 
@@ -445,8 +443,8 @@ void orcus_xlsx::read_sheet(
 
     if (get_config().debug)
     {
-        cout << "relationship sheet data: " << endl;
-        cout << "  sheet name: " << data->name << "  sheet ID: " << data->id << endl;
+        std::cout << "relationship sheet data: " << std::endl;
+        std::cout << "  sheet name: " << data->name << "  sheet ID: " << data->id << std::endl;
     }
 
     spreadsheet::iface::import_sheet* sheet = mp_impl->mp_factory->get_sheet(data->name);
@@ -484,11 +482,11 @@ void orcus_xlsx::read_shared_strings(const std::string& dir_path, const std::str
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
-        cout << "---" << endl;
-        cout << "read_shared_strings: file path = " << filepath << endl;
+        std::cout << "---" << std::endl;
+        std::cout << "read_shared_strings: file path = " << filepath << std::endl;
     }
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
         return;
 
@@ -513,8 +511,8 @@ void orcus_xlsx::read_styles(const std::string& dir_path, const std::string& fil
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
-        cout << "---" << endl;
-        cout << "read_styles: file path = " << filepath << endl;
+        std::cout << "---" << std::endl;
+        std::cout << "read_styles: file path = " << filepath << std::endl;
     }
 
     spreadsheet::iface::import_styles* styles = mp_impl->mp_factory->get_styles();
@@ -522,7 +520,7 @@ void orcus_xlsx::read_styles(const std::string& dir_path, const std::string& fil
         // Client code doesn't support styles.
         return;
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
         return;
 
@@ -562,14 +560,14 @@ void orcus_xlsx::read_table(const std::string& dir_path, const std::string& file
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
-        cout << "---" << endl;
-        cout << "read_table: file path = " << filepath << endl;
+        std::cout << "---" << std::endl;
+        std::cout << "read_table: file path = " << filepath << std::endl;
     }
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
-        cerr << "failed to open zip stream: " << filepath << endl;
+        std::cerr << "failed to open zip stream: " << filepath << std::endl;
         return;
     }
 
@@ -596,8 +594,8 @@ void orcus_xlsx::read_pivot_cache_def(
     {
         if (get_config().debug)
         {
-            cout << "---" << endl;
-            cout << "required pivot cache relation info was not present." << endl;
+            std::cout << "---" << std::endl;
+            std::cout << "required pivot cache relation info was not present." << std::endl;
         }
         return;
     }
@@ -605,15 +603,15 @@ void orcus_xlsx::read_pivot_cache_def(
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
-        cout << "---" << endl;
-        cout << "read_pivot_cache_def: file path = " << filepath
-            << "; cache id = " << data->id << endl;
+        std::cout << "---" << std::endl;
+        std::cout << "read_pivot_cache_def: file path = " << filepath
+            << "; cache id = " << data->id << std::endl;
     }
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
-        cerr << "failed to open zip stream: " << filepath << endl;
+        std::cerr << "failed to open zip stream: " << filepath << std::endl;
         return;
     }
 
@@ -650,8 +648,8 @@ void orcus_xlsx::read_pivot_cache_rec(
     {
         if (get_config().debug)
         {
-            cout << "---" << endl;
-            cout << "required pivot cache record relation info was not present." << endl;
+            std::cout << "---" << std::endl;
+            std::cout << "required pivot cache record relation info was not present." << std::endl;
         }
         return;
     }
@@ -659,14 +657,14 @@ void orcus_xlsx::read_pivot_cache_rec(
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
-        cout << "---" << endl;
-        cout << "read_pivot_cache_rec: file path = " << filepath << "; cache id = " << data->id << endl;
+        std::cout << "---" << std::endl;
+        std::cout << "read_pivot_cache_rec: file path = " << filepath << "; cache id = " << data->id << std::endl;
     }
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
-        cerr << "failed to open zip stream: " << filepath << endl;
+        std::cerr << "failed to open zip stream: " << filepath << std::endl;
         return;
     }
 
@@ -696,14 +694,14 @@ void orcus_xlsx::read_pivot_table(const std::string& dir_path, const std::string
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
-        cout << "---" << endl;
-        cout << "read_pivot_table: file path = " << filepath << endl;
+        std::cout << "---" << std::endl;
+        std::cout << "read_pivot_table: file path = " << filepath << std::endl;
     }
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
-        cerr << "failed to open zip stream: " << filepath << endl;
+        std::cerr << "failed to open zip stream: " << filepath << std::endl;
         return;
     }
 
@@ -735,14 +733,14 @@ void orcus_xlsx::read_rev_headers(const std::string& dir_path, const std::string
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
-        cout << "---" << endl;
-        cout << "read_rev_headers: file path = " << filepath << endl;
+        std::cout << "---" << std::endl;
+        std::cout << "read_rev_headers: file path = " << filepath << std::endl;
     }
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
-        cerr << "failed to open zip stream: " << filepath << endl;
+        std::cerr << "failed to open zip stream: " << filepath << std::endl;
         return;
     }
 
@@ -769,14 +767,14 @@ void orcus_xlsx::read_rev_log(const std::string& dir_path, const std::string& fi
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
-        cout << "---" << endl;
-        cout << "read_rev_log: file path = " << filepath << endl;
+        std::cout << "---" << std::endl;
+        std::cout << "read_rev_log: file path = " << filepath << std::endl;
     }
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
-        cerr << "failed to open zip stream: " << filepath << endl;
+        std::cerr << "failed to open zip stream: " << filepath << std::endl;
         return;
     }
 
@@ -802,14 +800,14 @@ void orcus_xlsx::read_drawing(const std::string& dir_path, const std::string& fi
     std::string filepath = resolve_file_path(dir_path, file_name);
     if (get_config().debug)
     {
-        cout << "---" << endl;
-        cout << "read_drawing: file path = " << filepath << endl;
+        std::cout << "---" << std::endl;
+        std::cout << "read_drawing: file path = " << filepath << std::endl;
     }
 
-    vector<unsigned char> buffer;
+    std::vector<unsigned char> buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
-        cerr << "failed to open zip stream: " << filepath << endl;
+        std::cerr << "failed to open zip stream: " << filepath << std::endl;
         return;
     }
 
