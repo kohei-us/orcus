@@ -369,26 +369,18 @@ void orcus_xlsx::read_workbook(const std::string& dir_path, const std::string& f
     context.pop_workbook_info(workbook_data);
     if (get_config().debug)
     {
-        for_each(workbook_data.data.begin(), workbook_data.data.end(),
-            [](const opc_rel_extras_t::map_type::value_type& v)
+        for (const auto& [rid, extra] : workbook_data.data)
+        {
+            if (auto* info = dynamic_cast<const xlsx_rel_sheet_info*>(extra.get()); info)
             {
-                const xlsx_rel_sheet_info* info =
-                    dynamic_cast<const xlsx_rel_sheet_info*>(v.second.get());
-
-                if (info)
-                {
-                    std::cout << "relationship id: " << v.first << "; sheet name: " << info->name << "; sheet id: " << info->id << std::endl;
-                }
-
-                const xlsx_rel_pivot_cache_info* info_pc =
-                    dynamic_cast<const xlsx_rel_pivot_cache_info*>(v.second.get());
-
-                if (info_pc)
-                {
-                    std::cout << "relationship id: " << v.first << "; pivot cache id: " << info_pc->id << std::endl;
-                }
+                std::cout << "relationship id: " << rid << "; sheet name: " << info->name << "; sheet id: " << info->id << std::endl;
             }
-        );
+
+            if (auto* info_pc = dynamic_cast<const xlsx_rel_pivot_cache_info*>(extra.get()); info_pc)
+            {
+                std::cout << "relationship id: " << rid << "; pivot cache id: " << info_pc->id << std::endl;
+            }
+        }
     }
 
     handler.reset();
