@@ -19,6 +19,8 @@ namespace spreadsheet { namespace iface {
 class import_pivot_cache_definition;
 class import_pivot_cache_field_group;
 class import_pivot_cache_records;
+class import_pivot_table_definition;
+class import_reference_resolver;
 
 }}
 
@@ -99,8 +101,14 @@ public:
  */
 class xlsx_pivot_table_context : public xml_context_base
 {
+    spreadsheet::iface::import_pivot_table_definition& m_xpt;
+    spreadsheet::iface::import_reference_resolver& m_resolver;
+
 public:
-    xlsx_pivot_table_context(session_context& cxt, const tokens& tokens);
+    xlsx_pivot_table_context(
+        session_context& cxt, const tokens& tokens,
+        spreadsheet::iface::import_pivot_table_definition& xpt,
+        spreadsheet::iface::import_reference_resolver& resolver);
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs) override;
     virtual bool end_element(xmlns_id_t ns, xml_token_t name) override;

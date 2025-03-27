@@ -12,8 +12,10 @@
 #include "session_context.hpp"
 #include "xlsx_types.hpp"
 
-#include "orcus/measurement.hpp"
-#include "orcus/spreadsheet/import_interface_pivot.hpp"
+#include <orcus/measurement.hpp>
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/spreadsheet/import_interface_pivot.hpp>
+#include <orcus/spreadsheet/import_interface_pivot_table_def.hpp>
 
 #include <optional>
 #include <mdds/sorted_string_map.hpp>
@@ -941,8 +943,11 @@ bool xlsx_pivot_cache_rec_context::end_element(xmlns_id_t ns, xml_token_t name)
     return pop_stack(ns, name);
 }
 
-xlsx_pivot_table_context::xlsx_pivot_table_context(session_context& cxt, const tokens& tokens) :
-    xml_context_base(cxt, tokens)
+xlsx_pivot_table_context::xlsx_pivot_table_context(
+    session_context& cxt, const tokens& tokens,
+    ss::iface::import_pivot_table_definition& xpt,
+    ss::iface::import_reference_resolver& resolver) :
+    xml_context_base(cxt, tokens), m_xpt(xpt), m_resolver(resolver)
 {
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
@@ -1085,55 +1090,22 @@ void xlsx_pivot_table_context::start_pivot_table_definition(const xml_token_attr
 {
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
+        if (attr.ns)
             continue;
 
         switch (attr.name)
         {
             case XML_name:
+            {
+                m_xpt.set_name(attr.value);
                 break;
+            }
             case XML_cacheId:
+            {
+                if (auto v = to_long_checked(attr.value); v)
+                    m_xpt.set_cache_id(*v);
                 break;
-            case XML_applyNumberFormats:
-                break;
-            case XML_applyBorderFormats:
-                break;
-            case XML_applyFontFormats:
-                break;
-            case XML_applyPatternFormats:
-                break;
-            case XML_applyAlignmentFormats:
-                break;
-            case XML_applyWidthHeightFormats:
-                break;
-            case XML_dataCaption:
-                break;
-            case XML_updatedVersion:
-                break;
-            case XML_minRefreshableVersion:
-                break;
-            case XML_showCalcMbrs:
-                break;
-            case XML_useAutoFormatting:
-                break;
-            case XML_itemPrintTitles:
-                break;
-            case XML_createdVersion:
-                break;
-            case XML_indent:
-                break;
-            case XML_compact:
-                break;
-            case XML_compactData:
-                break;
-            case XML_outline:
-                break;
-            case XML_outlineData:
-                break;
-            case XML_gridDropZones:
-                break;
-            case XML_multipleFieldFilters:
-                break;
+            }
         }
     }
 }
@@ -1142,19 +1114,17 @@ void xlsx_pivot_table_context::start_location(const xml_token_attrs_t& attrs)
 {
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
+        if (attr.ns)
             continue;
 
         switch (attr.name)
         {
             case XML_ref:
+            {
+                auto range = ss::to_rc_range(m_resolver.resolve_range(attr.value));
+                m_xpt.set_range(range);
                 break;
-            case XML_firstHeaderRow:
-                break;
-            case XML_firstDataRow:
-                break;
-            case XML_firstDataCol:
-                break;
+            }
         }
     }
 }

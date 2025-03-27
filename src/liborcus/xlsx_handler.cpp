@@ -15,6 +15,8 @@
 
 using namespace std;
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus {
 
 xlsx_sheet_xml_handler::xlsx_sheet_xml_handler(
@@ -64,8 +66,10 @@ xlsx_pivot_cache_rec_xml_handler::xlsx_pivot_cache_rec_xml_handler(
     xml_stream_handler(cxt, t, std::make_unique<xlsx_pivot_cache_rec_context>(cxt, t, pc_records)) {}
 
 xlsx_pivot_table_xml_handler::xlsx_pivot_table_xml_handler(
-    session_context& cxt, const tokens& t) :
-    xml_stream_handler(cxt, t, std::make_unique<xlsx_pivot_table_context>(cxt, t)) {}
+    session_context& cxt, const tokens& t,
+    ss::iface::import_pivot_table_definition& xpt,
+    ss::iface::import_reference_resolver& resolver) :
+    xml_stream_handler(cxt, t, std::make_unique<xlsx_pivot_table_context>(cxt, t, xpt, resolver)) {}
 
 xlsx_drawing_xml_handler::xlsx_drawing_xml_handler(
     session_context& cxt, const tokens& t) :

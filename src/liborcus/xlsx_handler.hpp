@@ -28,6 +28,7 @@ class import_table;
 class import_reference_resolver;
 class import_pivot_cache_definition;
 class import_pivot_cache_records;
+class import_pivot_table_definition;
 
 }}
 
@@ -76,7 +77,10 @@ public:
 class xlsx_pivot_table_xml_handler : public xml_stream_handler
 {
 public:
-    xlsx_pivot_table_xml_handler(session_context& cxt, const tokens& t);
+    xlsx_pivot_table_xml_handler(
+        session_context& cxt, const tokens& t,
+        spreadsheet::iface::import_pivot_table_definition& xpt,
+        spreadsheet::iface::import_reference_resolver& resolver);
 };
 
 class xlsx_drawing_xml_handler : public xml_stream_handler

@@ -40,6 +40,8 @@
 
 using namespace std;
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus {
 
 class xlsx_opc_handler : public opc_reader::part_handler
@@ -708,7 +710,15 @@ void orcus_xlsx::read_pivot_table(const std::string& dir_path, const std::string
     if (buffer.empty())
         return;
 
-    auto handler = std::make_unique<xlsx_pivot_table_xml_handler>(mp_impl->m_cxt, ooxml_tokens);
+    auto* xpt = mp_impl->mp_factory->create_pivot_table_definition();
+    if (!xpt)
+        return;
+
+    auto* resolver = mp_impl->mp_factory->get_reference_resolver(ss::formula_ref_context_t::global);
+    if (!resolver)
+        throw general_error("orcus_xlsx::read_pivot_table: reference resolver interface is not available.");
+
+    auto handler = std::make_unique<xlsx_pivot_table_xml_handler>(mp_impl->m_cxt, ooxml_tokens, *xpt, *resolver);
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
