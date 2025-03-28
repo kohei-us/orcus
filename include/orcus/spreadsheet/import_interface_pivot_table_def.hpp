@@ -178,6 +178,8 @@ public:
     virtual import_pivot_rc_items* start_row_items() = 0;
 
     virtual import_pivot_rc_items* start_col_items() = 0;
+
+    virtual void commit() = 0;
 };
 
 }}}

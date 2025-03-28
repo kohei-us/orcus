@@ -185,7 +185,7 @@ struct import_factory::impl
     import_global_settings m_global_settings;
     import_pivot_cache_def m_pc_def;
     import_pivot_cache_records m_pc_records;
-    import_pivot_table_def m_pivot_table_def;
+    detail::import_pivot_table_def pivot_table_def;
     import_ref_resolver m_ref_resolver;
     import_global_named_exp m_global_named_exp;
     import_styles m_styles;
@@ -205,6 +205,7 @@ struct import_factory::impl
         m_global_settings(envelope, doc),
         m_pc_def(doc),
         m_pc_records(doc),
+        pivot_table_def(doc),
         m_ref_resolver(doc),
         m_global_named_exp(doc),
         m_styles(m_config, doc.get_styles(), doc.get_string_pool()),
@@ -274,7 +275,8 @@ iface::import_pivot_cache_records* import_factory::create_pivot_cache_records(
 
 iface::import_pivot_table_definition* import_factory::create_pivot_table_definition()
 {
-    return &mp_impl->m_pivot_table_def;
+    mp_impl->pivot_table_def.reset();
+    return &mp_impl->pivot_table_def;
 }
 
 iface::import_sheet* import_factory::append_sheet(sheet_t sheet_index, std::string_view name)

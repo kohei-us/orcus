@@ -215,6 +215,26 @@ public:
     void dump_debug_state(std::string_view outdir) const;
 };
 
+class ORCUS_SPM_DLLPUBLIC pivot_table
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+
+public:
+    pivot_table(string_pool& pool);
+    pivot_table(const pivot_table&) = delete;
+    pivot_table(pivot_table&& other);
+    ~pivot_table();
+
+    pivot_table& operator=(const pivot_table&) = delete;
+    pivot_table& operator=(pivot_table&& other);
+
+    std::string_view get_name() const;
+    void set_name(std::string_view name);
+    void set_cache_id(pivot_cache_id_t cache_id);
+    void set_range(const range_t& range);
+};
+
 class ORCUS_SPM_DLLPUBLIC pivot_collection
 {
     struct impl;
@@ -222,6 +242,7 @@ class ORCUS_SPM_DLLPUBLIC pivot_collection
 
 public:
     pivot_collection(document& doc);
+    pivot_collection(const pivot_collection&) = delete;
     ~pivot_collection();
 
     /**
@@ -242,6 +263,8 @@ public:
      * @param cache pivot cache instance to store.
      */
     void insert_worksheet_cache(std::string_view table_name, std::unique_ptr<pivot_cache>&& cache);
+
+    void insert_pivot_table(pivot_table pt);
 
     /**
      * Count the number of pivot caches currently stored.

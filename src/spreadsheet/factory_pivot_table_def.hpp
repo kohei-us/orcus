@@ -8,8 +8,13 @@
 #pragma once
 
 #include <orcus/spreadsheet/import_interface_pivot_table_def.hpp>
+#include <orcus/spreadsheet/pivot.hpp>
 
 namespace orcus { namespace spreadsheet {
+
+class document;
+
+namespace detail {
 
 class import_pivot_field : public iface::import_pivot_field
 {
@@ -88,12 +93,18 @@ public:
 
 class import_pivot_table_def : public iface::import_pivot_table_definition
 {
+    document& m_doc;
+
+    pivot_table m_current_pt;
+
     import_pivot_rc_fields m_rc_fields;
     import_pivot_page_fields m_page_fields;
     import_pivot_data_fields m_data_fields;
     import_pivot_rc_items m_rc_items;
 
 public:
+    import_pivot_table_def(document& doc);
+
     virtual void set_name(std::string_view name) override;
     virtual void set_cache_id(pivot_cache_id_t cache_id) override;
     virtual void set_range(const range_t& ref) override;
@@ -105,8 +116,11 @@ public:
     virtual iface::import_pivot_data_fields* start_data_fields() override;
     virtual iface::import_pivot_rc_items* start_row_items() override;
     virtual iface::import_pivot_rc_items* start_col_items() override;
+    virtual void commit() override;
+
+    void reset();
 };
 
-}}
+}}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -48,8 +48,9 @@ struct worksheet_range
 using range_map_type = std::unordered_map<worksheet_range, std::unordered_set<pivot_cache_id_t>, worksheet_range::hash>;
 using name_map_type = std::unordered_map<std::string_view, std::unordered_set<pivot_cache_id_t>>;
 using caches_type = std::unordered_map<pivot_cache_id_t, std::unique_ptr<pivot_cache>>;
+using pivot_tables_type = std::unordered_map<std::string_view, pivot_table>;
 
-}
+} // namespace detail
 
 struct pivot_cache::impl
 {
@@ -68,6 +69,7 @@ struct pivot_collection::impl
     detail::range_map_type worksheet_range_map; /// mapping of sheet name & range pair to cache ID.
     detail::name_map_type table_map; /// mapping of table name to cache ID.
     detail::caches_type caches;
+    detail::pivot_tables_type pivot_tables;
 
     impl(document& _doc);
 

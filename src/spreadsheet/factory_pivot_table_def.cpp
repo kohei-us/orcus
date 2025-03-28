@@ -6,8 +6,9 @@
  */
 
 #include "factory_pivot_table_def.hpp"
+#include <orcus/spreadsheet/document.hpp>
 
-namespace orcus { namespace spreadsheet {
+namespace orcus { namespace spreadsheet { namespace detail {
 
 void import_pivot_field::set_item_count(std::size_t count) {}
 
@@ -65,9 +66,20 @@ iface::import_pivot_rc_item* import_pivot_rc_items::start_item()
 
 void import_pivot_rc_items::commit() {}
 
-void import_pivot_table_def::set_name(std::string_view name) {}
+import_pivot_table_def::import_pivot_table_def(document& doc) :
+    m_doc(doc),
+    m_current_pt(doc.get_string_pool())
+{}
 
-void import_pivot_table_def::set_cache_id(pivot_cache_id_t cache_id) {}
+void import_pivot_table_def::set_name(std::string_view name)
+{
+    m_current_pt.set_name(name);
+}
+
+void import_pivot_table_def::set_cache_id(pivot_cache_id_t cache_id)
+{
+    m_current_pt.set_cache_id(cache_id);
+}
 
 void import_pivot_table_def::set_range(const range_t& ref) {}
 
@@ -106,6 +118,16 @@ iface::import_pivot_rc_items* import_pivot_table_def::start_col_items()
     return &m_rc_items;
 }
 
-}}
+void import_pivot_table_def::commit()
+{
+    m_doc.get_pivot_collection().insert_pivot_table(std::move(m_current_pt));
+}
+
+void import_pivot_table_def::reset()
+{
+    m_current_pt = pivot_table(m_doc.get_string_pool());
+}
+
+}}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

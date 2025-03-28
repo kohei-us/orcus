@@ -219,6 +219,48 @@ void pivot_cache::dump_debug_state(std::string_view outdir) const
     dumper.dump(output_dir);
 }
 
+struct pivot_table::impl
+{
+    string_pool& pool;
+    std::string_view name;
+    pivot_cache_id_t cache_id;
+    range_t range;
+
+    impl(string_pool& _pool) : pool(_pool) {}
+};
+
+pivot_table::pivot_table(string_pool& pool) : mp_impl(std::make_unique<impl>(pool)) {}
+
+pivot_table::pivot_table(pivot_table&& other) : mp_impl(std::move(other.mp_impl)) {}
+
+pivot_table::~pivot_table() = default;
+
+pivot_table& pivot_table::operator=(pivot_table&& other)
+{
+    mp_impl = std::move(other.mp_impl);
+    return *this;
+}
+
+std::string_view pivot_table::get_name() const
+{
+    return mp_impl->name;
+}
+
+void pivot_table::set_name(std::string_view name)
+{
+    mp_impl->name = mp_impl->pool.intern(name).first;
+}
+
+void pivot_table::set_cache_id(pivot_cache_id_t cache_id)
+{
+    mp_impl->cache_id = cache_id;
+}
+
+void pivot_table::set_range(const range_t& range)
+{
+    mp_impl->range = range;
+}
+
 pivot_collection::pivot_collection(document& doc) : mp_impl(std::make_unique<impl>(doc)) {}
 
 pivot_collection::~pivot_collection() {}
@@ -275,6 +317,11 @@ void pivot_collection::insert_worksheet_cache(
 
     auto& id_set = it->second;
     id_set.insert(cache_id);
+}
+
+void pivot_collection::insert_pivot_table(pivot_table pt)
+{
+    mp_impl->pivot_tables.insert_or_assign(pt.get_name(), std::move(pt));
 }
 
 size_t pivot_collection::get_cache_count() const
