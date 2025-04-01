@@ -28,6 +28,9 @@ void debug_state_dumper_pivot_cache::dump(const fs::path& outdir) const
     fs::path outpath = outdir / os.str();
     std::ofstream of{outpath.native()};
 
+    if (!of)
+        return;
+
     of << "id: " << m_store.cache_id << std::endl;
     of << "fields:" << std::endl;
 
@@ -144,6 +147,9 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outdir) const
     os << m_store.name << ".yaml";
     fs::path outpath = outdir / os.str();
     std::ofstream of{outpath.native()};
+
+    if (!of)
+        return;
 
     of << "name: " << m_store.name << "\n";
     of << "cache-id: " << m_store.cache_id << "\n";

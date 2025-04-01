@@ -15,8 +15,6 @@
 #include <map>
 #include <algorithm>
 
-using namespace std;
-
 namespace orcus { namespace spreadsheet {
 
 namespace {
@@ -37,7 +35,7 @@ public:
 document::document(const range_size_t& sheet_size) :
     mp_impl(std::make_unique<detail::document_impl>(*this, sheet_size)) {}
 
-document::~document() {}
+document::~document() = default;
 
 shared_strings& document::get_shared_strings()
 {
@@ -253,20 +251,20 @@ void document::dump(dump_format_t format, const std::string& output) const
     }
 }
 
-void document::dump_check(ostream& os) const
+void document::dump_check(std::ostream& os) const
 {
     for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
         sheet->data.dump_check(os, sheet->name);
 }
 
-void document::dump_flat(const string& outdir) const
+void document::dump_flat(const std::string& outdir) const
 {
-    cout << "----------------------------------------------------------------------" << endl;
-    cout << "  Document content summary" << endl;
-    cout << "----------------------------------------------------------------------" << endl;
-    mp_impl->ss_store.dump(cout);
+    std::cout << "----------------------------------------------------------------------" << std::endl;
+    std::cout << "  Document content summary" << std::endl;
+    std::cout << "----------------------------------------------------------------------" << std::endl;
+    mp_impl->ss_store.dump(std::cout);
 
-    cout << "number of sheets: " << mp_impl->sheets.size() << endl;
+    std::cout << "number of sheets: " << mp_impl->sheets.size() << std::endl;
 
     for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
     {
@@ -277,17 +275,17 @@ void document::dump_flat(const string& outdir) const
         std::ofstream file(outpath.native());
         if (!file)
         {
-            cerr << "failed to create file: " << outpath << endl;
+            std::cerr << "failed to create file: " << outpath << std::endl;
             return;
         }
 
-        file << "---" << endl;
-        file << "Sheet name: " << sheet->name << endl;
+        file << "---" << std::endl;
+        file << "Sheet name: " << sheet->name << std::endl;
         sheet->data.dump_flat(file);
     }
 }
 
-void document::dump_html(const string& outdir) const
+void document::dump_html(const std::string& outdir) const
 {
     for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
     {
@@ -298,7 +296,7 @@ void document::dump_html(const string& outdir) const
         std::ofstream file(outpath.native());
         if (!file)
         {
-            cerr << "failed to create file: " << outpath << endl;
+            std::cerr << "failed to create file: " << outpath << std::endl;
             return;
         }
 
@@ -306,7 +304,7 @@ void document::dump_html(const string& outdir) const
     }
 }
 
-void document::dump_json(const string& outdir) const
+void document::dump_json(const std::string& outdir) const
 {
     for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
     {
@@ -317,7 +315,7 @@ void document::dump_json(const string& outdir) const
         std::ofstream file(outpath.native());
         if (!file)
         {
-            cerr << "failed to create file: " << outpath << endl;
+            std::cerr << "failed to create file: " << outpath << std::endl;
             return;
         }
 
@@ -333,10 +331,10 @@ void document::dump_csv(const std::string& outdir) const
         outpath /= std::string{sheet->name};
         outpath.replace_extension(".csv");
 
-        ofstream file(outpath.c_str());
+        std::ofstream file(outpath.c_str());
         if (!file)
         {
-            cerr << "failed to create file: " << outpath << endl;
+            std::cerr << "failed to create file: " << outpath << std::endl;
             return;
         }
 
