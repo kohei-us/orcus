@@ -7,6 +7,7 @@
 
 #include "document_impl.hpp"
 #include "debug_state_dumper.hpp"
+#include "debug_state_context.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -345,7 +346,8 @@ void document::dump_csv(const std::string& outdir) const
 
 void document::dump_debug_state(const std::string& outdir) const
 {
-    detail::doc_debug_state_dumper dumper{*mp_impl};
+    detail::debug_state_context cxt;
+    detail::doc_debug_state_dumper dumper{cxt, *mp_impl};
     fs::path output_dir{outdir};
     dumper.dump(output_dir);
 

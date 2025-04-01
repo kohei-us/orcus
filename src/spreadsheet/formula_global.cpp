@@ -51,6 +51,18 @@ ixion::abs_range_t to_abs_range(const range_t& range, sheet_t sheet_pos)
     return ret;
 }
 
+ixion::abs_rc_range_t to_abs_rc_range(const range_t& range)
+{
+    ixion::abs_rc_range_t ret;
+    ret.first.column = range.first.column;
+    ret.first.row    = range.first.row;
+
+    ret.last.column = range.last.column;
+    ret.last.row    = range.last.row;
+
+    return ret;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

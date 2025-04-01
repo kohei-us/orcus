@@ -6,6 +6,7 @@
  */
 
 #include "debug_state_dumper.hpp"
+#include "debug_state_context.hpp"
 #include "check_dumper.hpp"
 #include "document_impl.hpp"
 #include "sheet_impl.hpp"
@@ -118,9 +119,8 @@ void print_auto_filter(const auto_filter_t& filter, std::ostream& os)
 
 } // anonymous namespace
 
-doc_debug_state_dumper::doc_debug_state_dumper(const document_impl& doc) : m_doc(doc)
-{
-}
+doc_debug_state_dumper::doc_debug_state_dumper(const debug_state_context& cxt, const document_impl& doc) :
+    m_cxt(cxt), m_doc(doc) {}
 
 void doc_debug_state_dumper::dump(const fs::path& outdir) const
 {
@@ -355,8 +355,9 @@ void doc_debug_state_dumper::dump_named_expressions(const fs::path& outdir) cons
     print_named_expressions(m_doc.context, m_doc.context.get_named_expressions_iterator(), of);
 }
 
-sheet_debug_state_dumper::sheet_debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name) :
-    m_sheet(sheet), m_sheet_name(sheet_name) {}
+sheet_debug_state_dumper::sheet_debug_state_dumper(
+    const debug_state_context& cxt, const sheet_impl& sheet, std::string_view sheet_name) :
+    m_cxt(cxt), m_sheet(sheet), m_sheet_name(sheet_name) {}
 
 void sheet_debug_state_dumper::dump(const fs::path& outdir) const
 {
@@ -490,22 +491,7 @@ void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
         return;
 
     const auto& filter = *m_sheet.auto_filter;
-
-    auto resolver = ixion::formula_name_resolver::get(
-        ixion::formula_name_resolver_t::excel_a1, nullptr);
-
-    if (!resolver)
-        return;
-
-    ixion::abs_address_t origin;
-    ixion::range_t name;
-    name.first.row = filter.range.first.row;
-    name.first.column = filter.range.first.column;
-    name.last.row = filter.range.last.row;
-    name.last.column = filter.range.last.column;
-    name.set_absolute(false);
-
-    of << "range: " << resolver->get_name(name, origin, false) << "\n";
+    of << "range: " << m_cxt.print_range(filter.range) << "\n";
     print_auto_filter(filter, of);
 }
 

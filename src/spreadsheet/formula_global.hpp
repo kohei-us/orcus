@@ -15,6 +15,7 @@
 namespace ixion {
 
 struct abs_range_t;
+struct abs_rc_range_t;
 class formula_name_resolver;
 
 }
@@ -40,6 +41,8 @@ ixion::abs_range_t to_abs_range(
     const ixion::formula_name_resolver& resolver, const char* p_ref, size_t n_ref);
 
 ixion::abs_range_t to_abs_range(const range_t& range, sheet_t sheet_pos);
+
+ixion::abs_rc_range_t to_abs_rc_range(const range_t& range);
 
 }}
 

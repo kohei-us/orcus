@@ -67,7 +67,7 @@ struct pivot_table::impl
     string_pool& pool;
     std::string_view name;
     pivot_cache_id_t cache_id;
-    range_t range;
+    ixion::abs_rc_range_t range;
 
     impl(string_pool& _pool) : pool(_pool) {}
 };

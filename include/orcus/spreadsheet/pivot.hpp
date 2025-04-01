@@ -22,6 +22,7 @@
 namespace ixion {
 
 struct abs_range_t;
+struct abs_rc_range_t;
 
 }
 
@@ -239,7 +240,7 @@ public:
     std::string_view get_name() const;
     void set_name(std::string_view name);
     void set_cache_id(pivot_cache_id_t cache_id);
-    void set_range(const range_t& range);
+    void set_range(const ixion::abs_rc_range_t& range);
 
     void dump_debug_state(std::string_view outdir) const;
 };

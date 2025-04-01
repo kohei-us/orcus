@@ -11,6 +11,7 @@
 
 #include "filesystem_env.hpp"
 #include "pivot_impl.hpp"
+#include "debug_state_context.hpp"
 #include "debug_state_dumper_pivot.hpp"
 
 #include <unordered_map>
@@ -246,7 +247,7 @@ void pivot_table::set_cache_id(pivot_cache_id_t cache_id)
     mp_impl->cache_id = cache_id;
 }
 
-void pivot_table::set_range(const range_t& range)
+void pivot_table::set_range(const ixion::abs_rc_range_t& range)
 {
     mp_impl->range = range;
 }
@@ -256,7 +257,8 @@ void pivot_table::dump_debug_state(std::string_view outdir) const
     fs::path output_dir{outdir};
     fs::create_directories(output_dir);
 
-    detail::debug_state_dumper_pivot_table dumper(*mp_impl);
+    detail::debug_state_context cxt;
+    detail::debug_state_dumper_pivot_table dumper(cxt, *mp_impl);
     dumper.dump(output_dir);
 }
 

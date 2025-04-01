@@ -4,6 +4,7 @@ add_library(orcus-spreadsheet-model-${ORCUS_API_VERSION} SHARED
     check_dumper.cpp
     config.cpp
     csv_dumper.cpp
+    debug_state_context.cpp
     debug_state_dumper.cpp
     debug_state_dumper_pivot.cpp
     document.cpp

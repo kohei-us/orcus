@@ -6,7 +6,10 @@
  */
 
 #include "factory_pivot_table_def.hpp"
+#include "formula_global.hpp"
+
 #include <orcus/spreadsheet/document.hpp>
+#include <ixion/address.hpp>
 
 namespace orcus { namespace spreadsheet { namespace detail {
 
@@ -83,7 +86,7 @@ void import_pivot_table_def::set_cache_id(pivot_cache_id_t cache_id)
 
 void import_pivot_table_def::set_range(const range_t& ref)
 {
-    m_current_pt.set_range(ref);
+    m_current_pt.set_range(to_abs_rc_range(ref));
 }
 
 iface::import_pivot_fields* import_pivot_table_def::start_pivot_fields()

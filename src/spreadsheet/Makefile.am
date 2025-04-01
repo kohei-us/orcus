@@ -34,6 +34,8 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_SOURCES = \
 	check_dumper.hpp \
 	check_dumper.cpp \
 	config.cpp \
+	debug_state_context.hpp \
+	debug_state_context.cpp \
 	debug_state_dumper.hpp \
 	debug_state_dumper.cpp \
 	debug_state_dumper_pivot.hpp \

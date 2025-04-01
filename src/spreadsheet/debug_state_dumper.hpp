@@ -17,15 +17,17 @@ class document;
 
 namespace detail {
 
+class debug_state_context;
 struct document_impl;
 struct sheet_impl;
 
 class doc_debug_state_dumper
 {
+    const debug_state_context& m_cxt;
     const document_impl& m_doc;
 
 public:
-    doc_debug_state_dumper(const document_impl& doc);
+    doc_debug_state_dumper(const debug_state_context& cxt, const document_impl& doc);
 
     void dump(const fs::path& outdir) const;
 
@@ -37,11 +39,13 @@ private:
 
 class sheet_debug_state_dumper
 {
+    const debug_state_context& m_cxt;
     const sheet_impl& m_sheet;
     std::string_view m_sheet_name;
 
 public:
-    sheet_debug_state_dumper(const sheet_impl& sheet, std::string_view sheet_name);
+    sheet_debug_state_dumper(
+        const debug_state_context& cxt, const sheet_impl& sheet, std::string_view sheet_name);
 
     void dump(const fs::path& outdir) const;
 

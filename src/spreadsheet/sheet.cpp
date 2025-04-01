@@ -15,6 +15,7 @@
 #include "flat_dumper.hpp"
 #include "html_dumper.hpp"
 #include "sheet_impl.hpp"
+#include "debug_state_context.hpp"
 #include "debug_state_dumper.hpp"
 
 #include <iostream>
@@ -506,7 +507,8 @@ void sheet::dump_csv(std::ostream& os) const
 void sheet::dump_debug_state(const std::string& output_dir, std::string_view sheet_name) const
 {
     fs::path outdir{output_dir};
-    detail::sheet_debug_state_dumper dumper(*mp_impl, sheet_name);
+    detail::debug_state_context cxt;
+    detail::sheet_debug_state_dumper dumper(cxt, *mp_impl, sheet_name);
     dumper.dump(outdir);
 }
 

@@ -13,6 +13,8 @@
 
 namespace orcus { namespace spreadsheet { namespace detail {
 
+class debug_state_context;
+
 class debug_state_dumper_pivot_cache
 {
     const pivot_cache::impl& m_store;
@@ -25,10 +27,11 @@ public:
 
 class debug_state_dumper_pivot_table
 {
+    const debug_state_context& m_cxt;
     const pivot_table::impl& m_store;
 
 public:
-    debug_state_dumper_pivot_table(const pivot_table::impl& store);
+    debug_state_dumper_pivot_table(const debug_state_context& cxt, const pivot_table::impl& store);
 
     void dump(const fs::path& outdir) const;
 };

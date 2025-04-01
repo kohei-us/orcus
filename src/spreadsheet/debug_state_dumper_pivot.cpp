@@ -6,6 +6,7 @@
  */
 
 #include "debug_state_dumper_pivot.hpp"
+#include "debug_state_context.hpp"
 #include "pivot_impl.hpp"
 
 #include <sstream>
@@ -131,8 +132,9 @@ void debug_state_dumper_pivot_cache::dump(const fs::path& outdir) const
     }
 }
 
-debug_state_dumper_pivot_table::debug_state_dumper_pivot_table(const pivot_table::impl& store) :
-    m_store(store) {}
+debug_state_dumper_pivot_table::debug_state_dumper_pivot_table(
+    const debug_state_context& cxt, const pivot_table::impl& store) :
+    m_cxt(cxt), m_store(store) {}
 
 void debug_state_dumper_pivot_table::dump(const fs::path& outdir) const
 {
@@ -145,7 +147,7 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outdir) const
 
     of << "name: " << m_store.name << "\n";
     of << "cache-id: " << m_store.cache_id << "\n";
-    of << "range: " << m_store.range << std::endl;
+    of << "range: " << m_cxt.print_range(m_store.range) << std::endl;
 }
 
 }}}
