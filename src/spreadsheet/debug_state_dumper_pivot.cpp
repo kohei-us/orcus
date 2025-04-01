@@ -131,6 +131,23 @@ void debug_state_dumper_pivot_cache::dump(const fs::path& outdir) const
     }
 }
 
+debug_state_dumper_pivot_table::debug_state_dumper_pivot_table(const pivot_table::impl& store) :
+    m_store(store) {}
+
+void debug_state_dumper_pivot_table::dump(const fs::path& outdir) const
+{
+    fs::create_directories(outdir);
+
+    std::ostringstream os;
+    os << m_store.name << ".yaml";
+    fs::path outpath = outdir / os.str();
+    std::ofstream of{outpath.native()};
+
+    of << "name: " << m_store.name << "\n";
+    of << "cache-id: " << m_store.cache_id << "\n";
+    of << "range: " << m_store.range << std::endl;
+}
+
 }}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

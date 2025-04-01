@@ -352,6 +352,7 @@ void document::dump_debug_state(const std::string& outdir) const
     for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
     {
         fs::path outpath = output_dir;
+        outpath /= "sheets";
         outpath /= std::string{sheet->name};
         fs::create_directories(outpath);
         sheet->data.dump_debug_state(outpath.string(), sheet->name);

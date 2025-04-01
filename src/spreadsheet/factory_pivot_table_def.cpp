@@ -81,7 +81,10 @@ void import_pivot_table_def::set_cache_id(pivot_cache_id_t cache_id)
     m_current_pt.set_cache_id(cache_id);
 }
 
-void import_pivot_table_def::set_range(const range_t& ref) {}
+void import_pivot_table_def::set_range(const range_t& ref)
+{
+    m_current_pt.set_range(ref);
+}
 
 iface::import_pivot_fields* import_pivot_table_def::start_pivot_fields()
 {

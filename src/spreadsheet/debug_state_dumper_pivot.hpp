@@ -23,6 +23,16 @@ public:
     void dump(const fs::path& outdir) const;
 };
 
+class debug_state_dumper_pivot_table
+{
+    const pivot_table::impl& m_store;
+
+public:
+    debug_state_dumper_pivot_table(const pivot_table::impl& store);
+
+    void dump(const fs::path& outdir) const;
+};
+
 }}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

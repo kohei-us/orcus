@@ -219,16 +219,6 @@ void pivot_cache::dump_debug_state(std::string_view outdir) const
     dumper.dump(output_dir);
 }
 
-struct pivot_table::impl
-{
-    string_pool& pool;
-    std::string_view name;
-    pivot_cache_id_t cache_id;
-    range_t range;
-
-    impl(string_pool& _pool) : pool(_pool) {}
-};
-
 pivot_table::pivot_table(string_pool& pool) : mp_impl(std::make_unique<impl>(pool)) {}
 
 pivot_table::pivot_table(pivot_table&& other) : mp_impl(std::move(other.mp_impl)) {}
@@ -261,9 +251,18 @@ void pivot_table::set_range(const range_t& range)
     mp_impl->range = range;
 }
 
+void pivot_table::dump_debug_state(std::string_view outdir) const
+{
+    fs::path output_dir{outdir};
+    fs::create_directories(output_dir);
+
+    detail::debug_state_dumper_pivot_table dumper(*mp_impl);
+    dumper.dump(output_dir);
+}
+
 pivot_collection::pivot_collection(document& doc) : mp_impl(std::make_unique<impl>(doc)) {}
 
-pivot_collection::~pivot_collection() {}
+pivot_collection::~pivot_collection() = default;
 
 void pivot_collection::insert_worksheet_cache(
     std::string_view sheet_name, const ixion::abs_range_t& range,
@@ -368,10 +367,20 @@ const pivot_cache* pivot_collection::get_cache(pivot_cache_id_t cache_id) const
 void pivot_collection::dump_debug_state(std::string_view outdir) const
 {
     fs::path output_dir{outdir};
-    output_dir /= "pivot";
 
     for (const auto& [id, cache] : mp_impl->caches)
-        cache->dump_debug_state(output_dir.string());
+    {
+        auto this_dir = output_dir;
+        this_dir /= "pivot-caches";
+        cache->dump_debug_state(this_dir.string());
+    }
+
+    for (const auto& [name, table] : mp_impl->pivot_tables)
+    {
+        auto this_dir = output_dir;
+        this_dir /= "pivot-tables";
+        table.dump_debug_state(this_dir.string());
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const pivot_cache_item_t& item)

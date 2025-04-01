@@ -1083,6 +1083,18 @@ void xlsx_pivot_table_context::start_element(xmlns_id_t ns, xml_token_t name, co
 
 bool xlsx_pivot_table_context::end_element(xmlns_id_t ns, xml_token_t name)
 {
+    if (ns == NS_ooxml_xlsx)
+    {
+        switch (name)
+        {
+            case XML_pivotTableDefinition:
+            {
+                m_xpt.commit();
+                break;
+            }
+        }
+    }
+
     return pop_stack(ns, name);
 }
 

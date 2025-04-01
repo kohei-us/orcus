@@ -62,6 +62,16 @@ struct pivot_cache::impl
     impl(pivot_cache_id_t _cache_id, string_pool& sp);
 };
 
+struct pivot_table::impl
+{
+    string_pool& pool;
+    std::string_view name;
+    pivot_cache_id_t cache_id;
+    range_t range;
+
+    impl(string_pool& _pool) : pool(_pool) {}
+};
+
 struct pivot_collection::impl
 {
     document& doc;
