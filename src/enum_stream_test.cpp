@@ -710,6 +710,17 @@ void test_orcus_spreadsheet_pane_state_t()
 #endif
 }
 
+void test_orcus_spreadsheet_pivot_axis_t()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_axis_t::unknown, "unknown"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_axis_t::column, "column"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_axis_t::page, "page"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_axis_t::row, "row"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_axis_t::values, "values"); assert(result); }
+}
+
 void test_orcus_spreadsheet_pivot_cache_group_by_t()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -723,6 +734,28 @@ void test_orcus_spreadsheet_pivot_cache_group_by_t()
     { bool result = verify_stream_value(orcus::spreadsheet::pivot_cache_group_by_t::range, "range"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::pivot_cache_group_by_t::seconds, "seconds"); assert(result); }
     { bool result = verify_stream_value(orcus::spreadsheet::pivot_cache_group_by_t::years, "years"); assert(result); }
+}
+
+void test_orcus_spreadsheet_pivot_field_item_t()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::unknown, "unknown"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::average, "average"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::blank_line, "blank-line"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::count, "count"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::count_numbers, "count-numbers"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::data, "data"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::subtotal_default, "subtotal-default"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::grand_total, "grand-total"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::max, "max"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::min, "min"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::product, "product"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::stddev, "stddev"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::stddevp, "stddevp"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::sum, "sum"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::var, "var"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_field_item_t::varp, "varp"); assert(result); }
 }
 
 void test_orcus_spreadsheet_sheet_pane_t()
@@ -904,7 +937,9 @@ int main()
     test_orcus_spreadsheet_formula_t();
     test_orcus_spreadsheet_hor_alignment_t();
     test_orcus_spreadsheet_pane_state_t();
+    test_orcus_spreadsheet_pivot_axis_t();
     test_orcus_spreadsheet_pivot_cache_group_by_t();
+    test_orcus_spreadsheet_pivot_field_item_t();
     test_orcus_spreadsheet_sheet_pane_t();
     test_orcus_spreadsheet_strikethrough_style_t();
     test_orcus_spreadsheet_strikethrough_text_t();

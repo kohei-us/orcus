@@ -10,25 +10,62 @@
 
 #include <orcus/spreadsheet/document.hpp>
 #include <ixion/address.hpp>
+#include <iostream>
 
 namespace orcus { namespace spreadsheet { namespace detail {
 
-void import_pivot_field::set_item_count(std::size_t count) {}
+void import_pivot_field::set_item_count(std::size_t count)
+{
+    m_current_field.items.reserve(count);
+}
 
-void import_pivot_field::append_item(std::size_t index) {}
+void import_pivot_field::set_axis(pivot_axis_t axis)
+{
+    m_current_field.axis = axis;
+}
 
-void import_pivot_field::append_item(pivot_field_item_t type) {}
+void import_pivot_field::append_item(std::size_t index)
+{
+    m_current_field.items.emplace_back(index);
+}
 
-void import_pivot_field::commit() {}
+void import_pivot_field::append_item(pivot_field_item_t type)
+{
+    m_current_field.items.emplace_back(type);
+}
 
-void import_pivot_fields::set_count(std::size_t count) {}
+void import_pivot_field::commit()
+{
+    m_func(std::move(m_current_field));
+}
+
+void import_pivot_field::reset(commit_func_type func)
+{
+    m_func = std::move(func);
+    m_current_field = pivot_field_t{};
+}
+
+void import_pivot_fields::set_count(std::size_t count)
+{
+    m_current_fields.reserve(count);
+}
 
 iface::import_pivot_field* import_pivot_fields::start_pivot_field()
 {
-    return &m_field;
+    m_xfield.reset([this](pivot_field_t&& field) { m_current_fields.push_back(std::move(field)); });
+    return &m_xfield;
 }
 
-void import_pivot_fields::commit() {}
+void import_pivot_fields::commit()
+{
+    m_func(std::move(m_current_fields));
+}
+
+void import_pivot_fields::reset(commit_func_type func)
+{
+    m_func = std::move(func);
+    m_current_fields.clear();
+}
 
 void import_pivot_rc_fields::set_count(std::size_t count) {}
 
@@ -91,7 +128,8 @@ void import_pivot_table_def::set_range(const range_t& ref)
 
 iface::import_pivot_fields* import_pivot_table_def::start_pivot_fields()
 {
-    return nullptr;
+    m_pivot_fields.reset([this](pivot_fields_t&& fields) { m_current_pt.set_pivot_fields(std::move(fields)); });
+    return &m_pivot_fields;
 }
 
 iface::import_pivot_rc_fields* import_pivot_table_def::start_row_fields()

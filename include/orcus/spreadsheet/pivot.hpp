@@ -178,6 +178,51 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_field_t
     void swap(pivot_cache_field_t& other) noexcept;
 };
 
+struct ORCUS_SPM_DLLPUBLIC pivot_item_t
+{
+    using value_type = std::variant<std::size_t, pivot_field_item_t>;
+
+    enum class item_type
+    {
+        unknown = 0,
+        index,
+        type
+    };
+
+    item_type type;
+    value_type value;
+
+    pivot_item_t();
+    pivot_item_t(const pivot_item_t& other);
+    pivot_item_t(pivot_item_t&& other);
+    pivot_item_t(std::size_t i);
+    pivot_item_t(pivot_field_item_t t);
+    ~pivot_item_t();
+
+    pivot_item_t& operator=(pivot_item_t other);
+
+    void swap(pivot_item_t& other) noexcept;
+};
+
+using pivot_items_t = std::vector<pivot_item_t>;
+
+struct ORCUS_SPM_DLLPUBLIC pivot_field_t
+{
+    pivot_axis_t axis = pivot_axis_t::unknown;
+    pivot_items_t items;
+
+    pivot_field_t();
+    pivot_field_t(const pivot_field_t& other);
+    pivot_field_t(pivot_field_t&& other);
+    ~pivot_field_t();
+
+    pivot_field_t& operator=(pivot_field_t other);
+
+    void swap(pivot_field_t& other) noexcept;
+};
+
+using pivot_fields_t = std::vector<pivot_field_t>;
+
 class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
     friend class detail::debug_state_dumper_pivot_cache;
@@ -241,6 +286,7 @@ public:
     void set_name(std::string_view name);
     void set_cache_id(pivot_cache_id_t cache_id);
     void set_range(const ixion::abs_rc_range_t& range);
+    void set_pivot_fields(pivot_fields_t fields);
 
     void dump_debug_state(std::string_view outdir) const;
 };
@@ -295,6 +341,7 @@ public:
 
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const pivot_cache_item_t& item);
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const pivot_cache_record_value_t& v);
+ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const pivot_item_t& v);
 
 }}
 

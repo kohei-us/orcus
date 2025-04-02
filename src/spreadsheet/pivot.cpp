@@ -176,6 +176,45 @@ void pivot_cache_field_t::swap(pivot_cache_field_t& other) noexcept
     group_data.swap(other.group_data);
 }
 
+pivot_item_t::pivot_item_t() = default;
+pivot_item_t::pivot_item_t(const pivot_item_t& other) = default;
+pivot_item_t::pivot_item_t(pivot_item_t&& other) = default;
+pivot_item_t::pivot_item_t(std::size_t i) : type(item_type::index), value(i) {}
+pivot_item_t::pivot_item_t(pivot_field_item_t t) : type(item_type::type), value(t) {}
+pivot_item_t::~pivot_item_t() = default;
+
+
+pivot_item_t& pivot_item_t::operator=(pivot_item_t other)
+{
+    pivot_item_t temp(std::move(other));
+    temp.swap(*this);
+    return *this;
+}
+
+void pivot_item_t::swap(pivot_item_t& other) noexcept
+{
+    std::swap(type, other.type);
+    std::swap(value, other.value);
+}
+
+pivot_field_t::pivot_field_t() = default;
+pivot_field_t::pivot_field_t(const pivot_field_t& other) = default;
+pivot_field_t::pivot_field_t(pivot_field_t&& other) = default;
+pivot_field_t::~pivot_field_t() = default;
+
+pivot_field_t& pivot_field_t::operator=(pivot_field_t other)
+{
+    pivot_field_t temp(std::move(other));
+    temp.swap(*this);
+    return *this;
+}
+
+void pivot_field_t::swap(pivot_field_t& other) noexcept
+{
+    std::swap(axis, other.axis);
+    std::swap(items, other.items);
+}
+
 pivot_cache::pivot_cache(pivot_cache_id_t cache_id, string_pool& sp) :
     mp_impl(std::make_unique<impl>(cache_id, sp)) {}
 
@@ -250,6 +289,11 @@ void pivot_table::set_cache_id(pivot_cache_id_t cache_id)
 void pivot_table::set_range(const ixion::abs_rc_range_t& range)
 {
     mp_impl->range = range;
+}
+
+void pivot_table::set_pivot_fields(pivot_fields_t fields)
+{
+    mp_impl->fields = std::move(fields);
 }
 
 void pivot_table::dump_debug_state(std::string_view outdir) const
@@ -458,6 +502,29 @@ std::ostream& operator<<(std::ostream& os, const pivot_cache_record_value_t& v)
         case pivot_cache_record_value_t::record_type::shared_item_index:
         {
             os << '(' << std::get<std::size_t>(v.value) << ')';
+            break;
+        }
+    }
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const pivot_item_t& v)
+{
+    switch (v.type)
+    {
+        case pivot_item_t::item_type::index:
+        {
+            os << "index " << std::get<std::size_t>(v.value);
+            break;
+        }
+        case pivot_item_t::item_type::type:
+        {
+            os << "type " << std::get<pivot_field_item_t>(v.value);
+            break;
+        }
+        case pivot_item_t::item_type::unknown:
+        {
+            os << "unknown";
             break;
         }
     }

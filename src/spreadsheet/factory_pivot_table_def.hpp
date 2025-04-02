@@ -10,6 +10,8 @@
 #include <orcus/spreadsheet/import_interface_pivot_table_def.hpp>
 #include <orcus/spreadsheet/pivot.hpp>
 
+#include <functional>
+
 namespace orcus { namespace spreadsheet {
 
 class document;
@@ -19,20 +21,36 @@ namespace detail {
 class import_pivot_field : public iface::import_pivot_field
 {
 public:
+    using commit_func_type = std::function<void(pivot_field_t&&)>;
+
     void set_item_count(std::size_t count) override;
+    void set_axis(pivot_axis_t axis) override;
     void append_item(std::size_t index) override;
     void append_item(pivot_field_item_t type) override;
     void commit() override;
+
+    void reset(commit_func_type func);
+
+private:
+    commit_func_type m_func;
+    pivot_field_t m_current_field;
 };
 
 class import_pivot_fields : public iface::import_pivot_fields
 {
-    import_pivot_field m_field;
-
 public:
+    using commit_func_type = std::function<void(pivot_fields_t&&)>;
+
     void set_count(std::size_t count) override;
     iface::import_pivot_field* start_pivot_field() override;
     void commit() override;
+
+    void reset(commit_func_type func);
+
+private:
+    commit_func_type m_func;
+    import_pivot_field m_xfield;
+    pivot_fields_t m_current_fields;
 };
 
 class import_pivot_rc_fields : public iface::import_pivot_rc_fields
@@ -97,6 +115,7 @@ class import_pivot_table_def : public iface::import_pivot_table_definition
 
     pivot_table m_current_pt;
 
+    import_pivot_fields m_pivot_fields;
     import_pivot_rc_fields m_rc_fields;
     import_pivot_page_fields m_page_fields;
     import_pivot_data_fields m_data_fields;

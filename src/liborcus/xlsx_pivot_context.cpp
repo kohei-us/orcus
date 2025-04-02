@@ -11,6 +11,7 @@
 #include "xml_context_global.hpp"
 #include "session_context.hpp"
 #include "xlsx_types.hpp"
+#include "impl_utils.hpp"
 
 #include <orcus/measurement.hpp>
 #include <orcus/spreadsheet/import_interface.hpp>
@@ -48,6 +49,57 @@ const map_type& get()
 }
 
 } // namespace pc_source
+
+namespace item_type {
+
+using map_type = mdds::sorted_string_map<ss::pivot_field_item_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry_type entries[] = {
+    { "avg", ss::pivot_field_item_t::average, },
+    { "blank", ss::pivot_field_item_t::blank_line, },
+    { "count", ss::pivot_field_item_t::count },
+    { "countA", ss::pivot_field_item_t::count_numbers },
+    { "data", ss::pivot_field_item_t::data },
+    { "default", ss::pivot_field_item_t::subtotal_default },
+    { "grand", ss::pivot_field_item_t::grand_total },
+    { "max", ss::pivot_field_item_t::max },
+    { "min", ss::pivot_field_item_t::min },
+    { "product", ss::pivot_field_item_t::product },
+    { "stdDev", ss::pivot_field_item_t::stddev },
+    { "stdDevP", ss::pivot_field_item_t::stddevp },
+    { "sum", ss::pivot_field_item_t::sum },
+    { "var", ss::pivot_field_item_t::var },
+    { "varP", ss::pivot_field_item_t::varp },
+};
+
+const map_type& get()
+{
+    static const map_type map(entries, std::size(entries), ss::pivot_field_item_t::unknown);
+    return map;
+}
+
+} // namespace item_type
+
+namespace axis_type {
+
+using map_type = mdds::sorted_string_map<ss::pivot_axis_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry_type entries[] = {
+    { "axisCol", ss::pivot_axis_t::column },
+    { "axisPage", ss::pivot_axis_t::page },
+    { "axisRow", ss::pivot_axis_t::row },
+    { "axisValues", ss::pivot_axis_t::values },
+};
+
+const map_type& get()
+{
+    static const map_type map(entries, std::size(entries), ss::pivot_axis_t::unknown);
+    return map;
+}
+
+} // namespace axis_type
 
 }
 
@@ -1092,6 +1144,20 @@ bool xlsx_pivot_table_context::end_element(xmlns_id_t ns, xml_token_t name)
                 m_xpt.commit();
                 break;
             }
+            case XML_pivotFields:
+            {
+                assert(m_pivot_fields);
+                m_pivot_fields->commit();
+                m_pivot_fields = nullptr;
+                break;
+            }
+            case XML_pivotField:
+            {
+                assert(m_pivot_field);
+                m_pivot_field->commit();
+                m_pivot_field = nullptr;
+                break;
+            }
         }
     }
 
@@ -1143,32 +1209,41 @@ void xlsx_pivot_table_context::start_location(const xml_token_attrs_t& attrs)
 
 void xlsx_pivot_table_context::start_pivot_fields(const xml_token_attrs_t& attrs)
 {
+    m_pivot_fields = m_xpt.start_pivot_fields();
+    ENSURE_INTERFACE(m_pivot_fields, import_pivot_fields);
+
     // pivotFields and its child elements represent the visual
     // appearances of the fields inside pivot table.
     if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
-    {
-    }
+        m_pivot_fields->set_count(*count);
 }
 
 void xlsx_pivot_table_context::start_pivot_field(const xml_token_attrs_t& attrs)
 {
+    assert(m_pivot_fields);
+    m_pivot_field = m_pivot_fields->start_pivot_field();
+    ENSURE_INTERFACE(m_pivot_field, import_pivot_field);
+
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
+        if (attr.ns)
             continue;
 
         switch (attr.name)
         {
             case XML_axis:
+            {
+                auto v = axis_type::get().find(attr.value);
+                if (v == ss::pivot_axis_t::unknown)
+                {
+                    std::ostringstream os;
+                    os << "unrecognized pivot aixs type: '" << attr.value << "'";
+                    warn(os.str());
+                }
+
+                m_pivot_field->set_axis(v);
                 break;
-            case XML_compact:
-                break;
-            case XML_outline:
-                break;
-            case XML_showAll:
-                break;
-            case XML_dataField:
-                break;
+            }
         }
     }
 }
@@ -1177,14 +1252,18 @@ void xlsx_pivot_table_context::start_items(const xml_token_attrs_t& attrs)
 {
     if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
     {
+        assert(m_pivot_field);
+        m_pivot_field->set_item_count(*count);
     }
 }
 
 void xlsx_pivot_table_context::start_item(const xml_token_attrs_t& attrs)
 {
+    assert(m_pivot_field);
+
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
+        if (attr.ns)
             continue;
 
         switch (attr.name)
@@ -1192,6 +1271,7 @@ void xlsx_pivot_table_context::start_item(const xml_token_attrs_t& attrs)
             case XML_x:
             {
                 // field item index as defined in the pivot cache.
+                m_pivot_field->append_item(to_long(attr.value));
                 break;
             }
             case XML_t:
@@ -1199,6 +1279,16 @@ void xlsx_pivot_table_context::start_item(const xml_token_attrs_t& attrs)
                 // When the <item> element has attribute 't', it's subtotal or
                 // some sort of function item.  See 3.18.45 ST_ItemType
                 // (PivotItem Type) for possible values.
+
+                auto v = item_type::get().find(attr.value);
+                if (v == ss::pivot_field_item_t::unknown)
+                {
+                    std::ostringstream os;
+                    os << "unrecognized pivot field item type: '" << attr.value << "'";
+                    warn(os.str());
+                }
+
+                m_pivot_field->append_item(v);
                 break;
             }
         }

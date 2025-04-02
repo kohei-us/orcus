@@ -631,6 +631,15 @@ enum class pivot_field_item_t
     varp,
 };
 
+enum class pivot_axis_t
+{
+    unknown = 0,
+    column,
+    page,
+    row,
+    values
+};
+
 /**
  * Stores a 2-dimensional cell address.
  */
@@ -804,6 +813,8 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const strikethrough_
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const strikethrough_width_t& sw);
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const strikethrough_text_t& st);
 ORCUS_DLLPUBLIC std::ostream& operator<<(std::ostream& os, pivot_cache_group_by_t v);
+ORCUS_DLLPUBLIC std::ostream& operator<<(std::ostream& os, pivot_field_item_t v);
+ORCUS_DLLPUBLIC std::ostream& operator<<(std::ostream& os, pivot_axis_t v);
 
 }}
 

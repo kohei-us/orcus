@@ -30,6 +30,8 @@ public:
 
     virtual void set_item_count(std::size_t count) = 0;
 
+    virtual void set_axis(pivot_axis_t axis) = 0;
+
     /**
      * Append a pivot field item with an index.
      *

@@ -153,7 +153,17 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outdir) const
 
     of << "name: " << m_store.name << "\n";
     of << "cache-id: " << m_store.cache_id << "\n";
-    of << "range: " << m_cxt.print_range(m_store.range) << std::endl;
+    of << "range: " << m_cxt.print_range(m_store.range) << "\n";
+    of << "fields:" << std::endl;
+
+    for (const auto& field : m_store.fields)
+    {
+        of << "  - axis: " << field.axis << "\n";
+        of << "    items: " << std::endl;
+
+        for (const auto& item : field.items)
+            of << "      - " << item << std::endl;
+    }
 }
 
 }}}

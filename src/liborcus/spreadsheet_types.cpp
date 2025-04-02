@@ -824,6 +824,53 @@ std::ostream& operator<<(std::ostream& os, pivot_cache_group_by_t v)
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, pivot_field_item_t v)
+{
+    constexpr std::string_view values[] = {
+        "unknown",
+        "average",
+        "blank-line",
+        "count",
+        "count-numbers",
+        "data",
+        "subtotal-default",
+        "grand-total",
+        "max",
+        "min",
+        "product",
+        "stddev",
+        "stddevp",
+        "sum",
+        "var",
+        "varp",
+    };
+
+    if (auto pos = std::size_t(v); pos < std::size(values))
+        os << values[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, pivot_axis_t v)
+{
+    constexpr std::string_view values[] = {
+        "unknown",
+        "column",
+        "page",
+        "row",
+        "values",
+    };
+
+    if (auto pos = std::size_t(v); pos < std::size(values))
+        os << values[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
