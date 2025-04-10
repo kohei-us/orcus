@@ -222,6 +222,7 @@ struct ORCUS_SPM_DLLPUBLIC pivot_field_t
 };
 
 using pivot_fields_t = std::vector<pivot_field_t>;
+using pivot_ref_fields_t = std::vector<std::size_t>;
 
 class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
@@ -287,6 +288,8 @@ public:
     void set_cache_id(pivot_cache_id_t cache_id);
     void set_range(const ixion::abs_rc_range_t& range);
     void set_pivot_fields(pivot_fields_t fields);
+    void set_row_fields(pivot_ref_fields_t fields);
+    void set_column_fields(pivot_ref_fields_t fields);
 
     void dump_debug_state(std::string_view outdir) const;
 };

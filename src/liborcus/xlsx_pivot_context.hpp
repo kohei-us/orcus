@@ -22,6 +22,7 @@ class import_pivot_cache_records;
 class import_pivot_table_definition;
 class import_pivot_fields;
 class import_pivot_field;
+class import_pivot_rc_fields;
 class import_reference_resolver;
 
 }}
@@ -108,6 +109,7 @@ class xlsx_pivot_table_context : public xml_context_base
 
     spreadsheet::iface::import_pivot_fields* m_pivot_fields = nullptr;
     spreadsheet::iface::import_pivot_field* m_pivot_field = nullptr;
+    spreadsheet::iface::import_pivot_rc_fields* m_rc_fields = nullptr;
 
 public:
     xlsx_pivot_table_context(

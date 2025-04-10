@@ -56,9 +56,18 @@ private:
 class import_pivot_rc_fields : public iface::import_pivot_rc_fields
 {
 public:
+    using commit_func_type = std::function<void(pivot_ref_fields_t&&)>;
+
     virtual void set_count(std::size_t count) override;
     virtual void append_field(std::size_t index) override;
     virtual void commit() override;
+
+    void reset(pivot_axis_t axis, commit_func_type func);
+
+private:
+    commit_func_type m_func;
+    pivot_axis_t m_axis = pivot_axis_t::unknown;
+    pivot_ref_fields_t m_fields;
 };
 
 class import_pivot_page_field : public iface::import_pivot_page_field
@@ -130,7 +139,7 @@ public:
 
     virtual iface::import_pivot_fields* start_pivot_fields() override;
     virtual iface::import_pivot_rc_fields* start_row_fields() override;
-    virtual iface::import_pivot_rc_fields* start_col_fields() override;
+    virtual iface::import_pivot_rc_fields* start_column_fields() override;
     virtual iface::import_pivot_page_fields* start_page_fields() override;
     virtual iface::import_pivot_data_fields* start_data_fields() override;
     virtual iface::import_pivot_rc_items* start_row_items() override;

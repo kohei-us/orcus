@@ -164,6 +164,16 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outdir) const
         for (const auto& item : field.items)
             of << "      - " << item << std::endl;
     }
+
+    of << "row-fields:" << std::endl;
+
+    for (auto idx : m_store.row_fields)
+        of << "  - (" << idx << ")\n";
+
+    of << "column-fields:" << std::endl;
+
+    for (auto idx : m_store.column_fields)
+        of << "  - (" << idx << ")\n";
 }
 
 }}}

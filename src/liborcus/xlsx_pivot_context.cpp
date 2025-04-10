@@ -1158,6 +1158,20 @@ bool xlsx_pivot_table_context::end_element(xmlns_id_t ns, xml_token_t name)
                 m_pivot_field = nullptr;
                 break;
             }
+            case XML_rowFields:
+            {
+                assert(m_rc_fields);
+                m_rc_fields->commit();
+                m_rc_fields = nullptr;
+                break;
+            }
+            case XML_colFields:
+            {
+                assert(m_rc_fields);
+                m_rc_fields->commit();
+                m_rc_fields = nullptr;
+                break;
+            }
         }
     }
 
@@ -1297,15 +1311,43 @@ void xlsx_pivot_table_context::start_item(const xml_token_attrs_t& attrs)
 
 void xlsx_pivot_table_context::start_row_fields(const xml_token_attrs_t& attrs)
 {
-    if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
+    m_rc_fields = m_xpt.start_row_fields();
+    ENSURE_INTERFACE(m_rc_fields, import_pivot_rc_fields);
+
+    for (const xml_token_attr_t& attr : attrs)
     {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_count:
+            {
+                m_rc_fields->set_count(to_long(attr.value));
+                break;
+            }
+        }
     }
 }
 
 void xlsx_pivot_table_context::start_col_fields(const xml_token_attrs_t& attrs)
 {
-    if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
+    m_rc_fields = m_xpt.start_column_fields();
+    ENSURE_INTERFACE(m_rc_fields, import_pivot_rc_fields);
+
+    for (const xml_token_attr_t& attr : attrs)
     {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_count:
+            {
+                m_rc_fields->set_count(to_long(attr.value));
+                break;
+            }
+        }
     }
 }
 
@@ -1352,15 +1394,32 @@ void xlsx_pivot_table_context::start_page_field(const xml_token_attrs_t& attrs)
 
 void xlsx_pivot_table_context::start_field(const xml_token_attrs_t& attrs)
 {
-    // Index into the list of <pivotField> collection which is
-    // given earlier under the <pivotFields> element.  The value
-    // of -2 represents a special field that displays the list of
-    // data fields when the pivot table contains more than one
-    // data field.
-    if (auto idx = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_x); idx)
+    assert(m_rc_fields);
+
+    // Index into the list of <pivotField> collection which is given earlier
+    // under the <pivotFields> element.  The value of -2 represents a special
+    // field that displays the list of data fields when the pivot table contains
+    // more than one data field.
+
+    long x = 0; // defaults to 0
+
+    for (const xml_token_attr_t& attr : attrs)
     {
-        (void)idx;
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_x:
+            {
+                if (auto v = to_long_checked(attr.value); v)
+                    x = *v;
+                break;
+            }
+        }
     }
+
+    m_rc_fields->append_field(x);
 }
 
 void xlsx_pivot_table_context::start_data_fields(const xml_token_attrs_t& attrs)

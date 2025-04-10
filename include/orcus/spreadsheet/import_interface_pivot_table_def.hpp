@@ -171,7 +171,7 @@ public:
 
     virtual import_pivot_rc_fields* start_row_fields() = 0;
 
-    virtual import_pivot_rc_fields* start_col_fields() = 0;
+    virtual import_pivot_rc_fields* start_column_fields() = 0;
 
     virtual import_pivot_page_fields* start_page_fields() = 0;
 

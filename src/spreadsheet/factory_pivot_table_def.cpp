@@ -10,7 +10,7 @@
 
 #include <orcus/spreadsheet/document.hpp>
 #include <ixion/address.hpp>
-#include <iostream>
+#include <cassert>
 
 namespace orcus { namespace spreadsheet { namespace detail {
 
@@ -67,11 +67,29 @@ void import_pivot_fields::reset(commit_func_type func)
     m_current_fields.clear();
 }
 
-void import_pivot_rc_fields::set_count(std::size_t count) {}
+void import_pivot_rc_fields::set_count(std::size_t count)
+{
+    m_fields.reserve(count);
+}
 
-void import_pivot_rc_fields::append_field(std::size_t index) {}
+void import_pivot_rc_fields::append_field(std::size_t index)
+{
+    m_fields.push_back(index);
+}
 
-void import_pivot_rc_fields::commit() {}
+void import_pivot_rc_fields::commit()
+{
+    m_axis = pivot_axis_t::unknown;
+    m_func(std::move(m_fields));
+}
+
+void import_pivot_rc_fields::reset(pivot_axis_t axis, commit_func_type func)
+{
+    assert(axis == pivot_axis_t::row || axis == pivot_axis_t::column);
+    m_func = std::move(func);
+    m_axis = axis;
+    m_fields.clear();
+}
 
 void import_pivot_page_field::set_field(std::size_t index) {}
 
@@ -134,11 +152,20 @@ iface::import_pivot_fields* import_pivot_table_def::start_pivot_fields()
 
 iface::import_pivot_rc_fields* import_pivot_table_def::start_row_fields()
 {
+    m_rc_fields.reset(
+        pivot_axis_t::row,
+        [this](pivot_ref_fields_t&& fields) { m_current_pt.set_row_fields(std::move(fields)); }
+    );
+
     return &m_rc_fields;
 }
 
-iface::import_pivot_rc_fields* import_pivot_table_def::start_col_fields()
+iface::import_pivot_rc_fields* import_pivot_table_def::start_column_fields()
 {
+    m_rc_fields.reset(
+        pivot_axis_t::column,
+        [this](pivot_ref_fields_t&& fields) { m_current_pt.set_column_fields(std::move(fields)); }
+    );
     return &m_rc_fields;
 }
 

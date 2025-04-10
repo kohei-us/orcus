@@ -296,6 +296,16 @@ void pivot_table::set_pivot_fields(pivot_fields_t fields)
     mp_impl->fields = std::move(fields);
 }
 
+void pivot_table::set_row_fields(pivot_ref_fields_t fields)
+{
+    mp_impl->row_fields = std::move(fields);
+}
+
+void pivot_table::set_column_fields(pivot_ref_fields_t fields)
+{
+    mp_impl->column_fields = std::move(fields);
+}
+
 void pivot_table::dump_debug_state(std::string_view outdir) const
 {
     fs::path output_dir{outdir};
