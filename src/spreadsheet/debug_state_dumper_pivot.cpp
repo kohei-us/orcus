@@ -157,7 +157,38 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
         of << "    items: " << std::endl;
 
         for (const auto& item : field.items)
-            of << "      - " << item << std::endl;
+        {
+            of << "     - ";
+            std::ostringstream os;
+
+            switch (item.type)
+            {
+                case pivot_item_t::item_type::index:
+                {
+                    os << "(" << std::get<std::size_t>(item.value);
+
+                    if (item.hidden)
+                        os << "; hidden)";
+                    else
+                        os << ")";
+
+                    break;
+                }
+                case pivot_item_t::item_type::type:
+                {
+                    os << std::get<pivot_field_item_t>(item.value);
+                    break;
+                }
+                case pivot_item_t::item_type::unknown:
+                {
+                    os << "???";
+                    break;
+                }
+            }
+
+            m_cxt.ensure_yaml_string(of, os.str());
+            of << std::endl;
+        }
     }
 
     of << "row-fields:" << std::endl;

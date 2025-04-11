@@ -1275,6 +1275,10 @@ void xlsx_pivot_table_context::start_item(const xml_token_attrs_t& attrs)
 {
     assert(m_pivot_field);
 
+    std::optional<long> index;
+    std::optional<ss::pivot_field_item_t> type;
+    bool hidden = false;
+
     for (const xml_token_attr_t& attr : attrs)
     {
         if (attr.ns)
@@ -1285,7 +1289,12 @@ void xlsx_pivot_table_context::start_item(const xml_token_attrs_t& attrs)
             case XML_x:
             {
                 // field item index as defined in the pivot cache.
-                m_pivot_field->append_item(to_long(attr.value));
+                if (index = to_long_checked(attr.value); !index)
+                {
+                    std::ostringstream os;
+                    os << "invalid index value of pivot field item: '" << attr.value << "'";
+                    warn(os.str());
+                }
                 break;
             }
             case XML_t:
@@ -1294,19 +1303,29 @@ void xlsx_pivot_table_context::start_item(const xml_token_attrs_t& attrs)
                 // some sort of function item.  See 3.18.45 ST_ItemType
                 // (PivotItem Type) for possible values.
 
-                auto v = item_type::get().find(attr.value);
-                if (v == ss::pivot_field_item_t::unknown)
+                type = item_type::get().find(attr.value);
+                if (*type == ss::pivot_field_item_t::unknown)
                 {
                     std::ostringstream os;
                     os << "unrecognized pivot field item type: '" << attr.value << "'";
                     warn(os.str());
                 }
-
-                m_pivot_field->append_item(v);
+                break;
+            }
+            case XML_h:
+            {
+                hidden = to_bool(attr.value);
                 break;
             }
         }
     }
+
+    if (index)
+        m_pivot_field->append_item(*index, hidden);
+    else if (type)
+        m_pivot_field->append_item(*type);
+    else
+        throw xml_structure_error("pivot field item is missing a required attribute");
 }
 
 void xlsx_pivot_table_context::start_row_fields(const xml_token_attrs_t& attrs)

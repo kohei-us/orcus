@@ -24,9 +24,9 @@ void import_pivot_field::set_axis(pivot_axis_t axis)
     m_current_field.axis = axis;
 }
 
-void import_pivot_field::append_item(std::size_t index)
+void import_pivot_field::append_item(std::size_t index, bool hidden)
 {
-    m_current_field.items.emplace_back(index);
+    m_current_field.items.emplace_back(index, hidden);
 }
 
 void import_pivot_field::append_item(pivot_field_item_t type)

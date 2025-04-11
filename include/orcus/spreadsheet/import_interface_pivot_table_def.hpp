@@ -36,8 +36,9 @@ public:
      * Append a pivot field item with an index.
      *
      * @param index Index into the corresponding cache field in the pivot cache.
+     * @param hidden Whether or not this item is hidden.
      */
-    virtual void append_item(std::size_t index) = 0;
+    virtual void append_item(std::size_t index, bool hidden) = 0;
 
     virtual void append_item(pivot_field_item_t type) = 0;
 

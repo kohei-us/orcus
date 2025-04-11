@@ -22,6 +22,8 @@ public:
      * Print 2D range data in simple A1 format for readability.
      */
     std::string print_range(const ixion::abs_rc_range_t& range) const;
+
+    void ensure_yaml_string(std::ostream& os, std::string_view s) const;
 };
 
 }}}

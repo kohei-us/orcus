@@ -179,7 +179,7 @@ void pivot_cache_field_t::swap(pivot_cache_field_t& other) noexcept
 pivot_item_t::pivot_item_t() = default;
 pivot_item_t::pivot_item_t(const pivot_item_t& other) = default;
 pivot_item_t::pivot_item_t(pivot_item_t&& other) = default;
-pivot_item_t::pivot_item_t(std::size_t i) : type(item_type::index), value(i) {}
+pivot_item_t::pivot_item_t(std::size_t i, bool _hidden) : type(item_type::index), value(i), hidden(_hidden) {}
 pivot_item_t::pivot_item_t(pivot_field_item_t t) : type(item_type::type), value(t) {}
 pivot_item_t::~pivot_item_t() = default;
 
@@ -195,6 +195,7 @@ void pivot_item_t::swap(pivot_item_t& other) noexcept
 {
     std::swap(type, other.type);
     std::swap(value, other.value);
+    std::swap(hidden, other.hidden);
 }
 
 pivot_field_t::pivot_field_t() = default;
@@ -528,20 +529,22 @@ std::ostream& operator<<(std::ostream& os, const pivot_item_t& v)
     {
         case pivot_item_t::item_type::index:
         {
-            os << "index " << std::get<std::size_t>(v.value);
+            os << "(index: " << std::get<std::size_t>(v.value);
             break;
         }
         case pivot_item_t::item_type::type:
         {
-            os << "type " << std::get<pivot_field_item_t>(v.value);
+            os << "(type: " << std::get<pivot_field_item_t>(v.value);
             break;
         }
         case pivot_item_t::item_type::unknown:
         {
-            os << "unknown";
+            os << "(unknown";
             break;
         }
     }
+
+    os << "; hidden: " << std::boolalpha << v.hidden << ")";
     return os;
 }
 

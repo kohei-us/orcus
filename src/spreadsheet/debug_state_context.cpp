@@ -31,6 +31,42 @@ std::string debug_state_context::print_range(const ixion::abs_rc_range_t& range)
     return m_resolver->get_name(name, origin, false);
 }
 
+void debug_state_context::ensure_yaml_string(std::ostream& os, std::string_view s) const
+{
+    bool quote = false;
+    const char* p = s.data();
+    const char* p_end = p + s.size();
+    for (; p != p_end; ++p)
+    {
+        switch (*p)
+        {
+            case ':':
+            case '{':
+            case '}':
+            case '-':
+            case '#':
+                quote = true;
+                break;
+        }
+    }
+
+    if (quote)
+    {
+        os << '"';
+        p = s.data();
+        for (; p != p_end; ++p)
+        {
+            char c = *p;
+            if (c == '"')
+                os << '\\';
+            os << c;
+        }
+        os << '"';
+    }
+    else
+        os << s;
+}
+
 }}}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

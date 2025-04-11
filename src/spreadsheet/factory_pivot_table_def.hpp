@@ -25,7 +25,7 @@ public:
 
     void set_item_count(std::size_t count) override;
     void set_axis(pivot_axis_t axis) override;
-    void append_item(std::size_t index) override;
+    void append_item(std::size_t index, bool hidden) override;
     void append_item(pivot_field_item_t type) override;
     void commit() override;
 
@@ -79,11 +79,12 @@ public:
 
 class import_pivot_page_fields : public iface::import_pivot_page_fields
 {
-    import_pivot_page_field m_field;
-
 public:
     virtual iface::import_pivot_page_field* start_page_field() override;
     virtual void commit() override;
+
+private:
+    import_pivot_page_field m_field;
 };
 
 class import_pivot_data_field : public iface::import_pivot_data_field

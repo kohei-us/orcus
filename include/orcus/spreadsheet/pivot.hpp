@@ -191,11 +191,12 @@ struct ORCUS_SPM_DLLPUBLIC pivot_item_t
 
     item_type type;
     value_type value;
+    bool hidden = false;
 
     pivot_item_t();
     pivot_item_t(const pivot_item_t& other);
     pivot_item_t(pivot_item_t&& other);
-    pivot_item_t(std::size_t i);
+    pivot_item_t(std::size_t i, bool _hidden);
     pivot_item_t(pivot_field_item_t t);
     ~pivot_item_t();
 
