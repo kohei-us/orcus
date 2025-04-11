@@ -48,7 +48,7 @@ struct worksheet_range
 using range_map_type = std::unordered_map<worksheet_range, std::unordered_set<pivot_cache_id_t>, worksheet_range::hash>;
 using name_map_type = std::unordered_map<std::string_view, std::unordered_set<pivot_cache_id_t>>;
 using caches_type = std::unordered_map<pivot_cache_id_t, std::unique_ptr<pivot_cache>>;
-using pivot_tables_type = std::unordered_map<std::string_view, pivot_table>;
+using pivot_tables_type = std::vector<pivot_table>;
 
 } // namespace detail
 

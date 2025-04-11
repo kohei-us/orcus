@@ -291,7 +291,7 @@ public:
     void set_row_fields(pivot_ref_fields_t fields);
     void set_column_fields(pivot_ref_fields_t fields);
 
-    void dump_debug_state(std::string_view outdir) const;
+    void dump_debug_state(std::string_view outpath) const;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_collection

@@ -306,14 +306,14 @@ void pivot_table::set_column_fields(pivot_ref_fields_t fields)
     mp_impl->column_fields = std::move(fields);
 }
 
-void pivot_table::dump_debug_state(std::string_view outdir) const
+void pivot_table::dump_debug_state(std::string_view outpath) const
 {
-    fs::path output_dir{outdir};
-    fs::create_directories(output_dir);
+    fs::path output_path{outpath};
+    fs::create_directories(output_path.parent_path());
 
     detail::debug_state_context cxt;
     detail::debug_state_dumper_pivot_table dumper(cxt, *mp_impl);
-    dumper.dump(output_dir);
+    dumper.dump(output_path);
 }
 
 pivot_collection::pivot_collection(document& doc) : mp_impl(std::make_unique<impl>(doc)) {}
@@ -376,7 +376,7 @@ void pivot_collection::insert_worksheet_cache(
 
 void pivot_collection::insert_pivot_table(pivot_table pt)
 {
-    mp_impl->pivot_tables.insert_or_assign(pt.get_name(), std::move(pt));
+    mp_impl->pivot_tables.push_back(std::move(pt));
 }
 
 size_t pivot_collection::get_cache_count() const
@@ -431,11 +431,15 @@ void pivot_collection::dump_debug_state(std::string_view outdir) const
         cache->dump_debug_state(this_dir.string());
     }
 
-    for (const auto& [name, table] : mp_impl->pivot_tables)
+    std::size_t pos = 0;
+
+    for (const auto& table : mp_impl->pivot_tables)
     {
-        auto this_dir = output_dir;
-        this_dir /= "pivot-tables";
-        table.dump_debug_state(this_dir.string());
+        auto this_path = output_dir / "pivot-tables";
+        std::ostringstream os;
+        os << "pivot-" << pos++ << ".yaml";
+        this_path /= os.str();
+        table.dump_debug_state(this_path.string());
     }
 }
 

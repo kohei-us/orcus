@@ -139,14 +139,9 @@ debug_state_dumper_pivot_table::debug_state_dumper_pivot_table(
     const debug_state_context& cxt, const pivot_table::impl& store) :
     m_cxt(cxt), m_store(store) {}
 
-void debug_state_dumper_pivot_table::dump(const fs::path& outdir) const
+void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
 {
-    fs::create_directories(outdir);
-
-    std::ostringstream os;
-    os << m_store.name << ".yaml";
-    fs::path outpath = outdir / os.str();
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath.string()};
 
     if (!of)
         return;

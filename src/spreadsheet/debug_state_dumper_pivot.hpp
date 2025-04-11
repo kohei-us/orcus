@@ -33,7 +33,7 @@ class debug_state_dumper_pivot_table
 public:
     debug_state_dumper_pivot_table(const debug_state_context& cxt, const pivot_table::impl& store);
 
-    void dump(const fs::path& outdir) const;
+    void dump(const fs::path& outpath) const;
 };
 
 }}}
