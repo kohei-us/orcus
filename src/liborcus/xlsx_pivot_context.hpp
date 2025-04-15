@@ -23,6 +23,8 @@ class import_pivot_table_definition;
 class import_pivot_fields;
 class import_pivot_field;
 class import_pivot_rc_fields;
+class import_pivot_page_fields;
+class import_pivot_page_field;
 class import_reference_resolver;
 
 }}
@@ -110,6 +112,8 @@ class xlsx_pivot_table_context : public xml_context_base
     spreadsheet::iface::import_pivot_fields* m_pivot_fields = nullptr;
     spreadsheet::iface::import_pivot_field* m_pivot_field = nullptr;
     spreadsheet::iface::import_pivot_rc_fields* m_rc_fields = nullptr;
+    spreadsheet::iface::import_pivot_page_fields* m_page_fields = nullptr;
+    spreadsheet::iface::import_pivot_page_field* m_page_field = nullptr;
 
 public:
     xlsx_pivot_table_context(

@@ -73,18 +73,34 @@ private:
 class import_pivot_page_field : public iface::import_pivot_page_field
 {
 public:
+    using commit_func_type = std::function<void(pivot_ref_page_field_t&&)>;
+
     virtual void set_field(std::size_t index) override;
+    virtual void set_item(std::size_t index) override;
     virtual void commit() override;
+
+    void reset(commit_func_type func);
+
+private:
+    commit_func_type m_func;
+    pivot_ref_page_field_t m_current_field;
 };
 
 class import_pivot_page_fields : public iface::import_pivot_page_fields
 {
 public:
+    using commit_func_type = std::function<void(pivot_ref_page_fields_t&&)>;
+
+    virtual void set_count(std::size_t count) override;
     virtual iface::import_pivot_page_field* start_page_field() override;
     virtual void commit() override;
 
+    void reset(commit_func_type func);
+
 private:
-    import_pivot_page_field m_field;
+    commit_func_type m_func;
+    pivot_ref_page_fields_t m_current_fields;
+    import_pivot_page_field m_xfield;
 };
 
 class import_pivot_data_field : public iface::import_pivot_data_field

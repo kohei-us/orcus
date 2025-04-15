@@ -1172,6 +1172,20 @@ bool xlsx_pivot_table_context::end_element(xmlns_id_t ns, xml_token_t name)
                 m_rc_fields = nullptr;
                 break;
             }
+            case XML_pageFields:
+            {
+                assert(m_page_fields);
+                m_page_fields->commit();
+                m_page_fields = nullptr;
+                break;
+            }
+            case XML_pageField:
+            {
+                assert(m_page_field);
+                m_page_field->commit();
+                m_page_field = nullptr;
+                break;
+            }
         }
     }
 
@@ -1372,41 +1386,50 @@ void xlsx_pivot_table_context::start_col_fields(const xml_token_attrs_t& attrs)
 
 void xlsx_pivot_table_context::start_page_fields(const xml_token_attrs_t& attrs)
 {
-    if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
+    m_page_fields = m_xpt.start_page_fields();
+    ENSURE_INTERFACE(m_page_fields, import_pivot_page_fields);
+
+    for (const xml_token_attr_t& attr : attrs)
     {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_count:
+            {
+                m_page_fields->set_count(to_long(attr.value));
+                break;
+            }
+        }
     }
 }
 
 void xlsx_pivot_table_context::start_page_field(const xml_token_attrs_t& attrs)
 {
+    assert(m_page_fields);
+    m_page_field = m_page_fields->start_page_field();
+    ENSURE_INTERFACE(m_page_field, import_pivot_page_field);
+
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
+        if (attr.ns)
             continue;
 
         switch (attr.name)
         {
             case XML_fld:
             {
-                long fld = to_long(attr.value);
-                (void)fld;
+                if (auto v = to_long_checked(attr.value); v)
+                    m_page_field->set_field(*v);
                 break;
             }
             case XML_item:
             {
-                long item = to_long(attr.value);
-                (void)item;
+                if (auto v = to_long_checked(attr.value); v)
+                    m_page_field->set_item(*v);
                 break;
             }
-            case XML_hier:
-            {
-                long hier = to_long(attr.value);
-                // -1 if not applicable.
-                (void)hier;
-                break;
-            }
-            default:
-                ;
         }
     }
 }

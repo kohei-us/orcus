@@ -200,6 +200,21 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
 
     for (auto idx : m_store.column_fields)
         of << "  - (" << idx << ")\n";
+
+    of << "page-fields:" << std::endl;
+
+    for (const auto& field : m_store.page_fields)
+    {
+        of << "  - field: (" << field.field << ")\n";
+        of << "    item: ";
+
+        if (field.item)
+            of << "(" << *field.item << ")";
+        else
+            of << "(not set)";
+
+        of << std::endl;
+    }
 }
 
 }}}

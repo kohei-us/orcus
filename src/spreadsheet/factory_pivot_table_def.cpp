@@ -91,16 +91,50 @@ void import_pivot_rc_fields::reset(pivot_axis_t axis, commit_func_type func)
     m_fields.clear();
 }
 
-void import_pivot_page_field::set_field(std::size_t index) {}
+void import_pivot_page_field::set_field(std::size_t index)
+{
+    m_current_field.field = index;
+}
 
-void import_pivot_page_field::commit() {}
+void import_pivot_page_field::set_item(std::size_t index)
+{
+    m_current_field.item = index;
+}
+
+void import_pivot_page_field::commit()
+{
+    m_func(std::move(m_current_field));
+}
+
+void import_pivot_page_field::reset(commit_func_type func)
+{
+    m_func = std::move(func);
+    m_current_field = pivot_ref_page_field_t{};
+}
+
+void import_pivot_page_fields::set_count(std::size_t count)
+{
+    m_current_fields.reserve(count);
+}
 
 iface::import_pivot_page_field* import_pivot_page_fields::start_page_field()
 {
-    return &m_field;
+    m_xfield.reset([this](pivot_ref_page_field_t&& field) {
+       m_current_fields.push_back(std::move(field));
+    });
+    return &m_xfield;
 }
 
-void import_pivot_page_fields::commit() {}
+void import_pivot_page_fields::commit()
+{
+    m_func(std::move(m_current_fields));
+}
+
+void import_pivot_page_fields::reset(commit_func_type func)
+{
+    m_func = std::move(func);
+    m_current_fields.clear();
+}
 
 void import_pivot_data_field::set_field(std::size_t index) {}
 
@@ -171,6 +205,9 @@ iface::import_pivot_rc_fields* import_pivot_table_def::start_column_fields()
 
 iface::import_pivot_page_fields* import_pivot_table_def::start_page_fields()
 {
+    m_page_fields.reset([this](pivot_ref_page_fields_t&& fields) {
+        m_current_pt.set_page_fields(std::move(fields));
+    });
     return &m_page_fields;
 }
 

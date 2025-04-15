@@ -79,6 +79,8 @@ public:
 
     virtual void set_field(std::size_t index) = 0;
 
+    virtual void set_item(std::size_t index) = 0;
+
     virtual void commit() = 0;
 };
 
@@ -86,6 +88,8 @@ class ORCUS_DLLPUBLIC import_pivot_page_fields
 {
 public:
     virtual ~import_pivot_page_fields();
+
+    virtual void set_count(std::size_t count) = 0;
 
     virtual import_pivot_page_field* start_page_field() = 0;
 
