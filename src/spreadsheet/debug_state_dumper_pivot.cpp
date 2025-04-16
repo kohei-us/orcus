@@ -158,7 +158,7 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
 
         for (const auto& item : field.items)
         {
-            of << "     - ";
+            of << "      - ";
             std::ostringstream os;
 
             switch (item.type)
