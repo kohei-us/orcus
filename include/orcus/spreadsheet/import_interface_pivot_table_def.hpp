@@ -69,6 +69,12 @@ public:
 
     virtual void append_field(std::size_t index) = 0;
 
+    /**
+     * Append a special field that displays a list of data fields when the pivot
+     * table contains more than one data field.
+     */
+    virtual void append_data_field() = 0;
+
     virtual void commit() = 0;
 };
 

@@ -77,6 +77,11 @@ void import_pivot_rc_fields::append_field(std::size_t index)
     m_fields.push_back(index);
 }
 
+void import_pivot_rc_fields::append_data_field()
+{
+    m_fields.push_back(pivot_ref_rc_field_t::value_type::data);
+}
+
 void import_pivot_rc_fields::commit()
 {
     m_axis = pivot_axis_t::unknown;
@@ -188,7 +193,7 @@ iface::import_pivot_rc_fields* import_pivot_table_def::start_row_fields()
 {
     m_rc_fields.reset(
         pivot_axis_t::row,
-        [this](pivot_ref_fields_t&& fields) { m_current_pt.set_row_fields(std::move(fields)); }
+        [this](pivot_ref_rc_fields_t&& fields) { m_current_pt.set_row_fields(std::move(fields)); }
     );
 
     return &m_rc_fields;
@@ -198,7 +203,7 @@ iface::import_pivot_rc_fields* import_pivot_table_def::start_column_fields()
 {
     m_rc_fields.reset(
         pivot_axis_t::column,
-        [this](pivot_ref_fields_t&& fields) { m_current_pt.set_column_fields(std::move(fields)); }
+        [this](pivot_ref_rc_fields_t&& fields) { m_current_pt.set_column_fields(std::move(fields)); }
     );
     return &m_rc_fields;
 }

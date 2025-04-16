@@ -69,8 +69,8 @@ struct pivot_table::impl
     pivot_cache_id_t cache_id;
     ixion::abs_rc_range_t range;
     pivot_fields_t fields;
-    pivot_ref_fields_t row_fields;
-    pivot_ref_fields_t column_fields;
+    pivot_ref_rc_fields_t row_fields;
+    pivot_ref_rc_fields_t column_fields;
     pivot_ref_page_fields_t page_fields;
 
     impl(string_pool& _pool) : pool(_pool) {}

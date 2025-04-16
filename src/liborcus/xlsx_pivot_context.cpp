@@ -1461,7 +1461,10 @@ void xlsx_pivot_table_context::start_field(const xml_token_attrs_t& attrs)
         }
     }
 
-    m_rc_fields->append_field(x);
+    if (x == -2)
+        m_rc_fields->append_data_field();
+    else
+        m_rc_fields->append_field(x);
 }
 
 void xlsx_pivot_table_context::start_data_fields(const xml_token_attrs_t& attrs)

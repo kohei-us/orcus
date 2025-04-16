@@ -223,7 +223,27 @@ struct ORCUS_SPM_DLLPUBLIC pivot_field_t
 };
 
 using pivot_fields_t = std::vector<pivot_field_t>;
-using pivot_ref_fields_t = std::vector<std::size_t>;
+
+struct ORCUS_SPM_DLLPUBLIC pivot_ref_rc_field_t
+{
+    enum class value_type { unknown = 0, index, data };
+
+    value_type type = value_type::unknown;
+    std::size_t index = 0;
+
+    pivot_ref_rc_field_t();
+    pivot_ref_rc_field_t(const pivot_ref_rc_field_t& other);
+    pivot_ref_rc_field_t(pivot_ref_rc_field_t&& other);
+    pivot_ref_rc_field_t(std::size_t _index);
+    pivot_ref_rc_field_t(value_type vt);
+    ~pivot_ref_rc_field_t();
+
+    pivot_ref_rc_field_t& operator=(pivot_ref_rc_field_t other);
+
+    void swap(pivot_ref_rc_field_t& other) noexcept;
+};
+
+using pivot_ref_rc_fields_t = std::vector<pivot_ref_rc_field_t>;
 
 struct ORCUS_SPM_DLLPUBLIC pivot_ref_page_field_t
 {
@@ -306,8 +326,8 @@ public:
     void set_cache_id(pivot_cache_id_t cache_id);
     void set_range(const ixion::abs_rc_range_t& range);
     void set_pivot_fields(pivot_fields_t fields);
-    void set_row_fields(pivot_ref_fields_t fields);
-    void set_column_fields(pivot_ref_fields_t fields);
+    void set_row_fields(pivot_ref_rc_fields_t fields);
+    void set_column_fields(pivot_ref_rc_fields_t fields);
     void set_page_fields(pivot_ref_page_fields_t fields);
 
     void dump_debug_state(std::string_view outpath) const;

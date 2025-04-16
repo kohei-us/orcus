@@ -193,13 +193,39 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
 
     of << "row-fields:" << std::endl;
 
-    for (auto idx : m_store.row_fields)
-        of << "  - (" << idx << ")\n";
+    for (const auto& field : m_store.row_fields)
+    {
+        switch (field.type)
+        {
+            case pivot_ref_rc_field_t::value_type::index:
+                of << "  - (" << field.index << ")\n";
+                break;
+            case pivot_ref_rc_field_t::value_type::data:
+                of << "  - (data)\n";
+                break;
+            case pivot_ref_rc_field_t::value_type::unknown:
+                of << "  - (unknown)\n";
+                break;
+        }
+    }
 
     of << "column-fields:" << std::endl;
 
-    for (auto idx : m_store.column_fields)
-        of << "  - (" << idx << ")\n";
+    for (const auto& field : m_store.column_fields)
+    {
+        switch (field.type)
+        {
+            case pivot_ref_rc_field_t::value_type::index:
+                of << "  - (" << field.index << ")\n";
+                break;
+            case pivot_ref_rc_field_t::value_type::data:
+                of << "  - (data)\n";
+                break;
+            case pivot_ref_rc_field_t::value_type::unknown:
+                of << "  - (unknown)\n";
+                break;
+        }
+    }
 
     of << "page-fields:" << std::endl;
 
