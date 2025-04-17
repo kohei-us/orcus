@@ -159,9 +159,7 @@ pivot_cache_field_t::pivot_cache_field_t(pivot_cache_field_t&& other) :
 
 pivot_cache_field_t& pivot_cache_field_t::operator=(pivot_cache_field_t other)
 {
-    pivot_cache_field_t tmp(std::move(other));
-    swap(tmp);
-
+    swap(other);
     return *this;
 }
 
@@ -186,8 +184,7 @@ pivot_item_t::~pivot_item_t() = default;
 
 pivot_item_t& pivot_item_t::operator=(pivot_item_t other)
 {
-    pivot_item_t temp(std::move(other));
-    temp.swap(*this);
+    swap(other);
     return *this;
 }
 
@@ -205,8 +202,7 @@ pivot_field_t::~pivot_field_t() = default;
 
 pivot_field_t& pivot_field_t::operator=(pivot_field_t other)
 {
-    pivot_field_t temp(std::move(other));
-    temp.swap(*this);
+    swap(other);
     return *this;
 }
 
@@ -231,8 +227,7 @@ pivot_ref_rc_field_t::~pivot_ref_rc_field_t() = default;
 
 pivot_ref_rc_field_t& pivot_ref_rc_field_t::operator=(pivot_ref_rc_field_t other)
 {
-    pivot_ref_rc_field_t tmp(std::move(other));
-    swap(tmp);
+    swap(other);
     return *this;
 }
 
@@ -249,8 +244,7 @@ pivot_ref_page_field_t::~pivot_ref_page_field_t() = default;
 
 pivot_ref_page_field_t& pivot_ref_page_field_t::operator=(pivot_ref_page_field_t other)
 {
-    pivot_ref_page_field_t tmp(std::move(other));
-    swap(tmp);
+    swap(other);
     return *this;
 }
 
@@ -258,6 +252,27 @@ void pivot_ref_page_field_t::swap(pivot_ref_page_field_t& other) noexcept
 {
     std::swap(field, other.field);
     std::swap(item, other.item);
+}
+
+pivot_ref_data_field_t::pivot_ref_data_field_t() = default;
+pivot_ref_data_field_t::pivot_ref_data_field_t(const pivot_ref_data_field_t& other) = default;
+pivot_ref_data_field_t::pivot_ref_data_field_t(pivot_ref_data_field_t&& other) = default;
+pivot_ref_data_field_t::~pivot_ref_data_field_t() = default;
+
+pivot_ref_data_field_t& pivot_ref_data_field_t::operator=(pivot_ref_data_field_t other)
+{
+    swap(other);
+    return *this;
+}
+
+void pivot_ref_data_field_t::swap(pivot_ref_data_field_t& other) noexcept
+{
+    std::swap(field, other.field);
+    std::swap(name, other.name);
+    std::swap(subtotal, other.subtotal);
+    std::swap(show_data_as, other.show_data_as);
+    std::swap(base_field, other.base_field);
+    std::swap(base_item, other.base_item);
 }
 
 pivot_cache::pivot_cache(pivot_cache_id_t cache_id, string_pool& sp) :
@@ -354,6 +369,11 @@ void pivot_table::set_column_fields(pivot_ref_rc_fields_t fields)
 void pivot_table::set_page_fields(pivot_ref_page_fields_t fields)
 {
     mp_impl->page_fields = std::move(fields);
+}
+
+void pivot_table::set_data_fields(pivot_ref_data_fields_t fields)
+{
+    mp_impl->data_fields = std::move(fields);
 }
 
 void pivot_table::dump_debug_state(std::string_view outpath) const

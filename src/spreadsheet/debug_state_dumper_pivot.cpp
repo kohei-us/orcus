@@ -12,6 +12,8 @@
 #include <sstream>
 #include <fstream>
 
+namespace ss = orcus::spreadsheet;
+
 namespace orcus { namespace spreadsheet { namespace detail {
 
 debug_state_dumper_pivot_cache::debug_state_dumper_pivot_cache(const pivot_cache::impl& store) :
@@ -149,12 +151,12 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
     of << "name: " << m_store.name << "\n";
     of << "cache-id: " << m_store.cache_id << "\n";
     of << "range: " << m_cxt.print_range(m_store.range) << "\n";
-    of << "fields:" << std::endl;
+    of << "fields:\n";
 
     for (const auto& field : m_store.fields)
     {
         of << "  - axis: " << field.axis << "\n";
-        of << "    items: " << std::endl;
+        of << "    items:\n";
 
         for (const auto& item : field.items)
         {
@@ -187,11 +189,11 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
             }
 
             m_cxt.ensure_yaml_string(of, os.str());
-            of << std::endl;
+            of << "\n";
         }
     }
 
-    of << "row-fields:" << std::endl;
+    of << "row-fields:\n";
 
     for (const auto& field : m_store.row_fields)
     {
@@ -209,7 +211,7 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
         }
     }
 
-    of << "column-fields:" << std::endl;
+    of << "column-fields:\n";
 
     for (const auto& field : m_store.column_fields)
     {
@@ -227,7 +229,7 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
         }
     }
 
-    of << "page-fields:" << std::endl;
+    of << "page-fields:\n";
 
     for (const auto& field : m_store.page_fields)
     {
@@ -239,7 +241,53 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
         else
             of << "(not set)";
 
-        of << std::endl;
+        of << "\n";
+    }
+
+    of << "data-fields:" << std::endl;
+    for (const auto& field : m_store.data_fields)
+    {
+        of << "  - field: (" << field.field << ")\n";
+        of << "    name: " << field.name << "\n";
+        of << "    subtotal: ";
+
+        if (field.subtotal == ss::pivot_data_subtotal_t::unknown)
+            of << "(not set)";
+        else
+            of << field.subtotal;
+        of << "\n";
+
+        if (field.show_data_as == ss::pivot_data_show_data_as_t::unknown)
+            of << "    show data as: (not set)" << std::endl;
+        else
+        {
+            // TODO: Show base field and base item only when the type uses them
+            of << "    show data as:\n";
+            of << "      type: " << field.show_data_as << std::endl;
+
+            switch (field.show_data_as)
+            {
+                case pivot_data_show_data_as_t::difference:
+                case pivot_data_show_data_as_t::percent:
+                case pivot_data_show_data_as_t::percent_diff:
+                    // these types use both base field and item
+                    of << "      base field: (" << field.base_field << ")\n";
+                    of << "      base item: (" << field.base_item << ")" << std::endl;
+                    break;
+                case pivot_data_show_data_as_t::percent_of_col:
+                case pivot_data_show_data_as_t::percent_of_row:
+                case pivot_data_show_data_as_t::percent_of_total:
+                    // these types only use base field
+                    of << "      base field: (" << field.base_field << ")" << std::endl;
+                    break;
+                case pivot_data_show_data_as_t::normal:
+                case pivot_data_show_data_as_t::index:
+                case pivot_data_show_data_as_t::run_total:
+                case pivot_data_show_data_as_t::unknown:
+                    // these types don't use base field nor item
+                    break;
+            }
+        }
     }
 }
 

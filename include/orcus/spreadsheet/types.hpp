@@ -611,6 +611,10 @@ enum class pivot_cache_group_by_t
     years
 };
 
+/**
+ *
+ * @note It's a superset of aggregate_function_t.
+ */
 enum class pivot_field_item_t
 {
     unknown = 0,
@@ -629,6 +633,42 @@ enum class pivot_field_item_t
     sum,
     var,
     varp,
+};
+
+/**
+ * Aggregate function used in a data field.
+ */
+enum class pivot_data_subtotal_t
+{
+    unknown = 0,
+    average,
+    count,
+    count_numbers,
+    max,
+    min,
+    product,
+    stddev,
+    stddevp,
+    sum,
+    var,
+    varp,
+};
+
+enum class pivot_data_show_data_as_t
+{
+    unknown = 0,
+    /** Difference from a value. */
+    difference,
+    index,
+    normal,
+    /** Percentage from a target field item. */
+    percent,
+    /** Percentage difference from a value. */
+    percent_diff,
+    percent_of_col,
+    percent_of_row,
+    percent_of_total,
+    run_total,
 };
 
 enum class pivot_axis_t
@@ -815,6 +855,8 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const strikethrough_
 ORCUS_DLLPUBLIC std::ostream& operator<<(std::ostream& os, pivot_cache_group_by_t v);
 ORCUS_DLLPUBLIC std::ostream& operator<<(std::ostream& os, pivot_field_item_t v);
 ORCUS_DLLPUBLIC std::ostream& operator<<(std::ostream& os, pivot_axis_t v);
+ORCUS_DLLPUBLIC std::ostream& operator<<(std::ostream& os, pivot_data_show_data_as_t v);
+ORCUS_DLLPUBLIC std::ostream& operator<<(std::ostream& os, pivot_data_subtotal_t v);
 
 }}
 

@@ -8,6 +8,7 @@
 #include "factory_pivot_table_def.hpp"
 #include "formula_global.hpp"
 
+#include <orcus/string_pool.hpp>
 #include <orcus/spreadsheet/document.hpp>
 #include <ixion/address.hpp>
 #include <cassert>
@@ -141,16 +142,68 @@ void import_pivot_page_fields::reset(commit_func_type func)
     m_current_fields.clear();
 }
 
-void import_pivot_data_field::set_field(std::size_t index) {}
+import_pivot_data_field::import_pivot_data_field(string_pool& pool) : m_pool(pool) {}
 
-void import_pivot_data_field::commit() {}
+void import_pivot_data_field::set_field(std::size_t index)
+{
+    m_current_field.field = index;
+}
+
+void import_pivot_data_field::set_name(std::string_view name)
+{
+    m_current_field.name = m_pool.intern(name).first;
+}
+
+void import_pivot_data_field::set_subtotal_function(pivot_data_subtotal_t func)
+{
+    m_current_field.subtotal = func;
+}
+
+void import_pivot_data_field::set_show_data_as(
+    pivot_data_show_data_as_t type, std::size_t base_field, std::size_t base_item)
+{
+    m_current_field.show_data_as = type;
+    m_current_field.base_field = base_field;
+    m_current_field.base_item = base_item;
+}
+
+void import_pivot_data_field::commit()
+{
+    m_func(std::move(m_current_field));
+}
+
+void import_pivot_data_field::reset(commit_func_type func)
+{
+    m_func = std::move(func);
+    m_current_field = pivot_ref_data_field_t{};
+}
+
+import_pivot_data_fields::import_pivot_data_fields(string_pool& pool) :
+    m_pool(pool), m_xfield(pool) {}
+
+void import_pivot_data_fields::set_count(std::size_t count)
+{
+    m_current_fields.reserve(count);
+}
 
 iface::import_pivot_data_field* import_pivot_data_fields::start_data_field()
 {
-    return &m_field;
+    m_xfield.reset([this](pivot_ref_data_field_t&& field) {
+       m_current_fields.push_back(std::move(field));
+    });
+    return &m_xfield;
 }
 
-void import_pivot_data_fields::commit() {}
+void import_pivot_data_fields::commit()
+{
+    m_func(std::move(m_current_fields));
+}
+
+void import_pivot_data_fields::reset(commit_func_type func)
+{
+    m_func = std::move(func);
+    m_current_fields.clear();
+}
 
 void import_pivot_rc_item::append_index(std::size_t index) {}
 
@@ -165,7 +218,8 @@ void import_pivot_rc_items::commit() {}
 
 import_pivot_table_def::import_pivot_table_def(document& doc) :
     m_doc(doc),
-    m_current_pt(doc.get_string_pool())
+    m_current_pt(doc.get_string_pool()),
+    m_data_fields(doc.get_string_pool())
 {}
 
 void import_pivot_table_def::set_name(std::string_view name)
@@ -218,6 +272,9 @@ iface::import_pivot_page_fields* import_pivot_table_def::start_page_fields()
 
 iface::import_pivot_data_fields* import_pivot_table_def::start_data_fields()
 {
+    m_data_fields.reset([this](pivot_ref_data_fields_t&& fields) {
+        m_current_pt.set_data_fields(std::move(fields));
+    });
     return &m_data_fields;
 }
 

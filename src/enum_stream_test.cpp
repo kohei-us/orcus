@@ -736,6 +736,40 @@ void test_orcus_spreadsheet_pivot_cache_group_by_t()
     { bool result = verify_stream_value(orcus::spreadsheet::pivot_cache_group_by_t::years, "years"); assert(result); }
 }
 
+void test_orcus_spreadsheet_pivot_data_show_data_as_t()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_show_data_as_t::unknown, "unknown"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_show_data_as_t::difference, "difference"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_show_data_as_t::index, "index"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_show_data_as_t::normal, "normal"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_show_data_as_t::percent, "percent"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_show_data_as_t::percent_diff, "percent-diff"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_show_data_as_t::percent_of_col, "percent-of-col"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_show_data_as_t::percent_of_row, "percent-of-row"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_show_data_as_t::percent_of_total, "percent-of-total"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_show_data_as_t::run_total, "run-total"); assert(result); }
+}
+
+void test_orcus_spreadsheet_pivot_data_subtotal_t()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::unknown, "unknown"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::average, "average"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::count, "count"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::count_numbers, "count-numbers"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::max, "max"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::min, "min"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::product, "product"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::stddev, "stddev"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::stddevp, "stddevp"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::sum, "sum"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::var, "var"); assert(result); }
+    { bool result = verify_stream_value(orcus::spreadsheet::pivot_data_subtotal_t::varp, "varp"); assert(result); }
+}
+
 void test_orcus_spreadsheet_pivot_field_item_t()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -939,6 +973,8 @@ int main()
     test_orcus_spreadsheet_pane_state_t();
     test_orcus_spreadsheet_pivot_axis_t();
     test_orcus_spreadsheet_pivot_cache_group_by_t();
+    test_orcus_spreadsheet_pivot_data_show_data_as_t();
+    test_orcus_spreadsheet_pivot_data_subtotal_t();
     test_orcus_spreadsheet_pivot_field_item_t();
     test_orcus_spreadsheet_sheet_pane_t();
     test_orcus_spreadsheet_strikethrough_style_t();

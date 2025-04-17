@@ -72,6 +72,7 @@ struct pivot_table::impl
     pivot_ref_rc_fields_t row_fields;
     pivot_ref_rc_fields_t column_fields;
     pivot_ref_page_fields_t page_fields;
+    pivot_ref_data_fields_t data_fields;
 
     impl(string_pool& _pool) : pool(_pool) {}
 };

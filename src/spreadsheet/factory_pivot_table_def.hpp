@@ -107,17 +107,43 @@ private:
 class import_pivot_data_field : public iface::import_pivot_data_field
 {
 public:
+    using commit_func_type = std::function<void(pivot_ref_data_field_t&&)>;
+
+    import_pivot_data_field(string_pool& pool);
+
     virtual void set_field(std::size_t index) override;
+    virtual void set_name(std::string_view name) override;
+    virtual void set_subtotal_function(pivot_data_subtotal_t func) override;
+    virtual void set_show_data_as(
+        pivot_data_show_data_as_t type, std::size_t base_field, std::size_t base_item) override;
     virtual void commit() override;
+
+    void reset(commit_func_type func);
+
+private:
+    string_pool& m_pool;
+    commit_func_type m_func;
+    pivot_ref_data_field_t m_current_field;
 };
 
 class import_pivot_data_fields : public iface::import_pivot_data_fields
 {
-    import_pivot_data_field m_field;
-
 public:
+    using commit_func_type = std::function<void(pivot_ref_data_fields_t&&)>;
+
+    import_pivot_data_fields(string_pool& pool);
+
+    virtual void set_count(std::size_t count) override;
     virtual iface::import_pivot_data_field* start_data_field() override;
     virtual void commit() override;
+
+    void reset(commit_func_type func);
+
+private:
+    string_pool& m_pool;
+    commit_func_type m_func;
+    pivot_ref_data_fields_t m_current_fields;
+    import_pivot_data_field m_xfield;
 };
 
 class import_pivot_rc_item : public iface::import_pivot_rc_item

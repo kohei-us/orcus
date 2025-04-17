@@ -871,6 +871,54 @@ std::ostream& operator<<(std::ostream& os, pivot_axis_t v)
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, pivot_data_show_data_as_t v)
+{
+    constexpr std::string_view values[] = {
+        "unknown",
+        "difference",
+        "index",
+        "normal",
+        "percent",
+        "percent-diff",
+        "percent-of-col",
+        "percent-of-row",
+        "percent-of-total",
+        "run-total",
+    };
+
+    if (auto pos = std::size_t(v); pos < std::size(values))
+        os << values[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, pivot_data_subtotal_t v)
+{
+    constexpr std::string_view values[] = {
+        "unknown",
+        "average",
+        "count",
+        "count-numbers",
+        "max",
+        "min",
+        "product",
+        "stddev",
+        "stddevp",
+        "sum",
+        "var",
+        "varp",
+    };
+
+    if (auto pos = std::size_t(v); pos < std::size(values))
+        os << values[pos];
+    else
+        os << "???";
+
+    return os;
+}
+
 }}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

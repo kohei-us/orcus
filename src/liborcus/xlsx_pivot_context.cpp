@@ -101,6 +101,58 @@ const map_type& get()
 
 } // namespace axis_type
 
+namespace data_subtotal {
+
+using map_type = mdds::sorted_string_map<ss::pivot_data_subtotal_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry_type entries[] = {
+    { "average", ss::pivot_data_subtotal_t::average },
+    { "count", ss::pivot_data_subtotal_t::count },
+    { "countNums", ss::pivot_data_subtotal_t::count_numbers },
+    { "max", ss::pivot_data_subtotal_t::max },
+    { "min", ss::pivot_data_subtotal_t::min },
+    { "product", ss::pivot_data_subtotal_t::product },
+    { "stdDev", ss::pivot_data_subtotal_t::stddev },
+    { "stdDevp", ss::pivot_data_subtotal_t::stddevp },
+    { "sum", ss::pivot_data_subtotal_t::sum },
+    { "var", ss::pivot_data_subtotal_t::var },
+    { "varp", ss::pivot_data_subtotal_t::varp },
+};
+
+const map_type& get()
+{
+    static const map_type map(entries, std::size(entries), ss::pivot_data_subtotal_t::unknown);
+    return map;
+}
+
+} // namespace data_subtotal
+
+namespace show_data_as_type {
+
+using map_type = mdds::sorted_string_map<ss::pivot_data_show_data_as_t>;
+
+// Keys must be sorted.
+constexpr map_type::entry_type entries[] = {
+    { "difference", ss::pivot_data_show_data_as_t::difference },
+    { "index", ss::pivot_data_show_data_as_t::index },
+    { "normal", ss::pivot_data_show_data_as_t::normal },
+    { "percent", ss::pivot_data_show_data_as_t::percent },
+    { "percentDiff", ss::pivot_data_show_data_as_t::percent_diff },
+    { "percentOfCol", ss::pivot_data_show_data_as_t::percent_of_col },
+    { "percentOfRow", ss::pivot_data_show_data_as_t::percent_of_row },
+    { "percentOfTotal", ss::pivot_data_show_data_as_t::percent_of_total },
+    { "runTotal", ss::pivot_data_show_data_as_t::run_total },
+};
+
+const map_type& get()
+{
+    static const map_type map(entries, std::size(entries), ss::pivot_data_show_data_as_t::unknown);
+    return map;
+}
+
+} // namespace show_data_as_type
+
 }
 
 xlsx_pivot_cache_def_context::xlsx_pivot_cache_def_context(
@@ -1186,6 +1238,20 @@ bool xlsx_pivot_table_context::end_element(xmlns_id_t ns, xml_token_t name)
                 m_page_field = nullptr;
                 break;
             }
+            case XML_dataFields:
+            {
+                assert(m_data_fields);
+                m_data_fields->commit();
+                m_data_fields = nullptr;
+                break;
+            }
+            case XML_dataField:
+            {
+                assert(m_data_field);
+                m_data_field->commit();
+                m_data_field = nullptr;
+                break;
+            }
         }
     }
 
@@ -1398,7 +1464,8 @@ void xlsx_pivot_table_context::start_page_fields(const xml_token_attrs_t& attrs)
         {
             case XML_count:
             {
-                m_page_fields->set_count(to_long(attr.value));
+                if (auto v = to_long_checked(attr.value); v)
+                    m_page_fields->set_count(*v);
                 break;
             }
         }
@@ -1469,48 +1536,82 @@ void xlsx_pivot_table_context::start_field(const xml_token_attrs_t& attrs)
 
 void xlsx_pivot_table_context::start_data_fields(const xml_token_attrs_t& attrs)
 {
-    if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
+    m_data_fields = m_xpt.start_data_fields();
+    ENSURE_INTERFACE(m_data_fields, import_pivot_data_fields);
+
+    for (const xml_token_attr_t& attr : attrs)
     {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_count:
+            {
+                if (auto v = to_long_checked(attr.value); v)
+                    m_data_fields->set_count(*v);
+                break;
+            }
+        }
     }
 }
 
 void xlsx_pivot_table_context::start_data_field(const xml_token_attrs_t& attrs)
 {
+    assert(m_data_fields);
+    m_data_field = m_data_fields->start_data_field();
+    ENSURE_INTERFACE(m_data_field, import_pivot_data_field);
+
+    ss::pivot_data_show_data_as_t show_data_as = ss::pivot_data_show_data_as_t::unknown;
+    std::size_t base_field = 0;
+    std::size_t base_item = 0;
+
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
+        if (attr.ns)
             continue;
 
         switch (attr.name)
         {
             case XML_name:
+            {
+                m_data_field->set_name(attr.value);
                 break;
+            }
             case XML_fld:
             {
-                long fld = to_long(attr.value);
-                (void)fld;
+                if (auto v = to_long_checked(attr.value); v)
+                    m_data_field->set_field(*v);
                 break;
             }
             case XML_baseField:
             {
-                long fld = to_long(attr.value);
-                (void)fld;
+                if (auto v = to_long_checked(attr.value); v)
+                    base_field = *v;
                 break;
             }
             case XML_baseItem:
             {
-                long fld = to_long(attr.value);
-                (void)fld;
+                if (auto v = to_long_checked(attr.value); v)
+                    base_item = *v;
                 break;
             }
             case XML_subtotal:
             {
+                if (auto v = data_subtotal::get().find(attr.value); v != ss::pivot_data_subtotal_t::unknown)
+                    m_data_field->set_subtotal_function(v);
                 break;
             }
-            default:
-                ;
+            case XML_showDataAs:
+            {
+                show_data_as = show_data_as_type::get().find(attr.value);
+                break;
+            }
         }
     }
+
+    if (show_data_as != ss::pivot_data_show_data_as_t::unknown)
+        m_data_field->set_show_data_as(show_data_as, base_field, base_item);
 }
 
 void xlsx_pivot_table_context::start_row_items(const xml_token_attrs_t& attrs)

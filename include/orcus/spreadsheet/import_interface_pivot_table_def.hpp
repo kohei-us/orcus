@@ -109,6 +109,13 @@ public:
 
     virtual void set_field(std::size_t index) = 0;
 
+    virtual void set_name(std::string_view name) = 0;
+
+    virtual void set_subtotal_function(pivot_data_subtotal_t func) = 0;
+
+    virtual void set_show_data_as(
+        pivot_data_show_data_as_t type, std::size_t base_field, std::size_t base_item) = 0;
+
     virtual void commit() = 0;
 };
 
@@ -116,6 +123,8 @@ class ORCUS_DLLPUBLIC import_pivot_data_fields
 {
 public:
     virtual ~import_pivot_data_fields();
+
+    virtual void set_count(std::size_t count) = 0;
 
     virtual import_pivot_data_field* start_data_field() = 0;
 

@@ -262,6 +262,28 @@ struct ORCUS_SPM_DLLPUBLIC pivot_ref_page_field_t
 
 using pivot_ref_page_fields_t = std::vector<pivot_ref_page_field_t>;
 
+struct ORCUS_SPM_DLLPUBLIC pivot_ref_data_field_t
+{
+    std::size_t field = 0;
+    std::string_view name;
+    pivot_data_subtotal_t subtotal = pivot_data_subtotal_t::unknown;
+
+    pivot_data_show_data_as_t show_data_as = pivot_data_show_data_as_t::unknown;
+    std::size_t base_field = 0;
+    std::size_t base_item = 0;
+
+    pivot_ref_data_field_t();
+    pivot_ref_data_field_t(const pivot_ref_data_field_t& other);
+    pivot_ref_data_field_t(pivot_ref_data_field_t&& other);
+    ~pivot_ref_data_field_t();
+
+    pivot_ref_data_field_t& operator=(pivot_ref_data_field_t other);
+
+    void swap(pivot_ref_data_field_t& other) noexcept;
+};
+
+using pivot_ref_data_fields_t = std::vector<pivot_ref_data_field_t>;
+
 class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
     friend class detail::debug_state_dumper_pivot_cache;
@@ -329,6 +351,7 @@ public:
     void set_row_fields(pivot_ref_rc_fields_t fields);
     void set_column_fields(pivot_ref_rc_fields_t fields);
     void set_page_fields(pivot_ref_page_fields_t fields);
+    void set_data_fields(pivot_ref_data_fields_t fields);
 
     void dump_debug_state(std::string_view outpath) const;
 };

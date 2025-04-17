@@ -252,6 +252,8 @@ def create_enum_stream_test(rootdir, output_dir):
         "orcus::spreadsheet::hor_alignment_t",
         "orcus::spreadsheet::pivot_axis_t",
         "orcus::spreadsheet::pivot_cache_group_by_t",
+        "orcus::spreadsheet::pivot_data_subtotal_t",
+        "orcus::spreadsheet::pivot_data_show_data_as_t",
         "orcus::spreadsheet::pivot_field_item_t",
         "orcus::spreadsheet::strikethrough_style_t",
         "orcus::spreadsheet::strikethrough_text_t",
