@@ -134,11 +134,11 @@ public:
 /**
  * Interface for importing a single row or column item.
  *
- * A single row or column item includes a row of labels displayed in a pivot
- * table output. The labels are represented by their respective indexes into
- * the corresponding shared items in pivot cache definition.  The number of
- * indexes stored in one item is equal to the number of the corresponding row
- * or column fields.
+ * A single row or column item consists of a series of labels displayed in a
+ * pivot table output. The labels are represented by their respective indexes
+ * into the corresponding shared items in pivot cache definition.  The number
+ * of indexes stored in one item is equal to the number of the corresponding
+ * row or column fields.
  */
 class ORCUS_DLLPUBLIC import_pivot_rc_item
 {
@@ -146,7 +146,31 @@ public:
     virtual ~import_pivot_rc_item();
 
     /**
-     * Append the index of a label to the item.
+     * Set the number of items to be repeated from the previous row or column of
+     * items.  This typically corresponds with the number of empty cells to fill
+     * before the first non-empty item label to appear.
+     *
+     * @param repeat Number of items to repeat from the previous row or column,
+     *               which typically is the number of empty cells to fill.
+     */
+    virtual void set_repeat_items(std::size_t repeat) = 0;
+
+    /**
+     * Set the type of items in the current row or column of items.
+     *
+     * @param type Item type in the current row or column of items.
+     */
+    virtual void set_item_type(pivot_field_item_t type) = 0;
+
+    /**
+     * Set the index of a data item in a data field with multiple data items.
+     *
+     * @param index Index of a referenced data item.
+     */
+    virtual void set_data_item(std::size_t index) = 0;
+
+    /**
+     * Append the index of an item of a field.
      *
      * @param index Index of a label.
      */
@@ -162,6 +186,8 @@ class ORCUS_DLLPUBLIC import_pivot_rc_items
 {
 public:
     virtual ~import_pivot_rc_items();
+
+    virtual void set_count(std::size_t count) = 0;
 
     virtual import_pivot_rc_item* start_item() = 0;
 

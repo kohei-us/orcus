@@ -612,6 +612,7 @@ enum class pivot_cache_group_by_t
 };
 
 /**
+ * Pivot field item type.
  *
  * @note It's a superset of aggregate_function_t.
  */
@@ -622,6 +623,7 @@ enum class pivot_field_item_t
     blank_line,
     count,
     count_numbers,
+    /** Item represents a regular field value. */
     data,
     subtotal_default,
     grand_total,

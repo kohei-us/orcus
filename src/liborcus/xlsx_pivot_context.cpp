@@ -1252,6 +1252,27 @@ bool xlsx_pivot_table_context::end_element(xmlns_id_t ns, xml_token_t name)
                 m_data_field = nullptr;
                 break;
             }
+            case XML_rowItems:
+            {
+                assert(m_rc_items);
+                m_rc_items->commit();
+                m_rc_items = nullptr;
+                break;
+            }
+            case XML_colItems:
+            {
+                assert(m_rc_items);
+                m_rc_items->commit();
+                m_rc_items = nullptr;
+                break;
+            }
+            case XML_i:
+            {
+                assert(m_rc_item);
+                m_rc_item->commit();
+                m_rc_item = nullptr;
+                break;
+            }
         }
     }
 
@@ -1616,26 +1637,64 @@ void xlsx_pivot_table_context::start_data_field(const xml_token_attrs_t& attrs)
 
 void xlsx_pivot_table_context::start_row_items(const xml_token_attrs_t& attrs)
 {
-    // <rowItems> structure describes the displayed content of
-    // cells in the row field area.  Each <i> child element
-    // represents a single row.
-    if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
+    // <rowItems> structure describes the displayed content of cells in the row
+    // field area.  Each <i> child element represents a single row.
+
+    m_rc_items = m_xpt.start_row_items();
+    ENSURE_INTERFACE(m_rc_items, import_pivot_rc_items);
+
+    for (const xml_token_attr_t& attr : attrs)
     {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_count:
+            {
+                if (auto v = to_long_checked(attr.value); v)
+                    m_rc_items->set_count(*v);
+                break;
+            }
+        }
     }
 }
 
 void xlsx_pivot_table_context::start_col_items(const xml_token_attrs_t& attrs)
 {
-    if (auto count = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_count); count)
+    m_rc_items = m_xpt.start_col_items();
+    ENSURE_INTERFACE(m_rc_items, import_pivot_rc_items);
+
+    for (const xml_token_attr_t& attr : attrs)
     {
+        if (attr.ns)
+            continue;
+
+        switch (attr.name)
+        {
+            case XML_count:
+            {
+                if (auto v = to_long_checked(attr.value); v)
+                    m_rc_items->set_count(*v);
+                break;
+            }
+        }
     }
 }
 
 void xlsx_pivot_table_context::start_i(const xml_token_attrs_t& attrs)
 {
+    assert(m_rc_items);
+    m_rc_item = m_rc_items->start_item();
+    ENSURE_INTERFACE(m_rc_item, import_pivot_rc_item);
+
+    std::optional<long> data_item;
+    ss::pivot_field_item_t item_type = ss::pivot_field_item_t::data; // data by default
+    long repeat = 0;
+
     for (const xml_token_attr_t& attr : attrs)
     {
-        if (attr.ns && attr.ns != NS_ooxml_xlsx)
+        if (attr.ns)
             continue;
 
         switch (attr.name)
@@ -1643,39 +1702,73 @@ void xlsx_pivot_table_context::start_i(const xml_token_attrs_t& attrs)
             case XML_t:
             {
                 // total or subtotal function type.
+                item_type = item_type::get().find(attr.value);
+                if (item_type == ss::pivot_field_item_t::unknown)
+                {
+                    std::ostringstream os;
+                    os << "xlsx_pivot_table_context::start_i: unknown subtotal function type: '" << attr.value << "'";
+                    throw xml_structure_error(os.str());
+                }
                 break;
             }
             case XML_r:
             {
-                // "repeated item count" which basically is the number of
-                // blank cells that occur after the previous non-empty cell on
-                // the same row (in the classic layout mode).
-                long v = to_long(attr.value);
-                (void)v;
+                // "repeated item count" basically is the number of blank cells
+                // that repeat prior to the non-empty cell in the same
+                // row/column group
+                if (auto v = to_long_checked(attr.value); v)
+                    repeat = *v;
                 break;
             }
             case XML_i:
             {
-                // zero-based data field index in case of multiple data fields.
-                long v = to_long(attr.value);
-                (void)v;
+                // zero-based data item index in case of multiple data items in
+                // a data field.
+                if (auto v = to_long_checked(attr.value); v)
+                    data_item = *v;
                 break;
             }
         }
     }
+
+    m_rc_item->set_repeat_items(repeat);
+    m_rc_item->set_item_type(item_type);
+
+    if (data_item)
+        m_rc_item->set_data_item(*data_item);
 }
 
 void xlsx_pivot_table_context::start_x(const xml_token_attrs_t& attrs, const xml_token_pair_t& parent)
 {
     if (parent.second == XML_i)
     {
-        long idx = 0;
-        if (auto v = get_single_long_attr(attrs, NS_ooxml_xlsx, XML_v); v)
-            idx = *v;
+        assert(m_rc_item);
 
-        if (idx < 0)
-            // 0 is default when not set.
-            idx = 0;
+        long item_index = 0; // 0 by default
+
+        for (const xml_token_attr_t& attr : attrs)
+        {
+            if (attr.ns)
+                continue;
+
+            switch (attr.name)
+            {
+                case XML_v:
+                {
+                    if (auto v = to_long_checked(attr.value); v)
+                        item_index = *v;
+                    else
+                    {
+                        std::ostringstream os;
+                        os << "xlsx_pivot_table_context::start_x: failed to parse '" << attr.value << "' as integral value";
+                        throw xml_structure_error(os.str());
+                    }
+                    break;
+                }
+            }
+        }
+
+        m_rc_item->append_index(item_index);
     }
 }
 

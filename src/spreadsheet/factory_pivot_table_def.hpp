@@ -149,17 +149,36 @@ private:
 class import_pivot_rc_item : public iface::import_pivot_rc_item
 {
 public:
+    using commit_func_type = std::function<void(pivot_ref_rc_item_t&&)>;
+
+    virtual void set_repeat_items(std::size_t repeat) override;
+    virtual void set_item_type(pivot_field_item_t type) override;
+    virtual void set_data_item(std::size_t index) override;
     virtual void append_index(std::size_t index) override;
     virtual void commit() override;
+
+    void reset(commit_func_type func);
+
+private:
+    commit_func_type m_func;
+    pivot_ref_rc_item_t m_current;
 };
 
 class import_pivot_rc_items : public iface::import_pivot_rc_items
 {
-    import_pivot_rc_item m_item;
-
 public:
+    using commit_func_type = std::function<void(pivot_ref_rc_items_t&&)>;
+
+    virtual void set_count(std::size_t count) override;
     virtual iface::import_pivot_rc_item* start_item() override;
     virtual void commit() override;
+
+    void reset(commit_func_type func);
+
+private:
+    import_pivot_rc_item m_xitem;
+    commit_func_type m_func;
+    pivot_ref_rc_items_t m_current_rc_items;
 };
 
 class import_pivot_table_def : public iface::import_pivot_table_definition

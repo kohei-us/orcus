@@ -275,6 +275,25 @@ void pivot_ref_data_field_t::swap(pivot_ref_data_field_t& other) noexcept
     std::swap(base_item, other.base_item);
 }
 
+pivot_ref_rc_item_t::pivot_ref_rc_item_t() = default;
+pivot_ref_rc_item_t::pivot_ref_rc_item_t(const pivot_ref_rc_item_t& other) = default;
+pivot_ref_rc_item_t::pivot_ref_rc_item_t(pivot_ref_rc_item_t&& other) = default;
+pivot_ref_rc_item_t::~pivot_ref_rc_item_t() = default;
+
+pivot_ref_rc_item_t& pivot_ref_rc_item_t::operator=(pivot_ref_rc_item_t other)
+{
+    swap(other);
+    return *this;
+}
+
+void pivot_ref_rc_item_t::swap(pivot_ref_rc_item_t& other) noexcept
+{
+    std::swap(type, other.type);
+    std::swap(repeat, other.repeat);
+    items.swap(other.items);
+    std::swap(data_item, other.data_item);
+}
+
 pivot_cache::pivot_cache(pivot_cache_id_t cache_id, string_pool& sp) :
     mp_impl(std::make_unique<impl>(cache_id, sp)) {}
 
@@ -374,6 +393,16 @@ void pivot_table::set_page_fields(pivot_ref_page_fields_t fields)
 void pivot_table::set_data_fields(pivot_ref_data_fields_t fields)
 {
     mp_impl->data_fields = std::move(fields);
+}
+
+void pivot_table::set_row_items(pivot_ref_rc_items_t items)
+{
+    mp_impl->row_items = items;
+}
+
+void pivot_table::set_column_items(pivot_ref_rc_items_t items)
+{
+    mp_impl->column_items = items;
 }
 
 void pivot_table::dump_debug_state(std::string_view outpath) const

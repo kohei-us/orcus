@@ -25,6 +25,8 @@ class import_pivot_data_field;
 class import_pivot_fields;
 class import_pivot_field;
 class import_pivot_rc_fields;
+class import_pivot_rc_items;
+class import_pivot_rc_item;
 class import_pivot_page_fields;
 class import_pivot_page_field;
 class import_reference_resolver;
@@ -118,6 +120,8 @@ class xlsx_pivot_table_context : public xml_context_base
     spreadsheet::iface::import_pivot_page_field* m_page_field = nullptr;
     spreadsheet::iface::import_pivot_data_fields* m_data_fields = nullptr;
     spreadsheet::iface::import_pivot_data_field* m_data_field = nullptr;
+    spreadsheet::iface::import_pivot_rc_items* m_rc_items = nullptr;
+    spreadsheet::iface::import_pivot_rc_item* m_rc_item = nullptr;
 
 public:
     xlsx_pivot_table_context(

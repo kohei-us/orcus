@@ -284,6 +284,33 @@ struct ORCUS_SPM_DLLPUBLIC pivot_ref_data_field_t
 
 using pivot_ref_data_fields_t = std::vector<pivot_ref_data_field_t>;
 
+/**
+ * A single row or column item displayed in a pivot table output.
+ *
+ * Each row or column item consists of zero or more empty labels followed by
+ * non-empty labels.
+ */
+struct ORCUS_SPM_DLLPUBLIC pivot_ref_rc_item_t
+{
+    pivot_field_item_t type = pivot_field_item_t::unknown;
+
+    /** Number of empty labels that occur before the non-empty labels appear. */
+    std::size_t repeat = 0;
+    std::vector<std::size_t> items;
+    std::optional<std::size_t> data_item;
+
+    pivot_ref_rc_item_t();
+    pivot_ref_rc_item_t(const pivot_ref_rc_item_t& other);
+    pivot_ref_rc_item_t(pivot_ref_rc_item_t&& other);
+    ~pivot_ref_rc_item_t();
+
+    pivot_ref_rc_item_t& operator=(pivot_ref_rc_item_t other);
+
+    void swap(pivot_ref_rc_item_t& other) noexcept;
+};
+
+using pivot_ref_rc_items_t = std::vector<pivot_ref_rc_item_t>;
+
 class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
     friend class detail::debug_state_dumper_pivot_cache;
@@ -352,6 +379,8 @@ public:
     void set_column_fields(pivot_ref_rc_fields_t fields);
     void set_page_fields(pivot_ref_page_fields_t fields);
     void set_data_fields(pivot_ref_data_fields_t fields);
+    void set_row_items(pivot_ref_rc_items_t items);
+    void set_column_items(pivot_ref_rc_items_t items);
 
     void dump_debug_state(std::string_view outpath) const;
 };

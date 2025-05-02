@@ -34,6 +34,9 @@ public:
     debug_state_dumper_pivot_table(const debug_state_context& cxt, const pivot_table::impl& store);
 
     void dump(const fs::path& outpath) const;
+
+private:
+    void dump_rc_items(std::ofstream& of, const pivot_ref_rc_items_t& rc_items) const;
 };
 
 }}}

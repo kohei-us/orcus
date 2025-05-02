@@ -239,12 +239,12 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
         if (field.item)
             of << "(" << *field.item << ")";
         else
-            of << "(not set)";
+            of << "null";
 
         of << "\n";
     }
 
-    of << "data-fields:" << std::endl;
+    of << "data-fields:\n";
     for (const auto& field : m_store.data_fields)
     {
         of << "  - field: (" << field.field << ")\n";
@@ -252,13 +252,13 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
         of << "    subtotal: ";
 
         if (field.subtotal == ss::pivot_data_subtotal_t::unknown)
-            of << "(not set)";
+            of << "null";
         else
             of << field.subtotal;
         of << "\n";
 
         if (field.show_data_as == ss::pivot_data_show_data_as_t::unknown)
-            of << "    show data as: (not set)" << std::endl;
+            of << "    show data as: null" << std::endl;
         else
         {
             // TODO: Show base field and base item only when the type uses them
@@ -288,6 +288,36 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
                     break;
             }
         }
+    }
+
+    of << "row-items:\n";
+    dump_rc_items(of, m_store.row_items);
+    of << "column-items:\n";
+    dump_rc_items(of, m_store.column_items);
+    of << std::endl;
+}
+
+void debug_state_dumper_pivot_table::dump_rc_items(
+    std::ofstream& of, const pivot_ref_rc_items_t& rc_items) const
+{
+    for (const auto& item : rc_items)
+    {
+        of << "  - type: " << item.type << "\n";
+        of << "    data-item: ";
+
+        if (item.data_item)
+            of << '(' << *item.data_item << ')';
+        else
+            of << "null";
+        of << "\n";
+
+        of << "    item:\n";
+
+        for (std::size_t i = 0; i < item.repeat; ++i)
+            of << "      - null\n";
+
+        for (auto v : item.items)
+            of << "      - (" << v << ")\n";
     }
 }
 

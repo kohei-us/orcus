@@ -205,16 +205,60 @@ void import_pivot_data_fields::reset(commit_func_type func)
     m_current_fields.clear();
 }
 
-void import_pivot_rc_item::append_index(std::size_t index) {}
+void import_pivot_rc_item::set_repeat_items(std::size_t repeat)
+{
+    m_current.repeat = repeat;
+}
 
-void import_pivot_rc_item::commit() {}
+void import_pivot_rc_item::set_item_type(pivot_field_item_t type)
+{
+    m_current.type = type;
+}
+
+void import_pivot_rc_item::set_data_item(std::size_t index)
+{
+    m_current.data_item = index;
+}
+
+void import_pivot_rc_item::append_index(std::size_t index)
+{
+    m_current.items.push_back(index);
+}
+
+void import_pivot_rc_item::commit()
+{
+    m_func(std::move(m_current));
+}
+
+void import_pivot_rc_item::reset(commit_func_type func)
+{
+    m_func = std::move(func);
+    m_current = pivot_ref_rc_item_t{};
+}
+
+void import_pivot_rc_items::set_count(std::size_t count)
+{
+    m_current_rc_items.reserve(count);
+}
 
 iface::import_pivot_rc_item* import_pivot_rc_items::start_item()
 {
-    return &m_item;
+    m_xitem.reset([this](pivot_ref_rc_item_t&& rc_item) {
+        m_current_rc_items.push_back(std::move(rc_item));
+    });
+    return &m_xitem;
 }
 
-void import_pivot_rc_items::commit() {}
+void import_pivot_rc_items::commit()
+{
+    m_func(std::move(m_current_rc_items));
+}
+
+void import_pivot_rc_items::reset(commit_func_type func)
+{
+    m_func = std::move(func);
+    m_current_rc_items = pivot_ref_rc_items_t{};
+}
 
 import_pivot_table_def::import_pivot_table_def(document& doc) :
     m_doc(doc),
@@ -280,11 +324,17 @@ iface::import_pivot_data_fields* import_pivot_table_def::start_data_fields()
 
 iface::import_pivot_rc_items* import_pivot_table_def::start_row_items()
 {
+    m_rc_items.reset([this](pivot_ref_rc_items_t&& rc_items) {
+        m_current_pt.set_row_items(std::move(rc_items));
+    });
     return &m_rc_items;
 }
 
 iface::import_pivot_rc_items* import_pivot_table_def::start_col_items()
 {
+    m_rc_items.reset([this](pivot_ref_rc_items_t&& rc_items) {
+        m_current_pt.set_column_items(std::move(rc_items));
+    });
     return &m_rc_items;
 }
 
