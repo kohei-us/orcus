@@ -527,7 +527,7 @@ void pivot_collection::dump_debug_state(std::string_view outdir) const
 
         detail::debug_state_context cxt;
         detail::debug_state_dumper_pivot_table dumper(cxt, *table.mp_impl);
-        dumper.dump(this_path);
+        dumper.dump(this_path, mp_impl->caches);
     }
 }
 

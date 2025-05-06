@@ -141,11 +141,16 @@ debug_state_dumper_pivot_table::debug_state_dumper_pivot_table(
     const debug_state_context& cxt, const pivot_table::impl& store) :
     m_cxt(cxt), m_store(store) {}
 
-void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
+void debug_state_dumper_pivot_table::dump(
+    const fs::path& outpath, const detail::caches_type& caches) const
 {
     std::ofstream of{outpath.string()};
 
     if (!of)
+        return;
+
+    const auto* cache_store = get_cache_store(caches, m_store.cache_id);
+    if (!cache_store)
         return;
 
     of << "name: " << m_store.name << "\n";
@@ -320,6 +325,16 @@ void debug_state_dumper_pivot_table::dump_rc_items(
         for (auto v : item.items)
             of << "      - (" << v << ")\n";
     }
+}
+
+const pivot_cache::impl* debug_state_dumper_pivot_table::get_cache_store(
+    const detail::caches_type& caches, pivot_cache_id_t cache_id) const
+{
+    auto it = caches.find(cache_id);
+    if (it == caches.end())
+        return nullptr;
+
+    return it->second->mp_impl.get();
 }
 
 }}}

@@ -8,8 +8,7 @@
 #pragma once
 
 #include "filesystem_env.hpp"
-
-#include <orcus/spreadsheet/pivot.hpp>
+#include "pivot_impl.hpp"
 
 namespace orcus { namespace spreadsheet { namespace detail {
 
@@ -33,10 +32,13 @@ class debug_state_dumper_pivot_table
 public:
     debug_state_dumper_pivot_table(const debug_state_context& cxt, const pivot_table::impl& store);
 
-    void dump(const fs::path& outpath) const;
+    void dump(const fs::path& outpath, const detail::caches_type& caches) const;
 
 private:
     void dump_rc_items(std::ofstream& of, const pivot_ref_rc_items_t& rc_items) const;
+
+    const pivot_cache::impl* get_cache_store(
+        const detail::caches_type& caches, pivot_cache_id_t cache_id) const;
 };
 
 }}}

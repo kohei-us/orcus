@@ -315,6 +315,7 @@ using pivot_ref_rc_items_t = std::vector<pivot_ref_rc_item_t>;
 class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
     friend class detail::debug_state_dumper_pivot_cache;
+    friend class detail::debug_state_dumper_pivot_table;
     friend class pivot_collection;
 
     struct impl;
