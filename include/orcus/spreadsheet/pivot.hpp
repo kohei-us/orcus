@@ -33,6 +33,7 @@ class string_pool;
 namespace spreadsheet {
 
 class document;
+class pivot_collection;
 
 namespace detail {
 
@@ -314,6 +315,7 @@ using pivot_ref_rc_items_t = std::vector<pivot_ref_rc_item_t>;
 class ORCUS_SPM_DLLPUBLIC pivot_cache
 {
     friend class detail::debug_state_dumper_pivot_cache;
+    friend class pivot_collection;
 
     struct impl;
     std::unique_ptr<impl> mp_impl;
@@ -350,13 +352,12 @@ public:
     pivot_cache_id_t get_id() const;
 
     const records_type& get_all_records() const;
-
-    void dump_debug_state(std::string_view outdir) const;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_table
 {
     friend class detail::debug_state_dumper_pivot_table;
+    friend class pivot_collection;
 
     struct impl;
     std::unique_ptr<impl> mp_impl;
@@ -381,8 +382,6 @@ public:
     void set_data_fields(pivot_ref_data_fields_t fields);
     void set_row_items(pivot_ref_rc_items_t items);
     void set_column_items(pivot_ref_rc_items_t items);
-
-    void dump_debug_state(std::string_view outpath) const;
 };
 
 class ORCUS_SPM_DLLPUBLIC pivot_collection

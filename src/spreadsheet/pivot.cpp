@@ -329,15 +329,6 @@ const pivot_cache::records_type& pivot_cache::get_all_records() const
     return mp_impl->records;
 }
 
-void pivot_cache::dump_debug_state(std::string_view outdir) const
-{
-    fs::path output_dir{outdir};
-    fs::create_directories(output_dir);
-
-    detail::debug_state_dumper_pivot_cache dumper(*mp_impl);
-    dumper.dump(output_dir);
-}
-
 pivot_table::pivot_table(string_pool& pool) : mp_impl(std::make_unique<impl>(pool)) {}
 
 pivot_table::pivot_table(pivot_table&& other) : mp_impl(std::move(other.mp_impl)) {}
@@ -403,16 +394,6 @@ void pivot_table::set_row_items(pivot_ref_rc_items_t items)
 void pivot_table::set_column_items(pivot_ref_rc_items_t items)
 {
     mp_impl->column_items = items;
-}
-
-void pivot_table::dump_debug_state(std::string_view outpath) const
-{
-    fs::path output_path{outpath};
-    fs::create_directories(output_path.parent_path());
-
-    detail::debug_state_context cxt;
-    detail::debug_state_dumper_pivot_table dumper(cxt, *mp_impl);
-    dumper.dump(output_path);
 }
 
 pivot_collection::pivot_collection(document& doc) : mp_impl(std::make_unique<impl>(doc)) {}
@@ -527,7 +508,10 @@ void pivot_collection::dump_debug_state(std::string_view outdir) const
     {
         auto this_dir = output_dir;
         this_dir /= "pivot-caches";
-        cache->dump_debug_state(this_dir.string());
+        fs::create_directories(this_dir);
+
+        detail::debug_state_dumper_pivot_cache dumper(*cache->mp_impl);
+        dumper.dump(this_dir);
     }
 
     std::size_t pos = 0;
@@ -535,10 +519,15 @@ void pivot_collection::dump_debug_state(std::string_view outdir) const
     for (const auto& table : mp_impl->pivot_tables)
     {
         auto this_path = output_dir / "pivot-tables";
+        fs::create_directories(this_path);
+
         std::ostringstream os;
         os << "pivot-" << pos++ << ".yaml";
         this_path /= os.str();
-        table.dump_debug_state(this_path.string());
+
+        detail::debug_state_context cxt;
+        detail::debug_state_dumper_pivot_table dumper(cxt, *table.mp_impl);
+        dumper.dump(this_path);
     }
 }
 

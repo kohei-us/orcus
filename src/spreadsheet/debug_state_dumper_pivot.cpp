@@ -167,7 +167,8 @@ void debug_state_dumper_pivot_table::dump(const fs::path& outpath) const
             {
                 case pivot_item_t::item_type::index:
                 {
-                    os << "(" << std::get<std::size_t>(item.value);
+                    auto v = std::get<std::size_t>(item.value);
+                    os << "(" << v;
 
                     if (item.hidden)
                         os << "; hidden)";
