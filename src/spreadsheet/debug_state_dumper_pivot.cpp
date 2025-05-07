@@ -149,18 +149,35 @@ void debug_state_dumper_pivot_table::dump(
     if (!of)
         return;
 
-    const auto* cache_store = get_cache_store(caches, m_store.cache_id);
-    if (!cache_store)
-        return;
-
     of << "name: " << m_store.name << "\n";
     of << "cache-id: " << m_store.cache_id << "\n";
     of << "range: " << m_cxt.print_range(m_store.range) << "\n";
+
+    const auto* cache_store = get_cache_store(caches, m_store.cache_id);
+    if (!cache_store)
+    {
+        of << "# ERROR: cache store not found for cache ID of " << m_store.cache_id << std::endl;
+        return;
+    }
+
+    if (cache_store->fields.size() != m_store.fields.size())
+    {
+        of << "# ERROR: field counts differ between the pivot table and the referenced pivot cache" << std::endl;
+        return;
+    }
+
     of << "fields:\n";
 
-    for (const auto& field : m_store.fields)
+    for (std::size_t i = 0; i < m_store.fields.size(); ++i)
     {
-        of << "  - axis: " << field.axis << "\n";
+        const auto& field = m_store.fields[i];
+        const auto& pc_field = cache_store->fields[i];
+
+        of << "  - name: ";
+        m_cxt.ensure_yaml_string(of, pc_field.name);
+        of << "\n";
+
+        of << "    axis: " << field.axis << "\n";
         of << "    items:\n";
 
         for (const auto& item : field.items)
@@ -180,6 +197,9 @@ void debug_state_dumper_pivot_table::dump(
                     else
                         os << ")";
 
+                    os << " -> '";
+                    os << pc_field.items[v];
+                    os << "'";
                     break;
                 }
                 case pivot_item_t::item_type::type:
@@ -200,50 +220,23 @@ void debug_state_dumper_pivot_table::dump(
     }
 
     of << "row-fields:\n";
-
-    for (const auto& field : m_store.row_fields)
-    {
-        switch (field.type)
-        {
-            case pivot_ref_rc_field_t::value_type::index:
-                of << "  - (" << field.index << ")\n";
-                break;
-            case pivot_ref_rc_field_t::value_type::data:
-                of << "  - (data)\n";
-                break;
-            case pivot_ref_rc_field_t::value_type::unknown:
-                of << "  - (unknown)\n";
-                break;
-        }
-    }
+    dump_axis_rc_fields(of, m_store.row_fields, *cache_store);
 
     of << "column-fields:\n";
-
-    for (const auto& field : m_store.column_fields)
-    {
-        switch (field.type)
-        {
-            case pivot_ref_rc_field_t::value_type::index:
-                of << "  - (" << field.index << ")\n";
-                break;
-            case pivot_ref_rc_field_t::value_type::data:
-                of << "  - (data)\n";
-                break;
-            case pivot_ref_rc_field_t::value_type::unknown:
-                of << "  - (unknown)\n";
-                break;
-        }
-    }
+    dump_axis_rc_fields(of, m_store.column_fields, *cache_store);
 
     of << "page-fields:\n";
 
     for (const auto& field : m_store.page_fields)
     {
-        of << "  - field: (" << field.field << ")\n";
+        of << "  - field: ";
+        m_cxt.ensure_yaml_string(of, create_ref_field_value(field.field, *cache_store));
+        of << "\n";
+
         of << "    item: ";
 
         if (field.item)
-            of << "(" << *field.item << ")";
+            m_cxt.ensure_yaml_string(of, create_ref_item_value(field.field, *field.item, *cache_store));
         else
             of << "null";
 
@@ -253,7 +246,10 @@ void debug_state_dumper_pivot_table::dump(
     of << "data-fields:\n";
     for (const auto& field : m_store.data_fields)
     {
-        of << "  - field: (" << field.field << ")\n";
+        of << "  - field: ";
+        m_cxt.ensure_yaml_string(of, create_ref_field_value(field.field, *cache_store));
+        of << "\n";
+
         of << "    name: " << field.name << "\n";
         of << "    subtotal: ";
 
@@ -303,6 +299,59 @@ void debug_state_dumper_pivot_table::dump(
     of << std::endl;
 }
 
+std::string debug_state_dumper_pivot_table::create_ref_field_value(
+    std::size_t index, const pivot_cache::impl& cache_store) const
+{
+    std::ostringstream os;
+    os << "(" << index << ") -> ";
+
+    if (index < m_store.fields.size())
+    {
+        assert(index < cache_store.fields.size());
+        os << "'" << cache_store.fields[index].name << "'";
+    }
+    else
+        os << "(out-of-bound)";
+
+    return os.str();
+}
+
+std::string debug_state_dumper_pivot_table::create_ref_item_value(
+    std::size_t field, std::size_t item, const pivot_cache::impl& cache_store) const
+{
+    std::ostringstream os;
+    os << "(" << item << ") -> ";
+
+    if (field < m_store.fields.size())
+    {
+        if (const auto& pt_items = m_store.fields[field].items; item < pt_items.size())
+        {
+            if (const auto& item_value = pt_items[item]; item_value.type == pivot_item_t::item_type::index)
+            {
+                // overwrite the item index
+                item = std::get<std::size_t>(item_value.value);
+
+                assert(field < cache_store.fields.size());
+                const auto& pc_items = cache_store.fields[field].items;
+                if (item < pc_items.size())
+                {
+                    os << "'" << pc_items[item] << "'";
+                }
+                else
+                    os << "(out-of-bound item)";
+            }
+            else
+                os << "(non-index item)";
+        }
+        else
+            os << "(out-of-bound item)";
+    }
+    else
+        os << "(out-of-bound field)";
+
+    return os.str();
+}
+
 void debug_state_dumper_pivot_table::dump_rc_items(
     std::ofstream& of, const pivot_ref_rc_items_t& rc_items) const
 {
@@ -324,6 +373,30 @@ void debug_state_dumper_pivot_table::dump_rc_items(
 
         for (auto v : item.items)
             of << "      - (" << v << ")\n";
+    }
+}
+
+void debug_state_dumper_pivot_table::dump_axis_rc_fields(
+    std::ofstream& of, const pivot_ref_rc_fields_t& fields, const pivot_cache::impl& cache_store) const
+{
+    for (const auto& field : fields)
+    {
+        switch (field.type)
+        {
+            case pivot_ref_rc_field_t::value_type::index:
+            {
+                of << "  - ";
+                m_cxt.ensure_yaml_string(of, create_ref_field_value(field.index, cache_store));
+                of << "\n";
+                break;
+            }
+            case pivot_ref_rc_field_t::value_type::data:
+                of << "  - (data)\n";
+                break;
+            case pivot_ref_rc_field_t::value_type::unknown:
+                of << "  - (unknown)\n";
+                break;
+        }
     }
 }
 

@@ -33,6 +33,10 @@ std::string debug_state_context::print_range(const ixion::abs_rc_range_t& range)
 
 void debug_state_context::ensure_yaml_string(std::ostream& os, std::string_view s) const
 {
+    if (s.empty())
+        // nothing to print
+        return;
+
     bool quote = false;
     const char* p = s.data();
     const char* p_end = p + s.size();
@@ -43,10 +47,27 @@ void debug_state_context::ensure_yaml_string(std::ostream& os, std::string_view 
             case ':':
             case '{':
             case '}':
-            case '-':
+            case '[':
+            case ']':
+            case ',':
+            case '&':
+            case '*':
             case '#':
+            case '?':
+            case '|':
                 quote = true;
                 break;
+        }
+    }
+
+    // check for a leading "- "
+    if (!quote)
+    {
+        p = s.data();
+        if (*p++ == '-')
+        {
+            if (p == p_end || *p == ' ')
+                quote = true;
         }
     }
 
