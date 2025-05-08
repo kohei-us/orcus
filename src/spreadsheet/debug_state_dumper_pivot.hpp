@@ -38,7 +38,11 @@ private:
     std::string create_ref_field_value(std::size_t index, const pivot_cache::impl& cache_store) const;
     std::string create_ref_item_value(
         std::size_t field, std::size_t item, const pivot_cache::impl& cache_store) const;
-    void dump_rc_items(std::ofstream& of, const pivot_ref_rc_items_t& rc_items) const;
+
+    void dump_rc_items(
+        std::ofstream& of, const pivot_ref_rc_items_t& rc_items,
+        const pivot_ref_rc_fields_t& rc_fields, const pivot_cache::impl& cache_store) const;
+
     void dump_axis_rc_fields(
         std::ofstream& of, const pivot_ref_rc_fields_t& fields, const pivot_cache::impl& cache_store) const;
 

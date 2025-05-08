@@ -293,9 +293,9 @@ void debug_state_dumper_pivot_table::dump(
     }
 
     of << "row-items:\n";
-    dump_rc_items(of, m_store.row_items);
+    dump_rc_items(of, m_store.row_items, m_store.row_fields, *cache_store);
     of << "column-items:\n";
-    dump_rc_items(of, m_store.column_items);
+    dump_rc_items(of, m_store.column_items, m_store.column_fields, *cache_store);
     of << std::endl;
 }
 
@@ -353,7 +353,8 @@ std::string debug_state_dumper_pivot_table::create_ref_item_value(
 }
 
 void debug_state_dumper_pivot_table::dump_rc_items(
-    std::ofstream& of, const pivot_ref_rc_items_t& rc_items) const
+    std::ofstream& of, const pivot_ref_rc_items_t& rc_items,
+    const pivot_ref_rc_fields_t& rc_fields, const pivot_cache::impl& cache_store) const
 {
     for (const auto& item : rc_items)
     {
@@ -368,11 +369,71 @@ void debug_state_dumper_pivot_table::dump_rc_items(
 
         of << "    item:\n";
 
+        bool follow_ref = item.type == pivot_field_item_t::data &&
+            (item.repeat + item.items.size()) <= rc_fields.size();
+
         for (std::size_t i = 0; i < item.repeat; ++i)
             of << "      - null\n";
 
+        std::size_t field_pos = item.repeat;
+
         for (auto v : item.items)
-            of << "      - (" << v << ")\n";
+        {
+            of << "      - (" << v << ")";
+
+            if (follow_ref)
+            {
+                of << " -> ";
+                const auto& fid = rc_fields[field_pos++];
+
+                switch (fid.type)
+                {
+                    case pivot_ref_rc_field_t::value_type::index:
+                    {
+                        if (fid.index < m_store.fields.size())
+                        {
+                            const auto& pt_fld = m_store.fields[fid.index];
+                            assert(fid.index < cache_store.fields.size());
+                            const auto& pc_fld = cache_store.fields[fid.index];
+
+                            if (v < pt_fld.items.size())
+                            {
+                                const auto& pt_item = pt_fld.items[v];
+                                if (pt_item.type == pivot_item_t::item_type::index)
+                                {
+                                    v = std::get<std::size_t>(pt_item.value);
+                                    if (v < pc_fld.items.size())
+                                        of << "'" << pc_fld.items[v] << "'";
+                                    else
+                                        of << "(out-of-bound item in cache)";
+                                }
+                                else
+                                    of << "(non-index item)";
+
+                            }
+                            else
+                                of << "(out-of-bound item)";
+                        }
+                        else
+                            of << "(out-of-bound field)";
+
+                        break;
+                    }
+                    case pivot_ref_rc_field_t::value_type::data:
+                    {
+                        of << "(data)";
+                        break;
+                    }
+                    case pivot_ref_rc_field_t::value_type::unknown:
+                    {
+                        of << "(unknown)";
+                        break;
+                    }
+                }
+            }
+
+            of << "\n";
+        }
     }
 }
 
