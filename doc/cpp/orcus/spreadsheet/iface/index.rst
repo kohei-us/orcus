@@ -111,6 +111,56 @@ import_pivot_cache_records
 .. doxygenclass:: orcus::spreadsheet::iface::import_pivot_cache_records
    :members:
 
+import_pivot_data_field
+^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_data_field
+   :members:
+
+import_pivot_data_fields
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_data_fields
+   :members:
+
+import_pivot_field
+^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_field
+   :members:
+
+import_pivot_fields
+^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_fields
+   :members:
+
+import_pivot_page_field
+^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_page_field
+   :members:
+
+import_pivot_page_fields
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_page_fields
+   :members:
+
+import_pivot_rc_fields
+^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_rc_fields
+   :members:
+
+import_pivot_rc_item
+^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_rc_item
+   :members:
+
+import_pivot_rc_items
+^^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_rc_items
+   :members:
+
+import_pivot_table_definition
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_table_definition
+   :members:
+
 import_reference_resolver
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. doxygenclass:: orcus::spreadsheet::iface::import_reference_resolver

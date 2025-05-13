@@ -78,9 +78,25 @@ pane_state_t
 ^^^^^^^^^^^^
 .. doxygenenum:: orcus::spreadsheet::pane_state_t
 
+pivot_axis_t
+^^^^^^^^^^^^
+.. doxygenenum:: orcus::spreadsheet::pivot_axis_t
+
 pivot_cache_group_by_t
 ^^^^^^^^^^^^^^^^^^^^^^
 .. doxygenenum:: orcus::spreadsheet::pivot_cache_group_by_t
+
+pivot_data_show_data_as_t
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenenum:: orcus::spreadsheet::pivot_data_show_data_as_t
+
+pivot_data_subtotal_t
+^^^^^^^^^^^^^^^^^^^^^
+.. doxygenenum:: orcus::spreadsheet::pivot_data_subtotal_t
+
+pivot_field_item_t
+^^^^^^^^^^^^^^^^^^
+.. doxygenenum:: orcus::spreadsheet::pivot_field_item_t
 
 sheet_pane_t
 ^^^^^^^^^^^^
@@ -165,6 +181,26 @@ pivot_cache_items_t
 pivot_cache_record_t
 ^^^^^^^^^^^^^^^^^^^^
 .. doxygentypedef:: orcus::spreadsheet::pivot_cache_record_t
+
+pivot_fields_t
+^^^^^^^^^^^^^^
+.. doxygentypedef:: orcus::spreadsheet::pivot_fields_t
+
+pivot_items_t
+^^^^^^^^^^^^^
+.. doxygentypedef:: orcus::spreadsheet::pivot_items_t
+
+pivot_ref_data_fields_t
+^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygentypedef:: orcus::spreadsheet::pivot_ref_data_fields_t
+
+pivot_ref_page_fields_t
+^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygentypedef:: orcus::spreadsheet::pivot_ref_page_fields_t
+
+pivot_ref_rc_fields_t
+^^^^^^^^^^^^^^^^^^^^^
+.. doxygentypedef:: orcus::spreadsheet::pivot_ref_rc_fields_t
 
 row_height_t
 ^^^^^^^^^^^^
@@ -325,6 +361,31 @@ pivot_cache_record_value_t
 .. doxygenstruct:: orcus::spreadsheet::pivot_cache_record_value_t
    :members:
 
+pivot_field_t
+^^^^^^^^^^^^^
+.. doxygenstruct:: orcus::spreadsheet::pivot_field_t
+   :members:
+
+pivot_item_t
+^^^^^^^^^^^^
+.. doxygenstruct:: orcus::spreadsheet::pivot_item_t
+   :members:
+
+pivot_ref_data_field_t
+^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenstruct:: orcus::spreadsheet::pivot_ref_data_field_t
+   :members:
+
+pivot_ref_page_field_t
+^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenstruct:: orcus::spreadsheet::pivot_ref_page_field_t
+   :members:
+
+pivot_ref_rc_field_t
+^^^^^^^^^^^^^^^^^^^^
+.. doxygenstruct:: orcus::spreadsheet::pivot_ref_rc_field_t
+   :members:
+
 protection_t
 ^^^^^^^^^^^^
 .. doxygenstruct:: orcus::spreadsheet::protection_t
@@ -437,6 +498,11 @@ pivot_cache
 pivot_collection
 ^^^^^^^^^^^^^^^^
 .. doxygenclass:: orcus::spreadsheet::pivot_collection
+   :members:
+
+pivot_table
+^^^^^^^^^^^
+.. doxygenclass:: orcus::spreadsheet::pivot_table
    :members:
 
 shared_strings
