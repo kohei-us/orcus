@@ -379,11 +379,14 @@ void debug_state_dumper_pivot_table::dump_rc_items(
 
         for (auto v : item.items)
         {
-            of << "      - (" << v << ")";
+            of << "      - ";
+
+            std::ostringstream os;
+            os << "(" << v << ")";
 
             if (follow_ref)
             {
-                of << " -> ";
+                os << " -> ";
                 const auto& fid = rc_fields[field_pos++];
 
                 switch (fid.type)
@@ -403,34 +406,36 @@ void debug_state_dumper_pivot_table::dump_rc_items(
                                 {
                                     v = std::get<std::size_t>(pt_item.value);
                                     if (v < pc_fld.items.size())
-                                        of << "'" << pc_fld.items[v] << "'";
+                                        os << "'" << pc_fld.items[v] << "'";
                                     else
-                                        of << "(out-of-bound item in cache)";
+                                        os << "(out-of-bound item in cache)";
                                 }
                                 else
-                                    of << "(non-index item)";
+                                    os << "(non-index item)";
 
                             }
                             else
-                                of << "(out-of-bound item)";
+                                os << "(out-of-bound item)";
                         }
                         else
-                            of << "(out-of-bound field)";
+                            os << "(out-of-bound field)";
 
                         break;
                     }
                     case pivot_ref_rc_field_t::value_type::data:
                     {
-                        of << "(data)";
+                        os << "(data)";
                         break;
                     }
                     case pivot_ref_rc_field_t::value_type::unknown:
                     {
-                        of << "(unknown)";
+                        os << "(unknown)";
                         break;
                     }
                 }
             }
+
+            m_cxt.ensure_yaml_string(of, os.str());
 
             of << "\n";
         }
