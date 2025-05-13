@@ -614,7 +614,7 @@ enum class pivot_cache_group_by_t
 /**
  * Pivot field item type.
  *
- * @note It's a superset of aggregate_function_t.
+ * @note It's a superset of pivot_data_subtotal_t.
  */
 enum class pivot_field_item_t
 {
