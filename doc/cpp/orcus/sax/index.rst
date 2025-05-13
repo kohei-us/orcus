@@ -6,68 +6,47 @@ namespace orcus::sax
 Enum
 ----
 
-parse_token_t
-^^^^^^^^^^^^^
-.. doxygenenum:: orcus::sax::parse_token_t
+.. toctree::
+   :maxdepth: 1
 
+   enum-parse_token_t.rst
 
 Type aliases
 ------------
 
-parse_tokens_t
-^^^^^^^^^^^^^^
-.. doxygentypedef:: orcus::sax::parse_tokens_t
+.. toctree::
+   :maxdepth: 1
 
+   typedef-parse_tokens_t.rst
 
 Functions
 ---------
 
-decode_xml_encoded_char
-^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::sax::decode_xml_encoded_char(const char *p, size_t n)
+.. toctree::
+   :maxdepth: 1
 
-decode_xml_unicode_char
-^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::sax::decode_xml_unicode_char(const char *p, size_t n)
-
+   function-decode_xml_encoded_char.rst
+   function-decode_xml_unicode_char.rst
 
 Struct
 ------
 
-doctype_declaration
-^^^^^^^^^^^^^^^^^^^
-.. doxygenstruct:: orcus::sax::doctype_declaration
-   :members:
+.. toctree::
+   :maxdepth: 1
 
-parse_token
-^^^^^^^^^^^
-.. doxygenstruct:: orcus::sax::parse_token
-   :members:
-
-parser_attribute
-^^^^^^^^^^^^^^^^
-.. doxygenstruct:: orcus::sax::parser_attribute
-   :members:
-
-parser_element
-^^^^^^^^^^^^^^
-.. doxygenstruct:: orcus::sax::parser_element
-   :members:
-
+   struct-doctype_declaration.rst
+   struct-parse_token.rst
+   struct-parser_attribute.rst
+   struct-parser_element.rst
 
 Classes
 -------
 
-parser_base
-^^^^^^^^^^^
-.. doxygenclass:: orcus::sax::parser_base
-   :members:
+.. toctree::
+   :maxdepth: 1
 
-parser_thread
-^^^^^^^^^^^^^
-.. doxygenclass:: orcus::sax::parser_thread
-   :members:
-
+   class-parser_base.rst
+   class-parser_thread.rst
 
 Child namespaces
 ----------------

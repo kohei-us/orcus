@@ -343,7 +343,7 @@ def create_enum_stream_test(rootdir, output_dir):
         _print("}")
 
 
-def generate_rst(scope, child_scopes, symbols):
+def generate_rst(thisdir, scope, child_scopes, symbols):
     if scope:
         ns = "::".join(scope)
         title = "namespace " + ns
@@ -364,18 +364,25 @@ def generate_rst(scope, child_scopes, symbols):
         this_buf = [
             "Enum",
             "----",
-            ""
+            "",
+            ".. toctree::",
+            "   :maxdepth: 1",
+            "",
         ]
 
         for name, props in symbols["enum"]:
+            child_file = f"enum-{name}.rst"
+            this_buf.append(f"   {child_file}")
+
             full_name = f"{ns}::{name}"
             block = [
                 name,
-                "^" * len(name),
-                f".. doxygenenum:: {full_name}",
+                "=" * len(name),
                 "",
+                f".. doxygenenum:: {full_name}",
             ]
-            this_buf.extend(block)
+
+            thisdir.joinpath(child_file).write_text("\n".join(block))
 
         this_buf.append("")
         buf.extend(this_buf)
@@ -384,18 +391,25 @@ def generate_rst(scope, child_scopes, symbols):
         this_buf = [
             "Type aliases",
             "------------",
-            ""
+            "",
+            ".. toctree::",
+            "   :maxdepth: 1",
+            "",
         ]
 
         for name, props in symbols["typedef"]:
+            child_file = f"typedef-{name}.rst"
+            this_buf.append(f"   {child_file}")
+
             full_name = f"{ns}::{name}"
             block = [
                 name,
-                "^" * len(name),
-                f".. doxygentypedef:: {full_name}",
+                "=" * len(name),
                 "",
+                f".. doxygentypedef:: {full_name}",
             ]
-            this_buf.extend(block)
+
+            thisdir.joinpath(child_file).write_text("\n".join(block))
 
         this_buf.append("")
         buf.extend(this_buf)
@@ -404,18 +418,25 @@ def generate_rst(scope, child_scopes, symbols):
         this_buf = [
             "Constants",
             "---------",
-            ""
+            "",
+            ".. toctree::",
+            "   :maxdepth: 1",
+            "",
         ]
 
         for name, props in symbols["variable"]:
+            child_file = f"variable-{name}.rst"
+            this_buf.append(f"   {child_file}")
+
             full_name = f"{ns}::{name}"
             block = [
                 name,
-                "^" * len(name),
-                f".. doxygenvariable:: {full_name}",
+                "=" * len(name),
                 "",
+                f".. doxygenvariable:: {full_name}",
             ]
-            this_buf.extend(block)
+
+            thisdir.joinpath(child_file).write_text("\n".join(block))
 
         this_buf.append("")
         buf.extend(this_buf)
@@ -424,18 +445,25 @@ def generate_rst(scope, child_scopes, symbols):
         this_buf = [
             "Functions",
             "---------",
-            ""
+            "",
+            ".. toctree::",
+            "   :maxdepth: 1",
+            "",
         ]
 
         for name, props in symbols["function"]:
+            child_file = f"function-{name}.rst"
+            this_buf.append(f"   {child_file}")
+
             full_name = f"{ns}::{name}{props.argsstring}"
             block = [
                 f"{name}",
-                "^" * len(name),
-                f".. doxygenfunction:: {full_name}",
+                "=" * len(name),
                 "",
+                f".. doxygenfunction:: {full_name}",
             ]
-            this_buf.extend(block)
+
+            thisdir.joinpath(child_file).write_text("\n".join(block))
 
         this_buf.append("")
         buf.extend(this_buf)
@@ -444,19 +472,26 @@ def generate_rst(scope, child_scopes, symbols):
         this_buf = [
             "Struct",
             "------",
-            ""
+            "",
+            ".. toctree::",
+            "   :maxdepth: 1",
+            "",
         ]
 
         for name, props in symbols["struct"]:
+            child_file = f"struct-{name}.rst"
+            this_buf.append(f"   {child_file}")
+
             full_name = f"{ns}::{name}"
             block = [
                 name,
-                "^" * len(name),
+                "=" * len(name),
+                "",
                 f".. doxygenstruct:: {full_name}",
                 f"   :members:",
-                "",
             ]
-            this_buf.extend(block)
+
+            thisdir.joinpath(child_file).write_text("\n".join(block))
 
         this_buf.append("")
         buf.extend(this_buf)
@@ -465,19 +500,27 @@ def generate_rst(scope, child_scopes, symbols):
         this_buf = [
             "Classes",
             "-------",
-            ""
+            "",
+            ".. toctree::",
+            "   :maxdepth: 1",
+            "",
         ]
 
         for name, props in symbols["class"]:
+            child_file = f"class-{name}.rst"
+            this_buf.append(f"   {child_file}")
+
             full_name = f"{ns}::{name}"
             block = [
                 name,
-                "^" * len(name),
+                "=" * len(name),
+                "",
                 f".. doxygenclass:: {full_name}",
                 f"   :members:",
                 "",
             ]
-            this_buf.extend(block)
+
+            thisdir.joinpath(child_file).write_text("\n".join(block))
 
         this_buf.append("")
         buf.extend(this_buf)
@@ -509,7 +552,7 @@ def generate_doctree(rootdir, outdir):
         index_file = thisdir / "index.rst"
         print(index_file)
         thisdir.mkdir(parents=True, exist_ok=True)
-        index_file.write_text(generate_rst(scope, child_scopes, symbols))
+        index_file.write_text(generate_rst(thisdir, scope, child_scopes, symbols))
 
     symbol_tree.walk(_func)
 

@@ -6,17 +6,15 @@ namespace orcus::csv
 Struct
 ------
 
-parser_config
-^^^^^^^^^^^^^
-.. doxygenstruct:: orcus::csv::parser_config
-   :members:
+.. toctree::
+   :maxdepth: 1
 
+   struct-parser_config.rst
 
 Classes
 -------
 
-parser_base
-^^^^^^^^^^^
-.. doxygenclass:: orcus::csv::parser_base
-   :members:
+.. toctree::
+   :maxdepth: 1
 
+   class-parser_base.rst

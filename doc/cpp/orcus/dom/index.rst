@@ -6,30 +6,24 @@ namespace orcus::dom
 Enum
 ----
 
-node_t
-^^^^^^
-.. doxygenenum:: orcus::dom::node_t
+.. toctree::
+   :maxdepth: 1
 
+   enum-node_t.rst
 
 Struct
 ------
 
-entity_name
-^^^^^^^^^^^
-.. doxygenstruct:: orcus::dom::entity_name
-   :members:
+.. toctree::
+   :maxdepth: 1
 
+   struct-entity_name.rst
 
 Classes
 -------
 
-const_node
-^^^^^^^^^^
-.. doxygenclass:: orcus::dom::const_node
-   :members:
+.. toctree::
+   :maxdepth: 1
 
-document_tree
-^^^^^^^^^^^^^
-.. doxygenclass:: orcus::dom::document_tree
-   :members:
-
+   class-const_node.rst
+   class-document_tree.rst

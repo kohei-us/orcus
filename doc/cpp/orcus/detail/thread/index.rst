@@ -6,13 +6,8 @@ namespace orcus::detail::thread
 Classes
 -------
 
-parser_token_buffer
-^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::detail::thread::parser_token_buffer
-   :members:
+.. toctree::
+   :maxdepth: 1
 
-scoped_guard
-^^^^^^^^^^^^
-.. doxygenclass:: orcus::detail::thread::scoped_guard
-   :members:
-
+   class-parser_token_buffer.rst
+   class-scoped_guard.rst

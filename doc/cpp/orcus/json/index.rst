@@ -6,113 +6,56 @@ namespace orcus::json
 Enum
 ----
 
-node_t
-^^^^^^
-.. doxygenenum:: orcus::json::node_t
+.. toctree::
+   :maxdepth: 1
 
-parse_token_t
-^^^^^^^^^^^^^
-.. doxygenenum:: orcus::json::parse_token_t
-
+   enum-node_t.rst
+   enum-parse_token_t.rst
 
 Type aliases
 ------------
 
-parse_tokens_t
-^^^^^^^^^^^^^^
-.. doxygentypedef:: orcus::json::parse_tokens_t
+.. toctree::
+   :maxdepth: 1
 
+   typedef-parse_tokens_t.rst
 
 Functions
 ---------
 
-escape_string
-^^^^^^^^^^^^^
-.. doxygenfunction:: orcus::json::escape_string(std::string_view input)
+.. toctree::
+   :maxdepth: 1
 
+   function-escape_string.rst
 
 Struct
 ------
 
-parse_token
-^^^^^^^^^^^
-.. doxygenstruct:: orcus::json::parse_token
-   :members:
+.. toctree::
+   :maxdepth: 1
 
-parser_stats
-^^^^^^^^^^^^
-.. doxygenstruct:: orcus::json::parser_stats
-   :members:
-
-table_range_t
-^^^^^^^^^^^^^
-.. doxygenstruct:: orcus::json::table_range_t
-   :members:
-
+   struct-parse_token.rst
+   struct-parser_stats.rst
+   struct-table_range_t.rst
 
 Classes
 -------
 
-array
-^^^^^
-.. doxygenclass:: orcus::json::array
-   :members:
+.. toctree::
+   :maxdepth: 1
 
-const_node
-^^^^^^^^^^
-.. doxygenclass:: orcus::json::const_node
-   :members:
-
-const_node_iterator
-^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::json::const_node_iterator
-   :members:
-
-document_error
-^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::json::document_error
-   :members:
-
-document_tree
-^^^^^^^^^^^^^
-.. doxygenclass:: orcus::json::document_tree
-   :members:
-
-key_value_error
-^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::json::key_value_error
-   :members:
-
-node
-^^^^
-.. doxygenclass:: orcus::json::node
-   :members:
-
-object
-^^^^^^
-.. doxygenclass:: orcus::json::object
-   :members:
-
-parser_base
-^^^^^^^^^^^
-.. doxygenclass:: orcus::json::parser_base
-   :members:
-
-parser_thread
-^^^^^^^^^^^^^
-.. doxygenclass:: orcus::json::parser_thread
-   :members:
-
-structure_tree
-^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::json::structure_tree
-   :members:
-
-subtree
-^^^^^^^
-.. doxygenclass:: orcus::json::subtree
-   :members:
-
+   class-array.rst
+   class-const_node.rst
+   class-const_node_iterator.rst
+   class-document_error.rst
+   class-document_tree.rst
+   class-key_value_error.rst
+   class-node.rst
+   class-object.rst
+   class-parser_base.rst
+   class-parser_thread.rst
+   class-structure_tree.rst
+   class-subtree.rst
 
 Child namespaces
 ----------------

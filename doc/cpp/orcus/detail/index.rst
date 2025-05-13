@@ -6,11 +6,10 @@ namespace orcus::detail
 Classes
 -------
 
-parsing_aborted_error
-^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::detail::parsing_aborted_error
-   :members:
+.. toctree::
+   :maxdepth: 1
 
+   class-parsing_aborted_error.rst
 
 Child namespaces
 ----------------

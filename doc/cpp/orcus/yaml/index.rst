@@ -6,34 +6,21 @@ namespace orcus::yaml
 Enum
 ----
 
-node_t
-^^^^^^
-.. doxygenenum:: orcus::yaml::node_t
+.. toctree::
+   :maxdepth: 1
 
+   enum-node_t.rst
 
 Classes
 -------
 
-const_node
-^^^^^^^^^^
-.. doxygenclass:: orcus::yaml::const_node
-   :members:
+.. toctree::
+   :maxdepth: 1
 
-document_error
-^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::yaml::document_error
-   :members:
-
-document_tree
-^^^^^^^^^^^^^
-.. doxygenclass:: orcus::yaml::document_tree
-   :members:
-
-parser_base
-^^^^^^^^^^^
-.. doxygenclass:: orcus::yaml::parser_base
-   :members:
-
+   class-const_node.rst
+   class-document_error.rst
+   class-document_tree.rst
+   class-parser_base.rst
 
 Child namespaces
 ----------------

@@ -6,208 +6,47 @@ namespace orcus::spreadsheet::iface
 Classes
 -------
 
-export_factory
-^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::export_factory
-   :members:
+.. toctree::
+   :maxdepth: 1
 
-export_sheet
-^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::export_sheet
-   :members:
-
-import_array_formula
-^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_array_formula
-   :members:
-
-import_auto_filter
-^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_auto_filter
-   :members:
-
-import_auto_filter_multi_values
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_auto_filter_multi_values
-   :members:
-
-import_auto_filter_node
-^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_auto_filter_node
-   :members:
-
-import_border_style
-^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_border_style
-   :members:
-
-import_cell_protection
-^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_cell_protection
-   :members:
-
-import_cell_style
-^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_cell_style
-   :members:
-
-import_conditional_format
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_conditional_format
-   :members:
-
-import_data_table
-^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_data_table
-   :members:
-
-import_factory
-^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_factory
-   :members:
-
-import_fill_style
-^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_fill_style
-   :members:
-
-import_font_style
-^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_font_style
-   :members:
-
-import_formula
-^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_formula
-   :members:
-
-import_global_settings
-^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_global_settings
-   :members:
-
-import_named_expression
-^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_named_expression
-   :members:
-
-import_number_format
-^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_number_format
-   :members:
-
-import_pivot_cache_definition
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_cache_definition
-   :members:
-
-import_pivot_cache_field_group
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_cache_field_group
-   :members:
-
-import_pivot_cache_records
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_cache_records
-   :members:
-
-import_pivot_data_field
-^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_data_field
-   :members:
-
-import_pivot_data_fields
-^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_data_fields
-   :members:
-
-import_pivot_field
-^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_field
-   :members:
-
-import_pivot_fields
-^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_fields
-   :members:
-
-import_pivot_page_field
-^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_page_field
-   :members:
-
-import_pivot_page_fields
-^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_page_fields
-   :members:
-
-import_pivot_rc_fields
-^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_rc_fields
-   :members:
-
-import_pivot_rc_item
-^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_rc_item
-   :members:
-
-import_pivot_rc_items
-^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_rc_items
-   :members:
-
-import_pivot_table_definition
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_pivot_table_definition
-   :members:
-
-import_reference_resolver
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_reference_resolver
-   :members:
-
-import_shared_strings
-^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_shared_strings
-   :members:
-
-import_sheet
-^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_sheet
-   :members:
-
-import_sheet_properties
-^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_sheet_properties
-   :members:
-
-import_sheet_view
-^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_sheet_view
-   :members:
-
-import_strikethrough
-^^^^^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_strikethrough
-   :members:
-
-import_styles
-^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_styles
-   :members:
-
-import_table
-^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_table
-   :members:
-
-import_underline
-^^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_underline
-   :members:
-
-import_xf
-^^^^^^^^^
-.. doxygenclass:: orcus::spreadsheet::iface::import_xf
-   :members:
-
+   class-export_factory.rst
+   class-export_sheet.rst
+   class-import_array_formula.rst
+   class-import_auto_filter.rst
+   class-import_auto_filter_multi_values.rst
+   class-import_auto_filter_node.rst
+   class-import_border_style.rst
+   class-import_cell_protection.rst
+   class-import_cell_style.rst
+   class-import_conditional_format.rst
+   class-import_data_table.rst
+   class-import_factory.rst
+   class-import_fill_style.rst
+   class-import_font_style.rst
+   class-import_formula.rst
+   class-import_global_settings.rst
+   class-import_named_expression.rst
+   class-import_number_format.rst
+   class-import_pivot_cache_definition.rst
+   class-import_pivot_cache_field_group.rst
+   class-import_pivot_cache_records.rst
+   class-import_pivot_data_field.rst
+   class-import_pivot_data_fields.rst
+   class-import_pivot_field.rst
+   class-import_pivot_fields.rst
+   class-import_pivot_page_field.rst
+   class-import_pivot_page_fields.rst
+   class-import_pivot_rc_fields.rst
+   class-import_pivot_rc_item.rst
+   class-import_pivot_rc_items.rst
+   class-import_pivot_table_definition.rst
+   class-import_reference_resolver.rst
+   class-import_shared_strings.rst
+   class-import_sheet.rst
+   class-import_sheet_properties.rst
+   class-import_sheet_view.rst
+   class-import_strikethrough.rst
+   class-import_styles.rst
+   class-import_table.rst
+   class-import_underline.rst
+   class-import_xf.rst

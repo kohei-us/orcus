@@ -6,29 +6,18 @@ namespace orcus::sax::detail
 Type aliases
 ------------
 
-elem_scopes_type
-^^^^^^^^^^^^^^^^
-.. doxygentypedef:: orcus::sax::detail::elem_scopes_type
+.. toctree::
+   :maxdepth: 1
 
-entity_names_type
-^^^^^^^^^^^^^^^^^
-.. doxygentypedef:: orcus::sax::detail::entity_names_type
-
-ns_keys_type
-^^^^^^^^^^^^
-.. doxygentypedef:: orcus::sax::detail::ns_keys_type
-
+   typedef-elem_scopes_type.rst
+   typedef-entity_names_type.rst
+   typedef-ns_keys_type.rst
 
 Struct
 ------
 
-elem_scope
-^^^^^^^^^^
-.. doxygenstruct:: orcus::sax::detail::elem_scope
-   :members:
+.. toctree::
+   :maxdepth: 1
 
-entity_name
-^^^^^^^^^^^
-.. doxygenstruct:: orcus::sax::detail::entity_name
-   :members:
-
+   struct-elem_scope.rst
+   struct-entity_name.rst

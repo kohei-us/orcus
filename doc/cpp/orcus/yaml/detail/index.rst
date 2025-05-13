@@ -6,15 +6,9 @@ namespace orcus::yaml::detail
 Enum
 ----
 
-keyword_t
-^^^^^^^^^
-.. doxygenenum:: orcus::yaml::detail::keyword_t
+.. toctree::
+   :maxdepth: 1
 
-parse_token_t
-^^^^^^^^^^^^^
-.. doxygenenum:: orcus::yaml::detail::parse_token_t
-
-scope_t
-^^^^^^^
-.. doxygenenum:: orcus::yaml::detail::scope_t
-
+   enum-keyword_t.rst
+   enum-parse_token_t.rst
+   enum-scope_t.rst

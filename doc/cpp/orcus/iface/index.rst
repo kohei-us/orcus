@@ -6,13 +6,8 @@ namespace orcus::iface
 Classes
 -------
 
-document_dumper
-^^^^^^^^^^^^^^^
-.. doxygenclass:: orcus::iface::document_dumper
-   :members:
+.. toctree::
+   :maxdepth: 1
 
-import_filter
-^^^^^^^^^^^^^
-.. doxygenclass:: orcus::iface::import_filter
-   :members:
-
+   class-document_dumper.rst
+   class-import_filter.rst
