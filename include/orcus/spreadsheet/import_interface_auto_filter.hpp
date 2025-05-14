@@ -130,10 +130,8 @@ public:
      * Signal the start of the import of a set of auto-filter rules associated
      * with a single column.
      *
-     * @param col_offset 0-based offset position of the field relative to the
-     *                   left-most column of the filtered range.
-     * @param op         Boolean operator connecting the multiple filter rules
-     *                   at the root level of the filter rules tree.
+     * @param op Boolean operator connecting the multiple filter rules at the
+     *           root level of the filter rules tree.
      *
      * @return Interface for importing the root node of the auto-filter rules
      *         for a column.

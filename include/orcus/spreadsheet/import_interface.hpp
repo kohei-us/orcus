@@ -1190,7 +1190,7 @@ public:
     /**
      * Obtain an optional interface for importing global named expressions.
      *
-     * Note that @ref import_sheet also provides the same interface, but its
+     * Note that import_sheet also provides the same interface, but its
      * interface is for importing sheet-local named expressions.
      *
      * @return pointer to the global named expression interface, or a @p nullptr
