@@ -1051,9 +1051,13 @@ public:
     virtual void fill_down_cells(row_t src_row, col_t src_col, row_t range_size) = 0;
 
     /**
-     * Get the size of the sheet.
+     * Get the maximum dimension of a sheet.
      *
-     * @return structure containing the numbers of rows and columns of the
+     * @note The implementer should return a fixed dimension that does not
+     *       change at least during import.  All sheets belonging to the same
+     *       document should have the same maximum dimension.
+     *
+     * @return Structure containing the maximum numbers of rows and columns in a
      *         sheet.
      */
     virtual range_size_t get_sheet_size() const = 0;

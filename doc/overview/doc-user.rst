@@ -107,8 +107,11 @@ methods to satisfy the interface requirements of
   properties table, and this method only receives an index into the table.
 
 * :cpp:func:`~orcus::spreadsheet::iface::import_sheet::get_sheet_size` - This
-  method is expected to return the dimension of the sheet which the loader may
-  need in some operations.
+  method should return the dimension of a sheet in your document model which
+  the loader may need in some operations.  The dimension of a sheet is the
+  maximum numbers of rows and columns a sheet allows, and it is a fixed dimension
+  that cannot change at least during import.  Also, all sheets in your document
+  model should have the same sheet dimension.
 
 For now, we'll only implement
 :cpp:func:`~orcus::spreadsheet::iface::import_sheet::set_string`,
