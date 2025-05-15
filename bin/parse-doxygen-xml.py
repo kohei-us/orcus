@@ -44,16 +44,21 @@ def list_kinds(rootdir):
 
 
 @dataclass
-class FuncProps:
+class SymbolProps:
+    """Extra properties of a symbol."""
+    location: str = field(default=str)
+
+
+@dataclass
+class FuncProps(SymbolProps):
     """Extra properties of a function symbol."""
     argsstring: str = None
 
 
 @dataclass
-class EnumProps:
+class EnumProps(SymbolProps):
     """Extra properties of a enum symbol."""
 
-    location: str = field(default=str)
     members: list[str] = field(default_factory=list)
     """List of enum members."""
 
@@ -110,32 +115,36 @@ class SymbolTree:
                     for member in props.members:
                         print(f"        - {member}")
 
-
             if "typedef" in symbols:
                 print("  typedef:")
                 for symbol, props in symbols["typedef"]:
-                    print(f"    - {symbol}")
+                    print(f"    - name: {symbol}")
+                    print(f"      location: {props.location}")
 
             if "variable" in symbols:
                 print("  variable:")
                 for symbol, props in symbols["variable"]:
-                    print(f"    - {symbol}")
+                    print(f"    - name: {symbol}")
+                    print(f"      location: {props.location}")
 
             if "function" in symbols:
                 print("  function:")
                 for symbol, props in symbols["function"]:
                     print(f"    - name: {symbol}")
                     print(f"      argsstring: {props.argsstring}")
+                    print(f"      location: {props.location}")
 
             if "class" in symbols:
                 print("  class:")
                 for symbol, props in symbols["class"]:
-                    print(f"    - {symbol}")
+                    print(f"    - name: {symbol}")
+                    print(f"      location: {props.location}")
 
             if "struct" in symbols:
                 print("  struct:")
                 for symbol, props in symbols["struct"]:
-                    print(f"    - {symbol}")
+                    print(f"    - name: {symbol}")
+                    print(f"      location: {props.location}")
 
     def walk(self, func):
         self._scope = list()
@@ -178,31 +187,40 @@ def build_symbol_tree(rootdir):
 
             for elem in ns_elem.findall(".//memberdef[@kind='typedef']"):
                 name = elem.findtext("name")
-                all_symbols.append((ns_name, "typedef", name, None))
+                location = elem.find(".//location").attrib["file"]
+                props = SymbolProps(location=location)
+                all_symbols.append((ns_name, "typedef", name, props))
 
             for elem in ns_elem.findall(".//memberdef[@kind='function']"):
                 name = elem.findtext("name")
                 if name.startswith("operator"):
                     continue
-                props = FuncProps()
+                location = elem.find(".//location").attrib["file"]
+                props = FuncProps(location=location)
                 props.argsstring = elem.findtext("argsstring")
                 all_symbols.append((ns_name, "function", name, props))
 
             for elem in ns_elem.findall(".//memberdef[@kind='variable']"):
                 name = elem.findtext("name")
-                all_symbols.append((ns_name, "variable", name, None))
+                location = elem.find(".//location").attrib["file"]
+                props = SymbolProps(location=location)
+                all_symbols.append((ns_name, "variable", name, props))
 
         for elem in root.findall(".//compounddef[@kind='class']"):
             name = elem.findtext("compoundname")
+            location = elem.find(".//location").attrib["file"]
             ns, name = name.rsplit('::', maxsplit=1)
-            all_symbols.append((ns, "class", name, None))
+            props = SymbolProps(location=location)
+            all_symbols.append((ns, "class", name, props))
 
             type_scope.add(f"{ns}::{name}")
 
         for elem in root.findall(".//compounddef[@kind='struct']"):
             name = elem.findtext("compoundname")
+            location = elem.find(".//location").attrib["file"]
             ns, name = name.rsplit('::', maxsplit=1)
-            all_symbols.append((ns, "struct", name, None))
+            props = SymbolProps(location=location)
+            all_symbols.append((ns, "struct", name, props))
 
             type_scope.add(f"{ns}::{name}")
 
@@ -344,6 +362,8 @@ def create_enum_stream_test(rootdir, output_dir):
 
 
 def generate_rst(thisdir, scope, child_scopes, symbols):
+    include_dir = Path(__file__).parent.parent / "include"
+
     if scope:
         ns = "::".join(scope)
         title = "namespace " + ns
@@ -374,10 +394,14 @@ def generate_rst(thisdir, scope, child_scopes, symbols):
             child_file = f"enum-{name}.rst"
             this_buf.append(f"   {child_file}")
 
+            header = Path(props.location).relative_to(include_dir)
+
             full_name = f"{ns}::{name}"
             block = [
                 name,
                 "=" * len(name),
+                "",
+                f"Defined in header: <{header}>",
                 "",
                 f".. doxygenenum:: {full_name}",
             ]
@@ -401,10 +425,14 @@ def generate_rst(thisdir, scope, child_scopes, symbols):
             child_file = f"typedef-{name}.rst"
             this_buf.append(f"   {child_file}")
 
+            header = Path(props.location).relative_to(include_dir)
+
             full_name = f"{ns}::{name}"
             block = [
                 name,
                 "=" * len(name),
+                "",
+                f"Defined in header: <{header}>",
                 "",
                 f".. doxygentypedef:: {full_name}",
             ]
@@ -428,10 +456,14 @@ def generate_rst(thisdir, scope, child_scopes, symbols):
             child_file = f"variable-{name}.rst"
             this_buf.append(f"   {child_file}")
 
+            header = Path(props.location).relative_to(include_dir)
+
             full_name = f"{ns}::{name}"
             block = [
                 name,
                 "=" * len(name),
+                "",
+                f"Defined in header: <{header}>",
                 "",
                 f".. doxygenvariable:: {full_name}",
             ]
@@ -455,10 +487,14 @@ def generate_rst(thisdir, scope, child_scopes, symbols):
             child_file = f"function-{name}.rst"
             this_buf.append(f"   {child_file}")
 
+            header = Path(props.location).relative_to(include_dir)
+
             full_name = f"{ns}::{name}{props.argsstring}"
             block = [
                 f"{name}",
                 "=" * len(name),
+                "",
+                f"Defined in header: <{header}>",
                 "",
                 f".. doxygenfunction:: {full_name}",
             ]
@@ -482,10 +518,14 @@ def generate_rst(thisdir, scope, child_scopes, symbols):
             child_file = f"struct-{name}.rst"
             this_buf.append(f"   {child_file}")
 
+            header = Path(props.location).relative_to(include_dir)
+
             full_name = f"{ns}::{name}"
             block = [
                 name,
                 "=" * len(name),
+                "",
+                f"Defined in header: <{header}>",
                 "",
                 f".. doxygenstruct:: {full_name}",
                 f"   :members:",
@@ -510,10 +550,14 @@ def generate_rst(thisdir, scope, child_scopes, symbols):
             child_file = f"class-{name}.rst"
             this_buf.append(f"   {child_file}")
 
+            header = Path(props.location).relative_to(include_dir)
+
             full_name = f"{ns}::{name}"
             block = [
                 name,
                 "=" * len(name),
+                "",
+                f"Defined in header: <{header}>",
                 "",
                 f".. doxygenclass:: {full_name}",
                 f"   :members:",
