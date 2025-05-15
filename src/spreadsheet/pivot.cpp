@@ -502,7 +502,7 @@ const pivot_cache* pivot_collection::get_cache(pivot_cache_id_t cache_id) const
 
 void pivot_collection::dump_debug_state(std::string_view outdir) const
 {
-    fs::path output_dir{outdir};
+    fs::path output_dir{std::string{outdir}};
 
     for (const auto& [id, cache] : mp_impl->caches)
     {
