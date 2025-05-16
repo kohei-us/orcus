@@ -777,6 +777,7 @@ test_data = \
 	test/xls-xml/table-offset/check.txt \
 	test/xls-xml/table-offset/input.xml \
 	test/xls-xml/table/autofilter-asterisk.xml \
+	test/xls-xml/table/autofilter-nofilter.xml \
 	test/xls-xml/table/autofilter-number.xml \
 	test/xls-xml/table/autofilter-question.xml \
 	test/xls-xml/table/autofilter-text.xml \
