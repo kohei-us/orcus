@@ -1,3 +1,25 @@
+orcus 0.20.1
+
+* fixed an assertion failure when importing a document in Excel 2003 XML
+  format containing an autofilter with no filtering applied to it.
+
+* added a set of new interfaces to support importing pivot table definitions
+  from xlsx documents.
+
+* added support for dumping the internal state of pivot caches and pivot table
+  definitions as part of the debug state output.
+
+* added clarification on the return value of import_sheet::get_sheet_size()
+  interface method in the documentation.
+
+* C++ API reference has been restructured to show each symbol in a separate
+  page, and have their header information also included.
+
+* added test cases for testing expected string labels for enum types.
+
+* fixed orcus-json's map mode which would previously fail when built with
+  CMake.
+
 orcus 0.20.0
 
 * import filters
