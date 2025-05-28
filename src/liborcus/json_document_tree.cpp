@@ -692,7 +692,13 @@ class parser_handler
 
     json_value* push_value(json_value* value)
     {
-        assert(!m_stack.empty());
+        if (m_stack.empty())
+        {
+            assert(!m_root);
+            m_root = value;
+            return value;
+        }
+
         parser_stack& cur = m_stack.back();
 
         switch (cur.node->type)

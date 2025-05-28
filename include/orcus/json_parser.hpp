@@ -130,7 +130,6 @@ public:
     void parse();
 
 private:
-    void root_value();
     void value();
     void array();
     void end_array();
@@ -154,7 +153,7 @@ void json_parser<_Handler>::parse()
 
     skip_ws();
     if (has_char())
-        root_value();
+        value();
     else
         throw parse_error("parse: no json content could be found in file", offset());
 
@@ -162,25 +161,6 @@ void json_parser<_Handler>::parse()
         throw parse_error("parse: unexpected trailing string segment.", offset());
 
     m_handler.end_parse();
-}
-
-template<typename _Handler>
-void json_parser<_Handler>::root_value()
-{
-    char c = cur_char();
-
-    switch (c)
-    {
-        case '[':
-            array();
-        break;
-        case '{':
-            object();
-        break;
-        default:
-            parse_error::throw_with(
-                "root_value: either '[' or '{' was expected, but '", cur_char(), "' was found.", offset());
-    }
 }
 
 template<typename _Handler>

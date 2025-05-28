@@ -85,7 +85,10 @@ double parser_base::parse_double_or_throw()
 parse_quoted_string_state parser_base::parse_string()
 {
     assert(cur_char() == '"');
-    size_t max_length = remaining_size();
+    std::size_t max_length = available_size();
+    if (!max_length)
+        throw parse_error("parse_string: opening quote is the last character in this stream", offset());
+
     const char* p = mp_char;
     parse_quoted_string_state ret = parse_double_quoted_string(p, max_length, mp_impl->m_buffer);
     if (ret.has_control_character)
