@@ -17,7 +17,6 @@
 
 #include "filesystem_env.hpp"
 
-using namespace std;
 using namespace orcus;
 
 namespace po = boost::program_options;
@@ -71,7 +70,7 @@ const char* err_no_input_file = "No input file.";
 std::string gen_help_output_format()
 {
     std::ostringstream os;
-    os << "Specify the output format.  Supported format types are:" << endl;
+    os << "Specify the output format.  Supported format types are:" << std::endl;
 
     for (std::pair<std::string_view, dump_format_t> entry : get_dump_format_entries())
     {
@@ -87,23 +86,23 @@ std::string gen_help_output_format()
 }
 
 bool handle_dump_check(
-    iface::import_filter& app, iface::document_dumper& doc, const string& infile, const string& outfile)
+    iface::import_filter& app, iface::document_dumper& doc, const std::string& infile, const std::string& outfile)
 {
     if (outfile.empty())
     {
         // Dump to stdout when no output file is specified.
         app.read_file(infile);
-        doc.dump_check(cout);
+        doc.dump_check(std::cout);
         return true;
     }
 
     if (fs::exists(outfile) && fs::is_directory(outfile))
     {
-        cerr << "A directory named '" << outfile << "' already exists." << endl;
+        std::cerr << "A directory named '" << outfile << "' already exists." << std::endl;
         return false;
     }
 
-    ofstream file(outfile.c_str());
+    std::ofstream file(outfile.c_str());
     app.read_file(infile);
     doc.dump_check(file);
     return true;
@@ -122,10 +121,10 @@ bool parse_import_filter_args(
         ("help,h", "Print this help.")
         ("debug,d", po::bool_switch(&debug), help_debug)
         ("recalc,r", po::bool_switch(&recalc_formula_cells), help_recalc)
-        ("error-policy,e", po::value<string>()->default_value("fail"), help_formula_error_policy)
+        ("error-policy,e", po::value<std::string>()->default_value("fail"), help_formula_error_policy)
         ("dump-check", help_dump_check)
-        ("output,o", po::value<string>(), help_output)
-        ("output-format,f", po::value<string>(), gen_help_output_format().data())
+        ("output,o", po::value<std::string>(), help_output)
+        ("output-format,f", po::value<std::string>(), gen_help_output_format().data())
         ("row-size", po::value<spreadsheet::row_t>(), help_row_size);
 
     if (args_handler)
@@ -133,7 +132,7 @@ bool parse_import_filter_args(
 
     po::options_description hidden("Hidden options");
     hidden.add_options()
-        ("input", po::value<string>(), "input file");
+        ("input", po::value<std::string>(), "input file");
 
     po::options_description cmd_opt;
     cmd_opt.add(desc).add(hidden);
@@ -148,18 +147,18 @@ bool parse_import_filter_args(
             po::command_line_parser(argc, argv).options(cmd_opt).positional(po_desc).run(), vm);
         po::notify(vm);
     }
-    catch (const exception& e)
+    catch (const std::exception& e)
     {
         // Unknown options.
-        cout << e.what() << endl;
-        cout << desc;
+        std::cout << e.what() << std::endl;
+        std::cout << desc;
         return false;
     }
 
     if (vm.count("help"))
     {
-        cout << "Usage: orcus-" << app.get_name() << " [options] FILE" << endl << endl;
-        cout << help_program << endl << endl << desc;
+        std::cout << "Usage: orcus-" << app.get_name() << " [options] FILE" << std::endl << std::endl;
+        std::cout << help_program << std::endl << std::endl << desc;
         return true;
     }
 
@@ -167,14 +166,14 @@ bool parse_import_filter_args(
     dump_format_t outformat = dump_format_t::unknown;
 
     if (vm.count("input"))
-        infile = vm["input"].as<string>();
+        infile = vm["input"].as<std::string>();
 
     if (vm.count("output"))
-        outdir = vm["output"].as<string>();
+        outdir = vm["output"].as<std::string>();
 
     if (vm.count("output-format"))
     {
-        std::string outformat_s = vm["output-format"].as<string>();
+        std::string outformat_s = vm["output-format"].as<std::string>();
         outformat = to_dump_format_enum(outformat_s);
     }
 
@@ -187,7 +186,7 @@ bool parse_import_filter_args(
 
     if (error_policy == spreadsheet::formula_error_policy_t::unknown)
     {
-        cerr << "Unrecognized error policy: " << error_policy_s << endl;
+        std::cerr << "Unrecognized error policy: " << error_policy_s << std::endl;
         return false;
     }
 
@@ -195,7 +194,7 @@ bool parse_import_filter_args(
 
     if (infile.empty())
     {
-        cerr << err_no_input_file << endl;
+        std::cerr << err_no_input_file << std::endl;
         return false;
     }
 
@@ -217,7 +216,7 @@ bool parse_import_filter_args(
 
     if (outformat == dump_format_t::unknown)
     {
-        std::cerr << "You must specify one of the supported output formats." << endl;
+        std::cerr << "You must specify one of the supported output formats." << std::endl;
         return false;
     }
 

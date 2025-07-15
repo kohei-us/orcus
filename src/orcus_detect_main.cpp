@@ -14,7 +14,6 @@
 #include <string>
 
 using namespace orcus;
-using namespace std;
 
 int main(int argc, char** argv) try
 {
@@ -26,44 +25,44 @@ int main(int argc, char** argv) try
 
     if (content.empty())
     {
-        cerr << "file is empty" << endl;
+        std::cerr << "file is empty" << std::endl;
         return EXIT_FAILURE;
     }
 
     format_t detected_type = detect(content.str());
 
-    cout << "type: ";
+    std::cout << "type: ";
     switch (detected_type)
     {
         case format_t::csv:
-            cout << "plain text format";
+            std::cout << "plain text format";
             break;
         case format_t::gnumeric:
-            cout << "Gnumeric";
+            std::cout << "Gnumeric";
             break;
         case format_t::ods:
-            cout << "OpenDocument Spreadsheet";
+            std::cout << "OpenDocument Spreadsheet";
             break;
         case format_t::xls_xml:
-            cout << "Microsoft Excel XML";
+            std::cout << "Microsoft Excel XML";
             break;
         case format_t::xlsx:
-            cout << "Microsoft Office Open XML Excel 2007+";
+            std::cout << "Microsoft Office Open XML Excel 2007+";
             break;
         case format_t::parquet:
-            cout << "Apache Parquet";
+            std::cout << "Apache Parquet";
             break;
         case format_t::unknown:
         default:
-            cout << "unknown";
+            std::cout << "unknown";
     }
-    cout << endl;
+    std::cout << std::endl;
 
     return EXIT_SUCCESS;
 }
 catch (const std::exception& e)
 {
-    cerr << e.what() << endl;
+    std::cerr << e.what() << std::endl;
     return EXIT_FAILURE;
 }
 
