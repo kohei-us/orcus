@@ -32,6 +32,7 @@ public:
     file_content();
     file_content(file_content&& other);
     file_content(std::string_view filepath);
+    file_content(std::u16string_view filepath);
     ~file_content();
 
     /**

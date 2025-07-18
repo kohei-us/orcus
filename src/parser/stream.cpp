@@ -169,9 +169,9 @@ struct file_content::impl
 
     impl() : content_size(0), content(nullptr) {}
 
-    impl(std::string_view filepath) :
-        content_size(fs::file_size(std::string{filepath}.c_str())),
-        mapped_file(std::string{filepath}.c_str(), bip::read_only),
+    impl(const fs::path& filepath) :
+        content_size(fs::file_size(filepath)),
+        mapped_file(filepath.c_str(), bip::read_only),
         mapped_region(mapped_file, bip::read_only, 0, content_size),
         content(nullptr)
     {
@@ -185,6 +185,9 @@ file_content::file_content() :
 file_content::file_content(file_content&& other) = default;
 
 file_content::file_content(std::string_view filepath) :
+    mp_impl(std::make_unique<impl>(filepath)) {}
+
+file_content::file_content(std::u16string_view filepath) :
     mp_impl(std::make_unique<impl>(filepath)) {}
 
 file_content::~file_content() = default;
