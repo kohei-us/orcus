@@ -98,7 +98,7 @@ def gen_namespace_tokens(filepath, ns_values):
         outfile.write("extern const xmlns_id_t NS_odf_")
         outfile.write(key)
         outfile.write(";\n")
-    outfile.write("\nextern const xmlns_id_t* NS_odf_all;\n")
+    outfile.write("\nextern const xmlns_id_t* const NS_odf_all;\n")
     outfile.write("\n}\n\n")
     outfile.close()
 
@@ -125,7 +125,7 @@ def gen_namespace_tokens(filepath, ns_values):
     outfile.write("};\n\n")
     outfile.write("} // anonymous\n\n")
 
-    outfile.write("const xmlns_id_t* NS_odf_all = odf_ns;\n\n")
+    outfile.write("const xmlns_id_t* const NS_odf_all = odf_ns;\n\n")
 
     outfile.write("}\n\n")
     outfile.close()

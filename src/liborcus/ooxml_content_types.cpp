@@ -37,7 +37,7 @@ const content_type_t CT_image_png                   = "image/png";
 
 namespace {
 
-content_type_t cts[] = {
+const content_type_t cts[] = {
     CT_ooxml_extended_properties,
     CT_ooxml_drawing,
     CT_ooxml_vml_drawing,
@@ -68,7 +68,7 @@ content_type_t cts[] = {
 
 }
 
-const content_type_t* CT_all = cts;
+const content_type_t* const CT_all = cts;
 
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

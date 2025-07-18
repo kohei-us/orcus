@@ -18,7 +18,7 @@ extern const xmlns_id_t NS_gnumeric_ooo;
 extern const xmlns_id_t NS_gnumeric_xlink;
 extern const xmlns_id_t NS_gnumeric_xsi;
 
-extern const xmlns_id_t* NS_gnumeric_all;
+extern const xmlns_id_t* const NS_gnumeric_all;
 
 }
 

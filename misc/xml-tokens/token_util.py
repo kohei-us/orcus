@@ -57,7 +57,7 @@ def gen_token_names(outfile, tokens):
         print(get_auto_gen_warning(), file=f)
         print(file=f)
 
-        print("const char* token_names[] = {", file=f)
+        print("const char* const token_names[] = {", file=f)
         print(f"    \"{unknown_token_name}\", // 0", file=f)
 
         for i, token in enumerate(tokens):
@@ -67,4 +67,4 @@ def gen_token_names(outfile, tokens):
             print(f"    \"{token}\"{s} // {i+1}", file=f)
         print("};", file=f)
         print(file=f)
-        print(f"size_t token_name_count = {len(tokens)+1};", file=f)
+        print(f"const size_t token_name_count = {len(tokens)+1};", file=f)

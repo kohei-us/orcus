@@ -12,34 +12,34 @@
 
 namespace orcus {
 
-extern schema_t SCH_mc;
-extern schema_t SCH_opc_content_types;
-extern schema_t SCH_opc_rels;
-extern schema_t SCH_opc_rels_metadata_core_props;
-extern schema_t SCH_od_rels_calc_chain;
-extern schema_t SCH_od_rels_connections;
-extern schema_t SCH_od_rels_printer_settings;
-extern schema_t SCH_od_rels_rev_headers;
-extern schema_t SCH_od_rels_rev_log;
-extern schema_t SCH_od_rels_shared_strings;
-extern schema_t SCH_od_rels_styles;
-extern schema_t SCH_od_rels_theme;
-extern schema_t SCH_od_rels_usernames;
-extern schema_t SCH_od_rels_worksheet;
-extern schema_t SCH_od_rels_extended_props;
-extern schema_t SCH_od_rels_office_doc;
-extern schema_t SCH_od_rels_table;
-extern schema_t SCH_od_rels_pivot_cache_def;
-extern schema_t SCH_od_rels_pivot_cache_rec;
-extern schema_t SCH_od_rels_pivot_table;
-extern schema_t SCH_od_rels_drawing;
-extern schema_t SCH_xlsx_main;
-extern schema_t SCH_mso_x14ac;
+const extern schema_t SCH_mc;
+const extern schema_t SCH_opc_content_types;
+const extern schema_t SCH_opc_rels;
+const extern schema_t SCH_opc_rels_metadata_core_props;
+const extern schema_t SCH_od_rels_calc_chain;
+const extern schema_t SCH_od_rels_connections;
+const extern schema_t SCH_od_rels_printer_settings;
+const extern schema_t SCH_od_rels_rev_headers;
+const extern schema_t SCH_od_rels_rev_log;
+const extern schema_t SCH_od_rels_shared_strings;
+const extern schema_t SCH_od_rels_styles;
+const extern schema_t SCH_od_rels_theme;
+const extern schema_t SCH_od_rels_usernames;
+const extern schema_t SCH_od_rels_worksheet;
+const extern schema_t SCH_od_rels_extended_props;
+const extern schema_t SCH_od_rels_office_doc;
+const extern schema_t SCH_od_rels_table;
+const extern schema_t SCH_od_rels_pivot_cache_def;
+const extern schema_t SCH_od_rels_pivot_cache_rec;
+const extern schema_t SCH_od_rels_pivot_table;
+const extern schema_t SCH_od_rels_drawing;
+const extern schema_t SCH_xlsx_main;
+const extern schema_t SCH_mso_x14ac;
 
 /**
  * Null-terminated array of all schema types.
  */
-extern schema_t* SCH_all;
+const extern schema_t* const SCH_all;
 
 }
 

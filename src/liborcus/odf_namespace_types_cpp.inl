@@ -57,7 +57,7 @@ const xmlns_id_t odf_ns[] = {
 
 } // anonymous
 
-const xmlns_id_t* NS_odf_all = odf_ns;
+const xmlns_id_t* const NS_odf_all = odf_ns;
 
 }
 

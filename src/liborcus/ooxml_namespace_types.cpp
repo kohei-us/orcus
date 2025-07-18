@@ -22,7 +22,7 @@ const xmlns_id_t NS_mso_x14 = "http://schemas.microsoft.com/office/spreadsheetml
 
 namespace {
 
-xmlns_id_t ooxml_ns[] = {
+const xmlns_id_t ooxml_ns[] = {
     NS_ooxml_a,
     NS_ooxml_r,
     NS_ooxml_xdr,
@@ -30,13 +30,13 @@ xmlns_id_t ooxml_ns[] = {
     nullptr
 };
 
-xmlns_id_t opc_ns[] = {
+const xmlns_id_t opc_ns[] = {
     NS_opc_ct,
     NS_opc_rel,
     nullptr
 };
 
-xmlns_id_t misc_ns[] = {
+const xmlns_id_t misc_ns[] = {
     NS_mc,
     NS_mso_x14,
     nullptr
@@ -44,9 +44,9 @@ xmlns_id_t misc_ns[] = {
 
 }
 
-const xmlns_id_t* NS_ooxml_all = ooxml_ns;
-const xmlns_id_t* NS_opc_all = opc_ns;
-const xmlns_id_t* NS_misc_all = misc_ns;
+const xmlns_id_t* const NS_ooxml_all = ooxml_ns;
+const xmlns_id_t* const NS_opc_all = opc_ns;
+const xmlns_id_t* const NS_misc_all = misc_ns;
 
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

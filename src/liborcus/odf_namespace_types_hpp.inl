@@ -25,7 +25,7 @@ extern const xmlns_id_t NS_odf_xforms;
 extern const xmlns_id_t NS_odf_xhtml;
 extern const xmlns_id_t NS_odf_xlink;
 
-extern const xmlns_id_t* NS_odf_all;
+extern const xmlns_id_t* const NS_odf_all;
 
 }
 

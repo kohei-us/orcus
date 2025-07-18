@@ -41,7 +41,7 @@ extern const content_type_t CT_image_png;
 /**
  * Null-terminated array of all content types.
  */
-extern const content_type_t* CT_all;
+extern const content_type_t* const CT_all;
 
 }
 

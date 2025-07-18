@@ -558,11 +558,11 @@ const_node document_tree::get_document_root(size_t index) const
 
 namespace {
 
-const char* indent = "    ";
-const char* kw_true = "true";
-const char* kw_false = "false";
-const char* kw_tilde = "~";
-const char* kw_null = "null";
+const char* const indent = "    ";
+const char* const kw_true = "true";
+const char* const kw_false = "false";
+const char* const kw_tilde = "~";
+const char* const kw_null = "null";
 
 const char quote = '"';
 
@@ -812,7 +812,7 @@ void dump_json_node(std::ostringstream& os, const yaml_value& node, size_t scope
     }
 }
 
-const char* warning_multiple_documents =
+const char* const warning_multiple_documents =
 "warning: this YAML file contains multiple documents.  Only the first document\n"
 "will be written.";
 

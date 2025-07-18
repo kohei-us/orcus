@@ -240,7 +240,7 @@ opc_relations_context::opc_relations_context(session_context& session_cxt, const
     xml_context_base(session_cxt, _tokens)
 {
     // build content type cache.
-    for (schema_t* p = SCH_all; *p; ++p)
+    for (const schema_t* p = SCH_all; *p; ++p)
         m_schema_cache.insert(std::string_view(*p));
 }
 

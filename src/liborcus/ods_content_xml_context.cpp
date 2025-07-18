@@ -34,7 +34,7 @@ namespace cell_value {
 using map_type = mdds::sorted_string_map<ods_content_xml_context::cell_value_type>;
 
 // Keys must be sorted.
-map_type::entry_type entries[] = {
+constexpr map_type::entry_type entries[] = {
     { "date",   ods_content_xml_context::vt_date },
     { "float",  ods_content_xml_context::vt_float },
     { "string", ods_content_xml_context::vt_string }

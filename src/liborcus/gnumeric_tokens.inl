@@ -1,6 +1,6 @@
 // This file has been auto-generated.  Do not hand-edit this.
 
-const char* token_names[] = {
+const char* const token_names[] = {
     "??", // 0
     "Active", // 1
     "AllowBlank", // 2
@@ -279,4 +279,4 @@ const char* token_names[] = {
     "width"  // 275
 };
 
-size_t token_name_count = 276;
+const size_t token_name_count = 276;

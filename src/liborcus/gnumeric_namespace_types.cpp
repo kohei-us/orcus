@@ -18,7 +18,7 @@ const xmlns_id_t NS_gnumeric_xsi = "http://www.w3.org/2001/XMLSchema-instance";
 
 namespace {
 
-xmlns_id_t gnumeric_ns[] = {
+const xmlns_id_t gnumeric_ns[] = {
     NS_gnumeric_dc,
     NS_gnumeric_gnm,
     NS_gnumeric_ooo,
@@ -32,7 +32,7 @@ xmlns_id_t gnumeric_ns[] = {
 
 }
 
-const xmlns_id_t* NS_gnumeric_all = gnumeric_ns;
+const xmlns_id_t* const NS_gnumeric_all = gnumeric_ns;
 
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

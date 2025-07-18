@@ -16,7 +16,7 @@ const xmlns_id_t NS_xls_xml_html ="http://www.w3.org/TR/REC-html40";
 
 namespace {
 
-xmlns_id_t xls_xml_ns[] = {
+const xmlns_id_t xls_xml_ns[] = {
     NS_xls_xml_ss,
     NS_xls_xml_o,
     NS_xls_xml_x,
@@ -26,7 +26,7 @@ xmlns_id_t xls_xml_ns[] = {
 
 }
 
-const xmlns_id_t* NS_xls_xml_all = xls_xml_ns;
+const xmlns_id_t* const NS_xls_xml_all = xls_xml_ns;
 
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

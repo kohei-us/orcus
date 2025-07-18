@@ -1427,7 +1427,7 @@ std::ostream& operator<< (std::ostream& os, const date_time_t& v)
 
 std::ostream& operator<< (std::ostream& os, format_t v)
 {
-    static const char* values[] = {
+    static const char* const values[] = {
         "unknown",
         "ods",
         "xlsx",

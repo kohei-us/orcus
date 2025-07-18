@@ -1,6 +1,6 @@
 // This file has been auto-generated.  Do not hand-edit this.
 
-const char* token_names[] = {
+const char* const token_names[] = {
     "??", // 0
     "ContentType", // 1
     "Default", // 2
@@ -32,5 +32,5 @@ const char* token_names[] = {
     "version"  // 28
 };
 
-size_t token_name_count = 29;
+const size_t token_name_count = 29;
 

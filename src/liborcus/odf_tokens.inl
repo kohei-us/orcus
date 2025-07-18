@@ -1,6 +1,6 @@
 // This file has been auto-generated.  Do not hand-edit this.
 
-const char* token_names[] = {
+const char* const token_names[] = {
     "??", // 0
     "0", // 1
     "0deg", // 2
@@ -2282,4 +2282,4 @@ const char* token_names[] = {
     "zero-values"  // 2278
 };
 
-size_t token_name_count = 2279;
+const size_t token_name_count = 2279;

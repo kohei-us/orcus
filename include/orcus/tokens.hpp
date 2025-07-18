@@ -31,7 +31,7 @@ class ORCUS_PSR_DLLPUBLIC tokens
 public:
     tokens() = delete;
     tokens(const tokens&) = delete;
-    tokens(const char** token_names, size_t token_name_count);
+    tokens(const char* const* token_names, size_t token_name_count);
     ~tokens();
 
     /**
@@ -64,7 +64,7 @@ private:
     using token_map_type = std::unordered_map<std::string_view, xml_token_t>;
 
     token_map_type m_tokens;
-    const char** m_token_names;
+    const char* const* m_token_names;
     size_t m_token_name_count;
 };
 

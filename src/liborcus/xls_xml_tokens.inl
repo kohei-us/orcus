@@ -1,6 +1,6 @@
 // This file has been auto-generated.  Do not hand-edit this.
 
-const char* token_names[] = {
+const char* const token_names[] = {
     "??", // 0
     "AcceptLabelsInFormulas", // 1
     "Action", // 2
@@ -994,4 +994,4 @@ const char* token_names[] = {
     "yrange"  // 990
 };
 
-size_t token_name_count = 991;
+const size_t token_name_count = 991;

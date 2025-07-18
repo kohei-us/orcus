@@ -9,7 +9,7 @@
 
 namespace orcus {
 
-tokens::tokens(const char** token_names, size_t token_name_count) :
+tokens::tokens(const char* const* token_names, size_t token_name_count) :
     m_token_names(token_names), 
     m_token_name_count(token_name_count)
 {

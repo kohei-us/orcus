@@ -26,17 +26,17 @@ extern const xmlns_id_t NS_mso_x14;
 /**
  * Null-terminated array of all ooxml namespaces.
  */
-extern const xmlns_id_t* NS_ooxml_all;
+extern const xmlns_id_t* const NS_ooxml_all;
 
 /**
  * Null-terminated array of all opc namespaces.
  */
-extern const xmlns_id_t* NS_opc_all;
+extern const xmlns_id_t* const NS_opc_all;
 
 /**
  * Null-terminated array of all the other namespaces.
  */
-extern const xmlns_id_t* NS_misc_all;
+extern const xmlns_id_t* const NS_misc_all;
 
 }
 

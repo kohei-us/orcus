@@ -20,7 +20,7 @@ extern const xmlns_id_t NS_xls_xml_html;
 /**
  * Null-terminated array of all xls xml namespaces.
  */
-extern const xmlns_id_t* NS_xls_xml_all;
+extern const xmlns_id_t* const NS_xls_xml_all;
 
 }
 
