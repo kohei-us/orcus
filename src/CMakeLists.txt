@@ -5,6 +5,7 @@ add_subdirectory(liborcus)
 add_subdirectory(spreadsheet)
 
 add_executable(orcus-detect
+    cli_global.cpp
     orcus_detect_main.cpp
 )
 
@@ -27,32 +28,37 @@ add_executable(orcus-yaml
 )
 
 add_executable(orcus-csv
+    cli_global.cpp
     orcus_csv_main.cpp
     orcus_filter_global.cpp
 )
 
 add_executable(orcus-xml
-    orcus_xml_main.cpp
     cli_global.cpp
+    orcus_xml_main.cpp
     orcus_filter_global.cpp
 )
 
 add_executable(orcus-ods
+    cli_global.cpp
     orcus_ods_main.cpp
     orcus_filter_global.cpp
 )
 
 add_executable(orcus-styles-ods
+    cli_global.cpp
     orcus_ods_styles.cpp
     orcus_filter_global.cpp
 )
 
 add_executable(orcus-xlsx
+    cli_global.cpp
     orcus_xlsx_main.cpp
     orcus_filter_global.cpp
 )
 
 add_executable(orcus-xls-xml
+    cli_global.cpp
     orcus_xls_xml_main.cpp
     orcus_filter_global.cpp
 )
@@ -144,6 +150,7 @@ list(APPEND _INSTALL_TARGETS
 
 if(ORCUS_WITH_PARQUET)
     add_executable(orcus-parquet
+        cli_global.cpp
         orcus_parquet_main.cpp
         orcus_filter_global.cpp
     )

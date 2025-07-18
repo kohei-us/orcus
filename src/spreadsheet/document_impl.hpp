@@ -26,6 +26,10 @@
 #include <ixion/matrix.hpp>
 #include <ixion/model_context.hpp>
 
+#include "filesystem_env.hpp"
+
+#include <ostream>
+
 namespace orcus { namespace spreadsheet { namespace detail {
 
 /**
@@ -75,6 +79,14 @@ struct document_impl
     tables table_store;
 
     document_impl(document& _doc, const range_size_t& sheet_size);
+
+    void dump(dump_format_t format, const fs::path& outpath) const;
+    void dump_flat(const fs::path& outdir) const;
+    void dump_html(const fs::path& outdir) const;
+    void dump_json(const fs::path& outdir) const;
+    void dump_csv(const fs::path& outdir) const;
+    void dump_debug_state(const fs::path& outdir) const;
+    void dump_check(std::ostream& os) const;
 };
 
 }}}

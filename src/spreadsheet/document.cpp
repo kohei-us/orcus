@@ -8,6 +8,7 @@
 #include "document_impl.hpp"
 #include "debug_state_dumper.hpp"
 #include "debug_state_context.hpp"
+#include "filesystem_env.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -181,184 +182,21 @@ void document::clear()
     mp_impl = std::make_unique<detail::document_impl>(*this, get_sheet_size());
 }
 
-void document::dump(dump_format_t format, const std::string& output) const
+void document::dump(dump_format_t format, std::string_view output) const
 {
-    if (format == dump_format_t::none)
-        return;
+    fs::path outpath{output};
+    mp_impl->dump(format, outpath);
+}
 
-    if (format == dump_format_t::check)
-    {
-        // For this output, we write to a single file.
-        std::ostream* ostrm = &std::cout;
-        std::unique_ptr<std::ofstream> fs;
-
-        if (!output.empty())
-        {
-            if (fs::is_directory(output))
-            {
-                std::ostringstream os;
-                os << "Output file path points to an existing directory.";
-                throw std::invalid_argument(os.str());
-            }
-
-            // Output to stdout when output path is not given.
-            fs = std::make_unique<std::ofstream>(output.data());
-            ostrm = fs.get();
-        }
-
-        dump_check(*ostrm);
-        return;
-    }
-
-    if (output.empty())
-        throw std::invalid_argument("No output directory.");
-
-    if (fs::exists(output))
-    {
-        if (!fs::is_directory(output))
-        {
-            std::ostringstream os;
-            os << "A file named '" << output << "' already exists, and is not a directory.";
-            throw std::invalid_argument(os.str());
-        }
-    }
-    else
-        fs::create_directory(output);
-
-    switch (format)
-    {
-        case dump_format_t::csv:
-            dump_csv(output);
-            break;
-        case dump_format_t::flat:
-            dump_flat(output);
-            break;
-        case dump_format_t::html:
-            dump_html(output);
-            break;
-        case dump_format_t::json:
-            dump_json(output);
-            break;
-        case dump_format_t::debug_state:
-            dump_debug_state(output);
-            break;
-        // coverity[dead_error_line] - following conditions exist to avoid compiler warning
-        case dump_format_t::none:
-        case dump_format_t::unknown:
-            break;
-        default:
-            ;
-    }
+void document::dump(dump_format_t format, std::u16string_view output) const
+{
+    fs::path outpath{output};
+    mp_impl->dump(format, outpath);
 }
 
 void document::dump_check(std::ostream& os) const
 {
-    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
-        sheet->data.dump_check(os, sheet->name);
-}
-
-void document::dump_flat(const std::string& outdir) const
-{
-    std::cout << "----------------------------------------------------------------------" << std::endl;
-    std::cout << "  Document content summary" << std::endl;
-    std::cout << "----------------------------------------------------------------------" << std::endl;
-    mp_impl->ss_store.dump(std::cout);
-
-    std::cout << "number of sheets: " << mp_impl->sheets.size() << std::endl;
-
-    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
-    {
-        fs::path outpath{outdir};
-        outpath /= std::string{sheet->name};
-        outpath.replace_extension(".txt");
-
-        std::ofstream file(outpath.native());
-        if (!file)
-        {
-            std::cerr << "failed to create file: " << outpath << std::endl;
-            return;
-        }
-
-        file << "---" << std::endl;
-        file << "Sheet name: " << sheet->name << std::endl;
-        sheet->data.dump_flat(file);
-    }
-}
-
-void document::dump_html(const std::string& outdir) const
-{
-    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
-    {
-        fs::path outpath{outdir};
-        outpath /= std::string{sheet->name};
-        outpath.replace_extension(".html");
-
-        std::ofstream file(outpath.native());
-        if (!file)
-        {
-            std::cerr << "failed to create file: " << outpath << std::endl;
-            return;
-        }
-
-        sheet->data.dump_html(file);
-    }
-}
-
-void document::dump_json(const std::string& outdir) const
-{
-    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
-    {
-        fs::path outpath{outdir};
-        outpath /= std::string{sheet->name};
-        outpath.replace_extension(".json");
-
-        std::ofstream file(outpath.native());
-        if (!file)
-        {
-            std::cerr << "failed to create file: " << outpath << std::endl;
-            return;
-        }
-
-        sheet->data.dump_json(file);
-    }
-}
-
-void document::dump_csv(const std::string& outdir) const
-{
-    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
-    {
-        fs::path outpath{outdir};
-        outpath /= std::string{sheet->name};
-        outpath.replace_extension(".csv");
-
-        std::ofstream file(outpath.c_str());
-        if (!file)
-        {
-            std::cerr << "failed to create file: " << outpath << std::endl;
-            return;
-        }
-
-        sheet->data.dump_csv(file);
-    }
-}
-
-void document::dump_debug_state(const std::string& outdir) const
-{
-    detail::debug_state_context cxt;
-    detail::doc_debug_state_dumper dumper{cxt, *mp_impl};
-    fs::path output_dir{outdir};
-    dumper.dump(output_dir);
-
-    for (const std::unique_ptr<detail::sheet_item>& sheet : mp_impl->sheets)
-    {
-        fs::path outpath = output_dir;
-        outpath /= "sheets";
-        outpath /= std::string{sheet->name};
-        fs::create_directories(outpath);
-        sheet->data.dump_debug_state(outpath.string(), sheet->name);
-    }
-
-    mp_impl->pivots.dump_debug_state(outdir);
+    mp_impl->dump_check(os);
 }
 
 sheet_t document::get_sheet_index(std::string_view name) const

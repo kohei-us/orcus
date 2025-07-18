@@ -7,11 +7,12 @@
 
 #include "orcus/orcus_xlsx.hpp"
 
-#include "orcus/xml_namespace.hpp"
-#include "orcus/spreadsheet/import_interface.hpp"
-#include "orcus/exception.hpp"
-#include "orcus/config.hpp"
-#include "orcus/measurement.hpp"
+#include <orcus/xml_namespace.hpp>
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/exception.hpp>
+#include <orcus/config.hpp>
+#include <orcus/measurement.hpp>
+#include <orcus/stream.hpp>
 
 #include "xlsx_types.hpp"
 #include "xlsx_handler.hpp"
@@ -209,6 +210,12 @@ void orcus_xlsx::read_file(std::string_view filepath)
     set_formulas_to_doc();
 
     mp_impl->mp_factory->finalize();
+}
+
+void orcus_xlsx::read_file(std::u16string_view filepath)
+{
+    orcus::file_content fc(filepath);
+    read_stream(fc.str());
 }
 
 void orcus_xlsx::read_stream(std::string_view stream)

@@ -56,25 +56,27 @@ public:
     }
 };
 
-int main(int argc, char** argv)
+int ORCUS_CLI_MAIN(int argc, arg_char_t** argv) try
 {
+    bootstrap_program();
+
     spreadsheet::range_size_t ss{1048576, 16384};
     spreadsheet::document doc{ss};
     spreadsheet::import_factory fact(doc);
     orcus_csv app(&fact);
     csv_args_handler hdl(fact);
 
-    try
-    {
-        if (!parse_import_filter_args(argc, argv, fact, app, doc, &hdl))
-            return EXIT_FAILURE;
-    }
-    catch (const std::exception& e)
-    {
-        cerr << e.what() << endl;
+    import_filter_arg_parser<arg_char_t> parser(fact, app, doc);
+
+    if (!parser.parse(argc, argv))
         return EXIT_FAILURE;
-    }
 
     return EXIT_SUCCESS;
 }
+catch (const std::exception& e)
+{
+    cerr << e.what() << endl;
+    return EXIT_FAILURE;
+}
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

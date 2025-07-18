@@ -115,6 +115,12 @@ void orcus_xls_xml::read_file(std::string_view filepath)
     mp_impl->read_stream(content.data(), content.size(), get_config());
 }
 
+void orcus_xls_xml::read_file(std::u16string_view filepath)
+{
+    orcus::file_content fc(filepath);
+    read_stream(fc.str());
+}
+
 void orcus_xls_xml::read_stream(std::string_view stream)
 {
     memory_content mem_content(stream);

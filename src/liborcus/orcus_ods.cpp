@@ -10,6 +10,7 @@
 #include <orcus/zip_archive.hpp>
 #include <orcus/zip_archive_stream.hpp>
 #include <orcus/measurement.hpp>
+#include <orcus/stream.hpp>
 
 #include "xml_stream_parser.hpp"
 #include "ods_content_xml_context.hpp"
@@ -186,6 +187,12 @@ void orcus_ods::read_file(std::string_view filepath)
 {
     zip_archive_stream_fd stream(std::string{filepath}.c_str());
     read_file_impl(&stream);
+}
+
+void orcus_ods::read_file(std::u16string_view filepath)
+{
+    orcus::file_content fc(filepath);
+    read_stream(fc.str());
 }
 
 void orcus_ods::read_stream(std::string_view stream)

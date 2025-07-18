@@ -135,6 +135,12 @@ void orcus_gnumeric::read_file(std::string_view filepath)
     read_stream(content.str());
 }
 
+void orcus_gnumeric::read_file(std::u16string_view filepath)
+{
+    orcus::file_content fc(filepath);
+    read_stream(fc.str());
+}
+
 void orcus_gnumeric::read_stream(std::string_view stream)
 {
     if (stream.empty())

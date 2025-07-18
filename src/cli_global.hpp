@@ -11,7 +11,17 @@
 #include <boost/program_options.hpp>
 #include <iosfwd>
 
+#ifdef _WIN32
+#define ORCUS_CLI_MAIN wmain
+using arg_char_t = wchar_t;
+#else
+#define ORCUS_CLI_MAIN main
+using arg_char_t = char;
+#endif
+
 namespace orcus {
+
+void bootstrap_program();
 
 /**
  * This class abstracts away an instance of std::ostream.  It's either

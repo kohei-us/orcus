@@ -5,22 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/format_detection.hpp"
-#include "orcus/exception.hpp"
-#include "orcus/stream.hpp"
+#include <orcus/format_detection.hpp>
+#include <orcus/exception.hpp>
+#include <orcus/stream.hpp>
 
-#include <cstdlib>
+#include "orcus_filter_global.hpp"
+
 #include <iostream>
-#include <string>
 
 using namespace orcus;
 
-int main(int argc, char** argv) try
+int ORCUS_CLI_MAIN(int argc, arg_char_t** argv) try
 {
+    bootstrap_program();
+
     if (argc != 2)
         return EXIT_FAILURE;
 
-    const char* filepath = argv[1];
+    std::u16string_view filepath(reinterpret_cast<const char16_t*>(argv[1]));
     file_content content(filepath);
 
     if (content.empty())

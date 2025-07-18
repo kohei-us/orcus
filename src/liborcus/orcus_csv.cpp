@@ -7,11 +7,12 @@
 
 #include "orcus/orcus_csv.hpp"
 
-#include "orcus/csv_parser.hpp"
-#include "orcus/stream.hpp"
-#include "orcus/spreadsheet/import_interface.hpp"
-#include "orcus/config.hpp"
-#include "orcus/string_pool.hpp"
+#include <orcus/csv_parser.hpp>
+#include <orcus/stream.hpp>
+#include <orcus/spreadsheet/import_interface.hpp>
+#include <orcus/config.hpp>
+#include <orcus/string_pool.hpp>
+#include <orcus/stream.hpp>
 
 #include <cstring>
 #include <iostream>
@@ -175,6 +176,12 @@ void orcus_csv::read_file(std::string_view filepath)
     file_content fc(filepath);
     mp_impl->parse(fc.str(), get_config());
     mp_impl->factory->finalize();
+}
+
+void orcus_csv::read_file(std::u16string_view filepath)
+{
+    orcus::file_content fc(filepath);
+    read_stream(fc.str());
 }
 
 void orcus_csv::read_stream(std::string_view stream)

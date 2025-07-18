@@ -165,7 +165,7 @@ orcus_mso_encryption_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_
 
 # orcus-detect
 
-orcus_detect_SOURCES = orcus_detect_main.cpp
+orcus_detect_SOURCES = orcus_detect_main.cpp cli_global.cpp
 orcus_detect_LDFLAGS = \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
 	$(BOOST_SYSTEM_LDFLAGS)
@@ -199,6 +199,7 @@ bin_PROGRAMS += \
 # orcus-csv
 
 orcus_csv_SOURCES = \
+	cli_global.cpp \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_csv_main.cpp
@@ -262,6 +263,7 @@ bin_PROGRAMS += \
 # orcus-ods
 
 orcus_ods_SOURCES = \
+	cli_global.cpp \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_ods_main.cpp
@@ -290,6 +292,7 @@ orcus_ods_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 # orcus-styles-ods
 
 orcus_styles_ods_SOURCES = \
+	cli_global.cpp \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_ods_styles.cpp
@@ -326,6 +329,7 @@ bin_PROGRAMS += \
 # orcus-xlsx
 
 orcus_xlsx_SOURCES = \
+	cli_global.cpp \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_xlsx_main.cpp
@@ -361,6 +365,7 @@ bin_PROGRAMS += \
 # orcus-xls-xml
 
 orcus_xls_xml_SOURCES = \
+	cli_global.cpp \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_xls_xml_main.cpp
@@ -396,6 +401,7 @@ bin_PROGRAMS += \
 # orcus-gnumeric
 
 orcus_gnumeric_SOURCES = \
+	cli_global.cpp \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_gnumeric_main.cpp
@@ -431,6 +437,7 @@ bin_PROGRAMS += \
 # orcus-parquet
 
 orcus_parquet_SOURCES = \
+	cli_global.cpp \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_parquet_main.cpp

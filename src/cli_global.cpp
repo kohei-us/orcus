@@ -12,9 +12,23 @@
 
 #include "filesystem_env.hpp"
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 namespace po = boost::program_options;
 
 namespace orcus {
+
+void bootstrap_program()
+{
+#ifdef _WIN32
+    // enable UTF-8 support in console output
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+    std::wcout.imbue(std::locale(".65001"));
+#endif
+}
 
 output_stream::output_stream(const boost::program_options::variables_map& vm) :
     m_os(&std::cout)

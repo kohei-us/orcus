@@ -64,7 +64,10 @@ public:
     ~document();
 
     /** See @ref iface::document_dumper. */
-    virtual void dump(dump_format_t format, const std::string& output) const override;
+    virtual void dump(dump_format_t format, std::string_view output) const override;
+
+    /** See @ref iface::document_dumper. */
+    virtual void dump(dump_format_t format, std::u16string_view output) const override;
 
     /** See @ref iface::document_dumper. */
     virtual void dump_check(std::ostream& os) const override;
@@ -131,12 +134,6 @@ public:
     const tables& get_tables() const;
 
 private:
-    void dump_flat(const std::string& outdir) const;
-    void dump_html(const ::std::string& outdir) const;
-    void dump_json(const ::std::string& outdir) const;
-    void dump_csv(const std::string& outdir) const;
-    void dump_debug_state(const std::string& outdir) const;
-
     void finalize_import();
     void insert_dirty_cell(const ixion::abs_address_t& pos);
 

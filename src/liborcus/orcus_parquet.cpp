@@ -532,6 +532,12 @@ void orcus_parquet::read_file(std::string_view filepath)
     mp_impl->read_file(fs::path{std::string{filepath}});
 }
 
+void orcus_parquet::read_file(std::u16string_view filepath)
+{
+    orcus::file_content fc(filepath);
+    read_stream(fc.str());
+}
+
 void orcus_parquet::read_stream(std::string_view stream)
 {
     mp_impl->read_stream(stream);

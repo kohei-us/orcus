@@ -13,14 +13,18 @@
 
 #include <iostream>
 
-int main(int argc, char** argv) try
+int ORCUS_CLI_MAIN(int argc, arg_char_t** argv) try
 {
+    orcus::bootstrap_program();
+
     orcus::spreadsheet::range_size_t ss{1048576, 16384};
     orcus::spreadsheet::document doc{ss};
     orcus::spreadsheet::import_factory fact(doc);
     orcus::orcus_parquet app(&fact);
 
-    if (!parse_import_filter_args(argc, argv, fact, app, doc))
+    orcus::import_filter_arg_parser<arg_char_t> parser(fact, app, doc);
+
+    if (!parser.parse(argc, argv))
         return EXIT_FAILURE;
 
     return EXIT_SUCCESS;

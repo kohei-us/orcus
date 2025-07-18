@@ -6,9 +6,6 @@
  */
 
 #include "orcus_filter_global.hpp"
-#include "orcus/config.hpp"
-#include "orcus/interface.hpp"
-#include "orcus/spreadsheet/factory.hpp"
 
 #include <mdds/sorted_string_map.hpp>
 #include <vector>
@@ -39,31 +36,6 @@ const std::map<dump_format_t, std::string_view> descriptions =
     std::make_pair(dump_format_t::debug_state, "This format dumps the internal state of the document in detail, useful for debugging."),
     std::make_pair(dump_format_t::none,  "No output to be generated. Maybe useful during development."),
 };
-
-const char* help_program =
-"The FILE must specify a path to an existing file.";
-
-const char* help_output =
-"Output directory path, or output file when --dump-check option is used.";
-
-const char* help_dump_check =
-"Dump the content to stdout in a special format used for content verification "
-"in automated tests.";
-
-const char* help_debug =
-"Turn on a debug mode and optionally specify a debug level in order to generate run-time debug outputs.";
-
-const char* help_recalc =
-"Re-calculate all formula cells after the documetn is loaded.";
-
-const char* help_formula_error_policy =
-"Specify whether to abort immediately when the loader fails to parse the first "
-"formula cell ('fail'), or skip the offending cells and continue ('skip').";
-
-const char* help_row_size =
-"Specify the number of maximum rows in each sheet.";
-
-const char* err_no_input_file = "No input file.";
 
 }
 
@@ -105,132 +77,6 @@ bool handle_dump_check(
     std::ofstream file(outfile.c_str());
     app.read_file(infile);
     doc.dump_check(file);
-    return true;
-}
-
-bool parse_import_filter_args(
-    int argc, char** argv, spreadsheet::import_factory& fact,
-    iface::import_filter& app, iface::document_dumper& doc,
-    extra_args_handler* args_handler)
-{
-    bool debug = false;
-    bool recalc_formula_cells = false;
-
-    po::options_description desc("Options");
-    desc.add_options()
-        ("help,h", "Print this help.")
-        ("debug,d", po::bool_switch(&debug), help_debug)
-        ("recalc,r", po::bool_switch(&recalc_formula_cells), help_recalc)
-        ("error-policy,e", po::value<std::string>()->default_value("fail"), help_formula_error_policy)
-        ("dump-check", help_dump_check)
-        ("output,o", po::value<std::string>(), help_output)
-        ("output-format,f", po::value<std::string>(), gen_help_output_format().data())
-        ("row-size", po::value<spreadsheet::row_t>(), help_row_size);
-
-    if (args_handler)
-        args_handler->add_options(desc);
-
-    po::options_description hidden("Hidden options");
-    hidden.add_options()
-        ("input", po::value<std::string>(), "input file");
-
-    po::options_description cmd_opt;
-    cmd_opt.add(desc).add(hidden);
-
-    po::positional_options_description po_desc;
-    po_desc.add("input", -1);
-
-    po::variables_map vm;
-    try
-    {
-        po::store(
-            po::command_line_parser(argc, argv).options(cmd_opt).positional(po_desc).run(), vm);
-        po::notify(vm);
-    }
-    catch (const std::exception& e)
-    {
-        // Unknown options.
-        std::cout << e.what() << std::endl;
-        std::cout << desc;
-        return false;
-    }
-
-    if (vm.count("help"))
-    {
-        std::cout << "Usage: orcus-" << app.get_name() << " [options] FILE" << std::endl << std::endl;
-        std::cout << help_program << std::endl << std::endl << desc;
-        return true;
-    }
-
-    std::string infile, outdir;
-    dump_format_t outformat = dump_format_t::unknown;
-
-    if (vm.count("input"))
-        infile = vm["input"].as<std::string>();
-
-    if (vm.count("output"))
-        outdir = vm["output"].as<std::string>();
-
-    if (vm.count("output-format"))
-    {
-        std::string outformat_s = vm["output-format"].as<std::string>();
-        outformat = to_dump_format_enum(outformat_s);
-    }
-
-    if (vm.count("row-size"))
-        fact.set_default_row_size(vm["row-size"].as<spreadsheet::row_t>());
-
-    std::string error_policy_s = vm["error-policy"].as<std::string>();
-    spreadsheet::formula_error_policy_t error_policy =
-        spreadsheet::to_formula_error_policy(error_policy_s);
-
-    if (error_policy == spreadsheet::formula_error_policy_t::unknown)
-    {
-        std::cerr << "Unrecognized error policy: " << error_policy_s << std::endl;
-        return false;
-    }
-
-    fact.set_formula_error_policy(error_policy);
-
-    if (infile.empty())
-    {
-        std::cerr << err_no_input_file << std::endl;
-        return false;
-    }
-
-    config opt = app.get_config();
-    opt.debug = debug;
-
-    if (args_handler)
-        args_handler->map_to_config(opt, vm);
-
-    app.set_config(opt);
-
-    fact.set_recalc_formula_cells(recalc_formula_cells);
-
-    if (vm.count("dump-check"))
-    {
-        // 'outdir' is used as the output file path in this mode.
-        return handle_dump_check(app, doc, infile, outdir);
-    }
-
-    if (outformat == dump_format_t::unknown)
-    {
-        std::cerr << "You must specify one of the supported output formats." << std::endl;
-        return false;
-    }
-
-    try
-    {
-        app.read_file(infile);
-        doc.dump(outformat, outdir);
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-        return false;
-    }
-
     return true;
 }
 

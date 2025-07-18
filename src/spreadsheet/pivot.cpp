@@ -488,7 +488,22 @@ _CacheT* get_cache_impl(_CachesT& caches, pivot_cache_id_t cache_id)
     return it == caches.end() ? nullptr : it->second.get();
 }
 
+fs::path to_path(const pivot_collection::outdir_type& outdir)
+{
+    switch (outdir.index())
+    {
+        case 0:
+            return std::get<std::string_view>(outdir);
+        case 1:
+            return std::get<std::u16string_view>(outdir);
+    }
+
+    std::ostringstream os;
+    os << "invalid outdir_type in pivot_collection (" << outdir.index() << ")";
+    throw std::invalid_argument(os.str());
 }
+
+} // anonymous namespace
 
 pivot_cache* pivot_collection::get_cache(pivot_cache_id_t cache_id)
 {
@@ -500,9 +515,9 @@ const pivot_cache* pivot_collection::get_cache(pivot_cache_id_t cache_id) const
     return get_cache_impl<const detail::caches_type, const pivot_cache>(mp_impl->caches, cache_id);
 }
 
-void pivot_collection::dump_debug_state(std::string_view outdir) const
+void pivot_collection::dump_debug_state(const outdir_type& outdir) const
 {
-    fs::path output_dir{std::string{outdir}};
+    auto output_dir = to_path(outdir);
 
     for (const auto& [id, cache] : mp_impl->caches)
     {
