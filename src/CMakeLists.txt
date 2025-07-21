@@ -123,6 +123,12 @@ add_executable(orcus-ods-import-test EXCLUDE_FROM_ALL
     orcus_ods_import_test.cpp
 )
 
+add_executable(orcus-detect-test EXCLUDE_FROM_ALL
+    orcus_detect_test.cpp
+    cli_global.cpp
+    orcus_test_global.cpp
+)
+
 list(APPEND _TESTS
     orcus-csv-test
     orcus-ods-test
@@ -132,6 +138,7 @@ list(APPEND _TESTS
     orcus-xml-mapped-test
     orcus-json-mapped-test
     orcus-ods-import-test
+    orcus-detect-test
 )
 
 list(APPEND _INSTALL_TARGETS

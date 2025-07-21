@@ -11,6 +11,7 @@
 #include "test_global.hpp"
 #include <orcus/spreadsheet/document_types.hpp>
 #include <orcus/spreadsheet/auto_filter.hpp>
+#include <orcus/stream.hpp>
 #include <ixion/formula_name_resolver.hpp>
 
 #include <string>
@@ -28,6 +29,12 @@ struct table_t;
 }
 
 namespace test {
+
+orcus::file_content to_file_content(const std::string& path);
+orcus::file_content to_file_content(const std::wstring& path);
+
+void print_path(const std::string& path);
+void print_path(const std::wstring& path);
 
 std::string get_content_check(const spreadsheet::document& doc);
 

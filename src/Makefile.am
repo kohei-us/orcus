@@ -468,8 +468,31 @@ if BUILD_SPREADSHEET_MODEL
 
 EXTRA_PROGRAMS += \
 	orcus-csv-test \
+	orcus-detect-test \
 	orcus-xml-mapped-test \
 	orcus-json-mapped-test
+
+# orcus-detect-test
+
+orcus_detect_test_SOURCES = \
+	orcus_detect_test.cpp \
+	orcus_test_global.cpp \
+	cli_global.cpp
+
+orcus_detect_test_LDADD = \
+	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	liborcus/liborcus-@ORCUS_API_VERSION@.la \
+	./test/liborcus-test.a \
+	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	$(BOOST_PROGRAM_OPTIONS_LIBS) \
+	$(BOOST_FILESYSTEM_LIBS) \
+	$(BOOST_SYSTEM_LIBS) \
+	@LIBIXION_LIBS@
+
+orcus_detect_test_CPPFLAGS = \
+	-I$(top_builddir)/lib/liborcus/liborcus.la \
+	$(AM_CPPFLAGS) \
+	-DSRCDIR=\""$(top_srcdir)"\"
 
 # orcus-csv-test
 
@@ -543,6 +566,7 @@ orcus_json_mapped_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(A
 
 TESTS += \
 	orcus-csv-test \
+	orcus-detect-test \
 	orcus-xml-mapped-test \
 	orcus-json-mapped-test
 

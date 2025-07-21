@@ -24,6 +24,27 @@ namespace ss = orcus::spreadsheet;
 
 namespace orcus { namespace test {
 
+orcus::file_content to_file_content(const std::string& path)
+{
+    return orcus::file_content(path);
+}
+
+orcus::file_content to_file_content(const std::wstring& path)
+{
+    std::u16string_view sv{reinterpret_cast<const char16_t*>(path.data()), path.size()};
+    return orcus::file_content(sv);
+}
+
+void print_path(const std::string& path)
+{
+    std::cout << path << std::endl;
+}
+
+void print_path(const std::wstring& path)
+{
+    std::wcout << path << std::endl;
+}
+
 std::string get_content_check(const spreadsheet::document& doc)
 {
     std::ostringstream os;

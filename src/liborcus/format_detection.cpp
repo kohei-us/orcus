@@ -5,38 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifdef __ORCUS_ODS
-#define ODS_ENABLED 1
-#else
-#define ODS_ENABLED 0
-#endif
-
-#ifdef __ORCUS_XLSX
-#define XLSX_ENABLED 1
-#else
-#define XLSX_ENABLED 0
-#endif
-
-#ifdef __ORCUS_GNUMERIC
-#define GNUMERIC_ENABLED 1
-#else
-#define GNUMERIC_ENABLED 0
-#endif
-
-#ifdef __ORCUS_XLS_XML
-#define XLS_XML_ENABLED 1
-#else
-#define XLS_XML_ENABLED 0
-#endif
-
-#ifdef __ORCUS_PARQUET
-#define PARQUET_ENABLED 1
-#else
-#define PARQUET_ENABLED 0
-#endif
-
 #include <orcus/format_detection.hpp>
 #include <orcus/orcus_csv.hpp>
+
+#include "filter_env.hpp"
 
 #if ODS_ENABLED
 #include <orcus/orcus_ods.hpp>
