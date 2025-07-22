@@ -21,7 +21,6 @@ const fs::path test_base_dir(SRCDIR"/test");
 bool test_filter(std::string_view name)
 {
     static const std::unordered_set<std::string_view> filter_test_dirs = {
-        "csv",
 #if GNUMERIC_ENABLED
         "gnumeric",
 #endif
