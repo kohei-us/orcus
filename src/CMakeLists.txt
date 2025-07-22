@@ -83,6 +83,16 @@ target_link_libraries(orcus-env-dump orcus-parser-${ORCUS_API_VERSION} orcus-${O
 
 # test programs
 
+list(APPEND _COMPILE_DEFS
+    __ORCUS_XLSX
+    __ORCUS_ODS
+    __ORCUS_XLS_XML
+)
+
+if(ORCUS_WITH_PARQUET)
+    list(APPEND _COMPILE_DEFS __ORCUS_PARQUET)
+endif()
+
 add_executable(orcus-csv-test EXCLUDE_FROM_ALL
     orcus_csv_test.cpp
     orcus_test_global.cpp
@@ -183,6 +193,8 @@ foreach(_TEST ${_TESTS})
     target_compile_definitions(${_TEST} PRIVATE
         SRCDIR="${PROJECT_SOURCE_DIR}"
     )
+
+    target_compile_definitions(${_TEST} PRIVATE ${_COMPILE_DEFS})
 
     add_test(${_TEST} ${_TEST})
 
