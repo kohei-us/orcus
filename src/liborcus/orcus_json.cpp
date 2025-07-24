@@ -15,6 +15,7 @@
 
 #include "json_map_tree.hpp"
 #include "json_structure_mapper.hpp"
+#include "detection_result.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -83,6 +84,68 @@ struct json_value
             case value_type::null:
                 break;
         }
+    }
+};
+
+class json_detection_handler : public json_handler
+{
+    std::size_t m_token_count = 0;
+
+    void token_received()
+    {
+        // parse up to 100 tokens and if no error happens then call it "detected"
+        if (++m_token_count > 100)
+            throw detection_result(true);
+    }
+
+public:
+    void begin_array()
+    {
+        token_received();
+    }
+
+    void end_array()
+    {
+        token_received();
+    }
+
+    void begin_object()
+    {
+        token_received();
+    }
+
+    void object_key(std::string_view /*key*/, bool /*transient*/)
+    {
+        token_received();
+    }
+
+    void end_object()
+    {
+        token_received();
+    }
+    void boolean_true()
+    {
+        token_received();
+    }
+
+    void boolean_false()
+    {
+        token_received();
+    }
+
+    void null()
+    {
+        token_received();
+    }
+
+    void string(std::string_view /*val*/, bool /*transient*/)
+    {
+        token_received();
+    }
+
+    void number(double /*val*/)
+    {
+        token_received();
     }
 };
 
@@ -316,6 +379,29 @@ orcus_json::orcus_json(spreadsheet::iface::import_factory* im_fact) :
     mp_impl(std::make_unique<impl>(im_fact)) {}
 
 orcus_json::~orcus_json() {}
+
+bool orcus_json::detect(const unsigned char* blob, size_t size)
+{
+    std::string_view stream{reinterpret_cast<const char*>(blob), size};
+
+    json_detection_handler hdl;
+    json_parser<json_detection_handler> parser(stream, hdl);
+
+    try
+    {
+        parser.parse();
+    }
+    catch (const detection_result& res)
+    {
+        return res.get_result();
+    }
+    catch (...)
+    {
+        return false;
+    }
+
+    return true; // entire JSON stream has been parsed
+}
 
 void orcus_json::set_cell_link(std::string_view path, std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col)
 {
