@@ -85,6 +85,14 @@ public:
     }
 };
 
+const string_view str_value = "Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque "
+                              "faucibus ex sapien vitae pellentesque sem placerat. In id cursus"
+                              " mi pretium tellus duis convallis. Tempus leo eu aenean sed diam"
+                              " urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendu"
+                              "m egestas. Iaculis massa nisl malesuada lacinia integer nunc pos"
+                              "uere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad l"
+                              "itora torquent per conubia nostra inceptos himenaeos.";
+
 class mock_sheet : public import_sheet
 {
     mock_array_formula m_array_formula;
@@ -102,6 +110,12 @@ public:
         assert(row == -1);
         assert(col == 0);
         assert(val == true);
+    }
+
+    virtual void set_string(row_t row, col_t col, std::string_view s) override {
+        assert(row == -1);
+        assert(col == 0);
+        assert(s == str_value);
     }
 
     virtual iface::import_array_formula* get_array_formula() override
@@ -227,6 +241,35 @@ void test_array_formula()
     context.end_element(ns, elem);
 }
 
+void test_cell_string()
+{
+    mock_sheet sheet;
+    mock_ref_resolver resolver;
+    session_context cxt(std::make_unique<xlsx_session_data>());
+    config opt(format_t::xlsx);
+    opt.structure_check = false;
+
+    orcus::xlsx_sheet_context context(cxt, orcus::ooxml_tokens, 0, resolver, sheet);
+    context.set_config(opt);
+
+    orcus::xmlns_id_t ns = NS_ooxml_xlsx;
+  
+    orcus::xml_token_attrs_t inline_attrs;
+    inline_attrs.push_back(xml_token_attr_t(ns, XML_t, "inlineStr", false));
+    context.start_element(ns, XML_c, inline_attrs);
+
+    {
+        xml_token_attrs_t val_attrs;
+        context.start_element(ns, XML_is, val_attrs);
+        context.start_element(ns, XML_t, val_attrs);
+        context.characters(str_value, false);
+        context.end_element(ns, XML_t);
+        context.end_element(ns, XML_is);
+    }
+
+    context.end_element(ns, XML_c);
+}
+
 void test_hidden_col()
 {
     mock_sheet2 sheet;
@@ -274,6 +317,7 @@ int main()
 {
     test_cell_value();
     test_cell_bool();
+    test_cell_string();
     test_array_formula();
     test_hidden_col();
     test_hidden_row();

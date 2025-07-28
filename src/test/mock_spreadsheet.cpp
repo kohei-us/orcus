@@ -297,6 +297,11 @@ void import_sheet::set_string(row_t, col_t, string_id_t)
     assert(false);
 }
 
+void import_sheet::set_string(row_t, col_t, std::string_view)
+{
+    assert(false);
+}
+
 void import_sheet::set_format(row_t, col_t, size_t)
 {
     assert(false);
