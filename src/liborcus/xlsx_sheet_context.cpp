@@ -244,6 +244,12 @@ void xlsx_sheet_context::start_element(xmlns_id_t ns, xml_token_t name, const xm
             case XML_v:
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_c);
                 break;
+            case XML_is:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_c);
+                break;
+            case XML_t:
+                xml_element_expected(parent, NS_ooxml_xlsx, XML_is);
+                break;
             case XML_tableParts:
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
                 break;
@@ -277,6 +283,9 @@ bool xlsx_sheet_context::end_element(xmlns_id_t ns, xml_token_t name)
         {
             case XML_c:
                 end_element_cell();
+                break;
+            case XML_t:
+                m_cur_value = m_cur_str;
                 break;
             case XML_f:
                 m_cur_formula.str = m_cur_str;
@@ -791,29 +800,34 @@ void xlsx_sheet_context::push_raw_cell_value()
 
     switch (m_cur_cell_type)
     {
-        case xlsx_ct_shared_string:
-        {
-            // string cell
-            size_t str_id = to_long(m_cur_value);
-            m_sheet.set_string(m_cur_row, m_cur_col, str_id);
-        }
+    case xlsx_ct_inline_string:
+        // For the rare case of inline string we do not have context is pool safe to push.
+        // Hence, push to document backend to handle or not. 
+        m_sheet.set_string(m_cur_row, m_cur_col, m_cur_value);
         break;
-        case xlsx_ct_numeric:
-        {
-            // value cell
-            double val = to_double(m_cur_value);
-            m_sheet.set_value(m_cur_row, m_cur_col, val);
-        }
-        break;
-        case xlsx_ct_boolean:
-        {
-            // boolean cell
-            bool val = to_long(m_cur_value) != 0;
-            m_sheet.set_bool(m_cur_row, m_cur_col, val);
-        }
-        break;
-        default:
-            warn("unhanlded cell content type");
+    case xlsx_ct_shared_string:
+    {
+        // string cell
+        size_t str_id = to_long(m_cur_value);
+        m_sheet.set_string(m_cur_row, m_cur_col, str_id);
+    }
+    break;
+    case xlsx_ct_numeric:
+    {
+        // value cell
+        double val = to_double(m_cur_value);
+        m_sheet.set_value(m_cur_row, m_cur_col, val);
+    }
+    break;
+    case xlsx_ct_boolean:
+    {
+        // boolean cell
+        bool val = to_long(m_cur_value) != 0;
+        m_sheet.set_bool(m_cur_row, m_cur_col, val);
+    }
+    break;
+    default:
+        warn("unhanlded cell content type");
     }
 }
 

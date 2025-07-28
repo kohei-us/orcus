@@ -953,6 +953,21 @@ public:
     virtual void set_string(row_t row, col_t col, string_id_t sindex) = 0;
 
     /**
+    * Set string value to a cell when string is not in the pool.
+    * 
+    * Used in cases when parser cannot quarentee that string pools indexes
+    * and in document references are consistent if pushed to pool.
+    * 
+    * Implementing this allowed document backend to handle these best way possible but
+    * primarily strings are pushed to the string pool.
+    *
+    * @param row row ID
+    * @oaram col column ID
+    * @param s inline string found while parsing.
+    */
+    virtual void set_string(row_t row, col_t col, std::string_view s);
+
+    /**
      * Set numerical value to a cell.
      *
      * @param row row ID

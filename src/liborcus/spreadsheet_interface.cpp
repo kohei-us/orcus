@@ -114,6 +114,8 @@ import_array_formula::~import_array_formula() {}
 
 import_sheet::~import_sheet() {}
 
+void import_sheet::set_string(row_t /*row*/, col_t /*col*/, std::string_view /*s*/) {}
+
 import_sheet_view* import_sheet::get_sheet_view()
 {
     return nullptr;
