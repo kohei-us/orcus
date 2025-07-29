@@ -13,6 +13,7 @@
 #include <orcus/stream.hpp>
 #include <orcus/format_detection.hpp>
 #include <orcus/orcus_json.hpp>
+#include <orcus/orcus_xml.hpp>
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
@@ -42,7 +43,6 @@ bool test_filter(std::string_view name)
     return filter_test_dirs.count(name) > 0;
 }
 
-
 orcus::format_t expected_format(std::string_view parent_dir_name)
 {
     static const std::unordered_map<std::string_view, orcus::format_t> map = {
@@ -56,6 +56,48 @@ orcus::format_t expected_format(std::string_view parent_dir_name)
 
     auto it = map.find(parent_dir_name);
     return it == map.end() ? orcus::format_t::unknown : it->second;
+}
+
+std::vector<fs::path> collection_target_dirs(const fs::path& base_dir, std::string_view skip_dir)
+{
+    std::vector<fs::path> target_dirs;
+
+    for (const auto& entry : fs::directory_iterator(base_dir))
+    {
+        if (!entry.is_directory())
+            continue;
+
+        auto p = entry.path();
+        if (p.filename() == skip_dir)
+            continue;
+
+        target_dirs.push_back(std::move(p));
+    }
+
+    return target_dirs;
+}
+
+std::vector<fs::path> collection_target_files(
+    const std::vector<fs::path>& target_dirs, std::string_view ext)
+{
+    std::vector<fs::path> target_files;
+
+    for (const auto& target_dir : target_dirs)
+    {
+        for (const auto& entry : fs::recursive_directory_iterator(target_dir))
+        {
+            if (!entry.is_regular_file())
+                continue;
+
+            auto p = entry.path();
+            if (p.extension() != ext)
+                continue;
+
+            target_files.push_back(std::move(p));
+        }
+    }
+
+    return target_files;
 }
 
 void test_format_detection()
@@ -100,40 +142,21 @@ void test_json_detect_positive()
 
     auto json_base_dir = test_base_dir / "json";
 
-    std::vector<fs::path> target_dirs;
+    std::vector<fs::path> target_dirs = collection_target_dirs(json_base_dir, "validation");
+    assert(!target_dirs.empty());
 
-    for (const auto& entry : fs::directory_iterator(json_base_dir))
+    std::vector<fs::path> targets = collection_target_files(target_dirs, ".json");
+    assert(!targets.empty());
+
+    for (const auto& target : targets)
     {
-        if (!entry.is_directory())
-            continue;
+        std::cout << target << std::endl;
+        auto fc = orcus::test::to_file_content(target.string());
+        auto strm = fc.str();
+        bool valid = orcus::orcus_json::detect(
+            reinterpret_cast<const unsigned char*>(strm.data()), strm.size());
 
-        auto p = entry.path();
-        if (p.filename() == "validation")
-            // skip validation directory since it may contain invalid json files
-            continue;
-
-        target_dirs.push_back(std::move(p));
-    }
-
-    for (const auto& target_dir : target_dirs)
-    {
-        for (const auto& entry : fs::recursive_directory_iterator(target_dir))
-        {
-            if (!entry.is_regular_file())
-                continue;
-
-            auto p = entry.path();
-            if (p.extension() != ".json")
-                continue;
-
-            std::cout << p << std::endl;
-            auto fc = orcus::test::to_file_content(p.string());
-            auto strm = fc.str();
-            bool valid = orcus::orcus_json::detect(
-                reinterpret_cast<const unsigned char*>(strm.data()), strm.size());
-
-            assert(valid);
-        }
+        assert(valid);
     }
 }
 
@@ -167,12 +190,68 @@ void test_json_detect_negative()
     }
 }
 
+void test_xml_detect_positive()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    auto json_base_dir = test_base_dir / "xml";
+
+    std::vector<fs::path> target_dirs = collection_target_dirs(json_base_dir, "invalids");
+    assert(!target_dirs.empty());
+
+    std::vector<fs::path> target_files = collection_target_files(target_dirs, ".xml");
+    assert(!target_files.empty());
+
+    for (const auto& p : target_files)
+    {
+        std::cout << p << std::endl;
+        auto fc = orcus::test::to_file_content(p.string());
+        auto strm = fc.str();
+        bool valid = orcus::orcus_xml::detect(
+            reinterpret_cast<const unsigned char*>(strm.data()), strm.size());
+
+        assert(valid);
+    }
+}
+
+void test_xml_detect_negative()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    std::vector<fs::path> targets = {
+        "css/basic6.css",
+        "csv/split-sheet/input.csv",
+        "csv/simple-numbers/input.csv",
+        "gnumeric/text-alignment/input.gnumeric",
+        "ods/raw-values-1/input.ods",
+        "xlsx/raw-values-1/input.xlsx",
+        "yaml/basic2/input.yaml",
+        "json/swagger/input.json",
+    };
+
+    for (const auto& target : targets)
+    {
+        auto p = test_base_dir / target;
+        std::cout << p << std::endl;
+        assert(fs::is_regular_file(p));
+
+        auto fc = orcus::test::to_file_content(p.native());
+        auto strm = fc.str();
+        bool valid = orcus::orcus_xml::detect(
+            reinterpret_cast<const unsigned char*>(strm.data()), strm.size());
+
+        assert(!valid);
+    }
+}
+
 int main()
 {
     orcus::bootstrap_program();
     test_format_detection();
     test_json_detect_positive();
     test_json_detect_negative();
+    test_xml_detect_positive();
+    test_xml_detect_negative();
 
     return EXIT_SUCCESS;
 }

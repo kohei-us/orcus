@@ -35,6 +35,8 @@ public:
     orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact, spreadsheet::iface::export_factory* ex_fact);
     ~orcus_xml();
 
+    static bool detect(const unsigned char* blob, size_t size);
+
     /**
      * Define a namespace and its alias used in a map file.
      *

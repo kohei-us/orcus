@@ -13,6 +13,7 @@
 #include <orcus/string_pool.hpp>
 
 #include "orcus_xml_impl.hpp"
+#include "detection_result.hpp"
 
 #define ORCUS_DEBUG_XML 0
 
@@ -26,6 +27,39 @@
 namespace orcus {
 
 namespace {
+
+class xml_detection_handler : public sax_handler
+{
+    std::size_t m_token_count = 0;
+
+    void token_received()
+    {
+        // parse up to 100 tokens and if no error happens then call it "detected"
+        if (++m_token_count > 100)
+            throw detection_result(true);
+    }
+
+public:
+    void start_element(const orcus::sax::parser_element& /*elem*/)
+    {
+        token_received();
+    }
+
+    void end_element(const orcus::sax::parser_element& /*elem*/)
+    {
+        token_received();
+    }
+
+    void characters(std::string_view /*val*/, bool /*transient*/)
+    {
+        token_received();
+    }
+
+    void attribute(const orcus::sax::parser_attribute& /*attr*/)
+    {
+        token_received();
+    }
+};
 
 class xml_data_sax_handler
 {
@@ -496,6 +530,29 @@ orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_facto
 }
 
 orcus_xml::~orcus_xml() {}
+
+bool orcus_xml::detect(const unsigned char* blob, size_t size)
+{
+    std::string_view stream{reinterpret_cast<const char*>(blob), size};
+
+    xml_detection_handler hdl;
+    sax_parser<xml_detection_handler> parser(stream, hdl);
+
+    try
+    {
+        parser.parse();
+    }
+    catch (const detection_result& res)
+    {
+        return res.get_result();
+    }
+    catch (...)
+    {
+        return false;
+    }
+
+    return true; // entire XML stream has been parsed
+}
 
 void orcus_xml::set_namespace_alias(std::string_view alias, std::string_view uri, bool default_ns)
 {
