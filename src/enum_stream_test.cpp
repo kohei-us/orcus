@@ -358,6 +358,8 @@ void test_orcus_format_t()
     { bool result = verify_stream_value(orcus::format_t::xls_xml, "xls-xml"); assert(result); }
     { bool result = verify_stream_value(orcus::format_t::csv, "csv"); assert(result); }
     { bool result = verify_stream_value(orcus::format_t::parquet, "parquet"); assert(result); }
+    { bool result = verify_stream_value(orcus::format_t::json, "json"); assert(result); }
+    { bool result = verify_stream_value(orcus::format_t::xml, "xml"); assert(result); }
 }
 
 void test_orcus_json_node_t()

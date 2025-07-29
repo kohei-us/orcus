@@ -1435,6 +1435,8 @@ std::ostream& operator<< (std::ostream& os, format_t v)
         "xls-xml",
         "csv",
         "parquet",
+        "json",
+        "xml",
     };
 
     size_t vi = static_cast<std::underlying_type_t<format_t>>(v);

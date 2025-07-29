@@ -482,7 +482,9 @@ enum class format_t
     gnumeric,
     xls_xml,
     csv,
-    parquet
+    parquet,
+    json,
+    xml,
 };
 
 /**
