@@ -26,6 +26,8 @@
 #include <orcus/orcus_parquet.hpp>
 #endif
 
+#include "orcus_json_filter.hpp"
+
 #include <stdexcept>
 
 namespace ss = orcus::spreadsheet;
@@ -57,6 +59,9 @@ format_t detect(std::string_view strm) try
         return format_t::parquet;
 #endif
 
+    if (orcus_json_filter::detect(p, strm.size()))
+        return format_t::json;
+
     return format_t::unknown;
 }
 catch (const std::exception&)
@@ -72,6 +77,7 @@ std::shared_ptr<iface::import_filter> create_filter(format_t type, ss::iface::im
 {
     if (!factory)
         throw std::invalid_argument("pointer to import factory instance must not be null");
+
     switch (type)
     {
 #if ODS_ENABLED

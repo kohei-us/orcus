@@ -9,7 +9,7 @@
 #include <orcus/exception.hpp>
 #include <orcus/stream.hpp>
 
-#include "orcus_filter_global.hpp"
+#include "cli_global.hpp"
 
 #include <iostream>
 
@@ -22,8 +22,7 @@ int ORCUS_CLI_MAIN(int argc, arg_char_t** argv) try
     if (argc != 2)
         return EXIT_FAILURE;
 
-    std::u16string_view filepath(reinterpret_cast<const char16_t*>(argv[1]));
-    file_content content(filepath);
+    auto content = to_file_content(argv[1]);
 
     if (content.empty())
     {
@@ -53,6 +52,9 @@ int ORCUS_CLI_MAIN(int argc, arg_char_t** argv) try
             break;
         case format_t::parquet:
             std::cout << "Apache Parquet";
+            break;
+        case format_t::json:
+            std::cout << "JSON text data";
             break;
         case format_t::unknown:
         default:

@@ -20,6 +20,7 @@ list(APPEND _SOURCES
     spreadsheet_interface.cpp
     orcus_csv.cpp
     orcus_json.cpp
+    orcus_json_filter.cpp
     orcus_xml.cpp
     orcus_xml_impl.cpp
     orcus_xml_map_def.cpp

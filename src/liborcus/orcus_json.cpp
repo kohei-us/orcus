@@ -380,7 +380,7 @@ orcus_json::orcus_json(spreadsheet::iface::import_factory* im_fact) :
 
 orcus_json::~orcus_json() {}
 
-bool orcus_json::detect(const unsigned char* blob, size_t size)
+bool orcus_json::detect(const unsigned char* blob, std::size_t size)
 {
     std::string_view stream{reinterpret_cast<const char*>(blob), size};
 

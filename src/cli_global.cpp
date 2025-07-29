@@ -30,6 +30,17 @@ void bootstrap_program()
 #endif
 }
 
+file_content to_file_content(const char* filepath)
+{
+    return file_content(filepath);
+}
+
+file_content to_file_content(const wchar_t* filepath)
+{
+    std::u16string_view sv(reinterpret_cast<const char16_t*>(filepath));
+    return file_content(sv);
+}
+
 output_stream::output_stream(const boost::program_options::variables_map& vm) :
     m_os(&std::cout)
 {

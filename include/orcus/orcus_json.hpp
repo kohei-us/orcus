@@ -35,7 +35,7 @@ public:
     orcus_json(spreadsheet::iface::import_factory* im_fact);
     ~orcus_json();
 
-    static bool detect(const unsigned char* blob, size_t size);
+    static bool detect(const unsigned char* blob, std::size_t size);
 
     void set_cell_link(std::string_view path, std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col);
 

@@ -8,6 +8,8 @@
 #ifndef INCLUDED_ORCUS_CLI_GLOBAL_HPP
 #define INCLUDED_ORCUS_CLI_GLOBAL_HPP
 
+#include <orcus/stream.hpp>
+
 #include <boost/program_options.hpp>
 #include <iosfwd>
 
@@ -22,6 +24,9 @@ using arg_char_t = char;
 namespace orcus {
 
 void bootstrap_program();
+
+file_content to_file_content(const char* filepath);
+file_content to_file_content(const wchar_t* filepath);
 
 /**
  * This class abstracts away an instance of std::ostream.  It's either
