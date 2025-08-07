@@ -5,26 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
+#include "filesystem_env.hpp"
+
 #include <orcus/orcus_json.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/spreadsheet/factory.hpp>
 #include <orcus/exception.hpp>
 #include <orcus/parser_global.hpp>
+#include <orcus/format_detection.hpp>
 
 #include <iostream>
 #include <vector>
 #include <cassert>
 #include <sstream>
 
-#include "filesystem_env.hpp"
-
-using namespace std;
 using namespace orcus;
 
 namespace {
 
-const std::vector<const char*> tests =
+const std::vector<fs::path> mapped_test_dirs =
 {
     SRCDIR"/test/json-mapped/array-of-arrays-basic",
     SRCDIR"/test/json-mapped/array-of-arrays-header",
@@ -38,16 +39,18 @@ const std::vector<const char*> tests =
 
 void test_mapped_json_import()
 {
-    for (fs::path base_dir : tests)
+    ORCUS_TEST_FUNC_SCOPE;
+
+    for (const auto& base_dir : mapped_test_dirs)
     {
         fs::path data_file = base_dir / "input.json";
         fs::path map_file = base_dir / "map.json";
         fs::path check_file = base_dir / "check.txt";
 
-        cout << "reading " << data_file.string() << endl;
-        file_content content(data_file.string().data());
-        file_content map_content(map_file.string().data());
-        file_content check_content(check_file.string().data());
+        std::cout << "reading " << data_file.string() << std::endl;
+        file_content content(data_file.string());
+        file_content map_content(map_file.string());
+        file_content check_content(check_file.string());
 
         spreadsheet::range_size_t ss{1048576, 16384};
         spreadsheet::document doc{ss};
@@ -69,8 +72,47 @@ void test_mapped_json_import()
     }
 }
 
+void test_mapped_json_import_auto_mapping()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    const fs::path base_dir{SRCDIR"/test/json-mapped/auto-mapping/"};
+
+    for (const auto& entry : fs::directory_iterator(base_dir))
+    {
+        if (!entry.is_directory())
+            continue;
+
+        auto test_dir = entry.path();
+        std::cout << test_dir << std::endl;
+
+        fs::path input_file = test_dir / "input.json";
+        fs::path check_file = test_dir / "check.txt";
+
+        file_content content(input_file.string());
+        file_content check_content(check_file.string());
+
+        spreadsheet::range_size_t ss{1048576, 16384};
+        spreadsheet::document doc{ss};
+        spreadsheet::import_factory import_fact(doc);
+
+        auto filter = create_filter(format_t::json, &import_fact);
+        assert(filter);
+        assert(filter->get_name() == "json");
+
+        filter->read_stream(content.str());
+
+        std::ostringstream os;
+        doc.dump_check(os);
+        auto check_actual = os.str();
+        assert(check_actual == check_content.str());
+    }
+}
+
 void test_invalid_map_definition()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     spreadsheet::range_size_t ss{1048576, 16384};
     spreadsheet::document doc{ss};
     spreadsheet::import_factory import_fact(doc);
@@ -90,6 +132,7 @@ void test_invalid_map_definition()
 int main()
 {
     test_mapped_json_import();
+    test_mapped_json_import_auto_mapping();
     test_invalid_map_definition();
 
     return EXIT_SUCCESS;

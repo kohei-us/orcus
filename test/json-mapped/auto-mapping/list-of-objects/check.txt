@@ -1,0 +1,14 @@
+range-0/0/0:string:"A"
+range-0/0/1:string:"B"
+range-0/0/2:string:"C"
+range-0/0/3:string:"D"
+range-0/1/0:numeric:1
+range-0/1/1:numeric:2
+range-0/1/2:numeric:3
+range-0/2/0:numeric:11
+range-0/2/1:numeric:12
+range-0/2/2:numeric:13
+range-0/3/0:numeric:21
+range-0/3/1:numeric:22
+range-0/3/3:numeric:24
+range-0/4/2:string:"text"

@@ -550,6 +550,7 @@ orcus_json_mapped_test_LDFLAGS = \
 orcus_json_mapped_test_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	./test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS)
 

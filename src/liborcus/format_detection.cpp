@@ -100,6 +100,8 @@ std::shared_ptr<iface::import_filter> create_filter(format_t type, ss::iface::im
         case format_t::parquet:
             return std::allocate_shared<orcus_parquet>(std::allocator<orcus_parquet>{}, factory);
 #endif
+        case format_t::json:
+            return std::allocate_shared<orcus_json_filter>(std::allocator<orcus_json_filter>{}, factory);
         case format_t::csv:
             return std::allocate_shared<orcus_csv>(std::allocator<orcus_csv>{}, factory);
         case format_t::unknown:

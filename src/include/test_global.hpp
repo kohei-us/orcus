@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_TEST_GLOBAL_HPP
-#define INCLUDED_ORCUS_TEST_GLOBAL_HPP
+#pragma once
+
+// NB: This header cannot depend on orcus API.
 
 #ifdef NDEBUG
 // release build
@@ -60,7 +61,5 @@ bool verify_stream_value(EnumT v, std::string_view expected)
 }} // namespace orcus::test
 
 #define ORCUS_TEST_FUNC_SCOPE orcus::test::stack_printer __sp__(__func__)
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
