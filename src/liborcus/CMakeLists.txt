@@ -22,6 +22,7 @@ list(APPEND _SOURCES
     orcus_json.cpp
     orcus_json_filter.cpp
     orcus_xml.cpp
+    orcus_xml_filter.cpp
     orcus_xml_impl.cpp
     orcus_xml_map_def.cpp
     measurement.cpp

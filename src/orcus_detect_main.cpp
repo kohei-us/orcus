@@ -56,6 +56,9 @@ int ORCUS_CLI_MAIN(int argc, arg_char_t** argv) try
         case format_t::json:
             std::cout << "JSON text data";
             break;
+        case format_t::xml:
+            std::cout << "XML document";
+            break;
         case format_t::unknown:
         default:
             std::cout << "unknown";

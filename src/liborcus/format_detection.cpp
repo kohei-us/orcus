@@ -27,6 +27,7 @@
 #endif
 
 #include "orcus_json_filter.hpp"
+#include "orcus_xml_filter.hpp"
 
 #include <stdexcept>
 
@@ -58,6 +59,9 @@ format_t detect(std::string_view strm) try
     if (orcus_parquet::detect(p, strm.size()))
         return format_t::parquet;
 #endif
+
+    if (orcus_xml_filter::detect(p, strm.size()))
+        return format_t::xml;
 
     if (orcus_json_filter::detect(p, strm.size()))
         return format_t::json;
@@ -100,6 +104,8 @@ std::shared_ptr<iface::import_filter> create_filter(format_t type, ss::iface::im
         case format_t::parquet:
             return std::allocate_shared<orcus_parquet>(std::allocator<orcus_parquet>{}, factory);
 #endif
+        case format_t::xml:
+            return std::allocate_shared<orcus_xml_filter>(std::allocator<orcus_xml_filter>{}, factory);
         case format_t::json:
             return std::allocate_shared<orcus_json_filter>(std::allocator<orcus_json_filter>{}, factory);
         case format_t::csv:

@@ -90,6 +90,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES = \
 	orcus_json_filter.cpp \
 	orcus_json_filter.hpp \
 	orcus_xml.cpp \
+	orcus_xml_filter.cpp \
+	orcus_xml_filter.hpp \
 	orcus_xml_impl.hpp \
 	orcus_xml_impl.cpp \
 	orcus_xml_map_def.cpp \
