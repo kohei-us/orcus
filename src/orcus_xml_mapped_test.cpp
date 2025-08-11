@@ -244,6 +244,43 @@ void test_mapped_xml_import_no_map_definition()
     }
 }
 
+void test_mapped_xml_import_auto_mapping()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    const fs::path base_dir{SRCDIR"/test/xml-mapped/auto-mapping/"};
+
+    for (const auto& entry : fs::directory_iterator(base_dir))
+    {
+        if (!entry.is_directory())
+            continue;
+
+        auto test_dir = entry.path();
+        std::cout << test_dir << std::endl;
+
+        fs::path input_file = test_dir / "input.xml";
+        fs::path check_file = test_dir / "check.txt";
+
+        file_content content(input_file.string());
+        file_content check_content(check_file.string());
+
+        spreadsheet::range_size_t ss{1048576, 16384};
+        spreadsheet::document doc{ss};
+        spreadsheet::import_factory import_fact(doc);
+
+        auto filter = create_filter(format_t::xml, &import_fact);
+        assert(filter);
+        assert(filter->get_name() == "xml");
+
+        filter->read_stream(content.str());
+
+        std::ostringstream os;
+        doc.dump_check(os);
+        auto check_actual = os.str();
+        assert(check_actual == check_content.str());
+    }
+}
+
 void test_invalid_map_definition()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -333,6 +370,7 @@ int main()
 {
     test_mapped_xml_import();
     test_mapped_xml_import_no_map_definition();
+    test_mapped_xml_import_auto_mapping();
     test_invalid_map_definition();
     test_encoding();
 
