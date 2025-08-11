@@ -10,6 +10,7 @@
 #include <orcus/xml_namespace.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/dom_tree.hpp>
+#include <orcus/format_detection.hpp>
 
 #include <orcus/spreadsheet/factory.hpp>
 #include <orcus/spreadsheet/document.hpp>
@@ -186,8 +187,8 @@ void test_mapped_xml_import_no_map_definition()
 
         std::cout << "reading " << input_file.string() << std::endl;
 
-        file_content content(input_file.string().data());
-        file_content expected(check_file.string().data());
+        file_content content(input_file.string());
+        file_content expected(check_file.string());
 
         xmlns_repository repo;
 
@@ -220,6 +221,25 @@ void test_mapped_xml_import_no_map_definition()
             app.read_stream(content.str());
 
             test::verify_content(__FILE__, __LINE__, doc, expected.str());
+        }
+
+        {
+            // Use orcus_xml_filter adapter
+
+            spreadsheet::range_size_t ss{1048576, 16384};
+            spreadsheet::document doc{ss};
+            spreadsheet::import_factory import_fact(doc);
+
+            auto filter = create_filter(format_t::xml, &import_fact);
+            assert(filter);
+            assert(filter->get_name() == "xml");
+
+            filter->read_stream(content.str());
+
+            std::ostringstream os;
+            doc.dump_check(os);
+            auto check_actual = os.str();
+            assert(check_actual == expected.str());
         }
     }
 }
