@@ -155,7 +155,15 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
         // Specified child element already exists. Make sure it's unlinked.
         element* elem = *it;
         if (elem->ref_type != reference_type::unknown || elem->elem_type != element_type::unlinked)
-            throw xpath_error("This element is already linked.  You can't link the same element twice.");
+        {
+            std::ostringstream os;
+            os << "element named '" << elem->name.name << "' ";
+            if (elem->name.ns)
+                os << "(namespace='" << elem->name.ns << "') ";
+
+            os << "is already linked; you can't link the same element twice";
+            throw xpath_error(os.str());
+        }
 
         elem->link_reference(parent, _ref_type);
         return elem;
