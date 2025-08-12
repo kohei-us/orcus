@@ -77,6 +77,7 @@ void xml_structure_mapper::traverse()
 void xml_structure_mapper::push_range()
 {
     m_range_handler(std::move(m_current_range));
+    m_current_range = xml_table_range_t{};
 }
 
 }}

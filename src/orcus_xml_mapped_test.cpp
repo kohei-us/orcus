@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "orcus_test_global.hpp"
 #include <orcus/orcus_xml.hpp>
 #include <orcus/sax_ns_parser.hpp>
 #include <orcus/xml_namespace.hpp>
@@ -14,8 +15,6 @@
 
 #include <orcus/spreadsheet/factory.hpp>
 #include <orcus/spreadsheet/document.hpp>
-
-#include "orcus_test_global.hpp"
 
 #include <cstdlib>
 #include <cassert>
@@ -32,6 +31,18 @@ using namespace orcus;
 const fs::path test_base_dir(SRCDIR"/test/xml-mapped");
 
 namespace {
+
+std::string dump_xml_content(std::string_view content)
+{
+    xmlns_repository repo;
+    xmlns_context cxt = repo.create_context();
+    dom::document_tree tree(cxt);
+    tree.load(content);
+
+    std::ostringstream os;
+    tree.dump_compact(os);
+    return os.str();
+}
 
 void test_mapped_xml_import()
 {
@@ -364,6 +375,42 @@ void test_encoding()
     }
 }
 
+void test_map_gen()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    const fs::path base_dir{SRCDIR"/test/xml-mapped/map-gen/"};
+
+    for (const auto& entry : fs::directory_iterator(base_dir))
+    {
+        if (!entry.is_directory())
+            continue;
+
+        auto test_dir = entry.path();
+        std::cout << test_dir << std::endl;
+
+        fs::path input_file = test_dir / "input.xml";
+        fs::path check_file = test_dir / "check.txt";
+
+        file_content content(input_file.string());
+        file_content check(check_file.string());
+
+        xmlns_repository repo;
+
+        spreadsheet::range_size_t ss{1048576, 16384};
+        spreadsheet::document doc{ss};
+        spreadsheet::import_factory import_fact(doc);
+
+        orcus_xml app(repo, &import_fact, nullptr);
+        std::ostringstream os;
+        app.write_map_definition(content.str(), os);
+
+        auto map_xml = os.str();
+        auto actual = dump_xml_content(map_xml);
+        assert(actual == check.str());
+    }
+}
+
 } // anonymous namespace
 
 int main()
@@ -373,6 +420,7 @@ int main()
     test_mapped_xml_import_auto_mapping();
     test_invalid_map_definition();
     test_encoding();
+    test_map_gen();
 
     return EXIT_SUCCESS;
 }

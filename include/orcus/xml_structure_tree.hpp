@@ -25,7 +25,13 @@ struct ORCUS_DLLPUBLIC xml_table_range_t
     std::vector<std::string> row_groups;
 
     xml_table_range_t();
+    xml_table_range_t(const xml_table_range_t& other);
+    xml_table_range_t(xml_table_range_t&& other) noexcept;
     ~xml_table_range_t();
+
+    xml_table_range_t& operator=(xml_table_range_t other) noexcept;
+
+    void swap(xml_table_range_t& other) noexcept;
 };
 
 /**

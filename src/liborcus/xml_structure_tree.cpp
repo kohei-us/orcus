@@ -273,9 +273,22 @@ void print_scope(std::ostream& os, const scopes_type& scopes, const xmlns_contex
 
 }
 
-xml_table_range_t::xml_table_range_t() {}
+xml_table_range_t::xml_table_range_t() = default;
+xml_table_range_t::xml_table_range_t(const xml_table_range_t& other) = default;
+xml_table_range_t::xml_table_range_t(xml_table_range_t&& other) noexcept = default;
+xml_table_range_t::~xml_table_range_t() = default;
 
-xml_table_range_t::~xml_table_range_t() {}
+xml_table_range_t& xml_table_range_t::operator=(xml_table_range_t other) noexcept
+{
+    swap(other);
+    return *this;
+}
+
+void xml_table_range_t::swap(xml_table_range_t& other) noexcept
+{
+    paths.swap(other.paths);
+    row_groups.swap(other.row_groups);
+}
 
 struct xml_structure_tree::impl
 {
