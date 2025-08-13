@@ -127,7 +127,7 @@ void csv_parser<_Handler>::row()
         {
             next();
 #if ORCUS_DEBUG_CSV
-            cout << "(LF)" << endl;
+            std::cout << "(LF)" << std::endl;
 #endif
             m_handler.end_row();
             return;
@@ -174,7 +174,7 @@ template<typename _Handler>
 void csv_parser<_Handler>::quoted_cell()
 {
 #if ORCUS_DEBUG_CSV
-    cout << "--- quoted cell" << endl;
+    std::cout << "--- quoted cell" << std::endl;
 #endif
     char c = cur_char();
     assert(is_text_qualifier(c));
@@ -188,7 +188,7 @@ void csv_parser<_Handler>::quoted_cell()
     {
         c = cur_char();
 #if ORCUS_DEBUG_CSV
-        cout << "'" << c << "'" << endl;
+        std::cout << "'" << c << "'" << std::endl;
 #endif
         if (!is_text_qualifier(c))
             continue;
@@ -218,8 +218,7 @@ template<typename _Handler>
 void csv_parser<_Handler>::parse_cell_with_quote(const char* p0, size_t len0)
 {
 #if ORCUS_DEBUG_CSV
-    using namespace std;
-    cout << "--- parse cell with quote" << endl;
+    std::cout << "--- parse cell with quote" << std::endl;
 #endif
     assert(is_text_qualifier(cur_char()));
 
@@ -235,7 +234,7 @@ void csv_parser<_Handler>::parse_cell_with_quote(const char* p0, size_t len0)
     {
         char c = cur_char();
 #if ORCUS_DEBUG_CSV
-        cout << "'" << c << "'" << endl;
+        std::cout << "'" << c << "'" << std::endl;
 #endif
         if (!is_text_qualifier(c))
             continue;
@@ -294,9 +293,9 @@ void csv_parser<_Handler>::push_cell_value(const char* p, size_t n)
     m_handler.cell({p, len}, false);
 #if ORCUS_DEBUG_CSV
     if (len)
-        cout << "(cell:'" << std::string(p, len) << "')" << endl;
+        std::cout << "(cell:'" << std::string(p, len) << "')" << std::endl;
     else
-        cout << "(cell:'')" << endl;
+        std::cout << "(cell:'')" << std::endl;
 #endif
 }
 

@@ -15,8 +15,6 @@
 #include <iostream>
 #include <sstream>
 
-using namespace std;
-
 namespace orcus {
 
 namespace {
@@ -218,7 +216,7 @@ void xml_context_base::warn(std::string_view msg) const
 
 void xml_context_base::xml_element_expected(
     const xml_token_pair_t& elem, xmlns_id_t ns, xml_token_t name,
-    const string* error) const
+    const std::string* error) const
 {
     if (!m_config.structure_check)
         return;

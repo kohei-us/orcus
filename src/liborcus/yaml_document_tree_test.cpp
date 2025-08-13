@@ -16,7 +16,6 @@
 #include "filesystem_env.hpp"
 
 using namespace orcus;
-using namespace std;
 
 bool string_expected(const yaml::const_node& node, const char* expected)
 {
@@ -26,7 +25,7 @@ bool string_expected(const yaml::const_node& node, const char* expected)
     if (node.string_value() == expected)
         return true;
 
-    cerr << "expected='" << expected << "', actual='" << node.string_value() << "'" << endl;
+    std::cerr << "expected='" << expected << "', actual='" << node.string_value() << "'" << std::endl;
     return false;
 }
 
@@ -57,9 +56,9 @@ bool number_expected(
 
 yaml::document_tree load_doc(const char* filepath)
 {
-    cout << filepath << endl;
+    std::cout << filepath << std::endl;
     file_content strm(filepath);
-    cout << strm.str() << endl;
+    std::cout << strm.str() << std::endl;
     yaml::document_tree doc;
     doc.load(strm.str());
 

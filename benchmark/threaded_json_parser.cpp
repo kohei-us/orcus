@@ -11,7 +11,6 @@
 
 #define SIMULATE_PROCESSING_OVERHEAD 0
 
-using namespace std;
 using namespace orcus;
 
 namespace {
@@ -179,9 +178,9 @@ int main(int argc, char** argv) try
         max_token_size = strtol(p, nullptr, 10);
     }
 
-    cout << "file: " << filepath << endl;
-    cout << "min token size: " << min_token_size << endl;
-    cout << "max token size: " << max_token_size << endl;
+    std::cout << "file: " << filepath << std::endl;
+    std::cout << "min token size: " << min_token_size << std::endl;
+    std::cout << "max token size: " << max_token_size << std::endl;
 
     handler hdl;
     orcus::json::parser_stats stats;
@@ -193,17 +192,17 @@ int main(int argc, char** argv) try
         stats = parser.get_stats();
     }
 
-    cout << "final token buffer size threshold: " << stats.token_buffer_size_threshold << endl;
+    std::cout << "final token buffer size threshold: " << stats.token_buffer_size_threshold << std::endl;
 
-    cout << "parsed token count: " << hdl.token_size() << endl;
+    std::cout << "parsed token count: " << hdl.token_size() << std::endl;
 #if SIMULATE_PROCESSING_OVERHEAD
-    cout << "work value: " << hdl.work_value() << endl;
+    std::cout << "work value: " << hdl.work_value() << std::endl;
 #endif
 
     return EXIT_SUCCESS;
 }
 catch (const std::exception& e)
 {
-    cerr << e.what() << endl;
+    std::cerr << e.what() << std::endl;
     return EXIT_FAILURE;
 }

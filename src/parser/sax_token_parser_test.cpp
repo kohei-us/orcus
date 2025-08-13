@@ -12,7 +12,6 @@
 
 #include <cstring>
 
-using namespace std;
 using namespace orcus;
 
 void test_handler()

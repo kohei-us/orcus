@@ -5,8 +5,6 @@
 #include <cstdlib>
 #include <iostream>
 
-using namespace std;
-
 const char* json_string = "{"
 "   \"name\": \"John Doe\","
 "   \"occupation\": \"Software Engineer\","
@@ -32,17 +30,17 @@ int main()
         {
             case orcus::json::node_t::string:
                 // string value
-                cout << key << ": " << value.string_value() << endl;
+                std::cout << key << ": " << value.string_value() << std::endl;
                 break;
             case orcus::json::node_t::array:
             {
                 // array value
-                cout << key << ":" << endl;
+                std::cout << key << ":" << std::endl;
 
                 for (size_t i = 0; i < value.child_count(); ++i)
                 {
                     node array_element = value.child(i);
-                    cout << "  - " << array_element.numeric_value() << endl;
+                    std::cout << "  - " << array_element.numeric_value() << std::endl;
                 }
                 break;
             }

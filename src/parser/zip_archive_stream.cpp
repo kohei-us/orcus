@@ -16,8 +16,6 @@
 #define ftello _ftelli64
 #endif
 
-using namespace std;
-
 namespace orcus {
 
 zip_archive_stream::~zip_archive_stream() {}
@@ -28,7 +26,7 @@ zip_archive_stream_fd::zip_archive_stream_fd(const char* filepath) :
     if (!m_stream)
     {
         // Fail early at instantiation time.
-        ostringstream os;
+        std::ostringstream os;
         os << "failed to open " << filepath << " for reading";
         throw zip_error(os.str());
     }
@@ -64,7 +62,7 @@ void zip_archive_stream_fd::seek(size_t pos)
 {
     if (fseeko(m_stream, pos, SEEK_SET))
     {
-        ostringstream os;
+        std::ostringstream os;
         os << "failed to set seek position to " << pos << ".";
         throw zip_error(os.str());
     }
@@ -90,7 +88,7 @@ void zip_archive_stream_blob::seek(size_t pos)
 {
     if (pos > m_size)
     {
-        ostringstream os;
+        std::ostringstream os;
         os << "failed to seek position to " << pos << ".";
         throw zip_error(os.str());
     }

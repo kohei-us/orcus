@@ -35,7 +35,6 @@
 
 #define ORCUS_DEBUG_SHEET 0
 
-using namespace std;
 namespace gregorian = boost::gregorian;
 namespace posix_time = boost::posix_time;
 
@@ -94,7 +93,7 @@ void sheet::set_string(row_t row, col_t col, string_id_t sindex)
     cxt.set_string_cell(ixion::abs_address_t(mp_impl->sheet_id,row,col), sindex);
 
 #if ORCUS_DEBUG_SHEET
-    cout << "sheet::set_string: sheet=" << mp_impl->sheet_id << "; row=" << row << "; col=" << col << "; si=" << sindex << endl;
+    cout << "sheet::set_string: sheet=" << mp_impl->sheet_id << "; row=" << row << "; col=" << col << "; si=" << sindex << std::endl;
 #endif
 }
 
@@ -153,7 +152,7 @@ void sheet::set_format(row_t row_start, col_t col_start, row_t row_end, col_t co
 
             if (!r.second)
             {
-                cerr << "insertion of new cell format container failed!" << endl;
+                std::cerr << "insertion of new cell format container failed!" << std::endl;
                 return;
             }
 
@@ -190,7 +189,7 @@ void sheet::set_formula(row_t row, col_t col, const ixion::formula_tokens_store_
     catch ([[maybe_unused]] const ixion::formula_registration_error& e)
     {
 #if ORCUS_DEBUG_SHEET
-        cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; row=" << row << "; col=" << col << "; e=" << e.what() << endl;
+        cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; row=" << row << "; col=" << col << "; e=" << e.what() << std::endl;
 #endif
     }
 }
@@ -212,7 +211,7 @@ void sheet::set_formula(
     catch ([[maybe_unused]] const ixion::formula_registration_error& e)
     {
 #if ORCUS_DEBUG_SHEET
-        cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; row=" << row << "; col=" << col << "; e=" << e.what() << endl;
+        cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; row=" << row << "; col=" << col << "; e=" << e.what() << std::endl;
 #endif
     }
 }
@@ -231,7 +230,7 @@ void sheet::set_grouped_formula(const range_t& range, ixion::formula_tokens_t to
     catch ([[maybe_unused]] const ixion::formula_registration_error& e)
     {
 #if ORCUS_DEBUG_SHEET
-        cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; range=" << range << "; e=" << e.what() << endl;
+        cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; range=" << range << "; e=" << e.what() << std::endl;
 #endif
     }
 }
@@ -250,7 +249,7 @@ void sheet::set_grouped_formula(const range_t& range, ixion::formula_tokens_t to
     catch ([[maybe_unused]] const ixion::formula_registration_error& e)
     {
 #if ORCUS_DEBUG_SHEET
-        cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; range=" << range << "; e=" << e.what() << endl;
+        cout << "sheet::set_formula: sheet=" << mp_impl->sheet_id << "; range=" << range << "; e=" << e.what() << std::endl;
 #endif
     }
 }
@@ -337,9 +336,8 @@ void sheet::set_merge_cell_range(const range_t& range)
     if (it_col == mp_impl->merge_ranges.end())
     {
         auto p = std::make_unique<detail::merge_size_type>();
-        pair<detail::col_merge_size_type::iterator, bool> r =
-            mp_impl->merge_ranges.insert(
-                detail::col_merge_size_type::value_type(range.first.column, std::move(p)));
+        auto r = mp_impl->merge_ranges.insert(
+            detail::col_merge_size_type::value_type(range.first.column, std::move(p)));
 
         if (!r.second)
             // Insertion failed.
@@ -474,7 +472,7 @@ void sheet::dump_flat(std::ostream& os) const
     dumper.dump(os, mp_impl->sheet_id);
 }
 
-void sheet::dump_check(ostream& os, std::string_view sheet_name) const
+void sheet::dump_check(std::ostream& os, std::string_view sheet_name) const
 {
     detail::check_dumper dumper(*mp_impl, sheet_name);
     dumper.dump(os);

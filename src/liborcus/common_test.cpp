@@ -14,7 +14,6 @@
 #include <sstream>
 #include <cmath>
 
-using namespace std;
 using namespace orcus;
 
 void test_date_time_conversion()
@@ -36,9 +35,9 @@ void test_date_time_conversion()
     {
         std::string_view str(tests[i].str);
         date_time_t ret = date_time_t::from_chars(str);
-        cout << "original: " << str << endl;
-        cout << "converted: year=" << ret.year << ", month=" << ret.month << ", day="
-            << ret.day << ", hour=" << ret.hour << ", minute=" << ret.minute << ", second=" << ret.second << endl;
+        std::cout << "original: " << str << std::endl;
+        std::cout << "converted: year=" << ret.year << ", month=" << ret.month << ", day="
+            << ret.day << ", hour=" << ret.hour << ", minute=" << ret.minute << ", second=" << ret.second << std::endl;
         assert(ret.year == tests[i].year);
         assert(ret.month == tests[i].month);
         assert(ret.day == tests[i].day);
@@ -48,7 +47,7 @@ void test_date_time_conversion()
     }
 }
 
-string to_string(length_unit_t unit)
+std::string to_string(length_unit_t unit)
 {
     switch (unit)
     {
@@ -95,9 +94,9 @@ void test_measurement_conversion()
     for (size_t i = 0, n = sizeof(tests)/sizeof(tests[0]); i < n; ++i)
     {
         length_t ret = to_length(tests[i].str);
-        cout << "original: '" << tests[i].str << "', converted: " << ret.value
+        std::cout << "original: '" << tests[i].str << "', converted: " << ret.value
             << " (" << to_string(ret.unit) << "), expected: "
-            << tests[i].expected << " (" << to_string(tests[i].unit) << ")" << endl;
+            << tests[i].expected << " (" << to_string(tests[i].unit) << ")" << std::endl;
 
         // Check for double-precision equality without the rounding error.
         double factor = 1.0;
@@ -158,8 +157,8 @@ void test_string2number_conversion()
         const char* p = tests[i].str;
         const char* p_parse_ended = nullptr;
         double converted = to_double(p, &p_parse_ended);
-        cout << "original: '" << tests[i].str << "', converted: " << converted
-            << ", expected: " << tests[i].expected << endl;
+        std::cout << "original: '" << tests[i].str << "', converted: " << converted
+            << ", expected: " << tests[i].expected << std::endl;
 
         // Check for double-precision equality without the rounding error.
         double factor = 1.0;
@@ -195,8 +194,8 @@ void test_string2long_conversion()
         const char* p = tests[i].str;
         const char* p_parse_ended = nullptr;
         long converted = to_long(p, &p_parse_ended);
-        cout << "original: '" << tests[i].str << "', converted: " << converted
-            << ", expected: " << tests[i].expected << endl;
+        std::cout << "original: '" << tests[i].str << "', converted: " << converted
+            << ", expected: " << tests[i].expected << std::endl;
 
         assert(converted == tests[i].expected);
 

@@ -20,8 +20,6 @@
 #include <vector>
 #include <ostream>
 
-using namespace std;
-
 namespace orcus { namespace mso {
 
 namespace {
@@ -37,14 +35,14 @@ const xmlns_id_t NS_mso_all[] = {
 
 class char_printer
 {
-    ostream& m_os;
+    std::ostream& m_os;
 public:
-    char_printer(ostream& os) : m_os(os) {}
+    char_printer(std::ostream& os) : m_os(os) {}
     void operator() (const char c) const
     {
         short v = c;
         v &= 0x00FF;
-        m_os << hex << uppercase;
+        m_os << std::hex << std::uppercase;
         if (v < 16)
             m_os << '0';
         m_os << v << ' ';
@@ -53,11 +51,11 @@ public:
 
 void print_base64(const char* caption, std::string_view base64)
 {
-    cout << caption << " (base64): " << base64 << endl;
-    vector<uint8_t> value = orcus::decode_from_base64(base64);
-    cout << caption << " (binary): ";
-    for_each(value.begin(), value.end(), char_printer(cout));
-    cout << endl;
+    std::cout << caption << " (base64): " << base64 << std::endl;
+    std::vector<uint8_t> value = orcus::decode_from_base64(base64);
+    std::cout << caption << " (binary): ";
+    std::for_each(value.begin(), value.end(), char_printer(std::cout));
+    std::cout << std::endl;
 }
 
 class key_data_attr_handler
@@ -70,19 +68,19 @@ public:
             return;
 
         if (attr.name == "saltSize")
-            cout << "salt size: " << attr.value << endl;
+            std::cout << "salt size: " << attr.value << std::endl;
         else if (attr.name == "blockSize")
-            cout << "block size: " << attr.value << endl;
+            std::cout << "block size: " << attr.value << std::endl;
         else if (attr.name == "keyBits")
-            cout << "key bits: " << attr.value << endl;
+            std::cout << "key bits: " << attr.value << std::endl;
         else if (attr.name == "hashSize")
-            cout << "hash size: " << attr.value << endl;
+            std::cout << "hash size: " << attr.value << std::endl;
         else if (attr.name == "cipherAlgorithm")
-            cout << "cipher algorithm: " << attr.value << endl;
+            std::cout << "cipher algorithm: " << attr.value << std::endl;
         else if (attr.name == "cipherChaining")
-            cout << "cipher chaining: " << attr.value << endl;
+            std::cout << "cipher chaining: " << attr.value << std::endl;
         else if (attr.name == "hashAlgorithm")
-            cout << "hash algorithm: " << attr.value << endl;
+            std::cout << "hash algorithm: " << attr.value << std::endl;
         else if (attr.name == "saltValue")
             print_base64("salt value", attr.value);
     }
@@ -114,21 +112,21 @@ public:
             return;
 
         if (attr.name == "spinCount")
-            cout << "spin count: " << attr.value << endl;
+            std::cout << "spin count: " << attr.value << std::endl;
         else if (attr.name == "saltSize")
-            cout << "salt size: " << attr.value << endl;
+            std::cout << "salt size: " << attr.value << std::endl;
         else if (attr.name == "blockSize")
-            cout << "block size: " << attr.value << endl;
+            std::cout << "block size: " << attr.value << std::endl;
         else if (attr.name == "keyBits")
-            cout << "key bits: " << attr.value << endl;
+            std::cout << "key bits: " << attr.value << std::endl;
         else if (attr.name == "hashSize")
-            cout << "hash size: " << attr.value << endl;
+            std::cout << "hash size: " << attr.value << std::endl;
         else if (attr.name == "cipherAlgorithm")
-            cout << "cipher algorithm: " << attr.value << endl;
+            std::cout << "cipher algorithm: " << attr.value << std::endl;
         else if (attr.name == "cipherChaining")
-            cout << "cipher chaining: " << attr.value << endl;
+            std::cout << "cipher chaining: " << attr.value << std::endl;
         else if (attr.name == "hashAlgorithm")
-            cout << "hash algorithm: " << attr.value << endl;
+            std::cout << "hash algorithm: " << attr.value << std::endl;
         else if (attr.name == "saltValue")
             print_base64("salt value", attr.value);
         else if (attr.name == "encryptedVerifierHashInput")
@@ -143,7 +141,7 @@ public:
 
 class sax_handler
 {
-    vector<sax_ns_parser_attribute> m_attrs;
+    std::vector<sax_ns_parser_attribute> m_attrs;
 
 public:
     sax_handler(xmlns_context& /*ns_cxt*/) {}
@@ -165,13 +163,13 @@ public:
         {
             if (elem.name == "keyData")
             {
-                cout << "--- key data" << endl;
+                std::cout << "--- key data" << std::endl;
                 key_data_attr_handler func;
                 for_each(m_attrs.begin(), m_attrs.end(), func);
             }
             else if (elem.name == "dataIntegrity")
             {
-                cout << "--- data integrity" << endl;
+                std::cout << "--- data integrity" << std::endl;
                 data_integrity_attr_handler func;
                 for_each(m_attrs.begin(), m_attrs.end(), func);
             }
@@ -180,7 +178,7 @@ public:
         {
             if (elem.name == "encryptedKey")
             {
-                cout << "--- encrypted key" << endl;
+                std::cout << "--- encrypted key" << std::endl;
                 password_encrypted_key_attr_handler func;
                 for_each(m_attrs.begin(), m_attrs.end(), func);
             }
@@ -215,7 +213,7 @@ encryption_info_reader::~encryption_info_reader()
 void encryption_info_reader::read(const char* p, size_t n)
 {
 #if ORCUS_DEBUG_MSO_ENCRYPTION_INFO
-    cout << "encryption_info_reader::read: stream size=" << n << endl;
+    std::cout << "encryption_info_reader::read: stream size=" << n << std::endl;
 #endif
     orcus::xmlns_context cxt = mp_impl->m_ns_repo.create_context();
     sax_handler hdl(cxt);

@@ -19,8 +19,6 @@
 #include <vector>
 #include <sstream>
 
-using namespace std;
-
 namespace orcus { namespace detail {
 
 #ifdef __ORCUS_SPREADSHEET_MODEL

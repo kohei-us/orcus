@@ -12,15 +12,14 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 using namespace orcus;
 
 void test_stream_create_error_output()
 {
     test::stack_printer __sp__(__func__);
 
-    string output = create_parse_error_output("{}", 1);
-    cout << output << endl;
+    std::string output = create_parse_error_output("{}", 1);
+    std::cout << output << std::endl;
     const char* expected = "1:2: {}\n      ^";
     assert(output == expected);
 }
@@ -127,7 +126,7 @@ void test_stream_locate_line_with_offset()
     catch (const std::invalid_argument& e)
     {
         // expected
-        cout << "exception thrown as expected: '" << e.what() << "'" << endl;
+        std::cout << "exception thrown as expected: '" << e.what() << "'" << std::endl;
     }
 }
 

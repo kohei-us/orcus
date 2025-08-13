@@ -15,20 +15,19 @@
 #include <iterator>
 
 using namespace orcus;
-using namespace std;
 
 void test_base64_text_input(const char* p)
 {
-    cout << "input: '" << p << "'" << endl;
+    std::cout << "input: '" << p << "'" << std::endl;
     size_t n = strlen(p);
     std::vector<uint8_t> input(p, p+n);
     std::string encoded = encode_to_base64(input);
-    cout << "encoded: '" << encoded << "'" << endl;
+    std::cout << "encoded: '" << encoded << "'" << std::endl;
 
     std::vector<uint8_t> decoded = decode_from_base64(encoded);
-    cout << "decoded: '";
-    std::copy(decoded.begin(), decoded.end(), std::ostream_iterator<char>(cout, ""));
-    cout << "'" << endl;
+    std::cout << "decoded: '";
+    std::copy(decoded.begin(), decoded.end(), std::ostream_iterator<char>(std::cout, ""));
+    std::cout << "'" << std::endl;
 
     assert(input == decoded);
 }

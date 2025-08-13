@@ -14,7 +14,6 @@
 #include <cstdlib>
 #include <iostream>
 
-using namespace std;
 using namespace orcus;
 
 int ORCUS_CLI_MAIN(int argc, arg_char_t** argv) try
@@ -35,7 +34,7 @@ int ORCUS_CLI_MAIN(int argc, arg_char_t** argv) try
 }
 catch (const std::exception& e)
 {
-    cerr << e.what() << endl;
+    std::cerr << e.what() << std::endl;
     return EXIT_FAILURE;
 }
 

@@ -18,7 +18,6 @@
 #include <cstdlib>
 
 using namespace orcus;
-using namespace std;
 using namespace orcus::spreadsheet;
 using namespace orcus::spreadsheet::mock;
 

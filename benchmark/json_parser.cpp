@@ -12,7 +12,6 @@
 
 #define SIMULATE_PROCESSING_OVERHEAD 0
 
-using namespace std;
 using namespace orcus;
 
 namespace {
@@ -163,7 +162,7 @@ int main(int argc, char** argv) try
     const char* filepath = argv[1];
     orcus::file_content content(filepath);
 
-    cout << "file: " << filepath << endl;
+    std::cout << "file: " << filepath << std::endl;
 
     handler hdl;
 
@@ -173,15 +172,15 @@ int main(int argc, char** argv) try
         parser.parse();
     }
 
-    cout << "parsed token count: " << hdl.token_size() << endl;
+    std::cout << "parsed token count: " << hdl.token_size() << std::endl;
 #if SIMULATE_PROCESSING_OVERHEAD
-    cout << "work value: " << hdl.work_value() << endl;
+    std::cout << "work value: " << hdl.work_value() << std::endl;
 #endif
 
     return EXIT_SUCCESS;
 }
 catch (const std::exception& e)
 {
-    cerr << e.what() << endl;
+    std::cerr << e.what() << std::endl;
     return EXIT_FAILURE;
 }

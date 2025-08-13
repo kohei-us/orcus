@@ -8,7 +8,6 @@
 #include "test_global.hpp"
 #include "orcus/parser_base.hpp"
 
-using namespace std;
 using namespace orcus;
 
 void test_skip_space_and_control()

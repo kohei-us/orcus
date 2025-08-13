@@ -17,8 +17,6 @@
 #include <cstring>
 #include <iostream>
 
-using namespace std;
-
 namespace orcus {
 
 namespace {
@@ -160,7 +158,7 @@ struct orcus_csv::impl
         }
         catch (const parse_error& e)
         {
-            cout << "parse failed at offset " << e.offset() << ": " << e.what() << endl;
+            std::cout << "parse failed at offset " << e.offset() << ": " << e.what() << std::endl;
         }
     }
 };

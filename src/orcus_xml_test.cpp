@@ -16,7 +16,6 @@
 #include <sstream>
 
 using namespace orcus;
-using namespace std;
 
 class sax_handler_encoded_attrs
 {
@@ -43,11 +42,11 @@ public:
         m_attrs.push_back(attr);
     }
 
-    bool check(const vector<string>& expected) const
+    bool check(const std::vector<std::string>& expected) const
     {
         if (m_attrs.size() != expected.size())
         {
-            cerr << "unexpected attribute count." << endl;
+            std::cerr << "unexpected attribute count." << std::endl;
             return false;
         }
 
@@ -55,7 +54,9 @@ public:
         {
             if (m_attrs[i].value != expected[i].c_str())
             {
-                cerr << "expected attribute value: " << expected[i] << "  actual attribute value: " << m_attrs[i].value << endl;
+                std::cerr << "expected attribute value: " << expected[i]
+                    << "  actual attribute value: " << m_attrs[i].value
+                    << std::endl;
                 return false;
             }
         }
@@ -86,7 +87,7 @@ const char* sax_parser_parse_only_test_dirs[] = {
 
 void parse_file(dom::document_tree& tree, const char* filepath, std::string& /*strm*/)
 {
-    cout << "testing " << filepath << endl;
+    std::cout << "testing " << filepath << std::endl;
     file_content content(filepath);
     assert(!content.empty());
 
@@ -95,13 +96,13 @@ void parse_file(dom::document_tree& tree, const char* filepath, std::string& /*s
 
 void test_xml_sax_parser()
 {
-    string strm;
+    std::string strm;
     size_t n = sizeof(sax_parser_test_dirs)/sizeof(sax_parser_test_dirs[0]);
     for (size_t i = 0; i < n; ++i)
     {
         const char* dir = sax_parser_test_dirs[i];
-        string dir_path(dir);
-        string file = dir_path;
+        std::string dir_path(dir);
+        std::string file = dir_path;
         file.append("input.xml");
 
         xmlns_repository repo;
@@ -110,9 +111,9 @@ void test_xml_sax_parser()
         parse_file(tree, file.c_str(), strm);
 
         // Get the compact form of the content.
-        ostringstream os;
+        std::ostringstream os;
         tree.dump_compact(os);
-        string content = os.str();
+        std::string content = os.str();
 
         // Load the check form.
         file = dir_path;
@@ -128,13 +129,13 @@ void test_xml_sax_parser()
 
 void test_xml_sax_parser_read_only()
 {
-    string strm;
+    std::string strm;
     size_t n = sizeof(sax_parser_parse_only_test_dirs)/sizeof(sax_parser_parse_only_test_dirs[0]);
     for (size_t i = 0; i < n; ++i)
     {
         const char* dir = sax_parser_parse_only_test_dirs[i];
-        string dir_path(dir);
-        string file = dir_path;
+        std::string dir_path(dir);
+        std::string file = dir_path;
         file.append("input.xml");
 
         xmlns_repository repo;
@@ -146,7 +147,7 @@ void test_xml_sax_parser_read_only()
 
 void test_xml_declarations()
 {
-    string strm;
+    std::string strm;
     const char* file_path = SRCDIR"/test/xml/custom-decl-1/input.xml";
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
@@ -178,7 +179,7 @@ void test_xml_dtd()
     for (size_t i = 0; i < n; ++i)
     {
         const char* file_path = tests[i].file_path;
-        string strm;
+        std::string strm;
         xmlns_context cxt = repo.create_context();
         dom::document_tree dom(cxt);
         parse_file(dom, file_path, strm);
@@ -198,7 +199,7 @@ void test_xml_encoded_attrs()
 {
     const char* filepath = SRCDIR"/test/xml/encoded-attrs/test1.xml";
 
-    cout << "testing " << filepath << endl;
+    std::cout << "testing " << filepath << std::endl;
     file_content content(filepath);
     assert(!content.empty());
 
@@ -206,7 +207,7 @@ void test_xml_encoded_attrs()
     sax_parser<sax_handler_encoded_attrs> parser(content.str(), hdl);
     parser.parse();
 
-    vector<string> expected;
+    std::vector<std::string> expected;
     expected.push_back("1 & 2");
     expected.push_back("3 & 4");
     expected.push_back("5 & 6");

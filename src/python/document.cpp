@@ -17,7 +17,6 @@
 #include <object.h>
 #include <sstream>
 
-using namespace std;
 namespace ss = orcus::spreadsheet;
 
 namespace orcus { namespace python {

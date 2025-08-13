@@ -12,8 +12,6 @@
 #include <vector>
 #include <iostream>
 
-using namespace std;
-
 int main(int argc, char** argv)
 {
     if (argc < 2)
@@ -42,7 +40,7 @@ int main(int argc, char** argv)
     }
     catch (const std::exception& e)
     {
-        cerr << e.what() << endl;
+        std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 

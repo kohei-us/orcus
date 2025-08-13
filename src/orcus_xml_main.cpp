@@ -27,7 +27,6 @@
 #include "filesystem_env.hpp"
 
 using namespace orcus;
-using namespace std;
 namespace po = boost::program_options;
 
 namespace {
@@ -71,9 +70,9 @@ std::string to_string(output_mode::type t)
     return std::string();
 }
 
-void print_usage(ostream& os, const po::options_description& desc)
+void print_usage(std::ostream& os, const po::options_description& desc)
 {
-    os << "Usage: orcus-xml [OPTIONS] FILE" << endl << endl;
+    os << "Usage: orcus-xml [OPTIONS] FILE" << std::endl << std::endl;
     os << desc;
 }
 
@@ -115,14 +114,14 @@ bool parse_and_dump_structure(const file_content& content, const std::string& ou
 
     if (output.empty())
     {
-        tree.dump_compact(cout);
+        tree.dump_compact(std::cout);
         return true;
     }
 
-    ofstream file(output);
+    std::ofstream file(output);
     if (!file)
     {
-        cerr << "failed to create output file: " << output << endl;
+        std::cerr << "failed to create output file: " << output << std::endl;
         return false;
     }
 
@@ -151,12 +150,12 @@ int main(int argc, char** argv) try
         ("mode", po::value<std::string>(), build_mode_help_text().data())
         ("map,m", po::value<std::string>(), build_map_help_text().data())
         ("output,o", po::value<std::string>(), build_output_help_text().data())
-        ("output-format,f", po::value<string>(), gen_help_output_format().data())
+        ("output-format,f", po::value<std::string>(), gen_help_output_format().data())
     ;
 
     po::options_description hidden("");
     hidden.add_options()
-        ("input", po::value<string>(), "input file");
+        ("input", po::value<std::string>(), "input file");
 
     po::positional_options_description po_desc;
     po_desc.add("input", 1);
@@ -171,31 +170,31 @@ int main(int argc, char** argv) try
             po::command_line_parser(argc, argv).options(cmd_opt).positional(po_desc).run(), vm);
         po::notify(vm);
     }
-    catch (const exception& e)
+    catch (const std::exception& e)
     {
         // Unknown options.
-        cerr << e.what() << endl;
-        print_usage(cout, desc);
+        std::cerr << e.what() << std::endl;
+        print_usage(std::cout, desc);
         return EXIT_FAILURE;
     }
 
     if (vm.count("help"))
     {
-        print_usage(cout, desc);
+        print_usage(std::cout, desc);
         return EXIT_FAILURE;
     }
 
     if (!vm.count("input"))
     {
-        cerr << "No input file." << endl;
-        print_usage(cout, desc);
+        std::cerr << "No input file." << std::endl;
+        print_usage(std::cout, desc);
         return EXIT_FAILURE;
     }
 
     if (!vm.count("mode"))
     {
-        cerr << "Mode not specified." << endl;
-        print_usage(cout, desc);
+        std::cerr << "Mode not specified." << std::endl;
+        print_usage(std::cout, desc);
         return EXIT_FAILURE;
     }
 
@@ -204,8 +203,8 @@ int main(int argc, char** argv) try
 
     if (mode == output_mode::type::unknown)
     {
-        cerr << "Unknown output mode: " << s << endl;
-        print_usage(cout, desc);
+        std::cerr << "Unknown output mode: " << s << std::endl;
+        print_usage(std::cout, desc);
         return EXIT_FAILURE;
     }
 
@@ -213,7 +212,7 @@ int main(int argc, char** argv) try
 
     if (!fs::is_regular_file(input_path))
     {
-        cerr << input_path << " is not a valid file." << endl;
+        std::cerr << input_path << " is not a valid file." << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -224,7 +223,7 @@ int main(int argc, char** argv) try
 
         if (!fs::is_regular_file(map_path))
         {
-            cerr << map_path << " is not a valid map file." << endl;
+            std::cerr << map_path << " is not a valid map file." << std::endl;
             return EXIT_FAILURE;
         }
     }
@@ -294,14 +293,14 @@ int main(int argc, char** argv) try
                 }
                 else
                 {
-                    cerr << "Output format is not specified." << endl;
-                    print_usage(cout, desc);
+                    std::cerr << "Output format is not specified." << std::endl;
+                    print_usage(std::cout, desc);
                     return EXIT_FAILURE;
                 }
 
                 if (format == dump_format_t::unknown)
                 {
-                    std::cerr << "Unsupported output format: '" << s << "'" << endl;
+                    std::cerr << "Unsupported output format: '" << s << "'" << std::endl;
                     return EXIT_FAILURE;
                 }
 
@@ -312,15 +311,15 @@ int main(int argc, char** argv) try
             {
                 if (output.empty())
                 {
-                    cout << "output xml file name not provided" << endl;
-                    print_usage(cout, desc);
+                    std::cout << "output xml file name not provided" << std::endl;
+                    print_usage(std::cout, desc);
                     return EXIT_FAILURE;
                 }
 
-                ofstream file(output);
+                std::ofstream file(output);
                 if (!file)
                 {
-                    cerr << "failed to create output file: " << output << endl;
+                    std::cerr << "failed to create output file: " << output << std::endl;
                     return EXIT_FAILURE;
                 }
 
@@ -334,8 +333,8 @@ int main(int argc, char** argv) try
     }
     catch (const malformed_xml_error& e)
     {
-        cerr << create_parse_error_output(content.str(), e.offset()) << endl;
-        cerr << e.what() << endl;
+        std::cerr << create_parse_error_output(content.str(), e.offset()) << std::endl;
+        std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -343,7 +342,7 @@ int main(int argc, char** argv) try
 }
 catch (const std::exception& e)
 {
-    cerr << e.what() << endl;
+    std::cerr << e.what() << std::endl;
     return EXIT_FAILURE;
 }
 

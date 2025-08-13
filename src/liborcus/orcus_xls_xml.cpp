@@ -24,8 +24,6 @@
 #include <locale>
 #include <codecvt>
 
-using namespace std;
-
 namespace orcus {
 
 struct orcus_xls_xml::impl

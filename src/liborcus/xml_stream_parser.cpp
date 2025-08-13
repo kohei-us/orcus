@@ -17,8 +17,6 @@
 #include <vector>
 #include <sstream>
 
-using namespace std;
-
 namespace orcus {
 
 xml_stream_parser_base::xml_stream_parser_base(

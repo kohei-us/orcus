@@ -9,8 +9,6 @@
 
 #include <sstream>
 
-using namespace std;
-
 namespace orcus {
 
 general_error::general_error(std::string msg) :

@@ -10,7 +10,6 @@
 #include "mso/encryption_info.hpp"
 
 using namespace orcus;
-using namespace std;
 
 int main(int argc, char** argv) try
 {

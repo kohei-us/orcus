@@ -14,8 +14,6 @@
 
 #include <iostream>
 
-using namespace std;
-
 namespace orcus {
 
 xlsx_drawing_context::xlsx_drawing_context(session_context& cxt, const tokens& tkns) :
@@ -122,7 +120,11 @@ bool xlsx_drawing_context::end_element(xmlns_id_t ns, xml_token_t name)
             case XML_twoCellAnchor:
             case XML_oneCellAnchor:
                 if (get_config().debug)
-                    cout << "col: " << m_col << "; row: " << m_row << "; col offset: " << m_col_offset << "; row offset: " << m_row_offset << endl;
+                {
+                    std::cout << "col: " << m_col << "; row: " << m_row
+                        << "; col offset: " << m_col_offset << "; row offset: "
+                        << m_row_offset << std::endl;
+                }
                 break;
             default:
                 ;

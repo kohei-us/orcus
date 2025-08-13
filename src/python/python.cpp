@@ -35,8 +35,6 @@
 #define ORCUS_DEBUG_PYTHON 0
 #define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
 
-using namespace std;
-
 namespace orcus { namespace python {
 
 namespace {

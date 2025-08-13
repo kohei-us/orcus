@@ -11,7 +11,6 @@
 #include <iostream>
 
 using namespace orcus;
-using namespace std;
 
 void test_link_array_values()
 {

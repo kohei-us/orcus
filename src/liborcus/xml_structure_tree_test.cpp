@@ -18,7 +18,6 @@
 
 #include "filesystem_env.hpp"
 
-using namespace std;
 using namespace orcus;
 
 const fs::path test_base_dir(SRCDIR"/test/xml-structure");
@@ -64,14 +63,14 @@ void test_basic()
     for (const fs::path& base_dir : base_dirs)
     {
         fs::path filepath = base_dir / "input.xml";
-        cout << filepath << endl;
+        std::cout << filepath << std::endl;
         auto lt = load_tree(xmlns_repo, filepath);
 
         std::ostringstream os;
         lt->tree.dump_compact(os);
-        string data_content = os.str();
-        cout << "--" << endl;
-        cout << data_content;
+        std::string data_content = os.str();
+        std::cout << "--" << std::endl;
+        std::cout << data_content;
 
         // Check the dump content against known datum.
         filepath = base_dir / "check.txt";

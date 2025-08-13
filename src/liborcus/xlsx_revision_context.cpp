@@ -17,8 +17,6 @@
 #include <iostream>
 #include <limits>
 
-using namespace std;
-
 namespace orcus {
 
 namespace {
@@ -149,7 +147,7 @@ void xlsx_revheaders_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /
 {
 }
 
-void xlsx_revheaders_context::start_element(xmlns_id_t ns, xml_token_t name, const vector<xml_token_attr_t>& attrs)
+void xlsx_revheaders_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
     if (ns == NS_ooxml_xlsx)
@@ -161,10 +159,10 @@ void xlsx_revheaders_context::start_element(xmlns_id_t ns, xml_token_t name, con
                 xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
                 headers_attr_parser func;
                 func = for_each(attrs.begin(), attrs.end(), func);
-                cout << "* last guid: " << func.get_last_guid() << endl;
-                cout << "* highest revision ID: " << func.get_highest_revid() << endl;
-                cout << "* version: " << func.get_version() << endl;
-                cout << "* disk revisions: " << func.is_disk_revisions() << endl;
+                std::cout << "* last guid: " << func.get_last_guid() << std::endl;
+                std::cout << "* highest revision ID: " << func.get_highest_revid() << std::endl;
+                std::cout << "* version: " << func.get_version() << std::endl;
+                std::cout << "* disk revisions: " << func.is_disk_revisions() << std::endl;
             }
             break;
             case XML_header:
@@ -172,18 +170,18 @@ void xlsx_revheaders_context::start_element(xmlns_id_t ns, xml_token_t name, con
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_headers);
                 header_attr_parser func(get_session_context().spool);
                 func = for_each(attrs.begin(), attrs.end(), func);
-                cout << "* revision header (guid:" << func.get_guid() << ")" << endl;
-                cout << "  - timestamp: " << func.get_date_time().to_string() << endl;
-                cout << "  - user name: " << func.get_username() << endl;
+                std::cout << "* revision header (guid:" << func.get_guid() << ")" << std::endl;
+                std::cout << "  - timestamp: " << func.get_date_time().to_string() << std::endl;
+                std::cout << "  - user name: " << func.get_username() << std::endl;
 
                 if (func.get_min_revid() != -1 && func.get_max_revid() != -1)
-                    cout << "  - revision range: " << func.get_min_revid() << "-" << func.get_max_revid() << endl;
+                    std::cout << "  - revision range: " << func.get_min_revid() << "-" << func.get_max_revid() << std::endl;
 
                 long next_sheet = func.get_next_sheet_id();
                 if (next_sheet != -1)
-                    cout << "  - next available sheet: " << (next_sheet - 1) << endl;
+                    std::cout << "  - next available sheet: " << (next_sheet - 1) << std::endl;
 
-                cout << "  - revision log rid: " << func.get_rid() << endl;
+                std::cout << "  - revision log rid: " << func.get_rid() << std::endl;
                 // TODO : Intern the rid here when passing it to the revision log stream.
             }
             break;
@@ -216,10 +214,10 @@ bool xlsx_revheaders_context::end_element(xmlns_id_t ns, xml_token_t name)
         {
             case XML_sheetIdMap:
             {
-                cout << "  - sheet indices: ";
+                std::cout << "  - sheet indices: ";
                 for (size_t i = 0; i < m_cur_sheet_ids.size(); ++i)
-                    cout << m_cur_sheet_ids[i] << " ";
-                cout << endl;
+                    std::cout << m_cur_sheet_ids[i] << " ";
+                std::cout << std::endl;
             }
             break;
             default:
@@ -368,7 +366,7 @@ void xlsx_revlog_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*nam
 {
 }
 
-void xlsx_revlog_context::start_element(xmlns_id_t ns, xml_token_t name, const vector<xml_token_attr_t>& attrs)
+void xlsx_revlog_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
 
@@ -389,8 +387,8 @@ void xlsx_revlog_context::start_element(xmlns_id_t ns, xml_token_t name, const v
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_revisions);
                 rcc_attr_parser func;
                 func = for_each(attrs.begin(), attrs.end(), func);
-                cout << "* revision id: " << func.get_revision_id() << "  type: cell change" << endl;
-                cout << "  - sheet index: " << func.get_sheet_id() << endl;
+                std::cout << "* revision id: " << func.get_revision_id() << "  type: cell change" << std::endl;
+                std::cout << "  - sheet index: " << func.get_sheet_id() << std::endl;
                 m_cur_cell_type = xlsx_ct_unknown;
             }
             break;
@@ -439,11 +437,11 @@ void xlsx_revlog_context::start_element(xmlns_id_t ns, xml_token_t name, const v
                 xml_element_expected(parent, NS_ooxml_xlsx, XML_revisions);
                 rrc_attr_parser func;
                 func = for_each(attrs.begin(), attrs.end(), func);
-                cout << "* revision id: " << func.get_revision_id() << "  type: row column insert delete" << endl;
-                cout << "  - sheet index: " << func.get_sheet_id() << endl;
-                cout << "  - action type: " << to_string(func.get_action_type()) << endl;
-                cout << "  - range: " << func.get_ref() << endl;
-                cout << "  - end of list: " << (func.is_end_of_list() ? "true":"false") << endl;
+                std::cout << "* revision id: " << func.get_revision_id() << "  type: row column insert delete" << std::endl;
+                std::cout << "  - sheet index: " << func.get_sheet_id() << std::endl;
+                std::cout << "  - action type: " << to_string(func.get_action_type()) << std::endl;
+                std::cout << "  - range: " << func.get_ref() << std::endl;
+                std::cout << "  - end of list: " << (func.is_end_of_list() ? "true":"false") << std::endl;
             }
             break;
             case XML_rsnm:
@@ -466,8 +464,8 @@ void xlsx_revlog_context::start_element(xmlns_id_t ns, xml_token_t name, const v
                 m_cur_value = 0.0;
                 m_cur_string = std::string_view{};
 
-                cout << "  - new cell position: " << func.get_ref() << endl;
-                cout << "  - new cell type: " << to_string(m_cur_cell_type) << endl;
+                std::cout << "  - new cell position: " << func.get_ref() << std::endl;
+                std::cout << "  - new cell type: " << to_string(m_cur_cell_type) << std::endl;
             }
             break;
             case XML_f:
@@ -516,28 +514,28 @@ bool xlsx_revlog_context::end_element(xmlns_id_t ns, xml_token_t name)
         {
             case XML_nc:
             {
-                cout << "  - new cell value: ";
+                std::cout << "  - new cell value: ";
                 switch (m_cur_cell_type)
                 {
                     case xlsx_ct_boolean:
                         if (m_cur_value != 0.0)
-                            cout << "true";
+                            std::cout << "true";
                         else
-                            cout << "false";
+                            std::cout << "false";
                     break;
                     case xlsx_ct_numeric:
                         if (m_cur_formula)
-                            cout << m_cur_string;
+                            std::cout << m_cur_string;
                         else
-                            cout << m_cur_value;
+                            std::cout << m_cur_value;
                     break;
                     case xlsx_ct_inline_string:
-                        cout << m_cur_string;
+                        std::cout << m_cur_string;
                     break;
                     default:
                         ;
                 }
-                cout << endl;
+                std::cout << std::endl;
             }
             break;
             default:

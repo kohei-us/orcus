@@ -11,7 +11,6 @@
 #include <cstring>
 
 using namespace orcus;
-using namespace std;
 
 class handler
 {
@@ -88,7 +87,7 @@ public:
 
 void test_parser(const char* src, const json::parse_tokens_t& expected)
 {
-    cout << "source: " << src << endl;
+    std::cout << "source: " << src << std::endl;
 
     handler hdl;
     threaded_json_parser<handler> parser(src, std::strlen(src), hdl, 5, 5);
@@ -96,10 +95,10 @@ void test_parser(const char* src, const json::parse_tokens_t& expected)
 
     if (hdl.get_tokens() != expected)
     {
-        cout << "Expected tokens:" << endl;
-        cout << expected;
-        cout << "Actual tokens:" << endl;
-        cout << hdl.get_tokens();
+        std::cout << "Expected tokens:" << std::endl;
+        std::cout << expected;
+        std::cout << "Actual tokens:" << std::endl;
+        std::cout << hdl.get_tokens();
         abort();
     }
 }
@@ -172,7 +171,7 @@ void test_threaded_json_parser_invalid()
         catch (const parse_error&)
         {
             // works as expected.
-            cout << "invalid source: " << src << endl;
+            std::cout << "invalid source: " << src << std::endl;
         }
     }
 }

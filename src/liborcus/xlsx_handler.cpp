@@ -13,8 +13,6 @@
 
 #include <iostream>
 
-using namespace std;
-
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {

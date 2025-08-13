@@ -22,7 +22,6 @@
 
 #include <mdds/sorted_string_map.hpp>
 
-using namespace std;
 namespace ss = orcus::spreadsheet;
 
 namespace orcus {
@@ -511,7 +510,7 @@ void ods_content_xml_context::end_row()
     {
         // TODO: repeat this row.
         if (get_config().debug)
-            cout << "TODO: repeat this row " << m_row_attr.number_rows_repeated << " times." << endl;
+            std::cout << "TODO: repeat this row " << m_row_attr.number_rows_repeated << " times." << std::endl;
     }
     m_row += m_row_attr.number_rows_repeated;
 }
@@ -821,11 +820,11 @@ void ods_content_xml_context::end_spreadsheet()
         {
             if (get_config().debug)
             {
-                cout << "named expression: name='" << data.name
+                std::cout << "named expression: name='" << data.name
                      << "'; base='" << data.base
                      << "'; expression='" << data.expression
                      << "'; sheet-scope=" << data.scope
-                     << endl;
+                     << std::endl;
             }
 
             ss::src_address_t base = resolver->resolve_address(data.base);

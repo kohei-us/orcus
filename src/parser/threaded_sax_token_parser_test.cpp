@@ -14,7 +14,6 @@
 
 #include <cstring>
 
-using namespace std;
 using namespace orcus;
 
 void test_sax_token_parser_1()

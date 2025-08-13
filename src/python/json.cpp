@@ -18,8 +18,6 @@
 
 #define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
 
-using namespace std;
-
 namespace orcus { namespace python {
 
 namespace {

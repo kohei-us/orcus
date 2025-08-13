@@ -17,8 +17,6 @@
 
 #include <object.h>
 
-using namespace std;
-
 namespace orcus { namespace python {
 
 PyObject* detect_format(PyObject* /*module*/, PyObject* args, PyObject* kwargs)

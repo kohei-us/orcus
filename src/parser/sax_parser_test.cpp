@@ -9,8 +9,6 @@
 #include <orcus/sax_parser.hpp>
 #include <cstring>
 
-using namespace std;
-
 void test_handler()
 {
     const char* test_code = "<?xml version=\"1.0\"?><root/>";

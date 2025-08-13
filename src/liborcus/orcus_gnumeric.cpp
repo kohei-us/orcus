@@ -28,15 +28,13 @@
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 
-using namespace std;
-
 namespace orcus {
 
 namespace {
 
-bool decompress_gzip(const char* buffer, size_t size, string& decompressed)
+bool decompress_gzip(const char* buffer, size_t size, std::string& decompressed)
 {
-    string buf;
+    std::string buf;
 
     try
     {
@@ -46,7 +44,7 @@ bool decompress_gzip(const char* buffer, size_t size, string& decompressed)
         boost::iostreams::write(os, buffer, size);
         os.flush();
     }
-    catch (const exception&)
+    catch (const std::exception&)
     {
         return false;
     }
@@ -93,7 +91,7 @@ bool orcus_gnumeric::detect(const unsigned char* buffer, size_t size)
 {
     // Detect gnumeric format that's already in memory.
 
-    string decompressed;
+    std::string decompressed;
     if (!decompress_gzip(reinterpret_cast<const char*>(buffer), size, decompressed))
         return false;
 

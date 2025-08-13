@@ -4,7 +4,6 @@
 #include <iostream>
 
 using namespace orcus;
-using namespace std;
 
 void run_xmlns_example()
 {
@@ -33,14 +32,14 @@ void run_xmlns_example()
     for (const xmlns_id_t nsid : {ns_default, ns_a, ns_r})
     {
         std::string_view alias = ns_cxt.get_alias(nsid);
-        cout << "Namespace alias '" << alias << "' has an index of " << ns_cxt.get_index(nsid)
-            << " and a short name of '" << ns_cxt.get_short_name(nsid) << "'." << endl;
-        cout << "The value of the alias '" << alias << "' is '" << ns_cxt.get(alias) << "'." << endl;
+        std::cout << "Namespace alias '" << alias << "' has an index of " << ns_cxt.get_index(nsid)
+            << " and a short name of '" << ns_cxt.get_short_name(nsid) << "'." << std::endl;
+        std::cout << "The value of the alias '" << alias << "' is '" << ns_cxt.get(alias) << "'." << std::endl;
     }
 
     // Iterate over all namespaces in the current context.
     for (const xmlns_id_t nsid : ns_cxt.get_all_namespaces())
-        cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << endl;
+        std::cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << std::endl;
 }
 
 void run_xmlns_stacked()
@@ -53,7 +52,7 @@ void run_xmlns_stacked()
 
     // Push a nested deffault namespace.  This overwrites the original.
     xmlns_id_t current_default_ns = ns_cxt.push(std::string_view{}, "http://nested");
-    cout << "same as original: " << (current_default_ns == ns_default_1) << endl;
+    std::cout << "same as original: " << (current_default_ns == ns_default_1) << std::endl;
 
     // Pop the current default namespace.  After this the original namespace
     // becomes the default namespace again.
@@ -61,7 +60,7 @@ void run_xmlns_stacked()
 
     // Get the current default namespace identifier.
     current_default_ns = ns_cxt.get(std::string_view{});
-    cout << "same as original: " << (current_default_ns == ns_default_1) << endl;
+    std::cout << "same as original: " << (current_default_ns == ns_default_1) << std::endl;
 }
 
 void run_xmlns_same_ns_different_aliases()
@@ -77,7 +76,7 @@ void run_xmlns_same_ns_different_aliases()
         alias_1 = ns_cxt.push("foo", "http://some-namespace");
 
         for (const xmlns_id_t nsid : ns_cxt.get_all_namespaces())
-            cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << endl;
+            std::cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << std::endl;
     }
 
     {
@@ -85,10 +84,10 @@ void run_xmlns_same_ns_different_aliases()
         alias_2 = ns_cxt.push("bar", "http://some-namespace");
 
         for (const xmlns_id_t nsid : ns_cxt.get_all_namespaces())
-            cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << endl;
+            std::cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << std::endl;
     }
 
-    cout << (alias_1 == alias_2 ? "same" : "different") << endl;
+    std::cout << (alias_1 == alias_2 ? "same" : "different") << std::endl;
 }
 
 void run_xmlns_different_ns_same_alias()
@@ -104,7 +103,7 @@ void run_xmlns_different_ns_same_alias()
         alias_1 = ns_cxt.push("foo", "http://namespace-1");
 
         for (const xmlns_id_t nsid : ns_cxt.get_all_namespaces())
-            cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << endl;
+            std::cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << std::endl;
     }
 
     {
@@ -112,10 +111,10 @@ void run_xmlns_different_ns_same_alias()
         alias_2 = ns_cxt.push("foo", "http://namespace-2");
 
         for (const xmlns_id_t nsid : ns_cxt.get_all_namespaces())
-            cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << endl;
+            std::cout << "'" << ns_cxt.get_alias(nsid) << "' = " << ns_cxt.get_short_name(nsid) << std::endl;
     }
 
-    cout << (alias_1 == alias_2 ? "same" : "different") << endl;
+    std::cout << (alias_1 == alias_2 ? "same" : "different") << std::endl;
 }
 
 int main()

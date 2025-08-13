@@ -18,8 +18,6 @@
 
 #define ORCUS_DEBUG_XML_NAMESPACE 0
 
-using namespace std;
-
 #if ORCUS_DEBUG_XML_NAMESPACE
 #include <cstdio>
 #include <iostream>
@@ -149,12 +147,12 @@ xmlns_id_t xmlns_repository::get_identifier(size_t index) const
     return mp_impl->m_identifiers[index].data();
 }
 
-string xmlns_repository::get_short_name(xmlns_id_t ns_id) const
+std::string xmlns_repository::get_short_name(xmlns_id_t ns_id) const
 {
     size_t index = get_index(ns_id);
 
     if (index == INDEX_NOT_FOUND)
-        return string("???");
+        return std::string("???");
 
     std::ostringstream os;
     os << "ns" << index;
@@ -327,7 +325,7 @@ size_t xmlns_context::get_index(xmlns_id_t ns_id) const
     return mp_impl->repo->get_index(ns_id);
 }
 
-string xmlns_context::get_short_name(xmlns_id_t ns_id) const
+std::string xmlns_context::get_short_name(xmlns_id_t ns_id) const
 {
     if (!mp_impl->repo)
         throw general_error("this context is not associated with any repo.");
@@ -382,10 +380,10 @@ struct less_ns_by_index
 
 class push_back_ns_to_item
 {
-    vector<ns_item>& m_store;
+    std::vector<ns_item>& m_store;
     const xmlns_context& m_cxt;
 public:
-    push_back_ns_to_item(vector<ns_item>& store, const xmlns_context& cxt) : m_store(store), m_cxt(cxt) {}
+    push_back_ns_to_item(std::vector<ns_item>& store, const xmlns_context& cxt) : m_store(store), m_cxt(cxt) {}
     void operator() (xmlns_id_t ns)
     {
         size_t num_id = m_cxt.get_index(ns);
@@ -429,7 +427,7 @@ std::vector<xmlns_id_t> xmlns_context::get_all_namespaces() const
         all_ns.erase(it_unique_end, all_ns.end());
 
         // Now, sort by indices.
-        vector<ns_item> items;
+        std::vector<ns_item> items;
         std::for_each(all_ns.begin(), all_ns.end(), push_back_ns_to_item(items, *this));
         std::sort(items.begin(), items.end(), less_ns_by_index());
 
@@ -445,8 +443,8 @@ std::vector<xmlns_id_t> xmlns_context::get_all_namespaces() const
 
 void xmlns_context::dump(std::ostream& os) const
 {
-    vector<xmlns_id_t> nslist = get_all_namespaces();
-    vector<xmlns_id_t>::const_iterator it = nslist.begin(), it_end = nslist.end();
+    std::vector<xmlns_id_t> nslist = get_all_namespaces();
+    std::vector<xmlns_id_t>::const_iterator it = nslist.begin(), it_end = nslist.end();
     for (; it != it_end; ++it)
     {
         xmlns_id_t ns_id = *it;
@@ -454,7 +452,7 @@ void xmlns_context::dump(std::ostream& os) const
         if (num_id == INDEX_NOT_FOUND)
             continue;
 
-        os << "ns" << num_id << "=\"" << ns_id << '"' << endl;
+        os << "ns" << num_id << "=\"" << ns_id << '"' << std::endl;
     }
 }
 

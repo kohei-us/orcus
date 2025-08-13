@@ -18,7 +18,6 @@
 
 #include "filesystem_env.hpp"
 
-using namespace std;
 using namespace orcus;
 
 namespace po = boost::program_options;
@@ -33,8 +32,8 @@ const char* help_yaml_output_format =
 
 void print_yaml_usage(std::ostream& os, const po::options_description& desc)
 {
-    os << "Usage: orcus-yaml [options] FILE" << endl << endl;
-    os << help_program << endl << endl << desc;
+    os << "Usage: orcus-yaml [options] FILE" << std::endl << std::endl;
+    os << help_program << std::endl << std::endl << desc;
 }
 
 std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
@@ -42,12 +41,12 @@ std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
     po::options_description desc("Options");
     desc.add_options()
         ("help,h", "Print this help.")
-        ("output,o", po::value<string>(), help_yaml_output)
-        ("output-format,f", po::value<string>(), help_yaml_output_format);
+        ("output,o", po::value<std::string>(), help_yaml_output)
+        ("output-format,f", po::value<std::string>(), help_yaml_output_format);
 
     po::options_description hidden("Hidden options");
     hidden.add_options()
-        ("input", po::value<string>(), "input file");
+        ("input", po::value<std::string>(), "input file");
 
     po::options_description cmd_opt;
     cmd_opt.add(desc).add(hidden);
@@ -62,31 +61,31 @@ std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
             po::command_line_parser(argc, argv).options(cmd_opt).positional(po_desc).run(), vm);
         po::notify(vm);
     }
-    catch (const exception& e)
+    catch (const std::exception& e)
     {
         // Unknown options.
-        cerr << e.what() << endl;
-        print_yaml_usage(cerr, desc);
+        std::cerr << e.what() << std::endl;
+        print_yaml_usage(std::cerr, desc);
         return nullptr;
     }
 
     if (vm.count("help"))
     {
-        print_yaml_usage(cout, desc);
+        print_yaml_usage(std::cout, desc);
         return nullptr;
     }
 
     std::unique_ptr<yaml_config> config = std::make_unique<yaml_config>();
 
     if (vm.count("input"))
-        config->input_path = vm["input"].as<string>();
+        config->input_path = vm["input"].as<std::string>();
 
     if (vm.count("output"))
-        config->output_path = vm["output"].as<string>();
+        config->output_path = vm["output"].as<std::string>();
 
     if (vm.count("output-format"))
     {
-        std::string outformat = vm["output-format"].as<string>();
+        std::string outformat = vm["output-format"].as<std::string>();
         if (outformat == "none")
             config->output_format = yaml_config::output_format_type::none;
         else if (outformat == "yaml")
@@ -95,27 +94,27 @@ std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
             config->output_format = yaml_config::output_format_type::json;
         else
         {
-            cerr << "Unknown output format type '" << outformat << "'." << endl;
+            std::cerr << "Unknown output format type '" << outformat << "'." << std::endl;
             return nullptr;
         }
     }
     else
     {
-        cerr << "Output format is not specified." << endl;
-        print_yaml_usage(cerr, desc);
+        std::cerr << "Output format is not specified." << std::endl;
+        print_yaml_usage(std::cerr, desc);
         return nullptr;
     }
 
     if (config->input_path.empty())
     {
-        cerr << err_no_input_file << endl;
-        print_yaml_usage(cerr, desc);
+        std::cerr << err_no_input_file << std::endl;
+        print_yaml_usage(std::cerr, desc);
         return nullptr;
     }
 
     if (!fs::exists(config->input_path))
     {
-        cerr << "Input file does not exist: " << config->input_path << endl;
+        std::cerr << "Input file does not exist: " << config->input_path << std::endl;
         return nullptr;
     }
 
@@ -123,7 +122,7 @@ std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
     {
         if (config->output_path.empty())
         {
-            cerr << "Output file not given." << endl;
+            std::cerr << "Output file not given." << std::endl;
             return nullptr;
         }
 
@@ -131,7 +130,7 @@ std::unique_ptr<yaml_config> parse_yaml_args(int argc, char** argv)
         // directory.
         if (fs::is_directory(config->output_path))
         {
-            cerr << "Output file path points to an existing directory.  Aborting." << endl;
+            std::cerr << "Output file path points to an existing directory.  Aborting." << std::endl;
             return nullptr;
         }
     }
@@ -148,7 +147,7 @@ std::unique_ptr<yaml::document_tree> load_doc(const char* p, size_t n)
     }
     catch (const parse_error& e)
     {
-        cerr << create_parse_error_output(std::string_view(p, n), e.offset()) << endl;
+        std::cerr << create_parse_error_output(std::string_view(p, n), e.offset()) << std::endl;
         throw;
     }
     return doc;
@@ -169,13 +168,13 @@ int main(int argc, char** argv)
         {
             case yaml_config::output_format_type::yaml:
             {
-                ofstream fs(config->output_path.c_str());
+                std::ofstream fs(config->output_path.c_str());
                 fs << doc->dump_yaml();
             }
             break;
             case yaml_config::output_format_type::json:
             {
-                ofstream fs(config->output_path.c_str());
+                std::ofstream fs(config->output_path.c_str());
                 fs << doc->dump_json();
             }
             break;
@@ -185,7 +184,7 @@ int main(int argc, char** argv)
     }
     catch (const std::exception& e)
     {
-        cerr << e.what() << endl;
+        std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 

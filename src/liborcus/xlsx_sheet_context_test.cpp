@@ -15,7 +15,6 @@
 #include "orcus/config.hpp"
 
 using namespace orcus;
-using namespace std;
 using namespace orcus::spreadsheet;
 using namespace orcus::spreadsheet::mock;
 
@@ -85,13 +84,14 @@ public:
     }
 };
 
-const string_view str_value = "Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque "
-                              "faucibus ex sapien vitae pellentesque sem placerat. In id cursus"
-                              " mi pretium tellus duis convallis. Tempus leo eu aenean sed diam"
-                              " urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendu"
-                              "m egestas. Iaculis massa nisl malesuada lacinia integer nunc pos"
-                              "uere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad l"
-                              "itora torquent per conubia nostra inceptos himenaeos.";
+const std::string_view str_value =
+"Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque "
+"faucibus ex sapien vitae pellentesque sem placerat. In id cursus"
+" mi pretium tellus duis convallis. Tempus leo eu aenean sed diam"
+" urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendu"
+"m egestas. Iaculis massa nisl malesuada lacinia integer nunc pos"
+"uere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad l"
+"itora torquent per conubia nostra inceptos himenaeos.";
 
 class mock_sheet : public import_sheet
 {
@@ -253,7 +253,7 @@ void test_cell_string()
     context.set_config(opt);
 
     orcus::xmlns_id_t ns = NS_ooxml_xlsx;
-  
+
     orcus::xml_token_attrs_t inline_attrs;
     inline_attrs.push_back(xml_token_attr_t(ns, XML_t, "inlineStr", false));
     context.start_element(ns, XML_c, inline_attrs);
