@@ -155,6 +155,8 @@ misc_data = \
 	misc/xml-tokens/token_util.py \
 	misc/xml-tokens/xls-xml-tokens.txt
 
+# run `git ls-tree -r --name-only HEAD -- test | sed -e 's/^/\t/g' -e '$!s/$/\ \\/g' -e 's/#/\\#/g'`
+# to update this list.
 test_data = \
 	test/css/basic1.css \
 	test/css/basic10.css \
@@ -200,6 +202,7 @@ test_data = \
 	test/gnumeric/cell-value-types/input.gnumeric \
 	test/gnumeric/colored-text/input.gnumeric \
 	test/gnumeric/column-width-row-height/input.gnumeric \
+	test/gnumeric/detect/文件名是中文.gnumeric \
 	test/gnumeric/formula-cells/check.txt \
 	test/gnumeric/formula-cells/input.gnumeric \
 	test/gnumeric/hidden-rows-columns/input.gnumeric \
@@ -230,6 +233,14 @@ test_data = \
 	test/json-mapped/array-of-objects-header/check.txt \
 	test/json-mapped/array-of-objects-header/input.json \
 	test/json-mapped/array-of-objects-header/map.json \
+	test/json-mapped/auto-mapping/list-of-objects-two-sheets/check.txt \
+	test/json-mapped/auto-mapping/list-of-objects-two-sheets/input.json \
+	test/json-mapped/auto-mapping/list-of-objects/check.txt \
+	test/json-mapped/auto-mapping/list-of-objects/input.json \
+	test/json-mapped/auto-mapping/nested-arrays-two-sheets/check.txt \
+	test/json-mapped/auto-mapping/nested-arrays-two-sheets/input.json \
+	test/json-mapped/auto-mapping/nested-arrays/check.txt \
+	test/json-mapped/auto-mapping/nested-arrays/input.json \
 	test/json-mapped/nested-repeats-2/check.txt \
 	test/json-mapped/nested-repeats-2/input.json \
 	test/json-mapped/nested-repeats-2/map.json \
@@ -671,6 +682,7 @@ test_data = \
 	test/ods/cell-properties/wrap-and-shrink.ods \
 	test/ods/column-width-row-height/input.ods \
 	test/ods/date-cell/input.ods \
+	test/ods/detect/日本語のファイル.ods \
 	test/ods/formatted-text/bold-and-italic.ods \
 	test/ods/formula-1/check.txt \
 	test/ods/formula-1/input.ods \
@@ -704,6 +716,7 @@ test_data = \
 	test/parquet/basic/basic-zstd.parquet.check \
 	test/parquet/basic/float-with-nan.parquet \
 	test/parquet/basic/float-with-nan.parquet.check \
+	test/parquet/detect/圧縮なし.parquet \
 	test/python/env.json.in \
 	test/python/file_load_common.py \
 	test/python/perf/test_json.py \
@@ -736,6 +749,7 @@ test_data = \
 	test/xls-xml/colored-text/input.xml \
 	test/xls-xml/column-width-row-height/input.xml \
 	test/xls-xml/date-time/input.xml \
+	test/xls-xml/detect/日本語のファイル.xml \
 	test/xls-xml/double-bom/input.xml \
 	test/xls-xml/empty-rows/check.txt \
 	test/xls-xml/empty-rows/input.xml \
@@ -803,6 +817,7 @@ test_data = \
 	test/xlsx/data-table/one-variable.xlsx \
 	test/xlsx/date-cell/input.xlsx \
 	test/xlsx/date-time/input.xlsx \
+	test/xlsx/detect/日本語のファイル.xlsx \
 	test/xlsx/doc-structure/unordered-sheet-positions.xlsx \
 	test/xlsx/empty-shared-strings/check.txt \
 	test/xlsx/empty-shared-strings/input.xlsx \
@@ -875,6 +890,10 @@ test_data = \
 	test/xml-mapped/attribute-single-element/check.txt \
 	test/xml-mapped/attribute-single-element/input.xml \
 	test/xml-mapped/attribute-single-element/map.xml \
+	test/xml-mapped/auto-mapping/list-of-records-two-sheets/check.txt \
+	test/xml-mapped/auto-mapping/list-of-records-two-sheets/input.xml \
+	test/xml-mapped/auto-mapping/list-of-records/check.txt \
+	test/xml-mapped/auto-mapping/list-of-records/input.xml \
 	test/xml-mapped/content-basic/check-nomap.txt \
 	test/xml-mapped/content-basic/check.txt \
 	test/xml-mapped/content-basic/input.xml \
@@ -908,6 +927,8 @@ test_data = \
 	test/xml-mapped/fuel-economy/map.xml \
 	test/xml-mapped/invalids/map-defs/non-leaf-element-linked.xml \
 	test/xml-mapped/invalids/map-defs/not-xml.xml \
+	test/xml-mapped/map-gen/two-sheets/check.txt \
+	test/xml-mapped/map-gen/two-sheets/input.xml \
 	test/xml-mapped/nested-repeats-2/check-nomap.txt \
 	test/xml-mapped/nested-repeats-2/check.txt \
 	test/xml-mapped/nested-repeats-2/input.xml \
