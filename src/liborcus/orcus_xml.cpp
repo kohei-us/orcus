@@ -641,6 +641,8 @@ void orcus_xml::read_stream(std::string_view stream)
 
     sax_ns_parser<xml_data_sax_handler> parser(stream, ns_cxt, handler);
     parser.parse();
+
+    mp_impl->im_factory->finalize();
 }
 
 #if ORCUS_DEBUG_XML
