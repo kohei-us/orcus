@@ -491,21 +491,21 @@ orcus_parquet::orcus_parquet(spreadsheet::iface::import_factory* factory) :
 
 orcus_parquet::~orcus_parquet() = default;
 
-bool orcus_parquet::detect(const unsigned char* blob, std::size_t size)
+bool orcus_parquet::detect(std::string_view strm)
 {
-    if (size < 12u)
+    if (strm.size() < 12u)
         // At minimum header magic bytes (4), footer magic bytes (4), and the
         // footer metadata length (4).
         return false;
 
-    const auto* p = blob;
+    const auto* p = strm.data();
 
     // Check the first 4 bytes.
     if (std::string_view(reinterpret_cast<const char*>(p), 4) != "PAR1")
         return false;
 
     // Check the last 4 bytes.
-    p += size - 4u;
+    p += strm.size() - 4u;
     if (std::string_view(reinterpret_cast<const char*>(p), 4) != "PAR1")
         return false;
 
@@ -520,7 +520,7 @@ bool orcus_parquet::detect(const unsigned char* blob, std::size_t size)
     footer_size |= *p;
 
     p -= footer_size;
-    if (p <= blob)
+    if (p <= strm.data())
         // footer metadata position must be within the stream.
         return false;
 

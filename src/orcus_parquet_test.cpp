@@ -107,8 +107,7 @@ void test_parquet_detection()
         assert(fs::is_regular_file(docpath));
 
         file_content content{docpath.string()};
-        auto strm = content.str();
-        bool res = orcus_parquet::detect(reinterpret_cast<const unsigned char*>(strm.data()), strm.size());
+        bool res = orcus_parquet::detect(content.str());
         assert(res);
     }
 }

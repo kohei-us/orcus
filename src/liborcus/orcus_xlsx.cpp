@@ -152,9 +152,9 @@ orcus_xlsx::orcus_xlsx(spreadsheet::iface::import_factory* factory) :
 
 orcus_xlsx::~orcus_xlsx() {}
 
-bool orcus_xlsx::detect(const unsigned char* blob, size_t size)
+bool orcus_xlsx::detect(std::string_view strm)
 {
-    zip_archive_stream_blob stream(blob, size);
+    zip_archive_stream_blob stream(strm);
     zip_archive archive(&stream);
 
     try

@@ -153,9 +153,7 @@ void test_json_detect_positive()
         std::cout << target << std::endl;
         auto fc = orcus::test::to_file_content(target.string());
         auto strm = fc.str();
-        bool valid = orcus::orcus_json::detect(
-            reinterpret_cast<const unsigned char*>(strm.data()), strm.size());
-
+        bool valid = orcus::orcus_json::detect(strm);
         assert(valid);
     }
 }
@@ -183,9 +181,7 @@ void test_json_detect_negative()
 
         auto fc = orcus::test::to_file_content(p.native());
         auto strm = fc.str();
-        bool valid = orcus::orcus_json::detect(
-            reinterpret_cast<const unsigned char*>(strm.data()), strm.size());
-
+        bool valid = orcus::orcus_json::detect(strm);
         assert(!valid);
     }
 }
@@ -207,9 +203,7 @@ void test_xml_detect_positive()
         std::cout << p << std::endl;
         auto fc = orcus::test::to_file_content(p.string());
         auto strm = fc.str();
-        bool valid = orcus::orcus_xml::detect(
-            reinterpret_cast<const unsigned char*>(strm.data()), strm.size());
-
+        bool valid = orcus::orcus_xml::detect(strm);
         assert(valid);
     }
 }
@@ -237,9 +231,7 @@ void test_xml_detect_negative()
 
         auto fc = orcus::test::to_file_content(p.native());
         auto strm = fc.str();
-        bool valid = orcus::orcus_xml::detect(
-            reinterpret_cast<const unsigned char*>(strm.data()), strm.size());
-
+        bool valid = orcus::orcus_xml::detect(strm);
         assert(!valid);
     }
 }

@@ -19,9 +19,9 @@ orcus_xml_filter::orcus_xml_filter(ss::iface::import_factory* im_fact) :
 
 orcus_xml_filter::~orcus_xml_filter() = default;
 
-bool orcus_xml_filter::detect(const unsigned char* blob, std::size_t size)
+bool orcus_xml_filter::detect(std::string_view strm)
 {
-    return orcus_xml::detect(blob, size);
+    return orcus_xml::detect(strm);
 }
 
 void orcus_xml_filter::read_stream(std::string_view stream)

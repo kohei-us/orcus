@@ -77,9 +77,9 @@ orcus_xls_xml::orcus_xls_xml(spreadsheet::iface::import_factory* factory) :
 
 orcus_xls_xml::~orcus_xls_xml() = default;
 
-bool orcus_xls_xml::detect(const unsigned char* buffer, size_t size)
+bool orcus_xls_xml::detect(std::string_view strm)
 {
-    memory_content mem_content({reinterpret_cast<const char*>(buffer), size});
+    memory_content mem_content(strm);
     mem_content.convert_to_utf8();
 
     config opt(format_t::xls_xml);

@@ -87,12 +87,12 @@ orcus_gnumeric::~orcus_gnumeric()
 {
 }
 
-bool orcus_gnumeric::detect(const unsigned char* buffer, size_t size)
+bool orcus_gnumeric::detect(std::string_view strm)
 {
     // Detect gnumeric format that's already in memory.
 
     std::string decompressed;
-    if (!decompress_gzip(reinterpret_cast<const char*>(buffer), size, decompressed))
+    if (!decompress_gzip(strm.data(), strm.size(), decompressed))
         return false;
 
     if (decompressed.empty())

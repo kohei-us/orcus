@@ -378,14 +378,12 @@ struct orcus_json::impl
 orcus_json::orcus_json(spreadsheet::iface::import_factory* im_fact) :
     mp_impl(std::make_unique<impl>(im_fact)) {}
 
-orcus_json::~orcus_json() {}
+orcus_json::~orcus_json() = default;
 
-bool orcus_json::detect(const unsigned char* blob, std::size_t size)
+bool orcus_json::detect(std::string_view strm)
 {
-    std::string_view stream{reinterpret_cast<const char*>(blob), size};
-
     json_detection_handler hdl;
-    json_parser<json_detection_handler> parser(stream, hdl);
+    json_parser<json_detection_handler> parser(strm, hdl);
 
     try
     {

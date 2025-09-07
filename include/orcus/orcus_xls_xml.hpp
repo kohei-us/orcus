@@ -29,7 +29,7 @@ public:
     orcus_xls_xml(const orcus_xls_xml&) = delete;
     orcus_xls_xml& operator= (const orcus_xls_xml&) = delete;
 
-    static bool detect(const unsigned char* blob, size_t size);
+    static bool detect(std::string_view strm);
 
     virtual void read_file(std::string_view filepath) override;
     virtual void read_file(std::u16string_view filepath) override;

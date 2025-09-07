@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstdint>
+#include <string_view>
 
 namespace orcus {
 
@@ -57,6 +58,7 @@ class ORCUS_PSR_DLLPUBLIC zip_archive_stream_blob : public zip_archive_stream
 public:
     zip_archive_stream_blob() = delete;
     zip_archive_stream_blob(const uint8_t* blob, std::size_t size);
+    zip_archive_stream_blob(std::string_view strm);
     virtual ~zip_archive_stream_blob();
 
     virtual size_t size() const;

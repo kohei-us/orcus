@@ -17,9 +17,9 @@ orcus_json_filter::orcus_json_filter(ss::iface::import_factory* im_fact) :
 
 orcus_json_filter::~orcus_json_filter() = default;
 
-bool orcus_json_filter::detect(const unsigned char* blob, std::size_t size)
+bool orcus_json_filter::detect(std::string_view strm)
 {
-    return orcus_json::detect(blob, size);
+    return orcus_json::detect(strm);
 }
 
 void orcus_json_filter::read_stream(std::string_view stream)

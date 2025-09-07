@@ -72,7 +72,12 @@ void zip_archive_stream_fd::seek(size_t pos)
 zip_archive_stream_blob::zip_archive_stream_blob(const uint8_t* blob, std::size_t size) :
     m_blob(blob), m_cur(blob), m_size(size) {}
 
-zip_archive_stream_blob::~zip_archive_stream_blob() {}
+zip_archive_stream_blob::zip_archive_stream_blob(std::string_view strm) :
+    m_blob(reinterpret_cast<const uint8_t*>(strm.data())),
+    m_cur(m_blob),
+    m_size(strm.size()) {}
+
+zip_archive_stream_blob::~zip_archive_stream_blob() = default;
 
 size_t zip_archive_stream_blob::size() const
 {

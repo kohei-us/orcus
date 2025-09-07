@@ -531,12 +531,10 @@ orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_facto
 
 orcus_xml::~orcus_xml() {}
 
-bool orcus_xml::detect(const unsigned char* blob, size_t size)
+bool orcus_xml::detect(std::string_view strm)
 {
-    std::string_view stream{reinterpret_cast<const char*>(blob), size};
-
     xml_detection_handler hdl;
-    sax_parser<xml_detection_handler> parser(stream, hdl);
+    sax_parser<xml_detection_handler> parser(strm, hdl);
 
     try
     {

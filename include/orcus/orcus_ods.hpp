@@ -13,6 +13,7 @@
 #include "interface.hpp"
 
 #include <memory>
+#include <string_view>
 
 namespace orcus {
 
@@ -31,7 +32,7 @@ public:
     orcus_ods(spreadsheet::iface::import_factory* factory);
     ~orcus_ods();
 
-    static bool detect(const unsigned char* blob, size_t size);
+    static bool detect(std::string_view strm);
 
     virtual void read_file(std::string_view filepath) override;
     virtual void read_file(std::u16string_view filepath) override;

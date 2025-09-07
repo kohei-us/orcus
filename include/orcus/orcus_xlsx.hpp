@@ -11,6 +11,7 @@
 #include "interface.hpp"
 
 #include <memory>
+#include <string_view>
 
 namespace orcus {
 
@@ -36,7 +37,7 @@ public:
     orcus_xlsx(const orcus_xlsx&) = delete;
     orcus_xlsx& operator= (const orcus_xlsx&) = delete;
 
-    static bool detect(const unsigned char* blob, size_t size);
+    static bool detect(std::string_view strm);
 
     virtual void read_file(std::string_view filepath) override;
     virtual void read_file(std::u16string_view filepath) override;

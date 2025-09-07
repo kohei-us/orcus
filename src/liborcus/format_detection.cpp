@@ -37,33 +37,31 @@ namespace orcus {
 
 format_t detect(std::string_view strm) try
 {
-    const auto* p = reinterpret_cast<const unsigned char*>(strm.data());
-
 #if ODS_ENABLED
-    if (orcus_ods::detect(p, strm.size()))
+    if (orcus_ods::detect(strm))
         return format_t::ods;
 #endif
 #if XLSX_ENABLED
-    if (orcus_xlsx::detect(p, strm.size()))
+    if (orcus_xlsx::detect(strm))
         return format_t::xlsx;
 #endif
 #if GNUMERIC_ENABLED
-    if (orcus_gnumeric::detect(p, strm.size()))
+    if (orcus_gnumeric::detect(strm))
         return format_t::gnumeric;
 #endif
 #if XLS_XML_ENABLED
-    if (orcus_xls_xml::detect(p, strm.size()))
+    if (orcus_xls_xml::detect(strm))
         return format_t::xls_xml;
 #endif
 #if PARQUET_ENABLED
-    if (orcus_parquet::detect(p, strm.size()))
+    if (orcus_parquet::detect(strm))
         return format_t::parquet;
 #endif
 
-    if (orcus_xml_filter::detect(p, strm.size()))
+    if (orcus_xml_filter::detect(strm))
         return format_t::xml;
 
-    if (orcus_json_filter::detect(p, strm.size()))
+    if (orcus_json_filter::detect(strm))
         return format_t::json;
 
     return format_t::unknown;

@@ -28,7 +28,7 @@ public:
     orcus_xml_filter(spreadsheet::iface::import_factory* im_fact);
     virtual ~orcus_xml_filter();
 
-    static bool detect(const unsigned char* blob, std::size_t size);
+    static bool detect(std::string_view strm);
 
     virtual void read_stream(std::string_view stream) override;
 

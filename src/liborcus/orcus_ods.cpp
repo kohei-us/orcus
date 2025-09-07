@@ -150,9 +150,9 @@ void orcus_ods::read_content_xml(const unsigned char* p, size_t size)
     }
 }
 
-bool orcus_ods::detect(const unsigned char* blob, size_t size)
+bool orcus_ods::detect(std::string_view strm)
 {
-    zip_archive_stream_blob stream(blob, size);
+    zip_archive_stream_blob stream(strm);
     zip_archive archive(&stream);
 
     try
