@@ -75,6 +75,46 @@ catch (...)
     return format_t::unknown;
 }
 
+bool detect(std::string_view strm, format_t type) try
+{
+    switch (type)
+    {
+#if ODS_ENABLED
+        case format_t::ods:
+            return orcus_ods::detect(strm);
+#endif
+#if XLSX_ENABLED
+        case format_t::xlsx:
+            return orcus_xlsx::detect(strm);
+#endif
+#if GNUMERIC_ENABLED
+        case format_t::gnumeric:
+            return orcus_gnumeric::detect(strm);
+#endif
+#if XLS_XML_ENABLED
+        case format_t::xls_xml:
+            return orcus_xls_xml::detect(strm);
+#endif
+#if PARQUET_ENABLED
+        case format_t::parquet:
+            return orcus_parquet::detect(strm);
+#endif
+        case format_t::xml:
+            return orcus_xml_filter::detect(strm);
+        case format_t::json:
+            return orcus_json_filter::detect(strm);
+        case format_t::csv:
+            return true;
+        case format_t::unknown:;
+    }
+
+    return false;
+}
+catch (...)
+{
+    return false;
+}
+
 std::shared_ptr<iface::import_filter> create_filter(format_t type, ss::iface::import_factory* factory)
 {
     if (!factory)

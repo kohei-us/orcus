@@ -36,6 +36,20 @@ class import_factory;
 ORCUS_DLLPUBLIC format_t detect(std::string_view strm);
 
 /**
+ * Detect if a given document stream is of a specified format.
+ *
+ * @param strm Document stream to detect the format of.
+ * @param type Format type to check against.
+ *
+ * @return Whether or not the document stream is of the format specified by
+ *         the caller.
+ *
+ * @note The function will always return true if the specified format type is
+ *       format_t::csv.
+ */
+ORCUS_DLLPUBLIC bool detect(std::string_view strm, format_t type);
+
+/**
  * Create an instance of import_filter for a specified format.
  *
  * @param type Format type to create an instace of import_filter of.

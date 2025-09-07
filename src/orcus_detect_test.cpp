@@ -132,6 +132,55 @@ void test_format_detection()
             auto fc = orcus::test::to_file_content(input_s);
             orcus::format_t detected = orcus::detect(fc.str());
             assert(detected == expected);
+
+            bool valid = orcus::detect(fc.str(), expected);
+            assert(valid);
+        }
+    }
+
+    {
+        // check against CSV should always be true (for now)
+        auto input = test_base_dir / "csv" / "double-quotes" / "input.csv";
+        orcus::test::print_path(input.native());
+
+        auto fc = orcus::test::to_file_content(input.native());
+        bool valid = orcus::detect(fc.str(), orcus::format_t::csv);
+        assert(valid);
+    }
+
+    {
+        // test Excel 2003 XML file against multiple candidate types
+        auto detect_dir = test_base_dir / "xls-xml" / "detect";
+
+        constexpr std::tuple<orcus::format_t, bool> test_cases[] = {
+            { orcus::format_t::unknown, false },
+            { orcus::format_t::ods, false },
+            { orcus::format_t::xlsx, false },
+            { orcus::format_t::gnumeric, false },
+            { orcus::format_t::xls_xml, true },
+            { orcus::format_t::csv, true },
+            { orcus::format_t::parquet, false },
+            { orcus::format_t::json, false },
+            { orcus::format_t::xml, true },
+        };
+
+        for (const auto& input_entry : fs::directory_iterator(detect_dir))
+        {
+            if (!input_entry.is_regular_file())
+                continue;
+
+            auto input = input_entry.path();
+            auto input_s = input.native();
+            orcus::test::print_path(input_s);
+
+            auto fc = orcus::test::to_file_content(input_s);
+
+            for (const auto& [type, expected] : test_cases)
+            {
+                bool valid = orcus::detect(fc.str(), type);
+                std::cout << "tested type: " << type << std::endl;
+                assert(valid == expected);
+            }
         }
     }
 }
@@ -154,6 +203,9 @@ void test_json_detect_positive()
         auto fc = orcus::test::to_file_content(target.string());
         auto strm = fc.str();
         bool valid = orcus::orcus_json::detect(strm);
+        assert(valid);
+
+        valid = orcus::detect(strm, orcus::format_t::json);
         assert(valid);
     }
 }
@@ -183,6 +235,9 @@ void test_json_detect_negative()
         auto strm = fc.str();
         bool valid = orcus::orcus_json::detect(strm);
         assert(!valid);
+
+        valid = orcus::detect(strm, orcus::format_t::json);
+        assert(!valid);
     }
 }
 
@@ -204,6 +259,9 @@ void test_xml_detect_positive()
         auto fc = orcus::test::to_file_content(p.string());
         auto strm = fc.str();
         bool valid = orcus::orcus_xml::detect(strm);
+        assert(valid);
+
+        valid = orcus::detect(strm, orcus::format_t::xml);
         assert(valid);
     }
 }
@@ -232,6 +290,9 @@ void test_xml_detect_negative()
         auto fc = orcus::test::to_file_content(p.native());
         auto strm = fc.str();
         bool valid = orcus::orcus_xml::detect(strm);
+        assert(!valid);
+
+        valid = orcus::detect(strm, orcus::format_t::xml);
         assert(!valid);
     }
 }
