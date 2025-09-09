@@ -15,6 +15,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
+#include <any>
 
 namespace orcus { namespace json {
 
@@ -31,7 +32,33 @@ class ORCUS_DLLPUBLIC structure_tree
 
 public:
 
-    enum class node_type : short { unknown = 0, array = 1, object = 2, object_key = 3, value = 4 };
+    enum class node_type : uint8_t { unknown = 0, array = 1, object = 2, object_key = 3, value = 4 };
+
+    /**
+     * Location of a callback function.
+     */
+    enum class callback_type : uint8_t
+    {
+        /** Location not specified or unknown. */
+        unknown = 0,
+
+        /**
+         * Callback function is called when a repeat node is encountered.
+         * A repeat node can be either an object or an array.  The argument
+         * passed to the callback function contains the type of the repeat node
+         * and its type is @p node_type.
+         */
+        on_repeat_node
+    };
+
+    /**
+     * Callback function type.  It must take one argument.  What value is
+     * assigned and what the type of a value is depends on the location of the
+     * callback.  Refer to @p callback_type for details.
+     */
+    using callback_handler_type = std::function<void(std::any)>;
+
+    using range_handler_type = std::function<void(table_range_t&&)>;
 
     struct node_properties
     {
@@ -111,6 +138,15 @@ public:
     structure_tree();
     ~structure_tree();
 
+    /**
+     * Assign a user-defined callback function in a specified point of
+     * execution during parsing.
+     *
+     * @param type Location where the callback function will be called.
+     * @param callback Callback function.
+     */
+    void set_callback(callback_type type, callback_handler_type callback);
+
     void parse(std::string_view stream);
 
     /**
@@ -122,8 +158,6 @@ public:
     void dump_compact(std::ostream& os) const;
 
     walker get_walker() const;
-
-    using range_handler_type = std::function<void(table_range_t&&)>;
 
     void process_ranges(range_handler_type rh) const;
 };

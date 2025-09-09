@@ -37,6 +37,17 @@ public:
 
     static bool detect(std::string_view strm);
 
+    /**
+     * Detect whether or not a given JSON document contains at least one
+     * linkable range.
+     *
+     * @param stream JSON document stream to check.
+     *
+     * @return True if the document contains at least one linkable range,
+     *         otherwise false.
+     */
+    static bool has_range(std::string_view stream);
+
     void set_cell_link(std::string_view path, std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col);
 
     void start_range(

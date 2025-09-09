@@ -129,11 +129,54 @@ void test_invalid_map_definition()
     }
 }
 
+void test_has_range()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    // these files all have ranges
+    for (const auto& test_dir : mapped_test_dirs)
+    {
+        fs::path input = test_dir / "input.json";
+        std::cout << input << std::endl;
+        file_content content(input.string());
+        bool result = orcus_json::has_range(content.str());
+        assert(result);
+    }
+
+    const std::pair<fs::path, bool> test_files[] = {
+        // path, repeated
+        { SRCDIR"/test/json/basic1/input.json", false },
+        { SRCDIR"/test/json/basic2/input.json", false },
+        { SRCDIR"/test/json/basic3/input.json", false },
+        { SRCDIR"/test/json/basic4/input.json", false },
+        { SRCDIR"/test/json/empty-array-1/input.json", false },
+        { SRCDIR"/test/json/nested1/input.json", false },
+        { SRCDIR"/test/json/nested2/input.json", true },
+        { SRCDIR"/test/json/swagger/input.json", true },
+    };
+
+    for (const auto& [input, repeated] : test_files)
+    {
+        std::cout << input << std::endl;
+        file_content content(input.string());
+        bool result = orcus_json::has_range(content.str());
+        if (repeated)
+        {
+            assert(result);
+        }
+        else
+        {
+            assert(!result);
+        }
+    }
+}
+
 int main()
 {
     test_mapped_json_import();
     test_mapped_json_import_auto_mapping();
     test_invalid_map_definition();
+    test_has_range();
 
     return EXIT_SUCCESS;
 }

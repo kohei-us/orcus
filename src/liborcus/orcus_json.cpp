@@ -17,12 +17,17 @@
 #include "json_structure_mapper.hpp"
 #include "detection_result.hpp"
 
-#include <iostream>
 #include <sstream>
 
 namespace orcus {
 
 namespace {
+
+/**
+ * Special exception type only to be used to end parsing on first range
+ * encounter.
+ */
+struct range_detected {};
 
 struct json_value
 {
@@ -399,6 +404,29 @@ bool orcus_json::detect(std::string_view strm)
     }
 
     return true; // entire JSON stream has been parsed
+}
+
+bool orcus_json::has_range(std::string_view stream)
+{
+    json::structure_tree structure;
+    structure.set_callback(
+        json::structure_tree::callback_type::on_repeat_node,
+        [](std::any)
+        {
+            throw range_detected{};
+        }
+    );
+
+    try
+    {
+        structure.parse(stream);
+    }
+    catch (const range_detected&)
+    {
+        return true;
+    }
+
+    return false;
 }
 
 void orcus_json::set_cell_link(std::string_view path, std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col)

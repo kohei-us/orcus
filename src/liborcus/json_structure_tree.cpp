@@ -171,6 +171,8 @@ structure_tree::node_properties to_node_properties(const structure_node& sn)
     return np;
 }
 
+void empty_callback(std::any) {}
+
 } // anonymous namespace
 
 struct structure_tree::impl
@@ -179,6 +181,8 @@ struct structure_tree::impl
     structure_node* m_root;
     parse_scopes_type m_stack;
     string_pool m_pool;
+
+    structure_tree::callback_handler_type m_cb_on_repeat = empty_callback;
 
     impl() : m_root(nullptr) {}
     ~impl() {}
@@ -416,6 +420,9 @@ private:
             {
                 // current node does have a child of specified type.
                 bool repeat = is_node_repeatable(node);
+                if (repeat)
+                    m_cb_on_repeat(node.type);
+
                 structure_node& child = **it;
                 child.repeat = repeat;
                 m_stack.emplace_back(child);
@@ -662,6 +669,17 @@ std::string structure_tree::walker::build_row_group_path() const
 
 structure_tree::structure_tree() : mp_impl(std::make_unique<impl>()) {}
 structure_tree::~structure_tree() {}
+
+void structure_tree::set_callback(callback_type type, callback_handler_type callback)
+{
+    switch (type)
+    {
+        case callback_type::on_repeat_node:
+            mp_impl->m_cb_on_repeat = std::move(callback);
+            break;
+        case callback_type::unknown:;
+    }
+}
 
 void structure_tree::parse(std::string_view stream)
 {
