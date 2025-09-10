@@ -38,6 +38,17 @@ public:
     static bool detect(std::string_view strm);
 
     /**
+     * Detect whether or not a given XML document contains at least one linkable
+     * range.
+     *
+     * @param stream XML document stream to check.
+     *
+     * @return True if the document contains at least one linkable range,
+     *         otherwise false.
+     */
+    static bool has_range(std::string_view stream);
+
+    /**
      * Define a namespace and its alias used in a map file.
      *
      * @param alias alias for the namespace.

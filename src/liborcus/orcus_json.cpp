@@ -27,7 +27,7 @@ namespace {
  * Special exception type only to be used to end parsing on first range
  * encounter.
  */
-struct range_detected {};
+struct json_range_detected {};
 
 struct json_value
 {
@@ -413,7 +413,7 @@ bool orcus_json::has_range(std::string_view stream)
         json::structure_tree::callback_type::on_repeat_node,
         [](std::any)
         {
-            throw range_detected{};
+            throw json_range_detected{};
         }
     );
 
@@ -421,7 +421,7 @@ bool orcus_json::has_range(std::string_view stream)
     {
         structure.parse(stream);
     }
-    catch (const range_detected&)
+    catch (const json_range_detected&)
     {
         return true;
     }

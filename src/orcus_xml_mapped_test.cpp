@@ -411,6 +411,55 @@ void test_map_gen()
     }
 }
 
+void test_has_range()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    const fs::path tests[] = {
+        test_base_dir / "attribute-basic",
+        test_base_dir / "attribute-namespace",
+        test_base_dir / "attribute-namespace-2",
+        test_base_dir / "attribute-range-self-close",
+        test_base_dir / "content-basic",
+        test_base_dir / "content-one-column",
+        test_base_dir / "content-namespace",
+        test_base_dir / "content-namespace-2",
+        test_base_dir / "content-namespace-3",
+        test_base_dir / "fuel-economy",
+        test_base_dir / "nested-repeats",
+        test_base_dir / "nested-repeats-2",
+        test_base_dir / "nested-repeats-3",
+        test_base_dir / "nested-repeats-4",
+    };
+
+    // These files all have ranges.
+    for (const auto& base_dir : tests)
+    {
+        auto input = base_dir / "input.xml";
+        std::cout << input << std::endl;
+        orcus::file_content content{input.string()};
+        bool result = orcus_xml::has_range(content.str());
+        assert(result);
+    }
+
+    // These files don't have ranges.
+    const fs::path no_repeat_inputs[] = {
+        SRCDIR"/test/xml/ns-alias-1/input.xml",
+        SRCDIR"/test/xml/utf8-1/input.xml",
+        SRCDIR"/test/xml/utf8-2/input.xml",
+        SRCDIR"/test/xml/doctype/html.xml",
+        SRCDIR"/test/xml/encoded-attrs/test1.xml",
+    };
+
+    for (const auto& input : no_repeat_inputs)
+    {
+        std::cout << input << std::endl;
+        orcus::file_content content{input.string()};
+        bool result = orcus_xml::has_range(content.str());
+        assert(!result);
+    }
+}
+
 } // anonymous namespace
 
 int main()
@@ -421,6 +470,7 @@ int main()
     test_invalid_map_definition();
     test_encoding();
     test_map_gen();
+    test_has_range();
 
     return EXIT_SUCCESS;
 }

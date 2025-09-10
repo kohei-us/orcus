@@ -27,6 +27,8 @@ namespace orcus {
 
 namespace {
 
+void empty_callback(std::any) {}
+
 /** Element properties. */
 struct elem_prop
 {
@@ -92,9 +94,15 @@ struct element_ref
 
 typedef std::vector<element_ref> elements_type;
 
+struct callbacks
+{
+    xml_structure_tree::callback_handler_type on_repeat = empty_callback;
+};
+
 class xml_sax_handler
 {
     string_pool& m_pool;
+    callbacks& m_callbacks;
     std::unique_ptr<root> mp_root;
     elements_type m_stack;
     xml_structure_tree::entity_names_type m_attrs;
@@ -117,8 +125,8 @@ private:
     }
 
 public:
-    xml_sax_handler(string_pool& pool) :
-        m_pool(pool), mp_root(nullptr) {}
+    xml_sax_handler(string_pool& pool, callbacks& cbs) :
+        m_pool(pool), m_callbacks(cbs), mp_root(nullptr) {}
 
     void doctype(const sax::doctype_declaration&) {}
 
@@ -156,7 +164,10 @@ public:
             // multiple times in the same scope.
             ++it->second->in_scope_count;
             if (it->second->in_scope_count > 1)
+            {
                 it->second->repeat = true;
+                m_callbacks.on_repeat(key);
+            }
 
             element_ref ref(it->first, it->second.get());
             merge_attributes(*it->second);
@@ -271,7 +282,7 @@ void print_scope(std::ostream& os, const scopes_type& scopes, const xmlns_contex
     }
 }
 
-}
+} // anonymous namespace
 
 xml_table_range_t::xml_table_range_t() = default;
 xml_table_range_t::xml_table_range_t(const xml_table_range_t& other) = default;
@@ -293,6 +304,7 @@ void xml_table_range_t::swap(xml_table_range_t& other) noexcept
 struct xml_structure_tree::impl
 {
     string_pool m_pool;
+    callbacks m_callbacks;
     xmlns_context& m_xmlns_cxt;
     std::unique_ptr<root> mp_root;
 
@@ -370,7 +382,7 @@ xml_structure_tree::walker::walker(const walker& r) :
 {
 }
 
-xml_structure_tree::walker::~walker() {}
+xml_structure_tree::walker::~walker() = default;
 
 xml_structure_tree::walker& xml_structure_tree::walker::operator= (const walker& r)
 {
@@ -531,11 +543,22 @@ xml_structure_tree::xml_structure_tree(xml_structure_tree&& other) :
     other.mp_impl = std::make_unique<impl>(mp_impl->m_xmlns_cxt);
 }
 
-xml_structure_tree::~xml_structure_tree() {}
+xml_structure_tree::~xml_structure_tree() = default;
+
+void xml_structure_tree::set_callback(callback_type type, callback_handler_type callback)
+{
+    switch (type)
+    {
+        case callback_type::on_repeat_node:
+            mp_impl->m_callbacks.on_repeat = std::move(callback);
+            break;
+        case callback_type::unknown:;
+    }
+}
 
 void xml_structure_tree::parse(std::string_view s)
 {
-    xml_sax_handler hdl(mp_impl->m_pool);
+    xml_sax_handler hdl(mp_impl->m_pool, mp_impl->m_callbacks);
     sax_ns_parser<xml_sax_handler> parser(s, mp_impl->m_xmlns_cxt, hdl);
     parser.parse();
     mp_impl->mp_root = hdl.release_root_element();

@@ -23,6 +23,12 @@ namespace orcus {
 
 namespace {
 
+/**
+ * Special exception type only to be used to end parsing on first range
+ * encounter.
+ */
+struct xml_range_detected {};
+
 class xml_map_sax_handler
 {
     struct scope
@@ -182,6 +188,28 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
 }
 
 } // anonymous namespace
+
+bool orcus_xml::has_range(std::string_view stream)
+{
+    xmlns_repository repo;
+    xmlns_context cxt = repo.create_context();
+    xml_structure_tree structure(cxt);
+    structure.set_callback(
+        xml_structure_tree::callback_type::on_repeat_node,
+        [](std::any) { throw xml_range_detected{}; }
+    );
+
+    try
+    {
+        structure.parse(stream);
+    }
+    catch (const xml_range_detected&)
+    {
+        return true;
+    }
+
+    return false;
+}
 
 void orcus_xml::read_map_definition(std::string_view stream)
 {
