@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include <orcus/json_structure_tree.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/parser_global.hpp>
@@ -35,6 +36,8 @@ std::vector<const char*> base_dirs = {
  */
 void test_no_value_nodes()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path base_dir(SRCDIR"/test/json-structure/no-value-nodes");
 
     for (const fs::path& p : fs::directory_iterator(base_dir))
@@ -58,6 +61,8 @@ void test_no_value_nodes()
 
 void test_basic()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     for (const char* base_dir : base_dirs)
     {
         std::string filepath(base_dir);
@@ -87,6 +92,8 @@ void test_basic()
 
 void test_automatic_range_detection()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     using detected_group_type = std::unordered_set<std::string>;
     using detected_groups_type = std::vector<detected_group_type>;
 
@@ -189,11 +196,75 @@ void test_automatic_range_detection()
     }
 }
 
+void test_callback()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    {
+        fs::path input{SRCDIR"/test/json-structure/arrays-in-object/input.json"};
+        std::cout << input << std::endl;
+
+        orcus::file_content strm{input.string()};
+
+        std::size_t n_called = 0;
+
+        json::structure_tree tree;
+        tree.set_callback(
+            json::structure_tree::callback_type::on_repeat_node,
+            [&n_called](std::any arg) {
+                auto nt = std::any_cast<json::structure_tree::node_type>(arg);
+                assert(nt == json::structure_tree::node_type::object);
+                ++n_called;
+            }
+        );
+        tree.parse(strm.str());
+
+        // It contains a list of 4 objects and the first occurrence doesn't
+        // trigger a repeat callback.  So the callback should be called 3 times.
+        assert(n_called == 3);
+    }
+
+    {
+        // this test file contains both repeated objects and arrays.
+        fs::path input{SRCDIR"/test/json-structure/multiple-ranges/input.json"};
+        std::cout << input << std::endl;
+
+        orcus::file_content strm{input.string()};
+
+        std::unordered_map<json::structure_tree::node_type, std::size_t> n_types = {
+            { json::structure_tree::node_type::object, 0 },
+            { json::structure_tree::node_type::array, 0 },
+        };
+
+        json::structure_tree tree;
+        tree.set_callback(
+            json::structure_tree::callback_type::on_repeat_node,
+            [&n_types](std::any arg) {
+                auto nt = std::any_cast<json::structure_tree::node_type>(arg);
+                ++n_types[nt];
+            }
+        );
+        tree.parse(strm.str());
+
+        assert(n_types.size() == 2);
+
+        // "data" section contains 7 outer objects and 16 inner objects. Since
+        // the first occurrence doesn't trigger a repeat callback, the callback
+        // should be called (7-1)+(16-1) -> 21 times on the object type.
+        assert(n_types[json::structure_tree::node_type::object] == 21);
+
+        // "misc" section contains a list of 2 repeated arrays.  The callback
+        // should be called once only on the second occurrence.
+        assert(n_types[json::structure_tree::node_type::array] == 1);
+    }
+}
+
 int main()
 {
     test_no_value_nodes();
     test_basic();
     test_automatic_range_detection();
+    test_callback();
 
     return EXIT_SUCCESS;
 }
