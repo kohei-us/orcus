@@ -544,6 +544,7 @@ xml_structure_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(
 
 xml_structure_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS)
 

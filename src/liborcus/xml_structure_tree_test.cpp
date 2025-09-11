@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include <orcus/xml_structure_tree.hpp>
 #include <orcus/xml_namespace.hpp>
 #include <orcus/stream.hpp>
@@ -58,6 +59,8 @@ std::unique_ptr<loaded_tree> load_tree(xmlns_repository& repo, fs::path& filepat
 
 void test_basic()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     xmlns_repository xmlns_repo;
 
     for (const fs::path& base_dir : base_dirs)
@@ -86,6 +89,8 @@ void test_basic()
 
 void test_walker()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     xmlns_repository xmlns_repo;
 
     {
@@ -187,6 +192,8 @@ void test_walker()
 
 void test_walker_path()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     fs::path filepath = base_dirs[0] / "input.xml";
     xmlns_repository xmlns_repo;
     auto lt = load_tree(xmlns_repo, filepath);
@@ -235,6 +242,8 @@ void test_walker_path()
 
 void test_element_contents()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     xmlns_repository xmlns_repo;
 
     {
@@ -273,12 +282,77 @@ void test_element_contents()
     }
 }
 
+void test_callback()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    xmlns_repository xmlns_repo;
+
+    {
+        fs::path input = test_base_dir / "attribute-1" / "input.xml";
+        std::cout << input << std::endl;
+
+        orcus::file_content strm{input.string()};
+
+        std::size_t n_called = 0;
+
+        xml_structure_tree::entity_name expected_names[] = {
+            { XMLNS_UNKNOWN_ID, "entry" },
+        };
+
+        auto cxt = xmlns_repo.create_context();
+        xml_structure_tree tree{cxt};
+        tree.set_callback(
+            xml_structure_tree::callback_type::on_repeat_node,
+            [&n_called, &expected_names](std::any arg) {
+                auto name = std::any_cast<xml_structure_tree::entity_name>(arg);
+                assert(n_called < std::size(expected_names));
+                assert(name == expected_names[n_called]);
+                ++n_called;
+            }
+        );
+        tree.parse(strm.str());
+
+        assert(n_called == 1);
+    }
+
+    {
+        fs::path input = test_base_dir / "nested-repeat-1" / "input.xml";
+        std::cout << input << std::endl;
+
+        orcus::file_content strm{input.string()};
+
+        std::size_t n_called = 0;
+
+        xml_structure_tree::entity_name expected_names[] = {
+            { XMLNS_UNKNOWN_ID, "insert" },
+            { XMLNS_UNKNOWN_ID, "remove" },
+        };
+
+        auto cxt = xmlns_repo.create_context();
+        xml_structure_tree tree{cxt};
+        tree.set_callback(
+            xml_structure_tree::callback_type::on_repeat_node,
+            [&n_called, &expected_names](std::any arg) {
+                auto name = std::any_cast<xml_structure_tree::entity_name>(arg);
+                assert(n_called < std::size(expected_names));
+                assert(name == expected_names[n_called]);
+                ++n_called;
+            }
+        );
+        tree.parse(strm.str());
+
+        assert(n_called == 2);
+    }
+}
+
 int main()
 {
     test_basic();
     test_walker();
     test_walker_path();
     test_element_contents();
+    test_callback();
 
     return EXIT_SUCCESS;
 }
