@@ -24,8 +24,12 @@ class ORCUS_SPM_DLLPUBLIC view
     struct impl;
     std::unique_ptr<impl> mp_impl;
 public:
+    view() = delete;
+    view(const view&) = delete;
     view(document& doc);
     ~view();
+
+    view& operator=(const view&) = delete;
 
     sheet_view* get_or_create_sheet_view(sheet_t sheet);
     const sheet_view* get_sheet_view(sheet_t sheet) const;
@@ -39,8 +43,12 @@ class ORCUS_SPM_DLLPUBLIC sheet_view
     struct impl;
     std::unique_ptr<impl> mp_impl;
 public:
+    sheet_view() = delete;
+    sheet_view(const sheet_view&) = delete;
     sheet_view(view& doc_view);
     ~sheet_view();
+
+    sheet_view& operator=(const sheet_view&) = delete;
 
     const range_t& get_selection(sheet_pane_t pos) const;
 

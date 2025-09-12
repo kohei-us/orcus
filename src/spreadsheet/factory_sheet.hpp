@@ -47,6 +47,7 @@ class import_sheet_named_exp : public iface::import_named_expression
     void define(std::string_view name, std::string_view expression, formula_ref_context_t ref_cxt);
 
 public:
+    import_sheet_named_exp() = delete;
     import_sheet_named_exp(document& doc, sheet_t sheet_index);
     virtual ~import_sheet_named_exp() override;
 
@@ -65,22 +66,24 @@ class import_sheet_properties : public iface::import_sheet_properties
     document& m_doc;
     sheet& m_sheet;
 public:
+    import_sheet_properties() = delete;
     import_sheet_properties(document& doc, sheet& sh);
-    ~import_sheet_properties();
+    virtual ~import_sheet_properties() override;
 
-    virtual void set_column_width(col_t col, col_t col_span, double width, orcus::length_unit_t unit);
-    virtual void set_column_hidden(col_t col, col_t col_span, bool hidden);
-    virtual void set_row_height(row_t row, row_t row_span, double height, orcus::length_unit_t unit);
-    virtual void set_row_hidden(row_t row, row_t row_span, bool hidden);
-    virtual void set_merge_cell_range(const range_t& range);
+    virtual void set_column_width(col_t col, col_t col_span, double width, orcus::length_unit_t unit) override;
+    virtual void set_column_hidden(col_t col, col_t col_span, bool hidden) override;
+    virtual void set_row_height(row_t row, row_t row_span, double height, orcus::length_unit_t unit) override;
+    virtual void set_row_hidden(row_t row, row_t row_span, bool hidden) override;
+    virtual void set_merge_cell_range(const range_t& range) override;
 };
 
 class import_data_table : public iface::import_data_table
 {
     sheet& m_sheet;
 public:
+    import_data_table() = delete;
     import_data_table(sheet& sh);
-    ~import_data_table();
+    virtual ~import_data_table() override;
 
     void reset();
 
@@ -107,6 +110,7 @@ class import_array_formula : public iface::import_array_formula
     formula_error_policy_t m_error_policy;
 
 public:
+    import_array_formula() = delete;
     import_array_formula(document& doc, sheet& sheet);
     virtual ~import_array_formula() override;
 
@@ -147,6 +151,7 @@ class import_formula : public iface::import_formula
     formula_error_policy_t m_error_policy;
 
 public:
+    import_formula() = delete;
     import_formula(document& doc, sheet& sheet, shared_formula_pool& pool);
     virtual ~import_formula() override;
 
@@ -184,6 +189,7 @@ class import_sheet : public iface::import_sheet
     bool m_fill_missing_formula_results;
 
 public:
+    import_sheet() = delete;
     import_sheet(document& doc, sheet& sh, sheet_view* view);
     virtual ~import_sheet() override;
 
@@ -218,6 +224,7 @@ class import_sheet_view : public iface::import_sheet_view
     sheet_view& m_view;
     sheet_t m_sheet_index;
 public:
+    import_sheet_view() = delete;
     import_sheet_view(sheet_view& view, sheet_t si);
     virtual ~import_sheet_view();
     virtual void set_sheet_active() override;
@@ -240,8 +247,9 @@ class export_sheet : public iface::export_sheet
     const document& m_doc;
     const sheet& m_sheet;
 public:
+    export_sheet() = delete;
     export_sheet(const document& doc, const sheet& sh);
-    ~export_sheet();
+    virtual ~export_sheet() override;
 
     virtual void write_string(std::ostream& os, row_t row, col_t col) const override;
 };

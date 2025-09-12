@@ -57,6 +57,7 @@ class ORCUS_SPM_DLLPUBLIC document : public orcus::iface::document_dumper
     friend class import_factory;
 
 public:
+    document() = delete;
     document(const document&) = delete;
     document& operator= (const document&) = delete;
 

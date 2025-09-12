@@ -17,6 +17,7 @@ namespace spreadsheet { namespace iface { class import_factory; }}
 class ORCUS_DLLPUBLIC orcus_parquet : public iface::import_filter
 {
 public:
+    orcus_parquet() = delete;
     orcus_parquet(const orcus_parquet&) = delete;
     orcus_parquet& operator=(const orcus_parquet&) = delete;
 

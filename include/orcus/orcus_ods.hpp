@@ -25,12 +25,13 @@ class zip_archive_stream;
 
 class ORCUS_DLLPUBLIC orcus_ods : public iface::import_filter
 {
-    orcus_ods(const orcus_ods&); // disabled
-    orcus_ods& operator= (const orcus_ods&); // disabled
-
 public:
     orcus_ods(spreadsheet::iface::import_factory* factory);
     ~orcus_ods();
+
+    orcus_ods() = delete;
+    orcus_ods(const orcus_ods&) = delete;
+    orcus_ods& operator= (const orcus_ods&) = delete;
 
     static bool detect(std::string_view strm);
 

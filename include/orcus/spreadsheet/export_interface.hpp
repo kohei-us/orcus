@@ -18,10 +18,10 @@ namespace orcus { namespace spreadsheet { namespace iface {
 /**
  * Interface for exporting sheet contents.
  */
-class export_sheet
+class ORCUS_DLLPUBLIC export_sheet
 {
 public:
-    ORCUS_DLLPUBLIC virtual ~export_sheet() = 0;
+    virtual ~export_sheet();
 
     /**
      * Write the content of a cell to an output stream.
@@ -36,10 +36,10 @@ public:
 /**
  * Entry-point interface for exporting document contents.
  */
-class export_factory
+class ORCUS_DLLPUBLIC export_factory
 {
 public:
-    ORCUS_DLLPUBLIC virtual ~export_factory() = 0;
+    virtual ~export_factory();
 
     /**
      * Obtain an interface for exporting sheet content.

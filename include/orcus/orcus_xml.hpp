@@ -29,6 +29,7 @@ class ORCUS_DLLPUBLIC orcus_xml
     std::unique_ptr<impl> mp_impl;
 
 public:
+    orcus_xml() = delete;
     orcus_xml(const orcus_xml&) = delete;
     orcus_xml& operator= (const orcus_xml&) = delete;
 

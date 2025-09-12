@@ -28,7 +28,7 @@ class ORCUS_DLLPUBLIC orcus_json
     std::unique_ptr<impl> mp_impl;
 
 public:
-
+    orcus_json() = delete;
     orcus_json(const orcus_json&) = delete;
     orcus_json& operator= (const orcus_json&) = delete;
 

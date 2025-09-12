@@ -26,6 +26,7 @@ public:
     orcus_xls_xml(spreadsheet::iface::import_factory* factory);
     ~orcus_xls_xml();
 
+    orcus_xls_xml() = delete;
     orcus_xls_xml(const orcus_xls_xml&) = delete;
     orcus_xls_xml& operator= (const orcus_xls_xml&) = delete;
 

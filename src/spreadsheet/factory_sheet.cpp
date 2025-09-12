@@ -573,7 +573,7 @@ void import_sheet_properties::set_merge_cell_range(const range_t& range)
 }
 
 export_sheet::export_sheet(const document& doc, const sheet& sh) : m_doc(doc), m_sheet(sh) {}
-export_sheet::~export_sheet() {}
+export_sheet::~export_sheet() = default;
 
 void export_sheet::write_string(std::ostream& os, row_t row, col_t col) const
 {

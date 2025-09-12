@@ -407,7 +407,7 @@ struct export_factory::impl
 export_factory::export_factory(const document& doc) :
     mp_impl(std::make_unique<impl>(doc)) {}
 
-export_factory::~export_factory() {}
+export_factory::~export_factory() = default;
 
 const iface::export_sheet* export_factory::get_sheet(std::string_view sheet_name) const
 {

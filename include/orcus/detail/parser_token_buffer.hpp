@@ -19,12 +19,12 @@ namespace orcus { namespace detail { namespace thread {
  * Class that manages synchronization of parser tokens used in
  * multi-threaded parsers.
  */
-template<typename _TokensT>
+template<typename TokensT>
 class parser_token_buffer
 {
     enum class state_type { parsing_progress, parsing_ended, parsing_aborted };
 
-    typedef _TokensT tokens_type;
+    typedef TokensT tokens_type;
 
     mutable std::mutex m_mtx_tokens;
     std::condition_variable m_cv_tokens_empty;

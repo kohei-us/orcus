@@ -14,6 +14,8 @@ color_t::color_t() :
 {
 }
 
+color_t::color_t(const color_t& other) = default;
+
 color_t::color_t(color_elem_t _red, color_elem_t _green, color_elem_t _blue) :
     alpha(255), red(_red), green(_green), blue(_blue)
 {
@@ -22,6 +24,16 @@ color_t::color_t(color_elem_t _red, color_elem_t _green, color_elem_t _blue) :
 color_t::color_t(color_elem_t _alpha, color_elem_t _red, color_elem_t _green, color_elem_t _blue) :
     alpha(_alpha), red(_red), green(_green), blue(_blue)
 {
+}
+
+color_t& color_t::operator=(const color_t& other)
+{
+    alpha = other.alpha;
+    red = other.red;
+    green = other.green;
+    blue = other.blue;
+
+    return *this;
 }
 
 void color_t::reset()

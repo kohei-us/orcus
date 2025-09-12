@@ -34,6 +34,7 @@ public:
     orcus_xlsx(spreadsheet::iface::import_factory* factory);
     ~orcus_xlsx();
 
+    orcus_xlsx() = delete;
     orcus_xlsx(const orcus_xlsx&) = delete;
     orcus_xlsx& operator= (const orcus_xlsx&) = delete;
 
