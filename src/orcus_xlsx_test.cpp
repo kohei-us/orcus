@@ -68,6 +68,7 @@ const ss::pivot_cache* get_pivot_cache(
 
 std::vector<fs::path> dirs_recalc = {
     SRCDIR"/test/xlsx/raw-values-1",
+    SRCDIR"/test/xlsx/raw-values-2",
     SRCDIR"/test/xlsx/boolean-values",
     SRCDIR"/test/xlsx/empty-shared-strings",
     SRCDIR"/test/xlsx/formula-array-1",

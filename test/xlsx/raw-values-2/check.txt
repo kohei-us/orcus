@@ -1,0 +1,5 @@
+Sheet1/0/0:string:"One"
+Sheet1/1/0:string:"Two"
+Sheet1/2/0:string:"Three"
+Sheet1/3/0:string:""
+Sheet1/4/0:string:"Four"
