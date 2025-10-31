@@ -165,6 +165,7 @@ void xlsx_shared_strings_context::start_element(xmlns_id_t ns, xml_token_t name,
             case XML_t:
             {
                 // actual text stored as its content.
+                m_cur_str = std::string_view{};
                 break;
             }
             case XML_vertAlign:
