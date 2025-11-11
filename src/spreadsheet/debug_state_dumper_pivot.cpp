@@ -197,9 +197,14 @@ void debug_state_dumper_pivot_table::dump(
                     else
                         os << ")";
 
-                    os << " -> '";
-                    os << pc_field.items[v];
-                    os << "'";
+                    if (v < pc_field.items.size())
+                    {
+                        os << " -> '";
+                        os << pc_field.items[v];
+                        os << "'";
+                    }
+                    else
+                        os << " -> (out-of-bound item in cache)";
                     break;
                 }
                 case pivot_item_t::item_type::type:
