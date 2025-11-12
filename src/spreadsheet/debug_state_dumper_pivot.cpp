@@ -197,14 +197,18 @@ void debug_state_dumper_pivot_table::dump(
                     else
                         os << ")";
 
-                    if (v < pc_field.items.size())
+                    // NB: field group takes precedence if it exists
+                    const auto& pc_items = pc_field.group_data ? pc_field.group_data->items : pc_field.items;
+
+                    if (v < pc_items.size())
                     {
                         os << " -> '";
-                        os << pc_field.items[v];
+                        os << pc_items[v];
                         os << "'";
                     }
                     else
                         os << " -> (out-of-bound item in cache)";
+
                     break;
                 }
                 case pivot_item_t::item_type::type:
@@ -404,14 +408,17 @@ void debug_state_dumper_pivot_table::dump_rc_items(
                             assert(fid.index < cache_store.fields.size());
                             const auto& pc_fld = cache_store.fields[fid.index];
 
+                            // NB: field group takes precedence if it exists
+                            const auto& pc_items = pc_fld.group_data ? pc_fld.group_data->items : pc_fld.items;
+
                             if (v < pt_fld.items.size())
                             {
                                 const auto& pt_item = pt_fld.items[v];
                                 if (pt_item.type == pivot_item_t::item_type::index)
                                 {
                                     v = std::get<std::size_t>(pt_item.value);
-                                    if (v < pc_fld.items.size())
-                                        os << "'" << pc_fld.items[v] << "'";
+                                    if (v < pc_items.size())
+                                        os << "'" << pc_items[v] << "'";
                                     else
                                         os << "(out-of-bound item in cache)";
                                 }
