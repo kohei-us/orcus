@@ -83,9 +83,17 @@ gnumeric_value_format_type to_gnumeric_value_format_type(std::string_view s)
     return value_format_type::get().find(s);
 }
 
-bool gnumeric_value_format_segment::operator==(const gnumeric_value_format_segment& other) const
+bool gnumeric_value_format_segment::operator==(const gnumeric_value_format_segment& other) const noexcept
 {
     return type == other.type && value == other.value;
+}
+
+bool gnumeric_value_format_segment::operator<(const gnumeric_value_format_segment& other) const noexcept
+{
+    if (type != other.type)
+        return type < other.type;
+
+    return value < other.value;
 }
 
 void gnumeric_named_exp::reset()

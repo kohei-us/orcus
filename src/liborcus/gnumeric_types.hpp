@@ -81,7 +81,8 @@ struct gnumeric_value_format_segment
     gnumeric_value_format_type type = gnumeric_value_format_type::unknown;
     std::string_view value;
 
-    bool operator==(const gnumeric_value_format_segment& other) const;
+    bool operator==(const gnumeric_value_format_segment& other) const noexcept;
+    bool operator<(const gnumeric_value_format_segment& other) const noexcept;
 };
 
 using value_format_segments_type = mdds::segment_tree<std::size_t, gnumeric_value_format_segment>;
