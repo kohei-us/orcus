@@ -663,7 +663,7 @@ void xlsx_conditional_format_context::start_element(xmlns_id_t ns, xml_token_t n
     {
         case XML_conditionalFormatting:
         {
-            xml_element_expected(parent, NS_ooxml_xlsx, XML_worksheet);
+            xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
             if (m_cond_format)
                 std::for_each(attrs.begin(), attrs.end(), conditional_formatting_attr_parser(m_cond_format));
             break;
