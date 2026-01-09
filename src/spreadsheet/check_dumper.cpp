@@ -38,9 +38,32 @@ std::string escape_chars(const std::string& str)
     const char* p_end = p + str.size();
     for (; p != p_end; ++p)
     {
-        if (*p == '"')
-            ret.push_back('\\');
-        ret.push_back(*p);
+        switch (*p)
+        {
+            case '"':
+                ret.append("\\\"");
+                break;
+            case '\b':
+                ret.append("\\b");
+                break;
+            case '\f':
+                ret.append("\\f");
+                break;
+            case '\n':
+                ret.append("\\n");
+                break;
+            case '\r':
+                ret.append("\\r");
+                break;
+            case '\t':
+                ret.append("\\t");
+                break;
+            case '\\':
+                ret.append("\\\\");
+                break;
+            default:
+                ret.push_back(*p);
+        }
     }
     return ret;
 }

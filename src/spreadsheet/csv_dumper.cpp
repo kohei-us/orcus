@@ -25,7 +25,7 @@ namespace {
 void dump_string(std::ostream& os, const std::string& s)
 {
     // Scan for any special characters that necessitate quoting.
-    bool outer_quotes = s.find_first_of(",\"") != std::string::npos;
+    bool outer_quotes = s.find_first_of(",\"\n") != std::string::npos;
 
     if (outer_quotes)
         os << '"';

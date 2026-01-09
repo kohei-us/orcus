@@ -26,10 +26,11 @@ namespace ss = orcus::spreadsheet;
 namespace {
 
 std::vector<const char*> dirs = {
-    SRCDIR"/test/csv/simple-numbers/",
-    SRCDIR"/test/csv/normal-quotes/",
     SRCDIR"/test/csv/double-quotes/",
+    SRCDIR"/test/csv/linebreak/",
+    SRCDIR"/test/csv/normal-quotes/",
     SRCDIR"/test/csv/quoted-with-delim/",
+    SRCDIR"/test/csv/simple-numbers/",
 };
 
 void test_csv_create_filter()

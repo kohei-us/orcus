@@ -1,0 +1,4 @@
+data/0/0:string:"A\nB\nC"
+data/0/1:string:"D"
+data/0/2:string:"E"
+data/0/3:string:"F"
