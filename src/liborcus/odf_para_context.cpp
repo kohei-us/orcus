@@ -29,16 +29,6 @@ text_para_context::text_para_context(
 
 text_para_context::~text_para_context() = default;
 
-xml_context_base* text_para_context::create_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/)
-{
-    return nullptr;
-}
-
-void text_para_context::end_child_context(xmlns_id_t /*ns*/, xml_token_t /*name*/, xml_context_base* /*child*/)
-{
-    // not implemented yet.
-}
-
 void text_para_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
     xml_token_pair_t parent = push_stack(ns, name);
