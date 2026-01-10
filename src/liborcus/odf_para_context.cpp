@@ -26,25 +26,30 @@ text_para_context::text_para_context(
     mp_sstrings(ssb), m_styles(styles),
     m_string_index(0), m_has_content(false)
 {
+    static const xml_element_validator::rule rules[] = {
+        // parent element -> child element
+        { XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN, NS_odf_text, XML_p }, // root element
+        { NS_odf_text, XML_p, NS_odf_text, XML_span },
+    };
+
+    init_element_validator(rules, std::size(rules));
 }
 
 text_para_context::~text_para_context() = default;
 
 void text_para_context::start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs)
 {
-    xml_token_pair_t parent = push_stack(ns, name);
+    push_stack(ns, name);
     if (ns == NS_odf_text)
     {
         switch (name)
         {
             case XML_p:
                 // paragraph
-                xml_element_expected(parent, XMLNS_UNKNOWN_ID, XML_UNKNOWN_TOKEN);
                 break;
             case XML_span:
             {
                 // text span.
-                xml_element_expected(parent, NS_odf_text, XML_p);
                 flush_segment();
                 std::string_view style_name = get_single_attr(attrs, NS_odf_text, XML_style_name, &get_session_context().spool);
                 m_span_stack.push_back(style_name);

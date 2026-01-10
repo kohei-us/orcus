@@ -43,8 +43,8 @@ private:
     spreadsheet::iface::import_shared_strings* mp_sstrings;
     odf_styles_map_type& m_styles;
 
-    std::vector<std::string_view> m_span_stack; /// stack of text spans.
-    std::vector<std::string_view> m_contents;
+    std::vector<std::string_view> m_span_stack; /// stack of text spans with style names
+    std::vector<std::string_view> m_contents; /// raw string segments
     size_t m_string_index;
     bool m_has_content;
 };
