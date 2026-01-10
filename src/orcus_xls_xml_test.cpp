@@ -40,6 +40,7 @@ const std::vector<fs::path> dirs = {
     SRCDIR"/test/xls-xml/formula-cells-3/",
     SRCDIR"/test/xls-xml/invalid-sub-structure/",
     SRCDIR"/test/xls-xml/leading-whitespace/",
+    SRCDIR"/test/xls-xml/linebreak/",
     SRCDIR"/test/xls-xml/merged-cells/",
     SRCDIR"/test/xls-xml/named-colors/",
     SRCDIR"/test/xls-xml/named-expression/",
@@ -190,20 +191,7 @@ void test_xls_xml_import()
         assert(!check.empty());
         assert(!control.empty());
 
-        std::string_view s1(check.data(), check.size());
-        std::string_view s2 = control.str();
-        s1 = orcus::trim(s1);
-        s2 = orcus::trim(s2);
-
-        if (s1 != s2)
-        {
-            size_t offset = locate_first_different_char(s1, s2);
-            auto line1 = locate_line_with_offset(s1, offset);
-            auto line2 = locate_line_with_offset(s2, offset);
-            std::cout << "expected: " << line2.line << std::endl;
-            std::cout << "observed: " << line1.line << std::endl;
-            assert(!"content verification failed");
-        }
+        test::verify_content(__FILE__, __LINE__, control.str(), check);
     };
 
     for (const auto& dir : dirs)

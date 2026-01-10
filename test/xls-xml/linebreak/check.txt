@@ -1,0 +1,4 @@
+Sheet1/0/0:string:"A\nB\nC"
+Sheet1/0/1:string:"D"
+Sheet1/0/2:string:"E"
+Sheet1/0/3:string:"F"

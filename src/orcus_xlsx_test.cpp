@@ -75,6 +75,7 @@ std::vector<fs::path> dirs_recalc = {
     SRCDIR"/test/xlsx/formula-cells",
     SRCDIR"/test/xlsx/formula-shared",
     SRCDIR"/test/xlsx/formula-with-string-results",
+    SRCDIR"/test/xlsx/linebreak",
     SRCDIR"/test/xlsx/named-expression",
     SRCDIR"/test/xlsx/named-expression-sheet-local",
 };
@@ -141,9 +142,7 @@ void test_xlsx_import()
         assert(!check.empty());
         assert(!control.empty());
 
-        std::string_view s1(&check[0], check.size());
-        std::string_view s2 = control.str();
-        assert(orcus::trim(s1) == orcus::trim(s2));
+        test::verify_content(__FILE__, __LINE__, control.str(), check);
     };
 
     for (const fs::path& dir : dirs_recalc)
