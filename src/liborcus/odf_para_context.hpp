@@ -5,13 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_PARACONTEXT_HPP
-#define ORCUS_PARACONTEXT_HPP
+#pragma once
 
 #include "xml_context_base.hpp"
 #include "odf_styles.hpp"
-
-#include "orcus/string_pool.hpp"
 
 #include <vector>
 
@@ -46,7 +43,6 @@ private:
     spreadsheet::iface::import_shared_strings* mp_sstrings;
     odf_styles_map_type& m_styles;
 
-    string_pool m_pool;
     std::vector<std::string_view> m_span_stack; /// stack of text spans.
     std::vector<std::string_view> m_contents;
     size_t m_string_index;
@@ -55,5 +51,4 @@ private:
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

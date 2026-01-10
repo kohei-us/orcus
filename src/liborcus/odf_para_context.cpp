@@ -8,6 +8,7 @@
 #include "odf_para_context.hpp"
 #include "odf_token_constants.hpp"
 #include "odf_namespace_types.hpp"
+#include "session_context.hpp"
 #include "xml_context_global.hpp"
 
 #include "orcus/spreadsheet/import_interface.hpp"
@@ -45,7 +46,7 @@ void text_para_context::start_element(xmlns_id_t ns, xml_token_t name, const xml
                 // text span.
                 xml_element_expected(parent, NS_odf_text, XML_p);
                 flush_segment();
-                std::string_view style_name = get_single_attr(attrs, NS_odf_text, XML_style_name, &m_pool);
+                std::string_view style_name = get_single_attr(attrs, NS_odf_text, XML_style_name, &get_session_context().spool);
                 m_span_stack.push_back(style_name);
                 break;
             }
@@ -94,7 +95,7 @@ bool text_para_context::end_element(xmlns_id_t ns, xml_token_t name)
 void text_para_context::characters(std::string_view str, bool transient)
 {
     if (transient)
-        m_contents.push_back(m_pool.intern(str).first);
+        m_contents.push_back(get_session_context().spool.intern(str).first);
     else
         m_contents.push_back(str);
 }
@@ -103,7 +104,6 @@ void text_para_context::reset()
 {
     m_string_index = 0;
     m_has_content = false;
-    m_pool.clear();
     m_contents.clear();
 }
 
