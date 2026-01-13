@@ -113,12 +113,12 @@ ods_content_xml_context::cell_attr::cell_attr() :
 ods_content_xml_context::ods_content_xml_context(session_context& session_cxt, const tokens& tokens, spreadsheet::iface::import_factory* factory) :
     xml_context_base(session_cxt, tokens),
     mp_factory(factory),
+    mp_sstrings(factory ? factory->get_shared_strings() : nullptr),
     m_row(0), m_col(0), m_col_repeated(0),
-    m_para_index(0),
     m_has_content(false),
     m_styles(),
     m_child_styles(session_cxt, tokens, mp_factory->get_styles()),
-    m_child_para(session_cxt, tokens, factory->get_shared_strings(), m_styles),
+    m_child_para(session_cxt, tokens, m_styles),
     m_child_dde_links(session_cxt, tokens),
     m_child_dbranges(session_cxt, tokens, mp_factory)
 {
@@ -208,7 +208,7 @@ void ods_content_xml_context::end_child_context(xmlns_id_t ns, xml_token_t name,
     {
         text_para_context* para_context = static_cast<text_para_context*>(child);
         m_has_content = !para_context->empty();
-        m_para_index = para_context->get_string_index();
+        m_paragraphs.push_back(para_context->pop_paragraph());
     }
     else if (ns == NS_odf_office && name == XML_automatic_styles)
     {
@@ -517,6 +517,7 @@ void ods_content_xml_context::end_row()
 
 void ods_content_xml_context::start_cell(const xml_token_attrs_t& attrs)
 {
+    m_paragraphs.clear();
     m_cell_attr = cell_attr();
 
     /**
@@ -791,8 +792,7 @@ void ods_content_xml_context::push_cell_value()
                 m_cur_sheet.sheet->set_value(m_row, m_col, m_cell_attr.value);
                 break;
             case vt_string:
-                if (m_has_content)
-                    m_cur_sheet.sheet->set_string(m_row, m_col, m_para_index);
+                push_cell_value_string();
                 break;
             case vt_date:
             {
@@ -805,6 +805,49 @@ void ods_content_xml_context::push_cell_value()
                 ;
         }
     }
+}
+
+void ods_content_xml_context::push_cell_value_string()
+{
+    if (m_paragraphs.empty())
+        return;
+
+    std::size_t para_index = 0;
+
+    if (mp_sstrings)
+    {
+        auto push_paragraph = [](ss::iface::import_shared_strings* sstrings, const odf_text_paragraph& para)
+        {
+            for (const auto& segment : para)
+            {
+                for (const auto& fragment : segment.text_fragments)
+                {
+                    if (segment.font)
+                    {
+                        // has font applied
+                        sstrings->set_segment_font(*segment.font);
+                    }
+
+                    sstrings->append_segment(fragment);
+                }
+            }
+        };
+
+        auto it = m_paragraphs.begin();
+        auto it_end = m_paragraphs.end();
+        assert(it != it_end);
+        push_paragraph(mp_sstrings, *it);
+
+        for (++it; it != it_end; ++it)
+        {
+            mp_sstrings->append_segment("\n");
+            push_paragraph(mp_sstrings, *it);
+        }
+
+        para_index = mp_sstrings->commit_segments();
+    }
+
+    m_cur_sheet.sheet->set_string(m_row, m_col, para_index);
 }
 
 void ods_content_xml_context::end_spreadsheet()

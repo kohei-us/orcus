@@ -278,6 +278,8 @@ liborcus_@ORCUS_API_VERSION@_la_SOURCES += \
 	odf_style_context.cpp \
 	odf_number_format_context.hpp \
 	odf_number_format_context.cpp \
+	odf_text_para.hpp \
+	odf_text_para.cpp \
 	odf_token_constants.hpp \
 	odf_token_constants.inl \
 	odf_tokens.hpp \

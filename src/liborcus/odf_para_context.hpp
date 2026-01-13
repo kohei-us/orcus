@@ -9,6 +9,7 @@
 
 #include "xml_context_base.hpp"
 #include "odf_styles.hpp"
+#include "odf_text_para.hpp"
 
 #include <vector>
 
@@ -23,8 +24,7 @@ class text_para_context : public xml_context_base
 {
 public:
     text_para_context(
-       session_context& session_cxt, const tokens& tokens,
-       spreadsheet::iface::import_shared_strings* ssb, odf_styles_map_type& styles);
+       session_context& session_cxt, const tokens& tokens, odf_styles_map_type& styles);
     virtual ~text_para_context();
 
     virtual void start_element(xmlns_id_t ns, xml_token_t name, const xml_token_attrs_t& attrs);
@@ -33,20 +33,18 @@ public:
 
     void reset();
 
-    size_t get_string_index() const;
+    odf_text_paragraph pop_paragraph();
     bool empty() const;
 
 private:
     void flush_segment();
 
 private:
-    spreadsheet::iface::import_shared_strings* mp_sstrings;
     odf_styles_map_type& m_styles;
+    odf_text_paragraph m_paragraph;
 
     std::vector<std::string_view> m_span_stack; /// stack of text spans with style names
-    std::vector<std::string_view> m_contents; /// raw string segments
-    size_t m_string_index;
-    bool m_has_content;
+    std::vector<std::string_view> m_fragments; /// raw text fragments
 };
 
 }

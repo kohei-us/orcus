@@ -108,11 +108,13 @@ private:
     void push_default_column_cell_style(std::string_view style_name, spreadsheet::col_t span);
     void push_cell_format();
     void push_cell_value();
+    void push_cell_value_string();
 
     void end_spreadsheet();
 
 private:
     spreadsheet::iface::import_factory* mp_factory;
+    spreadsheet::iface::import_shared_strings* mp_sstrings;
     std::vector<spreadsheet::iface::import_sheet*> m_tables;
     sheet_data m_cur_sheet;
 
@@ -122,11 +124,11 @@ private:
     int m_row;
     int m_col;
     int m_col_repeated;
-    size_t m_para_index;
     bool m_has_content;
 
     odf_styles_map_type m_styles; /// map storing all automatic styles by their names.
     name2id_type m_cell_format_map; /// map of automatic style names to cell format (xf) IDs.
+    odf_text_paragraphs m_paragraphs;
 
     styles_context m_child_styles;
     text_para_context m_child_para;

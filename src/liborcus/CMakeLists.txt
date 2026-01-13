@@ -94,6 +94,7 @@ list(APPEND _SOURCES
     odf_styles_context.cpp
     odf_style_context.cpp
     odf_number_format_context.cpp
+    odf_text_para.cpp
     odf_tokens.cpp
     ods_content_xml_context.cpp
     ods_database_ranges_context.cpp

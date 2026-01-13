@@ -20,11 +20,9 @@
 namespace orcus {
 
 text_para_context::text_para_context(
-    session_context& session_cxt, const tokens& tokens,
-    spreadsheet::iface::import_shared_strings* ssb, odf_styles_map_type& styles) :
+    session_context& session_cxt, const tokens& tokens, odf_styles_map_type& styles) :
     xml_context_base(session_cxt, tokens),
-    mp_sstrings(ssb), m_styles(styles),
-    m_string_index(0), m_has_content(false)
+    m_styles(styles)
 {
     static const xml_element_validator::rule rules[] = {
         // parent element -> child element
@@ -76,8 +74,6 @@ bool text_para_context::end_element(xmlns_id_t ns, xml_token_t name)
             {
                 // paragraph
                 flush_segment();
-                if (mp_sstrings)
-                    m_string_index = mp_sstrings->commit_segments();
                 break;
             }
             case XML_span:
@@ -100,35 +96,32 @@ bool text_para_context::end_element(xmlns_id_t ns, xml_token_t name)
 void text_para_context::characters(std::string_view str, bool transient)
 {
     if (transient)
-        m_contents.push_back(get_session_context().spool.intern(str).first);
+        m_fragments.push_back(get_session_context().spool.intern(str).first);
     else
-        m_contents.push_back(str);
+        m_fragments.push_back(str);
 }
 
 void text_para_context::reset()
 {
-    m_string_index = 0;
-    m_has_content = false;
-    m_contents.clear();
+    m_fragments.clear();
+    m_paragraph = odf_text_paragraph{};
 }
 
-size_t text_para_context::get_string_index() const
+odf_text_paragraph text_para_context::pop_paragraph()
 {
-    return m_string_index;
+    return std::move(m_paragraph);
 }
 
 bool text_para_context::empty() const
 {
-    return !m_has_content;
+    return m_paragraph.empty();
 }
 
 void text_para_context::flush_segment()
 {
-    if (m_contents.empty())
+    if (m_fragments.empty())
         // No content to flush.
         return;
-
-    m_has_content = true;
 
     const odf_style* style = nullptr;
     if (!m_span_stack.empty())
@@ -139,19 +132,16 @@ void text_para_context::flush_segment()
             style = it->second.get();
     }
 
-    if (mp_sstrings)
-    {
-        if (style && style->family == style_family_text)
-        {
-            const auto& data = std::get<odf_style::text>(style->data);
-            mp_sstrings->set_segment_font(data.font);
-        }
+    m_paragraph.emplace_back();
+    auto& segment = m_paragraph.back();
 
-        for (std::string_view ps : m_contents)
-            mp_sstrings->append_segment(ps);
+    if (style && style->family == style_family_text)
+    {
+        const auto& data = std::get<odf_style::text>(style->data);
+        segment.font = data.font;
     }
 
-    m_contents.clear();
+    segment.text_fragments.swap(m_fragments); // clears contents
 }
 
 }
