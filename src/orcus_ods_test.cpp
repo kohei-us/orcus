@@ -31,6 +31,7 @@ std::vector<fs::path> dirs = {
     SRCDIR"/test/ods/formula-1/",
     SRCDIR"/test/ods/formula-2/",
     SRCDIR"/test/ods/linebreak/",
+    SRCDIR"/test/ods/linebreak-2/",
     SRCDIR"/test/ods/named-range/",
     SRCDIR"/test/ods/named-expression/",
     SRCDIR"/test/ods/named-expression-sheet-local/",

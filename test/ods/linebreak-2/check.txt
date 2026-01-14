@@ -1,0 +1,2 @@
+Sheet1/1/1:string:"Red\nBlue\nGreen"
+Sheet1/3/2:string:"Red and blue\nGreen and yellow"
