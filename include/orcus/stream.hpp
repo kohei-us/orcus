@@ -181,6 +181,13 @@ ORCUS_PSR_DLLPUBLIC std::size_t locate_first_different_char(std::string_view lef
  */
 ORCUS_PSR_DLLPUBLIC std::size_t calc_logical_string_length(std::string_view s);
 
+/**
+ * Generate a UUID string (version 4).
+ *
+ * @return UUID string.
+ */
+ORCUS_PSR_DLLPUBLIC std::string generate_uuid4();
+
 } // namespace orcus
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

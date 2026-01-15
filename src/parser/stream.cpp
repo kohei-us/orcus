@@ -23,6 +23,9 @@
 
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 namespace bip = boost::interprocess;
 
@@ -443,6 +446,13 @@ std::size_t calc_logical_string_length(std::string_view s)
     }
 
     return length;
+}
+
+std::string generate_uuid4()
+{
+    static boost::uuids::random_generator gen;
+    boost::uuids::uuid u = gen();
+    return boost::uuids::to_string(u);
 }
 
 }

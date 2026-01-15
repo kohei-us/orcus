@@ -16,7 +16,7 @@ using namespace orcus;
 
 void test_stream_create_error_output()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string output = create_parse_error_output("{}", 1);
     std::cout << output << std::endl;
@@ -26,7 +26,7 @@ void test_stream_create_error_output()
 
 void test_stream_locate_first_different_char()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     struct test_case
     {
@@ -55,7 +55,7 @@ void test_stream_locate_first_different_char()
 
 void test_stream_logical_string_length()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     struct check
     {
@@ -86,7 +86,7 @@ void test_stream_logical_string_length()
 
 void test_stream_locate_line_with_offset()
 {
-    test::stack_printer __sp__(__func__);
+    ORCUS_TEST_FUNC_SCOPE;
 
     std::string strm = "one\ntwo\nthree";
 
@@ -130,12 +130,29 @@ void test_stream_locate_line_with_offset()
     }
 }
 
+void test_stream_uuid()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    auto uuid = generate_uuid4();
+    std::cout << "uuid: " << uuid << std::endl;
+
+    // it must be xxxxxxxx-xxxx-4xxx-xxxx-xxxxxxxxxxxx (8-4-4-4-12)
+    assert(uuid.size() == 36u);
+    assert(uuid[8] == '-');
+    assert(uuid[13] == '-');
+    assert(uuid[14] == '4');
+    assert(uuid[18] == '-');
+    assert(uuid[23] == '-');
+}
+
 int main()
 {
     test_stream_create_error_output();
     test_stream_locate_first_different_char();
     test_stream_logical_string_length();
     test_stream_locate_line_with_offset();
+    test_stream_uuid();
 
     return EXIT_SUCCESS;
 }
