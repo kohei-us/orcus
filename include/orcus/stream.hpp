@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_STREAM_HPP
-#define INCLUDED_ORCUS_STREAM_HPP
+#pragma once
 
 #include "env.hpp"
 
@@ -183,7 +182,5 @@ ORCUS_PSR_DLLPUBLIC std::size_t locate_first_different_char(std::string_view lef
 ORCUS_PSR_DLLPUBLIC std::size_t calc_logical_string_length(std::string_view s);
 
 } // namespace orcus
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
