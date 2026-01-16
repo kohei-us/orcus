@@ -116,6 +116,40 @@ public:
     std::string_view str() const;
 };
 
+/**
+ * Buffer whose content lives on a filesystem as a temporary file.
+ *
+ * Internally the temporary file is memory-mapped in read-write mode.
+ * It is a fixed-size buffer, and the size of the buffer must be specified at
+ * construction.  The content of the buffer is left uninitialized upon
+ * construction.
+ */
+class ORCUS_PSR_DLLPUBLIC temp_file_content
+{
+    struct impl;
+    std::unique_ptr<impl> mp_impl;
+public:
+    temp_file_content() = delete;
+    temp_file_content(const temp_file_content&) = delete;
+    temp_file_content& operator=(const temp_file_content&) = delete;
+
+    temp_file_content(std::size_t buffer_size);
+    temp_file_content(temp_file_content&& other) noexcept;
+    ~temp_file_content();
+
+    temp_file_content& operator=(temp_file_content&& other) noexcept;
+
+    void swap(temp_file_content& other) noexcept;
+
+    char* data() noexcept;
+
+    const char* data() const noexcept;
+
+    std::size_t size() const noexcept;
+
+    std::string_view str() const;
+};
+
 struct ORCUS_PSR_DLLPUBLIC line_with_offset
 {
     /** content of the entire line. */

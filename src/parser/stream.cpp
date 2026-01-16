@@ -307,6 +307,85 @@ std::string_view memory_content::str() const
     return mp_impl->content;
 }
 
+struct temp_file_content::impl
+{
+    fs::path temp_path;
+
+    boost::uintmax_t content_size;
+    bip::file_mapping mapped_file;
+    bip::mapped_region mapped_region;
+
+    char* content;
+
+    impl(std::size_t file_size) :
+        temp_path(fs::temp_directory_path() / generate_uuid4()),
+        content_size(file_size),
+        content(nullptr)
+    {
+        {
+            std::ofstream ofs{temp_path, std::ios::binary};
+            if (!ofs)
+                throw std::runtime_error{"failed to create a temp file!"};
+        }
+
+        fs::resize_file(temp_path, file_size);
+
+        mapped_file = bip::file_mapping(temp_path.c_str(), bip::read_write);
+        mapped_region = bip::mapped_region(mapped_file, bip::read_write, 0, content_size);
+
+        content = static_cast<char*>(mapped_region.get_address());
+    }
+
+    ~impl()
+    {
+        fs::remove(temp_path);
+    }
+};
+
+temp_file_content::temp_file_content(std::size_t file_size) : mp_impl(std::make_unique<impl>(file_size))
+{
+}
+
+temp_file_content::temp_file_content(temp_file_content&& other) noexcept :
+    mp_impl(std::move(other.mp_impl))
+{
+}
+
+temp_file_content::~temp_file_content() = default;
+
+temp_file_content& temp_file_content::operator=(temp_file_content&& other) noexcept
+{
+    temp_file_content temp(std::move(other));
+    temp.swap(*this);
+
+    return *this;
+}
+
+void temp_file_content::swap(temp_file_content& other) noexcept
+{
+    mp_impl.swap(other.mp_impl);
+}
+
+char* temp_file_content::data() noexcept
+{
+    return mp_impl->content;
+}
+
+const char* temp_file_content::data() const noexcept
+{
+    return mp_impl->content;
+}
+
+std::size_t temp_file_content::size() const noexcept
+{
+    return mp_impl->content_size;
+}
+
+std::string_view temp_file_content::str() const
+{
+    return std::string_view{mp_impl->content, mp_impl->content_size};
+}
+
 line_with_offset::line_with_offset(std::string _line, std::size_t _line_number, std::size_t _offset_on_line) :
     line(std::move(_line)),
     line_number(_line_number),

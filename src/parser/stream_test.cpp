@@ -146,6 +146,30 @@ void test_stream_uuid()
     assert(uuid[23] == '-');
 }
 
+void test_temp_file_content()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    temp_file_content buf{1024};
+    assert(buf.size() == 1024);
+
+    char* p = buf.data();
+    for (std::size_t i = 0; i < buf.size(); ++i)
+        *p++ = '0';
+
+    auto s = buf.str();
+    assert(s.size() == buf.size());
+    for (std::size_t i = 0; i < s.size(); ++i)
+        assert(s[i] == '0');
+
+    auto moved = std::move(buf);
+    assert(moved.size() == 1024);
+
+    s = moved.str();
+    for (std::size_t i = 0; i < s.size(); ++i)
+        assert(s[i] == '0');
+}
+
 int main()
 {
     test_stream_create_error_output();
@@ -153,6 +177,7 @@ int main()
     test_stream_logical_string_length();
     test_stream_locate_line_with_offset();
     test_stream_uuid();
+    test_temp_file_content();
 
     return EXIT_SUCCESS;
 }
