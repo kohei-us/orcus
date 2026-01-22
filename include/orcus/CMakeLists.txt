@@ -41,6 +41,7 @@ list(APPEND _HEADERS
     sax_parser_base.hpp
     sax_token_parser.hpp
     sax_token_parser_thread.hpp
+    temp_content.hpp
     stream.hpp
     string_pool.hpp
     threaded_json_parser.hpp

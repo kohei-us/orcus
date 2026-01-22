@@ -6,7 +6,8 @@
  */
 
 #include "test_global.hpp"
-#include "orcus/stream.hpp"
+#include <orcus/stream.hpp>
+#include <orcus/temp_content.hpp>
 
 #include <cstdlib>
 #include <string>
@@ -146,12 +147,56 @@ void test_stream_uuid()
     assert(uuid[23] == '-');
 }
 
-void test_temp_file_content()
+template<temp_content_store_t StoreT>
+struct get_buffer_type;
+
+template<>
+struct get_buffer_type<temp_content_store_t::heap_allocated>
+{
+    std::string operator()() const
+    {
+        return "heap-allocated";
+    }
+};
+
+template<>
+struct get_buffer_type<temp_content_store_t::memory_mapped>
+{
+    std::string operator()() const
+    {
+        return "memory-mapped";
+    }
+};
+
+void test_temp_content_empty()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    temp_file_content buf{1024};
+    temp_content buf;
+    assert(buf.store_type() == temp_content_store_t::uninitialized);
+    assert(buf.size() == 0);
+    assert(buf.empty());
+}
+
+template<temp_content_store_t StoreT>
+void test_temp_content_stored()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+    std::cout << "store type: " << get_buffer_type<StoreT>{}() << std::endl;
+
+    {
+        // initializing it with a size of 0 is equivalent of default
+        // construction with no storage
+        temp_content buf{0, StoreT};
+        assert(buf.store_type() == temp_content_store_t::uninitialized);
+        assert(buf.size() == 0);
+        assert(buf.empty());
+    }
+
+    temp_content buf{1024, StoreT};
+    assert(buf.store_type() == StoreT);
     assert(buf.size() == 1024);
+    assert(!buf.empty());
 
     char* p = buf.data();
     for (std::size_t i = 0; i < buf.size(); ++i)
@@ -170,6 +215,20 @@ void test_temp_file_content()
         assert(s[i] == '0');
 }
 
+void test_temp_content_invalid_store_type()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+    try
+    {
+        temp_content{16, temp_content_store_t::uninitialized};
+        assert(!"std::invalid_argument should have been thrown!");
+    }
+    catch (const std::invalid_argument&)
+    {
+        // good
+    }
+}
+
 int main()
 {
     test_stream_create_error_output();
@@ -177,7 +236,9 @@ int main()
     test_stream_logical_string_length();
     test_stream_locate_line_with_offset();
     test_stream_uuid();
-    test_temp_file_content();
+    test_temp_content_stored<temp_content_store_t::heap_allocated>();
+    test_temp_content_stored<temp_content_store_t::memory_mapped>();
+    test_temp_content_invalid_store_type();
 
     return EXIT_SUCCESS;
 }

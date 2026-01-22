@@ -37,6 +37,7 @@ liborcus_HEADERS = \
 	sax_token_parser_thread.hpp \
 	stream.hpp \
 	string_pool.hpp \
+	temp_content.hpp \
 	threaded_json_parser.hpp \
 	threaded_sax_token_parser.hpp \
 	tokens.hpp \
