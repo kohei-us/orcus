@@ -68,7 +68,7 @@ void orcus_ods::read_styles(const zip_archive& archive)
     if (!xstyles)
         return;
 
-    std::vector<unsigned char> buf;
+    unnamed_buffer buf;
 
     try
     {
@@ -82,7 +82,7 @@ void orcus_ods::read_styles(const zip_archive& archive)
 
     xml_stream_parser parser(
         get_config(), mp_impl->ns_repo, odf_tokens,
-        reinterpret_cast<const char*>(buf.data()), buf.size());
+        buf.data(), buf.size());
 
     auto& ods_data = mp_impl->cxt.get_data<ods_session_data>();
     auto context = std::make_unique<document_styles_context>(
@@ -99,7 +99,7 @@ void orcus_ods::read_styles(const zip_archive& archive)
 
 void orcus_ods::read_content(const zip_archive& archive)
 {
-    std::vector<unsigned char> buf;
+    unnamed_buffer buf;
 
     try
     {
@@ -111,7 +111,7 @@ void orcus_ods::read_content(const zip_archive& archive)
         return;
     }
 
-    read_content_xml(buf.data(), buf.size());
+    read_content_xml(reinterpret_cast<const unsigned char*>(buf.data()), buf.size());
 }
 
 void orcus_ods::read_content_xml(const unsigned char* p, size_t size)
@@ -159,7 +159,7 @@ bool orcus_ods::detect(std::string_view strm)
     {
         archive.load();
 
-        std::vector<unsigned char> buf = archive.read_file_entry("mimetype");
+        auto buf = archive.read_file_entry("mimetype");
 
         if (buf.empty())
             // mimetype is empty.

@@ -162,7 +162,7 @@ bool orcus_xlsx::detect(std::string_view strm)
         archive.load();
 
         // Find and parse [Content_Types].xml which is required for OPC package.
-        std::vector<unsigned char> buf = archive.read_file_entry("[Content_Types].xml");
+        auto buf = archive.read_file_entry("[Content_Types].xml");
 
         if (buf.empty())
             return false;
@@ -172,7 +172,7 @@ bool orcus_xlsx::detect(std::string_view strm)
         ns_repo.add_predefined_values(NS_opc_all);
         session_context session_cxt;
         xml_stream_parser parser(
-            opt, ns_repo, opc_tokens, reinterpret_cast<const char*>(&buf[0]), buf.size());
+            opt, ns_repo, opc_tokens, buf.data(), buf.size());
 
         xml_stream_handler handler(
             session_cxt, opc_tokens,
@@ -353,7 +353,7 @@ void orcus_xlsx::read_workbook(const std::string& dir_path, const std::string& f
     if (get_config().debug)
         std::cout << "read_workbook: file path = " << filepath << std::endl;
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
         return;
 
@@ -366,7 +366,7 @@ void orcus_xlsx::read_workbook(const std::string& dir_path, const std::string& f
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
     parser.set_handler(handler.get());
     parser.parse();
 
@@ -433,7 +433,7 @@ void orcus_xlsx::read_sheet(
         std::cout << "read_sheet: file path = " << filepath << std::endl;
     }
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
         return;
 
@@ -462,7 +462,7 @@ void orcus_xlsx::read_sheet(
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
 
     auto handler = std::make_unique<xlsx_sheet_xml_handler>(
         mp_impl->m_cxt, ooxml_tokens, data->id-1, *resolver, *sheet);
@@ -485,7 +485,7 @@ void orcus_xlsx::read_shared_strings(const std::string& dir_path, const std::str
         std::cout << "read_shared_strings: file path = " << filepath << std::endl;
     }
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
         return;
 
@@ -494,7 +494,7 @@ void orcus_xlsx::read_shared_strings(const std::string& dir_path, const std::str
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
 
     auto handler = std::make_unique<xml_stream_handler>(
         mp_impl->m_cxt, ooxml_tokens,
@@ -519,7 +519,7 @@ void orcus_xlsx::read_styles(const std::string& dir_path, const std::string& fil
         // Client code doesn't support styles.
         return;
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
         return;
 
@@ -528,7 +528,7 @@ void orcus_xlsx::read_styles(const std::string& dir_path, const std::string& fil
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
 
     auto handler = std::make_unique<xml_stream_handler>(
         mp_impl->m_cxt, ooxml_tokens,
@@ -563,7 +563,7 @@ void orcus_xlsx::read_table(const std::string& dir_path, const std::string& file
         std::cout << "read_table: file path = " << filepath << std::endl;
     }
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
         std::cerr << "failed to open zip stream: " << filepath << std::endl;
@@ -578,7 +578,7 @@ void orcus_xlsx::read_table(const std::string& dir_path, const std::string& file
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
     parser.set_handler(handler.get());
     parser.parse();
 
@@ -607,7 +607,7 @@ void orcus_xlsx::read_pivot_cache_def(
             << "; cache id = " << data->id << std::endl;
     }
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
         std::cerr << "failed to open zip stream: " << filepath << std::endl;
@@ -629,7 +629,7 @@ void orcus_xlsx::read_pivot_cache_def(
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
     parser.set_handler(handler.get());
     parser.parse();
 
@@ -660,7 +660,7 @@ void orcus_xlsx::read_pivot_cache_rec(
         std::cout << "read_pivot_cache_rec: file path = " << filepath << "; cache id = " << data->id << std::endl;
     }
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
         std::cerr << "failed to open zip stream: " << filepath << std::endl;
@@ -681,7 +681,7 @@ void orcus_xlsx::read_pivot_cache_rec(
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
     parser.set_handler(handler.get());
     parser.parse();
 
@@ -697,7 +697,7 @@ void orcus_xlsx::read_pivot_table(const std::string& dir_path, const std::string
         std::cout << "read_pivot_table: file path = " << filepath << std::endl;
     }
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
         std::cerr << "failed to open zip stream: " << filepath << std::endl;
@@ -719,7 +719,7 @@ void orcus_xlsx::read_pivot_table(const std::string& dir_path, const std::string
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
     parser.set_handler(handler.get());
     parser.parse();
 
@@ -736,7 +736,7 @@ void orcus_xlsx::read_rev_headers(const std::string& dir_path, const std::string
         std::cout << "read_rev_headers: file path = " << filepath << std::endl;
     }
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
         std::cerr << "failed to open zip stream: " << filepath << std::endl;
@@ -748,7 +748,7 @@ void orcus_xlsx::read_rev_headers(const std::string& dir_path, const std::string
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
 
     auto handler = std::make_unique<xml_stream_handler>(
         mp_impl->m_cxt, ooxml_tokens,
@@ -770,7 +770,7 @@ void orcus_xlsx::read_rev_log(const std::string& dir_path, const std::string& fi
         std::cout << "read_rev_log: file path = " << filepath << std::endl;
     }
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
         std::cerr << "failed to open zip stream: " << filepath << std::endl;
@@ -782,7 +782,7 @@ void orcus_xlsx::read_rev_log(const std::string& dir_path, const std::string& fi
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
 
     auto handler = std::make_unique<xml_stream_handler>(
         mp_impl->m_cxt, ooxml_tokens,
@@ -803,7 +803,7 @@ void orcus_xlsx::read_drawing(const std::string& dir_path, const std::string& fi
         std::cout << "read_drawing: file path = " << filepath << std::endl;
     }
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!mp_impl->m_opc_reader.open_zip_stream(filepath, buffer))
     {
         std::cerr << "failed to open zip stream: " << filepath << std::endl;
@@ -818,7 +818,7 @@ void orcus_xlsx::read_drawing(const std::string& dir_path, const std::string& fi
 
     xml_stream_parser parser(
         get_config(), mp_impl->m_ns_repo, ooxml_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
     parser.set_handler(handler.get());
     parser.parse();
 

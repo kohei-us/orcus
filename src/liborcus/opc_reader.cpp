@@ -67,11 +67,11 @@ void opc_reader::read_file(std::unique_ptr<zip_archive_stream>&& stream)
     m_archive_stream.reset();
 }
 
-bool opc_reader::open_zip_stream(const std::string& path, std::vector<unsigned char>& buf)
+bool opc_reader::open_zip_stream(std::string_view path, unnamed_buffer& buf)
 {
     try
     {
-        std::vector<unsigned char> entry = m_archive->read_file_entry(path.c_str());
+        auto entry = m_archive->read_file_entry(path);
         buf.swap(entry);
         return true;
     }
@@ -243,7 +243,7 @@ void opc_reader::read_content()
 void opc_reader::read_content_types()
 {
     std::string filepath("[Content_Types].xml");
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!open_zip_stream(filepath, buffer))
         return;
 
@@ -252,7 +252,7 @@ void opc_reader::read_content_types()
 
     xml_stream_parser parser(
         m_config, m_ns_repo, opc_tokens,
-        reinterpret_cast<const char*>(&buffer[0]), buffer.size());
+        buffer.data(), buffer.size());
 
     auto handler = std::make_unique<xml_stream_handler>(
         m_session_cxt, opc_tokens,
@@ -272,7 +272,7 @@ void opc_reader::read_relations(const char* path, std::vector<opc_rel_t>& rels)
     if (m_config.debug)
         std::cout << "relation file path: " << filepath << std::endl;
 
-    std::vector<unsigned char> buffer;
+    unnamed_buffer buffer;
     if (!open_zip_stream(filepath, buffer))
         return;
 
@@ -281,7 +281,7 @@ void opc_reader::read_relations(const char* path, std::vector<opc_rel_t>& rels)
 
     xml_stream_parser parser(
         m_config, m_ns_repo, opc_tokens,
-        reinterpret_cast<const char*>(buffer.data()), buffer.size());
+        buffer.data(), buffer.size());
 
     auto& context = static_cast<opc_relations_context&>(m_opc_rel_handler.get_context());
     context.init();

@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_ZIP_ARCHIVE_HPP
-#define INCLUDED_ORCUS_ZIP_ARCHIVE_HPP
+#pragma once
 
 #include "env.hpp"
 #include "exception.hpp"
+#include "unnamed_buffer.hpp"
 
 #include <string_view>
 #include <vector>
@@ -61,7 +61,21 @@ public:
     zip_archive(const zip_archive&) = delete;
     zip_archive& operator= (const zip_archive) = delete;
 
+    /**
+     * Constructor.
+     *
+     * @param stream Memory location of archive stream.
+     */
     zip_archive(zip_archive_stream* stream);
+
+    /**
+     * Constructor with explicit buffer storage type.
+     *
+     * @param stream      Memory location of archive stream.
+     * @param buffer_type Type of temporary unnamed buffer that stores
+     *                    uncompressed file entry.
+     */
+    zip_archive(zip_archive_stream* stream, unnamed_buffer_store_t buffer_type);
     ~zip_archive();
 
     /**
@@ -118,10 +132,9 @@ public:
      * @exception zip_error thrown when any problem is encountered during data
      *                      stream retrieval.
      */
-    std::vector<unsigned char> read_file_entry(std::string_view entry_name) const;
+    unnamed_buffer read_file_entry(std::string_view entry_name) const;
 };
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

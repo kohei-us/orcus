@@ -58,15 +58,15 @@ class zip_inflater
 {
     z_stream m_zlib_cxt;
 
-    zip_inflater(); // disabled
 public:
-    zip_inflater(std::vector<unsigned char>& raw_buf, std::vector<unsigned char>& dest_buf, const zip_file_param& param)
+    zip_inflater() = delete;
+    zip_inflater(unnamed_buffer& raw_buf, unnamed_buffer& dest_buf, const zip_file_param& param)
     {
         memset(&m_zlib_cxt, 0, sizeof(m_zlib_cxt));
-        m_zlib_cxt.next_in = static_cast<Bytef*>(&raw_buf[0]);
+        m_zlib_cxt.next_in = reinterpret_cast<Bytef*>(raw_buf.data());
         m_zlib_cxt.avail_in = param.size_compressed;
 
-        m_zlib_cxt.next_out = static_cast<Bytef*>(&dest_buf[0]);
+        m_zlib_cxt.next_out = reinterpret_cast<Bytef*>(dest_buf.data());
         m_zlib_cxt.avail_out = param.size_uncompressed;
     }
 
@@ -230,17 +230,19 @@ class zip_archive::impl
     typedef std::unordered_map<std::string_view, std::size_t> filename_map_type;
 
     string_pool m_pool;
-    zip_archive_stream* m_stream;
-    off_t m_stream_size;
-    size_t m_central_dir_pos;
+    zip_archive_stream* m_stream = nullptr;
+    off_t m_stream_size = 0;
+    size_t m_central_dir_pos = 0;
 
     zip_stream_parser m_central_dir_end;
 
     file_params_type m_file_params;
     filename_map_type m_filenames;
+    unnamed_buffer_store_t m_buffer_type = unnamed_buffer_store_t::uninitialized;
 
 public:
     impl(zip_archive_stream* stream);
+    impl(zip_archive_stream* stream, unnamed_buffer_store_t buffer_type);
 
     void load();
     zip_file_entry_header get_file_entry_header(std::size_t index) const;
@@ -252,7 +254,7 @@ public:
         return m_file_params.size();
     }
 
-    std::vector<unsigned char> read_file_entry(std::string_view entry_name) const;
+    unnamed_buffer read_file_entry(std::string_view entry_name) const;
 
 private:
 
@@ -267,7 +269,12 @@ private:
 };
 
 zip_archive::impl::impl(zip_archive_stream* stream) :
-    m_stream(stream), m_stream_size(0), m_central_dir_pos(0)
+    impl(stream, unnamed_buffer_store_t::memory_mapped)
+{
+}
+
+zip_archive::impl::impl(zip_archive_stream* stream, unnamed_buffer_store_t buffer_type) :
+    m_stream(stream), m_buffer_type(buffer_type)
 {
     if (!m_stream)
         throw zip_error("null stream is not allowed.");
@@ -416,7 +423,7 @@ std::string_view zip_archive::impl::get_file_entry_name(std::size_t pos) const
     return m_file_params[pos].filename;
 }
 
-std::vector<unsigned char> zip_archive::impl::read_file_entry(std::string_view entry_name) const
+unnamed_buffer zip_archive::impl::read_file_entry(std::string_view entry_name) const
 {
     filename_map_type::const_iterator it = m_filenames.find(entry_name);
     if (it == m_filenames.end())
@@ -452,8 +459,8 @@ std::vector<unsigned char> zip_archive::impl::read_file_entry(std::string_view e
     // Data section is immediately followed by the header section.
     m_stream->seek(file_header.tell());
 
-    std::vector<unsigned char> raw_buf(param.size_compressed+1, 0);
-    m_stream->read(raw_buf.data(), param.size_compressed);
+    unnamed_buffer raw_buf(param.size_compressed+1, m_buffer_type); // null-terminated
+    m_stream->read(reinterpret_cast<unsigned char*>(raw_buf.data()), param.size_compressed);
 
     switch (param.compress_method)
     {
@@ -465,7 +472,7 @@ std::vector<unsigned char> zip_archive::impl::read_file_entry(std::string_view e
         case zip_file_param::deflated:
         {
             // deflate compression
-            std::vector<unsigned char> zip_buf(param.size_uncompressed+1, 0); // null-terminated
+            unnamed_buffer zip_buf(param.size_uncompressed+1, m_buffer_type); // null-terminated
             zip_inflater inflater(raw_buf, zip_buf, param);
             if (!inflater.init())
                 throw zip_error("error during initialization of inflater");
@@ -566,6 +573,11 @@ zip_archive::zip_archive(zip_archive_stream* stream) : mp_impl(std::make_unique<
 {
 }
 
+zip_archive::zip_archive(zip_archive_stream* stream, unnamed_buffer_store_t buffer_type) :
+    mp_impl(std::make_unique<impl>(stream, buffer_type))
+{
+}
+
 zip_archive::~zip_archive() = default;
 
 void zip_archive::load()
@@ -593,7 +605,7 @@ size_t zip_archive::get_file_entry_count() const
     return mp_impl->get_file_entry_count();
 }
 
-std::vector<unsigned char> zip_archive::read_file_entry(std::string_view entry_name) const
+unnamed_buffer zip_archive::read_file_entry(std::string_view entry_name) const
 {
     return mp_impl->read_file_entry(entry_name);
 }

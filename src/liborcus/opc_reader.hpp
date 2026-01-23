@@ -70,7 +70,7 @@ public:
     opc_reader(const config& opt, xmlns_repository& ns_repo, session_context& session_cxt, part_handler& handler);
 
     void read_file(std::unique_ptr<zip_archive_stream>&& stream);
-    bool open_zip_stream(const std::string& path, std::vector<unsigned char>& buf);
+    bool open_zip_stream(std::string_view path, unnamed_buffer& buf);
 
     /**
      * Read an xml part inside package.  The path is relative to the relation
