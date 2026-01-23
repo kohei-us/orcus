@@ -35,7 +35,7 @@
 
 namespace orcus {
 
-enum class temp_content_store_t
+enum class unnamed_buffer_store_t
 {
     /** Content is not stored. */
     uninitialized,
@@ -54,25 +54,25 @@ enum class temp_content_store_t
  *
  * @note This class is movable but not copyable.
  */
-class ORCUS_PSR_DLLPUBLIC temp_content
+class ORCUS_PSR_DLLPUBLIC unnamed_buffer
 {
     struct impl;
     std::unique_ptr<impl> mp_impl;
 
 public:
-    temp_content(const temp_content&) = delete;
-    temp_content& operator=(const temp_content&) = delete;
+    unnamed_buffer(const unnamed_buffer&) = delete;
+    unnamed_buffer& operator=(const unnamed_buffer&) = delete;
 
-    temp_content();
-    temp_content(std::size_t buffer_size, temp_content_store_t store);
-    temp_content(temp_content&& other) noexcept;
-    ~temp_content();
+    unnamed_buffer();
+    unnamed_buffer(std::size_t buffer_size, unnamed_buffer_store_t store);
+    unnamed_buffer(unnamed_buffer&& other) noexcept;
+    ~unnamed_buffer();
 
-    temp_content& operator=(temp_content&& other) noexcept;
+    unnamed_buffer& operator=(unnamed_buffer&& other) noexcept;
 
-    void swap(temp_content& other) noexcept;
+    void swap(unnamed_buffer& other) noexcept;
 
-    temp_content_store_t store_type() const noexcept;
+    unnamed_buffer_store_t store_type() const noexcept;
 
     char* data() noexcept;
 

@@ -41,13 +41,13 @@ list(APPEND _HEADERS
     sax_parser_base.hpp
     sax_token_parser.hpp
     sax_token_parser_thread.hpp
-    temp_content.hpp
     stream.hpp
     string_pool.hpp
     threaded_json_parser.hpp
     threaded_sax_token_parser.hpp
     tokens.hpp
     types.hpp
+    unnamed_buffer.hpp
     xml_namespace.hpp
     xml_structure_tree.hpp
     xml_writer.hpp

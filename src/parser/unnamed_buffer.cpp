@@ -26,7 +26,7 @@
  *
  ************************************************************************/
 
-#include <orcus/temp_content.hpp>
+#include <orcus/unnamed_buffer.hpp>
 #include <orcus/stream.hpp>
 
 #include "filesystem_env.hpp"
@@ -78,7 +78,7 @@ using backend_store_type = std::variant<std::monostate, std::unique_ptr<mmap_sto
 
 } // anonymous namespace
 
-struct temp_content::impl
+struct unnamed_buffer::impl
 {
     backend_store_type store;
 
@@ -89,7 +89,7 @@ struct temp_content::impl
     {
     }
 
-    impl(std::size_t file_size, temp_content_store_t st) :
+    impl(std::size_t file_size, unnamed_buffer_store_t st) :
         content_size(file_size)
     {
         if (!file_size)
@@ -97,21 +97,21 @@ struct temp_content::impl
 
         switch (st)
         {
-            case temp_content_store_t::heap_allocated:
+            case unnamed_buffer_store_t::heap_allocated:
             {
                 std::vector<char> this_store(file_size);
                 content = this_store.data();
                 store = std::move(this_store);
                 break;
             }
-            case temp_content_store_t::memory_mapped:
+            case unnamed_buffer_store_t::memory_mapped:
             {
                 auto this_store = std::make_unique<mmap_store>(file_size);
                 content = static_cast<char*>(this_store->mapped_region.get_address());
                 store = std::move(this_store);
                 break;
             }
-            case temp_content_store_t::uninitialized:
+            case unnamed_buffer_store_t::uninitialized:
             {
                 throw std::invalid_argument{"temp_content cannot be constructed with 'uninitialized' store type"};
             }
@@ -119,71 +119,71 @@ struct temp_content::impl
     }
 };
 
-temp_content::temp_content() : mp_impl(std::make_unique<impl>())
+unnamed_buffer::unnamed_buffer() : mp_impl(std::make_unique<impl>())
 {
 }
 
-temp_content::temp_content(std::size_t file_size, temp_content_store_t store) :
+unnamed_buffer::unnamed_buffer(std::size_t file_size, unnamed_buffer_store_t store) :
     mp_impl(std::make_unique<impl>(file_size, store))
 {
 }
 
-temp_content::temp_content(temp_content&& other) noexcept :
+unnamed_buffer::unnamed_buffer(unnamed_buffer&& other) noexcept :
     mp_impl(std::move(other.mp_impl))
 {
 }
 
-temp_content::~temp_content() = default;
+unnamed_buffer::~unnamed_buffer() = default;
 
-temp_content& temp_content::operator=(temp_content&& other) noexcept
+unnamed_buffer& unnamed_buffer::operator=(unnamed_buffer&& other) noexcept
 {
-    temp_content temp(std::move(other));
+    unnamed_buffer temp(std::move(other));
     temp.swap(*this);
 
     return *this;
 }
 
-void temp_content::swap(temp_content& other) noexcept
+void unnamed_buffer::swap(unnamed_buffer& other) noexcept
 {
     mp_impl.swap(other.mp_impl);
 }
 
-temp_content_store_t temp_content::store_type() const noexcept
+unnamed_buffer_store_t unnamed_buffer::store_type() const noexcept
 {
     switch (mp_impl->store.index())
     {
         case 0:
             break;
         case 1:
-            return temp_content_store_t::memory_mapped;
+            return unnamed_buffer_store_t::memory_mapped;
         case 2:
-            return temp_content_store_t::heap_allocated;
+            return unnamed_buffer_store_t::heap_allocated;
     }
 
-    return temp_content_store_t::uninitialized;
+    return unnamed_buffer_store_t::uninitialized;
 }
 
-char* temp_content::data() noexcept
+char* unnamed_buffer::data() noexcept
 {
     return mp_impl->content;
 }
 
-const char* temp_content::data() const noexcept
+const char* unnamed_buffer::data() const noexcept
 {
     return mp_impl->content;
 }
 
-std::size_t temp_content::size() const noexcept
+std::size_t unnamed_buffer::size() const noexcept
 {
     return mp_impl->content_size;
 }
 
-bool temp_content::empty() const noexcept
+bool unnamed_buffer::empty() const noexcept
 {
     return mp_impl->content == nullptr;
 }
 
-std::string_view temp_content::str() const
+std::string_view unnamed_buffer::str() const
 {
     return std::string_view{mp_impl->content, mp_impl->content_size};
 }

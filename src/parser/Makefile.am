@@ -33,9 +33,9 @@ liborcus_parser_@ORCUS_API_VERSION@_la_SOURCES = \
 	sax_token_parser_thread.cpp \
 	stream.cpp \
 	string_pool.cpp \
-	temp_content.cpp \
 	tokens.cpp \
 	types.cpp \
+	unnamed_buffer.cpp \
 	utf8.hpp \
 	utf8.cpp \
 	xml_namespace.cpp \
