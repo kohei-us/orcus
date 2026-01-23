@@ -92,34 +92,36 @@ public:
 };
 
 /**
- * Stream doesn't know its size; only its starting offset position within
- * the file stream.
+ * Stream doesn't know its size; only its starting offset position (head
+ * position) within the file stream.
  */
 class zip_stream_parser
 {
     zip_archive_stream* m_stream;
-    size_t m_pos;
-    size_t m_pos_internal;
+    std::size_t m_head_pos;
+    std::size_t m_offset; /// current offset from the head
 
-    void read_string_to_buffer(size_t n, std::vector<unsigned char>& buf)
+    std::vector<char> read_string_to_buffer(size_t n)
     {
         if (!n)
             throw zip_error("attempt to read string of zero size.");
 
-        m_stream->seek(m_pos+m_pos_internal);
-        m_stream->read(&buf[0], n);
-        m_pos_internal += n;
+        std::vector<char> buf(n+1, '\0');
+        m_stream->seek(m_head_pos+m_offset);
+        m_stream->read(reinterpret_cast<unsigned char*>(buf.data()), n);
+        m_offset += n;
+        return buf;
     }
 
 public:
-    zip_stream_parser() : m_stream(nullptr), m_pos(0), m_pos_internal(0) {}
-    zip_stream_parser(zip_archive_stream* stream, size_t pos) : m_stream(stream), m_pos(pos), m_pos_internal(0) {}
+    zip_stream_parser() : m_stream(nullptr), m_head_pos(0), m_offset(0) {}
+    zip_stream_parser(zip_archive_stream* stream, std::size_t pos) :
+        m_stream(stream), m_head_pos(pos), m_offset(0) {}
 
     std::string read_string(size_t n)
     {
-        std::vector<unsigned char> buf(n+1, '\0');
-        read_string_to_buffer(n, buf);
-        return std::string(reinterpret_cast<const char*>(&buf[0]));
+        auto buf = read_string_to_buffer(n);
+        return std::string(buf.data());
     }
 
     std::vector<uint8_t> read_bytes(std::size_t n)
@@ -128,30 +130,29 @@ public:
             throw zip_error("attempt to read string of zero size.");
 
         std::vector<uint8_t> buf;
-        m_stream->seek(m_pos+m_pos_internal);
+        m_stream->seek(m_head_pos+m_offset);
         m_stream->read(buf.data(), n);
-        m_pos_internal += n;
+        m_offset += n;
         return buf;
     }
 
     std::string_view read_string(size_t n, string_pool& pool)
     {
-        std::vector<unsigned char> buf(n+1, '\0');
-        read_string_to_buffer(n, buf);
-        return pool.intern({reinterpret_cast<const char*>(buf.data()), n}).first;
+        auto buf = read_string_to_buffer(n);
+        return pool.intern({buf.data(), n}).first;
     }
 
     void skip_bytes(size_t n)
     {
-        m_pos_internal += n;
+        m_offset += n;
     }
 
     uint32_t read_4bytes()
     {
-        m_stream->seek(m_pos+m_pos_internal);
+        m_stream->seek(m_head_pos+m_offset);
         unsigned char buf[4];
-        m_stream->read(&buf[0], 4);
-        m_pos_internal += 4;
+        m_stream->read(buf, 4);
+        m_offset += 4;
 
         uint32_t ret = buf[0];
         ret |= (buf[1] << 8);
@@ -163,10 +164,10 @@ public:
 
     uint16_t read_2bytes()
     {
-        m_stream->seek(m_pos+m_pos_internal);
+        m_stream->seek(m_head_pos+m_offset);
         unsigned char buf[2];
-        m_stream->read(&buf[0], 2);
-        m_pos_internal += 2;
+        m_stream->read(buf, 2);
+        m_offset += 2;
 
         uint16_t ret = buf[0];
         ret |= (buf[1] << 8);
@@ -176,7 +177,7 @@ public:
 
     size_t tell() const
     {
-        return m_pos + m_pos_internal;
+        return m_head_pos + m_offset;
     }
 };
 
