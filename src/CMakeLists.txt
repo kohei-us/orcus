@@ -33,6 +33,12 @@ add_executable(orcus-csv
     orcus_filter_global.cpp
 )
 
+add_executable(orcus-gnumeric
+    cli_global.cpp
+    orcus_gnumeric_main.cpp
+    orcus_filter_global.cpp
+)
+
 add_executable(orcus-xml
     cli_global.cpp
     orcus_xml_main.cpp
@@ -69,6 +75,7 @@ target_link_libraries(orcus-zip-dump orcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(orcus-json orcus-parser-${ORCUS_API_VERSION} orcus-spreadsheet-model-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-yaml orcus-parser-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-csv orcus-parser-${ORCUS_API_VERSION} orcus-spreadsheet-model-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
+target_link_libraries(orcus-gnumeric orcus-parser-${ORCUS_API_VERSION} orcus-spreadsheet-model-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-xml orcus-parser-${ORCUS_API_VERSION} orcus-spreadsheet-model-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-ods orcus-parser-${ORCUS_API_VERSION} orcus-spreadsheet-model-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
 target_link_libraries(orcus-styles-ods orcus-parser-${ORCUS_API_VERSION} orcus-spreadsheet-model-${ORCUS_API_VERSION} orcus-${ORCUS_API_VERSION})
@@ -156,6 +163,7 @@ list(APPEND _INSTALL_TARGETS
     orcus-css-dump
     orcus-zip-dump
     orcus-json
+    orcus-gnumeric
     orcus-yaml
     orcus-csv
     orcus-xml
