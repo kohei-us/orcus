@@ -152,7 +152,6 @@ set(_TESTS
     common-test
     css-document-tree-test
     dom-tree-test
-#   gnumeric-sheet-context-test
     json-document-tree-test
     json-structure-tree-test
     xml-structure-tree-test
@@ -209,6 +208,30 @@ add_executable(gnumeric-cell-context-test EXCLUDE_FROM_ALL
 	xml_util.cpp
 )
 
+add_executable(gnumeric-sheet-context-test EXCLUDE_FROM_ALL
+	debug_utils.cpp
+	session_context.cpp
+	gnumeric_sheet_context_test.cpp
+	gnumeric_sheet_context.cpp
+	gnumeric_names_context.cpp
+	gnumeric_cell_context.cpp
+	gnumeric_filter_context.cpp
+	gnumeric_styles_context.cpp
+	gnumeric_value_format_parser.cpp
+	gnumeric_types.cpp
+	number_utils.cpp
+	xls_filter_utils.cpp
+	xml_context_base.cpp
+	xml_element_types.cpp
+	xml_element_validator.cpp
+	xml_empty_context.cpp
+	xml_util.cpp
+	gnumeric_namespace_types.cpp
+	gnumeric_tokens.cpp
+	odf_namespace_types.cpp
+	string_helper.cpp
+)
+
 add_executable(xlsx-sheet-context-test EXCLUDE_FROM_ALL
     debug_utils.cpp
     formula_result.cpp
@@ -261,12 +284,17 @@ target_compile_definitions(gnumeric-cell-context-test PRIVATE
     __ORCUS_STATIC_LIB
 )
 
+target_compile_definitions(gnumeric-sheet-context-test PRIVATE
+    __ORCUS_STATIC_LIB
+)
+
 target_compile_definitions(xlsx-sheet-context-test PRIVATE
     __ORCUS_STATIC_LIB
 )
 
 target_link_libraries(odf-helper-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(gnumeric-cell-context-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
+target_link_libraries(gnumeric-sheet-context-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 target_link_libraries(xlsx-sheet-context-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 target_link_libraries(xml-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 target_link_libraries(json-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
@@ -274,6 +302,7 @@ target_link_libraries(xpath-parser-test orcus-${ORCUS_API_VERSION} orcus-parser-
 target_link_libraries(xls-filter-utils-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 add_test(odf-helper-test odf-helper-test)
 add_test(gnumeric-cell-context-test gnumeric-cell-context-test)
+add_test(gnumeric-sheet-context-test gnumeric-sheet-context-test)
 add_test(xlsx-sheet-context-test xlsx-sheet-context-test)
 add_test(xml-map-tree-test xml-map-tree-test)
 add_test(xls-filter-utils-test xls-filter-utils-test)
@@ -281,6 +310,7 @@ add_test(xls-filter-utils-test xls-filter-utils-test)
 add_dependencies(check
     ${_TESTS}
     gnumeric-cell-context-test
+    gnumeric-sheet-context-test
     odf-helper-test
     xlsx-sheet-context-test
     xml-map-tree-test
