@@ -376,8 +376,7 @@ gnumeric_cell_context_test_SOURCES = \
 	gnumeric_namespace_types.cpp \
 	gnumeric_tokens.cpp \
 	gnumeric_types.cpp \
-	odf_namespace_types.cpp \
-	spreadsheet_interface.cpp
+	odf_namespace_types.cpp
 
 gnumeric_cell_context_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
@@ -411,7 +410,6 @@ gnumeric_sheet_context_test_SOURCES = \
 	gnumeric_namespace_types.cpp \
 	gnumeric_tokens.cpp \
 	odf_namespace_types.cpp \
-	spreadsheet_interface.cpp \
 	string_helper.cpp
 
 gnumeric_sheet_context_test_LDADD = \
