@@ -13,6 +13,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#include <arrow/buffer.h>
 #include <arrow/io/file.h>
 #include <arrow/io/memory.h>
 #include <parquet/stream_reader.h>
@@ -346,9 +347,10 @@ class orcus_parquet::impl
 
     void read_stream_with_sheet_name(std::string_view sheet_name, std::string_view stream)
     {
-        auto buf = std::make_shared<arrow::io::BufferReader>(stream);
+        auto buf = std::make_shared<arrow::Buffer>(stream);
+        auto buf_reader = std::make_shared<arrow::io::BufferReader>(buf);
 
-        auto file_reader = parquet::ParquetFileReader::Open(buf);
+        auto file_reader = parquet::ParquetFileReader::Open(buf_reader);
         if (!file_reader)
         {
             warn("failed to open a parquet file reader from an in-memory buffer.");
