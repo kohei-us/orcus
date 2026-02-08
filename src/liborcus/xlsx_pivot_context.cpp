@@ -477,7 +477,7 @@ void xlsx_pivot_cache_def_context::start_element(xmlns_id_t ns, xml_token_t name
         }
         case XML_sharedItems:
         {
-            start_element_shared_items(parent, attrs);
+            start_element_shared_items(attrs);
             break;
         }
         case XML_groupItems:
@@ -860,8 +860,7 @@ void xlsx_pivot_cache_def_context::end_element_e()
     }
 }
 
-void xlsx_pivot_cache_def_context::start_element_shared_items(
-    const xml_token_pair_t& parent, const xml_token_attrs_t& attrs)
+void xlsx_pivot_cache_def_context::start_element_shared_items(const xml_token_attrs_t& attrs)
 {
     // If "semi-mixed types" is set, the field contains text values and at
     // least one other type.

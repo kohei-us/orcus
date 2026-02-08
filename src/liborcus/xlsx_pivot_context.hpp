@@ -83,7 +83,7 @@ private:
     void start_element_e(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
     void end_element_e();
 
-    void start_element_shared_items(const xml_token_pair_t& parent, const xml_token_attrs_t& attrs);
+    void start_element_shared_items(const xml_token_attrs_t& attrs);
 };
 
 /**
