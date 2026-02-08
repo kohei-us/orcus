@@ -107,7 +107,7 @@ void subtree_3(const orcus::json::document_tree& doc)
     //!code-end: subtree 3
 }
 
-int main(int argc, char** argv)
+int main()
 {
     //!code-start: load doc
     orcus::json::document_tree doc;
