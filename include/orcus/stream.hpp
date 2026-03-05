@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <string>
+#include <filesystem>
 
 namespace orcus {
 
@@ -30,8 +31,7 @@ public:
 
     file_content();
     file_content(file_content&& other);
-    file_content(std::string_view filepath);
-    file_content(std::u16string_view filepath);
+    file_content(const std::filesystem::path& filepath);
     ~file_content();
 
     /**

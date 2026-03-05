@@ -18,7 +18,6 @@
 #include <locale>
 #include <codecvt>
 #include <iostream>
-#include <filesystem>
 
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
@@ -187,10 +186,7 @@ file_content::file_content() :
 
 file_content::file_content(file_content&& other) = default;
 
-file_content::file_content(std::string_view filepath) :
-    mp_impl(std::make_unique<impl>(filepath)) {}
-
-file_content::file_content(std::u16string_view filepath) :
+file_content::file_content(const fs::path& filepath) :
     mp_impl(std::make_unique<impl>(filepath)) {}
 
 file_content::~file_content() = default;
