@@ -12,14 +12,6 @@ EXTRA_PROGRAMS = \
 TESTS = \
 	auto-filter-test
 
-if HAVE_FILESYSTEM
-AM_CPPFLAGS += "-DHAVE_FILESYSTEM=1"
-endif
-
-if HAVE_EXPERIMENTAL_FILESYSTEM
-AM_CPPFLAGS += "-DHAVE_EXPERIMENTAL_FILESYSTEM=1"
-endif
-
 COMMON_CPPFLAGS = $(AM_CPPFLAGS)
 
 if HAVE_STATIC_LIB
@@ -101,14 +93,6 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_LIBADD = \
 	$(BOOST_SYSTEM_LIBS) \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	../liborcus/liborcus-@ORCUS_API_VERSION@.la
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_LIBADD += -lstdc++fs
-else
-liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_LIBADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 # auto-filter-test
 

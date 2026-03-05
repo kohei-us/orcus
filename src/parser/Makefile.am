@@ -6,14 +6,6 @@ AM_CPPFLAGS = \
 	$(BOOST_CPPFLAGS) \
 	-D__ORCUS_PSR_BUILDING_DLL
 
-if HAVE_FILESYSTEM
-AM_CPPFLAGS += "-DHAVE_FILESYSTEM=1"
-endif
-
-if HAVE_EXPERIMENTAL_FILESYSTEM
-AM_CPPFLAGS += "-DHAVE_EXPERIMENTAL_FILESYSTEM=1"
-endif
-
 lib_LTLIBRARIES = liborcus-parser-@ORCUS_API_VERSION@.la
 liborcus_parser_@ORCUS_API_VERSION@_la_SOURCES = \
 	win_stdint.h \
@@ -52,15 +44,6 @@ liborcus_parser_@ORCUS_API_VERSION@_la_LDFLAGS = \
 liborcus_parser_@ORCUS_API_VERSION@_la_LIBADD = \
 	$(BOOST_SYSTEM_LIBS) \
 	$(ZLIB_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-liborcus_parser_@ORCUS_API_VERSION@_la_LDFLAGS += -lstdc++fs
-else
-liborcus_parser_@ORCUS_API_VERSION@_la_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-liborcus_parser_@ORCUS_API_VERSION@_la_LIBADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 EXTRA_PROGRAMS = \
 	base64-test \
@@ -123,15 +106,6 @@ xml_validation_test_LDADD = \
 	liborcus-parser-@ORCUS_API_VERSION@.la \
 	../test/liborcus-test.a \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-xml_validation_test_LDFLAGS += -lstdc++fs
-else
-xml_validation_test_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-xml_validation_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 # base64-test
 
@@ -237,17 +211,6 @@ zip_archive_test_LDADD = \
 	$(BOOST_SYSTEM_LIBS)
 zip_archive_test_LDFLAGS = \
 	$(BOOST_SYSTEM_LDFLAGS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-zip_archive_test_LDFLAGS += -lstdc++fs
-else
-zip_archive_test_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-zip_archive_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
-
-
 
 # parser-base-test
 

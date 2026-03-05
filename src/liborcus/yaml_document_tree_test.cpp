@@ -12,10 +12,10 @@
 #include <cassert>
 #include <iostream>
 #include <cmath>
-
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 using namespace orcus;
+namespace fs = std::filesystem;
 
 bool string_expected(const yaml::const_node& node, const char* expected)
 {

@@ -29,14 +29,6 @@ else
 AM_CPPFLAGS += -D__ORCUS_BUILDING_DLL=1
 endif
 
-if HAVE_FILESYSTEM
-AM_CPPFLAGS += "-DHAVE_FILESYSTEM=1"
-endif
-
-if HAVE_EXPERIMENTAL_FILESYSTEM
-AM_CPPFLAGS += "-DHAVE_EXPERIMENTAL_FILESYSTEM=1"
-endif
-
 liborcus_@ORCUS_API_VERSION@_la_CXXFLAGS = \
 	$(ZLIB_CFLAGS)
 
@@ -46,15 +38,6 @@ liborcus_@ORCUS_API_VERSION@_la_LDFLAGS = \
 liborcus_@ORCUS_API_VERSION@_la_LIBADD = \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	 $(BOOST_SYSTEM_LIBS) $(ZLIB_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-liborcus_@ORCUS_API_VERSION@_la_LDFLAGS += -lstdc++fs
-else
-liborcus_@ORCUS_API_VERSION@_la_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-liborcus_@ORCUS_API_VERSION@_la_LIBADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 AM_CPPFLAGS += -DSRCDIR=\""$(top_srcdir)"\"
 
@@ -450,14 +433,6 @@ css_document_tree_test_LDADD = \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS)
 
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-css_document_tree_test_LDADD += -lstdc++fs
-else
-css_document_tree_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
-
 # json-document-tree-test
 
 json_document_tree_test_SOURCES = \
@@ -471,14 +446,6 @@ json_document_tree_test_LDADD = \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	../test/liborcus-test.a \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-json_document_tree_test_LDADD += -lstdc++fs
-else
-json_document_tree_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 json_document_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -504,14 +471,6 @@ yaml_document_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-yaml_document_tree_test_LDADD += -lstdc++fs
-else
-yaml_document_tree_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 yaml_document_tree_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -548,14 +507,6 @@ xml_structure_tree_test_LDADD = \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS)
 
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-xml_structure_tree_test_LDADD += -lstdc++fs
-else
-xml_structure_tree_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
-
 # common-test
 
 common_test_SOURCES = \
@@ -580,14 +531,6 @@ json_structure_tree_test_LDADD = \
 	../test/liborcus-test.a \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-json_structure_tree_test_LDADD += -lstdc++fs
-else
-json_structure_tree_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 # json-map-tree-test
 

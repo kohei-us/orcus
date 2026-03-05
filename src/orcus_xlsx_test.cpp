@@ -15,11 +15,11 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
-
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 using namespace orcus;
 namespace ss = orcus::spreadsheet;
+namespace fs = std::filesystem;
 
 config test_config(format_t::xlsx);
 

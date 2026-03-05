@@ -11,12 +11,12 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 using namespace orcus;
 
 namespace po = boost::program_options;
+namespace fs = std::filesystem;
 
 namespace orcus {
 

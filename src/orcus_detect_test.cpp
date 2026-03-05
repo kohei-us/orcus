@@ -6,7 +6,6 @@
  */
 
 #include "orcus_test_global.hpp"
-#include "filesystem_env.hpp"
 #include "filter_env.hpp"
 #include "cli_global.hpp"
 
@@ -17,6 +16,9 @@
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 const fs::path test_base_dir(SRCDIR"/test");
 

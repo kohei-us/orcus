@@ -18,12 +18,12 @@
 #include <cassert>
 #include <iostream>
 #include <sstream>
-
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 namespace ss = orcus::spreadsheet;
 
 using orcus::test::stack_printer;
+namespace fs = std::filesystem;
 
 namespace {
 

@@ -8,13 +8,15 @@
 #include "document_impl.hpp"
 #include "debug_state_dumper.hpp"
 #include "debug_state_context.hpp"
-#include "filesystem_env.hpp"
 
+#include <filesystem>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <map>
 #include <algorithm>
+
+namespace fs = std::filesystem;
 
 namespace orcus { namespace spreadsheet {
 

@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include "filesystem_env.hpp"
-
+#include <filesystem>
 #include <string_view>
+
+namespace fs = std::filesystem;
 
 namespace orcus { namespace spreadsheet {
 

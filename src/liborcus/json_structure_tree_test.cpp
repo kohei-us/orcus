@@ -9,14 +9,15 @@
 #include <orcus/json_structure_tree.hpp>
 #include <orcus/stream.hpp>
 #include <orcus/parser_global.hpp>
-#include "filesystem_env.hpp"
 
 #include <vector>
 #include <sstream>
 #include <cassert>
 #include <unordered_set>
+#include <filesystem>
 
 using namespace orcus;
+namespace fs = std::filesystem;
 
 std::vector<const char*> base_dirs = {
     SRCDIR"/test/json-structure/arrays-in-object/",

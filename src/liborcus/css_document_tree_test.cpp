@@ -15,10 +15,10 @@
 #include <iostream>
 #include <sstream>
 #include <iterator>
-
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 using namespace orcus;
+namespace fs = std::filesystem;
 
 bool check_prop(const css_properties_t& props, std::string_view key, std::string_view val)
 {

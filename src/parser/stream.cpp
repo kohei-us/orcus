@@ -18,8 +18,7 @@
 #include <locale>
 #include <codecvt>
 #include <iostream>
-
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
@@ -28,6 +27,7 @@
 #include <boost/uuid/uuid_io.hpp>
 
 namespace bip = boost::interprocess;
+namespace fs = std::filesystem;
 
 namespace orcus {
 

@@ -23,6 +23,7 @@
 #include <vector>
 #include <cassert>
 #include <cstdlib>
+#include <filesystem>
 
 #include <ixion/exceptions.hpp>
 #include <ixion/formula.hpp>
@@ -31,12 +32,11 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/gregorian/greg_date.hpp>
 
-#include "filesystem_env.hpp"
-
 #define ORCUS_DEBUG_SHEET 0
 
 namespace gregorian = boost::gregorian;
 namespace posix_time = boost::posix_time;
+namespace fs = std::filesystem;
 
 namespace orcus { namespace spreadsheet {
 

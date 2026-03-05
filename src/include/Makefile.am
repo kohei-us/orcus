@@ -2,7 +2,6 @@ SUBDIRS = mso
 
 EXTRA_DIST = \
 	cpu_features.hpp \
-	filesystem_env.hpp \
 	filter_env.hpp \
 	mock_spreadsheet.hpp \
 	numeric_parser.hpp \

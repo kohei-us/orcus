@@ -26,9 +26,10 @@
 #include <ixion/matrix.hpp>
 #include <ixion/model_context.hpp>
 
-#include "filesystem_env.hpp"
-
+#include <filesystem>
 #include <ostream>
+
+namespace fs = std::filesystem;
 
 namespace orcus { namespace spreadsheet { namespace detail {
 

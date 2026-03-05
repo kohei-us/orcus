@@ -10,9 +10,10 @@
 #include <orcus/stream.hpp>
 
 #include <iostream>
+#include <filesystem>
 #include <boost/range/iterator_range.hpp>
 
-#include "filesystem_env.hpp"
+namespace fs = std::filesystem;
 
 void test_valid()
 {

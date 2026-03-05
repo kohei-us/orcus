@@ -15,8 +15,7 @@
 #include <orcus/dom_tree.hpp>
 #include <orcus/measurement.hpp>
 
-#include "filesystem_env.hpp"
-
+#include <filesystem>
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -26,6 +25,7 @@
 #include <algorithm>
 
 using namespace orcus;
+namespace fs = std::filesystem;
 
 const fs::path json_test_dirs[] = {
     SRCDIR"/test/json/basic1",

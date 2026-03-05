@@ -20,12 +20,12 @@
 #include <parquet/arrow/reader.h>
 #pragma GCC diagnostic pop
 
-#include "filesystem_env.hpp"
-
+#include <filesystem>
 #include <iostream>
 #include <unordered_map>
 
 namespace ss = orcus::spreadsheet;
+namespace fs = std::filesystem;
 
 namespace orcus {
 

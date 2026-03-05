@@ -9,14 +9,14 @@
 
 #include <iostream>
 #include <fstream>
-
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 #ifdef _WIN32
 #include <Windows.h>
 #endif
 
 namespace po = boost::program_options;
+namespace fs = std::filesystem;
 
 namespace orcus {
 

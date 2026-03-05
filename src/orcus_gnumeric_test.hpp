@@ -8,7 +8,6 @@
 #pragma once
 
 #include "orcus_test_global.hpp"
-#include "filesystem_env.hpp"
 
 #include <orcus/orcus_gnumeric.hpp>
 #include <orcus/format_detection.hpp>
@@ -25,6 +24,9 @@
 #include <ixion/model_context.hpp>
 #include <iostream>
 #include <sstream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 std::unique_ptr<orcus::spreadsheet::document> load_doc(const fs::path& filepath);
 

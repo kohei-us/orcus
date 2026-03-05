@@ -21,13 +21,14 @@
 #include <cstring>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include <boost/program_options.hpp>
 #include <mdds/sorted_string_map.hpp>
 
-#include "filesystem_env.hpp"
 
 using namespace orcus;
 namespace po = boost::program_options;
+namespace fs = std::filesystem;
 
 namespace {
 

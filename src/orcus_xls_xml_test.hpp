@@ -8,7 +8,6 @@
 #pragma once
 
 #include "orcus_test_global.hpp"
-#include "filesystem_env.hpp"
 
 #include <orcus/orcus_xls_xml.hpp>
 #include <orcus/format_detection.hpp>
@@ -27,6 +26,10 @@
 #include <ixion/model_context.hpp>
 #include <ixion/address.hpp>
 #include <ixion/cell.hpp>
+
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 orcus::config get_test_config();
 

@@ -13,7 +13,7 @@
 #include <orcus/zip_archive_stream.hpp>
 #include <orcus/zip_archive.hpp>
 
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 #define ASSERT_THROW(expr) \
 try \
@@ -26,6 +26,7 @@ catch (...) \
 }
 
 using namespace orcus;
+namespace fs = std::filesystem;
 
 void test_zip_archive_stream(zip_archive_stream* const strm, const unsigned char* const data, std::size_t const length)
 {

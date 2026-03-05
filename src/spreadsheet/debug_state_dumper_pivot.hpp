@@ -7,8 +7,10 @@
 
 #pragma once
 
-#include "filesystem_env.hpp"
+#include <filesystem>
 #include "pivot_impl.hpp"
+
+namespace fs = std::filesystem;
 
 namespace orcus { namespace spreadsheet { namespace detail {
 

@@ -23,11 +23,12 @@
 #include <iostream>
 #include <deque>
 #include <iomanip>
+#include <filesystem>
 
 #include <boost/current_function.hpp>
 #include <boost/pool/object_pool.hpp>
 
-#include "filesystem_env.hpp"
+namespace fs = std::filesystem;
 
 namespace orcus { namespace json {
 

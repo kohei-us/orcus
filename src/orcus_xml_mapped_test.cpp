@@ -23,10 +23,10 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
-
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 using namespace orcus;
+namespace fs = std::filesystem;
 
 const fs::path test_base_dir(SRCDIR"/test/xml-mapped");
 

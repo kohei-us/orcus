@@ -17,14 +17,6 @@ EXTRA_PROGRAMS = \
 
 AM_CPPFLAGS += $(BOOST_CPPFLAGS) $(LIBIXION_CFLAGS)
 
-if HAVE_FILESYSTEM
-AM_CPPFLAGS += "-DHAVE_FILESYSTEM=1"
-endif
-
-if HAVE_EXPERIMENTAL_FILESYSTEM
-AM_CPPFLAGS += "-DHAVE_EXPERIMENTAL_FILESYSTEM=1"
-endif
-
 if HAVE_STATIC_LIB
 AM_CPPFLAGS += -D__ORCUS_STATIC_LIB=1
 endif
@@ -111,15 +103,6 @@ orcus_json_LDADD = \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
 
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_json_LDADD += -lstdc++fs
-else
-orcus_json_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_json_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
-
 orcus_json_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 # orcus-yaml
@@ -136,15 +119,6 @@ orcus_yaml_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_yaml_LDADD += -lstdc++fs
-else
-orcus_yaml_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_yaml_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 orcus_yaml_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -174,15 +148,6 @@ orcus_detect_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_detect_LDADD += -lstdc++fs
-else
-orcus_detect_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_detect_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 orcus_detect_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -214,15 +179,6 @@ orcus_csv_LDADD = \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
 
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_csv_LDADD += -lstdc++fs
-else
-orcus_csv_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_csv_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
-
 orcus_csv_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 # orcus-xml
@@ -242,15 +198,6 @@ orcus_xml_LDADD = \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_xml_LDADD += -lstdc++fs
-else
-orcus_xml_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_xml_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 orcus_xml_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -278,15 +225,6 @@ orcus_ods_LDADD = \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
 
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_ods_LDADD += -lstdc++fs
-else
-orcus_ods_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_ods_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
-
 orcus_ods_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 # orcus-styles-ods
@@ -307,15 +245,6 @@ orcus_styles_ods_LDADD = \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_styles_ods_LDADD += -lstdc++fs
-else
-orcus_styles_ods_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_styles_ods_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 orcus_styles_ods_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -344,15 +273,6 @@ orcus_xlsx_LDADD = \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
 
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_xlsx_LDADD += -lstdc++fs
-else
-orcus_xlsx_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_xlsx_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
-
 orcus_xlsx_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 endif # WITH_XLSX_FILTER
@@ -379,15 +299,6 @@ orcus_xls_xml_LDADD = \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_xls_xml_LDADD += -lstdc++fs
-else
-orcus_xls_xml_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_xls_xml_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 orcus_xls_xml_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
@@ -416,15 +327,6 @@ orcus_gnumeric_LDADD = \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(BOOST_SYSTEM_LIBS)
 
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_gnumeric_LDADD += -lstdc++fs
-else
-orcus_gnumeric_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_gnumeric_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
-
 orcus_gnumeric_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS)
 
 endif # WITH_GNUMERIC_FILTER
@@ -443,16 +345,12 @@ orcus_parquet_SOURCES = \
 	orcus_parquet_main.cpp
 
 orcus_parquet_LDFLAGS = \
-	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
-	$(BOOST_FILESYSTEM_LDFLAGS) \
-	$(BOOST_SYSTEM_LDFLAGS)
+	$(BOOST_PROGRAM_OPTIONS_LDFLAGS)
 orcus_parquet_LDADD = \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
-	$(BOOST_PROGRAM_OPTIONS_LIBS) \
-	$(BOOST_FILESYSTEM_LIBS) \
-	$(BOOST_SYSTEM_LIBS)
+	$(BOOST_PROGRAM_OPTIONS_LIBS)
 
 endif # WITH_PARQUET_FILTER
 
@@ -485,8 +383,6 @@ orcus_detect_test_LDADD = \
 	./test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
-	$(BOOST_FILESYSTEM_LIBS) \
-	$(BOOST_SYSTEM_LIBS) \
 	@LIBIXION_LIBS@
 
 orcus_detect_test_CPPFLAGS = \
@@ -528,15 +424,6 @@ orcus_xml_mapped_test_LDADD = \
 	@LIBIXION_LIBS@ \
 	$(BOOST_SYSTEM_LIBS)
 
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_xml_mapped_test_LDADD += -lstdc++fs
-else
-orcus_xml_mapped_test_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_xml_mapped_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
-
 orcus_xml_mapped_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS) -DSRCDIR=\""$(top_srcdir)"\"
 
 # orcus-json-mapped-test
@@ -553,15 +440,6 @@ orcus_json_mapped_test_LDADD = \
 	./test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_json_mapped_test_LDADD += -lstdc++fs
-else
-orcus_json_mapped_test_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_json_mapped_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 orcus_json_mapped_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPFLAGS) -DSRCDIR=\""$(top_srcdir)"\"
 
@@ -595,15 +473,6 @@ orcus_ods_test_LDADD = \
 orcus_ods_test_LDFLAGS = \
 	$(BOOST_SYSTEM_LDFLAGS)
 
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_ods_test_LDADD += -lstdc++fs
-else
-orcus_ods_test_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_ods_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
-
 orcus_ods_test_CPPFLAGS = $(AM_CPPFLAGS) \
 	-I$(top_builddir)/lib/liborcus/liborcus.la -DSRCDIR=\""$(top_srcdir)"\"
 
@@ -626,15 +495,6 @@ orcus_ods_import_test_LDADD = \
 
 orcus_ods_import_test_LDFLAGS = \
 	$(BOOST_SYSTEM_LDFLAGS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_ods_import_test_LDADD += -lstdc++fs
-else
-orcus_ods_import_test_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_ods_import_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 orcus_ods_import_test_CPPFLAGS = $(AM_CPPFLAGS) \
 	-I$(top_builddir)/lib/liborcus/liborcus.la -DSRCDIR=\""$(top_srcdir)"\"
@@ -667,15 +527,6 @@ orcus_xlsx_test_LDADD = \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
 	@LIBIXION_LIBS@ \
 	$(BOOST_SYSTEM_LIBS)
-
-if !HAVE_FILESYSTEM
-if HAVE_EXPERIMENTAL_FILESYSTEM
-orcus_xlsx_test_LDADD += -lstdc++fs
-else
-orcus_xlsx_test_LDFLAGS += $(BOOST_FILESYSTEM_LDFLAGS)
-orcus_xlsx_test_LDADD += $(BOOST_FILESYSTEM_LIBS)
-endif
-endif
 
 orcus_xlsx_test_CPPFLAGS = \
 	@LIBIXION_CFLAGS@  $(AM_CPPFLAGS) \
@@ -729,14 +580,9 @@ orcus_gnumeric_test_LDADD = \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	./test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
-	@LIBIXION_LIBS@ \
-	$(BOOST_FILESYSTEM_LIBS) \
-	$(BOOST_SYSTEM_LIBS)
+	@LIBIXION_LIBS@
 
-orcus_gnumeric_test_LDFLAGS = \
-	$(BOOST_FILESYSTEM_LDFLAGS) \
-	$(BOOST_SYSTEM_LDFLAGS)
-
+orcus_gnumeric_test_LDFLAGS =
 orcus_gnumeric_test_CPPFLAGS = \
 	@LIBIXION_CFLAGS@  $(AM_CPPFLAGS) \
 	-I$(top_builddir)/lib/liborcus/liborcus.la -DSRCDIR=\""$(top_srcdir)"\"
@@ -757,9 +603,7 @@ orcus_parquet_test_LDADD = \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	./test/liborcus-test.a \
 	spreadsheet/liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
-	@LIBIXION_LIBS@ \
-	$(BOOST_FILESYSTEM_LIBS) \
-	$(BOOST_SYSTEM_LIBS)
+	@LIBIXION_LIBS@
 
 orcus_parquet_test_CPPFLAGS = \
 	@LIBIXION_CFLAGS@  $(AM_CPPFLAGS) \

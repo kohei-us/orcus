@@ -24,8 +24,9 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <filesystem>
 
-#include "filesystem_env.hpp"
+namespace fs = std::filesystem;
 
 std::unique_ptr<orcus::spreadsheet::document> load_doc(const fs::path& filepath);
 

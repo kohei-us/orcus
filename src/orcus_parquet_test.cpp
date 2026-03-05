@@ -15,11 +15,11 @@
 
 #include <iostream>
 #include <sstream>
-
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 using namespace orcus;
 namespace ss = orcus::spreadsheet;
+namespace fs = std::filesystem;
 
 const fs::path BASIC_TEST_DOC_DIR = SRCDIR"/test/parquet/basic";
 

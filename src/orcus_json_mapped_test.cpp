@@ -6,7 +6,6 @@
  */
 
 #include "test_global.hpp"
-#include "filesystem_env.hpp"
 
 #include <orcus/orcus_json.hpp>
 #include <orcus/stream.hpp>
@@ -20,8 +19,10 @@
 #include <vector>
 #include <cassert>
 #include <sstream>
+#include <filesystem>
 
 using namespace orcus;
+namespace fs = std::filesystem;
 
 namespace {
 

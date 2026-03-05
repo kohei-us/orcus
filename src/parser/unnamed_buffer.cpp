@@ -29,16 +29,16 @@
 #include <orcus/unnamed_buffer.hpp>
 #include <orcus/stream.hpp>
 
-#include "filesystem_env.hpp"
-
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
 #include <fstream>
 #include <vector>
 #include <variant>
+#include <filesystem>
 
 namespace bip = boost::interprocess;
+namespace fs = std::filesystem;
 
 namespace orcus {
 

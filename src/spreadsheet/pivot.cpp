@@ -9,7 +9,6 @@
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/string_pool.hpp"
 
-#include "filesystem_env.hpp"
 #include "pivot_impl.hpp"
 #include "debug_state_context.hpp"
 #include "debug_state_dumper_pivot.hpp"
@@ -19,6 +18,9 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace orcus { namespace spreadsheet {
 

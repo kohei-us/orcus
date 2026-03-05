@@ -16,10 +16,10 @@
 
 #include <boost/program_options.hpp>
 
-#include "filesystem_env.hpp"
+#include <filesystem>
 
 using namespace orcus;
-
+namespace fs = std::filesystem;
 namespace po = boost::program_options;
 
 const char* help_program = "The FILE must specify a path to an existing file.";
