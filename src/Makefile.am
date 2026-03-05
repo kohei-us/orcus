@@ -140,6 +140,7 @@ orcus_mso_encryption_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_
 # orcus-detect
 
 orcus_detect_SOURCES = orcus_detect_main.cpp cli_global.cpp
+orcus_detect_CXXFLAGS = $(ORCUS_CLI_UNICODE_CXXFLAGS)
 orcus_detect_LDFLAGS = \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
 	$(BOOST_SYSTEM_LDFLAGS)
@@ -168,7 +169,7 @@ orcus_csv_SOURCES = \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_csv_main.cpp
-
+orcus_csv_CXXFLAGS = $(ORCUS_CLI_UNICODE_CXXFLAGS)
 orcus_csv_LDFLAGS = \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
 	$(BOOST_SYSTEM_LDFLAGS)
@@ -188,7 +189,7 @@ orcus_xml_SOURCES = \
 	cli_global.hpp \
 	cli_global.cpp \
 	orcus_xml_main.cpp
-
+orcus_xml_CXXFLAGS = $(ORCUS_CLI_ANSI_CXXFLAGS)
 orcus_xml_LDFLAGS = \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
 	$(BOOST_SYSTEM_LDFLAGS)
@@ -214,7 +215,7 @@ orcus_ods_SOURCES = \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_ods_main.cpp
-
+orcus_ods_CXXFLAGS = $(ORCUS_CLI_UNICODE_CXXFLAGS)
 orcus_ods_LDFLAGS = \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
 	$(BOOST_SYSTEM_LDFLAGS)
@@ -262,7 +263,7 @@ orcus_xlsx_SOURCES = \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_xlsx_main.cpp
-
+orcus_xlsx_CXXFLAGS = $(ORCUS_CLI_UNICODE_CXXFLAGS)
 orcus_xlsx_LDFLAGS = \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
 	$(BOOST_SYSTEM_LDFLAGS)
@@ -289,7 +290,7 @@ orcus_xls_xml_SOURCES = \
 	orcus_filter_global.hpp \
 	orcus_filter_global.cpp \
 	orcus_xls_xml_main.cpp
-
+orcus_xls_xml_CXXFLAGS = $(ORCUS_CLI_UNICODE_CXXFLAGS)
 orcus_xls_xml_LDFLAGS = \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS) \
 	$(BOOST_SYSTEM_LDFLAGS)

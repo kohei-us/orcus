@@ -28,7 +28,7 @@ void debug_state_dumper_pivot_cache::dump(const fs::path& outdir) const
     std::ostringstream os;
     os << "cache-" << m_store.cache_id << ".yaml";
     fs::path outpath = outdir / os.str();
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
 
     if (!of)
         return;

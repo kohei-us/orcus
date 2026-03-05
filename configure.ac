@@ -354,6 +354,23 @@ AS_IF([test x"$enable_werror" = "xyes"], [
         CXXFLAGS="$CXXFLAGS -Werror"
 ])
 
+# ==============
+# CLI support
+# ==============
+
+ORCUS_CLI_ANSI_CXXFLAGS=""
+ORCUS_CLI_UNICODE_CXXFLAGS=""
+
+case "$host_os-$GXX" in
+  *mingw*-yes|*cygwin*-yes)
+    ORCUS_CLI_ANSI_CXXFLAGS="-mconsole"
+    ORCUS_CLI_UNICODE_CXXFLAGS="-mconsole -municode"
+    ;;
+esac
+
+AC_SUBST([ORCUS_CLI_ANSI_CXXFLAGS])
+AC_SUBST([ORCUS_CLI_UNICODE_CXXFLAGS])
+
 AX_VALGRIND_CHECK()
 
 AC_CONFIG_FILES([Makefile

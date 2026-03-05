@@ -132,7 +132,7 @@ void doc_debug_state_dumper::dump(const fs::path& outdir) const
 void doc_debug_state_dumper::dump_properties(const fs::path& outdir) const
 {
     const fs::path outpath = outdir / "properties.yaml";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (!of)
         return;
 
@@ -144,7 +144,7 @@ void doc_debug_state_dumper::dump_properties(const fs::path& outdir) const
 void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 {
     const fs::path outpath = outdir / "styles.yaml";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (!of)
         return;
 
@@ -348,7 +348,7 @@ void doc_debug_state_dumper::dump_styles(const fs::path& outdir) const
 void doc_debug_state_dumper::dump_named_expressions(const fs::path& outdir) const
 {
     const fs::path outpath = outdir / "named-expressions.yaml";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (!of)
         return;
 
@@ -375,7 +375,7 @@ void sheet_debug_state_dumper::dump_cell_values(const fs::path& outdir) const
 {
     check_dumper dumper{m_sheet, m_sheet_name};
     fs::path outpath = outdir / "cell-values.txt";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (of)
         dumper.dump(of);
 }
@@ -383,7 +383,7 @@ void sheet_debug_state_dumper::dump_cell_values(const fs::path& outdir) const
 void sheet_debug_state_dumper::dump_cell_formats(const fs::path& outdir) const
 {
     fs::path outpath = outdir / "cell-formats.yaml";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (!of)
         return;
 
@@ -413,7 +413,7 @@ void sheet_debug_state_dumper::dump_cell_formats(const fs::path& outdir) const
 void sheet_debug_state_dumper::dump_column_formats(const fs::path& outdir) const
 {
     fs::path outpath = outdir / "column-formats.yaml";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (!of)
         return;
 
@@ -427,7 +427,7 @@ void sheet_debug_state_dumper::dump_column_formats(const fs::path& outdir) const
 void sheet_debug_state_dumper::dump_row_formats(const fs::path& outdir) const
 {
     fs::path outpath = outdir / "row-formats.yaml";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (!of)
         return;
 
@@ -441,7 +441,7 @@ void sheet_debug_state_dumper::dump_row_formats(const fs::path& outdir) const
 void sheet_debug_state_dumper::dump_column_widths(const fs::path& outdir) const
 {
     fs::path outpath = outdir / "column-widths.yaml";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (!of)
         return;
 
@@ -462,7 +462,7 @@ void sheet_debug_state_dumper::dump_column_widths(const fs::path& outdir) const
 void sheet_debug_state_dumper::dump_row_heights(const fs::path& outdir) const
 {
     fs::path outpath = outdir / "row-heights.yaml";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (!of)
         return;
 
@@ -486,7 +486,7 @@ void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
         return;
 
     fs::path outpath = outdir / "auto-filter.yaml";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (!of)
         return;
 
@@ -498,7 +498,7 @@ void sheet_debug_state_dumper::dump_auto_filter(const fs::path& outdir) const
 void sheet_debug_state_dumper::dump_named_expressions(const fs::path& outdir) const
 {
     const fs::path outpath = outdir / "named-expressions.yaml";
-    std::ofstream of{outpath.native()};
+    std::ofstream of{outpath};
     if (!of)
         return;
 
