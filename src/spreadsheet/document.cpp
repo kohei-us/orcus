@@ -184,16 +184,9 @@ void document::clear()
     mp_impl = std::make_unique<detail::document_impl>(*this, get_sheet_size());
 }
 
-void document::dump(dump_format_t format, std::string_view output) const
+void document::dump(dump_format_t format, const fs::path& output) const
 {
-    fs::path outpath{output};
-    mp_impl->dump(format, outpath);
-}
-
-void document::dump(dump_format_t format, std::u16string_view output) const
-{
-    fs::path outpath{output};
-    mp_impl->dump(format, outpath);
+    mp_impl->dump(format, output);
 }
 
 void document::dump_check(std::ostream& os) const

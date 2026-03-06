@@ -86,9 +86,7 @@ public:
      *               created, or an output file path where the content of the
      *               entire document gets dumped into.
      */
-    virtual void dump(dump_format_t format, std::string_view output) const = 0;
-
-    virtual void dump(dump_format_t format, std::u16string_view output) const = 0;
+    virtual void dump(dump_format_t format, const std::filesystem::path& output) const = 0;
 
     /**
      * Dump the content of a document in a specialized "check" format suitable

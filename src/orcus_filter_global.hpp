@@ -239,7 +239,7 @@ public:
         try
         {
             m_app.read_file(traits::string_view(infile));
-            m_doc.dump(outformat, traits::string_view(outdir));
+            m_doc.dump(outformat, outdir);
         }
         catch (const std::exception& e)
         {

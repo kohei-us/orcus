@@ -65,10 +65,7 @@ public:
     ~document();
 
     /** See @ref iface::document_dumper. */
-    virtual void dump(dump_format_t format, std::string_view output) const override;
-
-    /** See @ref iface::document_dumper. */
-    virtual void dump(dump_format_t format, std::u16string_view output) const override;
+    virtual void dump(dump_format_t format, const std::filesystem::path& output) const override;
 
     /** See @ref iface::document_dumper. */
     virtual void dump_check(std::ostream& os) const override;
