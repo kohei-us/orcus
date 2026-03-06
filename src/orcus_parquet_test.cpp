@@ -75,7 +75,7 @@ void test_parquet_basic()
 
         // Test the file import.
         auto cxt = std::make_unique<doc_context>();
-        cxt->app.read_file(docpath.string());
+        cxt->app.read_file(docpath);
         assert(cxt->doc.get_sheet_count() == 1);
 
         // Check the content vs control

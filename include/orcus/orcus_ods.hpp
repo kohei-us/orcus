@@ -35,8 +35,7 @@ public:
 
     static bool detect(std::string_view strm);
 
-    virtual void read_file(std::string_view filepath) override;
-    virtual void read_file(std::u16string_view filepath) override;
+    virtual void read_file(const std::filesystem::path& filepath) override;
 
     virtual void read_stream(std::string_view stream) override;
 

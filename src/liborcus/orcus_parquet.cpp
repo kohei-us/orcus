@@ -20,7 +20,6 @@
 #include <parquet/arrow/reader.h>
 #pragma GCC diagnostic pop
 
-#include <filesystem>
 #include <iostream>
 #include <unordered_map>
 
@@ -457,9 +456,9 @@ class orcus_parquet::impl
 public:
     impl(const config& c, ss::iface::import_factory* factory) : m_config(c), m_factory(factory) {}
 
-    void read_file(fs::path filepath)
+    void read_file(const fs::path& filepath)
     {
-        file_content fc(filepath.string());
+        file_content fc(filepath);
         try
         {
             read_stream_with_sheet_name(filepath.stem().string(), fc.str());
@@ -529,15 +528,9 @@ bool orcus_parquet::detect(std::string_view strm)
     return true;
 }
 
-void orcus_parquet::read_file(std::string_view filepath)
+void orcus_parquet::read_file(const fs::path& filepath)
 {
-    mp_impl->read_file(fs::path{std::string{filepath}});
-}
-
-void orcus_parquet::read_file(std::u16string_view filepath)
-{
-    orcus::file_content fc(filepath);
-    read_stream(fc.str());
+    mp_impl->read_file(filepath);
 }
 
 void orcus_parquet::read_stream(std::string_view stream)

@@ -40,6 +40,7 @@
 #include <sstream>
 
 namespace ss = orcus::spreadsheet;
+namespace fs = std::filesystem;
 
 namespace orcus {
 
@@ -198,10 +199,10 @@ bool orcus_xlsx::detect(std::string_view strm)
     }
 }
 
-void orcus_xlsx::read_file(std::string_view filepath)
+void orcus_xlsx::read_file(const fs::path& filepath)
 {
     std::unique_ptr<zip_archive_stream> stream(
-        new zip_archive_stream_fd(std::string{filepath}.c_str()));
+        new zip_archive_stream_fd(filepath.string().c_str()));
     mp_impl->m_opc_reader.read_file(std::move(stream));
 
     // Formulas need to be inserted to the document after the shared string
@@ -210,12 +211,6 @@ void orcus_xlsx::read_file(std::string_view filepath)
     set_formulas_to_doc();
 
     mp_impl->mp_factory->finalize();
-}
-
-void orcus_xlsx::read_file(std::u16string_view filepath)
-{
-    orcus::file_content fc(filepath);
-    read_stream(fc.str());
 }
 
 void orcus_xlsx::read_stream(std::string_view stream)

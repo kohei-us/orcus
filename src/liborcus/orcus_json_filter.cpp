@@ -9,6 +9,7 @@
 #include <orcus/stream.hpp>
 
 namespace ss = orcus::spreadsheet;
+namespace fs = std::filesystem;
 
 namespace orcus {
 
@@ -28,13 +29,7 @@ void orcus_json_filter::read_stream(std::string_view stream)
     m_core.read_stream(stream);
 }
 
-void orcus_json_filter::read_file(std::string_view filepath)
-{
-    file_content content(filepath);
-    m_core.read_stream(content.str());
-}
-
-void orcus_json_filter::read_file(std::u16string_view filepath)
+void orcus_json_filter::read_file(const fs::path& filepath)
 {
     file_content content(filepath);
     m_core.read_stream(content.str());

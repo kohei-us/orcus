@@ -26,6 +26,8 @@
 #include <vector>
 #include <cstring>
 
+namespace fs = std::filesystem;
+
 namespace orcus {
 
 struct orcus_ods::impl
@@ -183,16 +185,10 @@ bool orcus_ods::detect(std::string_view strm)
     return true;
 }
 
-void orcus_ods::read_file(std::string_view filepath)
+void orcus_ods::read_file(const fs::path& filepath)
 {
     zip_archive_stream_fd stream(std::string{filepath}.c_str());
     read_file_impl(&stream);
-}
-
-void orcus_ods::read_file(std::u16string_view filepath)
-{
-    orcus::file_content fc(filepath);
-    read_stream(fc.str());
 }
 
 void orcus_ods::read_stream(std::string_view stream)

@@ -17,6 +17,8 @@
 #include <cstring>
 #include <iostream>
 
+namespace fs = std::filesystem;
+
 namespace orcus {
 
 namespace {
@@ -169,17 +171,11 @@ orcus_csv::orcus_csv(spreadsheet::iface::import_factory* factory) :
 
 orcus_csv::~orcus_csv() {}
 
-void orcus_csv::read_file(std::string_view filepath)
+void orcus_csv::read_file(const fs::path& filepath)
 {
     file_content fc(filepath);
     mp_impl->parse(fc.str(), get_config());
     mp_impl->factory->finalize();
-}
-
-void orcus_csv::read_file(std::u16string_view filepath)
-{
-    orcus::file_content fc(filepath);
-    read_stream(fc.str());
 }
 
 void orcus_csv::read_stream(std::string_view stream)

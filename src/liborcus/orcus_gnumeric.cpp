@@ -27,6 +27,8 @@
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 
+namespace fs = std::filesystem;
+
 namespace orcus {
 
 namespace {
@@ -119,23 +121,13 @@ bool orcus_gnumeric::detect(std::string_view strm)
     return false;
 }
 
-void orcus_gnumeric::read_file(std::string_view filepath)
+void orcus_gnumeric::read_file(const fs::path& filepath)
 {
-#if ORCUS_DEBUG_GNUMERIC
-    cout << "reading " << filepath << endl;
-#endif
-
     file_content content(filepath);
     if (content.empty())
         return;
 
     read_stream(content.str());
-}
-
-void orcus_gnumeric::read_file(std::u16string_view filepath)
-{
-    orcus::file_content fc(filepath);
-    read_stream(fc.str());
 }
 
 void orcus_gnumeric::read_stream(std::string_view stream)

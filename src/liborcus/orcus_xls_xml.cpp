@@ -24,6 +24,8 @@
 #include <locale>
 #include <codecvt>
 
+namespace fs = std::filesystem;
+
 namespace orcus {
 
 struct orcus_xls_xml::impl
@@ -103,20 +105,14 @@ bool orcus_xls_xml::detect(std::string_view strm)
     return false;
 }
 
-void orcus_xls_xml::read_file(std::string_view filepath)
+void orcus_xls_xml::read_file(const fs::path& filepath)
 {
-    file_content content(filepath.data());
+    file_content content(filepath);
     if (content.empty())
         return;
 
     content.convert_to_utf8();
     mp_impl->read_stream(content.data(), content.size(), get_config());
-}
-
-void orcus_xls_xml::read_file(std::u16string_view filepath)
-{
-    orcus::file_content fc(filepath);
-    read_stream(fc.str());
 }
 
 void orcus_xls_xml::read_stream(std::string_view stream)

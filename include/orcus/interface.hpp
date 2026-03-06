@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_INTERFACE_HPP
-#define INCLUDED_ORCUS_INTERFACE_HPP
+#pragma once
 
-#include "orcus/env.hpp"
-#include "orcus/types.hpp"
+#include "./env.hpp"
+#include "./types.hpp"
 
 #include <string>
 #include <memory>
+#include <filesystem>
 
 namespace orcus {
 
@@ -35,11 +35,9 @@ public:
     /**
      * Read the content of a file.
      *
-     * @param filepath path to a local file.  It must be a system path.
+     * @param filepath Path to a local file to read the content from.
      */
-    virtual void read_file(std::string_view filepath) = 0;
-
-    virtual void read_file(std::u16string_view filepath) = 0;
+    virtual void read_file(const std::filesystem::path& filepath) = 0;
 
     /**
      * Read the content of an in-memory stream.
@@ -92,5 +90,4 @@ public:
 
 }}
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
