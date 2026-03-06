@@ -9,6 +9,9 @@
 
 namespace orcus {
 
+config::config(const config& other) = default;
+config::~config() = default;
+
 config::config(format_t input) :
     input_format(input),
     debug(false),
@@ -35,6 +38,8 @@ config::config(format_t input) :
             ;
     }
 }
+
+config& config::operator=(const config& other) = default;
 
 json_config::json_config() = default;
 json_config::~json_config() = default;

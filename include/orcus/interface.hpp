@@ -53,7 +53,18 @@ public:
      */
     virtual std::string_view get_name() const = 0;
 
+    /**
+     * Update filter configuration.
+     *
+     * @param v New configuration to set.
+     */
     void set_config(const orcus::config& v);
+
+    /**
+     * Get current filter configuration.
+     *
+     * @return Reference to currently stored filter configuration.
+     */
     const orcus::config& get_config() const;
 };
 

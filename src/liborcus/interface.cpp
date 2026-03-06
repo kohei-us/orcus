@@ -23,6 +23,10 @@ import_filter::~import_filter() = default;
 
 void import_filter::set_config(const config& v)
 {
+    if (v.input_format != mp_impl->m_config.input_format)
+        throw std::invalid_argument(
+            "configuration for a different format type cannot be set");
+
     mp_impl->m_config = v;
 }
 

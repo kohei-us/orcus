@@ -45,15 +45,21 @@ struct ORCUS_DLLPUBLIC config
     bool debug;
 
     /**
-     * Control whether or not to perform strict check of the xml structure of
-     * a stream being parsed.  When enabled, it throws an xml_structure_error
-     * exception when an incorrect xml structure is detected.
+     * Control whether or not to perform strict check of the structure of a
+     * stream being parsed for an XML-based format.  When enabled, it throws an
+     * xml_structure_error exception when an incorrect XML structure is
+     * detected.
      */
     bool structure_check;
 
     data_type data;
 
+    config() = delete;
+    config(const config& other);
     config(format_t input_format);
+    ~config();
+
+    config& operator=(const config& other);
 };
 
 struct ORCUS_DLLPUBLIC json_config
