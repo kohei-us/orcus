@@ -18,6 +18,7 @@
 #include <variant>
 #include <optional>
 #include <ostream>
+#include <filesystem>
 
 namespace ixion {
 
@@ -391,8 +392,6 @@ class ORCUS_SPM_DLLPUBLIC pivot_collection
     std::unique_ptr<impl> mp_impl;
 
 public:
-    using outdir_type = std::variant<std::string_view, std::u16string_view>;
-
     pivot_collection(document& doc);
     pivot_collection(const pivot_collection&) = delete;
     ~pivot_collection();
@@ -432,7 +431,7 @@ public:
 
     const pivot_cache* get_cache(pivot_cache_id_t cache_id) const;
 
-    void dump_debug_state(const outdir_type& outdir) const;
+    void dump_debug_state(const std::filesystem::path& outdir) const;
 };
 
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const pivot_cache_item_t& item);

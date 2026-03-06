@@ -502,25 +502,11 @@ void sheet::dump_csv(std::ostream& os) const
     dumper.dump(os, mp_impl->sheet_id);
 }
 
-namespace {
-
-void dump_sheet_debug_state(const detail::sheet_impl& impl, const fs::path& outdir, std::string_view sheet_name)
+void sheet::dump_debug_state(const fs::path& output_dir, std::string_view sheet_name) const
 {
     detail::debug_state_context cxt;
-    detail::sheet_debug_state_dumper dumper(cxt, impl, sheet_name);
-    dumper.dump(outdir);
-}
-
-} // anonymous namespace
-
-void sheet::dump_debug_state(std::string_view output_dir, std::string_view sheet_name) const
-{
-    dump_sheet_debug_state(*mp_impl, output_dir, sheet_name);
-}
-
-void sheet::dump_debug_state(std::u16string_view output_dir, std::string_view sheet_name) const
-{
-    dump_sheet_debug_state(*mp_impl, output_dir, sheet_name);
+    detail::sheet_debug_state_dumper dumper(cxt, *mp_impl, sheet_name);
+    dumper.dump(output_dir);
 }
 
 size_t sheet::get_cell_format(row_t row, col_t col) const

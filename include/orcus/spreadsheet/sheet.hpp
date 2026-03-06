@@ -13,6 +13,7 @@
 
 #include <ostream>
 #include <memory>
+#include <filesystem>
 
 #include <ixion/address.hpp>
 #include <ixion/formula_tokens.hpp>
@@ -131,8 +132,7 @@ public:
     void dump_json(std::ostream& os) const;
     void dump_csv(std::ostream& os) const;
 
-    void dump_debug_state(std::string_view output_dir, std::string_view sheet_name) const;
-    void dump_debug_state(std::u16string_view output_dir, std::string_view sheet_name) const;
+    void dump_debug_state(const std::filesystem::path& output_dir, std::string_view sheet_name) const;
 
     /**
      * Get the cell format ID of specified cell.

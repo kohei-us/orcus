@@ -17,22 +17,6 @@
 
 namespace orcus { namespace spreadsheet { namespace detail {
 
-namespace {
-
-#ifdef _WIN32
-std::u16string to_string(const fs::path& p)
-{
-    return p.u16string();
-}
-#else
-std::string to_string(const fs::path& p)
-{
-    return p.string();
-}
-#endif
-
-} // anonymous namespace
-
 sheet_item::sheet_item(document& doc, std::string_view _name, sheet_t sheet_index) :
     name(_name), data(doc, sheet_index) {}
 
@@ -207,19 +191,18 @@ void document_impl::dump_debug_state(const fs::path& outdir) const
 {
     detail::debug_state_context cxt;
     detail::doc_debug_state_dumper dumper{cxt, *this};
-    fs::path output_dir{outdir};
-    dumper.dump(output_dir);
+    dumper.dump(outdir);
 
     for (const std::unique_ptr<detail::sheet_item>& sheet : sheets)
     {
-        fs::path outpath = output_dir;
+        fs::path outpath = outdir;
         outpath /= "sheets";
         outpath /= sheet->name;
         fs::create_directories(outpath);
-        sheet->data.dump_debug_state(to_string(outpath), sheet->name);
+        sheet->data.dump_debug_state(outpath, sheet->name);
     }
 
-    pivots.dump_debug_state(to_string(outdir));
+    pivots.dump_debug_state(outdir);
 }
 
 void document_impl::dump_check(std::ostream& os) const
