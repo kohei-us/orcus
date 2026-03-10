@@ -14,6 +14,7 @@ Enum
    enum-format_t.rst
    enum-length_unit_t.rst
    enum-string_escape_char_t.rst
+   enum-unnamed_buffer_store_t.rst
 
 Type aliases
 ------------
@@ -49,7 +50,9 @@ Functions
    function-create_parse_error_output.rst
    function-decode_from_base64.rst
    function-detect.rst
+   function-detect-2.rst
    function-encode_to_base64.rst
+   function-generate_uuid4.rst
    function-get_dump_format_entries.rst
    function-get_string_escape_char_type.rst
    function-get_version_major.rst
@@ -150,6 +153,7 @@ Classes
    class-threaded_json_parser.rst
    class-threaded_sax_token_parser.rst
    class-tokens.rst
+   class-unnamed_buffer.rst
    class-value_error.rst
    class-xml_structure_error.rst
    class-xml_structure_tree.rst

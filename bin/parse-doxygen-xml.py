@@ -483,8 +483,19 @@ def generate_rst(thisdir, scope, child_scopes, symbols):
             "",
         ]
 
+        overloaded = dict()
+
         for name, props in symbols["function"]:
-            child_file = f"function-{name}.rst"
+            if name in overloaded:
+                overloaded[name] += 1
+            else:
+                overloaded[name] = 1
+
+            if overloaded[name] > 1:
+                child_file = f"function-{name}-{overloaded[name]}.rst"
+            else:
+                child_file = f"function-{name}.rst"
+
             this_buf.append(f"   {child_file}")
 
             header = Path(props.location).relative_to(include_dir)
