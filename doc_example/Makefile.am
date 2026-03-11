@@ -7,6 +7,7 @@ AM_CPPFLAGS = \
 bin_PROGRAMS =
 
 EXTRA_PROGRAMS = \
+	detect-1 \
 	json-doc-1 \
 	json-doc-2 \
 	json-parser-1 \
@@ -17,7 +18,16 @@ EXTRA_PROGRAMS = \
 	spreadsheet-doc-2 \
 	spreadsheet-doc-2-sheets-no-string-pool \
 	spreadsheet-doc-2-sheets-with-string-pool \
-	spreadsheet-doc-2-sheets-with-formula
+	spreadsheet-doc-2-sheets-with-formula \
+	create-filter \
+	create-ods
+
+detect_1_SOURCES = \
+	detect_1.cpp
+
+detect_1_LDADD = \
+	../src/liborcus/liborcus-@ORCUS_API_VERSION@.la \
+	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
 json_doc_1_SOURCES = \
 	json_doc_1.cpp
@@ -99,10 +109,23 @@ spreadsheet_doc_2_sheets_with_formula_LDADD = \
 	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	../src/liborcus/liborcus-@ORCUS_API_VERSION@.la
 
+create_filter_SOURCES = \
+	create_filter.cpp
+
+create_filter_LDADD = $(SPDOC_LDADD)
+
+create_ods_SOURCES = \
+	create_ods.cpp
+
+create_ods_LDADD = $(SPDOC_LDADD)
+
 AM_TESTS_ENVIRONMENT = \
-	INPUTDIR=$(srcdir)/files; export INPUTDIR;
+	INPUTDIR=$(srcdir)/files; \
+	TESTDIR=$(srcdir)/../test; \
+	export INPUTDIR TESTDIR;
 
 TESTS = \
+	detect-1 \
 	json-doc-1 \
 	json-doc-2 \
 	json-parser-1 \
@@ -113,7 +136,9 @@ TESTS = \
 	spreadsheet-doc-2 \
 	spreadsheet-doc-2-sheets-no-string-pool \
 	spreadsheet-doc-2-sheets-with-string-pool \
-	spreadsheet-doc-2-sheets-with-formula
+	spreadsheet-doc-2-sheets-with-formula \
+	create-filter \
+	create-ods
 
 distclean-local:
 	rm -rf $(TESTS)

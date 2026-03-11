@@ -52,7 +52,7 @@ ORCUS_DLLPUBLIC bool detect(std::string_view strm, format_t type);
 /**
  * Create an instance of import_filter for a specified format.
  *
- * @param type Format type to create an instace of import_filter of.
+ * @param type Format type to create an instance of import_filter of.
  * @param factory Pointer to an import factory instance.  It must not be null.
  *
  * @return Pointer to an instance of import_filter for specified format.

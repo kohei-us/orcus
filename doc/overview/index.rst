@@ -93,3 +93,17 @@ these types of documents.
 
    json/index.rst
    yaml/index.rst
+
+
+Other utilities
+---------------
+
+There are other utilities included in this library that may be of use.  Check
+the following sections to find out more.
+
+.. toctree::
+   :maxdepth: 1
+
+   detect/index.rst
+   create-filter/index.rst
+
