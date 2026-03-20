@@ -71,7 +71,7 @@ model, on the other hand, you'll need to implement your own set of interface
 classes to wrap your document with.
 
 The following sections describe how to load a spreadsheet document by using 1)
-orcus's own spreadsheet document class, and 2) a user-defined custom docuemnt
+orcus's own spreadsheet document class, and 2) a user-defined custom document
 class.
 
 .. toctree::

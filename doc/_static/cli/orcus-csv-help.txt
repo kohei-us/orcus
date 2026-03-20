@@ -8,7 +8,7 @@ Options:
                                     a debug level in order to generate run-time
                                     debug outputs.
   -r [ --recalc ]                   Re-calculate all formula cells after the 
-                                    documetn is loaded.
+                                    document is loaded.
   -e [ --error-policy ] arg (=fail) Specify whether to abort immediately when 
                                     the loader fails to parse the first formula
                                     cell ('fail'), or skip the offending cells 

@@ -107,7 +107,7 @@ class import_filter_arg_parser
     "Turn on a debug mode and optionally specify a debug level in order to generate run-time debug outputs.";
 
     static constexpr const char* help_recalc =
-    "Re-calculate all formula cells after the documetn is loaded.";
+    "Re-calculate all formula cells after the document is loaded.";
 
     static constexpr const char* help_formula_error_policy =
     "Specify whether to abort immediately when the loader fails to parse the first "
