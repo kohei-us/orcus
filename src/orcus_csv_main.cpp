@@ -67,7 +67,7 @@ int ORCUS_CLI_MAIN(int argc, arg_char_t** argv) try
 
     import_filter_arg_parser<arg_char_t> parser(fact, app, doc);
 
-    if (!parser.parse(argc, argv))
+    if (!parser.parse(argc, argv, &hdl))
         return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
