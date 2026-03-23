@@ -1,3 +1,4 @@
+SUBDIRS = xml
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
@@ -12,7 +13,6 @@ EXTRA_PROGRAMS = \
 	json-doc-2 \
 	json-parser-1 \
 	json-subtree-1 \
-	xml-mapping-1 \
 	spreadsheet-doc-1 \
 	spreadsheet-doc-1-num-and-formula \
 	spreadsheet-doc-2 \
@@ -21,6 +21,10 @@ EXTRA_PROGRAMS = \
 	spreadsheet-doc-2-sheets-with-formula \
 	create-filter \
 	create-ods
+
+EXTRA_DIST = \
+	files/document.ods \
+	files/multi-sheets.ods
 
 detect_1_SOURCES = \
 	detect_1.cpp
@@ -56,12 +60,6 @@ json_subtree_1_LDADD = \
 	../src/liborcus/liborcus-@ORCUS_API_VERSION@.la \
 	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la
 
-xml_mapping_1_SOURCES = \
-	xml_mapping_1.cpp
-
-xml_mapping_1_LDADD = \
-	../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la \
-	../src/liborcus/liborcus-@ORCUS_API_VERSION@.la
 
 # Spreadsheet document examples.
 
@@ -124,21 +122,7 @@ AM_TESTS_ENVIRONMENT = \
 	TESTDIR=$(srcdir)/../test; \
 	export INPUTDIR TESTDIR;
 
-TESTS = \
-	detect-1 \
-	json-doc-1 \
-	json-doc-2 \
-	json-parser-1 \
-	json-subtree-1 \
-	xml-mapping-1 \
-	spreadsheet-doc-1 \
-	spreadsheet-doc-1-num-and-formula \
-	spreadsheet-doc-2 \
-	spreadsheet-doc-2-sheets-no-string-pool \
-	spreadsheet-doc-2-sheets-with-string-pool \
-	spreadsheet-doc-2-sheets-with-formula \
-	create-filter \
-	create-ods
+TESTS = $(EXTRA_PROGRAMS)
 
 distclean-local:
 	rm -rf $(TESTS)

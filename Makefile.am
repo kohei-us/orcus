@@ -106,22 +106,6 @@ doc_data = \
 	doc/python/orcus/xlsx/index.rst \
 	doc/requirements.txt
 
-doc_example_data = \
-	doc_example/Makefile.am \
-	doc_example/files/document.ods \
-	doc_example/files/multi-sheets.ods \
-	doc_example/json_doc_1.cpp \
-	doc_example/json_doc_2.cpp \
-	doc_example/json_parser_1.cpp \
-	doc_example/json_subtree_1.cpp \
-	doc_example/spreadsheet_doc_1.cpp \
-	doc_example/spreadsheet_doc_1_num_and_formula.cpp \
-	doc_example/spreadsheet_doc_2.cpp \
-	doc_example/spreadsheet_doc_2_sheets_no_string_pool.cpp \
-	doc_example/spreadsheet_doc_2_sheets_with_formula.cpp \
-	doc_example/spreadsheet_doc_2_sheets_with_string_pool.cpp \
-	doc_example/xml_mapping_1.cpp
-
 bin_data = \
 	bin/build-extra-dist.sh \
 	bin/env-osx.sh \
@@ -1022,7 +1006,6 @@ EXTRA_DIST = \
 	autogen.sh \
 	$(bin_data) \
 	$(doc_data) \
-	$(doc_example_data) \
 	$(misc_data) \
 	$(test_data)
 

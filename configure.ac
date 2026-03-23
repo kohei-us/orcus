@@ -393,6 +393,7 @@ AC_CONFIG_FILES([Makefile
         test/python/env.json
         benchmark/Makefile
         doc_example/Makefile
+        doc_example/xml/Makefile
 ])
 AC_OUTPUT
 
