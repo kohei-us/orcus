@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cities>
+  <header date-generated="2026-03-23">
+    <title>Basic Facts About Major Cities</title>
+    <source>Public knowledge</source>
+  </header>
+  <city name="Tokyo">
+    <country>Japan</country>
+    <population>37400000</population>
+    <fact>World's most populous metropolitan area.</fact>
+    <landmark>Tokyo Skytree</landmark>
+  </city>
+  <city name="New York">
+    <country>United States</country>
+    <population>19200000</population>
+    <fact>Home to the United Nations headquarters.</fact>
+    <landmark>Statue of Liberty</landmark>
+  </city>
+  <city name="London">
+    <country>United Kingdom</country>
+    <population>9300000</population>
+    <fact>One of the world's oldest financial centers.</fact>
+    <landmark>Big Ben</landmark>
+  </city>
+  <city name="Paris">
+    <country>France</country>
+    <population>12100000</population>
+    <fact>Known as the City of Light.</fact>
+    <landmark>Eiffel Tower</landmark>
+  </city>
+</cities>

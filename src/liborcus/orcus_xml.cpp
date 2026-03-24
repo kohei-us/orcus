@@ -529,7 +529,12 @@ orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_facto
     mp_impl->ex_factory = ex_fact;
 }
 
-orcus_xml::~orcus_xml() {}
+orcus_xml::orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact) :
+    orcus_xml(ns_repo, im_fact, nullptr)
+{
+}
+
+orcus_xml::~orcus_xml() = default;
 
 bool orcus_xml::detect(std::string_view strm)
 {

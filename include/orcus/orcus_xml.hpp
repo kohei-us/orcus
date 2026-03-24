@@ -34,6 +34,7 @@ public:
     orcus_xml& operator= (const orcus_xml&) = delete;
 
     orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact, spreadsheet::iface::export_factory* ex_fact);
+    orcus_xml(xmlns_repository& ns_repo, spreadsheet::iface::import_factory* im_fact);
     ~orcus_xml();
 
     static bool detect(std::string_view strm);

@@ -126,12 +126,52 @@ public:
 
     date_time_t get_date_time(row_t row, col_t col) const;
 
+    /**
+     * Dump the content of an entire sheet in flat-text format where cell values
+     * are placed in a ASCII art box.
+     *
+     * @param os Output stream to dump the content to.
+     */
     void dump_flat(std::ostream& os) const;
+
+    /**
+     * Dump the content of an entire sheet where each line contains the position
+     * and content of a single cell.
+     *
+     * @param os Output stream to dump the content to.
+     * @param sheet_name Sheet name to use in the output.
+     */
     void dump_check(std::ostream& os, std::string_view sheet_name) const;
+
+    /**
+     * Dump the content of an entire sheet in HTML format.
+     *
+     * @param os Output stream to dump the content to.
+     */
     void dump_html(std::ostream& os) const;
+
+    /**
+     * Dump the content of an entire sheet in JSON format.
+     *
+     * @param os Output stream to dump the content to.
+     */
     void dump_json(std::ostream& os) const;
+
+    /**
+     * Dump the content of an entire sheet in CSV format.
+     *
+     * @param os Output stream to dump the content to.
+     */
     void dump_csv(std::ostream& os) const;
 
+    /**
+     * Dump the stored state of a sheet across multiple files.  This is useful
+     * for debugging.
+     *
+     * @param output_dir Path to the output directory in which to dump the state
+     *                   files.
+     * @param sheet_name Sheet name to use in the debug state files.
+     */
     void dump_debug_state(const std::filesystem::path& output_dir, std::string_view sheet_name) const;
 
     /**

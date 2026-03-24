@@ -209,7 +209,7 @@ void test_mapped_xml_import_no_map_definition()
             spreadsheet::document doc{ss};
             spreadsheet::import_factory import_fact(doc);
 
-            orcus_xml app(repo, &import_fact, nullptr);
+            orcus_xml app(repo, &import_fact);
 
             app.detect_map_definition(content.str());
             app.read_stream(content.str());
@@ -223,7 +223,7 @@ void test_mapped_xml_import_no_map_definition()
             spreadsheet::document doc{ss};
             spreadsheet::import_factory import_fact(doc);
 
-            orcus_xml app(repo, &import_fact, nullptr);
+            orcus_xml app(repo, &import_fact);
 
             std::ostringstream os;
             app.write_map_definition(content.str(), os);
@@ -308,7 +308,7 @@ void test_invalid_map_definition()
     spreadsheet::range_size_t ss{1048576, 16384};
     spreadsheet::document doc{ss};
     spreadsheet::import_factory import_fact(doc);
-    orcus_xml app(repo, &import_fact, nullptr);
+    orcus_xml app(repo, &import_fact);
 
     for (const fs::path& test : tests)
     {
@@ -367,7 +367,7 @@ void test_encoding()
         spreadsheet::range_size_t ss{1048576, 16384};
         spreadsheet::document doc{ss};
         spreadsheet::import_factory import_fact(doc);
-        orcus_xml app(repo, &import_fact, nullptr);
+        orcus_xml app(repo, &import_fact);
 
         app.read_stream(content.str());
 
@@ -401,7 +401,7 @@ void test_map_gen()
         spreadsheet::document doc{ss};
         spreadsheet::import_factory import_fact(doc);
 
-        orcus_xml app(repo, &import_fact, nullptr);
+        orcus_xml app(repo, &import_fact);
         std::ostringstream os;
         app.write_map_definition(content.str(), os);
 
