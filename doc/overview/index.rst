@@ -84,13 +84,14 @@ class.
 Loading hierarchical documents
 ------------------------------
 
-The orcus library also includes support for hierarchical document types such
-as JSON and YAML.  The following sections delve more into the support for
-these types of documents.
+The orcus library also includes support for hierarchical document types
+such as XML, JSON and YAML.  The following sections delve more into the
+support for these types of documents.
 
 .. toctree::
    :maxdepth: 1
 
+   xml/index.rst
    json/index.rst
    yaml/index.rst
 
