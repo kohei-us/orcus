@@ -112,3 +112,57 @@ This code should produce the following output:
    +--------------------------------+
    | Public knowledge               |
    +--------------------------------+
+
+While :cpp:func:`~orcus::orcus_xml::set_cell_link()` maps individual XML
+nodes to individual cells, orcus also supports mapping repeating XML
+elements to a range of rows — similar to how a database table is
+structured.  Use :cpp:func:`~orcus::orcus_xml::start_range()` to begin
+defining a range mapping,
+:cpp:func:`~orcus::orcus_xml::append_field_link()` to map each XML node
+to a named column, :cpp:func:`~orcus::orcus_xml::set_range_row_group()`
+to identify the repeating element that determines row boundaries, and
+:cpp:func:`~orcus::orcus_xml::commit_range()` to finalize the mapping:
+
+.. literalinclude:: ../../../doc_example/xml/xml_mapping_repeat.cpp
+   :language: C++
+   :start-after: //!code-start: range
+   :end-before: //!code-end: range
+   :dedent: 4
+
+The first argument to :cpp:func:`~orcus::orcus_xml::start_range()` is
+the target sheet name, followed by the row and column of the top-left
+corner of the range.  Each call to
+:cpp:func:`~orcus::orcus_xml::append_field_link()` takes an XPath
+expression and a column label.  The call to
+:cpp:func:`~orcus::orcus_xml::set_range_row_group()` tells orcus that
+each ``<city>`` element represents one row in the output.  Once
+:cpp:func:`~orcus::orcus_xml::commit_range()` is called, the mapping is
+finalized and ready for parsing.  Re-running the code with this range
+mapping added should produce the following output:
+
+.. code-block:: none
+
+   rows: 5  cols: 5
+   +----------+----------------+--------------+----------------------------------------------+-------------------+
+   | City     | Country        | Population   | Fact                                         | Popular Spot      |
+   +----------+----------------+--------------+----------------------------------------------+-------------------+
+   | Tokyo    | Japan          | 37400000 [v] | World's most populous metropolitan area.     | Tokyo Skytree     |
+   +----------+----------------+--------------+----------------------------------------------+-------------------+
+   | New York | United States  | 19200000 [v] | Home to the United Nations headquarters.     | Statue of Liberty |
+   +----------+----------------+--------------+----------------------------------------------+-------------------+
+   | London   | United Kingdom | 9300000 [v]  | One of the world's oldest financial centers. | Big Ben           |
+   +----------+----------------+--------------+----------------------------------------------+-------------------+
+   | Paris    | France         | 12100000 [v] | Known as the City of Light.                  | Eiffel Tower      |
+   +----------+----------------+--------------+----------------------------------------------+-------------------+
+
+Note that while the example above runs the header metadata mapping and
+the city range mapping as two separate sessions, cell links and range
+mappings can be freely mixed within the same session.  When mixed, both
+become active when :cpp:func:`~orcus::orcus_xml::read_stream()` is
+called, and orcus will populate all of them in a single pass over the
+document.  You can also define multiple ranges in the same session by
+calling :cpp:func:`~orcus::orcus_xml::start_range()`,
+:cpp:func:`~orcus::orcus_xml::append_field_link()`,
+:cpp:func:`~orcus::orcus_xml::set_range_row_group()`, and
+:cpp:func:`~orcus::orcus_xml::commit_range()` again for each additional
+range before calling :cpp:func:`~orcus::orcus_xml::read_stream()`.
