@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log:serverLogs
+  xmlns:log="http://example.com/server-logs"
+  xmlns:meta="http://example.com/server-logs/meta"
+  meta:host="web-prod-04"
+  meta:date="2026-03-23">
+
+  <log:entry log:id="1">
+    <log:timestamp>2026-03-23T08:02:11Z</log:timestamp>
+    <log:level>INFO</log:level>
+    <log:service>AuthService</log:service>
+    <log:message>User alice@example.com authenticated successfully.</log:message>
+  </log:entry>
+
+  <log:entry log:id="2">
+    <log:timestamp>2026-03-23T08:14:37Z</log:timestamp>
+    <log:level>WARN</log:level>
+    <log:service>AuthService</log:service>
+    <log:message>Failed login attempt for user bob@example.com. Attempt 3 of 5.</log:message>
+  </log:entry>
+
+  <log:entry log:id="3">
+    <log:timestamp>2026-03-23T08:31:05Z</log:timestamp>
+    <log:level>ERROR</log:level>
+    <log:service>SessionManager</log:service>
+    <log:message>Cache connection timed out after 30s. Session store unreachable.</log:message>
+  </log:entry>
+
+  <log:entry log:id="4">
+    <log:timestamp>2026-03-23T08:31:09Z</log:timestamp>
+    <log:level>INFO</log:level>
+    <log:service>SessionManager</log:service>
+    <log:message>Cache connection restored. Resuming normal operations.</log:message>
+  </log:entry>
+
+  <log:entry log:id="5">
+    <log:timestamp>2026-03-23T09:45:22Z</log:timestamp>
+    <log:level>ERROR</log:level>
+    <log:service>ApiGateway</log:service>
+    <log:message>Request to /api/orders returned 503. Upstream service unavailable.</log:message>
+  </log:entry>
+
+  <log:entry log:id="6">
+    <log:timestamp>2026-03-23T10:00:00Z</log:timestamp>
+    <log:level>INFO</log:level>
+    <log:service>Scheduler</log:service>
+    <log:message>Daily report job completed. 1,402 records processed in 4.2s.</log:message>
+  </log:entry>
+
+</log:serverLogs>
