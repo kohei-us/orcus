@@ -52,6 +52,15 @@ public:
     ~sheet() noexcept;
 
     void set_auto(row_t row, col_t col, std::string_view s);
+
+    /**
+     * Set a string value to a specified cell address.
+     *
+     * @param row Row position of the cell.
+     * @param col Column position of the cell.
+     * @param s String value to set to the cell.
+     */
+    void set_string(row_t row, col_t col, std::string_view s);
     void set_string(row_t row, col_t col, string_id_t sindex);
     void set_value(row_t row, col_t col, double value);
     void set_bool(row_t row, col_t col, bool value);

@@ -7,10 +7,10 @@ AM_CPPFLAGS = \
 AM_CPPFLAGS += $(BOOST_CPPFLAGS) $(LIBIXION_CFLAGS)
 
 EXTRA_PROGRAMS = \
+	document-test \
 	auto-filter-test
 
-TESTS = \
-	auto-filter-test
+TESTS = $(EXTRA_PROGRAMS)
 
 COMMON_CPPFLAGS = $(AM_CPPFLAGS)
 
@@ -93,6 +93,17 @@ liborcus_spreadsheet_model_@ORCUS_API_VERSION@_la_LIBADD = \
 	$(BOOST_SYSTEM_LIBS) \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	../liborcus/liborcus-@ORCUS_API_VERSION@.la
+
+# document-test
+
+document_test_SOURCES = document_test.cpp
+document_test_LDFLAGS = -no-undefined
+document_test_LDADD = \
+	../test/liborcus-test.a \
+	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
+	../liborcus/liborcus-@ORCUS_API_VERSION@.la \
+	./liborcus-spreadsheet-model-@ORCUS_API_VERSION@.la \
+	$(LIBIXION_LIBS)
 
 # auto-filter-test
 
