@@ -27,6 +27,7 @@
 
 using namespace orcus;
 namespace fs = std::filesystem;
+namespace ss = orcus::spreadsheet;
 
 const fs::path test_base_dir(SRCDIR"/test/xml-mapped");
 
@@ -460,6 +461,23 @@ void test_has_range()
     }
 }
 
+void test_orcus_xml_functions()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    xmlns_repository repo;
+
+    ss::range_size_t ss{1048576, 16384};
+    ss::document doc{ss};
+    ss::import_factory import_fact(doc);
+
+    orcus::orcus_xml app(repo, &import_fact);
+    app.append_sheet("Sheet");
+    app.start_range("Sheet", 0, 0);
+
+    ORCUS_TEST_EXPECT_THROW(app.append_field_link("", "Label"), std::invalid_argument);
+}
+
 } // anonymous namespace
 
 int main()
@@ -471,6 +489,7 @@ int main()
     test_encoding();
     test_map_gen();
     test_has_range();
+    test_orcus_xml_functions();
 
     return EXIT_SUCCESS;
 }

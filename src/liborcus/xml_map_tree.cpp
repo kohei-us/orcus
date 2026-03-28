@@ -350,7 +350,7 @@ void xml_map_tree::start_range(const cell_position& pos)
 void xml_map_tree::append_range_field_link(std::string_view xpath, std::string_view label)
 {
     if (xpath.empty())
-        return;
+        throw std::invalid_argument("empty XPath argument is not allowed");
 
     m_cur_range_field_links.emplace_back(xpath, label);
 }

@@ -91,6 +91,8 @@ public:
      * @param xpath path to the element or attribute to link as a field.
      * @param label custom header label to use in lieu of the name of the
      *              linked entity.
+     *
+     * @exception std::invalid_argument if the xpath argument is empty.
      */
     void append_field_link(std::string_view xpath, std::string_view label);
 

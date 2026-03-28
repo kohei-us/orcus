@@ -62,4 +62,23 @@ bool verify_stream_value(EnumT v, std::string_view expected)
 
 #define ORCUS_TEST_FUNC_SCOPE orcus::test::stack_printer __sp__(__func__)
 
+#define ORCUS_TEST_EXPECT_THROW(expr, exception_type) \
+    do { \
+        bool thrown = false; \
+        try { \
+            expr; \
+        } catch (const exception_type&) { \
+            thrown = true; \
+        } catch (...) { \
+            std::cerr << __FILE__ << ":" << __LINE__ \
+                      << " expected exception of type '" #exception_type "' but got a different exception" << std::endl; \
+            assert(false); \
+        } \
+        if (!thrown) { \
+            std::cerr << __FILE__ << ":" << __LINE__ \
+                      << " expected exception of type '" #exception_type "' but no exception was thrown" << std::endl; \
+            assert(false); \
+        } \
+    } while (false)
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
