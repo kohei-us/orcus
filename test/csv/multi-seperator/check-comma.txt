@@ -1,0 +1,8 @@
+data/0/0:string:"12;34"
+data/0/1:string:"89;\"cdFaQv9QViYVsC5X\";'Hello-World';foo"
+data/0/2:string:"bar;93654"
+data/0/3:string:"aaaaa"
+data/1/0:string:"745845;5"
+data/1/1:string:"23;\"lZbztn49rMgfO/QJ\";'Football-Soccer';de"
+data/1/2:string:"bug;68931"
+data/1/3:string:"bbbbb"

@@ -231,7 +231,146 @@ void test_csv_dump_flat_utf8()
     test::verify_content(__FILE__, __LINE__, expected, flat_dump);
 }
 
+void test_different_seperators(){
+    ORCUS_TEST_FUNC_SCOPE;
+
+    const char* dir = SRCDIR"/test/csv/multi-seperator/";
+
+    config conf(format_t::csv);
+    std::get<config::csv_config>(conf.data).split_to_multiple_sheets = false;
+
+    // Calculate the input file which all of the test share.
+    const std::string input = std::string(dir) + "input.csv";
+
+    {
+        // Test delimiters been comma (',') and semicolon (';') and quote mark as double qoutes ('"')
+        std::cout << "checking " << input << " with , and ; delimeters and \" as qualifier ..." << std::endl;
+        std::get<config::csv_config>(conf.data).delimiters = ",;";
+        std::get<config::csv_config>(conf.data).text_qualifier = '\"';
+
+        ss::range_size_t ss{2, 9};
+        ss::document doc{ss};
+        ss::import_factory factory(doc);
+        orcus_csv app(&factory);
+        app.set_config(conf);
+
+        app.read_file(input);
+
+        assert(doc.get_sheet_count() == 1);
+
+        auto check = test::get_content_check(doc);
+
+        std::string path = dir;
+        path.append("check-comma-semicolon.txt");
+        file_content control(path);
+
+        test::verify_content(__FILE__, __LINE__, control.data(), check);
+    }
+
+    {
+        // Test delimiters been comma (',') and quote mark as double qoutes ('"')
+        std::cout << "checking " << input << " with , and \" as qualifier ..." << std::endl;
+        std::get<config::csv_config>(conf.data).delimiters = ",";
+        std::get<config::csv_config>(conf.data).text_qualifier = '\"';
+
+        ss::range_size_t ss{2, 4};
+        ss::document doc{ss};
+        ss::import_factory factory(doc);
+        orcus_csv app(&factory);
+        app.set_config(conf);
+
+        app.read_file(input);
+
+        assert(doc.get_sheet_count() == 1);
+
+        auto check = test::get_content_check(doc);
+
+        std::string path = dir;
+        path.append("check-comma.txt");
+        file_content control(path);
+
+        test::verify_content(__FILE__, __LINE__, control.data(), check);
+    }
+
+    {
+        // Test delimiters been semicolon (';') and quote mark as double qoutes ('"')
+        std::cout << "checking " << input << " with ; and \" as qualifier ..." << std::endl;
+        std::get<config::csv_config>(conf.data).delimiters = ";";
+        std::get<config::csv_config>(conf.data).text_qualifier = '\"';
+
+        ss::range_size_t ss{2, 6};
+        ss::document doc{ss};
+        ss::import_factory factory(doc);
+        orcus_csv app(&factory);
+        app.set_config(conf);
+
+        app.read_file(input);
+
+        assert(doc.get_sheet_count() == 1);
+
+        auto check = test::get_content_check(doc);
+
+        std::string path = dir;
+        path.append("check-semicolon.txt");
+        file_content control(path);
+
+        test::verify_content(__FILE__, __LINE__, control.data(), check);
+    }
+
+    {
+        // Test delimiters been dash ('-') and quote mark as double qoutes ('"')
+        std::cout << "checking " << input << " with - and \" as qualifier ..." << std::endl;
+        std::get<config::csv_config>(conf.data).delimiters = "-";
+        std::get<config::csv_config>(conf.data).text_qualifier = '\"';
+
+        ss::range_size_t ss{2, 2};
+        ss::document doc{ss};
+        ss::import_factory factory(doc);
+        orcus_csv app(&factory);
+        app.set_config(conf);
+
+        app.read_file(input);
+
+        assert(doc.get_sheet_count() == 1);
+
+        auto check = test::get_content_check(doc);
+
+        std::string path = dir;
+        path.append("check-dash.txt");
+        file_content control(path);
+
+        test::verify_content(__FILE__, __LINE__, control.data(), check);
+    }
+
+    // Test delimiters been semicolon ";" and dash ('-') and quote mark as single qoutes (''')
+    // Tests that qualifer get precedens over delimter. Here dash should not cut a new cell.
+    {
+        std::cout << "checking " << input << " with ; and - and \' as qualifier ..." << std::endl;
+        std::get<config::csv_config>(conf.data).delimiters = "-;";
+        std::get<config::csv_config>(conf.data).text_qualifier = '\'';
+
+        ss::range_size_t ss{2, 6};
+        ss::document doc{ss};
+        ss::import_factory factory(doc);
+        orcus_csv app(&factory);
+        app.set_config(conf);
+
+        app.read_file(input);
+
+        assert(doc.get_sheet_count() == 1);
+
+        auto check = test::get_content_check(doc);
+
+        std::string path = dir;
+        path.append("check-single-quote.txt");
+        file_content control(path);
+
+        test::verify_content(__FILE__, __LINE__, control.data(), check);
+    }
+}
+
 } // anonymous namespace
+
 
 int main()
 {
@@ -241,6 +380,7 @@ int main()
         test_csv_import();
         test_csv_import_split_sheet();
         test_csv_dump_flat_utf8();
+        test_different_seperators();
     }
     catch (const std::exception& e)
     {
