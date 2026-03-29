@@ -11,6 +11,7 @@
 #ifdef __ORCUS_PYTHON_CSV
 #include "document.hpp"
 #include "orcus/orcus_csv.hpp"
+#include "orcus/config.hpp"
 #include "orcus/spreadsheet/document.hpp"
 #include "orcus/spreadsheet/factory.hpp"
 #endif
@@ -19,22 +20,35 @@ namespace orcus { namespace python {
 
 #ifdef __ORCUS_PYTHON_CSV
 
-namespace {
-
-py_unique_ptr read_stream_object_from_string(PyObject* args, PyObject* kwargs)
+PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    static const char* kwlist[] = { "stream", nullptr };
+    static const char* kwlist[] = { "stream", "split", "delimiters", "qualifier", nullptr };
 
     py_unique_ptr ret;
     PyObject* file = nullptr;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", const_cast<char**>(kwlist), &file))
-        return ret;
+    // Get the default CSV configuration values expect on delimeters.
+    orcus::config conf(format_t::csv);
+    config::csv_config csvconf = std::get<config::csv_config>(conf.data);
+    int split = csvconf.split_to_multiple_sheets;
+    char qualifier = csvconf.text_qualifier;
+    const char *str = nullptr;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|psc", const_cast<char**>(kwlist), &file, &split, &str, &qualifier))
+        return nullptr;
+
+    // Set CSV configuration values. Only delimeters are not set to default value.
+    csvconf.split_to_multiple_sheets = (bool)split;
+    csvconf.text_qualifier = qualifier;
+    if (str != nullptr)
+        csvconf.delimiters = std::string(str);
+
+    conf.data = csvconf;
 
     if (!file)
     {
         PyErr_SetString(PyExc_RuntimeError, "Invalid file object has been passed.");
-        return ret;
+        return nullptr;
     }
 
     PyObject* obj_str = nullptr;
@@ -55,19 +69,12 @@ py_unique_ptr read_stream_object_from_string(PyObject* args, PyObject* kwargs)
     if (!obj_str)
     {
         PyErr_SetString(PyExc_RuntimeError, "failed to extract bytes from this object.");
-        return ret;
+        return nullptr;
     }
 
     ret.reset(obj_str);
-    return ret;
-}
 
-} // anonymous namespace
-
-PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
-{
-    py_unique_ptr str = read_stream_object_from_string(args, kwargs);
-    if (!str)
+    if (!ret)
         return nullptr;
 
     try
@@ -77,8 +84,10 @@ PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
         spreadsheet::import_factory fact(*doc);
         orcus_csv app(&fact);
 
+        app.set_config(conf);
+
         Py_ssize_t n = 0;
-        const char* p = PyUnicode_AsUTF8AndSize(str.get(), &n);
+        const char* p = PyUnicode_AsUTF8AndSize(ret.get(), &n);
         app.read_stream({p, static_cast<std::string_view::size_type>(n)});
 
         return create_document(std::move(doc));
