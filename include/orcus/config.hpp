@@ -34,6 +34,17 @@ struct ORCUS_DLLPUBLIC config
          * in case it spills over.
          */
         bool split_to_multiple_sheets;
+
+        /**
+         * What character is used to mark start and end of a string. Only one character is allowed.
+         */
+        char text_qualifier;
+
+        /**
+         * List of characters that seperate cells from each other.
+         */
+        std::string delimiters;
+
     };
 
     // TODO: add config for other formats as needed.

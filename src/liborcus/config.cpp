@@ -26,6 +26,8 @@ config::config(format_t input) :
             csv_config csv;
             csv.header_row_size = 0;
             csv.split_to_multiple_sheets = false;
+            csv.text_qualifier = '"';
+            csv.delimiters.push_back(',');
             data = csv;
             break;
         }

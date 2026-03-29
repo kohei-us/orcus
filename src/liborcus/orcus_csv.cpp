@@ -146,8 +146,9 @@ struct orcus_csv::impl
 
         orcus_csv_handler handler(*factory, conf);
         csv::parser_config config;
-        config.delimiters.push_back(',');
-        config.text_qualifier = '"';
+        auto format_config = std::get<config::csv_config>(conf.data);
+        config.delimiters = format_config.delimiters;
+        config.text_qualifier = format_config.text_qualifier;
         csv_parser<orcus_csv_handler> parser(stream, handler, config);
         try
         {
