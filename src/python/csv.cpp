@@ -27,7 +27,7 @@ PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
     py_unique_ptr ret;
     PyObject* file = nullptr;
 
-    // Get the default CSV configuration values expect on delimeters.
+    // Get the default CSV configuration values expect on delimiters.
     orcus::config conf(format_t::csv);
     config::csv_config csvconf = std::get<config::csv_config>(conf.data);
     int split = csvconf.split_to_multiple_sheets;
@@ -37,7 +37,7 @@ PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|psc", const_cast<char**>(kwlist), &file, &split, &str, &qualifier))
         return nullptr;
 
-    // Set CSV configuration values. Only delimeters are not set to default value.
+    // Set CSV configuration values. Only delimiters are not set to default value.
     csvconf.split_to_multiple_sheets = (bool)split;
     csvconf.text_qualifier = qualifier;
     if (str != nullptr)

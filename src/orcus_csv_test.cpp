@@ -231,7 +231,8 @@ void test_csv_dump_flat_utf8()
     test::verify_content(__FILE__, __LINE__, expected, flat_dump);
 }
 
-void test_different_seperators(){
+void test_different_seperators()
+{
     ORCUS_TEST_FUNC_SCOPE;
 
     const char* dir = SRCDIR"/test/csv/multi-seperator/";
@@ -370,7 +371,6 @@ void test_different_seperators(){
 }
 
 } // anonymous namespace
-
 
 int main()
 {
