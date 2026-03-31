@@ -16,40 +16,52 @@
 #include "orcus/spreadsheet/factory.hpp"
 #endif
 
+#include <cstring>
+
 namespace orcus { namespace python {
 
 #ifdef __ORCUS_PYTHON_CSV
 
 PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 {
-    static const char* kwlist[] = { "stream", "split", "delimiters", "qualifier", nullptr };
+    static const char* kwlist[] = { "stream", "split", "delimiters", "text_qualifier", nullptr };
 
     py_unique_ptr ret;
     PyObject* file = nullptr;
 
-    // Get the default CSV configuration values expect on delimiters.
+    // Get the default CSV configuration values except on delimiters.
     orcus::config conf(format_t::csv);
     config::csv_config csvconf = std::get<config::csv_config>(conf.data);
     int split = csvconf.split_to_multiple_sheets;
-    char qualifier = csvconf.text_qualifier;
-    const char *str = nullptr;
+    const char* delimiters = nullptr;
+    const char* text_qualifier = nullptr;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|psc", const_cast<char**>(kwlist), &file, &split, &str, &qualifier))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|pss", const_cast<char**>(kwlist), &file, &split, &delimiters, &text_qualifier))
         return nullptr;
-
-    // Set CSV configuration values. Only delimiters are not set to default value.
-    csvconf.split_to_multiple_sheets = (bool)split;
-    csvconf.text_qualifier = qualifier;
-    if (str != nullptr)
-        csvconf.delimiters = std::string(str);
-
-    conf.data = csvconf;
 
     if (!file)
     {
         PyErr_SetString(PyExc_RuntimeError, "Invalid file object has been passed.");
         return nullptr;
     }
+
+    // Set CSV configuration values. Only delimiters are not set to default value.
+    csvconf.split_to_multiple_sheets = (bool)split;
+    if (delimiters)
+        csvconf.delimiters = std::string(delimiters);
+
+    if (text_qualifier)
+    {
+        // make sure it's a string of length 1
+        if (std::strlen(text_qualifier) != 1u)
+        {
+            PyErr_SetString(PyExc_ValueError, "text_qualifier must be of length 1");
+            return nullptr;
+        }
+        csvconf.text_qualifier = *text_qualifier;
+    }
+
+    conf.data = csvconf;
 
     PyObject* obj_str = nullptr;
 
