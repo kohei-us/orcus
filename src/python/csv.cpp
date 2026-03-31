@@ -86,9 +86,6 @@ PyObject* csv_read(PyObject* /*module*/, PyObject* args, PyObject* kwargs)
 
     ret.reset(obj_str);
 
-    if (!ret)
-        return nullptr;
-
     try
     {
         spreadsheet::range_size_t ss{1048576, 16384};
