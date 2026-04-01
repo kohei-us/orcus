@@ -7,41 +7,55 @@
 #
 ########################################################################
 
-import unittest
-import os
-import os.path
+import pytest
+import sys
+from pathlib import Path
 
+import orcus
 from orcus import csv
 
 import file_load_common as common
 
 
-class DocLoader:
-
-    def load(self, filepath, recalc):
-        with open(filepath, "r") as f:
-            return csv.read(f)
-
-    def load_from_value(self, filepath):
-        with open(filepath, "r") as f:
-            content = f.read()
-        return csv.read(content)
+TESTDIR = Path(__file__).parent / ".." / "csv"
 
 
-class TestCase(unittest.TestCase):
+@pytest.mark.parametrize("test_dir_name", [
+    "simple-numbers",
+    "normal-quotes",
+    "double-quotes",
+    "quoted-with-delim",
+])
+def test_import(test_dir_name):
+    test_dir = TESTDIR / test_dir_name
+    print(f"test directory: {test_dir}")
 
-    @classmethod
-    def setUpClass(cls):
-        # base directory for ods test files.
-        basedir = os.path.join(os.path.dirname(__file__), "..", "csv")
-        cls.basedir = os.path.normpath(basedir)
+    expected = common.ExpectedDocument(test_dir / "check.txt")
+    input_file = test_dir / "input.csv"
+    print(f"input file: {input_file}")
 
-    def test_import(self):
-        test_dirs = ("simple-numbers", "normal-quotes", "double-quotes", "quoted-with-delim")
-        for test_dir in test_dirs:
-            test_dir = os.path.join(self.basedir, test_dir)
-            common.run_test_dir(self, test_dir, DocLoader())
+    doc = csv.read(input_file.open("r"))
+
+    assert isinstance(doc, orcus.Document)
+    assert len(expected.sheets) > 0
+    assert len(expected.sheets) <= len(doc.sheets)
+
+    expected_sheets = {sh.name: sh for sh in expected.sheets}
+
+    for actual_sheet in doc.sheets:
+        assert actual_sheet.name in expected_sheets
+        expected_sheet = expected_sheets[actual_sheet.name]
+        assert expected_sheet.data_size == actual_sheet.data_size
+        for row, (expected_row, actual_row) in enumerate(zip(expected_sheet.get_rows(), actual_sheet.get_rows())):
+            for col, (expected_cell, actual_cell) in enumerate(zip(expected_row, actual_row)):
+                result, err = common.compare_cells(expected_cell, actual_cell)
+                assert result, f"unexpected cell value (row={row}; col={col}; error='{err}')"
+
+    # Also verify loading from in-memory string value.
+    content = input_file.read_text()
+    doc = csv.read(content)
+    assert isinstance(doc, orcus.Document)
 
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))

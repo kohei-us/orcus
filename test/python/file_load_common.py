@@ -160,22 +160,30 @@ class ExpectedDocument(object):
         self.sheets[-1].insert_cell(pos.row, pos.column, cell_type, cell_value, result)
 
 
-def _compare_cells(expected, actual):
+def compare_cells(expected, actual):
     type = expected[0]
 
     if type != actual.type:
-        return False
+        return False, f"{type} is expected, but {actual.type} is found"
 
     if type == orcus.CellType.EMPTY:
-        return True
+        return True, None
 
     if type in (orcus.CellType.BOOLEAN, orcus.CellType.NUMERIC, orcus.CellType.STRING):
-        return expected[1] == actual.value
+        if expected[1] == actual.value:
+            return True, None
+        else:
+            return False, f"expected value is {expected[1]} but {actual.value} is found"
 
     if type == orcus.CellType.FORMULA:
-        return expected[1] == actual.value and expected[2] == actual.formula
+        if expected[1] != actual.value:
+            return False, f"expected value is {expected[1]} but {actual.value} is found"
+        if expected[2] != actual.formula:
+            return False, f"expected formula is {expected[2]} but {actual.formula} is found"
 
-    return False
+        return True, None
+
+    return False, "cell comparison result yielded false for unknown reason"
 
 
 class DocLoader:
@@ -232,7 +240,8 @@ def run_test_dir(self, test_dir, doc_loader):
             self.assertEqual(expected_sheet.data_size, actual_sheet.data_size)
             for expected_row, actual_row in zip(expected_sheet.get_rows(), actual_sheet.get_rows()):
                 for expected, actual in zip(expected_row, actual_row):
-                    self.assertTrue(_compare_cells(expected, actual))
+                    result, err = compare_cells(expected, actual)
+                    self.assertTrue(result, msg=err)
         else:
             # This sheet must be empty since it's not in the expected document.
             # Make sure it returns empty row set.
