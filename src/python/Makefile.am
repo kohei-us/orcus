@@ -109,7 +109,8 @@ TESTS = \
 	../../test/python/test_module.py \
 	../../test/python/test_csv.py \
 	../../test/python/test_csv_delimiters.py \
-	../../test/python/test_csv_export.py
+	../../test/python/test_csv_export.py \
+	../../test/python/test_csv_text_qualifiers.py
 
 if WITH_PYTHON_XLSX
 
