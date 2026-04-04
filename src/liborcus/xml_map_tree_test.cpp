@@ -263,12 +263,55 @@ void test_tree_walk_namespace()
     assert(elem == elem_old);
 }
 
+void test_default_namespace()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    xmlns_repository repo;
+    xml_map_tree tree(repo);
+    xml_map_tree::cell_position ref;
+    ref.sheet = std::string_view{"sheet"};
+    ref.row = 0;
+    ref.col = 0;
+
+    // Register a namespace URI as the default namespace.
+    tree.set_namespace_alias("ns", "http://example.com/default-ns", true);
+    xmlns_id_t ns = tree.get_namespace("ns");
+    assert(ns != XMLNS_UNKNOWN_ID);
+
+    // Cell link using unprefixed XPath -- should resolve to the default namespace.
+    tree.set_cell_link("/root/child", ref);
+    const auto* p = tree.get_link("/root/child");
+    assert(p);
+    assert(p->node_type == xml_map_tree::linkable_node_type::element);
+    const auto* elem = static_cast<const xml_map_tree::element*>(p);
+    assert(elem->ref_type == xml_map_tree::reference_type::cell);
+    assert(elem->name.ns == ns);
+    assert(elem->name.name == "child");
+
+    // The parent element should also carry the default namespace.
+    xml_map_tree::walker walker = tree.get_tree_walker();
+    walker.reset();
+    const xml_map_tree::element* root = walker.push_element({ns, "root"});
+    assert(root);
+    assert(root->name.ns == ns);
+    assert(root->name.name == "root");
+
+    const xml_map_tree::element* child = walker.push_element({ns, "child"});
+    assert(child);
+    assert(child->name.ns == ns);
+    assert(child->name.name == "child");
+    assert(child->ref_type == xml_map_tree::reference_type::cell);
+}
+
 int main()
 {
     test_path_insertion();
     test_attr_path_insertion();
     test_tree_walk();
     test_tree_walk_namespace();
+    test_default_namespace();
+
     return EXIT_SUCCESS;
 }
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
