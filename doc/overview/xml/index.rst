@@ -37,4 +37,5 @@ Contents:
    :maxdepth: 1
 
    mapping.rst
+   mapping-ns.rst
 

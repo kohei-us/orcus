@@ -1,3 +1,4 @@
+.. _xml-mapping-basic:
 
 Mapping XML to spreadsheet
 ==========================
