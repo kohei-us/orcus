@@ -230,7 +230,7 @@ public:
     xml_map_tree(xmlns_repository& xmlns_repo);
     ~xml_map_tree();
 
-    void set_namespace_alias(std::string_view alias, std::string_view uri, bool default_ns);
+    void set_namespace_alias(std::string_view alias, std::string_view uri);
     xmlns_id_t get_namespace(std::string_view alias) const;
 
     void set_cell_link(std::string_view xpath, const cell_position& ref);

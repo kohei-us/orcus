@@ -51,17 +51,20 @@ public:
     static bool has_range(std::string_view stream);
 
     /**
-     * Define a namespace and its alias used in a map file.
+     * Register a namespace URI and associate it with a short alias for use in
+     * XPath expressions passed to other methods.  The alias does not need to
+     * match the prefix declared in the XML document; it is local to this
+     * mapping session.
      *
-     * @param alias alias for the namespace.
-     * @param uri namespace value.
-     * @param default_ns whether or not to use this namespace as the default
-     *                   namespace.  When this value is set to true, the
-     *                   namespace being set will be applied for all elements
-     *                   and attributes used in the paths without explicit
-     *                   namespace values.
+     * Passing an empty string as @p alias designates the URI as the default
+     * namespace.  Any unprefixed name in a subsequent XPath expression will
+     * then be resolved against that namespace.
+     *
+     * @param alias Short prefix to use in XPath expressions, or an empty
+     *              string to set the default namespace.
+     * @param uri Namespace URI to associate with the alias.
      */
-    void set_namespace_alias(std::string_view alias, std::string_view uri, bool default_ns=false);
+    void set_namespace_alias(std::string_view alias, std::string_view uri);
 
     /**
      * Define a mapping of a single element or attribute to a single cell

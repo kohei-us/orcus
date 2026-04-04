@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <map xmlns="http://gitorious.org/orcus/xml-map">
-    <ns alias="a" uri="http://some-namespace" default="true"/>
+    <ns alias="a" uri="http://some-namespace"/>
+    <ns alias="" uri="http://some-namespace"/>
     <sheet name="data"/>
     <cell path="/a:table/title" row="0" column="0" sheet="data"/>
     <range row="2" column="0" sheet="data">

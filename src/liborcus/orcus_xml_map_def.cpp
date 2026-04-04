@@ -97,7 +97,6 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
     {
         // empty alias is associated with default namespace.
         std::string_view alias, uri;
-        bool default_ns = false;
 
         for (const sax::parser_attribute& attr : m_attrs)
         {
@@ -105,12 +104,10 @@ void xml_map_sax_handler::start_element(const sax::parser_element& elem)
                 alias = attr.value;
             else if (attr.name == "uri")
                 uri = attr.value;
-            else if (attr.name == "default")
-                default_ns = to_bool(attr.value);
         }
 
         if (!uri.empty())
-            m_app.set_namespace_alias(alias, uri, default_ns);
+            m_app.set_namespace_alias(alias, uri);
     }
     else if (elem.name == "cell")
     {

@@ -212,8 +212,8 @@ void test_tree_walk_namespace()
     ref.row = 1;
     ref.col = 2;
 
-    tree.set_namespace_alias("a", "http://some-namespace", false);
-    tree.set_namespace_alias("skip", "http://namespace-to-skip", false);
+    tree.set_namespace_alias("a", "http://some-namespace");
+    tree.set_namespace_alias("skip", "http://namespace-to-skip");
     tree.set_cell_link("/a:table/a:title", ref);
     tree.start_range(ref);
     ref.row = 2;
@@ -275,8 +275,8 @@ void test_default_namespace()
     ref.col = 0;
 
     // Register a namespace URI as the default namespace.
-    tree.set_namespace_alias("ns", "http://example.com/default-ns", true);
-    xmlns_id_t ns = tree.get_namespace("ns");
+    tree.set_namespace_alias("", "http://example.com/default-ns");
+    xmlns_id_t ns = tree.get_namespace("");
     assert(ns != XMLNS_UNKNOWN_ID);
 
     // Cell link using unprefixed XPath -- should resolve to the default namespace.

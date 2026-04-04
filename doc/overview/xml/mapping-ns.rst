@@ -64,11 +64,10 @@ attribute names inside the XPath expressions that follow.
 .. note::
 
    Documents that declare a *default namespace* (``xmlns="..."``) require
-   special handling.  Pass ``true`` as the third argument to
-   :cpp:func:`~orcus::orcus_xml::set_namespace_alias()` to mark that URI as
+   special handling.  Pass an empty string as the alias to mark that URI as
    the default namespace for the mapping session::
 
-      filter.set_namespace_alias("ns", "http://example.com/default-ns", true);
+      filter.set_namespace_alias("", "http://example.com/default-ns");
 
    Once a default namespace is set, any unprefixed name in an XPath expression
    is automatically resolved to that namespace, so the paths can be written

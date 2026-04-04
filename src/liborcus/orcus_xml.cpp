@@ -557,9 +557,9 @@ bool orcus_xml::detect(std::string_view strm)
     return true; // entire XML stream has been parsed
 }
 
-void orcus_xml::set_namespace_alias(std::string_view alias, std::string_view uri, bool default_ns)
+void orcus_xml::set_namespace_alias(std::string_view alias, std::string_view uri)
 {
-    mp_impl->map_tree.set_namespace_alias(alias, uri, default_ns);
+    mp_impl->map_tree.set_namespace_alias(alias, uri);
 }
 
 void orcus_xml::set_cell_link(std::string_view xpath, std::string_view sheet, spreadsheet::row_t row, spreadsheet::col_t col)

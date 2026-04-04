@@ -292,17 +292,17 @@ xml_map_tree::xml_map_tree(xmlns_repository& xmlns_repo) :
 
 xml_map_tree::~xml_map_tree() {}
 
-void xml_map_tree::set_namespace_alias(std::string_view alias, std::string_view uri, bool default_ns)
+void xml_map_tree::set_namespace_alias(std::string_view alias, std::string_view uri)
 {
 #if ORCUS_DEBUG_XML_MAP_TREE
-    cout << "xml_map_tree::set_namespace_alias: alias='" << alias << "', uri='" << uri << "', default=" << default_ns << endl;
+    cout << "xml_map_tree::set_namespace_alias: alias='" << alias << "', uri='" << uri << "'" << endl;
 #endif
     // We need to turn the alias string persistent because the xmlns context
     // doesn't intern the alias strings.
     std::string_view alias_safe = m_names.intern(alias).first;
     xmlns_id_t ns = m_xmlns_cxt.push(alias_safe, uri);
 
-    if (default_ns)
+    if (alias.empty())
         m_default_ns = ns;
 }
 
