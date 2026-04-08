@@ -31,7 +31,17 @@ structures in the XML tree correspond to rows and columns in a sheet.
 This mapping can be defined either via a map file or programmatically
 through the C++ API.
 
-Contents:
+Parsing
+-------
+
+.. toctree::
+   :maxdepth: 1
+
+   parsers.rst
+   dom-tree.rst
+
+XML mapping
+-----------
 
 .. toctree::
    :maxdepth: 1
