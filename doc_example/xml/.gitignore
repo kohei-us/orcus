@@ -2,3 +2,4 @@ xml-namespace
 xml-mapping-basic
 xml-mapping-ns
 xml-mapping-repeat
+xml-mapping-autodetect

@@ -38,4 +38,5 @@ Contents:
 
    mapping.rst
    mapping-ns.rst
+   mapping-autodetect.rst
 

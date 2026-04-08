@@ -6,13 +6,15 @@ AM_CPPFLAGS = \
 	-DINPUTDIR='"$(srcdir)/files"'
 
 EXTRA_DIST = \
-	files/cities.xml
+	files/cities.xml \
+	files/server-logs.xml
 
 EXTRA_PROGRAMS = \
 	xml-namespace \
 	xml-mapping-basic \
 	xml-mapping-repeat \
-	xml-mapping-ns
+	xml-mapping-ns \
+	xml-mapping-autodetect
 
 SPDOC_LDADD = \
 	../../src/parser/liborcus-parser-@ORCUS_API_VERSION@.la \
@@ -35,6 +37,9 @@ xml_mapping_repeat_LDADD = $(SPDOC_LDADD)
 
 xml_mapping_ns_SOURCES = xml_mapping_ns.cpp
 xml_mapping_ns_LDADD = $(SPDOC_LDADD)
+
+xml_mapping_autodetect_SOURCES = xml_mapping_autodetect.cpp
+xml_mapping_autodetect_LDADD = $(SPDOC_LDADD)
 
 TESTS = $(EXTRA_PROGRAMS)
 
