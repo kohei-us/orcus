@@ -590,7 +590,7 @@ std::vector<std::string> structure_tree::walker::build_field_paths() const
         {
             case structure_tree::node_type::array:
                 if (p->type != structure_tree::node_type::value)
-                    os << "[]";
+                    os << "[*]";
                 break;
             case structure_tree::node_type::object_key:
                 os << "['" << p_prev->name << "']";
@@ -654,7 +654,7 @@ std::string structure_tree::walker::build_row_group_path() const
         switch (p->type)
         {
             case structure_tree::node_type::array:
-                os << "[]";
+                os << "[*]";
                 break;
             case structure_tree::node_type::object_key:
                 os << "['" << p->name << "']";

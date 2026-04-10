@@ -14,6 +14,8 @@
 #include <orcus/exception.hpp>
 #include <orcus/parser_global.hpp>
 #include <orcus/format_detection.hpp>
+#include <orcus/json_document_tree.hpp>
+#include <orcus/config.hpp>
 
 #include <iostream>
 #include <vector>
@@ -130,6 +132,50 @@ void test_invalid_map_definition()
     }
 }
 
+void test_write_map_definition()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    struct check
+    {
+        fs::path input;
+        fs::path expected;
+    };
+
+    const check checks[] =
+    {
+        {
+            SRCDIR"/test/json-mapped/array-of-objects-header/input.json",
+            SRCDIR"/test/json-mapped/array-of-objects-header/expected-map-def.json",
+        },
+        {
+            SRCDIR"/test/json-mapped/nested-repeats/input.json",
+            SRCDIR"/test/json-mapped/nested-repeats/expected-map-def.json",
+        },
+    };
+
+    json_config jcfg;
+
+    for (const auto& c : checks)
+    {
+        std::cout << "input: " << c.input << std::endl;
+        file_content content(c.input.string());
+        file_content expected_content(c.expected.string());
+
+        orcus_json app(nullptr);
+        std::ostringstream os;
+        app.write_map_definition(content.str(), os);
+
+        json::document_tree actual;
+        actual.load(os.str(), jcfg);
+
+        json::document_tree expected;
+        expected.load(expected_content.str(), jcfg);
+
+        assert(actual.dump(0) == expected.dump(0));
+    }
+}
+
 void test_has_range()
 {
     ORCUS_TEST_FUNC_SCOPE;
@@ -177,6 +223,7 @@ int main()
     test_mapped_json_import();
     test_mapped_json_import_auto_mapping();
     test_invalid_map_definition();
+    test_write_map_definition();
     test_has_range();
 
     return EXIT_SUCCESS;

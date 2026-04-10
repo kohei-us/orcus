@@ -1,0 +1,21 @@
+{
+  "sheets": ["range-0"],
+  "ranges": [
+    {
+      "sheet": "range-0",
+      "row": 0,
+      "column": 0,
+      "row-header": true,
+      "fields": [
+        {"path": "$['data'][*]['category']"},
+        {"path": "$['data'][*]['region']"},
+        {"path": "$['data'][*]['records'][*]['id']"},
+        {"path": "$['data'][*]['records'][*]['ref']"}
+      ],
+      "row-groups": [
+        {"path": "$['data']"},
+        {"path": "$['data'][*]['records']"}
+      ]
+    }
+  ]
+}

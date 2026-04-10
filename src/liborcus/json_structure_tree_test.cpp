@@ -111,9 +111,9 @@ void test_automatic_range_detection()
             {
                 {
                     "row-group:$['rows']",
-                    "path:$['rows'][]['name']",
-                    "path:$['rows'][]['age']",
-                    "path:$['rows'][]['error']",
+                    "path:$['rows'][*]['name']",
+                    "path:$['rows'][*]['age']",
+                    "path:$['rows'][*]['error']",
                 }
             }
         },
@@ -121,8 +121,8 @@ void test_automatic_range_detection()
             SRCDIR"/test/json-structure/repeat-objects/input.json",
             {
                 {
-                    "path:$[]['name']",
-                    "path:$[]['age']",
+                    "path:$[*]['name']",
+                    "path:$[*]['age']",
                     "row-group:$",
                 }
             }
@@ -131,12 +131,12 @@ void test_automatic_range_detection()
             SRCDIR"/test/json-structure/repeat-objects-2/input.json",
             {
                 {
-                    "path:$[]['name']",
-                    "path:$[]['age']",
-                    "path:$[]['props']['alpha']",
-                    "path:$[]['props']['beta']",
-                    "path:$[]['props']['gamma']",
-                    "path:$[]['props']['theta']",
+                    "path:$[*]['name']",
+                    "path:$[*]['age']",
+                    "path:$[*]['props']['alpha']",
+                    "path:$[*]['props']['beta']",
+                    "path:$[*]['props']['gamma']",
+                    "path:$[*]['props']['theta']",
                     "row-group:$",
                 }
             }
@@ -145,17 +145,17 @@ void test_automatic_range_detection()
             SRCDIR"/test/json-structure/multiple-ranges/input.json",
             {
                 {
-                    "path:$['data'][]['category']",
-                    "path:$['data'][]['region']",
-                    "path:$['data'][]['records'][]['id']",
-                    "path:$['data'][]['records'][]['ref']",
+                    "path:$['data'][*]['category']",
+                    "path:$['data'][*]['region']",
+                    "path:$['data'][*]['records'][*]['id']",
+                    "path:$['data'][*]['records'][*]['ref']",
                     "row-group:$['data']",
-                    "row-group:$['data'][]['records']",
+                    "row-group:$['data'][*]['records']",
                 },
                 {
-                    "path:$['misc'][][0]",
-                    "path:$['misc'][][1]",
-                    "path:$['misc'][][2]",
+                    "path:$['misc'][*][0]",
+                    "path:$['misc'][*][1]",
+                    "path:$['misc'][*][2]",
                     "row-group:$['misc']",
                 }
             }
