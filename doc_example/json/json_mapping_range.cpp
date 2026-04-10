@@ -23,11 +23,11 @@ int main() try
 
     //!code-start: range
     filter.start_range("Books", 0, 0, true);
-    filter.append_field_link("$['books'][]['title']", "Title");
-    filter.append_field_link("$['books'][]['author']", "Author");
-    filter.append_field_link("$['books'][]['year']", "Year");
-    filter.append_field_link("$['books'][]['genre']", "Genre");
-    filter.append_field_link("$['books'][]['rating']", "Rating");
+    filter.append_field_link("$['books'][*]['title']", "Title");
+    filter.append_field_link("$['books'][*]['author']", "Author");
+    filter.append_field_link("$['books'][*]['year']", "Year");
+    filter.append_field_link("$['books'][*]['genre']", "Genre");
+    filter.append_field_link("$['books'][*]['rating']", "Rating");
     filter.set_range_row_group("$['books']");
     filter.commit_range();
     //!code-end: range

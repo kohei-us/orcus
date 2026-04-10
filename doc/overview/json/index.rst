@@ -4,27 +4,34 @@
 JSON
 ====
 
-The JSON part of orcus consists of a low-level parser class that handles
-parsing of JSON strings, and a high-level document class that stores parsed
-JSON structures as a node tree.
+The JSON support in orcus covers three distinct use cases.
 
-There are two approaches to processing JSON strings using the orcus library.
-One approach is to utilize the :cpp:class:`~orcus::json::document_tree` class
-to load and populate the JSON structure tree via its
-:cpp:func:`~orcus::json::document_tree::load()` method and traverse the tree
-through its :cpp:func:`~orcus::json::document_tree::get_document_root()` method.
-This approach is ideal if you want a quick way to parse and access the content
-of a JSON document with minimal effort.
+The first is **document parsing**, where you want to load a JSON string into
+memory and traverse its contents.  The high-level
+:cpp:class:`~orcus::json::document_tree` class handles this: call its
+:cpp:func:`~orcus::json::document_tree::load()` method to populate the tree,
+then navigate it via :cpp:func:`~orcus::json::document_tree::get_document_root()`.
+For cases where you already have your own data structure to populate, the
+low-level :cpp:class:`~orcus::json_parser` class lets you supply a handler
+that receives parser callbacks directly.
+:cpp:class:`~orcus::json::document_tree` itself is built on top of
+:cpp:class:`~orcus::json_parser`.
 
-Another approach is to use the low-level :cpp:class:`~orcus::json_parser`
-class directly by providing your own handler class to receive callbacks from
-the parser.  This method requires a bit more effort on your part to provide
-and populate your own data structure, but if you already have a data structure
-to store the content of JSON, then this approach is ideal.  The
-:cpp:class:`~orcus::json::document_tree` class internally uses
-:cpp:class:`~orcus::json_parser` to parse JSON contents.
+The second is **subtree extraction**, where you want to isolate a portion of
+a larger JSON document using a JSONPath expression.
+:cpp:class:`~orcus::json::subtree` supports this by taking a document and a
+path expression and exposing the selected subtree for further inspection or
+serialisation.
 
-Contents:
+The third is **spreadsheet mapping**, where you want to project the contents
+of a JSON document onto a spreadsheet by declaring how repeating structures
+map to rows and columns.  :cpp:class:`~orcus::orcus_json` provides this
+capability, either through a programmatic API where you register paths and
+ranges by hand, or through automatic structure detection that infers the
+mapping from the document itself.
+
+Parsing
+-------
 
 .. toctree::
    :maxdepth: 1
@@ -32,4 +39,20 @@ Contents:
    doctree.rst
    parser.rst
    doctree-direct.rst
+
+Subtree extraction
+------------------
+
+.. toctree::
+   :maxdepth: 1
+
    subtree.rst
+
+JSON mapping
+------------
+
+.. toctree::
+   :maxdepth: 1
+
+   mapping.rst
+   mapping-autodetect.rst
