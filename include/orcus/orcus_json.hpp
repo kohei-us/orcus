@@ -12,6 +12,7 @@
 #include "./spreadsheet/types.hpp"
 
 #include <memory>
+#include <ostream>
 #include <string_view>
 
 namespace orcus {
@@ -77,6 +78,16 @@ public:
      * @param stream JSON string.
      */
     void detect_map_definition(std::string_view stream);
+
+    /**
+     * Detect the mapping structure of a JSON string and write the result as a
+     * JSON map definition to an output stream.  The output can be edited and
+     * then passed to read_map_definition() to apply the rules.
+     *
+     * @param stream JSON string to analyse.
+     * @param out output stream to write the map definition to.
+     */
+    void write_map_definition(std::string_view stream, std::ostream& out) const;
 };
 
 }

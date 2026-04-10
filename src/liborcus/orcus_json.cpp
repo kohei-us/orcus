@@ -17,7 +17,9 @@
 #include "json_structure_mapper.hpp"
 #include "detection_result.hpp"
 
+#include <ostream>
 #include <sstream>
+#include <vector>
 
 namespace orcus {
 
@@ -618,6 +620,70 @@ void orcus_json::detect_map_definition(std::string_view stream)
     json::structure_tree structure;
     structure.parse(stream);
     structure.process_ranges(rh);
+}
+
+void orcus_json::write_map_definition(std::string_view stream, std::ostream& out) const
+{
+    // NB: though technically this method can be static, it is left as an
+    // instance method just to be consistent with orcus_xml's counterpart.
+
+    std::vector<json::table_range_t> ranges;
+
+    json::structure_tree::range_handler_type rh = [&ranges](json::table_range_t&& range)
+    {
+        ranges.push_back(std::move(range));
+    };
+
+    json::structure_tree tree;
+    tree.parse(stream);
+    tree.process_ranges(rh);
+
+    json::document_tree map_doc = {
+        {"sheets", json::array()},
+        {"ranges", json::array()}
+    };
+
+    json::node root = map_doc.get_document_root();
+    json::node sheets_node = root["sheets"];
+    json::node ranges_node = root["ranges"];
+
+    size_t range_count = 0;
+    for (const json::table_range_t& range : ranges)
+    {
+        std::ostringstream os;
+        os << "range-" << range_count++;
+        std::string sheet = os.str();
+        sheets_node.push_back(sheet);
+
+        ranges_node.push_back({
+            {"sheet", sheet},
+            {"row", 0},
+            {"column", 0},
+            {"row-header", true},
+            {"fields", json::array()},
+            {"row-groups", json::array()},
+        });
+
+        json::node range_node = ranges_node.back();
+        json::node fields_node = range_node["fields"];
+        json::node row_groups_node = range_node["row-groups"];
+
+        for (const std::string& path : range.paths)
+        {
+            fields_node.push_back(json::object());
+            json::node path_node = fields_node.back();
+            path_node["path"] = path;
+        }
+
+        for (const std::string& row_group : range.row_groups)
+        {
+            row_groups_node.push_back(json::object());
+            json::node path_node = row_groups_node.back();
+            path_node["path"] = row_group;
+        }
+    }
+
+    out << map_doc.dump(0);
 }
 
 }
