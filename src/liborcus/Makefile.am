@@ -539,6 +539,7 @@ json_map_tree_test_SOURCES = json_map_tree_test.cpp \
 	spreadsheet_impl_types.cpp
 json_map_tree_test_LDADD = \
 	liborcus-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a \
 	../parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	$(BOOST_SYSTEM_LIBS)
 

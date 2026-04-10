@@ -24,6 +24,10 @@ class json_map_tree
 public:
     using child_position_type = std::uintptr_t;
 
+    /**
+     * Sentinel array-child position representing a wildcard selector; both []
+     * and @c [*] in a mapping path expression resolve to this value.
+     */
     static constexpr child_position_type node_child_default_position = -1;
 
     /**

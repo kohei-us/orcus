@@ -134,6 +134,16 @@ public:
         if (*mp_cur == '\'')
             return next_object_key();
 
+        if (*mp_cur == '*')
+        {
+            // [*] is treated the same as [] - wildcard matching all array elements.
+            ++mp_cur;
+            if (mp_cur == mp_end || *mp_cur != ']')
+                return json_path_token_t::unknown;
+            ++mp_cur;
+            return json_map_tree::node_child_default_position;
+        }
+
         const char* p_head = mp_cur;
 
         for (; mp_cur != mp_end; ++mp_cur)

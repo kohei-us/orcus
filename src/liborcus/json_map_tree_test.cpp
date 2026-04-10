@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include "json_map_tree.hpp"
 
 #include <cassert>
@@ -14,20 +15,22 @@ using namespace orcus;
 
 void test_link_array_values()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json_map_tree tree;
 
     cell_position_t pos("sheet", 0, 0);
 
     tree.set_cell_link("$[0]", pos);
     pos.row = 1;
-    tree.set_cell_link("$[][0]", pos);
+    tree.set_cell_link("$[2][0]", pos);
 
     const json_map_tree::node* p = tree.get_link("$[0]");
     assert(p);
     assert(p->type == json_map_tree::map_node_type::cell_ref);
     assert(p->value.cell_ref->pos == cell_position_t("sheet", 0, 0));
 
-    p = tree.get_link("$[][0]");
+    p = tree.get_link("$[2][0]");
     assert(p);
     assert(p->type == json_map_tree::map_node_type::cell_ref);
     assert(p->value.cell_ref->pos == cell_position_t("sheet", 1, 0));
@@ -35,6 +38,8 @@ void test_link_array_values()
 
 void test_link_object_values()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     struct entry
     {
         const char* path;
@@ -43,9 +48,9 @@ void test_link_object_values()
 
     std::vector<entry> entries =
     {
-        { "$[]['id']",      cell_position_t("sheet", 2, 3) },
-        { "$[]['name']",    cell_position_t("sheet", 2, 4) },
-        { "$[]['address']", cell_position_t("sheet", 2, 5) },
+        { "$[0]['id']",      cell_position_t("sheet", 2, 3) },
+        { "$[0]['name']",    cell_position_t("sheet", 2, 4) },
+        { "$[0]['address']", cell_position_t("sheet", 2, 5) },
     };
 
     json_map_tree tree;
@@ -64,6 +69,8 @@ void test_link_object_values()
 
 void test_link_object_root()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json_map_tree tree;
 
     const char* path = "$['root'][2]";
@@ -78,6 +85,8 @@ void test_link_object_root()
 
 void test_link_range_fields()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     json_map_tree tree;
 
     cell_position_t pos("sheet", 1, 2);
@@ -116,12 +125,68 @@ void test_link_range_fields()
     assert(p->row_group == ref);
 }
 
+void test_bracket_wildcard()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    // [*] must be interchangeable with [] in range field and row group paths.
+
+    // Register fields and row group using [*], then look them up using [].
+    json_map_tree tree;
+    cell_position_t pos("sheet", 0, 0);
+
+    tree.start_range(pos, true);
+    tree.append_field_link("$[*]['title']", std::string_view{});
+    tree.append_field_link("$[*]['author']", std::string_view{});
+    tree.set_range_row_group("$[*]");
+    tree.commit_range();
+
+    const json_map_tree::node* p = tree.get_link("$[]['title']");
+    assert(p);
+    assert(p->type == json_map_tree::map_node_type::range_field_ref);
+    assert(p->value.range_field_ref->column_pos == 0);
+
+    p = tree.get_link("$[]['author']");
+    assert(p);
+    assert(p->type == json_map_tree::map_node_type::range_field_ref);
+    assert(p->value.range_field_ref->column_pos == 1);
+
+    p = tree.get_link("$[]");
+    assert(p);
+    assert(p->row_group != nullptr);
+
+    // Register fields and row group using [], then look them up using [*].
+    json_map_tree tree2;
+    cell_position_t pos2("sheet", 0, 0);
+
+    tree2.start_range(pos2, true);
+    tree2.append_field_link("$[]['title']", std::string_view{});
+    tree2.append_field_link("$[]['author']", std::string_view{});
+    tree2.set_range_row_group("$[]");
+    tree2.commit_range();
+
+    p = tree2.get_link("$[*]['title']");
+    assert(p);
+    assert(p->type == json_map_tree::map_node_type::range_field_ref);
+    assert(p->value.range_field_ref->column_pos == 0);
+
+    p = tree2.get_link("$[*]['author']");
+    assert(p);
+    assert(p->type == json_map_tree::map_node_type::range_field_ref);
+    assert(p->value.range_field_ref->column_pos == 1);
+
+    p = tree2.get_link("$[*]");
+    assert(p);
+    assert(p->row_group != nullptr);
+}
+
 int main()
 {
     test_link_array_values();
     test_link_object_values();
     test_link_object_root();
     test_link_range_fields();
+    test_bracket_wildcard();
 
     return EXIT_SUCCESS;
 }
