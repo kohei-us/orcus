@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "title": "My Book Collection",
+    "owner": "John Doe",
+    "last-updated": "2025-01-15"
+  },
+  "books": [
+    {
+      "title": "Crime and Punishment",
+      "author": "Fyodor Dostoevsky",
+      "year": 1866,
+      "genre": "Novel",
+      "rating": 4.8
+    },
+    {
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald",
+      "year": 1925,
+      "genre": "Novel",
+      "rating": 4.0
+    },
+    {
+      "title": "One Hundred Years of Solitude",
+      "author": "Gabriel Garcia Marquez",
+      "year": 1967,
+      "genre": "Magic Realism",
+      "rating": 4.7
+    },
+    {
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee",
+      "year": 1960,
+      "genre": "Novel",
+      "rating": 4.9
+    },
+    {
+      "title": "Brave New World",
+      "author": "Aldous Huxley",
+      "year": 1932,
+      "genre": "Dystopian",
+      "rating": 4.2
+    }
+  ]
+}

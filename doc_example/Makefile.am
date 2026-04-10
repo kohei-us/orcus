@@ -1,4 +1,4 @@
-SUBDIRS = xml
+SUBDIRS = xml json
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \

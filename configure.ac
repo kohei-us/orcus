@@ -394,6 +394,7 @@ AC_CONFIG_FILES([Makefile
         benchmark/Makefile
         doc_example/Makefile
         doc_example/xml/Makefile
+        doc_example/json/Makefile
 ])
 AC_OUTPUT
 

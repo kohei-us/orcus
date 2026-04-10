@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Mercury",
+    "type": "Terrestrial",
+    "distance-au": 0.39,
+    "diameter-km": 4879,
+    "moons": 0
+  },
+  {
+    "name": "Venus",
+    "type": "Terrestrial",
+    "distance-au": 0.72,
+    "diameter-km": 12104,
+    "moons": 0
+  },
+  {
+    "name": "Earth",
+    "type": "Terrestrial",
+    "distance-au": 1.0,
+    "diameter-km": 12742,
+    "moons": 1
+  },
+  {
+    "name": "Mars",
+    "type": "Terrestrial",
+    "distance-au": 1.52,
+    "diameter-km": 6779,
+    "moons": 2
+  },
+  {
+    "name": "Jupiter",
+    "type": "Gas Giant",
+    "distance-au": 5.20,
+    "diameter-km": 139820,
+    "moons": 95
+  },
+  {
+    "name": "Saturn",
+    "type": "Gas Giant",
+    "distance-au": 9.58,
+    "diameter-km": 116460,
+    "moons": 146
+  },
+  {
+    "name": "Uranus",
+    "type": "Ice Giant",
+    "distance-au": 19.22,
+    "diameter-km": 50724,
+    "moons": 28
+  },
+  {
+    "name": "Neptune",
+    "type": "Ice Giant",
+    "distance-au": 30.05,
+    "diameter-km": 49244,
+    "moons": 16
+  }
+]
