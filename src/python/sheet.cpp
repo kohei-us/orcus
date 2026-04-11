@@ -9,6 +9,7 @@
 #include "sheet_rows.hpp"
 #include "named_expression.hpp"
 #include "named_expressions.hpp"
+#include "global.hpp"
 
 #include <orcus/spreadsheet/types.hpp>
 #include <orcus/spreadsheet/sheet.hpp>
@@ -306,8 +307,8 @@ void store_sheet(
     if (range.valid())
     {
         pysheet->data_size = PyDict_New();
-        PyDict_SetItemString(pysheet->data_size, "column", PyLong_FromLong(range.last.column+1));
-        PyDict_SetItemString(pysheet->data_size, "row", PyLong_FromLong(range.last.row+1));
+        set_dict_item_new(pysheet->data_size, "column", from_long(range.last.column+1));
+        set_dict_item_new(pysheet->data_size, "row", from_long(range.last.row+1));
     }
     else
     {
@@ -318,8 +319,8 @@ void store_sheet(
     // Sheet size - size of the entire sheet.
     pysheet->sheet_size = PyDict_New();
     ss::range_size_t sheet_size = doc->get_sheet_size();
-    PyDict_SetItemString(pysheet->sheet_size, "column", PyLong_FromLong(sheet_size.columns));
-    PyDict_SetItemString(pysheet->sheet_size, "row", PyLong_FromLong(sheet_size.rows));
+    set_dict_item_new(pysheet->sheet_size, "column", from_long(sheet_size.columns));
+    set_dict_item_new(pysheet->sheet_size, "row", from_long(sheet_size.rows));
 }
 
 }}

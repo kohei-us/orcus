@@ -40,6 +40,24 @@ PyObject* get_python_enum_value(const char* enum_class_name, const char* value_n
     return PyObject_GetAttrString(cls.get(), value_name);
 }
 
+bool set_dict_item_new(PyObject* dict, const char* key, py_scoped_ref value)
+{
+    if (!value)
+        return false;
+
+    int ret = PyDict_SetItemString(dict, key, value.get());
+    return ret == 0;
+}
+
+bool add_to_set_new(PyObject* set, py_scoped_ref key)
+{
+    if (!key)
+        return false;
+
+    int ret = PySet_Add(set, key.get());
+    return ret == 0;
+}
+
 PyObject* create_object_from_type(PyTypeObject* type)
 {
     if (!type)
@@ -57,6 +75,18 @@ PyObject* create_object_from_type(PyTypeObject* type)
         return nullptr;
     }
 
+    return obj;
+}
+
+py_scoped_ref from_long(long v)
+{
+    py_scoped_ref obj = PyLong_FromLong(v);
+    return obj;
+}
+
+py_scoped_ref from_string(std::string_view s)
+{
+    py_scoped_ref obj = PyUnicode_FromStringAndSize(s.data(), s.size());
     return obj;
 }
 

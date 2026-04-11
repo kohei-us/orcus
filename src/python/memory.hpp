@@ -26,10 +26,16 @@ class py_scoped_ref
 public:
     py_scoped_ref();
     py_scoped_ref(PyObject* p);
+    py_scoped_ref(const py_scoped_ref& other);
+    py_scoped_ref(py_scoped_ref&& other) noexcept;
     ~py_scoped_ref();
 
-    py_scoped_ref& operator= (PyObject* p);
+    py_scoped_ref& operator=(PyObject* p);
+    py_scoped_ref& operator=(const py_scoped_ref& other);
+    py_scoped_ref& operator=(py_scoped_ref&& other) noexcept;
+
     PyObject* get();
+    const PyObject* get() const;
     operator bool() const;
 };
 

@@ -52,7 +52,7 @@ PyObject* named_exps_names(PyObject* self, PyObject* /*args*/, PyObject* /*kwarg
     for (auto iter = data.src; iter.has(); iter.next())
     {
         const std::string* name = iter.get().name;
-        PySet_Add(s, PyUnicode_FromStringAndSize(name->data(), name->size()));
+        add_to_set_new(s, from_string(*name));
     }
 
     return s;
