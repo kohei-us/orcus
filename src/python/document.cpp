@@ -159,10 +159,13 @@ PyObject* create_document_object()
     return obj_doc;
 }
 
-void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc)
+bool store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc)
 {
     if (!self)
-        return;
+    {
+        PyErr_SetString(PyExc_RuntimeError, "null document object passed");
+        return false;
+    }
 
     pyobj_document* pydoc = reinterpret_cast<pyobj_document*>(self);
     document_data* pydoc_data = pydoc->data;
@@ -170,12 +173,17 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
 
     PyTypeObject* sheet_type = get_sheet_type();
     if (!sheet_type)
-        return;
+    {
+        PyErr_SetString(PyExc_RuntimeError, "failed to obtain the sheet type");
+        return false;
+    }
 
     // Create a tuple of sheet objects and store it with the pydoc instance.
     size_t sheet_size = pydoc_data->m_doc->get_sheet_count();
 
     pydoc->sheets = PyTuple_New(sheet_size);
+    if (!pydoc->sheets)
+        return false;
 
     for (size_t i = 0; i < sheet_size; ++i)
     {
@@ -185,15 +193,21 @@ void store_document(PyObject* self, std::unique_ptr<spreadsheet::document>&& doc
 
         PyObject* pysheet = sheet_type->tp_new(sheet_type, nullptr, nullptr);
         if (!pysheet)
-            continue;
+        {
+            PyErr_SetString(PyExc_RuntimeError, "failed to create a sheet object");
+            return false;
+        }
 
         sheet_type->tp_init(pysheet, nullptr, nullptr);
 
         Py_INCREF(pysheet);
         PyTuple_SetItem(pydoc->sheets, i, pysheet);
 
-        store_sheet(pysheet, pydoc_data->m_doc.get(), sheet);
+        if (!store_sheet(pysheet, pydoc_data->m_doc.get(), sheet))
+            return false;
     }
+
+    return true;
 }
 
 } // anonoymous namespace
@@ -320,7 +334,12 @@ PyObject* create_document(std::unique_ptr<spreadsheet::document>&& doc)
     if (!obj_doc)
         return nullptr;
 
-    store_document(obj_doc, std::move(doc));
+    if (!store_document(obj_doc, std::move(doc)))
+    {
+        Py_DECREF(obj_doc);
+        return nullptr;
+    }
+
     return obj_doc;
 }
 

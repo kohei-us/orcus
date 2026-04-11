@@ -288,7 +288,7 @@ PyTypeObject* get_sheet_type()
     return &sheet_type;
 }
 
-void store_sheet(
+bool store_sheet(
     PyObject* self, const spreadsheet::document* doc, spreadsheet::sheet* orcus_sheet)
 {
     pyobj_sheet* pysheet = reinterpret_cast<pyobj_sheet*>(self);
@@ -301,14 +301,20 @@ void store_sheet(
     spreadsheet::sheet_t sid = orcus_sheet->get_index();
     std::string_view sheet_name = doc->get_sheet_name(sid);
     pysheet->name = PyUnicode_FromStringAndSize(sheet_name.data(), sheet_name.size());
+    if (!pysheet->name)
+        return false;
 
     // Data size - size of the data area.
     ixion::abs_range_t range = orcus_sheet->get_data_range();
     if (range.valid())
     {
         pysheet->data_size = PyDict_New();
-        set_dict_item_new(pysheet->data_size, "column", from_long(range.last.column+1));
-        set_dict_item_new(pysheet->data_size, "row", from_long(range.last.row+1));
+        if (!pysheet->data_size)
+            return false;
+        if (!set_dict_item_new(pysheet->data_size, "column", from_long(range.last.column+1)))
+            return false;
+        if (!set_dict_item_new(pysheet->data_size, "row", from_long(range.last.row+1)))
+            return false;
     }
     else
     {
@@ -318,9 +324,15 @@ void store_sheet(
 
     // Sheet size - size of the entire sheet.
     pysheet->sheet_size = PyDict_New();
+    if (!pysheet->sheet_size)
+        return false;
     ss::range_size_t sheet_size = doc->get_sheet_size();
-    set_dict_item_new(pysheet->sheet_size, "column", from_long(sheet_size.columns));
-    set_dict_item_new(pysheet->sheet_size, "row", from_long(sheet_size.rows));
+    if (!set_dict_item_new(pysheet->sheet_size, "column", from_long(sheet_size.columns)))
+        return false;
+    if (!set_dict_item_new(pysheet->sheet_size, "row", from_long(sheet_size.rows)))
+        return false;
+
+    return true;
 }
 
 }}

@@ -33,7 +33,13 @@ struct sheet_data
 
 PyTypeObject* get_sheet_type();
 
-void store_sheet(
+/**
+ * Populate a sheet Python object with data from the underlying C++ sheet.
+ *
+ * @return true on success, false on failure. On failure, a Python exception
+ *         has been set by the underlying C API call that failed.
+ */
+bool store_sheet(
     PyObject* self, const spreadsheet::document* doc, spreadsheet::sheet* orcus_sheet);
 
 }}
