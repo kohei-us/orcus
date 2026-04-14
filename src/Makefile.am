@@ -21,6 +21,12 @@ if HAVE_STATIC_LIB
 AM_CPPFLAGS += -D__ORCUS_STATIC_LIB=1
 endif
 
+# version-test
+
+version_test_SOURCES = version_test.cpp
+version_test_LDADD = \
+	./test/liborcus-test.a
+
 # enum-stream-test
 
 enum_stream_test_SOURCES = enum_stream_test.cpp

@@ -7,14 +7,13 @@
 
 #pragma once
 
-#include "./env.hpp"
+#define ORCUS_VERSION "@ORCUS_VERSION@"
+#define ORCUS_VERSION_MAJOR @ORCUS_VERSION_MAJOR@
+#define ORCUS_VERSION_MINOR @ORCUS_VERSION_MINOR@
+#define ORCUS_VERSION_MICRO @ORCUS_VERSION_MICRO@
 
-namespace orcus {
-
-ORCUS_DLLPUBLIC int get_version_major();
-ORCUS_DLLPUBLIC int get_version_minor();
-ORCUS_DLLPUBLIC int get_version_micro();
-
-}
+#define ORCUS_API_VERSION "@ORCUS_API_VERSION@"
+#define ORCUS_API_VERSION_MAJOR @ORCUS_API_VERSION_MAJOR@
+#define ORCUS_API_VERSION_MINOR @ORCUS_API_VERSION_MINOR@
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

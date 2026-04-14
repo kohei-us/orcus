@@ -4,22 +4,22 @@
 # ===================
 # Version information
 # ===================
-m4_define([orcus_major_version], [0])
-m4_define([orcus_minor_version], [22])
-m4_define([orcus_micro_version], [0])
-m4_define([orcus_version], [orcus_major_version.orcus_minor_version.orcus_micro_version])
+m4_define([orcus_version_major], [0])
+m4_define([orcus_version_minor], [22])
+m4_define([orcus_version_micro], [0])
+m4_define([orcus_version], [orcus_version_major.orcus_version_minor.orcus_version_micro])
 
 # ===============
 # API information
 # ===============
-m4_define([orcus_major_api_version], [0])
-m4_define([orcus_minor_api_version], [22])
-m4_define([orcus_api_version], [orcus_major_version.orcus_minor_api_version])
+m4_define([orcus_api_version_major], [0])
+m4_define([orcus_api_version_minor], [22])
+m4_define([orcus_api_version], [orcus_api_version_major.orcus_api_version_minor])
 
 # =============
 # Automake init
 # =============
-AC_INIT([liborcus],[orcus_version])
+AC_INIT([liborcus],[orcus_version], [kohei.yoshida@gmail.com])
 AC_CONFIG_MACRO_DIR([m4])
 m4_pattern_allow([^BOOST_])
 AC_CONFIG_HEADERS([config.h])
@@ -72,14 +72,21 @@ AC_SUBST(IXION_REQUIRED_API_VERSION)
 # =============
 # Set orcus api
 # =============
+ORCUS_VERSION=orcus_version
+ORCUS_VERSION_MAJOR=orcus_version_major
+ORCUS_VERSION_MINOR=orcus_version_minor
+ORCUS_VERSION_MICRO=orcus_version_micro
 ORCUS_API_VERSION=orcus_api_version
-ORCUS_MAJOR_VERSION=orcus_major_version
-ORCUS_MINOR_VERSION=orcus_minor_version
-ORCUS_MICRO_VERSION=orcus_micro_version
+ORCUS_API_VERSION_MAJOR=orcus_api_version_major
+ORCUS_API_VERSION_MINOR=orcus_api_version_minor
+
+AC_SUBST(ORCUS_VERSION)
+AC_SUBST(ORCUS_VERSION_MAJOR)
+AC_SUBST(ORCUS_VERSION_MINOR)
+AC_SUBST(ORCUS_VERSION_MICRO)
 AC_SUBST(ORCUS_API_VERSION)
-AC_SUBST(ORCUS_MAJOR_VERSION)
-AC_SUBST(ORCUS_MINOR_VERSION)
-AC_SUBST(ORCUS_MICRO_VERSION)
+AC_SUBST(ORCUS_API_VERSION_MAJOR)
+AC_SUBST(ORCUS_API_VERSION_MINOR)
 
 BOOST_REQUIRE([1.36])
 
@@ -378,13 +385,13 @@ AC_CONFIG_FILES([Makefile
         liborcus-spreadsheet-model-$ORCUS_API_VERSION.pc:liborcus-spreadsheet-model.pc.in
         include/Makefile
         include/orcus/Makefile
+        include/orcus/version.hpp
         include/orcus/detail/Makefile
         include/orcus/spreadsheet/Makefile
         src/Makefile
         src/include/Makefile
         src/include/mso/Makefile
         src/liborcus/Makefile
-        src/liborcus/constants.inl
         src/mso/Makefile
         src/parser/Makefile
         src/python/Makefile

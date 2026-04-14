@@ -5,25 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/info.hpp"
-
-#include "constants.inl"
+#include <orcus/info.hpp>
+#include <orcus/version.hpp>
 
 namespace orcus {
 
 int get_version_major()
 {
-    return ORCUS_MAJOR_VERSION;
+    return ORCUS_VERSION_MAJOR;
 }
 
 int get_version_minor()
 {
-    return ORCUS_MINOR_VERSION;
+    return ORCUS_VERSION_MINOR;
 }
 
 int get_version_micro()
 {
-    return ORCUS_MICRO_VERSION;
+    return ORCUS_VERSION_MICRO;
 }
 
 }
