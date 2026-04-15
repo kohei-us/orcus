@@ -219,6 +219,12 @@ endforeach()
 
 add_dependencies(check ${_TESTS})
 
+add_executable(version-test EXCLUDE_FROM_ALL version_test.cpp)
+target_link_libraries(version-test PRIVATE orcus-${ORCUS_API_VERSION} orcus-test)
+add_test(version-test version-test)
+
+add_dependencies(check version-test)
+
 install(
     TARGETS ${_INSTALL_TARGETS}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

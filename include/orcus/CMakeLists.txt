@@ -1,6 +1,11 @@
 add_subdirectory(detail)
 add_subdirectory(spreadsheet)
 
+configure_file(
+    ${PROJECT_SOURCE_DIR}/include/orcus/version.hpp.in
+    ${CMAKE_CURRENT_BINARY_DIR}/version.hpp
+)
+
 list(APPEND _HEADERS
     base64.hpp
     cell_buffer.hpp
@@ -63,5 +68,6 @@ if(ORCUS_WITH_PARQUET)
 endif()
 
 install(FILES ${_HEADERS}
+    ${CMAKE_CURRENT_BINARY_DIR}/version.hpp
     DESTINATION include/orcus-${ORCUS_API_VERSION}/orcus
 )

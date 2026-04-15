@@ -138,8 +138,6 @@ endif()
 
 add_library(orcus-${ORCUS_API_VERSION} SHARED ${_SOURCES})
 
-configure_file(constants.inl.in ${CMAKE_CURRENT_BINARY_DIR}/constants.inl)
-
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(orcus-${ORCUS_API_VERSION} ${_LINK_LIBS})
@@ -297,7 +295,7 @@ target_link_libraries(gnumeric-cell-context-test orcus-${ORCUS_API_VERSION} orcu
 target_link_libraries(gnumeric-sheet-context-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 target_link_libraries(xlsx-sheet-context-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 target_link_libraries(xml-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
-target_link_libraries(json-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
+target_link_libraries(json-map-tree-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 target_link_libraries(xpath-parser-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION})
 target_link_libraries(xls-filter-utils-test orcus-${ORCUS_API_VERSION} orcus-parser-${ORCUS_API_VERSION} orcus-test)
 add_test(odf-helper-test odf-helper-test)
