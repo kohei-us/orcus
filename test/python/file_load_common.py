@@ -24,7 +24,7 @@ class ExpectedCell:
     decimal_places: int = 0
 
 
-class Address(object):
+class Address:
 
     def __init__(self, pos_s):
         self.sheet_name, self.row, self.column = pos_s.split('/')
@@ -35,42 +35,42 @@ class Address(object):
         return f"(sheet={self.sheet_name}; row={self.row}, column={self.column})"
 
 
-class ExpectedSheet(object):
+class ExpectedSheet:
 
     def __init__(self, name):
-        self.__name = name
-        self.__rows = collections.OrderedDict()
-        self.__max_column = 0
-        self.__max_row = 0
+        self._name = name
+        self._rows = collections.OrderedDict()
+        self._max_column = 0
+        self._max_row = 0
 
     @property
     def name(self):
-        return self.__name
+        return self._name
 
     @property
     def data_size(self):
-        return {"column": self.__max_column+1, "row": self.__max_row+1}
+        return {"column": self._max_column+1, "row": self._max_row+1}
 
     def get_rows(self):
         rows = list()
-        for i in range(self.__max_row+1):
-            row = [ExpectedCell(orcus.CellType.EMPTY) for _ in range(self.__max_column+1)]
-            if i in self.__rows:
-                for col_pos, cell in self.__rows[i].items():
+        for i in range(self._max_row+1):
+            row = [ExpectedCell(orcus.CellType.EMPTY) for _ in range(self._max_column+1)]
+            if i in self._rows:
+                for col_pos, cell in self._rows[i].items():
                     row[col_pos] = cell
             rows.append(tuple(row))
         return tuple(rows)
 
     def insert_cell(self, row, column, cell_type, cell_value, result, result_places):
-        if row not in self.__rows:
-            self.__rows[row] = collections.OrderedDict()
+        if row not in self._rows:
+            self._rows[row] = collections.OrderedDict()
 
-        row_data = self.__rows[row]
+        row_data = self._rows[row]
 
         if cell_type == "numeric":
             row_data[column] = ExpectedCell(orcus.CellType.NUMERIC, float(cell_value), decimal_places=result_places)
         elif cell_type == "string":
-            row_data[column] = ExpectedCell(orcus.CellType.STRING, self.__unescape_string_cell_value(cell_value))
+            row_data[column] = ExpectedCell(orcus.CellType.STRING, self._unescape_string_cell_value(cell_value))
         elif cell_type == "boolean":
             if cell_value == "true":
                 row_data[column] = ExpectedCell(orcus.CellType.BOOLEAN, True)
@@ -84,12 +84,12 @@ class ExpectedSheet(object):
             raise RuntimeError(f"unhandled cell value type: {cell_type}")
 
         # Update the data range.
-        if row > self.__max_row:
-            self.__max_row = row
-        if column > self.__max_column:
-            self.__max_column = column
+        if row > self._max_row:
+            self._max_row = row
+        if column > self._max_column:
+            self._max_column = column
 
-    def __unescape_string_cell_value(self, v):
+    def _unescape_string_cell_value(self, v):
         if v[0] != '"' or v[-1] != '"':
             raise RuntimeError("string value is expected to be quoted.")
 
@@ -114,7 +114,7 @@ class ExpectedSheet(object):
         return "".join(buf)
 
 
-class ExpectedDocument(object):
+class ExpectedDocument:
 
     @staticmethod
     def _decimal_places(s):
@@ -127,9 +127,9 @@ class ExpectedDocument(object):
         with filepath.open("r") as f:
             for line in f.readlines():
                 line = line.strip()
-                self.__parse_line(line)
+                self._parse_line(line)
 
-    def __parse_line(self, line):
+    def _parse_line(self, line):
         if not line:
             return
 

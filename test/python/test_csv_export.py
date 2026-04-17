@@ -19,7 +19,7 @@ from orcus import FormatType, csv
 TESTDIR_XLSX = (Path(__file__).parent / ".." / "xlsx").resolve()
 
 
-class MockFileObject(object):
+class MockFileObject:
 
     def __init__(self):
         self._content = None
