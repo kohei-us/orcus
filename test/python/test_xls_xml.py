@@ -28,7 +28,7 @@ TESTDIR = (Path(__file__).parent / ".." / "xls-xml").resolve()
     "colored-text",
     "empty-rows",
     "formula-cells-1",
-#   "formula-cells-2",
+    "formula-cells-2",
     "formula-cells-3",
     "invalid-sub-structure",
     "leading-whitespace",

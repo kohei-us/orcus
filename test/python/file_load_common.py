@@ -9,6 +9,7 @@
 """Collection of test cases shared between different file format types."""
 
 import collections
+import math
 from pathlib import Path
 import orcus
 
@@ -50,14 +51,14 @@ class ExpectedSheet(object):
             rows.append(tuple(row))
         return tuple(rows)
 
-    def insert_cell(self, row, column, cell_type, cell_value, result):
+    def insert_cell(self, row, column, cell_type, cell_value, result, result_places):
         if row not in self.__rows:
             self.__rows[row] = collections.OrderedDict()
 
         row_data = self.__rows[row]
 
         if cell_type == "numeric":
-            row_data[column] = (orcus.CellType.NUMERIC, float(cell_value))
+            row_data[column] = (orcus.CellType.NUMERIC, float(cell_value), result_places)
         elif cell_type == "string":
             row_data[column] = (orcus.CellType.STRING, self.__unescape_string_cell_value(cell_value))
         elif cell_type == "boolean":
@@ -68,7 +69,7 @@ class ExpectedSheet(object):
             else:
                 raise RuntimeError(f"invalid boolean value: {cell_value}")
         elif cell_type == "formula":
-            row_data[column] = (orcus.CellType.FORMULA, result, cell_value)
+            row_data[column] = (orcus.CellType.FORMULA, result, cell_value, result_places)
         else:
             raise RuntimeError(f"unhandled cell value type: {cell_type}")
 
@@ -104,6 +105,11 @@ class ExpectedSheet(object):
 
 
 class ExpectedDocument(object):
+
+    @staticmethod
+    def _decimal_places(s):
+        idx = s.find('.')
+        return len(s) - idx - 1 if idx >= 0 else 0
 
     def __init__(self, filepath):
         self.sheets = []
@@ -142,23 +148,29 @@ class ExpectedDocument(object):
 
         pos, cell_type, cell_value = parts[0], parts[1], parts[2]
         result = None
-        if cell_type == "formula":
+        result_places = 0
+        if cell_type == "numeric":
+            result_places = self._decimal_places(cell_value)
+        elif cell_type == "formula":
             # Split the cell value into formula expression and result.
             idx = cell_value.rfind(':')
             if idx < 0:
                 raise RuntimeError("formula line is expected to contain a result value.")
-            cell_value, result = cell_value[:idx], cell_value[idx+1:]
+            result_str = cell_value[idx+1:]
+            cell_value = cell_value[:idx]
+            result_places = 0
             try:
-                result = float(result)
+                result = float(result_str)
+                result_places = self._decimal_places(result_str)
             except ValueError:
-                pass
+                result = result_str
 
         pos = Address(pos)
 
         if not self.sheets or self.sheets[-1].name != pos.sheet_name:
             self.sheets.append(ExpectedSheet(pos.sheet_name))
 
-        self.sheets[-1].insert_cell(pos.row, pos.column, cell_type, cell_value, result)
+        self.sheets[-1].insert_cell(pos.row, pos.column, cell_type, cell_value, result, result_places)
 
 
 def compare_cells(expected, actual):
@@ -170,18 +182,27 @@ def compare_cells(expected, actual):
     if type == orcus.CellType.EMPTY:
         return True, None
 
-    if type in (orcus.CellType.BOOLEAN, orcus.CellType.NUMERIC, orcus.CellType.STRING):
+    if type == orcus.CellType.NUMERIC:
+        tol = 0.5 * 10 ** -expected[2]
+        if not math.isclose(expected[1], actual.value, abs_tol=tol, rel_tol=0):
+            return False, f"expected value is {expected[1]} but {actual.value} is found"
+        return True, None
+
+    if type in (orcus.CellType.BOOLEAN, orcus.CellType.STRING):
         if expected[1] == actual.value:
             return True, None
         else:
             return False, f"expected value is {expected[1]} but {actual.value} is found"
 
     if type == orcus.CellType.FORMULA:
-        if expected[1] != actual.value:
+        if isinstance(expected[1], float):
+            tol = 0.5 * 10 ** -expected[3]
+            if not math.isclose(expected[1], actual.value, abs_tol=tol, rel_tol=0):
+                return False, f"expected value is {expected[1]} but {actual.value} is found"
+        elif expected[1] != actual.value:
             return False, f"expected value is {expected[1]} but {actual.value} is found"
         if expected[2] != actual.formula:
             return False, f"expected formula is {expected[2]} but {actual.formula} is found"
-
         return True, None
 
     return False, "cell comparison result yielded false for unknown reason"
