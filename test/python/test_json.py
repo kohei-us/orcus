@@ -7,39 +7,38 @@
 #
 ########################################################################
 
-import unittest
+import sys
+import pytest
 from orcus import json
 
 
-class JsonTest(unittest.TestCase):
+def test_loads():
+    s = '[1,2,3,"foo",[4,5,6], {"a": 12.3, "b": 34.4, "c": [true, false, null]}]'
+    o = json.loads(s)
+    assert isinstance(o, list)
+    assert len(o) == 6
+    assert o[0] == 1
+    assert o[1] == 2
+    assert o[2] == 3
+    assert o[3] == "foo"
 
-    def test_loads(self):
-        s = '[1,2,3,"foo",[4,5,6], {"a": 12.3, "b": 34.4, "c": [true, false, null]}]'
-        o = json.loads(s)
-        self.assertTrue(isinstance(o, list))
-        self.assertEqual(len(o), 6)
-        self.assertEqual(o[0], 1)
-        self.assertEqual(o[1], 2)
-        self.assertEqual(o[2], 3)
-        self.assertEqual(o[3], "foo")
+    assert isinstance(o[4], list)
+    assert o[4][0] == 4
+    assert o[4][1] == 5
+    assert o[4][2] == 6
 
-        self.assertTrue(isinstance(o[4], list))
-        self.assertEqual(o[4][0], 4)
-        self.assertEqual(o[4][1], 5)
-        self.assertEqual(o[4][2], 6)
+    d = o[5]
+    assert isinstance(d, dict)
+    assert len(d) == 3
+    assert d["a"] == 12.3
+    assert d["b"] == 34.4
 
-        d = o[5]
-        self.assertTrue(isinstance(d, dict))
-        self.assertEqual(len(d), 3)
-        self.assertEqual(d["a"], 12.3)
-        self.assertEqual(d["b"], 34.4)
-
-        l = d["c"]
-        self.assertEqual(len(l), 3)
-        self.assertEqual(l[0], True)
-        self.assertEqual(l[1], False)
-        self.assertEqual(l[2], None)
+    l = d["c"]
+    assert len(l) == 3
+    assert l[0] is True
+    assert l[1] is False
+    assert l[2] is None
 
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))

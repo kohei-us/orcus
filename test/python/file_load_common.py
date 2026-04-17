@@ -8,9 +8,8 @@
 
 """Collection of test cases shared between different file format types."""
 
-import os
-import os.path
 import collections
+from pathlib import Path
 import orcus
 
 
@@ -22,7 +21,7 @@ class Address(object):
         self.column = int(self.column)
 
     def __repr__(self):
-        return "(sheet={}; row={}, column={})".format(self.sheet_name, self.row, self.column)
+        return f"(sheet={self.sheet_name}; row={self.row}, column={self.column})"
 
 
 class ExpectedSheet(object):
@@ -67,11 +66,11 @@ class ExpectedSheet(object):
             elif cell_value == "false":
                 row_data[column] = (orcus.CellType.BOOLEAN, False)
             else:
-                raise RuntimeError("invalid boolean value: {}".format(cell_value))
+                raise RuntimeError(f"invalid boolean value: {cell_value}")
         elif cell_type == "formula":
             row_data[column] = (orcus.CellType.FORMULA, result, cell_value)
         else:
-            raise RuntimeError("unhandled cell value type: {}".format(cell_type))
+            raise RuntimeError(f"unhandled cell value type: {cell_type}")
 
         # Update the data range.
         if row > self.__max_row:
@@ -85,11 +84,13 @@ class ExpectedSheet(object):
 
         v = v[1:-1]  # remove the outer quotes.
 
+        escape_map = {"n": "\n", "t": "\t", "\\": "\\"}
+
         buf = []
         escaped_char = False
         for c in v:
             if escaped_char:
-                buf.append(c)
+                buf.append(escape_map.get(c, c))
                 escaped_char = False
                 continue
 
@@ -107,7 +108,7 @@ class ExpectedDocument(object):
     def __init__(self, filepath):
         self.sheets = []
 
-        with open(filepath, "r") as f:
+        with filepath.open("r") as f:
             for line in f.readlines():
                 line = line.strip()
                 self.__parse_line(line)
@@ -192,44 +193,41 @@ class DocLoader:
         self._mod_loader = mod_loader
 
     def load(self, filepath, recalc):
-        with open(filepath, "rb") as f:
-            return self._mod_loader.read(f, recalc=recalc)
+        return self._mod_loader.read(filepath.open("rb"), recalc=recalc)
 
     def load_from_value(self, filepath):
-        with open(filepath, "rb") as f:
-            bytes = f.read()
-        return self._mod_loader.read(bytes, recalc=False)
+        return self._mod_loader.read(filepath.read_bytes(), recalc=False)
 
 
-def run_test_dir(self, test_dir, doc_loader):
+def run_test_dir(test_dir, doc_loader):
     """Run test case for loading a file into a document.
 
     :param test_dir: test directory that contains an input file (whose base
        name is 'input') and a content check file (check.txt).
-    :param mod_loader: module object that contains function called 'read'.
+    :param doc_loader: DocLoader instance that loads the input file.
     """
 
-    print("test directory: {}".format(test_dir))
-    expected = ExpectedDocument(os.path.join(test_dir, "check.txt"))
+    test_dir = Path(test_dir)
+    print(f"test directory: {test_dir}")
+    expected = ExpectedDocument(test_dir / "check.txt")
 
     # Find the input file to load.
     input_file = None
-    for file_name in os.listdir(test_dir):
-        name, ext = os.path.splitext(file_name)
-        if name == "input":
-            input_file = os.path.join(test_dir, file_name)
+    for p in test_dir.iterdir():
+        if p.stem == "input":
+            input_file = p
             break
 
-    print("input file: {}".format(input_file))
-    self.assertIsNot(input_file, None)
+    print(f"input file: {input_file}")
+    assert input_file is not None
 
     doc = doc_loader.load(input_file, True)
-    self.assertIsInstance(doc, orcus.Document)
+    assert isinstance(doc, orcus.Document)
 
     # Sometimes the actual document contains trailing empty sheets, which the
     # expected document does not store.
-    self.assertTrue(len(expected.sheets))
-    self.assertTrue(len(expected.sheets) <= len(doc.sheets))
+    assert len(expected.sheets) > 0
+    assert len(expected.sheets) <= len(doc.sheets)
 
     expected_sheets = {sh.name: sh for sh in expected.sheets}
     actual_sheets = {sh.name: sh for sh in doc.sheets}
@@ -237,21 +235,21 @@ def run_test_dir(self, test_dir, doc_loader):
     for sheet_name, actual_sheet in actual_sheets.items():
         if sheet_name in expected_sheets:
             expected_sheet = expected_sheets[sheet_name]
-            self.assertEqual(expected_sheet.data_size, actual_sheet.data_size)
+            assert expected_sheet.data_size == actual_sheet.data_size
             for expected_row, actual_row in zip(expected_sheet.get_rows(), actual_sheet.get_rows()):
                 for expected, actual in zip(expected_row, actual_row):
                     result, err = compare_cells(expected, actual)
-                    self.assertTrue(result, msg=err)
+                    assert result, err
         else:
             # This sheet must be empty since it's not in the expected document.
             # Make sure it returns empty row set.
             rows = [row for row in actual_sheet.get_rows()]
-            self.assertEqual(len(rows), 0)
+            assert len(rows) == 0
 
     # Also make sure the document loads fine without recalc.
     doc = doc_loader.load(input_file, False)
-    self.assertIsInstance(doc, orcus.Document)
+    assert isinstance(doc, orcus.Document)
 
     # Make sure the document loads from in-memory value.
     doc = doc_loader.load_from_value(input_file)
-    self.assertIsInstance(doc, orcus.Document)
+    assert isinstance(doc, orcus.Document)

@@ -7,33 +7,28 @@
 #
 ########################################################################
 
-import unittest
-import os
-import os.path
+import sys
+import pytest
+from pathlib import Path
 
 from orcus import gnumeric
 
 import file_load_common as common
 
 
-class TestCase(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        # base directory for xlsx test files.
-        basedir = os.path.join(os.path.dirname(__file__), "..", "gnumeric")
-        cls.basedir = os.path.normpath(basedir)
-
-    def test_import(self):
-
-        test_dirs = (
-            "raw-values-1",
-        )
-
-        for test_dir in test_dirs:
-            test_dir = os.path.join(self.basedir, test_dir)
-            common.run_test_dir(self, test_dir, common.DocLoader(gnumeric))
+TESTDIR = (Path(__file__).parent / ".." / "gnumeric").resolve()
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.mark.parametrize("test_dir_name", [
+    "formula-cells",
+    "linebreak",
+    "named-expression",
+    "named-expression-sheet-local",
+    "raw-values-1",
+])
+def test_import(test_dir_name):
+    common.run_test_dir(TESTDIR / test_dir_name, common.DocLoader(gnumeric))
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))

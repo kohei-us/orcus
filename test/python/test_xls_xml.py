@@ -7,9 +7,9 @@
 #
 ########################################################################
 
-import unittest
-import os
-import os.path
+import sys
+import pytest
+from pathlib import Path
 
 import orcus
 from orcus import xls_xml
@@ -17,64 +17,66 @@ from orcus import xls_xml
 import file_load_common as common
 
 
-class TestCase(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        # base directory for ods test files.
-        basedir = os.path.join(os.path.dirname(__file__), "..", "xls-xml")
-        cls.basedir = os.path.normpath(basedir)
-
-    def test_import(self):
-
-        test_dirs = (
-            "basic",
-            "bold-and-italic",
-            "colored-text",
-            "empty-rows",
-            "merged-cells",
-            "named-expression",
-            "named-expression-sheet-local",
-            "raw-values-1",
-        )
-
-        for test_dir in test_dirs:
-            test_dir = os.path.join(self.basedir, test_dir)
-            common.run_test_dir(self, test_dir, common.DocLoader(xls_xml))
-
-    def test_skip_error_cells(self):
-        filepath = os.path.join(self.basedir, "formula-cells-parse-error", "input.xml")
-        with open(filepath, "rb") as f:
-            bytes = f.read()
-
-        with self.assertRaises(RuntimeError):
-            doc = xls_xml.read(bytes)
-
-        with self.assertRaises(RuntimeError):  # TODO : should we raise a more specific error?
-            doc = xls_xml.read(bytes, error_policy="fail")
-
-        # With the 'skip' policy, formula cells with erroneous formulas are
-        # imported as formula cells with error.
-        doc = xls_xml.read(bytes, error_policy="skip")
-
-        # Make sure cells B2 and A5 are imported as formula cells.
-        rows = [row for row in doc.sheets[0].get_rows()]
-        c = rows[1][1]
-        self.assertEqual(c.type, orcus.CellType.FORMULA_WITH_ERROR)
-        self.assertFalse(c.formula)  # formula string should be empty
-        # error formula tokens consist of: error token, string token (original formula), string token (error message).
-        formula_tokens = [t for t in c.get_formula_tokens()]
-        self.assertEqual(formula_tokens[0].type, orcus.FormulaTokenType.ERROR)
-        self.assertEqual(formula_tokens[1].type, orcus.FormulaTokenType.VALUE)
-        self.assertEqual(formula_tokens[2].type, orcus.FormulaTokenType.VALUE)
-        c = rows[4][0]
-        self.assertEqual(c.type, orcus.CellType.FORMULA_WITH_ERROR)
-        self.assertFalse(c.formula)  # formula string should be empty
-        formula_tokens = [t for t in c.get_formula_tokens()]
-        self.assertEqual(formula_tokens[0].type, orcus.FormulaTokenType.ERROR)
-        self.assertEqual(formula_tokens[1].type, orcus.FormulaTokenType.VALUE)
-        self.assertEqual(formula_tokens[2].type, orcus.FormulaTokenType.VALUE)
+TESTDIR = (Path(__file__).parent / ".." / "xls-xml").resolve()
 
 
-if __name__ == '__main__':
-    unittest.main()
+@pytest.mark.parametrize("test_dir_name", [
+    "basic",
+    "basic-utf-16-be",
+    "basic-utf-16-le",
+    "bold-and-italic",
+    "colored-text",
+    "empty-rows",
+    "formula-cells-1",
+#   "formula-cells-2",
+    "formula-cells-3",
+    "invalid-sub-structure",
+    "leading-whitespace",
+    "linebreak",
+    "merged-cells",
+    "named-colors",
+    "named-expression",
+    "named-expression-sheet-local",
+    "raw-values-1",
+    "table-offset",
+    "unnamed-parent-styles",
+])
+def test_import(test_dir_name):
+    common.run_test_dir(TESTDIR / test_dir_name, common.DocLoader(xls_xml))
+
+
+def test_skip_error_cells():
+    filepath = TESTDIR / "formula-cells-parse-error" / "input.xml"
+    data = filepath.read_bytes()
+
+    with pytest.raises(RuntimeError):
+        xls_xml.read(data)
+
+    with pytest.raises(RuntimeError):  # TODO : should we raise a more specific error?
+        xls_xml.read(data, error_policy="fail")
+
+    # With the 'skip' policy, formula cells with erroneous formulas are
+    # imported as formula cells with error.
+    doc = xls_xml.read(data, error_policy="skip")
+
+    # Make sure cells B2 and A5 are imported as formula cells.
+    rows = [row for row in doc.sheets[0].get_rows()]
+    c = rows[1][1]
+    assert c.type == orcus.CellType.FORMULA_WITH_ERROR
+    assert not c.formula  # formula string should be empty
+    # error formula tokens consist of: error token, string token (original formula), string token (error message).
+    formula_tokens = [t for t in c.get_formula_tokens()]
+    assert formula_tokens[0].type == orcus.FormulaTokenType.ERROR
+    assert formula_tokens[1].type == orcus.FormulaTokenType.VALUE
+    assert formula_tokens[2].type == orcus.FormulaTokenType.VALUE
+    c = rows[4][0]
+    assert c.type == orcus.CellType.FORMULA_WITH_ERROR
+    assert not c.formula  # formula string should be empty
+    formula_tokens = [t for t in c.get_formula_tokens()]
+    assert formula_tokens[0].type == orcus.FormulaTokenType.ERROR
+    assert formula_tokens[1].type == orcus.FormulaTokenType.VALUE
+    assert formula_tokens[2].type == orcus.FormulaTokenType.VALUE
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__]))
