@@ -10,8 +10,18 @@
 
 import collections
 import math
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Optional
 import orcus
+
+
+@dataclass
+class ExpectedCell:
+    type: orcus.CellType
+    value: Optional[Any] = None
+    formula: Optional[str] = None
+    decimal_places: int = 0
 
 
 class Address(object):
@@ -44,7 +54,7 @@ class ExpectedSheet(object):
     def get_rows(self):
         rows = list()
         for i in range(self.__max_row+1):
-            row = [(orcus.CellType.EMPTY, None) for _ in range(self.__max_column+1)]
+            row = [ExpectedCell(orcus.CellType.EMPTY) for _ in range(self.__max_column+1)]
             if i in self.__rows:
                 for col_pos, cell in self.__rows[i].items():
                     row[col_pos] = cell
@@ -58,18 +68,18 @@ class ExpectedSheet(object):
         row_data = self.__rows[row]
 
         if cell_type == "numeric":
-            row_data[column] = (orcus.CellType.NUMERIC, float(cell_value), result_places)
+            row_data[column] = ExpectedCell(orcus.CellType.NUMERIC, float(cell_value), decimal_places=result_places)
         elif cell_type == "string":
-            row_data[column] = (orcus.CellType.STRING, self.__unescape_string_cell_value(cell_value))
+            row_data[column] = ExpectedCell(orcus.CellType.STRING, self.__unescape_string_cell_value(cell_value))
         elif cell_type == "boolean":
             if cell_value == "true":
-                row_data[column] = (orcus.CellType.BOOLEAN, True)
+                row_data[column] = ExpectedCell(orcus.CellType.BOOLEAN, True)
             elif cell_value == "false":
-                row_data[column] = (orcus.CellType.BOOLEAN, False)
+                row_data[column] = ExpectedCell(orcus.CellType.BOOLEAN, False)
             else:
                 raise RuntimeError(f"invalid boolean value: {cell_value}")
         elif cell_type == "formula":
-            row_data[column] = (orcus.CellType.FORMULA, result, cell_value, result_places)
+            row_data[column] = ExpectedCell(orcus.CellType.FORMULA, result, formula=cell_value, decimal_places=result_places)
         else:
             raise RuntimeError(f"unhandled cell value type: {cell_type}")
 
@@ -158,7 +168,6 @@ class ExpectedDocument(object):
                 raise RuntimeError("formula line is expected to contain a result value.")
             result_str = cell_value[idx+1:]
             cell_value = cell_value[:idx]
-            result_places = 0
             try:
                 result = float(result_str)
                 result_places = self._decimal_places(result_str)
@@ -174,35 +183,32 @@ class ExpectedDocument(object):
 
 
 def compare_cells(expected, actual):
-    type = expected[0]
+    if expected.type != actual.type:
+        return False, f"{expected.type} is expected, but {actual.type} is found"
 
-    if type != actual.type:
-        return False, f"{type} is expected, but {actual.type} is found"
-
-    if type == orcus.CellType.EMPTY:
+    if expected.type == orcus.CellType.EMPTY:
         return True, None
 
-    if type == orcus.CellType.NUMERIC:
-        tol = 0.5 * 10 ** -expected[2]
-        if not math.isclose(expected[1], actual.value, abs_tol=tol, rel_tol=0):
-            return False, f"expected value is {expected[1]} but {actual.value} is found"
+    if expected.type == orcus.CellType.NUMERIC:
+        tol = 0.5 * 10 ** -expected.decimal_places
+        if not math.isclose(expected.value, actual.value, abs_tol=tol, rel_tol=0):
+            return False, f"expected value is {expected.value} but {actual.value} is found"
         return True, None
 
-    if type in (orcus.CellType.BOOLEAN, orcus.CellType.STRING):
-        if expected[1] == actual.value:
+    if expected.type in (orcus.CellType.BOOLEAN, orcus.CellType.STRING):
+        if expected.value == actual.value:
             return True, None
-        else:
-            return False, f"expected value is {expected[1]} but {actual.value} is found"
+        return False, f"expected value is {expected.value} but {actual.value} is found"
 
-    if type == orcus.CellType.FORMULA:
-        if isinstance(expected[1], float):
-            tol = 0.5 * 10 ** -expected[3]
-            if not math.isclose(expected[1], actual.value, abs_tol=tol, rel_tol=0):
-                return False, f"expected value is {expected[1]} but {actual.value} is found"
-        elif expected[1] != actual.value:
-            return False, f"expected value is {expected[1]} but {actual.value} is found"
-        if expected[2] != actual.formula:
-            return False, f"expected formula is {expected[2]} but {actual.formula} is found"
+    if expected.type == orcus.CellType.FORMULA:
+        if isinstance(expected.value, float):
+            tol = 0.5 * 10 ** -expected.decimal_places
+            if not math.isclose(expected.value, actual.value, abs_tol=tol, rel_tol=0):
+                return False, f"expected value is {expected.value} but {actual.value} is found"
+        elif expected.value != actual.value:
+            return False, f"expected value is {expected.value} but {actual.value} is found"
+        if expected.formula != actual.formula:
+            return False, f"expected formula is {expected.formula} but {actual.formula} is found"
         return True, None
 
     return False, "cell comparison result yielded false for unknown reason"
