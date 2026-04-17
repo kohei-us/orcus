@@ -182,6 +182,17 @@ class ExpectedDocument:
         self.sheets[-1].insert_cell(pos.row, pos.column, cell_type, cell_value, result, result_places)
 
 
+def _numeric_tolerance(decimal_places: int):
+    """Return absolute tolerance for numeric value based on number of decimal places.
+
+    The tolerance is half a unit of the last stored decimal place, so that
+    any value which rounds to the expected value at that precision will pass.
+    For example, 2 decimal places gives a tolerance of 0.005, meaning
+    330.68909... compares equal to 330.69.
+    """
+    return 0.5 * 10 ** -decimal_places
+
+
 def compare_cells(expected, actual):
     if expected.type != actual.type:
         return False, f"{expected.type} is expected, but {actual.type} is found"
@@ -190,7 +201,7 @@ def compare_cells(expected, actual):
         return True, None
 
     if expected.type == orcus.CellType.NUMERIC:
-        tol = 0.5 * 10 ** -expected.decimal_places
+        tol = _numeric_tolerance(expected.decimal_places)
         if not math.isclose(expected.value, actual.value, abs_tol=tol, rel_tol=0):
             return False, f"expected value is {expected.value} but {actual.value} is found"
         return True, None
@@ -202,7 +213,7 @@ def compare_cells(expected, actual):
 
     if expected.type == orcus.CellType.FORMULA:
         if isinstance(expected.value, float):
-            tol = 0.5 * 10 ** -expected.decimal_places
+            tol = _numeric_tolerance(expected.decimal_places)
             if not math.isclose(expected.value, actual.value, abs_tol=tol, rel_tol=0):
                 return False, f"expected value is {expected.value} but {actual.value} is found"
         elif expected.value != actual.value:
