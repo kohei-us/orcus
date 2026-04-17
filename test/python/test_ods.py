@@ -30,7 +30,7 @@ TESTDIR = (Path(__file__).parent / ".." / "ods").resolve()
     "raw-values-1",
 ])
 def test_import(test_dir_name):
-    common.run_test_dir(TESTDIR / test_dir_name, common.DocLoader(ods))
+    common.run_test_dir(TESTDIR / test_dir_name, ods)
 
 
 def test_formula_tokens_1():

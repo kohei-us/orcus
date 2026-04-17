@@ -27,7 +27,7 @@ TESTDIR = (Path(__file__).parent / ".." / "gnumeric").resolve()
     "raw-values-1",
 ])
 def test_import(test_dir_name):
-    common.run_test_dir(TESTDIR / test_dir_name, common.DocLoader(gnumeric))
+    common.run_test_dir(TESTDIR / test_dir_name, gnumeric)
 
 
 if __name__ == "__main__":

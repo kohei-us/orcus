@@ -32,7 +32,7 @@ TESTDIR = (Path(__file__).parent / ".." / "xlsx").resolve()
     "raw-values-2",
 ])
 def test_import(test_dir_name):
-    common.run_test_dir(TESTDIR / test_dir_name, common.DocLoader(xlsx))
+    common.run_test_dir(TESTDIR / test_dir_name, xlsx)
 
 
 def test_named_expression():

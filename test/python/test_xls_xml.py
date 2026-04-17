@@ -42,7 +42,7 @@ TESTDIR = (Path(__file__).parent / ".." / "xls-xml").resolve()
     "unnamed-parent-styles",
 ])
 def test_import(test_dir_name):
-    common.run_test_dir(TESTDIR / test_dir_name, common.DocLoader(xls_xml))
+    common.run_test_dir(TESTDIR / test_dir_name, xls_xml)
 
 
 def test_skip_error_cells():

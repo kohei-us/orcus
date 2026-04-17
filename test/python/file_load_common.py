@@ -214,24 +214,20 @@ def compare_cells(expected, actual):
     return False, "cell comparison result yielded false for unknown reason"
 
 
-class DocLoader:
-
-    def __init__(self, mod_loader):
-        self._mod_loader = mod_loader
-
-    def load(self, filepath, recalc):
-        return self._mod_loader.read(filepath.open("rb"), recalc=recalc)
-
-    def load_from_value(self, filepath):
-        return self._mod_loader.read(filepath.read_bytes(), recalc=False)
+def load_doc(mod, filepath, recalc):
+    return mod.read(filepath.open("rb"), recalc=recalc)
 
 
-def run_test_dir(test_dir, doc_loader):
+def load_doc_from_bytes(mod, filepath):
+    return mod.read(filepath.read_bytes(), recalc=False)
+
+
+def run_test_dir(test_dir, mod):
     """Run test case for loading a file into a document.
 
     :param test_dir: test directory that contains an input file (whose base
        name is 'input') and a content check file (check.txt).
-    :param doc_loader: DocLoader instance that loads the input file.
+    :param mod: orcus module with a read() function.
     """
 
     test_dir = Path(test_dir)
@@ -248,7 +244,7 @@ def run_test_dir(test_dir, doc_loader):
     print(f"input file: {input_file}")
     assert input_file is not None
 
-    doc = doc_loader.load(input_file, True)
+    doc = load_doc(mod, input_file, True)
     assert isinstance(doc, orcus.Document)
 
     # Sometimes the actual document contains trailing empty sheets, which the
@@ -274,9 +270,9 @@ def run_test_dir(test_dir, doc_loader):
             assert len(rows) == 0
 
     # Also make sure the document loads fine without recalc.
-    doc = doc_loader.load(input_file, False)
+    doc = load_doc(mod, input_file, False)
     assert isinstance(doc, orcus.Document)
 
     # Make sure the document loads from in-memory value.
-    doc = doc_loader.load_from_value(input_file)
+    doc = load_doc_from_bytes(mod, input_file)
     assert isinstance(doc, orcus.Document)
