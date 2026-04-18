@@ -32,21 +32,29 @@ The output is:
 .. code-block:: none
 
    rows: 7  cols: 5
-   +-------+-------------+----------------+--------------------------------------------------------------------+----------------------+
-   | id    | level       | message                                                            | service        | timestamp            |
-   +-------+-------------+----------------+--------------------------------------------------------------------+----------------------+
-   | 1 [v] | INFO        | User alice@example.com authenticated successfully.                 | AuthService    | 2026-03-23T08:02:11Z |
-   +-------+-------------+----------------+--------------------------------------------------------------------+----------------------+
-   | 2 [v] | WARN        | Failed login attempt for user bob@example.com. Attempt 3 of 5.    | AuthService    | 2026-03-23T08:14:37Z |
-   +-------+-------------+----------------+--------------------------------------------------------------------+----------------------+
-   | 3 [v] | ERROR       | Cache connection timed out after 30s. Session store unreachable.   | SessionManager | 2026-03-23T08:31:05Z |
-   +-------+-------------+----------------+--------------------------------------------------------------------+----------------------+
-   | 4 [v] | INFO        | Cache connection restored. Resuming normal operations.             | SessionManager | 2026-03-23T08:31:09Z |
-   +-------+-------------+----------------+--------------------------------------------------------------------+----------------------+
-   | 5 [v] | ERROR       | Request to /api/orders returned 503. Upstream service unavailable. | ApiGateway     | 2026-03-23T09:45:22Z |
-   +-------+-------------+----------------+--------------------------------------------------------------------+----------------------+
-   | 6 [v] | INFO        | Daily report job completed. 1,402 records processed in 4.2s.       | Scheduler      | 2026-03-23T10:00:00Z |
-   +-------+-------------+----------------+--------------------------------------------------------------------+----------------------+
+   +--------+----------------------+-----------+----------------+--------------------------------------------------------------------+
+   | ns0:id | ns0:timestamp        | ns0:level | ns0:service    | ns0:message                                                        |
+   +--------+----------------------+-----------+----------------+--------------------------------------------------------------------+
+   | 1 [v]  | 2026-03-23T08:02:11Z | INFO      | AuthService    | User alice@example.com authenticated successfully.                 |
+   +--------+----------------------+-----------+----------------+--------------------------------------------------------------------+
+   | 2 [v]  | 2026-03-23T08:14:37Z | WARN      | AuthService    | Failed login attempt for user bob@example.com. Attempt 3 of 5.     |
+   +--------+----------------------+-----------+----------------+--------------------------------------------------------------------+
+   | 3 [v]  | 2026-03-23T08:31:05Z | ERROR     | SessionManager | Cache connection timed out after 30s. Session store unreachable.   |
+   +--------+----------------------+-----------+----------------+--------------------------------------------------------------------+
+   | 4 [v]  | 2026-03-23T08:31:09Z | INFO      | SessionManager | Cache connection restored. Resuming normal operations.             |
+   +--------+----------------------+-----------+----------------+--------------------------------------------------------------------+
+   | 5 [v]  | 2026-03-23T09:45:22Z | ERROR     | ApiGateway     | Request to /api/orders returned 503. Upstream service unavailable. |
+   +--------+----------------------+-----------+----------------+--------------------------------------------------------------------+
+   | 6 [v]  | 2026-03-23T10:00:00Z | INFO      | Scheduler      | Daily report job completed. 1,402 records processed in 4.2s.       |
+   +--------+----------------------+-----------+----------------+--------------------------------------------------------------------+
+
+The column headers carry ``ns0:`` prefixes because the auto-detection assigns
+short aliases to each namespace it encounters, and those aliases become part of
+the field names used as column headers.  ``ns0`` corresponds to the primary
+namespace ``http://example.com/server-logs`` in this document.  The aliases are
+assigned in the order the namespaces are first seen during parsing, so
+``ns0`` is always the first-encountered namespace and ``ns1`` the second, and
+so on.
 
 .. note::
 
