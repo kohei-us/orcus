@@ -106,6 +106,22 @@ parsing.  The string can be edited freely at this point — fields can be
 removed, reordered, or relabelled, sheet names can be changed, and unwanted
 ranges can be dropped entirely.
 
+To relabel a field, add a ``label`` attribute to the ``<field>`` element.  For
+example, to give the ``ns0:id`` field a friendlier column header, change:
+
+.. code-block:: xml
+
+   <field path="/ns0:serverLogs/ns0:entry/@ns0:id"/>
+
+to:
+
+.. code-block:: xml
+
+   <field path="/ns0:serverLogs/ns0:entry/@ns0:id" label="id"/>
+
+The ``label`` value is used as the column header in the imported sheet instead
+of the auto-generated path-derived name.
+
 Once any edits are complete, load the definition and import the data:
 
 .. literalinclude:: ../../../doc_example/xml/xml_mapping_autodetect.cpp
