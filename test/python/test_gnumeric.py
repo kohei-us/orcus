@@ -20,6 +20,7 @@ TESTDIR = (Path(__file__).parent / ".." / "gnumeric").resolve()
 
 
 @pytest.mark.parametrize("test_dir_name", [
+    "cell-value-types",
     "formula-cells",
     "linebreak",
     "named-expression",

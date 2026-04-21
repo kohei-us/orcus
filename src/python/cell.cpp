@@ -284,7 +284,13 @@ PyObject* create_cell_object_formula(
     // Create formula expression string.
     auto* resolver = doc.get_formula_name_resolver(spreadsheet::formula_ref_context_t::global);
     const ixion::model_context& cxt = doc.get_model_context();
-    std::string formula_s = ixion::print_formula_tokens(cxt, origin, *resolver, tokens);
+
+    std::string formula_s = ixion::print_formula_tokens(
+        cxt, fc->get_parent_position(origin), *resolver, tokens);
+
+    if (fc->get_group_properties().grouped)
+        formula_s = "{" + formula_s + "}";
+
     obj_data->formula = PyUnicode_FromStringAndSize(formula_s.data(), formula_s.size());
 
     ixion::formula_result res;

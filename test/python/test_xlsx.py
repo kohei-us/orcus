@@ -22,6 +22,7 @@ TESTDIR = (Path(__file__).parent / ".." / "xlsx").resolve()
 @pytest.mark.parametrize("test_dir_name", [
     "boolean-values",
     "empty-shared-strings",
+    "formula-array-1",
     "formula-cells",
     "formula-shared",
     "formula-with-string-results",

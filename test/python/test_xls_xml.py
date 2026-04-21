@@ -27,6 +27,7 @@ TESTDIR = (Path(__file__).parent / ".." / "xls-xml").resolve()
     "bold-and-italic",
     "colored-text",
     "empty-rows",
+    "formula-array-1",
     "formula-cells-1",
     "formula-cells-2",
     "formula-cells-3",
