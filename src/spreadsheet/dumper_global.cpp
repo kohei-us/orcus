@@ -10,9 +10,36 @@
 
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_result.hpp>
+#include <ixion/formula.hpp>
 #include <ixion/cell.hpp>
 
 namespace orcus { namespace spreadsheet { namespace detail {
+
+void dump_formula_expression(
+    std::ostream& os,
+    const ixion::model_context& cxt,
+    ixion::abs_address_t pos,
+    const ixion::formula_name_resolver* resolver,
+    const ixion::formula_cell& cell)
+{
+    const ixion::formula_tokens_store_ptr_t& ts = cell.get_tokens();
+    if (!ts)
+        return;
+
+    std::string formula;
+    if (resolver)
+    {
+        pos = cell.get_parent_position(pos);
+        formula = ixion::print_formula_tokens(cxt, pos, *resolver, ts->get());
+    }
+    else
+        formula = "???";
+
+    if (cell.get_group_properties().grouped)
+        os << '{' << formula << '}';
+    else
+        os << formula;
+}
 
 void dump_cell_value(
     std::ostream& os, const ixion::model_context& cxt, const ixion::model_iterator::cell& cell,

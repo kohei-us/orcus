@@ -6,6 +6,7 @@
  */
 
 #include "html_dumper.hpp"
+#include "dumper_global.hpp"
 #include "impl_types.hpp"
 #include "number_format.hpp"
 
@@ -646,27 +647,10 @@ void html_dumper::dump(std::ostream& os) const
                         // print the formula and the formula result.
                         const ixion::formula_cell* cell = cxt.get_formula_cell(pos);
                         assert(cell);
-                        const ixion::formula_tokens_store_ptr_t& ts = cell->get_tokens();
-                        if (ts)
+                        if (cell->get_tokens())
                         {
-                            const ixion::formula_tokens_t& tokens = ts->get();
-
-                            std::string formula;
-                            if (resolver)
-                            {
-                                pos = cell->get_parent_position(pos);
-                                formula = ixion::print_formula_tokens(
-                                    m_doc.get_model_context(), pos, *resolver, tokens);
-                            }
-                            else
-                                formula = "???";
-
-                            ixion::formula_group_t fg = cell->get_group_properties();
-
-                            if (fg.grouped)
-                                os << '{' << formula << '}';
-                            else
-                                os << formula;
+                            detail::dump_formula_expression(
+                                os, m_doc.get_model_context(), pos, resolver, *cell);
 
                             try
                             {

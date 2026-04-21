@@ -6,6 +6,7 @@
  */
 
 #include "flat_dumper.hpp"
+#include "dumper_global.hpp"
 #include "number_format.hpp"
 #include <orcus/spreadsheet/document.hpp>
 #include <orcus/stream.hpp>
@@ -111,29 +112,11 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
                 // print the formula and the formula result.
                 const ixion::formula_cell* cell = std::get<const ixion::formula_cell*>(c.value);
                 assert(cell);
-                const ixion::formula_tokens_store_ptr_t& ts = cell->get_tokens();
-                if (ts)
+                if (cell->get_tokens())
                 {
-                    const ixion::formula_tokens_t& tokens = ts->get();
-
+                    ixion::abs_address_t pos(sheet_id, c.row, c.col);
                     std::ostringstream os2;
-                    std::string formula;
-                    if (resolver)
-                    {
-                        ixion::abs_address_t pos(sheet_id, c.row, c.col);
-                        pos = cell->get_parent_position(pos);
-                        formula = ixion::print_formula_tokens(
-                            cxt, pos, *resolver, tokens);
-                    }
-                    else
-                        formula = "???";
-
-                    ixion::formula_group_t fg = cell->get_group_properties();
-
-                    if (fg.grouped)
-                        os2 << '{' << formula << '}';
-                    else
-                        os2 << formula;
+                    detail::dump_formula_expression(os2, cxt, pos, resolver, *cell);
 
                     try
                     {
