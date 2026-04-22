@@ -283,4 +283,3 @@ intersphinx_mapping = {
 }
 
 autodoc_member_order = "bysource"
-

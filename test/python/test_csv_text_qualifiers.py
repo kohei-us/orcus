@@ -65,4 +65,3 @@ def test_invalid_qualifier():
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__]))
-
