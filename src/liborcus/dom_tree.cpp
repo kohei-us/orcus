@@ -754,6 +754,8 @@ void dump_element(std::ostream& os, const dom::element& elem, const xmlns_contex
 
 std::string document_tree::dump(std::size_t indent) const
 {
+    (void)indent;
+
     if (!mp_impl->m_root)
         return {};
 
