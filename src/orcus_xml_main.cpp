@@ -37,6 +37,7 @@ namespace output_mode {
 enum class type {
     unknown,
     dump,
+    lint,
     map,
     map_gen,
     transform_xml,
@@ -48,6 +49,7 @@ using map_type = mdds::sorted_string_map<type>;
 // Keys must be sorted.
 constexpr map_type::entry_type entries[] = {
     { "dump",      type::dump          },
+    { "lint",      type::lint          },
     { "map",       type::map           },
     { "map-gen",   type::map_gen       },
     { "structure", type::structure     },
@@ -106,6 +108,10 @@ std::string build_map_help_text()
     return os.str();
 }
 
+const char* help_indent =
+"Number of spaces per indent level for XML output when lint mode is specified. "
+"0 produces compact single-line output.";
+
 bool parse_and_dump_structure(const file_content& content, const std::string& output)
 {
     xmlns_repository repo;
@@ -141,6 +147,16 @@ void dump_document_structure(const file_content& content, output_stream& os)
     tree.dump_compact(os.get());
 }
 
+void dump_document_xml(const file_content& content, output_stream& os, std::size_t indent)
+{
+    xmlns_repository repo;
+    xmlns_context cxt = repo.create_context();
+    dom::document_tree tree(cxt);
+    tree.load(content.str());
+
+    os.get() << tree.dump(indent);
+}
+
 } // anonymous namespace
 
 int main(int argc, char** argv) try
@@ -152,6 +168,7 @@ int main(int argc, char** argv) try
         ("map,m", po::value<std::string>(), build_map_help_text().data())
         ("output,o", po::value<std::string>(), build_output_help_text().data())
         ("output-format,f", po::value<std::string>(), gen_help_output_format().data())
+        ("indent", po::value<std::size_t>(), help_indent)
     ;
 
     po::options_description hidden("");
@@ -248,6 +265,13 @@ int main(int argc, char** argv) try
             {
                 output_stream os(vm);
                 dump_document_structure(content, os);
+                return EXIT_SUCCESS;
+            }
+            case output_mode::type::lint:
+            {
+                output_stream os(vm);
+                std::size_t indent = vm.count("indent") ? vm["indent"].as<std::size_t>() : 0;
+                dump_document_xml(content, os, indent);
                 return EXIT_SUCCESS;
             }
             case output_mode::type::map_gen:

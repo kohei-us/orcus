@@ -666,6 +666,117 @@ void print_scope(std::ostream& os, const scopes_type& scopes)
 
 }
 
+namespace {
+
+// TODO: merge this with the same name function in xml_writer.cpp
+void write_content_encoded(std::ostream& os, std::string_view val, bool in_attr)
+{
+    for (char c : val)
+    {
+        switch (c)
+        {
+            case '&':
+                os << "&amp;";
+                break;
+            case '<':
+                os << "&lt;";
+                break;
+            case '>':
+                os << "&gt;";
+                break;
+            case '"':
+            {
+                if (in_attr)
+                    os << "&quot;";
+                else
+                    os << c;
+                break;
+            }
+            default:
+                os << c;
+        }
+    }
+}
+
+void dump_element_name(std::ostream& os, const dom::entity_name& name, const xmlns_context& cxt)
+{
+    if (name.ns)
+    {
+        std::size_t index = cxt.get_index(name.ns);
+        if (index != INDEX_NOT_FOUND)
+            os << "ns" << index << ':';
+    }
+    os << name.name;
+}
+
+void dump_element(std::ostream& os, const dom::element& elem, const xmlns_context& cxt)
+{
+    os << '<';
+    dump_element_name(os, elem.name, cxt);
+
+    for (const dom::attr& a : elem.attrs)
+    {
+        os << ' ';
+        dump_element_name(os, a.name, cxt);
+        os << "=\"";
+        write_content_encoded(os, a.value, true);
+        os << '"';
+    }
+
+    if (elem.child_nodes.empty())
+    {
+        os << "/>";
+        return;
+    }
+
+    os << '>';
+
+    for (const auto& child : elem.child_nodes)
+    {
+        if (child->type == dom::node_type::content)
+        {
+            const auto* c = static_cast<const dom::content*>(child.get());
+            write_content_encoded(os, c->value, false);
+        }
+        else
+        {
+            assert(child->type == dom::node_type::element);
+            dump_element(os, static_cast<const dom::element&>(*child), cxt);
+        }
+    }
+
+    os << "</";
+    dump_element_name(os, elem.name, cxt);
+    os << '>';
+}
+
+} // anonymous namespace
+
+std::string document_tree::dump(std::size_t indent) const
+{
+    if (!mp_impl->m_root)
+        return {};
+
+    std::ostringstream os;
+
+    // Emit XML declarations
+    for (const auto& [name, decl] : mp_impl->m_decls)
+    {
+        os << "<?" << name;
+        for (const dom::attr& a : decl.attrs)
+        {
+            os << ' ' << a.name.name << "=\"";
+            write_content_encoded(os, a.value, true);
+            os << '"';
+        }
+        os << "?>";
+    }
+
+    dump_element(os, *mp_impl->m_root, mp_impl->m_ns_cxt);
+
+    return os.str();
+}
+
 void document_tree::dump_compact(std::ostream& os) const
 {
     if (!mp_impl->m_root)

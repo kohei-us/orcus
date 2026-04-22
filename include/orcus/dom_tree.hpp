@@ -121,6 +121,17 @@ public:
 
     const sax::doctype_declaration* get_doctype() const;
 
+    /**
+     * Dump the XML document tree to string.
+     *
+     * @param indent Number of whitespace characters to use for one indent
+     *               level.  Note that specifying the indent value of 0 will
+     *               generate output without line breaks.
+     *
+     * @return A string representation of the XML document tree.
+     */
+    std::string dump(std::size_t indent) const;
+
     void dump_compact(std::ostream& os) const;
 };
 
