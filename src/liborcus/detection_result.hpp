@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_DETECTION_RESULT_HPP
-#define ORCUS_DETECTION_RESULT_HPP
+#pragma once
 
 namespace orcus {
 
@@ -22,5 +21,4 @@ public:
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

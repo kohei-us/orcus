@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_IMPL_TYPES_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_IMPL_TYPES_HPP
+#pragma once
 
 #include "orcus/spreadsheet/types.hpp"
 
@@ -33,7 +32,5 @@ std::ostream& operator<< (std::ostream& os, const cell_position_t& ref);
 bool operator< (const cell_position_t& left, const cell_position_t& right);
 
 }}}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

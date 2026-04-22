@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_ORCUS_XML_IMPL_HPP
-#define INCLUDED_ORCUS_ORCUS_XML_IMPL_HPP
+#pragma once
 
 #include "orcus/orcus_xml.hpp"
 #include "orcus/xml_namespace.hpp"
@@ -45,7 +44,5 @@ struct orcus_xml::impl
 };
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

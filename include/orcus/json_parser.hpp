@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_JSON_PARSER_HPP
-#define INCLUDED_ORCUS_JSON_PARSER_HPP
+#pragma once
 
 #include "json_parser_base.hpp"
 
@@ -394,7 +393,5 @@ void json_parser<_Handler>::string()
 }
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

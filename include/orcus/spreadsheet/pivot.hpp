@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_PIVOT_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_PIVOT_HPP
+#pragma once
 
 #include "../env.hpp"
 #include "../types.hpp"
@@ -439,7 +438,5 @@ ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const pivot_cache
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const pivot_item_t& v);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

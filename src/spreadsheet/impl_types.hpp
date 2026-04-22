@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_DETAIL_IMPL_TYPES_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_DETAIL_IMPL_TYPES_HPP
+#pragma once
 
 #include "orcus/spreadsheet/types.hpp"
 
@@ -34,7 +33,5 @@ typedef mdds::flat_segment_tree<col_t, col_t> overlapped_col_index_type;
 typedef std::unordered_map<row_t, std::unique_ptr<overlapped_col_index_type>> overlapped_cells_type;
 
 }}}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

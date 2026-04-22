@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_DETAIL_THREAD_HPP
-#define INCLUDED_ORCUS_DETAIL_THREAD_HPP
+#pragma once
 
 #include <thread>
 
@@ -29,7 +28,5 @@ public:
 };
 
 }}}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

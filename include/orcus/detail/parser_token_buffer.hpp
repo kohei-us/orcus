@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_DETAIL_THREAD_PARSER_TOKEN_BUFFER_HPP
-#define INCLUDED_ORCUS_DETAIL_THREAD_PARSER_TOKEN_BUFFER_HPP
+#pragma once
 
 #include "orcus/exception.hpp"
 
@@ -182,7 +181,5 @@ public:
 };
 
 }}}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

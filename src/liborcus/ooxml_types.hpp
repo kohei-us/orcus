@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_OOXML_TYPES_HPP
-#define INCLUDED_ORCUS_OOXML_TYPES_HPP
+#pragma once
 
 #include <iostream>
 #include <memory>
@@ -69,5 +68,4 @@ struct opc_rel_extras_t
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_OOXML_CONTENT_TYPES_HPP
-#define INCLUDED_ORCUS_OOXML_CONTENT_TYPES_HPP
+#pragma once
 
 #include "ooxml_types.hpp"
 
@@ -45,5 +44,4 @@ extern const content_type_t* const CT_all;
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

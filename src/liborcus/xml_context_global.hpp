@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_XML_CONTEXT_GLOBAL_HPP
-#define ORCUS_XML_CONTEXT_GLOBAL_HPP
+#pragma once
 
 #include <orcus/types.hpp>
 
@@ -42,7 +41,5 @@ std::optional<double> get_single_double_attr(
     const xml_token_attrs_t& attrs, xmlns_id_t ns, xml_token_t name);
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

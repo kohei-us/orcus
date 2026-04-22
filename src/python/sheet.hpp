@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_SHEET_HPP
-#define INCLUDED_ORCUS_PYTHON_SHEET_HPP
+#pragma once
 
 #include <Python.h>
 
@@ -43,7 +42,5 @@ bool store_sheet(
     PyObject* self, const spreadsheet::document* doc, spreadsheet::sheet* orcus_sheet);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

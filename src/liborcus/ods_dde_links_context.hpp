@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ODS_DDE_LINKS_CONTEXT_HPP
-#define INCLUDED_ODS_DDE_LINKS_CONTEXT_HPP
+#pragma once
 
 #include "xml_context_base.hpp"
 
@@ -36,7 +35,5 @@ public:
 };
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

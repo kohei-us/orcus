@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_ODF_HELPER_HPP
-#define INCLUDED_ORCUS_ODF_HELPER_HPP
+#pragma once
 
 #include <orcus/spreadsheet/types.hpp>
 #include <orcus/measurement.hpp>
@@ -49,7 +48,5 @@ spreadsheet::hor_alignment_t extract_hor_alignment_style(std::string_view value)
 spreadsheet::ver_alignment_t extract_ver_alignment_style(std::string_view value);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

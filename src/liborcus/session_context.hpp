@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SESSION_CONTEXT_HPP
-#define INCLUDED_ORCUS_SESSION_CONTEXT_HPP
+#pragma once
 
 #include <orcus/string_pool.hpp>
 #include <orcus/types.hpp>
@@ -54,5 +53,4 @@ struct session_context
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

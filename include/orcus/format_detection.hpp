@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_FORMAT_DETECTION_HPP
-#define ORCUS_FORMAT_DETECTION_HPP
+#pragma once
 
 #include <orcus/env.hpp>
 #include <orcus/types.hpp>
@@ -62,5 +61,4 @@ ORCUS_DLLPUBLIC std::shared_ptr<iface::import_filter> create_filter(
 
 } // namespace orcus
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

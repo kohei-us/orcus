@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_JSON_GLOBAL_HPP
-#define INCLUDED_ORCUS_JSON_GLOBAL_HPP
+#pragma once
 
 #include "orcus/env.hpp"
 
@@ -24,7 +23,5 @@ namespace orcus { namespace json {
 ORCUS_PSR_DLLPUBLIC std::string escape_string(std::string_view input);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

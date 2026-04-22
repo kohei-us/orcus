@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_CSS_TYPES_HPP
-#define INCLUDED_ORCUS_CSS_TYPES_HPP
+#pragma once
 
 #include "env.hpp"
 
@@ -133,7 +132,5 @@ ORCUS_PSR_DLLPUBLIC std::string pseudo_class_to_string(pseudo_class_t val);
 ORCUS_PSR_DLLPUBLIC property_function_t to_property_function(std::string_view s);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

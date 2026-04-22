@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#pragma once
+
 #include "orcus/json_structure_tree.hpp"
 
 #include <vector>

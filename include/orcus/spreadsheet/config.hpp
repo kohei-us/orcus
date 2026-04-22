@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_CONFIG_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_CONFIG_HPP
+#pragma once
 
 #include "orcus/env.hpp"
 
@@ -31,7 +30,5 @@ struct ORCUS_SPM_DLLPUBLIC document_config
 };
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_THREADED_JSON_PARSER_HPP
-#define INCLUDED_ORCUS_THREADED_JSON_PARSER_HPP
+#pragma once
 
 #include "json_parser_thread.hpp"
 #include "json_parser_base.hpp"
@@ -179,7 +178,5 @@ void threaded_json_parser<_Handler>::process_tokens(json::parse_tokens_t& tokens
 }
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

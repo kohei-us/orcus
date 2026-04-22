@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_CSS_PARSER_BASE_HPP
-#define INCLUDED_CSS_PARSER_BASE_HPP
+#pragma once
 
 #include "orcus/env.hpp"
 #include "orcus/css_types.hpp"
@@ -65,7 +64,5 @@ protected:
 
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

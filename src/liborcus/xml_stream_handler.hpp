@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_XML_STREAM_HANDLER_HPP
-#define ORCUS_XML_STREAM_HANDLER_HPP
+#pragma once
 
 #include <orcus/sax_token_parser.hpp>
 #include <orcus/config.hpp>
@@ -63,5 +62,4 @@ protected:
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

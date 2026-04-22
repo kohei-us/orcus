@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_AUTO_FILTER_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_AUTO_FILTER_HPP
+#pragma once
 
 #include "types.hpp"
 #include "../env.hpp"
@@ -187,7 +186,5 @@ struct ORCUS_SPM_DLLPUBLIC auto_filter_t
 ORCUS_SPM_DLLPUBLIC std::ostream& operator<<(std::ostream& os, const filter_item_t& v);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

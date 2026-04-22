@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_XML_MAP_TREE_HPP
-#define INCLUDED_ORCUS_XML_MAP_TREE_HPP
+#pragma once
 
 #include "orcus/spreadsheet/types.hpp"
 #include "orcus/exception.hpp"
@@ -312,5 +311,4 @@ std::ostream& operator<< (std::ostream& os, const xml_map_tree::linkable& link);
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

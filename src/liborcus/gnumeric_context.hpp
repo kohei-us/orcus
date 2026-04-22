@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_GNUMERICCONTEXT_HPP
-#define INCLUDED_ORCUS_GNUMERICCONTEXT_HPP
+#pragma once
 
 #include "xml_context_base.hpp"
 #include "gnumeric_sheet_context.hpp"
@@ -63,5 +62,4 @@ private:
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

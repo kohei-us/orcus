@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_CSS_DOCUMENT_TREE_HPP
-#define INCLUDED_ORCUS_CSS_DOCUMENT_TREE_HPP
+#pragma once
 
 #include "orcus/css_selector.hpp"
 #include "orcus/exception.hpp"
@@ -94,7 +93,5 @@ public:
 };
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_OPC_READER_HPP
-#define INCLUDED_ORCUS_OPC_READER_HPP
+#pragma once
 
 #include "orcus/env.hpp"
 #include "orcus/zip_archive.hpp"
@@ -123,5 +122,4 @@ private:
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

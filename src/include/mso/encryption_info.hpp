@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_MSO_ENCRYPTION_INFO_HPP__
-#define __ORCUS_MSO_ENCRYPTION_INFO_HPP__
+#pragma once
 
 #include <orcus/env.hpp>
 
@@ -33,5 +32,4 @@ private:
 
 }}
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

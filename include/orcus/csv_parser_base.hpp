@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef CSV_PARSER_BASE_HPP
-#define CSV_PARSER_BASE_HPP
+#pragma once
 
 #include "env.hpp"
 #include "cell_buffer.hpp"
@@ -76,5 +75,4 @@ protected:
 
 }}
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

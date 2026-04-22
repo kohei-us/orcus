@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_STRING_POOL_HPP
-#define INCLUDED_ORCUS_STRING_POOL_HPP
+#pragma once
 
 #include "env.hpp"
 
@@ -95,5 +94,4 @@ private:
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

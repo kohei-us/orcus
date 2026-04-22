@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_FORMULA_RESULT_HPP
-#define INCLUDED_ORCUS_FORMULA_RESULT_HPP
+#pragma once
 
 #include <vector>
 #include <cstdlib>
@@ -65,8 +64,5 @@ std::ostream& operator<< (std::ostream& os, const formula_result& v);
 std::ostream& operator<< (std::ostream& os, const orcus::range_formula_results& res);
 
 }
-
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_MEMORY_HPP
-#define INCLUDED_ORCUS_PYTHON_MEMORY_HPP
+#pragma once
 
 #include <memory>
 #include <Python.h>
@@ -40,8 +39,5 @@ public:
 };
 
 }}
-
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

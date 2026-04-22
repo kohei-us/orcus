@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SAX_PARSER_HPP
-#define INCLUDED_ORCUS_SAX_PARSER_HPP
+#pragma once
 
 #include "sax_parser_base.hpp"
 
@@ -573,5 +572,4 @@ void sax_parser<HandlerT,ConfigT>::attribute()
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

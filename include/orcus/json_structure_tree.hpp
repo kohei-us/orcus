@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_JSON_STRUCTURE_TREE_HPP
-#define INCLUDED_ORCUS_JSON_STRUCTURE_TREE_HPP
+#pragma once
 
 #include "orcus/env.hpp"
 #include "orcus/types.hpp"
@@ -165,7 +164,5 @@ public:
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, structure_tree::node_type nt);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

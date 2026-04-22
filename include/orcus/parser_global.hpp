@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_PARSER_GLOBAL_HPP
-#define ORCUS_PARSER_GLOBAL_HPP
+#pragma once
 
 #include "env.hpp"
 
@@ -157,5 +156,4 @@ ORCUS_PSR_DLLPUBLIC std::string_view trim(std::string_view str);
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

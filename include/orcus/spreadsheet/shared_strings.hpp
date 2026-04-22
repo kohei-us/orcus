@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_SHARED_STRINGS_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_SHARED_STRINGS_HPP
+#pragma once
 
 #include "document_types.hpp"
 
@@ -73,5 +72,4 @@ public:
 
 }}
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

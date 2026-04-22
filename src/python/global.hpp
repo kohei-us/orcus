@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_GLOBAL_HPP
-#define INCLUDED_ORCUS_PYTHON_GLOBAL_HPP
+#pragma once
 
 #include "memory.hpp"
 
@@ -48,7 +47,5 @@ py_scoped_ref from_long(long v);
 py_scoped_ref from_string(std::string_view s);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

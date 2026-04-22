@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_SPREADSHEET_IMPORT_INTERFACE_HPP
-#define ORCUS_SPREADSHEET_IMPORT_INTERFACE_HPP
+#pragma once
 
 #include <cstdlib>
 
@@ -1313,7 +1312,5 @@ public:
 };
 
 }}}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

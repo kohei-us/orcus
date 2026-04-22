@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_EXCEPTION_HPP
-#define INCLUDED_ORCUS_EXCEPTION_HPP
+#pragma once
 
 #include <stdexcept>
 #include <string>
@@ -146,7 +145,5 @@ class ORCUS_PSR_DLLPUBLIC parsing_aborted_error : public std::exception {};
 }
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

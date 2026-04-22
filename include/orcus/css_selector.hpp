@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_CSS_SELECTOR_HPP
-#define INCLUDED_ORCUS_CSS_SELECTOR_HPP
+#pragma once
 
 #include "env.hpp"
 #include "css_types.hpp"
@@ -104,7 +103,5 @@ ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const css_selector_t
 ORCUS_DLLPUBLIC std::ostream& operator<< (std::ostream& os, const css_property_value_t& v);
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

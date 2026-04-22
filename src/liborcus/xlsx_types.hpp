@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_XLSX_TYPES_HPP__
-#define __ORCUS_XLSX_TYPES_HPP__
+#pragma once
 
 #include "ooxml_types.hpp"
 #include "orcus/spreadsheet/types.hpp"
@@ -129,5 +128,4 @@ enum class xlsx_dynamic_filter_t
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

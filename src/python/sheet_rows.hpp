@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_SHEET_ROWS_HPP
-#define INCLUDED_ORCUS_PYTHON_SHEET_ROWS_HPP
+#pragma once
 
 #include <Python.h>
 #include <ixion/address.hpp>
@@ -48,7 +47,5 @@ PyTypeObject* get_sheet_rows_type();
 void store_sheet_rows_data(PyObject* self, const spreadsheet::document* orcus_doc, const spreadsheet::sheet* orcus_sheet);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

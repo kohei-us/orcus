@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_FORMULA_GLOBAL_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_FORMULA_GLOBAL_HPP
+#pragma once
 
 #include "orcus/spreadsheet/types.hpp"
 
@@ -45,7 +44,5 @@ ixion::abs_range_t to_abs_range(const range_t& range, sheet_t sheet_pos);
 ixion::abs_rc_range_t to_abs_rc_range(const range_t& range);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

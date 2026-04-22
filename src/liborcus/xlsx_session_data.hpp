@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_XLSX_SESSION_DATA_HPP
-#define INCLUDED_ORCUS_XLSX_SESSION_DATA_HPP
+#pragma once
 
 #include "session_context.hpp"
 #include "formula_result.hpp"
@@ -86,7 +85,5 @@ struct xlsx_session_data : public session_context::custom_data
 };
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

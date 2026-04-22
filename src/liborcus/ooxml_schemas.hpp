@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_OOXML_SCHEMAS_HPP
-#define INCLUDED_ORCUS_OOXML_SCHEMAS_HPP
+#pragma once
 
 #include "ooxml_types.hpp"
 
@@ -43,5 +42,4 @@ const extern schema_t* const SCH_all;
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

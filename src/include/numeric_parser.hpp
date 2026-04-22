@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_DETAIL_NUMERIC_PARSER_HPP
-#define INCLUDED_ORCUS_DETAIL_NUMERIC_PARSER_HPP
+#pragma once
 
 #include <mdds/global.hpp>
 #include <limits>
@@ -210,7 +209,5 @@ public:
 };
 
 }} // namespace orcus::detail
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

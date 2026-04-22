@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SAX_TOKEN_PARSER_HPP
-#define INCLUDED_ORCUS_SAX_TOKEN_PARSER_HPP
+#pragma once
 
 #include "sax_ns_parser.hpp"
 #include "types.hpp"
@@ -182,5 +181,4 @@ void sax_token_parser<HandlerT>::parse()
 
 } // namespace orcus
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

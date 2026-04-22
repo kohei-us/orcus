@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_CSV_PARSER_HPP
-#define ORCUS_CSV_PARSER_HPP
+#pragma once
 
 #include "csv_parser_base.hpp"
 
@@ -301,5 +300,4 @@ void csv_parser<_Handler>::push_cell_value(const char* p, size_t n)
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

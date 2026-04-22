@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_MEASUREMENT_HPP
-#define ORCUS_MEASUREMENT_HPP
+#pragma once
 
 #include "types.hpp"
 #include "env.hpp"
@@ -40,5 +39,4 @@ ORCUS_DLLPUBLIC double convert(double value, length_unit_t unit_from, length_uni
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

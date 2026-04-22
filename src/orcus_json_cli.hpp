@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_ORCUS_JSON_CLI_HPP
-#define INCLUDED_ORCUS_ORCUS_JSON_CLI_HPP
+#pragma once
 
 #include <orcus/stream.hpp>
 #include <orcus/types.hpp>
@@ -55,7 +54,5 @@ void map_to_sheets_and_dump(const file_content& content, cmd_params& params);
 }
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

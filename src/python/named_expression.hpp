@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_NAMED_EXPRESSION_HPP
-#define INCLUDED_ORCUS_PYTHON_NAMED_EXPRESSION_HPP
+#pragma once
 
 #include "orcus/spreadsheet/types.hpp"
 
@@ -36,7 +35,5 @@ PyObject* create_named_exp_dict(const spreadsheet::document& doc, ixion::named_e
 PyTypeObject* get_named_exp_type();
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PARSER_UTF8_HPP
-#define INCLUDED_ORCUS_PARSER_UTF8_HPP
+#pragma once
 
 #include <vector>
 #include <cstdint>
@@ -22,7 +21,5 @@ std::vector<char> encode_utf8(uint32_t cp);
 uint8_t calc_utf8_byte_length(uint8_t c1);
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_NUMBER_FORMAT_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_NUMBER_FORMAT_HPP
+#pragma once
 
 #include <iosfwd>
 
@@ -22,7 +21,5 @@ namespace orcus { namespace spreadsheet { namespace detail {
 void format_to_file_output(std::ostream& os, double v);
 
 }}}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

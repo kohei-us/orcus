@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_ODSTABLE_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_ODSTABLE_HPP
+#pragma once
 
 #include "../env.hpp"
 #include "types.hpp"
@@ -196,5 +195,4 @@ private:
 
 }}
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

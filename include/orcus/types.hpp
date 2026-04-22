@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_TYPES_HPP
-#define INCLUDED_ORCUS_TYPES_HPP
+#pragma once
 
 #include <cstdint>
 #include <cstdlib>
@@ -632,5 +631,4 @@ ORCUS_PSR_DLLPUBLIC extern const xml_token_t XML_UNKNOWN_TOKEN;
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

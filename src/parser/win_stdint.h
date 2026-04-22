@@ -25,8 +25,7 @@
  *
  ************************************************************************/
 
-#ifndef WIN_STDINT
-#define WIN_STDINT
+#pragma once
 
 #if _MSC_VER <= 1500
 
@@ -43,4 +42,3 @@ typedef unsigned __int64 uint64_t;
 
 #endif // visual studio version
 
-#endif

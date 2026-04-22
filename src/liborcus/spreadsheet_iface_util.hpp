@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_IFACE_UTIL_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_IFACE_UTIL_HPP
+#pragma once
 
 #include "orcus/spreadsheet/types.hpp"
 
@@ -30,7 +29,5 @@ void push_array_formula(
     spreadsheet::formula_grammar_t grammar, const range_formula_results& results);
 
 } // namespace orcus
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_FORMULA_TOKEN_HPP
-#define INCLUDED_ORCUS_PYTHON_FORMULA_TOKEN_HPP
+#pragma once
 
 #include "orcus/spreadsheet/types.hpp"
 
@@ -34,7 +33,5 @@ PyObject* create_formula_token_object(const spreadsheet::document& doc, const ix
 PyTypeObject* get_formula_token_type();
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

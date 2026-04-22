@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_SHARED_FORMULA_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_SHARED_FORMULA_HPP
+#pragma once
 
 #include <ixion/formula_tokens.hpp>
 
@@ -30,7 +29,5 @@ public:
 };
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

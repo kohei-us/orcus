@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_YAML_PARSER_HPP
-#define INCLUDED_ORCUS_YAML_PARSER_HPP
+#pragma once
 
 #include "orcus/yaml_parser_base.hpp"
 #include "orcus/parser_global.hpp"
@@ -685,7 +684,5 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
 }
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

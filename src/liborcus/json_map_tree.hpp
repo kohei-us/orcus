@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#pragma once
+
 #include "spreadsheet_impl_types.hpp"
 #include "orcus/string_pool.hpp"
 #include "orcus/exception.hpp"

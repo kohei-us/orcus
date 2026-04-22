@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_BASE64_HPP__
-#define __ORCUS_BASE64_HPP__
+#pragma once
 
 #include "env.hpp"
 #include <cstdint>
@@ -33,5 +32,4 @@ ORCUS_PSR_DLLPUBLIC std::string encode_to_base64(const std::vector<uint8_t>& inp
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

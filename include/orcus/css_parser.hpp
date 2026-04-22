@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_CSS_PARSER_HPP
-#define INCLUDED_ORCUS_CSS_PARSER_HPP
+#pragma once
 
 #define ORCUS_DEBUG_CSS 0
 
@@ -877,7 +876,5 @@ void css_parser<_Handler>::block()
 }
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

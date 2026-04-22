@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ODF_NUMBER_FORMATTING_CONTEXT_HPP
-#define ODF_NUMBER_FORMATTING_CONTEXT_HPP
+#pragma once
 
 #include "xml_context_base.hpp"
 #include "odf_styles.hpp"
@@ -174,7 +173,5 @@ private:
 };
 
 } // namespace orcus
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

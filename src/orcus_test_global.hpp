@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_ORCUS_TEST_GLOBAL_HPP
-#define INCLUDED_ORCUS_ORCUS_TEST_GLOBAL_HPP
+#pragma once
 
 #include "test_global.hpp"
 #include <orcus/spreadsheet/document_types.hpp>
@@ -125,7 +124,5 @@ std::shared_ptr<const spreadsheet::table_t> get_table_from_sheet(
     const spreadsheet::document& doc, std::string_view sheet_name, std::string_view table_name);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

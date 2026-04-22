@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_GNUMERIC_HPP
-#define INCLUDED_ORCUS_PYTHON_GNUMERIC_HPP
+#pragma once
 
 #include <Python.h>
 
@@ -15,7 +14,5 @@ namespace orcus { namespace python {
 PyObject* gnumeric_read(PyObject* module, PyObject* args, PyObject* kwargs);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

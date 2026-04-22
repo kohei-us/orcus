@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_DOM_TREE_HPP
-#define INCLUDED_ORCUS_DOM_TREE_HPP
+#pragma once
 
 #include "types.hpp"
 
@@ -128,7 +127,5 @@ public:
 } // namespace dom
 
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

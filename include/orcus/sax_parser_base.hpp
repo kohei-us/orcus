@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SAX_PARSER_BASE_HPP
-#define INCLUDED_ORCUS_SAX_PARSER_BASE_HPP
+#pragma once
 
 #include "env.hpp"
 #include "cell_buffer.hpp"
@@ -203,5 +202,4 @@ protected:
 
 }}
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_DOCUMENT_HPP
-#define INCLUDED_ORCUS_PYTHON_DOCUMENT_HPP
+#pragma once
 
 #include "orcus/spreadsheet/document.hpp"
 
@@ -77,7 +76,5 @@ PyObject* create_document(std::unique_ptr<spreadsheet::document>&& doc);
 PyTypeObject* get_document_type();
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

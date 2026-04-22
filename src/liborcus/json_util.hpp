@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_JSON_UTIL_HPP
-#define INCLUDED_ORCUS_JSON_UTIL_HPP
+#pragma once
 
 #include <sstream>
 #include <string_view>
@@ -16,7 +15,5 @@ namespace orcus { namespace json {
 void dump_string(std::ostringstream& os, std::string_view s);
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_CELL_HPP
-#define INCLUDED_ORCUS_PYTHON_CELL_HPP
+#pragma once
 
 #include <string>
 #include <Python.h>
@@ -38,7 +37,5 @@ PyObject* create_cell_object_formula(
 PyTypeObject* get_cell_type();
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

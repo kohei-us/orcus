@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_SHEET_IMPL_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_SHEET_IMPL_HPP
+#pragma once
 
 #include "impl_types.hpp"
 #include "orcus/spreadsheet/auto_filter.hpp"
@@ -66,7 +65,5 @@ struct sheet_impl
 };
 
 }}}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

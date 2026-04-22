@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_PYTHON_FORMULA_TOKENS_HPP
-#define INCLUDED_ORCUS_PYTHON_FORMULA_TOKENS_HPP
+#pragma once
 
 #include <ixion/formula_tokens_fwd.hpp>
 #include <Python.h>
@@ -33,7 +32,5 @@ PyObject* create_formula_tokens_iterator_object(
 PyTypeObject* get_formula_tokens_type();
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

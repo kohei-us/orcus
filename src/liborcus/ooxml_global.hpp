@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_OOXML_GLOBAL_HPP
-#define ORCUS_OOXML_GLOBAL_HPP
+#pragma once
 
 #include "orcus/types.hpp"
 #include "ooxml_types.hpp"
@@ -44,5 +43,4 @@ void init_ooxml_context(xml_context_base& cxt);
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

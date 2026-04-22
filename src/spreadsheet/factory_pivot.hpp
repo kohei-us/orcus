@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_SPREADSHEET_FACTORY_PIVOT_HPP
-#define INCLUDED_ORCUS_SPREADSHEET_FACTORY_PIVOT_HPP
+#pragma once
 
 #include "orcus/spreadsheet/pivot.hpp"
 #include "orcus/spreadsheet/document.hpp"
@@ -114,7 +113,5 @@ public:
 };
 
 }}
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

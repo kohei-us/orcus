@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_GNUMERICHANDLER_HPP__
-#define __ORCUS_GNUMERICHANDLER_HPP__
+#pragma once
 
 #include "xml_stream_handler.hpp"
 
@@ -32,5 +31,4 @@ public:
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

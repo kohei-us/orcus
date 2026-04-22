@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_XLS_XML_TOKENS_HPP
-#define ORCUS_XLS_XML_TOKENS_HPP
+#pragma once
 
 #include "orcus/tokens.hpp"
 
@@ -16,5 +15,4 @@ extern tokens xls_xml_tokens;
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

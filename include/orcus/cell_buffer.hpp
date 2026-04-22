@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef __ORCUS_CELL_BUFFER_HPP__
-#define __ORCUS_CELL_BUFFER_HPP__
+#pragma once
 
 #include "env.hpp"
 
@@ -38,5 +37,4 @@ public:
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

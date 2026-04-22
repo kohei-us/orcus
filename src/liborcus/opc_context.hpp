@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_OPC_CONTEXT_HPP
-#define INCLUDED_ORCUS_OPC_CONTEXT_HPP
+#pragma once
 
 #include "xml_context_base.hpp"
 #include "ooxml_types.hpp"
@@ -86,5 +85,4 @@ private:
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

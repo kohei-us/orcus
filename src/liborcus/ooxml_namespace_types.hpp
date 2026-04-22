@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_ORCUS_OOXML_NAMESPACE_TYPES_HPP
-#define INCLUDED_ORCUS_OOXML_NAMESPACE_TYPES_HPP
+#pragma once
 
 #include "orcus/types.hpp"
 
@@ -40,5 +39,4 @@ extern const xmlns_id_t* const NS_misc_all;
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

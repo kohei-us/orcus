@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef ORCUS_XLS_XML_NAMESPACE_TYPES_HPP
-#define ORCUS_XLS_XML_NAMESPACE_TYPES_HPP
+#pragma once
 
 #include "orcus/types.hpp"
 
@@ -24,5 +23,4 @@ extern const xmlns_id_t* const NS_xls_xml_all;
 
 }
 
-#endif
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
