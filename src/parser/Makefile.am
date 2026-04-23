@@ -30,6 +30,7 @@ liborcus_parser_@ORCUS_API_VERSION@_la_SOURCES = \
 	unnamed_buffer.cpp \
 	utf8.hpp \
 	utf8.cpp \
+	xml_encode.cpp \
 	xml_namespace.cpp \
 	xml_writer.cpp \
 	yaml_parser_base.cpp \

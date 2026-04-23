@@ -43,6 +43,7 @@ liborcus_HEADERS = \
 	types.hpp \
 	unnamed_buffer.hpp \
 	version.hpp \
+	xml_encode.hpp \
 	xml_namespace.hpp \
 	xml_structure_tree.hpp \
 	xml_writer.hpp \

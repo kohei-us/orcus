@@ -6,6 +6,7 @@
  */
 
 #include "dom_tree_impl.hpp"
+#include <orcus/xml_encode.hpp>
 
 #include <sstream>
 #include <cassert>
@@ -13,36 +14,6 @@
 namespace orcus { namespace dom {
 
 namespace {
-
-// TODO: merge this with the same name function in xml_writer.cpp
-void write_content_encoded(std::ostream& os, std::string_view val, bool in_attr)
-{
-    for (char c : val)
-    {
-        switch (c)
-        {
-            case '&':
-                os << "&amp;";
-                break;
-            case '<':
-                os << "&lt;";
-                break;
-            case '>':
-                os << "&gt;";
-                break;
-            case '"':
-            {
-                if (in_attr)
-                    os << "&quot;";
-                else
-                    os << c;
-                break;
-            }
-            default:
-                os << c;
-        }
-    }
-}
 
 void dump_element_name(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
 {
@@ -65,7 +36,7 @@ void dump_element(std::ostream& os, const detail::element& elem, const xmlns_con
         os << ' ';
         dump_element_name(os, a.name, cxt);
         os << "=\"";
-        write_content_encoded(os, a.value, true);
+        write_content_encoded(os, a.value, xml_encode_context_t::attr_double_quoted);
         os << '"';
     }
 
@@ -82,7 +53,7 @@ void dump_element(std::ostream& os, const detail::element& elem, const xmlns_con
         if (child->type == detail::node_type::content)
         {
             const auto* c = static_cast<const detail::content*>(child.get());
-            write_content_encoded(os, c->value, false);
+            write_content_encoded(os, c->value, xml_encode_context_t::text);
         }
         else
         {
@@ -112,7 +83,7 @@ std::string document_tree::dump(std::size_t /*indent*/) const
         for (const detail::attr& a : decl.attrs)
         {
             os << ' ' << a.name.name << "=\"";
-            write_content_encoded(os, a.value, true);
+            write_content_encoded(os, a.value, xml_encode_context_t::attr_double_quoted);
             os << '"';
         }
         os << "?>";

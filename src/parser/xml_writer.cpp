@@ -7,6 +7,7 @@
 
 #include <orcus/xml_writer.hpp>
 #include <orcus/xml_namespace.hpp>
+#include <orcus/xml_encode.hpp>
 #include <orcus/string_pool.hpp>
 
 #include <vector>
@@ -60,59 +61,6 @@ struct _attr
         value(_value)
     {}
 };
-
-void write_content_encoded(std::string_view content, std::ostream& os)
-{
-    auto _flush = [&os](const char*& p0, const char* p)
-    {
-        size_t n = std::distance(p0, p);
-        os.write(p0, n);
-        p0 = nullptr;
-    };
-
-    constexpr std::string_view cv_lt = "&lt;";
-    constexpr std::string_view cv_gt = "&gt;";
-    constexpr std::string_view cv_amp = "&amp;";
-    constexpr std::string_view cv_apos = "&apos;";
-    constexpr std::string_view cv_quot = "&quot;";
-
-    const char* p = content.data();
-    const char* p_end = p + content.size();
-    const char* p0 = nullptr;
-
-    for (; p != p_end; ++p)
-    {
-        if (!p0)
-            p0 = p;
-
-        switch (*p)
-        {
-            case '<':
-                _flush(p0, p);
-                os.write(cv_lt.data(), cv_lt.size());
-                break;
-            case '>':
-                _flush(p0, p);
-                os.write(cv_gt.data(), cv_gt.size());
-                break;
-            case '&':
-                _flush(p0, p);
-                os.write(cv_amp.data(), cv_amp.size());
-                break;
-            case '\'':
-                _flush(p0, p);
-                os.write(cv_apos.data(), cv_apos.size());
-                break;
-            case '"':
-                _flush(p0, p);
-                os.write(cv_quot.data(), cv_quot.size());
-                break;
-        }
-    }
-
-    if (p0)
-        _flush(p0, p);
-}
 
 } // anonymous namespace
 
@@ -267,7 +215,8 @@ void xml_writer::push_element(const xml_name_t& _name)
         os << ' ';
         mp_impl->print(attr.name);
         os << "=\"";
-        os << attr.value << '"';
+        write_content_encoded(os, attr.value, xml_encode_context_t::attr_double_quoted);
+        os << '"';
     }
 
     mp_impl->attrs.clear();
@@ -292,7 +241,7 @@ void xml_writer::add_attribute(const xml_name_t& name, std::string_view value)
 void xml_writer::add_content(std::string_view content)
 {
     close_current_element();
-    write_content_encoded(content, mp_impl->os);
+    write_content_encoded(mp_impl->os, content, xml_encode_context_t::text);
 }
 
 xml_name_t xml_writer::pop_element()

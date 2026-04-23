@@ -159,6 +159,19 @@ struct ORCUS_PSR_DLLPUBLIC xml_token_element_t
 };
 
 /**
+ * Specifies the XML encoding context which affects which characters get
+ * encoded. The set of characters that require encoding differs depending on
+ * where in an XML document the value will appear.
+ */
+enum class xml_encode_context_t
+{
+    unspecified,        ///< null/sentinel value; no encoding context specified
+    text,               ///< element text content
+    attr_double_quoted, ///< attribute value delimited by double quotes
+    attr_single_quoted, ///< attribute value delimited by single quotes
+};
+
+/**
  * Character set types, generated from IANA character-sets specifications.
  *
  * @see https://www.iana.org/assignments/character-sets/character-sets.xhtml

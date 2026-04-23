@@ -20,6 +20,7 @@ add_library(orcus-parser-${ORCUS_API_VERSION} SHARED
     types.cpp
     unnamed_buffer.cpp
     utf8.cpp
+    xml_encode.cpp
     xml_namespace.cpp
     xml_writer.cpp
     yaml_parser_base.cpp

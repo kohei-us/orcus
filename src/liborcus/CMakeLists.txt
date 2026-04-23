@@ -7,6 +7,8 @@ list(APPEND _SOURCES
     debug_utils.cpp
     detection_result.cpp
     dom_tree.cpp
+    dom_tree_dump.cpp
+    dom_tree_impl.cpp
     format_detection.cpp
     formula_result.cpp
     info.cpp
