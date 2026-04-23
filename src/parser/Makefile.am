@@ -64,6 +64,7 @@ EXTRA_PROGRAMS = \
 	threaded-sax-token-parser-test \
 	types-test \
 	utf8-test \
+	xml-encode-test \
 	xml-namespace-test \
 	xml-validation-test \
 	xml-writer-test \
@@ -257,6 +258,15 @@ utf8_test_SOURCES = \
 utf8_test_LDADD = liborcus-parser-@ORCUS_API_VERSION@.la
 utf8_test_CPPFLAGS = $(AM_CPPFLAGS)
 
+# xml-encode-test
+
+xml_encode_test_SOURCES = xml_encode_test.cpp
+
+xml_encode_test_LDADD = \
+	liborcus-parser-@ORCUS_API_VERSION@.la \
+	../test/liborcus-test.a
+xml_encode_test_CPPFLAGS = $(AM_CPPFLAGS)
+
 # xml-writer-test
 
 xml_writer_test_SOURCES = xml_writer_test.cpp
@@ -291,6 +301,7 @@ TESTS = \
 	threaded-sax-token-parser-test \
 	types-test \
 	utf8-test \
+	xml-encode-test \
 	xml-namespace-test \
 	xml-validation-test \
 	xml-writer-test \
