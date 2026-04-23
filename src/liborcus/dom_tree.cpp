@@ -5,178 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <orcus/dom_tree.hpp>
+#include "dom_tree_impl.hpp"
 #include <orcus/exception.hpp>
-#include <orcus/xml_namespace.hpp>
-#include <orcus/sax_ns_parser.hpp>
-#include <orcus/string_pool.hpp>
 
-#include <iostream>
 #include <sstream>
 #include <cassert>
-#include <unordered_map>
-#include <vector>
 #include <algorithm>
 #include <deque>
 
 namespace orcus {
 
 namespace dom {
-
-namespace {
-
-/**
- * Escape certain characters with backslash (\).
- */
-void escape(std::ostream& os, std::string_view val)
-{
-    if (val.empty())
-        return;
-
-    const char* p = val.data();
-    const char* p_end = p + val.size();
-    for (; p != p_end; ++p)
-    {
-        switch (*p)
-        {
-            case '"':
-                os << "\\\"";
-                break;
-            case '\\':
-                os << "\\\\";
-                break;
-            case '\b':
-                os << "\\b";
-                break;
-            case '\f':
-                os << "\\f";
-                break;
-            case '\n':
-                os << "\\n";
-                break;
-            case '\r':
-                os << "\\r";
-                break;
-            case '\t':
-                os << "\\t";
-                break;
-            default:
-                os << *p;
-        }
-    }
-}
-
-struct attr
-{
-    dom::entity_name name;
-    std::string_view value;
-
-    attr(xmlns_id_t _ns, std::string_view _name, std::string_view _value);
-};
-
-struct entity_name_hash
-{
-    std::size_t operator()(const entity_name& v) const
-    {
-        return std::hash<std::string_view>{}(v.name) ^ reinterpret_cast<std::size_t>(v.ns);
-    }
-};
-
-using attrs_type = std::vector<attr>;
-using attr_map_type = std::unordered_map<entity_name, size_t, entity_name_hash>;
-
-struct declaration
-{
-    attrs_type attrs;
-    attr_map_type attr_map;
-};
-
-enum class node_type { element, content };
-
-struct element;
-
-struct node
-{
-    const element* parent;
-    node_type type;
-
-    node(node_type _type) : parent(nullptr), type(_type) {}
-
-    virtual ~node() = 0;
-    virtual void print(std::ostream& os, const xmlns_context& cxt) const = 0;
-};
-
-typedef std::vector<std::unique_ptr<node>> nodes_type;
-
-struct element : public node
-{
-    entity_name name;
-    attrs_type attrs;
-    attr_map_type attr_map;
-    nodes_type child_nodes;
-    std::vector<size_t> child_elem_positions;
-
-    element() = delete;
-    element(xmlns_id_t _ns, std::string_view _name);
-    virtual void print(std::ostream& os, const xmlns_context& cxt) const;
-    virtual ~element();
-};
-
-struct content : public node
-{
-    std::string_view value;
-
-    content(std::string_view _value);
-    virtual void print(std::ostream& os, const xmlns_context& cxt) const;
-    virtual ~content();
-};
-
-void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
-{
-    if (name.ns)
-    {
-        size_t index = cxt.get_index(name.ns);
-        if (index != INDEX_NOT_FOUND)
-            os << "ns" << index << ':';
-    }
-    os << name.name;
-}
-
-void print(std::ostream& os, const attr& at, const xmlns_context& cxt)
-{
-    dom::print(os, at.name, cxt);
-    os << "=\"";
-    escape(os, at.value);
-    os << '"';
-}
-
-attr::attr(xmlns_id_t _ns, std::string_view _name, std::string_view _value) :
-    name(_ns, _name), value(_value) {}
-
-node::~node() {}
-
-element::element(xmlns_id_t _ns, std::string_view _name) :
-    node(node_type::element), name(_ns, _name) {}
-
-void element::print(std::ostream& os, const xmlns_context& cxt) const
-{
-    dom::print(os, name, cxt);
-}
-
-element::~element() = default;
-
-content::content(std::string_view _value) : node(node_type::content), value(_value) {}
-
-void content::print(std::ostream& os, const xmlns_context& /*cxt*/) const
-{
-    os << '"';
-    escape(os, value);
-    os << '"';
-}
-
-content::~content() = default;
-
-} // anonymous namespace
 
 entity_name::entity_name() : ns(XMLNS_UNKNOWN_ID) {}
 
@@ -202,8 +41,8 @@ struct const_node::impl
 
     union
     {
-        const dom::declaration* decl;
-        const dom::element* elem;
+        const detail::declaration* decl;
+        const detail::element* elem;
 
         struct
         {
@@ -232,12 +71,12 @@ struct const_node::impl
         }
     }
 
-    impl(const dom::element* _elem) : type(node_t::element)
+    impl(const detail::element* _elem) : type(node_t::element)
     {
         value.elem = _elem;
     }
 
-    impl(const dom::declaration* _decl) : type(node_t::declaration)
+    impl(const detail::declaration* _decl) : type(node_t::declaration)
     {
         value.decl = _decl;
     }
@@ -260,7 +99,7 @@ size_t const_node::child_count() const
     {
         case node_t::element:
         {
-            const dom::element* p = mp_impl->value.elem;
+            const detail::element* p = mp_impl->value.elem;
             return p->child_elem_positions.size();
         }
         default:
@@ -276,15 +115,15 @@ const_node const_node::child(size_t index) const
     {
         case node_t::element:
         {
-            const dom::element* p = mp_impl->value.elem;
+            const detail::element* p = mp_impl->value.elem;
 
             size_t elem_pos = p->child_elem_positions.at(index);
             assert(elem_pos < p->child_nodes.size());
 
-            const dom::node* child_node = p->child_nodes[elem_pos].get();
-            assert(child_node->type == node_type::element);
+            const detail::node* child_node = p->child_nodes[elem_pos].get();
+            assert(child_node->type == detail::node_type::element);
 
-            auto v = std::make_unique<impl>(static_cast<const dom::element*>(child_node));
+            auto v = std::make_unique<impl>(static_cast<const detail::element*>(child_node));
             return const_node(std::move(v));
         }
         default:
@@ -299,7 +138,7 @@ entity_name const_node::name() const
     {
         case node_t::element:
         {
-            const dom::element* p = mp_impl->value.elem;
+            const detail::element* p = mp_impl->value.elem;
             return p->name;
         }
         default:
@@ -315,7 +154,7 @@ std::string_view const_node::attribute(const entity_name& name) const
     {
         case node_t::element:
         {
-            const dom::element* p = mp_impl->value.elem;
+            const detail::element* p = mp_impl->value.elem;
             auto it = p->attr_map.find(name);
             if (it == p->attr_map.end())
                 break;
@@ -337,7 +176,7 @@ std::string_view const_node::attribute(std::string_view name) const
     {
         case node_t::declaration:
         {
-            const dom::declaration* p = mp_impl->value.decl;
+            const detail::declaration* p = mp_impl->value.decl;
             auto it = p->attr_map.find(name);
             if (it == p->attr_map.end())
                 return std::string_view();
@@ -359,12 +198,12 @@ size_t const_node::attribute_count() const
     {
         case node_t::declaration:
         {
-            const dom::declaration* p = mp_impl->value.decl;
+            const detail::declaration* p = mp_impl->value.decl;
             return p->attrs.size();
         }
         case node_t::element:
         {
-            const dom::element* p = mp_impl->value.elem;
+            const detail::element* p = mp_impl->value.elem;
             return p->attrs.size();
         }
         default:
@@ -378,7 +217,7 @@ const_node const_node::parent() const
     if (mp_impl->type != node_t::element)
         return const_node();
 
-    const dom::element* p = mp_impl->value.elem->parent;
+    const detail::element* p = mp_impl->value.elem->parent;
     if (!p)
         return const_node();
 
@@ -423,58 +262,11 @@ bool const_node::operator!= (const const_node& other) const
     return !operator==(other);
 }
 
-/**
- * This impl class also serves as the handler for the sax_ns_parser.
- */
-struct document_tree::impl
-{
-    typedef std::vector<dom::element*> element_stack_type;
-    typedef std::unordered_map<std::string_view, dom::declaration> declarations_type;
-
-    xmlns_context& m_ns_cxt;
-    string_pool m_pool;
-
-    std::unique_ptr<sax::doctype_declaration> m_doctype;
-
-    std::string_view m_cur_decl_name;
-    declarations_type m_decls;
-    dom::attrs_type m_doc_attrs;
-    dom::attrs_type m_cur_attrs;
-    dom::attr_map_type m_cur_attr_map;
-    element_stack_type m_elem_stack;
-    std::unique_ptr<dom::element> m_root;
-
-    impl(xmlns_context& cxt) : m_ns_cxt(cxt) {}
-
-    void start_declaration(std::string_view name)
-    {
-        m_cur_decl_name = name;
-    }
-
-    void end_declaration(std::string_view name);
-    void start_element(const sax_ns_parser_element& elem);
-    void end_element(const sax_ns_parser_element& elem);
-    void characters(std::string_view val, bool transient);
-    void doctype(const sax::doctype_declaration& dtd);
-
-    void attribute(std::string_view name, std::string_view val)
-    {
-        set_attribute(XMLNS_UNKNOWN_ID, name, val);
-    }
-
-    void attribute(const sax_ns_parser_attribute& attr)
-    {
-        set_attribute(attr.ns, attr.name, attr.value);
-    }
-
-    void set_attribute(xmlns_id_t ns, std::string_view name, std::string_view val);
-};
-
 void document_tree::impl::end_declaration(std::string_view name)
 {
     assert(m_cur_decl_name == name);
 
-    dom::declaration decl;
+    detail::declaration decl;
     decl.attrs.swap(m_cur_attrs);
     decl.attr_map.swap(m_cur_attr_map);
 
@@ -503,11 +295,11 @@ void document_tree::impl::start_element(const sax_ns_parser_element& elem)
     // These strings must be persistent.
     std::string_view name_safe = m_pool.intern(name).first;
 
-    dom::element* p = nullptr;
+    detail::element* p = nullptr;
     if (!m_root)
     {
         // This must be the root element!
-        m_root = std::make_unique<dom::element>(ns, name_safe);
+        m_root = std::make_unique<detail::element>(ns, name_safe);
         m_elem_stack.push_back(m_root.get());
         p = m_elem_stack.back();
         p->attrs.swap(m_cur_attrs);
@@ -521,9 +313,9 @@ void document_tree::impl::start_element(const sax_ns_parser_element& elem)
     size_t elem_pos = p->child_nodes.size();
     p->child_elem_positions.push_back(elem_pos);
 
-    p->child_nodes.push_back(std::make_unique<dom::element>(ns, name_safe));
-    const dom::element* parent = p;
-    p = static_cast<dom::element*>(p->child_nodes.back().get());
+    p->child_nodes.push_back(std::make_unique<detail::element>(ns, name_safe));
+    const detail::element* parent = p;
+    p = static_cast<detail::element*>(p->child_nodes.back().get());
     p->parent = parent;
     p->attrs.swap(m_cur_attrs);
     p->attr_map.swap(m_cur_attr_map);
@@ -536,7 +328,7 @@ void document_tree::impl::end_element(const sax_ns_parser_element& elem)
     xmlns_id_t ns = elem.ns;
     std::string_view name = elem.name;
 
-    const dom::element* p = m_elem_stack.back();
+    const detail::element* p = m_elem_stack.back();
     if (p->name.ns != ns || p->name.name != name)
         throw general_error("non-matching end element.");
 
@@ -553,9 +345,9 @@ void document_tree::impl::characters(std::string_view val, bool /*transient*/)
     if (val2.empty())
         return;
 
-    dom::element* p = m_elem_stack.back();
+    detail::element* p = m_elem_stack.back();
     val2 = m_pool.intern(val2).first; // Make sure the string is persistent.
-    auto child = std::make_unique<dom::content>(val2);
+    auto child = std::make_unique<detail::content>(val2);
     child->parent = p;
     p->child_nodes.push_back(std::move(child));
 }
@@ -567,8 +359,8 @@ void document_tree::impl::set_attribute(xmlns_id_t ns, std::string_view name, st
     std::string_view val2 = m_pool.intern(val).first;
 
     size_t pos = m_cur_attrs.size();
-    m_cur_attrs.push_back(dom::attr(ns, name2, val2));
-    m_cur_attr_map.insert({dom::entity_name(ns, name2), pos});
+    m_cur_attrs.push_back(detail::attr(ns, name2, val2));
+    m_cur_attr_map.insert({entity_name(ns, name2), pos});
 }
 
 void document_tree::impl::doctype(const sax::doctype_declaration& dtd)
@@ -603,7 +395,7 @@ void document_tree::load(std::string_view strm)
 
 dom::const_node document_tree::root() const
 {
-    const dom::element* p = mp_impl->m_root.get();
+    const detail::element* p = mp_impl->m_root.get();
     auto v = std::make_unique<const_node::impl>(p);
     return dom::const_node(std::move(v));
 }
@@ -614,7 +406,7 @@ dom::const_node document_tree::declaration(std::string_view name) const
     if (it == mp_impl->m_decls.end())
         return dom::const_node();
 
-    const dom::declaration* decl = &it->second;
+    const detail::declaration* decl = &it->second;
     auto v = std::make_unique<dom::const_node::impl>(decl);
     return dom::const_node(std::move(v));
 }
@@ -633,7 +425,7 @@ namespace {
 
 struct scope
 {
-    typedef std::vector<const dom::node*> nodes_type;
+    typedef std::vector<const detail::node*> nodes_type;
     std::string name;
     nodes_type nodes;
     nodes_type::const_iterator current_pos;
@@ -641,7 +433,7 @@ struct scope
     scope(const scope&) = delete;
     scope& operator=(const scope&) = delete;
 
-    scope(const std::string& _name, dom::node* _node) :
+    scope(const std::string& _name, detail::node* _node) :
         name(_name)
     {
         nodes.push_back(_node);
@@ -666,119 +458,6 @@ void print_scope(std::ostream& os, const scopes_type& scopes)
 
 }
 
-namespace {
-
-// TODO: merge this with the same name function in xml_writer.cpp
-void write_content_encoded(std::ostream& os, std::string_view val, bool in_attr)
-{
-    for (char c : val)
-    {
-        switch (c)
-        {
-            case '&':
-                os << "&amp;";
-                break;
-            case '<':
-                os << "&lt;";
-                break;
-            case '>':
-                os << "&gt;";
-                break;
-            case '"':
-            {
-                if (in_attr)
-                    os << "&quot;";
-                else
-                    os << c;
-                break;
-            }
-            default:
-                os << c;
-        }
-    }
-}
-
-void dump_element_name(std::ostream& os, const dom::entity_name& name, const xmlns_context& cxt)
-{
-    if (name.ns)
-    {
-        std::size_t index = cxt.get_index(name.ns);
-        if (index != INDEX_NOT_FOUND)
-            os << "ns" << index << ':';
-    }
-    os << name.name;
-}
-
-void dump_element(std::ostream& os, const dom::element& elem, const xmlns_context& cxt)
-{
-    os << '<';
-    dump_element_name(os, elem.name, cxt);
-
-    for (const dom::attr& a : elem.attrs)
-    {
-        os << ' ';
-        dump_element_name(os, a.name, cxt);
-        os << "=\"";
-        write_content_encoded(os, a.value, true);
-        os << '"';
-    }
-
-    if (elem.child_nodes.empty())
-    {
-        os << "/>";
-        return;
-    }
-
-    os << '>';
-
-    for (const auto& child : elem.child_nodes)
-    {
-        if (child->type == dom::node_type::content)
-        {
-            const auto* c = static_cast<const dom::content*>(child.get());
-            write_content_encoded(os, c->value, false);
-        }
-        else
-        {
-            assert(child->type == dom::node_type::element);
-            dump_element(os, static_cast<const dom::element&>(*child), cxt);
-        }
-    }
-
-    os << "</";
-    dump_element_name(os, elem.name, cxt);
-    os << '>';
-}
-
-} // anonymous namespace
-
-std::string document_tree::dump(std::size_t indent) const
-{
-    (void)indent;
-
-    if (!mp_impl->m_root)
-        return {};
-
-    std::ostringstream os;
-
-    // Emit XML declarations
-    for (const auto& [name, decl] : mp_impl->m_decls)
-    {
-        os << "<?" << name;
-        for (const dom::attr& a : decl.attrs)
-        {
-            os << ' ' << a.name.name << "=\"";
-            write_content_encoded(os, a.value, true);
-            os << '"';
-        }
-        os << "?>";
-    }
-
-    dump_element(os, *mp_impl->m_root, mp_impl->m_ns_cxt);
-
-    return os.str();
-}
-
 void document_tree::dump_compact(std::ostream& os) const
 {
     if (!mp_impl->m_root)
@@ -798,10 +477,10 @@ void document_tree::dump_compact(std::ostream& os) const
         scope& cur_scope = scopes.back();
         for (; cur_scope.current_pos != cur_scope.nodes.end(); ++cur_scope.current_pos)
         {
-            const dom::node* this_node = *cur_scope.current_pos;
+            const detail::node* this_node = *cur_scope.current_pos;
             assert(this_node);
             print_scope(os, scopes);
-            if (this_node->type == dom::node_type::content)
+            if (this_node->type == detail::node_type::content)
             {
                 // This is a text content.
                 this_node->print(os, mp_impl->m_ns_cxt);
@@ -809,29 +488,29 @@ void document_tree::dump_compact(std::ostream& os) const
                 continue;
             }
 
-            assert(this_node->type == dom::node_type::element);
-            const dom::element* elem = static_cast<const dom::element*>(this_node);
+            assert(this_node->type == detail::node_type::element);
+            const detail::element* elem = static_cast<const detail::element*>(this_node);
             os << "/";
             elem->print(os, mp_impl->m_ns_cxt);
             os << std::endl;
 
             {
                 // Dump attributes.
-                dom::attrs_type attrs = elem->attrs;
+                detail::attrs_type attrs = elem->attrs;
                 std::sort(attrs.begin(), attrs.end(),
-                      [](const dom::attr& left, const dom::attr& right) -> bool
+                      [](const detail::attr& left, const detail::attr& right) -> bool
                       {
                           return left.name.name < right.name.name;
                       }
                 );
 
-                for (const dom::attr& a : attrs)
+                for (const detail::attr& a : attrs)
                 {
                     print_scope(os, scopes);
                     os << "/";
                     elem->print(os, mp_impl->m_ns_cxt);
                     os << "@";
-                    dom::print(os, a, mp_impl->m_ns_cxt);
+                    detail::print(os, a, mp_impl->m_ns_cxt);
                     os << std::endl;
                 }
             }
@@ -842,7 +521,7 @@ void document_tree::dump_compact(std::ostream& os) const
             // This element has child nodes.  Push a new scope and populate it
             // with all child elements, but skip content nodes.
             scope::nodes_type nodes;
-            for (const std::unique_ptr<dom::node>& p : elem->child_nodes)
+            for (const std::unique_ptr<detail::node>& p : elem->child_nodes)
                 nodes.push_back(p.get());
 
             assert(!nodes.empty());
