@@ -54,8 +54,6 @@ struct node
 
     node(node_type _type) : parent(nullptr), type(_type) {}
     virtual ~node() = 0;
-
-    virtual void print(std::ostream& os, const xmlns_context& cxt) const = 0;
 };
 
 using nodes_type = std::vector<std::unique_ptr<node>>;
@@ -71,8 +69,6 @@ struct element : public node
     element() = delete;
     element(xmlns_id_t _ns, std::string_view _name);
     virtual ~element();
-
-    virtual void print(std::ostream& os, const xmlns_context& cxt) const override;
 };
 
 struct content : public node
@@ -80,12 +76,13 @@ struct content : public node
     std::string_view value;
 
     content(std::string_view _value);
-    virtual void print(std::ostream& os, const xmlns_context& cxt) const override;
     virtual ~content();
 };
 
 void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt);
 void print(std::ostream& os, const attr& at, const xmlns_context& cxt);
+void print(std::ostream& os, const element& elem, const xmlns_context& cxt);
+void print(std::ostream& os, const content& c, const xmlns_context& cxt);
 
 /**
  * Escape certain characters with backslash (\).

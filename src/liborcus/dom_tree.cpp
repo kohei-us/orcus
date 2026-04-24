@@ -425,7 +425,7 @@ namespace {
 
 struct scope
 {
-    typedef std::vector<const detail::node*> nodes_type;
+    typedef std::vector<const dom::detail::node*> nodes_type;
     std::string name;
     nodes_type nodes;
     nodes_type::const_iterator current_pos;
@@ -467,82 +467,78 @@ void document_tree::dump_compact(std::ostream& os) const
     mp_impl->m_ns_cxt.dump(os);
 
     scopes_type scopes;
-
     scopes.emplace_back(std::string(), mp_impl->m_root.get());
+
     while (!scopes.empty())
     {
-        bool new_scope = false;
-
-        // Iterate through all elements in the current scope.
         scope& cur_scope = scopes.back();
-        for (; cur_scope.current_pos != cur_scope.nodes.end(); ++cur_scope.current_pos)
+
+        if (cur_scope.current_pos == cur_scope.nodes.end())
         {
-            const detail::node* this_node = *cur_scope.current_pos;
-            assert(this_node);
-            print_scope(os, scopes);
-            if (this_node->type == detail::node_type::content)
-            {
-                // This is a text content.
-                this_node->print(os, mp_impl->m_ns_cxt);
-                os << std::endl;
-                continue;
-            }
-
-            assert(this_node->type == detail::node_type::element);
-            const detail::element* elem = static_cast<const detail::element*>(this_node);
-            os << "/";
-            elem->print(os, mp_impl->m_ns_cxt);
-            os << std::endl;
-
-            {
-                // Dump attributes.
-                detail::attrs_type attrs = elem->attrs;
-                std::sort(attrs.begin(), attrs.end(),
-                      [](const detail::attr& left, const detail::attr& right) -> bool
-                      {
-                          return left.name.name < right.name.name;
-                      }
-                );
-
-                for (const detail::attr& a : attrs)
-                {
-                    print_scope(os, scopes);
-                    os << "/";
-                    elem->print(os, mp_impl->m_ns_cxt);
-                    os << "@";
-                    detail::print(os, a, mp_impl->m_ns_cxt);
-                    os << std::endl;
-                }
-            }
-
-            if (elem->child_nodes.empty())
-                continue;
-
-            // This element has child nodes.  Push a new scope and populate it
-            // with all child elements, but skip content nodes.
-            scope::nodes_type nodes;
-            for (const std::unique_ptr<detail::node>& p : elem->child_nodes)
-                nodes.push_back(p.get());
-
-            assert(!nodes.empty());
-
-            // Push a new scope, and restart the loop with the new scope.
-            ++cur_scope.current_pos;
-            std::ostringstream elem_name;
-            elem->print(elem_name, mp_impl->m_ns_cxt);
-            scopes.emplace_back(elem_name.str());
-            scope& child_scope = scopes.back();
-            child_scope.nodes.swap(nodes);
-            child_scope.current_pos = child_scope.nodes.begin();
-
-            new_scope = true;
-            break;
+            // current scope has no more nodes to process - end the scope
+            scopes.pop_back();
+            continue;
         }
 
-        if (new_scope)
+        // process the current node in the current scope
+        const auto* this_node = *cur_scope.current_pos;
+        assert(this_node);
+        ++cur_scope.current_pos;
+
+        // print the scope prefix
+        print_scope(os, scopes);
+
+        if (this_node->type == detail::node_type::content)
+        {
+            // print the value of this content node
+            const auto* v = static_cast<const detail::content*>(this_node);
+            detail::print(os, *v, mp_impl->m_ns_cxt);
+            os << std::endl;
+            continue;
+        }
+
+        assert(this_node->type == detail::node_type::element);
+        const auto* elem = static_cast<const detail::element*>(this_node);
+        os << "/";
+        detail::print(os, *elem, mp_impl->m_ns_cxt);
+        os << std::endl;
+
+        {
+            // dump attributes sorted by name
+            detail::attrs_type attrs = elem->attrs;
+            std::sort(attrs.begin(), attrs.end(),
+                  [](const detail::attr& left, const detail::attr& right) -> bool
+                  {
+                      return left.name.name < right.name.name;
+                  }
+            );
+
+            for (const detail::attr& a : attrs)
+            {
+                print_scope(os, scopes);
+                os << "/";
+                detail::print(os, *elem, mp_impl->m_ns_cxt);
+                os << "@";
+                detail::print(os, a, mp_impl->m_ns_cxt);
+                os << std::endl;
+            }
+        }
+
+        if (elem->child_nodes.empty())
             continue;
 
-        scopes.pop_back();
+        scope::nodes_type nodes;
+        for (const std::unique_ptr<detail::node>& p : elem->child_nodes)
+            nodes.push_back(p.get());
+
+        assert(!nodes.empty());
+
+        std::ostringstream elem_name;
+        detail::print(elem_name, *elem, mp_impl->m_ns_cxt);
+        scopes.emplace_back(elem_name.str());
+        scope& child_scope = scopes.back();
+        child_scope.nodes.swap(nodes);
+        child_scope.current_pos = child_scope.nodes.begin();
     }
 }
 

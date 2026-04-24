@@ -79,23 +79,23 @@ node::~node() = default;
 element::element(xmlns_id_t _ns, std::string_view _name) :
     node(node_type::element), name(_ns, _name) {}
 
-void element::print(std::ostream& os, const xmlns_context& cxt) const
-{
-    detail::print(os, name, cxt);
-}
-
 element::~element() = default;
 
 content::content(std::string_view _value) : node(node_type::content), value(_value) {}
 
-void content::print(std::ostream& os, const xmlns_context& /*cxt*/) const
+content::~content() = default;
+
+void print(std::ostream& os, const element& elem, const xmlns_context& cxt)
 {
-    os << '"';
-    escape(os, value);
-    os << '"';
+    print(os, elem.name, cxt);
 }
 
-content::~content() = default;
+void print(std::ostream& os, const content& c, const xmlns_context& /*cxt*/)
+{
+    os << '"';
+    escape(os, c.value);
+    os << '"';
+}
 
 }}} // namespace orcus::dom::detail
 
