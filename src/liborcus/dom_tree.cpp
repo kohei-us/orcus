@@ -426,26 +426,26 @@ namespace {
 struct scope
 {
     typedef std::vector<const dom::detail::node*> nodes_type;
-    std::string name;
+    entity_name name;
     nodes_type nodes;
     nodes_type::const_iterator current_pos;
 
     scope(const scope&) = delete;
     scope& operator=(const scope&) = delete;
 
-    scope(const std::string& _name, detail::node* _node) :
+    scope(entity_name _name, detail::node* _node) :
         name(_name)
     {
         nodes.push_back(_node);
         current_pos = nodes.begin();
     }
 
-    scope(const std::string& _name) : name(_name) {}
+    scope(entity_name _name) : name(_name) {}
 };
 
 typedef std::deque<scope> scopes_type;
 
-void print_scope(std::ostream& os, const scopes_type& scopes)
+void print_scope(std::ostream& os, const scopes_type& scopes, const xmlns_context& cxt)
 {
     if (scopes.empty())
         throw general_error("scope stack shouldn't be empty while dumping tree.");
@@ -453,7 +453,10 @@ void print_scope(std::ostream& os, const scopes_type& scopes)
     // Skip the first scope which is root.
     scopes_type::const_iterator it = scopes.begin(), it_end = scopes.end();
     for (++it; it != it_end; ++it)
-        os << "/" << it->name;
+    {
+        os << "/";
+        detail::print(os, it->name, cxt);
+    }
 }
 
 }
@@ -467,7 +470,7 @@ void document_tree::dump_compact(std::ostream& os) const
     mp_impl->m_ns_cxt.dump(os);
 
     scopes_type scopes;
-    scopes.emplace_back(std::string(), mp_impl->m_root.get());
+    scopes.emplace_back(entity_name{}, mp_impl->m_root.get());
 
     while (!scopes.empty())
     {
@@ -486,7 +489,7 @@ void document_tree::dump_compact(std::ostream& os) const
         ++cur_scope.current_pos;
 
         // print the scope prefix
-        print_scope(os, scopes);
+        print_scope(os, scopes, mp_impl->m_ns_cxt);
 
         if (this_node->type == detail::node_type::content)
         {
@@ -497,6 +500,7 @@ void document_tree::dump_compact(std::ostream& os) const
             continue;
         }
 
+        // print this element node
         assert(this_node->type == detail::node_type::element);
         const auto* elem = static_cast<const detail::element*>(this_node);
         os << "/";
@@ -515,7 +519,8 @@ void document_tree::dump_compact(std::ostream& os) const
 
             for (const detail::attr& a : attrs)
             {
-                print_scope(os, scopes);
+                // print the scope, element then the attribute
+                print_scope(os, scopes, mp_impl->m_ns_cxt);
                 os << "/";
                 detail::print(os, *elem, mp_impl->m_ns_cxt);
                 os << "@";
@@ -525,17 +530,16 @@ void document_tree::dump_compact(std::ostream& os) const
         }
 
         if (elem->child_nodes.empty())
-            continue;
+            continue; // this element is a leaf element
 
+        // push a new scope with the child elements of this element
         scope::nodes_type nodes;
-        for (const std::unique_ptr<detail::node>& p : elem->child_nodes)
+        for (const auto& p: elem->child_nodes)
             nodes.push_back(p.get());
 
         assert(!nodes.empty());
 
-        std::ostringstream elem_name;
-        detail::print(elem_name, *elem, mp_impl->m_ns_cxt);
-        scopes.emplace_back(elem_name.str());
+        scopes.emplace_back(elem->name);
         scope& child_scope = scopes.back();
         child_scope.nodes.swap(nodes);
         child_scope.current_pos = child_scope.nodes.begin();
