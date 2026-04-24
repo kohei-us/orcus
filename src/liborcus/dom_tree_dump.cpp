@@ -9,63 +9,53 @@
 #include <orcus/xml_encode.hpp>
 
 #include <sstream>
-#include <cassert>
 
 namespace orcus { namespace dom {
 
 namespace {
 
-void dump_element_name(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
+struct xml_dumper : public tree_walker
 {
-    if (name.ns)
+    std::ostream& m_os;
+    const xmlns_context& m_cxt;
+
+    xml_dumper(const detail::element& root, std::ostream& os, const xmlns_context& cxt) :
+        tree_walker(root), m_os(os), m_cxt(cxt) {}
+
+protected:
+    void on_element_enter(const detail::element& elem, std::size_t /*depth*/) override
     {
-        std::size_t index = cxt.get_index(name.ns);
-        if (index != INDEX_NOT_FOUND)
-            os << "ns" << index << ':';
-    }
-    os << name.name;
-}
+        m_os << '<';
+        detail::print(m_os, elem.name, m_cxt);
 
-void dump_element(std::ostream& os, const detail::element& elem, const xmlns_context& cxt)
-{
-    os << '<';
-    dump_element_name(os, elem.name, cxt);
-
-    for (const detail::attr& a : elem.attrs)
-    {
-        os << ' ';
-        dump_element_name(os, a.name, cxt);
-        os << "=\"";
-        write_content_encoded(os, a.value, xml_encode_context_t::attr_double_quoted);
-        os << '"';
-    }
-
-    if (elem.child_nodes.empty())
-    {
-        os << "/>";
-        return;
-    }
-
-    os << '>';
-
-    for (const auto& child : elem.child_nodes)
-    {
-        if (child->type == detail::node_type::content)
+        for (const detail::attr& a : elem.attrs)
         {
-            const auto* c = static_cast<const detail::content*>(child.get());
-            write_content_encoded(os, c->value, xml_encode_context_t::text);
+            m_os << ' ';
+            detail::print(m_os, a.name, m_cxt);
+            m_os << "=\"";
+            write_content_encoded(m_os, a.value, xml_encode_context_t::attr_double_quoted);
+            m_os << '"';
         }
-        else
-        {
-            assert(child->type == detail::node_type::element);
-            dump_element(os, static_cast<const detail::element&>(*child), cxt);
-        }
+
+        // self-close leaf elements
+        m_os << (elem.child_nodes.empty() ? "/>" : ">");
     }
 
-    os << "</";
-    dump_element_name(os, elem.name, cxt);
-    os << '>';
-}
+    void on_element_exit(const detail::element& elem, std::size_t /*depth*/) override
+    {
+        if (elem.child_nodes.empty())
+            return; // already closed with />
+
+        m_os << "</";
+        detail::print(m_os, elem.name, m_cxt);
+        m_os << '>';
+    }
+
+    void on_content(const detail::content& c, std::size_t /*depth*/) override
+    {
+        write_content_encoded(m_os, c.value, xml_encode_context_t::text);
+    }
+};
 
 } // anonymous namespace
 
@@ -89,7 +79,8 @@ std::string document_tree::dump(std::size_t /*indent*/) const
         os << "?>";
     }
 
-    dump_element(os, *mp_impl->m_root, mp_impl->m_ns_cxt);
+    xml_dumper walker(*mp_impl->m_root, os, mp_impl->m_ns_cxt);
+    walker.run();
 
     return os.str();
 }
