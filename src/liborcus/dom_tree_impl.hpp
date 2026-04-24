@@ -135,6 +135,29 @@ struct document_tree::impl
     void set_attribute(xmlns_id_t ns, std::string_view name, std::string_view val);
 };
 
+class tree_walker
+{
+    using nodes_type = std::vector<const detail::node*>;
+
+    struct scope
+    {
+        nodes_type nodes;
+        nodes_type::const_iterator current_pos;
+
+        scope(const scope&) = delete;
+        scope& operator=(const scope&) = delete;
+
+        scope();
+        scope(const detail::node* node);
+    };
+
+    const detail::element& m_root;
+
+public:
+    tree_walker(const detail::element& root);
+    void run();
+};
+
 }} // namespace orcus::dom
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

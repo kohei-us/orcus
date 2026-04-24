@@ -7,6 +7,9 @@
 
 #include "dom_tree_impl.hpp"
 
+#include <cassert>
+#include <deque>
+
 namespace orcus { namespace dom { namespace detail {
 
 attr::attr(xmlns_id_t _ns, std::string_view _name, std::string_view _value) :
@@ -98,5 +101,57 @@ void print(std::ostream& os, const content& c, const xmlns_context& /*cxt*/)
 }
 
 }}} // namespace orcus::dom::detail
+
+namespace orcus { namespace dom {
+
+tree_walker::scope::scope() = default;
+
+tree_walker::scope::scope(const detail::node* node)
+{
+    nodes.push_back(node);
+    current_pos = nodes.begin();
+}
+
+tree_walker::tree_walker(const detail::element& root) : m_root(root) {}
+
+void tree_walker::run()
+{
+    std::deque<scope> scopes;
+    scopes.emplace_back(&m_root);
+
+    while (!scopes.empty())
+    {
+        scope& cur_scope = scopes.back();
+
+        if (cur_scope.current_pos == cur_scope.nodes.end())
+        {
+            scopes.pop_back();
+            continue;
+        }
+
+        const detail::node* this_node = *cur_scope.current_pos;
+        ++cur_scope.current_pos;
+        assert(this_node);
+
+        if (this_node->type == detail::node_type::content)
+            continue;
+
+        const auto* elem = static_cast<const detail::element*>(this_node);
+
+        if (elem->child_nodes.empty())
+            continue;
+
+        nodes_type child_nodes;
+        for (const auto& p : elem->child_nodes)
+            child_nodes.push_back(p.get());
+
+        scopes.emplace_back();
+        scope& child_scope = scopes.back();
+        child_scope.nodes.swap(child_nodes);
+        child_scope.current_pos = child_scope.nodes.begin();
+    }
+}
+
+}} // namespace orcus::dom
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
