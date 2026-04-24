@@ -421,13 +421,10 @@ const sax::doctype_declaration* document_tree::get_doctype() const
 
 namespace {
 
-struct compact_dumper : public tree_walker
+class compact_dumper : public tree_walker
 {
     std::ostream& m_os;
     const xmlns_context& m_cxt;
-
-    compact_dumper(const detail::element& root, std::ostream& os, const xmlns_context& cxt) :
-        tree_walker(root), m_os(os), m_cxt(cxt) {}
 
     void print_path(const detail::element& elem)
     {
@@ -441,6 +438,10 @@ struct compact_dumper : public tree_walker
             detail::print(m_os, (*it)->name, m_cxt);
         }
     }
+
+public:
+    compact_dumper(const detail::element& root, std::ostream& os, const xmlns_context& cxt) :
+        tree_walker(root), m_os(os), m_cxt(cxt) {}
 
 protected:
     void on_element_enter(const detail::element& elem, std::size_t /*depth*/) override
