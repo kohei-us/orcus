@@ -143,19 +143,26 @@ class tree_walker
     {
         nodes_type nodes;
         nodes_type::const_iterator current_pos;
+        const detail::element* owner;
+        std::size_t depth;
 
         scope(const scope&) = delete;
         scope& operator=(const scope&) = delete;
 
-        scope();
-        scope(const detail::node* node);
+        scope(const detail::element* owner, std::size_t depth);
     };
 
     const detail::element& m_root;
 
 public:
     tree_walker(const detail::element& root);
+    virtual ~tree_walker() = default;
     void run();
+
+protected:
+    virtual void on_element_enter(const detail::element&, std::size_t) {}
+    virtual void on_element_exit(const detail::element&, std::size_t) {}
+    virtual void on_content(const detail::content&, std::size_t) {}
 };
 
 }} // namespace orcus::dom

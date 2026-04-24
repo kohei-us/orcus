@@ -8,10 +8,8 @@
 #include "dom_tree_impl.hpp"
 #include <orcus/exception.hpp>
 
-#include <sstream>
 #include <cassert>
 #include <algorithm>
-#include <deque>
 
 namespace orcus {
 
@@ -423,41 +421,59 @@ const sax::doctype_declaration* document_tree::get_doctype() const
 
 namespace {
 
-struct scope
+struct compact_dumper : public tree_walker
 {
-    typedef std::vector<const dom::detail::node*> nodes_type;
-    entity_name name;
-    nodes_type nodes;
-    nodes_type::const_iterator current_pos;
+    std::ostream& m_os;
+    const xmlns_context& m_cxt;
 
-    scope(const scope&) = delete;
-    scope& operator=(const scope&) = delete;
+    compact_dumper(const detail::element& root, std::ostream& os, const xmlns_context& cxt) :
+        tree_walker(root), m_os(os), m_cxt(cxt) {}
 
-    scope(entity_name _name, detail::node* _node) :
-        name(_name)
+    void print_path(const detail::element& elem)
     {
-        nodes.push_back(_node);
-        current_pos = nodes.begin();
+        std::vector<const detail::element*> path;
+        for (const detail::element* p = &elem; p; p = p->parent)
+            path.push_back(p);
+
+        for (auto it = path.rbegin(); it != path.rend(); ++it)
+        {
+            m_os << "/";
+            detail::print(m_os, (*it)->name, m_cxt);
+        }
     }
 
-    scope(entity_name _name) : name(_name) {}
+protected:
+    void on_element_enter(const detail::element& elem, std::size_t /*depth*/) override
+    {
+        print_path(elem);
+        m_os << "\n";
+
+        // dump attributes sorted by name
+        detail::attrs_type attrs = elem.attrs;
+        std::sort(attrs.begin(), attrs.end(),
+            [](const detail::attr& left, const detail::attr& right) {
+                return left.name.name < right.name.name;
+            });
+
+        for (const detail::attr& a : attrs)
+        {
+            // print path, element then the attribute
+            print_path(elem);
+            m_os << "@";
+            detail::print(m_os, a, m_cxt);
+            m_os << "\n";
+        }
+    }
+
+    void on_content(const detail::content& c, std::size_t /*depth*/) override
+    {
+        // print the value of this content node
+        assert(c.parent);
+        print_path(*c.parent);
+        detail::print(m_os, c, m_cxt);
+        m_os << "\n";
+    }
 };
-
-typedef std::deque<scope> scopes_type;
-
-void print_scope(std::ostream& os, const scopes_type& scopes, const xmlns_context& cxt)
-{
-    if (scopes.empty())
-        throw general_error("scope stack shouldn't be empty while dumping tree.");
-
-    // Skip the first scope which is root.
-    scopes_type::const_iterator it = scopes.begin(), it_end = scopes.end();
-    for (++it; it != it_end; ++it)
-    {
-        os << "/";
-        detail::print(os, it->name, cxt);
-    }
-}
 
 }
 
@@ -466,84 +482,9 @@ void document_tree::dump_compact(std::ostream& os) const
     if (!mp_impl->m_root)
         return;
 
-    // Dump namespaces first.
     mp_impl->m_ns_cxt.dump(os);
-
-    scopes_type scopes;
-    scopes.emplace_back(entity_name{}, mp_impl->m_root.get());
-
-    while (!scopes.empty())
-    {
-        scope& cur_scope = scopes.back();
-
-        if (cur_scope.current_pos == cur_scope.nodes.end())
-        {
-            // current scope has no more nodes to process - end the scope
-            scopes.pop_back();
-            continue;
-        }
-
-        // process the current node in the current scope
-        const auto* this_node = *cur_scope.current_pos;
-        assert(this_node);
-        ++cur_scope.current_pos;
-
-        // print the scope prefix
-        print_scope(os, scopes, mp_impl->m_ns_cxt);
-
-        if (this_node->type == detail::node_type::content)
-        {
-            // print the value of this content node
-            const auto* v = static_cast<const detail::content*>(this_node);
-            detail::print(os, *v, mp_impl->m_ns_cxt);
-            os << std::endl;
-            continue;
-        }
-
-        // print this element node
-        assert(this_node->type == detail::node_type::element);
-        const auto* elem = static_cast<const detail::element*>(this_node);
-        os << "/";
-        detail::print(os, *elem, mp_impl->m_ns_cxt);
-        os << std::endl;
-
-        {
-            // dump attributes sorted by name
-            detail::attrs_type attrs = elem->attrs;
-            std::sort(attrs.begin(), attrs.end(),
-                  [](const detail::attr& left, const detail::attr& right) -> bool
-                  {
-                      return left.name.name < right.name.name;
-                  }
-            );
-
-            for (const detail::attr& a : attrs)
-            {
-                // print the scope, element then the attribute
-                print_scope(os, scopes, mp_impl->m_ns_cxt);
-                os << "/";
-                detail::print(os, *elem, mp_impl->m_ns_cxt);
-                os << "@";
-                detail::print(os, a, mp_impl->m_ns_cxt);
-                os << std::endl;
-            }
-        }
-
-        if (elem->child_nodes.empty())
-            continue; // this element is a leaf element
-
-        // push a new scope with the child elements of this element
-        scope::nodes_type nodes;
-        for (const auto& p: elem->child_nodes)
-            nodes.push_back(p.get());
-
-        assert(!nodes.empty());
-
-        scopes.emplace_back(elem->name);
-        scope& child_scope = scopes.back();
-        child_scope.nodes.swap(nodes);
-        child_scope.current_pos = child_scope.nodes.begin();
-    }
+    compact_dumper walker(*mp_impl->m_root, os, mp_impl->m_ns_cxt);
+    walker.run();
 }
 
 } // namespace dom

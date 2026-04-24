@@ -104,20 +104,17 @@ void print(std::ostream& os, const content& c, const xmlns_context& /*cxt*/)
 
 namespace orcus { namespace dom {
 
-tree_walker::scope::scope() = default;
-
-tree_walker::scope::scope(const detail::node* node)
-{
-    nodes.push_back(node);
-    current_pos = nodes.begin();
-}
+tree_walker::scope::scope(const detail::element* _owner, std::size_t _depth) :
+    current_pos(nodes.begin()), owner(_owner), depth(_depth) {}
 
 tree_walker::tree_walker(const detail::element& root) : m_root(root) {}
 
 void tree_walker::run()
 {
     std::deque<scope> scopes;
-    scopes.emplace_back(&m_root);
+    scopes.emplace_back(nullptr, 0u);
+    scopes.back().nodes.push_back(&m_root);
+    scopes.back().current_pos = scopes.back().nodes.begin();
 
     while (!scopes.empty())
     {
@@ -125,27 +122,41 @@ void tree_walker::run()
 
         if (cur_scope.current_pos == cur_scope.nodes.end())
         {
+            // current scope has no more nodes to process - end the scope
+            if (cur_scope.owner)
+                on_element_exit(*cur_scope.owner, cur_scope.depth - 1);
             scopes.pop_back();
             continue;
         }
 
+        // process the current node in the current scope
         const detail::node* this_node = *cur_scope.current_pos;
         ++cur_scope.current_pos;
         assert(this_node);
 
         if (this_node->type == detail::node_type::content)
+        {
+            const auto* cnt = static_cast<const detail::content*>(this_node);
+            on_content(*cnt, cur_scope.depth);
             continue;
+        }
 
         const auto* elem = static_cast<const detail::element*>(this_node);
+        on_element_enter(*elem, cur_scope.depth);
 
         if (elem->child_nodes.empty())
+        {
+            // this element is a leaf element
+            on_element_exit(*elem, cur_scope.depth);
             continue;
+        }
 
+        // push a new scope with the child elements of this element
         nodes_type child_nodes;
         for (const auto& p : elem->child_nodes)
             child_nodes.push_back(p.get());
 
-        scopes.emplace_back();
+        scopes.emplace_back(elem, cur_scope.depth + 1);
         scope& child_scope = scopes.back();
         child_scope.nodes.swap(child_nodes);
         child_scope.current_pos = child_scope.nodes.begin();
