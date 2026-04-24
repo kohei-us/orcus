@@ -191,6 +191,19 @@ public:
     {
         (void)attr;
     }
+
+    /**
+     * Called upon encountering a namespace declaration - either a default
+     * namespace declaration or one with an alias.
+     *
+     * @param alias Namespace alias, or an empty value for a default namespace.
+     * @param ns_id Namespace Name.
+     */
+    void namespace_declaration(std::string_view alias, xmlns_id_t ns_id)
+    {
+        (void)alias;
+        (void)ns_id;
+    }
 };
 
 /**
@@ -324,8 +337,9 @@ private:
             if (attr.ns.empty() && attr.name == "xmlns")
             {
                 // Default namespace
-                m_ns_cxt.push(std::string_view{}, attr.value);
+                xmlns_id_t ns_id = m_ns_cxt.push(std::string_view{}, attr.value);
                 m_ns_keys.insert(std::string_view{});
+                m_handler.namespace_declaration(std::string_view{}, ns_id);
                 return;
             }
 
@@ -334,8 +348,9 @@ private:
                 // Namespace alias
                 if (!attr.name.empty())
                 {
-                    m_ns_cxt.push(attr.name, attr.value);
+                    xmlns_id_t ns_id = m_ns_cxt.push(attr.name, attr.value);
                     m_ns_keys.insert(attr.name);
+                    m_handler.namespace_declaration(attr.name, ns_id);
                 }
                 return;
             }

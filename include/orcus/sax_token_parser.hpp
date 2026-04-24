@@ -18,7 +18,7 @@ namespace orcus {
 
 class tokens;
 
-class ORCUS_PSR_DLLPUBLIC sax_token_handler_wrapper_base
+class ORCUS_PSR_DLLPUBLIC sax_token_handler_wrapper_base : public sax_ns_handler
 {
 protected:
     xml_declaration_t m_declaration;

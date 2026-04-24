@@ -46,6 +46,17 @@ protected:
         m_os << '<';
         detail::print(m_os, elem.name, m_cxt);
 
+        // emit namespace declarations recorded on this element
+        for (xmlns_id_t ns_id : elem.ns_decls)
+        {
+            std::size_t index = m_cxt.get_index(ns_id);
+            if (index == INDEX_NOT_FOUND)
+                continue;
+            m_os << " xmlns:ns" << index << "=\"";
+            write_content_encoded(m_os, ns_id, xml_encode_context_t::attr_double_quoted);
+            m_os << '"';
+        }
+
         for (const detail::attr& a : elem.attrs)
         {
             m_os << ' ';

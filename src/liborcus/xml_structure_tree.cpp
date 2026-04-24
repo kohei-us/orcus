@@ -99,7 +99,7 @@ struct callbacks
     xml_structure_tree::callback_handler_type on_repeat = empty_callback;
 };
 
-class xml_sax_handler
+class xml_sax_handler : public sax_ns_handler
 {
     string_pool& m_pool;
     callbacks& m_callbacks;

@@ -285,6 +285,11 @@ void document_tree::impl::end_declaration(std::string_view name)
         it->second = std::move(decl);
 }
 
+void document_tree::impl::namespace_declaration(std::string_view /*alias*/, xmlns_id_t ns_id)
+{
+    m_cur_ns_decls.push_back(ns_id);
+}
+
 void document_tree::impl::start_element(const sax_ns_parser_element& elem)
 {
     xmlns_id_t ns = elem.ns;
@@ -302,6 +307,7 @@ void document_tree::impl::start_element(const sax_ns_parser_element& elem)
         p = m_elem_stack.back();
         p->attrs.swap(m_cur_attrs);
         p->attr_map.swap(m_cur_attr_map);
+        p->ns_decls.swap(m_cur_ns_decls);
         return;
     }
 
@@ -317,6 +323,7 @@ void document_tree::impl::start_element(const sax_ns_parser_element& elem)
     p->parent = parent;
     p->attrs.swap(m_cur_attrs);
     p->attr_map.swap(m_cur_attr_map);
+    p->ns_decls.swap(m_cur_ns_decls);
 
     m_elem_stack.push_back(p);
 }

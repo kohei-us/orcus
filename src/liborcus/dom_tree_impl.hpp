@@ -65,6 +65,7 @@ struct element : public node
     attr_map_type attr_map;
     nodes_type child_nodes;
     std::vector<size_t> child_elem_positions;
+    std::vector<xmlns_id_t> ns_decls; // namespace declarations on this element
 
     element() = delete;
     element(xmlns_id_t _ns, std::string_view _name);
@@ -91,7 +92,7 @@ void escape(std::ostream& os, std::string_view val);
 
 } // namespace detail
 
-struct document_tree::impl
+struct document_tree::impl : public sax_ns_handler
 {
     using element_stack_type = std::vector<detail::element*>;
     using declarations_type = std::unordered_map<std::string_view, detail::declaration>;
@@ -106,6 +107,7 @@ struct document_tree::impl
     detail::attrs_type m_doc_attrs;
     detail::attrs_type m_cur_attrs;
     detail::attr_map_type m_cur_attr_map;
+    std::vector<xmlns_id_t> m_cur_ns_decls;
     element_stack_type m_elem_stack;
     std::unique_ptr<detail::element> m_root;
 
@@ -116,6 +118,7 @@ struct document_tree::impl
         m_cur_decl_name = name;
     }
 
+    void namespace_declaration(std::string_view alias, xmlns_id_t ns_id);
     void end_declaration(std::string_view name);
     void start_element(const sax_ns_parser_element& elem);
     void end_element(const sax_ns_parser_element& elem);

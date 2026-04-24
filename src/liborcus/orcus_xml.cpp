@@ -61,7 +61,7 @@ public:
     }
 };
 
-class xml_data_sax_handler
+class xml_data_sax_handler : public sax_ns_handler
 {
     struct scope
     {

@@ -139,7 +139,7 @@ public:
     }
 };
 
-class sax_handler
+class sax_handler : public sax_ns_handler
 {
     std::vector<sax_ns_parser_attribute> m_attrs;
 
