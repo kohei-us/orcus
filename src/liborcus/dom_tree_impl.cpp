@@ -104,6 +104,127 @@ void print(std::ostream& os, const content& c, const xmlns_context& /*cxt*/)
 
 namespace orcus { namespace dom {
 
+void document_tree::impl::namespace_declaration(std::string_view /*alias*/, xmlns_id_t ns_id)
+{
+    m_cur_ns_decls.push_back(ns_id);
+}
+
+void document_tree::impl::end_declaration(std::string_view name)
+{
+    assert(m_cur_decl_name == name);
+
+    detail::declaration decl;
+    decl.attrs.swap(m_cur_attrs);
+    decl.attr_map.swap(m_cur_attr_map);
+
+    declarations_type::iterator it = m_decls.find(name);
+    if (it == m_decls.end())
+    {
+        // Insert a new entry for this name.
+        std::pair<declarations_type::iterator,bool> r =
+            m_decls.insert(
+                declarations_type::value_type(
+                    m_pool.intern(name).first, std::move(decl)));
+
+        if (!r.second)
+            // Insertion failed.
+            throw general_error("dom_tree::end_declaration: failed to insert a new declaration entry.");
+    }
+    else
+        it->second = std::move(decl);
+}
+
+void document_tree::impl::start_element(const sax_ns_parser_element& elem)
+{
+    xmlns_id_t ns = elem.ns;
+    std::string_view name = elem.name;
+
+    // These strings must be persistent.
+    std::string_view name_safe = m_pool.intern(name).first;
+
+    detail::element* p = nullptr;
+    if (!m_root)
+    {
+        // This must be the root element!
+        m_root = std::make_unique<detail::element>(ns, name_safe);
+        m_elem_stack.push_back(m_root.get());
+        p = m_elem_stack.back();
+        p->attrs.swap(m_cur_attrs);
+        p->attr_map.swap(m_cur_attr_map);
+        p->ns_decls.swap(m_cur_ns_decls);
+        return;
+    }
+
+    // Append new element as a child element of the current element.
+    p = m_elem_stack.back();
+
+    size_t elem_pos = p->child_nodes.size();
+    p->child_elem_positions.push_back(elem_pos);
+
+    p->child_nodes.push_back(std::make_unique<detail::element>(ns, name_safe));
+    const detail::element* parent = p;
+    p = static_cast<detail::element*>(p->child_nodes.back().get());
+    p->parent = parent;
+    p->attrs.swap(m_cur_attrs);
+    p->attr_map.swap(m_cur_attr_map);
+    p->ns_decls.swap(m_cur_ns_decls);
+
+    m_elem_stack.push_back(p);
+}
+
+void document_tree::impl::end_element(const sax_ns_parser_element& elem)
+{
+    xmlns_id_t ns = elem.ns;
+    std::string_view name = elem.name;
+
+    const detail::element* p = m_elem_stack.back();
+    if (p->name.ns != ns || p->name.name != name)
+        throw general_error("non-matching end element.");
+
+    m_elem_stack.pop_back();
+}
+
+void document_tree::impl::characters(std::string_view val, bool /*transient*/)
+{
+    if (m_elem_stack.empty())
+        // No root element has been encountered.  Ignore this.
+        return;
+
+    std::string_view val2 = trim(val);
+    if (val2.empty())
+        return;
+
+    detail::element* p = m_elem_stack.back();
+    val2 = m_pool.intern(val2).first; // Make sure the string is persistent.
+    auto child = std::make_unique<detail::content>(val2);
+    child->parent = p;
+    p->child_nodes.push_back(std::move(child));
+}
+
+void document_tree::impl::doctype(const sax::doctype_declaration& dtd)
+{
+    m_doctype = std::make_unique<sax::doctype_declaration>(dtd);  // make a copy.
+
+    sax::doctype_declaration& this_dtd = *m_doctype;
+    string_pool& pool = m_pool;
+
+    // Intern the strings.
+    this_dtd.root_element = pool.intern(dtd.root_element).first;
+    this_dtd.fpi = pool.intern(dtd.fpi).first;
+    this_dtd.uri = pool.intern(dtd.uri).first;
+}
+
+void document_tree::impl::set_attribute(xmlns_id_t ns, std::string_view name, std::string_view val)
+{
+    // These strings must be persistent.
+    std::string_view name2 = m_pool.intern(name).first;
+    std::string_view val2 = m_pool.intern(val).first;
+
+    size_t pos = m_cur_attrs.size();
+    m_cur_attrs.push_back(detail::attr(ns, name2, val2));
+    m_cur_attr_map.insert({entity_name(ns, name2), pos});
+}
+
 tree_walker::scope::scope(const detail::element* _owner, std::size_t _depth) :
     current_pos(nodes.begin()), owner(_owner), depth(_depth) {}
 
