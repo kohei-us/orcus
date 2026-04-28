@@ -8,7 +8,9 @@
 #include "dom_tree_impl.hpp"
 #include <orcus/xml_encode.hpp>
 
+#include <functional>
 #include <sstream>
+#include <unordered_map>
 
 namespace orcus { namespace dom {
 
@@ -25,11 +27,59 @@ class xml_dumper : public tree_walker
     std::ostream& m_os;
     const xmlns_context& m_cxt;
     std::size_t m_indent;
+    std::vector<std::reference_wrapper<const detail::element>> m_alias_elems;
 
     void write_indent(std::ostream& os, std::size_t depth)
     {
         for (std::size_t i = 0; i < depth * m_indent; ++i)
             os << ' ';
+    }
+
+    void write_name(const entity_name& name)
+    {
+        if (name.ns)
+        {
+            auto alias = find_alias(name);
+            if (!alias.empty())
+                // not a default namespace
+                m_os << alias << ':';
+        }
+        m_os << name.name;
+    }
+
+    std::string_view find_alias(const entity_name& name) const
+    {
+        auto it = m_alias_elems.rbegin(), it_end = m_alias_elems.rend();
+        for (; it != it_end; ++it)
+        {
+            const detail::element& elem = *it;
+            assert(!elem.ns_decls.empty());
+
+            for (const auto& [alias, ns] : elem.ns_decls)
+            {
+                if (name.ns == ns)
+                    return alias;
+            }
+        }
+
+        std::ostringstream os;
+        os << "namespace alias for " << name << " not found but it should have";
+        throw general_error(os.str());
+    }
+
+    void push_aliases(const detail::element& elem)
+    {
+        if (!elem.ns_decls.empty())
+            m_alias_elems.push_back(elem);
+    }
+
+    void pop_aliases(const detail::element& elem)
+    {
+        if (!m_alias_elems.empty())
+        {
+            if (&m_alias_elems.back().get() == &elem)
+                m_alias_elems.pop_back();
+        }
     }
 
 public:
@@ -39,20 +89,23 @@ public:
 protected:
     void on_element_enter(const detail::element& elem, std::size_t depth) override
     {
+        // register this element's namespace aliases before printing its name
+        push_aliases(elem);
+
         // indent only if parent element has at least one child element
         if (m_indent && elem.parent && has_element_children(*elem.parent))
             write_indent(m_os, depth);
 
         m_os << '<';
-        detail::print(m_os, elem.name, m_cxt);
+        write_name(elem.name);
 
         // emit namespace declarations recorded on this element
-        for (xmlns_id_t ns_id : elem.ns_decls)
+        for (const auto& [alias, ns_id] : elem.ns_decls)
         {
-            std::size_t index = m_cxt.get_index(ns_id);
-            if (index == INDEX_NOT_FOUND)
-                continue;
-            m_os << " xmlns:ns" << index << "=\"";
+            if (alias.empty())
+                m_os << " xmlns=\"";
+            else
+                m_os << " xmlns:" << alias << "=\"";
             write_content_encoded(m_os, ns_id, xml_encode_context_t::attr_double_quoted);
             m_os << '"';
         }
@@ -60,7 +113,7 @@ protected:
         for (const detail::attr& a : elem.attrs)
         {
             m_os << ' ';
-            detail::print(m_os, a.name, m_cxt);
+            write_name(a.name);
             m_os << "=\"";
             write_content_encoded(m_os, a.value, xml_encode_context_t::attr_double_quoted);
             m_os << '"';
@@ -90,25 +143,32 @@ protected:
     void on_element_exit(const detail::element& elem, std::size_t depth) override
     {
         if (elem.child_nodes.empty())
-            return; // already closed with />
+        {
+            // already closed with />; just clean up aliases
+            pop_aliases(elem);
+            return;
+        }
 
         if (m_indent && has_element_children(elem))
         {
             // close tag on its own indented line
             write_indent(m_os, depth);
             m_os << "</";
-            detail::print(m_os, elem.name, m_cxt);
+            write_name(elem.name);
             m_os << ">\n";
         }
         else
         {
             // close tag inline, then newline if parent is in block layout
             m_os << "</";
-            detail::print(m_os, elem.name, m_cxt);
+            write_name(elem.name);
             m_os << '>';
             if (m_indent && elem.parent && has_element_children(*elem.parent))
                 m_os << '\n';
         }
+
+        // pop this element's aliases after writing the closing tag
+        pop_aliases(elem);
     }
 
     void on_content(const detail::content& c, std::size_t depth) override
@@ -122,6 +182,11 @@ protected:
         }
         else
             write_content_encoded(m_os, c.value, xml_encode_context_t::text);
+    }
+
+    void on_document_exit() override
+    {
+        assert(m_alias_elems.empty());
     }
 };
 

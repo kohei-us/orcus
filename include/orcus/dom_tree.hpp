@@ -135,6 +135,8 @@ public:
     void dump_compact(std::ostream& os) const;
 };
 
+std::ostream& operator<<(std::ostream& os, const entity_name& v);
+
 } // namespace dom
 
 }

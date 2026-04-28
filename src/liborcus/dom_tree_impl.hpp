@@ -13,6 +13,7 @@
 #include <orcus/sax_ns_parser.hpp>
 
 #include <ostream>
+#include <utility>
 #include <vector>
 #include <unordered_map>
 #include <memory>
@@ -43,6 +44,14 @@ struct declaration
     attr_map_type attr_map;
 };
 
+struct ns_declaration
+{
+    std::string_view alias;
+    xmlns_id_t name;
+
+    ns_declaration(std::string_view _alias, xmlns_id_t _name);
+};
+
 enum class node_type { element, content };
 
 struct element;
@@ -65,7 +74,7 @@ struct element : public node
     attr_map_type attr_map;
     nodes_type child_nodes;
     std::vector<size_t> child_elem_positions;
-    std::vector<xmlns_id_t> ns_decls; // namespace declarations on this element
+    std::vector<ns_declaration> ns_decls; //< namespaces declared on this element
 
     element() = delete;
     element(xmlns_id_t _ns, std::string_view _name);
@@ -82,7 +91,6 @@ struct content : public node
 
 void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt);
 void print(std::ostream& os, const attr& at, const xmlns_context& cxt);
-void print(std::ostream& os, const element& elem, const xmlns_context& cxt);
 void print(std::ostream& os, const content& c, const xmlns_context& cxt);
 
 /**
@@ -107,7 +115,7 @@ struct document_tree::impl : public sax_ns_handler
     detail::attrs_type m_doc_attrs;
     detail::attrs_type m_cur_attrs;
     detail::attr_map_type m_cur_attr_map;
-    std::vector<xmlns_id_t> m_cur_ns_decls;
+    std::vector<detail::ns_declaration> m_cur_ns_decls;
     element_stack_type m_elem_stack;
     std::unique_ptr<detail::element> m_root;
 
@@ -166,6 +174,7 @@ protected:
     virtual void on_element_enter(const detail::element&, std::size_t) {}
     virtual void on_element_exit(const detail::element&, std::size_t) {}
     virtual void on_content(const detail::content&, std::size_t) {}
+    virtual void on_document_exit() {}
 };
 
 }} // namespace orcus::dom

@@ -20,6 +20,9 @@ std::size_t entity_name_hash::operator()(const entity_name& v) const
     return std::hash<std::string_view>{}(v.name) ^ reinterpret_cast<std::size_t>(v.ns);
 }
 
+ns_declaration::ns_declaration(std::string_view _alias, xmlns_id_t _name) :
+    alias(_alias), name(_name) {}
+
 void print(std::ostream& os, const entity_name& name, const xmlns_context& cxt)
 {
     if (name.ns)
@@ -88,11 +91,6 @@ content::content(std::string_view _value) : node(node_type::content), value(_val
 
 content::~content() = default;
 
-void print(std::ostream& os, const element& elem, const xmlns_context& cxt)
-{
-    print(os, elem.name, cxt);
-}
-
 void print(std::ostream& os, const content& c, const xmlns_context& /*cxt*/)
 {
     os << '"';
@@ -104,9 +102,10 @@ void print(std::ostream& os, const content& c, const xmlns_context& /*cxt*/)
 
 namespace orcus { namespace dom {
 
-void document_tree::impl::namespace_declaration(std::string_view /*alias*/, xmlns_id_t ns_id)
+void document_tree::impl::namespace_declaration(std::string_view alias, xmlns_id_t ns_id)
 {
-    m_cur_ns_decls.push_back(ns_id);
+    std::string_view alias_safe = m_pool.intern(alias).first;
+    m_cur_ns_decls.emplace_back(alias_safe, ns_id);
 }
 
 void document_tree::impl::end_declaration(std::string_view name)
@@ -282,6 +281,8 @@ void tree_walker::run()
         child_scope.nodes.swap(child_nodes);
         child_scope.current_pos = child_scope.nodes.begin();
     }
+
+    on_document_exit();
 }
 
 }} // namespace orcus::dom

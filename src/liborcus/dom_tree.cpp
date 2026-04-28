@@ -374,6 +374,19 @@ void document_tree::dump_compact(std::ostream& os) const
     walker.run();
 }
 
+std::ostream& operator<<(std::ostream& os, const entity_name& v)
+{
+    os << "entity-name(ns=";
+
+    if (!v.ns)
+        os << "none";
+    else
+        os << "'" << v.ns << "'";
+
+    os << "; name='" << v.name << "')";
+    return os;
+}
+
 } // namespace dom
 
 }
