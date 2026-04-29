@@ -258,8 +258,9 @@ void test_xml_lint()
 
     for (const auto& test_dir : test_dirs)
     {
-        std::cout << test_dir << std::endl;
-        auto content = test::to_file_content(test_dir / "input.xml");
+        auto input_path = test_dir / "input.xml";
+        std::cout << "testing " << input_path << std::endl;
+        auto content = test::to_file_content(input_path);
         assert(!content.empty());
 
         orcus::xmlns_context cxt = repo.create_context();
@@ -276,6 +277,8 @@ void test_xml_lint()
             const std::string stem = entry.path().stem().string();
             if (stem.find(prefix) != 0)
                 continue;
+
+            std::cout << "- checking against " << entry.path().filename() << std::endl;
 
             // Extract indent value from filename like "output-indent2.xml"
             std::size_t indent = std::stoi(stem.substr(prefix.length()));
