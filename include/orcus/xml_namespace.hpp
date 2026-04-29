@@ -132,7 +132,7 @@ public:
     void pop(std::string_view alias);
 
     /**
-     * Get the currnet namespace identifier for a specified namespace alias.
+     * Get the current namespace identifier for a specified namespace alias.
      *
      * @param alias namespace alias to get the current namespace identifier for.
      *

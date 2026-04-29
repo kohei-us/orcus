@@ -89,7 +89,7 @@ const char* sax_parser_parse_only_test_dirs[] = {
     SRCDIR"/test/xml/parse-only/rss/"
 };
 
-void parse_file(dom::document_tree& tree, const char* filepath, std::string& /*strm*/)
+void parse_file(dom::document_tree& tree, const char* filepath)
 {
     std::cout << "testing " << filepath << std::endl;
     auto content = test::to_file_content(filepath);
@@ -98,34 +98,51 @@ void parse_file(dom::document_tree& tree, const char* filepath, std::string& /*s
     tree.load(content.str());
 }
 
+bool compare_vs_expected(std::string_view actual, std::string_view expected)
+{
+    actual = trim(actual);
+    expected = trim(expected);
+
+    if (actual != expected)
+    {
+        auto pos = locate_first_different_char(actual, expected);
+        std::cout << create_parse_error_output(actual, pos) << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 void test_xml_sax_parser()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    std::string strm;
     size_t n = sizeof(sax_parser_test_dirs)/sizeof(sax_parser_test_dirs[0]);
     for (size_t i = 0; i < n; ++i)
     {
         const char* dir = sax_parser_test_dirs[i];
-        std::string dir_path(dir);
-        std::string file = dir_path;
-        file.append("input.xml");
+        fs::path dir_path(dir);
+        fs::path file = dir_path / "input.xml";
+
+        std::cout << "testing " << file << std::endl;
+
+        auto content = test::to_file_content(file);
+        assert(!content.empty());
 
         xmlns_repository repo;
         xmlns_context cxt = repo.create_context();
         dom::document_tree tree(cxt);
-        parse_file(tree, file.c_str(), strm);
+        tree.load(content.str());
 
         // Get the compact form of the content.
         std::ostringstream os;
         tree.dump_compact(os);
-        std::string content = os.str();
+        std::string compact = os.str();
 
         // Load the check form.
-        file = dir_path;
-        file.append("check.txt");
-        file_content check(file.data());
-        std::string_view psource(content);
+        file = dir_path / "check.txt";
+        file_content check(file);
+        std::string_view psource(compact);
         std::string_view pcheck = check.str();
 
         // They must be equal, minus preceding or trailing spaces (if any).
@@ -137,7 +154,6 @@ void test_xml_sax_parser_read_only()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    std::string strm;
     size_t n = sizeof(sax_parser_parse_only_test_dirs)/sizeof(sax_parser_parse_only_test_dirs[0]);
     for (size_t i = 0; i < n; ++i)
     {
@@ -149,7 +165,7 @@ void test_xml_sax_parser_read_only()
         xmlns_repository repo;
         xmlns_context cxt = repo.create_context();
         dom::document_tree tree(cxt);
-        parse_file(tree, file.c_str(), strm);
+        parse_file(tree, file.c_str());
     }
 }
 
@@ -157,12 +173,11 @@ void test_xml_declarations()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    std::string strm;
     const char* file_path = SRCDIR"/test/xml/custom-decl-1/input.xml";
     xmlns_repository repo;
     xmlns_context cxt = repo.create_context();
     dom::document_tree dom(cxt);
-    parse_file(dom, file_path, strm);
+    parse_file(dom, file_path);
 
     // Make sure we parse the custom declaration correctly.
     dom::const_node decl = dom.declaration("mso-application");
@@ -191,10 +206,9 @@ void test_xml_dtd()
     for (size_t i = 0; i < n; ++i)
     {
         const char* file_path = tests[i].file_path;
-        std::string strm;
         xmlns_context cxt = repo.create_context();
         dom::document_tree dom(cxt);
-        parse_file(dom, file_path, strm);
+        parse_file(dom, file_path);
         const sax::doctype_declaration* dtd = dom.get_doctype();
         assert(dtd);
         assert(dtd->keyword == tests[i].keyword);
@@ -235,6 +249,7 @@ void test_xml_lint()
     const fs::path test_dirs[] = {
         SRCDIR"/test/xml-lint/namespace-basic",
         SRCDIR"/test/xml-lint/namespace-multi",
+        SRCDIR"/test/xml-lint/namespace-xml-1",
         SRCDIR"/test/xml-lint/attributes",
         SRCDIR"/test/xml-lint/nested",
     };
@@ -269,15 +284,8 @@ void test_xml_lint()
             assert(!expected.empty());
 
             auto actual = tree.dump(indent);
-            auto expected_trim = trim(expected.str());
-            auto actual_trim = trim(actual);
-
-            if (actual_trim != expected_trim)
-            {
-                auto pos = locate_first_different_char(actual_trim, expected_trim);
-                std::cout << create_parse_error_output(actual_trim, pos) << std::endl;
-                assert(false);
-            }
+            bool res = compare_vs_expected(actual, expected.str());
+            assert(res);
         }
     }
 }

@@ -62,6 +62,10 @@ class xml_dumper : public tree_walker
             }
         }
 
+        // The xml prefix is predefined and never appears in element ns_decls.
+        if (name.ns != XMLNS_UNKNOWN_ID && name.ns == m_cxt.get("xml"))
+            return "xml";
+
         std::ostringstream os;
         os << "namespace alias for " << name << " not found but it should have";
         throw general_error(os.str());
