@@ -22,7 +22,11 @@
 #include <sstream>
 #include <chrono>
 
-namespace orcus { namespace test {
+namespace orcus {
+
+class file_content;
+
+namespace test {
 
 class stack_printer
 {
@@ -57,6 +61,12 @@ bool verify_stream_value(EnumT v, std::string_view expected)
     os << v;
     return os.str() == expected;
 }
+
+orcus::file_content to_file_content(const std::string& path);
+orcus::file_content to_file_content(const std::wstring& path);
+
+void print_path(const std::string& path);
+void print_path(const std::wstring& path);
 
 }} // namespace orcus::test
 

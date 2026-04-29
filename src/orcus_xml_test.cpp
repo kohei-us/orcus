@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "test_global.hpp"
 #include "orcus/sax_ns_parser.hpp"
 #include "orcus/dom_tree.hpp"
 #include "orcus/xml_namespace.hpp"
@@ -88,7 +89,7 @@ const char* sax_parser_parse_only_test_dirs[] = {
 void parse_file(dom::document_tree& tree, const char* filepath, std::string& /*strm*/)
 {
     std::cout << "testing " << filepath << std::endl;
-    file_content content(filepath);
+    auto content = test::to_file_content(filepath);
     assert(!content.empty());
 
     tree.load(content.str());
@@ -96,6 +97,8 @@ void parse_file(dom::document_tree& tree, const char* filepath, std::string& /*s
 
 void test_xml_sax_parser()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     std::string strm;
     size_t n = sizeof(sax_parser_test_dirs)/sizeof(sax_parser_test_dirs[0]);
     for (size_t i = 0; i < n; ++i)
@@ -129,6 +132,8 @@ void test_xml_sax_parser()
 
 void test_xml_sax_parser_read_only()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     std::string strm;
     size_t n = sizeof(sax_parser_parse_only_test_dirs)/sizeof(sax_parser_parse_only_test_dirs[0]);
     for (size_t i = 0; i < n; ++i)
@@ -147,6 +152,8 @@ void test_xml_sax_parser_read_only()
 
 void test_xml_declarations()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     std::string strm;
     const char* file_path = SRCDIR"/test/xml/custom-decl-1/input.xml";
     xmlns_repository repo;
@@ -162,6 +169,8 @@ void test_xml_declarations()
 
 void test_xml_dtd()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     struct {
         const char* file_path;
         sax::doctype_declaration::keyword_type keyword;
@@ -197,10 +206,12 @@ void test_xml_dtd()
 
 void test_xml_encoded_attrs()
 {
+    ORCUS_TEST_FUNC_SCOPE;
+
     const char* filepath = SRCDIR"/test/xml/encoded-attrs/test1.xml";
 
     std::cout << "testing " << filepath << std::endl;
-    file_content content(filepath);
+    auto content = test::to_file_content(filepath);
     assert(!content.empty());
 
     sax_handler_encoded_attrs hdl;

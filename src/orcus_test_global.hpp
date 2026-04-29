@@ -29,12 +29,6 @@ struct table_t;
 
 namespace test {
 
-orcus::file_content to_file_content(const std::string& path);
-orcus::file_content to_file_content(const std::wstring& path);
-
-void print_path(const std::string& path);
-void print_path(const std::wstring& path);
-
 std::string get_content_check(const spreadsheet::document& doc);
 
 std::string get_content_as_csv(const spreadsheet::document& doc, spreadsheet::sheet_t sheet_index);

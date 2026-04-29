@@ -41,6 +41,7 @@ enum_stream_test_CPPFLAGS = -I$(top_builddir)/lib/liborcus/liborcus.la $(AM_CPPF
 
 orcus_xml_test_SOURCES = orcus_xml_test.cpp
 orcus_xml_test_LDADD = \
+	./test/liborcus-test.a \
 	parser/liborcus-parser-@ORCUS_API_VERSION@.la \
 	liborcus/liborcus-@ORCUS_API_VERSION@.la
 
