@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<root xmlns:a="urn:ns:a" xmlns:b="urn:ns:b">
+  <a:elem>
+    <b:elem>content</b:elem>
+  </a:elem>
+</root>

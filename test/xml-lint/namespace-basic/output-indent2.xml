@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<root xmlns="http://test.test.org/">
+  <entry xmlns:foo="some:namespace:uri">
+    <foo:name>Foo</foo:name>
+  </entry>
+</root>

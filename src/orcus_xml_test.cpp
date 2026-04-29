@@ -6,15 +6,18 @@
  */
 
 #include "test_global.hpp"
-#include "orcus/sax_ns_parser.hpp"
-#include "orcus/dom_tree.hpp"
-#include "orcus/xml_namespace.hpp"
-#include "orcus/stream.hpp"
+#include <orcus/sax_ns_parser.hpp>
+#include <orcus/dom_tree.hpp>
+#include <orcus/xml_namespace.hpp>
+#include <orcus/stream.hpp>
 
 #include <cstdlib>
 #include <cassert>
 #include <iostream>
 #include <sstream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 using namespace orcus;
 
@@ -225,6 +228,60 @@ void test_xml_encoded_attrs()
     assert(hdl.check(expected));
 }
 
+void test_xml_lint()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    const fs::path test_dirs[] = {
+        SRCDIR"/test/xml-lint/namespace-basic",
+        SRCDIR"/test/xml-lint/namespace-multi",
+        SRCDIR"/test/xml-lint/attributes",
+        SRCDIR"/test/xml-lint/nested",
+    };
+
+    orcus::xmlns_repository repo;
+
+    for (const auto& test_dir : test_dirs)
+    {
+        std::cout << test_dir << std::endl;
+        auto content = test::to_file_content(test_dir / "input.xml");
+        assert(!content.empty());
+
+        orcus::xmlns_context cxt = repo.create_context();
+        orcus::dom::document_tree tree{cxt};
+        tree.load(content.str());
+
+        // Test dump with different indent values
+        constexpr std::string_view prefix = "output-indent";
+        for (const auto& entry : fs::directory_iterator(test_dir))
+        {
+            if (entry.path().extension() != ".xml")
+                continue;
+
+            const std::string stem = entry.path().stem().string();
+            if (stem.find(prefix) != 0)
+                continue;
+
+            // Extract indent value from filename like "output-indent2.xml"
+            std::size_t indent = std::stoi(stem.substr(prefix.length()));
+
+            auto expected = test::to_file_content(entry.path());
+            assert(!expected.empty());
+
+            auto actual = tree.dump(indent);
+            auto expected_trim = trim(expected.str());
+            auto actual_trim = trim(actual);
+
+            if (actual_trim != expected_trim)
+            {
+                auto pos = locate_first_different_char(actual_trim, expected_trim);
+                std::cout << create_parse_error_output(actual_trim, pos) << std::endl;
+                assert(false);
+            }
+        }
+    }
+}
+
 int main()
 {
     test_xml_sax_parser();
@@ -232,6 +289,7 @@ int main()
     test_xml_declarations();
     test_xml_dtd();
     test_xml_encoded_attrs();
+    test_xml_lint();
 
     return EXIT_SUCCESS;
 }
