@@ -147,41 +147,15 @@ struct xmlns_context::impl
     xmlns_list_type m_all_ns; /// all namespaces ever used in this context.
     xmlns_list_type m_default;
     alias_map_type m_map;
-    alias_map_type m_builtin_map; /// built-in aliases not tracked as declared namespaces.
 
     bool m_trim_all_ns = true;
 
     impl() {}
-    impl(xmlns_repository& _repo) : repo(&_repo)
-    {
-        register_builtin(NS_XML_ALIAS, NS_XML_URI);
-    }
+    impl(xmlns_repository& _repo) : repo(&_repo) {}
 
     impl(const impl& r) :
         repo(r.repo), m_all_ns(r.m_all_ns), m_default(r.m_default), m_map(r.m_map),
-        m_builtin_map(r.m_builtin_map), m_trim_all_ns(r.m_trim_all_ns) {}
-
-    void register_builtin(std::string_view alias, std::string_view uri)
-    {
-        if (!repo)
-            throw general_error("this context is not associated with any repo.");
-
-        xmlns_id_t id = uri.data();
-
-        auto it = m_builtin_map.find(alias);
-        if (it == m_builtin_map.end())
-        {
-            xmlns_list_type nslist;
-            nslist.push_back(id);
-            auto r = m_builtin_map.insert(alias_map_type::value_type(alias, nslist));
-            if (!r.second)
-                throw general_error("failed to insert built-in namespace");
-        }
-        else
-        {
-            it->second.push_back(id);
-        }
-    }
+        m_trim_all_ns(r.m_trim_all_ns) {}
 };
 
 xmlns_context::xmlns_context() : mp_impl(std::make_unique<impl>()) {}
@@ -215,6 +189,10 @@ xmlns_id_t xmlns_context::push(std::string_view alias, std::string_view uri)
 
     if (alias == NS_XML_ALIAS)
     {
+        if (uri == NS_XML_URI)
+            // explicit declaration of the builtin namespace is allowed
+            return NS_XML_URI.data();
+
         std::ostringstream os;
         os << "builtin namespace '" << NS_XML_ALIAS << "' cannot be explicitly declared";
         throw std::invalid_argument(os.str());
@@ -294,10 +272,9 @@ xmlns_id_t xmlns_context::get(std::string_view alias) const
     alias_map_type::const_iterator it = mp_impl->m_map.find(alias);
     if (it == mp_impl->m_map.end())
     {
-        // Check built-in aliases second (e.g. the predefined "xml" prefix).
-        it = mp_impl->m_builtin_map.find(alias);
-        if (it == mp_impl->m_builtin_map.end())
-            return XMLNS_UNKNOWN_ID;
+        // check against the builtin alias
+        if (alias == NS_XML_ALIAS)
+            return NS_XML_URI.data();
     }
 
     return it->second.empty() ? XMLNS_UNKNOWN_ID : it->second.back();

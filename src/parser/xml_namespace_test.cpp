@@ -223,6 +223,37 @@ void test_repo_move()
     assert(ns_id == XMLNS_UNKNOWN_ID);
 }
 
+void test_builtin_namespace()
+{
+    ORCUS_TEST_FUNC_SCOPE;
+
+    orcus::xmlns_repository repo;
+
+    {
+        auto cxt = repo.create_context();
+        std::string_view ns_name = cxt.get("xml");
+        std::string_view expected = "http://www.w3.org/XML/1998/namespace";
+        assert(ns_name == expected);
+
+        // explicit declaration is allowed
+        auto ns = cxt.push("xml", "http://www.w3.org/XML/1998/namespace");
+        assert(std::string_view{ns} == expected);
+    }
+
+    {
+        auto cxt = repo.create_context();
+        try
+        {
+            [[maybe_unused]] auto ns = cxt.push("xml", "not-the-right-namespace-name");
+            assert(!"declaration of non built-in namespace with 'xml' alias is not allowed");
+        }
+        catch (const std::invalid_argument&)
+        {
+            // correct
+        }
+    }
+}
+
 } // anonymous namespace
 
 int main()
@@ -233,6 +264,7 @@ int main()
     test_xml_name_t();
     test_ns_context();
     test_repo_move();
+    test_builtin_namespace();
 
     return EXIT_SUCCESS;
 }

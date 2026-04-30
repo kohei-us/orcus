@@ -49,6 +49,8 @@ class xml_dumper : public tree_walker
 
     std::string_view find_alias(const entity_name& name) const
     {
+        // recursively search for the matching namespace from the inner element
+        // and up
         auto it = m_alias_elems.rbegin(), it_end = m_alias_elems.rend();
         for (; it != it_end; ++it)
         {
