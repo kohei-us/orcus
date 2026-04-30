@@ -349,7 +349,9 @@ private:
                 if (!attr.name.empty())
                 {
                     xmlns_id_t ns_id = m_ns_cxt.push(attr.name, attr.value);
-                    m_ns_keys.insert(attr.name);
+                    // The builtin 'xml' alias is never pushed to the context map, so don't track it for popping.
+                    if (attr.name != XML_BUILTIN_NS_ALIAS)
+                        m_ns_keys.insert(attr.name);
                     m_handler.namespace_declaration(attr.name, ns_id);
                 }
                 return;

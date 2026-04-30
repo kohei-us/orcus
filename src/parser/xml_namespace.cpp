@@ -18,18 +18,16 @@
 
 namespace orcus {
 
+const xmlns_id_t XML_BUILTIN_NS_URI = "http://www.w3.org/XML/1998/namespace";
+
 namespace {
 
 using xmlns_list_type = std::vector<xmlns_id_t>;
 using alias_map_type = std::unordered_map<std::string_view, xmlns_list_type>;
-
-// builtin namespace 'xml'
-constexpr std::string_view NS_XML_ALIAS = "xml";
-constexpr std::string_view NS_XML_URI = "http://www.w3.org/XML/1998/namespace";
+using strid_map_type = std::unordered_map<std::string_view, std::size_t>;
 
 }
 
-typedef std::unordered_map<std::string_view, std::size_t> strid_map_type;
 
 struct xmlns_repository::impl
 {
@@ -187,14 +185,14 @@ xmlns_id_t xmlns_context::push(std::string_view alias, std::string_view uri)
     if (!mp_impl->repo)
         throw general_error("this context is not associated with any repo.");
 
-    if (alias == NS_XML_ALIAS)
+    if (alias == XML_BUILTIN_NS_ALIAS)
     {
-        if (uri == NS_XML_URI)
+        if (uri == XML_BUILTIN_NS_URI)
             // explicit declaration of the builtin namespace is allowed
-            return NS_XML_URI.data();
+            return XML_BUILTIN_NS_URI;
 
         std::ostringstream os;
-        os << "builtin namespace '" << NS_XML_ALIAS << "' cannot be explicitly declared";
+        os << "builtin namespace '" << XML_BUILTIN_NS_ALIAS << "' cannot be explicitly declared";
         throw std::invalid_argument(os.str());
     }
 
@@ -273,8 +271,8 @@ xmlns_id_t xmlns_context::get(std::string_view alias) const
     if (it == mp_impl->m_map.end())
     {
         // check against the builtin alias
-        if (alias == NS_XML_ALIAS)
-            return NS_XML_URI.data();
+        if (alias == XML_BUILTIN_NS_ALIAS)
+            return XML_BUILTIN_NS_URI;
     }
 
     return it->second.empty() ? XMLNS_UNKNOWN_ID : it->second.back();

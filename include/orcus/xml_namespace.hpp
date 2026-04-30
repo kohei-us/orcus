@@ -14,6 +14,12 @@
 
 namespace orcus {
 
+/** Alias for the builtin XML namespace, pre-defined by the XML specification. */
+constexpr std::string_view XML_BUILTIN_NS_ALIAS = "xml";
+
+/** URI for the builtin XML namespace, pre-defined by the XML specification. */
+ORCUS_PSR_DLLPUBLIC extern const xmlns_id_t XML_BUILTIN_NS_URI;
+
 class xmlns_context;
 struct xmlns_repository_impl;
 struct xmlns_context_impl;

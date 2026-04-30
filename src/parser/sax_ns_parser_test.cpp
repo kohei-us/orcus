@@ -67,10 +67,57 @@ void test_default_attr_ns()
     parser.parse();
 }
 
+/**
+ * Test that an explicit redeclaration of the builtin 'xml' namespace alias
+ * (which is permitted by the XML spec when the URI matches) is handled without
+ * throwing and that attributes prefixed with 'xml:' resolve to the correct
+ * namespace identifier.
+ */
+void test_builtin_xml_ns()
+{
+    struct _handler : public orcus::sax_ns_handler
+    {
+        orcus::xmlns_id_t xml_ns_id = nullptr;
+        bool ns_decl_seen = false;
+
+        void namespace_declaration(std::string_view alias, orcus::xmlns_id_t ns_id)
+        {
+            assert(alias == orcus::XML_BUILTIN_NS_ALIAS);
+            assert(ns_id == orcus::XML_BUILTIN_NS_URI);
+            ns_decl_seen = true;
+        }
+
+        void attribute(std::string_view /*name*/, std::string_view /*val*/) {}
+
+        void attribute(const orcus::sax_ns_parser_attribute& attr)
+        {
+            assert(attr.ns_alias == orcus::XML_BUILTIN_NS_ALIAS);
+            assert(attr.ns == orcus::XML_BUILTIN_NS_URI);
+            assert(attr.name == "lang");
+            assert(attr.value == "en");
+        }
+    };
+
+    // Explicitly redeclare xmlns:xml — legal per the XML spec when the URI matches.
+    const char* test_code =
+        "<?xml version=\"1.0\"?>"
+        "<root xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xml:lang=\"en\"/>";
+
+    orcus::xmlns_repository repo;
+    orcus::xmlns_context cxt = repo.create_context();
+
+    _handler hdl;
+    orcus::sax_ns_parser<_handler> parser(test_code, cxt, hdl);
+    parser.parse();
+
+    assert(hdl.ns_decl_seen);
+}
+
 int main()
 {
     test_handler();
     test_default_attr_ns();
+    test_builtin_xml_ns();
 
     return EXIT_SUCCESS;
 }
