@@ -3,7 +3,7 @@ Usage: orcus-xml [OPTIONS] FILE
 Options:
   -h [ --help ]              Print this help.
   --mode arg                 Mode of operation. Select one of the following 
-                             options: dump, map, map-gen, structure, or 
+                             options: dump, lint, map, map-gen, structure, or 
                              transform.
   -m [ --map ] arg           Path to the map file. A map file is required for 
                              all modes except for the structure mode.
@@ -26,3 +26,6 @@ Options:
                              during development.
                              * xml - This format is currently unsupported.
                              * yaml - This format is currently unsupported.
+  --indent arg               Number of spaces per indent level for XML output 
+                             when lint mode is specified. 0 produces compact 
+                             single-line output.
