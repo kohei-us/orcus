@@ -18,6 +18,6 @@ orcus-yaml
 for CMD in $CMDS; do
     CMD_PATH="$ROOTDIR/src/$CMD"
     DESTFILE="$ROOTDIR/doc/_static/cli/$CMD-help.txt"
-    "$CMD_PATH" -h > "$DESTFILE"
+    "$CMD_PATH" -h | sed 's/[[:space:]]*$//' > "$DESTFILE"
 done
 
