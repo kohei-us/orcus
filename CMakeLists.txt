@@ -12,7 +12,8 @@ set(ORCUS_VERSION_MAJOR ${orcus_VERSION_MAJOR})
 set(ORCUS_VERSION_MINOR ${orcus_VERSION_MINOR})
 set(ORCUS_VERSION_MICRO ${orcus_VERSION_PATCH})  # NB: PATCH -> MICRO
 message(STATUS "orcus version: ${ORCUS_VERSION}")
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
+message(STATUS "C++ standard: ${CMAKE_CXX_STANDARD}")
 
 set(MDDS_INCLUDEDIR "" CACHE STRING "path to mdds header directory.")
 set(IXION_INCLUDEDIR "" CACHE STRING "path to ixion header directory.")

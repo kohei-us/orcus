@@ -26,7 +26,7 @@ AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([1.11 foreign dist-bzip2 dist-xz])
 AM_SILENT_RULES([yes])
 AC_LANG([C++])
-AX_CXX_COMPILE_STDCXX_17([noext], [mandatory])
+AX_CXX_COMPILE_STDCXX([20], [noext], [mandatory])
 CXXFLAGS="-fvisibility=hidden $CXXFLAGS -Wall -pthread -Wshadow -Wunused-parameter"
 
 # ===========================

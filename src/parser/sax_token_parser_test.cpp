@@ -11,6 +11,20 @@
 #include "orcus/xml_namespace.hpp"
 
 #include <cstring>
+#include <iomanip>
+
+std::string_view sv_from_u8(std::u8string_view s) noexcept
+{
+    return {reinterpret_cast<const char*>(s.data()), s.size()};
+}
+
+void print_with_bytes(std::string_view label, std::string_view s)
+{
+    std::cout << label << ": '" << s << "' (bytes:";
+    for (uint8_t c : s)
+        std::cout << ' ' << std::hex << std::setw(2) << std::setfill('0') << (int)c;
+    std::cout << ")" << std::dec << '\n';
+}
 
 using namespace orcus;
 
@@ -145,7 +159,8 @@ void test_unicode_string()
         void characters(std::string_view val, bool /*transient*/)
         {
             std::cout << "charachters:" << std::endl;
-            std::cout << val << std::endl;
+            print_with_bytes("observed", val);
+            print_with_bytes("expected", str);
             assert(val == str);
         }
     };
@@ -158,13 +173,13 @@ void test_unicode_string()
     tokens token_map(token_names, token_count);
     xmlns_repository ns_repo;
     xmlns_context ns_cxt = ns_repo.create_context();
-    handler hdl(u8"\u0021");
+    handler hdl(sv_from_u8(u8"\u0021"));
     sax_token_parser<handler> parser1(content1, token_map, ns_cxt, hdl);
     parser1.parse();
-    hdl = handler(u8"\u00B6");
+    hdl = handler(sv_from_u8(u8"\u00B6"));
     sax_token_parser<handler> parser2(content2, token_map, ns_cxt, hdl);
     parser2.parse();
-    hdl = handler(u8"\u20B9");
+    hdl = handler(sv_from_u8(u8"\u20B9"));
     sax_token_parser<handler> parser3(content3, token_map, ns_cxt, hdl);
     parser3.parse();
 }
