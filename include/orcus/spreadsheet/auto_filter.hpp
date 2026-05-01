@@ -10,6 +10,7 @@
 #include "types.hpp"
 #include "../env.hpp"
 
+#include <compare>
 #include <map>
 #include <deque>
 #include <memory>
@@ -40,8 +41,7 @@ public:
     ~filter_value_t();
 
     bool operator==(const filter_value_t& other) const;
-    bool operator!=(const filter_value_t& other) const;
-    bool operator<(const filter_value_t& other) const;
+    std::partial_ordering operator<=>(const filter_value_t& other) const;
 
     filter_value_t& operator=(const filter_value_t& other);
 
@@ -58,6 +58,7 @@ class ORCUS_SPM_DLLPUBLIC filterable
 {
 public:
     virtual ~filterable();
+    bool operator==(const filterable& other) const;
 };
 
 /**
@@ -89,8 +90,7 @@ public:
     void swap(filter_item_t& other) noexcept;
 
     bool operator==(const filter_item_t& other) const;
-    bool operator!=(const filter_item_t& other) const;
-    bool operator<(const filter_item_t& other) const;
+    std::partial_ordering operator<=>(const filter_item_t& other) const;
 };
 
 class ORCUS_SPM_DLLPUBLIC filter_item_set_t : public filterable

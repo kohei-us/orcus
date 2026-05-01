@@ -15,33 +15,25 @@ filter_value_t::filter_value_t(std::string_view v) : m_store(v) {}
 filter_value_t::filter_value_t(const filter_value_t& other) = default;
 filter_value_t::~filter_value_t() = default;
 
-bool filter_value_t::operator==(const filter_value_t& other) const
-{
-    return m_store == other.m_store;
-}
+bool filter_value_t::operator==(const filter_value_t& other) const = default;
 
-bool filter_value_t::operator!=(const filter_value_t& other) const
-{
-    return !operator==(other);
-}
-
-bool filter_value_t::operator<(const filter_value_t& other) const
+std::partial_ordering filter_value_t::operator<=>(const filter_value_t& other) const
 {
     auto index = m_store.index();
-    if (index != other.m_store.index())
-        return index < other.m_store.index();
+    if (auto cmp = index <=> other.m_store.index(); cmp != 0)
+        return cmp;
 
     switch (index)
     {
-        case 0:
-            return true;
-        case 1:
-            return numeric() < other.numeric();
-        case 2:
-            return string() < other.string();
+        case 0: // std::monostate
+            return std::partial_ordering::equivalent;
+        case 1: // double
+            return numeric() <=> other.numeric();
+        case 2: // std::string_view
+            return string() <=> other.string();
     }
 
-    return false; // invalid value type
+    return std::partial_ordering::unordered; // invalid value type
 }
 
 filter_value_t& filter_value_t::operator=(const filter_value_t& other)
@@ -83,6 +75,7 @@ void filter_value_t::swap(filter_value_t& other) noexcept
 }
 
 filterable::~filterable() = default;
+bool filterable::operator==(const filterable& other) const = default;
 
 filter_item_t::filter_item_t() : m_op(auto_filter_op_t::unspecified) {}
 filter_item_t::filter_item_t(col_t _field, auto_filter_op_t _op) :
@@ -132,39 +125,20 @@ void filter_item_t::swap(filter_item_t& other) noexcept
     m_value.swap(other.m_value);
 }
 
-bool filter_item_t::operator==(const filter_item_t& other) const
+bool filter_item_t::operator==(const filter_item_t& other) const = default;
+
+std::partial_ordering filter_item_t::operator<=>(const filter_item_t& other) const
 {
-    if (m_field != other.m_field)
-        return false;
+    if (auto cmp = m_field <=> other.m_field; cmp != 0)
+        return cmp;
 
-    if (m_op != other.m_op)
-        return false;
+    if (auto cmp = m_op <=> other.m_op; cmp != 0)
+        return cmp;
 
-    if (m_regex != other.m_regex)
-        return false;
+    if (auto cmp = m_regex <=> other.m_regex; cmp != 0)
+        return cmp;
 
-    return m_value == other.m_value;
-}
-
-bool filter_item_t::operator!=(const filter_item_t& other) const
-{
-    return !operator==(other);
-}
-
-bool filter_item_t::operator<(const filter_item_t& other) const
-{
-    if (m_field != other.m_field)
-        return m_field < other.m_field;
-
-    using utype = std::underlying_type<auto_filter_op_t>::type;
-
-    if (m_op != other.m_op)
-        return static_cast<utype>(m_op) < static_cast<utype>(other.m_op);
-
-    if (m_regex != other.m_regex)
-        return m_regex < other.m_regex;
-
-    return m_value < other.m_value;
+    return m_value <=> other.m_value;
 }
 
 filter_item_set_t::filter_item_set_t() = default;
