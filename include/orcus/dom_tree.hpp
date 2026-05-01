@@ -44,7 +44,7 @@ struct ORCUS_DLLPUBLIC entity_name
     entity_name(xmlns_id_t _ns, std::string_view _name);
 
     bool operator== (const entity_name& other) const;
-    bool operator!= (const entity_name& other) const;
+    std::strong_ordering operator<=> (const entity_name& other) const;
 };
 
 class ORCUS_DLLPUBLIC const_node

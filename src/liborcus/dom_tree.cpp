@@ -23,14 +23,14 @@ entity_name::entity_name(std::string_view _name) :
 entity_name::entity_name(xmlns_id_t _ns, std::string_view _name) :
     ns(_ns), name(_name) {}
 
-bool entity_name::operator== (const entity_name& other) const
-{
-    return ns == other.ns && name == other.name;
-}
+bool entity_name::operator== (const entity_name& other) const = default;
 
-bool entity_name::operator!= (const entity_name& other) const
+std::strong_ordering entity_name::operator<=> (const entity_name& other) const
 {
-    return !operator==(other);
+    if (auto cmp = std::compare_three_way{}(ns, other.ns); cmp != 0)
+        return cmp;
+
+    return name <=> other.name;
 }
 
 struct const_node::impl
