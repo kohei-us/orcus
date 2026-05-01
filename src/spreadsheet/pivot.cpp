@@ -42,15 +42,7 @@ pivot_cache_record_value_t::pivot_cache_record_value_t(size_t index) :
 {
 }
 
-bool pivot_cache_record_value_t::operator== (const pivot_cache_record_value_t& other) const
-{
-    return type == other.type && value == other.value;
-}
-
-bool pivot_cache_record_value_t::operator!= (const pivot_cache_record_value_t& other) const
-{
-    return !operator==(other);
-}
+bool pivot_cache_record_value_t::operator== (const pivot_cache_record_value_t& other) const = default;
 
 pivot_cache_item_t::pivot_cache_item_t() : type(item_type::unknown) {}
 
@@ -91,17 +83,18 @@ pivot_cache_item_t::pivot_cache_item_t(pivot_cache_item_t&& other) :
     other.value = false;
 }
 
-bool pivot_cache_item_t::operator< (const pivot_cache_item_t& other) const
-{
-    if (type != other.type)
-        return type < other.type;
+bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const = default;
 
-    return value < other.value;
-}
-
-bool pivot_cache_item_t::operator== (const pivot_cache_item_t& other) const
+std::partial_ordering pivot_cache_item_t::operator<=> (const pivot_cache_item_t& other) const
 {
-    return type == other.type && value == other.value;
+    if (auto cmp = type <=> other.type; cmp != 0)
+        return cmp;
+
+    if (value == other.value)
+        return std::partial_ordering::equivalent;
+    if (value < other.value)
+        return std::partial_ordering::less;
+    return std::partial_ordering::greater;
 }
 
 pivot_cache_item_t& pivot_cache_item_t::operator= (pivot_cache_item_t other)

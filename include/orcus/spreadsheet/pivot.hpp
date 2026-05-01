@@ -69,7 +69,6 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_record_value_t
     pivot_cache_record_value_t(size_t index);
 
     bool operator== (const pivot_cache_record_value_t& other) const;
-    bool operator!= (const pivot_cache_record_value_t& other) const;
 };
 
 using pivot_cache_record_t = std::vector<pivot_cache_record_value_t>;
@@ -96,8 +95,8 @@ struct ORCUS_SPM_DLLPUBLIC pivot_cache_item_t
     pivot_cache_item_t(const pivot_cache_item_t& other);
     pivot_cache_item_t(pivot_cache_item_t&& other);
 
-    bool operator< (const pivot_cache_item_t& other) const;
     bool operator== (const pivot_cache_item_t& other) const;
+    std::partial_ordering operator<=> (const pivot_cache_item_t& other) const;
 
     pivot_cache_item_t& operator= (pivot_cache_item_t other);
 
