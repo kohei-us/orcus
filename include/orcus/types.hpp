@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <compare>
 #include <cstdint>
 #include <cstdlib>
 #include <vector>
@@ -556,8 +557,7 @@ struct ORCUS_PSR_DLLPUBLIC date_time_t
     date_time_t& operator= (date_time_t other);
 
     bool operator== (const date_time_t& other) const;
-    bool operator!= (const date_time_t& other) const;
-    bool operator< (const date_time_t& other) const;
+    std::partial_ordering operator<=> (const date_time_t& other) const;
 
     /**
      * Convert the date-time value to an ISO-formatted string representation.

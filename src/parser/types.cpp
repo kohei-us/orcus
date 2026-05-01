@@ -405,35 +405,26 @@ date_time_t date_time_t::from_chars(std::string_view str)
     return ret;
 }
 
-bool date_time_t::operator== (const date_time_t& other) const
+bool date_time_t::operator== (const date_time_t& other) const = default;
+
+std::partial_ordering date_time_t::operator<=> (const date_time_t& other) const
 {
-    return year == other.year && month == other.month && day == other.day &&
-        hour == other.hour && minute == other.minute && second == other.second;
-}
+    if (auto cmp = year <=> other.year; cmp != 0)
+        return cmp;
 
-bool date_time_t::operator!= (const date_time_t& other) const
-{
-    return !operator== (other);
-}
+    if (auto cmp = month <=> other.month; cmp != 0)
+        return cmp;
 
-bool date_time_t::operator< (const date_time_t& other) const
-{
-    if (year != other.year)
-        return year < other.year;
+    if (auto cmp = day <=> other.day; cmp != 0)
+        return cmp;
 
-    if (month != other.month)
-        return month < other.month;
+    if (auto cmp = hour <=> other.hour; cmp != 0)
+        return cmp;
 
-    if (day != other.day)
-        return day < other.day;
+    if (auto cmp = minute <=> other.minute; cmp != 0)
+        return cmp;
 
-    if (hour != other.hour)
-        return hour < other.hour;
-
-    if (minute != other.minute)
-        return minute < other.minute;
-
-    return second < other.second;
+    return second <=> other.second;
 }
 
 std::string date_time_t::to_string() const
