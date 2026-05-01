@@ -346,17 +346,14 @@ xml_structure_tree::entity_name::entity_name() :
 xml_structure_tree::entity_name::entity_name(xmlns_id_t _ns, std::string_view _name) :
     ns(_ns), name(_name) {}
 
-bool xml_structure_tree::entity_name::operator< (const entity_name& r) const
-{
-    if (ns != r.ns)
-        return ns < r.ns;
+bool xml_structure_tree::entity_name::operator== (const entity_name& r) const = default;
 
-    return name < r.name;
-}
-
-bool xml_structure_tree::entity_name::operator== (const entity_name& r) const
+std::strong_ordering xml_structure_tree::entity_name::operator<=> (const entity_name& r) const
 {
-    return ns == r.ns && name == r.name;
+    if (auto cmp = std::compare_three_way{}(ns, r.ns); cmp != 0)
+        return cmp;
+
+    return name <=> r.name;
 }
 
 size_t xml_structure_tree::entity_name::hash::operator() (const entity_name& val) const

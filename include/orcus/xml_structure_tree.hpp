@@ -83,8 +83,8 @@ public:
         entity_name();
         entity_name(xmlns_id_t _ns, std::string_view _name);
 
-        bool operator< (const entity_name& r) const;
         bool operator== (const entity_name& r) const;
+        std::strong_ordering operator<=> (const entity_name& r) const;
 
         struct ORCUS_DLLPUBLIC hash
         {
