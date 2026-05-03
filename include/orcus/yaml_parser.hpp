@@ -453,7 +453,7 @@ void yaml_parser<_Handler>::parse_value(const char* p, size_t len)
         return;
     }
 
-    yaml::detail::keyword_t kw = parse_keyword(p0, len);
+    yaml::detail::keyword_t kw = parse_keyword({p0, len});
 
     if (kw != yaml::detail::keyword_t::unknown)
     {
@@ -487,7 +487,7 @@ void yaml_parser<_Handler>::push_value(const char* p, size_t len)
     if (has_line_buffer() && get_scope_type() == yaml::detail::scope_t::unset)
         set_scope_type(yaml::detail::scope_t::multi_line_string);
 
-    push_line_back(p, len);
+    push_line_back({p, len});
 }
 
 template<typename _Handler>
@@ -639,7 +639,7 @@ void yaml_parser<_Handler>::parse_map_key(const char* p, size_t len)
         break;
         default:
         {
-            key_value kv = parse_key_value(p, p_end-p);
+            key_value kv = parse_key_value({p, static_cast<std::size_t>(p_end-p)});
 
             if (kv.key.empty())
             {

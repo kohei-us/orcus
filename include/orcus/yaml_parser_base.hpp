@@ -141,7 +141,7 @@ protected:
      */
     size_t pop_scope();
 
-    void push_line_back(const char* p, size_t n);
+    void push_line_back(std::string_view s);
 
     std::string_view pop_line_front();
 
@@ -168,9 +168,9 @@ protected:
      */
     void set_doc_hash(const char* hash);
 
-    detail::keyword_t parse_keyword(const char* p, size_t len);
+    detail::keyword_t parse_keyword(std::string_view s);
 
-    key_value parse_key_value(const char* p, size_t len);
+    key_value parse_key_value(std::string_view s);
 
     std::string_view parse_single_quoted_string_value(const char*& p, size_t max_length);
 

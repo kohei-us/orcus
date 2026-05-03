@@ -239,9 +239,9 @@ size_t parser_base::pop_scope()
     return get_scope();
 }
 
-void parser_base::push_line_back(const char* p, size_t n)
+void parser_base::push_line_back(std::string_view s)
 {
-    mp_impl->m_line_buffer.emplace_back(p, n);
+    mp_impl->m_line_buffer.push_back(s);
 }
 
 std::string_view parser_base::pop_line_front()
@@ -360,20 +360,21 @@ void throw_quoted_string_parse_error(
 
 }
 
-detail::keyword_t parser_base::parse_keyword(const char* p, size_t len)
+detail::keyword_t parser_base::parse_keyword(std::string_view s)
 {
-    return keyword::get().find({p, len});
+    return keyword::get().find(s);
 }
 
-parser_base::key_value parser_base::parse_key_value(const char* p, size_t len)
+parser_base::key_value parser_base::parse_key_value(std::string_view s)
 {
     size_t scope = get_scope();
     assert(scope != scope_empty);
 
-    assert(*p != ' ');
-    assert(len);
+    const char* p = s.data();
+    const char* p_end = p + s.size();
 
-    const char* p_end = p + len;
+    assert(*p != ' ');
+    assert(!s.empty());
 
     key_value kv;
 
@@ -493,7 +494,7 @@ void parser_base::handle_line_in_literal(size_t indent)
     }
 
     std::string_view line = parse_to_end_of_line();
-    push_line_back(line.data(), line.size());
+    push_line_back(line);
 }
 
 void parser_base::handle_line_in_multi_line_string()
@@ -504,7 +505,7 @@ void parser_base::handle_line_in_multi_line_string()
     std::string_view line = parse_to_end_of_line();
     line = trim(line);
     assert(!line.empty());
-    push_line_back(line.data(), line.size());
+    push_line_back(line);
 }
 
 }}
