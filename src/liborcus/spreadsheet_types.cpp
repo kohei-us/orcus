@@ -9,7 +9,7 @@
 #include <orcus/exception.hpp>
 
 #include <limits>
-#include <sstream>
+#include <format>
 
 #include <mdds/sorted_string_map.hpp>
 
@@ -469,9 +469,7 @@ color_rgb_t to_color_rgb(std::string_view s)
 
     if (n != 6)
     {
-        std::ostringstream os;
-        os << "'" << std::string_view(p0, n0) << "' is not a valid RGB color string.";
-        throw value_error(os.str());
+        throw value_error(std::format("'{}' is not a valid RGB color string.", std::string_view(p0, n0)));
     }
 
     color_rgb_t ret;
@@ -493,9 +491,7 @@ color_rgb_t to_color_rgb(std::string_view s)
             this_val = 10 + c - 'A';
         else
         {
-            std::ostringstream os;
-            os << "'" << std::string_view(p0, n0) << "' is not a valid RGB color string.";
-            throw value_error(os.str());
+            throw value_error(std::format("'{}' is not a valid RGB color string.", std::string_view(p0, n0)));
         }
 
         converted += this_val;

@@ -10,6 +10,7 @@
 
 #include "utf8.hpp"
 
+#include <format>
 #include <sstream>
 #include <fstream>
 #include <tuple>
@@ -110,9 +111,8 @@ std::tuple<std::string_view, size_t, size_t> find_line_with_offset(std::string_v
 
     if (p_offset >= p_end)
     {
-        std::ostringstream os;
-        os << "offset value of " << offset << " is out-of-bound for a stream of length " << strm.size();
-        throw std::invalid_argument(os.str());
+        throw std::invalid_argument(
+            std::format("offset value of {} is out-of-bound for a stream of length {}", offset, strm.size()));
     }
 
     // Determine the line number.
@@ -426,9 +426,8 @@ std::size_t calc_logical_string_length(std::string_view s)
         auto n_bytes = calc_utf8_byte_length(*p);
         if (!n_bytes || n_bytes > 4)
         {
-            std::ostringstream os;
-            os << "'" << s << "' contains invalid character at position " << std::distance(s.data(), p);
-            throw std::invalid_argument(os.str());
+            throw std::invalid_argument(
+                std::format("'{}' contains invalid character at position {}", s, std::distance(s.data(), p)));
         }
 
         p += n_bytes;
@@ -436,9 +435,7 @@ std::size_t calc_logical_string_length(std::string_view s)
 
     if (p != p_end)
     {
-        std::ostringstream os;
-        os << "last character of '" << s << "' ended prematurely";
-        throw std::invalid_argument(os.str());
+        throw std::invalid_argument(std::format("last character of '{}' ended prematurely", s));
     }
 
     return length;

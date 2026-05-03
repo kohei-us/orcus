@@ -14,7 +14,7 @@
 #include <cstring>
 #include <iostream>
 #include <unordered_map>
-#include <sstream>
+#include <format>
 #include <string_view>
 #include <iomanip>
 
@@ -333,9 +333,7 @@ zip_file_entry_header zip_archive::impl::get_file_entry_header(std::string_view 
     auto it = m_filenames.find(name);
     if (it == m_filenames.end())
     {
-        std::ostringstream os;
-        os << "file entry named '" << name << "' not found";
-        throw zip_error(os.str());
+        throw zip_error(std::format("file entry named '{}' not found", name));
     }
 
     return get_file_entry_header(it->second);
@@ -428,9 +426,7 @@ unnamed_buffer zip_archive::impl::read_file_entry(std::string_view entry_name) c
     filename_map_type::const_iterator it = m_filenames.find(entry_name);
     if (it == m_filenames.end())
     {
-        std::ostringstream os;
-        os << "entry named '" << entry_name << "' not found";
-        throw zip_error(os.str());
+        throw zip_error(std::format("entry named '{}' not found", entry_name));
     }
 
 

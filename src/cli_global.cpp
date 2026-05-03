@@ -57,11 +57,7 @@ output_stream::output_stream(const boost::program_options::variables_map& vm) :
     // Check to make sure the output path doesn't point to an existing
     // directory.
     if (fs::is_directory(output_path))
-    {
-        std::ostringstream os;
-        os << "Output file path points to an existing directory.";
-        throw std::invalid_argument(os.str());
-    }
+        throw std::invalid_argument("output file path points to an existing directory.");
 
     // Output to stdout when output path is not given.
     m_ofs = std::make_unique<std::ofstream>(output_path.data());

@@ -8,7 +8,7 @@
 #include "orcus/zip_archive_stream.hpp"
 #include "orcus/zip_archive.hpp"
 
-#include <sstream>
+#include <format>
 #include <cstring>
 
 #ifdef _MSC_VER
@@ -26,9 +26,7 @@ zip_archive_stream_fd::zip_archive_stream_fd(const char* filepath) :
     if (!m_stream)
     {
         // Fail early at instantiation time.
-        std::ostringstream os;
-        os << "failed to open " << filepath << " for reading";
-        throw zip_error(os.str());
+        throw zip_error(std::format("failed to open {} for reading", filepath));
     }
 }
 
@@ -62,9 +60,7 @@ void zip_archive_stream_fd::seek(size_t pos)
 {
     if (fseeko(m_stream, pos, SEEK_SET))
     {
-        std::ostringstream os;
-        os << "failed to set seek position to " << pos << ".";
-        throw zip_error(os.str());
+        throw zip_error(std::format("failed to set seek position to {}.", pos));
     }
 }
 
@@ -93,9 +89,7 @@ void zip_archive_stream_blob::seek(size_t pos)
 {
     if (pos > m_size)
     {
-        std::ostringstream os;
-        os << "failed to seek position to " << pos << ".";
-        throw zip_error(os.str());
+        throw zip_error(std::format("failed to seek position to {}.", pos));
     }
     m_cur = m_blob + pos;
 }

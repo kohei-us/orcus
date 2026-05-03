@@ -13,7 +13,7 @@
 #include <orcus/measurement.hpp>
 
 #include <cassert>
-#include <sstream>
+#include <format>
 #include <optional>
 
 #include <boost/numeric/conversion/cast.hpp>
@@ -61,10 +61,9 @@ void gnumeric_value_format_parser::segment()
                     m_segments.insert(*start, end, seg);
                 else
                 {
-                    std::ostringstream os;
                     n = std::distance(p_start, m_cur);
-                    os << "skipping invalid segment '" << std::string_view{p_start, numeric_cast<std::size_t>(n)} << "'";
-                    warn(m_config, os.str());
+                    warn(m_config, std::format("skipping invalid segment '{}'",
+                        std::string_view{p_start, numeric_cast<std::size_t>(n)}));
                 }
 
                 return;
@@ -76,9 +75,7 @@ void gnumeric_value_format_parser::segment()
                 seg.type = to_gnumeric_value_format_type(s);
                 if (seg.type == gnumeric_value_format_type::unknown)
                 {
-                    std::ostringstream os;
-                    os << "invalid value format type '" << s << "'";
-                    throw parse_error(os.str(), get_pos());
+                    throw parse_error(std::format("invalid value format type '{}'", s), get_pos());
                 }
 
                 p0 = nullptr;

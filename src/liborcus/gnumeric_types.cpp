@@ -8,6 +8,8 @@
 #include "gnumeric_types.hpp"
 #include "number_utils.hpp"
 
+#include <format>
+
 #include <orcus/spreadsheet/import_interface_underline.hpp>
 
 #include <mdds/sorted_string_map.hpp>
@@ -224,9 +226,7 @@ std::string push_underline(long v, ss::iface::import_underline* ul)
         }
         default:
         {
-            std::ostringstream os;
-            os << "unhandled underline enum value: " << v;
-            return os.str();
+            return std::format("unhandled underline enum value: {}", v);
         }
     }
 

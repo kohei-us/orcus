@@ -10,7 +10,7 @@
 #include <orcus/measurement.hpp>
 
 #include <cassert>
-#include <sstream>
+#include <format>
 #include <iostream>
 
 namespace orcus {
@@ -163,16 +163,12 @@ void json_path_parser::bracket()
                     auto v = to_long_checked(s);
                     if (!v)
                     {
-                        std::ostringstream os;
-                        os << "failed to convert to integer: '" << s << "'";
-                        throw invalid_arg_error(os.str());
+                        throw invalid_arg_error(std::format("failed to convert to integer: '{}'", s));
                     }
 
                     if (*v < 0)
                     {
-                        std::ostringstream os;
-                        os << "array index must be positive (" << *v << ")";
-                        throw invalid_arg_error(os.str());
+                        throw invalid_arg_error(std::format("array index must be positive ({})", *v));
                     }
 
                     m_parts.emplace_back(std::size_t(*v));
@@ -233,9 +229,7 @@ void json_path_parser::parse(std::string_view expression)
             }
             default:
             {
-                std::ostringstream os;
-                os << "unexpected character '" << *mp << "'";
-                throw invalid_arg_error(os.str());
+                throw invalid_arg_error(std::format("unexpected character '{}'", *mp));
             }
         }
     }

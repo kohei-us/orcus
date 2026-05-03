@@ -6,6 +6,8 @@
  */
 
 #include "test_global.hpp"
+
+#include <format>
 #include <orcus/version.hpp>
 
 void test_version()
@@ -16,9 +18,7 @@ void test_version()
         std::string ver = ORCUS_VERSION; // it's a string literal
         std::cout << "version: " << ver << std::endl;
 
-        std::ostringstream os;
-        os << ORCUS_VERSION_MAJOR << '.' << ORCUS_VERSION_MINOR << '.' << ORCUS_VERSION_MICRO;
-        assert(ver == os.str());
+        assert(ver == std::format("{}.{}.{}", ORCUS_VERSION_MAJOR, ORCUS_VERSION_MINOR, ORCUS_VERSION_MICRO));
     }
 
     {
@@ -35,9 +35,7 @@ void test_version()
         std::string ver = ORCUS_API_VERSION; // it's a string literal
         std::cout << "API version: " << ver << std::endl;
 
-        std::ostringstream os;
-        os << ORCUS_API_VERSION_MAJOR << '.' << ORCUS_API_VERSION_MINOR;
-        assert(ver == os.str());
+        assert(ver == std::format("{}.{}", ORCUS_API_VERSION_MAJOR, ORCUS_API_VERSION_MINOR));
     }
 
     {

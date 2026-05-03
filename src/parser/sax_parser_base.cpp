@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "orcus/sax_parser_base.hpp"
+#include <orcus/sax_parser_base.hpp>
 
 #include "utf8.hpp"
 
+#include <format>
 #include <cstring>
 #include <vector>
 #include <memory>
@@ -176,9 +177,8 @@ void parser_base::expects_next(const char* p, size_t n)
         if (c == *p)
             continue;
 
-        std::ostringstream os;
-        os << "'" << std::string(p0, n) << "' was expected, but not found.";
-        throw malformed_xml_error(os.str(), offset());
+        throw malformed_xml_error(
+            std::format("'{}' was expected, but not found.", std::string_view(p0, n)), offset());
     }
 }
 
@@ -308,9 +308,8 @@ void parser_base::name(std::string_view& str)
     mp_char = parse_utf8_xml_name_start_char(mp_char, mp_end);
     if (mp_char == p0)
     {
-        ::std::ostringstream os;
-        os << "name must begin with an alphabet, but got this instead '" << cur_char() << "'";
-        throw malformed_xml_error(os.str(), offset());
+        throw malformed_xml_error(
+            std::format("name must begin with an alphabet, but got this instead '{}'", cur_char()), offset());
     }
 
 #if defined(__ORCUS_CPU_FEATURES) && defined(__SSE4_2__)

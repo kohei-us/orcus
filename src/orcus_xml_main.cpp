@@ -17,6 +17,7 @@
 #include "orcus_filter_global.hpp"
 #include "cli_global.hpp"
 
+#include <format>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -81,9 +82,7 @@ void print_usage(std::ostream& os, const po::options_description& desc)
 
 std::string build_output_help_text()
 {
-    std::ostringstream os;
-    os << "Path to either an output directory, or an output file.";
-    return os.str();
+    return "Path to either an output directory, or an output file.";
 }
 
 std::string build_mode_help_text()
@@ -102,10 +101,9 @@ std::string build_mode_help_text()
 
 std::string build_map_help_text()
 {
-    std::ostringstream os;
-    os << "Path to the map file. A map file is required for all modes except for the "
-        << to_string(output_mode::type::structure) << " mode.";
-    return os.str();
+    return std::format(
+        "Path to the map file. A map file is required for all modes except for the {} mode.",
+        to_string(output_mode::type::structure));
 }
 
 const char* help_indent =

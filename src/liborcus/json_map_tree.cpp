@@ -9,7 +9,7 @@
 #include "orcus/measurement.hpp"
 
 #include <iostream>
-#include <sstream>
+#include <format>
 
 namespace orcus {
 
@@ -19,9 +19,7 @@ namespace {
 
 void throw_path_error(const char* file, int line, std::string_view path)
 {
-    std::ostringstream os;
-    os << file << "#" << line << ": failed to link this path '" << path << "'";
-    throw json_map_tree::path_error(os.str());
+    throw json_map_tree::path_error(std::format("{}#{}: failed to link this path '{}'", file, line, path));
 }
 
 enum class json_path_token_t { unknown, array_pos, object_key, end };
@@ -394,9 +392,7 @@ void json_map_tree::set_cell_link(std::string_view path, const cell_position_t& 
     node* p = stack.node_stack.back();
     if (p->type != map_node_type::unknown)
     {
-        std::ostringstream os;
-        os << "this path is not linkable: '" << path << '\'';
-        throw path_error(os.str());
+        throw path_error(std::format("this path is not linkable: '{}'", path));
     }
 
     p->type = map_node_type::cell_ref;
@@ -466,9 +462,8 @@ void json_map_tree::commit_range()
         else if (stack.dest_key.empty())
         {
             // This field is probably associated with an array.
-            std::ostringstream os;
-            os << "field " << unlabeled_field_count++;
-            p->value.range_field_ref->label = m_str_pool.intern(os.str()).first;
+            p->value.range_field_ref->label =
+                m_str_pool.intern(std::format("field {}", unlabeled_field_count++)).first;
         }
         else
             // This field is associated with an object key.  Use its key as the label.

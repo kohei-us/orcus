@@ -10,6 +10,7 @@
 
 #include "utf8.hpp"
 
+#include <format>
 #include <sstream>
 #include <iomanip>
 #include <cassert>
@@ -38,10 +39,9 @@ std::string escape_string(std::string_view input)
             // utf-8 character
             if (std::next(p, n) > p_end)
             {
-                std::ostringstream err;
-                err << __FILE__ << ':' << __LINE__ << ": utf-8 bytes of length "
-                    << n << " was expected, but the string does not have enough bytes left";
-                throw std::runtime_error(err.str());
+                throw std::runtime_error(std::format(
+                    "{}:{}: utf-8 bytes of length {} was expected, but the string does not have enough bytes left",
+                    __FILE__, __LINE__, n));
             }
 
             std::string_view sub{p, n};

@@ -25,7 +25,7 @@
 #include <ixion/formula_tokens.hpp>
 #include <ixion/formula.hpp>
 #include <ixion/model_context.hpp>
-#include <sstream>
+#include <format>
 #include <iostream>
 #include <unordered_map>
 
@@ -55,9 +55,7 @@ public:
 
         if (name.type != ixion::formula_name_t::cell_reference)
         {
-            std::ostringstream os;
-            os << address << " is not a valid cell address.";
-            throw orcus::invalid_arg_error(os.str());
+            throw orcus::invalid_arg_error(std::format("{} is not a valid cell address.", address));
         }
 
         auto addr = std::get<ixion::address_t>(name.value);
@@ -107,9 +105,7 @@ public:
                 ;
         }
 
-        std::ostringstream os;
-        os << "'" << range << "' is not a valid range address.";
-        throw orcus::invalid_arg_error(os.str());
+        throw orcus::invalid_arg_error(std::format("'{}' is not a valid range address.", range));
     }
 };
 
