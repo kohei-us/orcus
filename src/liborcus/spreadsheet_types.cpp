@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <format>
+#include <ostream>
 
 #include <mdds/sorted_string_map.hpp>
 
