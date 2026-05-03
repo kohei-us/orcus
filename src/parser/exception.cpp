@@ -7,7 +7,7 @@
 
 #include "orcus/exception.hpp"
 
-#include <sstream>
+#include <format>
 
 namespace orcus {
 
@@ -18,9 +18,7 @@ general_error::general_error(std::string msg) :
 
 general_error::general_error(std::string_view cls, std::string_view msg)
 {
-    std::ostringstream os;
-    os << cls << ": " << msg;
-    m_msg = os.str();
+    m_msg = std::format("{}: {}", cls, msg);
 }
 
 general_error::~general_error() noexcept = default;
@@ -72,24 +70,18 @@ namespace {
 
 std::string build_offset_msg(std::ptrdiff_t offset)
 {
-    std::ostringstream os;
-    os << " (offset=" << offset << ')';
-    return os.str();
+    return std::format(" (offset={})", offset);
 }
 
 std::string build_message(std::string_view msg_before, char c, std::string_view msg_after)
 {
-    std::ostringstream os;
-    os << msg_before << c << msg_after;
-    return os.str();
+    return std::format("{}{}{}", msg_before, c, msg_after);
 }
 
 std::string build_message(
     std::string_view msg_before, std::string_view msg, std::string_view msg_after)
 {
-    std::ostringstream os;
-    os << msg_before << msg << msg_after;
-    return os.str();
+    return std::format("{}{}{}", msg_before, msg, msg_after);
 }
 
 }

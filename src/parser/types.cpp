@@ -9,6 +9,7 @@
 #include <orcus/parser_global.hpp>
 #include <orcus/xml_namespace.hpp>
 
+#include <format>
 #include <limits>
 #include <sstream>
 #include <string_view>
@@ -61,8 +62,6 @@ bool xml_name_t::operator!= (const xml_name_t& other) const noexcept
 
 std::string xml_name_t::to_string(const xmlns_context& cxt, to_string_type type) const
 {
-    std::ostringstream os;
-
     if (ns)
     {
         std::string_view ns_str;
@@ -77,26 +76,20 @@ std::string xml_name_t::to_string(const xmlns_context& cxt, to_string_type type)
 
         }
         if (!ns_str.empty())
-            os << ns_str << ':';
+            return std::format("{}:{}", ns_str, name);
     }
-    os << name;
-
-    return os.str();
+    return std::string{name};
 }
 
 std::string xml_name_t::to_string(const xmlns_repository& repo) const
 {
-    std::ostringstream os;
-
     if (ns)
     {
         std::string ns_str = repo.get_short_name(ns);
         if (!ns_str.empty())
-            os << ns_str << ':';
+            return std::format("{}:{}", ns_str, name);
     }
-    os << name;
-
-    return os.str();
+    return std::string{name};
 }
 
 xml_token_attr_t::xml_token_attr_t() :
@@ -173,29 +166,26 @@ length_t& length_t::operator= (const length_t& other) = default;
 
 std::string length_t::to_string() const
 {
-    std::ostringstream os;
-    os << value;
-
+    std::string_view suffix;
     switch (unit)
     {
         case length_unit_t::centimeter:
-            os << " cm";
-        break;
+            suffix = " cm";
+            break;
         case length_unit_t::inch:
-            os << " in";
-        break;
+            suffix = " in";
+            break;
         case length_unit_t::point:
-            os << " pt";
-        break;
+            suffix = " pt";
+            break;
         case length_unit_t::twip:
-            os << " twip";
-        break;
+            suffix = " twip";
+            break;
         case length_unit_t::unknown:
         default:
             ;
     }
-
-    return os.str();
+    return std::format("{}{}", value, suffix);
 }
 
 bool length_t::operator== (const length_t& other) const noexcept
