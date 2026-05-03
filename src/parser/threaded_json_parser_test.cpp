@@ -90,7 +90,7 @@ void test_parser(const char* src, const json::parse_tokens_t& expected)
     std::cout << "source: " << src << std::endl;
 
     handler hdl;
-    threaded_json_parser<handler> parser(src, std::strlen(src), hdl, 5, 5);
+    threaded_json_parser<handler> parser(src, hdl, 5, 5);
     parser.parse();
 
     if (hdl.get_tokens() != expected)
@@ -164,7 +164,7 @@ void test_threaded_json_parser_invalid()
         try
         {
             handler hdl;
-            threaded_json_parser<handler> parser(src, std::strlen(src), hdl, 1);
+            threaded_json_parser<handler> parser(src, hdl, 1);
             parser.parse();
             assert(false);
         }

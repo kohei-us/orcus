@@ -186,7 +186,7 @@ int main(int argc, char** argv) try
     orcus::json::parser_stats stats;
     {
         stack_printer __stack_printer__("parsing");
-        orcus::threaded_json_parser<handler> parser(content.data(), content.size(), hdl, min_token_size, max_token_size);
+        orcus::threaded_json_parser<handler> parser(content.str(), hdl, min_token_size, max_token_size);
         parser.parse();
 
         stats = parser.get_stats();
