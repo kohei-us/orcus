@@ -24,6 +24,7 @@
 #include <deque>
 #include <iomanip>
 #include <filesystem>
+#include <ranges>
 
 #include <boost/current_function.hpp>
 #include <boost/pool/object_pool.hpp>
@@ -220,10 +221,11 @@ void dump_value(
         {
             auto& vals = v->value.array->value_array;
             os << "[" << cxt.end;
-            size_t n = vals.size();
-            size_t pos = 0;
-            for (auto it = vals.begin(), ite = vals.end(); it != ite; ++it, ++pos)
-                dump_item(os, cxt, nullptr, *it, indent, level, pos < (n-1));
+
+            // dump each array element, passing a separator flag for all but the last
+            std::size_t n = vals.size();
+            for (std::size_t pos : std::views::iota(std::size_t{0}, n))
+                dump_item(os, cxt, nullptr, vals[pos], indent, level, pos < (n-1));
 
             dump_repeat(os, cxt.indent, level);
             os << "]";
