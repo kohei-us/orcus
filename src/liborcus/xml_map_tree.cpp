@@ -83,27 +83,14 @@ xml_map_tree::element* xml_map_tree::element::get_child(const xml_name_t& _name)
 
     assert(child_elements);
 
-    auto it = std::find_if(
-        child_elements->begin(), child_elements->end(),
-        [&_name](const element* p) -> bool
-        {
-            return p->name == _name;
-        }
-    );
-
+    auto it = std::ranges::find(*child_elements, _name, &element::name);
     return it == child_elements->end() ? nullptr : *it;
 }
 
 xml_map_tree::element* xml_map_tree::element::get_or_create_child(
     xml_map_tree& parent, const xml_name_t& _name)
 {
-    auto it = std::find_if(
-        child_elements->begin(), child_elements->end(),
-        [&_name](const element* p) -> bool
-        {
-            return p->name == _name;
-        }
-    );
+    auto it = std::ranges::find(*child_elements, _name, &element::name);
 
     if (it != child_elements->end())
         return *it;
@@ -142,13 +129,7 @@ xml_map_tree::element* xml_map_tree::element::get_or_create_linked_child(
         throw invalid_map_error(os.str());
     }
 
-    auto it = std::find_if(
-        child_elements->begin(), child_elements->end(),
-        [&_name](const element* p) -> bool
-        {
-            return p->name == _name;
-        }
-    );
+    auto it = std::ranges::find(*child_elements, _name, &element::name);
 
     if (it != child_elements->end())
     {
@@ -521,13 +502,7 @@ const xml_map_tree::linkable* xml_map_tree::get_link(std::string_view xpath) con
 
             const element* elem = static_cast<const element*>(cur_node);
             const attribute_store_type& attrs = elem->attributes;
-            auto it = std::find_if(
-                attrs.begin(), attrs.end(),
-                [&token](const attribute* p) -> bool
-                {
-                    return p->name.ns == token.ns && p->name.name == token.name;
-                }
-            );
+            auto it = std::ranges::find(attrs, xml_name_t{token.ns, token.name}, &attribute::name);
 
             if (it == attrs.end())
                 // No such attribute exists.
@@ -548,13 +523,7 @@ const xml_map_tree::linkable* xml_map_tree::get_link(std::string_view xpath) con
         if (!elem->child_elements)
             return nullptr;
 
-        auto it = std::find_if(
-            elem->child_elements->begin(), elem->child_elements->end(),
-            [&token](const element* p) -> bool
-            {
-                return p->name.ns == token.ns && p->name.name == token.name;
-            }
-        );
+        auto it = std::ranges::find(*elem->child_elements, xml_name_t{token.ns, token.name}, &element::name);
 
         if (it == elem->child_elements->end())
             // No such child element exists.
@@ -684,13 +653,7 @@ xml_map_tree::linked_node_type xml_map_tree::get_linked_node(std::string_view xp
         attribute_store_type& attrs = cur_element->attributes;
 
         // Check if an attribute of the same name already exists.
-        auto it = std::find_if(
-            attrs.begin(), attrs.end(),
-            [&token](const attribute* p) -> bool
-            {
-                return p->name.ns == token.ns && p->name.name == token.name;
-            }
-        );
+        auto it = std::ranges::find(attrs, xml_name_t{token.ns, token.name}, &attribute::name);
 
         if (it != attrs.end())
             throw xpath_error("This attribute is already linked.  You can't link the same attribute twice.");
