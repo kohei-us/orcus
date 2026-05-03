@@ -108,7 +108,7 @@ class zip_stream_parser
 
         std::vector<char> buf(n+1, '\0');
         m_stream->seek(m_head_pos+m_offset);
-        m_stream->read(reinterpret_cast<unsigned char*>(buf.data()), n);
+        m_stream->read({reinterpret_cast<uint8_t*>(buf.data()), n});
         m_offset += n;
         return buf;
     }
@@ -131,7 +131,7 @@ public:
 
         std::vector<uint8_t> buf;
         m_stream->seek(m_head_pos+m_offset);
-        m_stream->read(buf.data(), n);
+        m_stream->read({buf.data(), n});
         m_offset += n;
         return buf;
     }
@@ -150,8 +150,8 @@ public:
     uint32_t read_4bytes()
     {
         m_stream->seek(m_head_pos+m_offset);
-        unsigned char buf[4];
-        m_stream->read(buf, 4);
+        uint8_t buf[4];
+        m_stream->read(buf);
         m_offset += 4;
 
         uint32_t ret = buf[0];
@@ -165,8 +165,8 @@ public:
     uint16_t read_2bytes()
     {
         m_stream->seek(m_head_pos+m_offset);
-        unsigned char buf[2];
-        m_stream->read(buf, 2);
+        uint8_t buf[2];
+        m_stream->read(buf);
         m_offset += 2;
 
         uint16_t ret = buf[0];
@@ -456,7 +456,7 @@ unnamed_buffer zip_archive::impl::read_file_entry(std::string_view entry_name) c
     m_stream->seek(file_header.tell());
 
     unnamed_buffer raw_buf(param.size_compressed+1, m_buffer_type); // null-terminated
-    m_stream->read(reinterpret_cast<unsigned char*>(raw_buf.data()), param.size_compressed);
+    m_stream->read({reinterpret_cast<uint8_t*>(raw_buf.data()), param.size_compressed});
 
     switch (param.compress_method)
     {
@@ -495,7 +495,7 @@ size_t zip_archive::impl::seek_central_dir()
     off_t max_comment_size = 0xffff;
 
     size_t buf_size = 22 + max_comment_size; // central directory size is 22 + n (n maxing at 0xffff).
-    std::vector<unsigned char> buf(buf_size);
+    std::vector<uint8_t> buf(buf_size);
 
     // Read stream backward and try to find the magic number.
 
@@ -508,10 +508,10 @@ size_t zip_archive::impl::seek_central_dir()
 
         size_t read_pos = read_end_pos - buf.size();
         m_stream->seek(read_pos);
-        m_stream->read(&buf[0], buf.size());
+        m_stream->read(buf);
 
         // Search this byte segment for the magic number.
-        std::vector<unsigned char>::reverse_iterator i = buf.rbegin(), ie = buf.rend();
+        std::vector<uint8_t>::reverse_iterator i = buf.rbegin(), ie = buf.rend();
         size_t magic_pos = 0;
         for (; i != ie; ++i)
         {

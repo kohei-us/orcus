@@ -28,25 +28,25 @@ catch (...) \
 using namespace orcus;
 namespace fs = std::filesystem;
 
-void test_zip_archive_stream(zip_archive_stream* const strm, const unsigned char* const data, std::size_t const length)
+void test_zip_archive_stream(zip_archive_stream* const strm, const uint8_t* const data, std::size_t const length)
 {
     assert(strm->size() == length);
     assert(strm->tell() == 0);
 
-    std::vector<unsigned char> buffer(length, 0);
-    unsigned char* buf = buffer.data();
+    std::vector<uint8_t> buffer(length, 0);
+    uint8_t* buf = buffer.data();
 
-    strm->read(buf, 2);
+    strm->read({buf, 2});
     assert(std::equal(data, data + 2, buf));
     assert(strm->tell() == 0);
-    strm->read(buf, length);
+    strm->read({buf, length});
     assert(std::equal(data, data + length, buf));
-    ASSERT_THROW(strm->read(buf, length + 1));
-    strm->read(buf, 0);
+    ASSERT_THROW(strm->read({buf, length + 1}));
+    strm->read({buf, 0});
 
     strm->seek(2);
     assert(strm->tell() == 2);
-    strm->read(buf, 2);
+    strm->read({buf, 2});
     assert(std::equal(data + 2, data + 4, buf));
     strm->seek(length);
     assert(strm->tell() == length);
@@ -58,8 +58,8 @@ void test_zip_archive_stream_blob()
 {
     ORCUS_TEST_FUNC_SCOPE;
 
-    const unsigned char data[] = "My hovercraft is full of eels.";
-    zip_archive_stream_blob strm(data, sizeof(data));
+    const uint8_t data[] = "My hovercraft is full of eels.";
+    zip_archive_stream_blob strm(std::span{data});
     test_zip_archive_stream(&strm, data, sizeof(data));
 }
 

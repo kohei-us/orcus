@@ -49,10 +49,10 @@ size_t zip_archive_stream_fd::tell() const
     return ftello(m_stream);
 }
 
-void zip_archive_stream_fd::read(unsigned char* buffer, size_t length) const
+void zip_archive_stream_fd::read(std::span<uint8_t> buffer) const
 {
-    size_t size_read = fread(buffer, 1, length, m_stream);
-    if (size_read != length)
+    size_t size_read = fread(buffer.data(), 1, buffer.size(), m_stream);
+    if (size_read != buffer.size())
         throw zip_error("actual size read doesn't match what was expected.");
 }
 
@@ -65,8 +65,8 @@ void zip_archive_stream_fd::seek(size_t pos)
 }
 
 
-zip_archive_stream_blob::zip_archive_stream_blob(const uint8_t* blob, std::size_t size) :
-    m_blob(blob), m_cur(blob), m_size(size) {}
+zip_archive_stream_blob::zip_archive_stream_blob(std::span<const uint8_t> blob) :
+    m_blob(blob.data()), m_cur(m_blob), m_size(blob.size()) {}
 
 zip_archive_stream_blob::zip_archive_stream_blob(std::string_view strm) :
     m_blob(reinterpret_cast<const uint8_t*>(strm.data())),
@@ -94,16 +94,16 @@ void zip_archive_stream_blob::seek(size_t pos)
     m_cur = m_blob + pos;
 }
 
-void zip_archive_stream_blob::read(unsigned char* buffer, size_t length) const
+void zip_archive_stream_blob::read(std::span<uint8_t> buffer) const
 {
-    if (!length)
+    if (buffer.empty())
         return;
     // First, make sure we have enough blob to satisfy the requested stream length.
     const size_t length_available = m_size - tell();
-    if (length_available < length)
+    if (length_available < buffer.size())
         throw zip_error("There is not enough stream left to fill requested length.");
 
-    memcpy(buffer, m_cur, length);
+    memcpy(buffer.data(), m_cur, buffer.size());
 }
 
 }

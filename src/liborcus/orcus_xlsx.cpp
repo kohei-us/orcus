@@ -209,7 +209,7 @@ void orcus_xlsx::read_stream(std::string_view stream)
 {
     std::unique_ptr<zip_archive_stream> blob(
         new zip_archive_stream_blob(
-            reinterpret_cast<const uint8_t*>(stream.data()), stream.size()));
+            std::span{reinterpret_cast<const uint8_t*>(stream.data()), stream.size()}));
     mp_impl->m_opc_reader.read_file(std::move(blob));
 
     // Formulas need to be inserted to the document after the shared string

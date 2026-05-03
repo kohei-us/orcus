@@ -194,7 +194,7 @@ void orcus_ods::read_file(const fs::path& filepath)
 void orcus_ods::read_stream(std::string_view stream)
 {
     zip_archive_stream_blob blob(
-        reinterpret_cast<const uint8_t*>(stream.data()), stream.size());
+        std::span{reinterpret_cast<const uint8_t*>(stream.data()), stream.size()});
     read_file_impl(&blob);
 }
 

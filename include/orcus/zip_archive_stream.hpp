@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstdint>
+#include <span>
 #include <string_view>
 
 namespace orcus {
@@ -23,7 +24,7 @@ public:
     virtual size_t size() const = 0;
     virtual size_t tell() const = 0;
     virtual void seek(size_t pos) = 0;
-    virtual void read(unsigned char* buffer, size_t length) const = 0;
+    virtual void read(std::span<uint8_t> buffer) const = 0;
 };
 
 /**
@@ -42,7 +43,7 @@ public:
     virtual size_t size() const;
     virtual size_t tell() const;
     virtual void seek(size_t pos);
-    virtual void read(unsigned char* buffer, size_t length) const;
+    virtual void read(std::span<uint8_t> buffer) const;
 };
 
 /**
@@ -56,14 +57,14 @@ class ORCUS_PSR_DLLPUBLIC zip_archive_stream_blob : public zip_archive_stream
 
 public:
     zip_archive_stream_blob() = delete;
-    zip_archive_stream_blob(const uint8_t* blob, std::size_t size);
+    zip_archive_stream_blob(std::span<const uint8_t> blob);
     zip_archive_stream_blob(std::string_view strm);
     virtual ~zip_archive_stream_blob();
 
     virtual size_t size() const;
     virtual size_t tell() const;
     virtual void seek(size_t pos);
-    virtual void read(unsigned char* buffer, size_t length) const;
+    virtual void read(std::span<uint8_t> buffer) const;
 };
 
 }
