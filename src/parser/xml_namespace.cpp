@@ -312,74 +312,39 @@ struct ns_item
 {
     size_t index;
     xmlns_id_t ns;
-
-    ns_item(size_t _index, xmlns_id_t _ns) : index(_index), ns(_ns) {}
-};
-
-struct less_ns_by_index
-{
-    bool operator() (const ns_item& left, const ns_item& right) const
-    {
-        return left.index < right.index;
-    }
-};
-
-class push_back_ns_to_item
-{
-    std::vector<ns_item>& m_store;
-    const xmlns_context& m_cxt;
-public:
-    push_back_ns_to_item(std::vector<ns_item>& store, const xmlns_context& cxt) : m_store(store), m_cxt(cxt) {}
-    void operator() (xmlns_id_t ns)
-    {
-        size_t num_id = m_cxt.get_index(ns);
-        if (num_id != INDEX_NOT_FOUND)
-            m_store.push_back(ns_item(num_id, ns));
-    }
-};
-
-class push_back_item_to_ns
-{
-    std::vector<xmlns_id_t>& m_store;
-public:
-    push_back_item_to_ns(std::vector<xmlns_id_t>& store) : m_store(store) {}
-    void operator() (const ns_item& item)
-    {
-        m_store.push_back(item.ns);
-    }
 };
 
 }
 
 std::vector<xmlns_id_t> xmlns_context::get_all_namespaces() const
 {
-    std::vector<xmlns_id_t> nslist;
-
     if (mp_impl->m_trim_all_ns)
     {
         xmlns_list_type& all_ns = mp_impl->m_all_ns;
 
-        nslist.assign(mp_impl->m_all_ns.begin(), mp_impl->m_all_ns.end());
+        // sort and remove duplicates
+        std::ranges::sort(all_ns);
+        auto [first, last] = std::ranges::unique(all_ns);
+        all_ns.erase(first, last);
 
-        // Sort it and remove duplicate.
-        std::sort(all_ns.begin(), all_ns.end());
-        xmlns_list_type::iterator it_unique_end =
-            std::unique(all_ns.begin(), all_ns.end());
-        all_ns.erase(it_unique_end, all_ns.end());
-
-        // Now, sort by indices.
+        // re-sort by repository index
         std::vector<ns_item> items;
-        std::for_each(all_ns.begin(), all_ns.end(), push_back_ns_to_item(items, *this));
-        std::sort(items.begin(), items.end(), less_ns_by_index());
+        for (xmlns_id_t ns : all_ns)
+        {
+            std::size_t num_id = get_index(ns);
+            if (num_id != INDEX_NOT_FOUND)
+                items.push_back({num_id, ns});
+        }
+        std::ranges::sort(items, {}, &ns_item::index);
 
         all_ns.clear();
-        std::for_each(items.begin(), items.end(), push_back_item_to_ns(all_ns));
+        for (const auto& item : items)
+            all_ns.push_back(item.ns);
 
         mp_impl->m_trim_all_ns = false;
     }
 
-    nslist.assign(mp_impl->m_all_ns.begin(), mp_impl->m_all_ns.end());
-    return nslist;
+    return {mp_impl->m_all_ns.begin(), mp_impl->m_all_ns.end()};
 }
 
 void xmlns_context::dump(std::ostream& os) const
