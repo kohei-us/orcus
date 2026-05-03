@@ -518,7 +518,7 @@ void sax_parser<HandlerT,ConfigT>::characters()
             // Text span with one or more encoded characters. Parse using cell buffer.
             cell_buffer& buf = get_cell_buffer();
             buf.reset();
-            buf.append(p0, mp_char-p0);
+            buf.append({p0, static_cast<std::size_t>(mp_char-p0)});
             characters_with_encoded_char(buf);
             if (buf.empty())
                 m_handler.characters(std::string_view{}, false);

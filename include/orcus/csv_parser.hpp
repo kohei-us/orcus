@@ -223,7 +223,7 @@ void csv_parser<_Handler>::parse_cell_with_quote(const char* p0, size_t len0)
 
     // Push the preceding chars to the temp buffer.
     m_cell_buf.reset();
-    m_cell_buf.append(p0, len0);
+    m_cell_buf.append({p0, len0});
 
     // Parse the rest, until the closing quote.
     next();
@@ -241,7 +241,7 @@ void csv_parser<_Handler>::parse_cell_with_quote(const char* p0, size_t len0)
         if (has_next() && is_text_qualifier(peek_char()))
         {
             // double quotation.  Copy the current segment to the cell buffer.
-            m_cell_buf.append(p_cur, cur_len);
+            m_cell_buf.append({p_cur, cur_len});
 
             next(); // to the 2nd quote.
             p_cur = mp_char;
@@ -251,7 +251,7 @@ void csv_parser<_Handler>::parse_cell_with_quote(const char* p0, size_t len0)
 
         // closing quote.  Flush the current segment to the cell
         // buffer, push the value to the handler, and exit normally.
-        m_cell_buf.append(p_cur, cur_len);
+        m_cell_buf.append({p_cur, cur_len});
 
         m_handler.cell(m_cell_buf.str(), true);
         next();

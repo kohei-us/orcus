@@ -273,14 +273,14 @@ std::string_view parser_base::merge_line_buffer()
     buf.reset();
 
     auto it = mp_impl->m_line_buffer.begin();
-    buf.append(it->data(), it->size());
+    buf.append(*it);
     ++it;
 
     std::for_each(it, mp_impl->m_line_buffer.end(),
         [&](std::string_view line)
         {
-            buf.append(&sep, 1);
-            buf.append(line.data(), line.size());
+            buf.append({&sep, 1});
+            buf.append(line);
         }
     );
 

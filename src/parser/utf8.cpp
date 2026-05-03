@@ -270,7 +270,7 @@ uint8_t calc_encoded_length(uint32_t cp)
 //
 // b1: 0b110xxxxx (5)
 // b2: 0b10xxxxxx (6)
-std::vector<char> encode_2b(uint32_t cp)
+std::string encode_2b(uint32_t cp)
 {
     assert(cp <= 0x7FF);
 
@@ -283,8 +283,7 @@ std::vector<char> encode_2b(uint32_t cp)
     char high = (cp & 0x1F);
     high |= 0xC0;
 
-    std::vector<char> ret = { high, low };
-    return ret;
+    return std::string{high, low};
 }
 
 // input must be less than or equal to 0xFFFF
@@ -292,7 +291,7 @@ std::vector<char> encode_2b(uint32_t cp)
 // b1: 0b1110xxxx (4)
 // b2: 0b10xxxxxx (6)
 // b3: 0b10xxxxxx (6)
-std::vector<char> encode_3b(uint32_t cp)
+std::string encode_3b(uint32_t cp)
 {
     assert(cp <= 0xFFFF);
 
@@ -310,8 +309,7 @@ std::vector<char> encode_3b(uint32_t cp)
     char high = (cp & 0x0F);
     high |= 0xE0;
 
-    std::vector<char> ret = { high, mid, low };
-    return ret;
+    return std::string{high, mid, low};
 }
 
 // input must be less than or equal to 0x10FFFF
@@ -320,7 +318,7 @@ std::vector<char> encode_3b(uint32_t cp)
 // b2: 0b10xxxxxx (6)
 // b3: 0b10xxxxxx (6)
 // b4: 0b10xxxxxx (6)
-std::vector<char> encode_4b(uint32_t cp)
+std::string encode_4b(uint32_t cp)
 {
     assert(cp <= 0x10FFFF);
 
@@ -343,8 +341,7 @@ std::vector<char> encode_4b(uint32_t cp)
     char high = (cp & 0x07);
     high |= 0xF0;
 
-    std::vector<char> ret = { high, mid2, mid1, low };
-    return ret;
+    return std::string{high, mid2, mid1, low};
 }
 
 } // anonymous namespace
@@ -478,7 +475,7 @@ const char* parse_utf8_xml_name_char(const char* p, const char* p_end)
     return p;
 }
 
-std::vector<char> encode_utf8(uint32_t cp)
+std::string encode_utf8(uint32_t cp)
 {
     uint8_t n_encoded = calc_encoded_length(cp);
 
@@ -486,7 +483,7 @@ std::vector<char> encode_utf8(uint32_t cp)
     {
         case 1:
             // no conversion
-            return std::vector<char>(1, cp);
+            return std::string(1, cp);
         case 2:
             return encode_2b(cp);
         case 3:

@@ -202,14 +202,14 @@ void parser_base::parse_encoded_char(cell_buffer& buf)
 
         char c = decode_xml_encoded_char(p0, n);
         if (c)
-            buf.append(&c, 1);
+            buf.append({&c, 1});
         else
         {
             std::string utf8 = decode_xml_unicode_char(p0, n);
 
             if (!utf8.empty())
             {
-                buf.append(utf8.data(), utf8.size());
+                buf.append(utf8);
                 c = '1'; // just to avoid hitting the !c case below
             }
         }
@@ -223,7 +223,7 @@ void parser_base::parse_encoded_char(cell_buffer& buf)
             cout << "sax_parser::parse_encoded_char: not a known encoding name. Use the original." << endl;
 #endif
             // Unexpected encoding name. Use the original text.
-            buf.append(p0, mp_char-p0);
+            buf.append({p0, static_cast<std::size_t>(mp_char-p0)});
         }
 
         return;
@@ -245,7 +245,7 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, std::string_view& st
         if (cur_char() == '&')
         {
             if (mp_char > p0)
-                buf.append(p0, mp_char-p0);
+                buf.append({p0, static_cast<std::size_t>(mp_char-p0)});
 
             parse_encoded_char(buf);
             p0 = mp_char;
@@ -259,7 +259,7 @@ void parser_base::value_with_encoded_char(cell_buffer& buf, std::string_view& st
     }
 
     if (mp_char > p0)
-        buf.append(p0, mp_char-p0);
+        buf.append({p0, static_cast<std::size_t>(mp_char-p0)});
 
     if (!buf.empty())
         str = buf.str();
@@ -288,7 +288,7 @@ bool parser_base::value(std::string_view& str, bool decode)
             // This value contains one or more encoded characters.
             cell_buffer& buf = get_cell_buffer();
             buf.reset();
-            buf.append(p0, mp_char-p0);
+            buf.append({p0, static_cast<std::size_t>(mp_char-p0)});
             value_with_encoded_char(buf, str, quote_char);
             return true;
         }
@@ -398,7 +398,7 @@ void parser_base::characters_with_encoded_char(cell_buffer& buf)
         if (cur_char() == '&')
         {
             if (mp_char > p0)
-                buf.append(p0, mp_char-p0);
+                buf.append({p0, static_cast<std::size_t>(mp_char-p0)});
 
             parse_encoded_char(buf);
             p0 = mp_char;
@@ -412,7 +412,7 @@ void parser_base::characters_with_encoded_char(cell_buffer& buf)
     }
 
     if (mp_char > p0)
-        buf.append(p0, mp_char-p0);
+        buf.append({p0, static_cast<std::size_t>(mp_char-p0)});
 }
 
 }}

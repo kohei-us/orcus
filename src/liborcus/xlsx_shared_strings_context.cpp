@@ -244,7 +244,7 @@ void xlsx_shared_strings_context::characters(std::string_view str, bool transien
             if (*p == 0x0D)
             {
                 // Append the segment up to this CR, and skip the CR.
-                m_cell_buffer.append(p0, std::distance(p0, p));
+                m_cell_buffer.append({p0, static_cast<std::size_t>(std::distance(p0, p))});
                 p0 = nullptr;
             }
         }
@@ -255,7 +255,7 @@ void xlsx_shared_strings_context::characters(std::string_view str, bool transien
 
             if (p0)
                 // Append the tail end.
-                m_cell_buffer.append(p0, std::distance(p0, p));
+                m_cell_buffer.append({p0, static_cast<std::size_t>(std::distance(p0, p))});
 
             m_cur_str = m_pool.intern(m_cell_buffer.str()).first;
             transient = false;

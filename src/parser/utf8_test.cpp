@@ -34,7 +34,7 @@ bool check_cp_ranges(parse_func_t parse, std::vector<cp_range_t> ranges)
     {
         for (uint32_t cp = range.lower; cp <= range.upper; ++cp)
         {
-            std::vector<char> buf;
+            std::string buf;
 
             try
             {

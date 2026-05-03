@@ -202,9 +202,9 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                         {
                             std::size_t n = std::distance(p_head, p);
                             if (n > 1)
-                                buffer.append(p_head, n-1);
+                                buffer.append({p_head, n-1});
                         }
-                        buffer.append(&c, 1);
+                        buffer.append({&c, 1});
                         p_head = nullptr;
                         continue;
                         break;
@@ -249,7 +249,7 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                     return ret;
                 }
 
-                buffer.append(encoded.data(), encoded.size());
+                buffer.append(encoded);
                 mode = double_quoted_string_parse_mode_t::unspecified;
 
                 switch (c)
@@ -283,8 +283,8 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                         // closing quote.
                         if (p_head)
                         {
-                            auto n = std::distance(p_head, p);
-                            buffer.append(p_head, n);
+                            std::size_t n = std::distance(p_head, p);
+                            buffer.append({p_head, n});
                             p_head = nullptr;
                         }
                         ++p; // skip the quote.
@@ -298,8 +298,8 @@ parse_quoted_string_state parse_double_quoted_string_with_buffer(cell_buffer& bu
                         mode = double_quoted_string_parse_mode_t::escaped;
                         if (p_head)
                         {
-                            auto n = std::distance(p_head, p);
-                            buffer.append(p_head, n);
+                            std::size_t n = std::distance(p_head, p);
+                            buffer.append({p_head, n});
                             p_head = nullptr;
                         }
                         break;
@@ -346,7 +346,7 @@ parse_quoted_string_state parse_single_quoted_string_buffered(
                 if (last == c)
                 {
                     // Second "'" in series.  This is an encoded single quote.
-                    buffer.append(p0, len);
+                    buffer.append({p0, len});
                     p0 = nullptr;
                     last = 0;
                     len = 0;
@@ -358,7 +358,7 @@ parse_quoted_string_state parse_single_quoted_string_buffered(
             {
                 if (last == '\'')
                 {
-                    buffer.append(p0, len-1);
+                    buffer.append({p0, len-1});
                     auto s = buffer.str();
                     ret.str = s.data();
                     ret.length = s.size();
@@ -373,7 +373,7 @@ parse_quoted_string_state parse_single_quoted_string_buffered(
 
     if (last == '\'')
     {
-        buffer.append(p0, len-1);
+        buffer.append({p0, len-1});
         auto s = buffer.str();
         ret.str = s.data();
         ret.length = s.size();
@@ -420,7 +420,7 @@ parse_quoted_string_state parse_single_quoted_string(
                 {
                     // Encoded single quote.
                     buffer.reset();
-                    buffer.append(ret.str, ret.length);
+                    buffer.append({ret.str, ret.length});
                     ++p;
                     return parse_single_quoted_string_buffered(p, p_end, buffer);
                 }
@@ -531,11 +531,11 @@ parse_quoted_string_state parse_double_quoted_string(
                         // Start the buffer with the string we've parsed so far.
                         buffer.reset();
                         if (ret.str && ret.length > 1)
-                            buffer.append(ret.str, ret.length-1);
+                            buffer.append({ret.str, ret.length-1});
 
                         // add the escaped char to the buffer too
                         c = to_escaped_char(c);
-                        buffer.append(&c, 1);
+                        buffer.append({&c, 1});
 
                         ++p; // skip the escaped char
                         return parse_double_quoted_string_with_buffer(buffer, p, p_end);
@@ -578,7 +578,7 @@ parse_quoted_string_state parse_double_quoted_string(
                 // Start the buffer with the parsed segment prior to '\u'
                 buffer.reset();
                 if (ret.str && ret.length > 6)
-                    buffer.append(ret.str, ret.length-6);
+                    buffer.append({ret.str, ret.length-6});
 
                 uint32_t cp = hex_string_to_int32(std::string_view{p_head, n_digits});
                 auto encoded = encode_utf8(cp);
@@ -590,7 +590,7 @@ parse_quoted_string_state parse_double_quoted_string(
                     return ret;
                 }
 
-                buffer.append(encoded.data(), encoded.size());
+                buffer.append(encoded);
 
                 return parse_double_quoted_string_with_buffer(buffer, p, p_end);
             }

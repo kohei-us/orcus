@@ -10,6 +10,7 @@
 #include "env.hpp"
 
 #include <string>
+#include <string_view>
 
 namespace orcus {
 
@@ -27,7 +28,7 @@ public:
     cell_buffer();
     ~cell_buffer();
 
-    void append(const char* p, size_t len);
+    void append(std::string_view s);
     void reset();
 
     std::string_view str() const;

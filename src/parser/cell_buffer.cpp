@@ -9,36 +9,24 @@
 
 #include <cstring>
 
-#define ORCUS_DEBUG_CELL_BUFFER 0
-
-#if ORCUS_DEBUG_CELL_BUFFER
-#include <iostream>
-using std::cout;
-using std::endl;
-#endif
-
 namespace orcus {
 
 cell_buffer::cell_buffer() : m_buf_size(0) {}
 
 cell_buffer::~cell_buffer() = default;
 
-void cell_buffer::append(const char* p, size_t len)
+void cell_buffer::append(std::string_view s)
 {
-    if (!len)
+    if (s.empty())
         return;
 
-#if ORCUS_DEBUG_CELL_BUFFER
-    cout << "cell_buffer::append: '" << std::string(p, len) << "'" << endl;
-#endif
-
-    size_t size_needed = m_buf_size + len;
+    std::size_t size_needed = m_buf_size + s.size();
     if (m_buffer.size() < size_needed)
         m_buffer.resize(size_needed);
 
     char* p_dest = &m_buffer[m_buf_size];
-    std::strncpy(p_dest, p, len);
-    m_buf_size += len;
+    std::strncpy(p_dest, s.data(), s.size());
+    m_buf_size += s.size();
 }
 
 void cell_buffer::reset()
