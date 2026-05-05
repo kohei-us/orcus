@@ -23,7 +23,7 @@ option(ORCUS_WITH_SSE42 "whether or not to enable use of SSE 4.2.")
 option(ORCUS_WITH_AVX2 "whether or not to enable use of AVX2.")
 option(ORCUS_WITH_PARQUET "whether or not to enable support for Apache Parquet import filter.")
 
-find_package(Boost COMPONENTS program_options filesystem)
+find_package(Boost COMPONENTS program_options filesystem iostreams system date_time)
 find_package(Threads)
 find_package(Python3)
 find_package(ZLIB)

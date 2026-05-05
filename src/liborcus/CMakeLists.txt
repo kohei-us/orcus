@@ -130,6 +130,10 @@ list(APPEND _COMPILE_DEFS
 
 list(APPEND _LINK_LIBS
     orcus-parser-${ORCUS_API_VERSION}
+    Boost::iostreams
+    Boost::program_options
+    Boost::system
+    Boost::date_time
 )
 
 if(ORCUS_WITH_PARQUET)
