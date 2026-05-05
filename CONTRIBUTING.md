@@ -47,13 +47,13 @@ To enable the Apache Parquet filter, pass `--with-parquet-filter` to
 ### CMake
 
 ```bash
-mkdir build && cd build
+mkdir build
+cd build
 cmake .. \
     -DMDDS_INCLUDEDIR=/path/to/mdds/include \
     -DIXION_INCLUDEDIR=/path/to/ixion/include \
     -DIXION_LIBRARYDIR=/path/to/ixion/lib
-make
-make install
+cmake --build . --config Release
 ```
 
 Boost and zlib are located automatically via `find_package`. If they are
