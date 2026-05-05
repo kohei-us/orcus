@@ -28,7 +28,6 @@ m4/lt*.m4
 missing
 py-compile
 test-driver
-VERSION
 stamp-h1
 benchmark/json-parser-test
 benchmark/threaded-json-parser-test
@@ -37,7 +36,5 @@ doc/_doxygen/
 doc/html/
 doc/latex/
 doc/xml/
-src/parser/*-parser-test
-src/parser/xml-writer-test
 test/python/env.json
 *~
