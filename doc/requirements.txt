@@ -1,3 +1,3 @@
 breathe
 sphinx-argparse
-piccolo-theme
+sphinx-rtd-theme

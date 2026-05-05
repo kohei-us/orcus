@@ -38,10 +38,10 @@ git repository, else you may encounter build issues or test failures.
 
 Orcus uses a combination of [Doxygen](http://www.stack.nl/~dimitri/doxygen/),
 [Sphinx](http://sphinx-doc.org/) and [Breathe](https://github.com/michaeljones/breathe)
-to build its documentation.  It also use [Sphinx Bootstrap Theme](https://ryan-roemer.github.io/sphinx-bootstrap-theme/)
+to build its documentation.  It also uses [sphinx-rtd-theme](https://sphinx-rtd-theme.readthedocs.io/)
 for the page layout and theme.
 
-Most distros package Doxygen, and Sphinx, Breathe and Sphinx Bootstrap Theme
+Most distros package Doxygen, and Sphinx, Breathe and sphinx-rtd-theme
 can be installed via pip.
 
 ## Debugging test programs
