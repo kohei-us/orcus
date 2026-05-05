@@ -26,7 +26,6 @@ AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([1.11 foreign dist-bzip2 dist-xz])
 AM_SILENT_RULES([yes])
 AC_LANG([C++])
-AX_CXX_COMPILE_STDCXX([20], [noext], [mandatory])
 CXXFLAGS="-fvisibility=hidden $CXXFLAGS -Wall -pthread -Wshadow -Wunused-parameter"
 
 # ===========================
@@ -34,6 +33,7 @@ CXXFLAGS="-fvisibility=hidden $CXXFLAGS -Wall -pthread -Wshadow -Wunused-paramet
 # ===========================
 AC_PROG_CPP
 AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX([20], [noext], [mandatory])
 LT_INIT([win32-dll disable-static pic-only])
 AC_PROG_INSTALL
 AC_PROG_LN_S
