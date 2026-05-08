@@ -361,8 +361,7 @@ def create_enum_stream_test(rootdir, output_dir):
         _print("}")
 
 
-def generate_rst(thisdir, scope, child_scopes, symbols):
-    include_dir = Path(__file__).parent.parent / "include"
+def generate_rst(thisdir, include_dir, scope, child_scopes, symbols):
 
     if scope:
         ns = "::".join(scope)
@@ -599,7 +598,7 @@ def generate_rst(thisdir, scope, child_scopes, symbols):
     return '\n'.join(buf)
 
 
-def generate_doctree(rootdir, outdir):
+def generate_doctree(rootdir, outdir, include_dir):
     symbol_tree = build_symbol_tree(rootdir)
 
     def _func(scope, child_scopes, symbols):
@@ -607,7 +606,7 @@ def generate_doctree(rootdir, outdir):
         index_file = thisdir / "index.rst"
         print(index_file)
         thisdir.mkdir(parents=True, exist_ok=True)
-        index_file.write_text(generate_rst(thisdir, scope, child_scopes, symbols))
+        index_file.write_text(generate_rst(thisdir, include_dir, scope, child_scopes, symbols))
 
     symbol_tree.walk(_func)
 
@@ -623,6 +622,11 @@ def main():
     )
     parser.add_argument("--mode", type=str, required=True, help="Type of action to perform.")
     parser.add_argument("--output", "-o", type=Path, help="Output directory path.")
+    parser.add_argument(
+        "--include-dir", type=Path,
+        default=Path(__file__).parent.parent / "include",
+        help="Path to the 'include' directory where public headers are"
+    )
     parser.add_argument("rootdir", type=Path, help="Directory where the doxygen XML files are found.")
     args = parser.parse_args()
 
@@ -630,7 +634,7 @@ def main():
         "kinds": (list_kinds, (args.rootdir,)),
         "symbols": (dump_symbols, (args.rootdir,)),
         "enum-test": (create_enum_stream_test, (args.rootdir, args.output)),
-        "doctree": (generate_doctree, (args.rootdir, args.output))
+        "doctree": (generate_doctree, (args.rootdir, args.output, args.include_dir.resolve()))
     }
 
     action = actions.get(args.mode)
