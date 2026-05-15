@@ -1238,7 +1238,7 @@ void test_xls_xml_named_colors()
         for (ss::row_t row = 1; row < 141; ++row)
         {
             // Column B stores the expected RGB value in hex.
-            size_t sid = model.get_string_identifier(ixion::abs_address_t(sh->get_index(), row, 1));
+            auto sid = model.get_string_identifier(ixion::abs_address_t(sh->get_index(), row, 1));
             const std::string* s = model.get_string(sid);
             assert(s);
             spreadsheet::color_rgb_t expected = spreadsheet::to_color_rgb(*s);

@@ -161,7 +161,7 @@ private:
     const char* m_name;
 };
 
-void print_formatted_text(std::ostream& strm, const std::string& text, const format_runs_t& formats)
+void print_formatted_text(std::ostream& strm, std::string_view text, const format_runs_t& formats)
 {
     std::size_t pos = 0;
     for (const format_run_t& run : formats)
@@ -169,7 +169,7 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
         if (pos < run.pos)
         {
             // flush unformatted text.
-            strm << std::string_view(&text[pos], run.pos - pos);
+            strm << text.substr(pos, run.pos - pos);
             pos = run.pos;
         }
 
@@ -246,11 +246,11 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
         }
 
         if (style.empty())
-            strm << std::string_view(&text[pos], run.size);
+            strm << text.substr(pos, run.size);
         else
         {
             html_elem span(strm, "span", style.c_str());
-            strm << std::string_view(&text[pos], run.size);
+            strm << text.substr(pos, run.size);
         }
 
         pos += run.size;
@@ -259,7 +259,7 @@ void print_formatted_text(std::ostream& strm, const std::string& text, const for
     if (pos < text.size())
     {
         // flush the remaining unformatted text.
-        strm << std::string_view(&text[pos], text.size() - pos);
+        strm << text.substr(pos);
     }
 }
 
@@ -625,14 +625,23 @@ void html_dumper::dump(std::ostream& os) const
                 {
                     case ixion::cell_t::string:
                     {
-                        size_t sindex = cxt.get_string_identifier(pos);
-                        const std::string* p = cxt.get_string(sindex);
-                        assert(p);
-                        const format_runs_t* pformat = sstrings.get_format_runs(sindex);
-                        if (pformat)
-                            print_formatted_text(os, *p, *pformat);
+                        auto sid = cxt.get_string_identifier(pos);
+                        if (sid == ixion::empty_string_id)
+                        {
+                            std::string_view s = cxt.get_string_value(pos);
+                            os << s;
+                        }
                         else
-                            os << *p;
+                        {
+                            const std::string* p = cxt.get_string(sid);
+                            assert(p);
+
+                            const format_runs_t* pformat = sstrings.get_format_runs(sid.value);
+                            if (pformat)
+                                print_formatted_text(os, *p, *pformat);
+                            else
+                                os << *p;
+                        }
 
                         break;
                     }

@@ -29,17 +29,15 @@ void write_cell_position(std::ostream& os, std::string_view sheet_name, row_t ro
     os << sheet_name << '/' << row << '/' << col << ':';
 }
 
-std::string escape_chars(const std::string& str)
+std::string escape_chars(std::string_view str)
 {
     if (str.empty())
-        return str;
+        return std::string{str};
 
     std::string ret;
-    const char* p = &str[0];
-    const char* p_end = p + str.size();
-    for (; p != p_end; ++p)
+    for (char c : str)
     {
-        switch (*p)
+        switch (c)
         {
             case '"':
                 ret.append("\\\"");
@@ -63,7 +61,7 @@ std::string escape_chars(const std::string& str)
                 ret.append("\\\\");
                 break;
             default:
-                ret.push_back(*p);
+                ret.push_back(c);
         }
     }
     return ret;
@@ -106,10 +104,8 @@ void check_dumper::dump_cell_values(std::ostream& os) const
                 case ixion::cell_t::string:
                 {
                     write_cell_position(os, m_sheet_name, row, col);
-                    size_t sindex = cxt.get_string_identifier(pos);
-                    const std::string* p = cxt.get_string(sindex);
-                    assert(p);
-                    os << "string:\"" << escape_chars(*p) << '"' << std::endl;
+                    std::string_view s = cxt.get_string_value(pos);
+                    os << "string:\"" << escape_chars(s) << '"' << std::endl;
                     break;
                 }
                 case ixion::cell_t::numeric:

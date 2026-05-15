@@ -97,7 +97,7 @@ void sheet::set_string(row_t row, col_t col, std::string_view s)
 void sheet::set_string(row_t row, col_t col, string_id_t sindex)
 {
     ixion::model_context& cxt = mp_impl->doc.get_model_context();
-    cxt.set_string_cell(ixion::abs_address_t(mp_impl->sheet_id,row,col), sindex);
+    cxt.set_string_cell(ixion::abs_address_t(mp_impl->sheet_id,row,col), ixion::string_id_t{sindex});
 
 #if ORCUS_DEBUG_SHEET
     cout << "sheet::set_string: sheet=" << mp_impl->sheet_id << "; row=" << row << "; col=" << col << "; si=" << sindex << std::endl;
@@ -393,7 +393,7 @@ range_t sheet::get_merge_cell_range(row_t row, col_t col) const
 size_t sheet::get_string_identifier(row_t row, col_t col) const
 {
     const ixion::model_context& cxt = mp_impl->doc.get_model_context();
-    return cxt.get_string_identifier(ixion::abs_address_t(mp_impl->sheet_id, row, col));
+    return cxt.get_string_identifier(ixion::abs_address_t(mp_impl->sheet_id, row, col)).value;
 }
 
 void sheet::set_auto_filter(std::unique_ptr<auto_filter_t> filter)

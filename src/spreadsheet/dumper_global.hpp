@@ -8,7 +8,7 @@
 #pragma once
 
 #include <ixion/model_context.hpp>
-#include <ixion/model_iterator.hpp>
+#include <ixion/model_cell_range.hpp>
 
 #include <ostream>
 #include <functional>
@@ -21,7 +21,7 @@ namespace ixion {
 
 namespace orcus { namespace spreadsheet { namespace detail {
 
-using func_str_handler = std::function<void(std::ostream&, const std::string&)>;
+using func_str_handler = std::function<void(std::ostream&, std::string_view)>;
 using func_empty_handler = std::function<void(std::ostream&)>;
 
 /**
@@ -43,9 +43,8 @@ void dump_formula_expression(
     const ixion::formula_cell& cell);
 
 void dump_cell_value(
-    std::ostream& os, const ixion::model_context& cxt, const ixion::model_iterator::cell& cell,
-    func_str_handler str_handler,
-    func_empty_handler empty_handler);
+    std::ostream& os, const ixion::model_cell_range::cell& cell,
+    func_str_handler str_handler, func_empty_handler empty_handler);
 
 }}}
 

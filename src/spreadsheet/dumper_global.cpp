@@ -42,9 +42,8 @@ void dump_formula_expression(
 }
 
 void dump_cell_value(
-    std::ostream& os, const ixion::model_context& cxt, const ixion::model_iterator::cell& cell,
-    func_str_handler str_handler,
-    func_empty_handler empty_handler)
+    std::ostream& os, const ixion::model_cell_range::cell& cell,
+    func_str_handler str_handler, func_empty_handler empty_handler)
 {
     switch (cell.type)
     {
@@ -63,9 +62,7 @@ void dump_cell_value(
         }
         case ixion::cell_t::string:
         {
-            const std::string* p = cxt.get_string(std::get<ixion::string_id_t>(cell.value));
-            assert(p);
-            str_handler(os, *p);
+            str_handler(os, std::get<std::string_view>(cell.value));
             break;
         }
         case ixion::cell_t::formula:

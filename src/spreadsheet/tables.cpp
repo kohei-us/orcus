@@ -107,18 +107,6 @@ class ixion_table_handler : public ixion::iface::table_handler
         return nullptr;
     }
 
-    std::string_view get_string(ixion::string_id_t sid) const
-    {
-        if (sid == ixion::empty_string_id)
-            return std::string_view{};
-
-        const std::string* p = m_context.get_string(sid);
-        if (!p || p->empty())
-            return std::string_view{};
-
-        return std::string_view(p->data(), p->size());
-    }
-
     col_t find_column(const table_t& tab, std::string_view name, size_t offset) const
     {
         if (offset >= tab.columns.size())
@@ -142,31 +130,24 @@ class ixion_table_handler : public ixion::iface::table_handler
     }
 
     ixion::abs_range_t get_range_from_table(
-        const table_t& tab, ixion::string_id_t column_first, ixion::string_id_t column_last,
+        const table_t& tab, std::string_view column_first, std::string_view column_last,
         ixion::table_areas_t areas) const
     {
-        if (column_first != ixion::empty_string_id)
+        if (!column_first.empty())
         {
-            std::string_view col1_name = get_string(column_first);
-            if (col1_name.empty())
-                return ixion::abs_range_t(ixion::abs_range_t::invalid);
-
-            col_t col1_index = find_column(tab, col1_name, 0);
+            col_t col1_index = find_column(tab, column_first, 0);
             if (col1_index < 0)
                 return ixion::abs_range_t(ixion::abs_range_t::invalid);
 
-            if (column_last != ixion::empty_string_id)
+            if (!column_last.empty())
             {
-                if (std::string_view col2_name = get_string(column_last); !col2_name.empty())
-                {
-                    // column range table reference.
-                    col_t col2_index = find_column(tab, col2_name, col1_index);
-                    ixion::abs_range_t range = tab.range;
-                    range.first.column = col1_index;
-                    range.last.column = col2_index;
-                    adjust_row_range(range, tab, areas);
-                    return range;
-                }
+                // column range table reference.
+                col_t col2_index = find_column(tab, column_last, col1_index);
+                ixion::abs_range_t range = tab.range;
+                range.first.column = col1_index;
+                range.last.column = col2_index;
+                adjust_row_range(range, tab, areas);
+                return range;
             }
 
             // single column table reference.
@@ -186,8 +167,8 @@ public:
 
     ixion::abs_range_t get_range(
         const ixion::abs_address_t& pos,
-        ixion::string_id_t column_first,
-        ixion::string_id_t column_last,
+        std::string_view column_first,
+        std::string_view column_last,
         ixion::table_areas_t areas) const override
     {
         const table_t* tab = find_table(pos);
@@ -198,17 +179,16 @@ public:
     }
 
     ixion::abs_range_t get_range(
-        ixion::string_id_t table,
-        ixion::string_id_t column_first,
-        ixion::string_id_t column_last,
+        std::string_view table,
+        std::string_view column_first,
+        std::string_view column_last,
         ixion::table_areas_t areas) const override
     {
-        std::string_view tab_name = get_string(table);
-        if (tab_name.empty())
+        if (table.empty())
             // no table name given.
             return ixion::abs_range_t(ixion::abs_range_t::invalid);
 
-        auto it = m_tables.find(tab_name);
+        auto it = m_tables.find(table);
         if (it == m_tables.end())
             // no table by this name found.
             return ixion::abs_range_t(ixion::abs_range_t::invalid);

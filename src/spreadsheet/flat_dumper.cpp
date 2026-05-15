@@ -13,7 +13,7 @@
 
 #include <ixion/formula.hpp>
 #include <ixion/model_context.hpp>
-#include <ixion/model_iterator.hpp>
+#include <ixion/model_cell_range.hpp>
 #include <ixion/formula_name_resolver.hpp>
 #include <ixion/formula_result.hpp>
 #include <ixion/cell.hpp>
@@ -50,7 +50,7 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     // Always start at the top-left corner.
     range.first.row = 0;
     range.first.column = 0;
-    ixion::model_iterator iter = cxt.get_model_iterator(
+    auto cell_range = cxt.iterate_cells(
         sheet_id, ixion::rc_direction_t::vertical, range);
 
     std::vector<std::string> mx(row_count*col_count);
@@ -65,9 +65,8 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     auto it_colwidth = col_widths.begin();
     col_t current_col = 0;
 
-    for (; iter.has(); iter.next())
+    for (const auto& c : cell_range)
     {
-        const ixion::model_iterator::cell& c = iter.get();
         if (c.col > current_col)
         {
             ++current_col;
@@ -81,11 +80,9 @@ void flat_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
         {
             case ixion::cell_t::string:
             {
-                ixion::string_id_t sindex = std::get<ixion::string_id_t>(c.value);
-                const std::string* p = cxt.get_string(sindex);
-                assert(p);
-                cell_str_width = calc_logical_string_length(*p);
-                mx[to_pos(c.row, c.col)] = std::move(*p);
+                std::string_view sv = std::get<std::string_view>(c.value);
+                cell_str_width = calc_logical_string_length(sv);
+                mx[to_pos(c.row, c.col)] = std::string{sv};
                 break;
             }
             case ixion::cell_t::numeric:

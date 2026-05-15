@@ -22,10 +22,10 @@ namespace orcus { namespace spreadsheet { namespace detail {
 
 namespace {
 
-void dump_string(std::ostream& os, const std::string& s)
+void dump_string(std::ostream& os, std::string_view s)
 {
     // Scan for any special characters that necessitate quoting.
-    bool outer_quotes = s.find_first_of(",\"\n") != std::string::npos;
+    bool outer_quotes = s.find_first_of(",\"\n") != std::string_view::npos;
 
     if (outer_quotes)
         os << '"';
@@ -73,20 +73,18 @@ void csv_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     iter_range.last.column = data_range.last.column;
     iter_range.last.row = data_range.last.row;
 
-    auto iter = cxt.get_model_iterator(
+    auto cell_range = cxt.iterate_cells(
         sheet_id, ixion::rc_direction_t::horizontal, iter_range);
 
-    for (; iter.has(); iter.next())
+    for (const auto& cell : cell_range)
     {
-        const auto& cell = iter.get();
-
         if (cell.col == 0 && cell.row > 0)
             os << std::endl;
 
         if (cell.col > 0)
             os << m_sep;
 
-        dump_cell_value(os, cxt, cell, dump_string, dump_empty);
+        dump_cell_value(os, cell, dump_string, dump_empty);
     }
 }
 

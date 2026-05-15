@@ -35,7 +35,7 @@ void json_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
     iter_range.last.column = data_range.last.column;
     iter_range.last.row = data_range.last.row;
 
-    auto iter = cxt.get_model_iterator(
+    auto cell_range = cxt.iterate_cells(
         sheet_id, ixion::rc_direction_t::horizontal, iter_range);
 
     std::vector<std::string> column_labels;
@@ -48,32 +48,22 @@ void json_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 
     os << "[" << std::endl;
 
-    ixion::row_t row = iter.get().row;
-    ixion::col_t col = iter.get().col;
-    assert(row == 0);
-    assert(col == 0);
-
-    os << "    {";
-    os << "\"" << column_labels[col] << "\": ";
-
-    func_str_handler str_handler = [](std::ostream& _os, const std::string& s)
+    func_str_handler str_handler = [](std::ostream& _os, std::string_view s)
     {
         _os << '"' << json::escape_string(s) << '"';
     };
 
     func_empty_handler empty_handler = [](std::ostream& _os) { _os << "null"; };
 
-    dump_cell_value(os, cxt, iter.get(), str_handler, empty_handler);
+    bool first = true;
+    ixion::row_t last_row = 0;
 
-    ixion::row_t last_row = row;
-
-    for (iter.next(); iter.has(); iter.next())
+    for (const auto& cell : cell_range)
     {
-        const auto& cell = iter.get();
         ixion::row_t this_row = cell.row;
         ixion::col_t this_col = cell.col;
 
-        if (this_row > last_row)
+        if (!first && this_row > last_row)
             os << "}," << std::endl;
 
         if (this_col == 0)
@@ -83,8 +73,9 @@ void json_dumper::dump(std::ostream& os, ixion::sheet_t sheet_id) const
 
         os << "\"" << column_labels.at(this_col) << "\": ";
 
-        dump_cell_value(os, cxt, cell, str_handler, empty_handler);
+        dump_cell_value(os, cell, str_handler, empty_handler);
         last_row = this_row;
+        first = false;
     }
 
     os << "}" << std::endl << "]" << std::endl;

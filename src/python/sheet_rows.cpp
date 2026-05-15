@@ -69,8 +69,9 @@ PyObject* sheet_rows_iter(PyObject* self)
         sheet_range.last.column = range.last.column;
         sheet_range.last.row = range.last.row;
 
-        data->m_range_iterator = data->m_doc->get_model_context().get_model_iterator(
+        data->m_range_cells = data->m_doc->get_model_context().iterate_cells(
             data->m_sheet->get_index(), ixion::rc_direction_t::horizontal, sheet_range);
+        data->m_range_iterator = data->m_range_cells.begin();
     }
 
     Py_INCREF(self);
@@ -80,9 +81,10 @@ PyObject* sheet_rows_iter(PyObject* self)
 PyObject* sheet_rows_iternext(PyObject* self)
 {
     sheet_rows_data* data = reinterpret_cast<pyobj_sheet_rows*>(self)->m_data;
-    ixion::model_iterator& iter = data->m_range_iterator;
+    auto& iter = data->m_range_iterator;
+    auto end = data->m_range_cells.end();
 
-    if (!iter.has())
+    if (iter == end)
     {
         // No more elements.  Stop the iteration.
         PyErr_SetNone(PyExc_StopIteration);
@@ -91,9 +93,9 @@ PyObject* sheet_rows_iternext(PyObject* self)
 
     PyObject* pyobj_row = PyTuple_New(data->m_range.last.column+1);
 
-    for (; iter.has(); iter.next())
+    for (; iter != end; ++iter)
     {
-        const auto& cell = iter.get();
+        const auto& cell = *iter;
         if (cell.row != data->m_current_row)
         {
             ++data->m_current_row;
@@ -121,10 +123,7 @@ PyObject* sheet_rows_iternext(PyObject* self)
             }
             case ixion::cell_t::string:
             {
-                ixion::string_id_t sid = std::get<ixion::string_id_t>(cell.value);
-                const ixion::model_context& cxt = data->m_doc->get_model_context();
-                const std::string* ps = cxt.get_string(sid);
-                obj = create_cell_object_string(ps);
+                obj = create_cell_object_string(std::get<std::string_view>(cell.value));
                 break;
             }
             case ixion::cell_t::formula:

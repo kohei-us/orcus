@@ -49,7 +49,7 @@ const format_runs_t* shared_strings::get_format_runs(std::size_t index) const
 
 const std::string* shared_strings::get_string(std::size_t index) const
 {
-    return mp_impl->context.get_string(index);
+    return mp_impl->context.get_string(ixion::string_id_t{static_cast<ixion::string_id_t::value_type>(index)});
 }
 
 void shared_strings::dump(std::ostream& os) const

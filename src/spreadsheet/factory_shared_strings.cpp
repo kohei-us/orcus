@@ -27,12 +27,14 @@ import_shared_strings::~import_shared_strings() {}
 
 size_t import_shared_strings::append(std::string_view s)
 {
-    return m_cxt.append_string(s);
+    auto sid = m_cxt.append_string(s);
+    return sid.value;
 }
 
 size_t import_shared_strings::add(std::string_view s)
 {
-    return m_cxt.add_string(s);
+    auto sid = m_cxt.add_string(s);
+    return sid.value;
 }
 
 void import_shared_strings::set_segment_font(size_t font_index)
@@ -129,10 +131,10 @@ size_t import_shared_strings::commit_segments()
 {
     ixion::string_id_t sindex = m_cxt.append_string(m_cur_segment_string);
     m_cur_segment_string.clear();
-    m_ss_store.set_format_runs(sindex, std::move(mp_cur_format_runs));
+    m_ss_store.set_format_runs(sindex.value, std::move(mp_cur_format_runs));
     mp_cur_format_runs.reset();
 
-    return sindex;
+    return sindex.value;
 }
 
 }}} // namespace orcus::spreadsheet::detail

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <string>
+#include <string_view>
 #include <Python.h>
 
 namespace ixion {
@@ -29,7 +29,7 @@ namespace python {
 
 PyObject* create_cell_object_empty();
 PyObject* create_cell_object_boolean(bool v);
-PyObject* create_cell_object_string(const std::string* p);
+PyObject* create_cell_object_string(std::string_view s);
 PyObject* create_cell_object_numeric(double v);
 PyObject* create_cell_object_formula(
     const spreadsheet::document& doc, const ixion::abs_address_t& origin, const ixion::formula_cell* fc);
