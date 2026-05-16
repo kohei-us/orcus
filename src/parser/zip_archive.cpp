@@ -29,6 +29,11 @@ namespace {
 
 constexpr std::uint32_t zip64_size_marker = 0xFFFFFFFFu;
 
+// Deflate cannot expand by more than 1032:1
+// (https://zlib.net/zlib_tech.html "Maximum Compression Factor")
+// Round up 1024 and treat anything past that as malformed.
+constexpr std::size_t max_compression_ratio = 1024;
+
 struct zip_file_param
 {
     enum compress_method_type { stored = 0, deflated = 8 };
@@ -379,6 +384,13 @@ void zip_archive::impl::read_file_entries()
         // A compressed payload cannot be larger than the archive itself.
         if (param.size_compressed > static_cast<std::size_t>(m_stream_size))
             throw zip_error("entry compressed size exceeds archive size");
+
+        // Refuse impossible deflate ratios so a tiny payload cannot demand a
+        // multi-GB output buffer.
+        if (param.compress_method == zip_file_param::deflated &&
+            param.size_compressed > 0 &&
+            param.size_uncompressed / param.size_compressed > max_compression_ratio)
+            throw zip_error("entry compression ratio exceeds the deflate maximum");
 
         if (param.filename_length)
             param.filename = central_dir.read_string(param.filename_length, m_pool);
