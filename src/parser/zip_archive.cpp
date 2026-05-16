@@ -376,6 +376,10 @@ void zip_archive::impl::read_file_entries()
             param.size_uncompressed == zip64_size_marker)
             throw zip_error("ZIP64 size field encountered; ZIP64 is not supported");
 
+        // A compressed payload cannot be larger than the archive itself.
+        if (param.size_compressed > static_cast<std::size_t>(m_stream_size))
+            throw zip_error("entry compressed size exceeds archive size");
+
         if (param.filename_length)
             param.filename = central_dir.read_string(param.filename_length, m_pool);
 
