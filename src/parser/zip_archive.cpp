@@ -129,7 +129,7 @@ public:
         if (!n)
             throw zip_error("attempt to read string of zero size.");
 
-        std::vector<uint8_t> buf;
+        std::vector<uint8_t> buf(n);
         m_stream->seek(m_head_pos+m_offset);
         m_stream->read({buf.data(), n});
         m_offset += n;
